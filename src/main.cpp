@@ -21,7 +21,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#include "two_scale_solver.hpp"
+
 int main()
 {
+   Two_scale_solver ds(0);
+   ds.solve(100);
+
    return 0;
 }
