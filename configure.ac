@@ -7,9 +7,9 @@ AM_CONFIG_HEADER(config.h)
 sysconfdir=${sysconfdir}/${PACKAGE}/${VERSION}
 
 AC_PROG_CXX
+AC_PROG_F77
+AC_F77_LIBRARY_LDFLAGS
 
-AC_SUBST(LIBSDL_LIBS)
-AC_SUBST(LIBSDL_CFLAGS)
-AC_SUBST(datadir)
+AC_SUBST(FLIBS)
 
 AC_OUTPUT(Makefile src/Makefile doc/Makefile test/Makefile)
