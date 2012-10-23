@@ -1,4 +1,6 @@
 *~
+*.o
+*.a
 
 aclocal.m4
 autom4te.cache/
@@ -13,7 +15,6 @@ Makefile.in
 missing
 stamp-h1
 
-src/*.o
 src/.deps
 src/Makefile
 src/Makefile.in
