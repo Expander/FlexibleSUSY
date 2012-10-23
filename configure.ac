@@ -14,4 +14,12 @@ AC_PROG_RANLIB
 AC_SUBST(FLIBS)
 AC_SUBST([AM_CXXFLAGS], [-ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor -Wfloat-equal])
 
-AC_OUTPUT(Makefile src/Makefile doc/Makefile test/Makefile models/Makefile models/sm/Makefile)
+# files to generate via autotools (prepare .am or .in source files)
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([src/Makefile])
+AC_CONFIG_FILES([doc/Makefile])
+AC_CONFIG_FILES([test/Makefile])
+AC_CONFIG_FILES([models/Makefile])
+AC_CONFIG_FILES([models/sm/Makefile])
+
+AC_OUTPUT
