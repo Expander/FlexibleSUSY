@@ -11,8 +11,10 @@ AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
 AC_PROG_RANLIB
 
+AM_CXXFLAGS="-ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor -Wfloat-equal"
+
 AC_SUBST(FLIBS)
-AC_SUBST([AM_CXXFLAGS], [-ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor -Wfloat-equal])
+AC_SUBST(AM_CXXFLAGS)
 
 # files to generate via autotools (prepare .am or .in source files)
 AC_CONFIG_FILES([Makefile])
