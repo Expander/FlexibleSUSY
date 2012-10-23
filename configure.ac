@@ -9,7 +9,8 @@ sysconfdir=${sysconfdir}/${PACKAGE}/${VERSION}
 AC_PROG_CXX
 AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
+AC_PROG_RANLIB
 
 AC_SUBST(FLIBS)
 
-AC_OUTPUT(Makefile src/Makefile doc/Makefile test/Makefile)
+AC_OUTPUT(Makefile src/Makefile doc/Makefile test/Makefile models/Makefile models/sm/Makefile)

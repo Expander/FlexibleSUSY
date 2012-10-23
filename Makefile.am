@@ -1,4 +1,4 @@
-SUBDIRS = src doc test
+SUBDIRS = src doc test models
 EXTRA_DIST = autogen.sh
 
 datadir = $(datarootdir)/@PACKAGE@/@VERSION@

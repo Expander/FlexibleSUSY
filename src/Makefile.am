@@ -1,13 +1,7 @@
-bin_PROGRAMS = flexisusy
 
-AM_CXXFLAGS = -ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor -Wfloat-equal
+noinst_LIBRARIES = libflexisusy.a
 
-AM_CFLAGS =
-
-flexisusy_LDADD = @FLIBS@
-
-flexisusy_SOURCES = \
-	main.cpp \
+libflexisusy_a_SOURCES = \
 	def.h \
 	def.cpp \
 	deq_solver.hpp \
@@ -15,6 +9,8 @@ flexisusy_SOURCES = \
 	dilog.f \
 	linalg.h \
 	linalg.cpp \
+	lowe.h \
+	lowe.cpp \
 	mycomplex.h \
 	numerics.h \
 	numerics.cpp \

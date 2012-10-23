@@ -22,10 +22,12 @@
 // ====================================================================
 
 #include "two_scale_solver.hpp"
+#include "sm.hpp"
 
 int main()
 {
-   Two_scale_solver ds(0);
+   StandardModel* sm = new StandardModel();
+   Two_scale_solver ds(sm);
    ds.solve(100);
 
    return 0;
