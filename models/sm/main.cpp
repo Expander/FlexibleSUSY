@@ -26,7 +26,31 @@
 
 int main()
 {
+   const double vev = 246;
+   const double root2 = sqrt(2.0);
+   const double mtoprun = 165;
+   const double mbrun = 2.9;
+   const double mtau = 1.77699;
+   const double yt = mtoprun * root2 / vev;
+   const double yb = mbrun * root2 / vev;
+   const double ytau = mtau * root2 / vev;
+
+   const double MZ = 91.1876;
+   const double aem = 1.0 / 127.918; // at MZ
+   const double sinthWsq = 0.23122;
+   const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinthWsq));
+   const double alpha2 = aem / sinthWsq;
+   const double alpha3 = 0.1187; // at MZ
+
    StandardModel* sm = new StandardModel();
+   sm->setMu(MZ);
+   sm->setYukawaElement(StandardModel::YU, 3, 3, yt);
+   sm->setYukawaElement(StandardModel::YD, 3, 3, yb);
+   sm->setYukawaElement(StandardModel::YE, 3, 3, ytau);
+   sm->setGaugeCoupling(1, sqrt(4 * PI * alpha1));
+   sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
+   sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
+
    Two_scale_solver ds(sm);
    ds.solve(100);
 
