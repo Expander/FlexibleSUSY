@@ -229,9 +229,9 @@ StandardModel StandardModel::calcBeta() const
       + 3.0 * sqr(yd.display(3, 3))
       + 2.5 * sqr(ye.display(3, 3)));
 
-   dg(1) = oneO16Pisq * (41.0 / 10.0);
-   dg(2) = oneO16Pisq * (-19.0 / 6.0);
-   dg(3) = oneO16Pisq * (-7.0);
+   dg(1) = oneO16Pisq * std::pow(displayGaugeCoupling(1), 3) * (41.0 / 10.0);
+   dg(2) = oneO16Pisq * std::pow(displayGaugeCoupling(2), 3) * (-19.0 / 6.0);
+   dg(3) = oneO16Pisq * std::pow(displayGaugeCoupling(3), 3) * (-7.0);
 
    return StandardModel(dyu, dyd, dye, dg);
 }
