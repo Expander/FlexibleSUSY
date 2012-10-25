@@ -54,5 +54,7 @@ int main()
    Two_scale_solver ds(sm);
    ds.solve(100);
 
+   delete sm;
+
    return 0;
 }
