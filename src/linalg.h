@@ -137,6 +137,16 @@ public:
   double average() const; ///< average element
   /// Closest element of the vector to the input
   int closest(double a) const; 
+  bool operator==(const DoubleVector& o) const {
+     if (displayStart() != o.displayStart())
+        return false;
+     if (displayEnd() != o.displayEnd())
+        return false;
+     for (int j=start; j<=end; ++j)
+        if (display(j) != o.display(j))
+           return false;
+     return true;
+  }
 };
 
 
@@ -350,6 +360,17 @@ public:
   /// Returns LU decomposition of a matrix. d gives whether there are an even
   /// or odd number of permutations
   DoubleMatrix ludcmp(double & d) const;
+  bool operator==(const DoubleMatrix& o) const {
+     if (displayRows() != o.displayRows())
+        return false;
+     if (displayCols() != o.displayCols())
+        return false;
+     for (int i = 1; i <= displayRows(); ++i)
+        for (int k = 1; k <= displayCols(); ++k)
+           if (display(i,k) != o.display(i,k))
+              return false;
+     return true;
+  }
 };
 
 /*
