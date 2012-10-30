@@ -64,6 +64,31 @@ struct sPhysical {
   
   /// Displays contents in a C-style convention *a (starts with index zero)
   void display(double *a) const;
+
+  bool operator==(const sPhysical& o) const {
+     return (mh0 == o.mh0)
+        && (mA0 == o.mA0)
+        && (mH0 == o.mH0)
+        && (mHpm == o.mHpm)
+        && (msnu == o.msnu)
+        && (mch == o.mch)
+        && (mneut == o.mneut)
+        && (mGluino == o.mGluino)
+        && (mixNeut == o.mixNeut)
+        && (thetaL == o.thetaL)
+        && (thetaR == o.thetaR)
+        && (thetat == o.thetat)
+        && (thetab == o.thetab)
+        && (thetatau == o.thetatau)
+        && (mu == o.mu)
+        && (md == o.md)
+        && (me == o.me)
+        && (thetaH == o.thetaH)
+        && (t1OV1Ms == o.t1OV1Ms)
+        && (t2OV2Ms == o.t2OV2Ms)
+        && (t1OV1Ms1loop == o.t1OV1Ms1loop)
+        && (t2OV2Ms1loop == o.t2OV2Ms1loop);
+  }
 }; 
 
 /// Formatted printout
