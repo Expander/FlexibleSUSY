@@ -24,5 +24,6 @@ AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([models/Makefile])
 AC_CONFIG_FILES([models/sm/Makefile])
 AC_CONFIG_FILES([models/mssm/Makefile])
+AC_CONFIG_FILES([models/mssm/test/Makefile])
 
 AC_OUTPUT

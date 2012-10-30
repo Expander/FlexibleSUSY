@@ -1,3 +1,5 @@
+SUBDIRS = test
+
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
 bin_PROGRAMS = run
