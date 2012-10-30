@@ -6,6 +6,7 @@ run_LDADD = @FLIBS@ $(top_srcdir)/src/libflexisusy.a
 
 run_SOURCES = \
 	main.cpp \
+	mssm_solver.cpp \
 	susy.cpp \
 	softpars.cpp \
 	softsusy.cpp \
