@@ -18,5 +18,4 @@ libflexisusy_a_SOURCES = \
 	rge.cpp \
 	utils.h \
 	utils.cpp \
-	two_scale_solver.hpp \
-	two_scale_solver.cpp
+	two_scale_solver.hpp

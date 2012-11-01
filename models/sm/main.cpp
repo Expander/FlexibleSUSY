@@ -52,7 +52,7 @@ int main()
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
 
    Two_scale_solver ds(sm);
-   ds.solve(100);
+   ds.solve();
 
    delete sm;
 

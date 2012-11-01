@@ -10,7 +10,6 @@ test_MssmSolver_LDADD = \
 
 test_MssmSolver_SOURCES = \
 	test_MssmSolver.cpp \
-	../mssm_solver.cpp \
 	../susy.cpp \
 	../softpars.cpp \
 	../softsusy.cpp \

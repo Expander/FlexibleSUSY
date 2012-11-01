@@ -19,22 +19,32 @@
 #ifndef TWO_SCALE_SOLVER_H
 #define TWO_SCALE_SOLVER_H
 
-#include "deq_solver.hpp"
+#include "rge_flow.hpp"
+#include <cassert>
 
 class RGE;
+class Two_scale;
 
-/**
- * @class Two_scale_solver
- * @author Alexander Voigt
- */
-class Two_scale_solver : public Deq_solver {
+template<>
+class RGEFlow<Two_scale> {
 public:
-   Two_scale_solver(RGE*);
-   virtual ~Two_scale_solver();
-   virtual DoubleVector solve(double);
+   RGEFlow(RGE*);
+   void solve();
 
 private:
    RGE* rge;
 };
+
+typedef RGEFlow<Two_scale> Two_scale_solver;
+
+RGEFlow<Two_scale>::RGEFlow(RGE* rge_)
+   : rge(rge_)
+{
+   assert(rge_ && "rge must not be 0");
+}
+
+void RGEFlow<Two_scale>::solve()
+{
+}
 
 #endif
