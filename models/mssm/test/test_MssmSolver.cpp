@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( test_MssmSolver )
    mssmSolver.setGaugeUnification(uni);
    mssmSolver.setMxGuess(mxGuess);
    mssmSolver.setHighScaleBoundaryCondition(sugraBcs);
-   mssmSolver.lowOrg();
+   mssmSolver.solve();
 
    MssmSoftsusy softSusy;
    softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);

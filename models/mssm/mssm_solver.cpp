@@ -26,7 +26,7 @@ MssmSolver::~MssmSolver()
 {
 }
 
-void MssmSolver::lowOrg()
+void MssmSolver::solve()
 {
    fMssmSoftSusy.lowOrg(fHighScaleBoundaryCondition, fMxGuess, fSoftHighScalePars,
                         fSignMu, fTanBeta, fLowScaleBoundaryContitions,

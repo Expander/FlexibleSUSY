@@ -12,7 +12,7 @@ public:
    MssmSolver();
    virtual ~MssmSolver();
 
-   virtual void lowOrg();
+   virtual void solve();
 
    const sPhysical& displayPhys() const;
    const sProblem& displayProblem() const;

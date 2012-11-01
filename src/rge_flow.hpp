@@ -5,7 +5,7 @@
 class RGEFlow {
 public:
    virtual ~RGEFlow() {}
-   virtual void lowOrg() = 0;
+   virtual void solve() = 0;
 };
 
 #endif
