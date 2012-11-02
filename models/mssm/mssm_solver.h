@@ -48,17 +48,9 @@ RGEFlow<SoftSusy_t>::RGEFlow()
    , fSoftHighScalePars(3)
    , fSignMu(1)
    , fTanBeta(10)
+   , fLowScaleBoundaryContitions()
    , fGaugeUnification(true)
 {
-   QedQcd oneset;
-   const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
-
-   oneset.setAlpha(ALPHAS, alphasMZ);
-   oneset.setPoleMt(mtop);
-   oneset.setMass(mBottom, mbmb);
-   oneset.toMz();      ///< Runs SM fermion masses to MZ
-
-   fLowScaleBoundaryContitions = oneset;
 }
 
 RGEFlow<SoftSusy_t>::~RGEFlow()
