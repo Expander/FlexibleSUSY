@@ -37,12 +37,12 @@ private:
 
 typedef RGEFlow<Two_scale> Two_scale_solver;
 
-RGEFlow<Two_scale>::RGEFlow(const std::vector<RGE*>& rge_)
+inline RGEFlow<Two_scale>::RGEFlow(const std::vector<RGE*>& rge_)
    : rge(rge_)
 {
 }
 
-void RGEFlow<Two_scale>::solve()
+inline void RGEFlow<Two_scale>::solve()
 {
 }
 

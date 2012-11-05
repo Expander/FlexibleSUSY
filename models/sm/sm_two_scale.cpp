@@ -1,9 +1,9 @@
 
-#include "sm.hpp"
+#include "sm_two_scale.hpp"
 
 #include <cassert>
 
-StandardModel::StandardModel()
+StandardModel<Two_scale>::StandardModel()
    : yu(3, 3), yd(3, 3), ye(3, 3), g(3)
 {
    setPars(numStandardModelPars);
@@ -12,7 +12,7 @@ StandardModel::StandardModel()
    setThresholds(0);
 }
 
-StandardModel::StandardModel(const StandardModel& s)
+StandardModel<Two_scale>::StandardModel(const StandardModel<Two_scale>& s)
    : yu(s.yu), yd(s.yd), ye(s.ye), g(s.g)
 {
    setPars(numStandardModelPars);
@@ -21,8 +21,8 @@ StandardModel::StandardModel(const StandardModel& s)
    setThresholds(s.displayThresholds());
 }
 
-StandardModel::StandardModel(const DoubleMatrix& SMu, const DoubleMatrix& SMd,
-                             const DoubleMatrix& SMe, const DoubleVector& g_)
+StandardModel<Two_scale>::StandardModel(const DoubleMatrix& SMu, const DoubleMatrix& SMd,
+                                        const DoubleMatrix& SMe, const DoubleVector& g_)
    : yu(SMu), yd(SMd), ye(SMe), g(g_)
 {
    setPars(numStandardModelPars);
@@ -31,11 +31,11 @@ StandardModel::StandardModel(const DoubleMatrix& SMu, const DoubleMatrix& SMd,
    setThresholds(0);
 }
 
-StandardModel::~StandardModel()
+StandardModel<Two_scale>::~StandardModel()
 {
 }
 
-const StandardModel& StandardModel::operator=(const StandardModel& s)
+const StandardModel<Two_scale>& StandardModel<Two_scale>::operator=(const StandardModel<Two_scale>& s)
 {
    if (this == &s) return *this;
    yu = s.yu;
@@ -48,28 +48,28 @@ const StandardModel& StandardModel::operator=(const StandardModel& s)
    return *this;
 }
 
-void StandardModel::setGaugeCoupling(int i, double f)
+void StandardModel<Two_scale>::setGaugeCoupling(int i, double f)
 {
    g(i) = f;
 }
 
-void StandardModel::setAllGauge(const DoubleVector& v)
+void StandardModel<Two_scale>::setAllGauge(const DoubleVector& v)
 {
    assert(v.displayStart() == 1 && v.displayEnd() == 3);
    g = v;
 }
 
-DoubleVector StandardModel::displayGauge() const
+DoubleVector StandardModel<Two_scale>::displayGauge() const
 {
    return g;
 }
 
-double StandardModel::displayGaugeCoupling(int i) const
+double StandardModel<Two_scale>::displayGaugeCoupling(int i) const
 {
    return g.display(i);
 }
 
-void StandardModel::setYukawaElement(yukawa k, int i, int j, double f)
+void StandardModel<Two_scale>::setYukawaElement(yukawa k, int i, int j, double f)
 {
    switch (k) {
    case YU:
@@ -82,12 +82,12 @@ void StandardModel::setYukawaElement(yukawa k, int i, int j, double f)
       ye(i, j) = f;
       break;
    default:
-      assert(false && "StandardModel::setYukawaElement called with illegal k");
+      assert(false && "StandardModel<Two_scale>::setYukawaElement called with illegal k");
       break;
    }
 }
 
-void StandardModel::setYukawaMatrix(yukawa k, const DoubleMatrix& m)
+void StandardModel<Two_scale>::setYukawaMatrix(yukawa k, const DoubleMatrix& m)
 {
    switch (k) {
    case YU:
@@ -100,12 +100,12 @@ void StandardModel::setYukawaMatrix(yukawa k, const DoubleMatrix& m)
       ye = m;
       break;
    default:
-      assert(false && "StandardModel::setYukawaMatrix called with illegal k");
+      assert(false && "StandardModel<Two_scale>::setYukawaMatrix called with illegal k");
       break;
    }
 }
 
-double StandardModel::displayYukawaElement(yukawa k, int i, int j) const
+double StandardModel<Two_scale>::displayYukawaElement(yukawa k, int i, int j) const
 {
    switch (k) {
    case YU:
@@ -118,13 +118,13 @@ double StandardModel::displayYukawaElement(yukawa k, int i, int j) const
       return ye.display(i, j);
       break;
    default:
-      assert(false && "StandardModel::displayYukawaElement called with illegal k");
+      assert(false && "StandardModel<Two_scale>::displayYukawaElement called with illegal k");
       break;
    }
    return 0.0;
 }
 
-DoubleMatrix StandardModel::displayYukawaMatrix(yukawa k) const
+DoubleMatrix StandardModel<Two_scale>::displayYukawaMatrix(yukawa k) const
 {
    switch (k) {
    case YU:
@@ -137,14 +137,14 @@ DoubleMatrix StandardModel::displayYukawaMatrix(yukawa k) const
       return ye;
       break;
    default:
-      assert(false && "StandardModel::displayYukawaMatrix called with illegal k");
+      assert(false && "StandardModel<Two_scale>::displayYukawaMatrix called with illegal k");
       break;
    }
 }
 
 //Peter:: edited to include new Essm parameters
 
-const DoubleVector StandardModel::display() const
+const DoubleVector StandardModel<Two_scale>::display() const
 {
    DoubleVector y(numStandardModelPars);
    int i, j, k = 0;
@@ -165,7 +165,7 @@ const DoubleVector StandardModel::display() const
 }
 //Peter:: edited to include new Essm parameters
 
-void StandardModel::set(const DoubleVector& y)
+void StandardModel<Two_scale>::set(const DoubleVector& y)
 {
    int i, j, k = 0;
    for (i = 1; i <= 3; i++)
@@ -182,13 +182,13 @@ void StandardModel::set(const DoubleVector& y)
    }
 }
 
-std::ostream& operator <<(std::ostream& left, const StandardModel& s)
+std::ostream& operator <<(std::ostream& left, const StandardModel<Two_scale>& s)
 {
    left << "SM parameters at Q: " << s.displayMu()
         << '\n'
-        << " Y^U" << s.displayYukawaMatrix(StandardModel::YU)
-        << " Y^D" << s.displayYukawaMatrix(StandardModel::YD)
-        << " Y^E" << s.displayYukawaMatrix(StandardModel::YE)
+        << " Y^U" << s.displayYukawaMatrix(StandardModel<Two_scale>::YU)
+        << " Y^D" << s.displayYukawaMatrix(StandardModel<Two_scale>::YD)
+        << " Y^E" << s.displayYukawaMatrix(StandardModel<Two_scale>::YE)
         << '\n'
         << " g1: " << s.displayGaugeCoupling(1)
         << " g2: " << s.displayGaugeCoupling(2)
@@ -200,7 +200,7 @@ std::ostream& operator <<(std::ostream& left, const StandardModel& s)
 }
 
 // Outputs derivatives (DRbar scheme) in the form of ds
-StandardModel StandardModel::calcBeta() const
+StandardModel<Two_scale> StandardModel<Two_scale>::calcBeta() const
 {
    static const double oneO16Pisq = 1.0 / (16.0 * PI * PI);
    DoubleMatrix dyu(3, 3), dyd(3, 3), dye(3, 3);
@@ -236,7 +236,7 @@ StandardModel StandardModel::calcBeta() const
    return StandardModel(dyu, dyd, dye, dg);
 }
 
-DoubleVector StandardModel::beta() const
+DoubleVector StandardModel<Two_scale>::beta() const
 {
    return calcBeta().display();
 }

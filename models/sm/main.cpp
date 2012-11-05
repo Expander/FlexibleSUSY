@@ -22,7 +22,9 @@
 // ====================================================================
 
 #include "two_scale_solver.hpp"
-#include "sm.hpp"
+#include "sm_two_scale.hpp"
+
+#include <cmath>
 
 int main()
 {
@@ -42,11 +44,11 @@ int main()
    const double alpha2 = aem / sinthWsq;
    const double alpha3 = 0.1187; // at MZ
 
-   StandardModel* sm = new StandardModel();
+   StandardModel<Two_scale>* sm = new StandardModel<Two_scale>();
    sm->setMu(MZ);
-   sm->setYukawaElement(StandardModel::YU, 3, 3, yt);
-   sm->setYukawaElement(StandardModel::YD, 3, 3, yb);
-   sm->setYukawaElement(StandardModel::YE, 3, 3, ytau);
+   sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, yt);
+   sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, yb);
+   sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, ytau);
    sm->setGaugeCoupling(1, sqrt(4 * PI * alpha1));
    sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
