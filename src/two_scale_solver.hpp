@@ -20,7 +20,7 @@
 #define TWO_SCALE_SOLVER_H
 
 #include "rge_flow.hpp"
-#include <cassert>
+#include <vector>
 
 class RGE;
 class Two_scale;
@@ -28,19 +28,18 @@ class Two_scale;
 template<>
 class RGEFlow<Two_scale> {
 public:
-   RGEFlow(RGE*);
+   RGEFlow(const std::vector<RGE*>&);
    void solve();
 
 private:
-   RGE* rge;
+   std::vector<RGE*> rge;
 };
 
 typedef RGEFlow<Two_scale> Two_scale_solver;
 
-RGEFlow<Two_scale>::RGEFlow(RGE* rge_)
+RGEFlow<Two_scale>::RGEFlow(const std::vector<RGE*>& rge_)
    : rge(rge_)
 {
-   assert(rge_ && "rge must not be 0");
 }
 
 void RGEFlow<Two_scale>::solve()

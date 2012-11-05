@@ -51,7 +51,8 @@ int main()
    sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
 
-   Two_scale_solver ds(sm);
+   std::vector<RGE*> rges(1, sm);
+   Two_scale_solver ds(rges);
    ds.solve();
 
    delete sm;
