@@ -53,8 +53,8 @@ int main()
    sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
 
-   std::vector<Two_scale_model*> rges(1, sm);
-   Two_scale_solver ds(rges);
+   Two_scale_solver ds;
+   ds.add_model(sm);
    ds.solve();
 
    delete sm;
