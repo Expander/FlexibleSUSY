@@ -16,34 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_SOLVER_H
-#define TWO_SCALE_SOLVER_H
+#ifndef TWO_SCALE_MODEL_H
+#define TWO_SCALE_MODEL_H
 
-#include "rg_flow.hpp"
-#include <vector>
+class DoubleVector;
 
-class Two_scale;
-class Two_scale_model;
-
-template<>
-class RGFlow<Two_scale> {
+class Two_scale_model {
 public:
-   RGFlow(const std::vector<Two_scale_model*>&);
-   void solve();
-
-private:
-   std::vector<Two_scale_model*> rge;
+   virtual ~Two_scale_model() {}
+   virtual void run_up_first_time() = 0;
+   virtual void run_down_first_time() = 0;
+   virtual void run_up() = 0;
+   virtual void run_down() = 0;
+   virtual void setParameters(const DoubleVector&) = 0;
 };
-
-typedef RGFlow<Two_scale> Two_scale_solver;
-
-inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& rge_)
-   : rge(rge_)
-{
-}
-
-inline void RGFlow<Two_scale>::solve()
-{
-}
 
 #endif
