@@ -20,6 +20,7 @@
 #define TWO_SCALE_SOLVER_H
 
 #include "rg_flow.hpp"
+#include "two_scale_model.hpp"
 #include <vector>
 
 class Two_scale;
@@ -32,31 +33,65 @@ public:
    RGFlow(const std::vector<Two_scale_model*>&);
 
    void addMatchingCondition(const Two_scale_matching*);
-   void run_up() {}
-   void run_down() {}
+   void run_up();
+   void run_down();
    void solve();
 
 private:
    std::vector<Two_scale_model*> rge;
    std::vector<const Two_scale_matching*> matching;
+   unsigned int maxIterations;
+
+   bool accuracyGoalReached() const;
 };
 
 typedef RGFlow<Two_scale> Two_scale_solver;
 
 inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& rge_)
    : rge(rge_)
+   , matching()
+   , maxIterations(10)
 {
 }
 
 inline void RGFlow<Two_scale>::solve()
 {
+   // initial run
    run_up();
    run_down();
+
+   for (unsigned int iter = 0;
+        iter < maxIterations && !accuracyGoalReached();
+        ++iter) {
+      run_up();
+      run_down();
+   }
+}
+
+inline void RGFlow<Two_scale>::run_up()
+{
+   for (std::vector<Two_scale_model*>::iterator model = rge.begin(), end = rge.end();
+        model != end; ++model) {
+      (*model)->run_up();
+   }
+}
+
+inline void RGFlow<Two_scale>::run_down()
+{
+   for (std::vector<Two_scale_model*>::iterator model = rge.begin(), end = rge.end();
+        model != end; ++model) {
+      (*model)->run_down();
+   }
 }
 
 inline void RGFlow<Two_scale>::addMatchingCondition(const Two_scale_matching* mc)
 {
    matching.push_back(mc);
+}
+
+inline bool RGFlow<Two_scale>::accuracyGoalReached() const
+{
+   return true;
 }
 
 #endif
