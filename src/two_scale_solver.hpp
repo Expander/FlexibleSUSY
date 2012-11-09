@@ -19,30 +19,30 @@
 #ifndef TWO_SCALE_SOLVER_H
 #define TWO_SCALE_SOLVER_H
 
-#include "rge_flow.hpp"
+#include "rg_flow.hpp"
 #include <vector>
 
 class RGE;
 class Two_scale;
 
 template<>
-class RGEFlow<Two_scale> {
+class RGFlow<Two_scale> {
 public:
-   RGEFlow(const std::vector<RGE*>&);
+   RGFlow(const std::vector<RGE*>&);
    void solve();
 
 private:
    std::vector<RGE*> rge;
 };
 
-typedef RGEFlow<Two_scale> Two_scale_solver;
+typedef RGFlow<Two_scale> Two_scale_solver;
 
-inline RGEFlow<Two_scale>::RGEFlow(const std::vector<RGE*>& rge_)
+inline RGFlow<Two_scale>::RGFlow(const std::vector<RGE*>& rge_)
    : rge(rge_)
 {
 }
 
-inline void RGEFlow<Two_scale>::solve()
+inline void RGFlow<Two_scale>::solve()
 {
 }
 

@@ -2,18 +2,18 @@
 #ifndef MSSM_SOLVER_H
 #define MSSM_SOLVER_H
 
-#include "rge_flow.hpp"
+#include "rg_flow.hpp"
 #include "softsusy.h"
 
 class SoftSusy_t;
 
 template<>
-class RGEFlow<SoftSusy_t> {
+class RGFlow<SoftSusy_t> {
 public:
    typedef void (*THighScaleBoundaryCondition)(MssmSoftsusy&, const DoubleVector&);
 
-   RGEFlow();
-   ~RGEFlow();
+   RGFlow();
+   ~RGFlow();
 
    void solve();
 
@@ -39,9 +39,9 @@ private:
    bool                         fGaugeUnification;
 };
 
-typedef RGEFlow<SoftSusy_t> MssmSolver;
+typedef RGFlow<SoftSusy_t> MssmSolver;
 
-RGEFlow<SoftSusy_t>::RGEFlow()
+RGFlow<SoftSusy_t>::RGFlow()
    : fMssmSoftSusy()
    , fHighScaleBoundaryCondition(sugraBcs)
    , fMxGuess(1.0e16)
@@ -53,58 +53,58 @@ RGEFlow<SoftSusy_t>::RGEFlow()
 {
 }
 
-RGEFlow<SoftSusy_t>::~RGEFlow()
+RGFlow<SoftSusy_t>::~RGFlow()
 {
 }
 
-void RGEFlow<SoftSusy_t>::solve()
+void RGFlow<SoftSusy_t>::solve()
 {
    fMssmSoftSusy.lowOrg(fHighScaleBoundaryCondition, fMxGuess, fSoftHighScalePars,
                         fSignMu, fTanBeta, fLowScaleBoundaryContitions,
                         fGaugeUnification);
 }
 
-const sPhysical& RGEFlow<SoftSusy_t>::displayPhys() const
+const sPhysical& RGFlow<SoftSusy_t>::displayPhys() const
 {
    return fMssmSoftSusy.displayPhys();
 }
 
-const sProblem& RGEFlow<SoftSusy_t>::displayProblem() const
+const sProblem& RGFlow<SoftSusy_t>::displayProblem() const
 {
    return fMssmSoftSusy.displayProblem();
 }
 
-void RGEFlow<SoftSusy_t>::setHighScaleBoundaryCondition(THighScaleBoundaryCondition bc)
+void RGFlow<SoftSusy_t>::setHighScaleBoundaryCondition(THighScaleBoundaryCondition bc)
 {
    fHighScaleBoundaryCondition = bc;
 }
 
-void RGEFlow<SoftSusy_t>::setMxGuess(double mxGuess)
+void RGFlow<SoftSusy_t>::setMxGuess(double mxGuess)
 {
    fMxGuess = mxGuess;
 }
 
-void RGEFlow<SoftSusy_t>::setSoftHighScalePars(const DoubleVector& softHighScalePars)
+void RGFlow<SoftSusy_t>::setSoftHighScalePars(const DoubleVector& softHighScalePars)
 {
    fSoftHighScalePars = softHighScalePars;
 }
 
-void RGEFlow<SoftSusy_t>::setSignMu(int signMu)
+void RGFlow<SoftSusy_t>::setSignMu(int signMu)
 {
    fSignMu = signMu;
 }
 
-void RGEFlow<SoftSusy_t>::setTanBeta(double tanBeta)
+void RGFlow<SoftSusy_t>::setTanBeta(double tanBeta)
 {
    fTanBeta = tanBeta;
 }
 
-void RGEFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const QedQcd& lowScaleBC)
+void RGFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const QedQcd& lowScaleBC)
 {
    fLowScaleBoundaryContitions = lowScaleBC;
 }
 
-void RGEFlow<SoftSusy_t>::setGaugeUnification(bool gaugeUnification)
+void RGFlow<SoftSusy_t>::setGaugeUnification(bool gaugeUnification)
 {
    fGaugeUnification = gaugeUnification;
 }
