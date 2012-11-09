@@ -1,6 +1,7 @@
 #include "mssm_solver.h"
 #include "softsusy.h"
 
+#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_MssmSolver
 
 #include <boost/test/unit_test.hpp>
