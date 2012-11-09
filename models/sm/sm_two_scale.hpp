@@ -27,8 +27,6 @@ public:
 
    virtual ~StandardModel();
 
-   virtual void run_up_first_time() {}
-   virtual void run_down_first_time() {}
    virtual void run_up() {}
    virtual void run_down() {}
    virtual void setParameters(const DoubleVector&) {}
