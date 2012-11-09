@@ -16,7 +16,7 @@ run_SOURCES = \
 test_MssmSolver_LDADD = \
 	@FLIBS@ \
 	$(top_srcdir)/src/libflexisusy.a \
-	$(BOOST_LIB)/libboost_unit_test_framework.a
+	-lboost_unit_test_framework
 
 test_MssmSolver_SOURCES = \
 	test_MssmSolver.cpp \
