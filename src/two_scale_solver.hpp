@@ -32,7 +32,7 @@ class RGFlow<Two_scale> {
 public:
    RGFlow(const std::vector<Two_scale_model*>&);
 
-   void addMatchingCondition(const Two_scale_matching*);
+   void add_matching_condition(const Two_scale_matching*);
    void run_up();
    void run_down();
    void solve();
@@ -42,7 +42,7 @@ private:
    std::vector<const Two_scale_matching*> matching;
    unsigned int maxIterations;
 
-   bool accuracyGoalReached() const;
+   bool accuracy_goal_reached() const;
 };
 
 typedef RGFlow<Two_scale> Two_scale_solver;
@@ -61,7 +61,7 @@ inline void RGFlow<Two_scale>::solve()
    run_down();
 
    for (unsigned int iter = 0;
-        iter < maxIterations && !accuracyGoalReached();
+        iter < maxIterations && !accuracy_goal_reached();
         ++iter) {
       run_up();
       run_down();
@@ -84,12 +84,12 @@ inline void RGFlow<Two_scale>::run_down()
    }
 }
 
-inline void RGFlow<Two_scale>::addMatchingCondition(const Two_scale_matching* mc)
+inline void RGFlow<Two_scale>::add_matching_condition(const Two_scale_matching* mc)
 {
    matching.push_back(mc);
 }
 
-inline bool RGFlow<Two_scale>::accuracyGoalReached() const
+inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
    return true;
 }
