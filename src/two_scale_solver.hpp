@@ -32,6 +32,8 @@ public:
    RGFlow(const std::vector<Two_scale_model*>&);
 
    void addMatchingCondition(const Two_scale_matching*);
+   void run_up() {}
+   void run_down() {}
    void solve();
 
 private:
@@ -48,6 +50,8 @@ inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& rge_)
 
 inline void RGFlow<Two_scale>::solve()
 {
+   run_up();
+   run_down();
 }
 
 inline void RGFlow<Two_scale>::addMatchingCondition(const Two_scale_matching* mc)
