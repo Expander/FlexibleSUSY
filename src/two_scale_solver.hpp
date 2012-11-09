@@ -38,7 +38,7 @@ public:
    void solve();
 
 private:
-   std::vector<Two_scale_model*> rge;
+   std::vector<Two_scale_model*> models;
    std::vector<const Two_scale_matching*> matching;
    unsigned int maxIterations;
 
@@ -47,8 +47,8 @@ private:
 
 typedef RGFlow<Two_scale> Two_scale_solver;
 
-inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& rge_)
-   : rge(rge_)
+inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& models_)
+   : models(models_)
    , matching()
    , maxIterations(10)
 {
@@ -70,7 +70,8 @@ inline void RGFlow<Two_scale>::solve()
 
 inline void RGFlow<Two_scale>::run_up()
 {
-   for (std::vector<Two_scale_model*>::iterator model = rge.begin(), end = rge.end();
+   for (std::vector<Two_scale_model*>::iterator model = models.begin(),
+           end = models.end();
         model != end; ++model) {
       (*model)->run_up();
    }
@@ -78,7 +79,8 @@ inline void RGFlow<Two_scale>::run_up()
 
 inline void RGFlow<Two_scale>::run_down()
 {
-   for (std::vector<Two_scale_model*>::iterator model = rge.begin(), end = rge.end();
+   for (std::vector<Two_scale_model*>::iterator model = models.begin(),
+           end = models.end();
         model != end; ++model) {
       (*model)->run_down();
    }
