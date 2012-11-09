@@ -24,15 +24,19 @@
 
 class Two_scale;
 class Two_scale_model;
+class Two_scale_matching;
 
 template<>
 class RGFlow<Two_scale> {
 public:
    RGFlow(const std::vector<Two_scale_model*>&);
+
+   void addMatchingCondition(const Two_scale_matching*);
    void solve();
 
 private:
    std::vector<Two_scale_model*> rge;
+   std::vector<const Two_scale_matching*> matching;
 };
 
 typedef RGFlow<Two_scale> Two_scale_solver;
@@ -44,6 +48,11 @@ inline RGFlow<Two_scale>::RGFlow(const std::vector<Two_scale_model*>& rge_)
 
 inline void RGFlow<Two_scale>::solve()
 {
+}
+
+inline void RGFlow<Two_scale>::addMatchingCondition(const Two_scale_matching* mc)
+{
+   matching.push_back(mc);
 }
 
 #endif
