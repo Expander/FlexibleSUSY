@@ -24,6 +24,7 @@
 #include "two_scale_solver.hpp"
 #include "sm_two_scale.hpp"
 
+#include <iostream>
 #include <cmath>
 
 int main()
@@ -55,7 +56,11 @@ int main()
 
    Two_scale_solver ds;
    ds.add_model(sm);
-   ds.solve();
+   try {
+      ds.solve();
+   } catch (Two_scale_solver::Error& e) {
+      std::cout << e.what() << std::endl;
+   }
 
    delete sm;
 
