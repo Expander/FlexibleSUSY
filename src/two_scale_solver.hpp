@@ -21,7 +21,9 @@
 
 #include "rg_flow.hpp"
 #include "two_scale_model.hpp"
+
 #include <vector>
+#include <string>
 
 class Two_scale;
 class Two_scale_model;
@@ -30,6 +32,14 @@ class Two_scale_matching;
 template<>
 class RGFlow<Two_scale> {
 public:
+   class Error {
+   public:
+      Error(const std::string& message_) : message(message) {}
+      std::string what() const { return message; }
+   private:
+      std::string message;
+   };
+
    RGFlow();
 
    void add_matching_condition(const Two_scale_matching*);
@@ -44,6 +54,7 @@ private:
    unsigned int maxIterations;
 
    bool accuracy_goal_reached() const;
+   void check_setup() const;
 };
 
 typedef RGFlow<Two_scale> Two_scale_solver;
@@ -57,6 +68,8 @@ inline RGFlow<Two_scale>::RGFlow()
 
 inline void RGFlow<Two_scale>::solve()
 {
+   check_setup();
+
    // initial run
    run_up();
    run_down();
@@ -66,6 +79,16 @@ inline void RGFlow<Two_scale>::solve()
         ++iter) {
       run_up();
       run_down();
+   }
+}
+
+inline void RGFlow<Two_scale>::check_setup() const
+{
+   if (models.size() + 1 != matching.size()) {
+      std::string message;
+      message = "RGFlow<Two_scale>::Error: number of models does not match"
+         "number of matching conditions - 1";
+      throw Error(message);
    }
 }
 
