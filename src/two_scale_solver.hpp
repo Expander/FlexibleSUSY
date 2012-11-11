@@ -83,10 +83,10 @@ inline void RGFlow<Two_scale>::solve()
 
 inline void RGFlow<Two_scale>::check_setup() const
 {
-   if (models.size() + 1 != matching.size()) {
+   if (models.size() != matching.size() + 1) {
       std::string message;
-      message = "RGFlow<Two_scale>::Error: number of models does not match"
-         "number of matching conditions - 1";
+      message = "RGFlow<Two_scale>::Error: number of models does not match "
+         "number of matching conditions + 1";
       throw Error(message);
    }
 
@@ -111,8 +111,9 @@ inline void RGFlow<Two_scale>::check_setup() const
 
 inline void RGFlow<Two_scale>::run_up()
 {
-   for (std::size_t i = 0, number_of_models = models.size();
-        i < number_of_models; ++i) {
+   const std::size_t number_of_models = models.size();
+   std::size_t i = 0;
+   while (i != number_of_models) {
       // init model parameters from low-scale model
       if (i > 0) {
          const Two_scale_model* low_scale_model = models[i - 1];
@@ -120,16 +121,23 @@ inline void RGFlow<Two_scale>::run_up()
          models[i]->setParameters(
             mc->calcHighFromLowScaleParameters(low_scale_model->getParameters()));
       }
-      models[i]->run_up();
+      models[i++]->run_up();
    }
 }
 
 inline void RGFlow<Two_scale>::run_down()
 {
-   for (std::vector<Two_scale_model*>::iterator model = models.begin(),
-           end = models.end();
-        model != end; ++model) {
-      (*model)->run_down();
+   const std::size_t number_of_models = models.size();
+   std::size_t i = number_of_models;
+   while (i--) {
+      // init model parameters from high-scale model
+      if (i < number_of_models - 1) {
+         const Two_scale_model* high_scale_model = models[i + 1];
+         const Two_scale_matching* mc = matching[i];
+         models[i]->setParameters(
+            mc->calcLowFromHighScaleParameters(high_scale_model->getParameters()));
+      }
+      models[i]->run_down();
    }
 }
 
