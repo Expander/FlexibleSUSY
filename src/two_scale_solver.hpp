@@ -73,9 +73,8 @@ inline void RGFlow<Two_scale>::solve()
    run_up();
    run_down();
 
-   for (unsigned int iter = 0;
-        iter < maxIterations && !accuracy_goal_reached();
-        ++iter) {
+   unsigned int iter = maxIterations;
+   while (iter-- && !accuracy_goal_reached()) {
       run_up();
       run_down();
    }
