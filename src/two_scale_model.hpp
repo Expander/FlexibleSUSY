@@ -19,7 +19,7 @@
 #ifndef TWO_SCALE_MODEL_H
 #define TWO_SCALE_MODEL_H
 
-class DoubleVector;
+#include "linalg.h"
 
 class Two_scale_model {
 public:
@@ -27,6 +27,7 @@ public:
    virtual void run_up() = 0;
    virtual void run_down() = 0;
    virtual void setParameters(const DoubleVector&) = 0;
+   virtual DoubleVector getParameters() const = 0;
 };
 
 #endif
