@@ -21,20 +21,19 @@
 
 #include "rg_flow.hpp"
 #include "two_scale_model.hpp"
+#include "two_scale_matching.hpp"
 
 #include <vector>
 #include <string>
 
 class Two_scale;
-class Two_scale_model;
-class Two_scale_matching;
 
 template<>
 class RGFlow<Two_scale> {
 public:
    class Error {
    public:
-      Error(const std::string& message_) : message(message) {}
+      Error(const std::string& message_) : message(message_) {}
       std::string what() const { return message; }
    private:
       std::string message;
@@ -94,10 +93,16 @@ inline void RGFlow<Two_scale>::check_setup() const
 
 inline void RGFlow<Two_scale>::run_up()
 {
-   for (std::vector<Two_scale_model*>::iterator model = models.begin(),
-           end = models.end();
-        model != end; ++model) {
-      (*model)->run_up();
+   for (std::size_t i = 0, number_of_models = models.size();
+        i < number_of_models; ++i) {
+      // init model parameters from low-scale model
+      if (i > 0) {
+         const Two_scale_model* low_scale_model = models[i - 1];
+         const Two_scale_matching* mc = matching[i - 1];
+         models[i]->setParameters(
+            mc->calcHighFromLowScaleParameters(low_scale_model->getParameters()));
+      }
+      models[i]->run_up();
    }
 }
 
