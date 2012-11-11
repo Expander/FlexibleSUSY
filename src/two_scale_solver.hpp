@@ -89,6 +89,24 @@ inline void RGFlow<Two_scale>::check_setup() const
          "number of matching conditions - 1";
       throw Error(message);
    }
+
+   for (std::vector<Two_scale_model*>::const_iterator model = models.begin(),
+           end = models.end(); model != end; ++model) {
+      if (!*model) {
+         std::string message;
+         message = "RGFlow<Two_scale>::Error: model pointer is NULL";
+         throw Error(message);
+      }
+   }
+
+   for (std::vector<const Two_scale_matching*>::const_iterator mc = matching.begin(),
+           end = matching.end(); mc != end; ++mc) {
+      if (!*mc) {
+         std::string message;
+         message = "RGFlow<Two_scale>::Error: matching condition pointer is NULL";
+         throw Error(message);
+      }
+   }
 }
 
 inline void RGFlow<Two_scale>::run_up()
