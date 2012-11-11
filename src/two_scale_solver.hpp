@@ -49,7 +49,7 @@ public:
 
 private:
    std::vector<Two_scale_model*> models;
-   std::vector<const Two_scale_matching*> matching;
+   std::vector<const Two_scale_matching*> matching_condition;
    unsigned int maxIterations;
 
    bool accuracy_goal_reached() const;
@@ -60,7 +60,7 @@ typedef RGFlow<Two_scale> Two_scale_solver;
 
 inline RGFlow<Two_scale>::RGFlow()
    : models()
-   , matching()
+   , matching_condition()
    , maxIterations(10)
 {
 }
@@ -83,7 +83,7 @@ inline void RGFlow<Two_scale>::solve()
 
 inline void RGFlow<Two_scale>::check_setup() const
 {
-   if (models.size() != matching.size() + 1) {
+   if (models.size() != matching_condition.size() + 1) {
       std::string message;
       message = "RGFlow<Two_scale>::Error: number of models does not match "
          "number of matching conditions + 1";
@@ -99,11 +99,13 @@ inline void RGFlow<Two_scale>::check_setup() const
       }
    }
 
-   for (std::vector<const Two_scale_matching*>::const_iterator mc = matching.begin(),
-           end = matching.end(); mc != end; ++mc) {
+   for (std::vector<const Two_scale_matching*>::const_iterator
+           mc = matching_condition.begin(),
+           end = matching_condition.end(); mc != end; ++mc) {
       if (!*mc) {
          std::string message;
-         message = "RGFlow<Two_scale>::Error: matching condition pointer is NULL";
+         message = "RGFlow<Two_scale>::Error: matching condition "
+            "pointer is NULL";
          throw Error(message);
       }
    }
@@ -117,9 +119,10 @@ inline void RGFlow<Two_scale>::run_up()
       // init model parameters from low-scale model
       if (i > 0) {
          const Two_scale_model* low_scale_model = models[i - 1];
-         const Two_scale_matching* mc = matching[i - 1];
+         const Two_scale_matching* mc = matching_condition[i - 1];
          models[i]->setParameters(
-            mc->calcHighFromLowScaleParameters(low_scale_model->getParameters()));
+            mc->calcHighFromLowScaleParameters(
+               low_scale_model->getParameters()));
       }
       models[i++]->run_up();
    }
@@ -133,9 +136,10 @@ inline void RGFlow<Two_scale>::run_down()
       // init model parameters from high-scale model
       if (i < number_of_models - 1) {
          const Two_scale_model* high_scale_model = models[i + 1];
-         const Two_scale_matching* mc = matching[i];
+         const Two_scale_matching* mc = matching_condition[i];
          models[i]->setParameters(
-            mc->calcLowFromHighScaleParameters(high_scale_model->getParameters()));
+            mc->calcLowFromHighScaleParameters(
+               high_scale_model->getParameters()));
       }
       models[i]->run_down();
    }
@@ -143,7 +147,7 @@ inline void RGFlow<Two_scale>::run_down()
 
 inline void RGFlow<Two_scale>::add_matching_condition(const Two_scale_matching* mc)
 {
-   matching.push_back(mc);
+   matching_condition.push_back(mc);
 }
 
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* m)
