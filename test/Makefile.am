@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/src -I$(BOOST_INC)
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(BOOST_CPPFLAGS)
 
 bin_PROGRAMS = test_two_scale_solver
 

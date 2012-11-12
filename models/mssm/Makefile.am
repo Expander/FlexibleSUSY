@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir)/src -I$(BOOST_INC)
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(BOOST_CPPFLAGS)
 
 bin_PROGRAMS = run test_MssmSolver
 
