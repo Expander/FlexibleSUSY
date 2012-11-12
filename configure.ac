@@ -11,6 +11,11 @@ AC_PROG_F77
 AC_F77_LIBRARY_LDFLAGS
 AC_PROG_RANLIB
 
+m4_include([m4/m4_ax_boost_base.m4])
+m4_include([m4/m4_ax_boost_unit_test_framework.m4])
+AX_BOOST_BASE([1.33.1])
+AX_BOOST_UNIT_TEST_FRAMEWORK
+
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS([boost/test/unit_test.hpp], [],
     [AC_MSG_ERROR(You need the Boost libraries.)])

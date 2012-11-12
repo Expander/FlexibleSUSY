@@ -4,7 +4,7 @@ bin_PROGRAMS = test_two_scale_solver
 
 test_two_scale_solver_LDADD = \
 	$(top_srcdir)/src/libflexisusy.a \
-	-lboost_unit_test_framework
+	@BOOST_UNIT_TEST_FRAMEWORK_LIB@
 
 test_two_scale_solver_SOURCES = \
 	test_two_scale_solver.cpp
