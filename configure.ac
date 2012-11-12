@@ -13,7 +13,7 @@ AC_PROG_RANLIB
 
 m4_include([m4/m4_ax_boost_base.m4])
 m4_include([m4/m4_ax_boost_unit_test_framework.m4])
-AX_BOOST_BASE([1.33.1])
+AX_BOOST_BASE([1.36])
 AX_BOOST_UNIT_TEST_FRAMEWORK
 
 AC_LANG_PUSH([C++])
