@@ -19,6 +19,7 @@ using std::ostringstream;
 using std::istream;
 using std::ostream;
 
+using namespace softsusy;
 
 /************************************
  * 
