@@ -12,12 +12,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <mycomplex.h>
+#include "mycomplex.h"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <cmath>
-#include <def.h>
+#include "def.h"
 #include <stdio.h>
 #include <string>
 #include <exception>
@@ -35,7 +35,6 @@
 #include <dirent.h>
 
 using namespace std;
-using namespace softsusy;
 
 /// Gives exponent of the largest number: either imaginary or real part
 double frexp(const Complex & c, int * i);
