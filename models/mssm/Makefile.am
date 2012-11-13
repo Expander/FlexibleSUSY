@@ -14,9 +14,10 @@ run_SOURCES = \
 	twoloophiggs.f
 
 test_MssmSolver_LDADD = \
-	@FLIBS@ \
 	$(top_srcdir)/src/libflexisusy.a \
-	@BOOST_UNIT_TEST_FRAMEWORK_LIB@
+	@BOOST_LDFLAGS@ \
+	@BOOST_UNIT_TEST_FRAMEWORK_LIB@ \
+	@FLIBS@
 
 test_MssmSolver_SOURCES = \
 	test_MssmSolver.cpp \
