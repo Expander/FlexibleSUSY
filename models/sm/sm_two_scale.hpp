@@ -11,7 +11,7 @@
 class Two_scale;
 
 template<>
-class StandardModel<Two_scale>: public Two_scale_model, private RGE {
+class StandardModel<Two_scale>: public Two_scale_model, protected RGE {
 private:
    DoubleMatrix yu, yd, ye; ///< Yukawa matrices for ups, downs and leptons
    DoubleVector g;          ///< Gauge couplings (g1 = sqrt(5/3) g_Y)
@@ -40,9 +40,9 @@ public:
    /// Sets whole Yukawa matrix
    void setYukawaMatrix(yukawa, const DoubleMatrix&);
    /// Set a single gauge coupling
-   void setGaugeCoupling(int, double);
+   virtual void setGaugeCoupling(int, double);
    /// Set all gauge couplings
-   void setAllGauge(const DoubleVector&);
+   virtual void setAllGauge(const DoubleVector&);
    /// Sets renormalisation scale
    void setMu(double mu) { RGE::setMu(mu); }
 
@@ -51,9 +51,9 @@ public:
    /// Returns a whole Yukawa matrix
    DoubleMatrix displayYukawaMatrix(yukawa) const;
    /// Returns a single gauge coupling
-   double displayGaugeCoupling(int) const;
+   virtual double displayGaugeCoupling(int) const;
    /// Returns all gauge couplings
-   DoubleVector displayGauge() const;
+   virtual DoubleVector displayGauge() const;
    /// Return renomalisation scale
    double displayMu() const { return RGE::displayMu(); }
    /// Return number of loops
@@ -63,13 +63,13 @@ public:
    /// Calculate beta functions
    StandardModel calcBeta() const;
 
-private:
+protected:
    /// Sets all RGE parameters to elements of vector
-   void set(const DoubleVector&);
+   virtual void set(const DoubleVector&);
    /// Returns all parameters as elements of a vector
-   const DoubleVector display() const;
+   virtual const DoubleVector display() const;
    /// Calculate beta functions
-   DoubleVector beta() const;
+   virtual DoubleVector beta() const;
 };
 
 /// Formatted output
