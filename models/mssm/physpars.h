@@ -19,10 +19,6 @@ using namespace std;
 
 typedef enum {none=0, selectron, smuon, stau, sup, scharm, stop, sdown, sstrange, sbottom, h0, A0, hpm, snue, snumu, snutau} tachyonType;
 
-const static char* tachyonNames[16] = {
-  "none", "selectron", "smuon", "stau", "sup", "scharm", "stop", "sdown", 
-  "sstrange", "sbottom", "h0", "A0", "hpm", "snue", "snumu", "snutau"};
-
 /// Masses of the physical particles. 
 struct sPhysical {
   double mh0, mA0, mH0, mHpm;

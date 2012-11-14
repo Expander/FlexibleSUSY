@@ -164,7 +164,7 @@ void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 /// From hep-ph/9606211's appendix. It should be done at MSusy to minimize the
 /// 1-loop contributions. Only call if you've calculated drbarpars.
 /// inputs are running top/bottom masses: call at MSusy only
-double MssmSoftsusy::doCalcTadpole1oneLoop(double mt, double sinthDRbar) {
+double MssmSoftsusy::doCalcTadpole1oneLoop(double /* mt */, double sinthDRbar) {
 
  if (forLoops.mu(1, 3) == 0.0 || forLoops.mu(2, 3) == 0.0) {
    if (PRINTOUT > 1)
@@ -342,7 +342,7 @@ double MssmSoftsusy::displayMwRun() const {
 /// From hep-ph/9311269's appendix. It should be done at MSusy to minimize the
 /// 1-loop contributions. Only call if you've calculated physpars
 /// inputs are running top/bottom masses. Call at MSusy
-double MssmSoftsusy::doCalcTadpole2oneLoop(double mt, double sinthDRbar) {
+double MssmSoftsusy::doCalcTadpole2oneLoop(double /* mt */, double sinthDRbar) {
 /// CHECKED
  if (forLoops.mu(1, 3) == 0.0 || forLoops.mu(2, 3) == 0.0) {
    if (PRINTOUT > 1)
@@ -878,7 +878,7 @@ void MssmSoftsusy::rewsbTreeLevel(int sgnMu) {
 /// Organises rewsb: call it at the low scale MS^2 = sqrt(0.5 * (mT1^2 +
 /// mT2^2)) is best, or below if it's decoupled from there. 
 /// Call with zero, or no mt if you want tree level
-void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & pars,
+void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
 			 double muOld) {
   if (altEwsb) {
     alternativeEwsb(mt);
@@ -1089,7 +1089,7 @@ void MssmSoftsusy::printLong() {
 
 
 
-bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double pizztMS) {
+bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
 
   double tanb = displayTanb();
   double beta = atan(tanb);
@@ -2018,7 +2018,7 @@ void MssmSoftsusy::addNeutralinoLoop(double p, DoubleMatrix & mass) {
 
 
 /// mixNeut set to diagonal = mixNeut^T mNeutralino mixNeut: checked
-void MssmSoftsusy::neutralinos(int accuracy, double piwwtMS, double pizztMS) {
+void MssmSoftsusy::neutralinos(int accuracy, double /* piwwtMS */, double /* pizztMS */) {
   double tanb = displayTanb();
   double cosb = cos(atan(tanb));
   DoubleMatrix mNeut(4, 4);
@@ -2668,7 +2668,7 @@ double MssmSoftsusy::calcRunningMtau() const {
 }
 
 void MssmSoftsusy::treeUpSquark(DoubleMatrix & mass, double mtrun, 
-				double pizztMS, double sinthDRbarMS, 
+				double /* pizztMS */, double sinthDRbarMS, 
 				int family) { 
   const double cu = 2.0 / 3.0;
   double mz2 = sqr(displayMzRun()), mt2 = sqr(mtrun);
@@ -5395,7 +5395,7 @@ void MssmSoftsusy::doUpSquarks(double mt, double pizztMS, double sinthDRbarMS,
 }
 
 void MssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun, 
-				  double pizztMS, double sinthDRbarMS, 
+				  double /* pizztMS */, double sinthDRbarMS, 
 				  int family) {
   const double cd = 1.0 / 3.0;
   double mz2 = sqr(displayMzRun()), mb2 = sqr(mbrun);
@@ -5423,7 +5423,7 @@ void MssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun,
 
 
 void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
-			    sinthDRbarMS, int accuracy, double mt) {
+                                 sinthDRbarMS, int accuracy, double /* mt */) {
   int family; for (family = 1; family <= 2; family++) {
     
     DoubleMatrix mSbotSquared(2, 2);
@@ -5498,7 +5498,7 @@ void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
   }
 }
 void MssmSoftsusy::treeChargedSlepton(DoubleMatrix & mass, double mtaurun, 
-				      double pizztMS, double sinthDRbarMS, 
+				      double /* pizztMS */, double sinthDRbarMS, 
 				      int family) { 
   double mz2 = sqr(displayMzRun()), mtau2 = sqr(mtaurun);
   double beta = atan(displayTanb()), mu = displaySusyMu(),
@@ -5603,7 +5603,7 @@ void MssmSoftsusy::doSnu(double pizztMS, int accuracy) {
   }
 }
 
-void MssmSoftsusy::treeSnu(double & mSnuSquared, double pizztMS, int family) {
+void MssmSoftsusy::treeSnu(double & mSnuSquared, double /* pizztMS */, int family) {
   double mz2 = sqr(displayMzRun());
   double beta = atan(displayTanb());
   double c2b = cos(2.0 * beta);
@@ -8617,7 +8617,7 @@ double MssmSoftsusy::sinSqThetaEff() {
 
 /// outrho, outsin represent the DRbar values
 double MssmSoftsusy::deltaVb(double outrho, double outsin, 
-			    double alphaDRbar, double pizztMZ) const {
+                             double alphaDRbar, double /* pizztMZ */) const {
   drBarPars tree(displayDrBarPars());
 
   double g       = displayGaugeCoupling(2);
@@ -8920,14 +8920,14 @@ void MssmSoftsusy::rhohat(double & outrho, double & outsin, double alphaDRbar,
   rhohat(outrho, outsin, alphaDRbar, pizztMZ, piwwt0, piwwtMW, tol, maxTries);
 }
 
-void MssmSoftsusy::methodBoundaryCondition(const DoubleVector & pars) {
+void MssmSoftsusy::methodBoundaryCondition(const DoubleVector & /* pars */) {
   ostringstream ii;
   ii << "Should only use MssmSoftsusy::methodBoundaryCondition in derived"
      << " objects.\n";
   throw ii.str();
 }
 
-void MssmSoftsusy::rpvSet(const DoubleVector & parameters){
+void MssmSoftsusy::rpvSet(const DoubleVector & /* parameters */){
   ostringstream ii;
   ii << "Should only use MssmSoftsusy::rpvSet in derived"
      << " objects.\n";
@@ -9323,7 +9323,7 @@ void MssmSoftsusy::spinfoSLHA(ostream & out) {
     out << "     4   Point invalid: " << displayProblem() << endl;
 }
 
-void MssmSoftsusy::softsusySLHA(ostream & out, double mgut) {
+void MssmSoftsusy::softsusySLHA(ostream & out, double /* mgut */) {
   out << "# Low energy data in SOFTSUSY: MIXING=" << MIXING << " TOLERANCE=" 
        << TOLERANCE << endl;
   //  out << "# mgut=" << mgut << " GeV\n";
@@ -10115,7 +10115,7 @@ double lep2Likelihood(double mh) {
 
 /// smears the likelihood curve for a Standard Model Higgs mass with a 3 GeV
 /// Gaussian theoretical error
-DoubleVector mhIntegrand(double mh, const DoubleVector & y) {
+DoubleVector mhIntegrand(double mh, const DoubleVector & /* y */) {
   DoubleVector dydx(1);
   dydx(1) = lep2Likelihood(mh) * 
     exp(-sqr(mhTrue - mh) / (2.0 * sqr(sigmaMh))) ;
@@ -10307,8 +10307,8 @@ double MssmSoftsusy::twoLoopGm2(double amu1Loop) const {
 
 
 /// input diagonal matrices and it'll give you back mixed ones
-void MssmSoftsusy::doQuarkMixing(DoubleMatrix & mDon, 
-				 DoubleMatrix & mUpq) {
+void MssmSoftsusy::doQuarkMixing(DoubleMatrix & /* mDon */,
+				 DoubleMatrix & /* mUpq */) {
   /// This is a dummy routine - MIXING is ignored in this object (it's all
   /// done in FLAVOURMSSMSOFTSUSY these days).
 

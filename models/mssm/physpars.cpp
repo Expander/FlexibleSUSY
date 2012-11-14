@@ -10,6 +10,10 @@
 
 #include <physpars.h>
 
+const static char* tachyonNames[16] = {
+  "none", "selectron", "smuon", "stau", "sup", "scharm", "stop", "sdown", 
+  "sstrange", "sbottom", "h0", "A0", "hpm", "snue", "snumu", "snutau"};
+
 const drBarPars & drBarPars::operator=(const drBarPars &s) {
   if (this == &s) return *this;
   mz = s.mz; mw = s.mw;
