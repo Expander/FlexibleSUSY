@@ -4,7 +4,6 @@
 
 #include "matching.hpp"
 
-class DoubleVector;
 class Two_scale;
 
 template<>
