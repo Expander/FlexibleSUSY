@@ -8,6 +8,10 @@
 
 #include <boost/test/unit_test.hpp>
 
+#define YU StandardModel<Two_scale>::YU
+#define YD StandardModel<Two_scale>::YD
+#define YE StandardModel<Two_scale>::YE
+
 class Trivial_SM_SMCW_matching_condition: public Two_scale_matching {
 public:
    Trivial_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
@@ -20,18 +24,18 @@ public:
       }
    virtual ~Trivial_SM_SMCW_matching_condition() {}
    virtual void matchLowToHighScaleModel() const {
-      DoubleVector pars(sm->getParameters());
-      assert(pars.displayStart() == 1 &&
-             pars.displayEnd() == StandardModel<Two_scale>::numStandardModelPars);
-      pars.setEnd(StandardModelCW<Two_scale>::numStandardModelCWPars);
-      smcw->setParameters(pars);
+      smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
+      smcw->setYukawaMatrix(YD, sm->displayYukawaMatrix(YD));
+      smcw->setYukawaMatrix(YE, sm->displayYukawaMatrix(YE));
+      for (int i = 1; i <= 3; ++i)
+         smcw->setGaugeCoupling(i, sm->displayGaugeCoupling(i));
    }
    virtual void matchHighToLowScaleModel() const {
-      DoubleVector pars(smcw->getParameters());
-      assert(pars.displayStart() == 1 &&
-             pars.displayEnd() == StandardModelCW<Two_scale>::numStandardModelCWPars);
-      pars.setEnd(StandardModel<Two_scale>::numStandardModelPars);
-      sm->setParameters(pars);
+      sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
+      sm->setYukawaMatrix(YD, smcw->displayYukawaMatrix(YD));
+      sm->setYukawaMatrix(YE, smcw->displayYukawaMatrix(YE));
+      for (int i = 1; i <= 3; ++i)
+         sm->setGaugeCoupling(i, smcw->displayGaugeCoupling(i));
    }
 private:
    StandardModel<Two_scale>* sm;
@@ -58,9 +62,9 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    StandardModel<Two_scale>* sm = new StandardModel<Two_scale>();
    sm->setMu(MZ);
-   sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, yt);
-   sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, yb);
-   sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, ytau);
+   sm->setYukawaElement(YU, 3, 3, yt);
+   sm->setYukawaElement(YD, 3, 3, yb);
+   sm->setYukawaElement(YE, 3, 3, ytau);
    sm->setGaugeCoupling(1, sqrt(4 * PI * alpha1));
    sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
@@ -82,16 +86,18 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
       BOOST_ERROR(e.what());
    }
 
-   DoubleVector smPars(sm->getParameters());
-   DoubleVector smcwPars(smcw->getParameters());
-
    // check that g4 and lambda are 0.0
-   BOOST_CHECK_EQUAL(smcwPars(StandardModelCW<Two_scale>::numStandardModelCWPars - 1), 0.0);
-   BOOST_CHECK_EQUAL(smcwPars(StandardModelCW<Two_scale>::numStandardModelCWPars), 0.0);
+   BOOST_CHECK_EQUAL(smcw->displayGaugeCoupling(4), 0.0);
+   BOOST_CHECK_EQUAL(smcw->displayLambda(), 0.0);
 
    // check that the SM parameters are the same in both models
-   smcwPars.setEnd(StandardModel<Two_scale>::numStandardModelPars);
-   BOOST_CHECK_EQUAL(smcwPars, smPars);
+   for (int i = 1; i <= 3; ++i)
+      BOOST_CHECK_EQUAL(smcw->displayGaugeCoupling(i),
+                        sm->displayGaugeCoupling(i));
+
+   BOOST_CHECK_EQUAL(smcw->displayYukawaMatrix(YU), sm->displayYukawaMatrix(YU));
+   BOOST_CHECK_EQUAL(smcw->displayYukawaMatrix(YD), sm->displayYukawaMatrix(YD));
+   BOOST_CHECK_EQUAL(smcw->displayYukawaMatrix(YE), sm->displayYukawaMatrix(YE));
 
    delete smcw;
    delete sm;

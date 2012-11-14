@@ -19,15 +19,11 @@
 #ifndef TWO_SCALE_MODEL_H
 #define TWO_SCALE_MODEL_H
 
-#include "linalg.h"
-
 class Two_scale_model {
 public:
    virtual ~Two_scale_model() {}
    virtual void run_up() = 0;
    virtual void run_down() = 0;
-   virtual void setParameters(const DoubleVector&) = 0;
-   virtual DoubleVector getParameters() const = 0;
 };
 
 #endif

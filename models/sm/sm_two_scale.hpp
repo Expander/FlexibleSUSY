@@ -29,8 +29,6 @@ public:
 
    virtual void run_up() {}
    virtual void run_down() {}
-   virtual void setParameters(const DoubleVector& v) { set(v); }
-   virtual DoubleVector getParameters() const { return display(); }
 
    /// sets object to be equal to another
    const StandardModel & operator=(const StandardModel& s);
