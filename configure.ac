@@ -3,6 +3,7 @@ AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
 sysconfdir=${sysconfdir}/${PACKAGE}/${VERSION}
 
