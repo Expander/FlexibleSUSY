@@ -16,20 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_CONSTRAINT_H
-#define TWO_SCALE_CONSTRAINT_H
+#ifndef SM_TWO_SCALE_EXP_CONSTRAINT_H
+#define SM_TWO_SCALE_EXP_CONSTRAINT_H
 
-#include "constraint.hpp"
+#include "two_scale_constraint.hpp"
 
 class Two_scale;
 
-template<>
-class Constraint<Two_scale> {
-public:
-   virtual ~Constraint() {}
-   virtual void apply() = 0;
-};
+template <class T>
+class StandardModel;
 
-typedef Constraint<Two_scale> Two_scale_constraint;
+class StandardModelExpConstraint : public Constraint<Two_scale> {
+public:
+   StandardModelExpConstraint(StandardModel<Two_scale>*);
+   virtual ~StandardModelExpConstraint();
+   virtual void apply();
+
+private:
+   StandardModel<Two_scale>* sm;
+};
 
 #endif
