@@ -21,7 +21,7 @@ AC_CHECK_HEADERS([boost/test/unit_test.hpp], [],
     [AC_MSG_ERROR(You need the Boost libraries.)])
 AC_LANG_POP([C++])
 
-AM_CXXFLAGS="-ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor -Wfloat-equal"
+AM_CXXFLAGS="-ggdb -Wall -pedantic -Wextra -Wcast-qual -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
 
 AC_SUBST(FLIBS)
 AC_SUBST(AM_CXXFLAGS)
