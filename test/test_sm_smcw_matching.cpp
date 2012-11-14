@@ -10,21 +10,32 @@
 
 class Trivial_SM_SMCW_matching_condition: public Two_scale_matching {
 public:
+   Trivial_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
+                                      StandardModelCW<Two_scale>* smcw_)
+      : sm(sm_)
+      , smcw(smcw_)
+      {
+         BOOST_REQUIRE(sm != NULL);
+         BOOST_REQUIRE(smcw != NULL);
+      }
    virtual ~Trivial_SM_SMCW_matching_condition() {}
-   virtual DoubleVector calcHighFromLowScaleParameters(const DoubleVector& v) const {
-      DoubleVector pars(v);
+   virtual void matchLowToHighScaleModel() const {
+      DoubleVector pars(sm->getParameters());
       assert(pars.displayStart() == 1 &&
              pars.displayEnd() == StandardModel<Two_scale>::numStandardModelPars);
       pars.setEnd(StandardModelCW<Two_scale>::numStandardModelCWPars);
-      return pars;
+      smcw->setParameters(pars);
    }
-   virtual DoubleVector calcLowFromHighScaleParameters(const DoubleVector& v) const {
-      DoubleVector pars(v);
+   virtual void matchHighToLowScaleModel() const {
+      DoubleVector pars(smcw->getParameters());
       assert(pars.displayStart() == 1 &&
              pars.displayEnd() == StandardModelCW<Two_scale>::numStandardModelCWPars);
       pars.setEnd(StandardModel<Two_scale>::numStandardModelPars);
-      return pars;
+      sm->setParameters(pars);
    }
+private:
+   StandardModel<Two_scale>* sm;
+   StandardModelCW<Two_scale>* smcw;
 };
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
@@ -58,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
-   Trivial_SM_SMCW_matching_condition mc;
+   Trivial_SM_SMCW_matching_condition mc(sm, smcw);
 
    Two_scale_solver solver;
    solver.add_model(sm);

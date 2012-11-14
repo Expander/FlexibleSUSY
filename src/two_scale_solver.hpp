@@ -117,11 +117,8 @@ inline void RGFlow<Two_scale>::run_up()
    while (i != number_of_models) {
       // init model parameters from low-scale model
       if (i > 0) {
-         const Two_scale_model* low_scale_model = models[i - 1];
          const Two_scale_matching* mc = matching_condition[i - 1];
-         models[i]->setParameters(
-            mc->calcHighFromLowScaleParameters(
-               low_scale_model->getParameters()));
+         mc->matchLowToHighScaleModel();
       }
       models[i++]->run_up();
    }
@@ -134,11 +131,8 @@ inline void RGFlow<Two_scale>::run_down()
    while (i--) {
       // init model parameters from high-scale model
       if (i < number_of_models - 1) {
-         const Two_scale_model* high_scale_model = models[i + 1];
          const Two_scale_matching* mc = matching_condition[i];
-         models[i]->setParameters(
-            mc->calcLowFromHighScaleParameters(
-               high_scale_model->getParameters()));
+         mc->matchHighToLowScaleModel();
       }
       models[i]->run_down();
    }

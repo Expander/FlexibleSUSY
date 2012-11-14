@@ -21,13 +21,22 @@ private:
 
 class Trivial_matching_condition: public Two_scale_matching {
 public:
+   Trivial_matching_condition(Static_model* mLow_, Static_model* mHigh_)
+      : mLow(mLow_)
+      , mHigh(mHigh_)
+      {
+         BOOST_REQUIRE(mLow != NULL);
+         BOOST_REQUIRE(mHigh != NULL);
+      }
    virtual ~Trivial_matching_condition() {}
-   virtual DoubleVector calcHighFromLowScaleParameters(const DoubleVector& v) const {
-      return v;
+   virtual void matchLowToHighScaleModel() const {
+      mHigh->setParameters(mLow->getParameters());
    }
-   virtual DoubleVector calcLowFromHighScaleParameters(const DoubleVector& v) const {
-      return v;
+   virtual void matchHighToLowScaleModel() const {
+      mLow->setParameters(mHigh->getParameters());
    }
+private:
+   Static_model *mLow, *mHigh;
 };
 
 BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
@@ -60,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
-   Trivial_matching_condition mc;
+   Trivial_matching_condition mc(&model1, &model2);
 
    Two_scale_solver solver;
    solver.add_model(&model1);
