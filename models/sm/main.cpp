@@ -23,6 +23,7 @@
 
 #include "two_scale_solver.hpp"
 #include "sm_two_scale.hpp"
+#include "logger.hpp"
 
 #include <iostream>
 #include <cmath>
@@ -59,7 +60,7 @@ int main()
    try {
       ds.solve();
    } catch (Two_scale_solver::Error& e) {
-      std::cout << e.what() << std::endl;
+      ERROR(e.what())
    }
 
    delete sm;

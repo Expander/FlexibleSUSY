@@ -18,6 +18,7 @@
 
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "sm_two_scale.hpp"
+#include "logger.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -52,9 +53,8 @@ void StandardModelExpConstraint::apply()
    const double alpha3 = 0.1187; // at MZ
 
    if (std::fabs(MZ - sm->displayMu()) < 1.0)
-      std::cout << "Warning: Applying the experimental constraints "
-         "of StandardModel<Two_scale> at a scale != MZ is not save!"
-                << std::endl;
+      WARNING("Warning: Applying the experimental constraints "
+              "of StandardModel<Two_scale> at a scale != MZ is not save!")
 
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, yt);
    sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, yb);
