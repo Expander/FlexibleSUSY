@@ -21,7 +21,7 @@ public:
    typedef enum {YU = 1, YD, YE} yukawa;
 
    StandardModel();
-   StandardModel(const StandardModel&);
+   StandardModel(const StandardModel<Two_scale>&);
    StandardModel(const DoubleMatrix& yu, const DoubleMatrix& yd,
                  const DoubleMatrix& ye, const DoubleVector& g);
 
@@ -31,7 +31,7 @@ public:
    virtual void run_down() {}
 
    /// sets object to be equal to another
-   const StandardModel & operator=(const StandardModel& s);
+   const StandardModel & operator=(const StandardModel<Two_scale>& s);
 
    /// Sets Yukawa matrix element
    void setYukawaElement(yukawa, int, int, double);

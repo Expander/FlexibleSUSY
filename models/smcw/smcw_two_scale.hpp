@@ -16,7 +16,7 @@ public:
       StandardModel<Two_scale>::numStandardModelPars + 2;
 
    StandardModelCW();
-   StandardModelCW(const StandardModelCW&);
+   StandardModelCW(const StandardModelCW<Two_scale>&);
    StandardModelCW(const StandardModel<Two_scale>&, double, double);
    StandardModelCW(const DoubleMatrix& yu, const DoubleMatrix& yd,
                    const DoubleMatrix& ye, const DoubleVector& g,
