@@ -90,20 +90,27 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #endif
 
 #ifdef SILENT
+   #define PRINT_COLOR_CODE(level)
+#else
+   #define PRINT_COLOR_CODE(level) \
+      switch (level) {                                        \
+      case kDebug:   std::cout << "\033[0;34m"; break;        \
+      case kWarning: std::cout << "\033[0;31m"; break;        \
+      case kError:   std::cout << "\033[1;31m"; break;        \
+      case kFatal:   std::cout << "\033[41;1;37m"; break;     \
+      case kInfo:                                             \
+      case kVerbose:                                          \
+      default:                                                \
+         break;                                               \
+      }
+#endif
+
+#ifdef SILENT
    #define LOG(level, message)
 #else
    #ifdef COLOR_PRINTOUT
       #define LOG(level, message)                                \
-         switch (level) {                                        \
-         case kDebug:   std::cout << "\033[0;34m"; break;        \
-         case kWarning: std::cout << "\033[0;31m"; break;        \
-         case kError:   std::cout << "\033[1;31m"; break;        \
-         case kFatal:   std::cout << "\033[41;1;37m"; break;     \
-         case kInfo:                                             \
-         case kVerbose:                                          \
-         default:                                                \
-            break;                                               \
-         }                                                       \
+         PRINT_COLOR_CODE(level)                                 \
          PRINT_PREFIX(level)                                     \
          std::cout << message << "\033[0m" << std::endl;
    #else
