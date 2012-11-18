@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <string>
+#include <cassert>
 
 class Two_scale;
 
@@ -158,6 +159,8 @@ inline void RGFlow<Two_scale>::run_down(TModel*)
 
 inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>* mc)
 {
+   assert(mc && "RGFlow<Two_scale>::add_matching_condition: matching"
+          " condition pointer is NULL");
    matching_condition.push_back(mc);
 }
 
