@@ -77,24 +77,39 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #endif
 
 #ifdef SILENT
+   #define PRINT_PREFIX(level)
+#else
+   #define PRINT_PREFIX(level) \
+      switch (level) {                                               \
+      case kWarning: std::cout << "Warning: "; break;                \
+      case kError:   std::cout << "Error: "; break;                  \
+      case kFatal:   std::cout << "Fatal: "; break;                  \
+      default:                                                       \
+         break;                                                      \
+      }
+#endif
+
+#ifdef SILENT
    #define LOG(level, message)
 #else
    #ifdef COLOR_PRINTOUT
       #define LOG(level, message)                                \
          switch (level) {                                        \
          case kDebug:   std::cout << "\033[0;34m"; break;        \
-         case kWarning: std::cout << "\033[0;31mWarning: "; break;      \
-         case kError:   std::cout << "\033[1;31mError: "; break;        \
-         case kFatal:   std::cout << "\033[41;1;37mFatal: "; break;     \
-         case kInfo:                                                     \
-         case kVerbose:                                                  \
-         default:                                                        \
-            break;                                                       \
-         }                                                               \
+         case kWarning: std::cout << "\033[0;31m"; break;        \
+         case kError:   std::cout << "\033[1;31m"; break;        \
+         case kFatal:   std::cout << "\033[41;1;37m"; break;     \
+         case kInfo:                                             \
+         case kVerbose:                                          \
+         default:                                                \
+            break;                                               \
+         }                                                       \
+         PRINT_PREFIX(level)                                     \
          std::cout << message << "\033[0m" << std::endl;
    #else
       #define LOG(level, message)                  \
-          std::cout << message << std::endl;
+         PRINT_PREFIX(level)                       \
+         std::cout << message << std::endl;
    #endif
 #endif
 
