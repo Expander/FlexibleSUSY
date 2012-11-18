@@ -19,23 +19,12 @@
 #ifndef TWO_SCALE_MODEL_H
 #define TWO_SCALE_MODEL_H
 
-#include <vector>
-
-class Two_scale;
-
-template<class T>
-class Constraint;
-
 class Two_scale_model {
 public:
    Two_scale_model();
    virtual ~Two_scale_model();
    virtual void run_up() = 0;
    virtual void run_down() = 0;
-   virtual void add_constraint(Constraint<Two_scale>*);
-
-private:
-   std::vector<Constraint<Two_scale>*> constraints;
 };
 
 #endif

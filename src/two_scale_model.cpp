@@ -17,18 +17,11 @@
 // ====================================================================
 
 #include "two_scale_model.hpp"
-#include "two_scale_constraint.hpp"
 
 Two_scale_model::Two_scale_model()
-   : constraints()
 {
 }
 
 Two_scale_model::~Two_scale_model()
 {
-}
-
-void Two_scale_model::add_constraint(Constraint<Two_scale>* c)
-{
-   constraints.push_back(c);
 }

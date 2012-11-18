@@ -21,6 +21,7 @@
 
 #include "rg_flow.hpp"
 #include "two_scale_model.hpp"
+#include "two_scale_constraint.hpp"
 #include "two_scale_matching.hpp"
 
 #include <vector>
@@ -41,6 +42,7 @@ public:
 
    RGFlow();
 
+   void add_constraint(Constraint<Two_scale>*);
    void add_matching_condition(const Matching<Two_scale>*);
    void add_model(Two_scale_model*);
    void run_up();
@@ -49,6 +51,7 @@ public:
 
 private:
    std::vector<Two_scale_model*> models;
+   std::vector<Constraint<Two_scale>*> constraints;
    std::vector<const Matching<Two_scale>*> matching_condition;
    unsigned int maxIterations;
 
@@ -58,6 +61,7 @@ private:
 
 inline RGFlow<Two_scale>::RGFlow()
    : models()
+   , constraints()
    , matching_condition()
    , maxIterations(10)
 {
@@ -134,6 +138,11 @@ inline void RGFlow<Two_scale>::run_down()
       }
       models[i]->run_down();
    }
+}
+
+inline void RGFlow<Two_scale>::add_constraint(Constraint<Two_scale>* c)
+{
+   constraints.push_back(c);
 }
 
 inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>* mc)
