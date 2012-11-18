@@ -57,11 +57,11 @@ int main()
    smcw->setGaugeCoupling(4, 0.0);
    smcw->setLambda(0.0);
 
-   Two_scale_solver ds;
+   RGFlow<Two_scale> ds;
    ds.add_model(smcw);
    try {
       ds.solve();
-   } catch (Two_scale_solver::Error& e) {
+   } catch (RGFlow<Two_scale>::Error& e) {
       ERROR(e.what())
    }
 

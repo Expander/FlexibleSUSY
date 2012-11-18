@@ -19,7 +19,7 @@ private:
    DoubleVector parameters;
 };
 
-class Trivial_matching_condition: public Two_scale_matching {
+class Trivial_matching_condition: public Matching<Two_scale> {
 public:
    Trivial_matching_condition(Static_model* mLow_, Static_model* mHigh_)
       : mLow(mLow_)
@@ -43,12 +43,12 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
 {
    const DoubleVector parameters(10);
    Static_model model(parameters);
-   Two_scale_solver solver;
+   RGFlow<Two_scale> solver;
    solver.add_model(&model);
 
    try {
       solver.solve();
-   } catch (Two_scale_solver::Error& e) {
+   } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
 
@@ -71,14 +71,14 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    // of one model to the other
    Trivial_matching_condition mc(&model1, &model2);
 
-   Two_scale_solver solver;
+   RGFlow<Two_scale> solver;
    solver.add_model(&model1);
    solver.add_model(&model2);
    solver.add_matching_condition(&mc);
 
    try {
       solver.solve();
-   } catch (Two_scale_solver::Error& e) {
+   } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
 

@@ -55,11 +55,11 @@ int main()
    sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
    sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
 
-   Two_scale_solver ds;
+   RGFlow<Two_scale> ds;
    ds.add_model(sm);
    try {
       ds.solve();
-   } catch (Two_scale_solver::Error& e) {
+   } catch (RGFlow<Two_scale>::Error& e) {
       ERROR(e.what())
    }
 

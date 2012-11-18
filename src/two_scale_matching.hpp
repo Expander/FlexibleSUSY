@@ -14,6 +14,4 @@ public:
    virtual void matchHighToLowScaleModel() const = 0;
 };
 
-typedef Matching<Two_scale> Two_scale_matching;
-
 #endif

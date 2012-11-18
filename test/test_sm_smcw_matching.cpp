@@ -12,7 +12,7 @@
 #define YD StandardModel<Two_scale>::YD
 #define YE StandardModel<Two_scale>::YE
 
-class Trivial_SM_SMCW_matching_condition: public Two_scale_matching {
+class Trivial_SM_SMCW_matching_condition: public Matching<Two_scale> {
 public:
    Trivial_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
                                       StandardModelCW<Two_scale>* smcw_)
@@ -75,14 +75,14 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    // of one model to the other
    Trivial_SM_SMCW_matching_condition mc(sm, smcw);
 
-   Two_scale_solver solver;
+   RGFlow<Two_scale> solver;
    solver.add_model(sm);
    solver.add_model(smcw);
    solver.add_matching_condition(&mc);
 
    try {
       solver.solve();
-   } catch (Two_scale_solver::Error& e) {
+   } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
 
