@@ -8,4 +8,5 @@ libflexisusy_a_SOURCES = \
 	lowe.cpp \
 	numerics.cpp \
 	rge.cpp \
+	two_scale_model.cpp \
 	utils.cpp

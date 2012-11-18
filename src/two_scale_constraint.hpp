@@ -30,6 +30,4 @@ public:
    virtual void apply() = 0;
 };
 
-typedef Constraint<Two_scale> Two_scale_constraint;
-
 #endif

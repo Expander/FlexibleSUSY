@@ -16,26 +16,19 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_MODEL_H
-#define TWO_SCALE_MODEL_H
+#include "two_scale_model.hpp"
+#include "two_scale_constraint.hpp"
 
-#include <vector>
+Two_scale_model::Two_scale_model()
+   : constraints()
+{
+}
 
-class Two_scale;
+Two_scale_model::~Two_scale_model()
+{
+}
 
-template<class T>
-class Constraint;
-
-class Two_scale_model {
-public:
-   Two_scale_model();
-   virtual ~Two_scale_model();
-   virtual void run_up() = 0;
-   virtual void run_down() = 0;
-   virtual void add_constraint(Constraint<Two_scale>*);
-
-private:
-   std::vector<Constraint<Two_scale>*> constraints;
-};
-
-#endif
+void Two_scale_model::add_constraint(Constraint<Two_scale>* c)
+{
+   constraints.push_back(c);
+}
