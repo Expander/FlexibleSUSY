@@ -45,9 +45,9 @@ void StandardModelExpConstraint::apply()
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, ewConstants::yt);
    sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, ewConstants::yb);
    sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, ewConstants::ytau);
-   sm->setGaugeCoupling(1, sqrt(4 * PI * ewConstants::alpha1));
-   sm->setGaugeCoupling(2, sqrt(4 * PI * ewConstants::alpha2));
-   sm->setGaugeCoupling(3, sqrt(4 * PI * ewConstants::alpha3));
+   sm->setGaugeCoupling(1, sqrt(4 * M_PI * ewConstants::alpha1));
+   sm->setGaugeCoupling(2, sqrt(4 * M_PI * ewConstants::alpha2));
+   sm->setGaugeCoupling(3, sqrt(4 * M_PI * ewConstants::alpha3));
 }
 
 double StandardModelExpConstraint::get_scale() const
