@@ -25,7 +25,8 @@
 #include <iostream>
 
 StandardModelExpConstraint::StandardModelExpConstraint(StandardModel<Two_scale>* sm_)
-   : sm(sm_)
+   : Constraint<Two_scale>()
+   , sm(sm_)
 {
    assert(sm && "pointer to StandardModel<Two_scale> must not be zero");
 }
