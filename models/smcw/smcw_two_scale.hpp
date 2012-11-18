@@ -28,7 +28,7 @@ public:
    virtual void run_down() {}
 
    /// sets object to be equal to another
-   const StandardModelCW & operator=(const StandardModelCW& s);
+   const StandardModelCW<Two_scale> & operator=(const StandardModelCW<Two_scale>& s);
 
    /// Set a single gauge coupling
    virtual void setGaugeCoupling(int, double);
