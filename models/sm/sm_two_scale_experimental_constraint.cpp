@@ -58,7 +58,7 @@ StandardModelExpConstraint::~StandardModelExpConstraint()
 void StandardModelExpConstraint::apply()
 {
    if (std::fabs(ewConstants::MZ - sm->displayMu()) < 1.0)
-      WARNING("Warning: Applying the experimental constraints "
+      WARNING("Applying the experimental constraints"
               "of StandardModel<Two_scale> at scale " << sm->displayMu()
               << " != MZ is not save!")
 
