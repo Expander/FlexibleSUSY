@@ -18,10 +18,6 @@
 
 #include "two_scale_model.hpp"
 
-Two_scale_model::Two_scale_model()
-{
-}
-
 Two_scale_model::~Two_scale_model()
 {
 }

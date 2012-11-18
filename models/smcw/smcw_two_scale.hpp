@@ -24,9 +24,6 @@ public:
 
    virtual ~StandardModelCW();
 
-   virtual void run_up() {}
-   virtual void run_down() {}
-
    /// sets object to be equal to another
    const StandardModelCW<Two_scale> & operator=(const StandardModelCW<Two_scale>& s);
 

@@ -21,10 +21,8 @@
 
 class Two_scale_model {
 public:
-   Two_scale_model();
    virtual ~Two_scale_model();
-   virtual void run_up() = 0;
-   virtual void run_down() = 0;
+   virtual int run_to(double) = 0;
 };
 
 #endif

@@ -27,8 +27,7 @@ public:
 
    virtual ~StandardModel();
 
-   virtual void run_up() {}
-   virtual void run_down() {}
+   virtual int run_to(double scale) { return RGE::runto(scale); }
 
    /// sets object to be equal to another
    const StandardModel & operator=(const StandardModel<Two_scale>& s);

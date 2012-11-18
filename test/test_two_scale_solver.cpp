@@ -11,8 +11,7 @@ public:
    Static_model() : parameters(1) {}
    Static_model(const DoubleVector& pars) : parameters(pars) {}
    virtual ~Static_model() {}
-   virtual void run_up() {}
-   virtual void run_down() {}
+   virtual int run_to(double) { return 0; }
    virtual void setParameters(const DoubleVector& v) { parameters = v; }
    virtual DoubleVector getParameters() const { return parameters; }
 private:

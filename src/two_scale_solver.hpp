@@ -42,26 +42,33 @@ public:
 
    RGFlow();
 
-   void add_constraint(Constraint<Two_scale>*);
    void add_matching_condition(const Matching<Two_scale>*);
-   void add_model(Two_scale_model*);
+   void add_model(Two_scale_model*, const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
    void run_up();
    void run_down();
    void solve();
 
 private:
-   std::vector<Two_scale_model*> models;
-   std::vector<Constraint<Two_scale>*> constraints;
+   struct TModel {
+      Two_scale_model* model;
+      std::vector<Constraint<Two_scale>*> constraints;
+      TModel(Two_scale_model* m, const std::vector<Constraint<Two_scale>*>& c)
+         : model(m)
+         , constraints(c)
+         {}
+   };
+   std::vector<TModel*> models;
    std::vector<const Matching<Two_scale>*> matching_condition;
    unsigned int maxIterations;
 
-   bool accuracy_goal_reached() const;
-   void check_setup() const;
+   bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
+   void check_setup() const;           ///< check the setup
+   void run_up(TModel*);               ///< run model up
+   void run_down(TModel*);             ///< run model down
 };
 
 inline RGFlow<Two_scale>::RGFlow()
    : models()
-   , constraints()
    , matching_condition()
    , maxIterations(10)
 {
@@ -91,7 +98,7 @@ inline void RGFlow<Two_scale>::check_setup() const
       throw Error(message);
    }
 
-   for (std::vector<Two_scale_model*>::const_iterator model = models.begin(),
+   for (std::vector<TModel*>::const_iterator model = models.begin(),
            end = models.end(); model != end; ++model) {
       if (!*model) {
          std::string message;
@@ -122,8 +129,13 @@ inline void RGFlow<Two_scale>::run_up()
          const Matching<Two_scale>* mc = matching_condition[i - 1];
          mc->matchLowToHighScaleModel();
       }
-      models[i++]->run_up();
+      run_up(models[i]);
+      ++i;
    }
+}
+
+inline void RGFlow<Two_scale>::run_up(TModel*)
+{
 }
 
 inline void RGFlow<Two_scale>::run_down()
@@ -136,13 +148,12 @@ inline void RGFlow<Two_scale>::run_down()
          const Matching<Two_scale>* mc = matching_condition[i];
          mc->matchHighToLowScaleModel();
       }
-      models[i]->run_down();
+      run_down(models[i]);
    }
 }
 
-inline void RGFlow<Two_scale>::add_constraint(Constraint<Two_scale>* c)
+inline void RGFlow<Two_scale>::run_down(TModel*)
 {
-   constraints.push_back(c);
 }
 
 inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>* mc)
@@ -150,8 +161,10 @@ inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>*
    matching_condition.push_back(mc);
 }
 
-inline void RGFlow<Two_scale>::add_model(Two_scale_model* m)
+inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
+                                         const std::vector<Constraint<Two_scale>*>& constraints)
 {
+   TModel* m = new TModel(model, constraints);
    models.push_back(m);
 }
 
