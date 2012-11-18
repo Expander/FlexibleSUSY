@@ -2,13 +2,15 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/models/sm \
 	-I$(top_srcdir)/models/smcw \
+	-I$(top_srcdir)/models/mssm \
 	@BOOST_CPPFLAGS@
 
 bin_PROGRAMS = \
 	test_two_scale_solver \
 	test_sm_two_scale \
 	test_sm_smcw_matching \
-	test_logger
+	test_logger \
+	test_mssm_solver
 
 test_two_scale_solver_LDADD = \
 	$(top_srcdir)/src/libflexisusy.a \
@@ -45,3 +47,17 @@ test_sm_two_scale_SOURCES = \
 	test_sm_two_scale.cpp \
 	$(top_srcdir)/models/sm/sm_two_scale.cpp \
 	$(top_srcdir)/models/sm/sm_two_scale_experimental_constraint.cpp
+
+test_mssm_solver_LDADD = \
+	$(top_srcdir)/src/libflexisusy.a \
+	@BOOST_LDFLAGS@ \
+	@BOOST_UNIT_TEST_FRAMEWORK_LIB@ \
+	@FLIBS@
+
+test_mssm_solver_SOURCES = \
+	test_mssm_solver.cpp \
+	$(top_srcdir)/models/mssm/susy.cpp \
+	$(top_srcdir)/models/mssm/softpars.cpp \
+	$(top_srcdir)/models/mssm/softsusy.cpp \
+	$(top_srcdir)/models/mssm/physpars.cpp \
+	$(top_srcdir)/models/mssm/twoloophiggs.f
