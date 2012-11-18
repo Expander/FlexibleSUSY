@@ -21,7 +21,6 @@
 #include "logger.hpp"
 
 #include <cassert>
-#include <iostream>
 
 StandardModelExpConstraint::StandardModelExpConstraint(StandardModel<Two_scale>* sm_)
    : Constraint<Two_scale>()
@@ -36,8 +35,10 @@ StandardModelExpConstraint::~StandardModelExpConstraint()
 
 void StandardModelExpConstraint::apply()
 {
-   if (std::fabs(ewConstants::MZ - sm->displayMu()) < 1.0)
-      WARNING("Applying the experimental constraints"
+   VERBOSE_MSG("Applying SM experimental constraints at scale "
+               << sm->displayMu())
+   if (std::fabs(ewConstants::MZ - sm->displayMu()) > 1.0)
+      WARNING("Applying the experimental constraints "
               "of StandardModel<Two_scale> at scale " << sm->displayMu()
               << " != MZ is not save!")
 
