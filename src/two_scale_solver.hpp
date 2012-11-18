@@ -167,6 +167,8 @@ inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>*
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
+   assert(model && "RGFlow<Two_scale>::add_model: model"
+          " pointer is NULL");
    TModel* m = new TModel(model, constraints);
    models.push_back(m);
 }
