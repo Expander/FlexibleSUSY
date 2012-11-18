@@ -1,6 +1,14 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/src
 
+EXTRA_DIST = \
+	mssm_solver.h \
+	softpars.h \
+	susy.h \
+	physpars.h \
+	softsusy.h \
+	twoloophiggs.h
+
 bin_PROGRAMS = run
 
 run_LDADD = \
