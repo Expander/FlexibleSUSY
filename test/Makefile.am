@@ -6,6 +6,7 @@ AM_CPPFLAGS = \
 
 bin_PROGRAMS = \
 	test_two_scale_solver \
+	test_sm_two_scale \
 	test_sm_smcw_matching \
 	test_logger
 
@@ -34,3 +35,13 @@ test_logger_LDADD = \
 
 test_logger_SOURCES = \
 	test_logger.cpp
+
+test_sm_two_scale_LDADD = \
+	$(top_srcdir)/src/libflexisusy.a \
+	@BOOST_LDFLAGS@ \
+	@BOOST_UNIT_TEST_FRAMEWORK_LIB@
+
+test_sm_two_scale_SOURCES = \
+	test_sm_two_scale.cpp \
+	$(top_srcdir)/models/sm/sm_two_scale.cpp \
+	$(top_srcdir)/models/sm/sm_two_scale_experimental_constraint.cpp
