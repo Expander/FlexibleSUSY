@@ -59,7 +59,8 @@ void StandardModelExpConstraint::apply()
 {
    if (std::fabs(ewConstants::MZ - sm->displayMu()) < 1.0)
       WARNING("Warning: Applying the experimental constraints "
-              "of StandardModel<Two_scale> at a scale != MZ is not save!")
+              "of StandardModel<Two_scale> at scale " << sm->displayMu()
+              << " != MZ is not save!")
 
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, ewConstants::yt);
    sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, ewConstants::yb);
