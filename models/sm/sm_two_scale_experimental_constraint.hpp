@@ -31,6 +31,7 @@ public:
    StandardModelExpConstraint(StandardModel<Two_scale>*);
    virtual ~StandardModelExpConstraint();
    virtual void apply();
+   virtual double get_scale() const;
 
 private:
    StandardModel<Two_scale>* sm;

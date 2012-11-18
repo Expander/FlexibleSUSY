@@ -28,6 +28,7 @@ class Constraint<Two_scale> {
 public:
    virtual ~Constraint() {}
    virtual void apply() = 0;
+   virtual double get_scale() const = 0;
 };
 
 #endif

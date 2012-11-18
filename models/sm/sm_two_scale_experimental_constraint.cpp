@@ -24,6 +24,26 @@
 #include <cmath>
 #include <iostream>
 
+namespace ewConstants {
+   namespace {
+      const double vev = 246;
+      const double root2 = sqrt(2.0);
+      const double mtoprun = 165;
+      const double mbrun = 2.9;
+      const double mtau = 1.77699;
+      const double yt = mtoprun * root2 / vev;
+      const double yb = mbrun * root2 / vev;
+      const double ytau = mtau * root2 / vev;
+
+      const double MZ = 91.1876;
+      const double aem = 1.0 / 127.918; // at MZ
+      const double sinthWsq = 0.23122;
+      const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinthWsq));
+      const double alpha2 = aem / sinthWsq;
+      const double alpha3 = 0.1187; // at MZ
+   }
+}
+
 StandardModelExpConstraint::StandardModelExpConstraint(StandardModel<Two_scale>* sm_)
    : Constraint<Two_scale>()
    , sm(sm_)
@@ -37,30 +57,19 @@ StandardModelExpConstraint::~StandardModelExpConstraint()
 
 void StandardModelExpConstraint::apply()
 {
-   const double vev = 246;
-   const double root2 = sqrt(2.0);
-   const double mtoprun = 165;
-   const double mbrun = 2.9;
-   const double mtau = 1.77699;
-   const double yt = mtoprun * root2 / vev;
-   const double yb = mbrun * root2 / vev;
-   const double ytau = mtau * root2 / vev;
-
-   const double MZ = 91.1876;
-   const double aem = 1.0 / 127.918; // at MZ
-   const double sinthWsq = 0.23122;
-   const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinthWsq));
-   const double alpha2 = aem / sinthWsq;
-   const double alpha3 = 0.1187; // at MZ
-
-   if (std::fabs(MZ - sm->displayMu()) < 1.0)
+   if (std::fabs(ewConstants::MZ - sm->displayMu()) < 1.0)
       WARNING("Warning: Applying the experimental constraints "
               "of StandardModel<Two_scale> at a scale != MZ is not save!")
 
-   sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, yt);
-   sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, yb);
-   sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, ytau);
-   sm->setGaugeCoupling(1, sqrt(4 * PI * alpha1));
-   sm->setGaugeCoupling(2, sqrt(4 * PI * alpha2));
-   sm->setGaugeCoupling(3, sqrt(4 * PI * alpha3));
+   sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, ewConstants::yt);
+   sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, ewConstants::yb);
+   sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, ewConstants::ytau);
+   sm->setGaugeCoupling(1, sqrt(4 * PI * ewConstants::alpha1));
+   sm->setGaugeCoupling(2, sqrt(4 * PI * ewConstants::alpha2));
+   sm->setGaugeCoupling(3, sqrt(4 * PI * ewConstants::alpha3));
+}
+
+double StandardModelExpConstraint::get_scale() const
+{
+   return ewConstants::MZ;
 }
