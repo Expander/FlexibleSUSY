@@ -36,11 +36,11 @@ StandardModelExpConstraint::~StandardModelExpConstraint()
 void StandardModelExpConstraint::apply()
 {
    VERBOSE_MSG("Applying SM experimental constraints at scale "
-               << sm->getScale())
+               << sm->getScale());
    if (std::fabs(ewConstants::MZ - sm->getScale()) > 1.0)
       WARNING("Applying the experimental constraints "
               "of StandardModel<Two_scale> at scale " << sm->getScale()
-              << " != MZ is not save!")
+              << " != MZ is not save!");
 
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, ewConstants::yt);
    sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, ewConstants::yb);

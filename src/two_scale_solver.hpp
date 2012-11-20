@@ -110,7 +110,7 @@ inline void RGFlow<Two_scale>::check_setup() const
       if (m + 1 == models.size()) {
          if (model->matching_condition)
             WARNING("the matching condition of the last model [" << m
-                    << "] is non-zero "<< model->matching_condition << " but will not be used")
+                    << "] is non-zero "<< model->matching_condition << " but will not be used");
       } else {
          if (model->matching_condition == NULL) {
             std::stringstream message;

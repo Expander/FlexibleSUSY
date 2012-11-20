@@ -69,7 +69,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                            \
          std::exit(1);                                \
          assert(false);                               \
-      } while (0);
+      } while (0)
 #else
    #define FATAL(message)                                             \
       do {                                                            \
@@ -77,7 +77,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          std::cout << "*** abort program execution" << std::endl;     \
          std::exit(1);                                                \
          assert(false);                                               \
-      } while (0);
+      } while (0)
 #endif
 
 #ifdef SILENT
@@ -92,7 +92,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                     \
             break;                                                    \
          }                                                            \
-      } while (0);
+      } while (0)
 #endif
 
 #ifdef SILENT
@@ -110,7 +110,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
          default:                                                \
             break;                                               \
          }                                                       \
-      } while (0);
+      } while (0)
 #endif
 
 #ifdef SILENT
@@ -119,16 +119,16 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
    #ifdef COLOR_PRINTOUT
       #define LOG(level, message)                                \
       do {                                                       \
-         PRINT_COLOR_CODE(level)                                 \
-         PRINT_PREFIX(level)                                     \
+         PRINT_COLOR_CODE(level);                                \
+         PRINT_PREFIX(level);                                    \
          std::cout << message << "\033[0m" << std::endl;         \
-      } while (0);
+      } while (0)
    #else
       #define LOG(level, message)                  \
       do {                                         \
-         PRINT_PREFIX(level)                       \
+         PRINT_PREFIX(level);                      \
          std::cout << message << std::endl;        \
-      } while (0);
+      } while (0)
    #endif
 #endif
 

@@ -14,10 +14,22 @@ BOOST_AUTO_TEST_CASE( test_all_messages )
    INFO("info message");
    WARNING("warning message");
    ERROR("error message");
-   FATAL("fatal message");
+   // FATAL("fatal message");
 }
 
 BOOST_AUTO_TEST_CASE( test_streaming_operator )
 {
    INFO("streamed info" << " message");
+}
+
+BOOST_AUTO_TEST_CASE( test_ifelse_statement )
+{
+   // ensure that the logger macros act like ordinary functions in
+   // if-else statements, i.e. the macros expand to ordinary
+   // statements, instead of compound statemets
+   bool condition = true;
+   if (condition)
+      INFO("true branch");
+   else
+      INFO("false branch");
 }
