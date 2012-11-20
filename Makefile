@@ -1,10 +1,13 @@
 MODULES  := config src models/sm models/smcw models/mssm test
-CPPFLAGS := $(patsubst %, -I%, $(MODULES))
+BOOSTLIBDIR :=
+BOOSTLIB := -L$(BOOSTLIBDIR) -lboost_unit_test_framework
+BOOSTINC :=
+CPPFLAGS := $(BOOSTINC) $(patsubst %, -I%, $(MODULES))
 CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
             -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor \
             -g -O2
 FFLAGS   :=
-LIBS     := -lboost_unit_test_framework -lgfortranbegin -lgfortran -lm
+LIBS     := $(BOOSTLIB) -lgfortranbegin -lgfortran -lm
 CXX      := g++
 FC       := gfortran
 MAKELIB  := ar cru
