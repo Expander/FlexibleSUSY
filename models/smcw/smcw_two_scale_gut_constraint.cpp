@@ -2,8 +2,9 @@
 #include "smcw_two_scale_gut_constraint.hpp"
 #include <cassert>
 
-StandardModelCWGUTConstraint::StandardModelCWGUTConstraint(StandardModelCW<Two_scale>* smcw_)
+StandardModelCWGUTConstraint::StandardModelCWGUTConstraint(StandardModelCW<Two_scale>* smcw_, double estimated_scale_)
    : Constraint<Two_scale>()
+   , estimated_scale(estimated_scale_)
    , smcw(smcw_)
    , gut_scale_calculator()
 {
@@ -23,7 +24,12 @@ void StandardModelCWGUTConstraint::apply()
    smcw->setGaugeCoupling(2, g_mean);
 }
 
-double StandardModelCWGUTConstraint::get_scale() const
+double StandardModelCWGUTConstraint::estimate_scale() const
 {
-   return gut_scale_calculator.calculateGUTScale(*smcw);
+   return estimated_scale;
+}
+
+void StandardModelCWGUTConstraint::update_scale()
+{
+   estimated_scale = gut_scale_calculator.calculateGUTScale(*smcw);
 }

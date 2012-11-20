@@ -41,7 +41,7 @@ public:
    /// Set all gauge couplings
    virtual void setAllGauge(const DoubleVector&);
    /// Sets renormalisation scale
-   void setMu(double mu) { RGE::setMu(mu); }
+   void setScale(double mu) { RGE::setMu(mu); }
 
    /// Returns a single Yukawa matrix element
    double displayYukawaElement(yukawa, int, int) const;
@@ -52,7 +52,7 @@ public:
    /// Returns all gauge couplings
    virtual DoubleVector displayGauge() const;
    /// Return renomalisation scale
-   double displayMu() const { return RGE::displayMu(); }
+   double getScale() const { return RGE::displayMu(); }
    /// Return number of loops
    int displayLoops() const { return RGE::displayLoops(); }
    /// Return level of threshold approximation

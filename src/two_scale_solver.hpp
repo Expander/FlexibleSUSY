@@ -43,34 +43,35 @@ public:
 
    RGFlow();
 
-   void add_matching_condition(const Matching<Two_scale>*);
-   void add_model(Two_scale_model*, const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
-   void run_up();
-   void run_down();
+   void add_model(Two_scale_model*,
+                  Matching<Two_scale>* m = NULL,
+                  const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
    void solve();
 
 private:
    struct TModel {
       Two_scale_model* model;
       std::vector<Constraint<Two_scale>*> constraints;
-      TModel(Two_scale_model* m, const std::vector<Constraint<Two_scale>*>& c)
+      const Matching<Two_scale>* matching_condition;
+      TModel(Two_scale_model* m,
+             const std::vector<Constraint<Two_scale>*>& c,
+             Matching<Two_scale>* mc)
          : model(m)
          , constraints(c)
+         , matching_condition(mc)
          {}
    };
    std::vector<TModel*> models;
-   std::vector<const Matching<Two_scale>*> matching_condition;
    unsigned int maxIterations;
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
-   void run_up(TModel*);               ///< run model up
-   void run_down(TModel*);             ///< run model down
+   void run_up();
+   void run_down();
 };
 
 inline RGFlow<Two_scale>::RGFlow()
    : models()
-   , matching_condition()
    , maxIterations(10)
 {
 }
@@ -92,14 +93,7 @@ inline void RGFlow<Two_scale>::solve()
 
 inline void RGFlow<Two_scale>::check_setup() const
 {
-   if (models.size() != matching_condition.size() + 1) {
-      std::string message;
-      message = "RGFlow<Two_scale>::Error: number of models does not match "
-         "number of matching conditions + 1";
-      throw Error(message);
-   }
-
-   for (std::vector<TModel*>::const_iterator model = models.begin(),
+    for (std::vector<TModel*>::const_iterator model = models.begin(),
            end = models.end(); model != end; ++model) {
       if (!*model) {
          std::string message;
@@ -107,75 +101,71 @@ inline void RGFlow<Two_scale>::check_setup() const
          throw Error(message);
       }
    }
-
-   for (std::vector<const Matching<Two_scale>*>::const_iterator
-           mc = matching_condition.begin(),
-           end = matching_condition.end(); mc != end; ++mc) {
-      if (!*mc) {
-         std::string message;
-         message = "RGFlow<Two_scale>::Error: matching condition "
-            "pointer is NULL";
-         throw Error(message);
-      }
-   }
 }
 
 inline void RGFlow<Two_scale>::run_up()
 {
-   const std::size_t number_of_models = models.size();
-   std::size_t i = 0;
-   while (i != number_of_models) {
-      // init model parameters from low-scale model
-      if (i > 0) {
-         const Matching<Two_scale>* mc = matching_condition[i - 1];
+   for (size_t m = 0; m < models.size(); ++m) {
+      TModel* model = models[m];
+      // apply all constraints
+      for (size_t c = 0; c < model->constraints.size(); ++c) {
+         Constraint<Two_scale>* constraint = model->constraints[c];
+         const double scale = constraint->estimate_scale();
+         model->model->run_to(scale);
+         constraint->update_scale();
+         constraint->apply();
+      }
+      // apply matching condition if this is not the last model
+      if (m != models.size() - 1) {
+         const Matching<Two_scale>* mc = model->matching_condition;
+         model->model->run_to(mc->get_scale());
          mc->matchLowToHighScaleModel();
       }
-      run_up(models[i]);
-      ++i;
    }
-}
-
-inline void RGFlow<Two_scale>::run_up(TModel*)
-{
 }
 
 inline void RGFlow<Two_scale>::run_down()
 {
-   const std::size_t number_of_models = models.size();
-   std::size_t i = number_of_models;
-   while (i--) {
-      // init model parameters from high-scale model
-      if (i < number_of_models - 1) {
-         const Matching<Two_scale>* mc = matching_condition[i];
+   for (long m = models.size() - 1; m >= 0; --m) {
+      TModel* model = models[m];
+      // apply all constraints:
+      // If m is the last model, do not apply the highest mc, because
+      // it was already appied when we ran up.
+      // If m is the first model, do not apply the lowest mc, because
+      // it will be appied when we run up next time.
+      const long c_begin = (m == static_cast<long>(models.size() - 1) ?
+                            model->constraints.size() - 2 :
+                            model->constraints.size() - 1);
+      const long c_end = (m == 0 ? 1 : 0);
+      for (long c = c_begin; c >= c_end; --c) {
+         Constraint<Two_scale>* constraint = model->constraints[c];
+         const double scale = constraint->estimate_scale();
+         model->model->run_to(scale);
+         constraint->update_scale();
+         constraint->apply();
+      }
+      // apply matching condition if this is not the first model
+      if (m > 0) {
+         const Matching<Two_scale>* mc = models[m - 1]->matching_condition;
+         model->model->run_to(mc->get_scale());
          mc->matchHighToLowScaleModel();
       }
-      run_down(models[i]);
    }
 }
 
-inline void RGFlow<Two_scale>::run_down(TModel*)
-{
-}
-
-inline void RGFlow<Two_scale>::add_matching_condition(const Matching<Two_scale>* mc)
-{
-   assert(mc && "RGFlow<Two_scale>::add_matching_condition: matching"
-          " condition pointer is NULL");
-   matching_condition.push_back(mc);
-}
-
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
+                                         Matching<Two_scale>* mc,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
    assert(model && "RGFlow<Two_scale>::add_model: model"
           " pointer is NULL");
-   TModel* m = new TModel(model, constraints);
+   TModel* m = new TModel(model, constraints, mc);
    models.push_back(m);
 }
 
 inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
-   return true;
+   return false;
 }
 
 #endif

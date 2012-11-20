@@ -12,6 +12,7 @@ public:
    virtual ~Matching() {}
    virtual void matchLowToHighScaleModel() const = 0;
    virtual void matchHighToLowScaleModel() const = 0;
+   virtual double get_scale() const = 0;
 };
 
 #endif

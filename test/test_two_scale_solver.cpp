@@ -34,6 +34,9 @@ public:
    virtual void matchHighToLowScaleModel() const {
       mLow->setParameters(mHigh->getParameters());
    }
+   virtual double get_scale() const {
+      return 100.0;
+   }
 private:
    Static_model *mLow, *mHigh;
 };
@@ -71,9 +74,8 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    Trivial_matching_condition mc(&model1, &model2);
 
    RGFlow<Two_scale> solver;
-   solver.add_model(&model1);
+   solver.add_model(&model1, &mc);
    solver.add_model(&model2);
-   solver.add_matching_condition(&mc);
 
    try {
       solver.solve();

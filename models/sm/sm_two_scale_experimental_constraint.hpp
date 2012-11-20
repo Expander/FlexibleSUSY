@@ -54,7 +54,8 @@ public:
    StandardModelExpConstraint(StandardModel<Two_scale>*);
    virtual ~StandardModelExpConstraint();
    virtual void apply();
-   virtual double get_scale() const;
+   virtual double estimate_scale() const;
+   virtual void update_scale();
 
 private:
    StandardModel<Two_scale>* sm;

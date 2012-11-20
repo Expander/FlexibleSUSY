@@ -36,10 +36,10 @@ StandardModelExpConstraint::~StandardModelExpConstraint()
 void StandardModelExpConstraint::apply()
 {
    VERBOSE_MSG("Applying SM experimental constraints at scale "
-               << sm->displayMu())
-   if (std::fabs(ewConstants::MZ - sm->displayMu()) > 1.0)
+               << sm->getScale())
+   if (std::fabs(ewConstants::MZ - sm->getScale()) > 1.0)
       WARNING("Applying the experimental constraints "
-              "of StandardModel<Two_scale> at scale " << sm->displayMu()
+              "of StandardModel<Two_scale> at scale " << sm->getScale()
               << " != MZ is not save!")
 
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, ewConstants::yt);
@@ -50,7 +50,11 @@ void StandardModelExpConstraint::apply()
    sm->setGaugeCoupling(3, sqrt(4 * M_PI * ewConstants::alpha3));
 }
 
-double StandardModelExpConstraint::get_scale() const
+double StandardModelExpConstraint::estimate_scale() const
 {
    return ewConstants::MZ;
+}
+
+void StandardModelExpConstraint::update_scale()
+{
 }

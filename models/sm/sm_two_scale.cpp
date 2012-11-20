@@ -184,7 +184,7 @@ void StandardModel<Two_scale>::set(const DoubleVector& y)
 
 std::ostream& operator <<(std::ostream& left, const StandardModel<Two_scale>& s)
 {
-   left << "SM parameters at Q: " << s.displayMu()
+   left << "SM parameters at Q: " << s.getScale()
         << '\n'
         << " Y^U" << s.displayYukawaMatrix(StandardModel<Two_scale>::YU)
         << " Y^D" << s.displayYukawaMatrix(StandardModel<Two_scale>::YD)
