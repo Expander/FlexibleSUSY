@@ -1,0 +1,12 @@
+How to compile
+==============
+
+1. Make sure that you have the boost libraries version >= 1.36
+   installed.  If not, you can download them from http://www.boost.org
+
+2. To compile run `make'.  If you want to use the boost libraries from
+   a specific directory, you can overwrite the `BOOSTLIBDIR',
+   `BOOSTLIBS' (set to -lboost_unit_test_framework by default) and
+   `BOOSTINC' variables.  For example
+
+      $ make BOOSTINC=-I/usr/include BOOSTLIBDIR=/usr/lib
