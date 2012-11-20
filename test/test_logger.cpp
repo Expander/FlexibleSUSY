@@ -9,15 +9,15 @@
 
 BOOST_AUTO_TEST_CASE( test_all_messages )
 {
-   VERBOSE_MSG("verbose message")
-   DEBUG_MSG("debug message")
-   INFO("info message")
-   WARNING("warning message")
-   ERROR("error message")
-   FATAL("fatal message")
+   VERBOSE_MSG("verbose message");
+   DEBUG_MSG("debug message");
+   INFO("info message");
+   WARNING("warning message");
+   ERROR("error message");
+   FATAL("fatal message");
 }
 
 BOOST_AUTO_TEST_CASE( test_streaming_operator )
 {
-   INFO("streamed info" << " message")
+   INFO("streamed info" << " message");
 }
