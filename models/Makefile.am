@@ -1,1 +1,0 @@
-SUBDIRS = sm smcw mssm
