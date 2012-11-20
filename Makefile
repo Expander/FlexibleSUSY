@@ -5,13 +5,16 @@ CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
             -g -O2
 FFLAGS   :=
 LIBS     := -lboost_unit_test_framework -lgfortranbegin -lgfortran -lm
-ALLDEP   :=
-ALLHDR   :=
-ALLLIB   :=
-ALLEXE   :=
 CXX      := g++
 FC       := gfortran
 MAKELIB  := ar cru
+
+# the modules add their dependency files to this variable
+ALLDEP   :=
+# the modules add their libraries to this variable
+ALLLIB   :=
+# the modules add executables to this variable
+ALLEXE   :=
 
 .PHONY:  all clean distclean
 
