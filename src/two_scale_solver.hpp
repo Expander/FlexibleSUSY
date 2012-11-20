@@ -23,9 +23,11 @@
 #include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_matching.hpp"
+#include "logger.hpp"
 
 #include <vector>
 #include <string>
+#include <sstream>
 #include <cassert>
 
 class Two_scale;
@@ -43,6 +45,8 @@ public:
 
    RGFlow();
 
+   void add_model(Two_scale_model*,
+                  const std::vector<Constraint<Two_scale>*>&);
    void add_model(Two_scale_model*,
                   Matching<Two_scale>* m = NULL,
                   const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
@@ -93,12 +97,27 @@ inline void RGFlow<Two_scale>::solve()
 
 inline void RGFlow<Two_scale>::check_setup() const
 {
-    for (std::vector<TModel*>::const_iterator model = models.begin(),
-           end = models.end(); model != end; ++model) {
-      if (!*model) {
-         std::string message;
-         message = "RGFlow<Two_scale>::Error: model pointer is NULL";
-         throw Error(message);
+   for (size_t m = 0; m < models.size(); ++m) {
+      TModel* model = models[m];
+      if (!model->model) {
+         std::stringstream message;
+         message << "RGFlow<Two_scale>::Error: model pointer ["
+                 << m << "] is NULL";
+         throw Error(message.str());
+      }
+
+      // check wether last model has a non-zero matching condition
+      if (m + 1 == models.size()) {
+         if (model->matching_condition)
+            WARNING("the matching condition of the last model [" << m
+                    << "] is non-zero "<< model->matching_condition << " but will not be used")
+      } else {
+         if (model->matching_condition == NULL) {
+            std::stringstream message;
+            message << "RGFlow<Two_scale>::Error: matching condition "
+                    << "of model " << m << " pointer is NULL";
+            throw Error(message.str());
+         }
       }
    }
 }
@@ -154,13 +173,20 @@ inline void RGFlow<Two_scale>::run_down()
 }
 
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
+                                         const std::vector<Constraint<Two_scale>*>& constraints)
+{
+   assert(model && "RGFlow<Two_scale>::add_model: model"
+          " pointer is NULL");
+   models.push_back(new TModel(model, constraints, NULL));
+}
+
+inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          Matching<Two_scale>* mc,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
    assert(model && "RGFlow<Two_scale>::add_model: model"
           " pointer is NULL");
-   TModel* m = new TModel(model, constraints, mc);
-   models.push_back(m);
+   models.push_back(new TModel(model, constraints, mc));
 }
 
 inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
