@@ -1,6 +1,5 @@
-DIR := src
-
-MODNAME := libflexisusy
+DIR          := src
+MODNAME      := libflexisusy
 
 LIBFLEXI_HDR := \
 		$(DIR)/constraint.hpp \

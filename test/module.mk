@@ -1,6 +1,5 @@
-DIR := test
-
-MODNAME := test
+DIR                       := test
+MODNAME                   := test
 
 TEST_TWO_SCALE_SOLVER_SRC := \
 		$(DIR)/test_two_scale_solver.cpp
@@ -11,7 +10,8 @@ TEST_TWO_SCALE_SOLVER_OBJ := \
 TEST_TWO_SCALE_SOLVER_DEP := \
 		$(TEST_TWO_SCALE_SOLVER_OBJ:.o=.d)
 
-TEST_TWO_SCALE_SOLVER     := $(DIR)/test_two_scale_solver
+TEST_TWO_SCALE_SOLVER     := \
+		$(DIR)/test_two_scale_solver
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
