@@ -11,7 +11,7 @@ ALLLIB   :=
 ALLEXE   :=
 CXX      := g++
 FC       := gfortran
-MAKELIB  := ar r
+MAKELIB  := ar cru
 
 .PHONY:  all clean distclean
 
