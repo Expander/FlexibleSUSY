@@ -1,24 +1,11 @@
 *~
 *.o
 *.a
+*.d
+*.x
 
-aclocal.m4
-autom4te.cache/
 configmake.h
-configure
-config.*
-depcomp
-INSTALL
-install-sh
 Makefile
-Makefile.in
-missing
-stamp-h1
-
-src/.deps
-src/Makefile
-src/Makefile.in
-src/flexisusy
 
 doc/*.html
 doc/*.png
@@ -27,5 +14,3 @@ doc/*.md5
 doc/*.map
 doc/*.css
 doc/*.dot
-
-test/.deps
