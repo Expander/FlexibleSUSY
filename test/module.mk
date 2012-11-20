@@ -27,7 +27,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(TEST_TWO_SCALE_SOLVER): $(TEST_TWO_SCALE_SOLVER_OBJ) $(ALLLIB)
-		$(CXX) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 ALLDEP += $(TEST_TWO_SCALE_SOLVER_DEP)
 ALLEXE += $(TEST_TWO_SCALE_SOLVER)

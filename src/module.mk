@@ -2,33 +2,37 @@ DIR := src
 
 MODNAME := libflexisusy
 
-LIBFLEXI_SRC := \
+LIBFLEXI_HDR := \
 		$(DIR)/constraint.hpp \
-		$(DIR)/def.cpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.f \
 		$(DIR)/dilog.h \
 		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/linalg.cpp \
 		$(DIR)/linalg.h \
-		$(DIR)/lowe.cpp \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
 		$(DIR)/mycomplex.h \
-		$(DIR)/numerics.cpp \
 		$(DIR)/numerics.h \
-		$(DIR)/rge.cpp \
 		$(DIR)/rge.h \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/two_scale_constraint.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_solver.hpp \
-		$(DIR)/utils.cpp \
 		$(DIR)/utils.h \
 		$(DIR)/xpr-base.h \
 		$(DIR)/xpr-matrix.h \
 		$(DIR)/xpr-vector.h
+
+LIBFLEXI_SRC := \
+		$(DIR)/def.cpp \
+		$(DIR)/dilog.f \
+		$(DIR)/linalg.cpp \
+		$(DIR)/lowe.cpp \
+		$(DIR)/numerics.cpp \
+		$(DIR)/rge.cpp \
+		$(DIR)/two_scale_model.cpp \
+		$(DIR)/utils.cpp
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \
@@ -56,4 +60,5 @@ $(LIBFLEXI): $(LIBFLEXI_OBJ)
 		$(MAKELIB) $@ $^
 
 ALLDEP += $(LIBFLEXI_DEP)
+ALLHDR += $(LIBFLEXI_HDR)
 ALLLIB += $(LIBFLEXI)

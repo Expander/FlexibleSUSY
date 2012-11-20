@@ -1,8 +1,12 @@
 MODULES  := src test
-CXXFLAGS := $(patsubst %, -I%, $(MODULES))
-FFLAGS   := $(patsubst %, -I%, $(MODULES))
-LIBS     := -lboost_unit_test_framework
+CPPFLAGS := $(patsubst %, -I%, $(MODULES))
+CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
+            -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor \
+            -g -O2
+FFLAGS   :=
+LIBS     := -lboost_unit_test_framework -lgfortranbegin -lgfortran -lm
 ALLDEP   :=
+ALLHDR   :=
 ALLLIB   :=
 ALLEXE   :=
 CXX      := g++
@@ -26,11 +30,11 @@ alllib:   $(ALLLIB)
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
-	$(CXX) $(CXXFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
+	$(CXX) $(CPPFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
 # the sed script ensures that the target contains the full path
-	$(FC) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
 clean::
