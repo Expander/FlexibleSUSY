@@ -2,6 +2,8 @@
 #ifndef GUT_SCALE_RUNNER_H
 #define GUT_SCALE_RUNNER_H
 
+#include <cmath>
+
 /**
  * @class GUT_scale_runner
  * @brief calculates the approximate GUT scale
