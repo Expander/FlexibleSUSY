@@ -44,6 +44,7 @@ public:
    };
 
    RGFlow();
+   ~RGFlow();
 
    /// add models and constraints
    void add_model(Two_scale_model*,
@@ -83,6 +84,12 @@ inline RGFlow<Two_scale>::RGFlow()
    : models()
    , maxIterations(10)
 {
+}
+
+inline RGFlow<Two_scale>::~RGFlow()
+{
+   for (size_t m = 0; m < models.size(); ++m)
+      delete models[m];
 }
 
 inline void RGFlow<Two_scale>::solve()
