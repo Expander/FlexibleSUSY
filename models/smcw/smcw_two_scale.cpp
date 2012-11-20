@@ -137,7 +137,7 @@ StandardModelCW<Two_scale> StandardModelCW<Two_scale>::calcBeta() const
                                          - 18.0 * g4 * g4 * lambda
                                          + 54.0 * std::pow(g4, 4));
 
-   return StandardModelCW(StandardModelCW<Two_scale>::calcBeta(), dg4, dlambda);
+   return StandardModelCW(StandardModel<Two_scale>::calcBeta(), dg4, dlambda);
 }
 
 DoubleVector StandardModelCW<Two_scale>::beta() const
