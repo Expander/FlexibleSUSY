@@ -20,15 +20,17 @@ ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
 
-.PHONY:  all allhdr allexec alllib clean distclean
+.PHONY:  all allhdr allexec alllib clean distclean tag release
 
 all:     allhdr allexec alllib
 
 include $(patsubst %, %/module.mk, $(MODULES))
 
-ifeq ($(findstring $(MAKECMDGOALS),clean distclean),)
+ifeq ($(findstring $(MAKECMDGOALS),clean distclean tag release),)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
+ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 
@@ -44,3 +46,11 @@ alllib:   $(ALLLIB)
 # the sed script ensures that the target contains the full path
 	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
+
+tag:
+	git tag v$(VERSION) -m "version $(VERSION)"
+
+release:
+	git archive --worktree-attributes --format=tar \
+	--prefix=$(PKGNAME)-$(VERSION)/ \
+	v$(VERSION) | gzip > $(PKGNAME)-$(VERSION).tar.gz
