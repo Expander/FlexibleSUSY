@@ -1,4 +1,4 @@
-MODULES  := src models/sm models/smcw models/mssm test
+MODULES  := config src models/sm models/smcw models/mssm test
 CPPFLAGS := $(patsubst %, -I%, $(MODULES))
 CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
             -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor \
@@ -8,17 +8,21 @@ LIBS     := -lboost_unit_test_framework -lgfortranbegin -lgfortran -lm
 CXX      := g++
 FC       := gfortran
 MAKELIB  := ar cru
+VERSION  := 0.1
+PKGNAME  := FlexibleSUSY
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
+# the modules add headers to be created to this variable
+ALLHDR   :=
 # the modules add their libraries to this variable
 ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
 
-.PHONY:  all clean distclean
+.PHONY:  all allhdr allexec alllib clean distclean
 
-all:     allexec alllib
+all:     allhdr allexec alllib
 
 include $(patsubst %, %/module.mk, $(MODULES))
 
@@ -28,6 +32,7 @@ ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 endif
 endif
 
+allhdr:   $(ALLHDR)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
 
