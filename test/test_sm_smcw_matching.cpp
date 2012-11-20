@@ -117,7 +117,8 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    StandardModelCW<Two_scale> smcw;
-   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12);
+   const double lambda_at_mgut = 1.0;
+   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
@@ -148,5 +149,9 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
    smcw.run_to(gut_scale);
    const double g1_at_mgut = smcw.displayGaugeCoupling(1);
    const double g2_at_mgut = smcw.displayGaugeCoupling(2);
+   const double g4_at_mgut = smcw.displayGaugeCoupling(4);
+   const double lambda_at_mgut_output = smcw.displayLambda();
    BOOST_CHECK_CLOSE(g1_at_mgut, g2_at_mgut, 1.0e-8);
+   BOOST_CHECK_CLOSE(g1_at_mgut, g4_at_mgut, 1.0e-7);
+   BOOST_CHECK_CLOSE(lambda_at_mgut, lambda_at_mgut_output, 1.0e-4);
 }
