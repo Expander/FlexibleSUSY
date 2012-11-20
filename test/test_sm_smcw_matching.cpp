@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    RGFlow<Two_scale> solver;
    solver.add_model(sm, &mc);
-   solver.add_model(smcw, NULL);
+   solver.add_model(smcw);
 
    try {
       solver.solve();
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
 
    RGFlow<Two_scale> solver;
    solver.add_model(&sm, &mc, sm_constraints);
-   solver.add_model(&smcw, NULL, smcw_constraints);
+   solver.add_model(&smcw, smcw_constraints);
 
    try {
       solver.solve();
