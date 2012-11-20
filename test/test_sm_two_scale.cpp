@@ -13,6 +13,7 @@
 BOOST_AUTO_TEST_CASE( test_electroweak_constaint )
 {
    StandardModel<Two_scale> sm;
+   sm.setScale(ewConstants::MZ);
    StandardModelExpConstraint sm_ew_constraint(&sm);
    const DoubleMatrix zero3x3(3,3);
 
