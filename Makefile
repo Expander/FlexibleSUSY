@@ -36,9 +36,3 @@ alllib:   $(ALLLIB)
 # the sed script ensures that the target contains the full path
 	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
-
-clean::
-	rm -f $(ALLDEP)
-
-distclean:: clean
-	rm -f $(ALLLIB) $(ALLEXE)

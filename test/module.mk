@@ -17,10 +17,12 @@ TEST_TWO_SCALE_SOLVER     := $(DIR)/test_two_scale_solver
 
 all-$(MODNAME): $(TEST_TWO_SCALE_SOLVER)
 
-clean-$(MODNAME): $(TEST_TWO_SCALE_SOLVER_OBJ)
+clean-$(MODNAME):
+		rm -rf $(TEST_TWO_SCALE_SOLVER_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(TEST_TWO_SCALE_SOLVER_DEP) $(TEST_TWO_SCALE_SOLVER)
+		rm -rf $(TEST_TWO_SCALE_SOLVER_DEP)
+		rm -rf $(TEST_TWO_SCALE_SOLVER)
 
 clean::         clean-$(MODNAME)
 
