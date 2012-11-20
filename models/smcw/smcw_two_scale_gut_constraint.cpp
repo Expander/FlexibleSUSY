@@ -24,7 +24,7 @@ void StandardModelCWGUTConstraint::apply()
    smcw->setGaugeCoupling(2, g_mean);
 }
 
-double StandardModelCWGUTConstraint::estimate_scale() const
+double StandardModelCWGUTConstraint::get_scale() const
 {
    return estimated_scale;
 }

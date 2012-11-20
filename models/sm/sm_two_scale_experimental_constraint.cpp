@@ -50,7 +50,7 @@ void StandardModelExpConstraint::apply()
    sm->setGaugeCoupling(3, sqrt(4 * M_PI * ewConstants::alpha3));
 }
 
-double StandardModelExpConstraint::estimate_scale() const
+double StandardModelExpConstraint::get_scale() const
 {
    return ewConstants::MZ;
 }

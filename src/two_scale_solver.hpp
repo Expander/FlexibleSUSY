@@ -145,7 +145,7 @@ inline void RGFlow<Two_scale>::run_up()
       // apply all constraints
       for (size_t c = 0; c < model->constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
-         const double scale = constraint->estimate_scale();
+         const double scale = constraint->get_scale();
          model->model->run_to(scale);
          constraint->update_scale();
          constraint->apply();
@@ -174,7 +174,7 @@ inline void RGFlow<Two_scale>::run_down()
       const long c_end = (m == 0 ? 1 : 0);
       for (long c = c_begin; c >= c_end; --c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
-         const double scale = constraint->estimate_scale();
+         const double scale = constraint->get_scale();
          model->model->run_to(scale);
          constraint->update_scale();
          constraint->apply();

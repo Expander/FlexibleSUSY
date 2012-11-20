@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
    BOOST_CHECK_EQUAL(smcw.displayYukawaMatrix(YE), sm.displayYukawaMatrix(YE));
 
    // get the GUT scale value
-   const double gut_scale = smcw_gut_constraint.estimate_scale();
+   const double gut_scale = smcw_gut_constraint.get_scale();
 
    // run smcw to the GUT scale and test equality of g1 and g2
    smcw.run_to(gut_scale);

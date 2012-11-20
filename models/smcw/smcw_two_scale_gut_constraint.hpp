@@ -28,7 +28,7 @@ public:
    StandardModelCWGUTConstraint(StandardModelCW<Two_scale>*, double);
    virtual ~StandardModelCWGUTConstraint();
    virtual void apply();
-   virtual double estimate_scale() const;
+   virtual double get_scale() const;
    virtual void update_scale();
 
 private:
