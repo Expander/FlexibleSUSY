@@ -1,4 +1,4 @@
-MODULES  := src test
+MODULES  := src test models/sm
 CPPFLAGS := $(patsubst %, -I%, $(MODULES))
 CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
             -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor \
