@@ -45,11 +45,16 @@ public:
 
    RGFlow();
 
+   /// add models and constraints
    void add_model(Two_scale_model*,
                   const std::vector<Constraint<Two_scale>*>&);
+   /// add models, constraints and matching condition
    void add_model(Two_scale_model*,
                   Matching<Two_scale>* m = NULL,
                   const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
+   /// set maximum number of iterations
+   void set_max_iterations(unsigned int);
+   /// solve all models
    void solve();
 
 private:
@@ -65,13 +70,13 @@ private:
          , matching_condition(mc)
          {}
    };
-   std::vector<TModel*> models;
-   unsigned int maxIterations;
+   std::vector<TModel*> models;        ///< tower of models
+   unsigned int maxIterations;         ///< maximum number of iterations
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
-   void run_up();
-   void run_down();
+   void run_up();                      ///< run all models up
+   void run_down();                    ///< run all models down
 };
 
 inline RGFlow<Two_scale>::RGFlow()
@@ -172,6 +177,14 @@ inline void RGFlow<Two_scale>::run_down()
    }
 }
 
+/**
+ * Add a model and the corresponding model constraints.  Note that the
+ * order of the model registration is important: Models that are added
+ * later are assumed to be valid at a higher scale.
+ *
+ * @param model model
+ * @param constraints vector of model constraints
+ */
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
@@ -180,6 +193,16 @@ inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
    models.push_back(new TModel(model, constraints, NULL));
 }
 
+/**
+ * Add a model, the corresponding model constraints and the matching
+ * condition to the next model.  Note that the order of the model
+ * registration is important: Models that are added later are assumed
+ * to be valid at a higher scale.
+ *
+ * @param model model
+ * @param mc matching condition to the next higher model
+ * @param constraints vector of model constraints
+ */
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          Matching<Two_scale>* mc,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
@@ -192,6 +215,11 @@ inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
 inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
    return false;
+}
+
+inline void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
+{
+   maxIterations = max_it;
 }
 
 #endif
