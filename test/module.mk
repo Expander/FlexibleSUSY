@@ -28,6 +28,9 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(TEST_DEP)
 		rm -rf $(TEST_EXE)
 
+execute-tests:  all-$(MODNAME)
+		for x in $(TEST_EXE); do ./$$x;	done
+
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
