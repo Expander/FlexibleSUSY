@@ -67,7 +67,7 @@ public:
    };
 
 
-   RGFlow(Convergence_tester<Two_scale>*);
+   RGFlow();
    ~RGFlow();
 
    /// add models and constraints
@@ -77,6 +77,8 @@ public:
    void add_model(Two_scale_model*,
                   Matching<Two_scale>* m = NULL,
                   const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
+   /// set convergence tester
+   void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set maximum number of iterations
    void set_max_iterations(unsigned int);
    /// solve all models
@@ -105,10 +107,10 @@ private:
    void run_down();                    ///< run all models down
 };
 
-inline RGFlow<Two_scale>::RGFlow(Convergence_tester<Two_scale>* convergence_tester_ = NULL)
+inline RGFlow<Two_scale>::RGFlow()
    : models()
    , maxIterations(10)
-   , convergence_tester(convergence_tester_)
+   , convergence_tester(NULL)
 {
 }
 
@@ -254,6 +256,16 @@ inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
    if (convergence_tester)
       return convergence_tester->accuracy_goal_reached();
    return false;
+}
+
+/**
+ * Set the convergence tester to be used during the iteration.
+ *
+ * @param convergence_tester the convergence tester to be used
+ */
+inline void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
+{
+   convergence_tester = convergence_tester_;
 }
 
 /**

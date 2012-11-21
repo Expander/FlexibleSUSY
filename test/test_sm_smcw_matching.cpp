@@ -176,8 +176,9 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 
    StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);
 
-   RGFlow<Two_scale> solver(&convergence_tester);
-   solver.set_max_iterations(50);
+   RGFlow<Two_scale> solver;
+   solver.set_max_iterations(10);
+   solver.set_convergence_tester(&convergence_tester);
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);
 
