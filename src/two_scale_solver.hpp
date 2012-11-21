@@ -38,11 +38,34 @@ class RGFlow<Two_scale> {
 public:
    class Error {
    public:
-      Error(const std::string& message_) : message(message_) {}
-      std::string what() const { return message; }
+      virtual ~Error() {}
+      virtual std::string what() const = 0;
+   };
+
+   class SetupError : public Error {
+   public:
+      SetupError(const std::string& message_) : message(message_) {}
+      virtual ~SetupError() {}
+      virtual std::string what() const { return message; }
    private:
       std::string message;
    };
+
+   class NoConvergenceError : public Error {
+   public:
+      NoConvergenceError(unsigned number_of_iterations_)
+         : number_of_iterations(number_of_iterations_) {}
+      virtual ~NoConvergenceError() {}
+      virtual std::string what() const {
+         std::stringstream message;
+         message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
+                 << " after " << number_of_iterations << " iterations";
+         return message.str();
+      }
+   private:
+      unsigned number_of_iterations;
+   };
+
 
    RGFlow(Convergence_tester<Two_scale>*);
    ~RGFlow();
@@ -110,9 +133,8 @@ inline void RGFlow<Two_scale>::solve()
       --iter;
    }
 
-   if (iter == 0)
-      WARNING("Maximum number of iterations (" << maxIterations
-              << ") reached.  The result might not be precise.");
+   if (iter == 0 && convergence_tester)
+      throw NoConvergenceError(maxIterations);
 }
 
 inline void RGFlow<Two_scale>::check_setup() const
@@ -123,7 +145,7 @@ inline void RGFlow<Two_scale>::check_setup() const
          std::stringstream message;
          message << "RGFlow<Two_scale>::Error: model pointer ["
                  << m << "] is NULL";
-         throw Error(message.str());
+         throw SetupError(message.str());
       }
 
       // check wether last model has a non-zero matching condition
@@ -136,7 +158,7 @@ inline void RGFlow<Two_scale>::check_setup() const
             std::stringstream message;
             message << "RGFlow<Two_scale>::Error: matching condition "
                     << "of model " << m << " pointer is NULL";
-            throw Error(message.str());
+            throw SetupError(message.str());
          }
       }
    }
