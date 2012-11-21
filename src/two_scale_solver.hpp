@@ -29,7 +29,6 @@
 #include <vector>
 #include <string>
 #include <sstream>
-#include <cassert>
 
 class Two_scale;
 
@@ -227,8 +226,6 @@ inline void RGFlow<Two_scale>::run_down()
 inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
-   assert(model && "RGFlow<Two_scale>::add_model: model"
-          " pointer is NULL");
    models.push_back(new TModel(model, constraints, NULL));
 }
 
@@ -246,8 +243,6 @@ inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                          Matching<Two_scale>* mc,
                                          const std::vector<Constraint<Two_scale>*>& constraints)
 {
-   assert(model && "RGFlow<Two_scale>::add_model: model"
-          " pointer is NULL");
    models.push_back(new TModel(model, constraints, mc));
 }
 
