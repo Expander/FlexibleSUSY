@@ -7,6 +7,7 @@ StandardModelCW<Two_scale>::StandardModelCW()
    : StandardModel<Two_scale>()
    , g4(0.0)
    , lambda(0.0)
+   , vs(0.0)
 {
    setPars(numStandardModelCWPars);
 }
@@ -15,14 +16,16 @@ StandardModelCW<Two_scale>::StandardModelCW(const StandardModelCW<Two_scale>& sm
    : StandardModel<Two_scale>(smcw)
    , g4(smcw.g4)
    , lambda(smcw.lambda)
+   , vs(smcw.vs)
 {
    setPars(numStandardModelCWPars);
 }
 
-StandardModelCW<Two_scale>::StandardModelCW(const StandardModel<Two_scale>& sm, double g4_, double lambda_)
+StandardModelCW<Two_scale>::StandardModelCW(const StandardModel<Two_scale>& sm, double g4_, double lambda_, double vs_)
    : StandardModel<Two_scale>(sm)
    , g4(g4_)
    , lambda(lambda_)
+   , vs(vs_)
 {
    setPars(numStandardModelCWPars);
 }
@@ -31,10 +34,11 @@ StandardModelCW<Two_scale>::StandardModelCW(const DoubleMatrix& SMu,
                                             const DoubleMatrix& SMd,
                                             const DoubleMatrix& SMe,
                                             const DoubleVector& g_,
-                                            double lambda_)
+                                            double lambda_, double vs_)
    : StandardModel<Two_scale>(SMu, SMd, SMe, g_)
    , g4(g_(4))
    , lambda(lambda_)
+   , vs(vs_)
 {
    setPars(numStandardModelCWPars);
 }
@@ -49,6 +53,7 @@ const StandardModelCW<Two_scale>& StandardModelCW<Two_scale>::operator=(const St
    StandardModel<Two_scale>::operator=(smcw);
    g4 = smcw.g4;
    lambda = smcw.lambda;
+   vs = smcw.vs;
    return *this;
 }
 
@@ -92,8 +97,9 @@ const DoubleVector StandardModelCW<Two_scale>::display() const
 {
    DoubleVector y(StandardModel<Two_scale>::display());
    y.setEnd(numStandardModelCWPars);
-   y(numStandardModelCWPars - 1) = g4;
-   y(numStandardModelCWPars) = lambda;
+   y(numStandardModelCWPars - 2) = g4;
+   y(numStandardModelCWPars - 1) = lambda;
+   y(numStandardModelCWPars)     = vs;
 
    return y;
 }
@@ -102,8 +108,9 @@ void StandardModelCW<Two_scale>::set(const DoubleVector& y)
 {
    assert(y.displayStart() == 1 && y.displayEnd() >= numStandardModelCWPars);
    StandardModel<Two_scale>::set(y);
-   g4 = y(numStandardModelCWPars - 1);
-   lambda = y(numStandardModelCWPars);
+   g4     = y(numStandardModelCWPars - 2);
+   lambda = y(numStandardModelCWPars - 1);
+   vs     = y(numStandardModelCWPars);
 }
 
 std::ostream& operator <<(std::ostream& left, const StandardModelCW<Two_scale>& s)
@@ -120,6 +127,7 @@ std::ostream& operator <<(std::ostream& left, const StandardModelCW<Two_scale>& 
         << " g4: " << s.displayGaugeCoupling(4)
         << '\n'
         << " lambda: " << s.displayLambda()
+        << " vs: " << s.displayVs()
         << '\n'
         << " thresholds: " << s.displayThresholds()
         << " #loops: " << s.displayLoops() << '\n';
@@ -137,10 +145,15 @@ StandardModelCW<Two_scale> StandardModelCW<Two_scale>::calcBeta() const
                                          - 18.0 * g4 * g4 * lambda
                                          + 54.0 * std::pow(g4, 4));
 
-   return StandardModelCW(StandardModel<Two_scale>::calcBeta(), dg4, dlambda);
+   return StandardModelCW(StandardModel<Two_scale>::calcBeta(), dg4, dlambda, 0.0);
 }
 
 DoubleVector StandardModelCW<Two_scale>::beta() const
 {
    return calcBeta().display();
+}
+
+double StandardModelCW<Two_scale>::calcZprimeMass() const
+{
+   return std::pow(vs * g4, 2);
 }

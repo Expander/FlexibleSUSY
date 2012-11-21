@@ -13,14 +13,14 @@ template<>
 class StandardModelCW<Two_scale>: public StandardModel<Two_scale> {
 public:
    const static int numStandardModelCWPars =
-      StandardModel<Two_scale>::numStandardModelPars + 2;
+      StandardModel<Two_scale>::numStandardModelPars + 3;
 
    StandardModelCW();
    StandardModelCW(const StandardModelCW<Two_scale>&);
-   StandardModelCW(const StandardModel<Two_scale>&, double, double);
+   StandardModelCW(const StandardModel<Two_scale>&, double, double, double);
    StandardModelCW(const DoubleMatrix& yu, const DoubleMatrix& yd,
                    const DoubleMatrix& ye, const DoubleVector& g,
-                   double lambda);
+                   double lambda, double vs);
 
    virtual ~StandardModelCW();
 
@@ -33,6 +33,8 @@ public:
    virtual void setAllGauge(const DoubleVector&);
    /// Set lambda parameter
    void setLambda(double l) { lambda = l; }
+   /// Set s VEV
+   void setVs(double v) { vs = v; }
 
    /// Returns a single gauge coupling
    virtual double displayGaugeCoupling(int) const;
@@ -40,8 +42,13 @@ public:
    virtual DoubleVector displayGauge() const;
    /// Returns lambda parameter
    double displayLambda() const { return lambda; }
+   /// Returns s VEV
+   double displayVs() const { return vs; }
    /// Calculate beta functions
    StandardModelCW calcBeta() const;
+
+   /// Calculate Z' mass
+   double calcZprimeMass() const;
 
 protected:
    /// Sets all RGE parameters to elements of vector
@@ -54,6 +61,7 @@ protected:
 private:
    double g4;     ///< g4 gauge coupling
    double lambda; ///< scalar potential parameter lambda
+   double vs;     ///< VEV of singlet field
 };
 
 /// Formatted output
