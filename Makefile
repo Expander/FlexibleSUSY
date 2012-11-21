@@ -1,4 +1,4 @@
-MODULES  := config src models/sm models/smcw models/mssm test
+MODULES  := config src models/sm models/smcw models/mssm test doc
 
 BOOSTLIBDIR :=
 BOOSTLIBS   := -lboost_unit_test_framework
