@@ -256,7 +256,7 @@ inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 /**
  * Set the convergence tester to be used during the iteration.
  *
- * @param convergence_tester the convergence tester to be used
+ * @param convergence_tester_ the convergence tester to be used
  */
 inline void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
 {
