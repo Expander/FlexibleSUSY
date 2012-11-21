@@ -13,6 +13,7 @@ public:
    virtual void matchLowToHighScaleModel() const = 0;
    virtual void matchHighToLowScaleModel() const = 0;
    virtual double get_scale() const = 0;
+   virtual void update_scale() = 0;
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "two_scale_solver.hpp"
+#include "two_scale_matching.hpp"
 #include "sm_two_scale.hpp"
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "smcw_two_scale.hpp"
@@ -18,7 +19,8 @@ class Trivial_SM_SMCW_matching_condition: public Matching<Two_scale> {
 public:
    Trivial_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
                                       StandardModelCW<Two_scale>* smcw_)
-      : sm(sm_)
+      : Matching<Two_scale>()
+      , sm(sm_)
       , smcw(smcw_)
       {
          BOOST_REQUIRE(sm != NULL);
@@ -44,6 +46,7 @@ public:
    virtual double get_scale() const {
       return 3000;
    }
+   virtual void update_scale() {}
 private:
    StandardModel<Two_scale>* sm;
    StandardModelCW<Two_scale>* smcw;

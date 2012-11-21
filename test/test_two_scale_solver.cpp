@@ -37,6 +37,7 @@ public:
    virtual double get_scale() const {
       return 100.0;
    }
+   virtual void update_scale() {}
 private:
    Static_model *mLow, *mHigh;
 };
