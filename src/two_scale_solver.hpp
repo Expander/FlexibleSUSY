@@ -101,9 +101,10 @@ inline void RGFlow<Two_scale>::solve()
    run_down();
 
    unsigned int iter = maxIterations;
-   while (--iter && !accuracy_goal_reached()) {
+   while (iter && !accuracy_goal_reached()) {
       run_up();
       run_down();
+      --iter;
    }
 
    if (iter == 0)
@@ -229,8 +230,8 @@ inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 }
 
 /**
- * Set the maximum number of iterations.  This includes the initial
- * run.
+ * Set the maximum number of iterations (excluding the initial run).
+ * If 0 is given, there will be only an initial run.
  *
  * @param max_it maximum number of iterations
  */
