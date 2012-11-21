@@ -23,6 +23,7 @@
 #include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_matching.hpp"
+#include "two_scale_convergence_tester.hpp"
 #include "logger.hpp"
 
 #include <vector>
@@ -43,7 +44,7 @@ public:
       std::string message;
    };
 
-   RGFlow();
+   RGFlow(Convergence_tester<Two_scale>*);
    ~RGFlow();
 
    /// add models and constraints
@@ -73,6 +74,7 @@ private:
    };
    std::vector<TModel*> models;        ///< tower of models
    unsigned int maxIterations;         ///< maximum number of iterations
+   Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
@@ -80,9 +82,10 @@ private:
    void run_down();                    ///< run all models down
 };
 
-inline RGFlow<Two_scale>::RGFlow()
+inline RGFlow<Two_scale>::RGFlow(Convergence_tester<Two_scale>* convergence_tester_ = NULL)
    : models()
    , maxIterations(10)
+   , convergence_tester(convergence_tester_)
 {
 }
 
@@ -226,6 +229,8 @@ inline void RGFlow<Two_scale>::add_model(Two_scale_model* model,
 
 inline bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
+   if (convergence_tester)
+      return convergence_tester->accuracy_goal_reached();
    return false;
 }
 

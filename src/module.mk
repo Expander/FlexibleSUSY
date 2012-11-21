@@ -3,6 +3,7 @@ MODNAME      := libflexisusy
 
 LIBFLEXI_HDR := \
 		$(DIR)/constraint.hpp \
+		$(DIR)/convergence_tester.hpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.f \
 		$(DIR)/dilog.h \
@@ -15,6 +16,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/rge.h \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/two_scale_constraint.hpp \
+		$(DIR)/two_scale_convergence_tester.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_solver.hpp \

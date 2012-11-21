@@ -4,10 +4,12 @@ MODNAME      := libsmcw
 LIBSMCW_HDR  := \
 		$(DIR)/smcw.hpp \
 		$(DIR)/smcw_two_scale.hpp \
+		$(DIR)/smcw_two_scale_convergence_tester.hpp \
 		$(DIR)/smcw_two_scale_gut_constraint.hpp
 
 LIBSMCW_SRC  := \
 		$(DIR)/smcw_two_scale.cpp \
+		$(DIR)/smcw_two_scale_convergence_tester.cpp \
 		$(DIR)/smcw_two_scale_gut_constraint.cpp
 
 LIBSMCW_OBJ  := \

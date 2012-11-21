@@ -4,6 +4,7 @@
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "smcw_two_scale.hpp"
 #include "smcw_two_scale_gut_constraint.hpp"
+#include "smcw_two_scale_convergence_tester.hpp"
 #include "linalg.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -157,4 +158,32 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
    BOOST_CHECK_CLOSE(g1_at_mgut, g2_at_mgut, 1.0e-8);
    BOOST_CHECK_CLOSE(g1_at_mgut, g4_at_mgut, 1.0e-7);
    BOOST_CHECK_CLOSE(lambda_at_mgut, lambda_at_mgut_output, 1.0e-4);
+}
+
+BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
+{
+   StandardModel<Two_scale> sm;
+   sm.setScale(ewConstants::MZ);
+   StandardModelExpConstraint sm_ew_constraint(&sm);
+   const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
+
+   StandardModelCW<Two_scale> smcw;
+   const double lambda_at_mgut = 1.0;
+   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
+   const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
+
+   Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
+
+   StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);
+
+   RGFlow<Two_scale> solver(&convergence_tester);
+   solver.set_max_iterations(50);
+   solver.add_model(&sm, &mc, sm_constraints);
+   solver.add_model(&smcw, smcw_constraints);
+
+   try {
+      solver.solve();
+   } catch (RGFlow<Two_scale>::Error& e) {
+      BOOST_ERROR(e.what());
+   }
 }
