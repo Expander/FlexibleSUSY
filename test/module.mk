@@ -29,7 +29,12 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(TEST_EXE)
 
 execute-tests:  all-$(MODNAME)
-		for x in $(TEST_EXE); do ./$$x;	done
+		@echo "executing all tests ..."
+		@for x in $(TEST_EXE); do            \
+			echo "executing test: $$x";  \
+			./$$x --log_level=warning;   \
+		done
+		@echo "all tests finished"
 
 clean::         clean-$(MODNAME)
 
