@@ -11,6 +11,12 @@ StandardModel_convergence_tester::~StandardModel_convergence_tester()
 {
 }
 
+/**
+ * Returns allways true, because the Standard Model is assumed to be a
+ * fixed theory.
+ *
+ * @return true
+ */
 bool StandardModel_convergence_tester::accuracy_goal_reached()
 {
    return true;

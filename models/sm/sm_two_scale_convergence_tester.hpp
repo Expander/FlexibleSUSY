@@ -24,6 +24,15 @@
 template <class T>
 class StandardModel;
 
+/**
+ * @class StandardModel_convergence_tester
+ * @brief Tests the StandardModel<Two_scale> class for convergence
+ *
+ * This class tests the StandardModel<Two_scale> class for convergence
+ * during an iteration between a high and a low scale.  The Standard
+ * Model is assumed to be a fixed theory (all parameters are known),
+ * the function accuracy_goal_reached() returns allways true.
+ */
 class StandardModel_convergence_tester : public Convergence_tester<Two_scale> {
 public:
    StandardModel_convergence_tester(StandardModel<Two_scale>*);
@@ -31,7 +40,7 @@ public:
    virtual bool accuracy_goal_reached();
 
 private:
-   StandardModel<Two_scale>* sm;
+   StandardModel<Two_scale>* sm; ///< the model to test for convergence
 };
 
 #endif
