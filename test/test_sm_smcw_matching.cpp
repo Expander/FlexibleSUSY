@@ -55,6 +55,8 @@ private:
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
 {
+   BOOST_MESSAGE("test if trivial matching condition leaves parameters invariant");
+
    const double vev = 246;
    const double root2 = sqrt(2.0);
    const double mtoprun = 165;
@@ -90,6 +92,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    solver.add_model(sm, &mc);
    solver.add_model(smcw);
 
+   // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
    } catch (RGFlow<Two_scale>::Error& e) {
@@ -113,24 +116,31 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    delete sm;
 }
 
-BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
+BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
 {
+   BOOST_MESSAGE("test if SM and SMCW constraints are applied correctly");
+
+   // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
    StandardModel_exp_constraint sm_ew_constraint(&sm);
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
+   // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
    const double lambda_at_mgut = 1.0;
    StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
+   // create trivial matching condition
    Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
 
+   // create two scale solver
    RGFlow<Two_scale> solver;
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);
 
+   // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
    } catch (RGFlow<Two_scale>::Error& e) {
@@ -149,39 +159,50 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
    // get the GUT scale value
    const double gut_scale = smcw_gut_constraint.get_scale();
 
-   // run smcw to the GUT scale and test equality of g1 and g2
+   // run CW-Standard Model to the GUT scale and test equality of g1
+   // and g2
    smcw.run_to(gut_scale);
    const double g1_at_mgut = smcw.displayGaugeCoupling(1);
    const double g2_at_mgut = smcw.displayGaugeCoupling(2);
    const double g4_at_mgut = smcw.displayGaugeCoupling(4);
-   const double lambda_at_mgut_output = smcw.displayLambda();
    BOOST_CHECK_CLOSE(g1_at_mgut, g2_at_mgut, 1.0e-8);
    BOOST_CHECK_CLOSE(g1_at_mgut, g4_at_mgut, 1.0e-7);
+
+   // check that the input value lambda(MGUT) was applied correctly
+   const double lambda_at_mgut_output = smcw.displayLambda();
    BOOST_CHECK_CLOSE(lambda_at_mgut, lambda_at_mgut_output, 1.0e-4);
 }
 
 BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 {
+   BOOST_MESSAGE("test if two scale solver with SM and SMCW converges");
+
+   // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
    StandardModel_exp_constraint sm_ew_constraint(&sm);
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
+   // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
    const double lambda_at_mgut = 1.0;
    StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
+   // create trivial matching condition
    Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
 
+   // create convergence tester for the CW-Standard Model
    StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);
 
+   // create two scale solver
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
    solver.set_convergence_tester(&convergence_tester);
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);
 
+   // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
    } catch (RGFlow<Two_scale>::Error& e) {
