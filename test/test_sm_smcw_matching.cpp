@@ -28,7 +28,7 @@ public:
          BOOST_REQUIRE(smcw != NULL);
       }
    virtual ~Trivial_SM_SMCW_matching_condition() {}
-   virtual void matchLowToHighScaleModel() const {
+   virtual void match_low_to_high_scale_model() const {
       smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
       smcw->setYukawaMatrix(YD, sm->displayYukawaMatrix(YD));
       smcw->setYukawaMatrix(YE, sm->displayYukawaMatrix(YE));
@@ -36,7 +36,7 @@ public:
          smcw->setGaugeCoupling(i, sm->displayGaugeCoupling(i));
       smcw->setScale(sm->getScale());
    }
-   virtual void matchHighToLowScaleModel() const {
+   virtual void match_high_to_low_scale_model() const {
       sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
       sm->setYukawaMatrix(YD, smcw->displayYukawaMatrix(YD));
       sm->setYukawaMatrix(YE, smcw->displayYukawaMatrix(YE));

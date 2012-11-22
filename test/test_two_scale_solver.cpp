@@ -28,10 +28,10 @@ public:
          BOOST_REQUIRE(mHigh != NULL);
       }
    virtual ~Trivial_matching_condition() {}
-   virtual void matchLowToHighScaleModel() const {
+   virtual void match_low_to_high_scale_model() const {
       mHigh->setParameters(mLow->getParameters());
    }
-   virtual void matchHighToLowScaleModel() const {
+   virtual void match_high_to_low_scale_model() const {
       mLow->setParameters(mHigh->getParameters());
    }
    virtual double get_scale() const {

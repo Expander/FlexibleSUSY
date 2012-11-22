@@ -181,7 +181,7 @@ inline void RGFlow<Two_scale>::run_up()
       if (m != models.size() - 1) {
          const Matching<Two_scale>* mc = model->matching_condition;
          model->model->run_to(mc->get_scale());
-         mc->matchLowToHighScaleModel();
+         mc->match_low_to_high_scale_model();
       }
    }
 }
@@ -210,7 +210,7 @@ inline void RGFlow<Two_scale>::run_down()
       if (m > 0) {
          const Matching<Two_scale>* mc = models[m - 1]->matching_condition;
          model->model->run_to(mc->get_scale());
-         mc->matchHighToLowScaleModel();
+         mc->match_high_to_low_scale_model();
       }
    }
 }
