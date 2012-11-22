@@ -84,10 +84,18 @@ public:
    void solve();
 
 private:
+   /**
+    * @class TModel
+    * @brief contains model, constraints and matching condition
+    *
+    * This class lumps together the model, its constraints and the
+    * matching condition to the next higher model.
+    */
    struct TModel {
-      Two_scale_model* model;
-      std::vector<Constraint<Two_scale>*> constraints;
-      const Matching<Two_scale>* matching_condition;
+      Two_scale_model* model;                          ///< the model
+      std::vector<Constraint<Two_scale>*> constraints; ///< model constraints
+      const Matching<Two_scale>* matching_condition;   ///< matching condition
+
       TModel(Two_scale_model* m,
              const std::vector<Constraint<Two_scale>*>& c,
              Matching<Two_scale>* mc)
@@ -96,8 +104,8 @@ private:
          , matching_condition(mc)
          {}
    };
-   std::vector<TModel*> models;        ///< tower of models
-   unsigned int maxIterations;         ///< maximum number of iterations
+   std::vector<TModel*> models;        ///< tower of models (from low to high scale)
+   unsigned int max_iterations;        ///< maximum number of iterations
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
@@ -106,9 +114,13 @@ private:
    void run_down();                    ///< run all models down
 };
 
+/**
+ * Create empty two scale solver.  Sets maximum number of iterations
+ * to 10 (default).
+ */
 inline RGFlow<Two_scale>::RGFlow()
    : models()
-   , maxIterations(10)
+   , max_iterations(10)
    , convergence_tester(NULL)
 {
 }
@@ -127,7 +139,7 @@ inline void RGFlow<Two_scale>::solve()
    run_up();
    run_down();
 
-   unsigned int iter = maxIterations;
+   unsigned int iter = max_iterations;
    while (iter && !accuracy_goal_reached()) {
       run_up();
       run_down();
@@ -135,7 +147,7 @@ inline void RGFlow<Two_scale>::solve()
    }
 
    if (iter == 0 && convergence_tester)
-      throw NoConvergenceError(maxIterations);
+      throw NoConvergenceError(max_iterations);
 }
 
 inline void RGFlow<Two_scale>::check_setup() const
@@ -153,7 +165,7 @@ inline void RGFlow<Two_scale>::check_setup() const
       if (m + 1 == models.size()) {
          if (model->matching_condition)
             WARNING("the matching condition of the last model [" << m
-                    << "] is non-zero "<< model->matching_condition << " but will not be used");
+                    << "] is non-zero but will not be used");
       } else {
          if (model->matching_condition == NULL) {
             std::stringstream message;
@@ -271,7 +283,7 @@ inline void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_sca
  */
 inline void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
 {
-   maxIterations = max_it;
+   max_iterations = max_it;
 }
 
 #endif
