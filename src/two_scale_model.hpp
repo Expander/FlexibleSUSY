@@ -21,7 +21,7 @@
 
 class Two_scale_model {
 public:
-   virtual ~Two_scale_model();
+   virtual ~Two_scale_model() {}
    virtual int run_to(double) = 0;
 };
 

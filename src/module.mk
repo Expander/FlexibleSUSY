@@ -32,7 +32,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
-		$(DIR)/two_scale_model.cpp \
 		$(DIR)/utils.cpp
 
 LIBFLEXI_OBJ := \
