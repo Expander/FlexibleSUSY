@@ -12,8 +12,8 @@ public:
    Static_model(const DoubleVector& pars) : parameters(pars) {}
    virtual ~Static_model() {}
    virtual int run_to(double) { return 0; }
-   virtual void setParameters(const DoubleVector& v) { parameters = v; }
-   virtual DoubleVector getParameters() const { return parameters; }
+   virtual void set_parameters(const DoubleVector& v) { parameters = v; }
+   virtual DoubleVector get_parameters() const { return parameters; }
 private:
    DoubleVector parameters;
 };
@@ -29,10 +29,10 @@ public:
       }
    virtual ~Trivial_matching_condition() {}
    virtual void match_low_to_high_scale_model() const {
-      mHigh->setParameters(mLow->getParameters());
+      mHigh->set_parameters(mLow->get_parameters());
    }
    virtual void match_high_to_low_scale_model() const {
-      mLow->setParameters(mHigh->getParameters());
+      mLow->set_parameters(mHigh->get_parameters());
    }
    virtual double get_scale() const {
       return 100.0;
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
       BOOST_ERROR(e.what());
    }
 
-   BOOST_CHECK_EQUAL(model.getParameters(), parameters);
+   BOOST_CHECK_EQUAL(model.get_parameters(), parameters);
 }
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
@@ -86,6 +86,6 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    // the high scale parameters should be the same as the low scale
    // parameters
-   BOOST_CHECK_EQUAL(model1.getParameters(), parameters);
-   BOOST_CHECK_EQUAL(model2.getParameters(), parameters);
+   BOOST_CHECK_EQUAL(model1.get_parameters(), parameters);
+   BOOST_CHECK_EQUAL(model2.get_parameters(), parameters);
 }
