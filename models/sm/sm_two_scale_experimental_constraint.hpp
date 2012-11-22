@@ -24,7 +24,12 @@
 
 class Two_scale;
 
-namespace ewConstants {
+/**
+ * @namespace Electroweak_constants
+ *
+ * Contains Standard Model parameters at the electroweak scale
+ */
+namespace Electroweak_constants {
    namespace {
       const double vev = 246;
       const double root2 = sqrt(2.0);
@@ -49,16 +54,23 @@ namespace ewConstants {
 template <class T>
 class StandardModel;
 
-class StandardModelExpConstraint : public Constraint<Two_scale> {
+/**
+ * @class StandardModel_exp_constraint
+ * @brief Experimental constraints of the Standard Model
+ *
+ * This class applies all experimental constraints to the Standard
+ * Model at the Z mass scale.
+ */
+class StandardModel_exp_constraint : public Constraint<Two_scale> {
 public:
-   StandardModelExpConstraint(StandardModel<Two_scale>*);
-   virtual ~StandardModelExpConstraint();
+   StandardModel_exp_constraint(StandardModel<Two_scale>*);
+   virtual ~StandardModel_exp_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void update_scale();
 
 private:
-   StandardModel<Two_scale>* sm;
+   StandardModel<Two_scale>* sm; ///< model to apply the constraints to
 };
 
 #endif

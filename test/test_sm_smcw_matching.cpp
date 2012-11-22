@@ -116,8 +116,8 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
 {
    StandardModel<Two_scale> sm;
-   sm.setScale(ewConstants::MZ);
-   StandardModelExpConstraint sm_ew_constraint(&sm);
+   sm.setScale(Electroweak_constants::MZ);
+   StandardModel_exp_constraint sm_ew_constraint(&sm);
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    StandardModelCW<Two_scale> smcw;
@@ -163,8 +163,8 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_running )
 BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 {
    StandardModel<Two_scale> sm;
-   sm.setScale(ewConstants::MZ);
-   StandardModelExpConstraint sm_ew_constraint(&sm);
+   sm.setScale(Electroweak_constants::MZ);
+   StandardModel_exp_constraint sm_ew_constraint(&sm);
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    StandardModelCW<Two_scale> smcw;
