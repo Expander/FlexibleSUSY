@@ -21,5 +21,6 @@ distclean::     distclean-$(MODNAME)
 
 $(INDEX_PADE):
 		( cat $(DOXYFILE) ; \
-                  echo "INPUT = $(MODULES)" ; \
-                  echo "OUTPUT_DIRECTORY = $(DOC_OUTPUT_DIR)" ) | doxygen -
+		  echo "INPUT = $(MODULES)" ; \
+		  echo "OUTPUT_DIRECTORY = $(DOC_OUTPUT_DIR)" ; \
+		  echo "EXCLUDE = $(ALLDEP)" ) | doxygen -
