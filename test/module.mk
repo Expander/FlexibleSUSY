@@ -4,7 +4,7 @@ MODNAME  := test
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_mssm_solver.cpp \
-		$(DIR)/test_sm_smcw_matching.cpp \
+		$(DIR)/test_sm_smcw_two_scale_integration.cpp \
 		$(DIR)/test_sm_two_scale.cpp \
 		$(DIR)/test_two_scale_solver.cpp
 
@@ -46,7 +46,7 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
 $(DIR)/test_mssm_solver.x: $(DIR)/test_mssm_solver.o $(LIBMSSM) $(LIBFLEXI)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
-$(DIR)/test_sm_smcw_matching.x: $(DIR)/test_sm_smcw_matching.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)
+$(DIR)/test_sm_smcw_two_scale_integration.x: $(DIR)/test_sm_smcw_two_scale_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(DIR)/test_sm_two_scale.x: $(DIR)/test_sm_two_scale.o $(LIBSM) $(LIBFLEXI)

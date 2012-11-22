@@ -8,7 +8,7 @@
 #include "linalg.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_sm_smcw_matching
+#define BOOST_TEST_MODULE test_sm_smcw_two_scale_integration
 
 #include <boost/test/unit_test.hpp>
 
