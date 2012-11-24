@@ -6,6 +6,7 @@
 #include "smcw_two_scale_gut_constraint.hpp"
 #include "smcw_two_scale_convergence_tester.hpp"
 #include "linalg.h"
+#include "running_coupling.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_sm_smcw_two_scale_integration
@@ -208,4 +209,16 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
+
+#if 0
+   // create data: all gauge couplings at different scales
+   sm.run_to(Electroweak_constants::MZ);
+   smcw.run_to(3000);
+   const double gut_scale = smcw_gut_constraint.get_scale();
+
+   Running_coupling rc;
+   rc.run(sm  , Electroweak_constants::MZ, 3000, 50, true);
+   rc.run(smcw, 3000, gut_scale, 100, true);
+   rc.write_to_file("running_coupling.dat");
+#endif
 }
