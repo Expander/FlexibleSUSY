@@ -26,8 +26,16 @@
 
 #include "linalg.h"
 
-// Class which stores the gauge couplings at different
-// scales
+/**
+ * @class Running_coupling
+ * @brief stores the gauge couplings at different scales
+ *
+ * Usage:
+ *
+ *    Running_coupling rc;
+ *    rc.run(sm, 100, 1.e12, 50, true); // sm is a two scale model
+ *    rc.write_to_file("running_coupling.dat");
+ */
 class Running_coupling {
 public:
    typedef std::pair<double, DoubleVector> TTouple;///< touple of scale and couplings
