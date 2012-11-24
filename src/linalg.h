@@ -130,7 +130,9 @@ public:
     }
     return saveIt;
   }
-  
+
+  std::size_t size() const { return end - start + 1; }
+
   /// Acts on each, element by element, dividing each element by v(i)
   DoubleVector divide(DoubleVector const &v) const;
   /// Average element of the vector
