@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "running_coupling.hpp"
-#include "logger.hpp"
 
 #include <fstream>
 

@@ -20,11 +20,11 @@
 #define RUNNING_COUPLING_H
 
 #include <vector>
-#include <cassert>
 #include <cmath>
 #include <algorithm>
 
 #include "linalg.h"
+#include "logger.hpp"
 
 /**
  * @class Running_coupling
@@ -77,7 +77,10 @@ private:
 template <class T>
 void Running_coupling::run(T rge, double q1, double q2, unsigned int nSteps, bool includeEndpoint)
 {
-   assert(q1 > 0.0 && q2 > 0.0);
+   if (q1 <= 0.0 || q2 <= 0.0) {
+      ERROR("negative scales are not allowed: q1=" << q1 << ", q2=" << q2);
+      return;
+   }
 
    if (nSteps < 1)
       nSteps = 1;
