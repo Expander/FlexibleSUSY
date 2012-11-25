@@ -34,7 +34,7 @@ all:     allhdr allexec alllib
 
 include $(patsubst %, %/module.mk, $(MODULES))
 
-ifeq ($(findstring $(MAKECMDGOALS),clean distclean tag release),)
+ifeq ($(findstring $(MAKECMDGOALS),clean distclean tag release all-doc),)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
