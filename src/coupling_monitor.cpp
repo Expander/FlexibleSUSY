@@ -16,16 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "running_coupling.hpp"
+#include "coupling_monitor.hpp"
 
 #include <fstream>
 
-Running_coupling::Running_coupling()
+Coupling_monitor::Coupling_monitor()
    : couplings(TData())
 {
 }
 
-Running_coupling::~Running_coupling()
+Coupling_monitor::~Coupling_monitor()
 {
 }
 
@@ -35,7 +35,7 @@ Running_coupling::~Running_coupling()
  * @return a pair with the scale and a DoubleVector which contains the
  * couplings at this scale
  */
-Running_coupling::TTouple Running_coupling::get_max_scale() const
+Coupling_monitor::TTouple Coupling_monitor::get_max_scale() const
 {
    if (couplings.empty()) {
       ERROR("Data container is empty!");
@@ -52,7 +52,7 @@ Running_coupling::TTouple Running_coupling::get_max_scale() const
 /**
  * Delete all internal couplings.
  */
-void Running_coupling::reset()
+void Coupling_monitor::reset()
 {
    couplings.clear();
 }
@@ -65,7 +65,7 @@ void Running_coupling::reset()
  * @param number_of_couplings number of couplings at each scale
  * @param start_index index of first coupling (usually set to 1)
  */
-void Running_coupling::write_comment_line(char coupling_name, std::ofstream& fout,
+void Coupling_monitor::write_comment_line(char coupling_name, std::ofstream& fout,
                                           std::size_t number_of_couplings,
                                           int start_index) const
 {
@@ -85,7 +85,7 @@ void Running_coupling::write_comment_line(char coupling_name, std::ofstream& fou
  *
  * @param file_name name of file to write the data to
  */
-void Running_coupling::write_to_file(const std::string& file_name) const
+void Coupling_monitor::write_to_file(const std::string& file_name) const
 {
    const char coupling_name = 'g';
 

@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef RUNNING_COUPLING_H
-#define RUNNING_COUPLING_H
+#ifndef COUPLING_MONITOR_H
+#define COUPLING_MONITOR_H
 
 #include <vector>
 #include <cmath>
@@ -27,21 +27,21 @@
 #include "logger.hpp"
 
 /**
- * @class Running_coupling
+ * @class Coupling_monitor
  * @brief stores the gauge couplings at different scales
  *
  * Usage:
  *
- *    Running_coupling rc;
+ *    Coupling_monitor rc;
  *    rc.run(sm, 100, 1.e12, 50, true); // sm is a two scale model
  *    rc.write_to_file("running_coupling.dat");
  */
-class Running_coupling {
+class Coupling_monitor {
 public:
    typedef std::pair<double, DoubleVector> TTouple;///< touple of scale and couplings
 
-   Running_coupling();
-   ~Running_coupling();
+   Coupling_monitor();
+   ~Coupling_monitor();
 
    template <class T>
    void run(T, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
@@ -74,7 +74,7 @@ private:
  *        (false by default)
  */
 template <class T>
-void Running_coupling::run(T rge, double q1, double q2,
+void Coupling_monitor::run(T rge, double q1, double q2,
                            unsigned int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
