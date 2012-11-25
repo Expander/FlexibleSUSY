@@ -44,7 +44,7 @@ public:
    virtual ~Running_coupling();
 
    template <class T>
-   void run(T, double, double, unsigned int, bool include_endpoint = false);
+   void run(T, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
    void write_to_file(const string&) const;
