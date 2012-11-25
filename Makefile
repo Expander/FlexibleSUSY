@@ -28,7 +28,8 @@ ALLLIB   :=
 # the modules add executables to this variable
 ALLEXE   :=
 
-.PHONY:  all allhdr allexec alllib clean distclean tag release
+.PHONY:  all allhdr allexec alllib \
+	 clean clean-dep distclean tag release
 
 all:     allhdr allexec alllib
 
@@ -45,6 +46,9 @@ endif
 allhdr:   $(ALLHDR)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
+
+clean-dep:
+	rm -rf $(ALLDEP)
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
