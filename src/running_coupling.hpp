@@ -41,7 +41,7 @@ public:
    typedef std::pair<double, DoubleVector> TTouple;///< touple of scale and couplings
 
    Running_coupling();
-   virtual ~Running_coupling();
+   ~Running_coupling();
 
    template <class T>
    void run(T, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
@@ -49,7 +49,7 @@ public:
    void reset();
    void write_to_file(const string&) const;
 
-protected:
+private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
    struct TDataComp {
       bool operator() (const TData::value_type& i,const TData::value_type& j) {
@@ -57,11 +57,10 @@ protected:
       }
    };
 
+   TData couplings;
+
    /// write a comment line
    void write_comment_line(char, std::ofstream&, std::size_t, int) const;
-
-private:
-   TData couplings;
 };
 
 /**
