@@ -20,10 +20,8 @@
 
 #include <fstream>
 
-using namespace std;
-
 Running_coupling::Running_coupling()
-   : fGaugeCouplings(TData())
+   : couplings(TData())
 {
 }
 
@@ -39,14 +37,14 @@ Running_coupling::~Running_coupling()
  */
 Running_coupling::TTouple Running_coupling::get_max_scale() const
 {
-   const TData* data = &fGaugeCouplings;
-
-   if (data->empty())
+   if (couplings.empty()) {
       ERROR("Data container is empty!");
+      return TTouple(0.0, DoubleVector(1));
+   }
 
    // find gauge couplings at the greatest scale
    TData::const_iterator maxScale
-      = max_element(data->begin(), data->end(), TDataComp());
+      = max_element(couplings.begin(), couplings.end(), TDataComp());
 
    return *maxScale;
 }
@@ -56,60 +54,61 @@ Running_coupling::TTouple Running_coupling::get_max_scale() const
  */
 void Running_coupling::reset()
 {
-   fGaugeCouplings.clear();
+   couplings.clear();
 }
 
 /**
  * write help line which describes the written data
  *
- * @param couplingName coupling name
+ * @param coupling_name coupling name
  * @param fout output stream
- * @param nElements number of couplings at each scale
- * @param startIndex index of first coupling (usually set to 1)
+ * @param number_of_couplings number of couplings at each scale
+ * @param start_index index of first coupling (usually set to 1)
  */
-void Running_coupling::write_comment_line(char couplingName, ofstream& fout,
-                                        unsigned int nElements, int startIndex) const
+void Running_coupling::write_comment_line(char coupling_name, std::ofstream& fout,
+                                          std::size_t number_of_couplings,
+                                          int start_index) const
 {
    if (!fout.good())
       return;
 
    fout << "# scale [GeV]";
 
-   for (unsigned int i = 0; i < nElements; ++i)
-      fout << " | " << couplingName << "(" << startIndex + i << ")";
+   for (std::size_t i = 0; i < number_of_couplings; ++i)
+      fout << " | " << coupling_name << "(" << start_index + i << ")";
 
-   fout << endl;
+   fout << std::endl;
 }
 
 /**
  * Write all couplings to a text file.
  *
- * @param fileName name of file to write the data to
+ * @param file_name name of file to write the data to
  */
-void Running_coupling::write_to_file(const string& fileName) const
+void Running_coupling::write_to_file(const std::string& file_name) const
 {
-   const TData* data = &fGaugeCouplings;
-   char couplingName = 'g';
+   const char coupling_name = 'g';
 
-   if (data->empty())
+   if (couplings.empty())
       return;
 
-   ofstream filestr(fileName.c_str(), ios::out);
+   std::ofstream filestr(file_name.c_str(), ios::out);
+   VERBOSE_MSG("opening file: " << file_name.c_str());
    if (filestr.fail()) {
-      ERROR("can't open file " << fileName
-            << " for writing running coupling " << couplingName);
+      ERROR("can't open file " << file_name
+            << " for writing running couplings");
       return;
    }
 
-   write_comment_line(couplingName, filestr,
-                      data->front().second.size(),
-                      data->front().second.displayStart());
+   write_comment_line(coupling_name, filestr,
+                      couplings.front().second.size(),
+                      couplings.front().second.displayStart());
 
    // write data
-   for (TData::const_iterator it = data->begin();
-        it != data->end(); ++it) {
+   for (TData::const_iterator it = couplings.begin();
+        it != couplings.end(); ++it) {
       if (!filestr.good()) {
-         ERROR("file " << fileName << " is corrupted");
+         ERROR("file " << file_name << " is corrupted");
          break;
       }
 
@@ -127,5 +126,5 @@ void Running_coupling::write_to_file(const string& fileName) const
    }
 
    filestr.close();
-   VERBOSE_MSG("file written: " << fileName.c_str());
+   VERBOSE_MSG("file written: " << file_name.c_str());
 }

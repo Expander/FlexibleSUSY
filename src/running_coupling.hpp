@@ -44,13 +44,13 @@ public:
    virtual ~Running_coupling();
 
    template <class T>
-   void run(T, double, double, unsigned int, bool includeEndpoint = false);
+   void run(T, double, double, unsigned int, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
    void write_to_file(const string&) const;
 
 protected:
-   typedef vector<TTouple> TData;           ///< container for the scales and couplings
+   typedef std::vector<TTouple> TData; ///< container for the scales and couplings
    struct TDataComp {
       bool operator() (const TData::value_type& i,const TData::value_type& j) {
          return i.first < j.first;
@@ -58,10 +58,10 @@ protected:
    };
 
    /// write a comment line
-   void write_comment_line(char, ofstream&, unsigned int, int) const;
+   void write_comment_line(char, std::ofstream&, std::size_t, int) const;
 
 private:
-   TData fGaugeCouplings;
+   TData couplings;
 };
 
 /**
@@ -70,34 +70,35 @@ private:
  * @param rge class with RGEs and parameters
  * @param q1 scale to start at
  * @param q2 end scale
- * @param nSteps number of steps
- * @param includeEndpoint include the endpoint q2 in the running
+ * @param number_of_steps number of steps
+ * @param include_endpoint include the endpoint q2 in the running
  *        (false by default)
  */
 template <class T>
-void Running_coupling::run(T rge, double q1, double q2, unsigned int nSteps, bool includeEndpoint)
+void Running_coupling::run(T rge, double q1, double q2,
+                           unsigned int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
       ERROR("negative scales are not allowed: q1=" << q1 << ", q2=" << q2);
       return;
    }
 
-   if (nSteps < 1)
-      nSteps = 1;
+   if (number_of_steps < 1)
+      number_of_steps = 1;
 
    // if the endpoint should be included, the scale loop must run from
-   // (n == 0) to (n == nSteps); otherwise it runs from (n == 0) to (n
-   // == nSteps - 1)
-   const unsigned int endpointOffset = includeEndpoint ? 1 : 0;
+   // (n == 0) to (n == number_of_steps); otherwise it runs from (n == 0) to (n
+   // == number_of_steps - 1)
+   const unsigned int endpoint_offset = include_endpoint ? 1 : 0;
 
    // run from q1 to q2
-   for (unsigned int n = 0; n < nSteps + endpointOffset; ++n) {
-      const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / nSteps);
+   for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
+      const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
       rge.run_to(scale);
-      fGaugeCouplings.push_back(TData::value_type(scale, rge.displayGauge()));
+      couplings.push_back(TData::value_type(scale, rge.displayGauge()));
    }
 
-   sort(fGaugeCouplings.begin(), fGaugeCouplings.end(), TDataComp());
+   std::sort(couplings.begin(), couplings.end(), TDataComp());
 }
 
 #endif
