@@ -2,7 +2,10 @@
 #ifndef GUT_SCALE_RUNNER_H
 #define GUT_SCALE_RUNNER_H
 
+#include "logger.hpp"
+
 #include <cmath>
+#include <limits>
 
 /**
  * @class GUT_scale_runner
@@ -41,8 +44,17 @@ double GUT_scale_calculator<T>::calculateGUTScale(const T& rge) const
    const T beta(rge.calcBeta());
    const double betaG1 = beta.displayGaugeCoupling(1);
    const double betaG2 = beta.displayGaugeCoupling(2);
+   const double diffBeta = betaG2 - betaG1;
 
-   const double gutScale = currentScale * exp((g1 - g2)/(betaG2 - betaG1));
+   double gutScale;
+
+   if (std::fabs(diffBeta) > std::numeric_limits<double>::epsilon()) {
+      gutScale = currentScale * exp((g1 - g2)/(betaG2 - betaG1));
+   } else {
+      ERROR("can't calculate GUT scale because beta functions of g1"
+            " and g2 are equal to " << betaG1);
+      gutScale = 1.0e12;
+   }
 
    return gutScale;
 }
