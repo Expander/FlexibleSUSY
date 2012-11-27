@@ -60,6 +60,57 @@ private:
    StandardModelCW<Two_scale>* smcw;
 };
 
+class Dynamic_SM_SMCW_matching_condition: public Matching<Two_scale> {
+public:
+   Dynamic_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
+                                      StandardModelCW<Two_scale>* smcw_)
+      : Matching<Two_scale>()
+      , sm(sm_)
+      , smcw(smcw_)
+      , scale(3000) // initial guess
+      {
+         BOOST_REQUIRE(sm != NULL);
+         BOOST_REQUIRE(smcw != NULL);
+      }
+   virtual ~Dynamic_SM_SMCW_matching_condition() {}
+   virtual void match_low_to_high_scale_model() {
+      // ensure that both models are at the matching scale
+      sm->run_to(get_scale());
+      smcw->setScale(sm->getScale());
+      // copy parameters
+      smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
+      smcw->setYukawaMatrix(YD, sm->displayYukawaMatrix(YD));
+      smcw->setYukawaMatrix(YE, sm->displayYukawaMatrix(YE));
+      for (int i = 1; i <= 3; ++i)
+         smcw->setGaugeCoupling(i, sm->displayGaugeCoupling(i));
+   }
+   virtual void match_high_to_low_scale_model() {
+      // ensure that both models are at the matching scale
+      smcw->run_to(get_scale());
+      BOOST_REQUIRE(sm->getScale() == smcw->getScale());
+      // copy parameters
+      sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
+      sm->setYukawaMatrix(YD, smcw->displayYukawaMatrix(YD));
+      sm->setYukawaMatrix(YE, smcw->displayYukawaMatrix(YE));
+      for (int i = 1; i <= 3; ++i)
+         sm->setGaugeCoupling(i, smcw->displayGaugeCoupling(i));
+      update_scale();
+   }
+   virtual double get_scale() const {
+      return scale;
+   }
+   virtual void update_scale() {
+      const double new_scale = smcw->calcZprimeMass();
+      if (new_scale != 0.0)
+         scale = new_scale;
+   }
+
+private:
+   StandardModel<Two_scale>* sm;
+   StandardModelCW<Two_scale>* smcw;
+   double scale; ///< dynamic matching scale
+};
+
 BOOST_AUTO_TEST_CASE( test_trival_matching )
 {
    BOOST_MESSAGE("test if trivial matching condition leaves parameters invariant");
@@ -227,4 +278,42 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    cm.run(smcw, 3000, gut_scale, 100, true);
    cm.write_to_file("running_coupling.dat");
 #endif
+}
+
+BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
+{
+   BOOST_MESSAGE("test if two scale solver with SM and SMCW and dynamic MC converges");
+
+   // create Standard Model and the EW constraints
+   StandardModel<Two_scale> sm;
+   sm.setScale(Electroweak_constants::MZ);
+   StandardModel_exp_constraint sm_ew_constraint(&sm);
+   const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
+
+   // create CW-Standard Model and the GUT constraint
+   StandardModelCW<Two_scale> smcw;
+   smcw.setVs(5000.0);
+   const double lambda_at_mgut = 1.0;
+   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
+   const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
+
+   // create dynamic matching condition
+   Dynamic_SM_SMCW_matching_condition mc(&sm, &smcw);
+
+   // create convergence tester for the CW-Standard Model
+   StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);
+
+   // create two scale solver
+   RGFlow<Two_scale> solver;
+   solver.set_max_iterations(10);
+   solver.set_convergence_tester(&convergence_tester);
+   solver.add_model(&sm, &mc, sm_constraints);
+   solver.add_model(&smcw, smcw_constraints);
+
+   // run two scale solver and ensure that no errors occure
+   try {
+      solver.solve();
+   } catch (RGFlow<Two_scale>::Error& e) {
+      BOOST_ERROR(e.what());
+   }
 }
