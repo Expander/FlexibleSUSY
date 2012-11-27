@@ -21,6 +21,8 @@ bool StandardModelCW_convergence_tester::accuracy_goal_reached()
 {
    bool precision_reached;
    if (it_count == 0) {
+      // this is the first run => no comparison possible => assume
+      // that accuracy goal has not been reached
       precision_reached = false;
    } else {
       if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
