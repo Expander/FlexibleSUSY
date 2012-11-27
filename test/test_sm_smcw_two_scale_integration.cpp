@@ -267,6 +267,8 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
+   BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
+                 << " iterations");
 
 #if 0
    // create data: all gauge couplings at different scales
@@ -317,4 +319,6 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
+   BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
+                 << " iterations");
 }
