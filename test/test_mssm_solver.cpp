@@ -2,11 +2,11 @@
 #include "softsusy.h"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MssmSolver
+#define BOOST_TEST_MODULE test_mssm_solver
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE( test_MssmSolver )
+BOOST_AUTO_TEST_CASE( test_mssm_solver )
 {
    DoubleVector highScaleSoftPars(3);
    const double m12 = 500., a0 = 0., m0 = 125.;
