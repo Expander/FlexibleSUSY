@@ -94,7 +94,7 @@ private:
    struct TModel {
       Two_scale_model* model;                          ///< the model
       std::vector<Constraint<Two_scale>*> constraints; ///< model constraints
-      const Matching<Two_scale>* matching_condition;   ///< matching condition
+      Matching<Two_scale>* matching_condition;         ///< matching condition
 
       TModel(Two_scale_model* m,
              const std::vector<Constraint<Two_scale>*>& c,
@@ -191,7 +191,7 @@ inline void RGFlow<Two_scale>::run_up()
       }
       // apply matching condition if this is not the last model
       if (m != models.size() - 1) {
-         const Matching<Two_scale>* mc = model->matching_condition;
+         Matching<Two_scale>* mc = model->matching_condition;
          model->model->run_to(mc->get_scale());
          mc->match_low_to_high_scale_model();
       }
@@ -220,7 +220,7 @@ inline void RGFlow<Two_scale>::run_down()
       }
       // apply matching condition if this is not the first model
       if (m > 0) {
-         const Matching<Two_scale>* mc = models[m - 1]->matching_condition;
+         Matching<Two_scale>* mc = models[m - 1]->matching_condition;
          model->model->run_to(mc->get_scale());
          mc->match_high_to_low_scale_model();
       }
