@@ -24,7 +24,9 @@ bool StandardModelCW_convergence_tester::accuracy_goal_reached()
       precision_reached = false;
    } else {
       if (scale_has_changed())
-         WARNING("scale has changed, parameter comparison might fail");
+         WARNING("scale has changed by " << scale_difference()
+                 << " GeV (" << rel_scale_difference()
+                 << "%), parameter comparison might fail");
 
       const double dg4 = std::fabs(smcw->displayGaugeCoupling(4) - last_iteration.displayGaugeCoupling(4));
       const double dlamda = std::fabs(smcw->displayLambda() - last_iteration.displayLambda());
@@ -41,10 +43,28 @@ bool StandardModelCW_convergence_tester::accuracy_goal_reached()
 
 bool StandardModelCW_convergence_tester::scale_has_changed() const
 {
-   return !is_equal(smcw->getScale(), last_iteration.getScale());
+   return !is_zero(scale_difference());
+}
+
+double StandardModelCW_convergence_tester::scale_difference() const
+{
+   return smcw->getScale() - last_iteration.getScale();
+}
+
+double StandardModelCW_convergence_tester::rel_scale_difference() const
+{
+   const double diff = scale_difference();
+   if (!is_zero(last_iteration.getScale()))
+      return diff / last_iteration.getScale();
+   return std::numeric_limits<double>::infinity();
 }
 
 bool StandardModelCW_convergence_tester::is_equal(double a, double b) const
 {
    return std::fabs(a - b) < std::numeric_limits<double>::epsilon();
+}
+
+bool StandardModelCW_convergence_tester::is_zero(double a) const
+{
+   return std::fabs(a) < std::numeric_limits<double>::epsilon();
 }
