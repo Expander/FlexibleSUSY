@@ -1,4 +1,5 @@
 #include "two_scale_solver.hpp"
+#include "two_scale_constraint.hpp"
 #include "linalg.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -52,6 +53,30 @@ public:
    }
 private:
    unsigned number_of_runs;
+};
+
+class Counting_constraint : public Constraint<Two_scale> {
+public:
+   Counting_constraint(double scale_)
+      : scale(scale_)
+      , number_of_apply_calls(0)
+      , number_of_update_scale(0) {}
+   virtual ~Counting_constraint() {}
+   virtual void apply() { ++number_of_apply_calls; }
+   virtual double get_scale() const { return scale; }
+   virtual void update_scale() { ++number_of_update_scale; }
+
+   unsigned get_number_of_apply_calls() const {
+      return number_of_apply_calls;
+   }
+   unsigned get_number_of_update_calls() const {
+      return number_of_update_scale;
+   }
+
+private:
+   double   scale;
+   unsigned number_of_apply_calls;
+   unsigned number_of_update_scale;
 };
 
 class Counting_matching_condition: public Matching<Two_scale> {
@@ -148,14 +173,25 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 BOOST_AUTO_TEST_CASE( test_count_method_calls )
 {
    Counting_model model1, model2;
+   Counting_constraint model1_c1(1000), model1_c2(1000);
+   Counting_constraint model2_c1(1000), model2_c2(1000);
+
+   std::vector<Constraint<Two_scale>*> model1_constraints;
+   model1_constraints.push_back(&model1_c1);
+   model1_constraints.push_back(&model1_c2);
+
+   std::vector<Constraint<Two_scale>*> model2_constraints;
+   model2_constraints.push_back(&model2_c1);
+   model2_constraints.push_back(&model2_c2);
+
    Counting_matching_condition mc(3000);
+
    const unsigned number_of_iterations = 0;
-   const unsigned number_of_constraints = 0;
 
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(number_of_iterations);
-   solver.add_model(&model1, &mc);
-   solver.add_model(&model2);
+   solver.add_model(&model1, &mc, model1_constraints);
+   solver.add_model(&model2, model2_constraints);
 
    try {
       solver.solve();
@@ -163,12 +199,19 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       BOOST_ERROR(e.what());
    }
 
-   BOOST_CHECK_EQUAL(model1.get_number_of_runs(),
-                     number_of_constraints + 1);
-   BOOST_CHECK_EQUAL(model2.get_number_of_runs(),
-                     number_of_constraints + 1);
+   // check how often the matching is appied
    BOOST_CHECK_EQUAL(mc.get_number_of_low_to_high_matches(),
                      number_of_iterations + 1);
    BOOST_CHECK_EQUAL(mc.get_number_of_high_to_low_matches(),
                      number_of_iterations + 1);
+   // lowest constraint
+   BOOST_CHECK_EQUAL(model1_c1.get_number_of_apply_calls(),
+                     (number_of_iterations + 1));
+   BOOST_CHECK_EQUAL(model1_c2.get_number_of_apply_calls(),
+                     2 * (number_of_iterations + 1));
+   BOOST_CHECK_EQUAL(model2_c1.get_number_of_apply_calls(),
+                     2 * (number_of_iterations + 1));
+   // highest constraint
+   BOOST_CHECK_EQUAL(model2_c2.get_number_of_apply_calls(),
+                     (number_of_iterations + 1));
 }
