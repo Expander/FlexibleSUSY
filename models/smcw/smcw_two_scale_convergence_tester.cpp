@@ -23,10 +23,11 @@ bool StandardModelCW_convergence_tester::accuracy_goal_reached()
    if (it_count == 0) {
       precision_reached = false;
    } else {
-      if (scale_has_changed())
+      if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
          WARNING("scale has changed by " << scale_difference()
                  << " GeV (" << rel_scale_difference()
                  << "%), parameter comparison might fail");
+      }
 
       const double dg4 = std::fabs(smcw->displayGaugeCoupling(4) - last_iteration.displayGaugeCoupling(4));
       const double dlamda = std::fabs(smcw->displayLambda() - last_iteration.displayLambda());
