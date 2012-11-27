@@ -30,6 +30,7 @@
 RGFlow<Two_scale>::RGFlow()
    : models()
    , max_iterations(10)
+   , needed_iterations(0)
    , convergence_tester(NULL)
 {
 }
@@ -54,6 +55,9 @@ void RGFlow<Two_scale>::solve()
       run_down();
       --iter;
    }
+
+   // save number of iterations that were done
+   needed_iterations = max_iterations - iter;
 
    if (iter == 0 && convergence_tester)
       throw NoConvergenceError(max_iterations);
@@ -191,4 +195,9 @@ void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* co
 void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
 {
    max_iterations = max_it;
+}
+
+unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
+{
+   return needed_iterations;
 }

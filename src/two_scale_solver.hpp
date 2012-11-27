@@ -75,6 +75,8 @@ public:
    void add_model(Two_scale_model*,
                   Matching<Two_scale>* m = NULL,
                   const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
+   /// get number of used iterations
+   unsigned int number_of_iterations_done() const;
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set maximum number of iterations
@@ -105,6 +107,7 @@ private:
    };
    std::vector<TModel*> models;        ///< tower of models (from low to high scale)
    unsigned int max_iterations;        ///< maximum number of iterations
+   unsigned int needed_iterations;     ///< number of iterations needed
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
