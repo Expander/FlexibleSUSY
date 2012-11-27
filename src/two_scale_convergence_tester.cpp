@@ -16,22 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_CONVERGENCE_TESTER_H
-#define TWO_SCALE_CONVERGENCE_TESTER_H
+#include "two_scale_convergence_tester.hpp"
 
-#include "convergence_tester.hpp"
+#include <cmath>
+#include <limits>
 
-class Two_scale;
+Convergence_tester<Two_scale>::~Convergence_tester()
+{
+}
 
-template<>
-class Convergence_tester<Two_scale> {
-public:
-   virtual ~Convergence_tester();
-   virtual bool accuracy_goal_reached() = 0;
+bool Convergence_tester<Two_scale>::is_equal(double a, double b) const
+{
+   return std::fabs(a - b) < std::numeric_limits<double>::epsilon();
+}
 
-protected:
-   bool is_equal(double, double) const;
-   bool is_zero(double) const;
-};
-
-#endif
+bool Convergence_tester<Two_scale>::is_zero(double a) const
+{
+   return std::fabs(a) < std::numeric_limits<double>::epsilon();
+}

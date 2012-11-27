@@ -27,13 +27,14 @@ LIBFLEXI_HDR := \
 		$(DIR)/xpr-vector.h
 
 LIBFLEXI_SRC := \
+		$(DIR)/coupling_monitor.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
-		$(DIR)/coupling_monitor.cpp \
+		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/utils.cpp
 
 LIBFLEXI_OBJ := \

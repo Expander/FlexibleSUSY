@@ -37,8 +37,6 @@ private:
    double scale_difference() const;
    double rel_scale_difference() const;
    bool scale_has_changed() const;
-   bool is_equal(double, double) const;
-   bool is_zero(double) const;
 };
 
 #endif

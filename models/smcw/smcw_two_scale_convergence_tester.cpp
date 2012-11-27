@@ -58,13 +58,3 @@ double StandardModelCW_convergence_tester::rel_scale_difference() const
       return diff / last_iteration.getScale();
    return std::numeric_limits<double>::infinity();
 }
-
-bool StandardModelCW_convergence_tester::is_equal(double a, double b) const
-{
-   return std::fabs(a - b) < std::numeric_limits<double>::epsilon();
-}
-
-bool StandardModelCW_convergence_tester::is_zero(double a) const
-{
-   return std::fabs(a) < std::numeric_limits<double>::epsilon();
-}
