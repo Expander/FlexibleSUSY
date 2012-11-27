@@ -322,6 +322,10 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
 
+   // check that the matching scale is approx. the Z' mass
+   // (assumption: smcw is currently at the matching scale)
+   BOOST_CHECK_CLOSE(mc.get_scale(), smcw.calcZprimeMass(), 1.0e-8);
+
 #if 0
    // create data: all gauge couplings at different scales
    const double gut_scale = smcw_gut_constraint.get_scale();
