@@ -321,4 +321,18 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    }
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
+
+#if 0
+   // create data: all gauge couplings at different scales
+   const double gut_scale = smcw_gut_constraint.get_scale();
+   const double matching_scale = mc.get_scale();
+
+   sm.run_to(Electroweak_constants::MZ);
+   smcw.run_to(matching_scale);
+
+   Coupling_monitor cm;
+   cm.run(sm, Electroweak_constants::MZ, matching_scale, 50, true);
+   cm.run(smcw, matching_scale, gut_scale, 100, true);
+   cm.write_to_file("running_coupling.dat");
+#endif
 }
