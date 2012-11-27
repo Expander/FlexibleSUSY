@@ -1,4 +1,6 @@
 #include "two_scale_solver.hpp"
+#include "two_scale_matching.hpp"
+#include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
 #include "linalg.h"
 

@@ -35,6 +35,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \
+		$(DIR)/two_scale_solver.cpp \
 		$(DIR)/utils.cpp
 
 LIBFLEXI_OBJ := \

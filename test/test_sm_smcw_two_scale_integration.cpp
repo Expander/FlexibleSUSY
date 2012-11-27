@@ -1,5 +1,6 @@
 #include "two_scale_solver.hpp"
 #include "two_scale_matching.hpp"
+#include "two_scale_model.hpp"
 #include "sm_two_scale.hpp"
 #include "sm_two_scale_experimental_constraint.hpp"
 #include "smcw_two_scale.hpp"
