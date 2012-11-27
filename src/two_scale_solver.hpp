@@ -192,7 +192,6 @@ inline void RGFlow<Two_scale>::run_up()
       // apply matching condition if this is not the last model
       if (m != models.size() - 1) {
          Matching<Two_scale>* mc = model->matching_condition;
-         model->model->run_to(mc->get_scale());
          mc->match_low_to_high_scale_model();
       }
    }
@@ -221,7 +220,6 @@ inline void RGFlow<Two_scale>::run_down()
       // apply matching condition if this is not the first model
       if (m > 0) {
          Matching<Two_scale>* mc = models[m - 1]->matching_condition;
-         model->model->run_to(mc->get_scale());
          mc->match_high_to_low_scale_model();
       }
    }

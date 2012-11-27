@@ -30,20 +30,26 @@ public:
       }
    virtual ~Trivial_SM_SMCW_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
+      // ensure that both models are at the matching scale
+      sm->run_to(get_scale());
+      smcw->setScale(sm->getScale());
+      // copy parameters
       smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
       smcw->setYukawaMatrix(YD, sm->displayYukawaMatrix(YD));
       smcw->setYukawaMatrix(YE, sm->displayYukawaMatrix(YE));
       for (int i = 1; i <= 3; ++i)
          smcw->setGaugeCoupling(i, sm->displayGaugeCoupling(i));
-      smcw->setScale(sm->getScale());
    }
    virtual void match_high_to_low_scale_model() {
+      // ensure that both models are at the matching scale
+      smcw->run_to(get_scale());
+      BOOST_REQUIRE(sm->getScale() == smcw->getScale());
+      // copy parameters
       sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
       sm->setYukawaMatrix(YD, smcw->displayYukawaMatrix(YD));
       sm->setYukawaMatrix(YE, smcw->displayYukawaMatrix(YE));
       for (int i = 1; i <= 3; ++i)
          sm->setGaugeCoupling(i, smcw->displayGaugeCoupling(i));
-      sm->setScale(smcw->getScale());
    }
    virtual double get_scale() const {
       return 3000;
