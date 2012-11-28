@@ -269,6 +269,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    }
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
+   BOOST_CHECK_EQUAL(solver.number_of_iterations_done(), 2u);
 
 #if 0
    // create data: all gauge couplings at different scales
@@ -321,6 +322,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    }
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
                  << " iterations");
+   BOOST_CHECK_EQUAL(solver.number_of_iterations_done(), 2u);
 
    // check that the matching scale is approx. the Z' mass
    // (assumption: smcw is currently at the matching scale)
