@@ -1,0 +1,137 @@
+#!/bin/sh
+
+# configure script for FlexibleSUSY
+# Author: Alexander Voigt
+
+PROGRAM_NAME=FlexibleSUSY
+PROGRAM_VERSION=0.1
+# directory of this script
+BASEDIR=$(dirname $0)
+# target makefile
+MAKEFILE=$BASEDIR/Makefile
+MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
+# options
+boost_lib_dir=""
+boost_inc_dir=""
+extra_defines=""
+CPPFLAGS=""
+CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
+ -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
+FFLAGS=""
+LIBS=""
+CXX="g++"
+FC="gfortran"
+MAKELIB="ar cru"
+
+function replace_in_makefile() {
+    # $1: string to replace
+    # $2: what to put into the place of $1
+    local what=$1
+    local by=$2
+    echo "replacing $what by $by in $MAKEFILE"
+    sed -e "s|$what|$by|g" -i $MAKEFILE
+}
+
+function copy_makefile_template() {
+    echo "copying makefile template $MAKEFILE_TMPL to $MAKEFILE"
+    cp $MAKEFILE_TMPL $MAKEFILE
+}
+
+function check_boost_libs() {
+    BOOSTLIBS=-lboost_unit_test_framework
+
+    if [ -z "$boost_lib_dir" ]; then
+	LIBS="$LIBS $BOOSTLIBS"
+    else
+	LIBS="$LIBS -L$boost_lib_dir $BOOSTLIBS"
+    fi
+}
+
+function check_boost_incl() {
+    # local search_dir=$boost_inc_dir
+    # BOOST_HEADERS=boost/test/unit_test.hpp
+    # if [ -n "$search_dir" ]; then
+    # 	echo -n "searching for boost headers in $search_dir ... "
+    # 	hdrnames=`basename $BOOST_HEADERS`
+    # 	hdrs=`find $search_dir -name $hdrnames`
+    # 	if [ -z "$hdrs" ]; then
+    # 	    echo "not found"
+    # 	    exit 1
+    # 	else
+    # 	    echo "found"
+    # 	fi
+    # fi
+
+    if [ -n "$boost_inc_dir" ]; then
+	CPPFLAGS="$CPPFLAGS -I$boost_inc_dir"
+    fi
+}
+
+function check_fortran_libs() {
+    LIBS="$LIBS -lgfortranbegin -lgfortran -lm"
+}
+
+function enable_defines() {
+    # $1: extra define statemens
+    if [ -n "$1" ]; then
+	echo "adding defines $1"
+	CPPFLAGS="$1 $CPPFLAGS"
+    fi
+}
+
+function help() {
+    echo "Usage: ./`basename $0` [options]"
+    echo "Options:"
+    echo "--boost-lib-dir=    directory to search for BOOST libraries"
+    echo "--boost-inc-dir=    directory to search for BOOST headers"
+    echo "--cxx=              C++ compiler (default: $CXX)"
+    echo "--debug             enable debug messages"
+    echo "--fc=               Fortran compiler (default: $FC)"
+    echo "--help=             print this help message"
+    echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
+    echo "--silent            suppress all command line output"
+    echo "--verbose           enable verbose messages"
+    echo "--version           print version information"
+}
+
+if test $# -gt 0 ; then
+    while test ! "x$1" = "x" ; do
+	case "$1" in
+	    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+	    *) optarg= ;;
+	esac
+
+	case $1 in
+	    --boost-lib-dir=*)       boost_lib_dir=$optarg ;;
+	    --boost-inc-dir=*)       boost_inc_dir=$optarg ;;
+	    --cxx=*)                 CXX=$optarg ;;
+	    --debug)                 extra_defines="$extra_defines -DDEBUG" ;;
+	    --fc=*)                  FC=$optarg ;;
+	    --help|-h)               help; exit 0 ;;
+	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
+	    --silent)                extra_defines="$extra_defines -DSILENT" ;;
+	    --verbose)               extra_defines="$extra_defines -DVERBOSE" ;;
+	    --version)               echo "$PROGRAM_NAME version $PROGRAM_VERSION"; exit 0 ;;
+	    *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
+	esac
+	shift
+    done
+fi
+
+copy_makefile_template
+
+check_boost_incl
+check_boost_libs
+check_fortran_libs
+
+enable_defines "$extra_defines"
+
+replace_in_makefile "@VERSION@"  "$PROGRAM_VERSION"
+replace_in_makefile "@PKGNAME@"  "$PROGRAM_NAME"
+replace_in_makefile "@LIBS@"     "$LIBS"
+replace_in_makefile "@CPPFLAGS@" "$CPPFLAGS"
+replace_in_makefile "@CXXFLAGS@" "$CXXFLAGS"
+replace_in_makefile "@CXX@"      "$CXX"
+replace_in_makefile "@FC@"       "$FC"
+replace_in_makefile "@MAKELIB@"  "$MAKELIB"
+replace_in_makefile "@FFLAGS@"   "$FFLAGS"

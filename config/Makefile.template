@@ -1,23 +1,13 @@
 MODULES  := config src models/sm models/smcw models/mssm test doc
-
-BOOSTLIBDIR :=
-BOOSTLIBS   := -lboost_unit_test_framework
-BOOSTINC    :=
-ifneq "$(BOOSTLIBDIR)" ""
-   BOOSTLIBS := $(addprefix -L$(BOOSTLIBDIR) , $(BOOSTLIBS))
-endif
-
-CPPFLAGS := $(BOOSTINC) $(patsubst %, -I%, $(MODULES))
-CXXFLAGS := -ggdb -Wall -pedantic -Wextra -Wcast-qual \
-            -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor \
-            -g -O2
-FFLAGS   :=
-LIBS     := $(BOOSTLIBS) -lgfortranbegin -lgfortran -lm
-CXX      := g++
-FC       := gfortran
-MAKELIB  := ar cru
-VERSION  := 0.1
-PKGNAME  := FlexibleSUSY
+CPPFLAGS := @CPPFLAGS@ $(patsubst %, -I%, $(MODULES))
+CXXFLAGS := @CXXFLAGS@
+FFLAGS   := @FFLAGS@
+LIBS     := @LIBS@
+CXX      := @CXX@
+FC       := @FC@
+MAKELIB  := @MAKELIB@
+VERSION  := @VERSION@
+PKGNAME  := @PKGNAME@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
