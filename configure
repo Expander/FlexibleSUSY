@@ -29,7 +29,7 @@ function replace_in_makefile() {
     local what=$1
     local by=$2
     echo "replacing $what by $by in $MAKEFILE"
-    sed -e "s|$what|$by|g" -i $MAKEFILE
+    sed -e "s|$what|$by|g" -i~ $MAKEFILE
 }
 
 function copy_makefile_template() {
