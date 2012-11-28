@@ -25,9 +25,10 @@ MAKELIB="ar cru"
 
 replace_in_makefile() {
     # $1: string to replace
-    # $2: what to put into the place of $1
-    local what=$1
-    local by=$2
+    # rest: what to put into the place of $1
+    local what="$1"
+    shift
+    local by="$@"
     echo "replacing $what by $by in $MAKEFILE"
     sed -e "s|$what|$by|g" -i~ $MAKEFILE
 }
@@ -72,9 +73,9 @@ check_fortran_libs() {
 }
 
 enable_defines() {
-    # $1: extra define statemens
-    if [ -n "$1" ]; then
-	echo "adding defines $1"
+    # $@: list of extra define statemens
+    if [ -n "$@" ]; then
+	echo "adding defines $@"
 	CPPFLAGS="$1 $CPPFLAGS"
     fi
 }
