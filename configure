@@ -30,7 +30,8 @@ replace_in_makefile() {
     shift
     local by="$@"
     echo "replacing $what by $by in $MAKEFILE"
-    sed -e "s|$what|$by|g" -i~ $MAKEFILE
+    sed -e "s|$what|$by|g" -i.orig $MAKEFILE
+    rm $MAKEFILE.orig
 }
 
 copy_makefile_template() {
