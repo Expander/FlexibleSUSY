@@ -23,7 +23,7 @@ CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
 
-function replace_in_makefile() {
+replace_in_makefile() {
     # $1: string to replace
     # $2: what to put into the place of $1
     local what=$1
@@ -32,12 +32,12 @@ function replace_in_makefile() {
     sed -e "s|$what|$by|g" -i~ $MAKEFILE
 }
 
-function copy_makefile_template() {
+copy_makefile_template() {
     echo "copying makefile template $MAKEFILE_TMPL to $MAKEFILE"
     cp $MAKEFILE_TMPL $MAKEFILE
 }
 
-function check_boost_libs() {
+check_boost_libs() {
     BOOSTLIBS=-lboost_unit_test_framework
 
     if [ -z "$boost_lib_dir" ]; then
@@ -47,7 +47,7 @@ function check_boost_libs() {
     fi
 }
 
-function check_boost_incl() {
+check_boost_incl() {
     # local search_dir=$boost_inc_dir
     # BOOST_HEADERS=boost/test/unit_test.hpp
     # if [ -n "$search_dir" ]; then
@@ -67,11 +67,11 @@ function check_boost_incl() {
     fi
 }
 
-function check_fortran_libs() {
+check_fortran_libs() {
     LIBS="$LIBS -lgfortranbegin -lgfortran -lm"
 }
 
-function enable_defines() {
+enable_defines() {
     # $1: extra define statemens
     if [ -n "$1" ]; then
 	echo "adding defines $1"
@@ -79,7 +79,7 @@ function enable_defines() {
     fi
 }
 
-function help() {
+help() {
     echo "Usage: ./`basename $0` [options]"
     echo "Options:"
     echo "--boost-lib-dir=    directory to search for BOOST libraries"
