@@ -92,7 +92,7 @@ help() {
     echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
     echo "--silent            suppress all command line output"
     echo "--verbose           enable verbose messages"
-    echo "--version           print version information"
+    echo "--version,-v        print version information"
 }
 
 if test $# -gt 0 ; then
@@ -112,7 +112,7 @@ if test $# -gt 0 ; then
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
 	    --silent)                extra_defines="$extra_defines -DSILENT" ;;
 	    --verbose)               extra_defines="$extra_defines -DVERBOSE" ;;
-	    --version)               echo "$PROGRAM_NAME version $PROGRAM_VERSION"; exit 0 ;;
+	    --version|-v)            echo "$PROGRAM_NAME version $PROGRAM_VERSION"; exit 0 ;;
 	    *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
 	esac
 	shift
