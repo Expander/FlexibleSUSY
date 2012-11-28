@@ -88,7 +88,7 @@ help() {
     echo "--cxx=              C++ compiler (default: $CXX)"
     echo "--debug             enable debug messages"
     echo "--fc=               Fortran compiler (default: $FC)"
-    echo "--help=             print this help message"
+    echo "--help,-h           print this help message"
     echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
     echo "--silent            suppress all command line output"
     echo "--verbose           enable verbose messages"
