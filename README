@@ -4,9 +4,13 @@ How to compile
 1. Make sure that you have the boost libraries version >= 1.36
    installed.  If not, you can download them from http://www.boost.org
 
-2. To compile run `make'.  If you want to use the boost libraries from
-   a specific directory, you can overwrite the `BOOSTLIBDIR',
-   `BOOSTLIBS' (set to -lboost_unit_test_framework by default) and
-   `BOOSTINC' variables.  For example
+2. Create the makefile using `./configure'.  Run `./configure --help'
+   to see all options.
 
-      $ make BOOSTINC=-I/usr/include BOOSTLIBDIR=/usr/lib
+   If you want to use the boost libraries and headers from specific
+   directories $BOOST_LIB, $BOOST_INC, you can run configure via
+
+      $ ./configure --boost-lib-dir=$BOOST_LIB --boost-inc-dir=$BOOST_INC
+
+3. To compile run `make'.  (Parallel make is supported via the -jN
+   option, where N is the number of cores to use.)
