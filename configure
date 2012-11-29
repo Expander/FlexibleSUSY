@@ -117,6 +117,7 @@ check_boost_libs() {
     BOOSTLIBS=-lboost_unit_test_framework
 
     if [ -z "$boost_lib_dir" ]; then
+	# assume that the linker will look in the default paths
 	LIBS="$LIBS $BOOSTLIBS"
     else
 	LIBS="$LIBS -L$boost_lib_dir $BOOSTLIBS"
