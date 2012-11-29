@@ -48,7 +48,7 @@ check_library() {
     # be overwritten at next invocation of this function.
 
     # Assert that we got enough arguments
-    if test $# -lt 1 ; then
+    if test $# -lt 2 ; then
         echo "check_library: Too few arguments"
         return 1
     fi
@@ -97,8 +97,58 @@ check_library() {
     fi
 }
 
+check_header() {
+    # This function will try to locate a header file [$1] in the
+    # directory given in $2.  If $2 is empty it will look in the
+    # default paths.
+    #
+    # The result of the search is stored in found_hdr and found_dir,
+    # which should be immediately copied, since the variables value
+    # will be overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -lt 2 ; then
+        echo "check_header: Too few arguments"
+        return 1
+    fi
+
+    # Save arguments in local names
+    default_paths="/usr/include /usr/local/include"
+    hdr=$1       ; shift
+    hdrdirl=$1
+    hdrdirs="$default_paths"
+    # check if we got a specific argument as to where the library
+    # is to be found
+    if test ! "x$hdrdirl" = "x" ; then
+        hdrdirs=$hdrdirl
+    fi
+
+    # Write a message
+    echo -n "checking for $hdr ... "
+
+    found_dir=""
+    found_hdr=""
+
+    for p in ${hdrdirs}; do
+	hdrlist=`echo $p/$hdr` # expands wildcard
+        for n in ${hdrlist} ; do
+            if test -f $n ; then
+		found_dir=$p
+                found_hdr=$hdr
+		break
+	    fi
+	done
+    done
+
+    if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
+	echo "not found in $hdrdirs"
+    else
+	echo "found"
+    fi
+}
+
 check_boost_libs() {
-    check_library "libboost_unit_test_framework" $boost_lib_dir
+    check_library "libboost_unit_test_framework" "$boost_lib_dir"
     if test "x$found_lib" = "x" ; then
         echo "`basename $0`: libboost_unit_test_framework MUST be installed"
         echo "See http://www.boost.org"
@@ -116,20 +166,14 @@ check_boost_libs() {
 }
 
 check_boost_incl() {
-    # local search_dir=$boost_inc_dir
-    # BOOST_HEADERS=boost/test/unit_test.hpp
-    # if [ -n "$search_dir" ]; then
-    # 	echo -n "searching for boost headers in $search_dir ... "
-    # 	hdrnames=`basename $BOOST_HEADERS`
-    # 	hdrs=`find $search_dir -name $hdrnames`
-    # 	if [ -z "$hdrs" ]; then
-    # 	    echo "not found"
-    # 	    exit 1
-    # 	else
-    # 	    echo "found"
-    # 	fi
-    # fi
+    check_header "boost/test/unit_test.hpp" "$boost_inc_dir"
+    if test "x$found_hdr" = "x" ; then
+        echo "`basename $0`: boost/test/unit_test.hpp MUST be installed"
+        echo "See http://www.boost.org"
+        exit 1
+    fi
 
+    # assume that the compiler will look in the default paths
     if [ -n "$boost_inc_dir" ]; then
 	CPPFLAGS="$CPPFLAGS -I$boost_inc_dir"
     fi
