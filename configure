@@ -93,7 +93,7 @@ check_library() {
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
 	echo "not found in $libdirs"
     else
-	echo "found"
+	echo "found in $found_dir"
     fi
 }
 
@@ -143,7 +143,7 @@ check_header() {
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
 	echo "not found in $hdrdirs"
     else
-	echo "found"
+	echo "found in $found_dir"
     fi
 }
 
