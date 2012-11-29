@@ -49,6 +49,9 @@ clean-dep:
 	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
+distclean::
+	-rm -f Makefile
+
 tag:
 	git tag v$(VERSION) -m "version $(VERSION)"
 
