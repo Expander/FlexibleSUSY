@@ -39,15 +39,6 @@ copy_makefile_template() {
     cp $MAKEFILE_TMPL $MAKEFILE
 }
 
-checking_msg() {
-    # Write a simple "checking" message to std out.
-    if test $# -lt 1 ; then
-        echo "checking_msg: Too few arguments"
-        return 1
-    fi
-    echo -n "checking for $1 ... "
-}
-
 check_library() {
     # This function will try to locate a library [$1] in the directory
     # given in $2.  If $2 is empty it will look in the default paths.
@@ -74,7 +65,7 @@ check_library() {
     fi
 
     # Write a message
-    checking_msg $lib
+    echo -n "checking for $lib ... "
 
     libs=""
     for i in $lib ; do
