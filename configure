@@ -39,7 +39,71 @@ copy_makefile_template() {
     cp $MAKEFILE_TMPL $MAKEFILE
 }
 
+checking_msg() {
+    # Write a simple "checking" message to std out.
+    if test $# -lt 1 ; then
+        echo "checking_msg: Too few arguments"
+        return 1
+    fi
+    echo -n "checking for $1 ... "
+}
+
+check_library() {
+    # This function will try to locate a library [$1] at the default
+    # places.
+    # The result of the search is stored in found_lib and found_dir,
+    # which should be immediately copied, since the variables value will
+    # be overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -lt 1 ; then
+        echo "check_library: Too few arguments"
+        return 1
+    fi
+
+    # Save arguments in local names
+    default_paths="/usr/lib /usr/local/lib"
+    lib=$1
+    found_dir=""
+    found_lib=""
+
+    # Write a message
+    checking_msg $lib
+
+    libs=""
+    for i in $lib ; do
+        for ext in .a .lib "" .so .sl .dylib .dll.a ; do
+            libs="$libs $i$ext"
+        done
+    done
+    for p in ${default_paths}; do
+	for l in ${libs}; do
+	    liblist=`echo $p/$l` # expands wildcard
+            for n in ${liblist} ; do
+                if test -f $n ; then
+		    found_dir=$p
+                    found_lib=$l
+		    break
+		fi
+	    done
+	done
+    done
+
+    if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
+	echo "not found"
+    else
+	echo "found"
+    fi
+}
+
 check_boost_libs() {
+    check_library "libboost_unit_test_framework"
+    if test "x$found_lib" = "x" ; then
+        echo "`basename $0`: libboost_unit_test_framework MUST be installed"
+        echo "See http://www.boost.org"
+        exit 1
+    fi
+
     BOOSTLIBS=-lboost_unit_test_framework
 
     if [ -z "$boost_lib_dir" ]; then
