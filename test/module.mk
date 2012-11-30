@@ -59,4 +59,4 @@ $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 ALLDEP += $(TEST_DEP)
-ALLEXE += $(TEST_EXE)
+ALLTST += $(TEST_EXE)
