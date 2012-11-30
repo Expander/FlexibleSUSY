@@ -147,7 +147,7 @@ void RGFlow<Two_scale>::run_down()
  * @param constraints vector of model constraints
  */
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,
-                                         const std::vector<Constraint<Two_scale>*>& constraints)
+                                  const std::vector<Constraint<Two_scale>*>& constraints)
 {
    models.push_back(new TModel(model, constraints, NULL));
 }
@@ -163,8 +163,8 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
  * @param constraints vector of model constraints
  */
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,
-                                         Matching<Two_scale>* mc,
-                                         const std::vector<Constraint<Two_scale>*>& constraints)
+                                  Matching<Two_scale>* mc,
+                                  const std::vector<Constraint<Two_scale>*>& constraints)
 {
    models.push_back(new TModel(model, constraints, mc));
 }
