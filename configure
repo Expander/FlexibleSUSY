@@ -150,7 +150,7 @@ check_header() {
 check_boost_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir"
     if test "x$found_lib" = "x" ; then
-        echo "`basename $0`: libboost_unit_test_framework must be installed"
+        echo "Warning: libboost_unit_test_framework must be installed"
 	echo "  to compile and run the tests, see http://www.boost.org"
     else
 	BOOSTLIBS=-lboost_unit_test_framework
@@ -166,7 +166,7 @@ check_boost_libs() {
 check_boost_incl() {
     check_header "boost/test/unit_test.hpp" "$boost_inc_dir"
     if test "x$found_hdr" = "x" ; then
-        echo "`basename $0`: boost/test/unit_test.hpp must be installed"
+        echo "Warning: boost/test/unit_test.hpp must be installed"
 	echo "  to compile and run the tests, see http://www.boost.org"
     else
         # assume that the compiler will look in the default paths
