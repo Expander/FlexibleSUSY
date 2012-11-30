@@ -21,7 +21,7 @@ ALLEXE   :=
 .PHONY:  all allhdr allexec alllib \
 	 clean clean-dep distclean tag release
 
-all:     allhdr allexec alllib
+all:     allhdr alllib allexec
 
 include $(patsubst %, %/module.mk, $(MODULES))
 
