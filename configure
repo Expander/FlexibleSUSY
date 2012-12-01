@@ -205,8 +205,10 @@ help() {
     echo "--boost-lib-dir=    directory to search for BOOST libraries"
     echo "--boost-inc-dir=    directory to search for BOOST headers"
     echo "--cxx=              C++ compiler (default: $CXX)"
+    echo "--cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--debug             enable debug messages"
     echo "--fc=               Fortran compiler (default: $FC)"
+    echo "--fflags=           Fortran compiler flags (default: $FFLAGS)"
     echo "--help,-h           print this help message"
     echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
     echo "--silent            suppress all command line output"
@@ -225,8 +227,10 @@ if test $# -gt 0 ; then
 	    --boost-lib-dir=*)       boost_lib_dir=$optarg ;;
 	    --boost-inc-dir=*)       boost_inc_dir=$optarg ;;
 	    --cxx=*)                 CXX=$optarg ;;
+	    --cxxflags=*)            CXXFLAGS=$optarg ;;
 	    --debug)                 extra_defines="$extra_defines -DDEBUG" ;;
 	    --fc=*)                  FC=$optarg ;;
+	    --fflags=*)              FFLAGS=$optarg ;;
 	    --help|-h)               help; exit 0 ;;
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
 	    --silent)                extra_defines="$extra_defines -DSILENT" ;;
