@@ -17,7 +17,7 @@ extra_defines=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
-FFLAGS=""
+FFLAGS="-g -O2"
 LIBS=""
 CXX="g++"
 FC="gfortran"
