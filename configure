@@ -204,6 +204,7 @@ help() {
     echo "Options:"
     echo "--boost-lib-dir=    directory to search for BOOST libraries"
     echo "--boost-inc-dir=    directory to search for BOOST headers"
+    echo "--colors            enable colored output"
     echo "--cxx=              C++ compiler (default: $CXX)"
     echo "--cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--debug             enable debug messages"
@@ -226,6 +227,7 @@ if test $# -gt 0 ; then
 	case $1 in
 	    --boost-lib-dir=*)       boost_lib_dir=$optarg ;;
 	    --boost-inc-dir=*)       boost_inc_dir=$optarg ;;
+	    --colors)                extra_defines="$extra_defines -DCOLOR_PRINTOUT" ;;
 	    --cxx=*)                 CXX=$optarg ;;
 	    --cxxflags=*)            CXXFLAGS=$optarg ;;
 	    --debug)                 extra_defines="$extra_defines -DDEBUG" ;;
