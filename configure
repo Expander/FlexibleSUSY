@@ -223,6 +223,14 @@ help() {
     echo "--version,-v        print version information"
 }
 
+version() {
+    echo "$PROGRAM_NAME $PROGRAM_VERSION"
+    echo "$PROGRAM_NAME is free software: you can redistribute it and/or modify"
+    echo "it under the terms of the GNU General Public License as published by"
+    echo "the Free Software Foundation, either version 3 of the License, or"
+    echo "(at your option) any later version.  See http://www.gnu.org/licenses/"
+}
+
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
 	case "$1" in
@@ -243,7 +251,7 @@ if test $# -gt 0 ; then
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
 	    --silent)                define "-DSILENT" ;;
 	    --verbose)               define "-DVERBOSE" ;;
-	    --version|-v)            echo "$PROGRAM_NAME version $PROGRAM_VERSION"; exit 0 ;;
+	    --version|-v)            version; exit 0 ;;
 	    *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
 	esac
 	shift
