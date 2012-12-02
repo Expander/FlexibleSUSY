@@ -13,7 +13,6 @@ MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
 # options
 boost_lib_dir=""
 boost_inc_dir=""
-extra_defines=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
@@ -191,11 +190,18 @@ check_fortran_libs() {
     esac
 }
 
-enable_defines() {
+define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
-	echo "adding defines $@"
-	CPPFLAGS="$1 $CPPFLAGS"
+	echo "define $@"
+	extra_defines="$extra_defines $@"
+    fi
+}
+
+enable_defines() {
+    if [ -n "$extra_defines" ]; then
+	echo "adding defines $extra_defines to CPPFLAGS"
+	CPPFLAGS="$extra_defines $CPPFLAGS"
     fi
 }
 
@@ -227,16 +233,16 @@ if test $# -gt 0 ; then
 	case $1 in
 	    --boost-lib-dir=*)       boost_lib_dir=$optarg ;;
 	    --boost-inc-dir=*)       boost_inc_dir=$optarg ;;
-	    --colors)                extra_defines="$extra_defines -DCOLOR_PRINTOUT" ;;
+	    --colors)                define "-DCOLOR_PRINTOUT" ;;
 	    --cxx=*)                 CXX=$optarg ;;
 	    --cxxflags=*)            CXXFLAGS=$optarg ;;
-	    --debug)                 extra_defines="$extra_defines -DDEBUG" ;;
+	    --debug)                 define "-DDEBUG" ;;
 	    --fc=*)                  FC=$optarg ;;
 	    --fflags=*)              FFLAGS=$optarg ;;
 	    --help|-h)               help; exit 0 ;;
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
-	    --silent)                extra_defines="$extra_defines -DSILENT" ;;
-	    --verbose)               extra_defines="$extra_defines -DVERBOSE" ;;
+	    --silent)                define "-DSILENT" ;;
+	    --verbose)               define "-DVERBOSE" ;;
 	    --version|-v)            echo "$PROGRAM_NAME version $PROGRAM_VERSION"; exit 0 ;;
 	    *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
 	esac
@@ -250,7 +256,7 @@ check_boost_incl
 check_boost_libs
 check_fortran_libs
 
-enable_defines "$extra_defines"
+enable_defines
 
 replace_in_makefile "@VERSION@"  "$PROGRAM_VERSION"
 replace_in_makefile "@PKGNAME@"  "$PROGRAM_NAME"
