@@ -38,6 +38,8 @@ public:
    const drBarPars& displayDrBarPars() const { return mssm.displayDrBarPars(); }
    double getScale() const { return mssm.displayMu(); }
    const sPhysical& displayPhys() const { return mssm.displayPhys(); }
+   double displayGravitino() const { return mssm.displayGravitino(); }
+   double displayMz() const { return mssm.displayMz(); }
 
    void setScale(double scale) { mssm.setMu(scale); }
    void setGaugeCoupling(int i, double g) { mssm.setGaugeCoupling(i, g); }
@@ -45,9 +47,13 @@ public:
    void setTanb(double tanb) { mssm.setTanb(tanb); }
    void setSusyMu(double mu) { mssm.setSusyMu(mu); }
    void setSugraBcs(double m0, double m12, double a0) { mssm.standardSugra(m0, m12, a0); }
+   void setMw(double mw) { mssm.setMw(mw); }
+   void setM32(double m32) { mssm.setM32(m32); }
+   void setSusy(const MssmSusy& s) { mssm.setSusy(s); }
 
    Mssm calcBeta() const { return mssm.beta2(); }
    void calcDrBarPars() { mssm.calcDrBarPars(); }
+   MssmSusy guessAtSusyMt(double tanb, const QedQcd& oneset) { return mssm.guessAtSusyMt(tanb, oneset); }
 
 private:
    Mssm(const SoftParsMssm&);

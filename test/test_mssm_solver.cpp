@@ -47,14 +47,29 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
 
 class Mssm_low_energy_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_low_energy_constraint(Mssm<Two_scale>* mssm_, const QedQcd& oneset_, double scale_)
+   Mssm_low_energy_constraint(Mssm<Two_scale>* mssm_, const QedQcd& oneset_,
+                              double tanBeta_, double scale_)
       : mssm(mssm_)
       , oneset(oneset_)
+      , tanBeta(tanBeta_)
       , scale(scale_)
       {}
    virtual ~Mssm_low_energy_constraint() {}
    virtual void apply() {
+      double m32 = mssm->displayGravitino();
+      // double muCondFirst = mssm->displayMuCond();
+      // double maCondFirst = mssm->displayMaCond();
+
       mssm->setData(oneset);
+      mssm->setMw(MW);
+      mssm->setM32(m32);
+      // mssm->setMuCond(muCondFirst);
+      // mssm->setMaCond(maCondFirst);
+
+      MssmSusy t(mssm->guessAtSusyMt(tanBeta, oneset));
+      t.setLoops(2);
+
+      mssm->setSusy(t);
    }
    virtual double get_scale() const { return scale; }
    virtual void update_scale() {
@@ -67,6 +82,7 @@ public:
 private:
    Mssm<Two_scale>* mssm;
    QedQcd oneset;
+   double tanBeta;
    double scale;
 };
 
@@ -98,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    mssm.setData(oneset);
 
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0);
-   Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, m0);
+   Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, tanBeta, m0);
 
    std::vector<Constraint<Two_scale>*> mssm_constraints;
    mssm_constraints.push_back(&mssm_low_energy_constraint);
