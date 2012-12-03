@@ -92,27 +92,37 @@ void RGFlow<Two_scale>::check_setup() const
 
 void RGFlow<Two_scale>::run_up()
 {
+   VERBOSE_MSG("> running tower up ...");
    for (size_t m = 0; m < models.size(); ++m) {
+      VERBOSE_MSG("> \tselecting model " << m);
       TModel* model = models[m];
       // apply all constraints
       for (size_t c = 0; c < model->constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
          const double scale = constraint->get_scale();
+         VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
+         VERBOSE_MSG("> \t\t\trunning model " << m << " to scale " << scale);
          model->model->run_to(scale);
+         VERBOSE_MSG("> \t\t\tupdating scale");
          constraint->update_scale();
+         VERBOSE_MSG("> \t\t\tapplying constraint " << c);
          constraint->apply();
       }
       // apply matching condition if this is not the last model
       if (m != models.size() - 1) {
+         VERBOSE_MSG("> \tmatching to model " << m + 1);
          Matching<Two_scale>* mc = model->matching_condition;
          mc->match_low_to_high_scale_model();
       }
    }
+   VERBOSE_MSG("> running up finished");
 }
 
 void RGFlow<Two_scale>::run_down()
 {
+   VERBOSE_MSG("< running tower down ...");
    for (long m = models.size() - 1; m >= 0; --m) {
+      VERBOSE_MSG("< \tselecting model " << m);
       TModel* model = models[m];
       // apply all constraints:
       // If m is the last model, do not apply the highest mc, because
@@ -126,16 +136,22 @@ void RGFlow<Two_scale>::run_down()
       for (long c = c_begin; c >= c_end; --c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
          const double scale = constraint->get_scale();
+         VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
+         VERBOSE_MSG("< \t\t\trunning model " << m << " to scale " << scale);
          model->model->run_to(scale);
+         VERBOSE_MSG("< \t\t\tupdating scale");
          constraint->update_scale();
+         VERBOSE_MSG("< \t\t\tapplying constraint " << c);
          constraint->apply();
       }
       // apply matching condition if this is not the first model
       if (m > 0) {
          Matching<Two_scale>* mc = models[m - 1]->matching_condition;
+         VERBOSE_MSG("< \tmatching to model " << m - 1);
          mc->match_high_to_low_scale_model();
       }
    }
+   VERBOSE_MSG("< running down finished");
 }
 
 /**
