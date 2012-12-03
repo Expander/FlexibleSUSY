@@ -59,7 +59,9 @@ public:
    virtual double get_scale() const { return scale; }
    virtual void update_scale() {
       drBarPars tree(mssm->displayDrBarPars());
-      scale = sqrt(tree.mu(2, 3) * tree.mu(1, 3));
+      double tmp_scale = sqrt(tree.mu(2, 3) * tree.mu(1, 3));
+      if (tmp_scale > 0.0)
+         scale = tmp_scale;
    }
 
 private:
@@ -89,15 +91,17 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    oneset.toMz();
 
    Mssm<Two_scale> mssm;
+   mssm.setScale(125);
    mssm.setSusyMu(signMu * 1.0);
    mssm.setTanb(tanBeta);
+   mssm.setData(oneset);
 
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0);
    Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, m0);
 
    std::vector<Constraint<Two_scale>*> mssm_constraints;
-   mssm_constraints.push_back(&mssm_sugra_constraint);
    mssm_constraints.push_back(&mssm_low_energy_constraint);
+   mssm_constraints.push_back(&mssm_sugra_constraint);
 
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
