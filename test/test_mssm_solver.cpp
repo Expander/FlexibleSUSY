@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE( test_mssm_solver )
+BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
 {
    DoubleVector highScaleSoftPars(3);
    const double m12 = 500., a0 = 0., m0 = 125.;
