@@ -39,8 +39,6 @@ private:
    bool                         fGaugeUnification;
 };
 
-typedef RGFlow<SoftSusy_t> MssmSolver;
-
 RGFlow<SoftSusy_t>::RGFlow()
    : fMssmSoftSusy()
    , fHighScaleBoundaryCondition(sugraBcs)

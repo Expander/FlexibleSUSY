@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( test_mssm_solver )
    oneset.setMass(mBottom, mbmb);
    oneset.toMz();
 
-   MssmSolver mssmSolver;
+   RGFlow<SoftSusy_t> mssmSolver;
    mssmSolver.setSoftHighScalePars(highScaleSoftPars);
    mssmSolver.setSignMu(signMu);
    mssmSolver.setTanBeta(tanBeta);
