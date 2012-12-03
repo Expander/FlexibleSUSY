@@ -95,7 +95,7 @@ void RGFlow<Two_scale>::run_up()
    VERBOSE_MSG("> running tower up ...");
    for (size_t m = 0; m < models.size(); ++m) {
       TModel* model = models[m];
-      VERBOSE_MSG("> \tselecting model " << m);
+      VERBOSE_MSG("> \tselecting model " << model->model->name());
       // apply all constraints
       for (size_t c = 0; c < model->constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
@@ -122,8 +122,8 @@ void RGFlow<Two_scale>::run_down()
 {
    VERBOSE_MSG("< running tower down ...");
    for (long m = models.size() - 1; m >= 0; --m) {
-      VERBOSE_MSG("< \tselecting model " << m);
       TModel* model = models[m];
+      VERBOSE_MSG("< \tselecting model " << model->model->name());
       // apply all constraints:
       // If m is the last model, do not apply the highest mc, because
       // it was already appied when we ran up.
