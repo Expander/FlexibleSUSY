@@ -31,6 +31,7 @@ public:
    Mssm();
    virtual ~Mssm();
 
+   void init(const QedQcd&, double, double, int, DoubleVector);
    virtual int run_to(double);
 
    double displayGaugeCoupling(int i) const { return mssm.displayGaugeCoupling(i); }
