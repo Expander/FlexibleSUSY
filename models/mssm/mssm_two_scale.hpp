@@ -38,6 +38,7 @@ public:
    double getScale() const { return mssm.displayMu(); }
    const sPhysical& displayPhys() const { return mssm.displayPhys(); }
 
+   void setScale(double scale) { mssm.setMu(scale); }
    void setGaugeCoupling(int i, double g) { mssm.setGaugeCoupling(i, g); }
    void setData(const QedQcd& d) { mssm.setData(d); }
    void setTanb(double tanb) { mssm.setTanb(tanb); }
