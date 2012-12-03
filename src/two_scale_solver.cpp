@@ -94,8 +94,8 @@ void RGFlow<Two_scale>::run_up()
 {
    VERBOSE_MSG("> running tower up ...");
    for (size_t m = 0; m < models.size(); ++m) {
-      VERBOSE_MSG("> \tselecting model " << m);
       TModel* model = models[m];
+      VERBOSE_MSG("> \tselecting model " << m);
       // apply all constraints
       for (size_t c = 0; c < model->constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->constraints[c];

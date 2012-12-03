@@ -10,6 +10,9 @@
 
 class Two_scale;
 
+/// Formatted output
+std::ostream& operator <<(std::ostream&, const StandardModel<Two_scale>&);
+
 template<>
 class StandardModel<Two_scale>: public Two_scale_model, protected RGE {
 private:
@@ -27,7 +30,9 @@ public:
 
    virtual ~StandardModel();
 
+   virtual std::string name() const { return "SM"; }
    virtual int run_to(double scale) { return RGE::runto(scale); }
+   virtual void print(std::ostream& s) const { s << *this; }
 
    /// sets object to be equal to another
    const StandardModel & operator=(const StandardModel<Two_scale>& s);
@@ -68,8 +73,5 @@ protected:
    /// Calculate beta functions
    virtual DoubleVector beta() const;
 };
-
-/// Formatted output
-std::ostream& operator <<(std::ostream&, const StandardModel<Two_scale>&);
 
 #endif

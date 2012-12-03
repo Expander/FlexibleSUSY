@@ -9,6 +9,9 @@
 
 class Two_scale;
 
+/// Formatted output
+std::ostream& operator <<(std::ostream&, const StandardModelCW<Two_scale>&);
+
 template<>
 class StandardModelCW<Two_scale>: public StandardModel<Two_scale> {
 public:
@@ -23,6 +26,8 @@ public:
                    double lambda, double vs);
 
    virtual ~StandardModelCW();
+   virtual std::string name() const { return "SMCW"; }
+   virtual void print(std::ostream& s) const { s << *this; }
 
    /// sets object to be equal to another
    const StandardModelCW<Two_scale> & operator=(const StandardModelCW<Two_scale>& s);
@@ -63,8 +68,5 @@ private:
    double lambda; ///< scalar potential parameter lambda
    double vs;     ///< VEV of singlet field
 };
-
-/// Formatted output
-std::ostream& operator <<(std::ostream&, const StandardModelCW<Two_scale>&);
 
 #endif

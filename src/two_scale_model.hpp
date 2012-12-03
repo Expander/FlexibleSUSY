@@ -19,10 +19,15 @@
 #ifndef TWO_SCALE_MODEL_H
 #define TWO_SCALE_MODEL_H
 
+#include <string>
+#include <ostream>
+
 class Two_scale_model {
 public:
    virtual ~Two_scale_model() {}
+   virtual std::string name() const { return "unnamed"; }
    virtual int run_to(double) = 0;
+   virtual void print(std::ostream&) const {}
 };
 
 #endif

@@ -14,6 +14,7 @@ public:
    Static_model() : parameters(1) {}
    Static_model(const DoubleVector& pars) : parameters(pars) {}
    virtual ~Static_model() {}
+   virtual std::string name() const { return "Static_model"; }
    virtual int run_to(double) { return 0; }
    virtual void set_parameters(const DoubleVector& v) { parameters = v; }
    virtual DoubleVector get_parameters() const { return parameters; }
