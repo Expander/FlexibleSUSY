@@ -2,7 +2,10 @@ DIR          := models/mssm
 MODNAME      := libmssm
 
 LIBMSSM_HDR  := \
+		$(DIR)/mssm.hpp \
 		$(DIR)/mssm_solver.h \
+		$(DIR)/mssm_two_scale.hpp \
+		$(DIR)/mssm_two_scale_sugra_constraint.hpp \
 		$(DIR)/physpars.h \
 		$(DIR)/softpars.h \
 		$(DIR)/softsusy.h \
@@ -10,6 +13,8 @@ LIBMSSM_HDR  := \
 		$(DIR)/twoloophiggs.h
 
 LIBMSSM_SRC  := \
+		$(DIR)/mssm_two_scale.cpp \
+		$(DIR)/mssm_two_scale_sugra_constraint.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/softpars.cpp \
 		$(DIR)/softsusy.cpp \
