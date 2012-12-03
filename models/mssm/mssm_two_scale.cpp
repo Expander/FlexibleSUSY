@@ -37,15 +37,12 @@ void Mssm<Two_scale>::init(const QedQcd& oneset, double mxGuess, double tanb, in
 {
    double mx = 0.0;
    const static MssmSoftsusy empty;
-
-   bool setTbAtMXflag = mssm.displaySetTbAtMX();
    double m32 = mssm.displayGravitino();
    double muCondFirst = mssm.displayMuCond();
    double maCondFirst = mssm.displayMaCond();
 
-   mssm.setSoftsusy(empty); /// Always starts from an empty object
+   mssm.setSoftsusy(empty);
    /// These are things that are re-written by the new initialisation
-   mssm.setSetTbAtMX(setTbAtMXflag);
    mssm.setData(oneset);
    mssm.setMw(MW);
    mssm.setM32(m32);
@@ -54,14 +51,7 @@ void Mssm<Two_scale>::init(const QedQcd& oneset, double mxGuess, double tanb, in
 
    double mz = mssm.displayMz();
 
-   /// Here all was same
-   if (mxGuess > 0.0)
-      mx = mxGuess;
-   else {
-      string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
-      ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
-      throw ii;
-   }
+   mx = mxGuess;
 
    if (oneset.displayMu() != mz) {
       cout << "WARNING: lowOrg in softsusy.cpp called with oneset at scale\n"
