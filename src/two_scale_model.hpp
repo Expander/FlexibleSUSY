@@ -28,6 +28,10 @@ public:
    virtual std::string name() const { return "unnamed"; }
    virtual int run_to(double) = 0;
    virtual void print(std::ostream&) const {}
+   friend std::ostream& operator<<(std::ostream& out, const Two_scale_model& model) {
+      model.print(out);
+      return out;
+   }
 };
 
 #endif
