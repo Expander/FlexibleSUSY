@@ -34,7 +34,7 @@ public:
    void init(const QedQcd&, double, double, int, DoubleVector);
    virtual std::string name() const { return "Mssm"; }
    virtual int run_to(double);
-   virtual std::ostream& operator<<(std::ostream& s) const { s << mssm; return s; }
+   virtual void print(std::ostream& s) const { s << mssm; }
 
    double displayGaugeCoupling(int i) const { return mssm.displayGaugeCoupling(i); }
    const drBarPars& displayDrBarPars() const { return mssm.displayDrBarPars(); }
