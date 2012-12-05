@@ -27,9 +27,10 @@ template<>
 class Constraint<Two_scale> {
 public:
    virtual ~Constraint() {}
-   virtual void apply() = 0;
-   virtual double get_scale() const = 0;
-   virtual void update_scale() = 0;
+   virtual void apply() = 0;                    ///< apply constraint
+   virtual void apply_first_time() { apply(); } ///< apply during first run
+   virtual double get_scale() const = 0;        ///< get scale where to apply
+   virtual void update_scale() = 0;             ///< recalculate the scale
 };
 
 #endif

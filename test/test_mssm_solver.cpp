@@ -3,6 +3,7 @@
 #include "mssm_two_scale_sugra_constraint.hpp"
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
+#include "logger.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_mssm_solver
@@ -55,21 +56,16 @@ public:
       , scale(scale_)
       {}
    virtual ~Mssm_low_energy_constraint() {}
-   virtual void apply() {
+   virtual void apply_first_time() {
       double m32 = mssm->displayGravitino();
-      // double muCondFirst = mssm->displayMuCond();
-      // double maCondFirst = mssm->displayMaCond();
-
       mssm->setData(oneset);
       mssm->setMw(MW);
       mssm->setM32(m32);
-      // mssm->setMuCond(muCondFirst);
-      // mssm->setMaCond(maCondFirst);
-
       MssmSusy t(mssm->guessAtSusyMt(tanBeta, oneset));
-      t.setLoops(2);
-
       mssm->setSusy(t);
+   }
+   virtual void apply() {
+      mssm->calcDrBarPars();
    }
    virtual double get_scale() const { return scale; }
    virtual void update_scale() {
@@ -107,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    oneset.toMz();
 
    Mssm<Two_scale> mssm;
-   mssm.init(oneset, mxGuess, tanBeta, signMu, highScaleSoftPars);
+   // mssm.init(oneset, mxGuess, tanBeta, signMu, highScaleSoftPars);
    mssm.setScale(125);
    mssm.setSusyMu(signMu * 1.0);
    mssm.setTanb(tanBeta);
