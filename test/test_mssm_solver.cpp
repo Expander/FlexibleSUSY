@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    mssm.setTanb(tanBeta);
    mssm.setData(oneset);
 
-   Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0);
+   Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
    Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, tanBeta, m0);
 
    std::vector<Constraint<Two_scale>*> mssm_constraints;
