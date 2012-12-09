@@ -1,6 +1,7 @@
 #include "mssm_solver.h"
 #include "mssm_two_scale.hpp"
 #include "mssm_two_scale_sugra_constraint.hpp"
+#include "mssm_two_scale_convergence_tester.hpp"
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
@@ -111,6 +112,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
 
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
    Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, tanBeta, m0);
+   Mssm_convergence_tester mssm_convergence_tester(&mssm, 0.1);
 
    std::vector<Constraint<Two_scale>*> mssm_constraints;
    mssm_constraints.push_back(&mssm_low_energy_constraint);
@@ -118,7 +120,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
 
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
-   // solver.set_convergence_tester(&convergence_tester);
+   solver.set_convergence_tester(&mssm_convergence_tester);
    solver.add_model(&mssm, mssm_constraints);
    try {
       solver.solve();
