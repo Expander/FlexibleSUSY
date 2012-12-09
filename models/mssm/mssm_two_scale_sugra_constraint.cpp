@@ -27,6 +27,8 @@ void Mssm_sugra_constraint::apply_first_time()
    mssm->run_to(MZ);
    mssm->rewsbTreeLevel(signMu);
    mssm->physical(0);
+   mssm->setLoops(2);
+   mssm->setThresholds(3);
 }
 
 void Mssm_sugra_constraint::apply()

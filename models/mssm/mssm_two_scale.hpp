@@ -43,6 +43,8 @@ public:
    double displayGravitino() const { return mssm.displayGravitino(); }
    double displayMz() const { return mssm.displayMz(); }
 
+   void setLoops(int l) { mssm.setLoops(l); }
+   void setThresholds(int l) { mssm.setThresholds(l); }
    void setScale(double scale) { mssm.setMu(scale); }
    void setGaugeCoupling(int i, double g) { mssm.setGaugeCoupling(i, g); }
    void setData(const QedQcd& d) { mssm.setData(d); }
