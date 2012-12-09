@@ -61,6 +61,8 @@ void RGFlow<Two_scale>::solve()
 
    if (iter == 0 && convergence_tester)
       throw NoConvergenceError(max_iterations);
+
+   VERBOSE_MSG("convergence reached after " << needed_iterations << " iterations");
 }
 
 void RGFlow<Two_scale>::check_setup() const
@@ -108,7 +110,6 @@ void RGFlow<Two_scale>::run_up_first_time()
          VERBOSE_MSG("> \t\t\tapplying constraint " << c << " the first time");
          constraint->apply_first_time();
       }
-      VERBOSE_MSG(model->model->name() << " is run up:" << *model->model);
       // apply matching condition if this is not the last model
       if (m != models.size() - 1) {
          VERBOSE_MSG("> \tmatching to model " << m + 1);
@@ -124,7 +125,7 @@ void RGFlow<Two_scale>::run_up()
    VERBOSE_MSG("> running tower up ...");
    for (size_t m = 0; m < models.size(); ++m) {
       TModel* model = models[m];
-      VERBOSE_MSG("> \tselecting model " << model->model->name() << ": " << *model->model);
+      VERBOSE_MSG("> \tselecting model " << model->model->name());
       // apply all constraints
       for (size_t c = 0; c < model->constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
