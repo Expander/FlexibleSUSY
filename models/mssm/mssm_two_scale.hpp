@@ -56,6 +56,8 @@ public:
    Mssm calcBeta() const { return mssm.beta2(); }
    void calcDrBarPars() { mssm.calcDrBarPars(); }
    MssmSusy guessAtSusyMt(double tanb, const QedQcd& oneset) { return mssm.guessAtSusyMt(tanb, oneset); }
+   virtual void rewsbTreeLevel(int sgnMu) { mssm.rewsbTreeLevel(sgnMu); }
+   virtual void physical(int accuracy) { mssm.physical(accuracy); }
 
 private:
    Mssm(const SoftParsMssm&);
