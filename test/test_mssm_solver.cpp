@@ -57,14 +57,6 @@ public:
       , scale(scale_)
       {}
    virtual ~Mssm_low_energy_constraint() {}
-   virtual void apply_first_time() {
-      double m32 = mssm->displayGravitino();
-      mssm->setData(oneset);
-      mssm->setMw(MW);
-      mssm->setM32(m32);
-      MssmSusy t(mssm->guessAtSusyMt(tanBeta, oneset));
-      mssm->setSusy(t);
-   }
    virtual void apply() {
       mssm->calcDrBarPars();
    }

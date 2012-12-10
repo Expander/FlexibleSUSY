@@ -27,7 +27,6 @@ class Mssm_sugra_constraint : public Constraint<Two_scale> {
 public:
    Mssm_sugra_constraint(Mssm<Two_scale>*, double, double, double, double, int);
    virtual ~Mssm_sugra_constraint();
-   virtual void apply_first_time();
    virtual void apply();
    virtual double get_scale() const;
    virtual void update_scale();

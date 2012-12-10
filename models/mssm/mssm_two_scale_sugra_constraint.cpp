@@ -19,18 +19,6 @@ Mssm_sugra_constraint::~Mssm_sugra_constraint()
 {
 }
 
-void Mssm_sugra_constraint::apply_first_time()
-{
-   apply();
-
-   mssm->setSusyMu(signMu * 1.0);
-   mssm->run_to(MZ);
-   mssm->rewsbTreeLevel(signMu);
-   mssm->physical(0);
-   mssm->setLoops(2);
-   mssm->setThresholds(3);
-}
-
 void Mssm_sugra_constraint::apply()
 {
    const double g1 = mssm->displayGaugeCoupling(1);
