@@ -44,10 +44,7 @@ RGFlow<Two_scale>::~RGFlow()
 void RGFlow<Two_scale>::solve()
 {
    check_setup();
-
-   // initial run
-   run_up_first_time();
-   run_down();
+   initial_guess();
 
    unsigned int iter = max_iterations;
    while (iter && !accuracy_goal_reached()) {
@@ -92,32 +89,8 @@ void RGFlow<Two_scale>::check_setup() const
    }
 }
 
-void RGFlow<Two_scale>::run_up_first_time()
+void RGFlow<Two_scale>::initial_guess()
 {
-   VERBOSE_MSG("> running tower up first time ...");
-   for (size_t m = 0; m < models.size(); ++m) {
-      TModel* model = models[m];
-      VERBOSE_MSG("> \tselecting model " << model->model->name());
-      // apply all constraints
-      for (size_t c = 0; c < model->constraints.size(); ++c) {
-         Constraint<Two_scale>* constraint = model->constraints[c];
-         const double scale = constraint->get_scale();
-         VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
-         VERBOSE_MSG("> \t\t\trunning model " << m << " to scale " << scale);
-         model->model->run_to(scale);
-         VERBOSE_MSG("> \t\t\tupdating scale");
-         constraint->update_scale();
-         VERBOSE_MSG("> \t\t\tapplying constraint " << c << " the first time");
-         constraint->apply_first_time();
-      }
-      // apply matching condition if this is not the last model
-      if (m != models.size() - 1) {
-         VERBOSE_MSG("> \tmatching to model " << m + 1);
-         Matching<Two_scale>* mc = model->matching_condition;
-         mc->match_low_to_high_scale_model();
-      }
-   }
-   VERBOSE_MSG("> running up first time finished");
 }
 
 void RGFlow<Two_scale>::run_up()
@@ -233,8 +206,8 @@ void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* co
 }
 
 /**
- * Set the maximum number of iterations (excluding the initial run).
- * If 0 is given, there will be only an initial run.
+ * Set the maximum number of iterations.  If 0 is given, there will be
+ * no iteration at all.
  *
  * @param max_it maximum number of iterations
  */

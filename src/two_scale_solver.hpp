@@ -112,8 +112,8 @@ private:
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
+   void initial_guess();               ///< initial guess
    void run_up();                      ///< run all models up
-   void run_up_first_time();           ///< run all models up the first time
    void run_down();                    ///< run all models down
 };
 

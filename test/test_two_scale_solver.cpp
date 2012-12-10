@@ -204,19 +204,19 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
 
       // check how often the matching is appied
       BOOST_CHECK_EQUAL(mc.get_number_of_low_to_high_matches(),
-                        number_of_iterations + 1);
+                        number_of_iterations);
       BOOST_CHECK_EQUAL(mc.get_number_of_high_to_low_matches(),
-                        number_of_iterations + 1);
+                        number_of_iterations);
       // lowest constraint applied once in each iteration
       BOOST_CHECK_EQUAL(model1_c1.get_number_of_apply_calls(),
-                        number_of_iterations + 1);
+                        number_of_iterations);
       // highest constraint applied once in each iteration
       BOOST_CHECK_EQUAL(model2_c2.get_number_of_apply_calls(),
-                        number_of_iterations + 1);
+                        number_of_iterations);
       // intermediate constraints applied twice in each iteration
       BOOST_CHECK_EQUAL(model1_c2.get_number_of_apply_calls(),
-                        2 * (number_of_iterations + 1));
+                        2 * number_of_iterations);
       BOOST_CHECK_EQUAL(model2_c1.get_number_of_apply_calls(),
-                        2 * (number_of_iterations + 1));
+                        2 * number_of_iterations);
    }
 }
