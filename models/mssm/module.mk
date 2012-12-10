@@ -6,6 +6,7 @@ LIBMSSM_HDR  := \
 		$(DIR)/mssm_solver.h \
 		$(DIR)/mssm_two_scale.hpp \
 		$(DIR)/mssm_two_scale_convergence_tester.hpp \
+		$(DIR)/mssm_two_scale_initial_guesser.hpp \
 		$(DIR)/mssm_two_scale_sugra_constraint.hpp \
 		$(DIR)/physpars.h \
 		$(DIR)/softpars.h \
@@ -16,6 +17,7 @@ LIBMSSM_HDR  := \
 LIBMSSM_SRC  := \
 		$(DIR)/mssm_two_scale.cpp \
 		$(DIR)/mssm_two_scale_convergence_tester.cpp \
+		$(DIR)/mssm_two_scale_initial_guesser.cpp \
 		$(DIR)/mssm_two_scale_sugra_constraint.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/softpars.cpp \

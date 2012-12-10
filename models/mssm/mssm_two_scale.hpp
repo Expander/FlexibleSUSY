@@ -48,7 +48,9 @@ public:
    void setScale(double scale) { mssm.setMu(scale); }
    void setGaugeCoupling(int i, double g) { mssm.setGaugeCoupling(i, g); }
    void setData(const QedQcd& d) { mssm.setData(d); }
+   void setM3Squared(double m32) { mssm.setM3Squared(m32); }
    void setTanb(double tanb) { mssm.setTanb(tanb); }
+   void setSoftsusy(const MssmSoftsusy& s) { mssm.setSoftsusy(s); }
    void setSusyMu(double mu) { mssm.setSusyMu(mu); }
    void setSugraBcs(double m0, double m12, double a0) { mssm.standardSugra(m0, m12, a0); }
    void setMw(double mw) { mssm.setMw(mw); }
