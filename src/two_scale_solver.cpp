@@ -78,13 +78,14 @@ void RGFlow<Two_scale>::check_setup() const
       // check wether last model has a non-zero matching condition
       if (m + 1 == models.size()) {
          if (model->matching_condition)
-            WARNING("the matching condition of the last model [" << m
-                    << "] is non-zero but will not be used");
+            WARNING("the matching condition of the " << model->model->name()
+                    << " is non-zero but will not be used");
       } else {
          if (model->matching_condition == NULL) {
             std::stringstream message;
             message << "RGFlow<Two_scale>::Error: matching condition "
-                    << "of model " << m << " pointer is NULL";
+                    << "of the " << model->model->name() << " to the "
+                    << models[m + 1]->model->name() << " is NULL";
             throw SetupError(message.str());
          }
       }
