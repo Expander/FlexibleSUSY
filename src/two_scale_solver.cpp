@@ -113,7 +113,7 @@ void RGFlow<Two_scale>::run_up()
       }
       // apply matching condition if this is not the last model
       if (m != models.size() - 1) {
-         VERBOSE_MSG("> \tmatching to model " << m + 1);
+         VERBOSE_MSG("> \tmatching to model " << models[m + 1]->model->name());
          Matching<Two_scale>* mc = model->matching_condition;
          mc->match_low_to_high_scale_model();
       }
@@ -150,7 +150,7 @@ void RGFlow<Two_scale>::run_down()
       // apply matching condition if this is not the first model
       if (m > 0) {
          Matching<Two_scale>* mc = models[m - 1]->matching_condition;
-         VERBOSE_MSG("< \tmatching to model " << m - 1);
+         VERBOSE_MSG("< \tmatching to model " << models[m - 1]->model->name());
          mc->match_high_to_low_scale_model();
       }
    }
