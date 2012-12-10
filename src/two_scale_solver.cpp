@@ -19,6 +19,7 @@
 #include "two_scale_solver.hpp"
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
+#include "two_scale_initial_guesser.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_model.hpp"
 #include "logger.hpp"
@@ -32,6 +33,7 @@ RGFlow<Two_scale>::RGFlow()
    , max_iterations(10)
    , needed_iterations(0)
    , convergence_tester(NULL)
+   , initial_guesser(NULL)
 {
 }
 
@@ -91,6 +93,8 @@ void RGFlow<Two_scale>::check_setup() const
 
 void RGFlow<Two_scale>::initial_guess()
 {
+   if (initial_guesser)
+      initial_guesser->guess();
 }
 
 void RGFlow<Two_scale>::run_up()
@@ -203,6 +207,11 @@ bool RGFlow<Two_scale>::accuracy_goal_reached() const
 void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* convergence_tester_)
 {
    convergence_tester = convergence_tester_;
+}
+
+void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
+{
+   initial_guesser = ig;
 }
 
 /**

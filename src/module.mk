@@ -8,6 +8,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/dilog.f \
 		$(DIR)/dilog.h \
 		$(DIR)/gut_scale_calculator.hpp \
+		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg.h \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
@@ -18,6 +19,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/two_scale_constraint.hpp \
 		$(DIR)/two_scale_convergence_tester.hpp \
+		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_solver.hpp \

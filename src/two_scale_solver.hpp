@@ -28,6 +28,7 @@
 template <class T> class Constraint;
 template <class T> class Matching;
 template <class T> class Convergence_tester;
+template <class T> class Initial_guesser;
 class Two_scale;
 class Two_scale_model;
 
@@ -79,6 +80,8 @@ public:
    unsigned int number_of_iterations_done() const;
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
+   /// set initial guesser
+   void set_initial_guesser(Initial_guesser<Two_scale>*);
    /// set maximum number of iterations
    void set_max_iterations(unsigned int);
    /// solve all models
@@ -109,6 +112,7 @@ private:
    unsigned int max_iterations;        ///< maximum number of iterations
    unsigned int needed_iterations;     ///< number of iterations needed
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
+   Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
