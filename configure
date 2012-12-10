@@ -22,22 +22,6 @@ CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
 
-replace_in_makefile() {
-    # $1: string to replace
-    # rest: what to put into the place of $1
-    local what="$1"
-    shift
-    local by="$@"
-    echo "replacing $what by $by in $MAKEFILE"
-    sed -e "s|$what|$by|g" -i.orig $MAKEFILE
-    rm $MAKEFILE.orig
-}
-
-copy_makefile_template() {
-    echo "copying makefile template $MAKEFILE_TMPL to $MAKEFILE"
-    cp $MAKEFILE_TMPL $MAKEFILE
-}
-
 check_library() {
     # This function will try to locate a library [$1] in the directory
     # given in $2.  If $2 is empty it will look in the default paths.
@@ -258,20 +242,19 @@ if test $# -gt 0 ; then
     done
 fi
 
-copy_makefile_template
-
 check_boost_incl
 check_boost_libs
 check_fortran_libs
 
 enable_defines
 
-replace_in_makefile "@VERSION@"  "$PROGRAM_VERSION"
-replace_in_makefile "@PKGNAME@"  "$PROGRAM_NAME"
-replace_in_makefile "@LIBS@"     "$LIBS"
-replace_in_makefile "@CPPFLAGS@" "$CPPFLAGS"
-replace_in_makefile "@CXXFLAGS@" "$CXXFLAGS"
-replace_in_makefile "@CXX@"      "$CXX"
-replace_in_makefile "@FC@"       "$FC"
-replace_in_makefile "@MAKELIB@"  "$MAKELIB"
-replace_in_makefile "@FFLAGS@"   "$FFLAGS"
+sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@LIBS@|$LIBS|"               \
+    -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXX@|$CXX|"                 \
+    -e "s|@FC@|$FC|"                   \
+    -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@FFLAGS@|$FFLAGS|"           \
+    < $MAKEFILE_TMPL > $MAKEFILE
