@@ -207,9 +207,9 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
                         number_of_iterations);
       BOOST_CHECK_EQUAL(mc.get_number_of_high_to_low_matches(),
                         number_of_iterations);
-      // lowest constraint applied once in each iteration
+      // lowest constraint applied first time and once in each iteration
       BOOST_CHECK_EQUAL(model1_c1.get_number_of_apply_calls(),
-                        number_of_iterations);
+                        (number_of_iterations == 0 ? 0 : number_of_iterations + 1));
       // highest constraint applied once in each iteration
       BOOST_CHECK_EQUAL(model2_c2.get_number_of_apply_calls(),
                         number_of_iterations);

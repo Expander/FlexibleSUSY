@@ -206,14 +206,24 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
       BOOST_ERROR(e.what());
    }
 
+   // to make the parameter comparison work, run sm to the same scale as smcw
+   sm.run_to(smcw.getScale());
+
    // check that the SM parameters are the same in both models
    for (int i = 1; i <= 3; ++i)
-      BOOST_CHECK_EQUAL(smcw.displayGaugeCoupling(i),
-                        sm.displayGaugeCoupling(i));
+      BOOST_CHECK_CLOSE(smcw.displayGaugeCoupling(i),
+                        sm.displayGaugeCoupling(i), 0.002);
 
-   BOOST_CHECK_EQUAL(smcw.displayYukawaMatrix(YU), sm.displayYukawaMatrix(YU));
-   BOOST_CHECK_EQUAL(smcw.displayYukawaMatrix(YD), sm.displayYukawaMatrix(YD));
-   BOOST_CHECK_EQUAL(smcw.displayYukawaMatrix(YE), sm.displayYukawaMatrix(YE));
+   for (int i = 1; i <= 3; ++i) {
+      for (int k = 1; k <= 3; ++k) {
+         BOOST_CHECK_CLOSE(smcw.displayYukawaElement(YU, i, k),
+                           sm.displayYukawaElement(YU, i, k), 0.002);
+         BOOST_CHECK_CLOSE(smcw.displayYukawaElement(YD, i, k),
+                           sm.displayYukawaElement(YD, i, k), 0.002);
+         BOOST_CHECK_CLOSE(smcw.displayYukawaElement(YE, i, k),
+                           sm.displayYukawaElement(YE, i, k), 0.002);
+      }
+   }
 
    // get the GUT scale value
    const double gut_scale = smcw_gut_constraint.get_scale();

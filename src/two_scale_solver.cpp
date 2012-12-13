@@ -45,6 +45,9 @@ RGFlow<Two_scale>::~RGFlow()
 
 void RGFlow<Two_scale>::solve()
 {
+   if (models.empty() || max_iterations == 0)
+      return;
+
    check_setup();
    initial_guess();
 
@@ -54,6 +57,8 @@ void RGFlow<Two_scale>::solve()
       run_down();
       --iter;
    }
+
+   apply_lowest_constaint();
 
    // save number of iterations that were done
    needed_iterations = max_iterations - iter;
@@ -109,11 +114,11 @@ void RGFlow<Two_scale>::run_up()
          Constraint<Two_scale>* constraint = model->constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
-         VERBOSE_MSG("> \t\t\trunning model " << m << " to scale " << scale);
+         VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
          model->model->run_to(scale);
          VERBOSE_MSG("> \t\t\tupdating scale");
          constraint->update_scale();
-         VERBOSE_MSG("> \t\t\tapplying constraint " << c);
+         VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
       }
       // apply matching condition if this is not the last model
@@ -133,24 +138,26 @@ void RGFlow<Two_scale>::run_down()
       TModel* model = models[m];
       VERBOSE_MSG("< \tselecting model " << model->model->name());
       // apply all constraints:
-      // If m is the last model, do not apply the highest mc, because
-      // it was already appied when we ran up.
-      // If m is the first model, do not apply the lowest mc, because
-      // it will be appied when we run up next time.
+      // If m is the last model, do not apply the highest constraint,
+      // because it was already appied when we ran up.
       const long c_begin = (m == static_cast<long>(models.size() - 1) ?
                             model->constraints.size() - 2 :
                             model->constraints.size() - 1);
-      const long c_end = (m == 0 ? 1 : 0);
-      for (long c = c_begin; c >= c_end; --c) {
+      for (long c = c_begin; c >= 0; --c) {
          Constraint<Two_scale>* constraint = model->constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
-         VERBOSE_MSG("< \t\t\trunning model " << m << " to scale " << scale);
+         VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
          model->model->run_to(scale);
-         VERBOSE_MSG("< \t\t\tupdating scale");
-         constraint->update_scale();
-         VERBOSE_MSG("< \t\t\tapplying constraint " << c);
-         constraint->apply();
+         // If m is the first model, do not apply the lowest
+         // constraint, because it will be appied when we run up next
+         // time.
+         if (m != 0 || c != 0) {
+            VERBOSE_MSG("< \t\t\tupdating scale");
+            constraint->update_scale();
+            VERBOSE_MSG("< \t\t\tapplying constraint");
+            constraint->apply();
+         }
       }
       // apply matching condition if this is not the first model
       if (m > 0) {
@@ -160,6 +167,25 @@ void RGFlow<Two_scale>::run_down()
       }
    }
    VERBOSE_MSG("< running down finished");
+}
+
+void RGFlow<Two_scale>::apply_lowest_constaint()
+{
+   if (models.empty())
+      return;
+
+   TModel* model = models[0];
+
+   if (model->constraints.empty())
+      return;
+
+   Constraint<Two_scale>* constraint = model->constraints[0];
+   const double scale = constraint->get_scale();
+   VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
+   VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
+   model->model->run_to(scale);
+   VERBOSE_MSG("| \tapplying constraint");
+   constraint->apply();
 }
 
 /**
