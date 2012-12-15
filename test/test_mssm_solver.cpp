@@ -76,12 +76,14 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    mssm.setData(oneset);
 
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
-   Mssm_low_energy_constraint mssm_low_energy_constraint(&mssm, oneset, tanBeta, m0);
+   Mssm_mz_constraint mssm_mz_constraint(&mssm, oneset, tanBeta);
+   Mssm_msusy_constraint mssm_msusy_constraint(&mssm, highScaleSoftPars, 1000.0, signMu);
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 0.1);
    Mssm_initial_guesser initial_guesser(&mssm, oneset, mxGuess, tanBeta, signMu, highScaleSoftPars, false);
 
    std::vector<Constraint<Two_scale>*> mssm_constraints;
-   mssm_constraints.push_back(&mssm_low_energy_constraint);
+   mssm_constraints.push_back(&mssm_mz_constraint);
+   mssm_constraints.push_back(&mssm_msusy_constraint);
    mssm_constraints.push_back(&mssm_sugra_constraint);
 
    RGFlow<Two_scale> solver;
@@ -94,9 +96,14 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
+   mssm.run_to(maximum(mssm.displayMsusy(), MZ));
+   mssm.physical(3);
+   mssm.runto(mssm.displayMz());
 
    MssmSoftsusy softSusy;
-   softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
+   const double mxSoftSusy
+      = softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
 
    BOOST_CHECK_EQUAL(mssm.displayPhys(), softSusy.displayPhys());
+   BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
 }

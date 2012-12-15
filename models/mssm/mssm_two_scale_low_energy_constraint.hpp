@@ -22,11 +22,11 @@
 #include "two_scale_constraint.hpp"
 #include "mssm_two_scale.hpp"
 
-class Mssm_low_energy_constraint : public Constraint<Two_scale> {
+class Mssm_mz_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_low_energy_constraint(Mssm<Two_scale>* mssm_, const QedQcd& oneset_,
-                              double tanBeta_, double scale_);
-   virtual ~Mssm_low_energy_constraint();
+   Mssm_mz_constraint(Mssm<Two_scale>* mssm_, const QedQcd& oneset_,
+                      double tanBeta_);
+   virtual ~Mssm_mz_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void update_scale();
@@ -36,6 +36,22 @@ private:
    QedQcd oneset;
    double tanBeta;
    double scale;
+};
+
+class Mssm_msusy_constraint : public Constraint<Two_scale> {
+public:
+   Mssm_msusy_constraint(Mssm<Two_scale>* mssm_, const DoubleVector& pars_,
+                         double scale_, int sgnMu_);
+   virtual ~Mssm_msusy_constraint();
+   virtual void apply();
+   virtual double get_scale() const;
+   virtual void update_scale();
+
+private:
+   Mssm<Two_scale>* mssm;
+   DoubleVector pars;
+   double scale;
+   int sgnMu;
 };
 
 #endif
