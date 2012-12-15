@@ -24,7 +24,7 @@
 
 class Mssm_mz_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_mz_constraint(Mssm<Two_scale>* mssm_, const QedQcd& oneset_,
+   Mssm_mz_constraint(Mssm<Two_scale>* mssm_,
                       double tanBeta_);
    virtual ~Mssm_mz_constraint();
    virtual void apply();
@@ -33,7 +33,6 @@ public:
 
 private:
    Mssm<Two_scale>* mssm;
-   QedQcd oneset;
    double tanBeta;
    double scale;
 };

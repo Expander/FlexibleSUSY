@@ -3,11 +3,9 @@
 #include <cassert>
 
 Mssm_mz_constraint::Mssm_mz_constraint(Mssm<Two_scale>* mssm_,
-                                       const QedQcd& oneset_,
                                        double tanBeta_)
    : Constraint<Two_scale>()
    , mssm(mssm_)
-   , oneset(oneset_)
    , tanBeta(tanBeta_)
    , scale(MZ)
 {
