@@ -26,47 +26,22 @@
 class Two_scale;
 
 template<>
-class Mssm<Two_scale>: public Two_scale_model {
+class Mssm<Two_scale>: public Two_scale_model, public MssmSoftsusy {
 public:
    Mssm();
    virtual ~Mssm();
 
-   void init(const QedQcd&, double, double, int, DoubleVector);
    virtual std::string name() const { return "Mssm"; }
    virtual int run_to(double);
-   virtual void print(std::ostream& s) const { s << mssm; }
+   virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
 
-   double displayGaugeCoupling(int i) const { return mssm.displayGaugeCoupling(i); }
-   const drBarPars& displayDrBarPars() const { return mssm.displayDrBarPars(); }
-   double getScale() const { return mssm.displayMu(); }
-   const sPhysical& displayPhys() const { return mssm.displayPhys(); }
-   double displayGravitino() const { return mssm.displayGravitino(); }
-   double displayMz() const { return mssm.displayMz(); }
-
-   void setLoops(int l) { mssm.setLoops(l); }
-   void setThresholds(int l) { mssm.setThresholds(l); }
-   void setScale(double scale) { mssm.setMu(scale); }
-   void setGaugeCoupling(int i, double g) { mssm.setGaugeCoupling(i, g); }
-   void setData(const QedQcd& d) { mssm.setData(d); }
-   void setM3Squared(double m32) { mssm.setM3Squared(m32); }
-   void setTanb(double tanb) { mssm.setTanb(tanb); }
-   void setSoftsusy(const MssmSoftsusy& s) { mssm.setSoftsusy(s); }
-   void setSusyMu(double mu) { mssm.setSusyMu(mu); }
-   void setSugraBcs(double m0, double m12, double a0) { mssm.standardSugra(m0, m12, a0); }
-   void setMw(double mw) { mssm.setMw(mw); }
-   void setM32(double m32) { mssm.setM32(m32); }
-   void setSusy(const MssmSusy& s) { mssm.setSusy(s); }
-
-   Mssm calcBeta() const { return mssm.beta2(); }
-   void calcDrBarPars() { mssm.calcDrBarPars(); }
-   MssmSusy guessAtSusyMt(double tanb, const QedQcd& oneset) { return mssm.guessAtSusyMt(tanb, oneset); }
-   virtual void rewsbTreeLevel(int sgnMu) { mssm.rewsbTreeLevel(sgnMu); }
-   virtual void physical(int accuracy) { mssm.physical(accuracy); }
+   void setScale(double scale) { setMu(scale); }
+   double getScale() const { return displayMu(); }
+   Mssm calcBeta() const { return beta2(); }
+   void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:
    Mssm(const SoftParsMssm&);
-
-   MssmSoftsusy mssm;
 };
 
 #endif

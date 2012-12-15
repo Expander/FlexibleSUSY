@@ -2,10 +2,11 @@
 #include "mssm_two_scale_initial_guesser.hpp"
 #include "mssm_two_scale.hpp"
 #include "softsusy.h"
+#include "logger.hpp"
 
 #include <cassert>
 
-Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, const QedQcd& oneset_, double mxGuess_, double tanb_, int sgnMu_, const DoubleVector& pars_)
+Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, const QedQcd& oneset_, double mxGuess_, double tanb_, int sgnMu_, const DoubleVector& pars_, bool ewsbBCscale_)
    : Initial_guesser<Two_scale>()
    , mssm(mssm_)
    , oneset(oneset_)
@@ -13,6 +14,7 @@ Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, const QedQcd&
    , tanb(tanb_)
    , sgnMu(sgnMu_)
    , pars(pars_)
+   , ewsbBCscale(ewsbBCscale_)
 {
    assert(mssm && "Mssm_initial_guesser: Error: pointer to Mssm"
           " cannot be zero");
@@ -24,56 +26,72 @@ Mssm_initial_guesser::~Mssm_initial_guesser()
 
 void Mssm_initial_guesser::guess()
 {
-   double mx = 0.0;
    const static MssmSoftsusy empty;
-   double m32 = mssm->displayGravitino();
-   // double muCondFirst = mssm->displayMuCond();
-   // double maCondFirst = mssm->displayMaCond();
 
-   mssm->setSoftsusy(empty);
-   /// These are things that are re-written by the new initialisation
+   double mx = 0.0;
+   const double muFirst = mssm->displaySusyMu(); /// Remember initial values
+   const bool setTbAtMXflag = mssm->displaySetTbAtMX();
+   const bool altFlag = mssm->displayAltEwsb();
+   const double m32 = mssm->displayGravitino();
+   const double muCondFirst = mssm->displayMuCond();
+   const double maCondFirst = mssm->displayMaCond();
+
+   mssm->setSoftsusy(empty); /// Always starts from an empty object
+   mssm->setSetTbAtMX(setTbAtMXflag);
+   if (altFlag)
+      mssm->useAlternativeEwsb();
    mssm->setData(oneset);
    mssm->setMw(MW);
    mssm->setM32(m32);
-   // mssm->setMuCond(muCondFirst);
-   // mssm->setMaCond(maCondFirst);
+   mssm->setMuCond(muCondFirst);
+   mssm->setMaCond(maCondFirst);
 
    double mz = mssm->displayMz();
 
-   mx = mxGuess;
+   if (mxGuess > 0.0) {
+      mx = mxGuess;
+   } else {
+      string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
+      ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
+      throw ii;
+   }
 
    if (oneset.displayMu() != mz) {
-      cout << "WARNING: lowOrg in softsusy.cpp called with oneset at scale\n"
-	   << oneset.displayMu() << "\ninstead of " << mz << endl;
+      WARNING("lowOrg in softsusy.cpp called with oneset at scale\n"
+              << oneset.displayMu() << "instead of " << mz);
    }
 
    MssmSusy t(mssm->guessAtSusyMt(tanb, oneset));
-
    t.setLoops(2); /// 2 loops should protect against ht Landau pole
    t.runto(mx);
 
    mssm->setSusy(t);
 
    /// Initial guess: B=0, mu=1st parameter, need better guesses
-   double m0 = pars.display(1);
-   double m12 = pars.display(2);
-   double a0 = pars.display(3);
+   const double m0 = pars.display(1);
+   const double m12 = pars.display(2);
+   const double a0 = pars.display(3);
+   mssm->standardSugra(m0, m12, a0);
 
-   /// Sets scalar soft masses equal to m0, fermion ones to m12 and sets the
-   /// trilinear scalar coupling to be a0
-   ///  if (m0 < 0.0) m.flagTachyon(true); Deleted on request from A Pukhov
-   mssm->setSugraBcs(m0, m12, a0);
+   if ((sgnMu == 1 || sgnMu == -1) && !ewsbBCscale) {
+      mssm->setSusyMu(sgnMu * 1.0);
+      mssm->setM3Squared(0.);
+   } else {
+      if (mssm->displayAltEwsb()) {
+         mssm->setSusyMu(mssm->displayMuCond());
+         mssm->setM3Squared(mssm->displayMaCond());
+      } else {
+         mssm->setSusyMu(muFirst);
+         mssm->setM3Squared(muFirst);
+      }
+   }
 
-   mssm->setSusyMu(sgnMu * 1.0);
-   mssm->setM3Squared(0.);
+   mssm->run(mx, mz);
 
-   mssm->setScale(mx);
-   mssm->run_to(mz);
-
-   if (sgnMu == 1 || sgnMu == -1) mssm->rewsbTreeLevel(sgnMu);
+   if (sgnMu == 1 || sgnMu == -1)
+      mssm->rewsbTreeLevel(sgnMu);
 
    mssm->physical(0);
-
    mssm->setThresholds(3);
    mssm->setLoops(2);
 }

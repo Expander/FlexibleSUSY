@@ -28,7 +28,8 @@ class Two_scale;
 
 class Mssm_initial_guesser : public Initial_guesser<Two_scale> {
 public:
-   Mssm_initial_guesser(Mssm<Two_scale>*, const QedQcd&, double, double, int, const DoubleVector&);
+   Mssm_initial_guesser(Mssm<Two_scale>*, const QedQcd&, double, double,
+                        int, const DoubleVector&, bool);
    virtual ~Mssm_initial_guesser();
    virtual void guess();
 
@@ -39,6 +40,7 @@ private:
    double tanb;               ///< tan(beta)
    int sgnMu;                 ///< sign of mu
    const DoubleVector pars;   ///< GUT parameters m0, m12, a0
+   bool ewsbBCscale;          ///< EWSB at susy scale
 };
 
 #endif
