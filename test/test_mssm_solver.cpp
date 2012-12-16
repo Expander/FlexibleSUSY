@@ -70,11 +70,6 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    oneset.toMz();
 
    Mssm<Two_scale> mssm;
-   mssm.setScale(125);
-   mssm.setSusyMu(signMu * 1.0);
-   mssm.setTanb(tanBeta);
-   mssm.setData(oneset);
-
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
    Mssm_mz_constraint mssm_mz_constraint(&mssm, tanBeta);
    Mssm_msusy_constraint mssm_msusy_constraint(&mssm, highScaleSoftPars, 1000.0, signMu);
