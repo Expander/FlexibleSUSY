@@ -104,6 +104,59 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
 
-   BOOST_CHECK_EQUAL(mssm.displayPhys(), softSusy.displayPhys());
+   // check equality of physical parameters
+   const sPhysical softSusyPhys(softSusy.displayPhys()), mssmPhys(mssm.displayPhys());
+
+   BOOST_CHECK_CLOSE(softSusyPhys.mh0         , mssmPhys.mh0         , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.mA0         , mssmPhys.mA0         , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.mH0         , mssmPhys.mH0         , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.mHpm        , mssmPhys.mHpm        , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.mGluino     , mssmPhys.mGluino     , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetaL      , mssmPhys.thetaL      , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetaR      , mssmPhys.thetaR      , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetat      , mssmPhys.thetat      , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetab      , mssmPhys.thetab      , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetatau    , mssmPhys.thetatau    , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.thetaH      , mssmPhys.thetaH      , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.t1OV1Ms     , mssmPhys.t1OV1Ms     , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.t2OV2Ms     , mssmPhys.t2OV2Ms     , 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.t1OV1Ms1loop, mssmPhys.t1OV1Ms1loop, 0.1);
+   BOOST_CHECK_CLOSE(softSusyPhys.t2OV2Ms1loop, mssmPhys.t2OV2Ms1loop, 0.1);
+
+   // sneutrino masses
+   for (int i = softSusyPhys.msnu.displayStart();
+        i < softSusyPhys.msnu.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(softSusyPhys.msnu(i), mssmPhys.msnu(i), 0.1);
+
+   // chargino masses
+   for (int i = softSusyPhys.mch.displayStart();
+        i < softSusyPhys.mch.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(softSusyPhys.mch(i), mssmPhys.mch(i), 0.1);
+
+   // neutralino masses
+   for (int i = softSusyPhys.mneut.displayStart();
+        i < softSusyPhys.mneut.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(softSusyPhys.mneut(i), mssmPhys.mneut(i), 0.1);
+
+   // neuralino mixing matrix
+   for (int i = 1; i < softSusyPhys.mixNeut.displayRows(); ++i)
+      for (int k = 1; k < softSusyPhys.mixNeut.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(softSusyPhys.mixNeut(i,k), mssmPhys.mixNeut(i,k), 0.1);
+
+   // up squarks
+   for (int i = 1; i < softSusyPhys.mu.displayRows(); ++i)
+      for (int k = 1; k < softSusyPhys.mu.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(softSusyPhys.mu(i,k), mssmPhys.mu(i,k), 0.1);
+
+   // down squarks
+   for (int i = 1; i < softSusyPhys.md.displayRows(); ++i)
+      for (int k = 1; k < softSusyPhys.md.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(softSusyPhys.md(i,k), mssmPhys.md(i,k), 0.1);
+
+   // down sleptons
+   for (int i = 1; i < softSusyPhys.me.displayRows(); ++i)
+      for (int k = 1; k < softSusyPhys.me.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(softSusyPhys.me(i,k), mssmPhys.me(i,k), 0.1);
+
    BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
 }
