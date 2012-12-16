@@ -92,9 +92,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    } catch (RGFlow<Two_scale>::Error& e) {
       BOOST_ERROR(e.what());
    }
-   mssm.run_to(maximum(mssm.displayMsusy(), MZ));
-   mssm.physical(3);
-   mssm.runto(mssm.displayMz());
+   mssm.calculate_spectrum();
 
    MssmSoftsusy softSusy;
    const double mxSoftSusy

@@ -32,6 +32,13 @@ Mssm<Two_scale>::~Mssm()
 {
 }
 
+void Mssm<Two_scale>::calculate_spectrum()
+{
+   run_to(maximum(displayMsusy(), MZ));
+   physical(3);
+   runto(displayMz());
+}
+
 int Mssm<Two_scale>::run_to(double scale, double eps)
 {
    return runto(scale, eps);

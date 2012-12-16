@@ -25,6 +25,7 @@
 class Two_scale_model {
 public:
    virtual ~Two_scale_model() {}
+   virtual void calculate_spectrum() {}
    virtual std::string name() const { return "unnamed"; }
    virtual int run_to(double, double eps = -1.0) = 0;
    virtual void print(std::ostream&) const {}
