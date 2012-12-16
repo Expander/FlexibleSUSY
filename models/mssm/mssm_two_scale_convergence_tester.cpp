@@ -33,6 +33,8 @@ bool Mssm_convergence_tester::accuracy_goal_reached()
 
       const double fracDiff = sumTol(*mssm, last_iteration);
       precision_reached = fracDiff < accuracy_goal;
+      VERBOSE_MSG("Mssm_convergence_tester: max. rel. difference: " << fracDiff
+                  << " (goal: " << accuracy_goal << ")");
    }
 
    // save old model parameters
