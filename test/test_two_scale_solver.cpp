@@ -202,6 +202,9 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
          BOOST_ERROR(e.what());
       }
 
+      // check that all iterations were done
+      BOOST_CHECK_EQUAL(solver.number_of_iterations_done(),
+                        number_of_iterations);
       // check how often the matching is appied
       BOOST_CHECK_EQUAL(mc.get_number_of_low_to_high_matches(),
                         number_of_iterations);
