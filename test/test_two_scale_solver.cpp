@@ -14,6 +14,7 @@ public:
    Static_model() : parameters(1) {}
    Static_model(const DoubleVector& pars) : parameters(pars) {}
    virtual ~Static_model() {}
+   virtual void calculate_spectrum() {}
    virtual std::string name() const { return "Static_model"; }
    virtual int run_to(double, double) { return 0; }
    virtual void set_parameters(const DoubleVector& v) { parameters = v; }
@@ -50,6 +51,7 @@ class Counting_model: public Two_scale_model {
 public:
    Counting_model() : number_of_runs(0) {}
    virtual ~Counting_model() {}
+   virtual void calculate_spectrum() {}
    virtual int run_to(double, double) { ++number_of_runs; return 0; }
    unsigned get_number_of_runs() const {
       return number_of_runs;

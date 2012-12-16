@@ -26,6 +26,8 @@ public:
                    double lambda, double vs);
 
    virtual ~StandardModelCW();
+
+   virtual void calculate_spectrum() {}
    virtual std::string name() const { return "SMCW"; }
    virtual void print(std::ostream& s) const { s << *this; }
 
