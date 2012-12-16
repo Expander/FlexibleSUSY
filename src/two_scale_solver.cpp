@@ -24,6 +24,8 @@
 #include "two_scale_model.hpp"
 #include "logger.hpp"
 
+#include <cmath>
+
 /**
  * Create empty two scale solver.  Sets maximum number of iterations
  * to 10 (default).
@@ -31,7 +33,7 @@
 RGFlow<Two_scale>::RGFlow()
    : models()
    , max_iterations(10)
-   , needed_iterations(0)
+   , iteration(0)
    , convergence_tester(NULL)
    , initial_guesser(NULL)
 {
@@ -53,6 +55,7 @@ void RGFlow<Two_scale>::solve()
 
    unsigned int iter = max_iterations;
    while (iter && !accuracy_goal_reached()) {
+      iteration = max_iterations - iter;
       run_up();
       run_down();
       --iter;
@@ -61,12 +64,12 @@ void RGFlow<Two_scale>::solve()
    apply_lowest_constaint();
 
    // save number of iterations that were done
-   needed_iterations = max_iterations - iter;
+   iteration = max_iterations - iter;
 
    if (iter == 0 && convergence_tester)
       throw NoConvergenceError(max_iterations);
 
-   VERBOSE_MSG("convergence reached after " << needed_iterations << " iterations");
+   VERBOSE_MSG("convergence reached after " << iteration << " iterations");
 }
 
 void RGFlow<Two_scale>::check_setup() const
@@ -190,6 +193,13 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
 
 double RGFlow<Two_scale>::get_precision()
 {
+   static const double minimum_precision = 1.0e-5;
+
+   if (use_increasing_precision) {
+      return std::max(exp(- static_cast<double>(iteration + 1) * log(10.0)),
+                      minimum_precision);
+   }
+
    return -1.0;
 }
 
@@ -241,6 +251,18 @@ void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* co
    convergence_tester = convergence_tester_;
 }
 
+/**
+ * Enable/ Disable the increasing RG running precision in each
+ * iteration.
+ *
+ * @param use_increasing_precision_ enable (true), disable (false)
+ * increasing precision
+ */
+void RGFlow<Two_scale>::set_increasing_running_precision(bool use_increasing_precision_)
+{
+   use_increasing_precision = use_increasing_precision_;
+}
+
 void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
 {
    initial_guesser = ig;
@@ -259,5 +281,5 @@ void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
 
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 {
-   return needed_iterations;
+   return iteration;
 }

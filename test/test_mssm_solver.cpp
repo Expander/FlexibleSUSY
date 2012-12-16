@@ -89,6 +89,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
    solver.set_convergence_tester(&mssm_convergence_tester);
+   solver.set_increasing_running_precision(true);
    solver.set_initial_guesser(&initial_guesser);
    solver.add_model(&mssm, mssm_constraints);
    try {
