@@ -28,7 +28,7 @@ public:
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "unnamed"; }
    virtual int run_to(double, double eps = -1.0) = 0;
-   virtual void print(std::ostream&) const {}
+   virtual void print(std::ostream& out) const { out << "Model: " << name(); }
    friend std::ostream& operator<<(std::ostream& out, const Two_scale_model& model) {
       model.print(out);
       return out;
