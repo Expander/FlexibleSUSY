@@ -32,7 +32,7 @@ public:
    virtual ~Mssm();
 
    virtual std::string name() const { return "Mssm"; }
-   virtual int run_to(double);
+   virtual int run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
 
    void setScale(double scale) { setMu(scale); }

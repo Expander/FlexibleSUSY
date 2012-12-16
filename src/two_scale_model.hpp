@@ -26,7 +26,7 @@ class Two_scale_model {
 public:
    virtual ~Two_scale_model() {}
    virtual std::string name() const { return "unnamed"; }
-   virtual int run_to(double) = 0;
+   virtual int run_to(double, double eps = -1.0) = 0;
    virtual void print(std::ostream&) const {}
    friend std::ostream& operator<<(std::ostream& out, const Two_scale_model& model) {
       model.print(out);

@@ -31,7 +31,7 @@ public:
    virtual ~StandardModel();
 
    virtual std::string name() const { return "SM"; }
-   virtual int run_to(double scale) { return RGE::runto(scale); }
+   virtual int run_to(double scale, double eps = -1.0) { return RGE::runto(scale, eps); }
    virtual void print(std::ostream& s) const { s << *this; }
 
    /// sets object to be equal to another

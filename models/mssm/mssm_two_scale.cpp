@@ -32,7 +32,7 @@ Mssm<Two_scale>::~Mssm()
 {
 }
 
-int Mssm<Two_scale>::run_to(double scale)
+int Mssm<Two_scale>::run_to(double scale, double eps)
 {
-   return runto(scale);
+   return runto(scale, eps);
 }
