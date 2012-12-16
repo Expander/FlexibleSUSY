@@ -120,6 +120,7 @@ private:
    void run_up();                      ///< run all models up
    void run_down();                    ///< run all models down
    void apply_lowest_constaint();      ///< apply lowest constraint
+   double get_precision();             ///< returns running precision
 };
 
 #endif

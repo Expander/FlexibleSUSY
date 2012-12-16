@@ -115,7 +115,7 @@ void RGFlow<Two_scale>::run_up()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
-         model->model->run_to(scale);
+         model->model->run_to(scale, get_precision());
          VERBOSE_MSG("> \t\t\tupdating scale");
          constraint->update_scale();
          VERBOSE_MSG("> \t\t\tapplying constraint");
@@ -148,7 +148,7 @@ void RGFlow<Two_scale>::run_down()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
-         model->model->run_to(scale);
+         model->model->run_to(scale, get_precision());
          // If m is the first model, do not apply the lowest
          // constraint, because it will be appied when we run up next
          // time.
@@ -183,9 +183,14 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
-   model->model->run_to(scale);
+   model->model->run_to(scale, get_precision());
    VERBOSE_MSG("| \tapplying constraint");
    constraint->apply();
+}
+
+double RGFlow<Two_scale>::get_precision()
+{
+   return -1.0;
 }
 
 /**
