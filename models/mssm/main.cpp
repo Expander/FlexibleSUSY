@@ -10,7 +10,7 @@
    Description: main calling program example: performs a scan of tan beta 
    (starting at CMSSM10.1.1) and prints out Higgs masses as a result in
    the format
-       <tan beta>      <mh0>     <mA0>    <mH0>     <mH+/->
+       (tan beta)      (mh0)     (mA0)    (mH0)     (mH+/-)
 */
 
 #include <iostream>

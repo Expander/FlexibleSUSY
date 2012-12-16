@@ -31,7 +31,7 @@ const static int numSoftParsMssm = 78 + numSusyPars;
 class SoftParsMssm: public MssmSusy
 {
 private:
-  DoubleVector mGaugino; ///< Gaugino masses, see ::beta for definitions
+  DoubleVector mGaugino; ///< Gaugino masses, see SoftParsMssm::beta for definitions
   DoubleMatrix ua, da, ea; ///< Trilinear soft terms..
   /// soft mass squared matrices of \f$ m_Q^2, m_U^2, m_D^2, m_L^2, m_E^2 \f$
   /// respectively.

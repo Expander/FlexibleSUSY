@@ -47,7 +47,7 @@ public:
    void run(T, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
-   void write_to_file(const string&) const;
+   void write_to_file(const std::string&) const;
 
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
