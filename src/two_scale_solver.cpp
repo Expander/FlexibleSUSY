@@ -191,16 +191,25 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
    constraint->apply();
 }
 
+/**
+ * Returns the precision of the RG running.  If
+ * use_increasing_precision == false the function returns the default
+ * precision \f$1.0e-3\f$.  Otherwise the returned precision is
+ * \f$1/10^n\f$ where \f$n\f$ is the iteration number (starting at 1).
+ *
+ * @return RG running precision
+ */
 double RGFlow<Two_scale>::get_precision()
 {
-   static const double minimum_precision = 1.0e-5;
+   static const double default_precision = 1.0e-3;
+   static const double minimum_precision = default_precision * 0.01;
 
    if (use_increasing_precision) {
       return std::max(exp(- static_cast<double>(iteration + 1) * log(10.0)),
                       minimum_precision);
    }
 
-   return -1.0;
+   return default_precision;
 }
 
 /**
