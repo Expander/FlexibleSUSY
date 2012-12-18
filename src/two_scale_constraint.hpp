@@ -29,7 +29,6 @@ public:
    virtual ~Constraint() {}
    virtual void apply() = 0;                    ///< apply constraint
    virtual double get_scale() const = 0;        ///< get scale where to apply
-   virtual void update_scale() = 0;             ///< recalculate the scale
 };
 
 #endif

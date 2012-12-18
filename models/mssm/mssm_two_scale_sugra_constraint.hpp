@@ -29,7 +29,6 @@ public:
    virtual ~Mssm_sugra_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void update_scale();
 
 private:
    double mx_guess;
@@ -37,6 +36,8 @@ private:
    GUT_scale_calculator<Mssm<Two_scale> > gut_scale_calculator;
    double m0, m12, a0;
    int signMu;
+
+   void update_scale();
 };
 
 #endif

@@ -64,24 +64,18 @@ class Counting_constraint : public Constraint<Two_scale> {
 public:
    Counting_constraint(double scale_)
       : scale(scale_)
-      , number_of_apply_calls(0)
-      , number_of_update_scale(0) {}
+      , number_of_apply_calls(0) {}
    virtual ~Counting_constraint() {}
    virtual void apply() { ++number_of_apply_calls; }
    virtual double get_scale() const { return scale; }
-   virtual void update_scale() { ++number_of_update_scale; }
 
    unsigned get_number_of_apply_calls() const {
       return number_of_apply_calls;
-   }
-   unsigned get_number_of_update_calls() const {
-      return number_of_update_scale;
    }
 
 private:
    double   scale;
    unsigned number_of_apply_calls;
-   unsigned number_of_update_scale;
 };
 
 class Counting_matching_condition: public Matching<Two_scale> {

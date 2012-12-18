@@ -18,6 +18,7 @@ Mssm_mz_constraint::~Mssm_mz_constraint()
 
 void Mssm_mz_constraint::apply()
 {
+   update_scale();
    mssm->sparticleThresholdCorrections(tanBeta);
 }
 
@@ -50,6 +51,7 @@ Mssm_msusy_constraint::~Mssm_msusy_constraint()
 void Mssm_msusy_constraint::apply()
 {
    mssm->calcDrBarPars();
+   update_scale();
    double mtrun = mssm->displayDrBarPars().mt;
    mssm->rewsb(sgnMu, mtrun, pars);
 }
@@ -63,8 +65,4 @@ void Mssm_msusy_constraint::update_scale()
 {
    mssm->setMsusy(mssm->calcMs());
    scale = mssm->displayMsusy();
-   // drBarPars tree(mssm->displayDrBarPars());
-   // double tmp_scale = sqrt(tree.mu(2, 3) * tree.mu(1, 3));
-   // if (tmp_scale > 0.0)
-   //    scale = tmp_scale;
 }

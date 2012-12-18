@@ -63,7 +63,3 @@ double StandardModel_exp_constraint::get_scale() const
 {
    return Electroweak_constants::MZ;
 }
-
-void StandardModel_exp_constraint::update_scale()
-{
-}

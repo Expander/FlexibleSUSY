@@ -29,13 +29,14 @@ public:
    virtual ~StandardModelCWGUTConstraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void update_scale();
 
 private:
    double estimated_scale;
    StandardModelCW<Two_scale>* smcw;
    GUT_scale_calculator<StandardModelCW<Two_scale> > gut_scale_calculator;
    double lambda_at_mgut;
+
+   void update_scale();
 };
 
 #endif

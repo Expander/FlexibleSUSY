@@ -67,7 +67,6 @@ public:
    virtual ~StandardModel_exp_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void update_scale();
 
 private:
    StandardModel<Two_scale>* sm; ///< model to apply the constraints to

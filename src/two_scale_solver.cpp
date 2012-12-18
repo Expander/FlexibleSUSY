@@ -121,8 +121,6 @@ void RGFlow<Two_scale>::run_up()
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
          model->model->run_to(scale, get_precision());
-         VERBOSE_MSG("> \t\t\tupdating scale");
-         constraint->update_scale();
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
       }
@@ -156,8 +154,6 @@ void RGFlow<Two_scale>::run_down()
          // constraint, because it will be appied when we run up next
          // time.
          if (m != 0 || c != model->downwards_constraints.size() - 1) {
-            VERBOSE_MSG("< \t\t\tupdating scale");
-            constraint->update_scale();
             VERBOSE_MSG("< \t\t\tapplying constraint");
             constraint->apply();
          }

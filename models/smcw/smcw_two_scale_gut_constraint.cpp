@@ -18,6 +18,8 @@ StandardModelCWGUTConstraint::~StandardModelCWGUTConstraint()
 
 void StandardModelCWGUTConstraint::apply()
 {
+   update_scale();
+
    const double g1 = smcw->displayGaugeCoupling(1);
    const double g2 = smcw->displayGaugeCoupling(2);
    const double g_mean = 0.5 * (g1 + g2);

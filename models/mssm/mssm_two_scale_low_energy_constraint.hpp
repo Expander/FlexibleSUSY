@@ -29,12 +29,13 @@ public:
    virtual ~Mssm_mz_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void update_scale();
 
 private:
    Mssm<Two_scale>* mssm;
    double tanBeta;
    double scale;
+
+   void update_scale();
 };
 
 class Mssm_msusy_constraint : public Constraint<Two_scale> {
@@ -44,13 +45,14 @@ public:
    virtual ~Mssm_msusy_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void update_scale();
 
 private:
    Mssm<Two_scale>* mssm;
    DoubleVector pars;
    double scale;
    int sgnMu;
+
+   void update_scale();
 };
 
 #endif

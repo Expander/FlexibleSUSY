@@ -21,6 +21,8 @@ Mssm_sugra_constraint::~Mssm_sugra_constraint()
 
 void Mssm_sugra_constraint::apply()
 {
+   update_scale();
+
    const double g1 = mssm->displayGaugeCoupling(1);
    const double g2 = mssm->displayGaugeCoupling(2);
    const double g_mean = 0.5 * (g1 + g2);
