@@ -25,6 +25,8 @@
 #include "logger.hpp"
 
 #include <cmath>
+#include <algorithm>
+#include <iterator>
 
 /**
  * Create empty two scale solver.  Sets maximum number of iterations
@@ -143,10 +145,8 @@ void RGFlow<Two_scale>::run_down()
       // apply all constraints:
       // If m is the last model, do not apply the highest constraint,
       // because it was already appied when we ran up.
-      const long c_begin = (m == static_cast<long>(models.size() - 1) ?
-                            model->downwards_constraints.size() - 2 :
-                            model->downwards_constraints.size() - 1);
-      for (long c = c_begin; c >= 0; --c) {
+      const long c_begin = (m == static_cast<long>(models.size() - 1) ? 1 : 0);
+      for (long c = c_begin; c < model->downwards_constraints.size(); ++c) {
          Constraint<Two_scale>* constraint = model->downwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
@@ -247,12 +247,12 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   Matching<Two_scale>* mc,
                                   const std::vector<Constraint<Two_scale>*>& constraints)
 {
-   // // create vector of downward constraints
-   // const std::vector<Constraint<Two_scale>*> downwards_constraints;
-   // std::reverse_copy(constraints.begin(), constraints.end(),
-   //                   std::back_inserter(downwards_constraints)));
+   // create vector of downward constraints
+   std::vector<Constraint<Two_scale>*> downward_constraints;
+   std::reverse_copy(constraints.begin(), constraints.end(),
+                     std::back_inserter(downward_constraints));
 
-   add_model(model, mc, constraints, constraints);
+   add_model(model, mc, constraints, downward_constraints);
 }
 
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,

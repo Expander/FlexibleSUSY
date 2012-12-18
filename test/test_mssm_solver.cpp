@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    mssm_upward_constraints.push_back(&mssm_sugra_constraint);
 
    std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
-   mssm_downward_constraints.push_back(&mssm_mz_constraint);
-   mssm_downward_constraints.push_back(&mssm_msusy_constraint);
    mssm_downward_constraints.push_back(&mssm_sugra_constraint);
+   mssm_downward_constraints.push_back(&mssm_msusy_constraint);
+   mssm_downward_constraints.push_back(&mssm_mz_constraint);
 
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
