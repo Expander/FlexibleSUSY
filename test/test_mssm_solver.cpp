@@ -98,6 +98,8 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    }
    mssm.calculate_spectrum();
 
+   // run softsusy
+   softsusy::TOLERANCE = 1.0e-4;
    MssmSoftsusy softSusy;
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
