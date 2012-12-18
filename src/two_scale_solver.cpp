@@ -213,7 +213,9 @@ double RGFlow<Two_scale>::get_precision()
 /**
  * Add a model and the corresponding model constraints.  Note that the
  * order of the model registration is important: Models that are added
- * later are assumed to be valid at a higher scale.
+ * later are assumed to be valid at a higher scale.  The same is true
+ * for the constraints: they are assumed to be ordered from low to
+ * high energies.
  *
  * @param model model
  * @param constraints vector of model constraints
@@ -224,6 +226,15 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
    add_model(model, NULL, constraints);
 }
 
+/**
+ * Add a model and the corresponding model constraints.  With this
+ * function the user can use different contraints for the up and down
+ * running of the model tower.
+ *
+ * @param model model
+ * @param upwards_constraints model constraints for running up
+ * @param downwards_constraints model constraints for running down
+ */
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   const std::vector<Constraint<Two_scale>*>& upwards_constraints,
                                   const std::vector<Constraint<Two_scale>*>& downwards_constraints)
@@ -233,9 +244,7 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
 
 /**
  * Add a model, the corresponding model constraints and the matching
- * condition to the next model.  Note that the order of the model
- * registration is important: Models that are added later are assumed
- * to be valid at a higher scale.
+ * condition to the next model.
  *
  * @param model model
  * @param mc matching condition to the next higher model
@@ -253,6 +262,17 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
    add_model(model, mc, constraints, downward_constraints);
 }
 
+/**
+ * Add a model, the corresponding model constraints and the matching
+ * condition to the next higher model.  With this function the user
+ * can use different contraints for the up and down running of the
+ * model tower.
+ *
+ * @param model model
+ * @param mc matching condition to the next higher model
+ * @param upwards_constraints model constraints for running up
+ * @param downwards_constraints model constraints for running down
+ */
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   Matching<Two_scale>* mc,
                                   const std::vector<Constraint<Two_scale>*>& upwards_constraints,
