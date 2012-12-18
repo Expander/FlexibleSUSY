@@ -155,7 +155,7 @@ void RGFlow<Two_scale>::run_down()
          // If m is the first model, do not apply the lowest
          // constraint, because it will be appied when we run up next
          // time.
-         if (m != 0 || c != 0) {
+         if (m != 0 || c != model->downwards_constraints.size() - 1) {
             VERBOSE_MSG("< \t\t\tupdating scale");
             constraint->update_scale();
             VERBOSE_MSG("< \t\t\tapplying constraint");
@@ -182,7 +182,7 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
    if (model->downwards_constraints.empty())
       return;
 
-   Constraint<Two_scale>* constraint = model->downwards_constraints[0];
+   Constraint<Two_scale>* constraint = model->downwards_constraints.back();
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
