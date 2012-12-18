@@ -72,10 +72,19 @@ public:
    /// add models and constraints
    void add_model(Two_scale_model*,
                   const std::vector<Constraint<Two_scale>*>&);
+   /// add models and up- and downwards constraints
+   void add_model(Two_scale_model*,
+                  const std::vector<Constraint<Two_scale>*>&,
+                  const std::vector<Constraint<Two_scale>*>&);
    /// add models, constraints and matching condition
    void add_model(Two_scale_model*,
                   Matching<Two_scale>* m = NULL,
                   const std::vector<Constraint<Two_scale>*>& constraints = std::vector<Constraint<Two_scale>*>());
+   /// add models, up- and downward constraints and matching condition
+   void add_model(Two_scale_model*,
+                  Matching<Two_scale>* m,
+                  const std::vector<Constraint<Two_scale>*>& upwards_constraints,
+                  const std::vector<Constraint<Two_scale>*>& downwards_constraints);
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
    /// set convergence tester
@@ -99,14 +108,17 @@ private:
     */
    struct TModel {
       Two_scale_model* model;                          ///< the model
-      std::vector<Constraint<Two_scale>*> constraints; ///< model constraints
+      std::vector<Constraint<Two_scale>*> upwards_constraints; ///< upwards constraints
+      std::vector<Constraint<Two_scale>*> downwards_constraints; ///< downwards constraints
       Matching<Two_scale>* matching_condition;         ///< matching condition
 
       TModel(Two_scale_model* m,
-             const std::vector<Constraint<Two_scale>*>& c,
+             const std::vector<Constraint<Two_scale>*>& uc,
+             const std::vector<Constraint<Two_scale>*>& dc,
              Matching<Two_scale>* mc)
          : model(m)
-         , constraints(c)
+         , upwards_constraints(uc)
+         , downwards_constraints(dc)
          , matching_condition(mc)
          {}
    };

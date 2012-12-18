@@ -113,8 +113,8 @@ void RGFlow<Two_scale>::run_up()
       TModel* model = models[m];
       VERBOSE_MSG("> \tselecting model " << model->model->name());
       // apply all constraints
-      for (size_t c = 0; c < model->constraints.size(); ++c) {
-         Constraint<Two_scale>* constraint = model->constraints[c];
+      for (size_t c = 0; c < model->upwards_constraints.size(); ++c) {
+         Constraint<Two_scale>* constraint = model->upwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
@@ -144,10 +144,10 @@ void RGFlow<Two_scale>::run_down()
       // If m is the last model, do not apply the highest constraint,
       // because it was already appied when we ran up.
       const long c_begin = (m == static_cast<long>(models.size() - 1) ?
-                            model->constraints.size() - 2 :
-                            model->constraints.size() - 1);
+                            model->downwards_constraints.size() - 2 :
+                            model->downwards_constraints.size() - 1);
       for (long c = c_begin; c >= 0; --c) {
-         Constraint<Two_scale>* constraint = model->constraints[c];
+         Constraint<Two_scale>* constraint = model->downwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
@@ -179,10 +179,10 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
 
    TModel* model = models[0];
 
-   if (model->constraints.empty())
+   if (model->downwards_constraints.empty())
       return;
 
-   Constraint<Two_scale>* constraint = model->constraints[0];
+   Constraint<Two_scale>* constraint = model->downwards_constraints[0];
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
@@ -223,7 +223,14 @@ double RGFlow<Two_scale>::get_precision()
 void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   const std::vector<Constraint<Two_scale>*>& constraints)
 {
-   models.push_back(new TModel(model, constraints, NULL));
+   add_model(model, NULL, constraints);
+}
+
+void RGFlow<Two_scale>::add_model(Two_scale_model* model,
+                                  const std::vector<Constraint<Two_scale>*>& upwards_constraints,
+                                  const std::vector<Constraint<Two_scale>*>& downwards_constraints)
+{
+   add_model(model, NULL, upwards_constraints, downwards_constraints);
 }
 
 /**
@@ -240,7 +247,20 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   Matching<Two_scale>* mc,
                                   const std::vector<Constraint<Two_scale>*>& constraints)
 {
-   models.push_back(new TModel(model, constraints, mc));
+   // // create vector of downward constraints
+   // const std::vector<Constraint<Two_scale>*> downwards_constraints;
+   // std::reverse_copy(constraints.begin(), constraints.end(),
+   //                   std::back_inserter(downwards_constraints)));
+
+   add_model(model, mc, constraints, constraints);
+}
+
+void RGFlow<Two_scale>::add_model(Two_scale_model* model,
+                                  Matching<Two_scale>* mc,
+                                  const std::vector<Constraint<Two_scale>*>& upwards_constraints,
+                                  const std::vector<Constraint<Two_scale>*>& downwards_constraints)
+{
+   models.push_back(new TModel(model, upwards_constraints, downwards_constraints, mc));
 }
 
 bool RGFlow<Two_scale>::accuracy_goal_reached() const

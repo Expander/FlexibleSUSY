@@ -76,17 +76,21 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 0.001);
    Mssm_initial_guesser initial_guesser(&mssm, oneset, mxGuess, tanBeta, signMu, highScaleSoftPars, false);
 
-   std::vector<Constraint<Two_scale>*> mssm_constraints;
-   mssm_constraints.push_back(&mssm_mz_constraint);
-   mssm_constraints.push_back(&mssm_msusy_constraint);
-   mssm_constraints.push_back(&mssm_sugra_constraint);
+   std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
+   mssm_upward_constraints.push_back(&mssm_mz_constraint);
+   mssm_upward_constraints.push_back(&mssm_sugra_constraint);
+
+   std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
+   mssm_downward_constraints.push_back(&mssm_mz_constraint);
+   mssm_downward_constraints.push_back(&mssm_msusy_constraint);
+   mssm_downward_constraints.push_back(&mssm_sugra_constraint);
 
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
    solver.set_convergence_tester(&mssm_convergence_tester);
    solver.set_increasing_running_precision(true);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&mssm, mssm_constraints);
+   solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
    try {
       solver.solve();
    } catch (RGFlow<Two_scale>::Error& e) {
