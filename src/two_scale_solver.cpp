@@ -27,6 +27,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iterator>
+#include <cassert>
 
 /**
  * Create empty two scale solver.  Sets maximum number of iterations
@@ -138,6 +139,7 @@ void RGFlow<Two_scale>::run_up()
 
 void RGFlow<Two_scale>::run_down()
 {
+   assert(models.size() > 0 && "model size must not be zero");
    VERBOSE_MSG("< running tower down ...");
    for (long m = models.size() - 1; m >= 0; --m) {
       TModel* model = models[m];
@@ -145,17 +147,18 @@ void RGFlow<Two_scale>::run_down()
       // apply all constraints:
       // If m is the last model, do not apply the highest constraint,
       // because it was already appied when we ran up.
-      const long c_begin = (m == static_cast<long>(models.size() - 1) ? 1 : 0);
-      for (long c = c_begin; c < model->downwards_constraints.size(); ++c) {
+      const size_t c_begin = (m + 1 == (long)models.size() ? 1 : 0);
+      const size_t number_of_constraints = model->downwards_constraints.size();
+      for (size_t c = c_begin; c < number_of_constraints; ++c) {
          Constraint<Two_scale>* constraint = model->downwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
          model->model->run_to(scale, get_precision());
-         // If m is the first model, do not apply the lowest
-         // constraint, because it will be appied when we run up next
+         // If m is the lowest energy model, do not apply the lowest
+         // constraint, because it will be applied when we run up next
          // time.
-         if (m != 0 || c != model->downwards_constraints.size() - 1) {
+         if (m != 0 || c + 1 != number_of_constraints) {
             VERBOSE_MSG("< \t\t\tapplying constraint");
             constraint->apply();
          }
