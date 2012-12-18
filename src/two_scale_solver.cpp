@@ -56,10 +56,12 @@ void RGFlow<Two_scale>::solve()
    initial_guess();
 
    unsigned int iter = max_iterations;
-   while (iter && !accuracy_goal_reached()) {
+   while (iter) {
       iteration = max_iterations - iter;
       run_up();
       run_down();
+      if (accuracy_goal_reached())
+         break;
       --iter;
    }
 
