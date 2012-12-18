@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
    Mssm_mz_constraint mssm_mz_constraint(&mssm, tanBeta);
    Mssm_msusy_constraint mssm_msusy_constraint(&mssm, highScaleSoftPars, 1000.0, signMu);
-   Mssm_convergence_tester mssm_convergence_tester(&mssm, 0.001);
+   Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
    Mssm_initial_guesser initial_guesser(&mssm, oneset, mxGuess, tanBeta, signMu, highScaleSoftPars, false);
 
    std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
