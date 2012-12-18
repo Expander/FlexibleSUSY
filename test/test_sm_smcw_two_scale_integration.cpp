@@ -55,7 +55,6 @@ public:
    virtual double get_scale() const {
       return 3000;
    }
-   virtual void update_scale() {}
 private:
    StandardModel<Two_scale>* sm;
    StandardModelCW<Two_scale>* smcw;

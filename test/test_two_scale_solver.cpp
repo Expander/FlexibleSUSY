@@ -42,7 +42,6 @@ public:
    virtual double get_scale() const {
       return 100.0;
    }
-   virtual void update_scale() {}
 private:
    Static_model *mLow, *mHigh;
 };
@@ -85,7 +84,6 @@ public:
       , number_of_low_to_high_matches(0)
       , number_of_high_to_low_matches(0)
       , number_of_get_scale(0)
-      , number_of_update_scale(0)
       {}
    virtual ~Counting_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
@@ -98,9 +96,6 @@ public:
       ++number_of_get_scale;
       return scale;
    }
-   virtual void update_scale() {
-      ++number_of_update_scale;
-   }
    unsigned get_number_of_low_to_high_matches() const {
       return number_of_low_to_high_matches;
    }
@@ -110,15 +105,11 @@ public:
    unsigned get_number_of_get_scale() const {
       return number_of_get_scale;
    }
-   unsigned get_number_of_update_scale() const {
-      return number_of_update_scale;
-   }
 private:
    double   scale;
    unsigned number_of_low_to_high_matches;
    unsigned number_of_high_to_low_matches;
    mutable unsigned number_of_get_scale;
-   unsigned number_of_update_scale;
 };
 
 BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
