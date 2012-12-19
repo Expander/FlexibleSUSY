@@ -16,11 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_LOW_ENERGY_CONSTRAINT_H
-#define MSSM_LOW_ENERGY_CONSTRAINT_H
+#ifndef MSSM_MZ_CONSTRAINT_H
+#define MSSM_MZ_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
-#include "mssm_two_scale.hpp"
+
+class Two_scale;
+template<class T> class Mssm;
+
+/**
+ * @class Mssm_mz_constraint
+ * @brief MSSM low-energy constraint at the Z mass MZ
+ *
+ * This class represents the low-energy constraint of the MSSM at the
+ * Z mass MZ.  The apply() function calculates the threshold
+ * corrections to the gauge and Yukawa couplings.  It is assumed that
+ * the MSSM model class is filled with the low-energy data set (see
+ * MssmSoftsusy::setData).
+ */
 
 class Mssm_mz_constraint : public Constraint<Two_scale> {
 public:
@@ -34,23 +47,6 @@ private:
    Mssm<Two_scale>* mssm;
    double tanBeta;
    double scale;
-
-   void update_scale();
-};
-
-class Mssm_msusy_constraint : public Constraint<Two_scale> {
-public:
-   Mssm_msusy_constraint(Mssm<Two_scale>* mssm_, const DoubleVector& pars_,
-                         double scale_, int sgnMu_);
-   virtual ~Mssm_msusy_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-
-private:
-   Mssm<Two_scale>* mssm;
-   DoubleVector pars;
-   double scale;
-   int sgnMu;
 
    void update_scale();
 };
