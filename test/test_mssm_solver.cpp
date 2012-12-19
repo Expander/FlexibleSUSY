@@ -8,6 +8,7 @@
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
+#include "stopwatch.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_mssm_solver
@@ -70,6 +71,11 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    oneset.setMass(mBottom, mbmb);
    oneset.toMz();
 
+   // record time for the two scale method to solve the MSSM
+   Stopwatch stopwatch;
+   stopwatch.start();
+
+   // setup the MSSM with the two scale method
    Mssm<Two_scale> mssm;
    Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
    Mssm_mz_constraint mssm_mz_constraint(&mssm, tanBeta);
@@ -99,11 +105,22 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    }
    mssm.calculate_spectrum();
 
+   stopwatch.stop();
+   VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
+               << " seconds (" << stopwatch.get_clicks() << " clicks)");
+
+   // record time for SoftSusy to solve the MSSM
+   stopwatch.start();
+
    // run softsusy
    softsusy::TOLERANCE = 1.0e-4;
    MssmSoftsusy softSusy;
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
+
+   stopwatch.stop();
+   VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
+               << " seconds (" << stopwatch.get_clicks() << " clicks)");
 
    // check equality of physical parameters
    const sPhysical softSusyPhys(softSusy.displayPhys()), mssmPhys(mssm.displayPhys());
