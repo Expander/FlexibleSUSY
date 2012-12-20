@@ -207,9 +207,23 @@ void test_point(const Mssm_parameter_point& pp)
    BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
 }
 
-BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
+BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 {
    Mssm_parameter_point pp;
    BOOST_MESSAGE("testing parameter point " << pp);
+   test_point(pp);
+}
+
+BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
+{
+   // slow convergence point taken from arXiv:1211.3231 Fig. 7
+   Mssm_parameter_point pp;
+   pp.oneset.setPoleMt(173.5);
+   pp.tanBeta = 10.0;
+   pp.a0 = 0.0;
+   pp.m12 = 337.5;
+   pp.m0 = 3400.0;
+
+   BOOST_MESSAGE("testing slow convergent parameter point " << pp);
    test_point(pp);
 }
