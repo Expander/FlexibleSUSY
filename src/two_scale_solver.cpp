@@ -56,22 +56,22 @@ void RGFlow<Two_scale>::solve()
    check_setup();
    initial_guess();
 
-   unsigned int iter = max_iterations;
-   while (iter) {
-      iteration = max_iterations - iter;
+   unsigned int iter = 0;
+   bool accuracy_reached = false;
+   while (iter < max_iterations && !accuracy_reached) {
+      iteration = iter;
       run_up();
       run_down();
-      if (accuracy_goal_reached())
-         break;
-      --iter;
+      accuracy_reached = accuracy_goal_reached();
+      ++iter;
    }
 
    apply_lowest_constaint();
 
    // save number of iterations that were done
-   iteration = max_iterations - iter;
+   iteration = iter;
 
-   if (iter == 0 && convergence_tester)
+   if (!accuracy_reached && convergence_tester)
       throw NoConvergenceError(max_iterations);
 
    VERBOSE_MSG("convergence reached after " << iteration << " iterations");
