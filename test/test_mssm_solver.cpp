@@ -78,10 +78,14 @@ struct Mssm_parameter_point {
    QedQcd oneset;
 };
 
-BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
+/**
+ * Tests if our two scale algorithm calculates the same spectrum as
+ * SoftSusy
+ *
+ * @param pp CMSSM parameter point
+ */
+void test_point(const Mssm_parameter_point& pp)
 {
-   Mssm_parameter_point pp;
-
    // record time for the two scale method to solve the MSSM
    Stopwatch stopwatch;
    stopwatch.start();
@@ -188,4 +192,10 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
          BOOST_CHECK_CLOSE(softSusyPhys.me(i,k), mssmPhys.me(i,k), 0.1);
 
    BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
+}
+
+BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
+{
+   Mssm_parameter_point pp;
+   test_point(pp);
 }
