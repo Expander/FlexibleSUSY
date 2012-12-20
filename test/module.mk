@@ -17,6 +17,9 @@ TEST_DEP := \
 TEST_EXE := \
 		$(TEST_OBJ:.o=.x)
 
+TEST_LOG := \
+		$(DIR)/test.log
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(TEST_EXE)
@@ -30,20 +33,20 @@ distclean-$(MODNAME): clean-$(MODNAME)
 
 execute-tests:  all-$(MODNAME)
 		@echo "executing all tests ..."
-		@rm -f test.log
+		@rm -f $(TEST_LOG)
 		@for x in $(TEST_EXE); do      \
 			echo -n "executing test: $$x ... ";              \
-			echo "**************************" >> test.log;   \
-			echo "* executing test: $$x ... " >> test.log;   \
-			echo "**************************" >> test.log;   \
-			./$$x --log_level=test_suite >> test.log 2>> test.log; \
+			echo "**************************" >> $(TEST_LOG);   \
+			echo "* executing test: $$x ... " >> $(TEST_LOG);   \
+			echo "**************************" >> $(TEST_LOG);   \
+			./$$x --log_level=test_suite >> $(TEST_LOG) 2>> $(TEST_LOG); \
 			if [ $$? = 0 ] ; then  \
 				echo "OK";     \
 			else                   \
 				echo "FAILED"; \
 			fi                     \
 		done
-		@echo "all tests finished"
+		@echo "all tests finished (log file: $(TEST_LOG))"
 
 clean::         clean-$(MODNAME)
 
