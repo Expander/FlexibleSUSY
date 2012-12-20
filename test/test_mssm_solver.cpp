@@ -51,25 +51,36 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
    BOOST_CHECK_EQUAL(mssmSolver.displayPhys(), softSusy.displayPhys());
 }
 
+struct Mssm_parameter_point {
+   Mssm_parameter_point()
+      : m0(125.0)
+      , m12(500.0)
+      , a0(0.0)
+      , mxGuess(1.0e16)
+      , signMu(1)
+      , tanBeta(10.0)
+      , oneset()
+   {
+      const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
+      oneset.setAlpha(ALPHAS, alphasMZ);
+      oneset.setPoleMt(mtop);
+      oneset.setMass(mBottom, mbmb);
+      oneset.toMz();
+   }
+   DoubleVector get_soft_pars() const {
+      DoubleVector highScaleSoftPars(3);
+      highScaleSoftPars(1) = m0;
+      highScaleSoftPars(2) = m12;
+      highScaleSoftPars(3) = a0;
+      return highScaleSoftPars;
+   }
+   double m0, m12, a0, mxGuess, signMu, tanBeta;
+   QedQcd oneset;
+};
+
 BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
 {
-   DoubleVector highScaleSoftPars(3);
-   const double m12 = 500., a0 = 0., m0 = 125.;
-   highScaleSoftPars(1) = m0;
-   highScaleSoftPars(2) = m12;
-   highScaleSoftPars(3) = a0;
-
-   const int signMu = 1;
-   const double tanBeta = 10.0;
-   const bool uni = true;
-   const double mxGuess = 1.0e16;
-
-   QedQcd oneset;
-   const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
-   oneset.setAlpha(ALPHAS, alphasMZ);
-   oneset.setPoleMt(mtop);
-   oneset.setMass(mBottom, mbmb);
-   oneset.toMz();
+   Mssm_parameter_point pp;
 
    // record time for the two scale method to solve the MSSM
    Stopwatch stopwatch;
@@ -77,11 +88,11 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
 
    // setup the MSSM with the two scale method
    Mssm<Two_scale> mssm;
-   Mssm_sugra_constraint mssm_sugra_constraint(&mssm, mxGuess, m0, m12, a0, signMu);
-   Mssm_mz_constraint mssm_mz_constraint(&mssm, tanBeta);
-   Mssm_msusy_constraint mssm_msusy_constraint(&mssm, highScaleSoftPars, 1000.0, signMu);
+   Mssm_sugra_constraint mssm_sugra_constraint(&mssm, pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
+   Mssm_mz_constraint mssm_mz_constraint(&mssm, pp.tanBeta);
+   Mssm_msusy_constraint mssm_msusy_constraint(&mssm, pp.get_soft_pars(), 1000.0, pp.signMu);
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
-   Mssm_initial_guesser initial_guesser(&mssm, oneset, mxGuess, tanBeta, signMu, highScaleSoftPars, false);
+   Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
 
    std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
    mssm_upward_constraints.push_back(&mssm_mz_constraint);
@@ -116,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
    softsusy::TOLERANCE = 1.0e-4;
    MssmSoftsusy softSusy;
    const double mxSoftSusy
-      = softSusy.lowOrg(sugraBcs, mxGuess, highScaleSoftPars, signMu, tanBeta, oneset, uni);
+      = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
 
    stopwatch.stop();
    VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
