@@ -92,6 +92,67 @@ struct Mssm_parameter_point {
 };
 
 /**
+ * Test equality of physical MSSM parameters
+ *
+ * @param a first parameter set
+ * @param b second parameter set
+ * @param tolerance max. allowed deviation
+ */
+void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
+{
+   BOOST_CHECK_CLOSE(a.mh0         , b.mh0         , tolerance);
+   BOOST_CHECK_CLOSE(a.mA0         , b.mA0         , tolerance);
+   BOOST_CHECK_CLOSE(a.mH0         , b.mH0         , tolerance);
+   BOOST_CHECK_CLOSE(a.mHpm        , b.mHpm        , tolerance);
+   BOOST_CHECK_CLOSE(a.mGluino     , b.mGluino     , tolerance);
+   BOOST_CHECK_CLOSE(a.thetaL      , b.thetaL      , tolerance);
+   BOOST_CHECK_CLOSE(a.thetaR      , b.thetaR      , tolerance);
+   BOOST_CHECK_CLOSE(a.thetat      , b.thetat      , tolerance);
+   BOOST_CHECK_CLOSE(a.thetab      , b.thetab      , tolerance);
+   BOOST_CHECK_CLOSE(a.thetatau    , b.thetatau    , tolerance);
+   BOOST_CHECK_CLOSE(a.thetaH      , b.thetaH      , tolerance);
+   BOOST_CHECK_CLOSE(a.t1OV1Ms     , b.t1OV1Ms     , tolerance);
+   BOOST_CHECK_CLOSE(a.t2OV2Ms     , b.t2OV2Ms     , tolerance);
+   BOOST_CHECK_CLOSE(a.t1OV1Ms1loop, b.t1OV1Ms1loop, tolerance);
+   BOOST_CHECK_CLOSE(a.t2OV2Ms1loop, b.t2OV2Ms1loop, tolerance);
+
+   // sneutrino masses
+   for (int i = a.msnu.displayStart();
+        i < a.msnu.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(a.msnu(i), b.msnu(i), tolerance);
+
+   // chargino masses
+   for (int i = a.mch.displayStart();
+        i < a.mch.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(a.mch(i), b.mch(i), tolerance);
+
+   // neutralino masses
+   for (int i = a.mneut.displayStart();
+        i < a.mneut.displayEnd(); ++i)
+      BOOST_CHECK_CLOSE(a.mneut(i), b.mneut(i), tolerance);
+
+   // neuralino mixing matrix
+   for (int i = 1; i < a.mixNeut.displayRows(); ++i)
+      for (int k = 1; k < a.mixNeut.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(a.mixNeut(i,k), b.mixNeut(i,k), tolerance);
+
+   // up squarks
+   for (int i = 1; i < a.mu.displayRows(); ++i)
+      for (int k = 1; k < a.mu.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(a.mu(i,k), b.mu(i,k), tolerance);
+
+   // down squarks
+   for (int i = 1; i < a.md.displayRows(); ++i)
+      for (int k = 1; k < a.md.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(a.md(i,k), b.md(i,k), tolerance);
+
+   // down sleptons
+   for (int i = 1; i < a.me.displayRows(); ++i)
+      for (int k = 1; k < a.me.displayCols(); ++k)
+         BOOST_CHECK_CLOSE(a.me(i,k), b.me(i,k), tolerance);
+}
+
+/**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
  *
@@ -151,58 +212,7 @@ void test_point(const Mssm_parameter_point& pp)
                << " seconds (" << stopwatch.get_clicks() << " clicks)");
 
    // check equality of physical parameters
-   const sPhysical softSusyPhys(softSusy.displayPhys()), mssmPhys(mssm.displayPhys());
-
-   BOOST_CHECK_CLOSE(softSusyPhys.mh0         , mssmPhys.mh0         , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.mA0         , mssmPhys.mA0         , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.mH0         , mssmPhys.mH0         , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.mHpm        , mssmPhys.mHpm        , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.mGluino     , mssmPhys.mGluino     , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetaL      , mssmPhys.thetaL      , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetaR      , mssmPhys.thetaR      , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetat      , mssmPhys.thetat      , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetab      , mssmPhys.thetab      , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetatau    , mssmPhys.thetatau    , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.thetaH      , mssmPhys.thetaH      , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.t1OV1Ms     , mssmPhys.t1OV1Ms     , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.t2OV2Ms     , mssmPhys.t2OV2Ms     , 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.t1OV1Ms1loop, mssmPhys.t1OV1Ms1loop, 0.1);
-   BOOST_CHECK_CLOSE(softSusyPhys.t2OV2Ms1loop, mssmPhys.t2OV2Ms1loop, 0.1);
-
-   // sneutrino masses
-   for (int i = softSusyPhys.msnu.displayStart();
-        i < softSusyPhys.msnu.displayEnd(); ++i)
-      BOOST_CHECK_CLOSE(softSusyPhys.msnu(i), mssmPhys.msnu(i), 0.1);
-
-   // chargino masses
-   for (int i = softSusyPhys.mch.displayStart();
-        i < softSusyPhys.mch.displayEnd(); ++i)
-      BOOST_CHECK_CLOSE(softSusyPhys.mch(i), mssmPhys.mch(i), 0.1);
-
-   // neutralino masses
-   for (int i = softSusyPhys.mneut.displayStart();
-        i < softSusyPhys.mneut.displayEnd(); ++i)
-      BOOST_CHECK_CLOSE(softSusyPhys.mneut(i), mssmPhys.mneut(i), 0.1);
-
-   // neuralino mixing matrix
-   for (int i = 1; i < softSusyPhys.mixNeut.displayRows(); ++i)
-      for (int k = 1; k < softSusyPhys.mixNeut.displayCols(); ++k)
-         BOOST_CHECK_CLOSE(softSusyPhys.mixNeut(i,k), mssmPhys.mixNeut(i,k), 0.1);
-
-   // up squarks
-   for (int i = 1; i < softSusyPhys.mu.displayRows(); ++i)
-      for (int k = 1; k < softSusyPhys.mu.displayCols(); ++k)
-         BOOST_CHECK_CLOSE(softSusyPhys.mu(i,k), mssmPhys.mu(i,k), 0.1);
-
-   // down squarks
-   for (int i = 1; i < softSusyPhys.md.displayRows(); ++i)
-      for (int k = 1; k < softSusyPhys.md.displayCols(); ++k)
-         BOOST_CHECK_CLOSE(softSusyPhys.md(i,k), mssmPhys.md(i,k), 0.1);
-
-   // down sleptons
-   for (int i = 1; i < softSusyPhys.me.displayRows(); ++i)
-      for (int k = 1; k < softSusyPhys.me.displayCols(); ++k)
-         BOOST_CHECK_CLOSE(softSusyPhys.me(i,k), mssmPhys.me(i,k), 0.1);
+   test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
 
    BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
 }
