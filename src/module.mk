@@ -19,6 +19,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/stopwatch.hpp \
 		$(DIR)/two_scale_constraint.hpp \
+		$(DIR)/two_scale_composite_convergence_tester.hpp \
 		$(DIR)/two_scale_convergence_tester.hpp \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
@@ -38,6 +39,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/stopwatch.cpp \
+		$(DIR)/two_scale_composite_convergence_tester.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_solver.cpp \
 		$(DIR)/utils.cpp
