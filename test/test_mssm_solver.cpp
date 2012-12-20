@@ -74,6 +74,19 @@ struct Mssm_parameter_point {
       highScaleSoftPars(3) = a0;
       return highScaleSoftPars;
    }
+   friend std::ostream& operator<<(std::ostream& os, const Mssm_parameter_point& pp) {
+      os << "CMSSM parameter point:"
+         << " m0=" << pp.m0
+         << ", m12=" << pp.m12
+         << ", a0=" << pp.a0
+         << ", mxGuess=" << pp.mxGuess
+         << ", signMu=" << pp.signMu
+         << ", tanBeta=" << pp.tanBeta
+         << ", QedQcd=" << pp.oneset
+         << '\n';
+      return os;
+   }
+
    double m0, m12, a0, mxGuess, signMu, tanBeta;
    QedQcd oneset;
 };
@@ -197,5 +210,6 @@ void test_point(const Mssm_parameter_point& pp)
 BOOST_AUTO_TEST_CASE( test_softsusy_mssm_with_generic_rge_solver )
 {
    Mssm_parameter_point pp;
+   BOOST_MESSAGE("testing parameter point " << pp);
    test_point(pp);
 }
