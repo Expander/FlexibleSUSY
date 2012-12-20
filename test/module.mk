@@ -30,9 +30,18 @@ distclean-$(MODNAME): clean-$(MODNAME)
 
 execute-tests:  all-$(MODNAME)
 		@echo "executing all tests ..."
-		@for x in $(TEST_EXE); do            \
-			echo "executing test: $$x";  \
-			./$$x --log_level=warning;   \
+		@rm -f test.log
+		@for x in $(TEST_EXE); do      \
+			echo -n "executing test: $$x ... ";              \
+			echo "**************************" >> test.log;   \
+			echo "* executing test: $$x ... " >> test.log;   \
+			echo "**************************" >> test.log;   \
+			./$$x --log_level=test_suite >> test.log 2>> test.log; \
+			if [ $$? = 0 ] ; then  \
+				echo "OK";     \
+			else                   \
+				echo "FAILED"; \
+			fi                     \
 		done
 		@echo "all tests finished"
 
