@@ -22,6 +22,7 @@
 #include "two_scale_initial_guesser.hpp"
 #include "two_scale_matching.hpp"
 #include "two_scale_model.hpp"
+#include "two_scale_running_precision.hpp"
 #include "logger.hpp"
 
 #include <cmath>
@@ -39,6 +40,7 @@ RGFlow<Two_scale>::RGFlow()
    , iteration(0)
    , convergence_tester(NULL)
    , initial_guesser(NULL)
+   , running_precision(NULL)
 {
 }
 
@@ -193,24 +195,18 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
 }
 
 /**
- * Returns the precision of the RG running.  If
- * use_increasing_precision == false the function returns the default
- * precision \f$1.0e-3\f$.  Otherwise the returned precision is
- * \f$1/10^n\f$ where \f$n\f$ is the iteration number (starting at 1).
+ * Returns the precision of the RG running using the user defined
+ * Two_scale_running_precision class.  If the user has not specified
+ * such a class, 1.0e-3 is returned by default.
  *
  * @return RG running precision
  */
 double RGFlow<Two_scale>::get_precision()
 {
-   static const double default_precision = 1.0e-3;
-   static const double minimum_precision = default_precision * 0.01;
+   if (running_precision)
+      return running_precision->get_precision(iteration);
 
-   if (use_increasing_precision) {
-      return std::max(exp(- static_cast<double>(iteration + 1) * log(10.0)),
-                      minimum_precision);
-   }
-
-   return default_precision;
+   return 1.0e-3;
 }
 
 /**
@@ -301,18 +297,6 @@ void RGFlow<Two_scale>::set_convergence_tester(Convergence_tester<Two_scale>* co
    convergence_tester = convergence_tester_;
 }
 
-/**
- * Enable/ Disable the increasing RG running precision in each
- * iteration.
- *
- * @param use_increasing_precision_ enable (true), disable (false)
- * increasing precision
- */
-void RGFlow<Two_scale>::set_increasing_running_precision(bool use_increasing_precision_)
-{
-   use_increasing_precision = use_increasing_precision_;
-}
-
 void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
 {
    initial_guesser = ig;
@@ -327,6 +311,16 @@ void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
 void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
 {
    max_iterations = max_it;
+}
+
+/**
+ * Set RG running precision calculator.
+ *
+ * @param rp running precision calculator
+ */
+void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
+{
+   running_precision = rp;
 }
 
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const

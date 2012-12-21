@@ -6,6 +6,7 @@ TEST_SRC := \
 		$(DIR)/test_mssm_solver.cpp \
 		$(DIR)/test_sm_smcw_two_scale_integration.cpp \
 		$(DIR)/test_sm_two_scale.cpp \
+		$(DIR)/test_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
 
 TEST_OBJ := \
@@ -56,6 +57,9 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(DIR)/test_mssm_solver.x: $(DIR)/test_mssm_solver.o $(LIBMSSM) $(LIBFLEXI)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+$(DIR)/test_running_precision.x: $(DIR)/test_running_precision.o $(LIBFLEXI)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 $(DIR)/test_sm_smcw_two_scale_integration.x: $(DIR)/test_sm_smcw_two_scale_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)

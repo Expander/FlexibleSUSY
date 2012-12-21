@@ -31,6 +31,7 @@ template <class T> class Convergence_tester;
 template <class T> class Initial_guesser;
 class Two_scale;
 class Two_scale_model;
+class Two_scale_running_precision;
 
 template<>
 class RGFlow<Two_scale> {
@@ -89,8 +90,8 @@ public:
    unsigned int number_of_iterations_done() const;
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
-   /// set increasing running precision
-   void set_increasing_running_precision(bool);
+   /// set running precision calculator
+   void set_running_precision(Two_scale_running_precision*);
    /// set initial guesser
    void set_initial_guesser(Initial_guesser<Two_scale>*);
    /// set maximum number of iterations
@@ -127,7 +128,7 @@ private:
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
-   bool use_increasing_precision;      ///< use increasing RG running precision
+   Two_scale_running_precision* running_precision;    ///< RG running precision calculator
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup

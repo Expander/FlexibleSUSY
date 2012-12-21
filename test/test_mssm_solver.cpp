@@ -5,6 +5,7 @@
 #include "mssm_two_scale_msusy_constraint.hpp"
 #include "mssm_two_scale_mz_constraint.hpp"
 #include "mssm_two_scale_convergence_tester.hpp"
+#include "two_scale_running_precision.hpp"
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
@@ -171,6 +172,7 @@ void test_point(const Mssm_parameter_point& pp)
    Mssm_msusy_constraint mssm_msusy_constraint(&mssm, pp.get_soft_pars(), 1000.0, pp.signMu);
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
    Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+   Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
    std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
    mssm_upward_constraints.push_back(&mssm_mz_constraint);
@@ -184,7 +186,7 @@ void test_point(const Mssm_parameter_point& pp)
    RGFlow<Two_scale> solver;
    solver.set_max_iterations(10);
    solver.set_convergence_tester(&mssm_convergence_tester);
-   solver.set_increasing_running_precision(true);
+   solver.set_running_precision(&two_scale_increasing_precision);
    solver.set_initial_guesser(&initial_guesser);
    solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
    try {

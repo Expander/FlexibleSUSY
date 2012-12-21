@@ -24,6 +24,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/two_scale_initial_guesser.hpp \
 		$(DIR)/two_scale_matching.hpp \
 		$(DIR)/two_scale_model.hpp \
+		$(DIR)/two_scale_running_precision.hpp \
 		$(DIR)/two_scale_solver.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/xpr-base.h \
@@ -41,6 +42,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \
+		$(DIR)/two_scale_running_precision.cpp \
 		$(DIR)/two_scale_solver.cpp \
 		$(DIR)/utils.cpp
 
