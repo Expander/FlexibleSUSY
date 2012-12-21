@@ -14,3 +14,5 @@ doc/*.md5
 doc/*.map
 doc/*.css
 doc/*.dot
+
+test/*.log
