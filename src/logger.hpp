@@ -20,6 +20,7 @@
 #define LOGGER_H
 
 #include <iostream>
+#include <cassert>
 
 /**
  * The following message logger macros are available:
@@ -73,7 +74,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #else
    #define FATAL(message)                                             \
       do {                                                            \
-         LOG(kFatal, message)                                         \
+         LOG(kFatal, message);                                        \
          std::cout << "*** abort program execution" << std::endl;     \
          std::exit(1);                                                \
          assert(false);                                               \
