@@ -161,6 +161,8 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
  */
 void test_point(const Mssm_parameter_point& pp)
 {
+   bool error = false;
+
    // record time for the two scale method to solve the MSSM
    Stopwatch stopwatch;
    stopwatch.start();
@@ -193,9 +195,10 @@ void test_point(const Mssm_parameter_point& pp)
       solver.solve();
    } catch (Error& e) {
       BOOST_ERROR(e.what());
-      BOOST_REQUIRE(false); // we can't continue to calculate the spectrum
+      error = true;
    }
-   mssm.calculate_spectrum();
+   if (!error)
+      mssm.calculate_spectrum();
 
    stopwatch.stop();
    VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
@@ -206,7 +209,9 @@ void test_point(const Mssm_parameter_point& pp)
 
    // run softsusy
    softsusy::TOLERANCE = 1.0e-4;
+#ifdef VERBOSE
    softsusy::PRINTOUT = 1;
+#endif
    MssmSoftsusy softSusy;
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
@@ -216,10 +221,15 @@ void test_point(const Mssm_parameter_point& pp)
    VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
                << " seconds (" << stopwatch.get_clicks() << " clicks)");
 
-   // check equality of physical parameters
-   test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
-
-   BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
+   if (softSusy.displayProblem().test()) {
+      BOOST_ERROR("SoftSusy problem: " << softSusy.displayProblem());
+      error = true;
+   }
+   if (!error) {
+      // check equality of physical parameters
+      test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
+      BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
+   }
 }
 
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
