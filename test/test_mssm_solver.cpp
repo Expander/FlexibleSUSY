@@ -251,12 +251,6 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    pp.m12 = 337.5;
    pp.m0 = 3400.0;
 
-   // softsusy::TOLERANCE = 1.0e-4;
-   // MssmSoftsusy softSusy;
-   // const double mxSoftSusy
-   //    = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
-   // VERBOSE_MSG(softSusy.displayPhys());
-
    BOOST_MESSAGE("testing non-perturbative parameter point " << pp);
    test_point(pp);
 }
