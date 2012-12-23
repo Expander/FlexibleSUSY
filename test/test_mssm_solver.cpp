@@ -210,6 +210,7 @@ void test_point(const Mssm_parameter_point& pp)
    MssmSoftsusy softSusy;
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
+   softsusy::PRINTOUT = 0;
 
    stopwatch.stop();
    VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
