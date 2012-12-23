@@ -125,7 +125,8 @@ void RGFlow<Two_scale>::run_up()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
-         model->model->run_to(scale, get_precision());
+         if (model->model->run_to(scale, get_precision()))
+            throw NonPerturbativeRunningError(model->model, scale);
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
       }
@@ -156,7 +157,8 @@ void RGFlow<Two_scale>::run_down()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
-         model->model->run_to(scale, get_precision());
+         if (model->model->run_to(scale, get_precision()))
+            throw NonPerturbativeRunningError(model->model, scale);
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
          // time.
@@ -189,7 +191,8 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
-   model->model->run_to(scale, get_precision());
+   if (model->model->run_to(scale, get_precision()))
+      throw NonPerturbativeRunningError(model->model, scale);
    VERBOSE_MSG("| \tapplying constraint");
    constraint->apply();
 }
@@ -326,4 +329,12 @@ void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 {
    return iteration;
+}
+
+std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const
+{
+   std::stringstream message;
+   message << "RGFlow<Two_scale>::NonPerturbativeRunningError: non-perturbative"
+           << " running of model " << model->name() << " to scale " << scale;
+   return message.str();
 }

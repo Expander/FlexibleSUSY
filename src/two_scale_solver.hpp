@@ -61,6 +61,18 @@ public:
       unsigned number_of_iterations;
    };
 
+   class NonPerturbativeRunningError : public Error {
+   public:
+      NonPerturbativeRunningError(Two_scale_model* model_, double scale_)
+         : model(model_)
+         , scale(scale_)
+         {}
+      virtual ~NonPerturbativeRunningError() {}
+      virtual std::string what() const;
+   private:
+      Two_scale_model* model;
+      double scale;
+   };
 
    RGFlow();
    ~RGFlow();
