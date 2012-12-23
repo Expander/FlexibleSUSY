@@ -206,6 +206,7 @@ void test_point(const Mssm_parameter_point& pp)
 
    // run softsusy
    softsusy::TOLERANCE = 1.0e-4;
+   softsusy::PRINTOUT = 1;
    MssmSoftsusy softSusy;
    const double mxSoftSusy
       = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
