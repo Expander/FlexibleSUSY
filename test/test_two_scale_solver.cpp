@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
 
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
 
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
 
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
 
       try {
          solver.solve();
-      } catch (RGFlow<Two_scale>::Error& e) {
+      } catch (Error& e) {
          BOOST_ERROR(e.what());
       }
 

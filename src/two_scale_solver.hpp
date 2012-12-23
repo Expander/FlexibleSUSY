@@ -20,6 +20,7 @@
 #define TWO_SCALE_SOLVER_H
 
 #include "rg_flow.hpp"
+#include "two_scale_error.hpp"
 
 #include <vector>
 #include <string>
@@ -36,12 +37,6 @@ class Two_scale_running_precision;
 template<>
 class RGFlow<Two_scale> {
 public:
-   class Error {
-   public:
-      virtual ~Error() {}
-      virtual std::string what() const = 0;
-   };
-
    class SetupError : public Error {
    public:
       SetupError(const std::string& message_) : message(message_) {}

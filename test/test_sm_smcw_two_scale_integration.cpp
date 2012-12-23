@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
    // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
 
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    // run two scale solver and ensure that no errors occure
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
    BOOST_MESSAGE("convergence after " << solver.number_of_iterations_done()

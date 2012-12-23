@@ -191,7 +191,7 @@ void test_point(const Mssm_parameter_point& pp)
    solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
    try {
       solver.solve();
-   } catch (RGFlow<Two_scale>::Error& e) {
+   } catch (Error& e) {
       BOOST_ERROR(e.what());
    }
    mssm.calculate_spectrum();
@@ -237,5 +237,25 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    pp.m0 = 3400.0;
 
    BOOST_MESSAGE("testing slow convergent parameter point " << pp);
+   test_point(pp);
+}
+
+BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
+{
+   // slow convergence point taken from arXiv:1211.3231 Fig. 7
+   Mssm_parameter_point pp;
+   pp.oneset.setPoleMt(173.5);
+   pp.tanBeta = 100.0;
+   pp.a0 = 0.0;
+   pp.m12 = 337.5;
+   pp.m0 = 3400.0;
+
+   // softsusy::TOLERANCE = 1.0e-4;
+   // MssmSoftsusy softSusy;
+   // const double mxSoftSusy
+   //    = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
+   // VERBOSE_MSG(softSusy.displayPhys());
+
+   BOOST_MESSAGE("testing non-perturbative parameter point " << pp);
    test_point(pp);
 }
