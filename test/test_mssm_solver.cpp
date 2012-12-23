@@ -193,6 +193,7 @@ void test_point(const Mssm_parameter_point& pp)
       solver.solve();
    } catch (Error& e) {
       BOOST_ERROR(e.what());
+      BOOST_REQUIRE(false); // we can't continue to calculate the spectrum
    }
    mssm.calculate_spectrum();
 
