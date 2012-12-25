@@ -189,6 +189,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
+         VERBOSE_MSG(ss.str());
          throw SoftSusy_error(ss.str());
       }
    }
