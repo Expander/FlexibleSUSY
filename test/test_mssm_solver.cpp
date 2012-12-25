@@ -197,6 +197,54 @@ private:
    MssmSoftsusy softSusy;
 };
 
+class Two_scale_tester {
+public:
+   Two_scale_tester()
+      : mx(0.0), mssm() {}
+   ~Two_scale_tester() {}
+   double get_mx() const { return mx; }
+   sPhysical get_physical() { return mssm.displayPhys(); }
+   void test(const Mssm_parameter_point& pp) {
+      Stopwatch stopwatch;
+      stopwatch.start(); // record time for the two scale method to solve the MSSM
+
+      // setup the MSSM with the two scale method
+      Mssm_sugra_constraint mssm_sugra_constraint(&mssm, pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
+      Mssm_mz_constraint mssm_mz_constraint(&mssm, pp.tanBeta);
+      Mssm_msusy_constraint mssm_msusy_constraint(&mssm, pp.get_soft_pars(), 1000.0, pp.signMu);
+      Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
+      Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+      Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
+
+      std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
+      mssm_upward_constraints.push_back(&mssm_mz_constraint);
+      mssm_upward_constraints.push_back(&mssm_sugra_constraint);
+
+      std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
+      mssm_downward_constraints.push_back(&mssm_sugra_constraint);
+      mssm_downward_constraints.push_back(&mssm_msusy_constraint);
+      mssm_downward_constraints.push_back(&mssm_mz_constraint);
+
+      RGFlow<Two_scale> solver;
+      solver.set_max_iterations(10);
+      solver.set_convergence_tester(&mssm_convergence_tester);
+      solver.set_running_precision(&two_scale_increasing_precision);
+      solver.set_initial_guesser(&initial_guesser);
+      solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
+      solver.solve();
+      mssm.calculate_spectrum();
+
+      stopwatch.stop();
+      VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
+                  << " seconds (" << stopwatch.get_clicks() << " clicks)");
+
+      mx = mssm_sugra_constraint.get_scale();
+   }
+private:
+   double mx;
+   Mssm<Two_scale> mssm;
+};
+
 /**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
@@ -205,47 +253,15 @@ private:
  */
 void test_point(const Mssm_parameter_point& pp)
 {
-   // record time for the two scale method to solve the MSSM
-   Stopwatch stopwatch;
-   stopwatch.start();
-
-   // setup the MSSM with the two scale method
-   Mssm<Two_scale> mssm;
-   Mssm_sugra_constraint mssm_sugra_constraint(&mssm, pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
-   Mssm_mz_constraint mssm_mz_constraint(&mssm, pp.tanBeta);
-   Mssm_msusy_constraint mssm_msusy_constraint(&mssm, pp.get_soft_pars(), 1000.0, pp.signMu);
-   Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
-   Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
-   Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
-
-   std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
-   mssm_upward_constraints.push_back(&mssm_mz_constraint);
-   mssm_upward_constraints.push_back(&mssm_sugra_constraint);
-
-   std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
-   mssm_downward_constraints.push_back(&mssm_sugra_constraint);
-   mssm_downward_constraints.push_back(&mssm_msusy_constraint);
-   mssm_downward_constraints.push_back(&mssm_mz_constraint);
-
-   RGFlow<Two_scale> solver;
-   solver.set_max_iterations(10);
-   solver.set_convergence_tester(&mssm_convergence_tester);
-   solver.set_running_precision(&two_scale_increasing_precision);
-   solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
-   solver.solve();
-   mssm.calculate_spectrum();
-
-   stopwatch.stop();
-   VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
-               << " seconds (" << stopwatch.get_clicks() << " clicks)");
+   Two_scale_tester two_scale_tester;
+   two_scale_tester.test(pp);
 
    SoftSusy_tester softSusy_tester;
    softSusy_tester.test(pp);
 
    // check equality of physical parameters
-   test_equality(softSusy_tester.get_physical(), mssm.displayPhys(), 0.1);
-   BOOST_CHECK_CLOSE(softSusy_tester.get_mx(), mssm_sugra_constraint.get_scale(), 0.1);
+   test_equality(softSusy_tester.get_physical(), two_scale_tester.get_physical(), 0.1);
+   BOOST_CHECK_CLOSE(softSusy_tester.get_mx(), two_scale_tester.get_mx(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
