@@ -153,6 +153,16 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
          BOOST_CHECK_CLOSE(a.me(i,k), b.me(i,k), tolerance);
 }
 
+class SoftSusy_error : public Error {
+public:
+   SoftSusy_error(const std::string& msg_)
+      : msg(msg_) {}
+   virtual ~SoftSusy_error() {}
+   virtual std::string what() const { return msg; }
+private:
+   std::string msg;
+};
+
 /**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
@@ -161,8 +171,6 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
  */
 void test_point(const Mssm_parameter_point& pp)
 {
-   bool error = false;
-
    // record time for the two scale method to solve the MSSM
    Stopwatch stopwatch;
    stopwatch.start();
@@ -191,14 +199,8 @@ void test_point(const Mssm_parameter_point& pp)
    solver.set_running_precision(&two_scale_increasing_precision);
    solver.set_initial_guesser(&initial_guesser);
    solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
-   try {
-      solver.solve();
-   } catch (Error& e) {
-      BOOST_ERROR(e.what());
-      error = true;
-   }
-   if (!error)
-      mssm.calculate_spectrum();
+   solver.solve();
+   mssm.calculate_spectrum();
 
    stopwatch.stop();
    VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
@@ -222,14 +224,13 @@ void test_point(const Mssm_parameter_point& pp)
                << " seconds (" << stopwatch.get_clicks() << " clicks)");
 
    if (softSusy.displayProblem().test()) {
-      BOOST_ERROR("SoftSusy problem: " << softSusy.displayProblem());
-      error = true;
+      std::stringstream ss;
+      ss << "SoftSusy problem: " << softSusy.displayProblem();
+      throw SoftSusy_error(ss.str());
    }
-   if (!error) {
-      // check equality of physical parameters
-      test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
-      BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
-   }
+   // check equality of physical parameters
+   test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
+   BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
@@ -250,7 +251,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    pp.m0 = 3400.0;
 
    BOOST_MESSAGE("testing slow convergent parameter point " << pp);
-   test_point(pp);
+   BOOST_CHECK_THROW(test_point(pp), RGFlow<Two_scale>::NoConvergenceError);
 }
 
 BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
@@ -264,5 +265,5 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    pp.m0 = 3400.0;
 
    BOOST_MESSAGE("testing non-perturbative parameter point " << pp);
-   test_point(pp);
+   BOOST_CHECK_THROW(test_point(pp), RGFlow<Two_scale>::NonPerturbativeRunningError);
 }
