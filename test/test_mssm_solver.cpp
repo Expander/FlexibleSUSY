@@ -163,6 +163,40 @@ private:
    std::string msg;
 };
 
+class SoftSusy_tester {
+public:
+   SoftSusy_tester()
+      : mx(0.0), softSusy() {}
+   ~SoftSusy_tester() {}
+   double get_mx() const { return mx; }
+   sPhysical get_physical() { return softSusy.displayPhys(); }
+   void test(const Mssm_parameter_point& pp) {
+      Stopwatch stopwatch;
+      stopwatch.start(); // record time for SoftSusy to solve the MSSM
+
+      // run softsusy
+      softsusy::TOLERANCE = 1.0e-4;
+#ifdef VERBOSE
+      softsusy::PRINTOUT = 1;
+#endif
+      mx = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
+      softsusy::PRINTOUT = 0;
+
+      stopwatch.stop();
+      VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
+                  << " seconds (" << stopwatch.get_clicks() << " clicks)");
+
+      if (softSusy.displayProblem().test()) {
+         std::stringstream ss;
+         ss << "SoftSusy problem: " << softSusy.displayProblem();
+         throw SoftSusy_error(ss.str());
+      }
+   }
+private:
+   double mx;
+   MssmSoftsusy softSusy;
+};
+
 /**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
@@ -206,31 +240,12 @@ void test_point(const Mssm_parameter_point& pp)
    VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
                << " seconds (" << stopwatch.get_clicks() << " clicks)");
 
-   // record time for SoftSusy to solve the MSSM
-   stopwatch.start();
+   SoftSusy_tester softSusy_tester;
+   softSusy_tester.test(pp);
 
-   // run softsusy
-   softsusy::TOLERANCE = 1.0e-4;
-#ifdef VERBOSE
-   softsusy::PRINTOUT = 1;
-#endif
-   MssmSoftsusy softSusy;
-   const double mxSoftSusy
-      = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, pp.oneset, true);
-   softsusy::PRINTOUT = 0;
-
-   stopwatch.stop();
-   VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
-               << " seconds (" << stopwatch.get_clicks() << " clicks)");
-
-   if (softSusy.displayProblem().test()) {
-      std::stringstream ss;
-      ss << "SoftSusy problem: " << softSusy.displayProblem();
-      throw SoftSusy_error(ss.str());
-   }
    // check equality of physical parameters
-   test_equality(softSusy.displayPhys(), mssm.displayPhys(), 0.1);
-   BOOST_CHECK_CLOSE(mxSoftSusy, mssm_sugra_constraint.get_scale(), 0.1);
+   test_equality(softSusy_tester.get_physical(), mssm.displayPhys(), 0.1);
+   BOOST_CHECK_CLOSE(softSusy_tester.get_mx(), mssm_sugra_constraint.get_scale(), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
