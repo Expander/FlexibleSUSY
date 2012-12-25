@@ -282,7 +282,10 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    pp.m0 = 3400.0;
 
    BOOST_MESSAGE("testing slow convergent parameter point " << pp);
-   BOOST_CHECK_THROW(test_point(pp), RGFlow<Two_scale>::NoConvergenceError);
+   Two_scale_tester two_scale_tester;
+   BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NoConvergenceError);
+   SoftSusy_tester softSusy_tester;
+   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_error);
 }
 
 BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
@@ -296,5 +299,8 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    pp.m0 = 3400.0;
 
    BOOST_MESSAGE("testing non-perturbative parameter point " << pp);
-   BOOST_CHECK_THROW(test_point(pp), RGFlow<Two_scale>::NonPerturbativeRunningError);
+   Two_scale_tester two_scale_tester;
+   BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NonPerturbativeRunningError);
+   SoftSusy_tester softSusy_tester;
+   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_error);
 }
