@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 
 BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 {
-   // slow convergence point taken from arXiv:1211.3231 Fig. 7
+   // slowly convergent point taken from arXiv:1211.3231 Fig. 7
    Mssm_parameter_point pp;
    pp.oneset.setPoleMt(173.5);
    pp.tanBeta = 10.0;
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 
 BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
 {
-   // slow convergence point taken from arXiv:1211.3231 Fig. 7
+   // non-perturbative point
    Mssm_parameter_point pp;
    pp.oneset.setPoleMt(173.5);
    pp.tanBeta = 100.0;
