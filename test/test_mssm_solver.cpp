@@ -163,6 +163,22 @@ private:
    std::string msg;
 };
 
+class SoftSusy_NoConvergence_error : public SoftSusy_error {
+public:
+   SoftSusy_NoConvergence_error(const std::string& msg_)
+      : SoftSusy_error(msg_) {}
+   virtual ~SoftSusy_NoConvergence_error() {}
+   virtual std::string what() const { return SoftSusy_error::what(); }
+};
+
+class SoftSusy_NonPerturbative_error : public SoftSusy_error {
+public:
+   SoftSusy_NonPerturbative_error(const std::string& msg_)
+      : SoftSusy_error(msg_) {}
+   virtual ~SoftSusy_NonPerturbative_error() {}
+   virtual std::string what() const { return SoftSusy_error::what(); }
+};
+
 class SoftSusy_tester {
 public:
    SoftSusy_tester()
@@ -190,7 +206,12 @@ public:
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
          VERBOSE_MSG(ss.str());
-         throw SoftSusy_error(ss.str());
+         if (softSusy.displayProblem().noConvergence)
+            throw SoftSusy_NoConvergence_error(ss.str());
+         else if (softSusy.displayProblem().nonperturbative)
+            throw SoftSusy_NonPerturbative_error(ss.str());
+         else
+            throw SoftSusy_error(ss.str());
       }
    }
 private:
@@ -286,7 +307,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NoConvergenceError);
    SoftSusy_tester softSusy_tester;
-   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_error);
+   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_NoConvergence_error);
 }
 
 BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
@@ -303,5 +324,5 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NonPerturbativeRunningError);
    SoftSusy_tester softSusy_tester;
-   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_error);
+   BOOST_CHECK_THROW(softSusy_tester.test(pp), SoftSusy_NonPerturbative_error);
 }
