@@ -51,11 +51,12 @@ RGFlow<Two_scale>::~RGFlow()
 
 void RGFlow<Two_scale>::solve()
 {
+   check_setup();
+
    unsigned int max_iterations = get_max_iterations();
    if (models.empty() || max_iterations == 0)
       return;
 
-   check_setup();
    initial_guess();
 
    unsigned int iter = 0;
@@ -72,7 +73,7 @@ void RGFlow<Two_scale>::solve()
    // save number of iterations that were done
    iteration = iter;
 
-   if (!accuracy_reached && convergence_tester)
+   if (!accuracy_reached)
       throw NoConvergenceError(max_iterations);
 
    VERBOSE_MSG("convergence reached after " << iteration << " iterations");
@@ -103,6 +104,11 @@ void RGFlow<Two_scale>::check_setup() const
             throw SetupError(message.str());
          }
       }
+   }
+
+   if (!convergence_tester) {
+      throw SetupError("RGFlow<Two_scale>::Error: convergence tester must "
+                       "not be NULL");
    }
 }
 
@@ -284,9 +290,7 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
 
 bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
-   if (convergence_tester)
-      return convergence_tester->accuracy_goal_reached();
-   return false;
+   return convergence_tester->accuracy_goal_reached();
 }
 
 /**
@@ -321,9 +325,7 @@ unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 
 unsigned int RGFlow<Two_scale>::get_max_iterations() const
 {
-   if (convergence_tester)
-      return convergence_tester->max_iterations();
-   return 10;
+   return convergence_tester->max_iterations();
 }
 
 std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const

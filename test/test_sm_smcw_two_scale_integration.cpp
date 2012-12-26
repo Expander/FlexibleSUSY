@@ -146,9 +146,13 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    // of one model to the other
    Trivial_SM_SMCW_matching_condition mc(sm, smcw);
 
+   // create convergence tester for the CW-Standard Model
+   StandardModelCW_convergence_tester convergence_tester(smcw, 0.01);
+
    RGFlow<Two_scale> solver;
    solver.add_model(sm, &mc);
    solver.add_model(smcw);
+   solver.set_convergence_tester(&convergence_tester);
 
    // run two scale solver and ensure that no errors occure
    try {
@@ -193,10 +197,14 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
    // create trivial matching condition
    Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
 
+   // create convergence tester for the CW-Standard Model
+   StandardModelCW_convergence_tester convergence_tester(&smcw, 1.0e-4);
+
    // create two scale solver
    RGFlow<Two_scale> solver;
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);
+   solver.set_convergence_tester(&convergence_tester);
 
    // run two scale solver and ensure that no errors occure
    try {

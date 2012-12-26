@@ -132,15 +132,13 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
 {
    const DoubleVector parameters(10);
    Static_model model(parameters);
+   Counting_convergence_tester ccc(10);
+
    RGFlow<Two_scale> solver;
    solver.add_model(&model);
+   solver.set_convergence_tester(&ccc);
 
-   try {
-      solver.solve();
-   } catch (Error& e) {
-      BOOST_ERROR(e.what());
-   }
-
+   BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
    BOOST_CHECK_EQUAL(model.get_parameters(), parameters);
 }
 
@@ -150,6 +148,8 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    const DoubleVector zeros(10);
    for (int i = 1; i <= 10; ++i)
       parameters(i) = i;
+
+   Counting_convergence_tester ccc(10);
 
    // init two models:
    // * low-energy model with parameters
@@ -163,12 +163,9 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    RGFlow<Two_scale> solver;
    solver.add_model(&model1, &mc);
    solver.add_model(&model2);
+   solver.set_convergence_tester(&ccc);
 
-   try {
-      solver.solve();
-   } catch (Error& e) {
-      BOOST_ERROR(e.what());
-   }
+   BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
 
    // the high scale parameters should be the same as the low scale
    // parameters
