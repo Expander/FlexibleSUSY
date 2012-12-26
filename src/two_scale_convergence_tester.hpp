@@ -28,6 +28,7 @@ class Convergence_tester<Two_scale> {
 public:
    virtual ~Convergence_tester();
    virtual bool accuracy_goal_reached() = 0;
+   virtual unsigned int max_iterations() const = 0;
 
 protected:
    bool is_equal(double, double) const;

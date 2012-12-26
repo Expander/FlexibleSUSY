@@ -27,6 +27,7 @@ public:
    StandardModelCW_convergence_tester(StandardModelCW<Two_scale>*, double);
    virtual ~StandardModelCW_convergence_tester();
    virtual bool accuracy_goal_reached();
+   virtual unsigned int max_iterations() const;
 
 private:
    StandardModelCW<Two_scale>* smcw;

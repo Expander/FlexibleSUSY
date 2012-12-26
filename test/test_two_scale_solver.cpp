@@ -2,6 +2,7 @@
 #include "two_scale_matching.hpp"
 #include "two_scale_model.hpp"
 #include "two_scale_constraint.hpp"
+#include "two_scale_convergence_tester.hpp"
 #include "linalg.h"
 
 #define BOOST_TEST_DYN_LINK
@@ -112,6 +113,21 @@ private:
    mutable unsigned number_of_get_scale;
 };
 
+class Counting_convergence_tester : public Convergence_tester<Two_scale> {
+public:
+   Counting_convergence_tester(unsigned int max_iterations_)
+      : iteration(0), maximum_iterations(max_iterations_) {}
+   virtual ~Counting_convergence_tester() {}
+   virtual bool accuracy_goal_reached() {
+      return false;
+   }
+   virtual unsigned int max_iterations() const {
+      return maximum_iterations;
+   }
+private:
+   unsigned int iteration, maximum_iterations;
+};
+
 BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
 {
    const DoubleVector parameters(10);
@@ -177,16 +193,23 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       model2_constraints.push_back(&model2_c2);
 
       Counting_matching_condition mc(3000);
+      Counting_convergence_tester ccc(number_of_iterations);
 
       RGFlow<Two_scale> solver;
-      solver.set_max_iterations(number_of_iterations);
+      solver.set_convergence_tester(&ccc);
       solver.add_model(&model1, &mc, model1_constraints);
       solver.add_model(&model2, model2_constraints);
 
-      try {
-         solver.solve();
-      } catch (Error& e) {
-         BOOST_ERROR(e.what());
+      if (number_of_iterations == 0) {
+         try {
+            solver.solve();
+         } catch (Error& e) {
+            BOOST_ERROR(e.what());
+         }
+      } else {
+         // expect NoConvergenceError because the accuracy_goal_reached()
+         // function of the convergence tester returns always false
+         BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
       }
 
       // check that all iterations were done

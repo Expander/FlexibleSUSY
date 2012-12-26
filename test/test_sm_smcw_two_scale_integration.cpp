@@ -265,7 +265,6 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
 
    // create two scale solver
    RGFlow<Two_scale> solver;
-   solver.set_max_iterations(10);
    solver.set_convergence_tester(&convergence_tester);
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);
@@ -318,7 +317,6 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
 
    // create two scale solver
    RGFlow<Two_scale> solver;
-   solver.set_max_iterations(10);
    solver.set_convergence_tester(&convergence_tester);
    solver.add_model(&sm, &mc, sm_constraints);
    solver.add_model(&smcw, smcw_constraints);

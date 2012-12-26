@@ -44,6 +44,11 @@ bool StandardModelCW_convergence_tester::accuracy_goal_reached()
    return precision_reached;
 }
 
+unsigned int StandardModelCW_convergence_tester::max_iterations() const
+{
+   return 10;
+}
+
 bool StandardModelCW_convergence_tester::scale_has_changed() const
 {
    return !is_zero(scale_difference());

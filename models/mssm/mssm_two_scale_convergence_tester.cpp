@@ -21,11 +21,12 @@
 
 #include <limits>
 
-Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_)
+Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_, unsigned long max_iterations_)
    : Convergence_tester<Two_scale>()
    , mssm(mssm_)
    , last_iteration()
    , it_count(0)
+   , maximum_iterations(max_iterations_)
    , accuracy_goal(accuracy_goal_)
 {
 }
@@ -59,6 +60,11 @@ bool Mssm_convergence_tester::accuracy_goal_reached()
    ++it_count;
 
    return precision_reached;
+}
+
+unsigned int Mssm_convergence_tester::max_iterations() const
+{
+   return maximum_iterations;
 }
 
 bool Mssm_convergence_tester::scale_has_changed() const

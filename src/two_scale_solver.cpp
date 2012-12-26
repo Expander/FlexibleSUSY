@@ -36,7 +36,6 @@
  */
 RGFlow<Two_scale>::RGFlow()
    : models()
-   , max_iterations(10)
    , iteration(0)
    , convergence_tester(NULL)
    , initial_guesser(NULL)
@@ -52,6 +51,7 @@ RGFlow<Two_scale>::~RGFlow()
 
 void RGFlow<Two_scale>::solve()
 {
+   unsigned int max_iterations = get_max_iterations();
    if (models.empty() || max_iterations == 0)
       return;
 
@@ -61,7 +61,6 @@ void RGFlow<Two_scale>::solve()
    unsigned int iter = 0;
    bool accuracy_reached = false;
    while (iter < max_iterations && !accuracy_reached) {
-      iteration = iter;
       run_up();
       run_down();
       accuracy_reached = accuracy_goal_reached();
@@ -306,17 +305,6 @@ void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
 }
 
 /**
- * Set the maximum number of iterations.  If 0 is given, there will be
- * no iteration at all.
- *
- * @param max_it maximum number of iterations
- */
-void RGFlow<Two_scale>::set_max_iterations(unsigned int max_it)
-{
-   max_iterations = max_it;
-}
-
-/**
  * Set RG running precision calculator.
  *
  * @param rp running precision calculator
@@ -329,6 +317,13 @@ void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 {
    return iteration;
+}
+
+unsigned int RGFlow<Two_scale>::get_max_iterations() const
+{
+   if (convergence_tester)
+      return convergence_tester->max_iterations();
+   return 10;
 }
 
 std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const

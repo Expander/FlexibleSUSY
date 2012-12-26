@@ -234,7 +234,7 @@ public:
       Mssm_sugra_constraint mssm_sugra_constraint(&mssm, pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
       Mssm_mz_constraint mssm_mz_constraint(&mssm, pp.tanBeta);
       Mssm_msusy_constraint mssm_msusy_constraint(&mssm, pp.get_soft_pars(), 1000.0, pp.signMu);
-      Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
+      Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4, 10);
       Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
       Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
@@ -248,7 +248,6 @@ public:
       mssm_downward_constraints.push_back(&mssm_mz_constraint);
 
       RGFlow<Two_scale> solver;
-      solver.set_max_iterations(10);
       solver.set_convergence_tester(&mssm_convergence_tester);
       solver.set_running_precision(&two_scale_increasing_precision);
       solver.set_initial_guesser(&initial_guesser);

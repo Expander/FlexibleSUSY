@@ -101,8 +101,6 @@ public:
    void set_running_precision(Two_scale_running_precision*);
    /// set initial guesser
    void set_initial_guesser(Initial_guesser<Two_scale>*);
-   /// set maximum number of iterations
-   void set_max_iterations(unsigned int);
    /// solve all models
    void solve();
 
@@ -131,7 +129,6 @@ private:
          {}
    };
    std::vector<TModel*> models;        ///< tower of models (from low to high scale)
-   unsigned int max_iterations;        ///< maximum number of iterations
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
@@ -139,6 +136,7 @@ private:
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
+   unsigned int get_max_iterations() const; ///< returns max. number of iterations
    void initial_guess();               ///< initial guess
    void run_up();                      ///< run all models up
    void run_down();                    ///< run all models down
