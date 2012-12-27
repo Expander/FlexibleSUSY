@@ -116,8 +116,8 @@ void Mssm_initial_guesser::guess()
    sProblem problem = mssm->displayProblem();
    if (problem.test()) {
       if (problem.testSeriousProblem())
-         WARNING("<Mssm_initial_guesser>::guess(): serious Problem: " << problem);
+         WARNING("<Mssm_initial_guesser::guess()>: serious problem: " << problem);
       else
-         WARNING("<Mssm_initial_guesser>::guess(): Problem: " << problem);
+         WARNING("<Mssm_initial_guesser::guess()>: problem: " << problem);
    }
 }
