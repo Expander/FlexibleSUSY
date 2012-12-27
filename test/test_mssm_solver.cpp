@@ -292,6 +292,17 @@ BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
    test_point(pp);
 }
 
+BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
+{
+   // do small parameter scan of tan(beta)
+   Mssm_parameter_point pp;
+   for (double tanb = 3.0; tanb <= 45.1; tanb += 3.0) {
+      pp.tanBeta = tanb;
+      BOOST_MESSAGE("testing parameter point " << pp);
+      test_point(pp);
+   }
+}
+
 BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 {
    // slowly convergent point taken from arXiv:1211.3231 Fig. 7
