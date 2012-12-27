@@ -9,7 +9,7 @@ do
 	continue;
     fi
 
-    log_file=`echo $t | sed -e 's/.x$/.log/'`
+    log_file=`echo $t | sed -e 's/\.x$/.log/'`
     rm -f $log_file
 
     echo -n "executing test: $t ... ";
