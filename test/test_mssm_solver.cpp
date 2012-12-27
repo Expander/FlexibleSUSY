@@ -275,10 +275,10 @@ private:
 void test_point(const Mssm_parameter_point& pp)
 {
    Two_scale_tester two_scale_tester;
-   two_scale_tester.test(pp);
+   BOOST_REQUIRE_NO_THROW(two_scale_tester.test(pp));
 
    SoftSusy_tester softSusy_tester;
-   softSusy_tester.test(pp);
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp));
 
    // check equality of physical parameters
    test_equality(softSusy_tester.get_physical(), two_scale_tester.get_physical(), 0.1);
