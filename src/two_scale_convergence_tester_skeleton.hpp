@@ -36,17 +36,20 @@ public:
    virtual unsigned int max_iterations() const;
 
 protected:
-   T* model;               ///< pointer to model
-   T last_iteration_model; ///< model state at last iteration
-   unsigned int it_count;  ///< iteration
-   double accuracy_goal;   ///< accuracy goal
-
    bool is_equal(double, double) const;         ///< test equality of two doubles
    bool is_zero(double) const;                  ///< test double for beeing zero
+   const T* get_model() const;                  ///< get model
+   const T* get_last_iteration_model() const;   ///< get model state during last iteration
    virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
    virtual double rel_scale_difference() const; ///< relative scale difference
    virtual double scale_difference() const;     ///< absolute scale difference
    virtual bool scale_has_changed() const;      ///< returns true if scale has changed
+
+private:
+   T* model;               ///< pointer to model
+   T last_iteration_model; ///< model state at last iteration
+   unsigned int it_count;  ///< iteration
+   double accuracy_goal;   ///< accuracy goal
 };
 
 template <class T>
@@ -104,6 +107,18 @@ template <class T>
 bool Convergence_tester_skeleton<T>::is_zero(double a) const
 {
    return std::fabs(a) < std::numeric_limits<double>::epsilon();
+}
+
+template <class T>
+const T* Convergence_tester_skeleton<T>::get_model() const
+{
+   return model;
+}
+
+template <class T>
+const T* Convergence_tester_skeleton<T>::get_last_iteration_model() const
+{
+   return &last_iteration_model;
 }
 
 template <class T>

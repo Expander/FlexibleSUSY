@@ -29,8 +29,13 @@ StandardModelCW_convergence_tester::~StandardModelCW_convergence_tester()
 
 double StandardModelCW_convergence_tester::max_rel_diff() const
 {
-   const double dg4 = std::fabs(model->displayGaugeCoupling(4) - last_iteration_model.displayGaugeCoupling(4));
-   const double dlamda = std::fabs(model->displayLambda() - last_iteration_model.displayLambda());
+   const StandardModelCW<Two_scale>* model = get_model();
+   const StandardModelCW<Two_scale>* last_iteration_model = get_last_iteration_model();
+
+   const double dg4 = std::fabs(model->displayGaugeCoupling(4)
+                                - last_iteration_model->displayGaugeCoupling(4));
+   const double dlamda = std::fabs(model->displayLambda()
+                                   - last_iteration_model->displayLambda());
    const double max_diff = std::max(dg4, dlamda);
 
    return max_diff;

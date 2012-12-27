@@ -29,7 +29,7 @@ Mssm_convergence_tester::~Mssm_convergence_tester()
 
 double Mssm_convergence_tester::max_rel_diff() const
 {
-   return sumTol(*model, last_iteration_model);
+   return sumTol(*get_model(), *get_last_iteration_model());
 }
 
 double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out) const
