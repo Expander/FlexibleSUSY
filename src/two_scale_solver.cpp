@@ -58,19 +58,16 @@ void RGFlow<Two_scale>::solve()
 
    initial_guess();
 
-   unsigned int iter = 0;
+   iteration = 0;
    bool accuracy_reached = false;
-   while (iter < max_iterations && !accuracy_reached) {
+   while (iteration < max_iterations && !accuracy_reached) {
       run_up();
       run_down();
       accuracy_reached = accuracy_goal_reached();
-      ++iter;
+      ++iteration;
    }
 
    apply_lowest_constaint();
-
-   // save number of iterations that were done
-   iteration = iter;
 
    if (!accuracy_reached)
       throw NoConvergenceError(max_iterations);
@@ -210,6 +207,7 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
  */
 double RGFlow<Two_scale>::get_precision()
 {
+   WARNING("precision of iteration " << iteration);
    if (running_precision)
       return running_precision->get_precision(iteration);
 
