@@ -288,7 +288,7 @@ void test_point(const Mssm_parameter_point& pp)
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 {
    Mssm_parameter_point pp;
-   BOOST_MESSAGE("testing parameter point " << pp);
+   BOOST_MESSAGE("testing " << pp);
    test_point(pp);
 }
 
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
    Mssm_parameter_point pp;
    for (double tanb = 3.0; tanb <= 45.1; tanb += 3.0) {
       pp.tanBeta = tanb;
-      BOOST_MESSAGE("testing parameter point " << pp);
+      BOOST_MESSAGE("testing " << pp);
       test_point(pp);
    }
 }
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    pp.m12 = 337.5;
    pp.m0 = 3400.0;
 
-   BOOST_MESSAGE("testing slow convergent parameter point " << pp);
+   BOOST_MESSAGE("testing slow convergent " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NoConvergenceError);
    SoftSusy_tester softSusy_tester;
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    pp.m12 = 337.5;
    pp.m0 = 3400.0;
 
-   BOOST_MESSAGE("testing non-perturbative parameter point " << pp);
+   BOOST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp), RGFlow<Two_scale>::NonPerturbativeRunningError);
    SoftSusy_tester softSusy_tester;
