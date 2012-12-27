@@ -31,8 +31,7 @@
 #include <cassert>
 
 /**
- * Create empty two scale solver.  Sets maximum number of iterations
- * to 10 (default).
+ * Create empty two scale solver.
  */
 RGFlow<Two_scale>::RGFlow()
    : models()
