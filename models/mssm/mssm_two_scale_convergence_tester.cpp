@@ -17,17 +17,10 @@
 // ====================================================================
 
 #include "mssm_two_scale_convergence_tester.hpp"
-#include "logger.hpp"
-
-#include <limits>
 
 Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_, unsigned long max_iterations_)
-   : Convergence_tester<Two_scale>()
-   , mssm(mssm_)
-   , last_iteration()
-   , it_count(0)
+   : Convergence_tester_skeleton<Mssm<Two_scale> >(mssm_, accuracy_goal_)
    , maximum_iterations(max_iterations_)
-   , accuracy_goal(accuracy_goal_)
 {
 }
 
@@ -35,57 +28,17 @@ Mssm_convergence_tester::~Mssm_convergence_tester()
 {
 }
 
-bool Mssm_convergence_tester::accuracy_goal_reached()
-{
-   bool precision_reached;
-   if (it_count == 0) {
-      // this is the first run => no comparison possible => assume
-      // that accuracy goal has not been reached
-      precision_reached = false;
-   } else {
-      if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
-         WARNING("scale has changed by " << scale_difference()
-                 << " GeV (" << rel_scale_difference()
-                 << "%), parameter comparison might fail");
-      }
-
-      const double fracDiff = sumTol(*mssm, last_iteration);
-      precision_reached = fracDiff < accuracy_goal;
-      VERBOSE_MSG("Mssm_convergence_tester: max. rel. difference: " << fracDiff
-                  << " (goal: " << accuracy_goal << ")");
-   }
-
-   // save old model parameters
-   last_iteration = *mssm;
-   ++it_count;
-
-   return precision_reached;
-}
-
 unsigned int Mssm_convergence_tester::max_iterations() const
 {
    return maximum_iterations;
 }
 
-bool Mssm_convergence_tester::scale_has_changed() const
+double Mssm_convergence_tester::max_rel_diff() const
 {
-   return !is_zero(scale_difference());
+   return sumTol(*model, last_iteration_model);
 }
 
-double Mssm_convergence_tester::scale_difference() const
-{
-   return mssm->getScale() - last_iteration.getScale();
-}
-
-double Mssm_convergence_tester::rel_scale_difference() const
-{
-   const double diff = scale_difference();
-   if (!is_zero(last_iteration.getScale()))
-      return diff / last_iteration.getScale();
-   return std::numeric_limits<double>::infinity();
-}
-
-double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out)
+double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out) const
 {
   drBarPars inforLoops(in.displayDrBarPars()),
     outforLoops(out.displayDrBarPars());

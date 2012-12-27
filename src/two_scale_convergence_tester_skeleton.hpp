@@ -1,0 +1,137 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#ifndef TWO_SCALE_CONVERGENCE_TESTER_SKELETON_H
+#define TWO_SCALE_CONVERGENCE_TESTER_SKELETON_H
+
+#include "two_scale_convergence_tester.hpp"
+#include "logger.hpp"
+
+#include <cmath>
+#include <limits>
+
+template <class T>
+class Convergence_tester_skeleton : public Convergence_tester<Two_scale> {
+public:
+   Convergence_tester_skeleton(T*, double);
+   virtual ~Convergence_tester_skeleton();
+
+   virtual bool accuracy_goal_reached();
+   virtual double get_accuracy_goal() const;
+   virtual unsigned int max_iterations() const;
+
+protected:
+   T* model;               ///< pointer to model
+   T last_iteration_model; ///< model state at last iteration
+   unsigned int it_count;  ///< iteration
+   double accuracy_goal;   ///< accuracy goal
+
+   bool is_equal(double, double) const;         ///< test equality of two doubles
+   bool is_zero(double) const;                  ///< test double for beeing zero
+   virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
+   virtual double rel_scale_difference() const; ///< relative scale difference
+   virtual double scale_difference() const;     ///< absolute scale difference
+   virtual bool scale_has_changed() const;      ///< returns true if scale has changed
+};
+
+template <class T>
+Convergence_tester_skeleton<T>::Convergence_tester_skeleton(T* model_, double accuracy_goal_)
+   : Convergence_tester<Two_scale>()
+   , model(model_)
+   , last_iteration_model()
+   , it_count(0)
+   , accuracy_goal(accuracy_goal_)
+{
+}
+
+template <class T>
+Convergence_tester_skeleton<T>::~Convergence_tester_skeleton()
+{
+}
+
+template <class T>
+bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
+{
+   bool precision_reached;
+   if (it_count == 0) {
+      // this is the first run => no comparison possible => assume
+      // that accuracy goal has not been reached
+      precision_reached = false;
+   } else {
+      if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
+         WARNING("scale has changed by " << scale_difference()
+                 << " GeV (" << rel_scale_difference()
+                 << "%), parameter comparison might fail");
+      }
+      precision_reached = max_rel_diff() < accuracy_goal;
+   }
+
+   // save old model parameters
+   last_iteration_model = *model;
+   ++it_count;
+
+   return precision_reached;
+}
+
+template <class T>
+double Convergence_tester_skeleton<T>::get_accuracy_goal() const
+{
+   return accuracy_goal;
+}
+
+template <class T>
+bool Convergence_tester_skeleton<T>::is_equal(double a, double b) const
+{
+   return std::fabs(a - b) < std::numeric_limits<double>::epsilon();
+}
+
+template <class T>
+bool Convergence_tester_skeleton<T>::is_zero(double a) const
+{
+   return std::fabs(a) < std::numeric_limits<double>::epsilon();
+}
+
+template <class T>
+unsigned int Convergence_tester_skeleton<T>::max_iterations() const
+{
+   return static_cast<int>(-log(accuracy_goal) / log(10.0) * 10);
+}
+
+template <class T>
+bool Convergence_tester_skeleton<T>::scale_has_changed() const
+{
+   return !is_zero(scale_difference());
+}
+
+template <class T>
+double Convergence_tester_skeleton<T>::scale_difference() const
+{
+   return model->getScale() - last_iteration_model.getScale();
+}
+
+template <class T>
+double Convergence_tester_skeleton<T>::rel_scale_difference() const
+{
+   const double diff = scale_difference();
+   const double last_scale = last_iteration_model.getScale();
+   if (!is_zero(last_scale))
+      return diff / last_scale;
+   return std::numeric_limits<double>::infinity();
+}
+
+#endif

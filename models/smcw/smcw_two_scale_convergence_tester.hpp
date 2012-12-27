@@ -19,25 +19,17 @@
 #ifndef SMCW_TWO_SCALE_CONVERGENCE_TESTER_H
 #define SMCW_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_convergence_tester.hpp"
+#include "two_scale_convergence_tester_skeleton.hpp"
 #include "smcw_two_scale.hpp"
 
-class StandardModelCW_convergence_tester : public Convergence_tester<Two_scale> {
+class StandardModelCW_convergence_tester : public Convergence_tester_skeleton<StandardModelCW<Two_scale> > {
 public:
    StandardModelCW_convergence_tester(StandardModelCW<Two_scale>*, double);
    virtual ~StandardModelCW_convergence_tester();
-   virtual bool accuracy_goal_reached();
    virtual unsigned int max_iterations() const;
 
-private:
-   StandardModelCW<Two_scale>* smcw;
-   StandardModelCW<Two_scale> last_iteration;
-   unsigned long it_count;
-   double accuracy_goal;
-
-   double scale_difference() const;
-   double rel_scale_difference() const;
-   bool scale_has_changed() const;
+protected:
+   virtual double max_rel_diff() const;
 };
 
 #endif

@@ -1,15 +1,25 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 #include "smcw_two_scale_convergence_tester.hpp"
-#include "logger.hpp"
-
-#include <limits>
 
 StandardModelCW_convergence_tester::StandardModelCW_convergence_tester(StandardModelCW<Two_scale>* smcw_, double accuracy_goal_)
-   : Convergence_tester<Two_scale>()
-   , smcw(smcw_)
-   , last_iteration()
-   , it_count(0)
-   , accuracy_goal(accuracy_goal_)
+   : Convergence_tester_skeleton<StandardModelCW<Two_scale> >(smcw_, accuracy_goal_)
 {
 }
 
@@ -17,52 +27,16 @@ StandardModelCW_convergence_tester::~StandardModelCW_convergence_tester()
 {
 }
 
-bool StandardModelCW_convergence_tester::accuracy_goal_reached()
+double StandardModelCW_convergence_tester::max_rel_diff() const
 {
-   bool precision_reached;
-   if (it_count == 0) {
-      // this is the first run => no comparison possible => assume
-      // that accuracy goal has not been reached
-      precision_reached = false;
-   } else {
-      if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
-         WARNING("scale has changed by " << scale_difference()
-                 << " GeV (" << rel_scale_difference()
-                 << "%), parameter comparison might fail");
-      }
+   const double dg4 = std::fabs(model->displayGaugeCoupling(4) - last_iteration_model.displayGaugeCoupling(4));
+   const double dlamda = std::fabs(model->displayLambda() - last_iteration_model.displayLambda());
+   const double max_diff = std::max(dg4, dlamda);
 
-      const double dg4 = std::fabs(smcw->displayGaugeCoupling(4) - last_iteration.displayGaugeCoupling(4));
-      const double dlamda = std::fabs(smcw->displayLambda() - last_iteration.displayLambda());
-      const double max_diff = std::max(dg4, dlamda);
-      precision_reached = max_diff < accuracy_goal;
-   }
-
-   // save old model parameters
-   last_iteration = *smcw;
-   ++it_count;
-
-   return precision_reached;
+   return max_diff;
 }
 
 unsigned int StandardModelCW_convergence_tester::max_iterations() const
 {
    return 10;
-}
-
-bool StandardModelCW_convergence_tester::scale_has_changed() const
-{
-   return !is_zero(scale_difference());
-}
-
-double StandardModelCW_convergence_tester::scale_difference() const
-{
-   return smcw->getScale() - last_iteration.getScale();
-}
-
-double StandardModelCW_convergence_tester::rel_scale_difference() const
-{
-   const double diff = scale_difference();
-   if (!is_zero(last_iteration.getScale()))
-      return diff / last_iteration.getScale();
-   return std::numeric_limits<double>::infinity();
 }

@@ -19,27 +19,22 @@
 #ifndef MSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 #define MSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_convergence_tester.hpp"
+#include "two_scale_convergence_tester_skeleton.hpp"
 #include "mssm_two_scale.hpp"
 
-class Mssm_convergence_tester : public Convergence_tester<Two_scale> {
+class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
 public:
    Mssm_convergence_tester(Mssm<Two_scale>*, double, unsigned long);
    virtual ~Mssm_convergence_tester();
-   virtual bool accuracy_goal_reached();
    virtual unsigned int max_iterations() const;
 
-private:
-   Mssm<Two_scale>* mssm;
-   Mssm<Two_scale> last_iteration;
-   unsigned long it_count;
-   unsigned long maximum_iterations;
-   double accuracy_goal;
+protected:
+   virtual double max_rel_diff() const;
 
-   double scale_difference() const;
-   double rel_scale_difference() const;
-   bool scale_has_changed() const;
-   double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&);
+private:
+   unsigned long maximum_iterations;
+
+   double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&) const;
 };
 
 #endif
