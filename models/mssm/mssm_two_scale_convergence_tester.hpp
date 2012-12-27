@@ -24,16 +24,13 @@
 
 class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
 public:
-   Mssm_convergence_tester(Mssm<Two_scale>*, double, unsigned long);
+   Mssm_convergence_tester(Mssm<Two_scale>*, double);
    virtual ~Mssm_convergence_tester();
-   virtual unsigned int max_iterations() const;
 
 protected:
    virtual double max_rel_diff() const;
 
 private:
-   unsigned long maximum_iterations;
-
    double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&) const;
 };
 

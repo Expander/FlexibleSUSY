@@ -18,19 +18,13 @@
 
 #include "mssm_two_scale_convergence_tester.hpp"
 
-Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_, unsigned long max_iterations_)
+Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_)
    : Convergence_tester_skeleton<Mssm<Two_scale> >(mssm_, accuracy_goal_)
-   , maximum_iterations(max_iterations_)
 {
 }
 
 Mssm_convergence_tester::~Mssm_convergence_tester()
 {
-}
-
-unsigned int Mssm_convergence_tester::max_iterations() const
-{
-   return maximum_iterations;
 }
 
 double Mssm_convergence_tester::max_rel_diff() const
