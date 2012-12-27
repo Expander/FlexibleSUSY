@@ -155,5 +155,5 @@ DoubleVector StandardModelCW<Two_scale>::beta() const
 
 double StandardModelCW<Two_scale>::calcZprimeMass() const
 {
-   return std::pow(vs * g4, 2);
+   return vs * g4;
 }
