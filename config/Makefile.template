@@ -6,6 +6,7 @@ LIBS     := @LIBS@
 CXX      := @CXX@
 FC       := @FC@
 MAKELIB  := @MAKELIB@
+LIBEXT   := @LIBEXT@
 VERSION  := @VERSION@
 PKGNAME  := @PKGNAME@
 

@@ -19,7 +19,7 @@ LIBSMCW_OBJ  := \
 LIBSMCW_DEP  := \
 		$(LIBSMCW_OBJ:.o=.d)
 
-LIBSMCW      := $(DIR)/$(MODNAME).a
+LIBSMCW      := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

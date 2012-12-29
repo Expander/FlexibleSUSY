@@ -18,6 +18,7 @@ CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
 FFLAGS="-g -O2"
 LIBS=""
+LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
@@ -201,6 +202,7 @@ help() {
     echo "--fc=               Fortran compiler (default: $FC)"
     echo "--fflags=           Fortran compiler flags (default: $FFLAGS)"
     echo "--help,-h           print this help message"
+    echo "--libext            library extension (default: $LIBEXT)"
     echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
     echo "--silent            suppress all command line output"
     echo "--verbose           enable verbose messages"
@@ -232,6 +234,7 @@ if test $# -gt 0 ; then
 	    --fc=*)                  FC=$optarg ;;
 	    --fflags=*)              FFLAGS=$optarg ;;
 	    --help|-h)               help; exit 0 ;;
+	    --libext=*)              LIBEXT=$optarg ;;
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
 	    --silent)                define "-DSILENT" ;;
 	    --verbose)               define "-DVERBOSE" ;;
@@ -256,5 +259,6 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
     -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@LIBEXT@|$LIBEXT|"           \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     < $MAKEFILE_TMPL > $MAKEFILE

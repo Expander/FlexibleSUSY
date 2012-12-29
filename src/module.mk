@@ -54,7 +54,7 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/$(MODNAME).a
+LIBFLEXI     := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

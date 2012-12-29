@@ -19,7 +19,7 @@ LIBSM_OBJ    := \
 LIBSM_DEP    := \
 		$(LIBSM_OBJ:.o=.d)
 
-LIBSM        := $(DIR)/$(MODNAME).a
+LIBSM        := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

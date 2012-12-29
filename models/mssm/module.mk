@@ -36,7 +36,7 @@ LIBMSSM_OBJ  := \
 LIBMSSM_DEP  := \
 		$(LIBMSSM_OBJ:.o=.d)
 
-LIBMSSM      := $(DIR)/$(MODNAME).a
+LIBMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
 SOFTSUSY_SRC := \
 		$(DIR)/main.cpp
