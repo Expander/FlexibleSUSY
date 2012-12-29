@@ -22,13 +22,14 @@ ALLEXE   :=
 ALLTST   :=
 
 .PHONY:  all allhdr allexec alllib alltest \
-	 clean clean-dep distclean tag release
+	 clean clean-dep distclean showbuild tag release
 
 all:     allhdr alllib allexec
 
 include $(patsubst %, %/module.mk, $(MODULES))
 
-ifeq ($(findstring $(MAKECMDGOALS),clean distclean tag release all-doc),)
+ifeq ($(findstring $(MAKECMDGOALS),clean distclean \
+      showbuild tag release all-doc),)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
@@ -55,6 +56,22 @@ clean-dep:
 
 distclean::
 	-rm -f Makefile
+
+showbuild:
+	@echo "PKGNAME  = $(PKGNAME)"
+	@echo "VERSION  = $(VERSION)"
+	@echo "CXX      = $(CXX)"
+	@echo "CPPFLAGS = $(CPPFLAGS)"
+	@echo "CXXFLAGS = $(CXXFLAGS)"
+	@echo "FC       = $(FC)"
+	@echo "FFLAGS   = $(FFLAGS)"
+	@echo "MAKELIB  = $(MAKELIB)"
+	@echo "LIBEXT   = $(LIBEXT)"
+	@echo "LIBS     = $(LIBS)"
+	@echo ""
+	@echo "The list of modules to be built:"
+	@echo "--------------------------------"
+	@echo "$(MODULES)"
 
 tag:
 	git tag v$(VERSION) -m "version $(VERSION)"
