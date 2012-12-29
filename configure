@@ -164,17 +164,9 @@ check_boost_incl() {
 check_fortran_libs() {
     case "$FC" in
 	gfortran)
-	    # get default search paths from gfortran
-	    # TODO: this does not work under windows, because there
-	    # the paths contain `c:/' etc.
-	    search_paths=`gfortran -print-search-dirs | grep libraries | sed 's|:|\n|g;s| *=||g' | sed '/libraries/d'`
-	    # add libgfortranbegin if available
-	    check_library "libgfortranbegin" "$search_paths"
-	    if test "x$found_lib" != "x" ; then
-		FLIBS="-lgfortranbegin"
-	    fi
-	    FLIBS="$FLIBS -lgfortran -lm"
-	    ;;
+	    FLIBS="-lgfortran -lm" ;;
+	g77|f77)
+	    FLIBS="-lg2c -lm" ;;
     esac
 }
 
