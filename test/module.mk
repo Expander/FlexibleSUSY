@@ -42,25 +42,25 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 $(DIR)/test_mssm_solver.x: $(DIR)/test_mssm_solver.o $(LIBMSSM) $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(FLIBS) $(BOOSTLIBS)
 
 $(DIR)/test_running_precision.x: $(DIR)/test_running_precision.o $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 $(DIR)/test_sm_smcw_two_scale_integration.x: $(DIR)/test_sm_smcw_two_scale_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 $(DIR)/test_sm_two_scale.x: $(DIR)/test_sm_two_scale.o $(LIBSM) $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 %.x: %.o $(ALLLIB)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(BOOSTLIBS)
 
 ALLDEP += $(TEST_DEP)
 ALLTST += $(TEST_EXE)

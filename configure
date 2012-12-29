@@ -17,7 +17,8 @@ CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
 FFLAGS="-g -O2"
-LIBS=""
+FLIBS=""
+BOOSTLIBS=""
 LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
@@ -137,12 +138,12 @@ check_boost_libs() {
         echo "Warning: libboost_unit_test_framework must be installed"
 	echo "  to compile and run the tests, see http://www.boost.org"
     else
-	BOOSTLIBS=-lboost_unit_test_framework
+	BOOSTLIBS_=-lboost_unit_test_framework
 	if [ -z "$boost_lib_dir" ]; then
             # assume that the linker will look in the default paths
-	    LIBS="$LIBS $BOOSTLIBS"
+	    BOOSTLIBS="$BOOSTLIBS_"
 	else
-	    LIBS="$LIBS -L$boost_lib_dir $BOOSTLIBS"
+	    BOOSTLIBS="-L$boost_lib_dir $BOOSTLIBS_"
 	fi
     fi
 }
@@ -168,9 +169,9 @@ check_fortran_libs() {
 	    # add libgfortranbegin if available
 	    check_library "libgfortranbegin" "$search_paths"
 	    if test "x$found_lib" != "x" ; then
-		LIBS="$LIBS -lgfortranbegin"
+		FLIBS="-lgfortranbegin"
 	    fi
-	    LIBS="$LIBS -lgfortran -lm"
+	    FLIBS="$FLIBS -lgfortran -lm"
 	    ;;
     esac
 }
@@ -253,7 +254,8 @@ enable_defines
 
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
-    -e "s|@LIBS@|$LIBS|"               \
+    -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@BOOSTLIBS@|$BOOSTLIBS|"     \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \

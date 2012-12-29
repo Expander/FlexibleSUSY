@@ -1,14 +1,15 @@
-MODULES  := config src models/sm models/smcw models/mssm test doc
-CPPFLAGS := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES))
-CXXFLAGS := @CXXFLAGS@
-FFLAGS   := @FFLAGS@
-LIBS     := @LIBS@
-CXX      := @CXX@
-FC       := @FC@
-MAKELIB  := @MAKELIB@
-LIBEXT   := @LIBEXT@
-VERSION  := @VERSION@
-PKGNAME  := @PKGNAME@
+MODULES   := config src models/sm models/smcw models/mssm test doc
+CPPFLAGS  := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES))
+CXXFLAGS  := @CXXFLAGS@
+FFLAGS    := @FFLAGS@
+FLIBS     := @FLIBS@
+BOOSTLIBS := @BOOSTLIBS@
+CXX       := @CXX@
+FC        := @FC@
+MAKELIB   := @MAKELIB@
+LIBEXT    := @LIBEXT@
+VERSION   := @VERSION@
+PKGNAME   := @PKGNAME@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -58,16 +59,17 @@ distclean::
 	-rm -f Makefile
 
 showbuild:
-	@echo "PKGNAME  = $(PKGNAME)"
-	@echo "VERSION  = $(VERSION)"
-	@echo "CXX      = $(CXX)"
-	@echo "CPPFLAGS = $(CPPFLAGS)"
-	@echo "CXXFLAGS = $(CXXFLAGS)"
-	@echo "FC       = $(FC)"
-	@echo "FFLAGS   = $(FFLAGS)"
-	@echo "MAKELIB  = $(MAKELIB)"
-	@echo "LIBEXT   = $(LIBEXT)"
-	@echo "LIBS     = $(LIBS)"
+	@echo "PKGNAME   = $(PKGNAME)"
+	@echo "VERSION   = $(VERSION)"
+	@echo "CXX       = $(CXX)"
+	@echo "CPPFLAGS  = $(CPPFLAGS)"
+	@echo "CXXFLAGS  = $(CXXFLAGS)"
+	@echo "FC        = $(FC)"
+	@echo "FFLAGS    = $(FFLAGS)"
+	@echo "MAKELIB   = $(MAKELIB)"
+	@echo "LIBEXT    = $(LIBEXT)"
+	@echo "FLIBS     = $(FLIBS)"
+	@echo "BOOSTLIBS = $(BOOSTLIBS)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
