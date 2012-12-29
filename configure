@@ -165,6 +165,8 @@ check_fortran_libs() {
     case "$FC" in
 	gfortran)
 	    # get default search paths from gfortran
+	    # TODO: this does not work under windows, because there
+	    # the paths contain `c:/' etc.
 	    search_paths=`gfortran -print-search-dirs | grep libraries | sed 's|:|\n|g;s| *=||g' | sed '/libraries/d'`
 	    # add libgfortranbegin if available
 	    check_library "libgfortranbegin" "$search_paths"
