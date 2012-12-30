@@ -207,7 +207,6 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
  */
 double RGFlow<Two_scale>::get_precision()
 {
-   WARNING("precision of iteration " << iteration);
    if (running_precision)
       return running_precision->get_precision(iteration);
 
