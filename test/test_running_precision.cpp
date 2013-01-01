@@ -84,10 +84,9 @@ public:
    Test_increasing_precision() : call(0) {}
    virtual ~Test_increasing_precision() {}
    virtual double get_precision(unsigned it) {
-      // Check that this function is called 3 times with the same
-      // argument, before the argument is increased, i.e. it is called
-      // with 0 0 0  1 1 1  2 2 2  3 3 3 ...
-      BOOST_CHECK_EQUAL(call / 3, it);
+      // Check that every time this function is called the argument is
+      // increased by 1, beginning with 0.
+      BOOST_CHECK_EQUAL(call, it);
       ++call;
       return 1.0e-3;
    }
@@ -101,14 +100,8 @@ BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )
    // RGFlow<Two_scale>) the iteration number is increased and passed
    // to Two_scale_running_precision.
    //
-   // We use a model with 2 constraints.  This means that
-   // Two_scale_model::run_to() is called 3 times (and so is
-   // Two_scale_running_precision::get_precision()): 2 times when we
-   // run up, and 1 time to run down.
-   //
    // The test in Test_increasing_precision ensures that
-   // get_precision() is called exactly 3 times with the same
-   // argument.
+   // get_precision() is called exactly 1 time during each iteration.
 
    Static_model model;
 

@@ -38,7 +38,8 @@ RGFlow<Two_scale>::RGFlow()
    , iteration(0)
    , convergence_tester(NULL)
    , initial_guesser(NULL)
-   , running_precision(NULL)
+   , running_precision_calculator(NULL)
+   , running_precision(1.0e-3)
 {
 }
 
@@ -61,6 +62,7 @@ void RGFlow<Two_scale>::solve()
    iteration = 0;
    bool accuracy_reached = false;
    while (iteration < max_iterations && !accuracy_reached) {
+      update_running_precision();
       run_up();
       run_down();
       accuracy_reached = accuracy_goal_reached();
@@ -199,18 +201,23 @@ void RGFlow<Two_scale>::apply_lowest_constaint()
 }
 
 /**
- * Returns the precision of the RG running using the user defined
- * Two_scale_running_precision class.  If the user has not specified
- * such a class, 1.0e-3 is returned by default.
+ * Returns the precision of the RG running.
  *
  * @return RG running precision
  */
 double RGFlow<Two_scale>::get_precision()
 {
-   if (running_precision)
-      return running_precision->get_precision(iteration);
+   return running_precision;
+}
 
-   return 1.0e-3;
+/**
+ * Recalculates the precision of the RG running using the user defined
+ * Two_scale_running_precision_calculator class.
+ */
+void RGFlow<Two_scale>::update_running_precision()
+{
+   if (running_precision_calculator)
+      running_precision = running_precision_calculator->get_precision(iteration);
 }
 
 /**
@@ -311,7 +318,7 @@ void RGFlow<Two_scale>::set_initial_guesser(Initial_guesser<Two_scale>* ig)
  */
 void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
 {
-   running_precision = rp;
+   running_precision_calculator = rp;
 }
 
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const

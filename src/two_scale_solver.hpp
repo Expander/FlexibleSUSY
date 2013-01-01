@@ -132,7 +132,8 @@ private:
    unsigned int iteration;             ///< iteration number (starting at 0)
    Convergence_tester<Two_scale>* convergence_tester; ///< the convergence tester
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
-   Two_scale_running_precision* running_precision;    ///< RG running precision calculator
+   Two_scale_running_precision* running_precision_calculator; ///< RG running precision calculator
+   double running_precision;           ///< RG running precision
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
@@ -142,6 +143,7 @@ private:
    void run_down();                    ///< run all models down
    void apply_lowest_constaint();      ///< apply lowest constraint
    double get_precision();             ///< returns running precision
+   void update_running_precision();    ///< update the RG running precision
 };
 
 #endif
