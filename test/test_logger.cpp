@@ -37,3 +37,17 @@ BOOST_AUTO_TEST_CASE( test_ifelse_statement )
    if (condition)
       VERBOSE_MSG("true branch");
 }
+
+BOOST_AUTO_TEST_CASE( test_statement )
+{
+   int i = 1;
+   INFO((i = i + 1)); // INFO(i = i + 1); does not work yet
+   BOOST_CHECK_EQUAL(i, 2);
+}
+
+BOOST_AUTO_TEST_CASE( test_statement_executed_once )
+{
+   int i = 1;
+   INFO(++i);
+   BOOST_CHECK_EQUAL(i, 2);
+}
