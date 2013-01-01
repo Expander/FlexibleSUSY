@@ -97,6 +97,21 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #endif
 
 #ifdef SILENT
+   #define PRINT_FILE_LINE(level)
+#else
+   #define PRINT_FILE_LINE(level)                                     \
+      do {                                                            \
+         switch (level) {                                             \
+         case kFatal:   std::cout << "(file: " << __FILE__            \
+                                  << ", line: " << __LINE__ << ") ";  \
+            break;                                                    \
+         default:                                                     \
+            break;                                                    \
+         }                                                            \
+      } while (0)
+#endif
+
+#ifdef SILENT
    #define PRINT_COLOR_CODE(level)
 #else
    #define PRINT_COLOR_CODE(level)                               \
@@ -122,12 +137,14 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                                       \
          PRINT_COLOR_CODE(level);                                \
          PRINT_PREFIX(level);                                    \
+         PRINT_FILE_LINE(level);                                 \
          std::cout << message << "\033[0m" << std::endl;         \
       } while (0)
    #else
       #define LOG(level, message)                  \
       do {                                         \
          PRINT_PREFIX(level);                      \
+         PRINT_FILE_LINE(level);                   \
          std::cout << message << std::endl;        \
       } while (0)
    #endif
