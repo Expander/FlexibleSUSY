@@ -1,4 +1,5 @@
 #include "mssm_solver.h"
+#include "mssm_parameter_point.hpp"
 #include "mssm_two_scale.hpp"
 #include "mssm_two_scale_initial_guesser.hpp"
 #include "mssm_two_scale_sugra_constraint.hpp"
@@ -51,46 +52,6 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
 
    BOOST_CHECK_EQUAL(mssmSolver.displayPhys(), softSusy.displayPhys());
 }
-
-struct Mssm_parameter_point {
-   Mssm_parameter_point()
-      : m0(125.0)
-      , m12(500.0)
-      , a0(0.0)
-      , mxGuess(1.0e16)
-      , signMu(1)
-      , tanBeta(10.0)
-      , oneset()
-   {
-      const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
-      oneset.setAlpha(ALPHAS, alphasMZ);
-      oneset.setPoleMt(mtop);
-      oneset.setMass(mBottom, mbmb);
-      oneset.toMz();
-   }
-   DoubleVector get_soft_pars() const {
-      DoubleVector highScaleSoftPars(3);
-      highScaleSoftPars(1) = m0;
-      highScaleSoftPars(2) = m12;
-      highScaleSoftPars(3) = a0;
-      return highScaleSoftPars;
-   }
-   friend std::ostream& operator<<(std::ostream& os, const Mssm_parameter_point& pp) {
-      os << "CMSSM parameter point:"
-         << " m0=" << pp.m0
-         << ", m12=" << pp.m12
-         << ", a0=" << pp.a0
-         << ", mxGuess=" << pp.mxGuess
-         << ", signMu=" << pp.signMu
-         << ", tanBeta=" << pp.tanBeta
-         << ", QedQcd=" << pp.oneset
-         << '\n';
-      return os;
-   }
-
-   double m0, m12, a0, mxGuess, signMu, tanBeta;
-   QedQcd oneset;
-};
 
 /**
  * Test equality of physical MSSM parameters

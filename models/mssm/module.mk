@@ -3,6 +3,7 @@ MODNAME      := libmssm
 
 LIBMSSM_HDR  := \
 		$(DIR)/mssm.hpp \
+		$(DIR)/mssm_parameter_point.hpp \
 		$(DIR)/mssm_solver.h \
 		$(DIR)/mssm_two_scale.hpp \
 		$(DIR)/mssm_two_scale_convergence_tester.hpp \
