@@ -19,6 +19,9 @@
 #ifndef MSSM_PARAMETER_POINT_H
 #define MSSM_PARAMETER_POINT_H
 
+#include "linalg.h"
+#include "lowe.h"
+
 struct Mssm_parameter_point {
    Mssm_parameter_point()
       : m0(125.0)
