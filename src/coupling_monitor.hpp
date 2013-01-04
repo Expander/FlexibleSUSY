@@ -43,8 +43,8 @@ public:
    Coupling_monitor();
    ~Coupling_monitor();
 
-   template <class T, class DataGetter>
-   void run(T, DataGetter, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
+   template <class Rge, class DataGetter>
+   void run(Rge, DataGetter, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
    void write_to_file(const std::string&) const;
@@ -82,8 +82,8 @@ public:
  * @param include_endpoint include the endpoint q2 in the running
  *        (false by default)
  */
-template <class T, class DataGetter>
-void Coupling_monitor::run(T rge, DataGetter data_getter, double q1, double q2,
+template <class Rge, class DataGetter>
+void Coupling_monitor::run(Rge rge, DataGetter data_getter, double q1, double q2,
                            unsigned int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
