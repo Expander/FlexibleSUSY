@@ -27,6 +27,18 @@ using namespace softsusy;
  *
  ************************************/
 
+void DoubleVector::append(const DoubleVector& v)
+{
+   const size_t old_size = x.size();
+   std::valarray<double> y(x); // old vector
+   x.resize(old_size + v.size());
+   end = start + x.size() - 1;
+   for (size_t i = 0; i < y.size(); ++i)
+      x[i] = y[i];
+   for (size_t i = 0; i < v.size(); ++i)
+      x[i + old_size] = v(i + v.displayStart());
+}
+
 /*
  *  ELEMENT ACCESS
  */

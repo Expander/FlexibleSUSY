@@ -70,6 +70,8 @@ public:
     assign_from(v);
   }
 
+  void append(const DoubleVector&); ///< append another vector
+
   /*
    *  ELEMENT ACCESS
    */
