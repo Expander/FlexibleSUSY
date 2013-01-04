@@ -188,20 +188,20 @@ enable_defines() {
 help() {
     echo "Usage: ./`basename $0` [options]"
     echo "Options:"
-    echo "--boost-lib-dir=    directory to search for BOOST libraries"
-    echo "--boost-inc-dir=    directory to search for BOOST headers"
-    echo "--colors            enable colored output"
-    echo "--cxx=              C++ compiler (default: $CXX)"
-    echo "--cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
-    echo "--debug             enable debug messages"
-    echo "--fc=               Fortran compiler (default: $FC)"
-    echo "--fflags=           Fortran compiler flags (default: $FFLAGS)"
-    echo "--help,-h           print this help message"
-    echo "--libext            library extension (default: $LIBEXT)"
-    echo "--make-lib-cmd=     command to make library (default: $MAKELIB)"
-    echo "--silent            suppress all command line output"
-    echo "--verbose           enable verbose messages"
-    echo "--version,-v        print version information"
+    echo "--enable-colors          enable colored output"
+    echo "--enable-debug           enable debug messages"
+    echo "--enable-silent          suppress all command line output"
+    echo "--enable-verbose         enable verbose messages"
+    echo "--with-boost-libdir=     directory to search for BOOST libraries"
+    echo "--with-boost-incdir=     directory to search for BOOST headers"
+    echo "--with-cxx=              C++ compiler (default: $CXX)"
+    echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
+    echo "--with-fc=               Fortran compiler (default: $FC)"
+    echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
+    echo "--help,-h                print this help message"
+    echo "--libext                 library extension (default: $LIBEXT)"
+    echo "--make-lib-cmd=          command to make library (default: $MAKELIB)"
+    echo "--version,-v             print version information"
 }
 
 version() {
@@ -220,19 +220,19 @@ if test $# -gt 0 ; then
 	esac
 
 	case $1 in
-	    --boost-lib-dir=*)       boost_lib_dir=$optarg ;;
-	    --boost-inc-dir=*)       boost_inc_dir=$optarg ;;
-	    --colors)                define "-DCOLOR_PRINTOUT" ;;
-	    --cxx=*)                 CXX=$optarg ;;
-	    --cxxflags=*)            CXXFLAGS=$optarg ;;
-	    --debug)                 define "-DDEBUG" ;;
-	    --fc=*)                  FC=$optarg ;;
-	    --fflags=*)              FFLAGS=$optarg ;;
+	    --enable-colors)         define "-DCOLOR_PRINTOUT" ;;
+	    --enable-debug)          define "-DDEBUG" ;;
+	    --enable-silent)         define "-DSILENT" ;;
+	    --enable-verbose)        define "-DVERBOSE" ;;
+	    --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
+	    --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
+	    --with-cxx=*)            CXX=$optarg ;;
+	    --with-cxxflags=*)       CXXFLAGS=$optarg ;;
+	    --with-fc=*)             FC=$optarg ;;
+	    --with-fflags=*)         FFLAGS=$optarg ;;
 	    --help|-h)               help; exit 0 ;;
 	    --libext=*)              LIBEXT=$optarg ;;
 	    --make-lib-cmd=*)        MAKELIB=$optarg ;;
-	    --silent)                define "-DSILENT" ;;
-	    --verbose)               define "-DVERBOSE" ;;
 	    --version|-v)            version; exit 0 ;;
 	    *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
 	esac
