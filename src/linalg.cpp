@@ -218,6 +218,13 @@ DoubleMatrix DoubleMatrix::transpose() const {
   return temp;
 }
 
+DoubleVector DoubleMatrix::flatten() const {
+   DoubleVector v(x.size());
+   for (size_t i = 0; i < x.size(); ++i)
+      v(i + 1) = x[i];
+   return v;
+}
+
 /*
  *  NUMERICAL DIAGONALIZATION ROUTINES ETC.
  */

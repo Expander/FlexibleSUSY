@@ -310,6 +310,7 @@ public:
 
   double trace() const;///< trace must only be performed on a square matrix
   DoubleMatrix transpose() const; ///< can be any size
+  DoubleVector flatten() const; ///< matrix to vector, row by row
 
   /*
    *  NUMERICAL DIAGONALIZATION ROUTINES ETC.
