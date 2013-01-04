@@ -43,8 +43,8 @@ public:
    Coupling_monitor();
    ~Coupling_monitor();
 
-   template <class T>
-   void run(T, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
+   template <class T, class DataGetter>
+   void run(T, DataGetter, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
    void write_to_file(const std::string&) const;
@@ -63,18 +63,27 @@ private:
    void write_comment_line(char, std::ofstream&, std::size_t, int) const;
 };
 
+class Gauge_coupling_getter {
+public:
+   template <class Rge>
+   DoubleVector operator()(const Rge& rge) {
+      return rge.displayGauge();
+   }
+};
+
 /**
  * Add running couplings between scale q1 and q2.
  *
  * @param rge class with RGEs and parameters
+ * @param data_getter functor which pulls the data from the rge object
  * @param q1 scale to start at
  * @param q2 end scale
  * @param number_of_steps number of steps
  * @param include_endpoint include the endpoint q2 in the running
  *        (false by default)
  */
-template <class T>
-void Coupling_monitor::run(T rge, double q1, double q2,
+template <class T, class DataGetter>
+void Coupling_monitor::run(T rge, DataGetter data_getter, double q1, double q2,
                            unsigned int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
@@ -94,7 +103,7 @@ void Coupling_monitor::run(T rge, double q1, double q2,
    for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
       const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
       rge.run_to(scale);
-      couplings.push_back(TData::value_type(scale, rge.displayGauge()));
+      couplings.push_back(TData::value_type(scale, data_getter(rge)));
    }
 
    std::sort(couplings.begin(), couplings.end(), TDataComp());
