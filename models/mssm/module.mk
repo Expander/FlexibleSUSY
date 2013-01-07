@@ -39,31 +39,16 @@ LIBMSSM_DEP  := \
 
 LIBMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
-SOFTSUSY_SRC := \
-		$(DIR)/main.cpp
-
-SOFTSUSY_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(SOFTSUSY_SRC)))
-
-SOFTSUSY_DEP := \
-		$(SOFTSUSY_OBJ:.o=.d)
-
-SOFTSUSY     := \
-		$(DIR)/softsusy.x
-
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
-all-$(MODNAME): $(LIBMSSM) $(SOFTSUSY)
+all-$(MODNAME): $(LIBMSSM)
 
 clean-$(MODNAME):
 		rm -rf $(LIBMSSM_OBJ)
-		rm -rf $(SOFTSUSY_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(LIBMSSM_DEP)
 		rm -rf $(LIBMSSM)
-		rm -rf $(SOFTSUSY_DEP)
-		rm -rf $(SOFTSUSY)
 
 clean::         clean-$(MODNAME)
 
@@ -72,11 +57,5 @@ distclean::     distclean-$(MODNAME)
 $(LIBMSSM): $(LIBMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(SOFTSUSY): $(SOFTSUSY_OBJ) $(LIBFLEXI) $(LIBMSSM)
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(FLIBS)
-
 ALLDEP += $(LIBMSSM_DEP)
 ALLLIB += $(LIBMSSM)
-
-ALLDEP += $(SOFTSUSY_DEP)
-ALLEXE += $(SOFTSUSY)

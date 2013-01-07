@@ -3,6 +3,7 @@ MODNAME  := examples
 
 EXAMPLES_SRC := \
 		$(DIR)/run_mssm.cpp \
+		$(DIR)/softsusy.cpp
 
 EXAMPLES_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXAMPLES_SRC)))
@@ -29,6 +30,9 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBMSSM) $(LIBFLEXI)
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(FLIBS)
+
+$(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBFLEXI) $(LIBMSSM)
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)
