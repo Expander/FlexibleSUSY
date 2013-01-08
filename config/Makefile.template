@@ -10,7 +10,7 @@ MAKELIB   := @MAKELIB@
 LIBEXT    := @LIBEXT@
 VERSION   := @VERSION@
 PKGNAME   := @PKGNAME@
-ALGORITMS := two_scale
+ALGORITMS := @ALGORITMS@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -71,6 +71,7 @@ showbuild:
 	@echo "LIBEXT    = $(LIBEXT)"
 	@echo "FLIBS     = $(FLIBS)"
 	@echo "BOOSTLIBS = $(BOOSTLIBS)"
+	@echo "ALGORITMS = $(ALGORITMS)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"

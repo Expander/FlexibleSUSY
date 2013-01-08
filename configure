@@ -23,6 +23,7 @@ LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
+ALGORITMS="all"
 
 check_library() {
     # This function will try to locate a library [$1] in the directory
@@ -132,6 +133,20 @@ check_header() {
     fi
 }
 
+check_algorithms() {
+    algs=`echo $ALGORITMS | sed 's/,/ /'g`
+    for a in ${algs}; do
+	case "$a" in
+	    all)
+		ALGORITMS="two_scale"; break ;;
+	    two_scale)
+		continue ;;
+	    *)
+		echo "Error: unknown algorithm: $a"; exit 1 ;;
+	esac
+    done
+}
+
 check_boost_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir"
     if test "x$found_lib" = "x" ; then
@@ -192,6 +207,9 @@ help() {
     echo "--enable-debug           enable debug messages"
     echo "--enable-silent          suppress all command line output"
     echo "--enable-verbose         enable verbose messages"
+    echo "--with-algorithms=*)     comma separated list of RG solver algorithms"
+    echo "                         (default: $ALGORITMS)"
+    echo "                         possible values: all, two_scale"
     echo "--with-boost-libdir=     directory to search for BOOST libraries"
     echo "--with-boost-incdir=     directory to search for BOOST headers"
     echo "--with-cxx=              C++ compiler (default: $CXX)"
@@ -224,6 +242,7 @@ if test $# -gt 0 ; then
 	    --enable-debug)          define "-DDEBUG" ;;
 	    --enable-silent)         define "-DSILENT" ;;
 	    --enable-verbose)        define "-DVERBOSE" ;;
+	    --with-algorithms=*)     ALGORITMS=$optarg ;;
 	    --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
 	    --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
 	    --with-cxx=*)            CXX=$optarg ;;
@@ -240,6 +259,7 @@ if test $# -gt 0 ; then
     done
 fi
 
+check_algorithms
 check_boost_incl
 check_boost_libs
 check_fortran_libs
@@ -249,6 +269,7 @@ enable_defines
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@ALGORITMS@|$ALGORITMS|"     \
     -e "s|@BOOSTLIBS@|$BOOSTLIBS|"     \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
