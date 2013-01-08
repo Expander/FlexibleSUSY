@@ -23,7 +23,9 @@ LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
+# available RG algorithms
 ALGORITMS="all"
+available_algorithms="two_scale"
 
 check_library() {
     # This function will try to locate a library [$1] in the directory
@@ -134,11 +136,11 @@ check_header() {
 }
 
 check_algorithms() {
-    algs=`echo $ALGORITMS | sed 's/,/ /'g`
+    algs=`echo $ALGORITMS | tr ',' ' '`
     for a in ${algs}; do
 	case "$a" in
 	    all)
-		ALGORITMS="two_scale"; break ;;
+		ALGORITMS="$available_algorithms"; break ;;
 	    two_scale)
 		continue ;;
 	    *)
@@ -209,7 +211,7 @@ help() {
     echo "--enable-verbose         enable verbose messages"
     echo "--with-algorithms=*)     comma separated list of RG solver algorithms"
     echo "                         (default: $ALGORITMS)"
-    echo "                         possible values: all, two_scale"
+    echo "                         possible values: all, $available_algorithms"
     echo "--with-boost-libdir=     directory to search for BOOST libraries"
     echo "--with-boost-incdir=     directory to search for BOOST headers"
     echo "--with-cxx=              C++ compiler (default: $CXX)"
