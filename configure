@@ -24,7 +24,7 @@ CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
 # available RG algorithms
-ALGORITMS="all"
+ALGORITHMS="all"
 available_algorithms="two_scale"
 
 check_library() {
@@ -136,11 +136,11 @@ check_header() {
 }
 
 check_algorithms() {
-    algs=`echo $ALGORITMS | tr ',' ' '`
+    algs=`echo $ALGORITHMS | tr ',' ' '`
     for a in ${algs}; do
 	case "$a" in
 	    all)
-		ALGORITMS="$available_algorithms"; break ;;
+		ALGORITHMS="$available_algorithms"; break ;;
 	    two_scale)
 		continue ;;
 	    *)
@@ -216,7 +216,7 @@ help() {
     echo "--enable-silent          suppress all command line output"
     echo "--enable-verbose         enable verbose messages"
     echo "--with-algorithms=*)     comma separated list of RG solver algorithms"
-    echo "                         (default: $ALGORITMS)"
+    echo "                         (default: $ALGORITHMS)"
     echo "                         possible values: all, $available_algorithms"
     echo "--with-boost-libdir=     directory to search for BOOST libraries"
     echo "--with-boost-incdir=     directory to search for BOOST headers"
@@ -250,7 +250,7 @@ if test $# -gt 0 ; then
 	    --enable-debug)          define "DEBUG" ;;
 	    --enable-silent)         define "SILENT" ;;
 	    --enable-verbose)        define "VERBOSE" ;;
-	    --with-algorithms=*)     ALGORITMS=$optarg ;;
+	    --with-algorithms=*)     ALGORITHMS=$optarg ;;
 	    --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
 	    --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
 	    --with-cxx=*)            CXX=$optarg ;;
@@ -277,7 +277,7 @@ enable_defines
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@FLIBS@|$FLIBS|"             \
-    -e "s|@ALGORITMS@|$ALGORITMS|"     \
+    -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTLIBS@|$BOOSTLIBS|"     \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
