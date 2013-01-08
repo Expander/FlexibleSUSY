@@ -193,7 +193,11 @@ define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
 	echo "define $@"
-	extra_defines="$extra_defines -D$@"
+	if [ -z "$extra_defines" ]; then
+	    extra_defines="-D$@"
+	else
+	    extra_defines="$extra_defines -D$@"
+	fi
     fi
 }
 
