@@ -193,7 +193,7 @@ define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
 	echo "define $@"
-	extra_defines="$extra_defines $@"
+	extra_defines="$extra_defines -D$@"
     fi
 }
 
@@ -242,10 +242,10 @@ if test $# -gt 0 ; then
 	esac
 
 	case $1 in
-	    --enable-colors)         define "-DCOLOR_PRINTOUT" ;;
-	    --enable-debug)          define "-DDEBUG" ;;
-	    --enable-silent)         define "-DSILENT" ;;
-	    --enable-verbose)        define "-DVERBOSE" ;;
+	    --enable-colors)         define "COLOR_PRINTOUT" ;;
+	    --enable-debug)          define "DEBUG" ;;
+	    --enable-silent)         define "SILENT" ;;
+	    --enable-verbose)        define "VERBOSE" ;;
 	    --with-algorithms=*)     ALGORITMS=$optarg ;;
 	    --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
 	    --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
