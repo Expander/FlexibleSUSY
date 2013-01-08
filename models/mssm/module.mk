@@ -8,7 +8,7 @@ LIBMSSM_SRC  := \
 		$(DIR)/susy.cpp \
 		$(DIR)/twoloophiggs.f
 
-ifneq ($(findstring two_scale,$(ALGORITMS)),)
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBMSSM_SRC  += \
 		$(DIR)/mssm_two_scale.cpp \
 		$(DIR)/mssm_two_scale_convergence_tester.cpp \

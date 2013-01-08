@@ -12,7 +12,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp
 
-ifneq ($(findstring two_scale,$(ALGORITMS)),)
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \

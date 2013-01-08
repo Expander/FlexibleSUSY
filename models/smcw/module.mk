@@ -3,7 +3,7 @@ MODNAME      := libsmcw
 
 LIBSMCW_SRC  :=
 
-ifneq ($(findstring two_scale,$(ALGORITMS)),)
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSMCW_SRC  += \
 		$(DIR)/smcw_two_scale.cpp \
 		$(DIR)/smcw_two_scale_convergence_tester.cpp \

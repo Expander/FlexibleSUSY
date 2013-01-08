@@ -3,7 +3,7 @@ MODNAME      := libsm
 
 LIBSM_SRC    :=
 
-ifneq ($(findstring two_scale,$(ALGORITMS)),)
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSM_SRC    += \
 		$(DIR)/sm_two_scale.cpp \
 		$(DIR)/sm_two_scale_convergence_tester.cpp \
