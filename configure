@@ -144,7 +144,9 @@ check_algorithms() {
 	    two_scale)
 		continue ;;
 	    *)
-		echo "Error: unknown algorithm: $a"; exit 1 ;;
+		echo "Error: unknown algorithm: $a";
+		echo "Available algorithms: $available_algorithms";
+		exit 1 ;;
 	esac
     done
 }
