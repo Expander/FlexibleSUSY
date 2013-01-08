@@ -1,16 +1,14 @@
 DIR          := models/sm
 MODNAME      := libsm
 
-LIBSM_HDR    := \
-		$(DIR)/sm.hpp \
-		$(DIR)/sm_two_scale.hpp \
-		$(DIR)/sm_two_scale_experimental_constraint.hpp \
-		$(DIR)/sm_two_scale_convergence_tester.hpp
+LIBSM_SRC    :=
 
-LIBSM_SRC    := \
+ifneq ($(findstring two_scale,$(ALGORITMS)),)
+LIBSM_SRC    += \
 		$(DIR)/sm_two_scale.cpp \
 		$(DIR)/sm_two_scale_convergence_tester.cpp \
 		$(DIR)/sm_two_scale_experimental_constraint.cpp
+endif
 
 LIBSM_OBJ    := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSM_SRC))) \

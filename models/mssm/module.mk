@@ -1,34 +1,22 @@
 DIR          := models/mssm
 MODNAME      := libmssm
 
-LIBMSSM_HDR  := \
-		$(DIR)/mssm.hpp \
-		$(DIR)/mssm_parameter_point.hpp \
-		$(DIR)/mssm_solver.h \
-		$(DIR)/mssm_two_scale.hpp \
-		$(DIR)/mssm_two_scale_convergence_tester.hpp \
-		$(DIR)/mssm_two_scale_initial_guesser.hpp \
-		$(DIR)/mssm_two_scale_msusy_constraint.hpp \
-		$(DIR)/mssm_two_scale_mz_constraint.hpp \
-		$(DIR)/mssm_two_scale_sugra_constraint.hpp \
-		$(DIR)/physpars.h \
-		$(DIR)/softpars.h \
-		$(DIR)/softsusy.h \
-		$(DIR)/susy.h \
-		$(DIR)/twoloophiggs.h
-
 LIBMSSM_SRC  := \
-		$(DIR)/mssm_two_scale.cpp \
-		$(DIR)/mssm_two_scale_convergence_tester.cpp \
-		$(DIR)/mssm_two_scale_initial_guesser.cpp \
-		$(DIR)/mssm_two_scale_msusy_constraint.cpp \
-		$(DIR)/mssm_two_scale_mz_constraint.cpp \
-		$(DIR)/mssm_two_scale_sugra_constraint.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/softpars.cpp \
 		$(DIR)/softsusy.cpp \
 		$(DIR)/susy.cpp \
 		$(DIR)/twoloophiggs.f
+
+ifneq ($(findstring two_scale,$(ALGORITMS)),)
+LIBMSSM_SRC  += \
+		$(DIR)/mssm_two_scale.cpp \
+		$(DIR)/mssm_two_scale_convergence_tester.cpp \
+		$(DIR)/mssm_two_scale_initial_guesser.cpp \
+		$(DIR)/mssm_two_scale_msusy_constraint.cpp \
+		$(DIR)/mssm_two_scale_mz_constraint.cpp \
+		$(DIR)/mssm_two_scale_sugra_constraint.cpp
+endif
 
 LIBMSSM_OBJ  := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBMSSM_SRC))) \

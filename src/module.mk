@@ -1,37 +1,6 @@
 DIR          := src
 MODNAME      := libflexisusy
 
-LIBFLEXI_HDR := \
-		$(DIR)/constraint.hpp \
-		$(DIR)/convergence_tester.hpp \
-		$(DIR)/def.h \
-		$(DIR)/dilog.f \
-		$(DIR)/dilog.h \
-		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/initial_guesser.hpp \
-		$(DIR)/linalg.h \
-		$(DIR)/lowe.h \
-		$(DIR)/matching.hpp \
-		$(DIR)/mycomplex.h \
-		$(DIR)/numerics.h \
-		$(DIR)/rge.h \
-		$(DIR)/rg_flow.hpp \
-		$(DIR)/coupling_monitor.hpp \
-		$(DIR)/stopwatch.hpp \
-		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_composite_convergence_tester.hpp \
-		$(DIR)/two_scale_convergence_tester.hpp \
-		$(DIR)/two_scale_convergence_tester_skeleton.hpp \
-		$(DIR)/two_scale_initial_guesser.hpp \
-		$(DIR)/two_scale_matching.hpp \
-		$(DIR)/two_scale_model.hpp \
-		$(DIR)/two_scale_running_precision.hpp \
-		$(DIR)/two_scale_solver.hpp \
-		$(DIR)/utils.h \
-		$(DIR)/xpr-base.h \
-		$(DIR)/xpr-matrix.h \
-		$(DIR)/xpr-vector.h
-
 LIBFLEXI_SRC := \
 		$(DIR)/coupling_monitor.cpp \
 		$(DIR)/def.cpp \
@@ -41,11 +10,15 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/stopwatch.cpp \
+		$(DIR)/utils.cpp
+
+ifneq ($(findstring two_scale,$(ALGORITMS)),)
+LIBFLEXI_SRC += \
 		$(DIR)/two_scale_composite_convergence_tester.cpp \
 		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_running_precision.cpp \
-		$(DIR)/two_scale_solver.cpp \
-		$(DIR)/utils.cpp
+		$(DIR)/two_scale_solver.cpp
+endif
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \

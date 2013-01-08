@@ -10,6 +10,7 @@ MAKELIB   := @MAKELIB@
 LIBEXT    := @LIBEXT@
 VERSION   := @VERSION@
 PKGNAME   := @PKGNAME@
+ALGORITMS := two_scale
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
