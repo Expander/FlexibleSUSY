@@ -5,14 +5,18 @@
 
 PROGRAM_NAME=FlexibleSUSY
 PROGRAM_VERSION=0.2
+
 # directory of this script
 BASEDIR=$(dirname $0)
+
 # default library directories
 default_lib_paths="/usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
+
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
 MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
+
 # options
 boost_lib_dir=""
 boost_inc_dir=""
@@ -26,6 +30,7 @@ LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
 MAKELIB="ar cru"
+MATH="math"
 # available RG algorithms
 ALGORITHMS="all"
 available_algorithms="two_scale lattice"
@@ -135,6 +140,27 @@ check_header() {
     fi
 }
 
+exists_in_path () {
+    # This function will try to locate an executable [$1] in $PATH.
+    #
+    # The result of the search is stored in cmd, which should be
+    # immediately copied, since the variables value will be
+    # overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -lt 1 ; then
+        echo "exists_in_path: Too few arguments"
+        return 1
+    fi
+
+    cmd=$(command -v -- "$1")
+    case "$cmd" in
+	/*) return 0 ;;
+	alias\ *) return 1 ;; # alias
+	*) return 1 ;; # built-in or function
+    esac
+}
+
 check_algorithms() {
     algs=`echo $ALGORITHMS | tr ',' ' '`
     ALGORITHMS=""
@@ -193,6 +219,18 @@ check_fortran_libs() {
     esac
 }
 
+check_math_cmd() {
+    echo -n "checking for Mathematica kernel $MATH ... "
+    exists_in_path "$MATH"
+    if [ -z "$cmd" ] ; then
+        echo "not found"
+        echo "Please install Mathematica"
+        exit 1
+    else
+        echo "found $cmd"
+    fi
+}
+
 define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
@@ -228,6 +266,7 @@ help() {
     echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--with-fc=               Fortran compiler (default: $FC)"
     echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
+    echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
     echo "--help,-h                print this help message"
     echo "--libext                 library extension (default: $LIBEXT)"
     echo "--make-lib-cmd=          command to make library (default: $MAKELIB)"
@@ -261,6 +300,7 @@ if test $# -gt 0 ; then
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-math-cmd=*)       MATH=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --libext=*)              LIBEXT=$optarg ;;
             --make-lib-cmd=*)        MAKELIB=$optarg ;;
@@ -275,6 +315,7 @@ check_algorithms
 check_boost_incl
 check_boost_libs
 check_fortran_libs
+# check_math_cmd
 
 enable_defines
 
