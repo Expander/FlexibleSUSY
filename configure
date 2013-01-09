@@ -224,8 +224,7 @@ check_math_cmd() {
     exists_in_path "$MATH"
     if [ -z "$cmd" ] ; then
         echo "not found"
-        echo "Please install Mathematica"
-        exit 1
+        echo "Warning: Mathematica needs to be installed to run the meta code!"
     else
         echo "found $cmd"
     fi
@@ -315,7 +314,7 @@ check_algorithms
 check_boost_incl
 check_boost_libs
 check_fortran_libs
-# check_math_cmd
+check_math_cmd
 
 enable_defines
 
@@ -329,6 +328,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
     -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     < $MAKEFILE_TMPL > $MAKEFILE

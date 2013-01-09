@@ -11,6 +11,7 @@ LIBEXT     := @LIBEXT@
 VERSION    := @VERSION@
 PKGNAME    := @PKGNAME@
 ALGORITHMS := @ALGORITHMS@
+MATH       := @MATH@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -72,6 +73,7 @@ showbuild:
 	@echo "FLIBS      = $(FLIBS)"
 	@echo "BOOSTLIBS  = $(BOOSTLIBS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
+	@echo "MATH       = $(MATH)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
