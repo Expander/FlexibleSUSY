@@ -20,6 +20,8 @@ MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
 # options
 boost_lib_dir=""
 boost_inc_dir=""
+gsl_lib_dir=""
+gsl_inc_dir=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
@@ -29,6 +31,7 @@ BOOSTLIBS=""
 LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
+GSLLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 # available RG algorithms
@@ -64,7 +67,7 @@ check_library() {
 
     libs=""
     for i in $lib ; do
-        for ext in .a .lib "" .so .sl .dylib .dll.a ; do
+        for ext in .a .lib "" .so .so.0 .sl .dylib .dll.a ; do
             libs="$libs $i$ext"
         done
     done
@@ -210,6 +213,37 @@ check_boost_incl() {
     fi
 }
 
+check_gsl_libs() {
+    check_library "libgsl" "$gsl_lib_dir" \
+	"$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        echo "Warning: libgsl must be installed"
+        echo "  to run the lattice algorithm, see http://www.gnu.org/s/gsl"
+    else
+        GSLLIBS_=-lgsl
+        if [ -z "$gsl_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            GSLLIBS="$GSLLIBS_"
+        else
+            GSLLIBS="-L$gsl_lib_dir $GSLLIBS_"
+        fi
+    fi
+}
+
+check_gsl_incl() {
+    check_header "gsl/gsl_version.h" "$gsl_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        echo "Warning: gsl/gsl_version.h must be installed"
+        echo "  to compile the lattice algorithm, see http://www.gnu.org/s/gsl"
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$gsl_inc_dir" ]; then
+            CPPFLAGS="$CPPFLAGS -I$gsl_inc_dir"
+        fi
+    fi
+}
+
 check_fortran_libs() {
     case "$FC" in
         gfortran)
@@ -265,6 +299,8 @@ help() {
     echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--with-fc=               Fortran compiler (default: $FC)"
     echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
+    echo "--with-gsl-incdir=       GSL support, location of gsl/gsl_version.h"
+    echo "--with-gsl-libdir=       GSL support, location of libgsl"
     echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
     echo "--help,-h                print this help message"
     echo "--libext                 library extension (default: $LIBEXT)"
@@ -299,6 +335,8 @@ if test $# -gt 0 ; then
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-gsl-libdir=*)     gsl_lib_dir=$optarg ;;
+            --with-gsl-incdir=*)     gsl_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --libext=*)              LIBEXT=$optarg ;;
@@ -314,6 +352,8 @@ check_algorithms
 check_boost_incl
 check_boost_libs
 check_fortran_libs
+check_gsl_incl
+check_gsl_libs
 check_math_cmd
 
 enable_defines
@@ -327,6 +367,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
+    -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \

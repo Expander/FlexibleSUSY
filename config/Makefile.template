@@ -6,6 +6,7 @@ FLIBS      := @FLIBS@
 BOOSTLIBS  := @BOOSTLIBS@
 CXX        := @CXX@
 FC         := @FC@
+GSLLIBS    := @GSLLIBS@
 MAKELIB    := @MAKELIB@
 LIBEXT     := @LIBEXT@
 VERSION    := @VERSION@
@@ -72,6 +73,7 @@ showbuild:
 	@echo "LIBEXT     = $(LIBEXT)"
 	@echo "FLIBS      = $(FLIBS)"
 	@echo "BOOSTLIBS  = $(BOOSTLIBS)"
+	@echo "GSLLIBS    = $(GSLLIBS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
 	@echo "MATH       = $(MATH)"
 	@echo ""
