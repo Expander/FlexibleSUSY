@@ -87,6 +87,15 @@ check_library() {
     found_dir=""
     found_lib=""
 
+    if test "x$memory_model" = "x64"; then
+        libdirs64=`echo "$libdirs" | sed -e 's|lib |lib64 |g' -e 's|lib$|lib64|g' -e 's|lib/|lib64/|g'`
+        libdirs="$libdirs $libdirs64"
+    fi
+    if test "x$memory_model" = "x32"; then
+        libdirs32=`echo "$libdirs" | sed -e 's|lib |lib32 |g' -e 's|lib$|lib32|g' -e 's|lib/|lib32/|g'`
+        libdirs="$libdirs $libdirs32"
+    fi
+
     for p in ${libdirs}; do
         for l in ${libs}; do
             liblist=`echo $p/$l` # expands wildcard
@@ -94,7 +103,7 @@ check_library() {
                 if test -f $n ; then
                     found_dir=$p
                     found_lib=$l
-                    break
+                    break 3
                 fi
             done
         done
