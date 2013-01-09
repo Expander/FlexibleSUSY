@@ -7,6 +7,9 @@ PROGRAM_NAME=FlexibleSUSY
 PROGRAM_VERSION=0.2
 # directory of this script
 BASEDIR=$(dirname $0)
+# default library directories
+default_lib_paths="/usr/lib /usr/local/lib"
+default_inc_paths="/usr/include /usr/local/include"
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
 MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
@@ -29,23 +32,22 @@ available_algorithms="two_scale lattice"
 
 check_library() {
     # This function will try to locate a library [$1] in the directory
-    # given in $2.  If $2 is empty it will look in the default paths.
+    # given in $2 or in a default path [$*].
     #
     # The result of the search is stored in found_lib and found_dir,
     # which should be immediately copied, since the variables value will
     # be overwritten at next invocation of this function.
 
     # Assert that we got enough arguments
-    if test $# -lt 2 ; then
+    if test $# -lt 3 ; then
         echo "check_library: Too few arguments"
         return 1
     fi
 
     # Save arguments in local names
-    default_paths="/usr/lib /usr/local/lib"
     lib=$1       ; shift
     libdirl=$1
-    libdirs="$default_paths"
+    libdirs="$*"
     # check if we got a specific argument as to where the library
     # is to be found
     if test ! "x$libdirl" = "x" ; then
@@ -87,8 +89,7 @@ check_library() {
 
 check_header() {
     # This function will try to locate a header file [$1] in the
-    # directory given in $2.  If $2 is empty it will look in the
-    # default paths.
+    # directory given in $2 or in a default path [$*].
     #
     # The result of the search is stored in found_hdr and found_dir,
     # which should be immediately copied, since the variables value
@@ -101,10 +102,9 @@ check_header() {
     fi
 
     # Save arguments in local names
-    default_paths="/usr/include /usr/local/include"
     hdr=$1       ; shift
     hdrdirl=$1
-    hdrdirs="$default_paths"
+    hdrdirs="$*"
     # check if we got a specific argument as to where the library
     # is to be found
     if test ! "x$hdrdirl" = "x" ; then
@@ -154,7 +154,8 @@ check_algorithms() {
 }
 
 check_boost_libs() {
-    check_library "libboost_unit_test_framework" "$boost_lib_dir"
+    check_library "libboost_unit_test_framework" "$boost_lib_dir" \
+	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         echo "Warning: libboost_unit_test_framework must be installed"
         echo "  to compile and run the tests, see http://www.boost.org"
@@ -170,7 +171,8 @@ check_boost_libs() {
 }
 
 check_boost_incl() {
-    check_header "boost/test/unit_test.hpp" "$boost_inc_dir"
+    check_header "boost/test/unit_test.hpp" "$boost_inc_dir" \
+	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
         echo "Warning: boost/test/unit_test.hpp must be installed"
         echo "  to compile and run the tests, see http://www.boost.org"
