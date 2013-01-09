@@ -315,7 +315,6 @@ check_math_cmd() {
 define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
-        echo "define $@"
         if [ -z "$extra_defines" ]; then
             extra_defines="-D$@"
         else
