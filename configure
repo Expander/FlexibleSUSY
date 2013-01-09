@@ -13,6 +13,9 @@ BASEDIR=$(dirname $0)
 default_lib_paths="/usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
+# memory model
+memory_model=""
+
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
 MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
@@ -37,6 +40,15 @@ MATH="math"
 # available RG algorithms
 ALGORITHMS="all"
 available_algorithms="two_scale lattice"
+
+guess_memory_model () {
+    chip=`uname -m | tr '[A-Z]' '[a-z]'`
+    case "$chip" in
+	*32) memory_model="32"; return 0 ;;
+	*64) memory_model="64"; return 0 ;;
+	*)   echo "Warning: could not guess memory model"; return 1 ;;
+    esac
+}
 
 check_library() {
     # This function will try to locate a library [$1] in the directory
@@ -347,6 +359,8 @@ if test $# -gt 0 ; then
         shift
     done
 fi
+
+guess_memory_model
 
 check_algorithms
 check_boost_incl
