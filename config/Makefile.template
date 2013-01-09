@@ -4,9 +4,11 @@ CXXFLAGS   := @CXXFLAGS@
 FFLAGS     := @FFLAGS@
 FLIBS      := @FLIBS@
 BOOSTLIBS  := @BOOSTLIBS@
+BOOSTFLAGS := @BOOSTFLAGS@
 CXX        := @CXX@
 FC         := @FC@
 GSLLIBS    := @GSLLIBS@
+GSLFLAGS   := @GSLFLAGS@
 MAKELIB    := @MAKELIB@
 LIBEXT     := @LIBEXT@
 VERSION    := @VERSION@
@@ -73,7 +75,9 @@ showbuild:
 	@echo "LIBEXT     = $(LIBEXT)"
 	@echo "FLIBS      = $(FLIBS)"
 	@echo "BOOSTLIBS  = $(BOOSTLIBS)"
+	@echo "BOOSTFLAGS = $(BOOSTFLAGS)"
 	@echo "GSLLIBS    = $(GSLLIBS)"
+	@echo "GSLFLAGS   = $(GSLFLAGS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
 	@echo "MATH       = $(MATH)"
 	@echo ""
