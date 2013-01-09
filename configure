@@ -164,6 +164,31 @@ check_header() {
     fi
 }
 
+use_algorithm() {
+    # This function tests if a certain algorithm [$1] is used.
+
+    # Assert that we got enough arguments
+    if test $# -ne 1 ; then
+        echo "use_algorithm: Exactly one argument required"
+        return 1
+    fi
+
+    # check that the argument is an algorithm
+    alg=`echo "$available_algorithms" | grep $1`
+    if [ -z "$alg" ]; then
+	echo "Error: $1 is not an available algorithm"
+	exit 1
+    fi
+
+    # check if the argument is in the list of used algorithms
+    alg=`echo "$ALGORITHMS" | grep $1`
+    if [ -z "$alg" ]; then
+	return 1;
+    else
+	return 0;
+    fi
+}
+
 exists_in_path () {
     # This function will try to locate an executable [$1] in $PATH.
     #
@@ -375,8 +400,10 @@ check_algorithms
 check_boost_incl
 check_boost_libs
 check_fortran_libs
-check_gsl_incl
-check_gsl_libs
+if use_algorithm "lattice"; then
+    check_gsl_incl
+    check_gsl_libs
+fi
 check_math_cmd
 
 enable_defines
