@@ -148,8 +148,8 @@ exists_in_path () {
     # overwritten at next invocation of this function.
 
     # Assert that we got enough arguments
-    if test $# -lt 1 ; then
-        echo "exists_in_path: Too few arguments"
+    if test $# -ne 1 ; then
+        echo "exists_in_path: Exactly one argument required"
         return 1
     fi
 
