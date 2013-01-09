@@ -25,7 +25,7 @@ FC="gfortran"
 MAKELIB="ar cru"
 # available RG algorithms
 ALGORITHMS="all"
-available_algorithms="two_scale"
+available_algorithms="two_scale lattice"
 
 check_library() {
     # This function will try to locate a library [$1] in the directory
@@ -137,11 +137,13 @@ check_header() {
 
 check_algorithms() {
     algs=`echo $ALGORITHMS | tr ',' ' '`
+    ALGORITHMS=""
     for a in ${algs}; do
 	case "$a" in
 	    all)
 		ALGORITHMS="$available_algorithms"; break ;;
-	    two_scale)
+	    two_scale|lattice)
+		ALGORITHMS="$ALGORITHMS $a"
 		continue ;;
 	    *)
 		echo "Error: unknown algorithm: $a";
@@ -215,9 +217,9 @@ help() {
     echo "--enable-debug           enable debug messages"
     echo "--enable-silent          suppress all command line output"
     echo "--enable-verbose         enable verbose messages"
-    echo "--with-algorithms=*)     comma separated list of RG solver algorithms"
+    echo "--with-algorithms=       comma separated list of RG solver algorithms"
     echo "                         (default: $ALGORITHMS)"
-    echo "                         possible values: all, $available_algorithms"
+    echo "                         possible values: all $available_algorithms"
     echo "--with-boost-libdir=     directory to search for BOOST libraries"
     echo "--with-boost-incdir=     directory to search for BOOST headers"
     echo "--with-cxx=              C++ compiler (default: $CXX)"
