@@ -6,6 +6,7 @@
 *.x
 
 config/config.h
+config.status
 Makefile
 
 doc/*.html
