@@ -13,6 +13,9 @@ BASEDIR=$(dirname $0)
 default_lib_paths="/usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
+# configure log file
+logfile="config.log"
+
 # memory model
 memory_model=""
 
@@ -45,6 +48,7 @@ MATH="math"
 ALGORITHMS="all"
 available_algorithms="two_scale lattice"
 
+#_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
     configargs="$*"
@@ -52,6 +56,33 @@ write_configure_parameters() {
     echo "$configargs" > config.status
 }
 
+#_____________________________________________________________________
+message() {
+    # Write a simple message to std out
+    if test $# -lt 1 ; then
+        echo "message: Too few arguments"
+        return 1
+    fi
+    echo -n "$* ... "
+    logmsg "$*"
+}
+
+#_____________________________________________________________________
+logmsg() {
+    # Write a simple message to std out
+    if test $# -lt 1 ; then
+        echo "logmsg: Too few arguments"
+        return 1
+    fi
+    if test "x$1" = "x-n"; then
+       shift
+       echo -n "$*" >> $logfile
+    else
+       echo "$*" >> $logfile
+    fi
+}
+
+#_____________________________________________________________________
 guess_memory_model () {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
@@ -61,6 +92,7 @@ guess_memory_model () {
     esac
 }
 
+#_____________________________________________________________________
 check_library() {
     # This function will try to locate a library [$1] in the directory
     # given in $2 or in a default path [$*].
@@ -86,7 +118,7 @@ check_library() {
     fi
 
     # Write a message
-    echo -n "checking for $lib ... "
+    checking_msg "$lib"
 
     libs=""
     for i in $lib ; do
@@ -121,12 +153,13 @@ check_library() {
     done
 
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
-        echo "not found in $libdirs"
+        result "not found in $libdirs"
     else
-        echo "found in $found_dir"
+        result "found in $found_dir"
     fi
 }
 
+#_____________________________________________________________________
 check_header() {
     # This function will try to locate a header file [$1] in the
     # directory given in $2 or in a default path [$*].
@@ -152,7 +185,7 @@ check_header() {
     fi
 
     # Write a message
-    echo -n "checking for $hdr ... "
+    checking_msg "$hdr"
 
     found_dir=""
     found_hdr=""
@@ -169,12 +202,148 @@ check_header() {
     done
 
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
-        echo "not found in $hdrdirs"
+        result "not found in $hdrdirs"
     else
-        echo "found in $found_dir"
+        result "found in $found_dir"
     fi
 }
 
+#_____________________________________________________________________
+checking_msg() {
+    # Write a simple "checking" message to std out.
+    if test $# -lt 1 ; then
+        echo "checking_msg: Too few arguments"
+        return 1
+    fi
+    echo -n "Checking for"
+    logmsg -n "Checking for"
+    while test $# -gt 1 ; do
+        echo -n " $1,"
+        logmsg -n " $1,"
+        shift
+        if test $# -eq 1 ; then
+            echo -n " or"
+            logmsg -n " or"
+        fi
+    done
+    echo -n " $1 ... "
+    logmsg -n " $1 ... "
+}
+
+#_____________________________________________________________________
+result() {
+    echo "$*"
+    logmsg "Result: $*"
+}
+
+#_____________________________________________________________________
+check_symbol() {
+    # This function will try to locate a symbol [$1] in a specific
+    # library [$2] and in a given directory [$3].
+    # The result of the check is stored in found_symbol, 1 if true,
+    # 0 otherwise, which should be immediately copied, since the variable
+    # will be overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -ne 3 ; then
+        echo "check_symbol: not 3 arguments"
+        found_symbol=0
+        return 1
+    fi
+
+    # Save arguments in logical names
+    symbol=$1     ; shift
+    symbollib=$1  ; shift
+    symboldir=$1
+
+    if test "x$symbollib" = "x" ; then
+        found_symbol=0
+        unset symbol
+        unset symbollib
+        unset symboldir
+        return 1
+    fi
+
+    symbollib=`echo $symbollib | sed -e 's/^-l/lib/'`
+
+    if test ! "x$symboldir" = "x" ; then
+        symboldir=`echo $symboldir | sed -e 's/^-L//'`
+    fi
+
+    # Check if we got a specific argument as to where the library
+    # is to be found
+    symbolfile=$symbollib
+    exts=".so .lib .dylib"
+    if test ! "x$shared" = "xno" ; then
+        exts="$exts .a"
+    else
+        exts=".a $exts"
+    fi
+
+    usrlib="/usr/lib"
+    if test "x$memory_model" = "x32" ; then
+        usrlib="/usr/lib32 $usrlib"
+    fi
+    if test "x$memory_model" = "64" ; then
+        usrlib="/usr/lib64 $usrlib"
+    fi
+
+    for d in "$symboldir" $usrlib ; do
+        logmsg " Checking in $d"
+        if test ! -r $d/$symbollib ; then
+            logmsg "  $d/$symbollib not readable"
+            for i in $exts ; do
+                logmsg "   Checking extension $i with $d/$symbollib"
+                if test -r $d/$symbollib$i ; then
+                    logmsg "   $d/$symbollib$i readable"
+                    symbolfile=$d/$symbollib$i
+                    break 2
+                fi
+             done
+        else
+            logmsg "$d/$symbollib readable"
+            symbolfile=$d/$symbollib
+            break
+        fi
+    done
+
+    if test "x$symbolfile" = "x" || test ! -r $symbolfile ; then
+       found_symbol=0
+       logmsg " Symbol not found"
+       unset symbol
+       unset symbollib
+       unset symboldir
+       return 1
+    fi
+
+    checking_msg "$symbol in $symbolfile"
+    nm $symbolfile 2>&1 | grep $symbol > /dev/null 2>&1
+    if test $? -eq 0 ; then
+        found_symbol=1
+        logmsg " Symbol found"
+    else
+        nm $symbolfile 2>&1 | grep "no symbols" > /dev/null 2>&1
+        # if test $? -eq 0 ; then
+        #     logmsg " $symbolfile is stripped, trying to link"
+        #     # stripped library - only safe test is to link against the library
+        #     check_link $symbolfile "" $symbol
+        #     found_symbol=$link_result
+        # else
+            found_symbol=0
+        # fi
+    fi
+    if test $found_symbol -eq 1 ; then
+        result "ok"
+    else
+        result "no"
+    fi
+
+    unset symbol
+    unset symbollib
+    unset symboldir
+}
+
+#_____________________________________________________________________
 use_algorithm() {
     # This function tests if a certain algorithm [$1] is used.
 
@@ -200,6 +369,7 @@ use_algorithm() {
     fi
 }
 
+#_____________________________________________________________________
 exists_in_path () {
     # This function will try to locate an executable [$1] in $PATH.
     #
@@ -221,6 +391,7 @@ exists_in_path () {
     esac
 }
 
+#_____________________________________________________________________
 check_algorithms() {
     algs=`echo $ALGORITHMS | tr ',' ' '`
     ALGORITHMS=""
@@ -239,6 +410,7 @@ check_algorithms() {
     done
 }
 
+#_____________________________________________________________________
 check_boost_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir" \
 	"$default_lib_paths"
@@ -256,6 +428,7 @@ check_boost_libs() {
     fi
 }
 
+#_____________________________________________________________________
 check_boost_incl() {
     check_header "boost/test/unit_test.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
@@ -270,6 +443,7 @@ check_boost_incl() {
     fi
 }
 
+#_____________________________________________________________________
 check_gsl_libs() {
     check_library "libgsl" "$gsl_lib_dir" \
 	"$default_lib_paths"
@@ -287,6 +461,7 @@ check_gsl_libs() {
     fi
 }
 
+#_____________________________________________________________________
 check_gsl_incl() {
     check_header "gsl/gsl_version.h" "$gsl_inc_dir" \
 	"$default_inc_paths"
@@ -301,6 +476,7 @@ check_gsl_incl() {
     fi
 }
 
+#_____________________________________________________________________
 check_fortran_libs() {
     case "$FC" in
         gfortran)
@@ -310,6 +486,7 @@ check_fortran_libs() {
     esac
 }
 
+#_____________________________________________________________________
 check_lapack_libs() {
     check_library "liblapack" "$lapack_lib_dir" \
 	"$default_lib_paths"
@@ -324,20 +501,23 @@ check_lapack_libs() {
         else
             LAPACKLIBS="-L$lapack_lib_dir $LAPACKLIBS_"
         fi
+	check_symbol dgbsv_ "$found_lib" "$found_dir"
     fi
 }
 
+#_____________________________________________________________________
 check_math_cmd() {
-    echo -n "checking for Mathematica kernel $MATH ... "
+    checking_msg "Mathematica kernel $MATH"
     exists_in_path "$MATH"
     if [ -z "$cmd" ] ; then
-        echo "not found"
+        result "not found"
         echo "Warning: Mathematica needs to be installed to run the meta code!"
     else
-        echo "found $cmd"
+        result "found $cmd"
     fi
 }
 
+#_____________________________________________________________________
 define() {
     # $@: list of extra define statemens
     if [ -n "$@" ]; then
@@ -349,6 +529,7 @@ define() {
     fi
 }
 
+#_____________________________________________________________________
 enable_defines() {
     if [ -n "$extra_defines" ]; then
         echo "adding defines $extra_defines to CPPFLAGS"
@@ -356,6 +537,7 @@ enable_defines() {
     fi
 }
 
+#_____________________________________________________________________
 help() {
     echo "Usage: ./`basename $0` [options]"
     echo "Options:"
@@ -383,6 +565,7 @@ help() {
     echo "--version,-v             print version information"
 }
 
+#_____________________________________________________________________
 version() {
     echo "$PROGRAM_NAME $PROGRAM_VERSION"
     echo "$PROGRAM_NAME is free software: you can redistribute it and/or modify"
@@ -391,6 +574,7 @@ version() {
     echo "(at your option) any later version.  See http://www.gnu.org/licenses/"
 }
 
+rm -f $logfile
 write_configure_parameters "$*"
 
 if test $# -gt 0 ; then
