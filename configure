@@ -43,6 +43,13 @@ MATH="math"
 ALGORITHMS="all"
 available_algorithms="two_scale lattice"
 
+write_configure_parameters() {
+    # This function writes all parameters [$*] to config.status
+    configargs="$*"
+    configargs=`echo $configargs | sed 's,\\\,\\\\,g'`
+    echo "$configargs" > config.status
+}
+
 guess_memory_model () {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
@@ -362,6 +369,8 @@ version() {
     echo "the Free Software Foundation, either version 3 of the License, or"
     echo "(at your option) any later version.  See http://www.gnu.org/licenses/"
 }
+
+write_configure_parameters "$*"
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
