@@ -9,6 +9,7 @@ CXX        := @CXX@
 FC         := @FC@
 GSLLIBS    := @GSLLIBS@
 GSLFLAGS   := @GSLFLAGS@
+LAPACKLIBS := @LAPACKLIBS@
 MAKELIB    := @MAKELIB@
 LIBEXT     := @LIBEXT@
 VERSION    := @VERSION@
@@ -78,6 +79,7 @@ showbuild:
 	@echo "BOOSTFLAGS = $(BOOSTFLAGS)"
 	@echo "GSLLIBS    = $(GSLLIBS)"
 	@echo "GSLFLAGS   = $(GSLFLAGS)"
+	@echo "LAPACKLIBS = $(LAPACKLIBS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
 	@echo "MATH       = $(MATH)"
 	@echo ""

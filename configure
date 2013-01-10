@@ -26,6 +26,7 @@ boost_inc_dir=""
 BOOSTFLAGS=""
 gsl_lib_dir=""
 gsl_inc_dir=""
+lapack_lib_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
@@ -37,6 +38,7 @@ LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
 GSLLIBS=""
+LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 # available RG algorithms
@@ -308,6 +310,23 @@ check_fortran_libs() {
     esac
 }
 
+check_lapack_libs() {
+    check_library "liblapack" "$lapack_lib_dir" \
+	"$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        echo "Warning: liblapack must be installed"
+        echo "  to run the lattice algorithm, see http://www.netlib.org/lapack"
+    else
+        LAPACKLIBS_=-llapack
+        if [ -z "$lapack_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            LAPACKLIBS="$LAPACKLIBS_"
+        else
+            LAPACKLIBS="-L$lapack_lib_dir $LAPACKLIBS_"
+        fi
+    fi
+}
+
 check_math_cmd() {
     echo -n "checking for Mathematica kernel $MATH ... "
     exists_in_path "$MATH"
@@ -355,6 +374,8 @@ help() {
     echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
     echo "--with-gsl-incdir=       GSL support, location of gsl/gsl_version.h"
     echo "--with-gsl-libdir=       GSL support, location of libgsl"
+    echo "--with-lapack-libdir=    directory to search for LAPACK and BLAS"
+    echo "                         libraries"
     echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
     echo "--help,-h                print this help message"
     echo "--libext                 library extension (default: $LIBEXT)"
@@ -393,6 +414,7 @@ if test $# -gt 0 ; then
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-gsl-libdir=*)     gsl_lib_dir=$optarg ;;
             --with-gsl-incdir=*)     gsl_inc_dir=$optarg ;;
+            --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --libext=*)              LIBEXT=$optarg ;;
@@ -413,6 +435,7 @@ check_fortran_libs
 if use_algorithm "lattice"; then
     check_gsl_incl
     check_gsl_libs
+    check_lapack_libs
 fi
 check_math_cmd
 
@@ -430,6 +453,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@FC@|$FC|"                   \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
+    -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
