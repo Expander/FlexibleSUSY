@@ -2,7 +2,7 @@
 #include "sm_two_scale_experimental_constraint.hpp"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_sm_two_scale
+#define BOOST_TEST_MODULE test_two_scale_sm
 
 #include <boost/test/unit_test.hpp>
 

@@ -13,7 +13,7 @@
 #include "stopwatch.hpp"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_mssm_solver
+#define BOOST_TEST_MODULE test_two_scale_mssm_solver
 
 #include <boost/test/unit_test.hpp>
 

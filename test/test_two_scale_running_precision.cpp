@@ -8,7 +8,7 @@
 #include <cmath>
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_running_precision
+#define BOOST_TEST_MODULE test_two_scale_running_precision
 
 #include <boost/test/unit_test.hpp>
 

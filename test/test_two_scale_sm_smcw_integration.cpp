@@ -10,7 +10,7 @@
 #include "coupling_monitor.hpp"
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_sm_smcw_two_scale_integration
+#define BOOST_TEST_MODULE test_two_scale_sm_smcw_integration
 
 #include <boost/test/unit_test.hpp>
 
