@@ -2,8 +2,12 @@ DIR      := examples
 MODNAME  := examples
 
 EXAMPLES_SRC := \
-		$(DIR)/run_mssm.cpp \
 		$(DIR)/softsusy.cpp
+
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+EXAMPLES_SRC += \
+		$(DIR)/run_mssm.cpp
+endif
 
 EXAMPLES_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXAMPLES_SRC)))

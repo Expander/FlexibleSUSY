@@ -2,12 +2,16 @@ DIR      := test
 MODNAME  := test
 
 TEST_SRC := \
-		$(DIR)/test_logger.cpp \
+		$(DIR)/test_logger.cpp
+
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+TEST_SRC += \
 		$(DIR)/test_mssm_solver.cpp \
 		$(DIR)/test_sm_smcw_two_scale_integration.cpp \
 		$(DIR)/test_sm_two_scale.cpp \
 		$(DIR)/test_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
+endif
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
