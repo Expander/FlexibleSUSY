@@ -63,7 +63,7 @@ message() {
         echo "message: Too few arguments"
         return 1
     fi
-    echo -n "$* ... "
+    echo "$* ... "
     logmsg "$*"
 }
 
@@ -88,7 +88,7 @@ guess_memory_model () {
     case "$chip" in
 	*32) memory_model="32"; return 0 ;;
 	*64) memory_model="64"; return 0 ;;
-	*)   echo "Warning: could not guess memory model"; return 1 ;;
+	*)   message "Warning: could not guess memory model"; return 1 ;;
     esac
 }
 
@@ -360,7 +360,7 @@ use_algorithm() {
     # check that the argument is an algorithm
     alg=`echo "$available_algorithms" | grep $1`
     if [ -z "$alg" ]; then
-	echo "Error: $1 is not an available algorithm"
+	message "Error: $1 is not an available algorithm"
 	exit 1
     fi
 
@@ -407,8 +407,8 @@ check_algorithms() {
                 ALGORITHMS="$ALGORITHMS $a"
                 continue ;;
             *)
-                echo "Error: unknown algorithm: $a";
-                echo "Available algorithms: $available_algorithms";
+                message "Error: unknown algorithm: $a";
+                message "Available algorithms: $available_algorithms";
                 exit 1 ;;
         esac
     done
@@ -419,8 +419,8 @@ check_boost_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        echo "Warning: libboost_unit_test_framework must be installed"
-        echo "  to compile and run the tests, see http://www.boost.org"
+        message "Warning: libboost_unit_test_framework must be installed"
+        message "  to compile and run the tests, see http://www.boost.org"
     else
         BOOSTLIBS_=-lboost_unit_test_framework
         if [ -z "$boost_lib_dir" ]; then
@@ -437,8 +437,8 @@ check_boost_incl() {
     check_header "boost/test/unit_test.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        echo "Warning: boost/test/unit_test.hpp must be installed"
-        echo "  to compile and run the tests, see http://www.boost.org"
+        message "Warning: boost/test/unit_test.hpp must be installed"
+        message "  to compile and run the tests, see http://www.boost.org"
     else
         # assume that the compiler will look in the default paths
         if [ -n "$boost_inc_dir" ]; then
@@ -452,8 +452,8 @@ check_gsl_libs() {
     check_library "libgsl" "$gsl_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        echo "Warning: libgsl must be installed"
-        echo "  to run the lattice algorithm, see http://www.gnu.org/s/gsl"
+        message "Warning: libgsl must be installed"
+        message "  to run the lattice algorithm, see http://www.gnu.org/s/gsl"
     else
         GSLLIBS_=-lgsl
         if [ -z "$gsl_lib_dir" ]; then
@@ -470,8 +470,8 @@ check_gsl_incl() {
     check_header "gsl/gsl_version.h" "$gsl_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        echo "Warning: gsl/gsl_version.h must be installed"
-        echo "  to compile the lattice algorithm, see http://www.gnu.org/s/gsl"
+        message "Warning: gsl/gsl_version.h must be installed"
+        message "  to compile the lattice algorithm, see http://www.gnu.org/s/gsl"
     else
         # assume that the compiler will look in the default paths
         if [ -n "$gsl_inc_dir" ]; then
@@ -495,8 +495,8 @@ check_lapack_libs() {
     check_library "liblapack" "$lapack_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        echo "Warning: liblapack must be installed"
-        echo "  to run the lattice algorithm, see http://www.netlib.org/lapack"
+        message "Warning: liblapack must be installed"
+        message "  to run the lattice algorithm, see http://www.netlib.org/lapack"
     else
         LAPACKLIBS_=-llapack
         if [ -z "$lapack_lib_dir" ]; then
@@ -515,7 +515,7 @@ check_math_cmd() {
     exists_in_path "$MATH"
     if [ -z "$cmd" ] ; then
         result "not found"
-        echo "Warning: Mathematica needs to be installed to run the meta code!"
+        message "Warning: Mathematica needs to be installed to run the meta code!"
     else
         result "found $cmd"
     fi
@@ -536,7 +536,7 @@ define() {
 #_____________________________________________________________________
 enable_defines() {
     if [ -n "$extra_defines" ]; then
-        echo "adding defines $extra_defines to CPPFLAGS"
+        message "adding defines $extra_defines to CPPFLAGS"
         CPPFLAGS="$extra_defines $CPPFLAGS"
     fi
 }
