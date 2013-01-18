@@ -20,7 +20,7 @@
 #define TWO_SCALE_SOLVER_H
 
 #include "rg_flow.hpp"
-#include "two_scale_error.hpp"
+#include "error.hpp"
 
 #include <vector>
 #include <string>
