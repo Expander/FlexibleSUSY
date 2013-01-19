@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_ERROR_H
-#define TWO_SCALE_ERROR_H
+#ifndef ERROR_H
+#define ERROR_H
 
 #include <string>
 
