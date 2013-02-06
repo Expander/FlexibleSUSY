@@ -288,7 +288,7 @@ check_symbol() {
     if test "x$memory_model" = "x32" ; then
         usrlib="/usr/lib32 $usrlib"
     fi
-    if test "x$memory_model" = "64" ; then
+    if test "x$memory_model" = "x64" ; then
         usrlib="/usr/lib64 $usrlib"
     fi
 
