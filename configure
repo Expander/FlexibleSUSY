@@ -122,7 +122,7 @@ check_library() {
 
     libs=""
     for i in $lib ; do
-        for ext in .a .lib "" .so .so.0 .sl .dylib .dll.a ; do
+        for ext in .a .lib "" .so .sl .dylib .dll.a ; do
             libs="$libs $i$ext"
         done
     done
