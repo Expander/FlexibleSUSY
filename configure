@@ -16,8 +16,8 @@ default_inc_paths="/usr/include /usr/local/include"
 # configure log file
 logfile="config.log"
 
-# memory model
-memory_model=""
+# whether we are in 32-bit or 64-bit environment
+machine_word_size=""
 
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
@@ -83,12 +83,12 @@ logmsg() {
 }
 
 #_____________________________________________________________________
-guess_memory_model () {
+guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
-	*32) memory_model="32"; return 0 ;;
-	*64) memory_model="64"; return 0 ;;
-	*)   message "Warning: could not guess memory model"; return 1 ;;
+	*32) machine_word_size="32"; return 0 ;;
+	*64) machine_word_size="64"; return 0 ;;
+	*)   message "Warning: could not guess machine word size"; return 1 ;;
     esac
 }
 
@@ -130,13 +130,13 @@ check_library() {
     found_dir=""
     found_lib=""
 
-    if test "x$memory_model" = "x64"; then
+    if test "x$machine_word_size" = "x64"; then
 	for p in ${libdirs}; do
             libdir64=`echo "$p" | grep lib | sed -e 's|lib$|lib64|g' -e 's|lib/|lib64/|g'`
             libdirs="$libdirs $libdir64"
 	done
     fi
-    if test "x$memory_model" = "x32"; then
+    if test "x$machine_word_size" = "x32"; then
 	for p in ${libdirs}; do
             libdir32=`echo "$p" | grep lib | sed -e 's|lib$|lib32|g' -e 's|lib/|lib32/|g'`
             libdirs="$libdirs $libdir32"
@@ -285,10 +285,10 @@ check_symbol() {
     fi
 
     usrlib="/usr/lib"
-    if test "x$memory_model" = "x32" ; then
+    if test "x$machine_word_size" = "x32" ; then
         usrlib="/usr/lib32 $usrlib"
     fi
-    if test "x$memory_model" = "x64" ; then
+    if test "x$machine_word_size" = "x64" ; then
         usrlib="/usr/lib64 $usrlib"
     fi
 
@@ -614,7 +614,7 @@ if test $# -gt 0 ; then
     done
 fi
 
-guess_memory_model
+guess_machine_word_size
 
 check_algorithms
 check_boost_incl
