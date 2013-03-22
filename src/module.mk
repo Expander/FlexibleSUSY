@@ -24,7 +24,9 @@ ifneq ($(findstring lattice,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/lattice_constraint.cpp \
 		$(DIR)/lattice_solver.cpp \
-		$(DIR)/rk.cpp
+		$(DIR)/rk.cpp \
+		$(DIR)/SM.cpp \
+		$(DIR)/fortran_utils.f
 endif
 
 LIBFLEXI_OBJ := \

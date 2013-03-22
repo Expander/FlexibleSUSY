@@ -9,6 +9,12 @@ EXAMPLES_SRC += \
 		$(DIR)/run_mssm.cpp
 endif
 
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+EXAMPLES_SRC += \
+		$(DIR)/lattice_fmssm.cpp \
+		$(DIR)/lattice_fmssm_fmssmn.cpp
+endif
+
 EXAMPLES_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXAMPLES_SRC)))
 
@@ -35,6 +41,13 @@ distclean::     distclean-$(MODNAME)
 
 $(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS)
+
+$(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(LAPACKLIBS) $(FLIBS)
+
+$(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBFLEXI) $(LIBMSSM)
 		$(CXX) -o $@ $^ $(FLIBS)

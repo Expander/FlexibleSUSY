@@ -1,0 +1,53 @@
+DIR          := models/fmssm
+MODNAME      := libfmssm
+
+LIBFMSSM_SRC  :=
+
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+LIBFMSSM_SRC  += \
+		$(DIR)/fmssm_lattice.cpp \
+		$(DIR)/fmssm_lattice_mz_constraint.cpp \
+		$(DIR)/fmssm_lattice_msusy_constraint.cpp \
+		$(DIR)/fmssm_lattice_mx_constraint.cpp \
+		$(DIR)/fmssm_oneloop.cpp \
+		$(DIR)/fmssm_lattice_rge.f \
+		$(DIR)/fmssm_lattice_constraints.f
+endif
+
+LIBFMSSM_OBJ  := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFMSSM_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIBFMSSM_SRC)))
+
+LIBFMSSM_DEP  := \
+		$(LIBFMSSM_OBJ:.o=.d)
+
+LIBFMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
+
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+
+all-$(MODNAME): $(LIBFMSSM)
+
+clean-$(MODNAME):
+		rm -rf $(LIBFMSSM_OBJ)
+
+distclean-$(MODNAME): clean-$(MODNAME)
+		rm -rf $(LIBFMSSM_DEP)
+		rm -rf $(LIBFMSSM)
+
+clean::         clean-$(MODNAME)
+
+distclean::     distclean-$(MODNAME)
+
+%.f : %.f.m
+	cd $(dir $@) && \
+	$(MATH) -run 'filename="$(notdir $@)"; << $(notdir $<); Quit[]'
+
+%.inc : %.inc.m
+	cd $(dir $@) && \
+	$(MATH) -run 'filename="$(notdir $@)"; << $(notdir $<); Quit[]'
+
+$(LIBFMSSM): $(LIBFMSSM_OBJ)
+		$(MAKELIB) $@ $^
+
+ALLDEP += $(LIBFMSSM_DEP)
+ALLLIB += $(LIBFMSSM)
