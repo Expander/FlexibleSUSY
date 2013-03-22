@@ -20,6 +20,13 @@ LIBFLEXI_SRC += \
 		$(DIR)/two_scale_solver.cpp
 endif
 
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+LIBFLEXI_SRC += \
+		$(DIR)/lattice_constraint.cpp \
+		$(DIR)/lattice_solver.cpp \
+		$(DIR)/rk.cpp
+endif
+
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(LIBFLEXI_SRC)))
