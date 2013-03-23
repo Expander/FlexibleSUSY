@@ -346,7 +346,7 @@ int main()
        m2Lprint << '\n';
    }
    INFO("At scale = " << exp(fmssm(0).t())*solver.scl0/TeV << " TeV:\n\n"
-	"mu = " << Comp(fmssm(0).mu()) << " TeV\n\n"
+	"mu = " << Comp(fmssm(0).mu())/TeV << " TeV\n\n"
 	"m2Q/TeV^2 =\n" << m2Qprint.str() << "\n"
 	"m2L/TeV^2 =\n" << m2Lprint.str());
 
