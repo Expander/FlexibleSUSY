@@ -38,13 +38,11 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-%.f : %.f.m
-	cd $(dir $@) && \
-	$(MATH) -run 'filename="$(notdir $@)"; << $(notdir $<); Quit[]'
+$(DIR)/%.f : $(DIR)/%.f.m
+	$(MATH) -run 'filename="$@"; << $<; Quit[]'
 
-%.inc : %.inc.m
-	cd $(dir $@) && \
-	$(MATH) -run 'filename="$(notdir $@)"; << $(notdir $<); Quit[]'
+$(DIR)/%.inc : $(DIR)/%.inc.m
+	$(MATH) -run 'filename="$@"; << $<; Quit[]'
 
 $(LIBFMSSMN): $(LIBFMSSMN_OBJ)
 		$(MAKELIB) $@ $^

@@ -1,4 +1,4 @@
-<< fmssm_lattice_defs.m
+<< models/fmssm/fmssm_lattice_defs.m
 
 gY := Sqrt[3/5] g1;
 

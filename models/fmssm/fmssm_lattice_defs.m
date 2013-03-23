@@ -1,4 +1,4 @@
-<< ../../src/writeRGE.m
+<< src/writeRGE.m
 
 norm[z_] := z Conjugate[z];
 H[m_] := ConjugateTranspose[m];

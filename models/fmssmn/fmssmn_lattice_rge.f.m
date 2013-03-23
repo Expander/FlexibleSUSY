@@ -1,4 +1,4 @@
-<< fmssmn_lattice_defs.m
+<< models/fmssmn/fmssmn_lattice_defs.m
 
 writeRGEs[filename, "Fmssmn",
     "a,\n",

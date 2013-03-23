@@ -22,7 +22,7 @@ public:
     struct Translator : public RGFlow<Lattice>::Translator {
 	Translator(RGFlow<Lattice> *f, size_t T, size_t m) :
 	    RGFlow<Lattice>::Translator::Translator(f, T, m) {}
-	#include "fmssm_lattice_translator.inc"
+	#include "models/fmssm/fmssm_lattice_translator.inc"
     };
 
     Translator operator()(size_t m) const { return Translator(f, T, m); }

@@ -1,4 +1,4 @@
-<< ../fmssm/fmssm_lattice_defs.m
+<< models/fmssm/fmssm_lattice_defs.m
 
 lowert    = t  	 /. x -> w;
 lowerg1   = g1 	 /. x -> w;
@@ -25,7 +25,7 @@ lowerTAe  = TAe  /. x -> w;
 
 Clear[Yn,m2N,TAn];
 
-<< fmssmn_lattice_defs.m
+<< models/fmssmn/fmssmn_lattice_defs.m
 
 writeMCs[filename, "\n", "", {}, {}, {
 {"Fmssm_fmssmn_gauge_couplings", {
