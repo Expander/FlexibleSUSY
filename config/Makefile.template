@@ -1,5 +1,5 @@
 MODULES    := config src models/sm models/smcw models/mssm models/fmssm models/fmssmn test examples doc
-CPPFLAGS   := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES))
+CPPFLAGS   := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS   := @CXXFLAGS@
 FFLAGS     := @FFLAGS@
 FLIBS      := @FLIBS@
