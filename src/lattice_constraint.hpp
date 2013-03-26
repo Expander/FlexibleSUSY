@@ -224,7 +224,7 @@ public:
     }
     void relocate(const std::vector<size_t>& site_map) {
 	size_t new_mbegin = site_map[mbegin];
-	size_t new_span  = site_map[mbegin + span] - new_mbegin;
+	size_t new_span  = site_map[mbegin + span - 1] - new_mbegin + 1;
 	mbegin = new_mbegin;
 	span  = new_span;
     }

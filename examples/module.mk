@@ -43,11 +43,11 @@ $(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 $(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
 			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBFLEXI) $(LIBMSSM)
 		$(CXX) -o $@ $^ $(FLIBS)

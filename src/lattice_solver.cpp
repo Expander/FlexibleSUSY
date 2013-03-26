@@ -29,14 +29,14 @@ ostream& operator<<(ostream &out, const RGFlow<Lattice>& f)
 }
 
 RGFlow<Lattice>::EFTspec::EFTspec
-(Lattice_model *model, const std::vector<SingleSiteConstraint*>& cs,
+(Lattice_model *model, const vector<SingleSiteConstraint*>& cs,
  InterTheoryConstraint* m, RGFlow *flow) :
     EFT(model, flow), constraints(cs), matching(m)
 {
 }
 
 RGFlow<Lattice>::RGFlow() :
-    min_dy(1e-6), max_dy(100),
+    tiny_dy(1e-2), huge_dy(100),
     max_a_steps(1024), max_iter(100),
     units_set(false), scl0(1)
 {
@@ -45,18 +45,19 @@ RGFlow<Lattice>::RGFlow() :
 RGFlow<Lattice>::~RGFlow()
 {
     delete A_;
+    for (auto i: teqidx) delete constraints[i];
     for (auto i: rgeidx) delete constraints[i];
 }
 
 void RGFlow<Lattice>::add_model
-(Lattice_model *model, const std::vector<SingleSiteConstraint*>& constraints)
+(Lattice_model *model, const vector<SingleSiteConstraint*>& constraints)
 {
     add_model(model, nullptr, constraints);
 }
 
 void RGFlow<Lattice>::add_model
 (Lattice_model *model, InterTheoryConstraint *matching,
- const std::vector<SingleSiteConstraint*>& constraints)
+ const vector<SingleSiteConstraint*>& constraints)
 {
     efts.push_back(EFTspec(model, constraints, matching, this));
 }
@@ -72,53 +73,8 @@ void RGFlow<Lattice>::solve()
     if (efts.empty()) throw SetupError("RGFlow<Lattice>::Error: EFT tower empty");
 
     init_lattice();
-
-    enum { END, INIT, RUN } state = INIT;
-    size_t a_steps = 1;
-    while (state != END) {
-	(*init_profile)();
-	if (state == INIT) {
-	    VERBOSE_MSG("initial RG flow\n" << *this);
-	    state = RUN;
-	}
-
-	for (size_t a_i = 0; a_i <= a_steps; a_i++) {
-	    a = Real(a_i)/a_steps;
-	    VERBOSE_MSG("\n\nbeginning inner iteration with a=" <<
-			a_i << '/' << a_steps);
-	    Inner_status s = iterate();
-	    switch (s) {
-	    case JUMPED:
-		a_steps *= 2;
-		if (a_steps <= max_a_steps) {
-		    VERBOSE_MSG("RG flow jumped, restarting outer iteration "
-				"with doubled a_steps=" << a_steps);
-		    goto end_outer;
-		}
-		else
-		    throw DivergenceError
-			("RGFlow<Lattice>::Error: inner iteration diverged");
-		break;
-	    case ENDLESS:
-		a_steps *= 2;
-		if (a_steps <= max_a_steps) {
-		    VERBOSE_MSG("inner iteration does not converge, "
-				"restarting outer iteration "
-				"with doubled a_steps=" << a_steps);
-		    goto end_outer;
-		}
-		else
-		    throw NoConvergenceError(max_iter);
-		break;
-	    default:
-		VERBOSE_MSG(*this);
-		break;
-	    }
-	}
-	state = END;
-    end_outer:
-	;
-    }
+    decrease_a();
+    increase_density();
 }
 
 void RGFlow<Lattice>::init_lattice()
@@ -147,6 +103,12 @@ void RGFlow<Lattice>::init_lattice()
     init_free_row_list();
 
     for (size_t T = 0; T < efts.size(); T++) {
+	for (size_t m = 0; m < efts[T].height-1; m++) {
+	    teqidx.push_back(constraints.size());
+	    Uniform_dt *teq = new Uniform_dt();
+	    teq->init(this, T, m, 2);
+	    constraints.push_back(teq);
+	}
 	rgeidx.push_back(constraints.size());
 	Lattice_RGE *rge = new Lattice_RGE();
 	rge->init(this, T);
@@ -169,64 +131,199 @@ void RGFlow<Lattice>::init_lattice()
 	throw MemoryError("RGFlow<Lattice>::Error: failed to allocate matrix");
 }
 
-void RGFlow<Lattice>::refine_lattice()
+void RGFlow<Lattice>::decrease_a()
 {
-#if 0
-    bool no_height_change = true;
-    for (size_t T = 0; T < efts.size(); T++)
-	if (new_heights[T] != efts[T].height) no_height_change = false;
-    if (no_height_change) return;
+    enum { END, INIT, RUN } state = INIT;
+    size_t a_steps = 1;
 
-    for (auto c: constraints) c->free_rows();
+    VERBOSE_MSG("\n\nentering a-loop with a_steps=" << a_steps);
+    while (state != END) {
+	(*init_profile)();
+	if (state == INIT) {
+	    VERBOSE_MSG("initial RG flow:\n" << *this);
+	    state = RUN;
+	}
 
-    vector<size_t> new_offsets(eft.size());
-    size_t offset = 0;
-    for (size_t T = 0; T < eft.size(); T++) {
-	new_offsets[T] = offset;
-	offset += efts[T].w.width * new_heights[T];
+	for (size_t a_i = 0; a_i <= a_steps; a_i++) {
+	    a = Real(a_i)/a_steps;
+	    VERBOSE_MSG("\n\nentering Newton loop with a=" <<
+			a_i << '/' << a_steps);
+	    Inner_status s = iterate();
+	    switch (s) {
+	    case JUMPED:
+		a_steps *= 2;
+		if (a_steps <= max_a_steps) {
+		    VERBOSE_MSG("RG flow jumped, restarting a-loop "
+				"with doubled a_steps=" << a_steps);
+		    goto end_outer;
+		}
+		else
+		    throw DivergenceError
+			("RGFlow<Lattice>::Error: Newton iterations diverged");
+	    case ENDLESS:
+		a_steps *= 2;
+		if (a_steps <= max_a_steps) {
+		    VERBOSE_MSG("Newton iterations do not converge, "
+				"restarting a-loop "
+				"with doubled a_steps=" << a_steps);
+		    goto end_outer;
+		}
+		else
+		    throw NoConvergenceError(max_iter);
+	    default:
+		VERBOSE_MSG(*this);
+		break;
+	    }
+	}
+	VERBOSE_MSG("exited a-loop");
+	state = END;
+    end_outer:
+	;
+    }
+}
+
+void RGFlow<Lattice>::increase_density()
+{
+    VERBOSE_MSG("\n\nbeginning to increase lattice density");
+
+    for (;;) {
+	RVec old_y = y_;
+	vector<size_t> old_heights(efts.size());
+	vector<size_t> old_offsets(efts.size());
+	for (size_t T = 0; T < efts.size(); T++) {
+	    old_heights[T] = efts[T].height;
+	    old_offsets[T] = efts[T].offset;
+	}
+	vector<vector<size_t>> site_maps = refine_lattice();
+	stringstream heights;
+#ifdef VERBOSE
+	for (auto& e: efts) heights << ' ' << e.height;
+	VERBOSE_MSG("\n\nentering Newton loop with heights:" <<
+		    heights.str());
+#endif
+	Inner_status s = iterate();
+	switch (s) {
+	case JUMPED:
+	    throw DivergenceError("RGFlow<Lattice>::Error: RG flow jumped, "
+				  "this cannot happen");
+	case ENDLESS:
+	    throw NoConvergenceError(max_iter);
+	default:
+	    Real maxdy = 0;
+	    for (size_t T = 0; T < efts.size(); T++)
+		for (size_t m = 0; m < old_heights[T]; m++)
+		    for (size_t i = 0; i < efts[T].w->width; i++) {
+			Real diff =
+			    fabs(y(T,site_maps[T][m],i) -
+				 old_y[old_offsets[T]+m*efts[T].w->width+i]);
+			if (diff > maxdy) maxdy = diff;
+		    }
+	    VERBOSE_MSG("maxdy=" << maxdy);
+	    if (maxdy < tiny_dy) {
+		VERBOSE_MSG("discretization fine enough");
+		return;
+	    }
+	    break;
+	}
+    }
+}
+
+vector<vector<size_t>> RGFlow<Lattice>::refine_lattice()
+{
+    size_t T_top = efts.size() - 1;
+    Real t_top = x(T_top,efts[T_top].height-1,0);
+    Real t_bot = x(0,0,0);
+    Real min_Dt = t_top - t_bot + 1;
+    Real max_Dt = 0;
+    for (size_t T = 0; T < efts.size(); T++) {
+	for (size_t m = 0; m < efts[T].height-1; m++) {
+	    Real Dt = x(T,m+1,0) - x(T,m,0);
+	    if (Dt > max_Dt) max_Dt = Dt;
+	    if (Dt < min_Dt) min_Dt = Dt;
+	}
     }
 
-    RVec new_y(offset);
-    for (size_t T = 0; T < eft.size(); T++) {
-	RVec s(efts[T].height), yi(efts[T].height);
+    Real spacing = max_Dt > 2*min_Dt ? min_Dt : min_Dt/2;
+    vector<vector<size_t>> site_maps(efts.size());
+    vector<size_t> new_heights(efts.size());
+    vector<size_t> new_offsets(efts.size());
+    size_t offset = 0;
+    for (size_t T = 0; T < efts.size(); T++) {
+	size_t new_m = 0;
+	site_maps[T].push_back(new_m);
+	for (size_t m = 0; m < efts[T].height-1; m++) {
+	    Real Dt = x(T,m+1,0) - x(T,m,0);
+	    size_t q = Dt / spacing + 0.5;
+	    site_maps[T].push_back(new_m += q);
+	}
+	new_heights[T] = site_maps[T][efts[T].height-1] + 1;
+	new_offsets[T] = offset;
+	offset += efts[T].w->width * new_heights[T];
+    }
+
+#ifdef VERBOSE
+    for (size_t T = 0; T < efts.size(); T++) {
+	stringstream maps;
+	maps << "EFT " << T << ":";
 	for (size_t m = 0; m < efts[T].height; m++)
-	    s[m] = m / Real(efts[T].height-1);
-	for (size_t i = 0; i < efts[T].w.width; i++) {
+	    maps << ' ' << m << "->" << site_maps[T][m];
+	VERBOSE_MSG(maps.str());
+    }
+#endif
+
+    RVec new_y(offset);
+    for (size_t T = 0; T < efts.size(); T++) {
+	RVec y0(efts[T].height);
+	for (size_t m = 0; m < efts[T].height; m++) {
+	    size_t new_m = site_maps[T][m];
+	    y0[m] = new_y[new_offsets[T] + new_m*efts[T].w->width] = y(T,m,0);
+	}
+	for (size_t m = 0; m < efts[T].height-1; m++) {
+	    size_t q = site_maps[T][m+1] - site_maps[T][m];
+	    for (size_t n = 1; n < q; n++) {
+		size_t new_m = site_maps[T][m] + n;
+		new_y[new_offsets[T] + new_m*efts[T].w->width] =
+		    ((q-n)*y(T,m,0) + n*y(T,m+1,0)) / q;
+	    }
+	}
+	RVec yi(efts[T].height);
+	for (size_t i = 1; i < efts[T].w->width; i++) {
 	    gsl_interp_accel *acc = gsl_interp_accel_alloc();
-	    gsl_spline *spl =
-		gsl_spline_alloc(gsl_interp_cspline, efts[T].height);
+	    const gsl_interp_type *itype =
+		efts[T].height > 2 ? gsl_interp_cspline : gsl_interp_linear;
+	    gsl_spline *spl = gsl_spline_alloc(itype, efts[T].height);
 	    for (size_t m = 0; m < efts[T].height; m++) yi[m] = y(T,m,i);
-	    gsl_spline_init(spl, &s[0], &yi[0], efts[T].height);
+	    gsl_spline_init(spl, &y0[0], &yi[0], efts[T].height);
 	    for (size_t m = 0; m < new_heights[T]; m++)
-		new_y[new_offsets[T] + m*efts[T].w.width + i] =
-		    gsl_spline_eval(spl, m / Real(new_heights[T]-1), acc);
+		new_y[new_offsets[T] + m*efts[T].w->width + i] =
+		    gsl_spline_eval
+		    (spl, new_y[new_offsets[T] + m*efts[T].w->width], acc);
 	    gsl_spline_free(spl);
 	    gsl_interp_accel_free(acc);
 	}
     }
+
+    for (auto c: constraints) c->free_rows();
     y_ = new_y;
     z.resize(offset);
-    rowPool.resize(offset);
-    initFreeRowList();
-
-    for (auto c: constr) c->relocate(new_heights);
-    for (size_t T = 0; T < eft.size(); T++) {
+    row_pool.resize(offset);
+    init_free_row_list();
+    for (auto c: constraints) c->relocate(site_maps);
+    for (size_t T = 0; T < efts.size(); T++) {
 	efts[T].height = new_heights[T];
 	efts[T].offset = new_offsets[T];
     }
-
-    for (auto c: constr) c->alloc_rows();
+    for (auto c: constraints) c->alloc_rows();
     sort_rows();
-    
+
     N = y_.size();
     IPIV.resize(N);
     delete A_;
     A_ = new band_matrix<Real>(N, KL, KU, LDA);
-    if (A_ == nullptr) {
-	*log << "Cannot allocate matrix\n";
-	abort();
-    }
-#endif
+    if (A_ == nullptr)
+	throw MemoryError("RGFlow<Lattice>::Error: failed to allocate matrix");
+
+    return site_maps;
 }
 
 #if 0
@@ -428,22 +525,22 @@ RGFlow<Lattice>::Inner_status RGFlow<Lattice>::iterate()
 	dgbsv_(N,KL,KU,NRHS,A_->pointer(),LDA,&IPIV[0],&z[0],LDB,&INFO);
 	assert(INFO >= 0);
 	if (INFO > 0) {
-	    std::stringstream msg;
+	    stringstream msg;
 	    msg << "RGFlow<Lattice>::Error: failed to solve equations, "
 		<< "DGBSV returned INFO = " << INFO;
 	    throw NonInvertibleMatrixError(msg.str());
 	}
 	Real maxdy = maxdiff(y_, z);
 	VERBOSE_MSG("iter=" << iter << " maxdy=" << maxdy);
-	if (maxdy < min_dy)
+	if (maxdy < tiny_dy)
 	    state = END;
-	else if (maxdy > max_dy)
+	else if (maxdy > huge_dy)
 	    return JUMPED;
 	y_ = z;
     }
 
     if (state == END) {
-	VERBOSE_MSG("converged after " << iter << " inner iterations");
+	VERBOSE_MSG("converged after " << iter << " Newton iterations");
 	return CONVERGED;
     }
     else

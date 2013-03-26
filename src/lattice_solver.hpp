@@ -234,7 +234,6 @@ public:
     void disable_RK();
     void set_nthreads(size_t nthreads);
     void solve();
-    Inner_status iterate();
     friend std::ostream& operator<<(std::ostream &out, const RGFlow& flow);
 
     struct EFTspec : public EFT {
@@ -249,8 +248,8 @@ public:
     };
     std::vector<EFTspec> efts;
     Initial_guesser<Lattice> *init_profile;
-    Real min_dy;
-    Real max_dy;
+    Real tiny_dy;
+    Real huge_dy;
     Real a;			// continuation parameter btw 0 & 1
     size_t max_a_steps;
     size_t max_iter;
@@ -274,13 +273,19 @@ public:
     Real& y(size_t T, size_t m, size_t i) { return y_[site_offset(T,m) + i]; }
     Real  y(size_t T, size_t m, size_t i) const
     { return y_[site_offset(T,m) + i]; }
+    Real  x(size_t T, size_t m, size_t i) const
+    { return y(T,m,i) * efts[T].units[i]; }
     std::vector<Lattice_constraint*> constraints;
+    std::vector<size_t> teqidx;
     std::vector<size_t> rgeidx;
     void set_units();
     void apply_constraints();
     Real maxdiff(const RVec& y0, const RVec& y1);
     void init_lattice();
-    void refine_lattice();
+    void decrease_a();
+    void increase_density();
+    Inner_status iterate();
+    std::vector<std::vector<size_t>> refine_lattice();
     void resample(const std::vector<size_t>& new_heights); // obsolete
     EqRow *ralloc(size_t T, size_t m, size_t span);
     void rfree(EqRow *r);

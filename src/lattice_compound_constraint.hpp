@@ -15,13 +15,17 @@ public:
     CompoundConstraint(std::vector<Constraint<Lattice>*> cs) :
 	constraints(cs)
 	{}
-    virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site)
-    { for (auto c: constraints) c->init(flow, theory, site); }
+    virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site) {
+	Constraint<Lattice>::init(flow, theory, site);
+	for (auto c: constraints) c->init(flow, theory, site);
+    }
     virtual void alloc_rows()
     { for (auto c: constraints) c->alloc_rows(); }
     virtual void free_rows()
     { for (auto c: constraints) c->free_rows(); }
     virtual void operator()() { for (auto c: constraints) (*c)(); }
+    virtual void relocate(const std::vector<size_t>& site_map)
+    { for (auto c: constraints) c->relocate(site_map); }
 protected:
     std::vector<Constraint<Lattice>*> constraints;
 };
