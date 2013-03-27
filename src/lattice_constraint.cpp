@@ -11,26 +11,28 @@ using namespace std;
 void Lattice_constraint::ralloc
 (size_t nrows, size_t T, size_t m, size_t span)
 {
-    VERBOSE_MSG("allocating " << nrows <<
-		" rows to T=" << T << " m=" << m << " span=" << span);
+    VERBOSE_MSG("allocating " << nrows << " rows to " << this <<
+		" at T=" << T << " m=" << m << " span=" << span);
     for (; nrows; nrows--)
 	rows.push_back(f->ralloc(T, m, span));
 }
 
 void Lattice_constraint::rfree()
 {
-    for (auto r: rows)
-	f->rfree(r); rows.clear();
+    VERBOSE_MSG("freeing " << rows.size() << " rows from " << this);
+    for (auto r: rows) f->rfree(r);
+    rows.clear();
 }
 
 void Lattice_RGE::operator()()
 {
     for (size_t i = 1; i < x.size(); i++) { // x[0] untouched
 	calc_dxmi_ddxmi(0, i, dxm0i, ddxm0i);
-	for (size_t m = 0; m < f->efts[T].height - 1; m++) {
+	for (size_t n = 0; n < span - 1; n++) {
+	    size_t m = mbegin + n;
 	    calc_dxmi_ddxmi(m+1, i, dxm1i, ddxm1i);
 	    // row order determined by alloc_rows()
-	    set_diff(m * (f->efts[T].w->width-1) + i-1, m, i);
+	    set_diff(n * (f->efts[T].w->width-1) + i-1, m, i);
 	    dxm0i = dxm1i;
 	    swap(ddxm0i, ddxm1i); // cheaper than ddxm0i = ddxm1i
 	}
@@ -59,9 +61,11 @@ void Lattice_RGE::set_diff(size_t r, size_t m, size_t i)
 
 void Lattice_RKRGE::operator()()
 {
+    size_t m = mbegin;
+
     for (size_t j = 0; j < a0.n; j++) {
-	a0.x(j) = y(0,j)*u(j);
-	a1.x(j) = y(1,j)*u(j);
+	a0.x(j) = y(m+0,j)*u(j);
+	a1.x(j) = y(m+1,j)*u(j);
     }
     for (size_t j = 1; j < a0.n; j++) {
 	dx0[j] = f->efts[T].w->dx(f->a, &a0.x(0), j);
@@ -77,12 +81,12 @@ void Lattice_RKRGE::operator()()
 	size_t r = i - 1;
 	z(r) = a1.x(i) - a0.x(i);
 	for (size_t j = 1; j < a0.n; j++) {
-	    A(r,0,0) -=  a0.D(i,j)*u(0)*dx0[j];
-	    A(r,1,0) +=  a1.D(i,j)*u(0)*dx1[j];
-	    A(r,0,j) =   a0.D(i,j)*u(j);
-	    A(r,1,j) = - a1.D(i,j)*u(j);
-	    z(r) += a0.D(i,j) * (u(j)*y(0,j) - u(0)*y(0,0)*dx0[j])
-		  - a1.D(i,j) * (u(j)*y(1,j) - u(0)*y(1,0)*dx1[j]);
+	    A(r,m+0,0) -=  a0.D(i,j)*u(0)*dx0[j];
+	    A(r,m+1,0) +=  a1.D(i,j)*u(0)*dx1[j];
+	    A(r,m+0,j) =   a0.D(i,j)*u(j);
+	    A(r,m+1,j) = - a1.D(i,j)*u(j);
+	    z(r) += a0.D(i,j) * (u(j)*y(m+0,j) - u(0)*y(m+0,0)*dx0[j])
+		  - a1.D(i,j) * (u(j)*y(m+1,j) - u(0)*y(m+1,0)*dx1[j]);
 	}
     }
 }

@@ -76,11 +76,20 @@ private:
 class IntraTheoryConstraint : public Lattice_constraint {
 public:
     // IntraTheoryConstraint() {}
-    virtual void init(RGFlow<Lattice> *flow, size_t theory)
-    { Lattice_constraint::init(flow); T = theory; }
-    virtual void relocate(const std::vector<size_t>& site_map) = 0;
+    virtual void init
+    (RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span_) {
+	Lattice_constraint::init(flow);
+	T = theory; mbegin = site; span = span_;
+    }
+    virtual void relocate(const std::vector<size_t>& site_map) {
+	size_t new_mbegin = site_map[mbegin];
+	size_t new_span  = site_map[mbegin + span - 1] - new_mbegin + 1;
+	mbegin = new_mbegin;
+	span  = new_span;
+    }
     virtual void relocate(const std::vector<std::vector<size_t>>& site_maps)
     { relocate(site_maps[T]); }
+    size_t mbegin;
 protected:
     Real& A(size_t r, size_t m, size_t j)
     { return Lattice_constraint::A(r, T, m, j); }
@@ -90,6 +99,7 @@ protected:
     void ralloc(size_t nrows, size_t m, size_t span)
     { Lattice_constraint::ralloc(nrows, T, m, span); }
     size_t T;
+    size_t span;
 private:
 };
 
@@ -100,18 +110,15 @@ class Constraint<Lattice> : public IntraTheoryConstraint {
 public:
     // SingleSiteConstraint() {}
     virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site)
-    { IntraTheoryConstraint::init(flow, theory); m = site; }
-    virtual void relocate(const std::vector<size_t>& site_map)
-    { m = site_map[m]; }
+    { IntraTheoryConstraint::init(flow, theory, site, 1); }
 protected:
     Real& A(size_t r, size_t j)
-    { return IntraTheoryConstraint::A(r, m, j); }
-    Real y(size_t i) { return IntraTheoryConstraint::y(m, i); }
+    { return IntraTheoryConstraint::A(r, mbegin, j); }
+    Real y(size_t i) { return IntraTheoryConstraint::y(mbegin, i); }
     Real& z(size_t r) { return IntraTheoryConstraint::z(r); }
     void ralloc(size_t nrows)
-    { IntraTheoryConstraint::ralloc(nrows, m, 1); }
+    { IntraTheoryConstraint::ralloc(nrows, mbegin, 1); }
 private:
-    size_t m;
 };
 
 class SingleSiteInterTheoryConstraint : public InterTheoryConstraint {
@@ -147,18 +154,17 @@ private:
 class Lattice_RGE : public IntraTheoryConstraint {
 public:
     // Lattice_RGE() {}
-    void init(RGFlow<Lattice> *flow, size_t theory) {
-	IntraTheoryConstraint::init(flow, theory);
+    void init(RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span) {
+	IntraTheoryConstraint::init(flow, theory, site, span);
 	x.resize(f->efts[T].w->width);
 	ddxm0i.resize(x.size());
 	ddxm1i.resize(x.size());
     }
     void alloc_rows() {
-	for (size_t m = 0; m < f->efts[T].height - 1; m++)
-	    ralloc(f->efts[T].w->width - 1, m, 2);
+	for (size_t n = 0; n < span - 1; n++)
+	    ralloc(f->efts[T].w->width - 1, mbegin + n, 2);
     }
     void operator()();
-    void relocate(const std::vector<size_t>& site_map) {}
 
     RVec x;
     Real dxm0i, dxm1i;
@@ -179,8 +185,9 @@ public:
     };
 
     // Lattice_RKRGE() {}
-    void init(RGFlow<Lattice> *flow, size_t theory) {
-	IntraTheoryConstraint::init(flow, theory);
+    void init(RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span) {
+	assert(span == 2);
+	IntraTheoryConstraint::init(flow, theory, site, span);
 	xD0.resize(f->efts[T].w->width * (1 + f->efts[T].w->width));
 	xD1.resize(xD0.size());
 	a0.set(xD0, f->efts[T].w->width);
@@ -189,10 +196,9 @@ public:
 	dx1.resize(f->efts[T].w->width);
     }
     void alloc_rows() {
-	ralloc(f->efts[T].w->width - 1, 0, 2);
+	ralloc(f->efts[T].w->width - 1, mbegin, 2);
     }
     void operator()();
-    void relocate(const std::vector<size_t>& site_map) {}
     int evolve_to(Real t_new, Adapter& a, Real eps = -1);
 
     BRVec   xD0, xD1;
@@ -203,11 +209,6 @@ public:
 class Uniform_dt : public IntraTheoryConstraint {
 public:
     // Uniform_dt() {}
-    void init(RGFlow<Lattice> *flow, size_t theory, size_t m, size_t span_) {
-	IntraTheoryConstraint::init(flow, theory);
-	mbegin = m;
-	span = span_;
-    }
     void alloc_rows() {
 	for (size_t n = 1; n < span - 1; n++)
 	    ralloc(1, mbegin + n - 1, 3);
@@ -222,15 +223,7 @@ public:
 	    z(r) = 0;
 	}
     }
-    void relocate(const std::vector<size_t>& site_map) {
-	size_t new_mbegin = site_map[mbegin];
-	size_t new_span  = site_map[mbegin + span - 1] - new_mbegin + 1;
-	mbegin = new_mbegin;
-	span  = new_span;
-    }
 private:
-    size_t mbegin;
-    size_t span;
 };
 
 class Match_t : public InterTheoryConstraint {

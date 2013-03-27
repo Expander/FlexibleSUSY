@@ -129,7 +129,7 @@ private:
 };
 
 
-int main()
+int main(int argc, char *argv[])
 {
    Mssm_parameter_point pp;
    // FIXME: solver does not work if GeV = 1 instead of 1e-3,
@@ -190,6 +190,7 @@ int main()
    solver.set_initial_guesser(&initial_guesser);
    // Q: is fmssm_constraints allowed to be modified after add_model()ed?
    solver.add_model(&fmssm, fmssm_constraints);
+   if (argc > 1) solver.enable_hybrid();
 
    INFO("Running: " << pp);
    try {

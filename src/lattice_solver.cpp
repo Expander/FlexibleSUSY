@@ -38,7 +38,7 @@ RGFlow<Lattice>::EFTspec::EFTspec
 RGFlow<Lattice>::RGFlow() :
     tiny_dy(1e-2), huge_dy(100),
     max_a_steps(1024), max_iter(100),
-    units_set(false), scl0(1)
+    units_set(false), hybrid(false), scl0(1)
 {
 }
 
@@ -74,7 +74,8 @@ void RGFlow<Lattice>::solve()
 
     init_lattice();
     decrease_a();
-    increase_density();
+    if (hybrid) rk_stage();
+    else increase_density();
 }
 
 void RGFlow<Lattice>::init_lattice()
@@ -108,11 +109,12 @@ void RGFlow<Lattice>::init_lattice()
 	    Uniform_dt *teq = new Uniform_dt();
 	    teq->init(this, T, m, 2);
 	    constraints.push_back(teq);
+
+	    rgeidx.push_back(constraints.size());
+	    Lattice_RGE *rge = new Lattice_RGE();
+	    rge->init(this, T, m, 2);
+	    constraints.push_back(rge);
 	}
-	rgeidx.push_back(constraints.size());
-	Lattice_RGE *rge = new Lattice_RGE();
-	rge->init(this, T);
-	constraints.push_back(rge);
 	for (auto c: efts[T].constraints)
 	    constraints.push_back(c);
 	if (efts[T].matching)
@@ -175,7 +177,7 @@ void RGFlow<Lattice>::decrease_a()
 		break;
 	    }
 	}
-	VERBOSE_MSG("exited a-loop");
+	VERBOSE_MSG("exiting a-loop");
 	state = END;
     end_outer:
 	;
@@ -245,9 +247,6 @@ vector<vector<size_t>> RGFlow<Lattice>::refine_lattice()
 
     Real spacing = max_Dt > 2*min_Dt ? min_Dt : min_Dt/2;
     vector<vector<size_t>> site_maps(efts.size());
-    vector<size_t> new_heights(efts.size());
-    vector<size_t> new_offsets(efts.size());
-    size_t offset = 0;
     for (size_t T = 0; T < efts.size(); T++) {
 	size_t new_m = 0;
 	site_maps[T].push_back(new_m);
@@ -256,11 +255,91 @@ vector<vector<size_t>> RGFlow<Lattice>::refine_lattice()
 	    size_t q = Dt / spacing + 0.5;
 	    site_maps[T].push_back(new_m += q);
 	}
+    }
+
+    resample(site_maps);
+
+    return site_maps;
+}
+
+void RGFlow<Lattice>::rk_stage()
+{
+    VERBOSE_MSG("\n\nentering Runge-Kutta stage");
+    enable_Runge_Kutta();
+    VERBOSE_MSG("\n\nentering Newton loop");
+    Inner_status s = iterate();
+    switch (s) {
+    case JUMPED:
+	throw DivergenceError("RGFlow<Lattice>::Error: RG flow jumped, "
+			      "this cannot happen");
+    case ENDLESS:
+	throw NoConvergenceError(max_iter);
+    default:
+	break;
+    }
+    VERBOSE_MSG("exiting Runge-Kutta stage");
+}
+
+void RGFlow<Lattice>::enable_Runge_Kutta()
+{
+    vector<vector<bool>> original(efts.size());
+    for (size_t T = efts.size(); T--; ) {
+	original[T].resize(efts[T].height);
+	for (auto c: efts[T].constraints)
+	    original[T][c->mbegin] = true;
+	if (efts[T].matching)
+	    original[T][efts[T].height-1] = original[T+1][0] = true;
+    }
+
+    vector<vector<size_t>> site_maps(efts.size());
+    for (size_t T = 0; T < efts.size(); T++) {
+	site_maps[T].resize(efts[T].height);
+	for (size_t m = 0, new_m = 0; m < efts[T].height; m++) {
+	    site_maps[T][m] = new_m;
+	    if (original[T][m]) new_m++;
+	}
+    }
+
+    resample(site_maps);
+
+    VERBOSE_MSG("switching to Runge-Kutta RGEs");
+    for (size_t i = 0, T = 0; T < efts.size(); T++)
+	for (size_t m = 0; m < efts[T].height-1; m++, i++) {
+	    constraints[rgeidx[i]]->free_rows();
+	    delete constraints[rgeidx[i]];
+	    Lattice_RKRGE *rkrge = new Lattice_RKRGE();
+	    rkrge->init(this, T, m, 2);
+	    constraints[rgeidx[i]] = rkrge;
+	}
+    for (auto i: rgeidx) constraints[i]->alloc_rows();
+    sort_rows();
+}
+
+void RGFlow<Lattice>::disable_Runge_Kutta()
+{
+    VERBOSE_MSG("switching to difference RGEs");
+    for (size_t i = 0, T = 0; T < efts.size(); T++)
+	for (size_t m = 0; m < efts[T].height-1; m++, i++) {
+	    constraints[rgeidx[i]]->free_rows();
+	    delete constraints[rgeidx[i]];
+	    Lattice_RGE *rge = new Lattice_RGE();
+	    rge->init(this, T, m, 2);
+	    constraints[rgeidx[i]] = rge;
+	}
+    for (auto i: rgeidx) constraints[i]->alloc_rows();
+    sort_rows();
+}
+
+void RGFlow<Lattice>::resample(const vector<vector<size_t>>& site_maps)
+{
+    vector<size_t> new_heights(efts.size());
+    vector<size_t> new_offsets(efts.size());
+    size_t offset = 0;
+    for (size_t T = 0; T < efts.size(); T++) {
 	new_heights[T] = site_maps[T][efts[T].height-1] + 1;
 	new_offsets[T] = offset;
 	offset += efts[T].w->width * new_heights[T];
     }
-
 #ifdef VERBOSE
     for (size_t T = 0; T < efts.size(); T++) {
 	stringstream maps;
@@ -322,86 +401,6 @@ vector<vector<size_t>> RGFlow<Lattice>::refine_lattice()
     A_ = new band_matrix<Real>(N, KL, KU, LDA);
     if (A_ == nullptr)
 	throw MemoryError("RGFlow<Lattice>::Error: failed to allocate matrix");
-
-    return site_maps;
-}
-
-#if 0
-void RGFlow<Lattice>::resample(const vector<size_t>& new_heights)
-{
-    bool no_height_change = true;
-    for (size_t T = 0; T < eft.size(); T++)
-	if (new_heights[T] != efts[T].height) no_height_change = false;
-    if (no_height_change) return;
-
-    for (auto c: constr) c->free_rows();
-
-    vector<size_t> new_offsets(eft.size());
-    size_t offset = 0;
-    for (size_t T = 0; T < eft.size(); T++) {
-	new_offsets[T] = offset;
-	offset += efts[T].w.width * new_heights[T];
-    }
-
-    RVec new_y(offset);
-    for (size_t T = 0; T < eft.size(); T++) {
-	RVec s(efts[T].height), yi(efts[T].height);
-	for (size_t m = 0; m < efts[T].height; m++)
-	    s[m] = m / Real(efts[T].height-1);
-	for (size_t i = 0; i < efts[T].w.width; i++) {
-	    gsl_interp_accel *acc = gsl_interp_accel_alloc();
-	    gsl_spline *spl =
-		gsl_spline_alloc(gsl_interp_cspline, efts[T].height);
-	    for (size_t m = 0; m < efts[T].height; m++) yi[m] = y(T,m,i);
-	    gsl_spline_init(spl, &s[0], &yi[0], efts[T].height);
-	    for (size_t m = 0; m < new_heights[T]; m++)
-		new_y[new_offsets[T] + m*efts[T].w.width + i] =
-		    gsl_spline_eval(spl, m / Real(new_heights[T]-1), acc);
-	    gsl_spline_free(spl);
-	    gsl_interp_accel_free(acc);
-	}
-    }
-    y_ = new_y;
-    z.resize(offset);
-    rowPool.resize(offset);
-    initFreeRowList();
-
-    for (auto c: constr) c->relocate(new_heights);
-    for (size_t T = 0; T < eft.size(); T++) {
-	efts[T].height = new_heights[T];
-	efts[T].offset = new_offsets[T];
-    }
-
-    for (auto c: constr) c->alloc_rows();
-    sort_rows();
-    
-    N = y_.size();
-    IPIV.resize(N);
-    delete A_;
-    A_ = new band_matrix<Real>(N, KL, KU, LDA);
-    if (A_ == nullptr) {
-	*log << "Cannot allocate matrix\n";
-	abort();
-    }
-}
-#endif
-
-void RGFlow<Lattice>::enable_RK()
-{
-#if 0
-    resample(vector<size_t>(eft.size(), 2));
-    for (size_t T = 0; T < rgeidx.size(); T++) {
-	constr[rgeidx[T]]->free_rows();
-	delete constr[rgeidx[T]];
-	constr[rgeidx[T]] = new RKRGE(T);
-	constr[rgeidx[T]]->init(this);
-    }
-    sort_rows();
-#endif
-}
-
-void RGFlow<Lattice>::disable_RK()
-{
 }
 
 void RGFlow<Lattice>::set_units()

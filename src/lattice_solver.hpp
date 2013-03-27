@@ -230,8 +230,7 @@ public:
 		   const std::vector<SingleSiteConstraint*>& downwards_constraints);
     void set_initial_guesser(Initial_guesser<Lattice>*);
 
-    void enable_RK();
-    void disable_RK();
+    void enable_hybrid() { hybrid = true; }
     void set_nthreads(size_t nthreads);
     void solve();
     friend std::ostream& operator<<(std::ostream &out, const RGFlow& flow);
@@ -254,6 +253,7 @@ public:
     size_t max_a_steps;
     size_t max_iter;
     bool units_set;
+    bool hybrid;
     Real scl0;			// t == log(mu/scl0)
     RVec y_;			// entire RG flow
     band_matrix<Real> *A_;
@@ -284,9 +284,12 @@ public:
     void init_lattice();
     void decrease_a();
     void increase_density();
+    void rk_stage();
     Inner_status iterate();
     std::vector<std::vector<size_t>> refine_lattice();
-    void resample(const std::vector<size_t>& new_heights); // obsolete
+    void enable_Runge_Kutta();
+    void disable_Runge_Kutta();
+    void resample(const std::vector<std::vector<size_t>>& site_maps);
     EqRow *ralloc(size_t T, size_t m, size_t span);
     void rfree(EqRow *r);
     void init_free_row_list();

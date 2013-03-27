@@ -237,7 +237,7 @@ public:
 };
 
 
-int main()
+int main(int argc, char *argv[])
 {
    Mssm_parameter_point pp;
    pp.m0  = 400*GeV;
@@ -322,6 +322,7 @@ int main()
    // Q: is fmssm_constraints allowed to be modified after add_model()ed?
    solver.add_model(&fmssm, &fmssm_fmssmn_matching, fmssm_constraints);
    solver.add_model(&fmssmn, fmssmn_constraints);
+   if (argc > 1) solver.enable_hybrid();
 
    INFO("Running: " << pp);
    try {
