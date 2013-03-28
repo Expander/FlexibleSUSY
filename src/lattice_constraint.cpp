@@ -27,7 +27,7 @@ void Lattice_constraint::rfree()
 void Lattice_RGE::operator()()
 {
     for (size_t i = 1; i < x.size(); i++) { // x[0] untouched
-	calc_dxmi_ddxmi(0, i, dxm0i, ddxm0i);
+	calc_dxmi_ddxmi(mbegin, i, dxm0i, ddxm0i);
 	for (size_t n = 0; n < span - 1; n++) {
 	    size_t m = mbegin + n;
 	    calc_dxmi_ddxmi(m+1, i, dxm1i, ddxm1i);
