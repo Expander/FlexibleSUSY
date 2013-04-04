@@ -30,11 +30,13 @@ BOOSTFLAGS=""
 gsl_lib_dir=""
 gsl_inc_dir=""
 lapack_lib_dir=""
+tvmet_config="tvmet-config"
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
 FFLAGS="-g -O2"
+TVMETFLAGS=""
 FLIBS=""
 BOOSTLIBS=""
 LIBEXT=".a"
@@ -42,6 +44,7 @@ CXX="g++"
 FC="gfortran"
 GSLLIBS=""
 LAPACKLIBS=""
+TVMETLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 # available RG algorithms
@@ -482,6 +485,23 @@ check_gsl_incl() {
 }
 
 #_____________________________________________________________________
+check_tvmet_config() {
+    checking_msg "tvmet configuration $tvmet_config"
+    exists_in_path "$tvmet_config"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: tvmet needs to be installed to use the lattice algorithm!"
+        message "  Either add the path to the \`tvmet-config' program to \$PATH or"
+        message "  use $0 --with-tvmet-config=<path to tvmet-config>"
+        exit 1
+    else
+        result "found $cmd"
+        TVMETFLAGS=`$cmd --includes --cxxflags`
+        TVMETLIBS=`$cmd --libs`
+    fi
+}
+
+#_____________________________________________________________________
 check_fortran_libs() {
     case "$FC" in
         gfortran)
@@ -600,6 +620,7 @@ help() {
     echo "--with-lapack-libdir=    directory to search for LAPACK and BLAS"
     echo "                         libraries"
     echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
+    echo "--with-tvmet-config=     Path to tvmet-config (default: $tvmet_config)"
     echo "--help,-h                print this help message"
     echo "--libext                 library extension (default: $LIBEXT)"
     echo "--make-lib-cmd=          command to make library (default: $MAKELIB)"
@@ -641,6 +662,7 @@ if test $# -gt 0 ; then
             --with-gsl-incdir=*)     gsl_inc_dir=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
+            --with-tvmet-config=*)   tvmet_config=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --libext=*)              LIBEXT=$optarg ;;
             --make-lib-cmd=*)        MAKELIB=$optarg ;;
@@ -661,6 +683,7 @@ if use_algorithm "lattice"; then
     check_gsl_incl
     check_gsl_libs
     check_lapack_libs
+    check_tvmet_config
 fi
 check_math_cmd
 
@@ -679,6 +702,8 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@TVMETLIBS@|$TVMETLIBS|"     \
+    -e "s|@TVMETFLAGS@|$TVMETFLAGS|"   \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \

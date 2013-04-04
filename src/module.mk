@@ -53,6 +53,10 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+$(LIBFLEXI_OBJ): CPPFLAGS += $(TVMETFLAGS)
+endif
+
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
 		$(MAKELIB) $@ $^
 
