@@ -27,8 +27,7 @@ MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
 boost_lib_dir=""
 boost_inc_dir=""
 BOOSTFLAGS=""
-gsl_lib_dir=""
-gsl_inc_dir=""
+gsl_config="gsl-config"
 lapack_lib_dir=""
 tvmet_config="tvmet-config"
 GSLFLAGS=""
@@ -452,35 +451,19 @@ check_boost_incl() {
 }
 
 #_____________________________________________________________________
-check_gsl_libs() {
-    check_library "libgsl" "$gsl_lib_dir" \
-	"$default_lib_paths"
-    if test "x$found_lib" = "x" ; then
-        message "Warning: libgsl must be installed"
-        message "  to run the lattice algorithm, see http://www.gnu.org/s/gsl"
+check_gsl_config() {
+    checking_msg "GSL configuration $gsl_config"
+    exists_in_path "$gsl_config"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: GSL needs to be installed to use the lattice algorithm!"
+        message "  Either add the path to the \`gsl-config' program to \$PATH or"
+        message "  use $0 --with-gsl-config=<path to gsl-config>"
+        exit 1
     else
-        GSLLIBS_=-lgsl
-        if [ -z "$gsl_lib_dir" ]; then
-            # assume that the linker will look in the default paths
-            GSLLIBS="$GSLLIBS_"
-        else
-            GSLLIBS="-L$gsl_lib_dir $GSLLIBS_"
-        fi
-    fi
-}
-
-#_____________________________________________________________________
-check_gsl_incl() {
-    check_header "gsl/gsl_version.h" "$gsl_inc_dir" \
-	"$default_inc_paths"
-    if test "x$found_hdr" = "x" ; then
-        message "Warning: gsl/gsl_version.h must be installed"
-        message "  to compile the lattice algorithm, see http://www.gnu.org/s/gsl"
-    else
-        # assume that the compiler will look in the default paths
-        if [ -n "$gsl_inc_dir" ]; then
-            GSLFLAGS="-I$gsl_inc_dir"
-        fi
+        result "found $cmd"
+        GSLFLAGS=`$cmd --cflags`
+        GSLLIBS=`$cmd --libs`
     fi
 }
 
@@ -615,8 +598,7 @@ help() {
     echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--with-fc=               Fortran compiler (default: $FC)"
     echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
-    echo "--with-gsl-incdir=       GSL support, location of gsl/gsl_version.h"
-    echo "--with-gsl-libdir=       GSL support, location of libgsl"
+    echo "--with-gsl-config=       Path to gsl-config (default: $gsl_config)"
     echo "--with-lapack-libdir=    directory to search for LAPACK and BLAS"
     echo "                         libraries"
     echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
@@ -658,8 +640,7 @@ if test $# -gt 0 ; then
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
-            --with-gsl-libdir=*)     gsl_lib_dir=$optarg ;;
-            --with-gsl-incdir=*)     gsl_inc_dir=$optarg ;;
+            --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-tvmet-config=*)   tvmet_config=$optarg ;;
@@ -680,8 +661,7 @@ check_boost_incl
 check_boost_libs
 check_fortran_libs
 if use_algorithm "lattice"; then
-    check_gsl_incl
-    check_gsl_libs
+    check_gsl_config
     check_lapack_libs
     check_tvmet_config
 fi

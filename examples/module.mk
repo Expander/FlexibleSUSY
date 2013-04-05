@@ -43,8 +43,8 @@ $(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
-$(DIR)/lattice_fmssm.o: CPPFLAGS += $(TVMETFLAGS)
-$(DIR)/lattice_fmssm_fmssmn.o: CPPFLAGS += $(TVMETFLAGS)
+$(DIR)/lattice_fmssm.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
+$(DIR)/lattice_fmssm_fmssmn.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
 endif
 
 $(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
