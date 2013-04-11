@@ -526,6 +526,10 @@ find_symbol_using_pkgconfig() {
 	logmsg "pkg-config not found"
 	return 1
     }
+    pkg-config --exists "$pkg" || {
+	logmsg "pkg-config does not manage $pkg"
+	return 1
+    }
     ldpaths=$(pkg-config --libs-only-L "$pkg")
     libnames=$(pkg-config --libs-only-l "$pkg")
     for dopt in $default_lib_paths $ldpaths; do
