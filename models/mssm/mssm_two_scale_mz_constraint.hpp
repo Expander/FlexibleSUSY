@@ -37,11 +37,11 @@ template<class T> class Mssm;
 
 class Mssm_mz_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_mz_constraint(Mssm<Two_scale>* mssm_,
-                      double tanBeta_);
+   Mssm_mz_constraint(double tanBeta_);
    virtual ~Mssm_mz_constraint();
    virtual void apply();
    virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
    Mssm<Two_scale>* mssm;

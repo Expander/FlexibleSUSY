@@ -185,13 +185,13 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
-   StandardModel_exp_constraint sm_ew_constraint(&sm);
+   StandardModel_exp_constraint sm_ew_constraint;
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
    const double lambda_at_mgut = 1.0;
-   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
+   StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create trivial matching condition
@@ -256,13 +256,13 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
-   StandardModel_exp_constraint sm_ew_constraint(&sm);
+   StandardModel_exp_constraint sm_ew_constraint;
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
    const double lambda_at_mgut = 1.0;
-   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
+   StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create trivial matching condition
@@ -308,14 +308,14 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    // create Standard Model and the EW constraints
    StandardModel<Two_scale> sm;
    sm.setScale(Electroweak_constants::MZ);
-   StandardModel_exp_constraint sm_ew_constraint(&sm);
+   StandardModel_exp_constraint sm_ew_constraint;
    const std::vector<Constraint<Two_scale>*> sm_constraints(1, &sm_ew_constraint);
 
    // create CW-Standard Model and the GUT constraint
    StandardModelCW<Two_scale> smcw;
    smcw.setVs(5000.0);
    const double lambda_at_mgut = 1.0;
-   StandardModelCWGUTConstraint smcw_gut_constraint(&smcw, 1.0e12, lambda_at_mgut);
+   StandardModelCWGUTConstraint smcw_gut_constraint(1.0e12, lambda_at_mgut);
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create dynamic matching condition

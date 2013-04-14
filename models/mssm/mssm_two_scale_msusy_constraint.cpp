@@ -29,16 +29,14 @@
  * @param scale_ first guess for the susy scale
  * @param sgnMu_ sign of superpotential parameter \f$\mu\f$
  */
-Mssm_msusy_constraint::Mssm_msusy_constraint(Mssm<Two_scale>* mssm_,
-                                             const DoubleVector& pars_,
+Mssm_msusy_constraint::Mssm_msusy_constraint(const DoubleVector& pars_,
                                              double scale_, int sgnMu_)
    : Constraint<Two_scale>()
-   , mssm(mssm_)
+   , mssm(NULL)
    , pars(pars_)
    , scale(scale_)
    , sgnMu(sgnMu_)
 {
-   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 }
 
 Mssm_msusy_constraint::~Mssm_msusy_constraint()
@@ -47,6 +45,8 @@ Mssm_msusy_constraint::~Mssm_msusy_constraint()
 
 void Mssm_msusy_constraint::apply()
 {
+   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+
    mssm->calcDrBarPars();
    update_scale();
    double mtrun = mssm->displayDrBarPars().mt;
@@ -56,6 +56,21 @@ void Mssm_msusy_constraint::apply()
 double Mssm_msusy_constraint::get_scale() const
 {
    return scale;
+}
+
+void Mssm_msusy_constraint::set_model(Two_scale_model* model)
+{
+#ifdef DEBUG
+   Mssm<Two_scale>* tmp = dynamic_cast<Mssm<Two_scale>*>(model);
+   if (tmp) {
+      mssm = tmp;
+   } else {
+      FATAL("<Mssm_msusy_constraint::set_model>: model pointer "
+            << model << " is not of type Mssm<Two_scale>*");
+   }
+#else
+   mssm = static_cast<Mssm<Two_scale>*>(model);
+#endif
 }
 
 void Mssm_msusy_constraint::update_scale()

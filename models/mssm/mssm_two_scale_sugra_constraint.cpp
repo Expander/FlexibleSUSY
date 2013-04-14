@@ -2,17 +2,16 @@
 #include "mssm_two_scale_sugra_constraint.hpp"
 #include <cassert>
 
-Mssm_sugra_constraint::Mssm_sugra_constraint(Mssm<Two_scale>* mssm_, double mx_guess_, double m0_, double m12_, double a0_, int signMu_)
+Mssm_sugra_constraint::Mssm_sugra_constraint(double mx_guess_, double m0_, double m12_, double a0_, int signMu_)
    : Constraint<Two_scale>()
    , mx_guess(mx_guess_)
-   , mssm(mssm_)
+   , mssm(NULL)
    , gut_scale_calculator()
    , m0(m0_)
    , m12(m12_)
    , a0(a0_)
    , signMu(signMu_)
 {
-   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 }
 
 Mssm_sugra_constraint::~Mssm_sugra_constraint()
@@ -21,6 +20,8 @@ Mssm_sugra_constraint::~Mssm_sugra_constraint()
 
 void Mssm_sugra_constraint::apply()
 {
+   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+
    update_scale();
 
    const double g1 = mssm->displayGaugeCoupling(1);
@@ -34,6 +35,21 @@ void Mssm_sugra_constraint::apply()
 double Mssm_sugra_constraint::get_scale() const
 {
    return mx_guess;
+}
+
+void Mssm_sugra_constraint::set_model(Two_scale_model* model)
+{
+#ifdef DEBUG
+   Mssm<Two_scale>* tmp = dynamic_cast<Mssm<Two_scale>*>(model);
+   if (tmp) {
+      mssm = tmp;
+   } else {
+      FATAL("<Mssm_sugra_constraint::set_model>: model pointer "
+            << model << " is not of type Mssm<Two_scale>*");
+   }
+#else
+   mssm = static_cast<Mssm<Two_scale>*>(model);
+#endif
 }
 
 void Mssm_sugra_constraint::update_scale()

@@ -75,6 +75,7 @@ public:
    virtual ~Static_constraint() {}
    virtual void apply() {}
    virtual double get_scale() const { return scale; }
+   virtual void set_model(Two_scale_model*) {}
 private:
    double scale;
 };

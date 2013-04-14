@@ -22,6 +22,7 @@
 #include "constraint.hpp"
 
 class Two_scale;
+class Two_scale_model;
 
 template<>
 class Constraint<Two_scale> {
@@ -29,6 +30,7 @@ public:
    virtual ~Constraint() {}
    virtual void apply() = 0;                    ///< apply constraint
    virtual double get_scale() const = 0;        ///< get scale where to apply
+   virtual void set_model(Two_scale_model*) = 0; ///< set model where to apply the constraint
 };
 
 #endif

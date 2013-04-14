@@ -22,11 +22,10 @@
 
 #include <cassert>
 
-StandardModel_exp_constraint::StandardModel_exp_constraint(StandardModel<Two_scale>* sm_)
+StandardModel_exp_constraint::StandardModel_exp_constraint()
    : Constraint<Two_scale>()
-   , sm(sm_)
+   , sm(NULL)
 {
-   assert(sm && "pointer to StandardModel<Two_scale> must not be zero");
 }
 
 StandardModel_exp_constraint::~StandardModel_exp_constraint()
@@ -40,6 +39,8 @@ StandardModel_exp_constraint::~StandardModel_exp_constraint()
  */
 void StandardModel_exp_constraint::apply()
 {
+   assert(sm && "pointer to StandardModel<Two_scale> must not be zero");
+
    VERBOSE_MSG("Applying SM experimental constraints at scale "
                << sm->getScale());
    if (std::fabs(Electroweak_constants::MZ - sm->getScale()) > 1.0)
@@ -62,4 +63,19 @@ void StandardModel_exp_constraint::apply()
 double StandardModel_exp_constraint::get_scale() const
 {
    return Electroweak_constants::MZ;
+}
+
+void StandardModel_exp_constraint::set_model(Two_scale_model* model)
+{
+#ifdef DEBUG
+   StandardModel<Two_scale>* tmp = dynamic_cast<StandardModel<Two_scale>*>(model);
+   if (tmp) {
+      sm = tmp;
+   } else {
+      FATAL("<StandardModel_exp_constraint::set_model>: model pointer "
+            << model << " is not of type StandardModel<Two_scale>*");
+   }
+#else
+   sm = static_cast<StandardModel<Two_scale>*>(model);
+#endif
 }

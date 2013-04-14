@@ -68,6 +68,7 @@ public:
    virtual ~Counting_constraint() {}
    virtual void apply() { ++number_of_apply_calls; }
    virtual double get_scale() const { return scale; }
+   virtual void set_model(Two_scale_model*) {}
 
    unsigned get_number_of_apply_calls() const {
       return number_of_apply_calls;
