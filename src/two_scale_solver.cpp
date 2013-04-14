@@ -288,7 +288,17 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   const std::vector<Constraint<Two_scale>*>& upwards_constraints,
                                   const std::vector<Constraint<Two_scale>*>& downwards_constraints)
 {
-   models.push_back(new TModel(model, upwards_constraints, downwards_constraints, mc));
+   TModel* tmp_model = new TModel(model, upwards_constraints, downwards_constraints, mc);
+
+   for (std::vector<Constraint<Two_scale>*>::iterator it = tmp_model->upwards_constraints.begin(),
+           end = tmp_model->upwards_constraints.end(); it != end; ++it)
+      (*it)->set_model(model);
+
+   for (std::vector<Constraint<Two_scale>*>::iterator it = tmp_model->downwards_constraints.begin(),
+           end = tmp_model->downwards_constraints.end(); it != end; ++it)
+      (*it)->set_model(model);
+
+   models.push_back(tmp_model);
 }
 
 bool RGFlow<Two_scale>::accuracy_goal_reached() const

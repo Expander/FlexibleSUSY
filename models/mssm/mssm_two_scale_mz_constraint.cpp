@@ -21,14 +21,12 @@
 
 #include <cassert>
 
-Mssm_mz_constraint::Mssm_mz_constraint(Mssm<Two_scale>* mssm_,
-                                       double tanBeta_)
+Mssm_mz_constraint::Mssm_mz_constraint(double tanBeta_)
    : Constraint<Two_scale>()
-   , mssm(mssm_)
+   , mssm(NULL)
    , tanBeta(tanBeta_)
    , scale(MZ)
 {
-   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 }
 
 Mssm_mz_constraint::~Mssm_mz_constraint()
@@ -37,6 +35,8 @@ Mssm_mz_constraint::~Mssm_mz_constraint()
 
 void Mssm_mz_constraint::apply()
 {
+   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+
    update_scale();
    mssm->sparticleThresholdCorrections(tanBeta);
 }
@@ -44,6 +44,11 @@ void Mssm_mz_constraint::apply()
 double Mssm_mz_constraint::get_scale() const
 {
    return scale;
+}
+
+void Mssm_mz_constraint::set_model(Two_scale_model* model)
+{
+   mssm = cast_model<Mssm<Two_scale> >(model);
 }
 
 void Mssm_mz_constraint::update_scale()

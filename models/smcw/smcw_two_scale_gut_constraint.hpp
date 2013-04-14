@@ -25,10 +25,11 @@
 
 class StandardModelCWGUTConstraint : public Constraint<Two_scale> {
 public:
-   StandardModelCWGUTConstraint(StandardModelCW<Two_scale>*, double, double);
+   StandardModelCWGUTConstraint(double, double);
    virtual ~StandardModelCWGUTConstraint();
    virtual void apply();
    virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
    double estimated_scale;

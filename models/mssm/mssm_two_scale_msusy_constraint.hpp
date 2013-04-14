@@ -37,11 +37,11 @@ template<class T> class Mssm;
 
 class Mssm_msusy_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_msusy_constraint(Mssm<Two_scale>* mssm_, const DoubleVector& pars_,
-                         double scale_, int sgnMu_);
+   Mssm_msusy_constraint(const DoubleVector& pars_, double scale_, int sgnMu_);
    virtual ~Mssm_msusy_constraint();
    virtual void apply();
    virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
    Mssm<Two_scale>* mssm;

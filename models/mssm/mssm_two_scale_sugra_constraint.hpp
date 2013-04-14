@@ -25,10 +25,11 @@
 
 class Mssm_sugra_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_sugra_constraint(Mssm<Two_scale>*, double, double, double, double, int);
+   Mssm_sugra_constraint(double, double, double, double, int);
    virtual ~Mssm_sugra_constraint();
    virtual void apply();
    virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
    double mx_guess;

@@ -63,10 +63,11 @@ class StandardModel;
  */
 class StandardModel_exp_constraint : public Constraint<Two_scale> {
 public:
-   StandardModel_exp_constraint(StandardModel<Two_scale>*);
+   StandardModel_exp_constraint();
    virtual ~StandardModel_exp_constraint();
    virtual void apply();
    virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
    StandardModel<Two_scale>* sm; ///< model to apply the constraints to
