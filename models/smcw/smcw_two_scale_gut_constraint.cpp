@@ -37,17 +37,7 @@ double StandardModelCWGUTConstraint::get_scale() const
 
 void StandardModelCWGUTConstraint::set_model(Two_scale_model* model)
 {
-#ifdef DEBUG
-   StandardModelCW<Two_scale>* tmp = dynamic_cast<StandardModelCW<Two_scale>*>(model);
-   if (tmp) {
-      smcw = tmp;
-   } else {
-      FATAL("<StandardModelCWGUTConstraint::set_model>: model pointer "
-            << model << " is not of type StandardModelCW<Two_scale>*");
-   }
-#else
-   smcw = static_cast<StandardModelCW<Two_scale>*>(model);
-#endif
+   smcw = cast_model<StandardModelCW<Two_scale> >(model);
 }
 
 void StandardModelCWGUTConstraint::update_scale()

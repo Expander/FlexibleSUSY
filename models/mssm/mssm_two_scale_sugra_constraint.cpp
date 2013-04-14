@@ -39,17 +39,7 @@ double Mssm_sugra_constraint::get_scale() const
 
 void Mssm_sugra_constraint::set_model(Two_scale_model* model)
 {
-#ifdef DEBUG
-   Mssm<Two_scale>* tmp = dynamic_cast<Mssm<Two_scale>*>(model);
-   if (tmp) {
-      mssm = tmp;
-   } else {
-      FATAL("<Mssm_sugra_constraint::set_model>: model pointer "
-            << model << " is not of type Mssm<Two_scale>*");
-   }
-#else
-   mssm = static_cast<Mssm<Two_scale>*>(model);
-#endif
+   mssm = cast_model<Mssm<Two_scale> >(model);
 }
 
 void Mssm_sugra_constraint::update_scale()

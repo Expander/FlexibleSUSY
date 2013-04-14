@@ -67,15 +67,5 @@ double StandardModel_exp_constraint::get_scale() const
 
 void StandardModel_exp_constraint::set_model(Two_scale_model* model)
 {
-#ifdef DEBUG
-   StandardModel<Two_scale>* tmp = dynamic_cast<StandardModel<Two_scale>*>(model);
-   if (tmp) {
-      sm = tmp;
-   } else {
-      FATAL("<StandardModel_exp_constraint::set_model>: model pointer "
-            << model << " is not of type StandardModel<Two_scale>*");
-   }
-#else
-   sm = static_cast<StandardModel<Two_scale>*>(model);
-#endif
+   sm = cast_model<StandardModel<Two_scale> >(model);
 }
