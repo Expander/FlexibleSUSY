@@ -20,6 +20,7 @@
 #define LOGGER_H
 
 #include <iostream>
+#include <cstdlib>
 #include <cassert>
 
 /**
@@ -68,7 +69,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #ifdef SILENT
    #define FATAL(message)                             \
       do {                                            \
-         std::exit(1);                                \
+         exit(1);                                     \
          assert(false);                               \
       } while (0)
 #else
@@ -76,7 +77,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                                            \
          LOG(kFatal, message);                                        \
          std::cout << "*** abort program execution" << std::endl;     \
-         std::exit(1);                                                \
+         exit(1);                                                     \
          assert(false);                                               \
       } while (0)
 #endif
