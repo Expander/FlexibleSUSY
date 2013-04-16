@@ -20,6 +20,8 @@
 #define TWO_SCALE_CONSTRAINT_H
 
 #include "constraint.hpp"
+#include "logger.hpp"
+#include <typeinfo>
 
 class Two_scale;
 class Two_scale_model;
