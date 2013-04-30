@@ -139,6 +139,11 @@ public:
 	Comp At = mxc.tfc.Au(2,2);
 	Real vu = msc.ewsb.vu;
 	Real vd = msc.ewsb.vd;
+	mxc.mhc.m2Hu_ini = b*vd/vu - sqr(mu) +
+	    (sqr(g2)+sqr(gY))*(Pow4(vd)-Pow4(vu))/(4*(sqr(vd)+sqr(vu)));
+	mxc.mhc.m2Hd_ini = b*vu/vd - sqr(mu) +
+	    (sqr(g2)+sqr(gY))*(Pow4(vu)-Pow4(vd))/(4*(sqr(vd)+sqr(vu)));
+
 	Real m2Q33 = real(mxc.mfc.m2Q(2,2));
 	Real m2U33 = real(mxc.mfc.m2U(2,2));
 
@@ -218,16 +223,16 @@ private:
 
 class Fmssmn_cmssmn_constraint : public Fmssmn_mx_constraint {
 public:
-    Fmssmn_cmssmn_constraint(double m0, double m12, double a0,
-			     double m2Hu_ini, double m2Hd_ini, const CM33& Yn){
+    Fmssmn_cmssmn_constraint(double m0, double m12, double a0, const CM33& Yn){
 	mgc.M1 = mgc.M2 = mgc.M3 = m12;
 	mfc.m2Q = sqr(m0), 0, 0,
 	    	  0, sqr(m0), 0,
 	    	  0, 0, sqr(m0);
 	mfc.m2U = mfc.m2D = mfc.m2L = mfc.m2N = mfc.m2E = mfc.m2Q;
 	mhc.m2Hu_fin = mhc.m2Hd_fin = sqr(m0);
-	mhc.m2Hu_ini = m2Hu_ini;
-	mhc.m2Hd_ini = m2Hd_ini;
+	// to be set by initial guesser
+	// mhc.m2Hu_ini = m2Hu_ini;
+	// mhc.m2Hd_ini = m2Hd_ini;
 	tfc.Au = a0, a0, a0,
 	    	 a0, a0, a0,
 	    	 a0, a0, a0;
@@ -250,15 +255,7 @@ int main(int argc, char *argv[])
    Fmssm<Lattice> fmssm;
 
    Fmssm_mz_constraint fmssm_mz_constraint(pp.tanBeta);
-   Real gY = fmssm_mz_constraint.gcs.g1 * sqrt(3/5.0);
-   Real g2 = fmssm_mz_constraint.gcs.g2;
    Fmssm_msusy_constraint fmssm_msusy_constraint(pp.tanBeta);
-   Real vu = fmssm_msusy_constraint.ewsb.vu;
-   Real vd = fmssm_msusy_constraint.ewsb.vd;
-   Real m2Hu_ini = b*vd/vu +
-       (sqr(g2)+sqr(gY))*(Pow4(vd)-Pow4(vu))/(4*(sqr(vd)+sqr(vu))) - sqr(mu);
-   Real m2Hd_ini = b*vu/vd +
-       (sqr(g2)+sqr(gY))*(Pow4(vu)-Pow4(vd))/(4*(sqr(vd)+sqr(vu))) - sqr(mu);
    // Fmssm_convergence_tester fmssm_convergence_tester(1.0e-4);
 
    std::vector<Constraint<Lattice>*> fmssm_constraints;
@@ -301,7 +298,7 @@ int main(int argc, char *argv[])
    CM33 Yn;
    Yn = UPMNS * YnDiag;
    Fmssmn_cmssmn_constraint fmssmn_cmssmn_constraint
-       (pp.m0, pp.m12, pp.a0, m2Hu_ini, m2Hd_ini, Yn);
+       (pp.m0, pp.m12, pp.a0, Yn);
    std::vector<Constraint<Lattice>*> fmssmn_constraints;
    fmssmn_constraints.push_back(&fmssmn_cmssmn_constraint);
 
