@@ -22,13 +22,21 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssm_lattice_constraints.hpp"
 
-class Fmssm_mz_constraint : public CompoundConstraint<Lattice> {
-public:
-    Fmssm_mz_constraint(double tanBeta);
 
+// auxiliary class for initializing own members before the base class
+// see http://www.boost.org/doc/libs/1_53_0/libs/utility/base_from_member.html
+struct Fmssm_mz_constraint_ {
+    Fmssm_mz_constraint_();
     Fixed_t fix_scale_to_mz;
     Fmssm_constraint_on_gauge_couplings gcs;
     Fmssm_constraint_on_yukawas ycs;
+};
+
+class Fmssm_mz_constraint :
+    public Fmssm_mz_constraint_,
+    public CompoundConstraint<Lattice> {
+public:
+    Fmssm_mz_constraint(double tanBeta);
 };
 
 #endif // FMSSM_LATTICE_MZ_CONSTRAINT_H

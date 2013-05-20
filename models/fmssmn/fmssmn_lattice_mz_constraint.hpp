@@ -22,24 +22,18 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
-class Fmssmn_mz_constraint : public CompoundConstraint<Lattice> {
-public:
-    Fmssmn_mz_constraint(double tanBeta);
-
-    class Fixed_mz : public AnySingleSiteConstraint {
-    public:
-	Fixed_mz() :
-	    AnySingleSiteConstraint(1,
-		[=](AnySingleSiteConstraint *dummy) {
-		    A(0,0) = u(0);
-		    z(0) = std::log(mZ/f->scl0);
-		})
-	    {}
-    };
-
-    Fixed_mz fixed_mz;
+struct Fmssmn_mz_constraint_ {
+    Fmssmn_mz_constraint_();
+    Fixed_t fix_scale_to_mz;
     Fmssmn_constraint_on_gauge_couplings gcs;
     Fmssmn_constraint_on_yude ycs;
+};
+
+class Fmssmn_mz_constraint :
+    public Fmssmn_mz_constraint_,
+    public CompoundConstraint<Lattice> {
+public:
+    Fmssmn_mz_constraint(double tanBeta);
 };
 
 #endif // FMSSMN_LATTICE_MZ_CONSTRAINT_H

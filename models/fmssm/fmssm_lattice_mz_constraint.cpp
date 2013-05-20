@@ -9,10 +9,13 @@
 using namespace std;
 
 
-Fmssm_mz_constraint::Fmssm_mz_constraint(double tanBeta) :
+Fmssm_mz_constraint_::Fmssm_mz_constraint_() :
     fix_scale_to_mz(mZ),
     gcs(),
-    ycs(),
+    ycs()
+{}
+
+Fmssm_mz_constraint::Fmssm_mz_constraint(double tanBeta) :
     CompoundConstraint<Lattice>::CompoundConstraint
     ({&fix_scale_to_mz, &gcs, &ycs})
 {

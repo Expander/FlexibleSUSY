@@ -19,18 +19,28 @@
 #ifndef FMSSM_LATTICE_MX_CONSTRAINT_H
 #define FMSSM_LATTICE_MX_CONSTRAINT_H
 
+
 #include "lattice_compound_constraint.hpp"
 #include "fmssm_lattice_constraints.hpp"
 
-class Fmssm_mx_constraint : public CompoundConstraint<Lattice> {
-public:
-    Fmssm_mx_constraint();
 
+// auxiliary class for initializing own members before the base class
+// see http://www.boost.org/doc/libs/1_53_0/libs/utility/base_from_member.html
+struct Fmssm_mx_constraint_ {
+    Fmssm_mx_constraint_();
     Fmssm_constraint_on_mx mxc;
     Fmssm_constraint_on_higgs_masses mhc;
     Fmssm_constraint_on_gaugino_masses mgc;
     Fmssm_constraint_on_sfermion_masses mfc;
     Fmssm_constraint_on_trilinears tfc;
 };
+
+class Fmssm_mx_constraint :
+    public Fmssm_mx_constraint_,
+    public CompoundConstraint<Lattice> {
+public:
+    Fmssm_mx_constraint();
+};
+
 
 #endif // FMSSM_LATTICE_MX_CONSTRAINT_H

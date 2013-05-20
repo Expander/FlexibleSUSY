@@ -22,16 +22,21 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
-class Fmssmn_mx_constraint : public CompoundConstraint<Lattice> {
-public:
-    Fmssmn_mx_constraint();
-
+struct Fmssmn_mx_constraint_ {
+    Fmssmn_mx_constraint_();
     Fmssmn_constraint_on_mx mxc;
     Fmssmn_constraint_on_yn ync;
     Fmssmn_constraint_on_higgs_masses mhc;
     Fmssmn_constraint_on_gaugino_masses mgc;
     Fmssmn_constraint_on_sfermion_masses mfc;
     Fmssmn_constraint_on_trilinears tfc;
+};
+
+class Fmssmn_mx_constraint :
+    public Fmssmn_mx_constraint_,
+    public CompoundConstraint<Lattice> {
+public:
+    Fmssmn_mx_constraint();
 };
 
 #endif // FMSSMN_LATTICE_MX_CONSTRAINT_H

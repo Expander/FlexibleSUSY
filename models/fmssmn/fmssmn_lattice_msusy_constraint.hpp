@@ -22,12 +22,17 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
-class Fmssmn_msusy_constraint : public CompoundConstraint<Lattice> {
-public:
-    Fmssmn_msusy_constraint(double tanBeta);
-
+struct Fmssmn_msusy_constraint_ {
+    Fmssmn_msusy_constraint_();
     Fmssmn_constraint_on_ms msc;
     Fmssmn_constraint_on_ewsb ewsb;
+};
+
+class Fmssmn_msusy_constraint :
+    public Fmssmn_msusy_constraint_,
+    public CompoundConstraint<Lattice> {
+public:
+    Fmssmn_msusy_constraint(double tanBeta);
 };
 
 #endif
