@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
    // METACODE: Fmssm_constraint_on_trilinears divides by 0
    // when a0 = 0, this can be avoided by rewriting the equation
    // without divisions
+   // UPDATE: supposed to be fixed in writeRGE.m
    pp.a0  = pp.m0;
    pp.tanBeta = 10;
    Real mu = pp.m0;		// sign wish enters here

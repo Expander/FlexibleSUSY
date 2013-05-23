@@ -25,6 +25,8 @@ putLabel[label_, stmt_] :=
   StringReplacePart[stmt,
 		    StringTake["     " <> ToString[label], -5], {1,5}];
 
+listTogether[l_] := (PolynomialLCM @@ (Denominator@Together@#& /@ l)) l;
+
 writeRGESubroutines[filename_, name_, params_, pdecls_, arrays_, nxs_] :=
 Block[{
     deriv, stmt, i, j, labelled = False
@@ -149,7 +151,8 @@ Block[{
   },
 derivs = D[realBCs, #]& /@ pars;
 BC0s = realBCs - pars.derivs;
-mat = Transpose[Cases[RowReduce[Transpose[Append[derivs, BC0s]]],
+mat = Transpose[listTogether /@
+		Cases[RowReduce[Transpose[Append[derivs, BC0s]]],
 		      Except[{___?PossibleZeroQ}]]];
 derivs = Drop[mat, -1];
 BC0s = Last[mat];
@@ -206,7 +209,8 @@ Block[{
   },
 derivs = D[realMCs, #]& /@ pars;
 MC0s = realMCs - pars.derivs;
-mat = Transpose[Cases[RowReduce[Transpose[Append[derivs, MC0s]]],
+mat = Transpose[listTogether /@
+		Cases[RowReduce[Transpose[Append[derivs, MC0s]]],
 		      Except[{___?PossibleZeroQ}]]];
 derivs = Drop[mat, -1];
 MC0s = Last[mat];
