@@ -73,7 +73,7 @@ void RGFlow<Lattice>::solve()
     if (efts.empty()) throw SetupError("RGFlow<Lattice>::Error: EFT tower empty");
 
     init_lattice();
-    decrease_a();
+    increase_a();
     if (hybrid) rk_stage();
     else increase_density();
 }
@@ -133,7 +133,7 @@ void RGFlow<Lattice>::init_lattice()
 	throw MemoryError("RGFlow<Lattice>::Error: failed to allocate matrix");
 }
 
-void RGFlow<Lattice>::decrease_a()
+void RGFlow<Lattice>::increase_a()
 {
     enum { END, INIT, RUN } state = INIT;
     size_t a_steps = 1;

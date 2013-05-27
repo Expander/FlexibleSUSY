@@ -282,7 +282,7 @@ public:
     void apply_constraints();
     Real maxdiff(const RVec& y0, const RVec& y1);
     void init_lattice();
-    void decrease_a();
+    void increase_a();
     void increase_density();
     void rk_stage();
     Inner_status iterate();
