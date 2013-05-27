@@ -38,6 +38,7 @@ public:
     virtual void relocate(const std::vector<std::vector<size_t>>& site_maps)=0;
     // size_t relocated_site(size_t m, size_t old_height, size_t new_height)
     // 	{ return size_t(0.5 + m*Real(new_height-1)/Real(old_height-1)); }
+    RGFlow<Lattice> *f;
 protected:
     Real& A(size_t r, size_t T, size_t m, size_t j)
     { return f->A(rows[r]->rowSpec.realRow, T, m, j); }
@@ -45,7 +46,6 @@ protected:
     Real& z(size_t r) { return f->z[rows[r]->rowSpec.realRow]; }
     void ralloc(size_t nrows, size_t T, size_t m, size_t span);
     void rfree();
-    RGFlow<Lattice> *f;
 private:
     std::vector<RGFlow<Lattice>::EqRow *> rows;
 };

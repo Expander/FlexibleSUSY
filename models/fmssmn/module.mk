@@ -11,7 +11,13 @@ LIBFMSSMN_SRC  += \
 		$(DIR)/fmssmn_lattice_mx_constraint.cpp \
 		$(DIR)/fmssmn_lattice_rge.f \
 		$(DIR)/fmssmn_lattice_constraints.f \
-		$(DIR)/fmssm_fmssmn_lattice_matchings.f
+		$(DIR)/fmssmn_lattice_numerical_constraints.cpp \
+		$(DIR)/fmssmn_lattice_numerical_constraints_dependence.cpp \
+		$(DIR)/fmssmn_lattice_numerical_constraints_functions.f \
+		$(DIR)/fmssm_fmssmn_lattice_matchings.f \
+		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings.cpp \
+		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_dependence.cpp \
+		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_functions.f
 endif
 
 LIBFMSSMN_OBJ  := \
@@ -37,6 +43,9 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+$(DIR)/%.cpp : $(DIR)/%.cpp.m
+	$(MATH) -run 'filename="$@"; << $<; Quit[]'
 
 $(DIR)/%.f : $(DIR)/%.f.m
 	$(MATH) -run 'filename="$@"; << $<; Quit[]'

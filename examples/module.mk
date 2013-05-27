@@ -12,7 +12,9 @@ endif
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
 		$(DIR)/lattice_fmssm.cpp \
-		$(DIR)/lattice_fmssm_fmssmn.cpp
+		$(DIR)/lattice_numerical_fmssm.cpp \
+		$(DIR)/lattice_fmssm_fmssmn.cpp \
+		$(DIR)/lattice_numerical_fmssm_fmssmn.cpp
 endif
 
 EXAMPLES_OBJ := \
@@ -44,13 +46,21 @@ $(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBMSSM) $(LIBFLEXI)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(DIR)/lattice_fmssm.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
+$(DIR)/lattice_numerical_fmssm.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
 $(DIR)/lattice_fmssm_fmssmn.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
+$(DIR)/lattice_numerical_fmssm_fmssmn.o: CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
 endif
 
 $(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
 
+$(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
+
 $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
+$(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o \
 			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
 

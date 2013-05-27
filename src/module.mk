@@ -23,6 +23,7 @@ endif
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \
 		$(DIR)/lattice_constraint.cpp \
+		$(DIR)/lattice_numerical_constraint.cpp \
 		$(DIR)/lattice_solver.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/SM.cpp \
