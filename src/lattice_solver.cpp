@@ -38,7 +38,8 @@ RGFlow<Lattice>::EFTspec::EFTspec
 RGFlow<Lattice>::RGFlow() :
     tiny_dy(1e-2), huge_dy(100),
     max_a_steps(1024), max_iter(100),
-    units_set(false), hybrid(false), scl0(1)
+    units_set(false), hybrid(false), scl0(1),
+    multithreading(true)
 {
 }
 
@@ -70,12 +71,15 @@ void RGFlow<Lattice>::set_initial_guesser(Initial_guesser<Lattice>* guesser)
 
 void RGFlow<Lattice>::solve()
 {
-    if (efts.empty()) throw SetupError("RGFlow<Lattice>::Error: EFT tower empty");
+    if (efts.empty())
+	throw SetupError("RGFlow<Lattice>::Error: EFT tower empty");
 
     init_lattice();
+    create_threads();
     increase_a();
     if (hybrid) rk_stage();
     else increase_density();
+    join_threads();
 }
 
 void RGFlow<Lattice>::init_lattice()
@@ -106,12 +110,12 @@ void RGFlow<Lattice>::init_lattice()
     for (size_t T = 0; T < efts.size(); T++) {
 	for (size_t m = 0; m < efts[T].height-1; m++) {
 	    teqidx.push_back(constraints.size());
-	    Uniform_dt *teq = new Uniform_dt();
+	    Uniform_dt *teq = new Uniform_dt;
 	    teq->init(this, T, m, 2);
 	    constraints.push_back(teq);
 
 	    rgeidx.push_back(constraints.size());
-	    Lattice_RGE *rge = new Lattice_RGE();
+	    Lattice_RGE *rge = new Lattice_RGE;
 	    rge->init(this, T, m, 2);
 	    constraints.push_back(rge);
 	}
@@ -282,6 +286,8 @@ void RGFlow<Lattice>::rk_stage()
 
 void RGFlow<Lattice>::enable_Runge_Kutta()
 {
+    join_threads();
+
     vector<vector<bool>> original(efts.size());
     for (size_t T = efts.size(); T--; ) {
 	original[T].resize(efts[T].height);
@@ -306,28 +312,36 @@ void RGFlow<Lattice>::enable_Runge_Kutta()
     for (size_t i = 0, T = 0; T < efts.size(); T++)
 	for (size_t m = 0; m < efts[T].height-1; m++, i++) {
 	    constraints[rgeidx[i]]->free_rows();
+	    constraints[rgeidx[i]]->deactivate();
 	    delete constraints[rgeidx[i]];
-	    Lattice_RKRGE *rkrge = new Lattice_RKRGE();
+	    Lattice_RKRGE *rkrge = new Lattice_RKRGE;
 	    rkrge->init(this, T, m, 2);
 	    constraints[rgeidx[i]] = rkrge;
 	}
     for (auto i: rgeidx) constraints[i]->alloc_rows();
     sort_rows();
+
+    create_threads();
 }
 
 void RGFlow<Lattice>::disable_Runge_Kutta()
 {
+    join_threads();
+
     VERBOSE_MSG("switching to difference RGEs");
     for (size_t i = 0, T = 0; T < efts.size(); T++)
 	for (size_t m = 0; m < efts[T].height-1; m++, i++) {
 	    constraints[rgeidx[i]]->free_rows();
+	    constraints[rgeidx[i]]->deactivate();
 	    delete constraints[rgeidx[i]];
-	    Lattice_RGE *rge = new Lattice_RGE();
+	    Lattice_RGE *rge = new Lattice_RGE;
 	    rge->init(this, T, m, 2);
 	    constraints[rgeidx[i]] = rge;
 	}
     for (auto i: rgeidx) constraints[i]->alloc_rows();
     sort_rows();
+
+    create_threads();
 }
 
 void RGFlow<Lattice>::resample(const vector<vector<size_t>>& site_maps)
@@ -428,7 +442,53 @@ void RGFlow<Lattice>::set_units()
 void RGFlow<Lattice>::apply_constraints()
 {
     A_->clear();
-    for (auto c: constraints) (*c)();
+
+    if (multithreading) {
+	threads_begin->wait();
+	(**elementary_constraints.begin())();
+	threads_end->wait();
+    }
+    else
+	for (auto c: elementary_constraints) (*c)();
+
+    // for (auto c: constraints) (*c)();
+}
+
+void RGFlow<Lattice>::apply_constraints_thread(Lattice_constraint *c)
+{
+    while (threads_begin->wait(), keep_threads) {
+	(*c)();
+	threads_end->wait();
+    }
+}
+
+void RGFlow<Lattice>::create_threads()
+{
+    if (!multithreading) return;
+
+    threads_begin = new boost::barrier(elementary_constraints.size());
+    threads_end   = new boost::barrier(elementary_constraints.size());
+    keep_threads = true;
+    threads = new boost::thread_group;
+    for (auto c: elementary_constraints)
+	if (c != *elementary_constraints.begin())
+	    threads->add_thread(
+		new boost::thread
+		(&RGFlow<Lattice>::apply_constraints_thread, this, c));
+    VERBOSE_MSG("launched " << threads->size() << " subthreads");
+}
+
+void RGFlow<Lattice>::join_threads()
+{
+    if (!multithreading) return;
+
+    keep_threads = false;
+    threads_begin->wait();
+    threads->join_all();
+    VERBOSE_MSG("joined " << threads->size() << " subthreads");
+    delete threads;
+    delete threads_begin;
+    delete threads_end;
 }
 
 Real RGFlow<Lattice>::maxdiff(const RVec& y0, const RVec& y1)

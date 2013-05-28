@@ -1,4 +1,5 @@
 #include <complex>
+#include <string>
 
 #include "consts.hpp"
 #include "mssm_parameter_point.hpp"
@@ -319,7 +320,12 @@ int main(int argc, char *argv[])
    // Q: is fmssm_constraints allowed to be modified after add_model()ed?
    solver.add_model(&fmssm, &fmssm_fmssmn_matching, fmssm_constraints);
    solver.add_model(&fmssmn, fmssmn_constraints);
-   if (argc > 1) solver.enable_hybrid();
+
+   if (argc > 1) {
+       string argv1(argv[1]);
+       if (argv1.find("h") != string::npos) solver.enable_hybrid();
+       if (argv1.find("1") != string::npos) solver.disable_multithreading();
+   }
 
    INFO("Running: " << pp);
    try {

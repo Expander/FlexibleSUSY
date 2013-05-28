@@ -6,9 +6,12 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <unordered_set>
 #include <cstddef>
 #include <cstdlib>
 #include <cassert>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/barrier.hpp>
 #include "mathdefs.hpp"
 
 #include "rg_flow.hpp"
@@ -231,7 +234,7 @@ public:
     void set_initial_guesser(Initial_guesser<Lattice>*);
 
     void enable_hybrid() { hybrid = true; }
-    void set_nthreads(size_t nthreads);
+    void disable_multithreading() { multithreading = false; };
     void solve();
     friend std::ostream& operator<<(std::ostream &out, const RGFlow& flow);
 
@@ -278,8 +281,19 @@ public:
     std::vector<Lattice_constraint*> constraints;
     std::vector<size_t> teqidx;
     std::vector<size_t> rgeidx;
+    std::unordered_set<Lattice_constraint*> elementary_constraints;
+    bool multithreading;
+    // as of v1.52 boost::thread gives valgrind the impression that
+    // 8 bytes are not freed at exit
+    // see http://www.cplusplus.com/forum/unices/83480/
+    boost::thread_group *threads;
+    boost::barrier *threads_begin, *threads_end;
+    bool keep_threads;
     void set_units();
     void apply_constraints();
+    void apply_constraints_thread(Lattice_constraint *c);
+    void create_threads();
+    void join_threads();
     Real maxdiff(const RVec& y0, const RVec& y1);
     void init_lattice();
     void increase_a();

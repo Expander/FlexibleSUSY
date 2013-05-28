@@ -8,6 +8,18 @@
 using namespace std;
 
 
+void Lattice_constraint::activate()
+{
+    VERBOSE_MSG("registering elementary constraint " << this);
+    f->elementary_constraints.insert(this);
+}
+
+void Lattice_constraint::deactivate()
+{
+    VERBOSE_MSG("deregistering elementary constraint " << this);
+    f->elementary_constraints.erase(this);
+}
+
 void Lattice_constraint::ralloc
 (size_t nrows, size_t T, size_t m, size_t span)
 {

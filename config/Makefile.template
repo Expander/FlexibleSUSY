@@ -4,6 +4,7 @@ CXXFLAGS   := @CXXFLAGS@
 FFLAGS     := @FFLAGS@
 FLIBS      := @FLIBS@
 BOOSTLIBS  := @BOOSTLIBS@
+BOOSTTHREADLIBS  := @BOOSTTHREADLIBS@
 BOOSTFLAGS := @BOOSTFLAGS@
 CXX        := @CXX@
 FC         := @FC@
@@ -78,6 +79,7 @@ showbuild:
 	@echo "LIBEXT     = $(LIBEXT)"
 	@echo "FLIBS      = $(FLIBS)"
 	@echo "BOOSTLIBS  = $(BOOSTLIBS)"
+	@echo "BOOSTTHREADLIBS  = $(BOOSTTHREADLIBS)"
 	@echo "BOOSTFLAGS = $(BOOSTFLAGS)"
 	@echo "GSLLIBS    = $(GSLLIBS)"
 	@echo "GSLFLAGS   = $(GSLFLAGS)"

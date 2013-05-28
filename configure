@@ -34,10 +34,11 @@ GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
-FFLAGS="-g -O2"
+FFLAGS="-g -O2 -frecursive"
 TVMETFLAGS=""
 FLIBS=""
 BOOSTLIBS=""
+BOOSTTHREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
 FC="gfortran"
@@ -451,6 +452,39 @@ check_boost_incl() {
 }
 
 #_____________________________________________________________________
+check_boost_thread_libs() {
+    check_library "libboost_thread" "$boost_lib_dir" \
+	"$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Warning: libboost_thread must be installed"
+        message "  to enable multithreading in the lattice method, see http://www.boost.org"
+    else
+        BOOSTTHREADLIBS_=-lboost_thread
+        if [ -z "$boost_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
+        else
+            BOOSTTHREADLIBS="-L$boost_lib_dir $BOOSTTHREADLIBS_"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
+check_boost_thread_incl() {
+    check_header "boost/thread/thread.hpp" "$boost_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Warning: boost/thread/thread.hpp must be installed"
+        message "  to enable multithreading in the lattice method, see http://www.boost.org"
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$boost_inc_dir" ]; then
+            BOOSTFLAGS="-I$boost_inc_dir"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_gsl_config() {
     checking_msg "GSL configuration $gsl_config"
     exists_in_path "$gsl_config"
@@ -663,6 +697,8 @@ guess_machine_word_size
 check_algorithms
 check_boost_incl
 check_boost_libs
+check_boost_thread_incl
+check_boost_thread_libs
 check_fortran_libs
 if use_algorithm "lattice"; then
     check_gsl_config
@@ -678,6 +714,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTLIBS@|$BOOSTLIBS|"     \
+    -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \

@@ -31,7 +31,8 @@ class Lattice_constraint {
 public:
     // Lattice_constraint() {}
     virtual ~Lattice_constraint() {}
-    virtual void init(RGFlow<Lattice> *flow) { f = flow; }
+    virtual void init(RGFlow<Lattice> *flow) { f = flow; activate(); }
+    virtual void deactivate();
     virtual void alloc_rows() = 0;
     virtual void free_rows() { rfree(); }
     virtual void operator()() = 0;
@@ -40,6 +41,7 @@ public:
     // 	{ return size_t(0.5 + m*Real(new_height-1)/Real(old_height-1)); }
     RGFlow<Lattice> *f;
 protected:
+    virtual void activate();
     Real& A(size_t r, size_t T, size_t m, size_t j)
     { return f->A(rows[r]->rowSpec.realRow, T, m, j); }
     Real y(size_t T, size_t m, size_t i) { return f->y(T, m, i); }
@@ -56,7 +58,8 @@ template<>
 class Matching<Lattice> : public Lattice_constraint {
 public:
     // InterTheoryConstraint() {}
-    virtual void init(RGFlow<Lattice> *flow, size_t lower_theory)
+    virtual void init
+    (RGFlow<Lattice> *flow, size_t lower_theory)
     { Lattice_constraint::init(flow); TL = lower_theory; }
     virtual void relocate(const std::vector<std::vector<size_t>>& site_maps) {}
 protected:
