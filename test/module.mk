@@ -46,25 +46,25 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBMSSM) $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_sm_smcw_integration.x: $(DIR)/test_two_scale_sm_smcw_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 %.x: %.o $(ALLLIB)
-		$(CXX) -o $@ $^ $(BOOSTLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 # add boost flags for the test object files only
 $(TEST_OBJ): CPPFLAGS += $(BOOSTFLAGS)

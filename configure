@@ -37,7 +37,7 @@ CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
 FFLAGS="-g -O2 -frecursive"
 TVMETFLAGS=""
 FLIBS=""
-BOOSTLIBS=""
+BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
@@ -419,25 +419,25 @@ check_algorithms() {
 }
 
 #_____________________________________________________________________
-check_boost_libs() {
+check_boost_test_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         message "Warning: libboost_unit_test_framework must be installed"
         message "  to compile and run the tests, see http://www.boost.org"
     else
-        BOOSTLIBS_=-lboost_unit_test_framework
+        BOOSTTESTLIBS_=-lboost_unit_test_framework
         if [ -z "$boost_lib_dir" ]; then
             # assume that the linker will look in the default paths
-            BOOSTLIBS="$BOOSTLIBS_"
+            BOOSTTESTLIBS="$BOOSTTESTLIBS_"
         else
-            BOOSTLIBS="-L$boost_lib_dir $BOOSTLIBS_"
+            BOOSTTESTLIBS="-L$boost_lib_dir $BOOSTTESTLIBS_"
         fi
     fi
 }
 
 #_____________________________________________________________________
-check_boost_incl() {
+check_boost_test_incl() {
     check_header "boost/test/unit_test.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
@@ -695,8 +695,8 @@ fi
 guess_machine_word_size
 
 check_algorithms
-check_boost_incl
-check_boost_libs
+check_boost_test_incl
+check_boost_test_libs
 check_boost_thread_incl
 check_boost_thread_libs
 check_fortran_libs
@@ -713,7 +713,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
-    -e "s|@BOOSTLIBS@|$BOOSTLIBS|"     \
+    -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
