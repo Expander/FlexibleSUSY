@@ -53,7 +53,7 @@ $(DIR)/%.inc : $(DIR)/%.inc.m
 	$(MATH) -run 'filename="$@"; << $<; Quit[]'
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
-$(LIBFMSSM_OBJ): CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS)
+$(LIBFMSSM_DEP) $(LIBFMSSM_OBJ): CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 endif
 
 $(LIBFMSSM): $(LIBFMSSM_OBJ)
