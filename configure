@@ -32,7 +32,7 @@ lapack_lib_dir=""
 tvmet_config="tvmet-config"
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
+CXXFLAGS="-std=c++11 -ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
 FFLAGS="-g -O2 -frecursive"
 TVMETFLAGS=""
