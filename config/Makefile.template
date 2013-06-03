@@ -1,4 +1,4 @@
-MODULES    := config src models/sm models/smcw models/mssm models/fmssm models/fmssmn test examples doc
+MODULES    := config src @MODELS@ test examples doc
 CPPFLAGS   := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS   := @CXXFLAGS@
 FFLAGS     := @FFLAGS@
@@ -88,6 +88,7 @@ showbuild:
 	@echo "LAPACKLIBS = $(LAPACKLIBS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
 	@echo "MATH       = $(MATH)"
+	@echo "MODELS     = $(MODELS)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
