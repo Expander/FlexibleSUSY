@@ -2,8 +2,19 @@ DIR          := models/fmssm
 MODNAME      := libfmssm
 
 LIBFMSSM_SRC  :=
+LIBFMSSM_GENERATED_SRC :=
+LIBFMSSM_INC  :=
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
+LIBFMSSM_GENERATED_SRC += \
+		$(DIR)/fmssm_lattice_rge.f \
+		$(DIR)/fmssm_lattice_constraints.f \
+		$(DIR)/fmssm_lattice_numerical_constraints_functions.f \
+		$(DIR)/fmssm_lattice_numerical_constraints_dependence.cpp
+
+LIBFMSSM_INC  += \
+		$(DIR)/fmssm_lattice_translator.inc
+
 LIBFMSSM_SRC  += \
 		$(DIR)/fmssm_lattice.cpp \
 		$(DIR)/fmssm_lattice_mz_constraint.cpp \
@@ -12,11 +23,8 @@ LIBFMSSM_SRC  += \
 		$(DIR)/fmssm_lattice_numerical_msusy_constraint.cpp \
 		$(DIR)/fmssm_lattice_mx_constraint.cpp \
 		$(DIR)/fmssm_oneloop.cpp \
-		$(DIR)/fmssm_lattice_rge.f \
-		$(DIR)/fmssm_lattice_constraints.f \
 		$(DIR)/fmssm_lattice_numerical_constraints.cpp \
-		$(DIR)/fmssm_lattice_numerical_constraints_dependence.cpp \
-		$(DIR)/fmssm_lattice_numerical_constraints_functions.f
+		$(LIBFMSSM_GENERATED_SRC)
 endif
 
 LIBFMSSM_OBJ  := \
@@ -38,6 +46,8 @@ clean-$(MODNAME):
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(LIBFMSSM_DEP)
 		rm -rf $(LIBFMSSM)
+		rm -rf $(LIBFMSSM_GENERATED_SRC)
+		rm -rf $(LIBFMSSM_INC)
 
 clean::         clean-$(MODNAME)
 

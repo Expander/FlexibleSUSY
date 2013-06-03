@@ -2,22 +2,30 @@ DIR          := models/fmssmn
 MODNAME      := libfmssmn
 
 LIBFMSSMN_SRC  :=
+LIBFMSSMN_GENERATED_SRC :=
+LIBFMSSMN_INC  :=
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
+LIBFMSSMN_GENERATED_SRC += \
+		$(DIR)/fmssmn_lattice_rge.f \
+		$(DIR)/fmssmn_lattice_constraints.f \
+		$(DIR)/fmssmn_lattice_numerical_constraints_functions.f \
+		$(DIR)/fmssmn_lattice_numerical_constraints_dependence.cpp \
+		$(DIR)/fmssm_fmssmn_lattice_matchings.f \
+		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_functions.f \
+		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_dependence.cpp
+
+LIBFMSSMN_INC  += \
+		$(DIR)/fmssmn_lattice_translator.inc
+
 LIBFMSSMN_SRC  += \
 		$(DIR)/fmssmn_lattice.cpp \
 		$(DIR)/fmssmn_lattice_mz_constraint.cpp \
 		$(DIR)/fmssmn_lattice_msusy_constraint.cpp \
 		$(DIR)/fmssmn_lattice_mx_constraint.cpp \
-		$(DIR)/fmssmn_lattice_rge.f \
-		$(DIR)/fmssmn_lattice_constraints.f \
 		$(DIR)/fmssmn_lattice_numerical_constraints.cpp \
-		$(DIR)/fmssmn_lattice_numerical_constraints_dependence.cpp \
-		$(DIR)/fmssmn_lattice_numerical_constraints_functions.f \
-		$(DIR)/fmssm_fmssmn_lattice_matchings.f \
 		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings.cpp \
-		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_dependence.cpp \
-		$(DIR)/fmssm_fmssmn_lattice_numerical_matchings_functions.f
+		$(LIBFMSSMN_GENERATED_SRC)
 endif
 
 LIBFMSSMN_OBJ  := \
@@ -39,6 +47,8 @@ clean-$(MODNAME):
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(LIBFMSSMN_DEP)
 		rm -rf $(LIBFMSSMN)
+		rm -rf $(LIBFMSSMN_GENERATED_SRC)
+		rm -rf $(LIBFMSSMN_INC)
 
 clean::         clean-$(MODNAME)
 
