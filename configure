@@ -427,7 +427,7 @@ check_models() {
     for a in ${models}; do
         case "$a" in
             all)
-                MODELS=`find $BASEDIR/models/* -maxdepth 0 -type d -print0 | tr '\0' ' '`
+                MODELS=`find $BASEDIR/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
                 break ;;
             *)
                 if test -d "$BASEDIR/models/$a" ; then
