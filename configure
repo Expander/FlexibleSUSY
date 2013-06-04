@@ -21,7 +21,7 @@ machine_word_size=""
 
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
-MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
+MAKEFILE_TMPL=$BASEDIR/config/Makefile.in
 
 # target config script
 FSCONFIG=$BASEDIR/flexiblesusy-config
