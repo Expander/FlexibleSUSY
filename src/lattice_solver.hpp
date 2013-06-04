@@ -61,6 +61,7 @@ private:
 			      
 struct Wilson {
     Wilson(size_t nvars) : width(nvars) {}
+    virtual ~Wilson() {}
     size_t width;		// 1 + number of Wilson coefficients
     // derivative wrt t == x[0]
     virtual Real  dx(const Real *x, size_t i) const = 0;
@@ -70,6 +71,7 @@ struct Wilson {
 
 struct ParWilson {
     ParWilson(size_t width_) : width(width_) {}
+    virtual ~ParWilson() {}
     size_t width;		// 1 + number of Wilson coefficients
     // derivative wrt t == x[0]
     virtual Real  dx(const Real a, const Real *x, size_t i) const = 0;

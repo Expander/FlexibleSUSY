@@ -61,7 +61,7 @@ public:
     virtual void init
     (RGFlow<Lattice> *flow, size_t lower_theory)
     { Lattice_constraint::init(flow); TL = lower_theory; }
-    virtual void relocate(const std::vector<std::vector<size_t>>& site_maps) {}
+    virtual void relocate(const std::vector<std::vector<size_t>>&) {}
 protected:
     Real& A(size_t r, size_t To, size_t j)
     { return Lattice_constraint::A(r, TL+To, m(To), j); }
@@ -246,7 +246,7 @@ class Unified_xi_xj : public AnySingleSiteConstraint {
 public:
     Unified_xi_xj(size_t i, size_t j) :
 	AnySingleSiteConstraint(1,
-	    [=](AnySingleSiteConstraint *dummy) {
+	    [=](AnySingleSiteConstraint *) {
 		A(0,i) =  u(i);
 		A(0,j) = -u(j);
 		z(0) = 0;
@@ -258,7 +258,7 @@ class Fixed_x : public AnySingleSiteConstraint {
 public:
     Fixed_x(size_t i, Real x) :
 	AnySingleSiteConstraint(1,
-	    [=](AnySingleSiteConstraint *dummy) {
+	    [=](AnySingleSiteConstraint *) {
 		A(0,i) = u(i);
 		z(0) = x;
 	    })
@@ -269,7 +269,7 @@ class Fixed_t : public AnySingleSiteConstraint {
 public:
     Fixed_t(Real mu) :
 	AnySingleSiteConstraint(1,
-	    [=](AnySingleSiteConstraint *dummy) {
+	    [=](AnySingleSiteConstraint *) {
 		A(0,0) = u(0);
 		z(0) = std::log(mu/f->scl0);
 	    })
