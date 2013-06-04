@@ -88,7 +88,7 @@ showbuild:
 	@echo "LAPACKLIBS = $(LAPACKLIBS)"
 	@echo "ALGORITHMS = $(ALGORITHMS)"
 	@echo "MATH       = $(MATH)"
-	@echo "MODELS     = $(MODELS)"
+	@echo "MODELS     = @MODELS@"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
