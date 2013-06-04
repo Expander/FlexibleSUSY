@@ -57,7 +57,7 @@ clean-dep:
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
-	$(CXX) $(CPPFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
 # the sed script ensures that the target contains the full path
