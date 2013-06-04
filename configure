@@ -436,6 +436,7 @@ check_models() {
                 else
                     message "Error: model directory \"$BASEDIR/models/$a\" does not exist";
                     message "Please create the directory and put a model file in it.";
+                    message "You can use \`./createmodel <model-name>' to create one."
                     exit 1
                 fi ;;
         esac
