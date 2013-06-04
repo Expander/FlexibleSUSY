@@ -8,6 +8,7 @@
 config/config.h
 config.status
 config.log
+flexiblesusy-config
 Makefile
 
 doc/*.html

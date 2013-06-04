@@ -6,11 +6,20 @@ TEST_SRC := \
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
-		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_running_precision.cpp \
-		$(DIR)/test_two_scale_sm_smcw_integration.cpp \
-		$(DIR)/test_two_scale_sm.cpp \
 		$(DIR)/test_two_scale_solver.cpp
+ifeq ($(shell $(FSCONFIG) --with-mssm),yes)
+TEST_SRC += \
+		$(DIR)/test_two_scale_mssm_solver.cpp
+endif
+ifeq ($(shell $(FSCONFIG) --with-sm),yes)
+TEST_SRC += \
+		$(DIR)/test_two_scale_sm.cpp
+endif
+ifeq ($(shell $(FSCONFIG) --with-sm --with-smcw),yes yes)
+TEST_SRC += \
+		$(DIR)/test_two_scale_sm_smcw_integration.cpp
+endif
 endif
 
 TEST_OBJ := \

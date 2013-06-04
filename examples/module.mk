@@ -1,6 +1,7 @@
 DIR      := examples
 MODNAME  := examples
 
+ifeq ($(shell $(FSCONFIG) --with-mssm),yes)
 EXAMPLES_SRC := \
 		$(DIR)/softsusy.cpp
 
@@ -8,13 +9,21 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
 		$(DIR)/run_mssm.cpp
 endif
+endif
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
+ifeq ($(shell $(FSCONFIG) --with-fmssm),yes)
 LATTICE_EXAMPLES_SRC += \
 		$(DIR)/lattice_fmssm.cpp \
 		$(DIR)/lattice_numerical_fmssm.cpp \
 		$(DIR)/lattice_fmssm_fmssmn.cpp \
 		$(DIR)/lattice_numerical_fmssm_fmssmn.cpp
+endif
+ifeq ($(shell $(FSCONFIG) --with-fmssm --with-fmssn),yes yes)
+LATTICE_EXAMPLES_SRC += \
+		$(DIR)/lattice_fmssm_fmssmn.cpp \
+		$(DIR)/lattice_numerical_fmssm_fmssmn.cpp
+endif
 
 LATTICE_EXAMPLES_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LATTICE_EXAMPLES_SRC)))

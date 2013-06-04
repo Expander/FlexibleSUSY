@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# Author: Alexander Voigt
+
+models="@MODELS@"
+version="@VERSION@"
+cppflags="@CPPFLAGS@"
+cxxflags="@CXXFLAGS@"
+fflags="@FFLAGS@"
+cxx="@CXX@"
+fc="@FC@"
+makelib="@MAKELIB@"
+math="@MATH@"
+packagename="@PKGNAME@"
+
+usage="\
+Usage: `basename $0` [--all-models] [--cxx] [--cxxflags] [--cppflags]\
+  [--fc] [--fflags] [--make-lib-cmd] [--math-cmd] [--with-<model>]\
+  [--help] [--version]"
+
+if test $# -eq 0; then
+    echo "${usage}" 1>&2
+    exit 1
+fi
+
+out=""
+
+while test $# -gt 0; do
+    case "$1" in
+        -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+        *)    optarg= ;;
+    esac
+
+    case $1 in
+        --all-models)    out="$out $models"   ;;
+        --cxx)           out="$out $cxx"      ;;
+        --cxxflags)      out="$out $cxxflags" ;;
+        --cppflags)      out="$out $cppflags" ;;
+        --fc)            out="$out $fc"       ;;
+        --fflags)        out="$out $fflags"   ;;
+        --make-lib-cmd)  out="$out $makelib"  ;;
+        --math-cmd)      out="$out $math"     ;;
+        --with-*)
+      ### Check for model
+            f=`echo $1 | sed 's/--with-//'`
+            for c in $models ; do
+                if test "x`basename $c`" = "x$f" ; then
+                    out="$out yes"
+                    break
+                fi
+                c=""
+            done
+            if test "x$c" = "x" ; then
+                out="$out no"
+            fi
+            ;;
+        --version)       out="$version"       ;;
+        --help)
+      ### Print a help message
+            echo "Usage: `basename $0` [options]"
+            echo "  --all-models          Print all models that are build"
+            echo "  --cxx                 Print C++ compiler"
+            echo "  --cxxflags            Print CXXFLAGS"
+            echo "  --cppflags            Print CPPFLAGS"
+            echo "  --fc                  Print Fortran compiler"
+            echo "  --fflags              Print FFLAGS"
+            echo "  --make-lib-cmd        Print make library command"
+            echo "  --math-cmd            Print Mathematica kernel command"
+            echo "  --with-<model>        Test if <model> is compiled in"
+            echo "  --version             Print the $packagename version"
+            echo "  --help                Print this message"
+            exit 0
+            ;;
+        *)
+      ### Give an error
+            echo "Unknown argument \"$1\"!" 1>&2
+            echo "${usage}" 1>&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+### Output the stuff
+echo $out

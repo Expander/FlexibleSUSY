@@ -23,6 +23,10 @@ machine_word_size=""
 MAKEFILE=$BASEDIR/Makefile
 MAKEFILE_TMPL=$BASEDIR/config/Makefile.template
 
+# target config script
+FSCONFIG=$BASEDIR/flexiblesusy-config
+FSCONFIG_TMPL=$BASEDIR/config/flexiblesusy-config.in
+
 # options
 boost_lib_dir=""
 boost_inc_dir=""
@@ -749,6 +753,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
+    -e "s|@FSCONFIG@|$FSCONFIG|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
@@ -760,3 +765,17 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
+
+sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXX@|$CXX|"                 \
+    -e "s|@FC@|$FC|"                   \
+    -e "s|@FFLAGS@|$FFLAGS|"           \
+    -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@MATH@|$MATH|"               \
+    -e "s|@MODELS@|$MODELS|"           \
+    < $FSCONFIG_TMPL > $FSCONFIG
+
+chmod a+x $FSCONFIG
