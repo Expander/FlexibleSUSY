@@ -6,7 +6,9 @@ INDEX_PADE      := $(DOC_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PADE)
+		$(INDEX_PADE) doc
+
+doc: all-$(MODNAME)
 
 all-$(MODNAME): $(INDEX_PADE)
 
