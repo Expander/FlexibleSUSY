@@ -11,6 +11,7 @@
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
 #include "stopwatch.hpp"
+#include "test.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_mssm_solver
@@ -142,7 +143,8 @@ public:
       : mx(0.0), softSusy() {}
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
-   sPhysical get_physical() { return softSusy.displayPhys(); }
+   sPhysical get_physical() const { return softSusy.displayPhys(); }
+   MssmSoftsusy get_mssm() const { return softSusy; }
    void test(const Mssm_parameter_point& pp) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for SoftSusy to solve the MSSM
@@ -182,7 +184,8 @@ public:
       : mx(0.0), mssm() {}
    ~Two_scale_tester() {}
    double get_mx() const { return mx; }
-   sPhysical get_physical() { return mssm.displayPhys(); }
+   sPhysical get_physical() const { return mssm.displayPhys(); }
+   const Mssm<Two_scale>& get_mssm() const { return mssm; }
    void test(const Mssm_parameter_point& pp) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for the two scale method to solve the MSSM
@@ -223,6 +226,44 @@ private:
    Mssm<Two_scale> mssm;
 };
 
+void test_equality(const SoftParsMssm& a, const SoftParsMssm& b)
+{
+   BOOST_CHECK_EQUAL(a.displayLoops()     , b.displayLoops());
+   BOOST_CHECK_EQUAL(a.displayMu()        , b.displayMu());
+   BOOST_CHECK_EQUAL(a.displayThresholds(), b.displayThresholds());
+
+   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(1), b.displayGaugeCoupling(1), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(2), b.displayGaugeCoupling(2), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(3), b.displayGaugeCoupling(3), 1.0e-5);
+
+   TEST_CLOSE(a.displayYukawaMatrix(YU), b.displayYukawaMatrix(YU), 1.0e-5);
+   TEST_CLOSE(a.displayYukawaMatrix(YD), b.displayYukawaMatrix(YD), 1.0e-5);
+   TEST_CLOSE(a.displayYukawaMatrix(YE), b.displayYukawaMatrix(YE), 1.0e-5);
+
+   BOOST_CHECK_CLOSE(a.displayGaugino(1), b.displayGaugino(1), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayGaugino(2), b.displayGaugino(2), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayGaugino(3), b.displayGaugino(3), 1.0e-5);
+
+   BOOST_CHECK_CLOSE(a.displayMh1Squared(), b.displayMh1Squared(), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayMh2Squared(), b.displayMh2Squared(), 1.0e-5);
+
+   TEST_CLOSE(a.displaySoftMassSquared(mQl), b.displaySoftMassSquared(mQl), 1.0e-5);
+   TEST_CLOSE(a.displaySoftMassSquared(mUr), b.displaySoftMassSquared(mUr), 1.0e-5);
+   TEST_CLOSE(a.displaySoftMassSquared(mDr), b.displaySoftMassSquared(mDr), 1.0e-5);
+   TEST_CLOSE(a.displaySoftMassSquared(mLl), b.displaySoftMassSquared(mLl), 1.0e-5);
+   TEST_CLOSE(a.displaySoftMassSquared(mEr), b.displaySoftMassSquared(mEr), 1.0e-5);
+
+   TEST_CLOSE(a.displayTrilinear(UA), b.displayTrilinear(UA), 1.0e-5);
+   TEST_CLOSE(a.displayTrilinear(DA), b.displayTrilinear(DA), 1.0e-5);
+   TEST_CLOSE(a.displayTrilinear(EA), b.displayTrilinear(EA), 1.0e-5);
+
+   BOOST_CHECK_CLOSE(a.displaySusyMu(), b.displaySusyMu(), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayM3Squared(), b.displayM3Squared(), 1.0e-5);
+
+   BOOST_CHECK_CLOSE(a.displayTanb(), b.displayTanb(), 1.0e-5);
+   BOOST_CHECK_CLOSE(a.displayHvev(), b.displayHvev(), 1.0e-5);
+}
+
 /**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
@@ -236,6 +277,11 @@ void test_point(const Mssm_parameter_point& pp)
 
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp));
+
+   // check equality of model parameters
+   const Mssm<Two_scale> mssm_two_scale(two_scale_tester.get_mssm());
+   const MssmSoftsusy mssm_softsusy(softSusy_tester.get_mssm());
+   test_equality(mssm_two_scale, mssm_softsusy);
 
    // check equality of physical parameters
    test_equality(softSusy_tester.get_physical(), two_scale_tester.get_physical(), 0.1);
