@@ -28,7 +28,7 @@ echo "done"
 
 # target makefile module
 MAKEFILE=module.mk
-MAKEFILE_TMPL=config/module_template.mk
+MAKEFILE_TMPL=templates/module.mk.in
 
 sed -e "s|@DIR@|$targetdir|g"         \
     -e "s|@MODEL@|$model|g"           \
