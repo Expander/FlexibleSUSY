@@ -49,7 +49,7 @@ void Mssm_msusy_constraint::apply()
 
    mssm->calcDrBarPars();
    update_scale();
-   double mtrun = mssm->displayDrBarPars().mt;
+   const double mtrun = mssm->displayDrBarPars().mt;
    mssm->rewsb(sgnMu, mtrun, pars);
 }
 
