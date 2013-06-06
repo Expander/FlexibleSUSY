@@ -73,10 +73,6 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
    BOOST_CHECK_CLOSE(a.thetab      , b.thetab      , tolerance);
    BOOST_CHECK_CLOSE(a.thetatau    , b.thetatau    , tolerance);
    BOOST_CHECK_CLOSE(a.thetaH      , b.thetaH      , tolerance);
-   BOOST_CHECK_CLOSE(a.t1OV1Ms     , b.t1OV1Ms     , tolerance);
-   BOOST_CHECK_CLOSE(a.t2OV2Ms     , b.t2OV2Ms     , tolerance);
-   BOOST_CHECK_CLOSE(a.t1OV1Ms1loop, b.t1OV1Ms1loop, tolerance);
-   BOOST_CHECK_CLOSE(a.t2OV2Ms1loop, b.t2OV2Ms1loop, tolerance);
 
    // sneutrino masses
    for (int i = a.msnu.displayStart();

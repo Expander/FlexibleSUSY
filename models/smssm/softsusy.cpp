@@ -40,6 +40,12 @@ const MssmSoftsusy & MssmSoftsusy::operator=(const MssmSoftsusy & s) {
   setThresholds(s.displayThresholds());
   setSetTbAtMX(s.displaySetTbAtMX());
   altEwsb = s.altEwsb;
+  predMzSq = s.displayPredMzSq();
+  t1OV1Ms = s.displayTadpole1Ms(); 
+  t2OV2Ms = s.displayTadpole2Ms(); 
+  t1OV1Ms1loop = s.displayTadpole1Ms1loop(); 
+  t2OV2Ms1loop = s.displayTadpole2Ms1loop(); 
+
   return *this;
 }
 
@@ -89,11 +95,30 @@ int MssmSoftsusy::rewsbM3sq(double mu, double & m3sq) const {
 
 /// Predicts tan beta once mu and soft terms are predicted at low energy
 /// Useful for fine-tuning calculation. Call at MSusy only.
-double MssmSoftsusy::predTanb() const  {
+/*double MssmSoftsusy::predTanb() const  {
   double sin2t = 2.0 * displayM3Squared() / 
     (displayMh1Squared() - displayTadpole1Ms() + 
      displayMh2Squared() - displayTadpole2Ms() + 2.0 *
-     sqr(displaySusyMu())); 
+     sqr(susyMu)); 
+  
+  /// Note: we want to take inverse sine so that fundamental domain is greater
+  /// than pi/4. sin(pi - 2 beta)=sin 2 beta should achieve this.
+  /// we also use tan (pi/2 - theta) = 1/tan(theta)
+  double theta;
+  if (fabs(sin2t) < 1.0) theta = asin(sin2t) * 0.5;
+  else return 0.0;
+  
+  return 1.0 / tan(theta);
+  }*/
+/// Predicts tan beta once mu and soft terms are predicted at low energy
+/// Useful for fine-tuning calculation. Call at MSusy only.
+double MssmSoftsusy::predTanb(double susyMu) const  {
+  if (susyMu < -6.e66) susyMu = displaySusyMu();
+
+  double sin2t = 2.0 * displayM3Squared() / 
+    (displayMh1Squared() - displayTadpole1Ms() + 
+     displayMh2Squared() - displayTadpole2Ms() + 2.0 *
+     sqr(susyMu)); 
   
   /// Note: we want to take inverse sine so that fundamental domain is greater
   /// than pi/4. sin(pi - 2 beta)=sin 2 beta should achieve this.
@@ -105,12 +130,17 @@ double MssmSoftsusy::predTanb() const  {
   return 1.0 / tan(theta);
 }
 
+
 void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 
     calcTadpole1Ms1loop(mt, sinthDRbar);
     calcTadpole2Ms1loop(mt, sinthDRbar);
     
-    if (numRewsbLoops > 1) {
+    t1OV1Ms = t1OV1Ms1loop;
+    t2OV2Ms = t2OV2Ms1loop;
+
+    /// tachyons tend to screw up this, so only calculate if we don't have them
+    if (numRewsbLoops > 1 && displayProblem().tachyon == none) {
       /// add the two-loop terms, prepare inputs
       double s1s = 0., s2s = 0., s1t = 0., s2t = 0.,
 	gs = displayGaugeCoupling(3), 
@@ -148,8 +178,8 @@ void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 		&costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
 
       if (!testNan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
-	physpars.t1OV1Ms = physpars.t1OV1Ms1loop - s1s - s1t - s1b - s1tau;
-	physpars.t2OV2Ms = physpars.t2OV2Ms1loop - s2s - s2t - s2b - s2tau; 
+	t1OV1Ms += - s1s - s1t - s1b - s1tau;
+	t2OV2Ms += - s2s - s2t - s2b - s2tau; 
 	/// end of 2-loop bit
       }
       else  {
@@ -164,7 +194,7 @@ void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 /// From hep-ph/9606211's appendix. It should be done at MSusy to minimize the
 /// 1-loop contributions. Only call if you've calculated drbarpars.
 /// inputs are running top/bottom masses: call at MSusy only
-double MssmSoftsusy::doCalcTadpole1oneLoop(double /* mt */, double sinthDRbar) {
+double MssmSoftsusy::doCalcTadpole1oneLoop(double mt, double sinthDRbar) {
 
  if (forLoops.mu(1, 3) == 0.0 || forLoops.mu(2, 3) == 0.0) {
    if (PRINTOUT > 1)
@@ -324,12 +354,13 @@ double MssmSoftsusy::doCalcTadpole1oneLoop(double /* mt */, double sinthDRbar) {
   return delta / (16.0 * sqr(PI));
 }
 
-void MssmSoftsusy::calcTadpole1Ms1loop(double mt, double sinthDRbar) { /// checked
+/// checked
+void MssmSoftsusy::calcTadpole1Ms1loop(double mt, double sinthDRbar) { 
   
-  physpars.t1OV1Ms1loop = doCalcTadpole1oneLoop(mt, sinthDRbar);
+  t1OV1Ms1loop = doCalcTadpole1oneLoop(mt, sinthDRbar);
 
-  if (testNan(physpars.t1OV1Ms1loop)) {
-    physpars.t1OV1Ms1loop = 0.0;
+  if (testNan(t1OV1Ms1loop)) {
+    t1OV1Ms1loop = 0.0;
     flagNoMuConvergence(true);
   }
 }
@@ -342,7 +373,7 @@ double MssmSoftsusy::displayMwRun() const {
 /// From hep-ph/9311269's appendix. It should be done at MSusy to minimize the
 /// 1-loop contributions. Only call if you've calculated physpars
 /// inputs are running top/bottom masses. Call at MSusy
-double MssmSoftsusy::doCalcTadpole2oneLoop(double /* mt */, double sinthDRbar) {
+double MssmSoftsusy::doCalcTadpole2oneLoop(double mt, double sinthDRbar) {
 /// CHECKED
  if (forLoops.mu(1, 3) == 0.0 || forLoops.mu(2, 3) == 0.0) {
    if (PRINTOUT > 1)
@@ -500,24 +531,40 @@ double MssmSoftsusy::doCalcTadpole2oneLoop(double /* mt */, double sinthDRbar) {
 }
 
 void MssmSoftsusy::calcTadpole2Ms1loop(double mt, double sinthDRbar) {/// CHECKED
-  physpars.t2OV2Ms1loop = doCalcTadpole2oneLoop(mt, sinthDRbar); 
-  if (testNan(physpars.t2OV2Ms1loop)) {
+  t2OV2Ms1loop = doCalcTadpole2oneLoop(mt, sinthDRbar); 
+  if (testNan(t2OV2Ms1loop)) {
     flagNoMuConvergence(true);
-    physpars.t2OV2Ms1loop = 0.0;
+    t2OV2Ms1loop = 0.0;
   }
 }
 
+//double averageMus(susyMu, muOld) {
+//  return; ///< placeholder
+//}
+
 /// Apply at scale MSusy: checked 19.12.2000
 /// Displays PHYSICAL MZ, ie MZ(q) - piZz^T(q)
-double MssmSoftsusy::predMzsq(double & tanb) const {
-  tanb = predTanb(); 
+/// Fixed pizztMS to resummed version 6/1/13
+double MssmSoftsusy::predMzsq(double & tanb, double muOld, double eps) {
+
+  if (fabs(displayTadpole1Ms()) < EPSTOL && 
+      fabs(displayTadpole2Ms()) < EPSTOL) {
+    double sinthDRbar = calcSinthdrbar();
+    calcDrBarPars(); 
+    double mt = forLoops.mt;
+    doTadpoles(mt, sinthDRbar);
+  }
   
+  double susyMu = displaySusyMu();
+  tanb = predTanb(susyMu); 
+  if (muOld > -6.e66) susyMu = susyMu / eps - muOld * (1. / eps - 1.);
+
+  double pizztMS = sqr(displayMzRun()) - sqr(displayMz()); ///< resums logs
   double MZsq = 2.0 *
     ((displayMh1Squared() - displayTadpole1Ms() - 
       (displayMh2Squared() - displayTadpole2Ms()) *
-      sqr(tanb)) / 
-     (sqr(tanb) - 1.0) - sqr(displaySusyMu())) - 
-    piZZT(displayMz(), displayMu());
+      sqr(tanb)) / (sqr(tanb) - 1.0) - sqr(susyMu)) - 
+    pizztMS;
 
   return MZsq;
 }
@@ -723,14 +770,15 @@ void MssmSoftsusy::iterateMu(double & muold, int sgnMu,
   
   try {
     calcDrBarPars();
-    double oneLoopMusq = treeLevelMusq;
+    double oneLoopMusq = 0.;
     /// calculate the new one-loop tadpoles with old value of mu
     if (numRewsbLoops > 0) {  
       doTadpoles(mt, sinthDRbar);
       oneLoopMusq = treeLevelMusq - 0.5 * pizzMS + 
 	(displayTadpole2Ms() * sqr(tanb) - displayTadpole1Ms()) /
-	(sqr(tanb) - 1.0); 
+	(sqr(tanb) - 1.0);
     }
+
     /// Error in rewsb
     if (oneLoopMusq < 0.0) {
       err = 2; 
@@ -811,14 +859,14 @@ void MssmSoftsusy::alternativeEwsb(double mt) {
   newMh1sq = sqr(sin(beta)) * (sqr(displayMaCond()) + piaa + sqr(mzRun) - dMA) 
     - (sqr(displaySusyMu()) + 0.5 * sqr(mzRun)) +
     displayTadpole1Ms() - sqr(sqr(sin(beta))) * 
-    displayPhys().t1OV1Ms1loop -
-    displayPhys().t2OV2Ms1loop * sqr(sin(beta)) * sqr(cos(beta));
+    t1OV1Ms1loop -
+    t2OV2Ms1loop * sqr(sin(beta)) * sqr(cos(beta));
   
   newMh2sq = sqr(cos(beta)) * (sqr(displayMaCond()) + piaa + sqr(mzRun) - dMA) 
     - (sqr(displaySusyMu()) + 0.5 * sqr(mzRun)) -
-    displayPhys().t1OV1Ms1loop * sqr(sin(beta)) * sqr(cos(beta)) +
+    t1OV1Ms1loop * sqr(sin(beta)) * sqr(cos(beta)) +
     displayTadpole2Ms() - sqr(sqr(cos(beta))) * 
-    displayPhys().t2OV2Ms1loop;
+    t2OV2Ms1loop;
   
   setMh1Squared(newMh1sq);
   setMh2Squared(newMh2sq);
@@ -878,8 +926,8 @@ void MssmSoftsusy::rewsbTreeLevel(int sgnMu) {
 /// Organises rewsb: call it at the low scale MS^2 = sqrt(0.5 * (mT1^2 +
 /// mT2^2)) is best, or below if it's decoupled from there. 
 /// Call with zero, or no mt if you want tree level
-void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
-			 double muOld) {
+void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & pars,
+			 double muOld, double eps) {
   if (altEwsb) {
     alternativeEwsb(mt);
     return;
@@ -895,23 +943,28 @@ void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
     
     /// Iterate to get a self-consistent mu solution
     int maxTries = 20, err = 0;
-    double tol = TOLERANCE * 1.0e-4;
+    double tol = TOLERANCE * 1.0e-6;
     
-    double pizztMS = sqr(displayMzRun()) - sqr(displayMz()); /// resums logs
-  //double pizztMS = piZZT(displayMz(), displayMu());
+    double pizztMS = sqr(displayMzRun()) - sqr(displayMz()); ///< resums logs
     
     iterateMu(munew, sgnMu, mt, maxTries, pizztMS, sinthDRbarMS,
 	      tol, err); 
     
-    if (err == 2) flagMusqwrongsign(true);
+    if (err == 2) {
+      flagMusqwrongsign(true);
+      if (PRINTOUT > 2) cout << " mu^2<0 ";
+    }
     else flagMusqwrongsign(false); 
-    if (err == 1) flagNoMuConvergence(true);
+    if (err == 1) {
+      flagNoMuConvergence(true);
+      if (PRINTOUT > 2) cout << " no mu convergence ";
+    }
     else setSusyMu(munew);
     
     /// average mu with the input value of muOld, if it isn't the number of the
     /// beast   
     if (muOld > -6.e66) {
-      munew = ((munew + muOld) * 0.5);
+      munew = (munew * eps + muOld * (1. - eps));
       setSusyMu(munew);
     }
     
@@ -919,7 +972,7 @@ void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
     else flagM3sq(true);
     
     setM3Squared(m3sqnew);
-    
+
     if ((displayMh1Squared() + 2.0 * sqr(displaySusyMu()) +
 	 displayMh2Squared() - 2.0 * fabs(displayM3Squared())) < 0.0 )
       flagHiggsufb(true);
@@ -933,10 +986,13 @@ void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
 ostream & operator <<(ostream &left, const MssmSoftsusy &s) {
   left << HR << endl;
   left << "Gravitino mass M3/2: " << s.displayGravitino() << endl;
-  left << "Msusy: " << s.displayMsusy() << " MW: " << s.displayMw() << endl;  
+  left << "Msusy: " << s.displayMsusy() << " MW: " << s.displayMw() 
+       << " Predicted MZ: " << sqrt(s.displayPredMzSq()) << endl;  
   left << "Data set:\n" << s.displayDataSet();
   left << HR << endl;
   left << s.displaySoftPars();
+  left << "t1/v1(MS)=" << s.displayTadpole1Ms() 
+       << " t2/v2(MS)=" << s.displayTadpole2Ms() << endl;
   left << HR << "\nPhysical MSSM parameters:\n";
   left << s.displayPhys();
   double mass; int posi, posj, id;
@@ -973,8 +1029,9 @@ void printShortInitialise() {
   }
 
 /// Prints mu, B and important spectral information
-void MssmSoftsusy::printShort() const {
+string MssmSoftsusy::printShort() const {
   
+  ostringstream a;
   const double problemFlag = -1.0;
 
   double mu, m3sq;
@@ -988,11 +1045,11 @@ void MssmSoftsusy::printShort() const {
   if (displayProblem().tachyon) m3sq = -1.0 * m3sq;
   
   if (displayProblem().nonperturbative || displayProblem().noMuConvergence) {
-    cout << " ";
-    int i; for (i=1; i<=12; i++) cout << problemFlag << " ";
+    a << " ";
+    int i; for (i=1; i<=12; i++) a << problemFlag << " ";
   }
-    else {
-      cout << " " << mu << " " << m3sq << " "
+  else {
+    a << " " << mu << " " << m3sq << " "
 	   << minimum(s.me(1, 3), s.me(2, 3)) << " " 
 	   << minimum(s.md(1, 3), s.md(2, 3)) << " " 
 	   << minimum(s.mu(1, 3), s.mu(2, 3)) << " " 
@@ -1006,10 +1063,11 @@ void MssmSoftsusy::printShort() const {
 	   << s.mGluino << " ";
     }
   
-  cout << flush;
+  a << flush;
+  return a.str();
 }
 
-void MssmSoftsusy::printLong() {
+string MssmSoftsusy::printLong() {
   /// output:
   ///  1  2     3      4   5   6   7    8  9  10 11   12    13    
   /// mu  m3sq mH1sq mH2sq g1 g2 mt(mt) mh mA mH mH+ alphaH msnu3
@@ -1021,27 +1079,13 @@ void MssmSoftsusy::printLong() {
   /// mgl mch1 mch2 thetaL thetaR mneut1 mneut2 mneut3 mneut4
   ///   39    40     41 
   /// sinthW t1ov1 t2ov2 
+  ostringstream a;
   double mu = displaySusyMu();
   if (displayProblem().muSqWrongSign || displayProblem().m3sq ||
       displayProblem().higgsUfb) 
     mu = -1.0 *  mu;
-  ///  if (displayProblem().noConvergence) 
-  /// mu = asin(-2.0);
   
-  if (displayProblem().tachyon) {
-    drBarPars s(displayDrBarPars());
-    s.me = -1.0 * s.me;
-    s.md = -1.0 * s.md;
-    s.mu = -1.0 * s.mu;
-    s.msnu = -1.0 * s.msnu;	
-    s.mh0 = -1.0 * s.mh0;
-    s.mA0 = -1.0 * s.mA0;
-    s.mH0 = -1.0 * s.mH0;
-    s.mHpm = -1.0 * s.mHpm;
-    setDrBarPars(s);
-  }
-  
-  cout <<" " << mu << " " 
+  a << " " << mu << " " 
        << displayM3Squared() << " " 
        << displayMh1Squared() << " " <<
     displayMh2Squared() << " " << 
@@ -1083,13 +1127,14 @@ void MssmSoftsusy::printLong() {
     displayTadpole1Ms() << " " <<
     displayTadpole2Ms() << " ";
 
-  if (displayProblem().test()) cout << "%" << displayProblem();
-  cout << endl << flush;
+  if (displayProblem().test()) a << "%" << displayProblem();
+  a << flush;
+  return a.str();
 }
 
 
 
-bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
+bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double pizztMS) {
 
   double tanb = displayTanb();
   double beta = atan(tanb);
@@ -1217,15 +1262,15 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
       minimisation conditions are explicitly used (in the calculation of mA)
      */
     dMA = p2s + p2w + p2b + p2tau;
-    mhAtmh(1, 1) = mHtree(1, 1) + physpars.t1OV1Ms1loop + dMA * sqr(sin(beta));
+    mhAtmh(1, 1) = mHtree(1, 1) + t1OV1Ms1loop + dMA * sqr(sin(beta));
     mhAtmh(1, 2) = mHtree(1, 2) - dMA * sin(beta) * cos(beta);
-    mhAtmh(2, 2) = mHtree(2, 2) + physpars.t2OV2Ms1loop + dMA * sqr(cos(beta));
+    mhAtmh(2, 2) = mHtree(2, 2) + t2OV2Ms1loop + dMA * sqr(cos(beta));
     mhAtmh(2, 1) = mhAtmh(1 ,2);
     mhAtmh = mhAtmh - sigmaMh;
 
-    mhAtmH(1, 1) = mHtree(1, 1) + physpars.t1OV1Ms1loop + dMA * sqr(sin(beta));
+    mhAtmH(1, 1) = mHtree(1, 1) + t1OV1Ms1loop + dMA * sqr(sin(beta));
     mhAtmH(1, 2) = mHtree(1, 2) - dMA * sin(beta) * cos(beta);
-    mhAtmH(2, 2) = mHtree(2, 2) + physpars.t2OV2Ms1loop + dMA * sqr(cos(beta));
+    mhAtmH(2, 2) = mHtree(2, 2) + t2OV2Ms1loop + dMA * sqr(cos(beta));
     mhAtmH(2, 1) = mhAtmH(1 ,2);
     mhAtmH = mhAtmH - sigmaMH;
   }
@@ -1240,7 +1285,7 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
     h0Htachyon = true;
     if (PRINTOUT > 2) cout << " h0/H tachyon: m^2=" << temp;
   }
-  temp = temp.apply(ccbSqrt);
+  temp = temp.apply(zeroSqrt);
 
   /// If certain DRbar ratios are large, they can cause massive higher order
   /// corrections in the higgs mass, making it have O(1) uncertainties. 
@@ -1273,11 +1318,11 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
     h0Htachyon = true;
     if (PRINTOUT > 2) cout << " h0/H tachyon: m^2=" << temp;
   }
-  temp = temp.apply(ccbSqrt);
+  temp = temp.apply(zeroSqrt);
   double bigMh = temp.max();
 
   double piaa = piAA(mApole, displayMu()); 
-  ///  double piaa = piAA(displayDrBarPars().mA0, displayMu());
+  //  double piaa = piAA(displayDrBarPars().mA0, displayMu());
   double poleMasq = (displayMh2Squared() - displayMh1Squared() )
     / cos(2.0 * beta) - sqr(mzPole);
   
@@ -1286,8 +1331,8 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
 	(displayMh2Squared() - displayTadpole2Ms() - 
 	 displayMh1Squared() + displayTadpole1Ms()) / 
 	cos(2.0 * beta) - mzRun2 - piaa +
-	sqr(sin(beta)) * physpars.t1OV1Ms1loop + sqr(cos(beta)) *
-	physpars.t2OV2Ms1loop + dMA;
+	sqr(sin(beta)) * t1OV1Ms1loop + sqr(cos(beta)) *
+	t2OV2Ms1loop + dMA;
     }
 
   double pihphm = piHpHm(physpars.mHpm, displayMu());
@@ -1295,9 +1340,9 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
   double poleMhcSq = poleMasq + sqr(displayMw()) + piaa + piwwtMS - pihphm;
 
   physpars.mh0 = littleMh;
-  physpars.mA0 = ccbSqrt(poleMasq);
+  physpars.mA0 = zeroSqrt(poleMasq);
   physpars.mH0 = bigMh;
-  physpars.mHpm = ccbSqrt(poleMhcSq);
+  physpars.mHpm = zeroSqrt(poleMhcSq);
 
   if (poleMhcSq > 0. && poleMasq > 0. && !h0Htachyon) return false;
   else {
@@ -1429,10 +1474,10 @@ void MssmSoftsusy::addCharginoLoop(double p, DoubleMatrix & mass) {
   aPsiChiZ = aPsiPsiZ * v.transpose();
   bPsiChiZ = bPsiPsiZ * u.hermitianConjugate();
 
-  /// checked and corrected
+  /// checked and corrected 4/10/12
   ComplexMatrix aPsiChiGam(2, 2), bPsiChiGam(2, 2);
-  aPsiChiGam = e * v; 
-  bPsiChiGam = e * u.complexConjugate();
+  aPsiChiGam = e * v.transpose(); 
+  bPsiChiGam = e * u.hermitianConjugate();
 
   /// checked and corrected
   DoubleMatrix aPsiPsiHc1(4, 2), bPsiPsiHc1(4, 2);
@@ -1514,10 +1559,10 @@ void MssmSoftsusy::addCharginoLoop(double p, DoubleMatrix & mass) {
 	   aPsicNue(i, k) * aPsicNue(j, k) * b1(p, 0., msmuon(k), q) +
 	   aPsicENu(i, k) * aPsicENu(j, k) * b1(p, 0., msnumu(k), q));
 	sigmaL(i, j) = sigmaL(i, j) + 0.5 * 
-	  (3.0 * aPsicBtm(i, k) * aPsicBtm(j, k) * b1(p, mt, mstop(k), q) +
-	   3.0 * aPsicTbm(i, k) * aPsicTbm(j, k) * b1(p, mb, msbot(k), q) +
-	   aPsicNuTaum(i, k) * aPsicNuTaum(j, k) * b1(p, mtau, mstau(k), q) +
-	   aPsicTauNu(i, k) * aPsicTauNu(j, k) * b1(p, 0., msnutau(k), q));
+	  (3.0 * aPsicBtm(i, k) * aPsicBtm(j, k) * b1(p, mb, mstop(k), q) +
+	   3.0 * aPsicTbm(i, k) * aPsicTbm(j, k) * b1(p, mt, msbot(k), q) +
+	   aPsicNuTaum(i, k) * aPsicNuTaum(j, k) * b1(p, 0., mstau(k), q) +
+	   aPsicTauNu(i, k) * aPsicTauNu(j, k) * b1(p, mtau, msnutau(k), q));
 	sigmaR(i, j) = sigmaR(i, j) + 0.5 * 
 	  (3.0 * bPsicDu(i, k) * bPsicDu(j, k) * b1(p, 0., msup(k), q) +
 	   3.0 * bPsicUd(i, k) * bPsicUd(j, k) * b1(p, 0., msdown(k), q) +
@@ -1529,15 +1574,15 @@ void MssmSoftsusy::addCharginoLoop(double p, DoubleMatrix & mass) {
 	   bPsicNue(i, k) * bPsicNue(j, k) * b1(p, 0., msmuon(k), q) +
 	   bPsicENu(i, k) * bPsicENu(j, k) * b1(p, 0., msnumu(k), q));
 	sigmaR(i, j) = sigmaR(i, j) + 0.5 * 
-	  (3.0 * bPsicBtm(i, k) * bPsicBtm(j, k) * b1(p, mt, mstop(k), q) +
-	   3.0 * bPsicTbm(i, k) * bPsicTbm(j, k) * b1(p, mb, msbot(k), q) +
-	   bPsicNuTaum(i, k) * bPsicNuTaum(j, k) * b1(p, mtau, mstau(k), q) +
-	   bPsicTauNu(i, k) * bPsicTauNu(j, k) * b1(p, 0., msnutau(k), q));
+	  (3.0 * bPsicBtm(i, k) * bPsicBtm(j, k) * b1(p, mb, mstop(k), q) +
+	   3.0 * bPsicTbm(i, k) * bPsicTbm(j, k) * b1(p, mt, msbot(k), q) +
+	   bPsicNuTaum(i, k) * bPsicNuTaum(j, k) * b1(p, 0., mstau(k), q) +
+	   bPsicTauNu(i, k) * bPsicTauNu(j, k) * b1(p, mtau, msnutau(k), q));
 	sigmaS(i, j) = sigmaS(i, j) + 
-	  (3.0 * bPsicBtm(i, k) * aPsicBtm(j, k) * mt * b0(p, mt, mstop(k), q) +
-	   3.0 * bPsicTbm(i, k) * aPsicTbm(j, k) * mb * b0(p, mb, msbot(k), q) +
-	   bPsicNuTaum(i, k) * aPsicNuTaum(j, k) * mtau *
-	   b0(p, mtau, mstau(k), q));
+	  (3.0 * bPsicBtm(i, k) * aPsicBtm(j, k) * mb * b0(p, mb, mstop(k), q) +
+	   3.0 * bPsicTbm(i, k) * aPsicTbm(j, k) * mt * b0(p, mt, msbot(k), q) +
+	   bPsicTauNu(i, k) * aPsicTauNu(j, k) * mtau *
+	   b0(p, mtau, msnutau(k), q));
       }
   
   /// checked and corrected  
@@ -2018,7 +2063,7 @@ void MssmSoftsusy::addNeutralinoLoop(double p, DoubleMatrix & mass) {
 
 
 /// mixNeut set to diagonal = mixNeut^T mNeutralino mixNeut: checked
-void MssmSoftsusy::neutralinos(int accuracy, double /* piwwtMS */, double /* pizztMS */) {
+void MssmSoftsusy::neutralinos(int accuracy, double piwwtMS, double pizztMS) {
   double tanb = displayTanb();
   double cosb = cos(atan(tanb));
   DoubleMatrix mNeut(4, 4);
@@ -2110,12 +2155,13 @@ void MssmSoftsusy::gluino(int accuracy) {
 
   /// Third family mixing contribution: NB changed sign of these 4/6/10
   /// Matchev says BPMZ may be wrong! Fixed again by dividing by M3 on 26/8/11
+  /// Corrected this incorrect "fix" 2/10/12
   delta = delta + forLoops.mt * sin(2.0 * forLoops.thetat) / displayGaugino(3) *
     (b0(p, forLoops.mt, forLoops.mu(1, 3), Q) - 
-     b0(p, forLoops.mt, forLoops.mu(2, 3), Q)) / p;
+     b0(p, forLoops.mt, forLoops.mu(2, 3), Q));
   delta = delta + forLoops.mb * sin(2.0 * forLoops.thetab) / displayGaugino(3) *
     (b0(p, forLoops.mb, forLoops.md(1, 3), Q) - 
-     b0(p, forLoops.mb, forLoops.md(2, 3), Q)) / p; 
+     b0(p, forLoops.mb, forLoops.md(2, 3), Q)); 
   
   delta = delta * sqr(displayGaugeCoupling(3)) / (16.0 * sqr(PI));
 
@@ -2186,6 +2232,13 @@ double MssmSoftsusy::calcRunningMt() {
   twoLoopQcd = sqr(sqr(displayGaugeCoupling(3))) * 
     (-0.538314 + 0.181534*l - 0.0379954*sqr(l));
   resigmat = resigmat + twoLoopQcd;
+
+  /*
+  cout << "twoloopqcd=" << twoLoopQcd 
+       << " twoloopSUSY=" 
+       << twoLpMt() * sqr(sqr(displayGaugeCoupling(3))) / 
+    sqr(16 * PI * PI) << endl;
+  */  
 
   /// 2 loop QCD involving MSSM sparticles -- hep-ph/0210258, in the
   /// approximation that all squarks and the gluino 
@@ -2668,7 +2721,7 @@ double MssmSoftsusy::calcRunningMtau() const {
 }
 
 void MssmSoftsusy::treeUpSquark(DoubleMatrix & mass, double mtrun, 
-				double /* pizztMS */, double sinthDRbarMS, 
+				double pizztMS, double sinthDRbarMS, 
 				int family) { 
   const double cu = 2.0 / 3.0;
   double mz2 = sqr(displayMzRun()), mt2 = sqr(mtrun);
@@ -2699,7 +2752,6 @@ void MssmSoftsusy::addSquarkCorrection(DoubleMatrix & mass) {
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " squark tachyonic ";
     flagTachyon(sup); flagTachyon(sdown); flagTachyon(scharm); 
     flagTachyon(sstrange);
     return;
@@ -2730,8 +2782,8 @@ void MssmSoftsusy::addSnuTauCorrection(double & mass) {
 
   /// No point adding radiative corrections to tachyonic particles
   if (mass < 0.0) { 
-    if (PRINTOUT > 2) cout << " snu_tau tachyonic ";
     flagTachyon(snutau);
+    mass = EPSTOL;
     return;
   }
 
@@ -2973,7 +3025,6 @@ void MssmSoftsusy::addSnuCorrection(double & mass, int family) {
 
   /// No point adding radiative corrections to tachyonic particles
   if (mass < 0.0) { 
-    if (PRINTOUT > 2) cout << " tree level snu tachyonic ";
     if (family == 1) flagTachyon(snue);
     else if (family == 2) flagTachyon(snumu);
     return;
@@ -3205,8 +3256,9 @@ void MssmSoftsusy::addStopCorrection(double p, DoubleMatrix & mass,
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " stop tachyonic ";
     flagTachyon(stop);
+    if (mass(1, 1) < 0.) mass(1, 1) = EPSTOL;
+    else mass(2, 2) = EPSTOL;
     return;
   }
 
@@ -3573,7 +3625,8 @@ void MssmSoftsusy::addStopCorrection(double p, DoubleMatrix & mass,
 	     a0(forLoops.msnu(3), q)));
 
   higgs(1, 2) += 
-    sqr(gp) * yuL * yuR * st * ct * (a0(mstop(1), q) - a0(mstop(2), q)) +
+    sqr(gp) * 0.25 * yuL * yuR * st * ct *
+    (a0(mstop(1), q) - a0(mstop(2), q)) +
     sqr(2.0 / 3.0 * e) * st * ct * 
     (ffn(p, mstop(1), 0.0, q) - ffn(p, mstop(2), 0.0, q)) -
     sqr(g) / costhDrbar2 * guL * guR * st * ct *
@@ -3662,7 +3715,8 @@ void MssmSoftsusy::addSlepCorrection(DoubleMatrix & mass, int family) {
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " slepton tachyonic ";
+    if (mass(1, 1) < 0.) mass(1, 1) = EPSTOL;
+    else mass(2, 2) = EPSTOL;
     if (family == 1) flagTachyon(selectron);
     if (family == 2) flagTachyon(smuon);
     return;
@@ -3672,6 +3726,7 @@ void MssmSoftsusy::addSlepCorrection(DoubleMatrix & mass, int family) {
   DoubleMatrix piSq(2, 2); /// Self-energy matrix
 	
   /// brevity
+  double    mw      = displayMwRun();
   double    mz      = displayMzRun();
   double    sinthDrbar = calcSinthdrbar();
   double    costhDrbar = sqrt(1.0 - sqr(sinthDrbar));
@@ -3839,8 +3894,8 @@ void MssmSoftsusy::addSlepCorrection(DoubleMatrix & mass, int family) {
     ffn(p1, msel(1), 0., q);
   higgs(1, 1) = higgs(1, 1) +   
     sqr(g) / sqr(costhDrbar) * sqr(geL) * 
-    ffn(p1, msel(family), mz, q) +
-    sqr(g) * 0.5 * ffn(p1, msnu(family), mw, q);
+    ffn(p1, msel(1), mz, q) +
+    sqr(g) * 0.5 * ffn(p1, msnu(1), mw, q);
 
   electroweak(1, 1) = electroweak(1, 1) +   
     sqr(g) * 0.25 * (a0(msel(1), q) + 2.0 * a0(msnu(family), q));
@@ -3919,8 +3974,9 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " tree stau tachyonic ";
     flagTachyon(stau);
+    if (mass(1, 1) < 0.) mass(1, 1) = EPSTOL;
+    else mass(2, 2) = EPSTOL;
     return;
   }
 
@@ -3928,6 +3984,7 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
   DoubleMatrix piSq(2, 2); /// Self-energy matrix
 	
   /// brevity
+  double    mw      = displayMwRun();
   double    mz      = displayMzRun();
   double    sinthDrbar = calcSinthdrbar();
   double    costhDrbar = sqrt(1.0 - sqr(sinthDrbar));
@@ -3962,6 +4019,7 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
 
   double    smu     = -displaySusyMu();
   double q = displayMu(), 
+    hb   = forLoops.hb,
     htau = forLoops.htau, 
     sinb = sin(beta), cosb = cos(beta), 
     htausq = sqr(htau);
@@ -4107,7 +4165,8 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
   /// start
   stop(1, 1) = htausq * (sqr(stau) * a0t1 + sqr(ctau) * a0t2);
   stop(2, 2) = htausq * (sqr(ctau) * a0t1 + sqr(stau) * a0t2);
-  stop(1, 2) = htausq * ctau * stau * (a0t1 - a0t2);
+  stop(1, 2) = htausq * ctau * stau * (a0t1 - a0t2)
+     + 3.0 * htau * hb * cb * sb * (a0(msbot(1), q) - a0(msbot(2), q));
 
   for (i=1; i<=4; i++) {
     higgs(1, 1) = higgs(1, 1) + 
@@ -4223,7 +4282,7 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
     (ffn(p, mstau(1), mz, q) - ffn(p, mstau(2), mz, q));
 
   for (i=1; i<=2; i++) {
-    double one = gfn(p, mch(i), mtau, q);
+    double one = gfn(p, mch(i), 0., q);
     chargino(1, 1) = chargino(1, 1) + fChNuStauLL(i) * one;
     chargino(1, 2) = chargino(1, 2) + fChNuStauLR(i) * one;
     chargino(2, 2) = chargino(2, 2) + fChNuStauRR(i) * one;
@@ -4231,9 +4290,13 @@ void MssmSoftsusy::addStauCorrection(double p, DoubleMatrix & mass,
 
   for (i=1; i<=4; i++) {
     double one = gfn(p, mneut(i), mtau, q);
-    neutralino(1, 1) = neutralino(1, 1) + fChi0TauStauLL(i) * one;
-    neutralino(2, 2) = neutralino(2, 2) + fChi0TauStauRR(i) * one;
-    neutralino(1, 2) = neutralino(1, 2) + fChi0TauStauLR(i) * one;
+    double two = 2.0 * mneut(i) * mtau * b0(p, mneut(i), mtau, q);
+    neutralino(1, 1) = neutralino(1, 1) + fChi0TauStauLL(i) * one
+       - gChi0TauStauLL(i) * two;
+    neutralino(2, 2) = neutralino(2, 2) + fChi0TauStauRR(i) * one
+       - gChi0TauStauRR(i) * two;
+    neutralino(1, 2) = neutralino(1, 2) + fChi0TauStauLR(i) * one
+       - gChi0TauStauLR(i) * two;
   }
 
   piSq = 1.0 / (16.0 * sqr(PI)) * 
@@ -4248,7 +4311,6 @@ void MssmSoftsusy::addSdownCorrection(DoubleMatrix & mass, int family) {
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " sdown tachyonic ";
     if (family == 1) flagTachyon(sdown); 
     else if (family == 2) flagTachyon(sstrange);
     return;
@@ -4258,6 +4320,7 @@ void MssmSoftsusy::addSdownCorrection(DoubleMatrix & mass, int family) {
   DoubleMatrix piSq(2, 2); /// Self-energy matrix
 	
   /// brevity
+  double    mw      = displayMwRun();
   double    mz      = displayMzRun();
   double    sinthDrbar = calcSinthdrbar();
   double    costhDrbar = sqrt(1.0 - sqr(sinthDrbar));
@@ -4308,8 +4371,8 @@ void MssmSoftsusy::addSdownCorrection(DoubleMatrix & mass, int family) {
   DoubleVector dnu(4), dnd(4), cn(4);
   assignHiggsSfermions(higgsm, higgsc, dnu, dnd, cn, beta);
 
-  DoubleMatrix lsSbotLSbotLR(4, 2), lsSbotLSbot12(4, 2);
-  DoubleMatrix lsSbotRSbotLR(4, 2), lsSbotRSbot12(4, 2);
+  DoubleMatrix lsSbotLSbotLR(4, 2);
+  DoubleMatrix lsSbotRSbotLR(4, 2);
   /// Order (s1 s2 G A, L R)
   lsSbotLSbotLR(1, 1) = g * mz * gdL * cosb / costhDrbar;
   lsSbotLSbotLR(2, 1) = -g * mz * gdL * sinb / costhDrbar;
@@ -4327,13 +4390,13 @@ void MssmSoftsusy::addSdownCorrection(DoubleMatrix & mass, int family) {
   DoubleMatrix lHSbotLSbot12(lsSbotLSbotLR), lHSbotRSbot12(lsSbotRSbotLR);
   /// Mix CP-even Higgses up
   for (i=1; i<=2; i++) { /// i is the L/R label
-    temp(1) = lsSbotLSbot12(1, i);
-    temp(2) = lsSbotLSbot12(2, i);
+    temp(1) = lsSbotLSbotLR(1, i);
+    temp(2) = lsSbotLSbotLR(2, i);
     temp2 = rot2d(alpha) * temp;
     lHSbotLSbot12(1, i) = temp2(1);
     lHSbotLSbot12(2, i) = temp2(2);
-    temp(1) = lsSbotRSbot12(1, i);
-    temp(2) = lsSbotRSbot12(2, i);
+    temp(1) = lsSbotRSbotLR(1, i);
+    temp(2) = lsSbotRSbotLR(2, i);
     temp2 = rot2d(alpha) * temp;
     lHSbotRSbot12(1, i) = temp2(1);
     lHSbotRSbot12(2, i) = temp2(2);
@@ -4560,8 +4623,9 @@ void MssmSoftsusy::addSbotCorrection(double p,
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " tree sbottom tachyonic ";
     flagTachyon(sbottom);
+    if (mass(1, 1) < 0.) mass(1, 1) = EPSTOL;
+    else mass(2, 2) = EPSTOL;
     return;
   }
 
@@ -4570,6 +4634,7 @@ void MssmSoftsusy::addSbotCorrection(double p,
 	
   /// brevity
   double    mz      = displayMzRun();
+  double    mw      = displayMwRun();
   double    sinthDrbar = calcSinthdrbar();
   double    costhDrbar = sqrt(1.0 - sqr(sinthDrbar));
   double    alpha   = forLoops.thetaH;
@@ -4606,7 +4671,8 @@ void MssmSoftsusy::addSbotCorrection(double p,
   double q = displayMu(), g3sq = sqr(displayGaugeCoupling(3)), 
     ht = forLoops.ht,
     hb = forLoops.hb,
-    mb = dataSet.displayMass(mBottom),
+    mb = forLoops.mb,
+    htau = forLoops.htau,
     htsq = sqr(ht), 
     sinb = sin(beta), cosb = cos(beta), 
     hbsq = sqr(hb);
@@ -4799,7 +4865,8 @@ void MssmSoftsusy::addSbotCorrection(double p,
 
   stop(1, 1) = hbsq * (sqr(sb) * a0t1 + sqr(cb) * a0t2);
   stop(2, 2) = hbsq * (sqr(cb) * a0t1 + sqr(sb) * a0t2);
-  stop(1, 2) = hbsq * cb * sb * 3.0 * (a0t1 - a0t2);
+  stop(1, 2) = hbsq * cb * sb * 3.0 * (a0t1 - a0t2)
+     + hb * htau * ctau * stau * (a0(mstau(1), q) - a0(mstau(2), q));
 
   sbottom(1, 1) = 
     htsq * (sqr(st) * a0(mstop(1), q) + sqr(ct) * a0(mstop(2), q));
@@ -4959,7 +5026,8 @@ void MssmSoftsusy::addSupCorrection(DoubleMatrix & mass, int family) {
 
 /// No point adding radiative corrections to tachyonic particles
   if (mass(1, 1) < 0.0 || mass(2, 2) < 0.0) { 
-    if (PRINTOUT > 2) cout << " tree sup tachyonic ";
+    if (mass(1, 1) < 0.) mass(1, 1) = EPSTOL;
+    else mass(2, 2) = EPSTOL;
     if (family == 1) flagTachyon(sup);
     else if (family == 2) flagTachyon(scharm);
     return;
@@ -5336,10 +5404,9 @@ void MssmSoftsusy::doUpSquarks(double mt, double pizztMS, double sinthDRbarMS,
 	physicalStopMassesSquared(2) < 0.0) {
       if (family == 1) flagTachyon(sup);
       else if (family == 2) flagTachyon(scharm);
-      if (PRINTOUT > 2) cout << " tachyonic up/scharm ";
     }
 
-    DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(ccbSqrt));
+    DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(zeroSqrt));
 
     physpars.mu(1, family) = physicalStopMasses(1);
     physpars.mu(2, family) = physicalStopMasses(2);
@@ -5369,12 +5436,11 @@ void MssmSoftsusy::doUpSquarks(double mt, double pizztMS, double sinthDRbarMS,
       ||  physicalStopMassesSquared2(1) < 0.0 || 
       physicalStopMassesSquared2(2) < 0.0) {
     flagTachyon(stop);
-    if (PRINTOUT > 2) cout << " tachyonic stops ";
   }
   
-  DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(ccbSqrt));
+  DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(zeroSqrt));
   DoubleVector 
-      physicalStopMasses2(physicalStopMassesSquared2.apply(ccbSqrt));
+      physicalStopMasses2(physicalStopMassesSquared2.apply(zeroSqrt));
   
   double lightStopMass = minimum(physicalStopMasses(1), physicalStopMasses(2));
   double heavyStopMass = maximum(physicalStopMasses2(1), 
@@ -5395,7 +5461,7 @@ void MssmSoftsusy::doUpSquarks(double mt, double pizztMS, double sinthDRbarMS,
 }
 
 void MssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun, 
-				  double /* pizztMS */, double sinthDRbarMS, 
+				  double pizztMS, double sinthDRbarMS, 
 				  int family) {
   const double cd = 1.0 / 3.0;
   double mz2 = sqr(displayMzRun()), mb2 = sqr(mbrun);
@@ -5423,7 +5489,7 @@ void MssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun,
 
 
 void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
-                                 sinthDRbarMS, int accuracy, double /* mt */) {
+			    sinthDRbarMS, int accuracy, double mt) {
   int family; for (family = 1; family <= 2; family++) {
     
     DoubleMatrix mSbotSquared(2, 2);
@@ -5438,10 +5504,9 @@ void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
 	physicalSbotMassesSquared(2) < 0.0) {
       if (family == 1) flagTachyon(sdown);
       else if (family == 2) flagTachyon(sstrange);
-      if (PRINTOUT > 2) cout << " tachyonic down squarks ";
     }
 
-    DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(ccbSqrt));
+    DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(zeroSqrt));
 
     physpars.md(1, family) = physicalSbotMasses(1);
     physpars.md(2, family) = physicalSbotMasses(2);
@@ -5473,11 +5538,10 @@ void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
       < 0.0 || minimum(physicalSbotMassesSquared2(1), 
 		       physicalSbotMassesSquared2(2)) < 0.0) {
     flagTachyon(sbottom);
-    if (PRINTOUT > 2) cout << " tachyonic sbottom ";
   }
 
-  DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(ccbSqrt));
-  DoubleVector physicalSbotMasses2(physicalSbotMassesSquared2.apply(ccbSqrt));
+  DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(zeroSqrt));
+  DoubleVector physicalSbotMasses2(physicalSbotMassesSquared2.apply(zeroSqrt));
 
   /// twisted measures the ordering of the sbottom masses. If msbot1 > msbot2,
   /// twisted is defined to be true (msbot2 > msbot1 is defined "untwisted").
@@ -5498,7 +5562,7 @@ void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
   }
 }
 void MssmSoftsusy::treeChargedSlepton(DoubleMatrix & mass, double mtaurun, 
-				      double /* pizztMS */, double sinthDRbarMS, 
+				      double pizztMS, double sinthDRbarMS, 
 				      int family) { 
   double mz2 = sqr(displayMzRun()), mtau2 = sqr(mtaurun);
   double beta = atan(displayTanb()), mu = displaySusyMu(),
@@ -5536,11 +5600,10 @@ void MssmSoftsusy::doChargedSleptons(double mtau, double pizztMS, double
     if (mSlepSquared(1, 1) < 0.0 || mSlepSquared(2, 2) < 0.0) {
       if (family == 1) flagTachyon(selectron);
       else if (family == 2) flagTachyon(smuon);
-      if (PRINTOUT > 2) cout << " slepton tachyonic ";
     }
       
-    physpars.me(1, family) = ccbSqrt(mSlepSquared(1, 1));
-    physpars.me(2, family) = ccbSqrt(mSlepSquared(2, 2));
+    physpars.me(1, family) = zeroSqrt(mSlepSquared(1, 1));
+    physpars.me(2, family) = zeroSqrt(mSlepSquared(2, 2));
   }
 
   /// do third family
@@ -5565,12 +5628,11 @@ void MssmSoftsusy::doChargedSleptons(double mtau, double pizztMS, double
       ||  physicalStauMassesSquared2(1) < 0.0 || 
       physicalStauMassesSquared2(2) < 0.0) {
     flagTachyon(stau);
-    if (PRINTOUT > 2) cout << " tachyonic staus ";
   }
   
-  DoubleVector physicalStauMasses(physicalStauMassesSquared.apply(ccbSqrt));
+  DoubleVector physicalStauMasses(physicalStauMassesSquared.apply(zeroSqrt));
   DoubleVector 
-      physicalStauMasses2(physicalStauMassesSquared2.apply(ccbSqrt));
+      physicalStauMasses2(physicalStauMassesSquared2.apply(zeroSqrt));
   
   double lightStauMass = minimum(physicalStauMasses(1), physicalStauMasses(2));
   double heavyStauMass = maximum(physicalStauMasses2(1), 
@@ -5599,11 +5661,11 @@ void MssmSoftsusy::doSnu(double pizztMS, int accuracy) {
       addSnuCorrection(mSnuSquared, family);
     }
 
-    physpars.msnu(family) = ccbSqrt(mSnuSquared);
+    physpars.msnu(family) = zeroSqrt(mSnuSquared);
   }
 }
 
-void MssmSoftsusy::treeSnu(double & mSnuSquared, double /* pizztMS */, int family) {
+void MssmSoftsusy::treeSnu(double & mSnuSquared, double pizztMS, int family) {
   double mz2 = sqr(displayMzRun());
   double beta = atan(displayTanb());
   double c2b = cos(2.0 * beta);
@@ -6118,7 +6180,7 @@ double MssmSoftsusy::lowOrg
 	   << oneset.displayMu() << "\ninstead of " << mz << endl;
     }
     
-    int maxtries = int(-log(TOLERANCE) / log(10.0) * 10);
+    int maxtries = 100; 
     double tol = TOLERANCE;
     
     MssmSusy t(guessAtSusyMt(tanb, oneset));
@@ -6170,16 +6232,6 @@ double MssmSoftsusy::lowOrg
     runto(mz);
     
     if (PRINTOUT) cout << " end of iteration" << endl;
-
-    /// check to see if there are any negative mass squared scalars: if there
-    /// are, flag tachyon problem
-    /*    int posi, posj, lspCode; double minmass;
-    lspCode = lsp(minmass, posi, posj); 
-    if (lspCode > 0 && lspCode < 6 && lspCode !=4 && minmass < 0.0) { 
-      flagTachyon(true); 
-      if (PRINTOUT > 2) recogLsp(posi, posj); cout << " tachyonic ";
-      }*/
-    
   }
   catch(const char *a) {
     ostringstream ii;
@@ -6222,12 +6274,12 @@ double MssmSoftsusy::realMinMs() const {
 }
 
 /// Difference between two SOFTSUSY objects in and out: EWSB terms only
-double sumTol(const MssmSoftsusy & in, const MssmSoftsusy & out) {
+double sumTol(const MssmSoftsusy & in, const MssmSoftsusy & out, int numTries) {
 
   drBarPars inforLoops(in.displayDrBarPars()), 
     outforLoops(out.displayDrBarPars());  
 
-  DoubleVector sT(32);
+  DoubleVector sT(34);
   int k = 1;
 
   double sTin  = fabs(inforLoops.mh0); double sTout = fabs(outforLoops.mh0);
@@ -6275,6 +6327,20 @@ double sumTol(const MssmSoftsusy & in, const MssmSoftsusy & out) {
       sT(k) = fabs(1.0 - minimum(sTin, sTout) / maximum(sTin, sTout));
       k++;
     }
+  /// The predicted value of MZ^2 is an absolute measure of how close to a
+  /// true solution we are:
+  double tbPred = 0.;
+  double predictedMzSq = in.displayPredMzSq();
+  /// We allow an extra factor of 10 for the precision in the predicted value
+  /// of MZ compared to TOLERANCE if the program is struggling and gone beyond
+  /// 10 tries - an extra 2 comes from MZ v MZ^2
+  if (!in.displayProblem().testSeriousProblem()) {
+    sT(k) = 0.5 * 
+      fabs(1. - minimum(predictedMzSq, sqr(MZ)) / 
+	   maximum(sqr(MZ), predictedMzSq));
+    if (numTries > 10) sT(k) *= 0.1;
+  }
+
   return sT.max();
 }
 
@@ -6294,20 +6360,22 @@ double MssmSoftsusy::calcSinthdrbar() const {
 }
 
 //VEV at current scale, using an input value of Z self-energy
-double MssmSoftsusy::getVev(double pizzt) const {
+double MssmSoftsusy::getVev(double pizzt) {
 
   double vsquared = 4.0 * (sqr(displayMz()) + pizzt) /
     (sqr(displayGaugeCoupling(2)) +
      sqr(displayGaugeCoupling(1)) * 0.6); 
 
-  if (vsquared < 200.0 || testNan(vsquared)) 
+  if (vsquared < 0.0 || testNan(vsquared)) {
+    flagTachyon(Z);
     return 246.22;
+  }
 
   return sqrt(vsquared);
 }
 
 //VEV at current scale: calculates Z self energy first
-double MssmSoftsusy::getVev() const {
+double MssmSoftsusy::getVev() {
   double pizzt = piZZT(displayMz(), displayMu());
 
   return getVev(pizzt);
@@ -6334,7 +6402,7 @@ void MssmSoftsusy::sparticleThresholdCorrections(double tb) {
     qcdSusythresh(displayDataSet().displayAlpha(ALPHAS), displayMu());
   
   /// Do gauge couplings
-  double outrho = 1.0, outsin = 0.48, tol = TOLERANCE * 1.0e-5; 
+  double outrho = 1.0, outsin = 0.48, tol = TOLERANCE * 1.0e-8; 
   int maxTries = 20;
   double pizztMZ = piZZT(displayMz(), displayMu(), true);
   double piwwt0  = piWWT(0., displayMu(), true);
@@ -6368,8 +6436,15 @@ void MssmSoftsusy::sparticleThresholdCorrections(double tb) {
   /// 3-family mixed-up Yukawa couplings: From PDG 2000
   doQuarkMixing(mDq, mUq); 
 
-  setMw(sqrt(0.25 * sqr(newGauge(2)) * sqr(vev) - 
-	     piWWT(displayMw(), displayMu()))); 
+  if (MIXING == -1) {
+    mDq(1, 1) = 0.; mDq(2, 2) = 0.; mUq(1, 1) = 0.; mUq(2, 2) = 0.;
+    mLep(1, 1) = 0.; mLep(2, 2) = 0.;
+  }
+
+  double poleMwSq = 0.25 * sqr(newGauge(2)) * sqr(vev) - 
+    piWWT(displayMw(), displayMu());
+  if (poleMwSq < 0.) flagTachyon(W);
+  setMw(zeroSqrt(poleMwSq)); 
   setGaugeCoupling(1, newGauge(1));
   setGaugeCoupling(2, newGauge(2));
   setGaugeCoupling(3, newGauge(3));
@@ -6383,6 +6458,99 @@ double MssmSoftsusy::displayMzRun() const {
   return displayHvev() * 0.5 * 
     sqrt(sqr(displayGaugeCoupling(2)) + 0.6 * sqr(displayGaugeCoupling(1)));
 } 
+
+void MssmSoftsusy::calcDrBarCharginos(double beta, double mw, drBarPars & eg) {
+
+  DoubleMatrix mCh(2, 2);   
+  mCh(1, 1) = displayGaugino(2);
+  mCh(2, 1) = root2 * mw * cos(beta); 
+  mCh(1, 2) = mCh(2, 1) * displayTanb();
+  mCh(2, 2) = displaySusyMu();
+  eg.mch = mCh.asy2by2(eg.thetaL, eg.thetaR);
+  eg.mpzCharginos();
+}
+
+void MssmSoftsusy::calcDrBarNeutralinos(double beta, double mz, double mw, 
+					double sinthDRbar, 
+					drBarPars & eg) {
+  DoubleMatrix mNeut(4, 4);
+  mNeut(1, 1) = displayGaugino(1);
+  mNeut(2, 2) = displayGaugino(2);
+  mNeut(1, 3) = - mz * cos(beta) * sinthDRbar;
+  mNeut(1, 4) = - mNeut(1, 3) * displayTanb();
+  mNeut(2, 3) = mw * cos(beta);
+  mNeut(2, 4) = - mNeut(2, 3) * displayTanb();
+  mNeut(3, 4) = - displaySusyMu();
+  mNeut.symmetrise();
+  if (mNeut.diagonaliseSym(eg.mixNeut, eg.mneut) > TOLERANCE *
+      1.0e-3) { 
+    ostringstream ii;
+    ii << "accuracy bad in neutralino diagonalisation"<< flush;
+    throw ii.str(); 
+    }
+
+  eg.mpzNeutralinos();
+}
+
+void MssmSoftsusy::calcDrBarHiggs(double beta, double mz2, double mw2, 
+				  double sinthDRbar, drBarPars & eg) {
+  if (eg.mt > 200. || eg.mt < 50.) 
+    throw("In MssmSoftsusy::calcDrBarHiggs and eg.mt is outside bounds\n");
+  
+  /// You could instead do like sPHENO, choose what you'd get from minimising
+  /// the potential at tree level, ie (mH2^2-mH1^2)/cos(2 beta)-mz^2. This
+  /// *may* be less sensitive to becoming a tachyon at MZ. 
+  //  double mAsq = (displayMh2Squared() - displayMh1Squared()) 
+  //    / (cos(2. * beta)) - mz2; 
+  double mAsq = displayM3Squared() / (sin(beta) * cos(beta));
+
+  if (mAsq < 0.) {
+    /* Previous solution: if we're at MZ, use the pole mA^2
+       if (close(displayMu(), MZ, tol)) {
+      double mApole = physpars.mA0; /// physical value
+      setDrBarPars(eg);
+      
+      double piaa = piAA(mApole, displayMu()); 
+      double t1Ov1 = doCalcTadpole1oneLoop(eg.mt, sinthDRbar), 
+      t2Ov2 = doCalcTadpole2oneLoop(eg.mt, sinthDRbar); 
+      double poleMasq = 
+      (displayMh2Squared() - t2Ov2 - 
+      displayMh1Squared() + t1Ov1) / 
+      cos(2.0 * beta) - mz2 - piaa +
+      sqr(sin(beta)) * t1Ov1 + sqr(cos(beta)) * t2Ov2;
+      
+      mAsq = poleMasq;
+      
+      if (mAsq < 0.) { flagTachyon(A0); mAsq = fabs(poleMasq); }
+      }
+     */
+    flagTachyon(A0); 
+    if (mAFlag == false) mAsq = zeroSqrt(mAsq); 
+    /// This may be  a bad idea in terms of convergence
+    else mAsq = fabs(mAsq);
+    
+    if (PRINTOUT > 1) cout << " mA^2(tree)=" << mAsq << " since m3sq=" 
+			   << displayM3Squared() << " @ "<< displayMu() 
+			   << " " << endl; 
+  }
+    
+  DoubleMatrix mH(2, 2); 
+  mH(1, 1) = mAsq * sqr(sin(beta)) + mz2 * sqr(cos(beta));
+  mH(1, 2) = - sin(beta) * cos(beta) * (mAsq + mz2); 
+  mH(2, 2) = mAsq * sqr(cos(beta)) + mz2 * sqr(sin(beta)); 
+  mH(2, 1) = mH(1 ,2); 
+  DoubleVector mSq(2);
+  mSq = mH.sym2by2(eg.thetaH);
+  if (mSq(1) < 0. || mSq(2) < 0.) {
+    flagTachyon(h0);
+  }
+  DoubleVector temp(mSq.apply(zeroSqrt));
+  if (temp(2) > temp(1)) eg.thetaH = eg.thetaH + PI * 0.5; 
+
+  int pos;
+  eg.mh0 = temp.min(pos); eg.mH0 = temp.max(); 
+  eg.mA0 = sqrt(mAsq); eg.mHpm = sqrt(mAsq + mw2);  
+}
 
 /// calculates masses all at tree-level in the DRbar scheme, useful for
 /// radiative corrections. 
@@ -6455,7 +6623,6 @@ void MssmSoftsusy::calcDrBarPars() {
     DoubleMatrix mSquared(2, 2); 
     treeUpSquark(mSquared, eg.mt, pizzt, sinthDRbar, family);
     mSq = mSquared.sym2by2(eg.thetat);
-    DoubleVector mstopDRbar(mSq.apply(ccbSqrt));   
     if (mSq(1) < 0. || mSq(2) < 0.) {
       switch(family) {
       case 1: flagTachyon(sup); break;
@@ -6465,10 +6632,10 @@ void MssmSoftsusy::calcDrBarPars() {
       }
       if (PRINTOUT > 2) cout << " tree sup(" << family << ") tachyon ";
     }
+    DoubleVector mstopDRbar(mSq.apply(zeroSqrt));   
     
     treeDownSquark(mSquared, eg.mb, pizzt, sinthDRbar, family);
     mSq = mSquared.sym2by2(eg.thetab);
-    DoubleVector msbotDRbar(mSq.apply(ccbSqrt));   
     if (mSq(1) < 0. || mSq(2) < 0.) {
       switch(family) {
       case 1: flagTachyon(sdown); break;
@@ -6478,10 +6645,10 @@ void MssmSoftsusy::calcDrBarPars() {
       }
     if (PRINTOUT > 1) cout << " tree sdown(" << family << ") tachyon ";
     }
+    DoubleVector msbotDRbar(mSq.apply(zeroSqrt));   
     
     treeChargedSlepton(mSquared, eg.mtau, pizzt, sinthDRbar, family);
     mSq = mSquared.sym2by2(eg.thetatau);
-    DoubleVector mstauDRbar(mSq.apply(ccbSqrt));   
     if (mSq(1) < 0. || mSq(2) < 0.) {
       switch(family) {
       case 1: flagTachyon(selectron); break;
@@ -6491,6 +6658,7 @@ void MssmSoftsusy::calcDrBarPars() {
       }
     if (PRINTOUT > 1) cout << " tree selectron(" << family << ") tachyon ";
     }
+    DoubleVector mstauDRbar(mSq.apply(zeroSqrt));   
     
     int i; for (i=1; i<=2; i++) {
       eg.mu(i, family) = mstopDRbar(i);    eg.md(i, family) = msbotDRbar(i);
@@ -6508,90 +6676,18 @@ void MssmSoftsusy::calcDrBarPars() {
     if (PRINTOUT > 1) cout << " tree sneutrino(" << family << ") tachyon@"
 			   << displayMu() << " ";
     }
-    eg.msnu(family) = ccbSqrt(mSnuSquared);
+    eg.msnu(family) = zeroSqrt(mSnuSquared);
   }
 
-  DoubleMatrix mCh(2, 2);   
   double mw = displayMwRun();
   double mw2 = sqr(mw);
-  mCh(1, 1) = displayGaugino(2);
-  mCh(2, 1) = root2 * mw * cos(beta); 
-  mCh(1, 2) = mCh(2, 1) * displayTanb();
-  mCh(2, 2) = displaySusyMu();
-  eg.mch = mCh.asy2by2(eg.thetaL, eg.thetaR);
- 
-  DoubleMatrix mNeut(4, 4);
-  mNeut(1, 1) = displayGaugino(1);
-  mNeut(2, 2) = displayGaugino(2);
-  mNeut(1, 3) = - mz * cos(beta) * sinthDRbar;
-  mNeut(1, 4) = - mNeut(1, 3) * displayTanb();
-  mNeut(2, 3) = mw * cos(beta);
-  mNeut(2, 4) = - mNeut(2, 3) * displayTanb();
-  mNeut(3, 4) = - displaySusyMu();
-  mNeut.symmetrise();
-  if (mNeut.diagonaliseSym(eg.mixNeut, eg.mneut) > TOLERANCE *
-      1.0e-3) { 
-    ostringstream ii;
-    ii << "accuracy bad in neutralino diagonalisation"<< flush;
-    throw ii.str(); 
-    }
-
-  double mAsq = displayM3Squared() / (sin(beta) * cos(beta));
-
-  if (fabs(mAsq) < 1.0e-10) mAsq = displayMaCond();
-
+  calcDrBarCharginos(beta, mw, eg);
+  calcDrBarNeutralinos(beta, mz, mw, sinthDRbar, eg);
   eg.mw = mw;
   eg.mz = mz;
-  eg.mpzNeutralinos();
-  eg.mpzCharginos();
-      
-  if (mAsq < 0.0) {
-    /// If it's for the EWSB BC at MZ, we simply use the one-loop corrected
-    /// mass for mA instead. You could indeed make this option permanent (ie
-    /// even for mAsq > 0) 
-    if (displayMu() == MZ) {
-      double mApole = physpars.mA0; /// physical value
-      setDrBarPars(eg);
 
-      double piaa = piAA(mApole, displayMu()); 
-      double t1Ov1 = doCalcTadpole1oneLoop(eg.mt, sinthDRbar), 
-	t2Ov2 = doCalcTadpole2oneLoop(eg.mt, sinthDRbar); 
-      double poleMasq = 
-	(displayMh2Squared() - t2Ov2 - 
-	 displayMh1Squared() + t1Ov1) / 
-	cos(2.0 * beta) - mz2 - piaa +
-	sqr(sin(beta)) * t1Ov1 + sqr(cos(beta)) * t2Ov2;
-      
-      mAsq = poleMasq;
-      
-      if (mAsq < 0.) { flagTachyon(A0); mAsq = fabs(poleMasq); }
-    } 
-    else {
-      flagTachyon(A0);
-      if (PRINTOUT > 1) cout << " mA^2(tree)=" << mAsq << " since m3sq=" <<
-			  displayM3Squared() << " @ "<< displayMu() <<
-			  " " << endl; 
-      mAsq = fabs(mAsq);
-    }
-  }
-
-  DoubleMatrix mH(2, 2); 
-  mH(1, 1) = mAsq * sqr(sin(beta)) + mz2 * sqr(cos(beta));
-  mH(1, 2) = - sin(beta) * cos(beta) * (mAsq + mz2); 
-  mH(2, 2) = mAsq * sqr(cos(beta)) + mz2 * sqr(sin(beta)); 
-  mH(2, 1) = mH(1 ,2); 
-  mSq = mH.sym2by2(eg.thetaH);
-  if (mSq(1) < 0. || mSq(2) < 0.) {
-    flagTachyon(h0);
-    if (PRINTOUT > 1) cout << " mH/h tachyon ";
-  }
-  DoubleVector temp(mSq.apply(ccbSqrt));
-  if (temp(2) > temp(1)) eg.thetaH = eg.thetaH + PI * 0.5; 
-
-  int pos;
-  eg.mh0 = temp.min(pos); eg.mH0 = temp.max(); 
-  eg.mA0 = sqrt(mAsq); eg.mHpm = sqrt(mAsq + mw2);
-
+  calcDrBarHiggs(beta, mz2, mw2, sinthDRbar, eg);  
+  
   setDrBarPars(eg);
 
   return;
@@ -6632,9 +6728,8 @@ void MssmSoftsusy::itLowsoft
   try {
     sparticleThresholdCorrections(tanb); 
 
-    if (problem.noRhoConvergence) {
-      if (PRINTOUT) cout << "No convergence in rhohat\n"; 
-    }
+    if (problem.noRhoConvergence && PRINTOUT) 
+      cout << "No convergence in rhohat\n"; 
   
     /// precision of running/RGE integration: start off low and increase
     double eps = maximum(exp(double(- numTries) * log(10.0)), tol * 0.01); 
@@ -6642,12 +6737,13 @@ void MssmSoftsusy::itLowsoft
     /// first stab at MSUSY: root(mstop1(MZ) mstop2(MZ))
     if (numTries == 1) setMsusy(calcMs()); 
     
-    /// initial guess for running top mass 
-    mtrun = mtpole - 20.0;
-    
     int err = 0;
+
+    err = runto(displayMsusy(), eps);
+    double tbIn; double predictedMzSq = 0.;
+    predictedMzSq = predMzsq(tbIn);
+    setPredMzSq(predictedMzSq);  
     if (!ewsbBCscale) err = runto(mx, eps);
-    else err = runto(displayMsusy(), eps);
 
     /// Guard against the top Yukawa fixed point
     if (displayYukawaElement(YU, 3, 3) > 3.0 
@@ -6710,13 +6806,23 @@ void MssmSoftsusy::itLowsoft
     if (ewsbBCscale) mx = displayMsusy();
     if (PRINTOUT > 0) cout << " mgut=" << mx << flush;
     
-    mtrun = forLoops.mt;
-    if (numTries < 11) rewsb(sgnMu, mtrun, pars);    
-    else rewsb(sgnMu, mtrun, pars, oldMu);    
+    mtrun = forLoops.mt; ///< This will be at MSUSY
+    //    double tbIn; double predictedMzSq = 0.;
+    if (numTries < 11) {
+      rewsb(sgnMu, mtrun, pars);    
+      //      predictedMzSq = predMzsq(tbIn);   
+    }
+    else { ///< After 11 tries, we start averaging old/new mu values
+      double epsi = 0.5;
+      if (numTries > 20) epsi = 0.2;
+      if (numTries > 30) epsi = 0.1;
+      rewsb(sgnMu, mtrun, pars, oldMu, epsi);    
+      //      predictedMzSq = predMzsq(tbIn, oldMu, eps);   
+    }
 
     oldMu = displaySusyMu();
 
-    fracDiff = sumTol(*this, old);    
+    fracDiff = sumTol(*this, old, numTries);    
     
     if (numTries !=0 && fracDiff < tol) {///< Accuracy achieved: bail out
       numTries = 0; ///< Reset the number of iterations for the next time
@@ -6726,6 +6832,7 @@ void MssmSoftsusy::itLowsoft
 
       return; 
     }
+
     // All problems should be reset since only the ones of the final iteration
     // should count (sometimes problems disappear). This can mean that problems
     // only show up as no rho convergence....
@@ -6738,12 +6845,11 @@ void MssmSoftsusy::itLowsoft
     /// If a print out is desired, print respectively, the difference with the
     /// last iteration (sum tol or sT), the mu parameter and m3^2 from EWSB, and
     /// the predicted MW and MZ boson masses
-    if (PRINTOUT > 0) 
-      cout << "\nsT=" << fracDiff << " mu=" << displaySusyMu() <<  " m3sq=" <<
-	displayM3Squared() << " MWp=" << displayMw() << flush;
-    if (PRINTOUT > 1) {
-      double tb; double MZp = sqrt(fabs(predMzsq(tb)));
-      cout << " MZp=" << MZp << flush;
+    if (PRINTOUT > 0) {
+      cout << "\n" << numTries << ". sT=" << fracDiff << " mu=" 
+	   << displaySusyMu() <<  " m3sq=" <<
+	displayM3Squared() << " MWp=" << displayMw() << " Mzp=" 
+	   << sqrt(displayPredMzSq()) << flush;
     }
 
     if (problem.noMuConvergence) {
@@ -6990,11 +7096,6 @@ double MssmSoftsusy::piZZT(double p, double q, bool usePoleMt) const {
 
   double pi = rhs * sqr(g) / (cw2DRbar * 16.0 * sqr(PI));
 
-  if (pi + sqr(mz) < 0.0) { 
-    if (PRINTOUT > 2) cout << " tachyon MZ "; 
-    return 0.; 
-  }
-
   return pi;
 }
 
@@ -7124,10 +7225,6 @@ double MssmSoftsusy::piWWT(double p, double q, bool usePoleMt) const {
 
   double pi = ans * sqr(g) / (16.0 * sqr(PI));
 
-  if (pi + sqr(displayMw()) < 0.0) {   
-    return 0.0; /// tachyonic 
-  }
-	
   return pi;
 }
 
@@ -8617,7 +8714,7 @@ double MssmSoftsusy::sinSqThetaEff() {
 
 /// outrho, outsin represent the DRbar values
 double MssmSoftsusy::deltaVb(double outrho, double outsin, 
-                             double alphaDRbar, double /* pizztMZ */) const {
+			    double alphaDRbar, double pizztMZ) const {
   drBarPars tree(displayDrBarPars());
 
   double g       = displayGaugeCoupling(2);
@@ -8920,14 +9017,14 @@ void MssmSoftsusy::rhohat(double & outrho, double & outsin, double alphaDRbar,
   rhohat(outrho, outsin, alphaDRbar, pizztMZ, piwwt0, piwwtMW, tol, maxTries);
 }
 
-void MssmSoftsusy::methodBoundaryCondition(const DoubleVector & /* pars */) {
+void MssmSoftsusy::methodBoundaryCondition(const DoubleVector & pars) {
   ostringstream ii;
   ii << "Should only use MssmSoftsusy::methodBoundaryCondition in derived"
      << " objects.\n";
   throw ii.str();
 }
 
-void MssmSoftsusy::rpvSet(const DoubleVector & /* parameters */){
+void MssmSoftsusy::rpvSet(const DoubleVector & parameters){
   ostringstream ii;
   ii << "Should only use MssmSoftsusy::rpvSet in derived"
      << " objects.\n";
@@ -9046,7 +9143,7 @@ void MssmSoftsusy::isajetNumbers764
   mNeut(1, 1) = m1;
   mNeut(2, 2) = m2;
   mNeut(3, 4) = - smu;
-  store.addNeutralinoLoop(m1, mNeut);
+  store.addNeutralinoLoop(fabs(m1), mNeut);
 
   m1 = fabs(mNeut(1, 1));
   m2 = fabs(mNeut(2, 2));
@@ -9323,10 +9420,9 @@ void MssmSoftsusy::spinfoSLHA(ostream & out) {
     out << "     4   Point invalid: " << displayProblem() << endl;
 }
 
-void MssmSoftsusy::softsusySLHA(ostream & out, double /* mgut */) {
-  out << "# Low energy data in SOFTSUSY: MIXING=" << MIXING << " TOLERANCE=" 
-       << TOLERANCE << endl;
-  //  out << "# mgut=" << mgut << " GeV\n";
+void MssmSoftsusy::softsusySLHA(ostream & out, double mgut) {
+  out << "# SOFTSUSY-specific non SLHA information:\n";
+  out << "# MIXING=" << MIXING << " Desired accuracy=" << TOLERANCE << " Achieved accuracy=" << displayFracDiff() << endl;
 }
 
 void MssmSoftsusy::higgsMSLHA(ostream & out) {
@@ -9590,44 +9686,38 @@ void MssmSoftsusy::msoftSLHA(ostream & out) {
       out << "      # Atau(Q)MSSM DRbar" << endl;   
 }
 
-void MssmSoftsusy::drbarSLHA(ostream & out, int numPoints, double qMax) {
-    int n = 0;
-    
-    while (n < numPoints) {
-      
-      n++;
-      /// Starting non-essential information. The following decides what scale to
-      /// output the running parameters at. It depends upon what qMax is and how
-      /// many points the user has requested.
-      /// For qMax = 0 and 1 point (defaults), Q=MSUSY is printed out.
-      /// For qMax = 0 and n points, points are spaced logarithmically between MZ
-      /// and MSUSY.
-      /// For qMax != 0 and 1 point, Q=qMax is printed.
-      /// For qMax != 0 and n points, points are log spaced between MZ and qMax.
-      
-      double ms = displayMsusy();
-      double q = minimum(ms, MZ);
-      
-      if (numPoints == 1 && qMax < EPSTOL) q = ms;
-      else if (numPoints == 1 && qMax > EPSTOL) q = qMax;
-      else if (numPoints > 1 && qMax < EPSTOL) qMax = ms;
+void MssmSoftsusy::drbarSLHA(ostream & out, int numPoints, double qMax, int n) {
+  /// Starting non-essential information. The following decides what scale to
+  /// output the running parameters at. It depends upon what qMax is and how
+  /// many points the user has requested.
+  /// For qMax = 0 and 1 point (defaults), Q=MSUSY is printed out.
+  /// For qMax = 0 and n points, points are spaced logarithmically between MZ
+  /// and MSUSY.
+  /// For qMax != 0 and 1 point, Q=qMax is printed.
+  /// For qMax != 0 and n points, points are log spaced between MZ and qMax.
+  
+  double ms = displayMsusy();
+  double q = minimum(ms, MZ);
+  
+  if (numPoints == 1 && qMax < EPSTOL) q = ms;
+  else if (numPoints == 1 && qMax > EPSTOL) q = qMax;
+  else if (numPoints > 1 && qMax < EPSTOL) qMax = ms;
 
-      if (numPoints > 1) { 
-	
-	if (n > 1) {
-	  double logq = (log(qMax) - log(MZ)) * double(n-1) / 
-	    double(numPoints-1) + log(MZ);
-	  q = exp(logq);
-	}
+  if (numPoints > 1) { 
+    
+    if (n > 1) {
+      double logq = (log(qMax) - log(MZ)) * double(n-1) / 
+	double(numPoints-1) + log(MZ);
+      q = exp(logq);
+    }
 	else q = MZ;
-      }
-      
-      runto(q);
-      gaugeSLHA(out);
-      yukawasSLHA(out);
-      hmixSLHA(out);
-      msoftSLHA(out);
-    }  
+  }
+  
+  runto(q);
+  gaugeSLHA(out);
+  yukawasSLHA(out);
+  hmixSLHA(out);
+  msoftSLHA(out);
 }
 
 void MssmSoftsusy::sminputsSLHA(ostream & out) {
@@ -9653,7 +9743,7 @@ void MssmSoftsusy::extparSLHA(ostream & out,
   if (ewsbBCscale) 
     out << "     0    -1.00000000e+00  # Set MX=MSUSY\n";
   else {
-    out << "     0    "; printRow(out, mgut); cout << "  # MX scale\n";
+    out << "     0    "; printRow(out, mgut); out << "  # MX scale\n";
   }
   
   int i;
@@ -9772,7 +9862,7 @@ void MssmSoftsusy::minparSLHA(ostream & out, const char model [],
   }  
   if (printMX) {
   out << "Block EXTPAR               # scale of SUSY breaking BCs\n";
-  out << "     0   "; printRow(out, mgut); cout << "   # MX scale\n";
+  out << "     0   "; printRow(out, mgut); out << "   # MX scale\n";
   }
 }
  
@@ -9806,12 +9896,15 @@ void MssmSoftsusy::lesHouchesAccordOutput(ostream & out, const char model[],
   minparSLHA(out, model, pars, tanb, sgnMu, mgut, ewsbBCscale);
   softsusySLHA(out, mgut);
 
-  if (!displayProblem().testSeriousProblem()) {
+  if (!displayProblem().testSeriousProblem() || printRuledOutSpectra) {
     massSLHA(out);
     alphaSLHA(out);
     inomixingSLHA(out);
     sfermionmixSLHA(out);
-    drbarSLHA(out, numPoints, qMax);
+
+    int n = 0; while (n < numPoints) {
+      n++; drbarSLHA(out, numPoints, qMax, n);
+    }
   } else {
     out << "# Declining to write spectrum because of serious problem"
 	<< " with point" << endl;
@@ -10115,7 +10208,7 @@ double lep2Likelihood(double mh) {
 
 /// smears the likelihood curve for a Standard Model Higgs mass with a 3 GeV
 /// Gaussian theoretical error
-DoubleVector mhIntegrand(double mh, const DoubleVector & /* y */) {
+DoubleVector mhIntegrand(double mh, const DoubleVector & y) {
   DoubleVector dydx(1);
   dydx(1) = lep2Likelihood(mh) * 
     exp(-sqr(mhTrue - mh) / (2.0 * sqr(sigmaMh))) ;
@@ -10173,10 +10266,6 @@ double MssmSoftsusy::smPredictionMW() const {
   double ans = mw0 - c1 * dH - c2 * sqr(dH) + c3 * sqr(dH) * sqr(dH) + 
     c4 * (dh - 1.) - c5 * dAlpha + c6 * dt - c7 * sqr(dt) - c8 * dH * dt + 
     c9 * dh * dt - c10 * dAlphas + c11 * dZ;
-
-  ///  double alpha = 1. / 137.03599976;
-  ///  double deltaRsm = sqrt(2.0) * GMU / (PI * alpha) * sqr(MW) * 
-  ///  (1.0 - sqr(MW) / sqr(MZ)) - 1.;
 
   return ans;
 }
@@ -10260,11 +10349,11 @@ double MssmSoftsusy::twoLoopGm2(double amu1Loop) const {
 
   DoubleVector lChiCh0(2), lChiCH0(2), lChiCA0(2);
   int k; for (k=1; k<=2; k++) {
-    lChiCh0(k) = sqrt(2.0) * MW / mch(k) *
+    lChiCh0(k) = root2 * MW / mch(k) *
       ((u(k, 1) * v(k, 2)).real() * cosA - sinA * (u(k, 2) * v(k, 1)).real());
-    lChiCH0(k) = sqrt(2.0) * MW / mch(k) *
+    lChiCH0(k) = root2 * MW / mch(k) *
       ((u(k, 1) * v(k, 2)).real() * sinA + cosA * (u(k, 2) * v(k, 1)).real());
-    lChiCA0(k) = sqrt(2.0) * MW / mch(k) *
+    lChiCA0(k) = root2 * MW / mch(k) *
       (-(u(k, 1) * v(k, 2)).real() * cosb - sinb * (u(k, 2) * v(k, 1)).real());
   }
     
@@ -10307,8 +10396,8 @@ double MssmSoftsusy::twoLoopGm2(double amu1Loop) const {
 
 
 /// input diagonal matrices and it'll give you back mixed ones
-void MssmSoftsusy::doQuarkMixing(DoubleMatrix & /* mDon */,
-				 DoubleMatrix & /* mUpq */) {
+void MssmSoftsusy::doQuarkMixing(DoubleMatrix & mDon, 
+				 DoubleMatrix & mUpq) {
   /// This is a dummy routine - MIXING is ignored in this object (it's all
   /// done in FLAVOURMSSMSOFTSUSY these days).
 
@@ -10394,3 +10483,6380 @@ void splitGmsb(MssmSoftsusy & m, const DoubleVector & inputParameters) {
 }
 
 
+double MssmSoftsusy::twoLpMt() const {
+  const double zt2 = sqr(PI) / 6.;
+  double mmsb1 = sqr(displayDrBarPars().md(1, 3));
+  double mmsb2 = sqr(displayDrBarPars().md(2, 3));
+  double mmst1 = sqr(displayDrBarPars().mu(1, 3));
+  double mmst2 = sqr(displayDrBarPars().mu(2, 3));
+  double mgl = displayGaugino(3);
+  double mmgl = sqr(mgl);
+  double mt = displayDrBarPars().mt;
+  double mmt = sqr(mt);
+  double mb = displayDrBarPars().mb;
+  double mmb = sqr(mb);
+  double csb = cos(displayDrBarPars().thetab), 
+    cs2b = cos(displayDrBarPars().thetab * 2.), 
+    cs4b = cos(4 * displayDrBarPars().thetab);
+  double snb = sin(displayDrBarPars().thetab), 
+    sn2b = sin(displayDrBarPars().thetab * 2.), 
+    sn4b = sin(4 * displayDrBarPars().thetab);
+  double cst = cos(displayDrBarPars().thetat), 
+    cs2t = cos(displayDrBarPars().thetat * 2.), 
+    cs4t = cos(4 * displayDrBarPars().thetat);
+  double snt = sin(displayDrBarPars().thetat), 
+    sn2t = sin(displayDrBarPars().thetat * 2.), 
+    sn4t = sin(4 * displayDrBarPars().thetat);
+  double mmu = sqr(displayMu());
+
+  /// average of first 2 generations squark mass
+  double msq = 0.125 * (displayDrBarPars().mu(1, 1) + 
+			displayDrBarPars().mu(2, 1) + 
+			displayDrBarPars().md(1, 1) + 
+			displayDrBarPars().md(2, 1) + 		       
+			displayDrBarPars().mu(1, 2) + 
+			displayDrBarPars().mu(2, 2) + 
+			displayDrBarPars().md(1, 2) + 
+			displayDrBarPars().md(2, 2));
+  double mmsusy = sqr(msq);
+
+  double lnMglSq = log(mmgl);
+  double lnMsbSq = log(mmsb1);
+  double lnMsb2Sq = log(mmsb2);
+  double lnMst1Sq = log(mmst1);
+  double lnMst2Sq = log(mmst2);
+  double lnMmsusy = log(mmsusy);
+  double lnMmt = log(mmt);
+  double lnMmu = log(mmu);
+  
+  double resmt =
+
+       + sqr(cs2t) * (
+          - 640/9
+          - 128/9*zt2
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst1,1)*sn2t * (
+          + 32/3*mmsusy/mt*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst1,1) * (
+          + 16/3*mmst1
+          - 8*mmsusy
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst1,2)*sn2t * (
+          + 32/3*mmst1*mmsusy/mt*mgl
+          - 32/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst1,2) * (
+          - 56/3*mmst1*mmsusy
+          + 56/3*sqr(mmst1)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst1,3) * (
+          - 32/3*sqr(mmst1)*mmsusy
+          + 32/3*pow(mmst1,3)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst2,1)*sn2t * (
+          - 32/3*mmsusy/mt*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst2,1) * (
+          + 16/3*mmst2
+          - 8*mmsusy
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst2,2)*sn2t * (
+          - 32/3*mmst2*mmsusy/mt*mgl
+          + 32/3*sqr(mmst2)/mt*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst2,2) * (
+          - 56/3*mmst2*mmsusy
+          + 56/3*sqr(mmst2)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmst2,3) * (
+          - 32/3*sqr(mmst2)*mmsusy
+          + 32/3*pow(mmst2,3)
+          )
+
+       + fin(mmgl,mmsusy) * (
+          - 16/3
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst1,1)*sn2t * (
+          + 4/3*mmsb1/mt*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst1,1) * (
+          - 1/3*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb1*mmst1/mt*mgl
+          + 4/3*sqr(mmsb1)/mt*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst1,2) * (
+          + mmsb1*sqr(mmst1
+          - mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb1*sqr(mmst1)
+          - 4/3*sqr(mmsb1)*mmst1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst2,1)*sn2t * (
+          - 4/3*mmsb1/mt*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst2,1) * (
+          - 1/3*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb1*mmst2/mt*mgl
+          - 4/3*sqr(mmsb1)/mt*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst2,2) * (
+          + mmsb1*sqr(mmst2
+          - mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb1*sqr(mmst2)
+          - 4/3*sqr(mmsb1)*mmst2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst1,1)*sn2t * (
+          + 4/3*mmsb2/mt*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst1,1) * (
+          - 1/3*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb2*mmst1/mt*mgl
+          + 4/3*sqr(mmsb2)/mt*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst1,2) * (
+          + mmsb2*sqr(mmst1
+          - mmsb2)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb2*sqr(mmst1)
+          - 4/3*sqr(mmsb2)*mmst1
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst2,1)*sn2t * (
+          - 4/3*mmsb2/mt*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst2,1) * (
+          - 1/3*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb2*mmst2/mt*mgl
+          - 4/3*sqr(mmsb2)/mt*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst2,2) * (
+          + mmsb2*sqr(mmst2
+          - mmsb2)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb2*sqr(mmst2)
+          - 4/3*sqr(mmsb2)*mmst2
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,1)*sn2t * (
+          + 88/9*mmst1/mt*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 5/3*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 154/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 34/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,1) * (
+          + 22/9*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,2) * (
+          + 12*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst1,3) * (
+          + 16/3*pow(mmst1,3)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,1)*sn2t * (
+          - 16/9*mmst1/mt*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 5/3*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 26/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 34/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,1) * (
+          + 16/9*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmst1*mmst2/mt*mgl
+          - 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 26/9*mmst1*mmst2
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,2) * (
+          - 17/9*mmst1*sqr(mmst2
+          - mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmst2,3) * (
+          + 4/3*mmst1*sqr(mmst2)
+          - 4/3*sqr(mmst1)*mmst2
+          )
+
+       + fin(mmst1,mmgl)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 128/9*mmst1
+          )
+
+       + fin(mmst1,mmsb1)*den(mmgl - mmst1,1) * (
+          - 2/3*mmst1
+          )
+
+       + fin(mmst1,mmsb1)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb1*mmst1/mt*mgl
+          + 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmsb1)*den(mmgl - mmst1,2) * (
+          + mmsb1*mmst1
+          - 7/3*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmsb1)*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb1*sqr(mmst1)
+          - 4/3*pow(mmst1,3)
+          )
+
+       + fin(mmst1,mmsb2)*den(mmgl - mmst1,1) * (
+          - 2/3*mmst1
+          )
+
+       + fin(mmst1,mmsb2)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb2*mmst1/mt*mgl
+          + 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmsb2)*den(mmgl - mmst1,2) * (
+          + mmsb2*mmst1
+          - 7/3*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmsb2)*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb2*sqr(mmst1)
+          - 4/3*pow(mmst1,3)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,1)*sn2t * (
+          - 4/9*mmst1/mt*mgl
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 11/9*mmst1
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          - 8/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,1) * (
+          + mmst1
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmst1*mmst2/mt*mgl
+          + 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 26/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,2) * (
+          + mmst1*mmst2
+          + 5/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst1,3) * (
+          + 4/3*sqr(mmst1)*mmst2
+          - 4/3*pow(mmst1,3)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,1)*sn2t * (
+          + 4/9*mmst1/mt*mgl
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 11/9*mmst1
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          + 8/9*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,1) * (
+          + 1/9*mmst1
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,2)*sn2t * (
+          - 4/3*mmst1*mmst2/mt*mgl
+          + 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 26/9*mmst1*mmst2
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,2) * (
+          + 5/9*mmst1*sqr(mmst2
+          + mmst1)
+          )
+
+       + fin(mmst1,mmst2)*den(mmgl - mmst2,3) * (
+          - 4/3*mmst1*sqr(mmst2)
+          + 4/3*sqr(mmst1)*mmst2
+          )
+
+       + fin(mmst1,mmsusy)*den(mmgl - mmst1,1) * (
+          - 16/3*mmst1
+          )
+
+       + fin(mmst1,mmsusy)*den(mmgl - mmst1,2)*sn2t * (
+          - 32/3*mmst1*mmsusy/mt*mgl
+          + 32/3*sqr(mmst1)/mt*mgl
+          )
+
+       + fin(mmst1,mmsusy)*den(mmgl - mmst1,2) * (
+          + 8*mmst1*mmsusy
+          - 56/3*sqr(mmst1)
+          )
+
+       + fin(mmst1,mmsusy)*den(mmgl - mmst1,3) * (
+          + 32/3*sqr(mmst1)*mmsusy
+          - 32/3*pow(mmst1,3)
+          )
+
+       + fin(mmst2,mmgl)*sqr(cs2t) * (
+          - 128/9
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,1)*sn2t * (
+          + 16/9*mmst2/mt*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 26/9*mmst1
+          + 11/9*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 26/9*sqr(mmst1)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 34/9*sqr(mmst1)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,1) * (
+          - 34/9*mmst1
+          - 2*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmst1*mmst2/mt*mgl
+          + 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 26/9*mmst1*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,2) * (
+          - 17/9*mmst1*sqr(mmst2
+          - mmst2)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst1,3) * (
+          - 4/3*mmst1*sqr(mmst2)
+          + 4/3*sqr(mmst1)*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,1)*sn2t * (
+          - 88/9*mmst2/mt*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 154/9*mmst1
+          - 139/9*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 154/9*sqr(mmst1)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 34/9*sqr(mmst1)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,1) * (
+          + 34/9*mmst1
+          + 56/9*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,2) * (
+          + 12*sqr(mmst2)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmst2,3) * (
+          + 16/3*pow(mmst2,3)
+          )
+
+       + fin(mmst2,mmgl)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 128/9*mmst1
+          )
+
+       + fin(mmst2,mmsb1)*den(mmgl - mmst2,1) * (
+          - 2/3*mmst2
+          )
+
+       + fin(mmst2,mmsb1)*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb1*mmst2/mt*mgl
+          - 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + fin(mmst2,mmsb1)*den(mmgl - mmst2,2) * (
+          + mmsb1*mmst2
+          - 7/3*sqr(mmst2)
+          )
+
+       + fin(mmst2,mmsb1)*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb1*sqr(mmst2)
+          - 4/3*pow(mmst2,3)
+          )
+
+       + fin(mmst2,mmsb2)*den(mmgl - mmst2,1) * (
+          - 2/3*mmst2
+          )
+
+       + fin(mmst2,mmsb2)*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb2*mmst2/mt*mgl
+          - 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + fin(mmst2,mmsb2)*den(mmgl - mmst2,2) * (
+          + mmsb2*mmst2
+          - 7/3*sqr(mmst2)
+          )
+
+       + fin(mmst2,mmsb2)*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb2*sqr(mmst2)
+          - 4/3*pow(mmst2,3)
+          )
+
+       + fin(mmst2,mmsusy)*den(mmgl - mmst2,1) * (
+          - 16/3*mmst2
+          )
+
+       + fin(mmst2,mmsusy)*den(mmgl - mmst2,2)*sn2t * (
+          + 32/3*mmst2*mmsusy/mt*mgl
+          - 32/3*sqr(mmst2)/mt*mgl
+          )
+
+       + fin(mmst2,mmsusy)*den(mmgl - mmst2,2) * (
+          + 8*mmst2*mmsusy
+          - 56/3*sqr(mmst2)
+          )
+
+       + fin(mmst2,mmsusy)*den(mmgl - mmst2,3) * (
+          + 32/3*sqr(mmst2)*mmsusy
+          - 32/3*pow(mmst2,3)
+          )
+
+       + lnMglSq*sqr(cs2t) * (
+          + 128/3
+          )
+
+       + sqr(lnMglSq)*sqr(cs2t) * (
+          - 64/9
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*sn2t * (
+          + 2/3*mmsb1/mt*mgl
+          + 2/3*mmsb2/mt*mgl
+          + 10*mmst1/mt*mgl
+          + 2/3*mmst2/mt*mgl
+          + 16/3*mmsusy/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 53/3*mmst1
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t * (
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 223/9*sqr(mmst1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 43/9*sqr(mmst1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2)*sn2t * (
+          - 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,3) * (
+          - 16/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,1) * (
+          - 1/2*mmsb1
+          - 1/2*mmsb2
+          - 73/6*mmst1
+          - 1/2*mmst2
+          + 4/3*mmsusy
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,2)*sn2t * (
+          + 2/3*mmsb1*mmst1/mt*mgl
+          + 2/3*mmsb2*mmst1/mt*mgl
+          + 2/3*mmst1*mmst2/mt*mgl
+          - 16*mmst1*mmsusy/mt*mgl
+          - 122/9*sqr(mmst1)/mt*mgl
+          + 32/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 53/6*sqr(mmst1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1)*sn2t * (
+          + 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,2)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,2) * (
+          - 7/6*mmsb1*mmst1
+          - 7/6*mmsb2*mmst1
+          - 7/6*mmst1*mmst2
+          + 52/3*mmst1*mmsusy
+          + 151/9*sqr(mmst1)
+          - 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,3)*sn2t * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,3) * (
+          - 2/3*mmsb1*sqr(mmst1)
+          - 2/3*mmsb2*sqr(mmst1)
+          - 32/3*mmst1*sqr(mmsusy)
+          - 2/3*sqr(mmst1)*mmst2
+          + 16*sqr(mmst1)*mmsusy
+          + 46/3*pow(mmst1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst1,4) * (
+          + 4/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*sn2t * (
+          - 2/3*mmsb1/mt*mgl
+          - 2/3*mmsb2/mt*mgl
+          + 2/9*mmst1/mt*mgl
+          - 98/9*mmst2/mt*mgl
+          - 16/3*mmsusy/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 223/9*mmst1
+          - 64/9*mmst2
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t * (
+          - 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 223/9*sqr(mmst1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 43/9*sqr(mmst1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2)*sn2t * (
+          + 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,3) * (
+          + 16/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,1) * (
+          - 1/2*mmsb1
+          - 1/2*mmsb2
+          + 109/18*mmst1
+          - 101/18*mmst2
+          + 4/3*mmsusy
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2)*sn2t * (
+          - 2/3*mmsb1*mmst2/mt*mgl
+          - 2/3*mmsb2*mmst2/mt*mgl
+          - 14/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          + 16*mmst2*mmsusy/mt*mgl
+          + 38/3*sqr(mmst2)/mt*mgl
+          - 32/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 53/6*sqr(mmst2)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1)*sn2t * (
+          + 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,2) * (
+          - 7/6*mmsb1*mmst2
+          - 7/6*mmsb2*mmst2
+          + 11/18*mmst1*mmst2
+          + 8/3*sqr(mmst1)
+          + 52/3*mmst2*mmsusy
+          + 53/3*sqr(mmst2)
+          - 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,3)*sn2t * (
+          + 8/9*pow(mmst2,3)/mt*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,3) * (
+          - 2/3*mmsb1*sqr(mmst2)
+          - 2/3*mmsb2*sqr(mmst2)
+          - 2/3*mmst1*sqr(mmst2)
+          - 32/3*mmst2*sqr(mmsusy)
+          + 16*sqr(mmst2)*mmsusy
+          + 46/3*pow(mmst2,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmst2,4) * (
+          + 4/9*pow(mmst2,4)
+          )
+
+       + sqr(lnMglSq) * (
+          - 166/9
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst1,1)*sn2t * (
+          - 4/3*mmsb1/mt*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst1,1) * (
+          + mmsb1
+          - 4/3*mmst1
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb1*mmst1/mt*mgl
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst1,2) * (
+          + 7/3*mmsb1*mmst1
+          - 14/3*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb1*sqr(mmst1)
+          - 8/3*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst2,1)*sn2t * (
+          + 4/3*mmsb1/mt*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst2,1) * (
+          + mmsb1
+          - 4/3*mmst2
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb1*mmst2/mt*mgl
+          - 8/3*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst2,2) * (
+          + 7/3*mmsb1*mmst2
+          - 14/3*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb1*sqr(mmst2)
+          - 8/3*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMsbSq * (
+          + 4/3
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst1,1)*sn2t * (
+          - 4/3*mmsb2/mt*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst1,1) * (
+          + mmsb2
+          - 4/3*mmst1
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 4/3*mmsb2*mmst1/mt*mgl
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst1,2) * (
+          + 7/3*mmsb2*mmst1
+          - 14/3*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst1,3) * (
+          + 4/3*mmsb2*sqr(mmst1)
+          - 8/3*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst2,1)*sn2t * (
+          + 4/3*mmsb2/mt*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst2,1) * (
+          + mmsb2
+          - 4/3*mmst2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst2,2)*sn2t * (
+          + 4/3*mmsb2*mmst2/mt*mgl
+          - 8/3*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst2,2) * (
+          + 7/3*mmsb2*mmst2
+          - 14/3*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmst2,3) * (
+          + 4/3*mmsb2*sqr(mmst2)
+          - 8/3*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMsb2Sq * (
+          + 4/3
+          )
+
+       + lnMglSq*lnMst1Sq*sn2t * (
+          - 208/9/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*sqr(cs2t) * (
+          - 64/9
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*sn2t * (
+          - 28/3*mmst1/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 121/9*mmst1
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          + 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          + 287/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          - 43/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          + 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,3) * (
+          + 16/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,1) * (
+          - 34/3*mmst1
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2)*sn2t * (
+          + 172/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 11/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,2) * (
+          - 130/3*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,3)*sn2t * (
+          + 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          + 16/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,3) * (
+          - 212/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst1,4) * (
+          - 8/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*sn2t * (
+          + 20/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          + 5/3*mmst1
+          - 22/9*mmst2
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          - 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          - 31/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          + 43/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          - 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,3) * (
+          - 16/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,1) * (
+          - 34/9*mmst1
+          + 2/9*mmst2
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*sn2t * (
+          + 4*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst1)/mt*mgl
+          - 8/3*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 32/9*mmst1*mmst2
+          - 52/9*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,2) * (
+          + 37/9*mmst1*mmst2
+          - 8/3*sqr(mmst1)
+          + 10/9*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          - 16/9*mmst1*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmst2,3) * (
+          + 28/9*mmst1*sqr(mmst2)
+          - 8/3*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 256/9*mmgl
+          + 256/9*mmst1
+          )
+
+       + lnMglSq*lnMst1Sq * (
+          + 52/9
+          )
+
+       + lnMglSq*lnMst2Sq*sn2t * (
+          + 208/9/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*sqr(cs2t) * (
+          + 64/3
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*sn2t * (
+          - 28/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          + 16/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 53/9*mmst1
+          - 16/9*mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          - 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          + 31/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          - 43/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          + 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,3) * (
+          + 16/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,1) * (
+          + 61/9*mmst1
+          + 25/9*mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 28/9*mmst1*mmst2/mt*mgl
+          + 32/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 32/9*mmst1*mmst2
+          - 52/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,2) * (
+          + 53/9*mmst1*mmst2
+          + 2*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          - 16/9*sqr(mmst1)*mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst1,3) * (
+          + 28/9*sqr(mmst1)*mmst2
+          - 8/3*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*sn2t * (
+          - 8/9*mmst1/mt*mgl
+          + 92/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 16/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          + 287/9*mmst1
+          + 166/9*mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          + 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          - 287/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          + 43/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          - 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,3) * (
+          - 16/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,1) * (
+          - 59/9*mmst1
+          - 161/9*mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*sn2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst1)/mt*mgl
+          - 164/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          + 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 11/9*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,4)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,2) * (
+          - 16/9*mmst1*mmst2
+          - 8/3*sqr(mmst1)
+          - 398/9*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,3)*sn2t * (
+          - 16/9*pow(mmst2,3)/mt*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          + 16/9*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,3) * (
+          - 212/9*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmst2,4) * (
+          - 8/9*pow(mmst2,4)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 256/9*mmgl
+          - 256/9*mmst1
+          )
+
+       + lnMglSq*lnMst2Sq * (
+          + 52/9
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst1,1)*sn2t * (
+          - 32/3*mmsusy/mt*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst1,1) * (
+          - 8/3*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst1,2)*sn2t * (
+          + 32*mmst1*mmsusy/mt*mgl
+          - 64/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst1,2) * (
+          - 104/3*mmst1*mmsusy
+          + 16*sqr(mmsusy)
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst1,3) * (
+          + 64/3*mmst1*sqr(mmsusy)
+          - 32*sqr(mmst1)*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst2,1)*sn2t * (
+          + 32/3*mmsusy/mt*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst2,1) * (
+          - 8/3*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst2,2)*sn2t * (
+          - 32*mmst2*mmsusy/mt*mgl
+          + 64/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst2,2) * (
+          - 104/3*mmst2*mmsusy
+          + 16*sqr(mmsusy)
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmst2,3) * (
+          + 64/3*mmst2*sqr(mmsusy)
+          - 32*sqr(mmst2)*mmsusy
+          )
+
+    + lnMglSq*lnMmt*den(mmgl - mmst1,1)*sn2t * (
+          + 16/3*mmst1/mt*mgl
+          )
+
+       + lnMglSq*lnMmt*den(mmgl - mmst1,1) * (
+          - 16/3*mmst1
+          )
+
+       + lnMglSq*lnMmt*den(mmgl - mmst1,2) * (
+          - 8/3*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMmt*den(mmgl - mmst2,1)*sn2t * (
+          - 16/3*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMmt*den(mmgl - mmst2,1) * (
+          - 16/3*mmst2
+          )
+
+       + lnMglSq*lnMmt*den(mmgl - mmst2,2) * (
+          - 8/3*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMmt * (
+          - 40/3
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,1)*sn2t * (
+          - 16*mmst1/mt*mgl
+          + 16/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 16*mmst1
+          + 16/9*mmst2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          + 128/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,1) * (
+          + 332/9*mmst1
+          - 16/9*mmst2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,2)*sn2t * (
+          + 16/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 32/9*mmst1*mmst2
+          - 32/3*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,2) * (
+          - 32/9*mmst1*mmst2
+          + 178/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          + 16/9*sqr(mmst1)*mmst2
+          - 16/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst1,3) * (
+          - 16/9*sqr(mmst1)*mmst2
+          + 8/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,1)*sn2t * (
+          - 16/9*mmst1/mt*mgl
+          + 16*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          + 16*mmst1
+          - 16/9*mmst2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          - 128/9*sqr(mmst1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,1) * (
+          - 16/9*mmst1
+          + 332/9*mmst2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,2)*sn2t * (
+          - 16/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 32/9*mmst1*mmst2
+          - 32/3*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,2) * (
+          - 32/9*mmst1*mmst2
+          + 178/9*sqr(mmst2)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          + 16/9*mmst1*sqr(mmst2)
+          - 16/9*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmst2,3) * (
+          - 16/9*mmst1*sqr(mmst2)
+          + 8/9*pow(mmst2,3)
+          )
+
+       + lnMglSq*lnMmu * (
+          + 36
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1)*sn2t * (
+          - 8/3*mmsb1/mt*mgl
+          - 8/3*mmsb2/mt*mgl
+          - 176/3*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          + 128/3*mmsusy/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 428/9*mmst1
+          + 16/9*mmst2
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 796/9*sqr(mmst1)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          - 76/3*sqr(mmst1)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,1) * (
+          + 2*mmsb1
+          + 2*mmsb2
+          + 290/9*mmst1
+          + 2/9*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMglSq*den(mmgl - mmst1,2)*sn2t * (
+          - 8/3*mmsb1*mmst1/mt*mgl
+          - 8/3*mmsb2*mmst1/mt*mgl
+          - 8/9*mmst1*mmst2/mt*mgl
+          - 64/3*mmst1*mmsusy/mt*mgl
+          + 56/9*sqr(mmst1)/mt*mgl
+          + 32*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 32/9*mmst1*mmst2
+          - 238/9*sqr(mmst1)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1) * (
+          - 8/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,2) * (
+          + 14/3*mmsb1*mmst1
+          + 14/3*mmsb2*mmst1
+          + 10/9*mmst1*mmst2
+          + 16/3*mmst1*mmsusy
+          - 290/9*sqr(mmst1)
+          - 24*sqr(mmsusy)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          + 16/9*sqr(mmst1)*mmst2
+          - 16/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmst1,3) * (
+          + 8/3*mmsb1*sqr(mmst1)
+          + 8/3*mmsb2*sqr(mmst1)
+          - 32*mmst1*sqr(mmsusy)
+          + 8/9*sqr(mmst1)*mmst2
+          + 64/3*sqr(mmst1)*mmsusy
+          - 200/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1)*sn2t * (
+          + 8/3*mmsb1/mt*mgl
+          + 8/3*mmsb2/mt*mgl
+          + 8/9*mmst1/mt*mgl
+          + 176/3*mmst2/mt*mgl
+          - 128/3*mmsusy/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          + 812/9*mmst1
+          + 368/9*mmst2
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 796/9*sqr(mmst1)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          + 76/3*sqr(mmst1)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,1) * (
+          + 2*mmsb1
+          + 2*mmsb2
+          - 226/9*mmst1
+          + 62/9*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMglSq*den(mmgl - mmst2,2)*sn2t * (
+          + 8/3*mmsb1*mmst2/mt*mgl
+          + 8/3*mmsb2*mmst2/mt*mgl
+          + 8/9*mmst1*mmst2/mt*mgl
+          + 64/3*mmst2*mmsusy/mt*mgl
+          - 56/9*sqr(mmst2)/mt*mgl
+          - 32*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 32/9*mmst1*mmst2
+          - 238/9*sqr(mmst2)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          + 8/9*pow(mmst1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,2) * (
+          + 14/3*mmsb1*mmst2
+          + 14/3*mmsb2*mmst2
+          + 2/9*mmst1*mmst2
+          - 8/9*sqr(mmst1)
+          + 16/3*mmst2*mmsusy
+          - 298/9*sqr(mmst2)
+          - 24*sqr(mmsusy)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          + 16/9*mmst1*sqr(mmst2)
+          - 16/9*pow(mmst2,3)
+          )
+
+       + lnMglSq*den(mmgl - mmst2,3) * (
+          + 8/3*mmsb1*sqr(mmst2)
+          + 8/3*mmsb2*sqr(mmst2)
+          + 8/9*mmst1*sqr(mmst2)
+          - 32*mmst2*sqr(mmsusy)
+          + 64/3*sqr(mmst2)*mmsusy
+          - 200/9*pow(mmst2,3)
+          )
+
+       + lnMglSq * (
+          + 232/3
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst1,1)*sn2t * (
+          + 2/3*mmsb1/mt*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst1,1) * (
+          - 7/6*mmsb1
+          + 2/3*mmst1
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst1,2)*sn2t * (
+          + 8/3*mmsb1*mmst1/mt*mgl
+          - 4/3*sqr(mmsb1)/mt*mgl
+          - 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst1,2) * (
+          - 4*mmsb1*sqr(mmst1
+          + mmsb1)
+          + 7/3*sqr(mmst1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst1,3) * (
+          - 8/3*mmsb1*sqr(mmst1)
+          + 4/3*sqr(mmsb1)*mmst1
+          + 4/3*pow(mmst1,3)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst2,1)*sn2t * (
+          - 2/3*mmsb1/mt*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst2,1) * (
+          - 7/6*mmsb1
+          + 2/3*mmst2
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst2,2)*sn2t * (
+          - 8/3*mmsb1*mmst2/mt*mgl
+          + 4/3*sqr(mmsb1)/mt*mgl
+          + 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst2,2) * (
+          - 4*mmsb1*sqr(mmst2
+          + mmsb1)
+          + 7/3*sqr(mmst2)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmst2,3) * (
+          - 8/3*mmsb1*sqr(mmst2)
+          + 4/3*sqr(mmsb1)*mmst2
+          + 4/3*pow(mmst2,3)
+          )
+
+       + sqr(lnMsbSq) * (
+          - 1/3
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmst1,1) * (
+          + 4/3*mmsb1
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 4*mmsb1*mmst1/mt*mgl
+          + 8/3*sqr(mmsb1)/mt*mgl
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmst1,2) * (
+          + 17/3*mmsb1*mmst1
+          - 2*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmst1,3) * (
+          + 4*mmsb1*sqr(mmst1)
+          - 8/3*sqr(mmsb1)*mmst1
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmst2,1) * (
+          + 4/3*mmsb1
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmst2,2)*sn2t * (
+          + 4*mmsb1*mmst2/mt*mgl
+          - 8/3*sqr(mmsb1)/mt*mgl
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmst2,2) * (
+          + 17/3*mmsb1*mmst2
+          - 2*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmst2,3) * (
+          + 4*mmsb1*sqr(mmst2)
+          - 8/3*sqr(mmsb1)*mmst2
+          )
+
+       + lnMsbSq*lnMmt * (
+          - 2/3
+          )
+
+       + lnMsbSq*den(mmgl - mmst1,1)*sn2t * (
+          + 8/3*mmsb1/mt*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmst1,1) * (
+          + 2*mmst1
+          )
+
+       + lnMsbSq*den(mmgl - mmst1,2)*sn2t * (
+          + 4*sqr(mmsb1)/mt*mgl
+          - 4*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmst1,2) * (
+          + 4/3*mmsb1*mmst1
+          - 3*sqr(mmsb1)
+          + 7*sqr(mmst1)
+          )
+
+       + lnMsbSq*den(mmgl - mmst1,3) * (
+          - 4*sqr(mmsb1)*mmst1
+          + 4*pow(mmst1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmst2,1)*sn2t * (
+          - 8/3*mmsb1/mt*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmst2,1) * (
+          + 2*mmst2
+          )
+
+       + lnMsbSq*den(mmgl - mmst2,2)*sn2t * (
+          - 4*sqr(mmsb1)/mt*mgl
+          + 4*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmst2,2) * (
+          + 4/3*mmsb1*mmst2
+          - 3*sqr(mmsb1)
+          + 7*sqr(mmst2)
+          )
+
+       + lnMsbSq*den(mmgl - mmst2,3) * (
+          - 4*sqr(mmsb1)*mmst2
+          + 4*pow(mmst2,3)
+          )
+
+       + lnMsbSq * (
+          + 1/9
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst1,1)*sn2t * (
+          + 2/3*mmsb2/mt*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst1,1) * (
+          - 7/6*mmsb2
+          + 2/3*mmst1
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst1,2)*sn2t * (
+          + 8/3*mmsb2*mmst1/mt*mgl
+          - 4/3*sqr(mmsb2)/mt*mgl
+          - 4/3*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst1,2) * (
+          - 4*mmsb2*sqr(mmst1
+          + mmsb2)
+          + 7/3*sqr(mmst1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst1,3) * (
+          - 8/3*mmsb2*sqr(mmst1)
+          + 4/3*sqr(mmsb2)*mmst1
+          + 4/3*pow(mmst1,3)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst2,1)*sn2t * (
+          - 2/3*mmsb2/mt*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst2,1) * (
+          - 7/6*mmsb2
+          + 2/3*mmst2
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst2,2)*sn2t * (
+          - 8/3*mmsb2*mmst2/mt*mgl
+          + 4/3*sqr(mmsb2)/mt*mgl
+          + 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst2,2) * (
+          - 4*mmsb2*sqr(mmst2
+          + mmsb2)
+          + 7/3*sqr(mmst2)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmst2,3) * (
+          - 8/3*mmsb2*sqr(mmst2)
+          + 4/3*sqr(mmsb2)*mmst2
+          + 4/3*pow(mmst2,3)
+          )
+
+       + sqr(lnMsb2Sq) * (
+          - 1/3
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmst1,1) * (
+          + 4/3*mmsb2
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 4*mmsb2*mmst1/mt*mgl
+          + 8/3*sqr(mmsb2)/mt*mgl
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmst1,2) * (
+          + 17/3*mmsb2*mmst1
+          - 2*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmst1,3) * (
+          + 4*mmsb2*sqr(mmst1)
+          - 8/3*sqr(mmsb2)*mmst1
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmst2,1) * (
+          + 4/3*mmsb2
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmst2,2)*sn2t * (
+          + 4*mmsb2*mmst2/mt*mgl
+          - 8/3*sqr(mmsb2)/mt*mgl
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmst2,2) * (
+          + 17/3*mmsb2*mmst2
+          - 2*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmst2,3) * (
+          + 4*mmsb2*sqr(mmst2)
+          - 8/3*sqr(mmsb2)*mmst2
+          )
+
+       + lnMsb2Sq*lnMmt * (
+          - 2/3
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst1,1)*sn2t * (
+          + 8/3*mmsb2/mt*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst1,1) * (
+          + 2*mmst1
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst1,2)*sn2t * (
+          + 4*sqr(mmsb2)/mt*mgl
+          - 4*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst1,2) * (
+          + 4/3*mmsb2*mmst1
+          - 3*sqr(mmsb2)
+          + 7*sqr(mmst1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst1,3) * (
+          - 4*sqr(mmsb2)*mmst1
+          + 4*pow(mmst1,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst2,1)*sn2t * (
+          - 8/3*mmsb2/mt*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst2,1) * (
+          + 2*mmst2
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst2,2)*sn2t * (
+          - 4*sqr(mmsb2)/mt*mgl
+          + 4*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst2,2) * (
+          + 4/3*mmsb2*mmst2
+          - 3*sqr(mmsb2)
+          + 7*sqr(mmst2)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmst2,3) * (
+          - 4*sqr(mmsb2)*mmst2
+          + 4*pow(mmst2,3)
+          )
+
+       + lnMsb2Sq * (
+          + 1/9
+          )
+
+       + lnMst1Sq*sn2t * (
+          + 280/9/mt*mgl
+          )
+
+       + lnMst1Sq*sqr(cs2t) * (
+          + 64/9
+          )
+
+       + sqr(lnMst1Sq)*sn2t * (
+          + 8/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*sn2t * (
+          - 2/9*mmst1/mt*mgl
+          - 4/9*mmst2/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          - 14/9*mmst1
+          - 11/9*mmst2
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn4t*cs2t * (
+          - 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 77/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,1) * (
+          - 2/3*mmsb1
+          - 2/3*mmsb2
+          + 419/18*mmst1
+          + mmst2
+          - 16/3*mmsusy
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,2)*sn2t * (
+          + 2*mmsb1*mmst1/mt*mgl
+          - 4/3*sqr(mmsb1)/mt*mgl
+          + 2*mmsb2*mmst1/mt*mgl
+          - 4/3*sqr(mmsb2)/mt*mgl
+          + 2*mmst1*mmst2/mt*mgl
+          + 16*mmst1*mmsusy/mt*mgl
+          - 86/9*sqr(mmst1)/mt*mgl
+          - 4/3*sqr(mmst2)/mt*mgl
+          - 32/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 26/9*mmst1*mmst2
+          - 85/18*sqr(mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,2) * (
+          - 17/6*mmsb1*sqr(mmst1
+          + mmsb1)
+          - 17/6*mmsb2*sqr(mmst1
+          + mmsb2)
+          + 1/18*mmst1*mmst2
+          - 68/3*mmst1*mmsusy
+          + 92/3*sqr(sqr(mmst1)
+          + mmst2)
+          + 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,3)*sn2t * (
+          - 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          - 16/9*pow(mmst1,3)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,3) * (
+          - 2*mmsb1*sqr(mmst1)
+          + 4/3*sqr(mmsb1)*mmst1
+          - 2*mmsb2*sqr(mmst1)
+          + 4/3*sqr(mmsb2)*mmst1
+          + 4/3*mmst1*sqr(mmst2)
+          + 32/3*mmst1*sqr(mmsusy)
+          - 2*sqr(mmst1)*mmst2
+          - 16*sqr(mmst1)*mmsusy
+          + 110/9*pow(mmst1,3)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst1,4) * (
+          + 4/9*pow(mmst1,4)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,1)*sn2t * (
+          - 2/3*mmst1/mt*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 13/9*mmst1
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,1) * (
+          + 17/18*mmst1
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmst2,2) * (
+          - 2/3*mmst1*mmst2
+          )
+
+       + sqr(lnMst1Sq)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 128/9*mmgl
+          - 64/9*mmst1
+          )
+
+       + sqr(lnMst1Sq) * (
+          + 41/9
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*sn2t * (
+          - 8/9*mmst1/mt*mgl
+          + 8/3*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 16/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 5/9*mmst1
+          + 38/9*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          + 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          + 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          - 5/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 17/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          - 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          + 32/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,3) * (
+          - 16/9*pow(mmst1,4)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,1) * (
+          - 11/3*mmst1
+          - 34/9*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 20/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          + 8/3*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 28/3*mmst1*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          + 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,4)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,2) * (
+          - 11/3*mmst1*mmst2
+          - 8/9*sqr(mmst1)
+          - 2*sqr(mmst2)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          + 16/9*sqr(mmst1)*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst1,3) * (
+          - 8/3*mmst1*sqr(mmst2)
+          + 20/9*sqr(mmst1)*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*sn2t * (
+          - 8/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          + 11/9*mmst1
+          + 22/9*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          - 8/3*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn4t*
+      cs2t * (
+          + 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          + 5/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 17/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2)*sn2t
+       * (
+          + 16/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,3) * (
+          + 16/9*pow(mmst1,4)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,1) * (
+          + 17/9*mmst1
+          - 2/9*mmst2
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*sn2t * (
+          - 4*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          + 8/3*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 32/9*mmst1*mmst2
+          + 52/9*sqr(mmst2)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1)*sn2t
+       * (
+          + 8/9*pow(mmst1,3)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          - 32/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,4)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,2) * (
+          - 25/9*mmst1*mmst2
+          + 8/3*sqr(mmst1)
+          - 10/9*sqr(mmst2)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          + 16/9*mmst1*sqr(mmst2)
+          )
+
+       + lnMst1Sq*lnMst2Sq*den(mmgl - mmst2,3) * (
+          - 28/9*mmst1*sqr(mmst2)
+          + 8/3*pow(mmst2,3)
+          )
+
+       + lnMst1Sq*lnMmsusy*den(mmgl - mmst1,1) * (
+          + 32/3*mmsusy
+          )
+
+       + lnMst1Sq*lnMmsusy*den(mmgl - mmst1,2)*sn2t * (
+          - 32*mmst1*mmsusy/mt*mgl
+          + 64/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmsusy*den(mmgl - mmst1,2) * (
+          + 136/3*mmst1*mmsusy
+          - 16*sqr(mmsusy)
+          )
+
+       + lnMst1Sq*lnMmsusy*den(mmgl - mmst1,3) * (
+          - 64/3*mmst1*sqr(mmsusy)
+          + 32*sqr(mmst1)*mmsusy
+          )
+
+       + lnMst1Sq*lnMmt*den(mmgl - mmst1,1)*sn2t * (
+          - 16/3*mmst1/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmt*den(mmgl - mmst1,1) * (
+          + 16/3*mmst1
+          )
+
+       + lnMst1Sq*lnMmt*den(mmgl - mmst1,2) * (
+          + 8/3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMmt * (
+          - 2/3
+          )
+
+       + lnMst1Sq*lnMmu*sn2t * (
+          + 64/9/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmu*sqr(cs2t) * (
+          + 64/9
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,1)*sn2t * (
+          + 16*mmst1/mt*mgl
+          - 16/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 16*mmst1
+          - 16/9*mmst2
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          - 128/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,1) * (
+          - 332/9*mmst1
+          + 16/9*mmst2
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,2)*sn2t * (
+          - 16/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 32/9*mmst1*mmst2
+          + 32/3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,2) * (
+          + 32/9*mmst1*mmst2
+          - 178/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          - 16/9*sqr(mmst1)*mmst2
+          + 16/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*lnMmu*den(mmgl - mmst1,3) * (
+          + 16/9*sqr(mmst1)*mmst2
+          - 8/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*lnMmu*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 128/9*mmst1
+          )
+
+       + lnMst1Sq*lnMmu * (
+          - 128/9
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*sn2t * (
+          + 172/3*mmst1/mt*mgl
+          - 28/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          + 16/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 229/9*mmst1
+          - 49/9*mmst2
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t * (
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 718/9*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 34/3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,1) * (
+          - 2*mmsb1
+          - 2*mmsb2
+          - 13/3*mmst1
+          + 43/9*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,2)*sn2t * (
+          + 8/3*mmsb1*mmst1/mt*mgl
+          - 4*sqr(mmsb1)/mt*mgl
+          + 8/3*mmsb2*mmst1/mt*mgl
+          - 4*sqr(mmsb2)/mt*mgl
+          + 8/9*mmst1*mmst2/mt*mgl
+          + 64/3*mmst1*mmsusy/mt*mgl
+          + 52/9*sqr(mmst1)/mt*mgl
+          - 4*sqr(mmst2)/mt*mgl
+          - 32*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,2)*sn4t*cs2t * (
+          + 8/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 110/9*mmst1*mmst2
+          + 16*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,2)*den(mmst1 - mmst2,1) * (
+          + 8/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,2) * (
+          - 6*mmsb1*mmst1
+          + 3*sqr(mmsb1)
+          - 6*mmsb2*mmst1
+          + 3*sqr(mmsb2)
+          + 56/9*mmst1*mmst2
+          - 48*mmst1*mmsusy
+          + 187/9*sqr(mmst1)
+          + 3*sqr(mmst2)
+          + 24*sqr(mmsusy)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,3)*sqr(cs2t) * (
+          - 16/9*sqr(mmst1)*mmst2
+          + 16/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst1,3) * (
+          - 8/3*mmsb1*sqr(mmst1)
+          + 4*sqr(mmsb1)*mmst1
+          - 8/3*mmsb2*sqr(mmst1)
+          + 4*sqr(mmsb2)*mmst1
+          + 4*mmst1*sqr(mmst2)
+          + 32*mmst1*sqr(mmsusy)
+          - 8/9*sqr(mmst1)*mmst2
+          - 64/3*sqr(mmst1)*mmsusy
+          + 92/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*sn2t * (
+          - 16/3*mmst1/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          + 8/9*mmst1/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 6*mmst1
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t * (
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 26/3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 34/3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,1) * (
+          + 52/9*mmst1
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          + 16/9*mmst1*mmst2
+          )
+
+       + lnMst1Sq*den(mmgl - mmst2,2) * (
+          - 40/9*mmst1*mmst2
+          )
+
+       + lnMst1Sq*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 128/3*mmgl
+          - 640/9*mmst1
+          )
+
+       + lnMst1Sq * (
+          + 5/9
+          )
+
+       + lnMst2Sq*sn2t * (
+          - 280/9/mt*mgl
+          )
+
+       + lnMst2Sq*sqr(cs2t) * (
+          - 64
+          )
+
+       + sqr(lnMst2Sq)*sn2t * (
+          - 8/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*sqr(cs2t) * (
+          - 64/9
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,1)*sn2t * (
+          + 4/9*mmst1/mt*mgl
+          + 2/9*mmst2/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 8/3*mmst1
+          - 11/9*mmst2
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,1) * (
+          - 14/9*mmst1
+          + 1/2*mmst2
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,2)*sn2t * (
+          + 8/3*mmst1*mmst2/mt*mgl
+          - 4/3*sqr(mmst1)/mt*mgl
+          - 4/3*sqr(mmst2)/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 26/9*mmst1*mmst2
+          + 26/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,2) * (
+          - 10/9*mmst1*mmst2
+          - 5/9*sqr(sqr(mmst1)
+          + mmst2)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst1,3) * (
+          + 4/3*mmst1*sqr(mmst2)
+          - 8/3*sqr(mmst1)*mmst2
+          + 4/3*pow(mmst1,3)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*sn2t * (
+          + 2/3*mmst2/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          + 16/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 77/9*mmst1
+          - 34/3*mmst2
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn4t*cs2t * (
+          - 16/9*sqr(mmst1)/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 77/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 13/9*sqr(mmst1)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,1) * (
+          - 2/3*mmsb1
+          - 2/3*mmsb2
+          + 13/9*mmst1
+          + 149/6*mmst2
+          - 16/3*mmsusy
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,2)*sn2t * (
+          - 2*mmsb1*mmst2/mt*mgl
+          + 4/3*sqr(mmsb1)/mt*mgl
+          - 2*mmsb2*mmst2/mt*mgl
+          + 4/3*sqr(mmsb2)/mt*mgl
+          + 2/3*mmst1*mmst2/mt*mgl
+          - 16*mmst2*mmsusy/mt*mgl
+          + 74/9*sqr(mmst2)/mt*mgl
+          + 32/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          - 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 137/18*sqr(mmst2)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,2) * (
+          - 17/6*mmsb1*sqr(mmst2
+          + mmsb1)
+          - 17/6*mmsb2*sqr(mmst2
+          + mmsb2)
+          + 1/2*mmst1*mmst2
+          - 68/3*mmst2*mmsusy
+          + 281/9*sqr(mmst2)
+          + 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,3)*sn2t * (
+          + 8/9*pow(mmst2,3)/mt*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          - 16/9*pow(mmst2,3)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,3) * (
+          - 2*mmsb1*sqr(mmst2)
+          + 4/3*sqr(mmsb1)*mmst2
+          - 2*mmsb2*sqr(mmst2)
+          + 4/3*sqr(mmsb2)*mmst2
+          + 2/3*mmst1*sqr(mmst2)
+          + 32/3*mmst2*sqr(mmsusy)
+          - 16*sqr(mmst2)*mmsusy
+          + 98/9*pow(mmst2,3)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmst2,4) * (
+          + 4/9*pow(mmst2,4)
+          )
+
+       + sqr(lnMst2Sq)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 128/9*mmgl
+          + 64/9*mmst1
+          )
+
+       + sqr(lnMst2Sq) * (
+          + 41/9
+          )
+
+       + lnMst2Sq*lnMmsusy*den(mmgl - mmst2,1) * (
+          + 32/3*mmsusy
+          )
+
+       + lnMst2Sq*lnMmsusy*den(mmgl - mmst2,2)*sn2t * (
+          + 32*mmst2*mmsusy/mt*mgl
+          - 64/3*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmsusy*den(mmgl - mmst2,2) * (
+          + 136/3*mmst2*mmsusy
+          - 16*sqr(mmsusy)
+          )
+
+       + lnMst2Sq*lnMmsusy*den(mmgl - mmst2,3) * (
+          - 64/3*mmst2*sqr(mmsusy)
+          + 32*sqr(mmst2)*mmsusy
+          )
+
+       + lnMst2Sq*lnMmt*den(mmgl - mmst2,1)*sn2t * (
+          + 16/3*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmt*den(mmgl - mmst2,1) * (
+          + 16/3*mmst2
+          )
+
+       + lnMst2Sq*lnMmt*den(mmgl - mmst2,2) * (
+          + 8/3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*lnMmt * (
+          - 2/3
+          )
+
+       + lnMst2Sq*lnMmu*sn2t * (
+          - 64/9/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmu*sqr(cs2t) * (
+          - 64/9
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,1)*sn2t * (
+          + 16/9*mmst1/mt*mgl
+          - 16*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 16*mmst1
+          + 16/9*mmst2
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t)
+       * (
+          + 128/9*sqr(mmst1)
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,1) * (
+          + 16/9*mmst1
+          - 332/9*mmst2
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,2)*sn2t * (
+          + 16/9*mmst1*mmst2/mt*mgl
+          - 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 32/9*mmst1*mmst2
+          + 32/3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,2) * (
+          + 32/9*mmst1*mmst2
+          - 178/9*sqr(mmst2)
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          - 16/9*mmst1*sqr(mmst2)
+          + 16/9*pow(mmst2,3)
+          )
+
+       + lnMst2Sq*lnMmu*den(mmgl - mmst2,3) * (
+          + 16/9*mmst1*sqr(mmst2)
+          - 8/9*pow(mmst2,3)
+          )
+
+       + lnMst2Sq*lnMmu*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 128/9*mmst1
+          )
+
+       + lnMst2Sq*lnMmu * (
+          - 128/9
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*sn2t * (
+          + 4/9*mmst1/mt*mgl
+          + 52/9*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 37/3*mmst1
+          + 19/3*mmst2
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sn2t * (
+          + 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 26/3*sqr(mmst1)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 14*sqr(mmst1)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1)*den(mmst1 - mmst2,2) * (
+          + 8/9*pow(mmst1,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,1) * (
+          - 137/9*mmst1
+          - 23/3*mmst2
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,2)*sn2t * (
+          - 4*sqr(mmst1)/mt*mgl
+          + 4*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          + 94/9*mmst1*mmst2
+          + 26/3*sqr(mmst1)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,2) * (
+          - 82/9*mmst1*mmst2
+          - 5/3*sqr(mmst1)
+          - 3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst1,3) * (
+          - 4*mmst1*sqr(mmst2)
+          + 4*pow(mmst1,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*sn2t * (
+          + 8/3*mmst1/mt*mgl
+          - 520/9*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          - 16/9*mmst2/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 734/9*mmst1
+          - 152/3*mmst2
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sn2t * (
+          - 8/9*sqr(mmst1)/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 718/9*sqr(mmst1)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 14*sqr(mmst1)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1)*den(mmst1 - mmst2,2) * (
+          - 8/9*pow(mmst1,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,1) * (
+          - 2*mmsb1
+          - 2*mmsb2
+          + 50/3*mmst1
+          + 52/9*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,2)*sn2t * (
+          - 8/3*mmsb1*mmst2/mt*mgl
+          + 4*sqr(mmsb1)/mt*mgl
+          - 8/3*mmsb2*mmst2/mt*mgl
+          + 4*sqr(mmsb2)/mt*mgl
+          - 8/9*mmst1*mmst2/mt*mgl
+          - 64/3*mmst2*mmsusy/mt*mgl
+          - 16/9*sqr(mmst2)/mt*mgl
+          + 32*sqr(mmsusy)/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,2)*sn4t*cs2t * (
+          - 8/9*mmst1*mmst2/mt*mgl
+          + 8/9*sqr(mmst2)/mt*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 32/9*mmst1*mmst2
+          + 74/3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,2)*den(mmst1 - mmst2,1) * (
+          - 8/9*pow(mmst1,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,2) * (
+          - 6*mmsb1*mmst2
+          + 3*sqr(mmsb1)
+          - 6*mmsb2*mmst2
+          + 3*sqr(mmsb2)
+          + 22/9*mmst1*mmst2
+          + 8/9*sqr(mmst1)
+          - 48*mmst2*mmsusy
+          + 20*sqr(mmst2)
+          + 24*sqr(mmsusy)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,3)*sqr(cs2t) * (
+          - 16/9*mmst1*sqr(mmst2)
+          + 16/9*pow(mmst2,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmst2,3) * (
+          - 8/3*mmsb1*sqr(mmst2)
+          + 4*sqr(mmsb1)*mmst2
+          - 8/3*mmsb2*sqr(mmst2)
+          + 4*sqr(mmsb2)*mmst2
+          - 8/9*mmst1*sqr(mmst2)
+          + 32*mmst2*sqr(mmsusy)
+          - 64/3*sqr(mmst2)*mmsusy
+          + 128/9*pow(mmst2,3)
+          )
+
+       + lnMst2Sq*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 128/3*mmgl
+          + 640/9*mmst1
+          )
+
+       + lnMst2Sq * (
+          + 5/9
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst1,1)*sn2t * (
+          + 16/3*mmsusy/mt*mgl
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst1,1) * (
+          - 4*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst1,2) * (
+          - 16/3*mmst1*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst2,1)*sn2t * (
+          - 16/3*mmsusy/mt*mgl
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst2,1) * (
+          - 4*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmst2,2) * (
+          - 16/3*mmst2*mmsusy
+          )
+
+       + sqr(lnMmsusy) * (
+          + 8/3
+          )
+
+       + lnMmsusy*lnMmt * (
+          - 16/3
+          )
+
+       + lnMmsusy*den(mmgl - mmst1,1)*sn2t * (
+          - 128/3*mmsusy/mt*mgl
+          )
+
+       + lnMmsusy*den(mmgl - mmst1,1) * (
+          + 32*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmst1,2) * (
+          + 128/3*mmst1*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmst2,1)*sn2t * (
+          + 128/3*mmsusy/mt*mgl
+          )
+
+       + lnMmsusy*den(mmgl - mmst2,1) * (
+          + 32*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmst2,2) * (
+          + 128/3*mmst2*mmsusy
+          )
+
+       + lnMmsusy * (
+          + 152/9
+          )
+
+       + lnMmt*lnMmu * (
+          + 64/3
+          )
+
+       + lnMmt*den(mmgl - mmst1,1) * (
+          + 8/3*mmst1
+          )
+
+       + lnMmt*den(mmgl - mmst2,1) * (
+          + 8/3*mmst2
+          )
+
+       + lnMmt * (
+          + 8
+          )
+
+       + lnMmu*sqr(cs2t) * (
+          + 128/9
+          )
+
+       + sqr(lnMmu) * (
+          - 130/9
+          )
+
+       + lnMmu*den(mmgl - mmst1,1)*sn2t * (
+          + 8/9*mmst1/mt*mgl
+          - 16/9*mmst2/mt*mgl
+          )
+
+       + lnMmu*den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMmu*den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 88/9*mmst1
+          - 8/3*mmst2
+          )
+
+       + lnMmu*den(mmgl - mmst1,1) * (
+          - 58/3*mmst1
+          + 8/3*mmst2
+          )
+
+       + lnMmu*den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 16/9*mmst1*mmst2
+          + 16/9*sqr(mmst1)
+          )
+
+       + lnMmu*den(mmgl - mmst1,2) * (
+          + 16/9*mmst1*mmst2
+          - 8/9*sqr(mmst1)
+          )
+
+       + lnMmu*den(mmgl - mmst2,1)*sn2t * (
+          + 16/9*mmst1/mt*mgl
+          - 8/9*mmst2/mt*mgl
+          )
+
+       + lnMmu*den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + lnMmu*den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 8/3*mmst1
+          + 88/9*mmst2
+          )
+
+       + lnMmu*den(mmgl - mmst2,1) * (
+          + 8/3*mmst1
+          - 58/3*mmst2
+          )
+
+       + lnMmu*den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 16/9*mmst1*mmst2
+          + 16/9*sqr(mmst2)
+          )
+
+       + lnMmu*den(mmgl - mmst2,2) * (
+          + 16/9*mmst1*mmst2
+          - 8/9*sqr(mmst2)
+          )
+
+       + lnMmu * (
+          - 932/9
+          )
+
+       + den(mmgl - mmst1,1)*sn2t * (
+          + 4/3*mmsb1/mt*mgl*zt2
+          + 8*mmsb1/mt*mgl
+          + 4/3*mmsb2/mt*mgl*zt2
+          + 8*mmsb2/mt*mgl
+          + 88/9*mmst1/mt*mgl*zt2
+          + 676/9*mmst1/mt*mgl
+          + 4/3*mmst2/mt*mgl*zt2
+          + 56/9*mmst2/mt*mgl
+          + 32/3*mmsusy/mt*mgl*zt2
+          + 64*mmsusy/mt*mgl
+          )
+
+       + den(mmgl - mmst1,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + den(mmgl - mmst1,1)*sqr(cs2t) * (
+          + 41/9*mmst1*zt2
+          + 439/9*mmst1
+          - 8/3*mmst2
+          )
+
+       + den(mmgl - mmst1,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          - 20*sqr(mmst1)*zt2
+          - 140*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst1,1)*den(mmst1 - mmst2,1) * (
+          + 20/3*sqr(mmst1)*zt2
+          + 428/9*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst1,1) * (
+          - mmsb1*zt2
+          - 6*mmsb1
+          - mmsb2*zt2
+          - 6*mmsb2
+          + 50/9*mmst1*zt2
+          + 61/9*mmst1
+          - mmst2*zt2
+          - 10/3*mmst2
+          - 8*mmsusy*zt2
+          - 48*mmsusy
+          )
+
+       + den(mmgl - mmst1,2)*sqr(cs2t) * (
+          - 16/9*mmst1*mmst2
+          + 16/9*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst1,2) * (
+          - 4/3*mmsb1*mmst1*zt2
+          - 8*mmsb1*mmst1
+          - 4/3*mmsb2*mmst1*zt2
+          - 8*mmsb2*mmst1
+          - 4/3*mmst1*mmst2*zt2
+          - 56/9*mmst1*mmst2
+          - 32/3*mmst1*mmsusy*zt2
+          - 64*mmst1*mmsusy
+          + 44/3*sqr(mmst1)*zt2
+          + 868/9*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst1,3) * (
+          + 16/3*pow(mmst1,3)*zt2
+          + 112/3*pow(mmst1,3)
+          )
+
+       + den(mmgl - mmst2,1)*sn2t * (
+          - 4/3*mmsb1/mt*mgl*zt2
+          - 8*mmsb1/mt*mgl
+          - 4/3*mmsb2/mt*mgl*zt2
+          - 8*mmsb2/mt*mgl
+          - 4/3*mmst1/mt*mgl*zt2
+          - 56/9*mmst1/mt*mgl
+          - 88/9*mmst2/mt*mgl*zt2
+          - 676/9*mmst2/mt*mgl
+          - 32/3*mmsusy/mt*mgl*zt2
+          - 64*mmsusy/mt*mgl
+          )
+
+       + den(mmgl - mmst2,1)*sn4t*cs2t * (
+          - 8/9*mmst1/mt*mgl
+          + 8/9*mmst2/mt*mgl
+          )
+
+       + den(mmgl - mmst2,1)*sqr(cs2t) * (
+          - 20*mmst1*zt2
+          - 428/3*mmst1
+          - 139/9*mmst2*zt2
+          - 821/9*mmst2
+          )
+
+       + den(mmgl - mmst2,1)*den(mmst1 - mmst2,1)*sqr(cs2t) * (
+          + 20*sqr(mmst1)*zt2
+          + 140*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst2,1)*den(mmst1 - mmst2,1) * (
+          - 20/3*sqr(mmst1)*zt2
+          - 428/9*sqr(mmst1)
+          )
+
+       + den(mmgl - mmst2,1) * (
+          - mmsb1*zt2
+          - 6*mmsb1
+          - mmsb2*zt2
+          - 6*mmsb2
+          + 17/3*mmst1*zt2
+          + 398/9*mmst1
+          + 110/9*mmst2*zt2
+          + 163/3*mmst2
+          - 8*mmsusy*zt2
+          - 48*mmsusy
+          )
+
+       + den(mmgl - mmst2,2)*sqr(cs2t) * (
+          - 16/9*mmst1*mmst2
+          + 16/9*sqr(mmst2)
+          )
+
+       + den(mmgl - mmst2,2) * (
+          - 4/3*mmsb1*mmst2*zt2
+          - 8*mmsb1*mmst2
+          - 4/3*mmsb2*mmst2*zt2
+          - 8*mmsb2*mmst2
+          - 4/3*mmst1*mmst2*zt2
+          - 56/9*mmst1*mmst2
+          - 32/3*mmst2*mmsusy*zt2
+          - 64*mmst2*mmsusy
+          + 44/3*sqr(mmst2)*zt2
+          + 868/9*sqr(mmst2)
+          )
+
+       + den(mmgl - mmst2,3) * (
+          + 16/3*pow(mmst2,3)*zt2
+          + 112/3*pow(mmst2,3)
+          )
+
+       - 77/2
+          + 8/9*zt2
+         ;  
+
+  return resmt;
+}
+
+
+double MssmSoftsusy::twoLpMb() const {
+  const double zt2 = sqr(PI) / 6.;
+  double mmsb1 = sqr(displayDrBarPars().md(1, 3));
+  double mmsb2 = sqr(displayDrBarPars().md(2, 3));
+  double mmst1 = sqr(displayDrBarPars().mu(1, 3));
+  double mmst2 = sqr(displayDrBarPars().mu(2, 3));
+  double mgl = displayGaugino(3);
+  double mmgl = sqr(mgl);
+  double mt = displayDrBarPars().mt;
+  double mmt = sqr(mt);
+  double mb = displayDrBarPars().mb;
+  double mmb = sqr(mb);
+  double csb = cos(displayDrBarPars().thetab), 
+    cs2b = cos(displayDrBarPars().thetab * 2.), 
+    cs4b = cos(4 * displayDrBarPars().thetab);
+  double snb = sin(displayDrBarPars().thetab), 
+    sn2b = sin(displayDrBarPars().thetab * 2.), 
+    sn4b = sin(4 * displayDrBarPars().thetab);
+  double cst = cos(displayDrBarPars().thetat), 
+    cs2t = cos(displayDrBarPars().thetat * 2.), 
+    cs4t = cos(4 * displayDrBarPars().thetat);
+  double snt = sin(displayDrBarPars().thetat), 
+    sn2t = sin(displayDrBarPars().thetat * 2.), 
+    sn4t = sin(4 * displayDrBarPars().thetat);
+  double mmu = sqr(displayMu());
+
+  /// average of first 2 generations squark mass
+  double msq = 0.125 * (displayDrBarPars().mu(1, 1) + 
+			displayDrBarPars().mu(2, 1) + 
+			displayDrBarPars().md(1, 1) + 
+			displayDrBarPars().md(2, 1) + 		       
+			displayDrBarPars().mu(1, 2) + 
+			displayDrBarPars().mu(2, 2) + 
+			displayDrBarPars().md(1, 2) + 
+			displayDrBarPars().md(2, 2));
+  double mmsusy = sqr(msq);
+
+  double lnMglSq = log(mmgl);
+  double lnMsbSq = log(mmsb1);
+  double lnMsb2Sq = log(mmsb2);
+  double lnMst1Sq = log(mmst1);
+  double lnMst2Sq = log(mmst2);
+  double lnMmsusy = log(mmsusy);
+  double lnMmt = log(mmt);
+  double lnMmb = log(mmb);
+  double lnMmu = log(mmu);
+
+  cout << "# " << den(mmgl - mmsb1,1) << " " <<        + den(mmgl - mmsb2,3) * (
+          + 16/3*pow(mmsb2,3)*zt2
+          + 112/3*pow(mmsb2,3)
+          )
+       << " ";
+
+  double resmb =
+
+       + sqr(cs2b) * (
+          - 640/9
+          - 128/9*zt2
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb1,1)*sn2b * (
+          + 32/3/mb*mmsusy*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb1,1) * (
+          + 16/3*mmsb1
+          - 8*mmsusy
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb1,2)*sn2b * (
+          + 32/3/mb*mmsb1*mmsusy*mgl
+          - 32/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb1,2) * (
+          - 56/3*mmsb1*mmsusy
+          + 56/3*sqr(mmsb1)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb1,3) * (
+          - 32/3*sqr(mmsb1)*mmsusy
+          + 32/3*pow(mmsb1,3)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb2,1)*sn2b * (
+          - 32/3/mb*mmsusy*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb2,1) * (
+          + 16/3*mmsb2
+          - 8*mmsusy
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb2,2)*sn2b * (
+          - 32/3/mb*mmsb2*mmsusy*mgl
+          + 32/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb2,2) * (
+          - 56/3*mmsb2*mmsusy
+          + 56/3*sqr(mmsb2)
+          )
+
+       + fin(mmgl,mmsusy)*den(mmgl - mmsb2,3) * (
+          - 32/3*sqr(mmsb2)*mmsusy
+          + 32/3*pow(mmsb2,3)
+          )
+
+       + fin(mmgl,mmsusy) * (
+          - 16/3
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,1)*sn2b * (
+          + 88/9/mb*mmsb1*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 5/3*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 154/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 34/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,1) * (
+          + 22/9*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,2) * (
+          + 12*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb1,3) * (
+          + 16/3*pow(mmsb1,3)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,1)*sn2b * (
+          - 16/9/mb*mmsb1*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 5/3*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 26/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 34/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,1) * (
+          + 16/9*mmsb1
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb1*mmsb2*mgl
+          - 4/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 26/9*mmsb1*mmsb2
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,2) * (
+          - 17/9*mmsb1*sqr(mmsb2
+          - mmsb1)
+          )
+
+       + fin(mmsb1,mmgl)*den(mmgl - mmsb2,3) * (
+          + 4/3*mmsb1*sqr(mmsb2)
+          - 4/3*sqr(mmsb1)*mmsb2
+          )
+
+       + fin(mmsb1,mmgl)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 128/9*mmsb1
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,1)*sn2b * (
+          - 4/9/mb*mmsb1*mgl
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 11/9*mmsb1
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          - 8/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,1) * (
+          + mmsb1
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmsb2*mgl
+          + 4/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 26/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,2) * (
+          + mmsb1*mmsb2
+          + 5/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb1,3) * (
+          + 4/3*sqr(mmsb1)*mmsb2
+          - 4/3*pow(mmsb1,3)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,1)*sn2b * (
+          + 4/9/mb*mmsb1*mgl
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 11/9*mmsb1
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          + 8/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,1) * (
+          + 1/9*mmsb1
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmsb2*mgl
+          + 4/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 26/9*mmsb1*mmsb2
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,2) * (
+          + 5/9*mmsb1*sqr(mmsb2
+          + mmsb1)
+          )
+
+       + fin(mmsb1,mmsb2)*den(mmgl - mmsb2,3) * (
+          - 4/3*mmsb1*sqr(mmsb2)
+          + 4/3*sqr(mmsb1)*mmsb2
+          )
+
+       + fin(mmsb1,mmst1)*den(mmgl - mmsb1,1) * (
+          - 2/3*mmsb1
+          )
+
+       + fin(mmsb1,mmst1)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst1*mgl
+          + 4/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmst1)*den(mmgl - mmsb1,2) * (
+          + mmsb1*mmst1
+          - 7/3*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmst1)*den(mmgl - mmsb1,3) * (
+          + 4/3*sqr(mmsb1)*mmst1
+          - 4/3*pow(mmsb1,3)
+          )
+
+       + fin(mmsb1,mmst2)*den(mmgl - mmsb1,1) * (
+          - 2/3*mmsb1
+          )
+
+       + fin(mmsb1,mmst2)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst2*mgl
+          + 4/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmst2)*den(mmgl - mmsb1,2) * (
+          + mmsb1*mmst2
+          - 7/3*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmst2)*den(mmgl - mmsb1,3) * (
+          + 4/3*sqr(mmsb1)*mmst2
+          - 4/3*pow(mmsb1,3)
+          )
+
+       + fin(mmsb1,mmsusy)*den(mmgl - mmsb1,1) * (
+          - 16/3*mmsb1
+          )
+
+       + fin(mmsb1,mmsusy)*den(mmgl - mmsb1,2)*sn2b * (
+          - 32/3/mb*mmsb1*mmsusy*mgl
+          + 32/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + fin(mmsb1,mmsusy)*den(mmgl - mmsb1,2) * (
+          + 8*mmsb1*mmsusy
+          - 56/3*sqr(mmsb1)
+          )
+
+       + fin(mmsb1,mmsusy)*den(mmgl - mmsb1,3) * (
+          + 32/3*sqr(mmsb1)*mmsusy
+          - 32/3*pow(mmsb1,3)
+          )
+
+       + fin(mmsb2,mmgl)*sqr(cs2b) * (
+          - 128/9
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,1)*sn2b * (
+          + 16/9/mb*mmsb2*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 26/9*mmsb1
+          + 11/9*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 26/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 34/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,1) * (
+          - 34/9*mmsb1
+          - 2*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmsb2*mgl
+          + 4/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 26/9*mmsb1*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,2) * (
+          - 17/9*mmsb1*sqr(mmsb2
+          - mmsb2)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb1,3) * (
+          - 4/3*mmsb1*sqr(mmsb2)
+          + 4/3*sqr(mmsb1)*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,1)*sn2b * (
+          - 88/9/mb*mmsb2*mgl
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 154/9*mmsb1
+          - 139/9*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 154/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 34/9*sqr(mmsb1)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,1) * (
+          + 34/9*mmsb1
+          + 56/9*mmsb2
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,2) * (
+          + 12*sqr(mmsb2)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmgl - mmsb2,3) * (
+          + 16/3*pow(mmsb2,3)
+          )
+
+       + fin(mmsb2,mmgl)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 128/9*mmsb1
+          )
+
+       + fin(mmsb2,mmst1)*den(mmgl - mmsb2,1) * (
+          - 2/3*mmsb2
+          )
+
+       + fin(mmsb2,mmst1)*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst1*mgl
+          - 4/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + fin(mmsb2,mmst1)*den(mmgl - mmsb2,2) * (
+          + mmsb2*mmst1
+          - 7/3*sqr(mmsb2)
+          )
+
+       + fin(mmsb2,mmst1)*den(mmgl - mmsb2,3) * (
+          + 4/3*sqr(mmsb2)*mmst1
+          - 4/3*pow(mmsb2,3)
+          )
+
+       + fin(mmsb2,mmst2)*den(mmgl - mmsb2,1) * (
+          - 2/3*mmsb2
+          )
+
+       + fin(mmsb2,mmst2)*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst2*mgl
+          - 4/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + fin(mmsb2,mmst2)*den(mmgl - mmsb2,2) * (
+          + mmsb2*mmst2
+          - 7/3*sqr(mmsb2)
+          )
+
+       + fin(mmsb2,mmst2)*den(mmgl - mmsb2,3) * (
+          + 4/3*sqr(mmsb2)*mmst2
+          - 4/3*pow(mmsb2,3)
+          )
+
+       + fin(mmsb2,mmsusy)*den(mmgl - mmsb2,1) * (
+          - 16/3*mmsb2
+          )
+
+       + fin(mmsb2,mmsusy)*den(mmgl - mmsb2,2)*sn2b * (
+          + 32/3/mb*mmsb2*mmsusy*mgl
+          - 32/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + fin(mmsb2,mmsusy)*den(mmgl - mmsb2,2) * (
+          + 8*mmsb2*mmsusy
+          - 56/3*sqr(mmsb2)
+          )
+
+       + fin(mmsb2,mmsusy)*den(mmgl - mmsb2,3) * (
+          + 32/3*sqr(mmsb2)*mmsusy
+          - 32/3*pow(mmsb2,3)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb1,1)*sn2b * (
+          + 4/3/mb*mmst1*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb1,1) * (
+          - 1/3*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst1*mgl
+          + 4/3/mb*sqr(mmst1)*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb1,2) * (
+          + mmsb1*sqr(mmst1
+          - mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb1,3) * (
+          - 4/3*mmsb1*sqr(mmst1)
+          + 4/3*sqr(mmsb1)*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb2,1)*sn2b * (
+          - 4/3/mb*mmst1*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb2,1) * (
+          - 1/3*mmst1
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst1*mgl
+          - 4/3/mb*sqr(mmst1)*mgl
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb2,2) * (
+          + mmsb2*sqr(mmst1
+          - mmst1)
+          )
+
+       + fin(mmst1,mmgl)*den(mmgl - mmsb2,3) * (
+          - 4/3*mmsb2*sqr(mmst1)
+          + 4/3*sqr(mmsb2)*mmst1
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb1,1)*sn2b * (
+          + 4/3/mb*mmst2*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb1,1) * (
+          - 1/3*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst2*mgl
+          + 4/3/mb*sqr(mmst2)*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb1,2) * (
+          + mmsb1*sqr(mmst2
+          - mmst2)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb1,3) * (
+          - 4/3*mmsb1*sqr(mmst2)
+          + 4/3*sqr(mmsb1)*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb2,1)*sn2b * (
+          - 4/3/mb*mmst2*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb2,1) * (
+          - 1/3*mmst2
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst2*mgl
+          - 4/3/mb*sqr(mmst2)*mgl
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb2,2) * (
+          + mmsb2*sqr(mmst2
+          - mmst2)
+          )
+
+       + fin(mmst2,mmgl)*den(mmgl - mmsb2,3) * (
+          - 4/3*mmsb2*sqr(mmst2)
+          + 4/3*sqr(mmsb2)*mmst2
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb1,1)*sn2b * (
+          + 16/3/mb*mmsb1*mgl
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb1,1) * (
+          - 16/3*mmsb1
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb1,2) * (
+          - 8/3*sqr(mmsb1)
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb2,1)*sn2b * (
+          - 16/3/mb*mmsb2*mgl
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb2,1) * (
+          - 16/3*mmsb2
+          )
+
+       + lnMmb*lnMglSq*den(mmgl - mmsb2,2) * (
+          - 8/3*sqr(mmsb2)
+          )
+
+       + lnMmb*lnMglSq * (
+          - 40/3
+          )
+
+       + lnMmb*lnMsbSq*den(mmgl - mmsb1,1)*sn2b * (
+          - 16/3/mb*mmsb1*mgl
+          )
+
+       + lnMmb*lnMsbSq*den(mmgl - mmsb1,1) * (
+          + 16/3*mmsb1
+          )
+
+       + lnMmb*lnMsbSq*den(mmgl - mmsb1,2) * (
+          + 8/3*sqr(mmsb1)
+          )
+
+       + lnMmb*lnMsbSq * (
+          - 2/3
+          )
+
+       + lnMmb*lnMsb2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          + 16/3/mb*mmsb2*mgl
+          )
+
+       + lnMmb*lnMsb2Sq*den(mmgl - mmsb2,1) * (
+          + 16/3*mmsb2
+          )
+
+       + lnMmb*lnMsb2Sq*den(mmgl - mmsb2,2) * (
+          + 8/3*sqr(mmsb2)
+          )
+
+       + lnMmb*lnMsb2Sq * (
+          - 2/3
+          )
+
+       + lnMmb*lnMst1Sq * (
+          - 2/3
+          )
+
+       + lnMmb*lnMst2Sq * (
+          - 2/3
+          )
+
+       + lnMmb*lnMmsusy * (
+          - 16/3
+          )
+
+       + lnMmb*lnMmu * (
+          + 64/3
+          )
+
+       + lnMmb*den(mmgl - mmsb1,1) * (
+          + 8/3*mmsb1
+          )
+
+       + lnMmb*den(mmgl - mmsb2,1) * (
+          + 8/3*mmsb2
+          )
+
+       + lnMmb * (
+          + 8
+          )
+
+       + lnMglSq*sqr(cs2b) * (
+          + 128/3
+          )
+
+       + sqr(lnMglSq)*sqr(cs2b) * (
+          - 64/9
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*sn2b * (
+          + 10/mb*mmsb1*mgl
+          + 2/3/mb*mmsb2*mgl
+          + 2/3/mb*mmst1*mgl
+          + 2/3/mb*mmst2*mgl
+          + 16/3/mb*mmsusy*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 53/3*mmsb1
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 223/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 43/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2)*sn2b * (
+          - 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,3) * (
+          - 16/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,1) * (
+          - 73/6*mmsb1
+          - 1/2*mmsb2
+          - 1/2*mmst1
+          - 1/2*mmst2
+          + 4/3*mmsusy
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,2)*sn2b * (
+          + 2/3/mb*mmsb1*mmsb2*mgl
+          + 2/3/mb*mmsb1*mmst1*mgl
+          + 2/3/mb*mmsb1*mmst2*mgl
+          - 16/mb*mmsb1*mmsusy*mgl
+          - 122/9/mb*sqr(mmsb1)*mgl
+          + 32/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 53/6*sqr(mmsb1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1)*sn2b * (
+          + 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,2) * (
+          - 7/6*mmsb1*mmsb2
+          - 7/6*mmsb1*mmst1
+          - 7/6*mmsb1*mmst2
+          + 52/3*mmsb1*mmsusy
+          + 151/9*sqr(mmsb1)
+          - 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,3)*sn2b * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,3) * (
+          - 32/3*mmsb1*sqr(mmsusy)
+          - 2/3*sqr(mmsb1)*mmsb2
+          - 2/3*sqr(mmsb1)*mmst1
+          - 2/3*sqr(mmsb1)*mmst2
+          + 16*sqr(mmsb1)*mmsusy
+          + 46/3*pow(mmsb1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb1,4) * (
+          + 4/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*sn2b * (
+          + 2/9/mb*mmsb1*mgl
+          - 98/9/mb*mmsb2*mgl
+          - 2/3/mb*mmst1*mgl
+          - 2/3/mb*mmst2*mgl
+          - 16/3/mb*mmsusy*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 223/9*mmsb1
+          - 64/9*mmsb2
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          - 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 223/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 43/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2)*sn2b * (
+          + 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,3) * (
+          + 16/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,1) * (
+          + 109/18*mmsb1
+          - 101/18*mmsb2
+          - 1/2*mmst1
+          - 1/2*mmst2
+          + 4/3*mmsusy
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2)*sn2b * (
+          - 14/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          - 2/3/mb*mmsb2*mmst1*mgl
+          - 2/3/mb*mmsb2*mmst2*mgl
+          + 16/mb*mmsb2*mmsusy*mgl
+          + 38/3/mb*sqr(mmsb2)*mgl
+          - 32/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 53/6*sqr(mmsb2)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1)*sn2b * (
+          + 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,2) * (
+          + 11/18*mmsb1*mmsb2
+          + 8/3*sqr(mmsb1)
+          - 7/6*mmsb2*mmst1
+          - 7/6*mmsb2*mmst2
+          + 52/3*mmsb2*mmsusy
+          + 53/3*sqr(mmsb2)
+          - 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,3)*sn2b * (
+          + 8/9/mb*pow(mmsb2,3)*mgl
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,3) * (
+          - 2/3*mmsb1*sqr(mmsb2)
+          - 32/3*mmsb2*sqr(mmsusy)
+          - 2/3*sqr(mmsb2)*mmst1
+          - 2/3*sqr(mmsb2)*mmst2
+          + 16*sqr(mmsb2)*mmsusy
+          + 46/3*pow(mmsb2,3)
+          )
+
+       + sqr(lnMglSq)*den(mmgl - mmsb2,4) * (
+          + 4/9*pow(mmsb2,4)
+          )
+
+       + sqr(lnMglSq) * (
+          - 166/9
+          )
+
+       + lnMglSq*lnMsbSq*sn2b * (
+          - 208/9/mb*mgl
+          )
+
+       + lnMglSq*lnMsbSq*sqr(cs2b) * (
+          - 64/9
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*sn2b * (
+          - 28/3/mb*mmsb1*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 121/9*mmsb1
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          + 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          + 287/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          - 43/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          + 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,3) * (
+          + 16/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,1) * (
+          - 34/3*mmsb1
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2)*sn2b * (
+          + 172/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 11/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,2) * (
+          - 130/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,3)*sn2b * (
+          + 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          + 16/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,3) * (
+          - 212/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb1,4) * (
+          - 8/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*sn2b * (
+          + 20/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          + 5/3*mmsb1
+          - 22/9*mmsb2
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          - 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          - 31/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          + 43/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          - 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,3) * (
+          - 16/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,1) * (
+          - 34/9*mmsb1
+          + 2/9*mmsb2
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb1)*mgl
+          - 8/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 32/9*mmsb1*mmsb2
+          - 52/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,2) * (
+          + 37/9*mmsb1*mmsb2
+          - 8/3*sqr(mmsb1)
+          + 10/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          - 16/9*mmsb1*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmgl - mmsb2,3) * (
+          + 28/9*mmsb1*sqr(mmsb2)
+          - 8/3*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMsbSq*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 256/9*mmgl
+          + 256/9*mmsb1
+          )
+
+       + lnMglSq*lnMsbSq * (
+          + 52/9
+          )
+
+       + lnMglSq*lnMsb2Sq*sn2b * (
+          + 208/9/mb*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*sqr(cs2b) * (
+          + 64/3
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sn2b * (
+          - 28/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          + 16/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 53/9*mmsb1
+          - 16/9*mmsb2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          - 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          + 31/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          - 43/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          + 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,3) * (
+          + 16/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,1) * (
+          + 61/9*mmsb1
+          + 25/9*mmsb2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 28/9/mb*mmsb1*mmsb2*mgl
+          + 32/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 32/9*mmsb1*mmsb2
+          - 52/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,2) * (
+          + 53/9*mmsb1*mmsb2
+          + 2*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          - 16/9*sqr(mmsb1)*mmsb2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb1,3) * (
+          + 28/9*sqr(mmsb1)*mmsb2
+          - 8/3*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 92/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 16/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          + 287/9*mmsb1
+          + 166/9*mmsb2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          + 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          - 287/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          + 43/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          - 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,3) * (
+          - 16/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,1) * (
+          - 59/9*mmsb1
+          - 161/9*mmsb2
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb1)*mgl
+          - 164/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          + 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 11/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,4)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,2) * (
+          - 16/9*mmsb1*mmsb2
+          - 8/3*sqr(mmsb1)
+          - 398/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,3)*sn2b * (
+          - 16/9/mb*pow(mmsb2,3)*mgl
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          + 16/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,3) * (
+          - 212/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmgl - mmsb2,4) * (
+          - 8/9*pow(mmsb2,4)
+          )
+
+       + lnMglSq*lnMsb2Sq*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 256/9*mmgl
+          - 256/9*mmsb1
+          )
+
+       + lnMglSq*lnMsb2Sq * (
+          + 52/9
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb1,1)*sn2b * (
+          - 4/3/mb*mmst1*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb1,1) * (
+          - 4/3*mmsb1
+          + mmst1
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst1*mgl
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb1,2) * (
+          + 7/3*mmsb1*mmst1
+          - 14/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb1,3) * (
+          + 4/3*sqr(mmsb1)*mmst1
+          - 8/3*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb2,1)*sn2b * (
+          + 4/3/mb*mmst1*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb2,1) * (
+          - 4/3*mmsb2
+          + mmst1
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst1*mgl
+          - 8/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb2,2) * (
+          + 7/3*mmsb2*mmst1
+          - 14/3*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMst1Sq*den(mmgl - mmsb2,3) * (
+          + 4/3*sqr(mmsb2)*mmst1
+          - 8/3*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMst1Sq * (
+          + 4/3
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb1,1)*sn2b * (
+          - 4/3/mb*mmst2*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb1,1) * (
+          - 4/3*mmsb1
+          + mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/3/mb*mmsb1*mmst2*mgl
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb1,2) * (
+          + 7/3*mmsb1*mmst2
+          - 14/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb1,3) * (
+          + 4/3*sqr(mmsb1)*mmst2
+          - 8/3*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          + 4/3/mb*mmst2*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb2,1) * (
+          - 4/3*mmsb2
+          + mmst2
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/3/mb*mmsb2*mmst2*mgl
+          - 8/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb2,2) * (
+          + 7/3*mmsb2*mmst2
+          - 14/3*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMst2Sq*den(mmgl - mmsb2,3) * (
+          + 4/3*sqr(mmsb2)*mmst2
+          - 8/3*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMst2Sq * (
+          + 4/3
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb1,1)*sn2b * (
+          - 32/3/mb*mmsusy*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb1,1) * (
+          - 8/3*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb1,2)*sn2b * (
+          + 32/mb*mmsb1*mmsusy*mgl
+          - 64/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb1,2) * (
+          - 104/3*mmsb1*mmsusy
+          + 16*sqr(mmsusy)
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb1,3) * (
+          + 64/3*mmsb1*sqr(mmsusy)
+          - 32*sqr(mmsb1)*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb2,1)*sn2b * (
+          + 32/3/mb*mmsusy*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb2,1) * (
+          - 8/3*mmsusy
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb2,2)*sn2b * (
+          - 32/mb*mmsb2*mmsusy*mgl
+          + 64/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb2,2) * (
+          - 104/3*mmsb2*mmsusy
+          + 16*sqr(mmsusy)
+          )
+
+       + lnMglSq*lnMmsusy*den(mmgl - mmsb2,3) * (
+          + 64/3*mmsb2*sqr(mmsusy)
+          - 32*sqr(mmsb2)*mmsusy
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,1)*sn2b * (
+          - 16/mb*mmsb1*mgl
+          + 16/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 16*mmsb1
+          + 16/9*mmsb2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          + 128/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,1) * (
+          + 332/9*mmsb1
+          - 16/9*mmsb2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,2)*sn2b * (
+          + 16/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 32/9*mmsb1*mmsb2
+          - 32/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,2) * (
+          - 32/9*mmsb1*mmsb2
+          + 178/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          + 16/9*sqr(mmsb1)*mmsb2
+          - 16/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb1,3) * (
+          - 16/9*sqr(mmsb1)*mmsb2
+          + 8/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,1)*sn2b * (
+          - 16/9/mb*mmsb1*mgl
+          + 16/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          + 16*mmsb1
+          - 16/9*mmsb2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          - 128/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,1) * (
+          - 16/9*mmsb1
+          + 332/9*mmsb2
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,2)*sn2b * (
+          - 16/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 32/9*mmsb1*mmsb2
+          - 32/3*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,2) * (
+          - 32/9*mmsb1*mmsb2
+          + 178/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          + 16/9*mmsb1*sqr(mmsb2)
+          - 16/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMmu*den(mmgl - mmsb2,3) * (
+          - 16/9*mmsb1*sqr(mmsb2)
+          + 8/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq*lnMmu * (
+          + 36
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1)*sn2b * (
+          - 176/3/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          - 8/3/mb*mmst1*mgl
+          - 8/3/mb*mmst2*mgl
+          + 128/3/mb*mmsusy*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 428/9*mmsb1
+          + 16/9*mmsb2
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 796/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          - 76/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,1) * (
+          + 290/9*mmsb1
+          + 2/9*mmsb2
+          + 2*mmst1
+          + 2*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,2)*sn2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/3/mb*mmsb1*mmst1*mgl
+          - 8/3/mb*mmsb1*mmst2*mgl
+          - 64/3/mb*mmsb1*mmsusy*mgl
+          + 56/9/mb*sqr(mmsb1)*mgl
+          + 32/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 32/9*mmsb1*mmsb2
+          - 238/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1) * (
+          - 8/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,2) * (
+          + 10/9*mmsb1*mmsb2
+          + 14/3*mmsb1*mmst1
+          + 14/3*mmsb1*mmst2
+          + 16/3*mmsb1*mmsusy
+          - 290/9*sqr(mmsb1)
+          - 24*sqr(mmsusy)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          + 16/9*sqr(mmsb1)*mmsb2
+          - 16/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmsb1,3) * (
+          - 32*mmsb1*sqr(mmsusy)
+          + 8/9*sqr(mmsb1)*mmsb2
+          + 8/3*sqr(mmsb1)*mmst1
+          + 8/3*sqr(mmsb1)*mmst2
+          + 64/3*sqr(mmsb1)*mmsusy
+          - 200/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1)*sn2b * (
+          + 8/9/mb*mmsb1*mgl
+          + 176/3/mb*mmsb2*mgl
+          + 8/3/mb*mmst1*mgl
+          + 8/3/mb*mmst2*mgl
+          - 128/3/mb*mmsusy*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          + 812/9*mmsb1
+          + 368/9*mmsb2
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 796/9*sqr(mmsb1)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          + 76/3*sqr(mmsb1)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,1) * (
+          - 226/9*mmsb1
+          + 62/9*mmsb2
+          + 2*mmst1
+          + 2*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,2)*sn2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/3/mb*mmsb2*mmst1*mgl
+          + 8/3/mb*mmsb2*mmst2*mgl
+          + 64/3/mb*mmsb2*mmsusy*mgl
+          - 56/9/mb*sqr(mmsb2)*mgl
+          - 32/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 32/9*mmsb1*mmsb2
+          - 238/9*sqr(mmsb2)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          + 8/9*pow(mmsb1,3)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,2) * (
+          + 2/9*mmsb1*mmsb2
+          - 8/9*sqr(mmsb1)
+          + 14/3*mmsb2*mmst1
+          + 14/3*mmsb2*mmst2
+          + 16/3*mmsb2*mmsusy
+          - 298/9*sqr(mmsb2)
+          - 24*sqr(mmsusy)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          + 16/9*mmsb1*sqr(mmsb2)
+          - 16/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq*den(mmgl - mmsb2,3) * (
+          + 8/9*mmsb1*sqr(mmsb2)
+          - 32*mmsb2*sqr(mmsusy)
+          + 8/3*sqr(mmsb2)*mmst1
+          + 8/3*sqr(mmsb2)*mmst2
+          + 64/3*sqr(mmsb2)*mmsusy
+          - 200/9*pow(mmsb2,3)
+          )
+
+       + lnMglSq * (
+          + 232/3
+          )
+
+       + lnMsbSq*sn2b * (
+          + 280/9/mb*mgl
+          )
+
+       + lnMsbSq*sqr(cs2b) * (
+          + 64/9
+          )
+
+       + sqr(lnMsbSq)*sn2b * (
+          + 8/mb*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*sn2b * (
+          - 2/9/mb*mmsb1*mgl
+          - 4/9/mb*mmsb2*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          - 14/9*mmsb1
+          - 11/9*mmsb2
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn4b*cs2b * (
+          - 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 77/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,1) * (
+          + 419/18*mmsb1
+          + mmsb2
+          - 2/3*mmst1
+          - 2/3*mmst2
+          - 16/3*mmsusy
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,2)*sn2b * (
+          + 2/mb*mmsb1*mmsb2*mgl
+          + 2/mb*mmsb1*mmst1*mgl
+          + 2/mb*mmsb1*mmst2*mgl
+          + 16/mb*mmsb1*mmsusy*mgl
+          - 86/9/mb*sqr(mmsb1)*mgl
+          - 4/3/mb*sqr(mmsb2)*mgl
+          - 4/3/mb*sqr(mmst1)*mgl
+          - 4/3/mb*sqr(mmst2)*mgl
+          - 32/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 26/9*mmsb1*mmsb2
+          - 85/18*sqr(mmsb1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,2) * (
+          + 1/18*mmsb1*mmsb2
+          - 17/6*mmsb1*mmst1
+          - 17/6*mmsb1*mmst2
+          - 68/3*mmsb1*mmsusy
+          + 92/3*sqr(sqr(sqr(sqr(mmsb1)
+          + mmsb2)
+          + mmst1)
+          + mmst2)
+          + 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,3)*sn2b * (
+          - 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          - 16/9*pow(mmsb1,3)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,3) * (
+          + 4/3*mmsb1*sqr(mmsb2)
+          + 4/3*mmsb1*sqr(mmst1)
+          + 4/3*mmsb1*sqr(mmst2)
+          + 32/3*mmsb1*sqr(mmsusy)
+          - 2*sqr(mmsb1)*mmsb2
+          - 2*sqr(mmsb1)*mmst1
+          - 2*sqr(mmsb1)*mmst2
+          - 16*sqr(mmsb1)*mmsusy
+          + 110/9*pow(mmsb1,3)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb1,4) * (
+          + 4/9*pow(mmsb1,4)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,1)*sn2b * (
+          - 2/3/mb*mmsb1*mgl
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 13/9*mmsb1
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,1) * (
+          + 17/18*mmsb1
+          )
+
+       + sqr(lnMsbSq)*den(mmgl - mmsb2,2) * (
+          - 2/3*mmsb1*mmsb2
+          )
+
+       + sqr(lnMsbSq)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 128/9*mmgl
+          - 64/9*mmsb1
+          )
+
+       + sqr(lnMsbSq) * (
+          + 41/9
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sn2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 8/3/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 16/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 5/9*mmsb1
+          + 38/9*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          + 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          + 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          - 5/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 17/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          - 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          + 32/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,3) * (
+          - 16/9*pow(mmsb1,4)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,1) * (
+          - 11/3*mmsb1
+          - 34/9*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 20/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          + 8/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 28/3*mmsb1*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          + 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,4)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,2) * (
+          - 11/3*mmsb1*mmsb2
+          - 8/9*sqr(mmsb1)
+          - 2*sqr(mmsb2)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          + 16/9*sqr(mmsb1)*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb1,3) * (
+          - 8/3*mmsb1*sqr(mmsb2)
+          + 20/9*sqr(mmsb1)*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          - 8/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          + 11/9*mmsb1
+          + 22/9*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          - 8/3/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn4b*
+      cs2b * (
+          + 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          + 5/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 17/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2)*sn2b
+       * (
+          + 16/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,3) * (
+          + 16/9*pow(mmsb1,4)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,1) * (
+          + 17/9*mmsb1
+          - 2/9*mmsb2
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          - 4/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          + 8/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 32/9*mmsb1*mmsb2
+          + 52/9*sqr(mmsb2)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1)*sn2b
+       * (
+          + 8/9/mb*pow(mmsb1,3)*mgl
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          - 32/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,4)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,2) * (
+          - 25/9*mmsb1*mmsb2
+          + 8/3*sqr(mmsb1)
+          - 10/9*sqr(mmsb2)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          + 16/9*mmsb1*sqr(mmsb2)
+          )
+
+       + lnMsbSq*lnMsb2Sq*den(mmgl - mmsb2,3) * (
+          - 28/9*mmsb1*sqr(mmsb2)
+          + 8/3*pow(mmsb2,3)
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmsb1,1) * (
+          + 4/3*mmst1
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/mb*mmsb1*mmst1*mgl
+          + 8/3/mb*sqr(mmst1)*mgl
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmsb1,2) * (
+          + 17/3*mmsb1*mmst1
+          - 2*sqr(mmst1)
+          )
+
+       + lnMsbSq*lnMst1Sq*den(mmgl - mmsb1,3) * (
+          - 8/3*mmsb1*sqr(mmst1)
+          + 4*sqr(mmsb1)*mmst1
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmsb1,1) * (
+          + 4/3*mmst2
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/mb*mmsb1*mmst2*mgl
+          + 8/3/mb*sqr(mmst2)*mgl
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmsb1,2) * (
+          + 17/3*mmsb1*mmst2
+          - 2*sqr(mmst2)
+          )
+
+       + lnMsbSq*lnMst2Sq*den(mmgl - mmsb1,3) * (
+          - 8/3*mmsb1*sqr(mmst2)
+          + 4*sqr(mmsb1)*mmst2
+          )
+
+       + lnMsbSq*lnMmsusy*den(mmgl - mmsb1,1) * (
+          + 32/3*mmsusy
+          )
+
+       + lnMsbSq*lnMmsusy*den(mmgl - mmsb1,2)*sn2b * (
+          - 32/mb*mmsb1*mmsusy*mgl
+          + 64/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMsbSq*lnMmsusy*den(mmgl - mmsb1,2) * (
+          + 136/3*mmsb1*mmsusy
+          - 16*sqr(mmsusy)
+          )
+
+       + lnMsbSq*lnMmsusy*den(mmgl - mmsb1,3) * (
+          - 64/3*mmsb1*sqr(mmsusy)
+          + 32*sqr(mmsb1)*mmsusy
+          )
+
+       + lnMsbSq*lnMmu*sn2b * (
+          + 64/9/mb*mgl
+          )
+
+       + lnMsbSq*lnMmu*sqr(cs2b) * (
+          + 64/9
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,1)*sn2b * (
+          + 16/mb*mmsb1*mgl
+          - 16/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 16*mmsb1
+          - 16/9*mmsb2
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          - 128/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,1) * (
+          - 332/9*mmsb1
+          + 16/9*mmsb2
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,2)*sn2b * (
+          - 16/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 32/9*mmsb1*mmsb2
+          + 32/3*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,2) * (
+          + 32/9*mmsb1*mmsb2
+          - 178/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          - 16/9*sqr(mmsb1)*mmsb2
+          + 16/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*lnMmu*den(mmgl - mmsb1,3) * (
+          + 16/9*sqr(mmsb1)*mmsb2
+          - 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*lnMmu*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 128/9*mmsb1
+          )
+
+       + lnMsbSq*lnMmu * (
+          - 128/9
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*sn2b * (
+          + 172/3/mb*mmsb1*mgl
+          - 28/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          + 16/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 229/9*mmsb1
+          - 49/9*mmsb2
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 718/9*sqr(mmsb1)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 34/3*sqr(mmsb1)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,1) * (
+          - 13/3*mmsb1
+          + 43/9*mmsb2
+          - 2*mmst1
+          - 2*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,2)*sn2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/3/mb*mmsb1*mmst1*mgl
+          + 8/3/mb*mmsb1*mmst2*mgl
+          + 64/3/mb*mmsb1*mmsusy*mgl
+          + 52/9/mb*sqr(mmsb1)*mgl
+          - 4/mb*sqr(mmsb2)*mgl
+          - 4/mb*sqr(mmst1)*mgl
+          - 4/mb*sqr(mmst2)*mgl
+          - 32/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,2)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 110/9*mmsb1*mmsb2
+          + 16*sqr(mmsb1)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,2)*den(mmsb1 - mmsb2,1) * (
+          + 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,2) * (
+          + 56/9*mmsb1*mmsb2
+          - 6*mmsb1*mmst1
+          - 6*mmsb1*mmst2
+          - 48*mmsb1*mmsusy
+          + 187/9*sqr(mmsb1)
+          + 3*sqr(mmsb2)
+          + 3*sqr(mmst1)
+          + 3*sqr(mmst2)
+          + 24*sqr(mmsusy)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,3)*sqr(cs2b) * (
+          - 16/9*sqr(mmsb1)*mmsb2
+          + 16/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb1,3) * (
+          + 4*mmsb1*sqr(mmsb2)
+          + 4*mmsb1*sqr(mmst1)
+          + 4*mmsb1*sqr(mmst2)
+          + 32*mmsb1*sqr(mmsusy)
+          - 8/9*sqr(mmsb1)*mmsb2
+          - 8/3*sqr(mmsb1)*mmst1
+          - 8/3*sqr(mmsb1)*mmst2
+          - 64/3*sqr(mmsb1)*mmsusy
+          + 92/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*sn2b * (
+          - 16/3/mb*mmsb1*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          + 8/9/mb*mmsb1*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 6*mmsb1
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 26/3*sqr(mmsb1)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 34/3*sqr(mmsb1)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,1) * (
+          + 52/9*mmsb1
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          + 16/9*mmsb1*mmsb2
+          )
+
+       + lnMsbSq*den(mmgl - mmsb2,2) * (
+          - 40/9*mmsb1*mmsb2
+          )
+
+       + lnMsbSq*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 128/3*mmgl
+          - 640/9*mmsb1
+          )
+
+       + lnMsbSq * (
+          + 5/9
+          )
+
+       + lnMsb2Sq*sn2b * (
+          - 280/9/mb*mgl
+          )
+
+       + lnMsb2Sq*sqr(cs2b) * (
+          - 64
+          )
+
+       + sqr(lnMsb2Sq)*sn2b * (
+          - 8/mb*mgl
+          )
+
+       + sqr(lnMsb2Sq)*sqr(cs2b) * (
+          - 64/9
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,1)*sn2b * (
+          + 4/9/mb*mmsb1*mgl
+          + 2/9/mb*mmsb2*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 8/3*mmsb1
+          - 11/9*mmsb2
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,1) * (
+          - 14/9*mmsb1
+          + 1/2*mmsb2
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,2)*sn2b * (
+          + 8/3/mb*mmsb1*mmsb2*mgl
+          - 4/3/mb*sqr(mmsb1)*mgl
+          - 4/3/mb*sqr(mmsb2)*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 26/9*mmsb1*mmsb2
+          + 26/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,2) * (
+          - 10/9*mmsb1*mmsb2
+          - 5/9*sqr(sqr(mmsb1)
+          + mmsb2)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb1,3) * (
+          + 4/3*mmsb1*sqr(mmsb2)
+          - 8/3*sqr(mmsb1)*mmsb2
+          + 4/3*pow(mmsb1,3)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*sn2b * (
+          + 2/3/mb*mmsb2*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          + 16/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 77/9*mmsb1
+          - 34/3*mmsb2
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn4b*cs2b * (
+          - 16/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 77/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 13/9*sqr(mmsb1)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,1) * (
+          + 13/9*mmsb1
+          + 149/6*mmsb2
+          - 2/3*mmst1
+          - 2/3*mmst2
+          - 16/3*mmsusy
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,2)*sn2b * (
+          + 2/3/mb*mmsb1*mmsb2*mgl
+          - 2/mb*mmsb2*mmst1*mgl
+          - 2/mb*mmsb2*mmst2*mgl
+          - 16/mb*mmsb2*mmsusy*mgl
+          + 74/9/mb*sqr(mmsb2)*mgl
+          + 4/3/mb*sqr(mmst1)*mgl
+          + 4/3/mb*sqr(mmst2)*mgl
+          + 32/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          - 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 137/18*sqr(mmsb2)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,2) * (
+          + 1/2*mmsb1*mmsb2
+          - 17/6*mmsb2*mmst1
+          - 17/6*mmsb2*mmst2
+          - 68/3*mmsb2*mmsusy
+          + 281/9*sqr(sqr(sqr(mmsb2)
+          + mmst1)
+          + mmst2)
+          + 8*sqr(mmsusy)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,3)*sn2b * (
+          + 8/9/mb*pow(mmsb2,3)*mgl
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          - 16/9*pow(mmsb2,3)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,3) * (
+          + 2/3*mmsb1*sqr(mmsb2)
+          + 4/3*mmsb2*sqr(mmst1)
+          + 4/3*mmsb2*sqr(mmst2)
+          + 32/3*mmsb2*sqr(mmsusy)
+          - 2*sqr(mmsb2)*mmst1
+          - 2*sqr(mmsb2)*mmst2
+          - 16*sqr(mmsb2)*mmsusy
+          + 98/9*pow(mmsb2,3)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmgl - mmsb2,4) * (
+          + 4/9*pow(mmsb2,4)
+          )
+
+       + sqr(lnMsb2Sq)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 128/9*mmgl
+          + 64/9*mmsb1
+          )
+
+       + sqr(lnMsb2Sq) * (
+          + 41/9
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmsb2,1) * (
+          + 4/3*mmst1
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/mb*mmsb2*mmst1*mgl
+          - 8/3/mb*sqr(mmst1)*mgl
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmsb2,2) * (
+          + 17/3*mmsb2*mmst1
+          - 2*sqr(mmst1)
+          )
+
+       + lnMsb2Sq*lnMst1Sq*den(mmgl - mmsb2,3) * (
+          - 8/3*mmsb2*sqr(mmst1)
+          + 4*sqr(mmsb2)*mmst1
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmsb2,1) * (
+          + 4/3*mmst2
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/mb*mmsb2*mmst2*mgl
+          - 8/3/mb*sqr(mmst2)*mgl
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmsb2,2) * (
+          + 17/3*mmsb2*mmst2
+          - 2*sqr(mmst2)
+          )
+
+       + lnMsb2Sq*lnMst2Sq*den(mmgl - mmsb2,3) * (
+          - 8/3*mmsb2*sqr(mmst2)
+          + 4*sqr(mmsb2)*mmst2
+          )
+
+       + lnMsb2Sq*lnMmsusy*den(mmgl - mmsb2,1) * (
+          + 32/3*mmsusy
+          )
+
+       + lnMsb2Sq*lnMmsusy*den(mmgl - mmsb2,2)*sn2b * (
+          + 32/mb*mmsb2*mmsusy*mgl
+          - 64/3/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMsb2Sq*lnMmsusy*den(mmgl - mmsb2,2) * (
+          + 136/3*mmsb2*mmsusy
+          - 16*sqr(mmsusy)
+          )
+
+       + lnMsb2Sq*lnMmsusy*den(mmgl - mmsb2,3) * (
+          - 64/3*mmsb2*sqr(mmsusy)
+          + 32*sqr(mmsb2)*mmsusy
+          )
+
+       + lnMsb2Sq*lnMmu*sn2b * (
+          - 64/9/mb*mgl
+          )
+
+       + lnMsb2Sq*lnMmu*sqr(cs2b) * (
+          - 64/9
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,1)*sn2b * (
+          + 16/9/mb*mmsb1*mgl
+          - 16/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 16*mmsb1
+          + 16/9*mmsb2
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b)
+       * (
+          + 128/9*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,1) * (
+          + 16/9*mmsb1
+          - 332/9*mmsb2
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,2)*sn2b * (
+          + 16/9/mb*mmsb1*mmsb2*mgl
+          - 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 32/9*mmsb1*mmsb2
+          + 32/3*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,2) * (
+          + 32/9*mmsb1*mmsb2
+          - 178/9*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          - 16/9*mmsb1*sqr(mmsb2)
+          + 16/9*pow(mmsb2,3)
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmgl - mmsb2,3) * (
+          + 16/9*mmsb1*sqr(mmsb2)
+          - 8/9*pow(mmsb2,3)
+          )
+
+       + lnMsb2Sq*lnMmu*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 128/9*mmsb1
+          )
+
+       + lnMsb2Sq*lnMmu * (
+          - 128/9
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*sn2b * (
+          + 4/9/mb*mmsb1*mgl
+          + 52/9/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 37/3*mmsb1
+          + 19/3*mmsb2
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          + 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 26/3*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 14*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,2) * (
+          + 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,1) * (
+          - 137/9*mmsb1
+          - 23/3*mmsb2
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/mb*sqr(mmsb1)*mgl
+          + 4/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          + 94/9*mmsb1*mmsb2
+          + 26/3*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,2) * (
+          - 82/9*mmsb1*mmsb2
+          - 5/3*sqr(mmsb1)
+          - 3*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb1,3) * (
+          - 4*mmsb1*sqr(mmsb2)
+          + 4*pow(mmsb1,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          + 8/3/mb*mmsb1*mgl
+          - 520/9/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          - 16/9/mb*mmsb2*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 734/9*mmsb1
+          - 152/3*mmsb2
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sn2b * (
+          - 8/9/mb*sqr(mmsb1)*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 718/9*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 14*sqr(mmsb1)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,2) * (
+          - 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,1) * (
+          + 50/3*mmsb1
+          + 52/9*mmsb2
+          - 2*mmst1
+          - 2*mmst2
+          - 16*mmsusy
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          - 8/3/mb*mmsb2*mmst1*mgl
+          - 8/3/mb*mmsb2*mmst2*mgl
+          - 64/3/mb*mmsb2*mmsusy*mgl
+          - 16/9/mb*sqr(mmsb2)*mgl
+          + 4/mb*sqr(mmst1)*mgl
+          + 4/mb*sqr(mmst2)*mgl
+          + 32/mb*sqr(mmsusy)*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,2)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mmsb2*mgl
+          + 8/9/mb*sqr(mmsb2)*mgl
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 32/9*mmsb1*mmsb2
+          + 74/3*sqr(mmsb2)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,2)*den(mmsb1 - mmsb2,1) * (
+          - 8/9*pow(mmsb1,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,2) * (
+          + 22/9*mmsb1*mmsb2
+          + 8/9*sqr(mmsb1)
+          - 6*mmsb2*mmst1
+          - 6*mmsb2*mmst2
+          - 48*mmsb2*mmsusy
+          + 20*sqr(mmsb2)
+          + 3*sqr(mmst1)
+          + 3*sqr(mmst2)
+          + 24*sqr(mmsusy)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,3)*sqr(cs2b) * (
+          - 16/9*mmsb1*sqr(mmsb2)
+          + 16/9*pow(mmsb2,3)
+          )
+
+       + lnMsb2Sq*den(mmgl - mmsb2,3) * (
+          - 8/9*mmsb1*sqr(mmsb2)
+          + 4*mmsb2*sqr(mmst1)
+          + 4*mmsb2*sqr(mmst2)
+          + 32*mmsb2*sqr(mmsusy)
+          - 8/3*sqr(mmsb2)*mmst1
+          - 8/3*sqr(mmsb2)*mmst2
+          - 64/3*sqr(mmsb2)*mmsusy
+          + 128/9*pow(mmsb2,3)
+          )
+
+       + lnMsb2Sq*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 128/3*mmgl
+          + 640/9*mmsb1
+          )
+
+       + lnMsb2Sq * (
+          + 5/9
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb1,1)*sn2b * (
+          + 2/3/mb*mmst1*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb1,1) * (
+          + 2/3*mmsb1
+          - 7/6*mmst1
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb1,2)*sn2b * (
+          + 8/3/mb*mmsb1*mmst1*mgl
+          - 4/3/mb*sqr(mmsb1)*mgl
+          - 4/3/mb*sqr(mmst1)*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb1,2) * (
+          - 4*mmsb1*mmst1
+          + 7/3*sqr(sqr(mmsb1)
+          + mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb1,3) * (
+          + 4/3*mmsb1*sqr(mmst1)
+          - 8/3*sqr(mmsb1)*mmst1
+          + 4/3*pow(mmsb1,3)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb2,1)*sn2b * (
+          - 2/3/mb*mmst1*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb2,1) * (
+          + 2/3*mmsb2
+          - 7/6*mmst1
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb2,2)*sn2b * (
+          - 8/3/mb*mmsb2*mmst1*mgl
+          + 4/3/mb*sqr(mmsb2)*mgl
+          + 4/3/mb*sqr(mmst1)*mgl
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb2,2) * (
+          - 4*mmsb2*mmst1
+          + 7/3*sqr(sqr(mmsb2)
+          + mmst1)
+          )
+
+       + sqr(lnMst1Sq)*den(mmgl - mmsb2,3) * (
+          + 4/3*mmsb2*sqr(mmst1)
+          - 8/3*sqr(mmsb2)*mmst1
+          + 4/3*pow(mmsb2,3)
+          )
+
+       + sqr(lnMst1Sq) * (
+          - 1/3
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb1,1)*sn2b * (
+          + 8/3/mb*mmst1*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb1,1) * (
+          + 2*mmsb1
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/mb*sqr(mmsb1)*mgl
+          + 4/mb*sqr(mmst1)*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb1,2) * (
+          + 4/3*mmsb1*mmst1
+          + 7*sqr(mmsb1)
+          - 3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb1,3) * (
+          - 4*mmsb1*sqr(mmst1)
+          + 4*pow(mmsb1,3)
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb2,1)*sn2b * (
+          - 8/3/mb*mmst1*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb2,1) * (
+          + 2*mmsb2
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/mb*sqr(mmsb2)*mgl
+          - 4/mb*sqr(mmst1)*mgl
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb2,2) * (
+          + 4/3*mmsb2*mmst1
+          + 7*sqr(mmsb2)
+          - 3*sqr(mmst1)
+          )
+
+       + lnMst1Sq*den(mmgl - mmsb2,3) * (
+          - 4*mmsb2*sqr(mmst1)
+          + 4*pow(mmsb2,3)
+          )
+
+       + lnMst1Sq * (
+          + 1/9
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb1,1)*sn2b * (
+          + 2/3/mb*mmst2*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb1,1) * (
+          + 2/3*mmsb1
+          - 7/6*mmst2
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb1,2)*sn2b * (
+          + 8/3/mb*mmsb1*mmst2*mgl
+          - 4/3/mb*sqr(mmsb1)*mgl
+          - 4/3/mb*sqr(mmst2)*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb1,2) * (
+          - 4*mmsb1*mmst2
+          + 7/3*sqr(sqr(mmsb1)
+          + mmst2)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb1,3) * (
+          + 4/3*mmsb1*sqr(mmst2)
+          - 8/3*sqr(mmsb1)*mmst2
+          + 4/3*pow(mmsb1,3)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb2,1)*sn2b * (
+          - 2/3/mb*mmst2*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb2,1) * (
+          + 2/3*mmsb2
+          - 7/6*mmst2
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb2,2)*sn2b * (
+          - 8/3/mb*mmsb2*mmst2*mgl
+          + 4/3/mb*sqr(mmsb2)*mgl
+          + 4/3/mb*sqr(mmst2)*mgl
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb2,2) * (
+          - 4*mmsb2*mmst2
+          + 7/3*sqr(sqr(mmsb2)
+          + mmst2)
+          )
+
+       + sqr(lnMst2Sq)*den(mmgl - mmsb2,3) * (
+          + 4/3*mmsb2*sqr(mmst2)
+          - 8/3*sqr(mmsb2)*mmst2
+          + 4/3*pow(mmsb2,3)
+          )
+
+       + sqr(lnMst2Sq) * (
+          - 1/3
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb1,1)*sn2b * (
+          + 8/3/mb*mmst2*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb1,1) * (
+          + 2*mmsb1
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb1,2)*sn2b * (
+          - 4/mb*sqr(mmsb1)*mgl
+          + 4/mb*sqr(mmst2)*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb1,2) * (
+          + 4/3*mmsb1*mmst2
+          + 7*sqr(mmsb1)
+          - 3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb1,3) * (
+          - 4*mmsb1*sqr(mmst2)
+          + 4*pow(mmsb1,3)
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb2,1)*sn2b * (
+          - 8/3/mb*mmst2*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb2,1) * (
+          + 2*mmsb2
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb2,2)*sn2b * (
+          + 4/mb*sqr(mmsb2)*mgl
+          - 4/mb*sqr(mmst2)*mgl
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb2,2) * (
+          + 4/3*mmsb2*mmst2
+          + 7*sqr(mmsb2)
+          - 3*sqr(mmst2)
+          )
+
+       + lnMst2Sq*den(mmgl - mmsb2,3) * (
+          - 4*mmsb2*sqr(mmst2)
+          + 4*pow(mmsb2,3)
+          )
+
+       + lnMst2Sq * (
+          + 1/9
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb1,1)*sn2b * (
+          + 16/3/mb*mmsusy*mgl
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb1,1) * (
+          - 4*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb1,2) * (
+          - 16/3*mmsb1*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb2,1)*sn2b * (
+          - 16/3/mb*mmsusy*mgl
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb2,1) * (
+          - 4*mmsusy
+          )
+
+       + sqr(lnMmsusy)*den(mmgl - mmsb2,2) * (
+          - 16/3*mmsb2*mmsusy
+          )
+
+       + sqr(lnMmsusy) * (
+          + 8/3
+          )
+
+       + lnMmsusy*den(mmgl - mmsb1,1)*sn2b * (
+          - 128/3/mb*mmsusy*mgl
+          )
+
+       + lnMmsusy*den(mmgl - mmsb1,1) * (
+          + 32*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmsb1,2) * (
+          + 128/3*mmsb1*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmsb2,1)*sn2b * (
+          + 128/3/mb*mmsusy*mgl
+          )
+
+       + lnMmsusy*den(mmgl - mmsb2,1) * (
+          + 32*mmsusy
+          )
+
+       + lnMmsusy*den(mmgl - mmsb2,2) * (
+          + 128/3*mmsb2*mmsusy
+          )
+
+       + lnMmsusy * (
+          + 152/9
+          )
+
+       + lnMmu*sqr(cs2b) * (
+          + 128/9
+          )
+
+       + sqr(lnMmu) * (
+          - 130/9
+          )
+
+       + lnMmu*den(mmgl - mmsb1,1)*sn2b * (
+          + 8/9/mb*mmsb1*mgl
+          - 16/9/mb*mmsb2*mgl
+          )
+
+       + lnMmu*den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMmu*den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 88/9*mmsb1
+          - 8/3*mmsb2
+          )
+
+       + lnMmu*den(mmgl - mmsb1,1) * (
+          - 58/3*mmsb1
+          + 8/3*mmsb2
+          )
+
+       + lnMmu*den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 16/9*mmsb1*mmsb2
+          + 16/9*sqr(mmsb1)
+          )
+
+       + lnMmu*den(mmgl - mmsb1,2) * (
+          + 16/9*mmsb1*mmsb2
+          - 8/9*sqr(mmsb1)
+          )
+
+       + lnMmu*den(mmgl - mmsb2,1)*sn2b * (
+          + 16/9/mb*mmsb1*mgl
+          - 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMmu*den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + lnMmu*den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 8/3*mmsb1
+          + 88/9*mmsb2
+          )
+
+       + lnMmu*den(mmgl - mmsb2,1) * (
+          + 8/3*mmsb1
+          - 58/3*mmsb2
+          )
+
+       + lnMmu*den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 16/9*mmsb1*mmsb2
+          + 16/9*sqr(mmsb2)
+          )
+
+       + lnMmu*den(mmgl - mmsb2,2) * (
+          + 16/9*mmsb1*mmsb2
+          - 8/9*sqr(mmsb2)
+          )
+
+       + lnMmu * (
+          - 932/9
+          )
+
+       + den(mmgl - mmsb1,1)*sn2b * (
+          + 88/9/mb*mmsb1*mgl*zt2
+          + 676/9/mb*mmsb1*mgl
+          + 4/3/mb*mmsb2*mgl*zt2
+          + 56/9/mb*mmsb2*mgl
+          + 4/3/mb*mmst1*mgl*zt2
+          + 8/mb*mmst1*mgl
+          + 4/3/mb*mmst2*mgl*zt2
+          + 8/mb*mmst2*mgl
+          + 32/3/mb*mmsusy*mgl*zt2
+          + 64/mb*mmsusy*mgl
+          )
+
+       + den(mmgl - mmsb1,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + den(mmgl - mmsb1,1)*sqr(cs2b) * (
+          + 41/9*mmsb1*zt2
+          + 439/9*mmsb1
+          - 8/3*mmsb2
+          )
+
+       + den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          - 20*sqr(mmsb1)*zt2
+          - 140*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb1,1)*den(mmsb1 - mmsb2,1) * (
+          + 20/3*sqr(mmsb1)*zt2
+          + 428/9*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb1,1) * (
+          + 50/9*mmsb1*zt2
+          + 61/9*mmsb1
+          - mmsb2*zt2
+          - 10/3*mmsb2
+          - mmst1*zt2
+          - 6*mmst1
+          - mmst2*zt2
+          - 6*mmst2
+          - 8*mmsusy*zt2
+          - 48*mmsusy
+          )
+
+       + den(mmgl - mmsb1,2)*sqr(cs2b) * (
+          - 16/9*mmsb1*mmsb2
+          + 16/9*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb1,2) * (
+          - 4/3*mmsb1*mmsb2*zt2
+          - 56/9*mmsb1*mmsb2
+          - 4/3*mmsb1*mmst1*zt2
+          - 8*mmsb1*mmst1
+          - 4/3*mmsb1*mmst2*zt2
+          - 8*mmsb1*mmst2
+          - 32/3*mmsb1*mmsusy*zt2
+          - 64*mmsb1*mmsusy
+          + 44/3*sqr(mmsb1)*zt2
+          + 868/9*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb1,3) * (
+          + 16/3*pow(mmsb1,3)*zt2
+          + 112/3*pow(mmsb1,3)
+          )
+
+       + den(mmgl - mmsb2,1)*sn2b * (
+          - 4/3/mb*mmsb1*mgl*zt2
+          - 56/9/mb*mmsb1*mgl
+          - 88/9/mb*mmsb2*mgl*zt2
+          - 676/9/mb*mmsb2*mgl
+          - 4/3/mb*mmst1*mgl*zt2
+          - 8/mb*mmst1*mgl
+          - 4/3/mb*mmst2*mgl*zt2
+          - 8/mb*mmst2*mgl
+          - 32/3/mb*mmsusy*mgl*zt2
+          - 64/mb*mmsusy*mgl
+          )
+
+       + den(mmgl - mmsb2,1)*sn4b*cs2b * (
+          - 8/9/mb*mmsb1*mgl
+          + 8/9/mb*mmsb2*mgl
+          )
+
+       + den(mmgl - mmsb2,1)*sqr(cs2b) * (
+          - 20*mmsb1*zt2
+          - 428/3*mmsb1
+          - 139/9*mmsb2*zt2
+          - 821/9*mmsb2
+          )
+
+       + den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1)*sqr(cs2b) * (
+          + 20*sqr(mmsb1)*zt2
+          + 140*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb2,1)*den(mmsb1 - mmsb2,1) * (
+          - 20/3*sqr(mmsb1)*zt2
+          - 428/9*sqr(mmsb1)
+          )
+
+       + den(mmgl - mmsb2,1) * (
+          + 17/3*mmsb1*zt2
+          + 398/9*mmsb1
+          + 110/9*mmsb2*zt2
+          + 163/3*mmsb2
+          - mmst1*zt2
+          - 6*mmst1
+          - mmst2*zt2
+          - 6*mmst2
+          - 8*mmsusy*zt2
+          - 48*mmsusy
+          )
+
+       + den(mmgl - mmsb2,2)*sqr(cs2b) * (
+          - 16/9*mmsb1*mmsb2
+          + 16/9*sqr(mmsb2)
+          )
+
+       + den(mmgl - mmsb2,2) * (
+          - 4/3*mmsb1*mmsb2*zt2
+          - 56/9*mmsb1*mmsb2
+          - 4/3*mmsb2*mmst1*zt2
+          - 8*mmsb2*mmst1
+          - 4/3*mmsb2*mmst2*zt2
+          - 8*mmsb2*mmst2
+          - 32/3*mmsb2*mmsusy*zt2
+          - 64*mmsb2*mmsusy
+          + 44/3*sqr(mmsb2)*zt2
+          + 868/9*sqr(mmsb2)
+          )
+
+       + den(mmgl - mmsb2,3) * (
+          + 16/3*pow(mmsb2,3)*zt2
+          + 112/3*pow(mmsb2,3)
+          )
+
+       - 77/2
+          + 8/9*zt2
+         ;
+
+  return resmb;
+}
