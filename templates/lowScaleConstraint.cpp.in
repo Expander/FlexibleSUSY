@@ -1,0 +1,62 @@
+
+#include "lowScaleConstraint.hpp"
+#include "model.hpp"
+#include "wrappers.hpp"
+#include "logger.hpp"
+#include "ew_input.hpp"
+
+#include <cassert>
+#include <cmath>
+
+#define INPUTPARAMETER(p) inputPars.p
+#define MODELPARAMETER(p) model->get_##p()
+#define BETAPARAMETER(p) beta_functions.get_##p()
+#define BETA(p) beta_##p
+#define SM(p) Electroweak_constants::p
+
+@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+   : model(0)
+   , inputPars(inputPars_)
+{
+@scaleGuess@
+}
+
+@ModelName@_low_scale_constraint::~@ModelName@_low_scale_constraint()
+{
+}
+
+void @ModelName@_low_scale_constraint::apply()
+{
+   assert(model && "Error: low scale constraint: model pointer must"
+          " not be zero");
+
+   model->calculate_DRbar_parameters();
+   update_scale();
+   model->solve_ewsb();
+   calculate_DRbar_gauge_couplings();
+
+@applyConstraint@
+}
+
+double @ModelName@_low_scale_constraint::get_scale() const
+{
+   return scale;
+}
+
+void @ModelName@_low_scale_constraint::set_model(@ModelName@* model_)
+{
+   model = model_;
+}
+
+void @ModelName@_low_scale_constraint::update_scale()
+{
+@calculateScale@
+}
+
+void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
+{
+   const double currentScale = model->displayMu();
+   static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+
+@setDRbarCouplings@
+}

@@ -417,6 +417,21 @@ operator*( T a, const MatIndexable<T,B>& b )
   return MatXpr< T, ExprT >( ExprT( a,	MatConstRef<T,MatIndexable<T,B> >(b) ));
 }
 
+/// multiply xpr matrix by a scalar
+template<typename T, typename B>
+MatXpr< T,
+     MatXprScalOp<T,
+               MatConstRef<T,MatIndexable<T,B> >,
+	      OpMultiply<T> > >
+operator*( int a, const MatIndexable<T,B>& b )
+{
+  typedef MatXprScalOp< T,
+    MatConstRef<T,MatIndexable<T,B> >,
+    OpMultiply<T> > ExprT;
+
+  return MatXpr< T, ExprT >( ExprT( static_cast<T>(a), MatConstRef<T,MatIndexable<T,B> >(b) ));
+}
+
 /// multiply xpr complex matrix by a scalar
 template<typename B>
 MatXpr< Complex, 
@@ -424,6 +439,21 @@ MatXpr< Complex,
                MatConstRef<Complex,MatIndexable<Complex,B> >, 
 	      OpMultiply<Complex> > >
 operator*( double a, const MatIndexable<Complex,B>& b )
+{
+  typedef MatXprScalOp< Complex, 
+    MatConstRef<Complex,MatIndexable<Complex,B> >, 
+    OpMultiply<Complex> > ExprT;
+  
+  return MatXpr< Complex, ExprT >( ExprT( a,	MatConstRef<Complex,MatIndexable<Complex,B> >(b) ));
+}
+
+/// multiply xpr complex matrix by a scalar
+template<typename B>
+MatXpr< Complex, 
+     MatXprScalOp<Complex, 
+               MatConstRef<Complex,MatIndexable<Complex,B> >, 
+	      OpMultiply<Complex> > >
+operator*( const std::complex<double>& a, const MatIndexable<Complex,B>& b )
 {
   typedef MatXprScalOp< Complex, 
     MatConstRef<Complex,MatIndexable<Complex,B> >, 
@@ -451,9 +481,39 @@ operator*( double a, const MatXpr<Complex,B>& b )
 template<typename B>
 MatXpr< Complex, 
      MatXprScalOp<Complex, 
+               MatConstRef<Complex,MatXpr<Complex,B> >, 
+	      OpMultiply<Complex> > >
+operator*( const std::complex<double>& a, const MatXpr<Complex,B>& b )
+{
+  typedef MatXprScalOp< Complex, 
+    MatConstRef<Complex,MatXpr<Complex,B> >, 
+    OpMultiply<Complex> > ExprT;
+  
+  return MatXpr< Complex, ExprT >( ExprT( a,	MatConstRef<Complex,MatXpr<Complex,B> >(b) ));
+}
+
+/// multiply xpr matrix by a scalar
+template<typename B>
+MatXpr< Complex, 
+     MatXprScalOp<Complex, 
                MatConstRef<Complex,MatIndexable<Complex,B> >, 
 	      OpMultiply<Complex> > >
 operator*( const MatIndexable<Complex,B>& b , double a)
+{
+  typedef MatXprScalOp< Complex, 
+    MatConstRef<Complex,MatIndexable<Complex,B> >, 
+    OpMultiply<Complex> > ExprT;
+  
+  return MatXpr< Complex, ExprT >( ExprT( a,	MatConstRef<Complex,MatIndexable<Complex,B> >(b) ));
+}
+
+/// multiply xpr matrix by a scalar
+template<typename B>
+MatXpr< Complex, 
+     MatXprScalOp<Complex, 
+               MatConstRef<Complex,MatIndexable<Complex,B> >, 
+	      OpMultiply<Complex> > >
+operator*( const MatIndexable<Complex,B>& b , const std::complex<double>& a)
 {
   typedef MatXprScalOp< Complex, 
     MatConstRef<Complex,MatIndexable<Complex,B> >, 
@@ -469,6 +529,21 @@ MatXpr< Complex,
                MatConstRef<Complex,MatXpr<Complex,B> >, 
 	      OpMultiply<Complex> > >
 operator*( const MatXpr<Complex,B>& b , double a)
+{
+  typedef MatXprScalOp< Complex, 
+    MatConstRef<Complex,MatXpr<Complex,B> >, 
+    OpMultiply<Complex> > ExprT;
+  
+  return MatXpr< Complex, ExprT >( ExprT( a,	MatConstRef<Complex,MatXpr<Complex,B> >(b) ));
+}
+
+/// multiply xpr complex matrix by a scalar
+template<typename B>
+MatXpr< Complex, 
+     MatXprScalOp<Complex, 
+               MatConstRef<Complex,MatXpr<Complex,B> >, 
+	      OpMultiply<Complex> > >
+operator*( const MatXpr<Complex,B>& b , const std::complex<double>& a)
 {
   typedef MatXprScalOp< Complex, 
     MatConstRef<Complex,MatXpr<Complex,B> >, 
@@ -497,6 +572,23 @@ operator*( const MatIndexable<T,B>& b, T a )
 
 /// multiply xpr matrix by scalar
 template<typename T, typename B>
+MatXpr< T,
+     MatXprScalOp<T,
+               MatConstRef<T,MatIndexable<T,B> >,
+	      OpMultiply<T> > >
+operator*( const MatIndexable<T,B>& b, int a )
+{
+  typedef MatXprScalOp< T,
+    MatConstRef<T,MatIndexable<T,B> >,
+    OpMultiply<T> > ExprT;
+
+  return MatXpr< T, ExprT >(
+                             ExprT( static_cast<T>(a),
+				MatConstRef<T,MatIndexable<T,B> >(b) ));
+}
+
+/// multiply xpr matrix by scalar
+template<typename T, typename B>
 MatXpr< T, 
      MatXprScalOp<T, 
                MatConstRef<T,MatXpr<T,B> >, 
@@ -514,6 +606,23 @@ operator*( T a, const MatXpr<T,B>& b )
 
 /// multiply xpr matrix by scalar
 template<typename T, typename B>
+MatXpr< T,
+     MatXprScalOp<T,
+               MatConstRef<T,MatXpr<T,B> >,
+	      OpMultiply<T> > >
+operator*( int a, const MatXpr<T,B>& b )
+{
+  typedef MatXprScalOp< T,
+    MatConstRef<T,MatXpr<T,B> >,
+    OpMultiply<T> > ExprT;
+
+  return MatXpr< T, ExprT >(
+                             ExprT( static_cast<T>(a),
+				MatConstRef<T,MatXpr<T,B> >(b) ));
+}
+
+/// multiply xpr matrix by scalar
+template<typename T, typename B>
 MatXpr< T, 
      MatXprScalOp<T, 
                MatConstRef<T,MatXpr<T,B> >, 
@@ -526,6 +635,23 @@ operator*( const MatXpr<T,B>& b, T a )
   
   return MatXpr< T, ExprT >(
 			 ExprT( a,
+				MatConstRef<T,MatXpr<T,B> >(b) ));
+}
+
+/// multiply xpr matrix by scalar
+template<typename T, typename B>
+MatXpr< T,
+     MatXprScalOp<T,
+               MatConstRef<T,MatXpr<T,B> >,
+	      OpMultiply<T> > >
+operator*( const MatXpr<T,B>& b, int a )
+{
+  typedef MatXprScalOp< T,
+    MatConstRef<T,MatXpr<T,B> >,
+    OpMultiply<T> > ExprT;
+
+  return MatXpr< T, ExprT >(
+                             ExprT( static_cast<T>(a),
 				MatConstRef<T,MatXpr<T,B> >(b) ));
 }
 

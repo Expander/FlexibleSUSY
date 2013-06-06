@@ -30,6 +30,7 @@ public:
   *********************************************************************************/
 
   double mod() const { return std::abs(*this); }///< returns modulus of number
+  double norm() const { return std::norm(*this); } ///< returns the square of the modulus
   double arg() const { return std::arg(*this); }///< returns angle (in Argand diagram): theta=-pi->pi
 
   Complex conj() const { return std::conj(*this); }///< Complex conjugate
@@ -67,5 +68,29 @@ inline Complex conj(const Complex &a) { return std::conj(a); }
 inline Complex log(const Complex &a) { return std::log(a); } ///< Principal log
 inline Complex exp(const Complex &a) { return std::exp(a); }
 inline Complex sqrt(const Complex &a) { return std::sqrt(a); }
+
+template <typename T>
+inline std::complex<T> operator*(std::complex<T> lhs, const int rhs)
+{
+   return lhs *= rhs;
+}
+
+template <typename T>
+inline std::complex<T> operator*(const int lhs, std::complex<T> rhs)
+{
+   return rhs *= lhs;
+}
+
+template <typename T>
+inline std::complex<T> operator+(std::complex<T> lhs, const int rhs)
+{
+   return lhs += rhs;
+}
+
+template <typename T>
+inline std::complex<T> operator+(const int lhs, std::complex<T> rhs)
+{
+   return operator+(rhs, lhs);
+}
 
 #endif

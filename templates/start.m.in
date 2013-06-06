@@ -1,0 +1,23 @@
+$flexiblesusyOutputDir   = "@DIR@";
+$flexiblesusyMetaDir     = "./meta/";
+$flexiblesusyTemplateDir = "./templates/";
+AppendTo[$Path, $flexiblesusyMetaDir];
+
+Needs["SARAH`"];
+Needs["FlexibleSUSY`", "FlexibleSUSY.m"];
+
+workingDirectory = Directory[];
+$sarahOutputDir = FileNameJoin[{workingDirectory, "Output"}];
+Print["Current working directory: ", workingDirectory];
+Print["SARAH output directory: ", $sarahOutputDir];
+
+Start["@ModelName@"];
+
+MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
+                 InputFile -> "@DIR@/FlexibleSUSY.m",
+                 softSusyCompatibleRGEs -> True,
+                 defaultDiagonalizationPrecision -> MediumPrecision,
+                 highPrecision -> {hh, Ah, Hpm},
+                 mediumPrecision -> {},
+                 lowPrecision -> {}
+                ];

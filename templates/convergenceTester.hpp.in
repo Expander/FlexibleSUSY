@@ -1,0 +1,19 @@
+
+#ifndef @ModelName@_CONVERGENCE_TESTER_H
+#define @ModelName@_CONVERGENCE_TESTER_H
+
+class @ModelName@;
+
+// we will later inherit this class from
+// Convergence_tester_skeleton<@ModelName@>
+
+class @ModelName@_convergence_tester {
+public:
+   @ModelName@_convergence_tester(@ModelName@*, double);
+   virtual ~@ModelName@_convergence_tester();
+
+protected:
+   virtual double max_rel_diff() const;
+};
+
+#endif

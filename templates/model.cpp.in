@@ -1,0 +1,258 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#include "model.hpp"
+#include "wrappers.hpp"
+#include "logger.hpp"
+
+#include <cmath>
+#include <iostream>
+
+#define CLASSNAME @ModelName@
+
+#define CALC_DRBAR_PARS(model) model->calculate_DRbar_parameters()
+
+#define PHYSICAL(parameter) physical.parameter
+
+#if __cplusplus <= 199711L && defined(__GNUC__)
+   #define decltype typeof
+#endif
+
+#undef VERBOSE
+
+@ModelName@::@ModelName@()
+   : @ModelName@_soft_parameters()
+   , number_of_ewsb_iterations(100)
+   , number_of_mass_iterations(20)
+   , ewsb_loop_order(0)
+   , ewsb_iteration_precision(1.0e-7)
+   , mass_iteration_precision(1.0e-7)
+   , physical()
+@physicalMassesInit@
+@mixingMatricesInit@
+@phasesInit@
+{
+}
+
+@ModelName@::~@ModelName@()
+{
+}
+
+void @ModelName@::set_number_of_ewsb_iterations(std::size_t iterations)
+{
+   number_of_ewsb_iterations = iterations;
+}
+
+void @ModelName@::set_ewsb_loop_order(unsigned loop_order)
+{
+   ewsb_loop_order = loop_order;
+}
+
+void @ModelName@::set_ewsb_iteration_precision(double precision)
+{
+   ewsb_iteration_precision = precision;
+}
+
+unsigned @ModelName@::get_ewsb_loop_order() const
+{
+   return ewsb_loop_order;
+}
+
+double @ModelName@::get_ewsb_iteration_precision() const
+{
+   return ewsb_iteration_precision;
+}
+
+const @ModelName@_physical& @ModelName@::get_physical() const
+{
+   return physical;
+}
+
+int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   @ModelName@* model = static_cast<@ModelName@*>(params);
+
+   double tadpole[@numberOfEWSBEquations@];
+
+@calculateTreeLevelTadpoles@
+@calculateOneLoopTadpoles@
+
+   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+      gsl_vector_set(f, i, tadpole[i]);
+
+   return GSL_SUCCESS;
+}
+
+int @ModelName@::solve_ewsb()
+{
+   const gsl_multiroot_fsolver_type* solvers[] =
+      {gsl_multiroot_fsolver_hybrids, gsl_multiroot_fsolver_hybrid,
+       gsl_multiroot_fsolver_dnewton, gsl_multiroot_fsolver_broyden};
+
+   double x_init[@numberOfEWSBEquations@];
+   ewsb_initial_guess(x_init);
+
+   int status;
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+      status = solve_ewsb_with(solvers[i], x_init);
+      if (status == GSL_SUCCESS)
+         break;
+   }
+
+   return status;
+}
+
+void @ModelName@::ewsb_initial_guess(double* x_init)
+{
+@initialGuess@
+}
+
+int @ModelName@::solve_ewsb_with(const gsl_multiroot_fsolver_type* solver,
+                                  const double* x_init)
+{
+   gsl_multiroot_fsolver* s = gsl_multiroot_fsolver_alloc(solver, @numberOfEWSBEquations@);
+   int status;
+   std::size_t iter = 0;
+   gsl_multiroot_function f = {&tadpole_equations, @numberOfEWSBEquations@, this};
+   gsl_vector* x = gsl_vector_alloc(@numberOfEWSBEquations@);
+
+   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+      gsl_vector_set(x, i, x_init[i]);
+
+   gsl_multiroot_fsolver_set(s, &f, x);
+
+#ifdef VERBOSE
+   print_state(iter, s);
+#endif
+
+   do {
+      iter++;
+      status = gsl_multiroot_fsolver_iterate(s);
+
+#ifdef VERBOSE
+      print_state(iter, s);
+#endif
+
+      if (status)   // check if solver is stuck
+         break;
+
+      status =
+         gsl_multiroot_test_residual(s->f, ewsb_iteration_precision);
+   } while (status == GSL_CONTINUE && iter < number_of_ewsb_iterations);
+
+#ifdef VERBOSE
+   printf("EWSB status = %s\n", gsl_strerror(status));
+#endif
+
+   gsl_multiroot_fsolver_free(s);
+   gsl_vector_free(x);
+
+   return status;
+}
+
+void @ModelName@::print_state(std::size_t iter, gsl_multiroot_fsolver* s) const
+{
+   std::cout << "iter = " << iter << ", x =";
+   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+      std::cout << " " << gsl_vector_get(s->x, i);
+   std::cout << ", f(x) =";
+   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+      std::cout << " " << gsl_vector_get(s->f, i);
+   std::cout << "\n";
+}
+
+void @ModelName@::print(std::ostream& ostr) const
+{
+   ostr << "========================================\n"
+           "@ModelName@\n"
+           "========================================\n";
+   @ModelName@_soft_parameters::print(ostr);
+   ostr << "----------------------------------------\n"
+           "tree-level DRbar masses:\n"
+           "----------------------------------------\n";
+@printMasses@
+   ostr << "----------------------------------------\n"
+           "tree-level DRbar mixing matrices:\n"
+           "----------------------------------------\n";
+@printMixingMatrices@
+   physical.print(ostr);
+}
+
+double @ModelName@::A0(double m) const
+{
+   return a0(m, displayMu());
+}
+
+Complex @ModelName@::B0(double p, double m1, double m2) const
+{
+   return Complex(b0(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::B1(double p, double m1, double m2) const
+{
+   return Complex(-b1(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::B00(double p, double m1, double m2) const
+{
+   return Complex(b22(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::B22(double p, double m1, double m2) const
+{
+   return Complex(b22bar(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::H0(double p, double m1, double m2) const
+{
+   return Complex(hfn(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::F0(double p, double m1, double m2) const
+{
+   return Complex(ffn(p, m1, m2, displayMu()));
+}
+
+Complex @ModelName@::G0(double p, double m1, double m2) const
+{
+   return Complex(gfn(p, m1, m2, displayMu()));
+}
+
+void @ModelName@::calculate_DRbar_parameters()
+{
+@calculateAllMasses@
+}
+
+void @ModelName@::calculate_1loop_masses()
+{
+   calculate_DRbar_parameters();
+
+@callAllLoopMassFunctions@
+}
+
+@massCalculationFunctions@
+
+@tadpoleEqFunctions@
+
+@selfEnergyFunctions@
+
+@loopMassesFunctions@
+
+@runningDRbarMassesFunctions@
+
+@dependenceNumFunctions@

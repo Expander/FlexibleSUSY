@@ -1,0 +1,49 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#ifndef @ModelName@_susy_parameters_H
+#define @ModelName@_susy_parameters_H
+
+#include "rge.h"
+
+#include <iosfwd>
+
+class @ModelName@_susy_parameters : public RGE {
+public:
+   @ModelName@_susy_parameters();
+   @ModelName@_susy_parameters(double scale_, double loops_, double thresholds_@cCtorParameterList@);
+   virtual ~@ModelName@_susy_parameters() {}
+   virtual DoubleVector beta() const;
+   virtual const DoubleVector display() const;
+   virtual void print(std::ostream&) const;
+   virtual void set(const DoubleVector&);
+
+   @ModelName@_susy_parameters calcBeta() const;
+
+@setter@
+@getter@
+@anomDimPrototypes@
+
+protected:
+@parameterDef@
+
+private:
+   static const int numberOfParameters = @numberOfParameters@;
+};
+
+#endif

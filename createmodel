@@ -33,3 +33,11 @@ MAKEFILE_TMPL=templates/module.mk.in
 sed -e "s|@DIR@|$targetdir|g"         \
     -e "s|@MODEL@|$model|g"           \
     < $MAKEFILE_TMPL > $targetdir/$MAKEFILE
+
+sed -e "s|@DIR@|$targetdir|g"         \
+    -e "s|@ModelName@|$model|g"       \
+    < templates/start.m.in > $targetdir/start.m
+
+sed -e "s|@DIR@|$targetdir|g"         \
+    -e "s|@ModelName@|$model|g"       \
+    < templates/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m

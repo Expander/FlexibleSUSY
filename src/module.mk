@@ -10,7 +10,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/stopwatch.cpp \
-		$(DIR)/utils.cpp
+		$(DIR)/utils.cpp \
+		$(DIR)/wrappers.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBFLEXI_SRC += \

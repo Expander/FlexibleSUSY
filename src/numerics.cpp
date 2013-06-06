@@ -248,7 +248,7 @@ double findMinimum(double ax, double bx, double cx, double (*f)(double),
 
 
 
-DoubleVector dd(double x, const DoubleVector & /* y */) {
+DoubleVector dd(double x, const DoubleVector & y) {
   DoubleVector dydx(1);
   dydx(1) = -integrandThreshbnr(x);
   return dydx;
@@ -273,7 +273,7 @@ Complex fnfn(double x) {
 	 / sqr(mtInt));
 }
 
-DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
+DoubleVector dilogarg(double t, const DoubleVector & y) {
 
   const double eps = TOLERANCE * 1.0e-20;
 
@@ -317,8 +317,25 @@ double bIntegral(int n1, double p, double m1, double m2, double mt) {
 }
 
 /// Decides level at which one switches to p=0 limit of calculations
-static const double pTolerance = 1.0e-6; 
+const double pTolerance = 1.0e-6; 
 
+double fB(const Complex & a) {
+  /// First, special cases at problematic points
+  double x = a.real(), y = a.imag();
+  if (fabs(x) < pTolerance) {
+    double ans = -1. - x + sqr(x) * 0.5;
+    return ans;
+  }
+  if (close(x, 1., pTolerance)) {
+    double eps = x - 1.;
+    double ans = -1. + sqr(eps) * 0.5;
+    return ans;
+  }
+    
+    Complex ans = log(1.0 - a) - a * log(1.0 - 1.0 / a) - 1.;
+    return ans.real();
+}
+  
 /*
   Analytic expressions follow for above integrals: sometimes useful!
   From hep-ph/9606211
@@ -330,17 +347,25 @@ double b0(double p, double m1, double m2, double q) {
   return B0(p*p, m1*m1, m2*m2).real();
 #endif
 
+  // protect against infrared divergence
+  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
+      && close(m2, 0.0, EPSTOL))
+     return 0.0;
+
   double mMin = minimum(fabs(m1), fabs(m2));
   double mMax = maximum(fabs(m1), fabs(m2));
 
   double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
   double s = pSq - mMinSq + mMaxSq;
 
-  if (sqr(p) > pTolerance * sqr(minimum(fabs(m1), fabs(m2)))) {    
+  if (sqr(p) > pTolerance * sqr(mMin)) {    
+    /*    if (mMaxSq < pSq * pTolerance) {
+      //      cerr << "High p " << m2 << endl;
+      if (printDEBUG[1]) cout << "#" << mMaxSq << "<"<< pSq * pTolerance <<" ";
+      return 2. - 2. * log(p / q);
+      }*/
 
-    if (mMaxSq < pSq * pTolerance) return 2. - 2. * log(p / q);
-
-    Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    Complex iEpsilon(0.0, EPSTOL * mMax);
     
     Complex xPlus, xMinus;
 
@@ -348,18 +373,21 @@ double b0(double p, double m1, double m2, double q) {
       (2. * sqr(p));
     xMinus = 2. * (sqr(mMax) - iEpsilon) / 
       (s + sqrt(sqr(s) - 4. * sqr(p) * (sqr(mMax) - iEpsilon)));
-    
+   
     double ans = -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
 
     return ans;
   }
   else {
-    if (close(m1, m2, EPSTOL))
+    if (close(m1, m2, EPSTOL)) {
       return - log(sqr(m1 / q));
+    }
     else {
       double Mmax2 = sqr(mMax),
 	Mmin2 = sqr(mMin); 
-      if (Mmin2 < sqr(TOLERANCE)) return 1.0 - log(Mmax2 / sqr(q));
+      if (Mmin2 < sqr(TOLERANCE)) {
+	return 1.0 - log(Mmax2 / sqr(q));
+      }
       else {
 	return 
 	  1.0 - log(Mmax2 / sqr(q)) + Mmin2 * log(Mmax2 / Mmin2) 
@@ -399,27 +427,24 @@ double b22(double p,  double m1, double m2, double q) {
   double answer;
   
   if (sqr(p) < pTolerance * maximum(sqr(m1), sqr(m2)) ) {
-    //    cout << "Low p approx\n";
     // m1 == m2 with good accuracy
     if (close(m1, m2, EPSTOL)) {
-      //      cout << "m1=m2 approx\n";
       answer = -sqr(m1) * log(sqr(m1 / q)) * 0.5 + sqr(m1) * 0.5;
     }
     else
       /// This zero p limit is good
       if (fabs(m1) > EPSTOL && fabs(m2) > EPSTOL) {
-	//	cout << "General low p approx\n";
 	answer = 0.375 * (sqr(m1) + sqr(m2)) - 0.25 * 
 	  (sqr(sqr(m2)) * log(sqr(m2 / q)) - sqr(sqr(m1)) * 
 	   log(sqr(m1 / q))) / (sqr(m2) - sqr(m1)); 
       }
       else
 	if (fabs(m1) < EPSTOL) {
-	  //	  cout << "Low m1 approx\n";
 	  answer = 0.375 * sqr(m2) - 0.25 * sqr(m2) * log(sqr(m2 / q));
 	}
-	else 
+	else {
 	  answer = 0.375 * sqr(m1) - 0.25 * sqr(m1) * log(sqr(m1 / q));
+	}
   }
   else {// checked
     double b0Save = b0(p, m1, m2, q);
@@ -439,7 +464,7 @@ double b22(double p,  double m1, double m2, double q) {
 
     answer = ans;
   }
-  
+
   return answer;
 }
 
@@ -769,7 +794,7 @@ double ffbar(double z) {
 
 #define FUNC(x) ((*func)(x))
 
-double trapzd(double (*func)(double), double a, double b, int n, double /* EPS */) {
+double trapzd(double (*func)(double), double a, double b, int n, double EPS) {
 	double x,tnm,sum,del;
 	static double s;
 	int it,j;
@@ -875,7 +900,7 @@ double llqThresh(double mSq, double mChi1, double mSlep, double mChi2) {
   return sqrt(ans / (4.0 * l * xi));
 }
 
-double lqnear(double mSq, double /* mChi1 */, double mSlep, double mChi2) {
+double lqnear(double mSq, double mChi1, double mSlep, double mChi2) {
   double xi    = sqr(mChi2);
   double l     = sqr(mSlep);
   double q     = sqr(mSq);
@@ -1047,4 +1072,130 @@ void getAngles(const DoubleMatrix & v, double & t12, double & t13,
   }
   d = acos(double(pf));
   t12 = asin(v.display(1, 2) / cos(t13));
+}
+
+bool midPtStep(DoubleVector & xi, 
+	      DoubleVector (*derivs)(double t, const DoubleVector & v), 
+	      double tInitial, double tStep) {
+  /// initial guess
+  DoubleVector xiPlus1Old(xi + tStep * derivs(tInitial + tStep, xi));
+  DoubleVector xiPlus1New(xi.displayEnd());
+
+  double diff = 6.66e66, delta = 0.;
+  int count = 0;
+  while (diff > 1.0e-15 && count < 100) {
+    count++;
+    xiPlus1New = xi + tStep * derivs(tInitial + tStep, 0.5*(xi + xiPlus1Old));
+    double max = -1.; /// difference between iterations
+      int i; for (i=1; i<=xi.displayEnd(); i++) {
+	if (fabs(xiPlus1New(i)) < 1.0e-12) 
+	delta = fabs(xiPlus1New(i) - xiPlus1Old(i));
+      else delta = fabs(1.- xiPlus1Old(i) / xiPlus1New(i));
+      if (delta > max) max = delta;
+      }
+
+    diff = max;
+
+    xiPlus1Old = xiPlus1New;
+  }
+  xi = xiPlus1New;
+  if (count < 100) return false;
+  return true;
+}
+
+/// Do a fixed number of steps of approximately reversible integration: hoping
+/// it will help convergence in difficult cases. It is really *slow* though.
+bool integrateReversibly(DoubleVector & xi, 
+			 DoubleVector (*derivs)(double t, 
+						const DoubleVector & v), 
+			 double tInitial, double tFinal, int numSteps) {
+  bool err = false;
+  double tStep = (tFinal - tInitial) / double(numSteps);
+
+  double t = tInitial;
+  int i; for (i=0; i<=numSteps; i++) {
+
+    if (midPtStep(xi, derivs, t, tStep)) err = true;
+    t = tStep * double(i) + tInitial;
+  }
+  return err;
+}
+
+double den(double a, int b) {
+  double aa = a;
+  int i; for (i=1; i<b; i++) aa = aa * a;
+  return 1. / aa;
+}
+
+double fin(double mm1, double mm2) {
+  if (mm1>mm2)
+    return (-3.5 - (7.*mm2)/(2.*mm1) +
+	    dilog(mm2/mm1) - (mm2*dilog(mm2/mm1))/mm1 -
+	    (3.*mm2*log(mm1))/mm1 - log(mm1)*log(mm1 - mm2) +
+	    (mm2*log(mm1)*log(mm1 - mm2))/mm1 + (3.*mm2*log(mm2))/mm1 -
+	    log(mm1)*log(mm2) + (2.*mm2*log(mm1)*log(mm2))/mm1 +
+	    log(mm1 - mm2)*log(mm2) - (mm2*log(mm1 - mm2)*log(mm2))/mm1 - 
+	    sqr(PI) * 0.25 +
+	    (mm2*sqr(PI))/(12.*mm1) + sqr(log(mm1)) - 
+	    (3.*mm2*sqr(log(mm1)))/(2.*mm1) -
+	    (mm2*sqr(log(mm2)))/(2.*mm1));
+  else if (mm1<mm2)
+    return (-3.5 - (7.*mm2)/(2.*mm1) -
+	    dilog(mm1/mm2) + (mm2*dilog(mm1/mm2))/mm1 -
+	    (3*mm2*log(mm1))/mm1 + (3*mm2*log(mm2))/mm1 +
+	    (mm2*log(mm1)*log(mm2))/mm1 - log(mm1)*
+	    log(-mm1 + mm2)+ (mm2*log(mm1)*log(-mm1 + mm2))/mm1 
+	    + log(mm2)*log(-mm1 + mm2) -
+	    (mm2*log(mm2)*log(-mm1 + mm2))/mm1 + sqr(PI) / 12. -
+	    (mm2*sqr(PI))/(4.*mm1) + sqr(log(mm1)) * 0.5 - 
+	    (mm2*sqr(log(mm1)))/mm1 -
+	    sqr(log(mm2))/2);
+  else return 7.-sqr(PI)/6.;  
+}
+
+double zriddr(double (*func)(double), double x1, double x2, double xacc) {
+  int j;
+  double ans,fh,fl,fm,fnew,s,xh,xl,xm,xnew;
+  
+  fl=(*func)(x1);
+  fh=(*func)(x2);
+  if ((fl > 0.0 && fh < 0.0) || (fl < 0.0 && fh > 0.0)) {
+    xl=x1;
+    xh=x2;
+    ans=UNUSED;
+    for (j=1;j<=MAXIT;j++) {
+      xm=0.5*(xl+xh);
+      fm=(*func)(xm);
+      s=sqrt(fm*fm-fl*fh);
+      if (s == 0.0) return ans;
+      xnew=xm+(xm-xl)*((fl >= fh ? 1.0 : -1.0)*fm/s);
+      if (fabs(xnew-ans) <= xacc) return ans;
+      ans=xnew;
+      fnew=(*func)(ans);
+      if (fnew == 0.0) return ans;
+      if (SIGN(fm,fnew) != fm) {
+	xl=xm;
+	fl=fm;
+	xh=ans;
+	fh=fnew;
+      } else if (SIGN(fl,fnew) != fl) {
+	xh=ans;
+	fh=fnew;
+      } else if (SIGN(fh,fnew) != fh) {
+	xl=ans;
+	fl=fnew;
+      } else throw("In zriddr: never get here.");
+      if (fabs(xh-xl) <= xacc) return ans;
+    }
+    throw("zriddr exceeded maximum iterations");
+  }
+  else {
+    if (close(fl, 0.0, EPSTOL)) return x1;
+    if (close(fh, 0.0, EPSTOL)) return x2;
+    ostringstream s;
+    s << "Root must be bracketed in zriddr. f(" << x1 << ")=" << fl 
+      << ", fh(" << x2 << ")=" << fh << endl;
+    throw(s.str());
+  }
+  return 0.0;
 }

@@ -1,0 +1,25 @@
+
+#ifndef @ModelName@_SUSY_SCALE_CONSTRAINT_H
+#define @ModelName@_SUSY_SCALE_CONSTRAINT_H
+
+#include "inputPars.hpp"
+
+class @ModelName@;
+
+class @ModelName@_susy_scale_constraint {
+public:
+   @ModelName@_susy_scale_constraint(const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_susy_scale_constraint();
+   virtual void apply();
+   virtual double get_scale() const;
+   virtual void set_model(@ModelName@*);
+
+private:
+   double scale;
+   @ModelName@* model;
+   @ModelName@_input_parameters inputPars;
+
+   void update_scale();
+};
+
+#endif

@@ -1,0 +1,16 @@
+
+#include "convergenceTester.hpp"
+
+@ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@*, double)
+{
+}
+
+@ModelName@_convergence_tester::~@ModelName@_convergence_tester()
+{
+}
+
+double @ModelName@_convergence_tester::max_rel_diff() const
+{
+   // return get_model()->display().compare(get_last_iteration_model()->display());
+   return 0.0;
+}

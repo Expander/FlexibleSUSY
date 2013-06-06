@@ -1,0 +1,34 @@
+#include "model.hpp"
+#include "inputPars.hpp"
+#include "highScaleConstraint.hpp"
+#include "susyScaleConstraint.hpp"
+#include "lowScaleConstraint.hpp"
+#include "convergenceTester.hpp"
+#include "initialGuesser.hpp"
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+   @ModelName@_input_parameters input;
+   @ModelName@_high_scale_constraint high_scale_input(input);
+   @ModelName@_susy_scale_constraint susy_scale_input(input);
+   @ModelName@_low_scale_constraint  low_scale_input(input);
+
+   @ModelName@ model;
+   model.setMu(100.);
+
+   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-7);
+   @ModelName@_initial_guesser initial_guesser(&model, input);
+
+   try {
+      model.solve_ewsb();
+      model.calculate_1loop_masses();
+      model.print(std::cout);
+   } catch (std::string& str) {
+      cout << "Error: " << str << endl;
+   }
+
+   return 0;
+}

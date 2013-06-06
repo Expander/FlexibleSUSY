@@ -1,0 +1,24 @@
+
+#ifndef @ModelName@_INITIAL_GUESSER_H
+#define @ModelName@_INITIAL_GUESSER_H
+
+#include "inputPars.hpp"
+
+class @ModelName@;
+
+// we will later inherit this class from Initial_guesser<Two_scale>
+
+class @ModelName@_initial_guesser {
+public:
+   @ModelName@_initial_guesser(@ModelName@*, const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_initial_guesser();
+   virtual void guess();
+
+private:
+   @ModelName@* model;
+   @ModelName@_input_parameters input_pars;
+   double low_scale_guess;
+   double high_scale_guess;
+};
+
+#endif

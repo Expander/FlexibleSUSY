@@ -132,6 +132,10 @@ int DoubleVector::closest(double a) const {
   return position;
 }
 
+void DoubleVector::fillArray(double* array, unsigned offset) const
+{
+   ::fillArray(x, array, offset);
+}
 
 
 
@@ -207,6 +211,50 @@ void DoubleMatrix::swapcols(int i, int j) {
   std::valarray<double> temp(col(i));
   col(i) = col(j);
   col(j) = temp;
+}
+
+void DoubleMatrix::setCols(int numberOfCols)
+{
+   if (numberOfCols == cols)
+      return;
+
+   std::valarray<double> old(x);
+   x.resize(rows * numberOfCols, 0.0);
+   if (numberOfCols > cols) {
+      for (std::size_t i = 0; i < old.size(); ++i)
+         x[i + (i / cols) * (numberOfCols - cols)] = old[i];
+   } else {
+      for (std::size_t i = 0; i < x.size(); ++i)
+         x[i] = old[i + (i / numberOfCols) * (cols - numberOfCols)];
+   }
+   cols = numberOfCols;
+}
+
+void DoubleMatrix::setRows(int numberOfRows)
+{
+   if (numberOfRows == rows)
+      return;
+
+   std::valarray<double> old(x);
+   x.resize(cols * numberOfRows, 0.0);
+   const std::size_t minSize = std::min(old.size(), x.size());
+   for (std::size_t i = 0; i < minSize; ++i)
+      x[i] = old[i];
+   rows = numberOfRows;
+}
+
+void DoubleMatrix::resize(int numberOfRows, int numberOfCols)
+{
+   setCols(numberOfCols);
+   setRows(numberOfRows);
+}
+
+bool DoubleMatrix::testNan() const
+{
+   for (std::size_t i = 0; i < x.size(); ++i)
+      if (::testNan(x[i]))
+         return true;
+   return false;
 }
 
 double DoubleMatrix::trace() const {
@@ -512,6 +560,7 @@ DoubleVector DoubleMatrix::sym2by2(double & theta) const  {
   temp(1) = mm(1, 1);
   temp(2) = mm(2, 2);
   
+#ifdef ARRAY_BOUNDS_CHECKING
   double maxtol = maximum(abs(temp(1)), abs(temp(2))) * TOLERANCE;
   if (abs(mm(2, 1)) > maxtol || abs(mm(1, 2)) > maxtol) {
     ostringstream ii;
@@ -520,6 +569,7 @@ DoubleVector DoubleMatrix::sym2by2(double & theta) const  {
     ii << "Found diagonalised matrix to be " << mm;
     throw ii.str();
   }
+#endif
   
   return temp; 
 }
@@ -528,16 +578,16 @@ DoubleVector DoubleMatrix::sym2by2(double & theta) const  {
 // [ cos thetaL    sin thetaL ]   A   [ cos thetaR -sin thetaR ]  = diag
 // [ -sin thetaL   cos thetaL ]       [ sin thetaR  cos thetaR ]
 DoubleVector DoubleMatrix::asy2by2(double & thetaL, double & thetaR) const {
-  DoubleVector temp1(2), temp2(2);
+   DoubleVector temp1(2), temp2(2);
   DoubleMatrix e(*this);
   
   DoubleMatrix h(e.transpose() * e);
-  temp1 = (h.sym2by2(thetaR)).apply(sqrt);
+  temp1 = (h.sym2by2(thetaR)).apply(zeroSqrt);
   if (temp1(1) > temp1(2))
     thetaR = thetaR + PI * 0.5;
   
   h = e * e.transpose();
-  temp2 = (h.sym2by2(thetaL)).apply(sqrt);
+  temp2 = (h.sym2by2(thetaL)).apply(zeroSqrt);
   
   // Did the eigenvalues come out in the wrong order? 
   // If so, swap the order of the second case by adding pi/2 to the angle.
@@ -548,6 +598,7 @@ DoubleVector DoubleMatrix::asy2by2(double & thetaL, double & thetaR) const {
   DoubleMatrix mm(2, 2);
   mm = rot2d(thetaL) * e * rot2d(-thetaR);
   
+#ifdef ARRAY_BOUNDS_CHECKING
   double maxtol = maximum(abs(temp1(1)), abs(temp1(2))) * TOLERANCE;
   if (abs(mm(2, 1)) > maxtol || abs(mm(1, 2)) > maxtol) {
     outputCharacteristics(15);
@@ -559,6 +610,7 @@ DoubleVector DoubleMatrix::asy2by2(double & thetaL, double & thetaR) const {
     ii << "m=" << mm;
     throw ii.str();
   }
+#endif
   
   temp1(1) = mm(1, 1); temp1(2) = mm(2, 2);
   
@@ -1094,6 +1146,45 @@ void ComplexMatrix::swapcols(int i,int j) {
   col(j) = temp;
 }
 
+
+void ComplexMatrix::setCols(int numberOfCols)
+{
+   if (numberOfCols == cols)
+      return;
+
+   std::valarray<Complex> old(x);
+   x.resize(rows * numberOfCols, 0.0);
+   if (numberOfCols > cols) {
+      for (std::size_t i = 0; i < old.size(); ++i)
+         x[i + (i / cols) * (numberOfCols - cols)] = old[i];
+   } else {
+      for (std::size_t i = 0; i < x.size(); ++i)
+         x[i] = old[i + (i / numberOfCols) * (cols - numberOfCols)];
+   }
+   cols = numberOfCols;
+}
+
+void ComplexMatrix::setRows(int numberOfRows)
+{
+   if (numberOfRows == rows)
+      return;
+
+   std::valarray<Complex> old(x);
+   x.resize(cols * numberOfRows, 0.0);
+   const std::size_t minSize = std::min(old.size(), x.size());
+   for (std::size_t i = 0; i < minSize; ++i)
+      x[i] = old[i];
+   rows = numberOfRows;
+}
+
+
+void ComplexMatrix::resize(int numberOfRows, int numberOfCols)
+{
+   setCols(numberOfCols);
+   setRows(numberOfRows);
+}
+
+
 Complex ComplexMatrix::trace() const {
 #ifdef ARRAY_BOUNDS_CHECKING
   if (rows != cols)  {
@@ -1124,6 +1215,22 @@ ComplexMatrix ComplexMatrix::hermitianConjugate() const {
 
 ComplexMatrix ComplexMatrix::complexConjugate() const { 
   return ComplexMatrix(x.apply(conj),rows,cols); 
+}
+
+DoubleMatrix ComplexMatrix::real() const
+{
+   std::valarray<double> reals(x.size());
+   for (std::size_t i = 0; i < x.size(); ++i)
+      reals[i] = x[i].real();
+   return DoubleMatrix(reals, rows, cols);
+}
+
+DoubleMatrix ComplexMatrix::imag() const
+{
+   std::valarray<double> imags(x.size());
+   for (std::size_t i = 0; i < x.size(); ++i)
+      imags[i] = x[i].imag();
+   return DoubleMatrix(imags, rows, cols);
 }
 
 /*
@@ -1344,6 +1451,11 @@ DoubleMatrix DoubleMatrix::ludcmp(double & d) const {
   return a;
 }
 
+void DoubleMatrix::fillArray(double* array, unsigned offset) const
+{
+   ::fillArray(x, array, offset);
+}
+
 double DoubleMatrix::determinant() const {
   double ans = 1.;
   DoubleMatrix lu(this->ludcmp(ans));
@@ -1389,4 +1501,42 @@ double DoubleVector::average() const {
   double f = 0.0;
   int i; for (i=start; i<=end; i++) f += x[i];
   return f / double(end);
+}
+
+/// fill array from valarray, starting at offset
+void fillArray(const std::valarray<double>& x, double* array, unsigned offset)
+{
+   for (unsigned i = 0; i < x.size(); ++i)
+      array[i + offset] = x[i];
+}
+
+const ComplexMatrix& ComplexMatrix::operator+=(const DoubleMatrix& other)
+{
+#ifdef ARRAY_BOUNDS_CHECKING
+  if (start != other.displayStart() || end != other.displayEnd())
+    {
+      ostringstream ii;
+      ii << "ComplexMatrix::operator+(const DoubleMatrix&) incompatible lengths\n";
+      ii << *this << "*\n" << other;
+      throw(ii.str());
+    }
+#endif
+  for (std::size_t i = 0; i < x.size(); i++)
+     x[i] += other.x[i];
+  return *this;
+}
+
+ComplexMatrix ComplexMatrix::operator+(const DoubleMatrix& other)
+{
+#ifdef ARRAY_BOUNDS_CHECKING
+  if (start != other.displayStart() || end != other.displayEnd())
+    {
+      ostringstream ii;
+      ii << "ComplexMatrix::operator+=(const DoubleMatrix&) incompatible lengths\n";
+      ii << *this << "*\n" << other;
+      throw(ii.str());
+    }
+#endif
+  ComplexMatrix temp(*this);
+  return temp += other;
 }

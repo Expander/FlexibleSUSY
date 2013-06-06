@@ -1,0 +1,77 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#include "softPars.hpp"
+#include "wrappers.hpp"
+
+#include <iostream>
+
+@ModelName@_soft_parameters::@ModelName@_soft_parameters()
+   : @ModelName@_susy_parameters()
+   @parameterDefaultInit@
+{
+   setPars(numberOfParameters);
+}
+
+@ModelName@_soft_parameters::@ModelName@_soft_parameters(
+   const @ModelName@_susy_parameters& susy_model
+   @cCtorParameterList@
+)
+   : @ModelName@_susy_parameters(susy_model)
+   @parameterCopyInit@
+{
+   setPars(numberOfParameters);
+}
+
+DoubleVector @ModelName@_soft_parameters::beta() const
+{
+   return calcBeta().display();
+}
+
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calcBeta() const
+{
+@beta@
+
+   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calcBeta());
+
+   return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
+}
+
+const DoubleVector @ModelName@_soft_parameters::display() const
+{
+   DoubleVector pars(@ModelName@_susy_parameters::display());
+   pars.setEnd(numberOfParameters);
+
+@display@
+
+   return pars;
+}
+
+void @ModelName@_soft_parameters::print(std::ostream& ostr) const
+{
+   @ModelName@_susy_parameters::print(ostr);
+   ostr << "soft parameters:\n";
+@printParameters@
+}
+
+void @ModelName@_soft_parameters::set(const DoubleVector& v)
+{
+   @ModelName@_susy_parameters::set(v);
+
+@set@
+}

@@ -1,0 +1,9 @@
+
+#ifndef @ModelName@_INPUT_PARAMETERS_H
+#define @ModelName@_INPUT_PARAMETERS_H
+
+struct @ModelName@_input_parameters {
+@defineInputParameters@
+};
+
+#endif

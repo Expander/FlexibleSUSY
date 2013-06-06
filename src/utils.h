@@ -12,12 +12,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "mycomplex.h"
+#include <mycomplex.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <cmath>
-#include "def.h"
+#include <def.h>
 #include <stdio.h>
 #include <string>
 #include <exception>
@@ -31,7 +31,12 @@
 #include <dirent.h>
 
 using namespace std;
+using namespace softsusy;
 
+/// returns either sqrt(f) for f>0 or 0 otherwise
+inline double zeroSqrt(double f){ if (f > 0.) return sqrt(f); 
+  else return EPSTOL; 
+}
 /// Gives exponent of the largest number: either imaginary or real part
 double frexp(const Complex & c, int * i);
 /// Exception handler - will even trap errors in the fortran portion

@@ -1,0 +1,49 @@
+
+#include "initialGuesser.hpp"
+#include "highScaleConstraint.hpp"
+#include "model.hpp"
+#include <cassert>
+
+@ModelName@_initial_guesser::@ModelName@_initial_guesser(@ModelName@* model_, const @ModelName@_input_parameters& input_pars_)
+   : model(model_)
+   , input_pars(input_pars_)
+{
+   assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
+          " @ModelName@ must not be zero");
+
+   low_scale_guess = 91.1876; // MZ
+   high_scale_guess = @highScaleGuess@;
+}
+
+@ModelName@_initial_guesser::~@ModelName@_initial_guesser()
+{
+}
+
+void @ModelName@_initial_guesser::guess()
+{
+   static const @ModelName@ empty;
+   *model = empty;
+
+   // guess susy parameters
+   @ModelName@_susy_parameters susy_pars;
+   susy_pars.setLoops(2);
+
+   // assign susy parameters at high scale
+   susy_pars.runto(@highScaleGuess@);
+   static_cast<@ModelName@_susy_parameters*>(model)->operator=(susy_pars);
+   model->setMu(@highScaleGuess@);
+
+   // apply high-scale constraint
+   @ModelName@_high_scale_constraint high_constraint(input_pars);
+   high_constraint.set_model(model);
+   high_constraint.apply();
+
+   // apply EWSB constraint
+   model->runto(low_scale_guess);
+   model->solve_ewsb();
+
+   // calculate tree-level spectrum
+   model->calculate_DRbar_parameters();
+   model->setThresholds(3);
+   model->setLoops(2);
+}

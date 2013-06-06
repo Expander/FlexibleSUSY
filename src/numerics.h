@@ -11,6 +11,8 @@
 
 #ifndef NUMERICS_H
 #define NUMERICS_H
+#define MAXIT 60
+#define UNUSED (-1.11e30)
 
 #include "utils.h"
 #include "mycomplex.h"
@@ -88,7 +90,7 @@ double d0(double m1, double m2, double m3, double m4);
 
 // inlined PV functions
 inline double a0(double m, double q) {
-  if (m == 0.0) return 0.0;
+  if (fabs(m) < EPSTOL) return 0.;
   return sqr(m) * (1.0 - log(sqr(m / q)));
 }
 
@@ -111,12 +113,13 @@ inline double b22bar(double p, double m1, double m2, double q) {
   return b22(p, m1, m2, q) - 0.25 * a0(m1, q) - 0.25 * a0(m2, q);
 }
 
-inline double fB(const Complex & x) {
+/*inline double fB(const Complex & x) {
   /// special case at 0
   //  if (x.real() < EPSTOL * 10. && x.imag() < EPSTOL * 10.) return -1.;
   return (log(Complex(1.0 - x)) - x * log(Complex(1.0 - 1.0 / x)) 
-	  - Complex(1.0)).real();
-  } 
+         - Complex(1.0)).real();
+	 } */
+double fB(const Complex & x);
 
 double dilogarg(double t);
 double dilog(double x);
@@ -195,5 +198,26 @@ DoubleMatrix display3x3RealMixing(double theta12, double theta13,
 /// Given a matrix v, determines which angles gave it
 void getAngles(const DoubleMatrix & v, double & t12, double & t13, 
 	       double & t23, double & d);
+/// Evolves the dependent variables xi by one reversible mid-point step of
+/// length tStep. Returns true if there is an error.
+bool midPtStep(DoubleVector & xi, 
+	      DoubleVector (*derivs)(double t, const DoubleVector & v), 
+	      double tInitial, double tStep);
+/// Reversible integrate with numSteps steps between tInitial and tFinal. 
+/// Returns true if there's an error
+bool integrateReversibly(DoubleVector & xi, 
+			 DoubleVector (*derivs)(double t, 
+						const DoubleVector & v), 
+			 double tInitial, double tFinal, int numSteps);
+
+/// useful for 2-loop mb/mt corrections
+double fin(double mm1, double mm2);
+double den(double a, int b); /// 1/a^b
+double log1minusx(double x);
+/// sign of inputs
+#define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
+/// returns a root of function func between x1 and x2 to accuracy xacc (x1 and
+/// x2 MUST bracket a root)
+double zriddr(double (*func)(double), double x1, double x2, double xacc);
 #endif
 

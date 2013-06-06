@@ -4,11 +4,16 @@ MODNAME      := lib@MODEL@
 LIB@MODEL@_SRC := 
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-LIB@MODEL@_SRC += 
-endif
-
-ifneq ($(findstring lattice,$(ALGORITHMS)),)
-LIB@MODEL@_SRC += 
+LIB@MODEL@_SRC += \
+		$(DIR)/convergenceTester.cpp \
+		$(DIR)/highScaleConstraint.cpp \
+		$(DIR)/initialGuesser.cpp \
+		$(DIR)/lowScaleConstraint.cpp \
+		$(DIR)/model.cpp \
+		$(DIR)/physical.cpp \
+		$(DIR)/susyPars.cpp \
+		$(DIR)/softPars.cpp \
+		$(DIR)/susyScaleConstraint.cpp
 endif
 
 LIB@MODEL@_OBJ := \
@@ -18,7 +23,11 @@ LIB@MODEL@_OBJ := \
 LIB@MODEL@_DEP := \
 		$(LIB@MODEL@_OBJ:.o=.d)
 
+$(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ): CPPFLAGS += $(GSLFLAGS)
+
 LIB@MODEL@     := $(DIR)/$(MODNAME)$(LIBEXT)
+
+RUN_@MODEL@_EXE := $(DIR)/run.x
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -35,12 +44,54 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-ifneq ($(findstring lattice,$(ALGORITHMS)),)
-$(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ): CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
-endif
+$(DIR)/susyPars.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
+	math -run "Get[\"$<\"]; Quit[]"
+
+$(DIR)/susyPars.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/softPars.hpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/softPars.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/physical.hpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/physical.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/model.hpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/model.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/run.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/highScaleConstraint.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/susyScaleConstraint.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/lowScaleConstraint.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/convergenceTester.cpp: $(DIR)/susyPars.hpp
+	true
+
+$(DIR)/initialGuesser.cpp: $(DIR)/susyPars.hpp
+	true
 
 $(LIB@MODEL@): $(LIB@MODEL@_OBJ)
 		$(MAKELIB) $@ $^
 
+$(RUN_@MODEL@_EXE): $(DIR)/run.o $(LIB@MODEL@) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(GSLLIBS) $(FLIBS)
+
 ALLDEP += $(LIB@MODEL@_DEP)
 ALLLIB += $(LIB@MODEL@)
+ALLEXE += $(RUN_@MODEL@_EXE)

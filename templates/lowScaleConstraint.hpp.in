@@ -1,0 +1,26 @@
+
+#ifndef @ModelName@_LOW_SCALE_CONSTRAINT_H
+#define @ModelName@_LOW_SCALE_CONSTRAINT_H
+
+#include "inputPars.hpp"
+
+class @ModelName@;
+
+class @ModelName@_low_scale_constraint {
+public:
+   @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_low_scale_constraint();
+   virtual void apply();
+   virtual double get_scale() const;
+   virtual void set_model(@ModelName@*);
+
+private:
+   double scale;
+   @ModelName@* model;
+   @ModelName@_input_parameters inputPars;
+
+   void calculate_DRbar_gauge_couplings();
+   void update_scale();
+};
+
+#endif

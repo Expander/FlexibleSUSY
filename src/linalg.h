@@ -61,6 +61,12 @@ public:
     return *this;
   }
 
+  DoubleVector& operator=(double value) {
+    for (std::size_t i = 0; i < x.size(); ++i)
+      x[i] = value;
+    return *this;
+  }
+
   template <typename E>
   DoubleVector(const Xpr<double,E> & v)
     : Indexable<double,DoubleVector>(), 
@@ -113,6 +119,7 @@ public:
   double min(int & p) const;///< minimum element in vector
   /// Returns sum of absolute values of all elements
   double sumElements() const { return abs(x).sum(); }  
+  std::size_t size() const { return x.size(); }
   
   void swap(int i, int j); ///< swaps ith and jth elements of a vector
   
@@ -132,15 +139,15 @@ public:
     }
     return saveIt;
   }
-
-  std::size_t size() const { return end - start + 1; }
-
+  
   /// Acts on each, element by element, dividing each element by v(i)
   DoubleVector divide(DoubleVector const &v) const;
   /// Average element of the vector
   double average() const; ///< average element
   /// Closest element of the vector to the input
   int closest(double a) const; 
+  /// fill array, starting at offset
+  void fillArray(double* array, unsigned offset = 0) const;
   bool operator==(const DoubleVector& o) const {
      if (displayStart() != o.displayStart())
         return false;
@@ -309,7 +316,15 @@ public:
   /// Obvious elementary row/column operations
   void swaprows(int i, int j);
   void swapcols(int i,int j);
+  std::size_t size() const { return x.size(); }
+  /// change number of columns (Warning: can be slow because it internally copys a std::valarray<double>)
+  void setCols(int);
+  /// change number of rows (Warning: can be slow because it internally copys a std::valarray<double>)
+  void setRows(int);
+  /// resize matrix (Warning: can be slow because it internally copys a std::valarray<double>)
+  void resize(int, int);
 
+  bool testNan() const; ///< test for Nan elements
   double trace() const;///< trace must only be performed on a square matrix
   DoubleMatrix transpose() const; ///< can be any size
   DoubleVector flatten() const; ///< matrix to vector, row by row
@@ -365,6 +380,8 @@ public:
   /// Returns LU decomposition of a matrix. d gives whether there are an even
   /// or odd number of permutations
   DoubleMatrix ludcmp(double & d) const;
+  /// fill array, starting at offset
+  void fillArray(double* array, unsigned offset = 0) const;
   bool operator==(const DoubleMatrix& o) const {
      if (displayRows() != o.displayRows())
         return false;
@@ -405,12 +422,17 @@ DoubleMatrix rot2dTwist(double theta);
 /// \f$ u^* A v^+ \f$ = mdiagpositive
 void positivise(double thetaL, double thetaR, const DoubleVector & diag,
 		  ComplexMatrix & u, ComplexMatrix & v);
+void positivise(double theta, const DoubleVector& diag, ComplexMatrix& u);
+void positivise(double theta, const DoubleVector& diag, DoubleMatrix& u);
 /// Diagonalisation routines
 void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v);
 double pythagoras(double a, double b);
 void diagonaliseJac(DoubleMatrix & a,  int n,  DoubleVector & d, DoubleMatrix
 		    & v,  int *nrot);
 
+
+/// fill array from valarray, starting at offset
+void fillArray(const std::valarray<double>&, double*, unsigned offset = 0);
 
 /*
  *  INLINE FUNCTION DEFINITIONS
@@ -649,16 +671,27 @@ public:
 
   /// Sets diagonal entries equal to v, rest are 0
   const ComplexMatrix & operator=(const Complex &v);  
+  const ComplexMatrix & operator+=(const DoubleMatrix&);
+  ComplexMatrix operator+(const DoubleMatrix&);
 
   Complex min(int & k, int & l) const; ///< smallest absolute element
   /// Obvious elementary row/column operations
   void swaprows(int i, int j);///< Swaps row i with row j
   void swapcols(int i,int j);///< Swaps column i with column j
 
+  /// change number of columns (Warning: can be slow because it internally copys a std::valarray<double>)
+  void setCols(int);
+  /// change number of rows (Warning: can be slow because it internally copys a std::valarray<double>)
+  void setRows(int);
+  /// resize matrix (Warning: can be slow because it internally copys a std::valarray<double>)
+  void resize(int, int);
+
   Complex trace() const;  
   ComplexMatrix transpose() const;
   ComplexMatrix hermitianConjugate() const;
   ComplexMatrix complexConjugate() const;
+  DoubleMatrix real() const;
+  DoubleMatrix imag() const;
   
   /*
    *  NUMERICAL DIAGONALIZATION ROUTINES ETC.
