@@ -36,7 +36,8 @@
 #undef VERBOSE
 
 @ModelName@::@ModelName@()
-   : @ModelName@_soft_parameters()
+   : Two_scale_model()
+   , @ModelName@_soft_parameters()
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
@@ -243,6 +244,34 @@ void @ModelName@::calculate_1loop_masses()
    calculate_DRbar_parameters();
 
 @callAllLoopMassFunctions@
+}
+
+void @ModelName@::calculate_spectrum()
+{
+   // tree-level parameters
+   set_ewsb_loop_order(0);
+   solve_ewsb();
+   calculate_DRbar_parameters();
+
+   // one-loop level parameters
+   set_ewsb_loop_order(1);
+   solve_ewsb();
+   calculate_1loop_masses();
+}
+
+double @ModelName@::getScale() const
+{
+   return displayMu();
+}
+
+std::string @ModelName@::name() const
+{
+   return "@ModelName@";
+}
+
+int @ModelName@::run_to(double scale, double eps)
+{
+   return runto(scale, eps);
 }
 
 @massCalculationFunctions@

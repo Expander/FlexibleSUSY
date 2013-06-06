@@ -15,7 +15,8 @@
 #define SM(p) Electroweak_constants::p
 
 @ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
-   : model(0)
+   : Constraint<Two_scale>()
+   , model(0)
    , inputPars(inputPars_)
 {
 @scaleGuess@
@@ -43,9 +44,9 @@ double @ModelName@_low_scale_constraint::get_scale() const
    return scale;
 }
 
-void @ModelName@_low_scale_constraint::set_model(@ModelName@* model_)
+void @ModelName@_low_scale_constraint::set_model(Two_scale_model* model_)
 {
-   model = model_;
+   model = cast_model<@ModelName@>(model_);
 }
 
 void @ModelName@_low_scale_constraint::update_scale()

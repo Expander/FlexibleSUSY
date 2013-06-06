@@ -3,16 +3,17 @@
 #define @ModelName@_LOW_SCALE_CONSTRAINT_H
 
 #include "@ModelName@_inputPars.hpp"
+#include "two_scale_constraint.hpp"
 
 class @ModelName@;
 
-class @ModelName@_low_scale_constraint {
+class @ModelName@_low_scale_constraint : public Constraint<Two_scale> {
 public:
    @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&);
    virtual ~@ModelName@_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(@ModelName@*);
+   virtual void set_model(Two_scale_model*);
 
 private:
    double scale;
