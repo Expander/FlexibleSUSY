@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "physical.hpp"
+#include "@ModelName@_physical.hpp"
 
 #include <iostream>
 

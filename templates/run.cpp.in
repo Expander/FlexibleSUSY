@@ -1,10 +1,10 @@
-#include "model.hpp"
-#include "inputPars.hpp"
-#include "highScaleConstraint.hpp"
-#include "susyScaleConstraint.hpp"
-#include "lowScaleConstraint.hpp"
-#include "convergenceTester.hpp"
-#include "initialGuesser.hpp"
+#include "@ModelName@_model.hpp"
+#include "@ModelName@_inputPars.hpp"
+#include "@ModelName@_highScaleConstraint.hpp"
+#include "@ModelName@_susyScaleConstraint.hpp"
+#include "@ModelName@_lowScaleConstraint.hpp"
+#include "@ModelName@_convergenceTester.hpp"
+#include "@ModelName@_initialGuesser.hpp"
 #include <iostream>
 
 using namespace std;

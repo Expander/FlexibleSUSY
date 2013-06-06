@@ -1,7 +1,7 @@
 
-#include "initialGuesser.hpp"
-#include "highScaleConstraint.hpp"
-#include "model.hpp"
+#include "@ModelName@_initialGuesser.hpp"
+#include "@ModelName@_highScaleConstraint.hpp"
+#include "@ModelName@_model.hpp"
 #include <cassert>
 
 @ModelName@_initial_guesser::@ModelName@_initial_guesser(@ModelName@* model_, const @ModelName@_input_parameters& input_pars_)

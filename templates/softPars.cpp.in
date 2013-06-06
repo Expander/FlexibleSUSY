@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "softPars.hpp"
+#include "@ModelName@_softPars.hpp"
 #include "wrappers.hpp"
 
 #include <iostream>

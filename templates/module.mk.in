@@ -5,15 +5,15 @@ LIB@MODEL@_SRC :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@MODEL@_SRC += \
-		$(DIR)/convergenceTester.cpp \
-		$(DIR)/highScaleConstraint.cpp \
-		$(DIR)/initialGuesser.cpp \
-		$(DIR)/lowScaleConstraint.cpp \
-		$(DIR)/model.cpp \
-		$(DIR)/physical.cpp \
-		$(DIR)/susyPars.cpp \
-		$(DIR)/softPars.cpp \
-		$(DIR)/susyScaleConstraint.cpp
+		$(DIR)/@MODEL@_convergenceTester.cpp \
+		$(DIR)/@MODEL@_highScaleConstraint.cpp \
+		$(DIR)/@MODEL@_initialGuesser.cpp \
+		$(DIR)/@MODEL@_lowScaleConstraint.cpp \
+		$(DIR)/@MODEL@_model.cpp \
+		$(DIR)/@MODEL@_physical.cpp \
+		$(DIR)/@MODEL@_susyPars.cpp \
+		$(DIR)/@MODEL@_softPars.cpp \
+		$(DIR)/@MODEL@_susyScaleConstraint.cpp
 endif
 
 LIB@MODEL@_OBJ := \
@@ -27,7 +27,7 @@ $(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ): CPPFLAGS += $(GSLFLAGS)
 
 LIB@MODEL@     := $(DIR)/$(MODNAME)$(LIBEXT)
 
-RUN_@MODEL@_EXE := $(DIR)/run.x
+RUN_@MODEL@_EXE := $(DIR)/run_@MODEL@.x
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -44,52 +44,52 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/susyPars.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
+$(DIR)/@MODEL@_susyPars.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
 	math -run "Get[\"$<\"]; Quit[]"
 
-$(DIR)/susyPars.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_susyPars.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/softPars.hpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_softPars.hpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/softPars.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_softPars.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/physical.hpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_physical.hpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/physical.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_physical.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/model.hpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_model.hpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/model.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_model.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/run.cpp: $(DIR)/susyPars.hpp
+$(DIR)/run_@MODEL@.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/highScaleConstraint.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_highScaleConstraint.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/susyScaleConstraint.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_susyScaleConstraint.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/lowScaleConstraint.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_lowScaleConstraint.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/convergenceTester.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_convergenceTester.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
-$(DIR)/initialGuesser.cpp: $(DIR)/susyPars.hpp
+$(DIR)/@MODEL@_initialGuesser.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
 $(LIB@MODEL@): $(LIB@MODEL@_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_@MODEL@_EXE): $(DIR)/run.o $(LIB@MODEL@) $(LIBFLEXI)
+$(RUN_@MODEL@_EXE): $(DIR)/run_@MODEL@.o $(LIB@MODEL@) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(FLIBS)
 
 ALLDEP += $(LIB@MODEL@_DEP)

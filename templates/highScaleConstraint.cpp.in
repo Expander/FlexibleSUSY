@@ -1,6 +1,6 @@
 
-#include "highScaleConstraint.hpp"
-#include "model.hpp"
+#include "@ModelName@_highScaleConstraint.hpp"
+#include "@ModelName@_model.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 

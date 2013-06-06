@@ -2,7 +2,7 @@
 #ifndef @ModelName@_INITIAL_GUESSER_H
 #define @ModelName@_INITIAL_GUESSER_H
 
-#include "inputPars.hpp"
+#include "@ModelName@_inputPars.hpp"
 
 class @ModelName@;
 

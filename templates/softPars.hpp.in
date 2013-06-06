@@ -20,7 +20,7 @@
 #define @ModelName@_soft_parameters_H
 
 #include "rge.h"
-#include "susyPars.hpp"
+#include "@ModelName@_susyPars.hpp"
 
 #include <iosfwd>
 

@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "susyPars.hpp"
+#include "@ModelName@_susyPars.hpp"
 #include "wrappers.hpp"
 
 #include <iostream>

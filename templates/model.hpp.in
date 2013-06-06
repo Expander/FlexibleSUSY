@@ -19,8 +19,8 @@
 #ifndef @ModelName@_H
 #define @ModelName@_H
 
-#include "softPars.hpp"
-#include "physical.hpp"
+#include "@ModelName@_softPars.hpp"
+#include "@ModelName@_physical.hpp"
 
 #include <iosfwd>
 
