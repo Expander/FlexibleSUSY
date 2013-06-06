@@ -1,13 +1,13 @@
 DIR      := examples
 MODNAME  := examples
 
-ifeq ($(shell $(FSCONFIG) --with-mssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
 EXAMPLES_SRC := \
 		$(DIR)/softsusy.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
-		$(DIR)/run_mssm.cpp
+		$(DIR)/run_smssm.cpp
 endif
 endif
 
@@ -58,23 +58,23 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/run_mssm.x: $(DIR)/run_mssm.o $(LIBSMSSM) $(LIBFLEXI)
+$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 
-$(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFSMSSM) $(LIBFLEXI)
+$(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
-$(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFSMSSM) $(LIBFLEXI)
+$(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
-			       $(LIBFSMSSMN) $(LIBFSMSSM) $(LIBFLEXI)
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o \
-			       $(LIBFSMSSMN) $(LIBFSMSSM) $(LIBFLEXI)
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
