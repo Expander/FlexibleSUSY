@@ -3,12 +3,11 @@
 #define @ModelName@_INITIAL_GUESSER_H
 
 #include "@ModelName@_inputPars.hpp"
+#include "two_scale_initial_guesser.hpp"
 
 class @ModelName@;
 
-// we will later inherit this class from Initial_guesser<Two_scale>
-
-class @ModelName@_initial_guesser {
+class @ModelName@_initial_guesser : public Initial_guesser<Two_scale> {
 public:
    @ModelName@_initial_guesser(@ModelName@*, const @ModelName@_input_parameters&);
    virtual ~@ModelName@_initial_guesser();

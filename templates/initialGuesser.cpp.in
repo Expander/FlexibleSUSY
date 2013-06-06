@@ -5,7 +5,8 @@
 #include <cassert>
 
 @ModelName@_initial_guesser::@ModelName@_initial_guesser(@ModelName@* model_, const @ModelName@_input_parameters& input_pars_)
-   : model(model_)
+   : Initial_guesser<Two_scale>()
+   , model(model_)
    , input_pars(input_pars_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
