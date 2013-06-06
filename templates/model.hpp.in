@@ -40,6 +40,7 @@ public:
    unsigned get_ewsb_loop_order() const;
    double get_ewsb_iteration_precision() const;
    const @ModelName@_physical& get_physical() const;
+   double getScale() const { return displayMu(); }
    int solve_ewsb();
    int solve_ewsb_with(const gsl_multiroot_fsolver_type*, const double*);
    void ewsb_initial_guess(double*);

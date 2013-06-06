@@ -1,7 +1,8 @@
 
 #include "@ModelName@_convergenceTester.hpp"
 
-@ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@*, double)
+@ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@* model, double accuracy_goal)
+   : Convergence_tester_skeleton<@ModelName@>(model, accuracy_goal)
 {
 }
 
@@ -11,6 +12,5 @@
 
 double @ModelName@_convergence_tester::max_rel_diff() const
 {
-   // return get_model()->display().compare(get_last_iteration_model()->display());
-   return 0.0;
+   return get_model()->display().compare(get_last_iteration_model()->display());
 }

@@ -2,12 +2,10 @@
 #ifndef @ModelName@_CONVERGENCE_TESTER_H
 #define @ModelName@_CONVERGENCE_TESTER_H
 
-class @ModelName@;
+#include "@ModelName@_model.hpp"
+#include "two_scale_convergence_tester_skeleton.hpp"
 
-// we will later inherit this class from
-// Convergence_tester_skeleton<@ModelName@>
-
-class @ModelName@_convergence_tester {
+class @ModelName@_convergence_tester : public Convergence_tester_skeleton<@ModelName@> {
 public:
    @ModelName@_convergence_tester(@ModelName@*, double);
    virtual ~@ModelName@_convergence_tester();
