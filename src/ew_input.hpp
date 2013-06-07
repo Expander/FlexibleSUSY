@@ -37,12 +37,12 @@ namespace Electroweak_constants {
       const double yb = mbrun * root2 / vev;
       const double ytau = mtau * root2 / vev;
       const double MZ = 91.1876;
-      const double aem = 1.0 / 127.918; // at MZ
+      const double aem = 1.0 / 127.916; // at MZ
       const double sinthWsq = 0.23122;
       const double sinThetaW = sqrt(sinthWsq);
       const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinthWsq));
       const double alpha2 = aem / sinthWsq;
-      const double alpha3 = 0.1187; // at MZ
+      const double alpha3 = 0.1184; // at MZ
       const double e  = sqrt(4.0 * M_PI * aem);
       const double g1 = sqrt(4.0 * M_PI * alpha1);
       const double g2 = sqrt(4.0 * M_PI * alpha2);
