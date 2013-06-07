@@ -11,33 +11,73 @@ fi
 
 # directory of this script
 BASEDIR=$(dirname $0)
+overwrite="no"
+models=""
 
-# model name
-model=$1
-if test -d "models/$model" ; then
-    echo "Error: directory models/$model already exists!"
-    echo "Please chose another model name."
-    exit 1
+#_____________________________________________________________________
+help() {
+    echo "Usage: ./`basename $0` [options] <model>"
+    echo "Options:"
+    echo "--force,-f               overwrite model files"
+    echo "--models=                comma separated list of models to create"
+    echo "--help,-h                print this help message"
+}
+
+if test $# -gt 0 ; then
+    while test ! "x$1" = "x" ; do
+        case "$1" in
+            -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+            *)    optarg= ;;
+        esac
+
+        case $1 in
+            --force|-f)              overwrite="yes" ;;
+            --help|-h)               help; exit 0 ;;
+            --models=*)              models=`echo $optarg | tr ',' ' '` ;;
+            *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
+        esac
+        shift
+    done
 fi
 
-# target directory
-targetdir="models/$model"
-echo -n "creating model directory $targetdir ... "
-mkdir $targetdir
-echo "done"
+if [ -z "$models" ] ; then
+    echo "Error: no model specified!"
+    help
+fi
 
-# target makefile module
-MAKEFILE=module.mk
-MAKEFILE_TMPL=templates/module.mk.in
+for m in ${models}; do
+    if test -d "models/$m" -a "x$overwrite" = "xno" ; then
+        echo "Error: directory models/$m already exists!"
+        echo "Please chose another model name or use the --force option."
+        echo "See ./`basename $0` -- help for more information."
+        continue
+    fi
 
-sed -e "s|@DIR@|$targetdir|g"         \
-    -e "s|@MODEL@|$model|g"           \
-    < $MAKEFILE_TMPL > $targetdir/$MAKEFILE
+    echo "creating model $m"
 
-sed -e "s|@DIR@|$targetdir|g"         \
-    -e "s|@ModelName@|$model|g"       \
-    < templates/start.m.in > $targetdir/start.m
+    # create target directory
+    targetdir="models/$m"
+    if test ! -d "models/$m" ; then
+        echo -n "creating model directory $targetdir ... "
+        mkdir $targetdir
+        echo "done"
+    fi
 
-sed -e "s|@DIR@|$targetdir|g"         \
-    -e "s|@ModelName@|$model|g"       \
-    < templates/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
+    echo -n "creating Makefile module $targetdir/module.mk ... "
+    sed -e "s|@DIR@|$targetdir|g"         \
+        -e "s|@MODEL@|$m|g"           \
+        < templates/module.mk.in > $targetdir/module.mk
+    echo "done"
+
+    echo -n "creating start script $targetdir/start.m ... "
+    sed -e "s|@DIR@|$targetdir|g"         \
+        -e "s|@ModelName@|$m|g"       \
+        < templates/start.m.in > $targetdir/start.m
+    echo "done"
+
+    echo -n "creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
+    sed -e "s|@DIR@|$targetdir|g"         \
+        -e "s|@ModelName@|$m|g"       \
+        < templates/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
+    echo "done"
+done
