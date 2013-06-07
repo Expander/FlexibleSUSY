@@ -51,9 +51,9 @@ void StandardModel_exp_constraint::apply()
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, Electroweak_constants::yt);
    sm->setYukawaElement(StandardModel<Two_scale>::YD, 3, 3, Electroweak_constants::yb);
    sm->setYukawaElement(StandardModel<Two_scale>::YE, 3, 3, Electroweak_constants::ytau);
-   sm->setGaugeCoupling(1, sqrt(4 * M_PI * Electroweak_constants::alpha1));
-   sm->setGaugeCoupling(2, sqrt(4 * M_PI * Electroweak_constants::alpha2));
-   sm->setGaugeCoupling(3, sqrt(4 * M_PI * Electroweak_constants::alpha3));
+   sm->setGaugeCoupling(1, Electroweak_constants::g1);
+   sm->setGaugeCoupling(2, Electroweak_constants::g2);
+   sm->setGaugeCoupling(3, Electroweak_constants::g3);
 }
 
 /**
