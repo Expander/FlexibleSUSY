@@ -1,5 +1,5 @@
 
-(* CMSSM input parameters *)
+(* input parameters *)
 
 MINPAR=     {{1,m0},
              {2,m12},
@@ -13,7 +13,7 @@ RenormalizationScale = Su[1]*Su[6];
 
 ConditionGUTscale = g1 == g2;
 
-(* GUT conditions CMSSM *)
+(* GUT conditions *)
 
 BoundaryHighScaleFirstGuess = 1.0 10^14;
 
