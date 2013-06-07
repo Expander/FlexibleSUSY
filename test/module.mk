@@ -10,7 +10,8 @@ TEST_SRC += \
 		$(DIR)/test_two_scale_solver.cpp
 ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
 TEST_SRC += \
-		$(DIR)/test_two_scale_mssm_solver.cpp
+		$(DIR)/test_two_scale_mssm_solver.cpp \
+		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
@@ -62,6 +63,9 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
+
+$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI)
