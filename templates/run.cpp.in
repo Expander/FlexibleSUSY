@@ -5,7 +5,12 @@
 #include "@ModelName@_lowScaleConstraint.hpp"
 #include "@ModelName@_convergenceTester.hpp"
 #include "@ModelName@_initialGuesser.hpp"
+
+#include "two_scale_running_precision.hpp"
+#include "two_scale_solver.hpp"
+
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -16,15 +21,31 @@ int main()
    @ModelName@_susy_scale_constraint susy_scale_input(input);
    @ModelName@_low_scale_constraint  low_scale_input(input);
 
+   std::vector<Constraint<Two_scale>*> upward_constraints;
+   upward_constraints.push_back(&low_scale_input);
+   upward_constraints.push_back(&high_scale_input);
+
+   std::vector<Constraint<Two_scale>*> downward_constraints;
+   downward_constraints.push_back(&high_scale_input);
+   downward_constraints.push_back(&susy_scale_input);
+   downward_constraints.push_back(&low_scale_input);
+
    @ModelName@ model;
    model.setMu(100.);
 
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-7);
    @ModelName@_initial_guesser initial_guesser(&model, input);
+   Two_scale_increasing_precision precision(10.0, 1.0e-5);
+
+   RGFlow<Two_scale> solver;
+   solver.set_convergence_tester(&convergence_tester);
+   solver.set_running_precision(&precision);
+   solver.set_initial_guesser(&initial_guesser);
+   solver.add_model(&model, upward_constraints, downward_constraints);
 
    try {
-      model.solve_ewsb();
-      model.calculate_1loop_masses();
+      solver.solve();
+      model.calculate_spectrum();
       model.print(std::cout);
    } catch (std::string& str) {
       cout << "Error: " << str << endl;
