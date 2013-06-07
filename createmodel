@@ -75,9 +75,16 @@ for m in ${models}; do
         < templates/start.m.in > $targetdir/start.m
     echo "done"
 
+    # if we provide a FlexibleSUSY model file for this model, we use
+    # this one
+    modelFileDir="templates"
+    if test -d "$modelFileDir/$m" ; then
+        modelFileDir="$modelFileDir/$m"
+    fi
+
     echo -n "creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@ModelName@|$m|g"       \
-        < templates/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
+        < $modelFileDir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
     echo "done"
 done
