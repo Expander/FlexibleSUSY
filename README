@@ -14,3 +14,43 @@ How to compile
 
 3. To compile run `make'.  (Parallel make is supported via the -jN
    option, where N is the number of cores to use.)
+
+
+How to create a model
+=====================
+
+1. Create
+
+   * a model directory models/<model>/
+   * a makefile module models/<model>/module.mk
+   * and a model file  models/<model>/FlexibleSUSY.m
+
+   via
+
+   $ ./createmodel --models=<model>
+
+   Here <model> is the name of your model (e.g. MSSM, NMSSM, etc.).
+   See `./createmodel --help' for more details.
+
+2. Create the Makefile and register your model via
+
+   $ ./configure --with-model=<model>
+
+   See `./configure --help' for more options
+
+3. Compile by running
+
+   $ make
+
+   When `make' is executed, Mathematica will be called, which will
+   generate the model classes and will write them to models/<model>/ .
+   Afterwards these model classes will be compiled and a user example
+   spectrum generator models/<model>/run_<model>.x will be created.
+
+
+Example
+=======
+
+   $ ./createmodel --models=MSSM,NMSSM
+   $ ./configure --with-model=MSSM,NMSSM
+   $ make
