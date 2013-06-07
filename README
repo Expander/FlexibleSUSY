@@ -34,9 +34,10 @@ How to create a model
 
 2. Create the Makefile and register your model via
 
-   $ ./configure --with-model=<model>
+   $ ./configure --with-models=<model>
 
-   See `./configure --help' for more options
+   Use `./configure --with-models=all' to build all models.
+   See `./configure --help' for more options.
 
 3. Compile by running
 
@@ -52,5 +53,5 @@ Example
 =======
 
    $ ./createmodel --models=MSSM,NMSSM
-   $ ./configure --with-model=MSSM,NMSSM
+   $ ./configure --with-models=MSSM,NMSSM
    $ make

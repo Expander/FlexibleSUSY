@@ -16,11 +16,11 @@ models=""
 
 #_____________________________________________________________________
 help() {
-    echo "Usage: ./`basename $0` [options] <model>"
+    echo "Usage: ./`basename $0` [options] --models=<model1>{,<model2>}"
     echo "Options:"
-    echo "--force,-f               overwrite model files"
-    echo "--models=                comma separated list of models to create"
-    echo "--help,-h                print this help message"
+    echo "--force,-f               Overwrite existing model files"
+    echo "--models=                Comma separated list of models to create"
+    echo "--help,-h                Print this help message"
 }
 
 if test $# -gt 0 ; then

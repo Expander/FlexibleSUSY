@@ -440,7 +440,7 @@ check_models() {
                 else
                     message "Error: model directory \"$BASEDIR/models/$a\" does not exist!"
                     message "Please create the directory and put a model file in it."
-                    message "You can use \`./createmodel <model-name>' to create one."
+                    message "You can use \`./createmodel --models=<model>' to create one."
                     exit 1
                 fi ;;
         esac
@@ -652,30 +652,30 @@ enable_defines() {
 help() {
     echo "Usage: ./`basename $0` [options]"
     echo "Options:"
-    echo "--enable-colors          enable colored output"
-    echo "--enable-debug           enable debug messages"
-    echo "--enable-silent          suppress all command line output"
-    echo "--enable-verbose         enable verbose messages"
-    echo "--with-algorithms=       comma separated list of RG solver algorithms"
+    echo "--enable-colors          Enable colored output"
+    echo "--enable-debug           Enable debug messages"
+    echo "--enable-silent          Suppress all command line output"
+    echo "--enable-verbose         Enable verbose messages"
+    echo "--with-algorithms=       Comma separated list of RG solver algorithms"
     echo "                         (default: $ALGORITHMS)"
     echo "                         possible values: all $available_algorithms"
-    echo "--with-boost-libdir=     directory to search for BOOST libraries"
-    echo "--with-boost-incdir=     directory to search for BOOST headers"
+    echo "--with-boost-libdir=     Path to search for BOOST libraries"
+    echo "--with-boost-incdir=     Path to search for BOOST headers"
     echo "--with-cxx=              C++ compiler (default: $CXX)"
     echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--with-fc=               Fortran compiler (default: $FC)"
     echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
     echo "--with-gsl-config=       Path to gsl-config (default: $gsl_config)"
-    echo "--with-lapack-libdir=    directory to search for LAPACK and BLAS"
-    echo "                         libraries"
+    echo "--with-lapack-libdir=    Path to search for LAPACK and BLAS libraries"
     echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
-    echo "--with-model=            models to use (default: $MODELS)"
-    echo "                         possible values: all <model-name>"
+    echo "--with-models=           Comma separated list of models to be build"
+    echo "                         (default: $MODELS)"
+    echo "                         possible values: all <model1>,<model2>,..."
     echo "--with-tvmet-config=     Path to tvmet-config (default: $tvmet_config)"
-    echo "--help,-h                print this help message"
-    echo "--libext                 library extension (default: $LIBEXT)"
-    echo "--make-lib-cmd=          command to make library (default: $MAKELIB)"
-    echo "--version,-v             print version information"
+    echo "--help,-h                Print this help message"
+    echo "--libext                 Library extension (default: $LIBEXT)"
+    echo "--make-lib-cmd=          Command to make library (default: $MAKELIB)"
+    echo "--version,-v             Print version information"
 }
 
 #_____________________________________________________________________
@@ -712,7 +712,7 @@ if test $# -gt 0 ; then
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
-            --with-model=*)          MODELS=$optarg ;;
+            --with-models=*)         MODELS=$optarg ;;
             --with-tvmet-config=*)   tvmet_config=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --libext=*)              LIBEXT=$optarg ;;
