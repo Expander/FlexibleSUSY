@@ -49,7 +49,7 @@ double GUT_scale_calculator<T>::calculateGUTScale(const T& rge) const
    double gutScale;
 
    if (std::fabs(diffBeta) > std::numeric_limits<double>::epsilon()) {
-      gutScale = currentScale * exp((g1 - g2)/(betaG2 - betaG1));
+      gutScale = currentScale * exp((g1 - g2)/diffBeta);
    } else {
       ERROR("can't calculate GUT scale because beta functions of g1"
             " and g2 are equal to " << betaG1);
