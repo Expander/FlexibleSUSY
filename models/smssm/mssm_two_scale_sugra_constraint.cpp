@@ -23,12 +23,6 @@ void Mssm_sugra_constraint::apply()
    assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 
    update_scale();
-
-   const double g1 = mssm->displayGaugeCoupling(1);
-   const double g2 = mssm->displayGaugeCoupling(2);
-   const double g_mean = 0.5 * (g1 + g2);
-   mssm->setGaugeCoupling(1, g_mean);
-   mssm->setGaugeCoupling(2, g_mean);
    mssm->setSugraBcs(m0, m12, a0);
 }
 
