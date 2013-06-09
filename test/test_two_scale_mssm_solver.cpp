@@ -190,6 +190,7 @@ public:
       Stopwatch stopwatch;
       stopwatch.start(); // record time for the two scale method to solve the MSSM
 
+      softsusy::TOLERANCE = 1.0e-4;
       // setup the MSSM with the two scale method
       Mssm_sugra_constraint mssm_sugra_constraint(pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
       Mssm_mz_constraint mssm_mz_constraint(pp.tanBeta);
