@@ -3,6 +3,7 @@
 #define TEST_H
 
 static const double max_dev = 1.0e-12;
+static bool gErrors = 0;
 
 template <typename T>
 bool is_zero(T a)
@@ -38,11 +39,13 @@ bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
 template <typename T>
 void check_equality(T a, T b, const std::string& testMsg, T max_dev)
 {
-   if (!is_equal(a, b, max_dev))
+   if (!is_equal(a, b, max_dev)) {
       std::cout << "test failed: " << testMsg << ": "
                 << a << " != " << b
                 << " (diff.: " << (a-b) << ", rel. diff.: "
                 << 100. * (a-b)/a << "%)\n";
+      gErrors++;
+   }
 }
 
 void check_equality(Complex a, Complex b, const std::string& testMsg, double max_dev)
@@ -57,9 +60,11 @@ void check_equality(Complex a, Complex b, const std::string& testMsg, double max
 
 void check_equality(int a, int b, const std::string& testMsg, double)
 {
-   if (a != b)
+   if (a != b) {
       std::cout << "test failed: " << testMsg << ": "
                 << a << " != " << b << ")\n";
+      gErrors++;
+   }
 }
 
 void check_equality(const DoubleVector& a, const DoubleVector& b,
@@ -71,6 +76,7 @@ void check_equality(const DoubleVector& a, const DoubleVector& b,
                 << "a.displayStart() == " << a.displayStart()
                 << ", b.displayStart() == " << b.displayStart()
                 << std::endl;
+      gErrors++;
       return;
    }
 
@@ -80,6 +86,7 @@ void check_equality(const DoubleVector& a, const DoubleVector& b,
                 << "a.displayEnd() == " << a.displayEnd()
                 << ", b.displayEnd() == " << b.displayEnd()
                 << std::endl;
+      gErrors++;
       return;
    }
 
@@ -134,16 +141,20 @@ void check_equality(const ComplexMatrix& a, const DoubleMatrix& b,
 
 void check_condition(bool condition, const std::string& testMsg)
 {
-   if (!condition)
+   if (!condition) {
       std::cout << "test failed: " << testMsg << "\n";
+      gErrors++;
+   }
 }
 
 template <typename T>
 void check_greater_than(T a, T b, const std::string& testMsg)
 {
-   if (!(a > b))
+   if (!(a > b)) {
       std::cout << "test failed: " << testMsg << ": " << a << " > "
                 << b << "\n";
+      gErrors++;
+   }
 }
 
 #define S(x) #x

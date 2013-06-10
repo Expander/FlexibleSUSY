@@ -1323,5 +1323,5 @@ int main()
    std::cout << "====================\n";
    compare_models(2);
 
-   return 0;
+   return gErrors;
 }
