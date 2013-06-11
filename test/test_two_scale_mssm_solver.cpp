@@ -118,10 +118,12 @@ public:
       , mssm(NULL)
       , pars(pars_)
       , scale(scale_)
+      , numTries(0)
       {}
    virtual ~Mssm_msusy_mzprediction_constraint() {}
    virtual void apply() {
       assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+      numTries++;
       update_scale();
       double tbIn;
       const double predictedMzSq = mssm->predMzsq(tbIn);
@@ -136,9 +138,11 @@ private:
    Mssm<Two_scale>* mssm;
    DoubleVector pars;
    double scale;
+   unsigned numTries;
 
    void update_scale() {
-      mssm->setMsusy(mssm->calcMs());
+      if (numTries == 1)
+         mssm->setMsusy(mssm->calcMs());
       scale = mssm->displayMsusy();
    }
 };
