@@ -124,12 +124,15 @@ public:
    virtual void apply() {
       assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
       numTries++;
-      update_scale();
       double tbIn;
       const double predictedMzSq = mssm->predMzsq(tbIn);
       mssm->setPredMzSq(predictedMzSq);
    }
-   virtual double get_scale() const { return scale; }
+   virtual double get_scale() const {
+      if (numTries == 0)
+         update_scale();
+      return mssm->displayMsusy();
+   }
    virtual void set_model(Two_scale_model* model) {
       mssm = cast_model<Mssm<Two_scale> >(model);
    }
@@ -137,12 +140,11 @@ public:
 private:
    Mssm<Two_scale>* mssm;
    DoubleVector pars;
-   double scale;
+   mutable double scale;
    unsigned numTries;
 
-   void update_scale() {
-      if (numTries == 1)
-         mssm->setMsusy(mssm->calcMs());
+   void update_scale() const {
+      mssm->setMsusy(mssm->calcMs());
       scale = mssm->displayMsusy();
    }
 };

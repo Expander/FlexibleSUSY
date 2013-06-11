@@ -55,7 +55,7 @@ void Mssm_msusy_constraint::apply()
 
 double Mssm_msusy_constraint::get_scale() const
 {
-   return scale;
+   return mssm->displayMsusy();
 }
 
 void Mssm_msusy_constraint::set_model(Two_scale_model* model)
