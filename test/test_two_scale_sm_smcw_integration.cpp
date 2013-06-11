@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
                  << " iterations");
    BOOST_CHECK_EQUAL(solver.number_of_iterations_done(), 3u);
 
-#if 1
+#if 0
    // create data: all gauge couplings at different scales
    sm.run_to(Electroweak_constants::MZ);
    smcw.run_to(3000);
