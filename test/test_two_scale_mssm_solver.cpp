@@ -11,7 +11,6 @@
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
 #include "stopwatch.hpp"
-#include "test.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_mssm_solver
@@ -74,6 +73,10 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
    BOOST_CHECK_CLOSE(a.thetab      , b.thetab      , tolerance);
    BOOST_CHECK_CLOSE(a.thetatau    , b.thetatau    , tolerance);
    BOOST_CHECK_CLOSE(a.thetaH      , b.thetaH      , tolerance);
+   BOOST_CHECK_CLOSE(a.t1OV1Ms     , b.t1OV1Ms     , tolerance);
+   BOOST_CHECK_CLOSE(a.t2OV2Ms     , b.t2OV2Ms     , tolerance);
+   BOOST_CHECK_CLOSE(a.t1OV1Ms1loop, b.t1OV1Ms1loop, tolerance);
+   BOOST_CHECK_CLOSE(a.t2OV2Ms1loop, b.t2OV2Ms1loop, tolerance);
 
    // sneutrino masses
    for (int i = a.msnu.displayStart();
@@ -111,44 +114,6 @@ void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
          BOOST_CHECK_CLOSE(a.me(i,k), b.me(i,k), tolerance);
 }
 
-class Mssm_msusy_mzprediction_constraint : public Constraint<Two_scale> {
-public:
-   Mssm_msusy_mzprediction_constraint(const DoubleVector& pars_, double scale_)
-      : Constraint<Two_scale>()
-      , mssm(NULL)
-      , pars(pars_)
-      , scale(scale_)
-      , numTries(0)
-      {}
-   virtual ~Mssm_msusy_mzprediction_constraint() {}
-   virtual void apply() {
-      assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
-      numTries++;
-      double tbIn;
-      const double predictedMzSq = mssm->predMzsq(tbIn);
-      mssm->setPredMzSq(predictedMzSq);
-   }
-   virtual double get_scale() const {
-      if (numTries == 0)
-         update_scale();
-      return mssm->displayMsusy();
-   }
-   virtual void set_model(Two_scale_model* model) {
-      mssm = cast_model<Mssm<Two_scale> >(model);
-   }
-
-private:
-   Mssm<Two_scale>* mssm;
-   DoubleVector pars;
-   mutable double scale;
-   unsigned numTries;
-
-   void update_scale() const {
-      mssm->setMsusy(mssm->calcMs());
-      scale = mssm->displayMsusy();
-   }
-};
-
 class SoftSusy_error : public Error {
 public:
    SoftSusy_error(const std::string& msg_)
@@ -182,7 +147,6 @@ public:
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
-   MssmSoftsusy get_mssm() const { return softSusy; }
    void test(const Mssm_parameter_point& pp) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for SoftSusy to solve the MSSM
@@ -223,7 +187,6 @@ public:
    ~Two_scale_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return mssm.displayPhys(); }
-   const Mssm<Two_scale>& get_mssm() const { return mssm; }
    void test(const Mssm_parameter_point& pp) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for the two scale method to solve the MSSM
@@ -233,14 +196,12 @@ public:
       Mssm_sugra_constraint mssm_sugra_constraint(pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
       Mssm_mz_constraint mssm_mz_constraint(pp.tanBeta);
       Mssm_msusy_constraint mssm_msusy_constraint(pp.get_soft_pars(), 1000.0, pp.signMu);
-      Mssm_msusy_mzprediction_constraint mssm_msusy_mzprediction_constraint(pp.get_soft_pars(), 1000.0);
       Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
       Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
       Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
       std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
       mssm_upward_constraints.push_back(&mssm_mz_constraint);
-      mssm_upward_constraints.push_back(&mssm_msusy_mzprediction_constraint);
       mssm_upward_constraints.push_back(&mssm_sugra_constraint);
 
       std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
@@ -267,44 +228,6 @@ private:
    Mssm<Two_scale> mssm;
 };
 
-void test_equality(const SoftParsMssm& a, const SoftParsMssm& b)
-{
-   BOOST_CHECK_EQUAL(a.displayLoops()     , b.displayLoops());
-   BOOST_CHECK_EQUAL(a.displayMu()        , b.displayMu());
-   BOOST_CHECK_EQUAL(a.displayThresholds(), b.displayThresholds());
-
-   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(1), b.displayGaugeCoupling(1), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(2), b.displayGaugeCoupling(2), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayGaugeCoupling(3), b.displayGaugeCoupling(3), 1.0e-5);
-
-   TEST_CLOSE(a.displayYukawaMatrix(YU), b.displayYukawaMatrix(YU), 1.0e-5);
-   TEST_CLOSE(a.displayYukawaMatrix(YD), b.displayYukawaMatrix(YD), 1.0e-5);
-   TEST_CLOSE(a.displayYukawaMatrix(YE), b.displayYukawaMatrix(YE), 1.0e-5);
-
-   BOOST_CHECK_CLOSE(a.displayGaugino(1), b.displayGaugino(1), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayGaugino(2), b.displayGaugino(2), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayGaugino(3), b.displayGaugino(3), 1.0e-5);
-
-   BOOST_CHECK_CLOSE(a.displayMh1Squared(), b.displayMh1Squared(), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayMh2Squared(), b.displayMh2Squared(), 1.0e-5);
-
-   TEST_CLOSE(a.displaySoftMassSquared(mQl), b.displaySoftMassSquared(mQl), 1.0e-5);
-   TEST_CLOSE(a.displaySoftMassSquared(mUr), b.displaySoftMassSquared(mUr), 1.0e-5);
-   TEST_CLOSE(a.displaySoftMassSquared(mDr), b.displaySoftMassSquared(mDr), 1.0e-5);
-   TEST_CLOSE(a.displaySoftMassSquared(mLl), b.displaySoftMassSquared(mLl), 1.0e-5);
-   TEST_CLOSE(a.displaySoftMassSquared(mEr), b.displaySoftMassSquared(mEr), 1.0e-5);
-
-   TEST_CLOSE(a.displayTrilinear(UA), b.displayTrilinear(UA), 1.0e-5);
-   TEST_CLOSE(a.displayTrilinear(DA), b.displayTrilinear(DA), 1.0e-5);
-   TEST_CLOSE(a.displayTrilinear(EA), b.displayTrilinear(EA), 1.0e-5);
-
-   BOOST_CHECK_CLOSE(a.displaySusyMu(), b.displaySusyMu(), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayM3Squared(), b.displayM3Squared(), 1.0e-5);
-
-   BOOST_CHECK_CLOSE(a.displayTanb(), b.displayTanb(), 1.0e-5);
-   BOOST_CHECK_CLOSE(a.displayHvev(), b.displayHvev(), 1.0e-5);
-}
-
 /**
  * Tests if our two scale algorithm calculates the same spectrum as
  * SoftSusy
@@ -318,11 +241,6 @@ void test_point(const Mssm_parameter_point& pp)
 
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp));
-
-   // check equality of model parameters
-   // const Mssm<Two_scale> mssm_two_scale(two_scale_tester.get_mssm());
-   // const MssmSoftsusy mssm_softsusy(softSusy_tester.get_mssm());
-   // test_equality(mssm_two_scale, mssm_softsusy);
 
    // check equality of physical parameters
    test_equality(softSusy_tester.get_physical(), two_scale_tester.get_physical(), 0.1);

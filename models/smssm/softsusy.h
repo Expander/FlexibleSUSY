@@ -75,8 +75,6 @@ private:
   bool setTbAtMX;     ///< flag: do we set tan beta at the SUSY breaking scale?
   bool altEwsb;       ///< flag: do we set mu, mA at the SUSY breaking scale?
   double predMzSq;    ///< predicted Z mass squared after iteration
-  double t1OV1Ms, t2OV2Ms;  ///< DRbar tadpoles(MSusy): incl 2 loops
-  double t1OV1Ms1loop, t2OV2Ms1loop; ///< DRbar tadpoles(MSusy): excl 2 loops
 public:
   //  void (*boundaryCondition)(MssmSoftsusy &, const DoubleVector &);
   /// Default constructor fills object with zeroes
@@ -126,8 +124,8 @@ public:
   double displayMz() const { return displayDataSet().displayMu(); }
   /// Is tan beta set at the user defined SUSY breaking scale?
   bool displaySetTbAtMX() const { return setTbAtMX; } 
-  const bool displayAltEwsb() const { return altEwsb; }
-  const double displayPredMzSq() const { return predMzSq; }
+  double displayPredMzSq() const { return predMzSq; }
+  bool displayAltEwsb() const { return altEwsb; }
 
   /// Flags weird mgut-type problems
   void flagMgutOutOfBounds(bool a) { problem.mgutOutOfBounds = a; };
@@ -286,17 +284,6 @@ public:
 
   /// Organises tree-level calculation of all sparticle masses and mixings
   virtual void calcDrBarPars();
-  /// calculates the higgs DRbar parameters. Make sure mt is set in eg. It
-  /// will fill in the Higgs masses with the appropriate values on exit.
-  void calcDrBarHiggs(double beta, double mz2, double mw2, 
-		      double sinthDRbar, drBarPars & eg);
-  /// calculates the chargino DRbar parameters. It will fill in the chargino
-  /// masses in eg with the appropriate values on exit. 
-  void calcDrBarCharginos(double beta, double mw, drBarPars & eg);
-  /// calculates the chargino DRbar parameters. It will fill in the chargino
-  /// masses in eg with the appropriate values on exit. 
-  void calcDrBarNeutralinos(double beta, double mz, double mw, double sinth, 
-			    drBarPars & eg);
   /// For an input tan beta=tb, sets gauge and Yukawa couplings according to
   /// the tree-level spectrum and data set: pars contains the boundary
   /// conditions. They aren't used in R-parity conservation, though. 
@@ -389,7 +376,7 @@ public:
   /// eps reflects how the old and new values of mu are to be averaged:
   /// it's (eps * mu + (1-eps) * muOld)
   virtual void rewsb(int sgnMu, double mt, const DoubleVector & pars,
-		     double muOld = -6.66e66, double eps = 0.);
+		     double muOld = -6.66e66, double eps = 0.5);
   /// Organises tree-level rewsb: call it at the low scale M_{SUSY}
   /// IO parameters: sgnMu is +/-1 (desired sign of mu)
   virtual void rewsbTreeLevel(int sgnMu);
@@ -504,7 +491,6 @@ public:
   string printShort() const;
   /// Prints a list of all sparticle/Higgs masses to standard output
   string printLong();
-
   /// Prints whols object to standard output
   virtual void printObj() { cout << *this; };
   
@@ -715,9 +701,8 @@ public:
 inline MssmSoftsusy::MssmSoftsusy()
   : SoftParsMssm(), AltEwsbMssm(), physpars(), forLoops(), 
     problem(), msusy(0.0), minV(6.66e66), 
-    mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), altEwsb(false), 
-    predMzSq(0.), t1OV1Ms(0.), t2OV2Ms(0.), t1OV1Ms1loop(0.), 
-    t2OV2Ms1loop(0.) { 
+    mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), altEwsb(false),
+    predMzSq(0.) { 
       setPars(110);
       setMu(0.0);
       setLoops(0);
@@ -732,10 +717,7 @@ inline MssmSoftsusy::MssmSoftsusy(const MssmSoftsusy & s)
     problem(s.problem), msusy(s.msusy), minV(s.minV), 
     mw(s.mw), dataSet(s.displayDataSet()), fracDiff(s.displayFracDiff()), 
     setTbAtMX(s.displaySetTbAtMX()), 
-    altEwsb(s.displayAltEwsb()), predMzSq(s.displayPredMzSq()), 
-    t1OV1Ms(s.displayTadpole1Ms()), t2OV2Ms(s.displayTadpole2Ms()), 
-    t1OV1Ms1loop(s.displayTadpole1Ms1loop()), 
-    t2OV2Ms1loop(s.displayTadpole2Ms1loop()) {
+    altEwsb(s.displayAltEwsb()), predMzSq(s.displayPredMzSq()) {
 
     setPars(110);
     setMu(s.displayMu()); 
@@ -747,8 +729,7 @@ inline MssmSoftsusy::MssmSoftsusy(const MssmSusy &s)
   : SoftParsMssm(s), AltEwsbMssm(), 
     physpars(), forLoops(), problem(), 
     msusy(0.0), minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), 
-    setTbAtMX(false), altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.) { 
+    setTbAtMX(false), altEwsb(false), predMzSq(0.) { 
   setPars(110);
   setMu(s.displayMu()); 
   setLoops(s.displayLoops());
@@ -760,8 +741,7 @@ inline MssmSoftsusy::MssmSoftsusy
  double hv) 
   : SoftParsMssm(s), AltEwsbMssm(), physpars(sp), forLoops(), problem(), msusy(0.0),
     minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), 
-    altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.) {
+    altEwsb(false), predMzSq(0.) {
   setHvev(hv);
   setPars(110);
   setMu(mu);
@@ -784,19 +764,19 @@ inline double MssmSoftsusy::displayMsusy() const { return msusy; }
 inline double MssmSoftsusy::displayMw() const { return mw; } 
 
 inline double MssmSoftsusy::displayTadpole1Ms() const {
-  return t1OV1Ms; 
+  return physpars.t1OV1Ms; 
 }
 
 inline double MssmSoftsusy::displayTadpole2Ms() const {
-  return t2OV2Ms; 
+  return physpars.t2OV2Ms; 
 }
 
 inline double MssmSoftsusy::displayTadpole1Ms1loop() const {
-  return t1OV1Ms1loop; 
+  return physpars.t1OV1Ms1loop; 
 }
 
 inline double MssmSoftsusy::displayTadpole2Ms1loop() const {
-  return t2OV2Ms1loop; 
+  return physpars.t2OV2Ms1loop;
 }
 
 inline void MssmSoftsusy::setMinpot(double f) { minV = f; }
@@ -812,7 +792,7 @@ void printShortInitialise();
 /// Formatted output
 ostream & operator <<(ostream &, const MssmSoftsusy &); 
 /// Calculates fractional difference in Drbar masses between in and out
-double sumTol(const MssmSoftsusy & in, const MssmSoftsusy & out, int numTries);
+double sumTol(const MssmSoftsusy & in, const MssmSoftsusy & out);
 /// returns the square root of the absolute value of the argument
 // returns sqrt(f) for f>0 
 inline double ccbSqrt(double f){ return sqrt(fabs(f)); }
@@ -885,8 +865,6 @@ double lnLHiggs(double mh);
 void nonUniGauginos(MssmSoftsusy & m, const DoubleVector & inputParameters);
 
 void splitGmsb(MssmSoftsusy & m, const DoubleVector & inputParameters);
-
-//double averageMus(susyMu, muOld);
 #endif
 
 
