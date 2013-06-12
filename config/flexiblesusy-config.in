@@ -9,14 +9,15 @@ cxxflags="@CXXFLAGS@"
 fflags="@FFLAGS@"
 cxx="@CXX@"
 fc="@FC@"
+flibs="@FLIBS@"
 makelib="@MAKELIB@"
 math="@MATH@"
 packagename="@PKGNAME@"
 
 usage="\
 Usage: `basename $0` [--all-models] [--cxx] [--cxxflags] [--cppflags]\
-  [--fc] [--fflags] [--make-lib-cmd] [--math-cmd] [--with-<model>]\
-  [--help] [--version]"
+ [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd] [--with-<model>]\
+ [--help] [--version]"
 
 if test $# -eq 0; then
     echo "${usage}" 1>&2
@@ -38,6 +39,7 @@ while test $# -gt 0; do
         --cppflags)      out="$out $cppflags" ;;
         --fc)            out="$out $fc"       ;;
         --fflags)        out="$out $fflags"   ;;
+        --flibs)         out="$out $flibs"    ;;
         --make-lib-cmd)  out="$out $makelib"  ;;
         --math-cmd)      out="$out $math"     ;;
         --with-*)
@@ -64,6 +66,7 @@ while test $# -gt 0; do
             echo "  --cppflags            Print CPPFLAGS"
             echo "  --fc                  Print Fortran compiler"
             echo "  --fflags              Print FFLAGS"
+            echo "  --flibs               Print FLIBS"
             echo "  --make-lib-cmd        Print make library command"
             echo "  --math-cmd            Print Mathematica kernel command"
             echo "  --with-<model>        Test if <model> is compiled in"
