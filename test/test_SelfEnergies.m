@@ -43,7 +43,7 @@ TestEquality[Private`ReplaceMixingMatrixByIdentityIn[couplingWithDelta[[2]],
             ];
 
 (* check case where the conj is on the other field *)
-couplingWithDelta = {Cp[UField[{idx1}], Susyno`LieGroups`conj[Field[{idx2}]]],
+couplingWithDelta = {Cp[UField[{idx1}], VField, Susyno`LieGroups`conj[Field[{idx2}]]],
                      g SARAH`Delta[idx1, idx2] };
 
 TestEquality[Private`ReplaceMixingMatrixByIdentityIn[couplingWithDelta[[2]],
