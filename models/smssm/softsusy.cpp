@@ -41,6 +41,10 @@ const MssmSoftsusy & MssmSoftsusy::operator=(const MssmSoftsusy & s) {
   setSetTbAtMX(s.displaySetTbAtMX());
   altEwsb = s.altEwsb;
   predMzSq = s.displayPredMzSq();
+  t1OV1Ms = s.displayTadpole1Ms(); 
+  t2OV2Ms = s.displayTadpole2Ms(); 
+  t1OV1Ms1loop = s.displayTadpole1Ms1loop(); 
+  t2OV2Ms1loop = s.displayTadpole2Ms1loop(); 
 
   return *this;
 }
@@ -116,8 +120,8 @@ void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
     calcTadpole1Ms1loop(mt, sinthDRbar);
     calcTadpole2Ms1loop(mt, sinthDRbar);
     
-    physpars.t1OV1Ms = physpars.t1OV1Ms1loop;
-    physpars.t2OV2Ms = physpars.t2OV2Ms1loop;
+    t1OV1Ms = t1OV1Ms1loop;
+    t2OV2Ms = t2OV2Ms1loop;
 
     /// tachyons tend to screw up this, so only calculate if we don't have them
     if (numRewsbLoops > 1) {
@@ -158,8 +162,8 @@ void MssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 		&costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
 
       if (!testNan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
-	physpars.t1OV1Ms += - s1s - s1t - s1b - s1tau;
-	physpars.t2OV2Ms += - s2s - s2t - s2b - s2tau; 
+	t1OV1Ms += - s1s - s1t - s1b - s1tau;
+	t2OV2Ms += - s2s - s2t - s2b - s2tau; 
 	/// end of 2-loop bit
       }
       else  {
@@ -337,10 +341,10 @@ double MssmSoftsusy::doCalcTadpole1oneLoop(double /* mt */, double sinthDRbar) {
 /// checked
 void MssmSoftsusy::calcTadpole1Ms1loop(double mt, double sinthDRbar) { 
   
-  physpars.t1OV1Ms1loop = doCalcTadpole1oneLoop(mt, sinthDRbar);
+  t1OV1Ms1loop = doCalcTadpole1oneLoop(mt, sinthDRbar);
 
-  if (testNan(physpars.t1OV1Ms1loop)) {
-    physpars.t1OV1Ms1loop = 0.0;
+  if (testNan(t1OV1Ms1loop)) {
+    t1OV1Ms1loop = 0.0;
     flagNoMuConvergence(true);
   }
 }
@@ -511,10 +515,10 @@ double MssmSoftsusy::doCalcTadpole2oneLoop(double /* mt */, double sinthDRbar) {
 }
 
 void MssmSoftsusy::calcTadpole2Ms1loop(double mt, double sinthDRbar) {/// CHECKED
-  physpars.t2OV2Ms1loop = doCalcTadpole2oneLoop(mt, sinthDRbar); 
-  if (testNan(physpars.t2OV2Ms1loop)) {
+  t2OV2Ms1loop = doCalcTadpole2oneLoop(mt, sinthDRbar); 
+  if (testNan(t2OV2Ms1loop)) {
     flagNoMuConvergence(true);
-    physpars.t2OV2Ms1loop = 0.0;
+    t2OV2Ms1loop = 0.0;
   }
 }
 
@@ -834,14 +838,14 @@ void MssmSoftsusy::alternativeEwsb(double mt) {
   newMh1sq = sqr(sin(beta)) * (sqr(displayMaCond()) + piaa + sqr(mzRun) - dMA) 
     - (sqr(displaySusyMu()) + 0.5 * sqr(mzRun)) +
     displayTadpole1Ms() - sqr(sqr(sin(beta))) * 
-    displayPhys().t1OV1Ms1loop -
-    displayPhys().t2OV2Ms1loop * sqr(sin(beta)) * sqr(cos(beta));
+    t1OV1Ms1loop -
+    t2OV2Ms1loop * sqr(sin(beta)) * sqr(cos(beta));
   
   newMh2sq = sqr(cos(beta)) * (sqr(displayMaCond()) + piaa + sqr(mzRun) - dMA) 
     - (sqr(displaySusyMu()) + 0.5 * sqr(mzRun)) -
-    displayPhys().t1OV1Ms1loop * sqr(sin(beta)) * sqr(cos(beta)) +
+    t1OV1Ms1loop * sqr(sin(beta)) * sqr(cos(beta)) +
     displayTadpole2Ms() - sqr(sqr(cos(beta))) * 
-    displayPhys().t2OV2Ms1loop;
+    t2OV2Ms1loop;
   
   setMh1Squared(newMh1sq);
   setMh2Squared(newMh2sq);
@@ -926,13 +930,13 @@ void MssmSoftsusy::rewsb(int sgnMu, double mt, const DoubleVector & /* pars */,
 	      tol, err); 
     
     if (err == 2) {
-       flagMusqwrongsign(true);
-       if (PRINTOUT > 2) cout << " mu^2<0 ";
+      flagMusqwrongsign(true);
+      if (PRINTOUT > 2) cout << " mu^2<0 ";
     }
     else flagMusqwrongsign(false); 
     if (err == 1) {
-       flagNoMuConvergence(true);
-       if (PRINTOUT > 2) cout << " no mu convergence ";
+      flagNoMuConvergence(true);
+      if (PRINTOUT > 2) cout << " no mu convergence ";
     }
     else setSusyMu(munew);
     
@@ -1236,15 +1240,15 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
       minimisation conditions are explicitly used (in the calculation of mA)
      */
     dMA = p2s + p2w + p2b + p2tau;
-    mhAtmh(1, 1) = mHtree(1, 1) + physpars.t1OV1Ms1loop + dMA * sqr(sin(beta));
+    mhAtmh(1, 1) = mHtree(1, 1) + t1OV1Ms1loop + dMA * sqr(sin(beta));
     mhAtmh(1, 2) = mHtree(1, 2) - dMA * sin(beta) * cos(beta);
-    mhAtmh(2, 2) = mHtree(2, 2) + physpars.t2OV2Ms1loop + dMA * sqr(cos(beta));
+    mhAtmh(2, 2) = mHtree(2, 2) + t2OV2Ms1loop + dMA * sqr(cos(beta));
     mhAtmh(2, 1) = mhAtmh(1 ,2);
     mhAtmh = mhAtmh - sigmaMh;
 
-    mhAtmH(1, 1) = mHtree(1, 1) + physpars.t1OV1Ms1loop + dMA * sqr(sin(beta));
+    mhAtmH(1, 1) = mHtree(1, 1) + t1OV1Ms1loop + dMA * sqr(sin(beta));
     mhAtmH(1, 2) = mHtree(1, 2) - dMA * sin(beta) * cos(beta);
-    mhAtmH(2, 2) = mHtree(2, 2) + physpars.t2OV2Ms1loop + dMA * sqr(cos(beta));
+    mhAtmH(2, 2) = mHtree(2, 2) + t2OV2Ms1loop + dMA * sqr(cos(beta));
     mhAtmH(2, 1) = mhAtmH(1 ,2);
     mhAtmH = mhAtmH - sigmaMH;
   }
@@ -1305,8 +1309,8 @@ bool MssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */) {
 	(displayMh2Squared() - displayTadpole2Ms() - 
 	 displayMh1Squared() + displayTadpole1Ms()) / 
 	cos(2.0 * beta) - mzRun2 - piaa +
-	sqr(sin(beta)) * physpars.t1OV1Ms1loop + sqr(cos(beta)) *
-	physpars.t2OV2Ms1loop + dMA;
+	sqr(sin(beta)) * t1OV1Ms1loop + sqr(cos(beta)) *
+	t2OV2Ms1loop + dMA;
     }
 
   double pihphm = piHpHm(physpars.mHpm, displayMu());
