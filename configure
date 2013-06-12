@@ -744,7 +744,6 @@ enable_defines
 
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
-    -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
@@ -753,6 +752,8 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
+    -e "s|@FFLAGS@|$FFLAGS|"           \
+    -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
@@ -763,7 +764,6 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
-    -e "s|@FFLAGS@|$FFLAGS|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
 
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
@@ -773,6 +773,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
+    -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
