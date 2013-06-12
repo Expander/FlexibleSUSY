@@ -78,6 +78,7 @@ clean-dep:
 
 distclean::
 	-rm -f Makefile
+	-rm -f flexiblesusy-config
 
 showbuild:
 	@echo "PKGNAME    = $(PKGNAME)"
