@@ -27,6 +27,13 @@ TEST_SRC += \
 endif
 endif
 
+TEST_META := \
+		test/test_CConversion.m \
+		test/test_Constraint.m \
+		test/test_MassEigenstates.m \
+		test/test_SelfEnergies.m \
+		test/test_TextFormatting.m
+
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
 
@@ -38,6 +45,9 @@ TEST_EXE := \
 
 TEST_SCRIPT := \
 		$(DIR)/execute_test.sh
+
+TEST_META_SCRIPT := \
+		$(DIR)/execute_meta_code_test.sh
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -51,9 +61,12 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(TEST_EXE)
 
 execute-tests:  all-$(MODNAME)
-		@echo "executing all tests ..."
+		@echo "executing all compiled tests ..."
 		@./$(TEST_SCRIPT) $(TEST_EXE)
-		@echo "all tests finished"
+		@echo "all compiled tests finished"
+		@echo "executing all meta code tests ..."
+		@./$(TEST_META_SCRIPT) $(MATH) $(TEST_META)
+		@echo "all meta code tests finished"
 
 clean::         clean-$(MODNAME)
 

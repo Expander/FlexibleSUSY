@@ -12,12 +12,7 @@ META_SRC     := \
 		$(DIR)/Phases.m \
 		$(DIR)/SelfEnergies.m \
 		$(DIR)/Tadpoles.m \
-		$(DIR)/test_cConversion.m \
-		$(DIR)/test_Constraint.m \
-		$(DIR)/test_MassEigenstates.m \
-		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/TestSuite.m \
-		$(DIR)/test_textFormatting.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
