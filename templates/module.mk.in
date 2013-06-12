@@ -45,7 +45,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/@MODEL@_susyPars.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
-	math -run "Get[\"$<\"]; Quit[]"
+	$(MATH) -run "Get[\"$<\"]; Quit[]"
 
 $(DIR)/@MODEL@_susyPars.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
