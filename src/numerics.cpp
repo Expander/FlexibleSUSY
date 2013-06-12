@@ -248,7 +248,7 @@ double findMinimum(double ax, double bx, double cx, double (*f)(double),
 
 
 
-DoubleVector dd(double x, const DoubleVector & y) {
+DoubleVector dd(double x, const DoubleVector & /* y */) {
   DoubleVector dydx(1);
   dydx(1) = -integrandThreshbnr(x);
   return dydx;
@@ -273,7 +273,7 @@ Complex fnfn(double x) {
 	 / sqr(mtInt));
 }
 
-DoubleVector dilogarg(double t, const DoubleVector & y) {
+DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
 
   const double eps = TOLERANCE * 1.0e-20;
 
@@ -321,7 +321,7 @@ const double pTolerance = 1.0e-6;
 
 double fB(const Complex & a) {
   /// First, special cases at problematic points
-  double x = a.real(), y = a.imag();
+  double x = a.real();
   if (fabs(x) < pTolerance) {
     double ans = -1. - x + sqr(x) * 0.5;
     return ans;
@@ -794,7 +794,7 @@ double ffbar(double z) {
 
 #define FUNC(x) ((*func)(x))
 
-double trapzd(double (*func)(double), double a, double b, int n, double EPS) {
+double trapzd(double (*func)(double), double a, double b, int n, double /* EPS */) {
 	double x,tnm,sum,del;
 	static double s;
 	int it,j;
@@ -900,7 +900,7 @@ double llqThresh(double mSq, double mChi1, double mSlep, double mChi2) {
   return sqrt(ans / (4.0 * l * xi));
 }
 
-double lqnear(double mSq, double mChi1, double mSlep, double mChi2) {
+double lqnear(double mSq, double /* mChi1 */, double mSlep, double mChi2) {
   double xi    = sqr(mChi2);
   double l     = sqr(mSlep);
   double q     = sqr(mSq);
