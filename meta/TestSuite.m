@@ -5,11 +5,14 @@ TestEquality::usage="tests equality of two expressions";
 TestCPPCode::usage="tests a C/C++ code snippet for an expected
 result";
 PrintTestSummary::usage="prints test summary";
+GetNumberOfFailedTests::usage="returns number of failed tests";
 
 Begin["Private`"];
 
 numberOfFailedTests := 0;
 numberOfPassedTests := 0;
+
+GetNumberOfFailedTests[] := numberOfFailedTests;
 
 TestEquality[val_, expr_, msg_:""] := 
     If[val =!= expr,
