@@ -4,9 +4,11 @@ Needs["SelfEnergies`", "SelfEnergies.m"];
 Print["testing CreateMixingMatrixReplacementRulesFor[] ..."];
 
 Field;
+VField;
 FindMixingMatrixSymbolFor[Field] := ZField;
 FindMixingMatrixSymbolFor[SVDField] := {U, V};
 GetDimension[Field] := 3;
+IsVector[VField] = True;
 
 TestEquality[Private`CreateMixingMatrixReplacementRulesFor[Cp[Field[{i}]]], {}];
 
@@ -32,7 +34,7 @@ TestEquality[Private`ReplaceMixingMatrixByIdentityIn[couplingWithMixingMatrix[[2
 
 (* check that if no mixing matrix exists, a sum over the mixing matrix
    is introduced *)
-couplingWithDelta = {Cp[Susyno`LieGroups`conj[UField[{idx1}]], Field[{idx2}]],
+couplingWithDelta = {Cp[Susyno`LieGroups`conj[UField[{idx1}]], VField, Field[{idx2}]],
                      g SARAH`Delta[idx1, idx2] };
 
 TestEquality[Private`ReplaceMixingMatrixByIdentityIn[couplingWithDelta[[2]],
