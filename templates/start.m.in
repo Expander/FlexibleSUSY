@@ -11,7 +11,7 @@ $sarahOutputDir = FileNameJoin[{workingDirectory, "Output"}];
 Print["Current working directory: ", workingDirectory];
 Print["SARAH output directory: ", $sarahOutputDir];
 
-Start["@ModelName@"];
+Start["@ModelName@"@SubModel@];
 
 MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
                  InputFile -> "@DIR@/FlexibleSUSY.m",
