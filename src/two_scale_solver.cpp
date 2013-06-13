@@ -119,11 +119,13 @@ void RGFlow<Two_scale>::initial_guess()
 void RGFlow<Two_scale>::run_up()
 {
    VERBOSE_MSG("> running tower up ...");
-   for (size_t m = 0; m < models.size(); ++m) {
+   const size_t number_of_models = models.size();
+   for (size_t m = 0; m < number_of_models; ++m) {
       TModel* model = models[m];
       VERBOSE_MSG("> \tselecting model " << model->model->name());
       // apply all constraints
-      for (size_t c = 0; c < model->upwards_constraints.size(); ++c) {
+      const size_t n_upwards_constraints = model->upwards_constraints.size();
+      for (size_t c = 0; c < n_upwards_constraints; ++c) {
          Constraint<Two_scale>* constraint = model->upwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
@@ -134,7 +136,7 @@ void RGFlow<Two_scale>::run_up()
          constraint->apply();
       }
       // apply matching condition if this is not the last model
-      if (m != models.size() - 1) {
+      if (m != number_of_models - 1) {
          VERBOSE_MSG("> \tmatching to model " << models[m + 1]->model->name());
          Matching<Two_scale>* mc = model->matching_condition;
          mc->match_low_to_high_scale_model();
@@ -147,15 +149,16 @@ void RGFlow<Two_scale>::run_down()
 {
    assert(models.size() > 0 && "model size must not be zero");
    VERBOSE_MSG("< running tower down ...");
-   for (long m = models.size() - 1; m >= 0; --m) {
+   const size_t number_of_models = models.size();
+   for (long m = number_of_models - 1; m >= 0; --m) {
       TModel* model = models[m];
       VERBOSE_MSG("< \tselecting model " << model->model->name());
       // apply all constraints:
       // If m is the last model, do not apply the highest constraint,
       // because it was already appied when we ran up.
-      const size_t c_begin = (m + 1 == (long)models.size() ? 1 : 0);
-      const size_t number_of_constraints = model->downwards_constraints.size();
-      for (size_t c = c_begin; c < number_of_constraints; ++c) {
+      const size_t c_begin = (m + 1 == (long)number_of_models ? 1 : 0);
+      const size_t c_end = model->downwards_constraints.size();
+      for (size_t c = c_begin; c < c_end; ++c) {
          Constraint<Two_scale>* constraint = model->downwards_constraints[c];
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
@@ -165,7 +168,7 @@ void RGFlow<Two_scale>::run_down()
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
          // time.
-         if (m != 0 || c + 1 != number_of_constraints) {
+         if (m != 0 || c + 1 != c_end) {
             VERBOSE_MSG("< \t\t\tapplying constraint");
             constraint->apply();
          }
