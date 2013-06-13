@@ -729,10 +729,10 @@ guess_machine_word_size
 check_algorithms
 check_boost_test_incl
 check_boost_test_libs
-check_boost_thread_incl
-check_boost_thread_libs
 check_fortran_libs
 if use_algorithm "lattice"; then
+    check_boost_thread_incl
+    check_boost_thread_libs
     check_gsl_config
     check_lapack_libs
     check_tvmet_config
