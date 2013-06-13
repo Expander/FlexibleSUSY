@@ -471,10 +471,14 @@ CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
           ];
 
 GetRunningOneLoopDRbarParticles[] :=
-    {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron};
+    {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron, SARAH`Neutrino,
+     SARAH`VectorP, SARAH`VectorZ, SARAH`VectorW};
+
+CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
+    "double calculate_" <> ToValidCSymbolString[particle] <> "_DRbar_1loop(double, int) const;\n";
 
 CreateRunningDRbarMassPrototype[particle_] :=
-    "double calculate_" <> ToValidCSymbolString[particle] <> "_DRbar_1loop(double, int);\n";
+    "double calculate_" <> ToValidCSymbolString[particle] <> "_DRbar_1loop(double) const;\n";
 
 CreateRunningDRbarMassPrototypes[] :=
     Module[{result = "", particles},
@@ -483,19 +487,40 @@ CreateRunningDRbarMassPrototypes[] :=
            Return[result];
           ];
 
-CreateRunningDRbarMassFunction[particle_] :=
+CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name},
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            name = ToValidCSymbolString[particle];
-           result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell, int index)\n{\n";
-           body = "const double p = m_onshell;\n" <>
-           "const double self_energy_1  = " <> selfEnergyFunctionS  <> "(p, index, index).real();\n" <>
-           "const double self_energy_PL = " <> selfEnergyFunctionPL <> "(p, index, index).real();\n" <>
-           "const double self_energy_PR = " <> selfEnergyFunctionPR <> "(p, index, index).real();\n" <>
-           "return m_onshell + self_energy_1 + m_onshell * (self_energy_PL + self_energy_PR);\n";
+           If[IsMassless[particle],
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              body = "return 0.0;\n";
+              ,
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell, int index) const\n{\n";
+              body = "const double p = m_onshell;\n" <>
+              "const double self_energy_1  = " <> selfEnergyFunctionS  <> "(p, index, index).real();\n" <>
+              "const double self_energy_PL = " <> selfEnergyFunctionPL <> "(p, index, index).real();\n" <>
+              "const double self_energy_PR = " <> selfEnergyFunctionPR <> "(p, index, index).real();\n" <>
+              "return m_onshell + self_energy_1 + m_onshell * (self_energy_PL + self_energy_PR);\n";
+             ];
+           Return[result <> IndentText[body] <> "}\n\n"];
+          ];
+
+CreateRunningDRbarMassFunction[particle_] :=
+    Module[{result, body, selfEnergyFunction, name},
+           selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           name = ToValidCSymbolString[particle];
+           If[IsMassless[particle],
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double) const \n{\n";
+              body = "return 0.0;\n";
+              ,
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell) const\n{\n";
+              body = "const double p = m_onshell;\n" <>
+              "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
+              "return zeroSqrt(Sqr(m_onshell) + self_energy);\n";
+             ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
