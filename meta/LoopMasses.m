@@ -428,7 +428,7 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            body = DoDiagonalization[particle, precision, tadpole];
            result = "void CLASSNAME::calculate_" <> ToString[particle] <>
-                    "_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
+                    "_onshell_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
           ];
 
@@ -451,7 +451,7 @@ CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
           ];
 
 CreateLoopMassPrototype[particle_Symbol] :=
-    "void calculate_" <> ToString[particle] <> "_1loop();\n";
+    "void calculate_" <> ToString[particle] <> "_onshell_1loop();\n";
 
 CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
@@ -461,7 +461,7 @@ CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
           ];
 
 CallLoopMassFunction[particle_Symbol] :=
-    "calculate_" <> ToString[particle] <> "_1loop();\n";
+    "calculate_" <> ToString[particle] <> "_onshell_1loop();\n";
 
 CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
