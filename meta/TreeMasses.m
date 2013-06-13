@@ -82,6 +82,7 @@ IsMajoranaFermion::usage="";
 IsDiracFermion::usage="";
 IsComplexScalar::usage="";
 IsRealScalar::usage="";
+IsMassless::usage="";
 
 Begin["Private`"];
 
@@ -146,6 +147,9 @@ IsComplexScalar[sym_Symbol] :=
 
 IsRealScalar[sym_Symbol] :=
     And[IsScalar[sym], MemberQ[SARAH`realVar, sym]];
+
+IsMassless[sym_Symbol, states_:SARAH`EWSB] :=
+    MemberQ[SARAH`Massless[states], sym];
 
 GetDimension[sym_[__], states_:SARAH`EWSB] := GetDimension[sym, states];
 
