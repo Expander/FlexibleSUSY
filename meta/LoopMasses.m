@@ -65,7 +65,7 @@ Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
 Do1DimVector[particleName_String, selfEnergyFunction_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
-    "PHYSICAL(" <> particleName <> ") = zeroSqrt(sqr(" <> particleName <>
+    "PHYSICAL(" <> particleName <> ") = zeroSqrt(Sqr(" <> particleName <>
     ") - self_energy);\n";
 
 
@@ -85,7 +85,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "ComplexMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = sqrt(" <> particleName <> "(i1) * " <> 
+                                  IndentText["const double p = zeroSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = " <>
                                              selfEnergyFunction <> "(p,i1,i2);\n"] <>
@@ -136,7 +136,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        "ComplexMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = sqrt(" <> particleName <> "(i1) * " <> 
+                                  IndentText["const double p = zeroSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
                                              "self_energy_1(i1,i2) = " <>
                                              selfEnergyFunctionS <> "(p,i1,i2);\n" <>
