@@ -28,8 +28,8 @@
 
 void @ModelName@_high_scale_constraint::apply()
 {
-   assert(model && "Error: High scale constraint: model pointer must"
-          " not be zero");
+   assert(model && "Error: @ModelName@_high_scale_constraint:"
+          " model pointer must not be zero");
 
    update_scale();
 
