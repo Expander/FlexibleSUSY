@@ -28,13 +28,16 @@
 
 void @ModelName@_low_scale_constraint::apply()
 {
-   assert(model && "Error: low scale constraint: model pointer must"
-          " not be zero");
+   assert(model && "Error: @ModelName@_low_scale_constraint:"
+          " model pointer must not be zero");
 
+   model->solve_ewsb();
    model->calculate_DRbar_parameters();
    update_scale();
-   model->solve_ewsb();
    calculate_DRbar_gauge_couplings();
+
+   const double MZDRbar
+      = model->calculate_@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
 
 @applyConstraint@
 }

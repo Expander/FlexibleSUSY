@@ -46,6 +46,16 @@ ReplaceInFiles[files_List, replacementList_List] :=
              ];
           ];
 
+GeneralReplacementRules[] :=
+    { "@VectorZ@"     -> ToValidCSymbolString[SARAH`VectorZ],
+      "@VectorP@"     -> ToValidCSymbolString[SARAH`VectorP],
+      "@VectorW@"     -> ToValidCSymbolString[SARAH`VectorW],
+      "@TopQuark@"    -> ToValidCSymbolString[SARAH`TopQuark],
+      "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
+      "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
+      "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino] }
+
+
 WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
               additionalDecl_:"", numberOfBaseClassParameters_:0] :=
    Module[{setter, getter, parameterDef, set,
@@ -116,7 +126,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
                    "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
-                   "@setDRbarCouplings@"    -> IndentText[WrapLines[setDRbarCouplings]]
+                   "@setDRbarCouplings@"    -> IndentText[WrapLines[setDRbarCouplings]],
+                   Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
 

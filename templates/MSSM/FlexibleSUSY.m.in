@@ -38,6 +38,6 @@ BoundarySUSYScale={};
 BoundaryLowScale = MZ;
 
 BoundaryLowScaleInput={
-   {vd, 2 VZ / Sqrt[(g1^2+g2^2)] Cos[ArcTan[TanBeta]]},
-   {vu, 2 VZ / Sqrt[(g1^2+g2^2)] Sin[ArcTan[TanBeta]]}
+   {vd, 2 MZDRbar / Sqrt[(g1^2+g2^2)] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[(g1^2+g2^2)] Sin[ArcTan[TanBeta]]}
 };
