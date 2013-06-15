@@ -66,6 +66,8 @@ int ThetaStep(int, int);
 
 DoubleMatrix Tp(const DoubleMatrix&);
 ComplexMatrix Tp(const ComplexMatrix&);
+DoubleMatrix Transpose(const DoubleMatrix&);
+ComplexMatrix Transpose(const ComplexMatrix&);
 
 double trace(const DoubleMatrix&);
 Complex trace(const ComplexMatrix&);

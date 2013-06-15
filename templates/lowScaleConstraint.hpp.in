@@ -21,6 +21,7 @@ private:
    @ModelName@_input_parameters inputPars;
 
    void calculate_DRbar_gauge_couplings();
+   void calculate_DRbar_yukawa_couplings();
    void update_scale();
 };
 

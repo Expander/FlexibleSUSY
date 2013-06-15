@@ -365,6 +365,16 @@ ComplexMatrix Tp(const ComplexMatrix& m)
    return m.transpose();
 }
 
+DoubleMatrix Transpose(const DoubleMatrix& m)
+{
+   return m.transpose();
+}
+
+ComplexMatrix Transpose(const ComplexMatrix& m)
+{
+   return m.transpose();
+}
+
 double trace(const DoubleMatrix& m)
 {
    return m.trace();

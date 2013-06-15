@@ -1,7 +1,8 @@
 
 BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`"}];
 
-SetDRbarCouplings::usage="";
+SetDRbarGaugeCouplings::usage="";
+SetDRbarYukawaCouplings::usage="";
 CalculateDRbarColorCoupling::usage="";
 CalculateDRbarElectromagneticCoupling::usage="";
 
@@ -56,7 +57,7 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
            Simplify[coupling + (result + DRbarConversion[group]) CConversion`oneOver16PiSqr (coupling)^3]
           ];
 
-SetDRbarCouplings[] :=
+SetDRbarGaugeCouplings[] :=
     Module[{result,
             couplingG1, couplingG2, couplingG3, couplingEm,
             drBarCouplingG3, drBarCouplingEm, drBarCouplingSi,
@@ -99,6 +100,68 @@ SetDRbarCouplings[] :=
                     Constraint`SetParameter[couplingG1, drBarCouplingG1CVariable, "model"] <>
                     Constraint`SetParameter[couplingG2, drBarCouplingG2CVariable, "model"] <>
                     Constraint`SetParameter[couplingG3, drBarCouplingG3CVariable, "model"];
+           Return[result];
+          ];
+
+GetPrefactor[expr_Plus, yukawas_List] := 1;
+
+GetPrefactor[expr_Integer, yukawas_List] := 1;
+
+GetPrefactor[expr_Symbol, yukawas_List] := 1;
+
+ContainsNoYukawa[expr_, yukawas_List] :=
+    And @@ (FreeQ[expr, #]& /@ yukawas);
+
+GetPrefactor[expr_Times, yukawas_List] :=
+    Module[{factors, prefactors},
+           factors = List @@ expr;
+           prefactors = Select[factors, ContainsNoYukawa[#, yukawas]&];
+           Times @@ prefactors
+          ];
+
+StripMatrixIndices[sym_Symbol] := sym;
+
+StripMatrixIndices[sym_[_Integer, _Integer]] := sym;
+
+ToMatrixSymbol[{}] := Null;
+
+ToMatrixSymbol[list_List] :=
+    Module[{dim, symbol, matrix, i, k},
+           dim = Length[list];
+           symbol = StripMatrixIndices[list[[1,1]]];
+           matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
+           Which[matrix === list, symbol,
+                 Transpose[matrix] === list, Transpose[symbol],
+                 True, Null
+                ]
+          ];
+
+InvertRelation[Transpose[sym_], expr_] := {sym, Transpose[expr]};
+InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, ConjugateTranspose[expr]};
+InvertRelation[sym_, expr_] := {sym, expr};
+
+InvertMassRelation[fermion_, yukawas_List] :=
+    Module[{massMatrix, polynom, prefactor, matrixSymbol},
+           massMatrix = SARAH`MassMatrix[fermion];
+           polynom = Factor[massMatrix /. List -> Plus];
+           prefactor = GetPrefactor[polynom, yukawas];
+           matrixSymbol = ToMatrixSymbol[massMatrix / prefactor];
+           InvertRelation[matrixSymbol, fermion / prefactor]
+          ];
+
+SetDRbarYukawaCouplings[] :=
+    Module[{result, yTop, top, yBot, bot, yTau, tau, yukawas},
+           yukawas = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
+           {yTop, top} = InvertMassRelation[SARAH`TopQuark   , yukawas];
+           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, yukawas];
+           {yTau, tau} = InvertMassRelation[SARAH`Electron   , yukawas];
+           top = top /. SARAH`TopQuark    -> Global`topDRbar;
+           bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
+           tau = tau /. SARAH`Electron    -> Global`electronDRbar;
+           result = Constraint`CreateLocalConstRefs[top + bot + tau] <>
+                    Constraint`SetParameter[yTop, RValueToCFormString[top], "model"] <>
+                    Constraint`SetParameter[yBot, RValueToCFormString[bot], "model"] <>
+                    Constraint`SetParameter[yTau, RValueToCFormString[tau], "model"];
            Return[result];
           ];
 

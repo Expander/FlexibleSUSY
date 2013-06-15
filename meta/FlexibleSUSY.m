@@ -112,7 +112,7 @@ WriteInputParameterClass[modelName_String, inputParameters_List, files_List] :=
 WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_String,
                      inputParameters_List, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
-           setDRbarCouplings},
+           setDRbarGaugeCouplings, setDRbarYukawaCouplings},
           Constraint`SetInputParameters[inputParameters];
           Constraint`SetModelParameters[GetParameters[]];
           Constraint`SetOutputParameters[GetOutputParameters[]];
@@ -120,13 +120,15 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess];
-          setDRbarCouplings = ThresholdCorrections`SetDRbarCouplings[];
+          setDRbarGaugeCouplings  = ThresholdCorrections`SetDRbarGaugeCouplings[];
+          setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
                  { "@ModelName@"            -> modelName,
                    "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
-                   "@setDRbarCouplings@"    -> IndentText[WrapLines[setDRbarCouplings]],
+                   "@setDRbarGaugeCouplings@"  -> IndentText[WrapLines[setDRbarGaugeCouplings]],
+                   "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
