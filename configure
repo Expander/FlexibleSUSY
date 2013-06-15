@@ -499,6 +499,24 @@ check_boost_thread_libs() {
 }
 
 #_____________________________________________________________________
+check_boost_thread_libs() {
+    check_library "libboost_thread libboost_thread-mt" \
+	"$boost_lib_dir" "$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Warning: libboost_thread or libboost_thread-mt must be installed"
+        message "  to enable multithreading in the lattice method, see http://www.boost.org"
+    else
+        BOOSTTHREADLIBS_=-l$(echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+        if [ -z "$boost_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
+        else
+            BOOSTTHREADLIBS="-L$boost_lib_dir $BOOSTTHREADLIBS_"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_boost_thread_incl() {
     check_header "boost/thread/thread.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
