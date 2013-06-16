@@ -31,12 +31,13 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
           ];
 
 CreateCompareFunction[particles_List] :=
-    Module[{result, numberOfMasses, i, offset = 0},
-           numberOfMasses = CountNumberOfMasses[particles];
+    Module[{result, numberOfMasses, i, offset = 0, massiveParticles},
+           massiveParticles = Select[particles, (!TreeMasses`IsMassless[#])&];
+           numberOfMasses = CountNumberOfMasses[massiveParticles];
            result = "DoubleVector diff(" <> ToString[numberOfMasses] <> ");\n\n";
-           For[i = 1, i <= Length[particles], i++,
-               result = result <> CalcDifference[particles[[i]], offset, "diff"];
-               offset += CountNumberOfMasses[particles[[i]]];
+           For[i = 1, i <= Length[massiveParticles], i++,
+               result = result <> CalcDifference[massiveParticles[[i]], offset, "diff"];
+               offset += CountNumberOfMasses[massiveParticles[[i]]];
               ];
            If[offset != numberOfMasses,
               Print["Error: something is wrong with the counting of masses:"];
