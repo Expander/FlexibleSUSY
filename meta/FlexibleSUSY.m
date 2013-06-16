@@ -53,7 +53,14 @@ GeneralReplacementRules[] :=
       "@TopQuark@"    -> ToValidCSymbolString[SARAH`TopQuark],
       "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
       "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
-      "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino] }
+      "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino],
+      "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
+      "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
+      "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
+      "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
+      "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
+      "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling]
+    }
 
 
 WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
