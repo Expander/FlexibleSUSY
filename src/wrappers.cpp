@@ -66,6 +66,30 @@ int Delta(int i, int j)
    return i == j ? 1 : 0;
 }
 
+DoubleMatrix Diag(const DoubleMatrix& m)
+{
+   DoubleMatrix diag(m);
+   for (int i = 1; i <= m.displayCols(); ++i) {
+      for (int k = 1; k <= m.displayRows(); ++k) {
+         if (i != k)
+            diag(i,k) = 0.0;
+      }
+   }
+   return diag;
+}
+
+ComplexMatrix Diag(const ComplexMatrix& m)
+{
+   ComplexMatrix diag(m);
+   for (int i = 1; i <= m.displayCols(); ++i) {
+      for (int k = 1; k <= m.displayRows(); ++k) {
+         if (i != k)
+            diag(i,k) = Complex(0.0, 0.0);
+      }
+   }
+   return diag;
+}
+
 /**
  * diag = u m u^T
  *

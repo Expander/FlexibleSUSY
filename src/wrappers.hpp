@@ -27,6 +27,9 @@ double Sin(double);
 
 int Delta(int, int);
 
+DoubleMatrix Diag(const DoubleMatrix&);
+ComplexMatrix Diag(const ComplexMatrix&);
+
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
 void DiagonalizeUnsorted(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
