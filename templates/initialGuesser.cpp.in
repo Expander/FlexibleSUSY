@@ -81,10 +81,11 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
 
    // apply EWSB constraint
    model->runto(low_scale_guess);
-   model->solve_ewsb();
+   model->solve_ewsb(0);
 
    // calculate tree-level spectrum
    model->calculate_DRbar_parameters();
    model->setThresholds(3);
    model->setLoops(2);
+   model->set_ewsb_loop_order(1);
 }
