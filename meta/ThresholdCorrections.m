@@ -126,18 +126,21 @@ StripMatrixIndices[sym_[_Integer, _Integer]] := sym;
 ToMatrixSymbol[{}] := Null;
 
 ToMatrixSymbol[list_List] :=
-    Module[{dim, symbol, matrix, i, k},
+    Module[{dim, symbol, matrix, i, k, diag},
            dim = Length[list];
            symbol = StripMatrixIndices[list[[1,1]]];
            matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
+           diag = DiagonalMatrix[Table[symbol[i,i], {i,1,dim}]];
            Which[matrix === list, symbol,
                  Transpose[matrix] === list, Transpose[symbol],
+                 diag === list, FlexibleSUSY`Diag[symbol],
                  True, Null
                 ]
           ];
 
 InvertRelation[Transpose[sym_], expr_] := {sym, Transpose[expr]};
 InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, ConjugateTranspose[expr]};
+InvertRelation[FlexibleSUSY`Diag[sym_], expr_] := {sym, FlexibleSUSY`Diag[expr]};
 InvertRelation[sym_, expr_] := {sym, expr};
 
 InvertMassRelation[fermion_, yukawas_List] :=
@@ -146,6 +149,11 @@ InvertMassRelation[fermion_, yukawas_List] :=
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawas];
            matrixSymbol = ToMatrixSymbol[massMatrix / prefactor];
+           If[matrixSymbol === Null,
+              Print["Error: could not convert expression to matrix symbol: ",
+                    massMatrix / prefactor];
+              Return[{Null, fermion}];
+             ];
            InvertRelation[matrixSymbol, fermion / prefactor]
           ];
 
