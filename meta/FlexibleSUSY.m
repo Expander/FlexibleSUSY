@@ -563,9 +563,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_lowScaleConstraint.cpp"}]}}
                                ];
 
+           If[Head[Global`InitialGuess] =!= List,
+              Global`InitialGuess = {};
+             ];
+
            Print["Creating initialGuesser.{hpp,cpp} ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                    SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
+                                    Join[SARAH`BoundaryLowScaleInput, Global`InitialGuess] /. susyBreakingParameterReplacementRules,
                                     Model`Name,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initialGuesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initialGuesser.hpp"}]},
