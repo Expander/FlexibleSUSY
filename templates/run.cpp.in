@@ -8,6 +8,7 @@
 
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
+#include "error.hpp"
 
 #include <iostream>
 #include <vector>
@@ -47,6 +48,8 @@ int main()
       solver.solve();
       model.calculate_spectrum();
       model.print(std::cout);
+   } catch (Error& error) {
+      cout << "Error: " << error.what() << endl;
    } catch (std::string& str) {
       cout << "Error: " << str << endl;
    }
