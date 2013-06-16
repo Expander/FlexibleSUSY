@@ -107,12 +107,15 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
                  } ];
           ];
 
-WriteInputParameterClass[modelName_String, inputParameters_List, files_List] :=
-   Module[{defineInputParameters},
+WriteInputParameterClass[modelName_String, inputParameters_List,
+                         defaultValues_List, files_List] :=
+   Module[{defineInputParameters, defaultInputParametersInit},
           defineInputParameters = Constraint`DefineInputParameters[inputParameters];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[defaultValues];
           ReplaceInFiles[files,
                          { "@ModelName@"             -> modelName,
-                           "@defineInputParameters@" -> IndentText[defineInputParameters]
+                           "@defineInputParameters@" -> IndentText[defineInputParameters],
+                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit]
                          } ];
           ];
 
@@ -512,8 +515,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.cpp"}]}},
                          traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
 
+           If[Head[Global`DefaultParameterPoint] =!= List,
+              Global`DefaultParameterPoint = {};
+             ];
+
            Print["Creating inputPars.{hpp,cpp} ..."];
            WriteInputParameterClass[Model`Name, (#[[2]])& /@ MINPAR,
+                                    Global`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "inputPars.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_inputPars.hpp"}]}}
                                    ];

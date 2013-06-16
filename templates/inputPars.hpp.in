@@ -4,6 +4,9 @@
 
 struct @ModelName@_input_parameters {
 @defineInputParameters@
+   @ModelName@_input_parameters()
+      @defaultInputParametersInit@
+   {}
 };
 
 #endif

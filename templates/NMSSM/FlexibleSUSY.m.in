@@ -10,6 +10,16 @@ MINPAR=     {{1,m0},
              {65,vSInput}
             };
 
+DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Azero, 0},
+    {LambdaInput, 0.1},
+    {KappaInput, 0.1},
+    {vSInput, 1000}
+};
+
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;

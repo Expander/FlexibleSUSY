@@ -4,6 +4,7 @@ BeginPackage["Constraint`", {"CConversion`", "BetaFunction`"}];
 ApplyConstraints::usage="";
 CalculateScale::usage="";
 DefineInputParameters::usage="";
+InitializeInputParameters::usage="";
 
 SetInputParameters::usage="";
 SetModelParameters::usage="";
@@ -192,6 +193,28 @@ DefineParameter[parameter_Symbol] :=
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
            (result = result <> DefineParameter[#])& /@ inputParameters;
+           Return[result];
+          ];
+
+InitializeInputParameter[{parameter_, value_?NumberQ}] :=
+    ToValidCSymbolString[parameter] <> "(" <> RValueToCFormString[value] <> ")";
+
+InitializeInputParameter[pars__] :=
+    Module[{},
+           Print["Error: Default values for parameters must be given in the",
+                 " form {parameter, value} where value is a number."];
+           Return[""];
+          ];
+
+InitializeInputParameters[defaultValues_List] :=
+    Module[{result = "", i},
+           For[i = 1, i <= Length[defaultValues], i++,
+               If[i == 1,
+                  result = ": ";,
+                  result = result <> ", ";
+                 ];
+               result = result <> InitializeInputParameter[defaultValues[[i]]];
+              ];
            Return[result];
           ];
 

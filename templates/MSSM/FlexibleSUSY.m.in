@@ -6,6 +6,13 @@ MINPAR=     {{1,m0},
              {3,TanBeta},
              {4,Azero}};
 
+DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Azero, 0}
+};
+
 ParametersToSolveTadpoles = { B[\[Mu]], \[Mu] };
 
 RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
