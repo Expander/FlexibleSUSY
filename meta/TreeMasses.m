@@ -113,10 +113,10 @@ GetParticles[states_:SARAH`EWSB] :=
           ];
 
 GetSusyParticles[states_:SARAH`EWSB] :=
-    Select[GetParticles[states], (!SMQ[#])&];
+    Select[GetParticles[states], (!SARAH`SMQ[#])&];
 
 GetSMParticles[states_:SARAH`EWSB] :=
-    Select[GetParticles[states], (SMQ[#])&];
+    Select[GetParticles[states], (SARAH`SMQ[#])&];
 
 IsOfType[sym_Symbol, type_Symbol, states_:SARAH`EWSB] :=
     SARAH`getType[sym, False, states] === type;
