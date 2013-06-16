@@ -31,7 +31,7 @@ void @ModelName@_low_scale_constraint::apply()
    assert(model && "Error: @ModelName@_low_scale_constraint:"
           " model pointer must not be zero");
 
-   model->solve_ewsb();
+   model->solve_ewsb(0);
    model->calculate_DRbar_parameters();
    update_scale();
    calculate_DRbar_gauge_couplings();
