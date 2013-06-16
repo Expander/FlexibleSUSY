@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "Tadpoles`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "Tadpoles`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
 MakeFlexibleSUSY::usage="";
 
@@ -154,6 +154,16 @@ WriteInitialGuesserClass[highScaleFirstGuess_, settings_List, modelName_String, 
                    "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@highScaleGuess@"       -> highScaleGuess,
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
+                   Sequence @@ GeneralReplacementRules[]
+                 } ];
+          ];
+
+WriteConvergenceTesterClass[particles_List, modelName_String, files_List] :=
+   Module[{compareFunction},
+          compareFunction = ConvergenceTester`CreateCompareFunction[particles];
+          ReplaceInFiles[files,
+                 { "@ModelName@"            -> modelName,
+                   "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -422,7 +432,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             nonSusyTraceDecl, nonSusyTraceRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
-            diagonalizationPrecision},
+            diagonalizationPrecision, allParticles},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -532,9 +542,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           Parameters`ApplyGUTNormalization[] /.
            { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
 
+           allParticles = GetMassEigenstate[#]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
-               Join[GetMassEigenstate[#]& /@ massMatrices,
+               Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
+
+           Print["Creating class for convergence tester ..."];
+           WriteConvergenceTesterClass[allParticles, Model`Name,
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.cpp"}]}}
+                                      ];
 
            Print["Creating class for high-scale constraint ..."];
            WriteConstraintClass[SARAH`ConditionGUTscale /. susyBreakingParameterReplacementRules,
@@ -615,11 +634,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.cpp"}]}},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]}},
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];

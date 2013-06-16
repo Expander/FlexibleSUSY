@@ -6,6 +6,7 @@ META_SRC     := \
 		$(DIR)/BetaFunction.m \
 		$(DIR)/CConversion.m \
 		$(DIR)/Constraint.m \
+		$(DIR)/ConvergenceTester.m \
 		$(DIR)/FlexibleSUSY.m \
 		$(DIR)/LoopMasses.m \
 		$(DIR)/Parameters.m \

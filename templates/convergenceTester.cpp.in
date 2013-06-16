@@ -1,5 +1,13 @@
 
 #include "@ModelName@_convergenceTester.hpp"
+#include <cmath>
+#include <algorithm>
+
+#define OLD1(p) ol->get_##p()
+#define NEW1(p) ne->get_##p()
+
+#define OLD(p,i) ol->get_##p()(i)
+#define NEW(p,i) ne->get_##p()(i)
 
 @ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@* model, double accuracy_goal)
    : Convergence_tester_skeleton<@ModelName@>(model, accuracy_goal)
@@ -12,5 +20,8 @@
 
 double @ModelName@_convergence_tester::max_rel_diff() const
 {
-   return get_model()->display().compare(get_last_iteration_model()->display());
+   const @ModelName@* ol = get_last_iteration_model();
+   const @ModelName@* ne = get_model();
+
+@compareFunction@
 }
