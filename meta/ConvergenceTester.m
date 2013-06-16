@@ -12,7 +12,7 @@ CountNumberOfMasses[particle_] :=
     TreeMasses`GetDimension[particle];
 
 CalcDifference[particle_, offset_Integer, diff_String] :=
-    Module[{result, body, dim, esStr, comma},
+    Module[{result, body, dim, dimStart, esStr, comma},
            dim = TreeMasses`GetDimension[particle];
            esStr = ToValidCSymbolString[particle];
            If[dim == 1,
@@ -22,7 +22,9 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
               result = body <> "\n";
               ,
               comma = "OLD(" <> esStr <> ",i),NEW(" <> esStr <> ",i)";
-              result = "for (unsigned i = 1; i <= " <> ToString[dim] <> "; ++i) {\n";
+              dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+              result = "for (unsigned i = " <> ToString[dimStart] <>
+                       "; i <= " <> ToString[dim] <> "; ++i) {\n";
               body = diff <> "(i + " <> ToString[offset] <> ") = " <>
                      "std::fabs(1.0 - std::min(" <> comma <> ")/std::max(" <> comma <> "));";
               result = result <> IndentText[body] <> "\n}\n";
@@ -31,13 +33,13 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
           ];
 
 CreateCompareFunction[particles_List] :=
-    Module[{result, numberOfMasses, i, offset = 0, massiveParticles},
-           massiveParticles = Select[particles, (!TreeMasses`IsMassless[#])&];
-           numberOfMasses = CountNumberOfMasses[massiveParticles];
+    Module[{result, numberOfMasses, i, offset = 0, massiveSusyParticles},
+           massiveSusyParticles = Select[particles, (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
+           numberOfMasses = CountNumberOfMasses[massiveSusyParticles];
            result = "DoubleVector diff(" <> ToString[numberOfMasses] <> ");\n\n";
-           For[i = 1, i <= Length[massiveParticles], i++,
-               result = result <> CalcDifference[massiveParticles[[i]], offset, "diff"];
-               offset += CountNumberOfMasses[massiveParticles[[i]]];
+           For[i = 1, i <= Length[massiveSusyParticles], i++,
+               result = result <> CalcDifference[massiveSusyParticles[[i]], offset, "diff"];
+               offset += CountNumberOfMasses[massiveSusyParticles[[i]]];
               ];
            If[offset != numberOfMasses,
               Print["Error: something is wrong with the counting of masses:"];
