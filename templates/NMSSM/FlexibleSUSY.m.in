@@ -22,8 +22,8 @@ DefaultParameterPoint = {
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
 
-RenormalizationScaleFirstGuess = m0^2 + 4 m12^2;
-RenormalizationScale = Su[1]*Su[6];
+RenormalizationScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
+RenormalizationScale = Sqrt[Su[1]*Su[6]];
 
 ConditionGUTscale = g1 == g2;
 
