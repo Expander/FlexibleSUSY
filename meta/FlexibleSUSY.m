@@ -42,6 +42,7 @@ ReplaceInFiles[files_List, replacementList_List] :=
               cppTemplateFileName = files[[f,2]];
               cppFile             = Import[cppFileName, "String"];
               modifiedCppFile     = StringReplace[cppFile, replacementList];
+              Print["   writing file ", cppTemplateFileName];
               Export[cppTemplateFileName, modifiedCppFile, "String"];
              ];
           ];
@@ -479,7 +480,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            anomDim = ConvertSarahAnomDim[SARAH`Gij];
            anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
 
-           Print["Creating susyPars.{hpp,cpp} ..."];
+           Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim, Model`Name,
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyPars.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyPars.hpp"}]},
@@ -507,7 +508,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            TreeMasses`SetModelParameters[allParameters];
 
-           Print["Creating softPars.{hpp,cpp} ..."];
+           Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {}, Model`Name,
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "softPars.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.hpp"}]},
@@ -519,7 +520,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Global`DefaultParameterPoint = {};
              ];
 
-           Print["Creating inputPars.{hpp,cpp} ..."];
+           Print["Creating class for input parameters ..."];
            WriteInputParameterClass[Model`Name, (#[[2]])& /@ MINPAR,
                                     Global`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "inputPars.hpp.in"}],
@@ -535,7 +536,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Join[GetMassEigenstate[#]& /@ massMatrices,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
-           Print["Creating highScaleConstraint.{hpp,cpp} ..."];
+           Print["Creating class for high-scale constraint ..."];
            WriteConstraintClass[SARAH`ConditionGUTscale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundaryHighScale /. susyBreakingParameterReplacementRules,
                                 Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
@@ -547,7 +548,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_highScaleConstraint.cpp"}]}}
                                ];
 
-           Print["Creating susyScaleConstraint.{hpp,cpp} ..."];
+           Print["Creating class for susy-scale constraint ..."];
            WriteConstraintClass[SARAH`RenormalizationScale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundarySUSYScale /. susyBreakingParameterReplacementRules,
                                 SARAH`RenormalizationScaleFirstGuess /. susyBreakingParameterReplacementRules,
@@ -559,7 +560,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyScaleConstraint.cpp"}]}}
                                ];
 
-           Print["Creating lowScaleConstraint.{hpp,cpp} ..."];
+           Print["Creating class for low-scale constraint ..."];
            WriteConstraintClass[Global`BoundaryLowScale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
                                 Global`MZ,
@@ -575,7 +576,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Global`InitialGuess = {};
              ];
 
-           Print["Creating initialGuesser.{hpp,cpp} ..."];
+           Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                     Join[SARAH`BoundaryLowScaleInput, Global`InitialGuess] /. susyBreakingParameterReplacementRules,
                                     Model`Name,
@@ -603,7 +604,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[lowPrecision]}],
                eigenstates];
 
-           Print["Creating model.{hpp,cpp} ..."];
+           Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations, Model`Name,
                            ParametersToSolveTadpoles /. susyBreakingParameterReplacementRules,
                            nPointFunctions, phases,
@@ -621,7 +622,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.cpp"}]}},
                            diagonalizationPrecision];
 
-           Print["Writing user example run.{hpp,cpp} ..."];
+           Print["Creating user example spectrum generator program ..."];
            WriteUserExample[Model`Name, {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                                           FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> Model`Name <> ".cpp"}]}}];
           ];
