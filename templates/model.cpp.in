@@ -122,8 +122,9 @@ int @ModelName@::solve_ewsb(unsigned loop_order)
 {
    const unsigned old_loop_order = ewsb_loop_order;
    set_ewsb_loop_order(loop_order);
-   solve_ewsb();
+   const int error_code = solve_ewsb();
    set_ewsb_loop_order(old_loop_order);
+   return error_code;
 }
 
 void @ModelName@::ewsb_initial_guess(double* x_init)
