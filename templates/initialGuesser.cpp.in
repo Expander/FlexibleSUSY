@@ -2,7 +2,15 @@
 #include "@ModelName@_initialGuesser.hpp"
 #include "@ModelName@_highScaleConstraint.hpp"
 #include "@ModelName@_model.hpp"
+#include "lowe.h"
+#include "ew_input.hpp"
+#include "wrappers.hpp"
+
 #include <cassert>
+
+#define INPUTPARAMETER(p) input_pars.p
+#define MODELPARAMETER(p) model->get_##p()
+#define SM(p) Electroweak_constants::p
 
 @ModelName@_initial_guesser::@ModelName@_initial_guesser(@ModelName@* model_, const @ModelName@_input_parameters& input_pars_)
    : Initial_guesser<Two_scale>()
@@ -25,14 +33,42 @@ void @ModelName@_initial_guesser::guess()
    static const @ModelName@ empty;
    *model = empty;
 
-   // guess susy parameters
-   @ModelName@_susy_parameters susy_pars;
-   susy_pars.setLoops(2);
+   guess_susy_parameters();
+   guess_soft_parameters();
+}
 
-   // assign susy parameters at high scale
-   susy_pars.runto(@highScaleGuess@);
-   static_cast<@ModelName@_susy_parameters*>(model)->operator=(susy_pars);
-   model->setMu(@highScaleGuess@);
+void @ModelName@_initial_guesser::guess_susy_parameters()
+{
+   QedQcd leAtMt;
+   const double sinth2 = Electroweak_constants::sinthWsq;
+   const double mtpole = Electroweak_constants::PMTOP;
+
+   // guess gauge couplings at mt
+   const DoubleVector a(leAtMt.getGaugeMu(mtpole, sinth2));
+
+   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * a(1)));
+   model->set_@leftCoupling@(sqrt(4.0 * M_PI * a(2)));
+   model->set_@strongCoupling@(sqrt(4.0 * M_PI * a(3)));
+   model->setMu(mtpole);
+   model->setLoops(2);
+
+   DoubleMatrix topDRbar(3,3), bottomDRbar(3,3),  electronDRbar(3,3);
+   topDRbar(1,1)      = Electroweak_constants::MUP;
+   topDRbar(2,2)      = Electroweak_constants::MCHARM;
+   topDRbar(3,3)      = Electroweak_constants::MTOP;
+   bottomDRbar(1,1)   = Electroweak_constants::MDOWN;
+   bottomDRbar(2,2)   = Electroweak_constants::MSTRANGE;
+   bottomDRbar(3,3)   = Electroweak_constants::MBOTTOM;
+   electronDRbar(1,1) = Electroweak_constants::MELECTRON;
+   electronDRbar(2,2) = Electroweak_constants::MMUON;
+   electronDRbar(3,3) = Electroweak_constants::MTAU;
+
+@setDRbarYukawaCouplings@
+}
+
+void @ModelName@_initial_guesser::guess_soft_parameters()
+{
+   model->run_to(@highScaleGuess@);
 
    // apply high-scale constraint
    @ModelName@_high_scale_constraint high_constraint(input_pars);

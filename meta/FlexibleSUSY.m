@@ -141,11 +141,14 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
           ];
 
 WriteInitialGuesserClass[highScaleFirstGuess_, modelName_String, files_List] :=
-   Module[{highScaleGuess},
+   Module[{highScaleGuess, setDRbarYukawaCouplings},
           highScaleGuess = CConversion`RValueToCFormString[highScaleFirstGuess];
+          setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
                  { "@ModelName@"            -> modelName,
-                   "@highScaleGuess@"       -> highScaleGuess
+                   "@highScaleGuess@"       -> highScaleGuess,
+                   "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
+                   Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
 

@@ -18,6 +18,9 @@ private:
    @ModelName@_input_parameters input_pars;
    double low_scale_guess;
    double high_scale_guess;
+
+   void guess_susy_parameters();
+   void guess_soft_parameters();
 };
 
 #endif
