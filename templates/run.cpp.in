@@ -32,7 +32,6 @@ int main()
    downward_constraints.push_back(&low_scale_input);
 
    @ModelName@ model;
-   model.setMu(100.);
 
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
    @ModelName@_initial_guesser initial_guesser(&model, input);
