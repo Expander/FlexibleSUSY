@@ -34,7 +34,7 @@ int main()
    @ModelName@ model;
    model.setMu(100.);
 
-   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-7);
+   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
    @ModelName@_initial_guesser initial_guesser(&model, input);
    Two_scale_increasing_precision precision(10.0, 1.0e-5);
 
