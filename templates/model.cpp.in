@@ -118,6 +118,14 @@ int @ModelName@::solve_ewsb()
    return status;
 }
 
+int @ModelName@::solve_ewsb(unsigned loop_order)
+{
+   const unsigned old_loop_order = ewsb_loop_order;
+   set_ewsb_loop_order(loop_order);
+   solve_ewsb();
+   set_ewsb_loop_order(old_loop_order);
+}
+
 void @ModelName@::ewsb_initial_guess(double* x_init)
 {
 @initialGuess@

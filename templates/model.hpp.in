@@ -42,6 +42,7 @@ public:
    double get_ewsb_iteration_precision() const;
    const @ModelName@_physical& get_physical() const;
    int solve_ewsb();
+   int solve_ewsb(unsigned);
    int solve_ewsb_with(const gsl_multiroot_fsolver_type*, const double*);
    void ewsb_initial_guess(double*);
    void print_state(std::size_t, gsl_multiroot_fsolver*) const;
