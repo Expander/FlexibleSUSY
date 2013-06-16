@@ -140,12 +140,14 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
                  } ];
           ];
 
-WriteInitialGuesserClass[highScaleFirstGuess_, modelName_String, files_List] :=
+WriteInitialGuesserClass[highScaleFirstGuess_, settings_List, modelName_String, files_List] :=
    Module[{highScaleGuess, setDRbarYukawaCouplings},
           highScaleGuess = CConversion`RValueToCFormString[highScaleFirstGuess];
+          applyConstraint = Constraint`ApplyConstraints[settings];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
                  { "@ModelName@"            -> modelName,
+                   "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@highScaleGuess@"       -> highScaleGuess,
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
                    Sequence @@ GeneralReplacementRules[]
@@ -563,6 +565,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating initialGuesser.{hpp,cpp} ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
+                                    SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
                                     Model`Name,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initialGuesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initialGuesser.hpp"}]},
