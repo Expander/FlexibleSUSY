@@ -27,6 +27,10 @@ MAKEFILE_TMPL=$BASEDIR/config/Makefile.in
 FSCONFIG=$BASEDIR/flexiblesusy-config
 FSCONFIG_TMPL=$BASEDIR/config/flexiblesusy-config.in
 
+# target config header
+CONFIGHDR=$BASEDIR/config/config.h
+CONFIGHDR_TMPL=$BASEDIR/config/config.h.in
+
 # options
 boost_lib_dir=""
 boost_inc_dir=""
@@ -778,5 +782,9 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
     < $FSCONFIG_TMPL > $FSCONFIG
+
+sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    < $CONFIGHDR_TMPL > $CONFIGHDR
 
 chmod a+x $FSCONFIG
