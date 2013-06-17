@@ -59,6 +59,11 @@ void @ModelName@::set_number_of_ewsb_iterations(std::size_t iterations)
    number_of_ewsb_iterations = iterations;
 }
 
+void @ModelName@::set_number_of_mass_iterations(std::size_t iterations)
+{
+   number_of_mass_iterations = iterations;
+}
+
 void @ModelName@::set_ewsb_loop_order(unsigned loop_order)
 {
    ewsb_loop_order = loop_order;
@@ -67,6 +72,11 @@ void @ModelName@::set_ewsb_loop_order(unsigned loop_order)
 void @ModelName@::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
+}
+
+void @ModelName@::set_mass_iteration_precision(double precision)
+{
+   mass_iteration_precision = precision;
 }
 
 unsigned @ModelName@::get_ewsb_loop_order() const
