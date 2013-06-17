@@ -5462,7 +5462,7 @@ void MssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun,
 
 
 void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
-                                 sinthDRbarMS, int accuracy, double /* mt */) {
+                                 sinthDRbarMS, int accuracy, double mt) {
   int family; for (family = 1; family <= 2; family++) {
     
     DoubleMatrix mSbotSquared(2, 2);
@@ -5495,8 +5495,8 @@ void MssmSoftsusy::doDownSquarks(double mb, double pizztMS, double
     double pLight = minimum(forLoops.md(1, 3), forLoops.md(2, 3));
     double pHeavy = maximum(forLoops.md(1, 3), forLoops.md(2, 3));
 
-    addSbotCorrection(pLight, mSbotSquared, mb);  
-    addSbotCorrection(pHeavy, mSbotSquared2, mb);      
+    addSbotCorrection(pLight, mSbotSquared, mt);
+    addSbotCorrection(pHeavy, mSbotSquared2, mt);
   }
     
   double theta;
