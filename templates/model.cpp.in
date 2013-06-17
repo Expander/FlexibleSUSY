@@ -258,13 +258,11 @@ void @ModelName@::calculate_1loop_masses()
 void @ModelName@::calculate_spectrum()
 {
    // tree-level parameters
-   set_ewsb_loop_order(0);
-   solve_ewsb();
+   solve_ewsb(0);
    calculate_DRbar_parameters();
 
    // one-loop level parameters
-   set_ewsb_loop_order(1);
-   solve_ewsb();
+   solve_ewsb(1);
    calculate_1loop_masses();
 }
 
