@@ -50,7 +50,7 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
 Do1DimScalar[particleName_String, selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
     "const Complex self_energy = " <> selfEnergyFunction <> "(p)\n" <>
-    "PHYSICAL(" <> particleName <> ") = zeroSqrt(" <> particleName <>
+    "PHYSICAL(" <> particleName <> ") = ZeroSqrt(" <> particleName <>
     " - self_energy.real()" <> If[tadpole == "", "", " + " <> tadpole] <> ");\n";
 
 Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
@@ -65,7 +65,7 @@ Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
 Do1DimVector[particleName_String, selfEnergyFunction_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
-    "PHYSICAL(" <> particleName <> ") = zeroSqrt(Sqr(" <> particleName <>
+    "PHYSICAL(" <> particleName <> ") = ZeroSqrt(Sqr(" <> particleName <>
     ") - self_energy);\n";
 
 
@@ -85,7 +85,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "ComplexMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = zeroSqrt(" <> particleName <> "(i1) * " <> 
+                                  IndentText["const double p = ZeroSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = " <>
                                              selfEnergyFunction <> "(p,i1,i2);\n"] <>
@@ -110,7 +110,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                 ];
               result = result <>
                        "PHYSICAL(" <> particleName <> ") = PHYSICAL(" <>
-                       particleName <> ").apply(zeroSqrt);\n";
+                       particleName <> ").apply(ZeroSqrt);\n";
               ,
               result = Do1DimScalar[particleName, selfEnergyFunction, particleName, "tadpoles"];
              ];
@@ -136,7 +136,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        "ComplexMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = zeroSqrt(" <> particleName <> "(i1) * " <> 
+                                  IndentText["const double p = ZeroSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
                                              "self_energy_1(i1,i2) = " <>
                                              selfEnergyFunctionS <> "(p,i1,i2);\n" <>
@@ -231,7 +231,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> "), " <>
                             Vtemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
                             "Diagonalise(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n" <>
-                            "PHYSICAL(" <> particleName <> "(es)) = zeroSqrt(eigen_values(es));\n" <>
+                            "PHYSICAL(" <> particleName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
@@ -241,7 +241,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
                             "DiagonalizeUnsorted(M_1loop, " <> Utemp <> ", eigen_values);\n" <>
-                            "PHYSICAL(" <> particleName <> "(es)) = zeroSqrt(eigen_values(es));\n" <>
+                            "PHYSICAL(" <> particleName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1)\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
              ];
@@ -519,7 +519,7 @@ CreateRunningDRbarMassFunction[particle_] :=
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell) const\n{\n";
               body = "const double p = m_onshell;\n" <>
               "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
-              "return zeroSqrt(Sqr(m_onshell) + self_energy);\n";
+              "return ZeroSqrt(Sqr(m_onshell) + self_energy);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];

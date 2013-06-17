@@ -427,7 +427,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
-              body = body <> ev <> " = " <> ev <> ".apply(zeroSqrt);\n";
+              body = body <> ev <> " = " <> ev <> ".apply(ZeroSqrt);\n";
              ];
            Return[result <> IndentText[body] <> "}\n"];
           ];

@@ -87,4 +87,6 @@ DoubleMatrix unitMatrix()
    return u;
 }
 
+double ZeroSqrt(double);
+
 #endif

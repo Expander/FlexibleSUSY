@@ -413,3 +413,8 @@ double Sqrt(double a)
 {
    return std::sqrt(a);
 }
+
+double ZeroSqrt(double x)
+{
+   return (x > 0.0 ? std::sqrt(x) : 0.0);
+}
