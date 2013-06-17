@@ -1,5 +1,5 @@
 << models/fmssm/fmssm_lattice_defs.m
-<< src/writeNRGE.m
+<< meta/writeNRGE.m
 
 lowert    = t  	 /. x -> w;
 lowerg1   = g1 	 /. x -> w;

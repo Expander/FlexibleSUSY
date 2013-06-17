@@ -1,4 +1,4 @@
-<< src/Format.m
+<< meta/Format.m
 
 fortranAssign[lhs_, rhs_, arrays_] := ToString[
   FortranAssign[lhs, rhs /. { Im -> aimag },

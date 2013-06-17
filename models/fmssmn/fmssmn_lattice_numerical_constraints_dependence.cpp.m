@@ -1,5 +1,5 @@
 << models/fmssmn/fmssmn_lattice_defs.m
-<< src/writeNRGE.m
+<< meta/writeNRGE.m
 
 gY := Sqrt[3/5] g1;
 
