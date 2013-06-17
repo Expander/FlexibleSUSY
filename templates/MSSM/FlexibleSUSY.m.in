@@ -50,6 +50,7 @@ BoundaryLowScaleInput={
 };
 
 InitialGuess = {
-    {\[Mu]   , MZDRbar},
-    {B[\[Mu]], MZDRbar^2}
+   Sequence @@ BoundaryLowScaleInput,
+   {\[Mu]   , MZDRbar},
+   {B[\[Mu]], MZDRbar^2}
 };

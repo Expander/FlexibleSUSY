@@ -597,7 +597,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                    Join[SARAH`BoundaryLowScaleInput, Global`InitialGuess] /. susyBreakingParameterReplacementRules,
+                                    Global`InitialGuess /. susyBreakingParameterReplacementRules,
                                     Model`Name,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initialGuesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initialGuesser.hpp"}]},
