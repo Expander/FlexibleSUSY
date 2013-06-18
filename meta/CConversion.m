@@ -262,8 +262,8 @@ RValueToCFormString[expr_] :=
                     SARAH`Mass2[a_]           :> SARAH`Mass2[SARAH`Mass[a]] /.
                     SARAH`Mass[a_?NumberQ]    :> a /.
                     SARAH`Mass[bar[a_[idx_]]] :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
-                    SARAH`Mass[a_[idx_]]      :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
                     SARAH`Mass[bar[a_]]       :> ToValidCSymbol[SARAH`Mass[a]] /.
+                    SARAH`Mass[a_[idx_]]      :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
                     SARAH`Mass[a_]            :> ToValidCSymbol[SARAH`Mass[a]] /.
                     Susyno`LieGroups`conj[a_] a_ :> AbsSqr[a] /.
                     SARAH`Conj[a_] a_            :> AbsSqr[a];
