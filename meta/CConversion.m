@@ -304,22 +304,22 @@ CreateUniqueCVariable[] :=
            Return[variable];
           ];
 
-ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_:""] :=
-    Module[{result = "", tmpSum = "", idxStr, startStr, stopStr},
+ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
+    Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
            startStr = ToValidCSymbolString[start];
            stopStr  = ToValidCSymbolString[stop];
            tmpSum   = CreateUniqueCVariable[];
-           result = type <> " " <> tmpSum <> initialValue <> ";\n";
-           result = result <> "for (unsigned " <> idxStr <> " = " <>
-                    startStr <> "; " <> idxStr <> " <= " <> stopStr
-                    <> "; ++" <> idxStr <> ") {\n" <>
+           result = type <> " " <> tmpSum <> initialValue <> ";\n" <>
+                    "for (unsigned " <> idxStr <> " = " <>
+                    startStr <> "; " <> idxStr <> " <= " <> stopStr <>
+                    "; ++" <> idxStr <> ") {\n" <>
                     IndentText[ExpandSums[expr,tmpSum,type,initialValue]] <> "}\n" <>
                     variable <> " += " <> tmpSum <> ";\n";
            Return[result];
           ];
 
-ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_:""] :=
+ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{summands},
            summands = List @@ expr;
            StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
@@ -340,7 +340,7 @@ StripThetaStep[expr_] :=
           ];
 
 ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_String:"Complex", initialValue_:""] :=
+           type_String:"Complex", initialValue_String:""] :=
     Module[{strippedExpr, condition, result, expandedExpr},
            expandedExpr = Expand[expr];
            If[expandedExpr === expr,
@@ -354,7 +354,7 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times, variable_String, type_String:"Complex", initialValue_:""] :=
+ExpandSums[expr_Times, variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
            sums = Select[factors, (!FreeQ[#,sum[__]])&];
@@ -382,7 +382,7 @@ ExpandSums[expr_Times, variable_String, type_String:"Complex", initialValue_:""]
            Return[result];
           ];
 
-ExpandSums[expr_?((!FreeQ[#,SARAH`ThetaStep])&), variable_String, type_String:"Complex", initialValue_:""] :=
+ExpandSums[expr_?((!FreeQ[#,SARAH`ThetaStep])&), variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{strippedExpr, i, condition = "", result},
            {strippedExpr, condition} = StripThetaStep[expr];
            result = "if (" <> condition <> ") {\n" <>
@@ -392,7 +392,7 @@ ExpandSums[expr_?((!FreeQ[#,SARAH`ThetaStep])&), variable_String, type_String:"C
            Return[result];
           ];
 
-ExpandSums[expr_, variable_String, type_String:"Complex", initialValue_:""] :=
+ExpandSums[expr_, variable_String, type_String:"Complex", initialValue_String:""] :=
     variable <> " += " <> RValueToCFormString[expr] <> ";\n";
 
 End[];
