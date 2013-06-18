@@ -64,7 +64,7 @@ IndentText[text_String, spaces_Integer:3] :=
            If[text == "", Return[text];];
            For[i = 0, i < spaces, i++, whiteSpace = whiteSpace <> " "];
            Return[StringReplace[whiteSpace <> text,
-                                { x:RegularExpression["\n\n+"] :> x <> whiteSpace,
+                                { x:("\n" ~~ ("\n"..)) :> x <> whiteSpace,
                                   "\n" ~~ EndOfString -> "\n",
                                   "\n" -> "\n" <> whiteSpace } ]];
           ];
