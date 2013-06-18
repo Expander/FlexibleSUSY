@@ -9,7 +9,7 @@ PrintParameter[Null, streamName_String] := "";
 
 PrintParameter[parameter_, streamName_String] :=
     Module[{parameterName},
-           parameterName = ToValidCSymbolString[parameter /. a_[i1,i2] :> a];
+           parameterName = CConversion`ToValidCSymbolString[parameter /. a_[i1,i2] :> a];
            Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
                   parameterName <> " << '\\n';\n"];
           ];

@@ -81,7 +81,7 @@ CreateInlineSetter[parameter_String, type_] :=
     CreateInlineSetter[parameter, CreateSetterInputType[type]];
 
 (* Creates a C++ inline getter *)
-CreateInlineGetter[parameter_, type_String] :=
+CreateInlineGetter[parameter_String, type_String] :=
     type <> " get_" <> parameter <>
     "() const { return " <> parameter <> "; }\n";
 
@@ -248,18 +248,34 @@ ToValidCSymbolString[symbol_] :=
  *)
 RValueToCFormString[expr_] :=
     Module[{times, result},
+           result = expr //. {
+                    SARAH`A0[b_]             :> SARAH`A0[SARAH`Mass[b]]        /; Head[b] =!= SARAH`Mass,
+                    SARAH`B0[a__ , b_, c___] :> SARAH`B0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`B1[a__ , b_, c___] :> SARAH`B1[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`B00[a__, b_, c___] :> SARAH`B00[a, SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`B22[a__, b_, c___] :> SARAH`B22[a, SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`F0[a__ , b_, c___] :> SARAH`F0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`G0[a__ , b_, c___] :> SARAH`G0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
+                    SARAH`H0[a__ , b_, c___] :> SARAH`H0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass };
+           result = result /.
+                    SARAH`Mass2[a_?NumberQ]   :> Global`Sqr[a] /.
+                    SARAH`Mass2[a_]           :> SARAH`Mass2[SARAH`Mass[a]] /.
+                    SARAH`Mass[a_?NumberQ]    :> a /.
+                    SARAH`Mass[bar[a_[idx_]]] :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
+                    SARAH`Mass[a_[idx_]]      :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
+                    SARAH`Mass[bar[a_]]       :> ToValidCSymbol[SARAH`Mass[a]] /.
+                    SARAH`Mass[a_]            :> ToValidCSymbol[SARAH`Mass[a]] /.
+                    Susyno`LieGroups`conj[a_] a_ :> AbsSqr[a] /.
+                    SARAH`Conj[a_] a_            :> AbsSqr[a];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
-                          Hold[#] &[expr /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
+                          Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
                                               SARAH`trace[a__]  :> SARAH`trace[times[a]],
                                               a_[SARAH`i1,SARAH`i2] :> a,
                                               SARAH`Delta[a_,a_] -> 1,
                                               Power[a_,2]       :> Global`Sqr[a],
                                               Power[E,a_]       :> exp[a]
                                             }]
-                          /. times -> Times /. Susyno`LieGroups`conj -> SARAH`Conj /.
-                          SARAH`Conj[a_] a_ :> AbsSqr[a] /.
-                          SARAH`Mass[bar[a_]] :> a /.
-                          SARAH`Mass[a_] :> a
+                          /. times -> Times /. Susyno`LieGroups`conj -> SARAH`Conj
                          ];
            ToString[HoldForm @@ result]
           ];

@@ -14,7 +14,7 @@ CountNumberOfMasses[particle_] :=
 CalcDifference[particle_, offset_Integer, diff_String] :=
     Module[{result, body, dim, dimStart, esStr, comma},
            dim = TreeMasses`GetDimension[particle];
-           esStr = ToValidCSymbolString[particle];
+           esStr = ToValidCSymbolString[SARAH`Mass[particle]];
            If[dim == 1,
               comma = "OLD1(" <> esStr <> "),NEW1(" <> esStr <> ")";
               body = diff <> "(" <> ToString[1 + offset] <> ") = " <>
@@ -34,7 +34,8 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
 
 CreateCompareFunction[particles_List] :=
     Module[{result, numberOfMasses, i, offset = 0, massiveSusyParticles},
-           massiveSusyParticles = Select[particles, (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
+           massiveSusyParticles = Select[particles /. SARAH`Mass -> Identity,
+                                         (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
            numberOfMasses = CountNumberOfMasses[massiveSusyParticles];
            result = "DoubleVector diff(" <> ToString[numberOfMasses] <> ");\n\n";
            For[i = 1, i <= Length[massiveSusyParticles], i++,

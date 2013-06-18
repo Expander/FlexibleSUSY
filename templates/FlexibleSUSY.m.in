@@ -16,7 +16,7 @@ DefaultParameterPoint = {
 ParametersToSolveTadpoles = { B[\[Mu]], \[Mu] };
 
 RenormalizationScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
-RenormalizationScale = Sqrt[Su[1]*Su[6]];
+RenormalizationScale = Sqrt[Mass[Su[1]]*Mass[Su[6]]];
 
 ConditionGUTscale = g1 == g2;
 

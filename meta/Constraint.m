@@ -79,7 +79,7 @@ ApplyConstraints[settings_List] :=
 RemoveProtectedHeads[expr_] :=
     expr /. SARAH`SM[__] -> SARAH`SM[];
 
-DefineLocalConstRef[parameter_Symbol, macro_String, prefix_String:""] :=
+DefineLocalConstRef[parameter_, macro_String, prefix_String:""] :=
     "const auto& " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
     macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
 
@@ -89,7 +89,10 @@ CreateLocalConstRefs[expr_] :=
            compactExpr = RemoveProtectedHeads[expr];
            symbols = { Cases[compactExpr, _Symbol, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity] };
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, SARAH`Mass[a_]     /; MemberQ[allOutputParameters,SARAH`Mass[a]], Infinity],
+                       Cases[compactExpr, SARAH`Mass[a_[__]] /; MemberQ[allOutputParameters,SARAH`Mass[a]] :> SARAH`Mass[a], Infinity]
+                     };
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];

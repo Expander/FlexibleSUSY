@@ -50,8 +50,9 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                (* some dynkin indices are not defined in SARAH *)
                If[!NumericQ[dynkin], dynkin = 0];
                If[dim == 1,
-                  result -= prefactor dynkin Log[particle/Global`currentScale];,
-                  result -= Sum[prefactor dynkin Log[particle[i]/Global`currentScale], {i,dimStart,dim}];
+                  result -= prefactor dynkin Log[SARAH`Mass[particle]/Global`currentScale];,
+                  result -= Sum[prefactor dynkin Log[SARAH`Mass[particle][i]/Global`currentScale],
+                                {i,dimStart,dim}];
                  ];
               ];
            Simplify[coupling + (result + DRbarConversion[group]) CConversion`oneOver16PiSqr (coupling)^3]
@@ -84,13 +85,13 @@ SetDRbarGaugeCouplings[] :=
            result = Constraint`CreateLocalConstRefs[drBarCouplingG3 + drBarCouplingEm] <> "\n";
            (* calculate g3 *)
            result = result <> "const double " <> drBarCouplingG3CVariable <> " = " <>
-                    RValueToCFormString[drBarCouplingG3] <> ";\n\n";
+                    CConversion`RValueToCFormString[drBarCouplingG3] <> ";\n\n";
            (* calculate e *)
            result = result <> "const double " <> drBarCouplingEmCVariable <> " = " <>
-                    RValueToCFormString[drBarCouplingEm] <> ";\n\n";
+                    CConversion`RValueToCFormString[drBarCouplingEm] <> ";\n\n";
            (* calculate sin(thetaW) *)
            result = result <> "const double " <> drBarCouplingSiCVariable <> " = " <>
-                    RValueToCFormString[drBarCouplingSi] <> ";\n\n";
+                    CConversion`RValueToCFormString[drBarCouplingSi] <> ";\n\n";
            drBarCouplingG1CVariable = drBarCouplingEmCVariable <> " * " <>
                                       RValueToCFormString[1/Parameters`GetGUTNormalization[couplingG1]] <>
                                       " / cos(asin(" <> drBarCouplingSiCVariable <> "))";
