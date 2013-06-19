@@ -235,20 +235,17 @@ void DiagonalizeUnsorted(const DoubleMatrix& m, ComplexMatrix& u,
 void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u , DoubleVector& eigenvalues)
 {
    double theta;
-   eigenvalues = m.sym2by2(theta);
+   eigenvalues = m.sym2by2(theta).apply(fabs);
    u = rot2d(theta);
-   eigenvalues = eigenvalues.apply(fabs);
 }
 
 void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenvalues)
 {
    double theta;
-   eigenvalues = m.sym2by2(theta);
+   eigenvalues = m.sym2by2(theta).apply(fabs);
 
    const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
    u = a * rot2d(theta);
-
-   eigenvalues = eigenvalues.apply(fabs);
 }
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
