@@ -1107,6 +1107,7 @@ void compare_tadpoles(MssmSoftsusy s, MSSM m)
 void compare_loop_masses(MssmSoftsusy s, MSSM m)
 {
    ensure_tree_level_ewsb(m);
+   ensure_tree_level_ewsb(s);
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
    m.calculate_1loop_masses();
@@ -1142,15 +1143,22 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    TEST_EQUALITY(0.0, m.get_physical().MassVG);
    TEST_EQUALITY(0.0, m.get_physical().MassVP);
 
-   ensure_one_loop_ewsb(m);
-   m.calculate_1loop_masses();
-   ensure_one_loop_ewsb(s);
-   s.physical(1);
-
+   // ensure that the important scalar potential parameters are equal
+   // before solvin the 1-loop EWSB
    TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
    TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 1.0e-10);
    TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
+
+   ensure_one_loop_ewsb(m);
+   ensure_one_loop_ewsb(s);
+   // check that the important scalar potential parameters are equal
+   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
+   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
+   TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 0.1);
+   TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
+   m.calculate_1loop_masses();
+   s.physical(1);
 
    DoubleVector hh(m.get_physical().Masshh);
    if (hh(1) <= hh(2)) {
