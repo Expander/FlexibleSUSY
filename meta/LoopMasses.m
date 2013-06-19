@@ -435,7 +435,7 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            body = DoDiagonalization[particle, precision, tadpole];
            result = "void CLASSNAME::calculate_" <> ToValidCSymbolString[SARAH`Mass[particle]] <>
-                    "_onshell_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
+                    "_pole_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
           ];
 
@@ -458,7 +458,7 @@ CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
           ];
 
 CreateLoopMassPrototype[particle_Symbol] :=
-    "void calculate_" <> ToValidCSymbolString[SARAH`Mass[particle]] <> "_onshell_1loop();\n";
+    "void calculate_" <> ToValidCSymbolString[SARAH`Mass[particle]] <> "_pole_1loop();\n";
 
 CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
@@ -468,7 +468,7 @@ CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
           ];
 
 CallLoopMassFunction[particle_Symbol] :=
-    "calculate_" <> ToValidCSymbolString[SARAH`Mass[particle]] <> "_onshell_1loop();\n";
+    "calculate_" <> ToValidCSymbolString[SARAH`Mass[particle]] <> "_pole_1loop();\n";
 
 CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
@@ -507,12 +507,12 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell, int index) const\n{\n";
-              body = "const double p = m_onshell;\n" <>
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole, int index) const\n{\n";
+              body = "const double p = m_pole;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, index, index));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, index, index));\n" <>
               "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, index, index));\n" <>
-              "return m_onshell + self_energy_1 + m_onshell * (self_energy_PL + self_energy_PR);\n";
+              "return m_pole + self_energy_1 + m_pole * (self_energy_PL + self_energy_PR);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
@@ -525,10 +525,10 @@ CreateRunningDRbarMassFunction[particle_] :=
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double) const \n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell) const\n{\n";
-              body = "const double p = m_onshell;\n" <>
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole) const\n{\n";
+              body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-              "return ZeroSqrt(Sqr(m_onshell) + self_energy);\n";
+              "return ZeroSqrt(Sqr(m_pole) + self_energy);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
