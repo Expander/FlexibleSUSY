@@ -34,8 +34,8 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
                   particleIndex = ToString[tadpoles[[i,2]]];
                   vev           = ToValidCSymbolString[tadpoles[[i,3]]];
                   result = result <>
-                           matrixName <> "(" <> particleIndex <> "," <> particleIndex <> ") = " <>
-                           CreateTadpoleFunctionName[particle] <> "(" <> particleIndex <> ").imag() / " <>
+                           matrixName <> "(" <> particleIndex <> "," <> particleIndex <> ") = Re(" <>
+                           CreateTadpoleFunctionName[particle] <> "(" <> particleIndex <> ")) / " <>
                            vev <> ";\n";
                  ];
               ,
@@ -51,20 +51,20 @@ Do1DimScalar[particleName_String, selfEnergyFunction_String, momentum_String, ta
     "const double p = " <> momentum <> ";\n" <>
     "const Complex self_energy = " <> selfEnergyFunction <> "(p)\n" <>
     "PHYSICAL(" <> particleName <> ") = ZeroSqrt(" <> particleName <>
-    " - self_energy.real()" <> If[tadpole == "", "", " + " <> tadpole] <> ");\n";
+    " - Re(self_energy)" <> If[tadpole == "", "", " + " <> tadpole] <> ");\n";
 
 Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const double self_energy_1  = " <> selfEnergyFunctionS  <> "(p).real();\n" <>
-    "const double self_energy_PL = " <> selfEnergyFunctionPL <> "(p).real();\n" <>
-    "const double self_energy_PR = " <> selfEnergyFunctionPR <> "(p).real();\n" <>
+    "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
+    "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
+    "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
     "PHYSICAL(" <> particleName <> ") = " <> particleName <>
     " - self_energy_1 - " <> particleName <> " * (self_energy_PL + self_energy_PR);\n";
 
 Do1DimVector[particleName_String, selfEnergyFunction_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
+    "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     "PHYSICAL(" <> particleName <> ") = ZeroSqrt(Sqr(" <> particleName <>
     ") - self_energy);\n";
 
@@ -94,7 +94,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                                  ] <>
                        "}\n" <>
                        "const DoubleMatrix M_1loop(" <> massMatrixStr <>
-                       "() - self_energy.real()" <>
+                       "() - Re(self_energy)" <>
                        If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n";
               If[Head[mixingMatrix] === List,
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
@@ -152,11 +152,11 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                                  ] <>
                        "}\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
-                       "const DoubleMatrix delta_M(- self_energy_PR.real() * M_tree " <>
-                       "- M_tree * self_energy_PL.real() - self_energy_1.real());\n";
+                       "const DoubleMatrix delta_M(- Re(self_energy_PR) * M_tree " <>
+                       "- M_tree * Re(self_energy_PL) - Re(self_energy_1));\n";
               If[IsMajoranaFermion[particle],
                  result = result <>
-                          "const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n";
+                          "const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + Transpose(delta_M)));\n";
                  ,
                  result = result <>
                           "const DoubleMatrix M_1loop(M_tree + delta_M);\n";
@@ -267,7 +267,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const DoubleMatrix M_1loop(M_tree - self_energy.real()" <>
+                                  "const DoubleMatrix M_1loop(M_tree - Re(self_energy)" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
                                   "DoubleVector eigen_values(" <> dimStr <> ");\n" <>
                                   diagSnippet
@@ -315,12 +315,12 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const DoubleMatrix delta_M(- self_energy_PR.real() * M_tree " <>
-                                  "- M_tree * self_energy_PL.real() - self_energy_1.real());\n"
+                                  "const DoubleMatrix delta_M(- Re(self_energy_PR) * M_tree " <>
+                                  "- M_tree * Re(self_energy_PL) - Re(self_energy_1));\n"
                                  ];
               If[IsMajoranaFermion[particle],
                  result = result <>
-                          IndentText["const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n"];
+                          IndentText["const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + Transpose(delta_M)));\n"];
                  ,
                  result = result <>
                           IndentText["const DoubleMatrix M_1loop(M_tree + delta_M);\n"];
@@ -508,9 +508,9 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
               ,
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell, int index) const\n{\n";
               body = "const double p = m_onshell;\n" <>
-              "const double self_energy_1  = " <> selfEnergyFunctionS  <> "(p, index, index).real();\n" <>
-              "const double self_energy_PL = " <> selfEnergyFunctionPL <> "(p, index, index).real();\n" <>
-              "const double self_energy_PR = " <> selfEnergyFunctionPR <> "(p, index, index).real();\n" <>
+              "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, index, index));\n" <>
+              "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, index, index));\n" <>
+              "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, index, index));\n" <>
               "return m_onshell + self_energy_1 + m_onshell * (self_energy_PL + self_energy_PR);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
@@ -526,7 +526,7 @@ CreateRunningDRbarMassFunction[particle_] :=
               ,
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_onshell) const\n{\n";
               body = "const double p = m_onshell;\n" <>
-              "const double self_energy = " <> selfEnergyFunction <> "(p).real();\n" <>
+              "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "return ZeroSqrt(Sqr(m_onshell) + self_energy);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];

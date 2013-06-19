@@ -605,8 +605,8 @@ FillArrayWithOneLoopTadpoles[tadpoles_List, arrayName_String:"tadpole"] :=
                functionName = CreateTadpoleFunctionName[field];
                For[d = 1, d <= GetDimension[field], d++; i++,
                    body = body <> arrayName <> "[" <> ToString[i] <> "] -= " <>
-                          "model->" <> functionName <>
-                          "(" <> ToString[d] <> ").real();\n";
+                          "Re(model->" <> functionName <>
+                          "(" <> ToString[d] <> "));\n";
                   ];
               ];
            Return[result <> IndentText[body] <> "}\n"];

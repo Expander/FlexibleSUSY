@@ -109,9 +109,6 @@ ostream & operator <<(ostream &left, const DoubleVector &v) {
 
 istream & operator>>(istream & left, DoubleVector &v) {
   DoubleVector temp(v.displayStart(), v.displayEnd());
-  // what's this for?
-  //char c[70];
-  //cin >> c; 
   for (int i=temp.displayStart(); i<=temp.displayEnd(); ++i) {
     left >> temp(i); 
   }
@@ -267,14 +264,15 @@ double DoubleMatrix::trace() const {
 #endif
   double sum = 0.0;
   for (int i = 1; i<=rows; ++i)
-    sum += this->elmt(i,i);
+    sum += elmt(i,i);
   return sum;
 }
 
 DoubleMatrix DoubleMatrix::transpose() const {
   DoubleMatrix temp(cols,rows);
   for (int i=1; i<=rows; ++i)
-    temp.col(i) = this->row(i);
+     for (int k=1; k<=cols; ++k)
+        temp(k,i) = elmt(i,k);
   return temp;
 }
 
@@ -302,9 +300,8 @@ void DoubleMatrix::associateOrderAbs(DoubleVector &v) {
     throw ii.str();
   }
 #endif
-  int i,j;
-  for (i=v.displayStart(); i<=v.displayEnd(); ++i)
-    for (j=i+1; j<=v.displayEnd(); ++j)
+  for (int i=v.displayStart(); i<=v.displayEnd(); ++i)
+    for (int j=i+1; j<=v.displayEnd(); ++j)
       if (abs(v.display(i)) > abs(v.display(j))) {
 	v.swap(i,j);
 	swapcols(i,j);
@@ -326,9 +323,8 @@ void DoubleMatrix::associateOrderAbs(DoubleMatrix & u,
     throw ii.str();
   }
 #endif
-  int i,j;
-  for (i=w.displayStart(); i<=w.displayEnd(); ++i)
-    for (j=i+1; j<=w.displayEnd(); ++j)
+  for (int i=w.displayStart(); i<=w.displayEnd(); ++i)
+    for (int j=i+1; j<=w.displayEnd(); ++j)
       if (abs(w.display(i)) > abs(w.display(j))) {
 	w.swap(i, j);
 	v.swapcols(i, j);
@@ -403,7 +399,7 @@ DoubleMatrix DoubleMatrix::inverse() const {
   ans.diagonalise(u, v, w);
   
   const double underflow = 1.0e-16;
-  int i; for (i=1; i<=ans.displayRows(); ++i) {
+  for (int i=1; i<=ans.displayRows(); ++i) {
     if (w(i) > underflow) w(i) = 1 / w(i); // Leave zero eigenvalues alone
     else {
       ostringstream ii;
@@ -444,7 +440,7 @@ double DoubleMatrix::diagonalise(DoubleMatrix & u, DoubleMatrix & v,
   // Calculate residue: difference in two matrices, divided by absolute value
   // of largest eigenvalue
   DoubleMatrix temp(w);
-  return this->compare(DoubleMatrix(u * temp * v.transpose())) / w.max();
+  return compare(DoubleMatrix(u * temp * v.transpose())) / w.max();
 }
 
 // For SYMMETRIC MATRICES ONLY!
@@ -473,7 +469,7 @@ double DoubleMatrix::diagonaliseSym(DoubleMatrix & v, DoubleVector & w) const {
   // Calculate residue: difference in two matrices, divided by absolute
   // value of largest eigenvalue
   DoubleMatrix temp(w); 
-  return this->compare(DoubleMatrix(v * temp * v.transpose())) / w.max();
+  return compare(DoubleMatrix(v * temp * v.transpose())) / w.max();
 }
 
 // For SYMMETRIC MATRICES ONLY!
@@ -503,22 +499,22 @@ double DoubleMatrix::diagonaliseSym(ComplexMatrix & v, DoubleVector & w) const {
   // produce POSITIVE neutralino masses, a la Matchev, Pierce and Zhang
   ComplexMatrix m(c, c);
 
-  int i, j; for (i=1; i<=c; ++i) 
+  for (int i=1; i<=c; ++i) 
     if (w(i) < 0.0) {
-      for (j=1; j<=c; ++j) v(i, j) = Complex(0.0, k(i, j));
+      for (int j=1; j<=c; ++j) v(i, j) = Complex(0.0, k(i, j));
       w(i) = - w(i);
     }
     else {
-      for (j=1; j<=c; ++j) v(i, j) = Complex(k(i, j), 0.0);
+      for (int j=1; j<=c; ++j) v(i, j) = Complex(k(i, j), 0.0);
     }
   
   // Calculate residue: difference in two matrices, divided by absolute
   // value of largest eigenvalue
   ComplexMatrix temp(c, c); 
-  for (i=1; i<=c; ++i) temp(i, i) = w(i);
+  for (int i=1; i<=c; ++i) temp(i, i) = w(i);
   //this seems to be a relic
   //cout << v * temp * v.transpose();
-  return this->compare(ComplexMatrix(v.transpose() * temp * v)) / w.max();
+  return compare(ComplexMatrix(v.transpose() * temp * v)) / w.max();
 }
 
 // Special case that's often used: eigenvalues of 2 by 2 symmetric matrix
@@ -622,10 +618,9 @@ DoubleVector DoubleMatrix::asy2by2(double & thetaL, double & thetaR) const {
  */
 
 istream & operator>>(istream & left, DoubleMatrix &m) {
-  int i, j;
   DoubleMatrix x(m.displayRows(), m.displayCols());
-  for (i=1; i<=m.displayRows(); ++i)
-    for (j=1; j<=m.displayCols(); ++j)
+  for (int i=1; i<=m.displayRows(); ++i)
+    for (int j=1; j<=m.displayCols(); ++j)
       left >> x(i, j);
   m = x;  
   return left;
@@ -697,9 +692,11 @@ void positivise(double thetaL, double thetaR, const DoubleVector & diag,
 #endif
   
   ComplexMatrix a(2, 2);
-  int i; for (i=1; i<=2; ++i) if (diag.display(i) < 0.0) 
-    a(i, i) = Complex(0.0, 1.0); 
-  else a(i, i) = Complex(1.0, 0.0);
+  for (int i=1; i<=2; ++i)
+     if (diag.display(i) < 0.0)
+        a(i, i) = Complex(0.0, 1.0);
+     else
+        a(i, i) = Complex(1.0, 0.0);
   
   u = a * rot2d(thetaL);
   v = a * rot2d(thetaR);
@@ -1195,21 +1192,23 @@ Complex ComplexMatrix::trace() const {
 #endif
   Complex sum(0.0);
   for(int i=1; i<=rows; ++i) 
-    sum += this->elmt(i, i);
+    sum += elmt(i, i);
   return sum;
 }
 
 ComplexMatrix ComplexMatrix::transpose() const {
   ComplexMatrix temp(cols,rows);
   for (int i=1; i<=rows; ++i)
-    temp.col(i) = this->row(i);
+     for (int k=1; k<=cols; ++k)
+        temp(k,i) = elmt(i,k);
   return temp;
 }
 
 ComplexMatrix ComplexMatrix::hermitianConjugate() const {
   ComplexMatrix temp(cols,rows);
   for (int i=1; i<=rows; ++i)
-    temp.col(i) = this->row(i).apply(conj);
+     for (int k=1; k<=cols; ++k)
+        temp(k,i) = conj(elmt(i,k));
   return temp;
 }
 
@@ -1281,9 +1280,8 @@ istream & operator>>(istream & left, ComplexMatrix &m) {
 ostream & operator <<(ostream &left, const ComplexMatrix &v) {
   left << "(" << v.displayRows() << "," <<
     v.displayCols() << "):\n";
-  int i, j; 
-  for(i=1; i<=v.displayRows(); ++i) {
-    for(j=1; j<=v.displayCols(); ++j) {
+  for(int i=1; i<=v.displayRows(); ++i) {
+    for(int j=1; j<=v.displayCols(); ++j) {
       if (v.display(i, j).real() >= 0.0)
 	left << " ";  
       left << v.display(i, j) << " ";
@@ -1458,10 +1456,9 @@ void DoubleMatrix::fillArray(double* array, unsigned offset) const
 
 double DoubleMatrix::determinant() const {
   double ans = 1.;
-  DoubleMatrix lu(this->ludcmp(ans));
+  DoubleMatrix lu(ludcmp(ans));
 
-  int i; 
-  for (i=1; i<=displayRows(); i++)
+  for (int i=1; i<=displayRows(); i++)
     ans *= lu.elmt(i, i);
   return ans;
 }
@@ -1484,7 +1481,7 @@ DoubleVector DoubleVector::divide(DoubleVector const &v) const {
     }
 #endif
   DoubleVector temp(v);
-  int i; for(i=start; i<=end; i++) temp(i) = x[i] / v.display(i);
+  for(int i=start; i<=end; i++) temp(i) = x[i] / v.display(i);
   return temp;
 }
 
