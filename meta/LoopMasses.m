@@ -100,7 +100,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "DiagonaliseSVD(M_1loop, PHYSICAL(" <> U <> "), " <>
+                          "DiagonalizeSVD(M_1loop, PHYSICAL(" <> U <> "), " <>
                           "PHYSICAL(" <> V <> "), " <>
                           "PHYSICAL(" <> particleName <> "));\n";
                  ,
@@ -234,7 +234,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Vtemp = "mix_" <> V;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> "), " <>
                             Vtemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            "Diagonalise(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n" <>
+                            "Diagonalize(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n" <>
                             "PHYSICAL(" <> particleName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
