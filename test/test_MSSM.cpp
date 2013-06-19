@@ -1304,7 +1304,6 @@ void compare_models(int loopLevel)
       std::cout << "done\n";
 
       std::cout << "testing high scale constraint ... ";
-      m.set_g1(g1);
       test_high_scale_constraint(m);
       std::cout << "done\n";
    }
@@ -1312,7 +1311,6 @@ void compare_models(int loopLevel)
 
 int main()
 {
-
    std::cout << "====================\n";
    std::cout << "compare 1-loop level\n";
    std::cout << "====================\n";
