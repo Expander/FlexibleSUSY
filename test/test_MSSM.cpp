@@ -727,7 +727,7 @@ void compare_sup_self_energy(MssmSoftsusy s, MSSM m)
    TEST_CLOSE(Su_softsusy_se(3,3), Su_sarah_se(3,3), 1.0e-10);
    TEST_CLOSE(Su_softsusy_se(3,6), Su_sarah_se(3,6), 1.0e-10);
    TEST_CLOSE(Su_softsusy_se(6,3), Su_sarah_se(6,3), 1.0e-10);
-   TEST_CLOSE(Su_softsusy_se(6,6), Su_sarah_se(6,6), 1.2e-10);
+   TEST_CLOSE(Su_softsusy_se(6,6), Su_sarah_se(6,6), 1.0e-9);
 }
 
 void compare_sdown_self_energy(MssmSoftsusy s, MSSM m)
