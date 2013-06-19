@@ -56,6 +56,8 @@ double Power(Base base, Exponent exp)
 
 double Re(double);
 double Re(const Complex&);
+DoubleMatrix Re(const DoubleMatrix&);
+DoubleMatrix Re(const ComplexMatrix&);
 
 double Sqrt(double);
 

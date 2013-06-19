@@ -374,6 +374,16 @@ double Re(const Complex& x)
    return real(x);
 }
 
+DoubleMatrix Re(const DoubleMatrix& m)
+{
+   return m;
+}
+
+DoubleMatrix Re(const ComplexMatrix& m)
+{
+   return m.real();
+}
+
 int ThetaStep(int a, int b)
 {
    return a <= b ? 1 : 0;
