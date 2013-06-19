@@ -34,6 +34,7 @@ CONFIGHDR_TMPL=$BASEDIR/config/config.h.in
 # options
 boost_lib_dir=""
 boost_inc_dir=""
+eigen_inc_dir=""
 BOOSTFLAGS=""
 gsl_config="gsl-config"
 lapack_lib_dir=""
@@ -49,6 +50,7 @@ BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
+EIGENFLAGS=""
 FC="gfortran"
 GSLLIBS=""
 LAPACKLIBS=""
@@ -204,17 +206,26 @@ check_header() {
     # Write a message
     checking_msg "$hdr"
 
+    hdrs=""
+    for i in $hdr ; do
+        for ext in "" .h .hpp ; do
+            hdrs="$hdrs $i$ext"
+        done
+    done
+
     found_dir=""
     found_hdr=""
 
     for p in ${hdrdirs}; do
-        hdrlist=`echo $p/$hdr` # expands wildcard
-        for n in ${hdrlist} ; do
-            if test -f $n ; then
-                found_dir=$p
-                found_hdr=$hdr
-                break
-            fi
+        for h in ${hdrs}; do
+            hdrlist=`echo $p/$h` # expands wildcard
+            for n in ${hdrlist} ; do
+                if test -f $n ; then
+                    found_dir=$p
+                    found_hdr=$hdr
+                    break 3
+                fi
+            done
         done
     done
 
@@ -518,6 +529,19 @@ check_boost_thread_incl() {
 }
 
 #_____________________________________________________________________
+check_eigen_incl() {
+    eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
+                     /usr/local/include/eigen3"
+    check_header "Eigen/Core" "$eigen_inc_dir" "$eigen_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Error: Eigen 3 must be installed, see http://eigen.tuxfamily.org"
+        exit 1
+    else
+        EIGENFLAGS="-I$found_dir"
+    fi
+}
+
+#_____________________________________________________________________
 check_gsl_config() {
     checking_msg "GSL configuration $gsl_config"
     exists_in_path "$gsl_config"
@@ -665,6 +689,7 @@ help() {
     echo "                         possible values: all $available_algorithms"
     echo "--with-boost-libdir=     Path to search for BOOST libraries"
     echo "--with-boost-incdir=     Path to search for BOOST headers"
+    echo "--with-eigen-incdir=     Path to search for Eigen headers"
     echo "--with-cxx=              C++ compiler (default: $CXX)"
     echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
     echo "--with-fc=               Fortran compiler (default: $FC)"
@@ -711,6 +736,7 @@ if test $# -gt 0 ; then
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
+            --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
@@ -733,6 +759,7 @@ guess_machine_word_size
 check_algorithms
 check_boost_test_incl
 check_boost_test_libs
+check_eigen_incl
 check_fortran_libs
 check_gsl_config
 if use_algorithm "lattice"; then
@@ -756,6 +783,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@FC@|$FC|"                   \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
