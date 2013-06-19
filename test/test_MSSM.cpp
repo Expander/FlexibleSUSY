@@ -987,6 +987,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM m)
    // used simultaneously, which leads to some deviations
 
    s.setMu(MZ);
+   s.calcDrBarPars();
    m.setMu(MZ);
    m.calculate_DRbar_parameters();
 
@@ -994,7 +995,12 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM m)
    const double softsusy_mtop = s.calcRunningMt();
    const double sarah_mtop = m.calculate_MassFu_DRbar_1loop(mtpole, 3);
 
-   TEST_CLOSE(sarah_mtop, softsusy_mtop, 1.0e-10);
+   // Softsusy:
+   // * additional two-loop contribution
+   // * mt_pole and mt_run in the loop functions
+   // FlexibleSUSY:
+   // * allways running DRbar masses in the loop functions
+   TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.03);
 }
 
 void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
@@ -1003,6 +1009,7 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
    // are used simultaneously, which leads to some deviations
 
    s.setMu(MZ);
+   s.calcDrBarPars();
    m.setMu(MZ);
    m.calculate_DRbar_parameters();
 
@@ -1010,12 +1017,19 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
    const double softsusy_mbot = s.calcRunningMb();
    const double sarah_mbot = m.calculate_MassFd_DRbar_1loop(mbpole, 3);
 
-   TEST_CLOSE(sarah_mbot, softsusy_mbot, 1.0e-10);
+   // Softsusy:
+   // * no photon contribution
+   // * resummed mb
+   // * sometimes on-shell masses in the loop functions
+   // FlexibleSUSY:
+   // * allways running DRbar masses in the loop functions
+   TEST_CLOSE(sarah_mbot, softsusy_mbot, 0.06);
 }
 
 void compare_tau_self_energy(MssmSoftsusy s, MSSM m)
 {
    s.setMu(MZ);
+   s.calcDrBarPars();
    m.setMu(MZ);
    m.calculate_DRbar_parameters();
 
@@ -1023,7 +1037,12 @@ void compare_tau_self_energy(MssmSoftsusy s, MSSM m)
    const double softsusy_mtau = s.calcRunningMtau();
    const double sarah_mtau = m.calculate_MassFe_DRbar_1loop(mtaupole, 3);
 
-   TEST_CLOSE(sarah_mtau, softsusy_mtau, 1.0e-10);
+   // Softsusy:
+   // * no photon contribution
+   // * sometimes on-shell masses in the loop functions
+   // FlexibleSUSY:
+   // * allways running DRbar masses in the loop functions
+   TEST_CLOSE(sarah_mtau, softsusy_mtau, 0.04);
 }
 
 void compare_self_energies(MssmSoftsusy s, MSSM m)
