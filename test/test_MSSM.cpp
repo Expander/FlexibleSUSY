@@ -239,25 +239,25 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM m)
    TEST_CLOSE(m.get_tadpole_vu(), 0.0, 1.0e-9);
 
    // neutral CP even Higgs
-   DoubleVector hh(m.get_Masshh().sort());
+   DoubleVector hh(m.get_Masshh());
    TEST_EQUALITY(hh(1), s.displayDrBarPars().mh0);
    TEST_EQUALITY(hh(2), s.displayDrBarPars().mH0);
-   TEST_CLOSE(m.get_ZH()(1,1), cos(alpha), 1.0e-12);
-   TEST_CLOSE(m.get_ZH()(1,2), sin(alpha), 1.0e-12);
-   TEST_CLOSE(m.get_ZH()(2,1), -sin(alpha), 1.0e-12);
-   TEST_CLOSE(m.get_ZH()(2,2), cos(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(1,1), -sin(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(1,2), cos(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(2,1), -cos(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(2,2), -sin(alpha), 1.0e-12);
 
    // neutral CP odd Higgs
-   DoubleVector Ah(m.get_MassAh().sort());
+   DoubleVector Ah(m.get_MassAh());
    TEST_CLOSE(Ah(1), s.displayMzRun(), 1.0e-11);
    TEST_EQUALITY(Ah(2), s.displayDrBarPars().mA0);
-   TEST_CLOSE(m.get_ZA()(1,1), sin(beta), 1.0e-12);
-   TEST_CLOSE(m.get_ZA()(1,2), cos(beta), 1.0e-12);
-   TEST_CLOSE(m.get_ZA()(2,1), -cos(beta), 1.0e-12);
-   TEST_CLOSE(m.get_ZA()(2,2), sin(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(1,1), -cos(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(1,2), sin(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(2,1), -sin(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(2,2), -cos(beta), 1.0e-12);
 
    // charged Higgs
-   DoubleVector Hpm(m.get_MassHpm().sort());
+   DoubleVector Hpm(m.get_MassHpm());
    TEST_EQUALITY(Hpm(1), s.displayMwRun()); // for RXi(Wm) == 1
    TEST_EQUALITY(Hpm(2), s.displayDrBarPars().mHpm);
    // This test assumes that we have a twisted rotation using beta a
@@ -381,7 +381,7 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM m)
    TEST_CLOSE(ZE(6,6), cos(thetatau), 1.0e-12);
 
    // sneutrinos
-   DoubleVector msnu(s.displayDrBarPars().msnu.sort());
+   DoubleVector msnu(s.displayDrBarPars().msnu);
    DoubleVector Snu(m.get_MassSv());
 
    TEST_EQUALITY(Snu(1), msnu(1));
@@ -1160,7 +1160,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    m.calculate_1loop_masses();
    s.physical(1);
 
-   DoubleVector hh(m.get_physical().Masshh);
+   const DoubleVector hh(m.get_physical().Masshh);
    if (hh(1) <= hh(2)) {
       TEST_CLOSE(s.displayPhys().mh0, m.get_physical().Masshh(1), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mH0, m.get_physical().Masshh(2), 1.0e-10);
@@ -1168,10 +1168,22 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
       TEST_CLOSE(s.displayPhys().mh0, m.get_physical().Masshh(2), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mH0, m.get_physical().Masshh(1), 1.0e-10);
    }
-   TEST_CLOSE(m.get_physical().MassVZ , m.get_physical().MassAh(1), 1.0e-10);
-   TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MassAh(2), 1.0e-10);
-   TEST_CLOSE(m.get_physical().MassVWm, m.get_physical().MassHpm(1), 1.0e-10);
-   TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MassHpm(2), 1.0e-10);
+   const DoubleVector Ah(m.get_physical().MassAh);
+   if (Ah(1) < Ah(2)) {
+      TEST_CLOSE(m.get_physical().MassVZ , m.get_physical().MassAh(1), 1.0e-10);
+      TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MassAh(2), 1.0e-10);
+   } else {
+      TEST_CLOSE(m.get_physical().MassVZ , m.get_physical().MassAh(2), 1.0e-10);
+      TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MassAh(1), 1.0e-10);
+   }
+   const DoubleVector Hpm(m.get_physical().MassHpm);
+   if (Hpm(1) < Hpm(2)) {
+      TEST_CLOSE(m.get_physical().MassVWm, m.get_physical().MassHpm(1), 1.0e-10);
+      TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MassHpm(2), 1.0e-10);
+   } else {
+      TEST_CLOSE(m.get_physical().MassVWm, m.get_physical().MassHpm(2), 1.0e-10);
+      TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MassHpm(1), 1.0e-10);
+   }
 }
 
 void test_ewsb_tree(MSSM model, MssmSoftsusy softSusy)

@@ -232,20 +232,33 @@ void DiagonalizeUnsorted(const DoubleMatrix& m, ComplexMatrix& u,
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u , DoubleVector& eigenvalues)
+void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u,
+                     DoubleVector& eigenvalues)
+{
+   double theta;
+   eigenvalues = m.sym2by2(theta).apply(fabs);
+   if (eigenvalues(1) > eigenvalues(2)) {
+      theta += 0.5 * M_PI;
+      std::swap(eigenvalues(1), eigenvalues(2));
+   }
+   u = rot2d(theta);
+}
+
+void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
+                     DoubleVector& eigenvalues)
+{
+   double theta;
+   eigenvalues = m.sym2by2(theta).apply(fabs);
+   const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
+   u = a * rot2d(theta);
+}
+
+void Diagonalize2by2Unsorted(const DoubleMatrix& m, DoubleMatrix& u,
+                             DoubleVector& eigenvalues)
 {
    double theta;
    eigenvalues = m.sym2by2(theta).apply(fabs);
    u = rot2d(theta);
-}
-
-void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenvalues)
-{
-   double theta;
-   eigenvalues = m.sym2by2(theta).apply(fabs);
-
-   const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
-   u = a * rot2d(theta);
 }
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
