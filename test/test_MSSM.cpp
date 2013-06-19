@@ -182,8 +182,9 @@ void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
    // const int signMu = Mu >= 0.0 ? 1 : -1;
    const double vev = softSusy.displayHvev();
    const double tanBeta = softSusy.displayTanb();
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
+   const double beta = atan(tanBeta);
+   const double sinBeta = sin(beta);
+   const double cosBeta = cos(beta);
    const double vu = vev * sinBeta;
    const double vd = vev * cosBeta;
    const double g1 = softSusy.displayGaugeCoupling(1);
@@ -192,11 +193,13 @@ void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
    const double BMu = softSusy.displayM3Squared();
    const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
    const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double MZrun = 0.5 * vev * sqrt(sqr(gY) + sqr(g2));
 
-   // softSusy.rewsbTreeLevel(signMu);
+   softSusy.setMh1Squared(mHd2);
+   softSusy.setMh2Squared(mHu2);
 
-   softSusy.setMh2Squared(mHd2);
-   softSusy.setMh1Squared(mHu2);
+   TEST_CLOSE(MZrun, softSusy.displayMzRun(), 1.0e-10);
+   TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
 }
 
 void ensure_one_loop_ewsb(MSSM& m)
@@ -208,6 +211,18 @@ void ensure_one_loop_ewsb(MSSM& m)
    m.solve_ewsb();
    TEST_CLOSE(m.get_tadpole_vd() - m.tadpole_hh(1).real(), 0.0, precision);
    TEST_CLOSE(m.get_tadpole_vu() - m.tadpole_hh(2).real(), 0.0, precision);
+}
+
+void ensure_one_loop_ewsb(MssmSoftsusy& s)
+{
+   ensure_tree_level_ewsb(s);
+
+   // s.rewsbTreeLevel(m.get_Mu() >= 0.0 ? 1 : -1);
+   const int signMu = s.displaySusyMu() >= 0.0 ? 1 : -1;
+   const double mtrun = s.displayDrBarPars().mt;
+   const DoubleVector pars(3);
+   softsusy::numRewsbLoops = 1;
+   s.rewsb(signMu, mtrun, pars);
 }
 
 void compare_tree_level_masses(MssmSoftsusy s, MSSM m)
@@ -1128,9 +1143,14 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    TEST_EQUALITY(0.0, m.get_physical().MassVP);
 
    ensure_one_loop_ewsb(m);
-   ensure_tree_level_ewsb(s);
-   s.physical(1);
    m.calculate_1loop_masses();
+   ensure_one_loop_ewsb(s);
+   s.physical(1);
+
+   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
+   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
+   TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 1.0e-10);
+   TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
 
    DoubleVector hh(m.get_physical().Masshh);
    if (hh(1) <= hh(2)) {
