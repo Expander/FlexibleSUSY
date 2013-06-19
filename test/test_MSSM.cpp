@@ -1170,18 +1170,14 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    }
    const DoubleVector Ah(m.get_physical().MassAh);
    if (Ah(1) < Ah(2)) {
-      TEST_CLOSE(m.get_physical().MassVZ , m.get_physical().MassAh(1), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MassAh(2), 1.0e-10);
    } else {
-      TEST_CLOSE(m.get_physical().MassVZ , m.get_physical().MassAh(2), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MassAh(1), 1.0e-10);
    }
    const DoubleVector Hpm(m.get_physical().MassHpm);
    if (Hpm(1) < Hpm(2)) {
-      TEST_CLOSE(m.get_physical().MassVWm, m.get_physical().MassHpm(1), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MassHpm(2), 1.0e-10);
    } else {
-      TEST_CLOSE(m.get_physical().MassVWm, m.get_physical().MassHpm(2), 1.0e-10);
       TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MassHpm(1), 1.0e-10);
    }
 }
