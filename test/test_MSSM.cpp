@@ -954,8 +954,14 @@ void compare_z_self_energy(MssmSoftsusy s, MSSM m)
    const Complex sarah_z_se(m.self_energy_VZ(p));
    const double softsusy_z_se = s.piZZT(p, scale, false);
 
+   TEST_EQUALITY(scale, m.displayMu());
+   TEST_EQUALITY(scale, s.displayMu());
+   TEST_EQUALITY(m.get_MassVZ(), s.displayMzRun());
    TEST_EQUALITY(sarah_z_se.imag(), 0.0);
-   TEST_CLOSE(sarah_z_se.real(), softsusy_z_se, 1.0e-10);
+   // Note: Softsusy uses on-shell masses for the 1st and 2nd
+   // generation fermions.  FlexibleSUSY allways uses running DRbar
+   // masses.  This leads to some deviation.
+   TEST_CLOSE(sarah_z_se.real(), softsusy_z_se, 1.0e-4);
 }
 
 void compare_w_self_energy(MssmSoftsusy s, MSSM m)
@@ -965,9 +971,14 @@ void compare_w_self_energy(MssmSoftsusy s, MSSM m)
    const Complex sarah_w_se(m.self_energy_VWm(p));
    const double softsusy_w_se = s.piWWT(p, scale, false);
 
-   TEST_CLOSE(m.get_MassVWm(), s.displayMwRun(), 1.0e-10);
+   TEST_EQUALITY(scale, m.displayMu());
+   TEST_EQUALITY(scale, s.displayMu());
+   TEST_EQUALITY(m.get_MassVZ(), s.displayMzRun());
    TEST_EQUALITY(sarah_w_se.imag(), 0.0);
-   TEST_CLOSE(sarah_w_se.real(), softsusy_w_se, 1.0e-10);
+   // Note: Softsusy uses on-shell masses for the 1st and 2nd
+   // generation fermions.  FlexibleSUSY allways uses running DRbar
+   // masses.  This leads to some deviation.
+   TEST_CLOSE(sarah_w_se.real(), softsusy_w_se, 2.0e-3);
 }
 
 void compare_top_self_energy(MssmSoftsusy s, MSSM m)
