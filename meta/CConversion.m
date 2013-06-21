@@ -106,10 +106,10 @@ CreateDefaultConstructor[parameter_, CConversion`ScalarType[type_]] :=
     parameter <> "(0)";
 
 CreateDefaultConstructor[parameter_, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> ToString[entries] <> ")";
+    parameter <> "(" <> type <> "::Zero())";
 
 CreateDefaultConstructor[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> "()";
+    parameter <> "(" <> type <> "::Zero())";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
