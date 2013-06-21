@@ -70,7 +70,9 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()
 {
-   Eigen::Matrix<double,3,3> topDRbar(3,3), bottomDRbar(3,3),  electronDRbar(3,3);
+   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
+      bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
+      electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = model->calculate_Mass@TopQuark@_DRbar_1loop(Electroweak_constants::MUP, 1);
    topDRbar(1,1)      = model->calculate_Mass@TopQuark@_DRbar_1loop(Electroweak_constants::MCHARM, 2);
    topDRbar(2,2)      = model->calculate_Mass@TopQuark@_DRbar_1loop(Electroweak_constants::PMTOP, 3);
