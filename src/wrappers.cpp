@@ -1,6 +1,8 @@
 
 #include "wrappers.hpp"
 
+#include <Eigen/SVD>
+
 double AbsSqr(const Complex& z)
 {
    return z.norm();
@@ -295,6 +297,35 @@ void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
    }
 }
 
+Eigen::MatrixXd ToEigen(const DoubleMatrix& m)
+{
+   const int cols = m.displayCols(), rows = m.displayRows();
+   Eigen::MatrixXd eig(rows,cols);
+   for (int i = 1; i <= rows; ++i)
+      for (int j = 1; j <= rows; ++j)
+         eig(i-1,j-1) = m(i,j);
+   return eig;
+}
+
+DoubleMatrix ToSoftsusy(const Eigen::MatrixXd& m)
+{
+   const int cols = m.cols(), rows = m.rows();
+   DoubleMatrix soft(rows,cols);
+   for (int i = 1; i <= rows; ++i)
+      for (int j = 1; j <= rows; ++j)
+         soft(i,j) = m(i-1,j-1);
+   return soft;
+}
+
+DoubleVector ToSoftsusy(const Eigen::VectorXd& m)
+{
+   const int cols = m.rows();
+   DoubleVector soft(cols);
+   for (int j = 1; j <= cols; ++j)
+      soft(j) = m(j-1);
+   return soft;
+}
+
 /**
  * diag = u m v^T
  *
@@ -319,6 +350,12 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
    // Numerical routine replaces argument, so make a copy of elements
    u = m;
    diagonaliseSvd(u, eigenvalues, v);
+
+   // Eigen::MatrixXd me(ToEigen(m)), ue(ToEigen(u)), ve(ToEigen(v));
+   // Eigen::JacobiSVD<Eigen::MatrixXd> eigensolver(me, Eigen::ComputeThinU | Eigen::ComputeThinV);
+   // u = ToSoftsusy(eigensolver.matrixU());
+   // v = ToSoftsusy(eigensolver.matrixV());
+   // eigenvalues = ToSoftsusy(eigensolver.singularValues());
 
    // Phase freedom - tends to give more familiar matrices
    u = -1.0 * u; v = -1.0 * v;
