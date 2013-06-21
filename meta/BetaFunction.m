@@ -31,9 +31,22 @@ GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
-GuessType[sym_[i1,i2]] := CConversion`MatrixType["DoubleMatrix", Sequence @@ SARAH`getDimParameters[sym]];
+GuessType[sym_[i1,i2]] :=
+    Module[{dim1, dim2, scalarType},
+           {dim1, dim2} = SARAH`getDimParameters[sym];
+           If[True || MemberQ[SARAH`realVar,sym],
+              scalarType = "double";,
+              scalarType = "Complex";
+             ];
+           CConversion`MatrixType["Eigen::Matrix<" <> scalarType <> "," <>
+                                  ToString[dim1] <> "," <> ToString[dim2] <> ">", dim1, dim2]
+          ];
 
-GuessType[sym_Symbol] := CConversion`ScalarType["double"];
+GuessType[sym_Symbol] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`ScalarType["double"],
+       CConversion`ScalarType["Complex"]
+      ];
 
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
@@ -59,8 +72,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
               beta2L        = beta2L <> betaName <> " = " <> betaName <>
                               " + " <> twoLoopBeta <> ";\n";
               ];
-           localDecl     = localDecl <> dataType <> " "
-                           <> CreateDefaultConstructor[betaName, type] <> ";\n";
+           localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];
           ];
 
@@ -109,7 +121,8 @@ ConvertSarahRGEs[betaFunctions_List] :=
           ];
 
 (* count number of parameters in beta functions list *)
-CountNumberOfParameters[CConversion`ScalarType[type_]] := 1;
+CountNumberOfParameters[CConversion`ScalarType["double"]] := 1;
+CountNumberOfParameters[CConversion`ScalarType["Complex"]] := 2;
 
 CountNumberOfParameters[CConversion`VectorType[type_, entries_]] := entries;
 
@@ -170,6 +183,7 @@ ConvertParameterNames[betaFunctions_List] :=
            names = (GetName[#])& /@ betaFunctions;
            names = Flatten[names /. a_[i1,i2] :> a];
            rules = (Rule[#, ToValidCSymbol[#]])& /@ names;
+           (If[#[[1]] =!= #[[2]], SARAH`getDimParameters[#[[2]]] = SARAH`getDimParameters[#[[1]]]];)& /@ rules;
            rules = Cases[rules, HoldPattern[Rule[a_,b_]] /; a=!=b, 1];
            Return[rules];
            ];
@@ -250,7 +264,7 @@ CreateCCtorInitialization[betaFunctions_List] :=
 (* create copy constructor initialization list *)
 CreateCCtorParameterList[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CreateGetterReturnType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            def = def <> ", " <> dataType <> " " <> name <> "_";
            Return[def];

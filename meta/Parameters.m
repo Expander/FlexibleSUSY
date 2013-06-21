@@ -48,10 +48,17 @@ CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
            Return[{ass, 1}];
           ];
 
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :=
+    Module[{ass = ""},
+           ass = name <> " = Complex(v(" <> ToString[startIndex] <>
+                 ", v(" <> ToString[startIndex + 1] <> "));\n";
+           Return[{ass, 2}];
+          ];
+
 CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
-           For[i = 1, i <= rows, i++,
-               For[j = 1, j <= cols, j++; count++,
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
                    ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                          <> ") = v(" <> ToString[startIndex + count] <> ");\n";
                   ];
@@ -76,10 +83,17 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
            Return[{ass, 1}];
           ];
 
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :=
+    Module[{ass = ""},
+           ass = "pars(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
+                 "pars(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
+           Return[{ass, 2}];
+          ];
+
 CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
-           For[i = 1, i <= rows, i++,
-               For[j = 1, j <= cols, j++; count++,
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
                    ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
                           <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                           <> ");\n";

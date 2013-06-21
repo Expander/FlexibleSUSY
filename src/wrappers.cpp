@@ -90,6 +90,18 @@ ComplexMatrix Diag(const ComplexMatrix& m)
    return diag;
 }
 
+Eigen::Matrix3d Diag(const Eigen::Matrix3d& m)
+{
+   Eigen::Matrix3d diag(m);
+   for (int i = 0; i < 3; ++i) {
+      for (int k = 0; k < 3; ++k) {
+         if (i != k)
+            diag(i,k) = 0.0;
+      }
+   }
+   return diag;
+}
+
 /**
  * diag = u m u^T
  *

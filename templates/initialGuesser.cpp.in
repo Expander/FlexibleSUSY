@@ -6,6 +6,7 @@
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
+#include <Eigen/Core>
 #include <cassert>
 
 #define INPUTPARAMETER(p) input_pars.p
@@ -56,16 +57,16 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
 
 @applyConstraint@
 
-   DoubleMatrix topDRbar(3,3), bottomDRbar(3,3),  electronDRbar(3,3);
-   topDRbar(1,1)      = Electroweak_constants::MUP;
-   topDRbar(2,2)      = Electroweak_constants::MCHARM;
-   topDRbar(3,3)      = Electroweak_constants::MTOP;
-   bottomDRbar(1,1)   = Electroweak_constants::MDOWN;
-   bottomDRbar(2,2)   = Electroweak_constants::MSTRANGE;
-   bottomDRbar(3,3)   = Electroweak_constants::MBOTTOM;
-   electronDRbar(1,1) = Electroweak_constants::MELECTRON;
-   electronDRbar(2,2) = Electroweak_constants::MMUON;
-   electronDRbar(3,3) = Electroweak_constants::MTAU;
+   Eigen::Matrix<double,3,3> topDRbar, bottomDRbar,  electronDRbar;
+   topDRbar(0,0)      = Electroweak_constants::MUP;
+   topDRbar(1,1)      = Electroweak_constants::MCHARM;
+   topDRbar(2,2)      = Electroweak_constants::MTOP;
+   bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
+   bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
+   bottomDRbar(2,2)   = Electroweak_constants::MBOTTOM;
+   electronDRbar(0,0) = Electroweak_constants::MELECTRON;
+   electronDRbar(1,1) = Electroweak_constants::MMUON;
+   electronDRbar(2,2) = Electroweak_constants::MTAU;
 
 @setDRbarYukawaCouplings@
 }

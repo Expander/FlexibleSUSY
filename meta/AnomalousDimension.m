@@ -51,7 +51,7 @@ ConvertSarahAnomDim[gij_List] :=
                name = CreateValidAnomDimName[adim[[1]]];
                If[FreeQ[adim[[2]], a_[i1,i2]],
                   type = CConversion`ScalarType["double"];,
-                  type = CConversion`MatrixType["DoubleMatrix", 3, 3];
+                  type = CConversion`MatrixType["Eigen::Matrix<double,3,3>", 3, 3];
                  ];
                AppendTo[lst, AnomalousDimension[name, type, Drop[adim, 1]]];
               ];
@@ -80,8 +80,7 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            unitMatrix = CreateUnitMatrix[type];
            body = "const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);\n" <>
                   "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n";
-           body = body <> GetCParameterType[type] <> " " <>
-                  CreateDefaultConstructor["anomDim", type] <> ";\n";
+           body = body <> CreateDefaultDefinition["anomDim", type] <> ";\n";
            (* one-loop *)
            body = body <> "\nanomDim = " <>
                   RValueToCFormString[(CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim])

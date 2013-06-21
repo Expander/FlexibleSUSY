@@ -93,6 +93,7 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI)
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
+$(DIR)/test_MSSM.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 

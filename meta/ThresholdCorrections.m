@@ -139,8 +139,8 @@ ToMatrixSymbol[list_List] :=
                 ]
           ];
 
-InvertRelation[Transpose[sym_], expr_] := {sym, Transpose[expr]};
-InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, ConjugateTranspose[expr]};
+InvertRelation[Transpose[sym_], expr_] := {sym, SARAH`Tp[expr]};
+InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, SARAH`Adj[expr]};
 InvertRelation[FlexibleSUSY`Diag[sym_], expr_] := {sym, FlexibleSUSY`Diag[expr]};
 InvertRelation[sym_, expr_] := {sym, expr};
 

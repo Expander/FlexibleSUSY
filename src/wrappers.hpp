@@ -5,6 +5,7 @@
 #include <cmath>
 #include "linalg.h"
 #include "numerics.h"
+#include <Eigen/Core>
 
 static const double Pi = M_PI;
 
@@ -29,6 +30,7 @@ int Delta(int, int);
 
 DoubleMatrix Diag(const DoubleMatrix&);
 ComplexMatrix Diag(const ComplexMatrix&);
+Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
@@ -78,17 +80,7 @@ ComplexMatrix Transpose(const ComplexMatrix&);
 double trace(const DoubleMatrix&);
 Complex trace(const ComplexMatrix&);
 
-#define UNITMATRIX(rows) \
-   unitMatrix<rows>()
-
-template <int rows>
-DoubleMatrix unitMatrix()
-{
-   DoubleMatrix u(rows,rows);
-   for (int i = 1; i <= rows; ++i)
-      u(i,i) = 1.0;
-   return u;
-}
+#define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
 
 double ZeroSqrt(double);
 
