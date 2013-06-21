@@ -1272,13 +1272,22 @@ void compare_models(int loopLevel)
    const double vd = vev * cosBeta;
    const double susyMu = 120.0;
    const double BMu = sqr(2.0 * susyMu);
-   DoubleMatrix Yu(3,3), Yd(3,3), Ye(3,3);
-   Yu(3,3) = 165.0   * root2 / (vev * sinBeta);
-   Yd(3,3) = 2.9     * root2 / (vev * cosBeta);
-   Ye(3,3) = 1.77699 * root2 / (vev * cosBeta);
-   DoubleMatrix ID(3, 3), mm0(3, 3);
+   DoubleMatrix Yu_SS(3,3), Yd_SS(3,3), Ye_SS(3,3);
+   Yu_SS(3,3) = 165.0   * root2 / (vev * sinBeta);
+   Yd_SS(3,3) = 2.9     * root2 / (vev * cosBeta);
+   Ye_SS(3,3) = 1.77699 * root2 / (vev * cosBeta);
+   DoubleMatrix ID(3, 3), mm0_SS(3, 3);
    for (int i=1; i<=3; i++) ID(i, i) = 1.0;
-   mm0 = ID * sqr(m0);
+   mm0_SS = ID * sqr(m0);
+
+   Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero()),
+      Yd(Eigen::Matrix<double,3,3>::Zero()),
+      Ye(Eigen::Matrix<double,3,3>::Zero()),
+      mm0(Eigen::Matrix<double,3,3>::Zero());
+   Yu(2,2) = 165.0   * root2 / (vev * sinBeta);
+   Yd(2,2) = 2.9     * root2 / (vev * cosBeta);
+   Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
+   mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
    MSSM m;
    m.setMu(91);
@@ -1313,22 +1322,22 @@ void compare_models(int loopLevel)
    softSusy.setGaugeCoupling(1, g1);
    softSusy.setGaugeCoupling(2, g2);
    softSusy.setGaugeCoupling(3, g3);
-   softSusy.setYukawaMatrix(YU, Yu);
-   softSusy.setYukawaMatrix(YD, Yd);
-   softSusy.setYukawaMatrix(YE, Ye);
+   softSusy.setYukawaMatrix(YU, Yu_SS);
+   softSusy.setYukawaMatrix(YD, Yd_SS);
+   softSusy.setYukawaMatrix(YE, Ye_SS);
    softSusy.setGauginoMass(1, M12);
    softSusy.setGauginoMass(2, M12);
    softSusy.setGauginoMass(3, M12);
-   softSusy.setSoftMassMatrix(mQl, mm0);
-   softSusy.setSoftMassMatrix(mUr, mm0);
-   softSusy.setSoftMassMatrix(mDr, mm0);
-   softSusy.setSoftMassMatrix(mLl, mm0);
-   softSusy.setSoftMassMatrix(mEr, mm0);
+   softSusy.setSoftMassMatrix(mQl, mm0_SS);
+   softSusy.setSoftMassMatrix(mUr, mm0_SS);
+   softSusy.setSoftMassMatrix(mDr, mm0_SS);
+   softSusy.setSoftMassMatrix(mLl, mm0_SS);
+   softSusy.setSoftMassMatrix(mEr, mm0_SS);
    softSusy.setMh1Squared(sqr(m0));
    softSusy.setMh2Squared(sqr(m0));
-   softSusy.setTrilinearMatrix(UA, a0 * Yu);
-   softSusy.setTrilinearMatrix(DA, a0 * Yd);
-   softSusy.setTrilinearMatrix(EA, a0 * Ye);
+   softSusy.setTrilinearMatrix(UA, a0 * Yu_SS);
+   softSusy.setTrilinearMatrix(DA, a0 * Yd_SS);
+   softSusy.setTrilinearMatrix(EA, a0 * Ye_SS);
    softSusy.setSusyMu(susyMu);
    softSusy.setM3Squared(BMu);
    softSusy.setHvev(vev);

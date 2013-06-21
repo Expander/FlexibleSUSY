@@ -14,6 +14,10 @@ allParameters = {};
 
 GetParameters[] := allParameters;
 
+allIndexReplacementRules = {};
+
+GetIndexReplacementRules[] := allIndexReplacementRules;
+
 allBetaFunctions = {};
 
 GetBetaFunctions[] := allBetaFunctions;
@@ -515,8 +519,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* store all model parameters *)
            allParameters = Join[GetName /@ susyBetaFunctions,
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
+           allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
 
            TreeMasses`SetModelParameters[allParameters];
+           TreeMasses`SetIndexReplacementRules[allIndexReplacementRules];
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {}, Model`Name,
@@ -540,7 +546,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            massMatrices = ConvertSarahMassMatrices[] /.
                           susyBreakingParameterReplacementRules /.
                           Parameters`ApplyGUTNormalization[] /.
-           { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
+                          { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) } /.
+                          allIndexReplacementRules;
 
            allParticles = SARAH`Mass[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
@@ -612,6 +619,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
 
            SelfEnergies`SetParameterReplacementRules[susyBreakingParameterReplacementRules];
+           SelfEnergies`SetIndexReplacementRules[allIndexReplacementRules];
 
            phases = ConvertSarahPhases[SARAH`ParticlePhases];
 

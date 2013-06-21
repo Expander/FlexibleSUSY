@@ -19,6 +19,9 @@ for a given field";
 SetParameterReplacementRules::usage="replacement rules for model
 parameters";
 
+SetIndexReplacementRules::usage="set index replacement rules for model
+parameters";
+
 FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
 Begin["Private`"];
@@ -30,6 +33,10 @@ SetParameterReplacementRules[rules_List] :=
 
 SetParameterReplacementRules[rules_Rule] :=
     parameterReplacementRules = {rule};
+
+indexReplacementRules = {};
+
+SetIndexReplacementRules[rules_List] := indexReplacementRules = rules;
 
 (* In this variable we collect the names and number of indices of the
    defined C/C++ functions to avoid double definitions *)
@@ -433,7 +440,8 @@ CreateCouplingFunctions[coupling_, sumOverInternalColors_:False] :=
                 ];
               (* replace mixing matrices by Delta[] for unrotated fields *)
               expr = TreeMasses`ReplaceDependencies[ReplaceMixingMatrixByIdentityIn[expr, coupling]] /.
-                     Parameters`ApplyGUTNormalization[];
+                     Parameters`ApplyGUTNormalization[] /.
+                     indexReplacementRules;
               {prototype, definition} = CreateCouplingFunction[coupling, expr, strippedIndices];
              ];
            Return[{symbol, prototype, definition}];

@@ -11,7 +11,27 @@ gauge couplings, which replace non-normalized gauge couplings
 GetGUTNormalization::usage="Returns GUT normalization of the given
 coupling";
 
+CreateIndexReplacementRules::usage="";
+
 Begin["Private`"];
+
+CreateIndexReplacementRules[pars_List] :=
+    Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},
+           indexReplacementRules = {};
+           For[p = 1, p <= Length[pars], p++,
+               parameter = pars[[p]];
+               dim = SARAH`getDimParameters[parameter];
+               rule = {};
+               Switch[Length[dim],
+                      1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
+                      2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
+                      3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
+                      4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
+                     ];
+               AppendTo[indexReplacementRules, rule];
+              ];
+           Return[Flatten[indexReplacementRules]]
+          ];
 
 GetGUTNormalization[coupling_Symbol] :=
     Module[{pos, norm},
