@@ -59,8 +59,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
               beta2L        = beta2L <> betaName <> " = " <> betaName <>
                               " + " <> twoLoopBeta <> ";\n";
               ];
-           localDecl     = localDecl <> dataType <> " "
-                           <> CreateDefaultConstructor[betaName, type] <> ";\n";
+           localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];
           ];
 

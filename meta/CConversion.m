@@ -40,6 +40,9 @@ CreateGetterReturnType::usage="creates C/C++ getter return type";
 CreateDefaultConstructor::usage="creates C/C++ default constructor for
 a given parameter type";
 
+CreateDefaultDefinition::usage="creates C/C++ variable definition
+using the default constructor";
+
 ExpandSums::usage="expands expressions that contain sum symbols of the
 form sum[index,1,3,expression]"
 
@@ -107,6 +110,18 @@ CreateDefaultConstructor[parameter_, CConversion`VectorType[type_, entries_]] :=
 
 CreateDefaultConstructor[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
+
+CreateDefaultDefinition[parameter_, type_] :=
+    Print["Error: unknown parameter type: " <> ToString[type]];
+
+CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
+    type <> " " <> parameter <> " = 0";
+
+CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, entries_]] :=
+    type <> " " <> parameter <> "(" <> ToString[entries] <> ")";
+
+CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
+    type <> " " <> parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
 
 GetCParameterType[parameterType_] :=
     ToString[parameterType[[1]]];
