@@ -31,9 +31,21 @@ GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
-GuessType[sym_[i1,i2]] := CConversion`MatrixType["DoubleMatrix", Sequence @@ SARAH`getDimParameters[sym]];
+GuessType[sym_[i1,i2]] :=
+    Module[{dim1, dim2, scalarType},
+           {dim1, dim2} = SARAH`getDimParameters[sym];
+           If[True || MemberQ[SARAH`realVar,sym],
+              scalarType = "double";,
+              scalarType = "Complex";
+             ];
+           CConversion`MatrixType["DoubleMatrix", Sequence @@ SARAH`getDimParameters[sym]]
+          ];
 
-GuessType[sym_Symbol] := CConversion`ScalarType["double"];
+GuessType[sym_Symbol] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`ScalarType["double"],
+       CConversion`ScalarType["Complex"]
+      ];
 
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
@@ -170,6 +182,7 @@ ConvertParameterNames[betaFunctions_List] :=
            names = (GetName[#])& /@ betaFunctions;
            names = Flatten[names /. a_[i1,i2] :> a];
            rules = (Rule[#, ToValidCSymbol[#]])& /@ names;
+           (If[#[[1]] =!= #[[2]], SARAH`getDimParameters[#[[2]]] = SARAH`getDimParameters[#[[1]]]];)& /@ rules;
            rules = Cases[rules, HoldPattern[Rule[a_,b_]] /; a=!=b, 1];
            Return[rules];
            ];
