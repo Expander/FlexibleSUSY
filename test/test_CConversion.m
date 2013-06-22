@@ -61,14 +61,14 @@ TestEquality[RValueToCFormString[f[x]], "f(x)"];
 TestEquality[RValueToCFormString[a MatMul[A]], "a*A"];
 TestEquality[RValueToCFormString[a MatMul[A,B]], "a*(A*B)"];
 TestEquality[RValueToCFormString[a MatMul[A,B,A]], "a*(A*B*A)"];
-TestEquality[RValueToCFormString[a trace[A]], "a*trace(A)"];
-TestEquality[RValueToCFormString[a trace[A,B]], "a*trace(A*B)"];
-TestEquality[RValueToCFormString[a trace[A,B,A]], "a*trace(A*B*A)"];
+TestEquality[RValueToCFormString[a trace[A]], "a*(A).trace()"];
+TestEquality[RValueToCFormString[a trace[A,B]], "a*(A*B).trace()"];
+TestEquality[RValueToCFormString[a trace[A,B,A]], "a*(A*B*A).trace()"];
 
-TestEquality[RValueToCFormString[MatMul[Adj[A]]], "Adj(A)"];
-TestEquality[RValueToCFormString[MatMul[A Adj[A]]], "A*Adj(A)"];
-TestEquality[RValueToCFormString[trace[Adj[A]]], "trace(Adj(A))"];
-TestEquality[RValueToCFormString[trace[A Adj[A]]], "trace(A*Adj(A))"];
+TestEquality[RValueToCFormString[MatMul[Adj[A]]], "A.adjoint()"];
+TestEquality[RValueToCFormString[MatMul[A Adj[A]]], "A*A.adjoint()"];
+TestEquality[RValueToCFormString[trace[Adj[A]]], "(A.adjoint()).trace()"];
+TestEquality[RValueToCFormString[trace[A Adj[A]]], "(A*A.adjoint()).trace()"];
 
 (* SARAH sometimes appends indices [i1,i2] to express that a type is
    of type matrix. These indices should be stripped before
