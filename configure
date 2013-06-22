@@ -204,17 +204,26 @@ check_header() {
     # Write a message
     checking_msg "$hdr"
 
+    hdrs=""
+    for i in $hdr ; do
+        for ext in "" .h .hpp ; do
+            hdrs="$hdrs $i$ext"
+        done
+    done
+
     found_dir=""
     found_hdr=""
 
     for p in ${hdrdirs}; do
-        hdrlist=`echo $p/$hdr` # expands wildcard
-        for n in ${hdrlist} ; do
-            if test -f $n ; then
-                found_dir=$p
-                found_hdr=$hdr
-                break
-            fi
+        for h in ${hdrs}; do
+            hdrlist=`echo $p/$h` # expands wildcard
+            for n in ${hdrlist} ; do
+                if test -f $n ; then
+                    found_dir=$p
+                    found_hdr=$hdr
+                    break 3
+                fi
+            done
         done
     done
 
