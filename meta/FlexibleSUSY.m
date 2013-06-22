@@ -226,7 +226,7 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
            runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
            callAllLoopMassFunctions     = LoopMasses`CallAllLoopMassFunctions[];
-           masses                       = SARAH`Mass[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           masses                       = FlexibleSUSY`Mass[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
@@ -542,7 +542,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           Parameters`ApplyGUTNormalization[] /.
            { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
 
-           allParticles = SARAH`Mass[GetMassEigenstate[#]]& /@ massMatrices;
+           allParticles = FlexibleSUSY`Mass[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
                Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];

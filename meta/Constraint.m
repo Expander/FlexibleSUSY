@@ -90,8 +90,8 @@ CreateLocalConstRefs[expr_] :=
            symbols = { Cases[compactExpr, _Symbol, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, SARAH`Mass[a_]     /; MemberQ[allOutputParameters,SARAH`Mass[a]], Infinity],
-                       Cases[compactExpr, SARAH`Mass[a_[__]] /; MemberQ[allOutputParameters,SARAH`Mass[a]] :> SARAH`Mass[a], Infinity]
+                       Cases[compactExpr, FlexibleSUSY`Mass[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`Mass[a]], Infinity],
+                       Cases[compactExpr, FlexibleSUSY`Mass[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`Mass[a]] :> FlexibleSUSY`Mass[a], Infinity]
                      };
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];

@@ -264,20 +264,20 @@ ToValidCSymbolString[symbol_] :=
 RValueToCFormString[expr_] :=
     Module[{times, result},
            result = expr //. {
-                    SARAH`A0[b_]             :> SARAH`A0[SARAH`Mass[b]]        /; Head[b] =!= SARAH`Mass,
-                    SARAH`B0[a__ , b_, c___] :> SARAH`B0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`B1[a__ , b_, c___] :> SARAH`B1[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`B00[a__, b_, c___] :> SARAH`B00[a, SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`B22[a__, b_, c___] :> SARAH`B22[a, SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`F0[a__ , b_, c___] :> SARAH`F0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`G0[a__ , b_, c___] :> SARAH`G0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass,
-                    SARAH`H0[a__ , b_, c___] :> SARAH`H0[a , SARAH`Mass[b], c] /; Head[b] =!= SARAH`Mass } /.
+                    SARAH`A0[b_]             :> SARAH`A0[FlexibleSUSY`Mass[b]]        /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`B0[a__ , b_, c___] :> SARAH`B0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`B1[a__ , b_, c___] :> SARAH`B1[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`B00[a__, b_, c___] :> SARAH`B00[a, FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`B22[a__, b_, c___] :> SARAH`B22[a, FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`F0[a__ , b_, c___] :> SARAH`F0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`G0[a__ , b_, c___] :> SARAH`G0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
+                    SARAH`H0[a__ , b_, c___] :> SARAH`H0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass } /.
                     SARAH`Mass2[a_?NumberQ]  :> Global`Sqr[a] /.
-                    SARAH`Mass2[a_]          :> SARAH`Mass2[SARAH`Mass[a]] /.
-                    SARAH`Mass[a_?NumberQ]   :> a /.
-                    SARAH`Mass[bar[a_]]      :> SARAH`Mass[a] /.
-                    SARAH`Mass[a_[idx_]]     :> ToValidCSymbol[SARAH`Mass[a]][idx] /.
-                    SARAH`Mass[a_]           :> ToValidCSymbol[SARAH`Mass[a]] /.
+                    SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`Mass[a]] /.
+                    FlexibleSUSY`Mass[a_?NumberQ]   :> a /.
+                    FlexibleSUSY`Mass[bar[a_]]      :> FlexibleSUSY`Mass[a] /.
+                    FlexibleSUSY`Mass[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`Mass[a]][idx] /.
+                    FlexibleSUSY`Mass[a_]           :> ToValidCSymbol[FlexibleSUSY`Mass[a]] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj /.
                     SARAH`Conj[a_] a_        :> AbsSqr[a] /.
                     a_[SARAH`i1,SARAH`i2]    :> a /.
