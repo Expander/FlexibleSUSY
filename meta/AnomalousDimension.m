@@ -1,5 +1,5 @@
 
-BeginPackage["AnomalousDimension`", {"SARAH`", "TextFormatting`", "CConversion`"}];
+BeginPackage["AnomalousDimension`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`"}];
 
 AnomalousDimension[];
 
@@ -44,14 +44,15 @@ CreateValidAnomDimName[names_] :=
  * @param gij list of SARAH-like formated anomalous dimensions
  *)
 ConvertSarahAnomDim[gij_List] :=
-    Module[{lst = {}, adim, i, name, type},
+    Module[{lst = {}, adim, i, name, type, dim},
            For[i = 1, i <= Length[gij], i++,
                adim = gij[[i]];
                (* adim[[1]] == {name1,name2}, adim[[2]] == 1-loop anom. dim *)
                name = CreateValidAnomDimName[adim[[1]]];
                If[FreeQ[adim[[2]], a_[i1,i2]],
                   type = CConversion`ScalarType["double"];,
-                  type = CConversion`MatrixType["DoubleMatrix", 3, 3];
+                  dim = TreeMasses`GetDimension[adim[[1,1]]];
+                  type = CConversion`MatrixType["DoubleMatrix", dim, dim];
                  ];
                AppendTo[lst, AnomalousDimension[name, type, Drop[adim, 1]]];
               ];
