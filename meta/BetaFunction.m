@@ -250,7 +250,7 @@ CreateCCtorInitialization[betaFunctions_List] :=
 (* create copy constructor initialization list *)
 CreateCCtorParameterList[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CreateGetterReturnType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            def = def <> ", " <> dataType <> " " <> name <> "_";
            Return[def];
