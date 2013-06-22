@@ -265,7 +265,7 @@ GetMixingMatrixType[massMatrix_TreeMasses`MassMatrix] :=
 CreateMassGetter[massMatrix_TreeMasses`MassMatrix] :=
     Module[{massESSymbol, returnType, dim, massESSymbolStr},
            massESSymbol = GetMassEigenstate[massMatrix];
-           massESSymbolStr = ToValidCSymbolString[SARAH`Mass[massESSymbol]];
+           massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]];
            dim = GetDimension[massESSymbol];
            If[dim == 1,
               returnType = CConversion`ScalarType["double"];,
@@ -293,7 +293,7 @@ CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_] :=
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType];
 
 CreateMassCalculationPrototype[TreeMasses`MassMatrix[_, massESSymbol_, Null]] :=
-    Module[{result, ev = ToValidCSymbolString[SARAH`Mass[massESSymbol]]},
+    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]]},
            result = "void calculate_" <> ev <> "();\n";
            Return[result];
           ];
@@ -302,7 +302,7 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`MassMatrix] :=
     Module[{result = "", massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
            result = CreateMassMatrixGetterPrototype[massMatrix] <>
-                    "void calculate_" <> ToValidCSymbolString[SARAH`Mass[massESSymbol]] <>
+                    "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]] <>
                     "();\n";
            Return[result];
           ];
@@ -310,7 +310,7 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`MassMatrix] :=
 CallMassCalculationFunction[massMatrix_TreeMasses`MassMatrix] :=
     Module[{result = "", k, massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
-           result = "calculate_" <> ToValidCSymbolString[SARAH`Mass[massESSymbol]]
+           result = "calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]]
                     <> "();\n";
            Return[result];
           ];
@@ -390,7 +390,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            dimStr = ToString[dim];
            ev = ToValidCSymbolString[GetHead[eigenVector]];
            matrixSymbol = "mass_matrix_" <> ev;
-           ev = ToValidCSymbolString[SARAH`Mass[GetHead[eigenVector]]];
+           ev = ToValidCSymbolString[FlexibleSUSY`Mass[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            body = "DoubleMatrix " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
@@ -434,7 +434,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
           ];
 
 CreateMassCalculationFunction[TreeMasses`MassMatrix[mass_, massESSymbol_, Null]] :=
-    Module[{result, ev = ToValidCSymbolString[SARAH`Mass[massESSymbol]], body,
+    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]], body,
             trans = Identity},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            If[IsVector[massESSymbol] || IsScalar[massESSymbol],
@@ -466,7 +466,7 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`MassMatrix] :=
               returnType = "double";
              ];
            result = returnType <> " " <>
-                    ToValidCSymbolString[SARAH`Mass[massESSymbol]] <> ";\n";
+                    ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]] <> ";\n";
            Return[result];
           ];
 
@@ -474,7 +474,7 @@ CreatePhysicalMassInitialization[massMatrix_TreeMasses`MassMatrix] :=
     Module[{result = "", massESSymbol, dim},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
-           result = ", " <> ToValidCSymbolString[SARAH`Mass[massESSymbol]];
+           result = ", " <> ToValidCSymbolString[FlexibleSUSY`Mass[massESSymbol]];
            If[dim == 1,
               result = result <> "(0)";,
               result = result <> "(" <> ToString[dim] <> ")";

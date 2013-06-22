@@ -84,7 +84,7 @@ ConvertSarahTadpoles[tadpoles_List] :=
                   result[[k,1]] = field[SARAH`gO1];
                  ];
               ];
-           Return[result /. SARAH`Mass2 -> SARAH`Mass];
+           Return[result /. SARAH`Mass2 -> FlexibleSUSY`Mass];
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
@@ -503,14 +503,14 @@ ReplaceGhosts[states_:SARAH`EWSB] :=
            Return[ghosts];
           ];
 
-SARAH`A0[Mass2[a_]]              := SARAH`A0[SARAH`Mass[a]];
-SARAH`B0[a___, Mass2[b_], c___]  := SARAH`B0[a,SARAH`Mass[b],c];
-SARAH`B1[a___, Mass2[b_], c___]  := SARAH`B1[a,SARAH`Mass[b],c];
-SARAH`B00[a___, Mass2[b_], c___] := SARAH`B00[a,SARAH`Mass[b],c];
-SARAH`B22[a___, Mass2[b_], c___] := SARAH`B22[a,SARAH`Mass[b],c];
-SARAH`F0[a___, Mass2[b_], c___]  := SARAH`F0[a,SARAH`Mass[b],c];
-SARAH`G0[a___, Mass2[b_], c___]  := SARAH`G0[a,SARAH`Mass[b],c];
-SARAH`H0[a___, Mass2[b_], c___]  := SARAH`H0[a,SARAH`Mass[b],c];
+SARAH`A0[Mass2[a_]]              := SARAH`A0[FlexibleSUSY`Mass[a]];
+SARAH`B0[a___, Mass2[b_], c___]  := SARAH`B0[a,FlexibleSUSY`Mass[b],c];
+SARAH`B1[a___, Mass2[b_], c___]  := SARAH`B1[a,FlexibleSUSY`Mass[b],c];
+SARAH`B00[a___, Mass2[b_], c___] := SARAH`B00[a,FlexibleSUSY`Mass[b],c];
+SARAH`B22[a___, Mass2[b_], c___] := SARAH`B22[a,FlexibleSUSY`Mass[b],c];
+SARAH`F0[a___, Mass2[b_], c___]  := SARAH`F0[a,FlexibleSUSY`Mass[b],c];
+SARAH`G0[a___, Mass2[b_], c___]  := SARAH`G0[a,FlexibleSUSY`Mass[b],c];
+SARAH`H0[a___, Mass2[b_], c___]  := SARAH`H0[a,FlexibleSUSY`Mass[b],c];
 
 SARAH`A0[bar[a_]]              := SARAH`A0[a];
 SARAH`B0[a___, bar[b_], c___]  := SARAH`B0[a,b,c];
