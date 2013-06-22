@@ -69,8 +69,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
               twoLoopBeta  := RValueToCFormString[(CConversion`twoLoop * GetBeta2Loop[betaFunction])
                                             /. { Kronecker[i1,i2] -> unitMatrix }
                                             /. { a_[i1,i2] :> a }];
-              beta2L        = beta2L <> betaName <> " = " <> betaName <>
-                              " + " <> twoLoopBeta <> ";\n";
+              beta2L        = beta2L <> betaName <> " += " <> twoLoopBeta <> ";\n";
               ];
            localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];
