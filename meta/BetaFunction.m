@@ -108,7 +108,8 @@ ConvertSarahRGEs[betaFunctions_List] :=
           ];
 
 (* count number of parameters in beta functions list *)
-CountNumberOfParameters[CConversion`ScalarType[type_]] := 1;
+CountNumberOfParameters[CConversion`ScalarType["double"]] := 1;
+CountNumberOfParameters[CConversion`ScalarType["Complex"]] := 2;
 
 CountNumberOfParameters[CConversion`VectorType[type_, entries_]] := entries;
 
