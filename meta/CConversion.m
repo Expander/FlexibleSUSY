@@ -123,6 +123,18 @@ CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, _]] :=
 CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, _, _]] :=
     type <> " " <> parameter;
 
+CreateDefaultDefinition[parameter_, type_] :=
+    Print["Error: unknown parameter type: " <> ToString[type]];
+
+CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
+    type <> " " <> parameter <> " = 0";
+
+CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, entries_]] :=
+    type <> " " <> parameter <> "(" <> ToString[entries] <> ")";
+
+CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
+    type <> " " <> parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
+
 GetCParameterType[parameterType_] :=
     ToString[parameterType[[1]]];
 
