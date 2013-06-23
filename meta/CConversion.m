@@ -130,10 +130,10 @@ CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
     type <> " " <> parameter <> " = 0";
 
 CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, entries_]] :=
-    type <> " " <> parameter <> "(" <> ToString[entries] <> ")";
+    type <> " " <> parameter;
 
 CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
-    type <> " " <> parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
+    type <> " " <> parameter;
 
 GetCParameterType[parameterType_] :=
     ToString[parameterType[[1]]];
