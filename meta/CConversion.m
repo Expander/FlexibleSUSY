@@ -272,15 +272,7 @@ RValueToCFormString[expr_] :=
                     SARAH`B22[a___, SARAH`Mass2[b_], c___] :> SARAH`B22[a,FlexibleSUSY`M[b],c],
                     SARAH`F0[a___, SARAH`Mass2[b_], c___]  :> SARAH`F0[a,FlexibleSUSY`M[b],c],
                     SARAH`G0[a___, SARAH`Mass2[b_], c___]  :> SARAH`G0[a,FlexibleSUSY`M[b],c],
-                    SARAH`H0[a___, SARAH`Mass2[b_], c___]  :> SARAH`H0[a,FlexibleSUSY`M[b],c] } //. {
-                    SARAH`A0[bar[a_]]                :> SARAH`A0[a],
-                    SARAH`B0[a___, bar[b_], c___]    :> SARAH`B0[a,b,c],
-                    SARAH`B1[a___, bar[b_], c___]    :> SARAH`B1[a,b,c],
-                    SARAH`B00[a___, bar[b_], c___]   :> SARAH`B00[a,b,c],
-                    SARAH`B22[a___, bar[b_], c___]   :> SARAH`B22[a,b,c],
-                    SARAH`F0[a___, bar[b_], c___]    :> SARAH`F0[a,b,c],
-                    SARAH`G0[a___, bar[b_], c___]    :> SARAH`G0[a,b,c],
-                    SARAH`H0[a___, bar[b_], c___]    :> SARAH`H0[a,b,c] } /. {
+                    SARAH`H0[a___, SARAH`Mass2[b_], c___]  :> SARAH`H0[a,FlexibleSUSY`M[b],c] } /. {
                     SARAH`A0[p_^2]                   :> SARAH`A0[p],
                     SARAH`B0[p_^2, a__]              :> SARAH`B0[p, a],
                     SARAH`B1[p_^2, a__]              :> SARAH`B1[p, a],
