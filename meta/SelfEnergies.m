@@ -77,7 +77,7 @@ ConvertSarahTadpoles[tadpoles_List] :=
                   result[[k,1]] = field[SARAH`gO1];
                  ];
               ];
-           Return[result /. SARAH`Mass2 -> FlexibleSUSY`Mass];
+           Return[result /. SARAH`Mass2 -> FlexibleSUSY`M];
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
@@ -126,7 +126,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                   result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
                  ];
               ];
-           Return[result /. SARAH`Mass -> FlexibleSUSY`Mass];
+           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
 StripIndices[expr_, indices_List] :=
@@ -494,33 +494,6 @@ ReplaceGhosts[states_:SARAH`EWSB] :=
               ];
            Return[ghosts];
           ];
-
-SARAH`A0[Mass2[a_]]              := SARAH`A0[FlexibleSUSY`Mass[a]];
-SARAH`B0[a___, Mass2[b_], c___]  := SARAH`B0[a,FlexibleSUSY`Mass[b],c];
-SARAH`B1[a___, Mass2[b_], c___]  := SARAH`B1[a,FlexibleSUSY`Mass[b],c];
-SARAH`B00[a___, Mass2[b_], c___] := SARAH`B00[a,FlexibleSUSY`Mass[b],c];
-SARAH`B22[a___, Mass2[b_], c___] := SARAH`B22[a,FlexibleSUSY`Mass[b],c];
-SARAH`F0[a___, Mass2[b_], c___]  := SARAH`F0[a,FlexibleSUSY`Mass[b],c];
-SARAH`G0[a___, Mass2[b_], c___]  := SARAH`G0[a,FlexibleSUSY`Mass[b],c];
-SARAH`H0[a___, Mass2[b_], c___]  := SARAH`H0[a,FlexibleSUSY`Mass[b],c];
-
-SARAH`A0[bar[a_]]              := SARAH`A0[a];
-SARAH`B0[a___, bar[b_], c___]  := SARAH`B0[a,b,c];
-SARAH`B1[a___, bar[b_], c___]  := SARAH`B1[a,b,c];
-SARAH`B00[a___, bar[b_], c___] := SARAH`B00[a,b,c];
-SARAH`B22[a___, bar[b_], c___] := SARAH`B22[a,b,c];
-SARAH`F0[a___, bar[b_], c___]  := SARAH`F0[a,b,c];
-SARAH`G0[a___, bar[b_], c___]  := SARAH`G0[a,b,c];
-SARAH`H0[a___, bar[b_], c___]  := SARAH`H0[a,b,c];
-
-SARAH`A0[p_^2]       := SARAH`A0[p];
-SARAH`B0[p_^2, a__]  := SARAH`B0[p, a];
-SARAH`B1[p_^2, a__]  := SARAH`B1[p, a];
-SARAH`B00[p_^2, a__] := SARAH`B00[p, a];
-SARAH`B22[p_^2, a__] := SARAH`B22[p, a];
-SARAH`F0[p_^2, a__]  := SARAH`F0[p, a];
-SARAH`G0[p_^2, a__]  := SARAH`G0[p, a];
-SARAH`H0[p_^2, a__]  := SARAH`H0[p, a];
 
 DeclareFieldIndices[field_Symbol] := "";
 

@@ -263,21 +263,38 @@ ToValidCSymbolString[symbol_] :=
  *)
 RValueToCFormString[expr_] :=
     Module[{times, result},
-           result = expr //. {
-                    SARAH`A0[b_]             :> SARAH`A0[FlexibleSUSY`Mass[b]]        /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`B0[a__ , b_, c___] :> SARAH`B0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`B1[a__ , b_, c___] :> SARAH`B1[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`B00[a__, b_, c___] :> SARAH`B00[a, FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`B22[a__, b_, c___] :> SARAH`B22[a, FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`F0[a__ , b_, c___] :> SARAH`F0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`G0[a__ , b_, c___] :> SARAH`G0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass,
-                    SARAH`H0[a__ , b_, c___] :> SARAH`H0[a , FlexibleSUSY`Mass[b], c] /; Head[b] =!= FlexibleSUSY`Mass } /.
+           result = expr /.
+                    SARAH`Mass -> FlexibleSUSY`M //. {
+                    SARAH`A0[SARAH`Mass2[a_]]              :> SARAH`A0[FlexibleSUSY`M[a]],
+                    SARAH`B0[a___, SARAH`Mass2[b_], c___]  :> SARAH`B0[a,FlexibleSUSY`M[b],c],
+                    SARAH`B1[a___, SARAH`Mass2[b_], c___]  :> SARAH`B1[a,FlexibleSUSY`M[b],c],
+                    SARAH`B00[a___, SARAH`Mass2[b_], c___] :> SARAH`B00[a,FlexibleSUSY`M[b],c],
+                    SARAH`B22[a___, SARAH`Mass2[b_], c___] :> SARAH`B22[a,FlexibleSUSY`M[b],c],
+                    SARAH`F0[a___, SARAH`Mass2[b_], c___]  :> SARAH`F0[a,FlexibleSUSY`M[b],c],
+                    SARAH`G0[a___, SARAH`Mass2[b_], c___]  :> SARAH`G0[a,FlexibleSUSY`M[b],c],
+                    SARAH`H0[a___, SARAH`Mass2[b_], c___]  :> SARAH`H0[a,FlexibleSUSY`M[b],c] } //. {
+                    SARAH`A0[bar[a_]]                :> SARAH`A0[a],
+                    SARAH`B0[a___, bar[b_], c___]    :> SARAH`B0[a,b,c],
+                    SARAH`B1[a___, bar[b_], c___]    :> SARAH`B1[a,b,c],
+                    SARAH`B00[a___, bar[b_], c___]   :> SARAH`B00[a,b,c],
+                    SARAH`B22[a___, bar[b_], c___]   :> SARAH`B22[a,b,c],
+                    SARAH`F0[a___, bar[b_], c___]    :> SARAH`F0[a,b,c],
+                    SARAH`G0[a___, bar[b_], c___]    :> SARAH`G0[a,b,c],
+                    SARAH`H0[a___, bar[b_], c___]    :> SARAH`H0[a,b,c] } /. {
+                    SARAH`A0[p_^2]                   :> SARAH`A0[p],
+                    SARAH`B0[p_^2, a__]              :> SARAH`B0[p, a],
+                    SARAH`B1[p_^2, a__]              :> SARAH`B1[p, a],
+                    SARAH`B00[p_^2, a__]             :> SARAH`B00[p, a],
+                    SARAH`B22[p_^2, a__]             :> SARAH`B22[p, a],
+                    SARAH`F0[p_^2, a__]              :> SARAH`F0[p, a],
+                    SARAH`G0[p_^2, a__]              :> SARAH`G0[p, a],
+                    SARAH`H0[p_^2, a__]              :> SARAH`H0[p, a] } /.
                     SARAH`Mass2[a_?NumberQ]  :> Global`Sqr[a] /.
-                    SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`Mass[a]] /.
-                    FlexibleSUSY`Mass[a_?NumberQ]   :> a /.
-                    FlexibleSUSY`Mass[bar[a_]]      :> FlexibleSUSY`Mass[a] /.
-                    FlexibleSUSY`Mass[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`Mass[a]][idx] /.
-                    FlexibleSUSY`Mass[a_]           :> ToValidCSymbol[FlexibleSUSY`Mass[a]] /.
+                    SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`M[a]] /.
+                    FlexibleSUSY`M[a_?NumberQ]   :> a /.
+                    FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
+                    FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
+                    FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
                     Susyno`LieGroups`conj    -> SARAH`Conj /.
                     SARAH`Conj[a_] a_        :> AbsSqr[a] /.
                     a_[SARAH`i1,SARAH`i2]    :> a /.
