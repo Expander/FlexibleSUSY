@@ -1,7 +1,7 @@
 
 BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
 
-MassMatrix::usage="Head of a mass matrix";
+FSMassMatrix::usage="Head of a mass matrix";
 
 ConvertSarahMassMatrices::usage="creates list of mass matrices using
 SARAH's MassMatrix[] function";
@@ -232,25 +232,25 @@ ConvertSarahMassMatrices[] :=
                eigenstateName = particles[[k]];
                If[IsUnmixed[eigenstateName],
                   massMatrix = { ReplaceDependencies[GetMassOfUnmixedParticle[eigenstateName]] };
-                  AppendTo[result, TreeMasses`MassMatrix[massMatrix, eigenstateName, Null]];
+                  AppendTo[result, TreeMasses`FSMassMatrix[massMatrix, eigenstateName, Null]];
                   ,
                   massMatrix = ReplaceDependencies[SARAH`MassMatrix[eigenstateName]];
                   mixingMatrixSymbol = FindMixingMatrixSymbolFor[eigenstateName];
                   If[Head[massMatrix] === List,
-                     AppendTo[result, TreeMasses`MassMatrix[massMatrix, eigenstateName, mixingMatrixSymbol]];
+                     AppendTo[result, TreeMasses`FSMassMatrix[massMatrix, eigenstateName, mixingMatrixSymbol]];
                     ];
                  ];
               ];
            Return[result];
           ];
 
-GetMixingMatrixSymbol[massMatrix_TreeMasses`MassMatrix] := massMatrix[[3]];
+GetMixingMatrixSymbol[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[3]];
 
-GetMassEigenstate[massMatrix_TreeMasses`MassMatrix] := massMatrix[[2]];
+GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 
-GetMassMatrix[massMatrix_TreeMasses`MassMatrix] := massMatrix[[1]];
+GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 
-GetMixingMatrixType[massMatrix_TreeMasses`MassMatrix] :=
+GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{type, eigenstate, mixingMatrixSymbol, dim},
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
@@ -262,7 +262,7 @@ GetMixingMatrixType[massMatrix_TreeMasses`MassMatrix] :=
            Return[CConversion`MatrixType[type, dim, dim]];
           ];
 
-CreateMassGetter[massMatrix_TreeMasses`MassMatrix] :=
+CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{massESSymbol, returnType, dim, massESSymbolStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
@@ -274,7 +274,7 @@ CreateMassGetter[massMatrix_TreeMasses`MassMatrix] :=
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
           ];
 
-CreateMixingMatrixGetter[massMatrix_TreeMasses`MassMatrix] :=
+CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{mixingMatrixSymbol, returnType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            returnType = GetMixingMatrixType[massMatrix];
@@ -292,13 +292,13 @@ CreateMixingMatrixGetter[Null, returnType_] := "";
 CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_] :=
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType];
 
-CreateMassCalculationPrototype[TreeMasses`MassMatrix[_, massESSymbol_, Null]] :=
+CreateMassCalculationPrototype[TreeMasses`FSMassMatrix[_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]]},
            result = "void calculate_" <> ev <> "();\n";
            Return[result];
           ];
 
-CreateMassCalculationPrototype[massMatrix_TreeMasses`MassMatrix] :=
+CreateMassCalculationPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
            result = CreateMassMatrixGetterPrototype[massMatrix] <>
@@ -307,7 +307,7 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`MassMatrix] :=
            Return[result];
           ];
 
-CallMassCalculationFunction[massMatrix_TreeMasses`MassMatrix] :=
+CallMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", k, massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
            result = "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]]
@@ -362,7 +362,7 @@ MatrixToCFormString[matrix_List, symbol_String, matrixType_String:"DoubleMatrix"
            Return[result];
           ];
 
-CreateMassMatrixGetterFunction[massMatrix_TreeMasses`MassMatrix] :=
+CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, body, ev, matrixSymbol, matrix, massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
@@ -375,7 +375,7 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`MassMatrix] :=
            Return[result];
           ];
 
-CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`MassMatrix] :=
+CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, ev, matrixSymbol, massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
@@ -433,7 +433,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
-CreateMassCalculationFunction[TreeMasses`MassMatrix[mass_, massESSymbol_, Null]] :=
+CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
             trans = Identity},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
@@ -446,7 +446,7 @@ CreateMassCalculationFunction[TreeMasses`MassMatrix[mass_, massESSymbol_, Null]]
            Return[result <> body <> "}\n\n"];
           ];
 
-CreateMassCalculationFunction[massMatrix_TreeMasses`MassMatrix] :=
+CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol, mixingMatrixSymbol, matrix},
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
@@ -459,7 +459,7 @@ CreateMassCalculationFunction[massMatrix_TreeMasses`MassMatrix] :=
            Return[result];
           ];
 
-CreatePhysicalMassDefinition[massMatrix_TreeMasses`MassMatrix] :=
+CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol, returnType = "DoubleVector"},
            massESSymbol = GetMassEigenstate[massMatrix];
            If[GetDimension[massESSymbol] == 1,
@@ -470,7 +470,7 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`MassMatrix] :=
            Return[result];
           ];
 
-CreatePhysicalMassInitialization[massMatrix_TreeMasses`MassMatrix] :=
+CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol, dim},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
@@ -493,7 +493,7 @@ DefineMatrix[matrix_List, type_String] :=
            Return[result];
           ];
 
-CreateMixingMatrixDefinition[massMatrix_TreeMasses`MassMatrix] :=
+CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, mixingMatrixSymbol, matrixType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            matrixType = GetMixingMatrixType[massMatrix][[1]];
@@ -514,7 +514,7 @@ InitializeMatrix[matrix_List, dim_Integer] :=
            Return[result];
           ];
 
-CreateMixingMatrixInitialization[massMatrix_TreeMasses`MassMatrix] :=
+CreateMixingMatrixInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, mixingMatrixSymbol, dim},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = Length[GetMassMatrix[massMatrix]];

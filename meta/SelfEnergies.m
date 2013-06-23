@@ -1,11 +1,11 @@
 
 BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`"}];
 
-SelfEnergy::usage="self-energy head";
+FSSelfEnergy::usage="self-energy head";
 Tadpole::usage="tadpole head";
 
 ConvertSarahSelfEnergies::usage="converts SARAH's self-energies to our
-own format: SelfEnergies`SelfEnergy[particle, expression]";
+own format: SelfEnergies`FSSelfEnergy[particle, expression]";
 
 ConvertSarahTadpoles::usage="converts SARAH's tadpoles to our own
 format: SelfEnergies`Tadpole[particle, expression]";
@@ -41,13 +41,13 @@ FunctionAlreadyDefined[name_String, numberOfIndices_Integer] :=
 RegisterFunction[name_String, numberOfIndices_Integer] :=
     AppendTo[cppFunctionDefinitions, {name, numberOfIndices}];
 
-GetExpression[selfEnergy_SelfEnergies`SelfEnergy] :=
+GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     selfEnergy[[2]];
 
 GetExpression[tadpole_SelfEnergies`Tadpole] :=
     tadpole[[2]];
 
-GetField[selfEnergy_SelfEnergies`SelfEnergy] :=
+GetField[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     selfEnergy[[1]];
 
 GetField[tadpole_SelfEnergies`Tadpole] :=
@@ -55,7 +55,7 @@ GetField[tadpole_SelfEnergies`Tadpole] :=
 
 GetField[sym_] :=
     Module[{},
-           Print["Error: GetField is not called with a SelfEnergies`SelfEnergy",
+           Print["Error: GetField is not called with a SelfEnergies`FSSelfEnergy",
                  "or SelfEnergies`Tadpole head: ", sym];
            Quit[];
           ];
@@ -87,7 +87,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
                Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
            massESReplacements = Cases[massESReplacements, HoldPattern[Except[0] -> _]];
-           result = (SelfEnergies`SelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
+           result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
            (* append mass eigenstate indices *)
            For[k = 1, k <= Length[result], k++,
                field = GetField[result[[k]]];
@@ -96,7 +96,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                  ];
               ];
            (* filter out all fermionic self-energies *)
-           fermionSE = Cases[result, SelfEnergies`SelfEnergy[_, List[__]]];
+           fermionSE = Cases[result, SelfEnergies`FSSelfEnergy[_, List[__]]];
            result = Select[result, (Head[GetExpression[#]] =!= List)&];
            (* decompose fermionic self-energies into L,R,S parts *)
            For[k = 1, k <= Length[fermionSE], k++,
@@ -106,9 +106,9 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                   Print["Error: self-energy of ", field, " does not have 3 parts"];
                   Continue[];
                  ];
-               AppendTo[result, SelfEnergies`SelfEnergy[field[1]       , expr[[1]]]];
-               AppendTo[result, SelfEnergies`SelfEnergy[field[SARAH`PR], expr[[2]]]];
-               AppendTo[result, SelfEnergies`SelfEnergy[field[SARAH`PL], expr[[3]]]];
+               AppendTo[result, SelfEnergies`FSSelfEnergy[field[1]       , expr[[1]]]];
+               AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PR], expr[[2]]]];
+               AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PL], expr[[3]]]];
               ];
            (* If the external field has dimension 1, remove it's
               indices.  For example in the Glu self-energy, terms
@@ -460,7 +460,7 @@ CreateVertexExpressions[expr_] :=
            Return[{allProtos, allDecls, allRules}];
           ];
 
-CreateVertexExpressions[se_SelfEnergies`SelfEnergy] :=
+CreateVertexExpressions[se_SelfEnergies`FSSelfEnergy] :=
     CreateVertexExpressions[GetExpression[se]];
 
 CreateVertexExpressions[se_SelfEnergies`Tadpole] :=
@@ -520,13 +520,13 @@ CreateSelfEnergyFunctionName[field_] :=
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
-CreateFunctionName[selfEnergy_SelfEnergies`SelfEnergy] :=
+CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
 
 CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
     CreateTadpoleFunctionName[GetField[tadpole]];
 
-CreateFunctionPrototype[selfEnergy_SelfEnergies`SelfEnergy] :=
+CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
     "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
