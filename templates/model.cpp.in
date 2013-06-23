@@ -29,12 +29,6 @@
 
 #define PHYSICAL(parameter) physical.parameter
 
-#if __cplusplus <= 199711L && defined(__GNUC__)
-   #define decltype typeof
-#endif
-
-#undef VERBOSE
-
 @ModelName@::@ModelName@()
    : Two_scale_model()
    , @ModelName@_soft_parameters()
