@@ -32,6 +32,18 @@ CONFIGHDR=$BASEDIR/config/config.h
 CONFIGHDR_TMPL=$BASEDIR/config/config.h.in
 
 # options
+deprecated_options=""
+options="                    \
+   enable_colors             \
+   enable_debug              \
+   enable_silent             \
+   enable_verbose            \
+"
+enable_colors="no"
+enable_debug=""
+enable_silent="no"
+enable_verbose="no"
+
 boost_lib_dir=""
 boost_inc_dir=""
 eigen_inc_dir=""
@@ -41,9 +53,9 @@ lapack_lib_dir=""
 tvmet_config="tvmet-config"
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-std=c++11 -ggdb -O2 -Wall -pedantic -Wextra -Wcast-qual\
+CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra -Wcast-qual\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
-FFLAGS="-g -O2 -frecursive"
+FFLAGS="-O2 -frecursive"
 TVMETFLAGS=""
 FLIBS=""
 BOOSTTESTLIBS=""
@@ -78,7 +90,7 @@ message() {
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$* ... "
+    echo "$*"
     logmsg "$*"
 }
 
@@ -329,7 +341,7 @@ check_symbol() {
                 fi
              done
         else
-            logmsg "$d/$symbollib readable"
+            logmsg "  $d/$symbollib readable"
             symbolfile=$d/$symbollib
             break
         fi
@@ -664,63 +676,88 @@ check_math_cmd() {
 }
 
 #_____________________________________________________________________
-define() {
-    # $@: list of extra define statemens
-    if [ -n "$@" ]; then
-        if [ -z "$extra_defines" ]; then
-            extra_defines="-D$@"
+enable_defines() {
+    if test "x$enable_colors" = "xyes" ; then
+        message "Enabling colored output -DCOLOR_PRINTOUT"
+        CPPFLAGS="$CPPFLAGS -DCOLOR_PRINTOUT"
+    fi
+
+    if test "x$enable_debug" = "xyes" ; then
+        message "Enabling debug mode -DDEBUG"
+        CPPFLAGS="$CPPFLAGS -DDEBUG"
+        CXXFLAGS="$CXXFLAGS -g"
+        FFLAGS="$FFLAGS -g"
+    fi
+
+    if test "x$enable_debug" = "xno" ; then
+        message "Disabling debug mode and removing assertions -UDEBUG -DNDEBUG"
+        CPPFLAGS="$CPPFLAGS -UDEBUG -DNDEBUG"
+    fi
+
+    if test "x$enable_silent" = "xyes" ; then
+        message "Enabling silent mode -DSILENT"
+        CPPFLAGS="$CPPFLAGS -DSILENT"
+    fi
+
+    if test "x$enable_verbose" = "xyes" ; then
+        if test "x$enable_silent" = "xyes" ; then
+            message "Warning: ignoring --enable-verbose because silent mode is enabled!"
         else
-            extra_defines="$extra_defines -D$@"
+            message "Enabling verbose mode -DVERBOSE"
+            CPPFLAGS="$CPPFLAGS -DVERBOSE"
         fi
     fi
 }
 
 #_____________________________________________________________________
-enable_defines() {
-    if [ -n "$extra_defines" ]; then
-        message "adding defines $extra_defines to CPPFLAGS"
-        CPPFLAGS="$extra_defines $CPPFLAGS"
-    fi
-}
-
-#_____________________________________________________________________
 help() {
-    echo "Usage: ./`basename $0` [options]"
-    echo "Options:"
-    echo "--enable-colors          Enable colored output"
-    echo "--enable-debug           Enable debug messages"
-    echo "--enable-silent          Suppress all command line output"
-    echo "--enable-verbose         Enable verbose messages"
-    echo "--with-algorithms=       Comma separated list of RG solver algorithms"
-    echo "                         (default: $ALGORITHMS)"
-    echo "                         possible values: all $available_algorithms"
-    echo "--with-boost-libdir=     Path to search for BOOST libraries"
-    echo "--with-boost-incdir=     Path to search for BOOST headers"
-    echo "--with-eigen-incdir=     Path to search for Eigen headers"
-    echo "--with-cxx=              C++ compiler (default: $CXX)"
-    echo "--with-cxxflags=         C++ compiler flags (default: $CXXFLAGS)"
-    echo "--with-fc=               Fortran compiler (default: $FC)"
-    echo "--with-fflags=           Fortran compiler flags (default: $FFLAGS)"
-    echo "--with-gsl-config=       Path to gsl-config (default: $gsl_config)"
-    echo "--with-lapack-libdir=    Path to search for LAPACK and BLAS libraries"
-    echo "--with-math-cmd=         Mathematic kernel (default: $MATH)"
-    echo "--with-models=           Comma separated list of models to be build"
-    echo "                         (default: $MODELS)"
-    echo "                         possible values: all <model1>,<model2>,..."
-    echo "--with-tvmet-config=     Path to tvmet-config (default: $tvmet_config)"
-    echo "--help,-h                Print this help message"
-    echo "--libext                 Library extension (default: $LIBEXT)"
-    echo "--make-lib-cmd=          Command to make library (default: $MAKELIB)"
-    echo "--version,-v             Print version information"
+cat <<EOF
+Usage: ./`basename $0` [options]
+Options:
+
+  --help,-h         Print this help message
+  --libext          Library extension (default: $LIBEXT)
+  --make-lib-cmd    Command to make library (default: $MAKELIB)
+  --version,-v      Print version information
+
+enable/disable options, prefix with either --enable- or --disable-
+
+  colors            Colored output
+  debug             Debug messages and assertions
+  silent            Suppress all command line output
+  verbose           Verbose messages
+
+with options, prefix with --with-, enables corresponding support
+
+  algorithms        Comma separated list of RG solver algorithms
+                    (default: $ALGORITHMS)
+                    possible values: all $available_algorithms
+  boost-libdir      Path to search for BOOST libraries
+  boost-incdir      Path to search for BOOST headers
+  eigen-incdir      Path to search for Eigen headers
+  cxx               C++ compiler (default: $CXX)
+  cxxflags          C++ compiler flags (default: $CXXFLAGS)
+  fc                Fortran compiler (default: $FC)
+  fflags            Fortran compiler flags (default: $FFLAGS)
+  gsl-config        Path to gsl-config (default: $gsl_config)
+  lapack-libdir     Path to search for LAPACK and BLAS libraries
+  math-cmd          Mathematic kernel (default: $MATH)
+  models            Comma separated list of models to be build
+                    (default: $MODELS)
+                    possible values: all <model1>,<model2>,...
+  tvmet-config      Path to tvmet-config (default: $tvmet_config)
+EOF
 }
 
 #_____________________________________________________________________
 version() {
-    echo "$PROGRAM_NAME $PROGRAM_VERSION"
-    echo "$PROGRAM_NAME is free software: you can redistribute it and/or modify"
-    echo "it under the terms of the GNU General Public License as published by"
-    echo "the Free Software Foundation, either version 3 of the License, or"
-    echo "(at your option) any later version.  See http://www.gnu.org/licenses/"
+cat <<EOF
+$PROGRAM_NAME $PROGRAM_VERSION
+$PROGRAM_NAME is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.  See http://www.gnu.org/licenses/
+EOF
 }
 
 rm -f $logfile
@@ -734,10 +771,46 @@ if test $# -gt 0 ; then
         esac
 
         case $1 in
-            --enable-colors)         define "COLOR_PRINTOUT" ;;
-            --enable-debug)          define "DEBUG" ;;
-            --enable-silent)         define "SILENT" ;;
-            --enable-verbose)        define "VERBOSE" ;;
+            --enable-*)
+                f=`echo $1 | sed -e 's/--//' -e 's/-/_/g'`
+                eval prev='$'`echo ${f}`
+                if test "x${prev}" = "xyes"; then
+                    echo "INFO: $1: already enabled by default."
+                fi
+                if test ! "x`echo ${deprecated_options} | grep ${f}`" = "x"; then
+                    echo "WARNING: option $1 is deprecated and ignored"'!'
+                fi
+                eval ${f}=yes
+                for c in $options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                for c in $deprecated_options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                if test "x$f" != "x" ; then
+                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                fi
+                ;;
+            --disable-*)
+                f=`echo $1 | sed -e 's/--disable/enable/' -e 's/-/_/g'`
+                eval prev='$'`echo ${f}`
+                if test "x${prev}" = "xno"; then
+                    echo "INFO: $1: already disabled by default."
+                fi
+                eval ${f}=no
+                for c in $options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                if test "x$f" != "x" ; then
+                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                fi
+                ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
