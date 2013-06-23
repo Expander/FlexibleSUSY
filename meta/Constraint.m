@@ -79,8 +79,8 @@ ApplyConstraints[settings_List] :=
 RemoveProtectedHeads[expr_] :=
     expr /. SARAH`SM[__] -> SARAH`SM[];
 
-DefineLocalConstRef[parameter_, macro_String, prefix_String:""] :=
-    "const auto& " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
+DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
+    "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
     macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
 
 CreateLocalConstRefs[expr_] :=
@@ -97,9 +97,9 @@ CreateLocalConstRefs[expr_] :=
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
-           (result = result <> DefineLocalConstRef[#,"INPUTPARAMETER"])& /@ inputSymbols;
-           (result = result <> DefineLocalConstRef[#,"MODELPARAMETER"])& /@ modelPars;
-           (result = result <> DefineLocalConstRef[#,"MODELPARAMETER"])& /@ outputPars;
+           (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
+           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
+           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            Return[result];
           ];
 
@@ -110,7 +110,7 @@ CreateLocalConstRefsForBetas[expr_] :=
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           (result = result <> DefineLocalConstRef[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
+           (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
            Return[result];
           ];
 
