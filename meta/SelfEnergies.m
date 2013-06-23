@@ -133,7 +133,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                   result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
                  ];
               ];
-           Return[result];
+           Return[result /. SARAH`Mass -> FlexibleSUSY`Mass];
           ];
 
 StripIndices[expr_, indices_List] :=
