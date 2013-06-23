@@ -88,7 +88,7 @@ message() {
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$* ... "
+    echo "$*"
     logmsg "$*"
 }
 
@@ -339,7 +339,7 @@ check_symbol() {
                 fi
              done
         else
-            logmsg "$d/$symbollib readable"
+            logmsg "  $d/$symbollib readable"
             symbolfile=$d/$symbollib
             break
         fi
