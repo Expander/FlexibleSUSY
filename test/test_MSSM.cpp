@@ -1155,31 +1155,36 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    // check that the important scalar potential parameters are equal
    TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
-   TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 0.1);
-   TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
+   TEST_CLOSE_REL(m.get_Mu(), s.displaySusyMu(), 0.0007);
+   TEST_CLOSE_REL(m.get_BMu(), s.displayM3Squared(), 0.0003);
    m.calculate_1loop_masses();
    s.physical(1);
 
-   const DoubleVector hh(m.get_physical().Mhh);
-   if (hh(1) <= hh(2)) {
-      TEST_CLOSE(s.displayPhys().mh0, m.get_physical().Mhh(1), 1.0e-10);
-      TEST_CLOSE(s.displayPhys().mH0, m.get_physical().Mhh(2), 1.0e-10);
-   } else {
-      TEST_CLOSE(s.displayPhys().mh0, m.get_physical().Mhh(2), 1.0e-10);
-      TEST_CLOSE(s.displayPhys().mH0, m.get_physical().Mhh(1), 1.0e-10);
+   DoubleVector hh(m.get_physical().Mhh);
+   if (hh(1) > hh(2)) {
+      TEST(false && "Error: hh wrong order!");
+      hh = hh.sort();
    }
-   const DoubleVector Ah(m.get_physical().MAh);
-   if (Ah(1) < Ah(2)) {
-      TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MAh(2), 1.0e-10);
-   } else {
-      TEST_CLOSE(s.displayPhys().mA0     , m.get_physical().MAh(1), 1.0e-10);
+   TEST_CLOSE(s.displayPhys().mh0, hh(1), 0.1);
+   TEST_CLOSE(s.displayPhys().mH0, hh(2), 0.04);
+   TEST_CLOSE_REL(s.displayPhys().mh0, hh(1), 0.001);
+   TEST_CLOSE_REL(s.displayPhys().mH0, hh(2), 6.0e-5);
+
+   DoubleVector Ah(m.get_physical().MAh);
+   if (Ah(1) > Ah(2)) {
+      TEST(false && "Error: Ah wrong order!");
+      Ah = Ah.sort();
    }
-   const DoubleVector Hpm(m.get_physical().MHpm);
-   if (Hpm(1) < Hpm(2)) {
-      TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MHpm(2), 1.0e-10);
-   } else {
-      TEST_CLOSE(s.displayPhys().mHpm    , m.get_physical().MHpm(1), 1.0e-10);
+   TEST_CLOSE(s.displayPhys().mA0, Ah(2), 0.05);
+   TEST_CLOSE_REL(s.displayPhys().mA0, Ah(2), 6.0e-5);
+
+   DoubleVector Hpm(m.get_physical().MHpm);
+   if (Hpm(1) > Hpm(2)) {
+      TEST(false && "Error: Hpm wrong order!");
+      Hpm = Hpm.sort();
    }
+   TEST_CLOSE(s.displayPhys().mHpm, Hpm(2), 0.09);
+   TEST_CLOSE_REL(s.displayPhys().mHpm, Hpm(2), 1.3e-4);
 }
 
 void test_ewsb_tree(MSSM model, MssmSoftsusy softSusy)
@@ -1246,7 +1251,7 @@ void test_ewsb_1loop(MSSM model, MssmSoftsusy softSusy)
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
-   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 5.0);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 0.0004);
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 0.1);
 }
 

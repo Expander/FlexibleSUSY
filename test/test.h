@@ -19,6 +19,18 @@ bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
    return std::fabs(a - b) < prec;
 }
 
+template <typename T>
+bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+{
+   if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+      return true;
+
+   if (std::fabs(a) < prec)
+      return std::numeric_limits<T>::infinity();
+
+   return std::fabs((a - b)/a) < prec;
+}
+
 bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
 {
    if (a.displayRows() != b.displayRows()) {
@@ -196,12 +208,25 @@ void check_greater_than(T a, T b, const std::string& testMsg)
    }
 }
 
+template <typename T>
+void check_relative_dev(T a, T b, const std::string& testMsg, T max_dev)
+{
+   if (!is_equal_rel(a, b, max_dev)) {
+      std::cout << "test failed: " << testMsg << ": "
+                << a << " != " << b
+                << " (diff.: " << (a-b) << ", rel. diff.: "
+                << 100. * (a-b)/a << "%)\n";
+      gErrors++;
+   }
+}
+
 #define S(x) #x
 #define S_(x) S(x)
 #define S__LINE__ S_(__LINE__)
 #define TEST_EQUALITY(a, b) check_equality(a, b,"line " S__LINE__ ": " #a " == " #b, max_dev)
 #define TEST_CLOSE(a, b, dev) check_equality(a, b, "line " S__LINE__ ": " #a " == " #b, dev)
 #define TEST_GREATER(a, b) check_greater_than(a, b,"line " S__LINE__ ": " #a " > " #b)
+#define TEST_CLOSE_REL(a, b, dev) check_relative_dev(a, b, "line " S__LINE__ ": " #a " =r= " #b, dev)
 #define TEST(condition) check_condition(condition, #condition);
 
 #endif
