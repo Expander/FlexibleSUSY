@@ -579,7 +579,14 @@ check_tvmet_config() {
 check_fortran_libs() {
     case "$FC" in
         gfortran)
-            FLIBS="-lgfortran -lm" ;;
+            gfortran_lib_search_paths=`gfortran -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
+            check_library "libgfortran" "$gfortran_lib_search_paths" "$default_lib_paths"
+            if test "x$found_lib" = "x" ; then
+                message "Error: libgfortran not found in $gfortran_lib_search_paths $default_lib_paths"
+                exit 1
+            else
+                FLIBS="-L$found_dir -lgfortran -lm"
+            fi ;;
         g77|f77)
             FLIBS="-lg2c -lm" ;;
     esac

@@ -112,8 +112,7 @@ int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 int @ModelName@::solve_ewsb()
 {
    const gsl_multiroot_fsolver_type* solvers[] =
-      {gsl_multiroot_fsolver_hybrids, gsl_multiroot_fsolver_hybrid,
-       gsl_multiroot_fsolver_dnewton, gsl_multiroot_fsolver_broyden};
+      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
 
    double x_init[@numberOfEWSBEquations@];
    ewsb_initial_guess(x_init);

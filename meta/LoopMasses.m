@@ -76,7 +76,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
             tadpoleMatrix, U, V, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
@@ -124,7 +124,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
             massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
@@ -198,7 +198,7 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
     Module[{result, dim, dimStr, particleName, mixingMatrix, selfEnergyFunction},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
@@ -223,7 +223,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
             massMatrixStr, diagonalizationFunction = "Diagonalize"},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = particleName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            If[dim == 2, diagonalizationFunction = "Diagonalize2by2";];
@@ -287,7 +287,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
             momentum = inputMomentum, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = particleName];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
@@ -378,7 +378,7 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
             momentum = inputMomentum},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = particleName];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
@@ -402,7 +402,7 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
     Module[{result, dim, dimStr, particleName, inputMomenta, outputMomenta, body},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            inputMomenta = "old_" <> particleName;
            outputMomenta = "new_" <> particleName;
            body = DoMediumDiagonalization[particle, inputMomenta, tadpole] <> "\n" <>
@@ -434,7 +434,7 @@ DoDiagonalization[particle_Symbol, FlexibleSUSY`HighPrecision, tadpole_] :=
 CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            body = DoDiagonalization[particle, precision, tadpole];
-           result = "void CLASSNAME::calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[particle]] <>
+           result = "void CLASSNAME::calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
                     "_pole_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
           ];
@@ -458,7 +458,7 @@ CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
           ];
 
 CreateLoopMassPrototype[particle_Symbol] :=
-    "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[particle]] <> "_pole_1loop();\n";
+    "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
 CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
@@ -468,7 +468,7 @@ CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
           ];
 
 CallLoopMassFunction[particle_Symbol] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[particle]] <> "_pole_1loop();\n";
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
 CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
     Module[{particles, result = ""},
@@ -482,11 +482,11 @@ GetRunningOneLoopDRbarParticles[] :=
      SARAH`VectorP, SARAH`VectorZ, SARAH`VectorW};
 
 CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
-    "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[particle]] <>
+    "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
     "_DRbar_1loop(double, int) const;\n";
 
 CreateRunningDRbarMassPrototype[particle_] :=
-    "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`Mass[particle]] <>
+    "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
     "_DRbar_1loop(double) const;\n";
 
 CreateRunningDRbarMassPrototypes[] :=
@@ -502,7 +502,7 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
-           name = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
               body = "return 0.0;\n";
@@ -520,7 +520,7 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
 CreateRunningDRbarMassFunction[particle_] :=
     Module[{result, body, selfEnergyFunction, name},
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           name = ToValidCSymbolString[FlexibleSUSY`Mass[particle]];
+           name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double) const \n{\n";
               body = "return 0.0;\n";
