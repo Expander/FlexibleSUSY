@@ -3,7 +3,7 @@
 #define TEST_H
 
 static const double max_dev = 1.0e-12;
-static bool gErrors = 0;
+static int gErrors = 0;
 
 template <typename T>
 bool is_zero(T a)
