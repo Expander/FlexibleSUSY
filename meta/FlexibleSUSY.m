@@ -522,7 +522,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
 
            TreeMasses`SetModelParameters[allParameters];
-           TreeMasses`SetIndexReplacementRules[allIndexReplacementRules];
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {}, Model`Name,
