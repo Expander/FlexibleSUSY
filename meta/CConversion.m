@@ -262,12 +262,6 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
 
-Format[Susyno`LieGroups`conj[x_],CForm] :=
-    If[SARAH`getDimParameters[x] === {},
-       Format["Conj(" <> ToString[CForm[x]] <> ")", OutputForm],
-       Format[ToString[CForm[x]] <> ".conjugate()", OutputForm]
-      ];
-
 Format[SARAH`Conj[x_],CForm]            :=
     If[SARAH`getDimParameters[x] === {} || SARAH`getDimParameters[x] === {0},
        Format["Conj(" <> ToString[CForm[x]] <> ")", OutputForm],
