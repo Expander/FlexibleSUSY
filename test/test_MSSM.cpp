@@ -251,8 +251,8 @@ void ensure_one_loop_ewsb(MSSM& m)
    const double precision = m.get_ewsb_iteration_precision();
    m.set_ewsb_loop_order(1);
    m.solve_ewsb();
-   TEST_CLOSE(m.get_tadpole_vd() - m.tadpole_hh(1).real(), 0.0, precision);
-   TEST_CLOSE(m.get_tadpole_vu() - m.tadpole_hh(2).real(), 0.0, precision);
+   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(1).real(), 0.0, precision);
+   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(2).real(), 0.0, precision);
 }
 
 void ensure_one_loop_ewsb(MssmSoftsusy& s)
@@ -277,8 +277,8 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM m)
    const double alpha = s.displayDrBarPars().thetaH;
 
    // check that tadpole eqs. are fulfilled
-   TEST_CLOSE(m.get_tadpole_vd(), 0.0, 1.0e-8);
-   TEST_CLOSE(m.get_tadpole_vu(), 0.0, 1.0e-9);
+   TEST_CLOSE(m.get_ewsb_eq_vd(), 0.0, 1.0e-8);
+   TEST_CLOSE(m.get_ewsb_eq_vu(), 0.0, 1.0e-9);
 
    // neutral CP even Higgs
    DoubleVector hh(m.get_Mhh());
@@ -1230,8 +1230,8 @@ void test_ewsb_tree(MSSM model, MssmSoftsusy softSusy)
    // tree-level
    model.set_ewsb_loop_order(0);
    model.solve_ewsb();
-   TEST_CLOSE(model.get_tadpole_vd(), 0.0, precision);
-   TEST_CLOSE(model.get_tadpole_vu(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vd(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vu(), 0.0, precision);
 
    softSusy.rewsbTreeLevel(signMu);
    TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 5.0);
@@ -1263,8 +1263,8 @@ void test_ewsb_1loop(MSSM model, MssmSoftsusy softSusy)
    // one-loop
    model.set_ewsb_loop_order(1);
    model.solve_ewsb();
-   TEST_CLOSE(model.get_tadpole_vd() - model.tadpole_hh(1).real(), 0.0, precision);
-   TEST_CLOSE(model.get_tadpole_vu() - model.tadpole_hh(2).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(1).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(2).real(), 0.0, precision);
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);

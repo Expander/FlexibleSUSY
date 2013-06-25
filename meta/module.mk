@@ -12,7 +12,7 @@ META_SRC     := \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
 		$(DIR)/SelfEnergies.m \
-		$(DIR)/Tadpoles.m \
+		$(DIR)/EWSB.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThresholdCorrections.m \
