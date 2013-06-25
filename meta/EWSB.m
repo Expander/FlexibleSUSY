@@ -17,6 +17,8 @@ EWSB eqs. solver";
 
 Begin["Private`"];
 
+freePhases = {};
+
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
     FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
 
@@ -48,20 +50,21 @@ CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
                  ];
                If[Parameters`IsRealParameter[par],
                   If[CheckInEquations[uniquePar, AppearsOnlySquaredInEquation, uniqueEqs],
-                     Print["Note: ", par, " appears only squared in EWSB equations."];
+                     Print["   Note: ", par, " appears only squared in EWSB equations."];
                      AppendTo[newPhases, FlexibleSUSY`Sign[par]];
                     ];
                   ,
                   If[CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
-                     Print["Note: ", par, " appears only absolute squared in EWSB equations."];
+                     Print["   Note: ", par, " appears only absolute squared in EWSB equations."];
                      AppendTo[newPhases, FlexibleSUSY`Phase[par]];
                      ,
-                     Print["Note: ", par, " is complex and appears in EWSB equations."];
+                     Print["   Note: ", par, " is complex and appears in EWSB equations."];
                      AppendTo[newPhases, FlexibleSUSY`Phase[par]];
                     ];
                  ];
               ];
-           Print["Introducing new free parameters: ", newPhases];
+           Print["   Introducing new free parameters: ", newPhases];
+           freePhases = newPhases;
            Return[newPhases];
           ];
 

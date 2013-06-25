@@ -131,11 +131,12 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
                  } ];
           ];
 
-WriteInputParameterClass[modelName_String, inputParameters_List,
+WriteInputParameterClass[modelName_String, inputParameters_List, freePhases_List,
                          defaultValues_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit},
-          defineInputParameters = Constraint`DefineInputParameters[inputParameters];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[defaultValues];
+   Module[{defineInputParameters, defaultInputParametersInit, defaultValuesForPhases},
+          defaultValuesForPhases = {#, CConversion`ScalarType["Complex"]}& /@ freePhases;
+          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases]];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, defaultValuesForPhases]];
           ReplaceInFiles[files,
                          { "@ModelName@"             -> modelName,
                            "@defineInputParameters@" -> IndentText[defineInputParameters],
@@ -457,7 +458,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             nonSusyTraceDecl, nonSusyTraceRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
-            diagonalizationPrecision, allParticles},
+            diagonalizationPrecision, allParticles, freePhases},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -552,10 +553,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
 
            Print["Checking EWSB equations ..."];
-           EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
+           freePhases = EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[Model`Name, Global`InputParameters,
+           WriteInputParameterClass[Model`Name, Global`InputParameters, freePhases,
                                     Global`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "inputPars.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_inputPars.hpp"}]}}

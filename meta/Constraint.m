@@ -193,6 +193,12 @@ CalculateScaleFromExpr[expr_] :=
 DefineParameter[parameter_Symbol] :=
     "double " <> ToValidCSymbolString[parameter] <> ";\n";
 
+DefineParameter[FlexibleSUSY`Phase[phase_]] :=
+    "Complex " <> ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> ";\n";
+
+DefineParameter[FlexibleSUSY`Sign[phase_]] :=
+    "int " <> ToValidCSymbolString[phase] <> ";\n";
+
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
            (result = result <> DefineParameter[#])& /@ inputParameters;
@@ -201,6 +207,9 @@ DefineInputParameters[inputParameters_List] :=
 
 InitializeInputParameter[{parameter_, value_?NumberQ}] :=
     ToValidCSymbolString[parameter] <> "(" <> RValueToCFormString[value] <> ")";
+
+InitializeInputParameter[{parameter_, CConversion`ScalarType["Complex"]}] :=
+    ToValidCSymbolString[parameter] <> "(1,0)";
 
 InitializeInputParameter[pars__] :=
     Module[{},
