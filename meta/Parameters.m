@@ -13,7 +13,33 @@ coupling";
 
 CreateIndexReplacementRules::usage="";
 
+GetType::usage="";
+
 Begin["Private`"];
+
+GetTypeFromDimension[sym_Symbol, {}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`ScalarType["double"],
+       CConversion`ScalarType["Complex"]
+      ];
+
+GetTypeFromDimension[sym_Symbol, {1}] :=
+    GetTypeFromDimension[sym, {}];
+
+GetTypeFromDimension[sym_Symbol, {num_?NumberQ}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ">", num],
+       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ">", num]
+      ];
+
+GetTypeFromDimension[sym_Symbol, {num1_?NumberQ, num2_?NumberQ}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
+       CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
+      ];
+
+GetType[sym_Symbol] :=
+    GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
 CreateIndexReplacementRules[pars_List] :=
     Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},

@@ -32,21 +32,10 @@ GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
 GuessType[sym_[i1,i2]] :=
-    Module[{dim1, dim2, scalarType},
-           {dim1, dim2} = SARAH`getDimParameters[sym];
-           If[True || MemberQ[SARAH`realVar,sym],
-              scalarType = "double";,
-              scalarType = "Complex";
-             ];
-           CConversion`MatrixType["Eigen::Matrix<" <> scalarType <> "," <>
-                                  ToString[dim1] <> "," <> ToString[dim2] <> ">", dim1, dim2]
-          ];
+    Parameters`GetType[sym];
 
 GuessType[sym_Symbol] :=
-    If[True || MemberQ[SARAH`realVar,sym],
-       CConversion`ScalarType["double"],
-       CConversion`ScalarType["Complex"]
-      ];
+    Parameters`GetType[sym];
 
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
