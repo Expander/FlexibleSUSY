@@ -11,7 +11,16 @@ gauge couplings, which replace non-normalized gauge couplings
 GetGUTNormalization::usage="Returns GUT normalization of the given
 coupling";
 
+IsRealParameter::usage="";
+IsComplexParameter::usage="";
+
 Begin["Private`"];
+
+IsRealParameter[sym_] :=
+    MemberQ[SARAH`realVar, sym];
+
+IsComplexParameter[sym_] :=
+    !MemberQ[SARAH`realVar, sym];
 
 GetGUTNormalization[coupling_Symbol] :=
     Module[{pos, norm},
