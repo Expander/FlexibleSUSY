@@ -701,23 +701,6 @@ void compare_selectron_self_energy(MssmSoftsusy s, MSSM m)
    TEST_CLOSE(Se_softsusy_se(3,6), Se_sarah_se(3,6), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,3), Se_sarah_se(6,3), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 1.0e-10);
-
-   // one-loop diagonalization
-   DoubleMatrix MSe_sarah_1loop(m.get_mass_matrix_Se()
-                                - Se_sarah_se.real());
-   DoubleMatrix ZSe_sarah_1loop(6,6);
-   DoubleVector Se_sarah_1loop(6);
-   DiagonalizeUnsorted(MSe_sarah_1loop, ZSe_sarah_1loop, Se_sarah_1loop);
-   Se_sarah_1loop = Se_sarah_1loop.apply(zeroSqrt);
-
-   // The differences of 0.02 and 0.03 GeV come from the different way
-   // we do the diagnoalization.
-   TEST_CLOSE(Se_softsusy_1loop(1,1), Se_sarah_1loop(1), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_1loop(1,2), Se_sarah_1loop(2), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_1loop(1,3), Se_sarah_1loop(3), 0.02);
-   TEST_CLOSE(Se_softsusy_1loop(2,1), Se_sarah_1loop(4), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_1loop(2,2), Se_sarah_1loop(5), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_1loop(2,3), Se_sarah_1loop(6), 0.03);
 }
 
 void compare_sup_self_energy(MssmSoftsusy s, MSSM m)
