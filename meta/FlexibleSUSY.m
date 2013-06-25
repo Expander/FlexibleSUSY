@@ -22,6 +22,29 @@ allOutputParameters = {};
 
 GetOutputParameters[] := allOutputParameters;
 
+CheckModelFileSettings[] :=
+    Module[{},
+           If[Head[Global`InitialGuess] =!= List,
+              Global`InitialGuess = {};
+             ];
+           If[!NameQ["Global`BoundaryHighScaleFirstGuess"],
+              Print["Warning: Global`BoundaryHighScaleFirstGuess should be",
+                    " set in the model file!"];
+              Global`BoundaryHighScaleFirstGuess = 1.0 10^14;
+             ];
+           If[!NameQ[Global`BoundaryLowScale],
+              Print["Warning: Global`BoundaryLowScale should be",
+                    " set in the model file!"];
+              Global`BoundaryLowScale = Global`MZ;
+             ];
+           If[Head[Global`DefaultParameterPoint] =!= List,
+              Global`DefaultParameterPoint = {};
+             ];
+           If[Head[Global`InputParameters] =!= List,
+              Global`InputParameters = {};
+             ];
+          ];
+
 (*
    @brief Replaces tokens in files.
 
@@ -407,7 +430,9 @@ LoadModelFile[file_String] :=
     Module[{},
            If[FileExists[file],
               Print["Loading model file ", file];
-              Get[file];,
+              Get[file];
+              CheckModelFileSettings[];
+              ,
               Print["Error: model file not found: ", file];
               Quit[];
              ];
@@ -526,10 +551,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.cpp"}]}},
                          traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
 
-           If[Head[Global`DefaultParameterPoint] =!= List,
-              Global`DefaultParameterPoint = {};
-             ];
-
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[Model`Name, Global`InputParameters,
                                     Global`DefaultParameterPoint,
@@ -590,10 +611,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "lowScaleConstraint.cpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_lowScaleConstraint.cpp"}]}}
                                ];
-
-           If[Head[Global`InitialGuess] =!= List,
-              Global`InitialGuess = {};
-             ];
 
            Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
