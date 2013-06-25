@@ -1,10 +1,7 @@
 
 (* input parameters *)
 
-MINPAR=     {{1,m0},
-             {2,m12},
-             {3,TanBeta},
-             {4,Azero}};
+InputParameters = { m0, m12, TanBeta, Azero };
 
 DefaultParameterPoint = {
     {m0, 125},

@@ -531,7 +531,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[Model`Name, (#[[2]])& /@ MINPAR,
+           WriteInputParameterClass[Model`Name, Global`InputParameters,
                                     Global`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "inputPars.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_inputPars.hpp"}]}}
@@ -560,7 +560,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 SARAH`BoundaryHighScale /. susyBreakingParameterReplacementRules,
                                 Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Model`Name,
-                                (#[[2]])& /@ MINPAR,
+                                Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "highScaleConstraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_highScaleConstraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "highScaleConstraint.cpp.in"}],
@@ -572,7 +572,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 SARAH`BoundarySUSYScale /. susyBreakingParameterReplacementRules,
                                 SARAH`RenormalizationScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Model`Name,
-                                (#[[2]])& /@ MINPAR,
+                                Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyScaleConstraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyScaleConstraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyScaleConstraint.cpp.in"}],
@@ -584,7 +584,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
                                 Global`MZ,
                                 Model`Name,
-                                (#[[2]])& /@ MINPAR,
+                                Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "lowScaleConstraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_lowScaleConstraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "lowScaleConstraint.cpp.in"}],

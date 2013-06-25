@@ -1,16 +1,8 @@
 
 (* CE6SSM input parameters *)
 
-MINPAR=     {{1,m0},
-             {2,m12},
-             {3,TanBeta},
-             {4,Azero},
-             {61,LambdaInput},
-             {62,KappaInput},
-             {65,vSInput},
-             {66,BmuPrimeInput},
-             {67,muPrimeInput}
-            };
+InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
+                    KappaInput, vSInput, BmuPrimeInput, muPrimeInput };
 
 DefaultParameterPoint = {
     {m0, 125},
