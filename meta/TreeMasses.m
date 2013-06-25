@@ -411,20 +411,8 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                  body = body <> "Diagonalize2by2(" <> matrixSymbol <> ", " <>
                         U <> ", " <> ev <> ");\n";
                  ,
-                 (* Workaround: For the charginos and neutralinos it
-                    is important that we to sort the eigenvalues.  So,
-                    we have to use the function
-                    Diagonalize(ComplexMatrix&, DoubleVector) *)
-                 If[IsFermion[eigenVector] && (IsSymmetric[matrix] || Length[matrix] === 2),
-                    body = body <> "Diagonalize(" <> matrixSymbol <> ", " <>
-                           U <> ", " <> ev <> ");\n";
-                    ,
-                    (* For the sfermions it is important that we do
-                       *not* reorder the eigenvalues because we might
-                       exchange left and right-chiral particles. *)
-                    body = body <> "DiagonalizeUnsorted(" <> matrixSymbol <> ", " <>
-                           U <> ", " <> ev <> ");\n";
-                   ];
+                 body = body <> "Diagonalize(" <> matrixSymbol <> ", " <>
+                        U <> ", " <> ev <> ");\n";
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],

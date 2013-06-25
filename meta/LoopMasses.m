@@ -106,7 +106,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                          "DiagonalizeUnsorted(M_1loop, PHYSICAL(" <> U <> "), " <>
+                          "Diagonalize(M_1loop, PHYSICAL(" <> U <> "), " <>
                           "PHYSICAL(" <> particleName <> "));\n";
                 ];
               result = result <>
@@ -245,7 +245,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               U = ToValidCSymbolString[mixingMatrix];
               Utemp = "mix_" <> U;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            diagonalizationFunction <> "Unsorted(M_1loop, " <> Utemp <> ", eigen_values);\n" <>
+                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", eigen_values);\n" <>
                             "PHYSICAL(" <> particleName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1)\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
