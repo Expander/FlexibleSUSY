@@ -551,6 +551,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.cpp"}]}},
                          traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
 
+           Print["Checking EWSB equations ..."];
+           EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
+
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[Model`Name, Global`InputParameters,
                                     Global`DefaultParameterPoint,

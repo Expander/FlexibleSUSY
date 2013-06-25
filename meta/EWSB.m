@@ -1,5 +1,7 @@
 
-BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`"}];
+BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
+
+CheckEWSBEquations::usage="";
 
 CreateEWSBEqPrototype::usage="creates C function prototype for a
 given EWSB equation";
@@ -14,6 +16,54 @@ FillInitialGuessArray::usage="fills a C array with initial values for the
 EWSB eqs. solver";
 
 Begin["Private`"];
+
+AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
+    FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
+
+AppearsOnlySquaredInEquation[parameter_, equation_] :=
+    AppearsInEquationOnlyAs[parameter, equation, Power[#,2]&];
+
+AppearsOnlyAbsSquaredInEquation[parameter_, equation_] :=
+    AppearsInEquationOnlyAs[parameter, equation, (Susyno`LieGroups`conj[#] #)&] ||
+    AppearsInEquationOnlyAs[parameter, equation, (# Susyno`LieGroups`conj[#])&];
+
+AppearsNotInEquation[parameter_, equation_] :=
+    FreeQ[equation, parameter];
+
+CheckInEquations[parameter_, statement_, equations_List] :=
+    And @@ (statement[parameter,#]& /@ equations);
+
+CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
+    Module[{i, par, uniquePar, uniqueEqs, rules, newPhases = {}},
+           For[i = 1, i <= Length[outputParameters], i++,
+               par = outputParameters[[i]];
+               uniquePar = Unique[CConversion`ToValidCSymbol[par]];
+               rules = Join[{ par -> uniquePar},
+                            Rule[#,Unique[CConversion`ToValidCSymbol[#]]]& /@ Select[outputParameters, (# =!= par)&]
+                           ];
+               uniqueEqs = ewsbEqs /. rules;
+               If[CheckInEquations[uniquePar, AppearsNotInEquation, uniqueEqs],
+                  Print["Error: ", par, " does not appear in EWSB equations!"];
+                  Continue[];
+                 ];
+               If[Parameters`IsRealParameter[par],
+                  If[CheckInEquations[uniquePar, AppearsOnlySquaredInEquation, uniqueEqs],
+                     Print["Note: ", par, " appears only squared in EWSB equations."];
+                     AppendTo[newPhases, FlexibleSUSY`Sign[par]];
+                    ];
+                  ,
+                  If[CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
+                     Print["Note: ", par, " appears only absolute squared in EWSB equations."];
+                     AppendTo[newPhases, FlexibleSUSY`Phase[par]];
+                     ,
+                     Print["Note: ", par, " is complex and appears in EWSB equations."];
+                     AppendTo[newPhases, FlexibleSUSY`Phase[par]];
+                    ];
+                 ];
+              ];
+           Print["Introducing new free parameters: ", newPhases];
+           Return[newPhases];
+          ];
 
 CreateEWSBEqPrototype[vev_Symbol] :=
     Module[{result = ""},
