@@ -143,10 +143,10 @@ IsDiracFermion[sym_Symbol] :=
     And[IsFermion[sym], !MemberQ[SARAH`MajoranaPart, sym]];
 
 IsComplexScalar[sym_Symbol] :=
-    And[IsScalar[sym], !MemberQ[SARAH`realVar, sym]];
+    And[IsScalar[sym], Parameters`IsComplexParameter[sym]];
 
 IsRealScalar[sym_Symbol] :=
-    And[IsScalar[sym], MemberQ[SARAH`realVar, sym]];
+    And[IsScalar[sym], Parameters`IsRealParameter[sym]];
 
 IsMassless[sym_Symbol, states_:SARAH`EWSB] :=
     MemberQ[SARAH`Massless[states], sym];
@@ -255,7 +255,7 @@ GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = Length[GetMassMatrix[massMatrix]];
-           Which[MemberQ[SARAH`realVar,mixingMatrixSymbol], type = "DoubleMatrix";,
+           Which[Parameters`IsRealParameter[mixingMatrixSymbol], type = "DoubleMatrix";,
                  IsFermion[eigenstate],                     type = "ComplexMatrix";,
                  True,                                      type = "DoubleMatrix";
                 ];

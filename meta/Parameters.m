@@ -24,10 +24,10 @@ IsRealParameter[sym_] :=
     MemberQ[SARAH`realVar, sym];
 
 IsComplexParameter[sym_] :=
-    !MemberQ[SARAH`realVar, sym];
+    !IsRealParameter[sym];
 
 GetTypeFromDimension[sym_Symbol, {}] :=
-    If[True || MemberQ[SARAH`realVar,sym],
+    If[True || IsRealParameter[sym],
        CConversion`ScalarType["double"],
        CConversion`ScalarType["Complex"]
       ];
@@ -36,13 +36,13 @@ GetTypeFromDimension[sym_Symbol, {1}] :=
     GetTypeFromDimension[sym, {}];
 
 GetTypeFromDimension[sym_Symbol, {num_?NumberQ}] :=
-    If[True || MemberQ[SARAH`realVar,sym],
+    If[True || IsRealParameter[sym],
        CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
        CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
       ];
 
 GetTypeFromDimension[sym_Symbol, {num1_?NumberQ, num2_?NumberQ}] :=
-    If[True || MemberQ[SARAH`realVar,sym],
+    If[True || IsRealParameter[sym],
        CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
        CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
       ];
