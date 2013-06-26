@@ -15,13 +15,24 @@ double ArcTan(double);
 double ArcSin(double);
 double ArcCos(double);
 
-double Conj(double);
-Complex Conj(const Complex&);
+
+inline double Conj(double a)
+{
+   return a;
+}
+
+inline Complex Conj(const Complex& a)
+{
+   return std::conj(a);
+}
 
 double Cos(double);
 double Sin(double);
 
-int Delta(int, int);
+inline int Delta(int i, int j)
+{
+   return i == j ? 1 : 0;
+}
 
 Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
@@ -46,9 +57,19 @@ double Power(Base base, Exponent exp)
    return std::pow(base, exp);
 }
 
-double Re(double);
+
+inline double Re(double x)
+{
+   return x;
+}
+
 double Re(const Complex&);
-DoubleMatrix Re(const DoubleMatrix&);
+
+inline DoubleMatrix Re(const DoubleMatrix& m)
+{
+   return m;
+}
+
 DoubleMatrix Re(const ComplexMatrix&);
 
 double Sqrt(double);
@@ -58,8 +79,6 @@ T Sqr(T a)
 {
    return a * a;
 }
-
-int ThetaStep(int, int);
 
 DoubleMatrix Transpose(const DoubleMatrix&);
 ComplexMatrix Transpose(const ComplexMatrix&);

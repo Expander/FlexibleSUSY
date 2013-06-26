@@ -28,16 +28,6 @@ double ArcCos(double a)
    return acos(a);
 }
 
-double Conj(double a)
-{
-   return a;
-}
-
-Complex Conj(const Complex& a)
-{
-   return std::conj(a);
-}
-
 double Cos(double x)
 {
    return cos(x);
@@ -46,11 +36,6 @@ double Cos(double x)
 double Sin(double x)
 {
    return sin(x);
-}
-
-int Delta(int i, int j)
-{
-   return i == j ? 1 : 0;
 }
 
 Eigen::Matrix3d Diag(const Eigen::Matrix3d& m)
@@ -321,29 +306,14 @@ double MaxRelDiff(const DoubleVector& a, const DoubleVector& b)
    return a.compare(b);
 }
 
-double Re(double x)
-{
-   return x;
-}
-
 double Re(const Complex& x)
 {
    return std::real(x);
 }
 
-DoubleMatrix Re(const DoubleMatrix& m)
-{
-   return m;
-}
-
 DoubleMatrix Re(const ComplexMatrix& m)
 {
    return m.real();
-}
-
-int ThetaStep(int a, int b)
-{
-   return a <= b ? 1 : 0;
 }
 
 DoubleMatrix Transpose(const DoubleMatrix& m)
