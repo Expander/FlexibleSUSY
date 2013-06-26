@@ -3,6 +3,11 @@
 
 #include <Eigen/SVD>
 
+double AbsSqr(double z)
+{
+   return z * z;
+}
+
 double AbsSqr(const Complex& z)
 {
    return std::norm(z);

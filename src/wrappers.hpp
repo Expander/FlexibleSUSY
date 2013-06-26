@@ -8,6 +8,7 @@
 
 static const double Pi = M_PI;
 
+double AbsSqr(double);
 double AbsSqr(const Complex&);
 
 double ArcTan(double);
