@@ -254,7 +254,7 @@ GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{type, eigenstate, mixingMatrixSymbol, dim},
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           dim = GetMassMatrix[massMatrix];
+           dim = Length[GetMassMatrix[massMatrix]];
            Which[MemberQ[SARAH`realVar,mixingMatrixSymbol], type = "DoubleMatrix";,
                  IsFermion[eigenstate],                     type = "ComplexMatrix";,
                  True,                                      type = "DoubleMatrix";

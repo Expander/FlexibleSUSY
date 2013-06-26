@@ -2,9 +2,9 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
-#include <cmath>
 #include "linalg.h"
-#include "numerics.h"
+#include <cmath>
+#include <Eigen/Core>
 
 static const double Pi = M_PI;
 
@@ -14,21 +14,15 @@ double ArcTan(double);
 double ArcSin(double);
 double ArcCos(double);
 
-DoubleMatrix Adj(const DoubleMatrix&);
-ComplexMatrix Adj(const ComplexMatrix&);
-
 double Conj(double);
 Complex Conj(const Complex&);
-DoubleMatrix Conj(const DoubleMatrix&);
-ComplexMatrix Conj(const ComplexMatrix&);
 
 double Cos(double);
 double Sin(double);
 
 int Delta(int, int);
 
-DoubleMatrix Diag(const DoubleMatrix&);
-ComplexMatrix Diag(const ComplexMatrix&);
+Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
@@ -41,7 +35,6 @@ void Diagonalize(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVect
 void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 
 double Log(double);
-double Mass2(double);
 
 double MaxRelDiff(double, double);
 double MaxRelDiff(const DoubleVector&, const DoubleVector&);
@@ -67,25 +60,10 @@ T Sqr(T a)
 
 int ThetaStep(int, int);
 
-DoubleMatrix Tp(const DoubleMatrix&);
-ComplexMatrix Tp(const ComplexMatrix&);
 DoubleMatrix Transpose(const DoubleMatrix&);
 ComplexMatrix Transpose(const ComplexMatrix&);
 
-double trace(const DoubleMatrix&);
-Complex trace(const ComplexMatrix&);
-
-#define UNITMATRIX(rows) \
-   unitMatrix<rows>()
-
-template <int rows>
-DoubleMatrix unitMatrix()
-{
-   DoubleMatrix u(rows,rows);
-   for (int i = 1; i <= rows; ++i)
-      u(i,i) = 1.0;
-   return u;
-}
+#define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
 
 double ZeroSqrt(double);
 

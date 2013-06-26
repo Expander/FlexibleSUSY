@@ -32,20 +32,10 @@ GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
 GuessType[sym_[i1,i2]] :=
-    Module[{dim1, dim2, scalarType},
-           {dim1, dim2} = SARAH`getDimParameters[sym];
-           If[True || MemberQ[SARAH`realVar,sym],
-              scalarType = "double";,
-              scalarType = "Complex";
-             ];
-           CConversion`MatrixType["DoubleMatrix", Sequence @@ SARAH`getDimParameters[sym]]
-          ];
+    Parameters`GetType[sym];
 
 GuessType[sym_Symbol] :=
-    If[True || MemberQ[SARAH`realVar,sym],
-       CConversion`ScalarType["double"],
-       CConversion`ScalarType["Complex"]
-      ];
+    Parameters`GetType[sym];
 
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
@@ -68,8 +58,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
               twoLoopBeta  := RValueToCFormString[(CConversion`twoLoop * GetBeta2Loop[betaFunction])
                                             /. { Kronecker[i1,i2] -> unitMatrix }
                                             /. { a_[i1,i2] :> a }];
-              beta2L        = beta2L <> betaName <> " = " <> betaName <>
-                              " + " <> twoLoopBeta <> ";\n";
+              beta2L        = beta2L <> betaName <> " += " <> twoLoopBeta <> ";\n";
               ];
            localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];

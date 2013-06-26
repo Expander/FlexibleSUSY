@@ -2,6 +2,8 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include <Eigen/Core>
+
 static const double max_dev = 1.0e-12;
 static int gErrors = 0;
 
@@ -41,6 +43,17 @@ bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
    }
    for (int i = 1; i <= a.displayRows(); ++i) {
       for (int l = 1; l <= a.displayCols(); ++l) {
+         if (!is_equal(a(i,l), b(i,l), max_dev))
+            return false;
+      }
+   }
+   return true;
+}
+
+bool is_equal(const Eigen::Matrix<double,3,3>& a, const Eigen::Matrix<double,3,3>& b, double max_dev)
+{
+   for (int i = 0; i < 3; ++i) {
+      for (int l = 0; l < 3; ++l) {
          if (!is_equal(a(i,l), b(i,l), max_dev))
             return false;
       }
@@ -114,6 +127,32 @@ void check_equality(const DoubleMatrix& a, const DoubleMatrix& b,
 {
    for (int i = 1; i <= a.displayRows(); ++i) {
       for (int l = 1; l <= a.displayCols(); ++l) {
+         std::ostringstream element;
+         element << testMsg << " [element " << i << "," << l << "]";
+         check_equality(a(i,l), b(i,l), element.str(), max_dev);
+      }
+   }
+}
+
+void check_equality(const DoubleMatrix& b,
+                    const Eigen::Matrix<double,3,3>& a,
+                    const std::string& testMsg, double max_dev)
+{
+   for (int i = 0; i < 3; ++i) {
+      for (int l = 0; l < 3; ++l) {
+         std::ostringstream element;
+         element << testMsg << " [element " << i << "," << l << "]";
+         check_equality(a(i,l), b(i+1,l+1), element.str(), max_dev);
+      }
+   }
+}
+
+void check_equality(const Eigen::Matrix<double,3,3>& a,
+                    const Eigen::Matrix<double,3,3>& b,
+                    const std::string& testMsg, double max_dev)
+{
+   for (int i = 0; i < 3; ++i) {
+      for (int l = 0; l < 3; ++l) {
          std::ostringstream element;
          element << testMsg << " [element " << i << "," << l << "]";
          check_equality(a(i,l), b(i,l), element.str(), max_dev);

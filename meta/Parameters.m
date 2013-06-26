@@ -11,6 +11,10 @@ gauge couplings, which replace non-normalized gauge couplings
 GetGUTNormalization::usage="Returns GUT normalization of the given
 coupling";
 
+CreateIndexReplacementRules::usage="";
+
+GetType::usage="";
+
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
 
@@ -21,6 +25,48 @@ IsRealParameter[sym_] :=
 
 IsComplexParameter[sym_] :=
     !MemberQ[SARAH`realVar, sym];
+
+GetTypeFromDimension[sym_Symbol, {}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`ScalarType["double"],
+       CConversion`ScalarType["Complex"]
+      ];
+
+GetTypeFromDimension[sym_Symbol, {1}] :=
+    GetTypeFromDimension[sym, {}];
+
+GetTypeFromDimension[sym_Symbol, {num_?NumberQ}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
+       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
+      ];
+
+GetTypeFromDimension[sym_Symbol, {num1_?NumberQ, num2_?NumberQ}] :=
+    If[True || MemberQ[SARAH`realVar,sym],
+       CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
+       CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
+      ];
+
+GetType[sym_Symbol] :=
+    GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
+
+CreateIndexReplacementRules[pars_List] :=
+    Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},
+           indexReplacementRules = {};
+           For[p = 1, p <= Length[pars], p++,
+               parameter = pars[[p]];
+               dim = SARAH`getDimParameters[parameter];
+               rule = {};
+               Switch[Length[dim],
+                      1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
+                      2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
+                      3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
+                      4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
+                     ];
+               AppendTo[indexReplacementRules, rule];
+              ];
+           Return[Flatten[indexReplacementRules]]
+          ];
 
 GetGUTNormalization[coupling_Symbol] :=
     Module[{pos, norm},
@@ -66,8 +112,8 @@ CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :=
 
 CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
-           For[i = 1, i <= rows, i++,
-               For[j = 1, j <= cols, j++; count++,
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
                    ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                          <> ") = v(" <> ToString[startIndex + count] <> ");\n";
                   ];
@@ -101,8 +147,8 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :
 
 CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
-           For[i = 1, i <= rows, i++,
-               For[j = 1, j <= cols, j++; count++,
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
                    ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
                           <> name <> "(" <> ToString[i] <> "," <> ToString[j]
                           <> ");\n";

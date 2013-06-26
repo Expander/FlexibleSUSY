@@ -1,9 +1,11 @@
 
 #include "wrappers.hpp"
 
+#include <Eigen/SVD>
+
 double AbsSqr(const Complex& z)
 {
-   return z.norm();
+   return std::norm(z);
 }
 
 double ArcTan(double a)
@@ -21,16 +23,6 @@ double ArcCos(double a)
    return acos(a);
 }
 
-DoubleMatrix Adj(const DoubleMatrix& m)
-{
-   return m.transpose();
-}
-
-ComplexMatrix Adj(const ComplexMatrix& m)
-{
-   return m.hermitianConjugate();
-}
-
 double Conj(double a)
 {
    return a;
@@ -38,17 +30,7 @@ double Conj(double a)
 
 Complex Conj(const Complex& a)
 {
-   return a.conj();
-}
-
-DoubleMatrix Conj(const DoubleMatrix& m)
-{
-   return m;
-}
-
-ComplexMatrix Conj(const ComplexMatrix& m)
-{
-   return m.complexConjugate();
+   return std::conj(a);
 }
 
 double Cos(double x)
@@ -66,25 +48,13 @@ int Delta(int i, int j)
    return i == j ? 1 : 0;
 }
 
-DoubleMatrix Diag(const DoubleMatrix& m)
+Eigen::Matrix3d Diag(const Eigen::Matrix3d& m)
 {
-   DoubleMatrix diag(m);
-   for (int i = 1; i <= m.displayCols(); ++i) {
-      for (int k = 1; k <= m.displayRows(); ++k) {
+   Eigen::Matrix3d diag(m);
+   for (int i = 0; i < 3; ++i) {
+      for (int k = 0; k < 3; ++k) {
          if (i != k)
             diag(i,k) = 0.0;
-      }
-   }
-   return diag;
-}
-
-ComplexMatrix Diag(const ComplexMatrix& m)
-{
-   ComplexMatrix diag(m);
-   for (int i = 1; i <= m.displayCols(); ++i) {
-      for (int k = 1; k <= m.displayRows(); ++k) {
-         if (i != k)
-            diag(i,k) = Complex(0.0, 0.0);
       }
    }
    return diag;
@@ -218,6 +188,35 @@ void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
    }
 }
 
+Eigen::MatrixXd ToEigen(const DoubleMatrix& m)
+{
+   const int cols = m.displayCols(), rows = m.displayRows();
+   Eigen::MatrixXd eig(rows,cols);
+   for (int i = 1; i <= rows; ++i)
+      for (int j = 1; j <= rows; ++j)
+         eig(i-1,j-1) = m(i,j);
+   return eig;
+}
+
+DoubleMatrix ToSoftsusy(const Eigen::MatrixXd& m)
+{
+   const int cols = m.cols(), rows = m.rows();
+   DoubleMatrix soft(rows,cols);
+   for (int i = 1; i <= rows; ++i)
+      for (int j = 1; j <= rows; ++j)
+         soft(i,j) = m(i-1,j-1);
+   return soft;
+}
+
+DoubleVector ToSoftsusy(const Eigen::VectorXd& m)
+{
+   const int cols = m.rows();
+   DoubleVector soft(cols);
+   for (int j = 1; j <= cols; ++j)
+      soft(j) = m(j-1);
+   return soft;
+}
+
 /**
  * diag = u m v^T
  *
@@ -242,6 +241,12 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
    // Numerical routine replaces argument, so make a copy of elements
    u = m;
    diagonaliseSvd(u, eigenvalues, v);
+
+   // Eigen::MatrixXd me(ToEigen(m)), ue(ToEigen(u)), ve(ToEigen(v));
+   // Eigen::JacobiSVD<Eigen::MatrixXd> eigensolver(me, Eigen::ComputeThinU | Eigen::ComputeThinV);
+   // u = ToSoftsusy(eigensolver.matrixU());
+   // v = ToSoftsusy(eigensolver.matrixV());
+   // eigenvalues = ToSoftsusy(eigensolver.singularValues());
 
    // Phase freedom - tends to give more familiar matrices
    u = -1.0 * u; v = -1.0 * v;
@@ -294,14 +299,16 @@ double Log(double a)
    return std::log(a);
 }
 
-double Mass2(double m)
-{
-   return m * m;
-}
-
 double MaxRelDiff(double a, double b)
 {
-   return toleranceCheck(a, b);
+   const double sTin = fabs(a), sTout = fabs(b);
+   const double maxx = std::max(sTin, sTout);
+   const double underflow = 1.0e-20;
+
+   if (maxx < underflow)
+      return 0.0;
+
+   return fabs(1.0 - std::min(sTin, sTout) / maxx);
 }
 
 double MaxRelDiff(const DoubleVector& a, const DoubleVector& b)
@@ -316,7 +323,7 @@ double Re(double x)
 
 double Re(const Complex& x)
 {
-   return real(x);
+   return std::real(x);
 }
 
 DoubleMatrix Re(const DoubleMatrix& m)
@@ -334,16 +341,6 @@ int ThetaStep(int a, int b)
    return a <= b ? 1 : 0;
 }
 
-DoubleMatrix Tp(const DoubleMatrix& m)
-{
-   return m.transpose();
-}
-
-ComplexMatrix Tp(const ComplexMatrix& m)
-{
-   return m.transpose();
-}
-
 DoubleMatrix Transpose(const DoubleMatrix& m)
 {
    return m.transpose();
@@ -352,16 +349,6 @@ DoubleMatrix Transpose(const DoubleMatrix& m)
 ComplexMatrix Transpose(const ComplexMatrix& m)
 {
    return m.transpose();
-}
-
-double trace(const DoubleMatrix& m)
-{
-   return m.trace();
-}
-
-Complex trace(const ComplexMatrix& m)
-{
-   return m.trace();
 }
 
 double Sqrt(double a)

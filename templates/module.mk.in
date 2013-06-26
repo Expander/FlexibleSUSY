@@ -86,6 +86,8 @@ $(DIR)/@MODEL@_convergenceTester.cpp: $(DIR)/@MODEL@_susyPars.hpp
 $(DIR)/@MODEL@_initialGuesser.cpp: $(DIR)/@MODEL@_susyPars.hpp
 	true
 
+$(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ) $(DIR)/run_@MODEL@.o: CPPFLAGS += $(EIGENFLAGS)
+
 $(LIB@MODEL@): $(LIB@MODEL@_OBJ)
 		$(MAKELIB) $@ $^
 

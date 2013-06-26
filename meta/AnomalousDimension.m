@@ -52,7 +52,9 @@ ConvertSarahAnomDim[gij_List] :=
                If[FreeQ[adim[[2]], a_[i1,i2]],
                   type = CConversion`ScalarType["double"];,
                   dim = TreeMasses`GetDimension[adim[[1,1]]];
-                  type = CConversion`MatrixType["DoubleMatrix", dim, dim];
+                  type = CConversion`MatrixType["Eigen::Matrix<double," <>
+                                                ToString[dim] <> "," <>
+                                                ToString[dim] <> ">", dim, dim];
                  ];
                AppendTo[lst, AnomalousDimension[name, type, Drop[adim, 1]]];
               ];
@@ -91,7 +93,7 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
               body = body <> "\nif (displayLoops() > 1) {\n";
-              body = body <> "   anomDim = anomDim + " <>
+              body = body <> "   anomDim += " <>
                      RValueToCFormString[(CConversion`twoLoop * GetAnomDim2Loop[anomDim])
                                    /. { Kronecker[i1,i2] -> unitMatrix }
                                    /. { a_[i1,i2] :> a }];

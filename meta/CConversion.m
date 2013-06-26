@@ -106,10 +106,22 @@ CreateDefaultConstructor[parameter_, CConversion`ScalarType[type_]] :=
     parameter <> "(0)";
 
 CreateDefaultConstructor[parameter_, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> ToString[entries] <> ")";
+    parameter <> "(" <> type <> "::Zero())";
 
 CreateDefaultConstructor[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
+    parameter <> "(" <> type <> "::Zero())";
+
+CreateDefaultDefinition[parameter_, type_] :=
+    Print["Error: unknown parameter type: " <> ToString[type]];
+
+CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
+    type <> " " <> parameter <> " = 0";
+
+CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, _]] :=
+    type <> " " <> parameter;
+
+CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, _, _]] :=
+    type <> " " <> parameter;
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
@@ -118,10 +130,10 @@ CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
     type <> " " <> parameter <> " = 0";
 
 CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, entries_]] :=
-    type <> " " <> parameter <> "(" <> ToString[entries] <> ")";
+    type <> " " <> parameter;
 
 CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
-    type <> " " <> parameter <> "(" <> ToString[rows] <> "," <> ToString[cols] <> ")";
+    type <> " " <> parameter;
 
 GetCParameterType[parameterType_] :=
     ToString[parameterType[[1]]];
@@ -249,6 +261,28 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
    a valid C variable name and removing matrix indices *)
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
+
+Format[SARAH`Conj[x_],CForm]            :=
+    If[SARAH`getDimParameters[x] === {} || SARAH`getDimParameters[x] === {0},
+       Format["Conj(" <> ToString[CForm[x]] <> ")", OutputForm],
+       Format[ToString[CForm[x]] <> ".conjugate()", OutputForm]
+      ];
+
+Format[SARAH`Adj[x_Symbol],CForm]       := Format[ToString[CForm[x]] <> ".adjoint()"  , OutputForm];
+
+Format[SARAH`Adj[x_],CForm]             :=
+    Format["(" <> ToString[CForm[x]] <> ").adjoint()"  , OutputForm];
+
+Format[SARAH`Tp[x_Symbol],CForm]        := Format[ToString[CForm[x]] <> ".transpose()", OutputForm];
+
+Format[SARAH`Tp[x_],CForm]              :=
+    Format["(" <> ToString[CForm[x]] <> ").transpose()", OutputForm];
+
+Format[SARAH`trace[HoldPattern[x_Symbol]],CForm] :=
+    Format[ToString[CForm[HoldForm[x]]] <> ".trace()", OutputForm];
+
+Format[SARAH`trace[HoldPattern[x_]],CForm] :=
+    Format["(" <> ToString[CForm[HoldForm[x]]] <> ").trace()", OutputForm];
 
 (* Converts an expression to CForm and expands SARAH symbols
  *
