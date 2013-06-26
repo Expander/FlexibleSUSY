@@ -1,30 +1,30 @@
 
-BeginPackage["Tadpoles`", {"SARAH`", "TextFormatting`", "CConversion`"}];
+BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`"}];
 
-CreateTadpoleEqPrototype::usage="creates C function prototype for a
-given tadpole equation";
+CreateEWSBEqPrototype::usage="creates C function prototype for a
+given EWSB equation";
 
-CreateTadpoleEqFunction::usage="creates C function definition for a
-given tadpole equation";
+CreateEWSBEqFunction::usage="creates C function definition for a
+given EWSB equation";
 
-FillArrayWithTadpoles::usage="fills array of doubles with the values
-of the tadpoles";
+FillArrayWithEWSBEqs::usage="fills array of doubles with the values
+of the EWSB equations";
 
 FillInitialGuessArray::usage="fills a C array with initial values for the
 EWSB eqs. solver";
 
 Begin["Private`"];
 
-CreateTadpoleEqPrototype[vev_Symbol] :=
+CreateEWSBEqPrototype[vev_Symbol] :=
     Module[{result = ""},
-           result = "double get_tadpole_" <> ToValidCSymbolString[vev] <>
+           result = "double get_ewsb_eq_" <> ToValidCSymbolString[vev] <>
                     "() const;\n";
            Return[result];
           ];
 
-CreateTadpoleEqFunction[vev_Symbol, equation_] :=
+CreateEWSBEqFunction[vev_Symbol, equation_] :=
     Module[{result = "", body = "", variableName = ""},
-           variableName = "tadpole_" <> ToValidCSymbolString[vev];
+           variableName = "ewsb_eq_" <> ToValidCSymbolString[vev];
            result = "double CLASSNAME::get_" <> variableName <>
                     "() const\n{\n";
            body = "double " <> variableName <> " = " <>
@@ -34,11 +34,11 @@ CreateTadpoleEqFunction[vev_Symbol, equation_] :=
            Return[result <> body <> "}\n\n"];
           ];
 
-FillArrayWithTadpoles[tadpoleEquations_List, parametersFixedByEWSB_List,
+FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
                       gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
     Module[{i, result = "", vev},
            If[Length[tadpoleEquations] =!= Length[parametersFixedByEWSB],
-              Print["Error: number of tadpole equations (",Length[tadpoleEquations],
+              Print["Error: number of EWSB equations (",Length[tadpoleEquations],
                     ") is not equal to the number of fixed parameters (",
                     Length[parametersFixedByEWSB],")"];
               Return[""];
@@ -53,7 +53,7 @@ FillArrayWithTadpoles[tadpoleEquations_List, parametersFixedByEWSB_List,
            For[i = 1, i <= Length[tadpoleEquations], i++,
                vev = tadpoleEquations[[i,1]];
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
-                        "] = " <> "model->get_tadpole_" <>
+                        "] = " <> "model->get_ewsb_eq_" <>
                         ToValidCSymbolString[vev] <> "();\n";
               ];
            Return[result];

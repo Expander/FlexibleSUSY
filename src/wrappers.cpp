@@ -189,63 +189,6 @@ void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenval
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-/**
- * diag = u m u^T
- *
- * @param m mass matrix
- * @param u mixing matrix
- * @param eigenvalues eigenvalues (unsorted)
- */
-void DiagonalizeUnsorted(const DoubleMatrix& m, DoubleMatrix& u,
-                         DoubleVector& eigenvalues)
-{
-   const int c = m.displayCols();
-#ifdef DEBUG
-   if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
-       u.displayCols() != c || u.displayRows() !=c || c > 10) {
-      ostringstream ii;
-      ii << "Error: Trying to diagonalise matrix \n" << m;
-      throw ii.str();
-   }
-#endif
-   // Numerical recipes routine replaces argument, so make a copy of elements
-   DoubleMatrix a(m);
-   int nrot;
-   diagonaliseJac(a, c, eigenvalues, u, &nrot);
-   u = u.transpose();
-}
-
-/**
- * diag = u m u^+
- *
- * @param m mass matrix
- * @param u mixing matrix
- * @param eigenvalues eigenvalues (unsorted)
- */
-void DiagonalizeUnsorted(const DoubleMatrix& m, ComplexMatrix& u,
-                         DoubleVector& eigenvalues)
-{
-   const int c = m.displayCols();
-#ifdef DEBUG
-   if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
-       u.displayCols() != c || u.displayRows() !=c || c > 10) {
-      ostringstream ii;
-      ii << "Error: Trying to diagonalise matrix \n" << m;
-      throw ii.str();
-   }
-#endif
-   // Numerical recipes routine replaces argument, so make a copy of elements
-   DoubleMatrix a(m), k(c, c);
-   int nrot;
-   diagonaliseJac(a, c, eigenvalues, k, &nrot);
-
-   // We want to change the PHASES of the neutralino mixing matrix in order to
-   // produce POSITIVE neutralino masses, a la Matchev, Pierce and Zhang
-   const ComplexMatrix trans(phase_rotation(eigenvalues));
-   u = trans * k.transpose();
-   eigenvalues = eigenvalues.apply(fabs);
-}
-
 void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u,
                      DoubleVector& eigenvalues)
 {
@@ -265,14 +208,6 @@ void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
    eigenvalues = m.sym2by2(theta).apply(fabs);
    const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
    u = a * rot2d(theta);
-}
-
-void Diagonalize2by2Unsorted(const DoubleMatrix& m, DoubleMatrix& u,
-                             DoubleVector& eigenvalues)
-{
-   double theta;
-   eigenvalues = m.sym2by2(theta).apply(fabs);
-   u = rot2d(theta);
 }
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)

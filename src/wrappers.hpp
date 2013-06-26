@@ -34,11 +34,8 @@ Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
-void DiagonalizeUnsorted(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
-void DiagonalizeUnsorted(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
 void Diagonalize2by2(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
-void Diagonalize2by2Unsorted(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 
 // SVD
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleMatrix& , DoubleVector&);

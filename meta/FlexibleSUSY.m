@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "Tadpoles`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
 MakeFlexibleSUSY::usage="";
 
@@ -206,18 +206,18 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
                calculateAllMasses        = calculateAllMasses <> TreeMasses`CallMassCalculationFunction[massMatrices[[k]]];
               ];
            For[k = 1, k <= Length[tadpoleEquations], k++,
-               tadpoleEqPrototypes = tadpoleEqPrototypes <> Tadpoles`CreateTadpoleEqPrototype[tadpoleEquations[[k,1]]];
-               tadpoleEqFunctions  = tadpoleEqFunctions  <> Tadpoles`CreateTadpoleEqFunction[tadpoleEquations[[k,1]], tadpoleEquations[[k,2]]];
+               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[tadpoleEquations[[k,1]]];
+               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[tadpoleEquations[[k,1]], tadpoleEquations[[k,2]]];
               ];
            If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
-           calculateTreeLevelTadpoles = Tadpoles`FillArrayWithTadpoles[tadpoleEquations, parametersFixedByEWSB];
+           calculateTreeLevelTadpoles = EWSB`FillArrayWithEWSBEqs[tadpoleEquations, parametersFixedByEWSB];
            oneLoopTadpoles = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles   = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
-           initialGuess = Tadpoles`FillInitialGuessArray[parametersFixedByEWSB];
+           initialGuess = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
            phasesDefinition = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
