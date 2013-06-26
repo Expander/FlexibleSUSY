@@ -28,8 +28,8 @@ GetTypeFromDimension[sym_Symbol, {1}] :=
 
 GetTypeFromDimension[sym_Symbol, {num_?NumberQ}] :=
     If[True || MemberQ[SARAH`realVar,sym],
-       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ">", num],
-       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ">", num]
+       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
+       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
       ];
 
 GetTypeFromDimension[sym_Symbol, {num1_?NumberQ, num2_?NumberQ}] :=
