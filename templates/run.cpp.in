@@ -31,7 +31,7 @@ int main()
    downward_constraints.push_back(&susy_scale_input);
    downward_constraints.push_back(&low_scale_input);
 
-   @ModelName@ model;
+   @ModelName@ model(input);
 
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
    @ModelName@_initial_guesser initial_guesser(&model, input);

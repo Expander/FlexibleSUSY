@@ -91,9 +91,30 @@ CreateEWSBEqFunction[vev_Symbol, equation_] :=
            Return[result <> body <> "}\n\n"];
           ];
 
+FindFreePhase[parameter_] :=
+    Module[{phases},
+           phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | FlexibleSUSY`Sign[parameter]];
+           If[phases === {}, Null, phases[[1]]]
+          ];
+
+SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
+    Module[{result, parameterStr, freePhase, gslInput},
+           parameterStr = ToValidCSymbolString[parameter];
+           freePhase = FindFreePhase[parameter];
+           gslInput = "gsl_vector_get(" <> gslIntputVector <> ", " <> ToString[index] <> ")";
+           If[freePhase =!= Null,
+              result = "model->set_" <> parameterStr <> "(" <>
+                       "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <>
+                       "AbsSqr(" <> gslInput <> "));\n";
+              ,
+              result = "model->set_" <> parameterStr <> "(" <> gslInput <> ");\n";
+             ];
+           Return[result];
+          ];
+
 FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
                       gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
-    Module[{i, result = "", vev},
+    Module[{i, result = "", vev, par},
            If[Length[tadpoleEquations] =!= Length[parametersFixedByEWSB],
               Print["Error: number of EWSB equations (",Length[tadpoleEquations],
                     ") is not equal to the number of fixed parameters (",
@@ -101,10 +122,8 @@ FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
               Return[""];
              ];
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               result = result <> "model->set_" <>
-                        ToValidCSymbolString[parametersFixedByEWSB[[i]]] <>
-                        "(gsl_vector_get(" <> gslIntputVector <> ", " <>
-                        ToString[i-1] <> "));\n";
+               par = parametersFixedByEWSB[[i]];
+               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1];
               ];
            result = result <> "\n";
            For[i = 1, i <= Length[tadpoleEquations], i++,

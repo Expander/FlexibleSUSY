@@ -654,7 +654,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations, Model`Name,
-                           ParametersToSolveTadpoles /. susyBreakingParameterReplacementRules,
+                           ParametersToSolveTadpoles,
                            nPointFunctions, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_model.hpp"}]},

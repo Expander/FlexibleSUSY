@@ -28,8 +28,9 @@
 #define CALC_DRBAR_PARS(model) model->calculate_DRbar_parameters()
 
 #define PHYSICAL(parameter) physical.parameter
+#define INPUT(parameter) model->get_input().parameter
 
-@ModelName@::@ModelName@()
+@ModelName@::@ModelName@(const @ModelName@_input_parameters& input_)
    : Two_scale_model()
    , @ModelName@_soft_parameters()
    , number_of_ewsb_iterations(100)
@@ -38,6 +39,7 @@
    , ewsb_iteration_precision(1.0e-7)
    , mass_iteration_precision(1.0e-7)
    , physical()
+   , input(input_)
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
@@ -86,6 +88,11 @@ double @ModelName@::get_ewsb_iteration_precision() const
 const @ModelName@_physical& @ModelName@::get_physical() const
 {
    return physical;
+}
+
+const @ModelName@_input_parameters& @ModelName@::get_input() const
+{
+   return input;
 }
 
 int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)

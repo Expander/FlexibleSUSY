@@ -31,9 +31,6 @@
 
 void @ModelName@_initial_guesser::guess()
 {
-   static const @ModelName@ empty;
-   *model = empty;
-
    guess_susy_parameters();
    guess_soft_parameters();
 }
