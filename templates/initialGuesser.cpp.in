@@ -72,15 +72,20 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
 
 void @ModelName@_initial_guesser::guess_soft_parameters()
 {
-   model->run_to(@highScaleGuess@);
+   int err = model->run_to(@highScaleGuess@);
+   if (err)
+      throw NonPerturbativeRunningError(model, @highScaleGuess@);
 
    // apply high-scale constraint
    @ModelName@_high_scale_constraint high_constraint(input_pars);
    high_constraint.set_model(model);
    high_constraint.apply();
 
+   err = model->run_to(low_scale_guess);
+   if (err)
+      throw NonPerturbativeRunningError(model, low_scale_guess);
+
    // apply EWSB constraint
-   model->runto(low_scale_guess);
    model->solve_ewsb(0);
 
    // calculate tree-level spectrum
