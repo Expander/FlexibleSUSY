@@ -197,7 +197,7 @@ DefineParameter[FlexibleSUSY`Phase[phase_]] :=
     "Complex " <> ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> ";\n";
 
 DefineParameter[FlexibleSUSY`Sign[phase_]] :=
-    "int " <> ToValidCSymbolString[phase] <> ";\n";
+    "int " <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> ";\n";
 
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
@@ -208,8 +208,11 @@ DefineInputParameters[inputParameters_List] :=
 InitializeInputParameter[{parameter_, value_?NumberQ}] :=
     ToValidCSymbolString[parameter] <> "(" <> RValueToCFormString[value] <> ")";
 
-InitializeInputParameter[{parameter_, CConversion`ScalarType["Complex"]}] :=
-    ToValidCSymbolString[parameter] <> "(1,0)";
+InitializeInputParameter[FlexibleSUSY`Phase[phase_]] :=
+    ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> "(1.,.0)";
+
+InitializeInputParameter[FlexibleSUSY`Sign[phase_]] :=
+    ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "(1)";
 
 InitializeInputParameter[pars__] :=
     Module[{},

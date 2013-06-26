@@ -49,13 +49,15 @@ CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
                   Continue[];
                  ];
                If[Parameters`IsRealParameter[par],
-                  If[CheckInEquations[uniquePar, AppearsOnlySquaredInEquation, uniqueEqs],
+                  If[CheckInEquations[uniquePar, AppearsOnlySquaredInEquation, uniqueEqs] ||
+                     CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
                      Print["   Note: ", par, " appears only squared in EWSB equations."];
                      AppendTo[newPhases, FlexibleSUSY`Sign[par]];
                     ];
                   ,
                   If[CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
-                     Print["   Note: ", par, " appears only absolute squared in EWSB equations."];
+                     Print["   Note: ", par, " is complex and appears only ",
+                           "absolute squared in EWSB equations."];
                      AppendTo[newPhases, FlexibleSUSY`Phase[par]];
                      ,
                      Print["   Note: ", par, " is complex and appears in EWSB equations."];
@@ -63,7 +65,9 @@ CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
                     ];
                  ];
               ];
-           Print["   Introducing new free parameters: ", newPhases];
+           If[Length[newPhases] > 0,
+              Print["   Introducing new free parameters: ", newPhases];
+             ];
            freePhases = newPhases;
            Return[newPhases];
           ];

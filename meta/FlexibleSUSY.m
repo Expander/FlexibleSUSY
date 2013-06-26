@@ -137,10 +137,9 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
 
 WriteInputParameterClass[modelName_String, inputParameters_List, freePhases_List,
                          defaultValues_List, files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, defaultValuesForPhases},
-          defaultValuesForPhases = {#, CConversion`ScalarType["Complex"]}& /@ freePhases;
+   Module[{defineInputParameters, defaultInputParametersInit},
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases]];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, defaultValuesForPhases]];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, freePhases]];
           ReplaceInFiles[files,
                          { "@ModelName@"             -> modelName,
                            "@defineInputParameters@" -> IndentText[defineInputParameters],
@@ -510,6 +509,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBetaFunctions = ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (GetAllBetaFunctions[#]!={})&];
+           Parameters`AddRealParameter[(GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
            susyParameterReplacementRules = BetaFunction`ConvertParameterNames[susyBetaFunctions];
            susyBetaFunctions = susyBetaFunctions /. susyParameterReplacementRules;
 
@@ -530,6 +530,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (GetAllBetaFunctions[#]!={})&];
+           Parameters`AddRealParameter[(GetName /@ susyBreakingBetaFunctions) /. a_[i1,i2] :> a];
            susyBreakingParameterReplacementRules = Flatten[{susyParameterReplacementRules, BetaFunction`ConvertParameterNames[susyBreakingBetaFunctions]}];
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. susyBreakingParameterReplacementRules;
 

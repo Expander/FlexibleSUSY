@@ -13,6 +13,8 @@ coupling";
 
 CreateIndexReplacementRules::usage="";
 
+AddRealParameter::usage="";
+
 GetType::usage="";
 
 IsRealParameter::usage="";
@@ -20,8 +22,16 @@ IsComplexParameter::usage="";
 
 Begin["Private`"];
 
+additionalRealParameters = {};
+
+AddRealParameter[parameter_List] :=
+    additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, parameter]];
+
+AddRealParameter[parameter_] :=
+    additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
+
 IsRealParameter[sym_] :=
-    MemberQ[SARAH`realVar, sym];
+    MemberQ[Join[SARAH`realVar, additionalRealParameters], sym];
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
