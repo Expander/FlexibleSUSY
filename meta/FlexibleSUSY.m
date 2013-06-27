@@ -78,6 +78,7 @@ GeneralReplacementRules[] :=
     { "@VectorZ@"     -> ToValidCSymbolString[SARAH`VectorZ],
       "@VectorP@"     -> ToValidCSymbolString[SARAH`VectorP],
       "@VectorW@"     -> ToValidCSymbolString[SARAH`VectorW],
+      "@VectorG@"     -> ToValidCSymbolString[SARAH`VectorG],
       "@TopQuark@"    -> ToValidCSymbolString[SARAH`TopQuark],
       "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
       "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
