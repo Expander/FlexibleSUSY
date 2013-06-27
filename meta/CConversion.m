@@ -43,6 +43,8 @@ a given parameter type";
 CreateDefaultDefinition::usage="creates C/C++ variable definition
 using the default constructor";
 
+SetToDefault::usage="set parameter to default value";
+
 ExpandSums::usage="expands expressions that contain sum symbols of the
 form sum[index,1,3,expression]"
 
@@ -102,38 +104,41 @@ CreateGetterPrototype[parameter_, type_] :=
 CreateDefaultConstructor[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
-CreateDefaultConstructor[parameter_, CConversion`ScalarType[type_]] :=
+CreateDefaultConstructor[parameter_String, CConversion`ScalarType[type_]] :=
     parameter <> "(0)";
 
-CreateDefaultConstructor[parameter_, CConversion`VectorType[type_, entries_]] :=
+CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries_]] :=
     parameter <> "(" <> type <> "::Zero())";
 
-CreateDefaultConstructor[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> "(" <> type <> "::Zero())";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
-CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
+CreateDefaultDefinition[parameter_String, CConversion`ScalarType[type_]] :=
     type <> " " <> parameter <> " = 0";
 
-CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, _]] :=
+CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, _]] :=
     type <> " " <> parameter;
 
-CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, _, _]] :=
+CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, _, _]] :=
     type <> " " <> parameter;
 
-CreateDefaultDefinition[parameter_, type_] :=
+SetToDefault[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
-CreateDefaultDefinition[parameter_, CConversion`ScalarType[type_]] :=
-    type <> " " <> parameter <> " = 0";
+SetToDefault[parameter_String, CConversion`ScalarType["double"]] :=
+    parameter <> " = 0.;\n";
 
-CreateDefaultDefinition[parameter_, CConversion`VectorType[type_, entries_]] :=
-    type <> " " <> parameter;
+SetToDefault[parameter_String, CConversion`ScalarType["Complex"]] :=
+    parameter <> " = Complex(0.,0.);\n";
 
-CreateDefaultDefinition[parameter_, CConversion`MatrixType[type_, rows_, cols_]] :=
-    type <> " " <> parameter;
+SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
+    parameter <> " = " <> type <> "::Zero();\n";
+
+SetToDefault[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
+    parameter <> " = " <> type <> "::Zero();\n";
 
 GetCParameterType[parameterType_] :=
     ToString[parameterType[[1]]];

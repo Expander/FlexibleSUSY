@@ -52,6 +52,13 @@ DoubleVector @ModelName@_soft_parameters::beta() const
    return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
 }
 
+void @ModelName@_soft_parameters::clear()
+{
+   @ModelName@_susy_parameters::clear();
+
+@clearParameters@
+}
+
 const DoubleVector @ModelName@_soft_parameters::display() const
 {
    DoubleVector pars(@ModelName@_susy_parameters::display());

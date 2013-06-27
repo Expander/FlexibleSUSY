@@ -276,6 +276,14 @@ void @ModelName@::calculate_spectrum()
    calculate_1loop_masses();
 }
 
+void @ModelName@::clear()
+{
+   @ModelName@_soft_parameters::clear();
+
+@clearOutputParameters@
+   physical.clear();
+}
+
 double @ModelName@::getScale() const
 {
    return displayMu();

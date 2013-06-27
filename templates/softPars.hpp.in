@@ -35,6 +35,7 @@ public:
    virtual void set(const DoubleVector&);
 
    @ModelName@_soft_parameters calcBeta() const;
+   virtual void clear();
 
 @setter@
 @getter@

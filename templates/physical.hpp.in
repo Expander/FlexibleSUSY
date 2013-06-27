@@ -25,6 +25,7 @@
 
 struct @ModelName@_physical {
    @ModelName@_physical();
+   void clear();
    void print(std::ostream&) const;
 
 @physicalMassesDef@

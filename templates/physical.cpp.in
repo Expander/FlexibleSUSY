@@ -27,6 +27,11 @@
 {
 }
 
+void @ModelName@_physical::clear()
+{
+@clearOutputParameters@
+}
+
 void @ModelName@_physical::print(std::ostream& ostr) const
 {
    ostr << "----------------------------------------\n"

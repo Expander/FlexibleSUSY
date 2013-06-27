@@ -18,6 +18,7 @@ CreateParameterDefaultInitialization::usage="";
 CreateCCtorInitialization::usage="";
 CreateCCtorParameterList::usage="";
 CreateParameterList::usage="";
+ClearParameters::usage="";
 
 Begin["Private`"];
 
@@ -282,6 +283,19 @@ CreateParameterList[betaFunctions_List, prefix_:""] :=
                If[def != "", def = def <> ", "];
                def = def <> CreateParameterList[betaFunctions[[i]], prefix];
               ];
+           Return[def];
+          ];
+
+ClearParameter[betaFunction_BetaFunction] :=
+    Module[{def, type},
+           def = CConversion`SetToDefault[ToValidCSymbolString[GetName[betaFunction]],
+                                          GetType[betaFunction]];
+           Return[def];
+          ];
+
+ClearParameters[betaFunctions_List] :=
+    Module[{def = ""},
+           (def = def <> ClearParameter[#])& /@ betaFunctions;
            Return[def];
           ];
 

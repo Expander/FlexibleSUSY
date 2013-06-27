@@ -36,6 +36,7 @@ public:
 
    void calculate_DRbar_parameters();
    void calculate_1loop_masses();
+   virtual void clear();
    void set_ewsb_loop_order(unsigned);
    void set_ewsb_iteration_precision(double);
    void set_mass_iteration_precision(double);

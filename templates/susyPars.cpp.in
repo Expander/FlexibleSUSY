@@ -56,6 +56,11 @@ DoubleVector @ModelName@_susy_parameters::beta() const
                     @betaParameterList@);
 }
 
+void @ModelName@_susy_parameters::clear()
+{
+@clearParameters@
+}
+
 @anomDimFunctions@
 
 const DoubleVector @ModelName@_susy_parameters::display() const

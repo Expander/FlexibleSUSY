@@ -33,6 +33,8 @@ matrix";
 CreateMixingMatrixInitialization::usage="creates default
 initialization of the given mixing matrix";
 
+ClearOutputParameters::usage="clears masses and mixing matrices";
+
 GetParticles::usage="returns list of particles";
 
 GetSusyParticles::usage="returns list of susy particles";
@@ -486,6 +488,32 @@ CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            matrixType = GetMixingMatrixType[massMatrix][[1]];
            result = DefineMatrix[mixingMatrixSymbol, matrixType];
+           Return[result];
+          ];
+
+ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{result, massESSymbol, mixingMatrixSymbol, matrixType, dim, dimStr, i},
+           massESSymbol = GetMassEigenstate[massMatrix];
+           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
+           dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
+           If[dim == 1,
+              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = 0.0;\n";
+              ,
+              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = DoubleVector(" <> dimStr <> ");\n";
+             ];
+           If[mixingMatrixSymbol =!= Null,
+              matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
+              If[Head[mixingMatrixSymbol] === List,
+                 For[i = 1, i <= Length[mixingMatrixSymbol], i++,
+                     result = result <> ToValidCSymbolString[mixingMatrixSymbol[[i]]] <>
+                              " = " <> matrixType <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+                    ];
+                 ,
+                 result = result <> ToValidCSymbolString[mixingMatrixSymbol] <>
+                          " = " <> matrixType <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+                ];
+             ];
            Return[result];
           ];
 

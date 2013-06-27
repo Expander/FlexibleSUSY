@@ -96,7 +96,8 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
    Module[{setter, getter, parameterDef, set,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
-           anomDimPrototypes, anomDimFunctions, printParameters, parameters},
+           anomDimPrototypes, anomDimFunctions, printParameters, parameters,
+           clearParameters},
           (* extract list of parameters from the beta functions *)
           parameters = GetName[#]& /@ betaFun;
           (* count number of parameters *)
@@ -112,11 +113,13 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
           cCtorParameterList   = BetaFunction`CreateCCtorParameterList[betaFun];
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
+          clearParameters      = BetaFunction`ClearParameters[betaFun];
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
           ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
+                   "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
                    "@parameterDefaultInit@" -> WrapLines[parameterDefaultInit],
                    "@display@"              -> IndentText[display],
                    "@set@"                  -> IndentText[set],
@@ -213,7 +216,8 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
             callAllLoopMassFunctions = "", printMasses = "", printMixingMatrices = "",
             masses, mixingMatrices, oneLoopTadpoles,
-            dependenceNumPrototypes, dependenceNumFunctions
+            dependenceNumPrototypes, dependenceNumFunctions,
+            clearOutputParameters = ""
            },
            vevs = #[[1]]& /@ tadpoleEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
@@ -224,6 +228,7 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
                physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
                physicalMassesInitNoLeadingComma = StringTrim[physicalMassesInit, StartOfString ~~ ","];
                mixingMatricesInit   = mixingMatricesInit <> TreeMasses`CreateMixingMatrixInitialization[massMatrices[[k]]];
+               clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
                calculateAllMasses        = calculateAllMasses <> TreeMasses`CallMassCalculationFunction[massMatrices[[k]]];
@@ -268,6 +273,7 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
+                            "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@initialGuess@"           -> IndentText[initialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
