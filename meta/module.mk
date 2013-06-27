@@ -18,6 +18,7 @@ META_SRC     := \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
+		$(DIR)/TwoLoop.m \
 		$(DIR)/WriteOut.m
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
