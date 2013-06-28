@@ -57,6 +57,7 @@ public:
                  << " after " << number_of_iterations << " iterations";
          return message.str();
       }
+      unsigned get_number_of_iterations() { return number_of_iterations; }
    private:
       unsigned number_of_iterations;
    };
@@ -69,6 +70,7 @@ public:
          {}
       virtual ~NonPerturbativeRunningError() {}
       virtual std::string what() const;
+      Two_scale_model* get_model() { return model; }
    private:
       Two_scale_model* model;
       double scale;
