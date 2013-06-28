@@ -284,11 +284,6 @@ void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
    eigenvalues = eigenvalues.apply(fabs);
 }
 
-double Log(double a)
-{
-   return std::log(a);
-}
-
 double MaxRelDiff(double a, double b)
 {
    const double sTin = fabs(a), sTout = fabs(b);

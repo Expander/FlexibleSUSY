@@ -46,7 +46,15 @@ void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleMatrix& , DoubleVect
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 
-double Log(double);
+double FiniteLog(double a)
+{
+   return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
+}
+
+double Log(double a)
+{
+   return std::log(a);
+}
 
 double MaxRelDiff(double, double);
 double MaxRelDiff(const DoubleVector&, const DoubleVector&);
