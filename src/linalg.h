@@ -158,6 +158,7 @@ public:
            return false;
      return true;
   }
+  bool testNan() const; ///< test for Nan elements
 };
 
 

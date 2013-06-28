@@ -86,6 +86,14 @@ void DoubleVector::swap(int i, int j) {
   (*this)(i) = m;
 }
 
+bool DoubleVector::testNan() const
+{
+   for (std::size_t i = 0; i < x.size(); ++i)
+      if (::testNan(x[i]))
+         return true;
+   return false;
+}
+
 /*
  *  STANDARD INPUT / OUTPUT
  */
