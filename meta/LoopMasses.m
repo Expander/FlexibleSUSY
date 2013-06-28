@@ -508,7 +508,6 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
            (* twoLoopCorrection = TwoLoop`GetDeltaMQCD[particle, Global`displayMu[]] /. *)
            (*                     FlexibleSUSY`M[p_] :> FlexibleSUSY`M[p[Global`idx]]; *)
            addTwoLoopCorrection = twoLoopCorrection =!= 0;
-           Print[particle, ", addTwoLoopCorrection: ", addTwoLoopCorrection, ", correction = ", twoLoopCorrection];
            If[addTwoLoopCorrection,
               twoLoopCorrectionDecl = "const double two_loop = " <> RValueToCFormString[twoLoopCorrection] <> ";\n";
              ];
