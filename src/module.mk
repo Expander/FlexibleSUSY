@@ -5,6 +5,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/coupling_monitor.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
+		$(DIR)/error.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \

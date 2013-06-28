@@ -16,28 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef ERROR_H
-#define ERROR_H
+#include "error.hpp"
 
-#include <string>
+#include <sstream>
 
-class Error {
-public:
-   virtual ~Error() {}
-   virtual std::string what() const = 0;
-};
+TachyonError::TachyonError(Two_scale_model* model_,
+                           const std::string& particle_name_,
+                           int particle_index_)
+   : model(model_)
+   , particle_name(particle_name_)
+   , particle_index(particle_index_)
+{
+}
 
-class Two_scale_model;
-
-class TachyonError : public Error {
-public:
-   TachyonError(Two_scale_model*, const std::string&, int);
-   virtual ~TachyonError() {}
-   virtual std::string what() const;
-private:
-   Two_scale_model* model;
-   std::string particle_name;
-   int particle_index;
-};
-
-#endif
+std::string TachyonError::what() const
+{
+   std::stringstream message;
+   message << "TachyonError: tachyonic particle detected: "
+           << particle_name << "(" << particle_index << ")";
+   return message.str();
+}
