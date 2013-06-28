@@ -50,8 +50,8 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                (* some dynkin indices are not defined in SARAH *)
                If[!NumericQ[dynkin], dynkin = 0];
                If[dim == 1,
-                  result -= prefactor dynkin Log[FlexibleSUSY`M[particle]/Global`currentScale];,
-                  result -= Sum[prefactor dynkin Log[FlexibleSUSY`M[particle][i]/Global`currentScale],
+                  result -= prefactor dynkin Global`FiniteLog[Global`Sqr[FlexibleSUSY`M[particle]/Global`currentScale]] / 2;,
+                  result -= Sum[prefactor dynkin Global`FiniteLog[Global`Sqr[FlexibleSUSY`M[particle][i]/Global`currentScale]] / 2,
                                 {i,dimStart,dim}];
                  ];
               ];
