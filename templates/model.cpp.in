@@ -120,11 +120,28 @@ int @ModelName@::solve_ewsb()
    double x_init[@numberOfEWSBEquations@];
    ewsb_initial_guess(x_init);
 
+#ifdef VERBOSE
+   std::cout << "Solving EWSB equations ...\n"
+      "\tInitial guess: x_init =";
+   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+      std::cout << " " << x_init[i];
+   std::cout << '\n';
+#endif
+
    int status;
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+      VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
       status = solve_ewsb_with(solvers[i], x_init);
-      if (status == GSL_SUCCESS)
+      if (status == GSL_SUCCESS) {
+         VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
+      }
+#ifdef VERBOSE
+      else {
+         WARNING("\tSolver " << i << " could not find a solution!");
+         WARNING("\t   Requested precision: " << ewsb_iteration_precision);
+      }
+#endif
    }
 
    return status;
@@ -178,7 +195,7 @@ int @ModelName@::solve_ewsb_with(const gsl_multiroot_fsolver_type* solver,
    } while (status == GSL_CONTINUE && iter < number_of_ewsb_iterations);
 
 #ifdef VERBOSE
-   printf("EWSB status = %s\n", gsl_strerror(status));
+   printf("\tEWSB status = %s\n", gsl_strerror(status));
 #endif
 
    gsl_multiroot_fsolver_free(s);
@@ -189,13 +206,13 @@ int @ModelName@::solve_ewsb_with(const gsl_multiroot_fsolver_type* solver,
 
 void @ModelName@::print_state(std::size_t iter, gsl_multiroot_fsolver* s) const
 {
-   std::cout << "iter = " << iter << ", x =";
+   std::cout << "\tIteration " << iter << ": x =";
    for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
       std::cout << " " << gsl_vector_get(s->x, i);
    std::cout << ", f(x) =";
    for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
       std::cout << " " << gsl_vector_get(s->f, i);
-   std::cout << "\n";
+   std::cout << '\n';
 }
 
 void @ModelName@::print(std::ostream& ostr) const
