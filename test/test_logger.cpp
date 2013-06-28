@@ -22,6 +22,8 @@ BOOST_AUTO_TEST_CASE( test_streaming_operator )
    INFO("streamed info" << " message");
 }
 
+#pragma GCC diagnostic ignored "-Wempty-body"
+
 BOOST_AUTO_TEST_CASE( test_ifelse_statement )
 {
    // ensure that the logger macros act like ordinary functions in
