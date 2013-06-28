@@ -11,6 +11,11 @@ static const double Pi = M_PI;
 double AbsSqr(double);
 double AbsSqr(const Complex&);
 
+inline double AbsSqrt(double x)
+{
+   return (x >= 0.0 ? std::sqrt(x) : std::sqrt(-x));
+}
+
 double ArcTan(double);
 double ArcSin(double);
 double ArcCos(double);
