@@ -420,10 +420,9 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\nint min_element;\n" <>
-                     "if (" <> ev <> ".min(min_element) < 0.)\n" <>
-                     IndentText["WARNING(\"Particle is tachyonic: " <> ev <> "(\" << min_element << \")\");"] <> "\n\n";
-                     (* IndentText["throw TachyonError(this, \"" <> ev <> "\", min_element);\n\n"] <> "\n\n; *)
-              body = body <> ev <> " = " <> ev <> ".apply(ZeroSqrt);\n";
+                     "if (throw_on_tachyon && " <> ev <> ".min(min_element) < 0.)\n" <>
+                     IndentText["throw TachyonError(this, \"" <> ev <> "\", min_element);"] <> "\n\n";
+              body = body <> ev <> " = " <> ev <> ".apply(AbsSqrt);\n";
              ];
            Return[result <> IndentText[body] <> "}\n"];
           ];

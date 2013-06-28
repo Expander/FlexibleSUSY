@@ -37,6 +37,7 @@
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
+   , throw_on_tachyon(false)
    , ewsb_iteration_precision(1.0e-7)
    , mass_iteration_precision(1.0e-7)
    , physical()
@@ -268,6 +269,8 @@ void @ModelName@::calculate_1loop_masses()
 
 void @ModelName@::calculate_spectrum()
 {
+   throw_on_tachyon = true;
+
    // tree-level parameters
    solve_ewsb(0);
    calculate_DRbar_parameters();
@@ -275,6 +278,8 @@ void @ModelName@::calculate_spectrum()
    // one-loop level parameters
    solve_ewsb(1);
    calculate_1loop_masses();
+
+   throw_on_tachyon = false;
 }
 
 void @ModelName@::clear()
