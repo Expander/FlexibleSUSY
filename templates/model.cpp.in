@@ -19,6 +19,7 @@
 #include "@ModelName@_model.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
+#include "error.hpp"
 
 #include <cmath>
 #include <iostream>
