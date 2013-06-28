@@ -46,12 +46,12 @@ void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleMatrix& , DoubleVect
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
 
-double FiniteLog(double a)
+inline double FiniteLog(double a)
 {
    return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
 }
 
-double Log(double a)
+inline double Log(double a)
 {
    return std::log(a);
 }
