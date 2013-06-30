@@ -212,6 +212,7 @@ DoubleVector ToSoftsusy(const Eigen::VectorXd& m)
  *
  * @param m mass matrix
  * @param u mixing matrix
+ * @param v mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
 void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
@@ -252,6 +253,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
  *
  * @param m mass matrix
  * @param u mixing matrix
+ * @param v mixing matrix
  * @param eigenvalues eigenvalues (sorted)
  */
 void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u,

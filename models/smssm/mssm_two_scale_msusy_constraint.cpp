@@ -24,7 +24,6 @@
 /**
  * Constructor
  *
- * @param mssm_ Mssm class to apply the constraint to
  * @param pars_ vector with soft parameters m0, m12, a0
  * @param scale_ first guess for the susy scale
  * @param sgnMu_ sign of superpotential parameter \f$\mu\f$
