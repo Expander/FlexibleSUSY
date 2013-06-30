@@ -669,7 +669,8 @@ check_math_cmd() {
     exists_in_path "$MATH"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Warning: Mathematica needs to be installed to run the meta code!"
+        message "Error: Mathematica needs to be installed to run the meta code!"
+        exit 1
     else
         result "found $cmd"
     fi
