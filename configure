@@ -512,8 +512,10 @@ check_boost_thread_libs() {
     check_library "libboost_thread libboost_thread-mt" \
 	"$boost_lib_dir" "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Warning: libboost_thread or libboost_thread-mt must be installed"
+        message "Error: libboost_thread or libboost_thread-mt must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
+        message "  You can disable the lattice method with the --with-algorithms= flag."
+        exit 1
     else
         BOOSTTHREADLIBS_=-l$(echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
         if [ -z "$boost_lib_dir" ]; then
@@ -530,8 +532,10 @@ check_boost_thread_incl() {
     check_header "boost/thread/thread.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
-        message "Warning: boost/thread/thread.hpp must be installed"
+        message "Error: boost/thread/thread.hpp must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
+        message "  You can disable the lattice method with the --with-algorithms= flag."
+        exit 1
     else
         # assume that the compiler will look in the default paths
         if [ -n "$boost_inc_dir" ]; then
@@ -609,8 +613,11 @@ check_lapack_libs_using_options() {
     check_library "liblapack" "$lapack_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Warning: liblapack must be installed"
+        message "Error: liblapack must be installed"
         message "  to run the lattice algorithm, see http://www.netlib.org/lapack"
+        message "  You can disable the lattice algorithm with the"
+        message "  --with-algorithms= flag"
+        exit 1
     else
         LAPACKLIBS_=-llapack
         if [ -z "$lapack_lib_dir" ]; then
