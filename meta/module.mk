@@ -8,6 +8,7 @@ META_SRC     := \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/FlexibleSUSY.m \
+		$(DIR)/Format.m \
 		$(DIR)/LoopMasses.m \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
@@ -19,7 +20,9 @@ META_SRC     := \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
 		$(DIR)/TwoLoop.m \
-		$(DIR)/WriteOut.m
+		$(DIR)/WriteOut.m \
+		$(DIR)/writeRGE.m \
+		$(DIR)/writeNRGE.m
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
