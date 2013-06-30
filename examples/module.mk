@@ -62,7 +62,7 @@ $(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
-$(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(TVMETFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
+$(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 
 $(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)

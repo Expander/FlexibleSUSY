@@ -1,47 +1,23 @@
-// -*- c++ -*-
-
-#ifndef mathdefs_h
-#define mathdefs_h
+#ifndef mathdefs_hpp
+#define mathdefs_hpp
 
 
 #include <cmath>
 #include <complex>
 #include <limits>
-#include <iostream>		// required by <tvmet/Matrix.h>
 
 #include <boost/numeric/ublas/vector.hpp>
-#include <tvmet/Matrix.h>
-#include <tvmet/Vector.h>
+
 
 typedef double Real;
 typedef std::complex<Real> Comp;
 
 typedef boost::numeric::ublas::vector<Real> BRVec;
 
-typedef tvmet::Matrix<Real, 2, 2> RM22;
-typedef tvmet::Matrix<Real, 3, 3> RM33;
-typedef tvmet::Matrix<Real, 4, 4> RM44;
-typedef tvmet::Matrix<Real, 6, 6> RM66;
-typedef tvmet::Matrix<Comp, 2, 2> CM22;
-typedef tvmet::Matrix<Comp, 3, 3> CM33;
-typedef tvmet::Matrix<Comp, 4, 4> CM44;
-typedef tvmet::Matrix<Comp, 6, 6> CM66;
-typedef tvmet::Vector<Real, 2>	  RVe2;
-typedef tvmet::Vector<Real, 3>	  RVe3;
-typedef tvmet::Vector<Real, 4>	  RVe4;
-typedef tvmet::Vector<Real, 6>	  RVe6;
-
 
 const double pi = M_PI;
 const double r2 = M_SQRT2;
 const Real epsilon = std::numeric_limits<Real>::epsilon();
-
-
-struct Interval {
-    Real ini;			// initial value
-    Real fin;			// final value
-    size_t nsteps;		// number of steps
-};
 
 
 template<unsigned p, bool even_p, class T>
@@ -96,4 +72,4 @@ template<class T> inline T sign(T x)
 }
 
 
-#endif // mathdefs_h
+#endif // mathdefs_hpp

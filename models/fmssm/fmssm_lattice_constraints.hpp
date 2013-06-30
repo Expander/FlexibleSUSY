@@ -3,6 +3,7 @@
 
 
 #include "lattice_foreign_constraint.hpp"
+#include "small_matrices.hpp"
 
 
 #define fortran_fmssm_bc(name)				\
@@ -95,7 +96,7 @@ public:
     void operator()() {
 	for (size_t i = 0; i < 54; i++) {
 	    fmssm_yukawas_(0,0,0,
-			   Yu.begin(),Yd.begin(),Ye.begin(),
+			   Yu.data(),Yd.data(),Ye.data(),
 			   0,0,
 			   nullptr,nullptr,nullptr,
 			   nullptr,nullptr,
@@ -185,8 +186,8 @@ public:
 	    fmssm_sfermion_masses_(0,0,0,
 				   nullptr,nullptr,nullptr,
 				   0,0,
-				   m2Q.begin(),m2U.begin(),m2D.begin(),
-				   m2L.begin(),m2E.begin(),
+				   m2Q.data(),m2U.data(),m2D.data(),
+				   m2L.data(),m2E.data(),
 				   nullptr,nullptr,nullptr,
 				   0,0,0,
 				   0,0,
@@ -208,7 +209,7 @@ public:
 			      0,0,
 			      nullptr,nullptr,nullptr,
 			      nullptr,nullptr,
-			      Au.begin(),Ad.begin(),Ae.begin(),
+			      Au.data(),Ad.data(),Ae.data(),
 			      0,0,0,
 			      0,0,
 			      f->scl0, nullptr, i,

@@ -3,6 +3,7 @@
 
 
 #include "lattice_foreign_constraint.hpp"
+#include "small_matrices.hpp"
 
 
 #define decl_fmssmn_bc(name)						\
@@ -96,7 +97,7 @@ public:
     void operator()() {
 	for (size_t i = 0; i < 54; i++) {
 	    fmssmn_yude_(0,0,0,
-			 Yu.begin(),Yd.begin(),nullptr,Ye.begin(),
+			 Yu.data(),Yd.data(),nullptr,Ye.data(),
 			 0,0,
 			 nullptr,nullptr,nullptr,
 			 nullptr,nullptr,nullptr,
@@ -187,8 +188,8 @@ public:
 	    fmssmn_sfermion_masses_(0,0,0,
 				    nullptr,nullptr,nullptr,nullptr,
 				    0,0,
-				    m2Q.begin(),m2U.begin(),m2D.begin(),
-				    m2L.begin(),m2N.begin(),m2E.begin(),
+				    m2Q.data(),m2U.data(),m2D.data(),
+				    m2L.data(),m2N.data(),m2E.data(),
 				    nullptr,nullptr,nullptr,nullptr,
 				    0,0,0,
 				    0,0,
@@ -210,7 +211,7 @@ public:
 			       0,0,
 			       nullptr,nullptr,nullptr,
 			       nullptr,nullptr,nullptr,
-			       Au.begin(),Ad.begin(),An.begin(),Ae.begin(),
+			       Au.data(),Ad.data(),An.data(),Ae.data(),
 			       0,0,0,
 			       0,0,
 			       f->scl0, nullptr, i,
@@ -227,7 +228,7 @@ public:
     void operator()() {
 	for (size_t i = 0; i < 18; i++) {
 	    fmssmn_yn_(0,0,0,
-		       nullptr,nullptr,Yn.begin(),nullptr,
+		       nullptr,nullptr,Yn.data(),nullptr,
 		       0,0,
 		       nullptr,nullptr,nullptr,
 		       nullptr,nullptr,nullptr,

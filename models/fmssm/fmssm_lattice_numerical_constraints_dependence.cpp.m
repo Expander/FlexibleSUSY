@@ -28,16 +28,16 @@ WriteString[filename,
 
 writeNBCDeps[filename, {
     M1i, M2i, M3i, A0i,
-    _m2QiT, _m2UiT, _m2DiT, _m2LiT, _m2EiT, _m2NiT,
-    _AuiT, _AdiT, _AniT, _AeiT,
-    _YuiT, _YdiT, _YniT, _YeiT
+    _m2Qi, _m2Ui, _m2Di, _m2Li, _m2Ei, _m2Ni,
+    _Aui, _Adi, _Ani, _Aei,
+    _Yui, _Ydi, _Yni, _Yei
 },{
 {"Fmssm_constraint_on_ms_n::dependence", Det[m2stop] - (scale0 Exp[t])^4},
 {"Fmssm_constraint_on_gauge_couplings_n_::dependence", {g1 - g1i, g2 - g2i, g3 - g3i}},
 {"Fmssm_constraint_on_yukawas_n_::dependence", {
-    Yu - Table[YuiT[j,i], {i,3}, {j,3}],
-    Yd - Table[YdiT[j,i], {i,3}, {j,3}],
-    Ye - Table[YeiT[j,i], {i,3}, {j,3}]}},
+    Yu - Table[Yui[i,j], {i,3}, {j,3}],
+    Yd - Table[Ydi[i,j], {i,3}, {j,3}],
+    Ye - Table[Yei[i,j], {i,3}, {j,3}]}},
 {"Fmssm_constraint_on_ewsb_n_::dependence", {
     b vd/vu + (g2^2+gY^2) (vd^4-vu^4)/(4(vd^2+vu^2)) - (norm[mu]+m2Hu),
     b vu/vd + (g2^2+gY^2) (vu^4-vd^4)/(4(vd^2+vu^2)) - (norm[mu]+m2Hd),

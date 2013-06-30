@@ -226,17 +226,17 @@ class Fmssmn_cmssmn_constraint : public Fmssmn_mx_constraint {
 public:
     Fmssmn_cmssmn_constraint(double m0, double m12, double a0, const CM33& Yn){
 	mgc.M1 = mgc.M2 = mgc.M3 = m12;
-	mfc.m2Q = sqr(m0), 0, 0,
-	    	  0, sqr(m0), 0,
-	    	  0, 0, sqr(m0);
+	mfc.m2Q << sqr(m0), 0, 0,
+	    	   0, sqr(m0), 0,
+	    	   0, 0, sqr(m0);
 	mfc.m2U = mfc.m2D = mfc.m2L = mfc.m2N = mfc.m2E = mfc.m2Q;
 	mhc.m2Hu_fin = mhc.m2Hd_fin = sqr(m0);
 	// to be set by initial guesser
 	// mhc.m2Hu_ini = m2Hu_ini;
 	// mhc.m2Hd_ini = m2Hd_ini;
-	tfc.Au = a0, a0, a0,
-	    	 a0, a0, a0,
-	    	 a0, a0, a0;
+	tfc.Au << a0, a0, a0,
+	    	  a0, a0, a0,
+	    	  a0, a0, a0;
 	tfc.Ad = tfc.An = tfc.Ae = tfc.Au;
 	ync.Yn = Yn;
     }
@@ -289,13 +289,13 @@ int main(int argc, char *argv[])
        });
 
    CM33 UPMNS;			// tribimaximal mixing
-   UPMNS =  sqrt(2.0/3),  sqrt(1.0/3),	    0.0   ,
-       	   -sqrt(1.0/6),  sqrt(1.0/3), sqrt(1.0/2),
-       	    sqrt(1.0/6), -sqrt(1.0/3), sqrt(1.0/2);
+   UPMNS <<  sqrt(2.0/3),  sqrt(1.0/3),	    0.0   ,
+       	    -sqrt(1.0/6),  sqrt(1.0/3), sqrt(1.0/2),
+       	     sqrt(1.0/6), -sqrt(1.0/3), sqrt(1.0/2);
    CM33 YnDiag;
-   YnDiag = 0.2, 0, 0,
-       	    0, 0.6, 0,
-       	    0, 0, 1.2;
+   YnDiag << 0.2, 0, 0,
+       	     0, 0.6, 0,
+       	     0, 0, 1.2;
    CM33 Yn;
    Yn = UPMNS * YnDiag;
    Fmssmn_cmssmn_constraint fmssmn_cmssmn_constraint

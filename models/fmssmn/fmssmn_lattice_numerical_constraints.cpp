@@ -30,7 +30,7 @@ Fmssmn_constraint_on_yn_n_::Fmssmn_constraint_on_yn_n_() :
 	members[i] = new AnyNumericalConstraint(nonzeros[i],
 	    [&,i](const AnyNumericalConstraint *self, const Real *x) {
 		return fmssmn_yn_n_(0,0,0,
-				    nullptr,nullptr,Yn.begin(),nullptr,
+				    nullptr,nullptr,Yn.data(),nullptr,
 				    0,0,
 				    nullptr,nullptr,nullptr,
 				    nullptr,nullptr,nullptr,
