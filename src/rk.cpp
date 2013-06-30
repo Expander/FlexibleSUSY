@@ -92,37 +92,32 @@
 */
 
 #include <algorithm>
-#include <iostream>
-
+#include "logger.hpp"
 #include "rk.hpp"
 
-using std::cout;
-using std::endl;
-using std::flush;
-using std::function;
+using namespace std;
+using namespace Eigen;
+
+namespace runge_kutta {
 
 /// Returns |a| with sign of b in front
-inline Real sign(Real a, Real b) 
-{ return ((b) >= 0.0 ? fabs(a) : -fabs(a)); }
+double sign(double a, double b) 
+{ return b >= 0 ? fabs(a) : -fabs(a); }
 
 // returns >0 if there's a problem:
-int integrateOdes(BRVec& ystart, Real from, Real to, Real eps,
-	      Real h1, Real hmin, 
-	      Derivs derivs,
-	      function<int(BRVec& y, const BRVec& dydx, Real
-			   *x, Real htry, Real eps, BRVec& yscal,
-			   Real *hdid, Real *hnext, 
-			   Derivs derivs)> rkqs) {  
+int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
+		  double h1, double hmin, Derivs derivs,
+		  RungeKuttaQuinticStepper rkqs) {  
   int nvar =  ystart.size();
   int nstp, i;
-  Real x, hnext, hdid, h;
-  BRVec yscal(nvar), y(ystart), dydx;
+  double x, hnext, hdid, h;
+  ArrayXd yscal(nvar), y(ystart), dydx;
   
   x = from;
   h = sign(h1, to - from);
   
   const int MAXSTP = 400;
-  const Real TINY = 1.0e-16;
+  const double TINY = 1.0e-16;
 
   for (nstp = 1; nstp <= MAXSTP; nstp++) {
     dydx = derivs(x, y);
@@ -133,19 +128,18 @@ int integrateOdes(BRVec& ystart, Real from, Real to, Real eps,
     if (smallStep) return 1;
 
     if ((x - to) * (to - from) >= 0.0) {
-      for (i = 0; i< nvar; i++) ystart(i) = y(i);
+      for (i = 0; i < nvar; i++) ystart(i) = y(i);
       return 0;
     }
       
     if (fabs(hnext) <= hmin) {
       nstp = MAXSTP; // bail out
       {
-	cout << "Step size too small in diffeq.cpp:integrateOdes\n";
-	cout << "**********x = " << x << "*********\n";
+	ERROR("Step size too small in rk.cpp:integrateOdes\n"
+	      << "**********x = " << x << "*********");
 	for (i = 0;i < nvar;i++) 
-	  cout << "y(" << i << ") = " << y(i) << " dydx(" << i <<
-	    ") = " << dydx(i) << endl;
-	cout.flush();
+	    ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
+		  ") = " << dydx(i));
       }
     }
     
@@ -153,43 +147,41 @@ int integrateOdes(BRVec& ystart, Real from, Real to, Real eps,
   }
   
   {
-    cout << "Bailed out of diffeq.cpp:too many steps in integrateOdes\n";
-    cout << "**********x = " << x << "*********\n";
-    for (i = 0;i < nvar;i++) 
-      cout << "y(" << i << ") = " << y(i) << " dydx(" << i <<
-	") = " << dydx(i) << endl;
-    cout.flush();
+    ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
+	    << "**********x = " << x << "*********");
+    for (i = 0; i < nvar; i++) 
+	ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
+	      ") = " << dydx(i));
   }
   
   return 1;
 }
 
-int odeStepper(BRVec& y, const BRVec& dydx, Real *x, Real
-		htry, Real eps, BRVec& yscal, Real *hdid, 
-		Real *hnext,		
-		Derivs derivs)
+int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
+	       double eps, ArrayXd& yscal, double *hdid, double *hnext,
+	       Derivs derivs)
 {
-  const Real SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
+  const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
 
   int i, n = y.size();
-  Real errmax, h, htemp, xnew;
+  double errmax, h, htemp, xnew;
   
-  BRVec yerr(n), ytemp(n);
+  ArrayXd yerr(n), ytemp(n);
   h = htry;
   for (;;) {
     rungeKuttaStep(y, dydx, *x, h, ytemp, yerr, derivs);
     errmax = 0.0;
-    for (i = 0; i < n;i++) errmax = std::max(errmax, fabs(yerr(i) / yscal(i)));
+    for (i = 0; i < n;i++) errmax = max(errmax, fabs(yerr(i) / yscal(i)));
     errmax  /= eps;
     if (errmax <= 1.0) break;
     htemp = SAFETY * h * pow(errmax, PSHRNK);
-    h = (h >= 0.0 ? std::max(htemp ,0.1 * h) : std::min(htemp, 0.1 * h));
+    h = (h >= 0.0 ? max(htemp ,0.1 * h) : min(htemp, 0.1 * h));
     xnew = (*x) + h;
     if (xnew == *x) 
       {
 	{
-	cout << "At x = " << *x;
-	cout << ",stepsize underflow in odeStepper" << flush << endl;
+	  ERROR("At x = " << *x
+		<< ",stepsize underflow in odeStepper");
 	}
 	return 1;
       }
@@ -201,43 +193,43 @@ int odeStepper(BRVec& y, const BRVec& dydx, Real *x, Real
   return 0;
 }
 
-void rungeKuttaStep(const BRVec& y, const BRVec& dydx,
-	     Real x, Real h, BRVec& yout, BRVec& yerr,
-	     Derivs derivs) {
+void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
+		    double h, ArrayXd& yout, ArrayXd& yerr, Derivs derivs)
+{
   int i;
-  const Real a2 = 0.2,a3 = 0.3,a4 = 0.6,a5 = 1.0,a6 = 0.875,b21 =
+  const double a2 = 0.2,a3 = 0.3,a4 = 0.6,a5 = 1.0,a6 = 0.875,b21 =
     0.2,b31 = 3.0 / 40.0,b32 = 9.0 / 40.0,b41 = 0.3,b42 = -0.9,b43 = 1.2,
     b51 = -11.0 / 54.0, b52 = 2.5,b53 = -70.0 / 27.0,b54 = 35.0 / 27.0,
     b61 = 1631.0 / 55296.0,b62 = 175.0 / 512.0,b63 = 575.0 / 13824.0,
     b64 = 44275.0 / 110592.0,b65 = 253.0 / 4096.0,c1 = 37.0 / 378.0,
     c3 = 250.0 / 621.0,c4 = 125.0 / 594.0,c6 = 512.0 / 1771.0,
     dc5 = -277.00 / 14336.0;
-  const Real dc1 = c1-2825.0 / 27648.0,dc3 = c3-18575.0 / 48384.0,
+  const double dc1 = c1-2825.0 / 27648.0,dc3 = c3-18575.0 / 48384.0,
     dc4 = c4-13525.0 / 55296.0,dc6 = c6-0.25;
   
   int n = y.size();
   
-  BRVec ytemp = y + b21 * h * dydx;
-  BRVec ak2 = derivs(x + a2 * h, ytemp);
+  ArrayXd ytemp = b21 * h * dydx + y;
+  ArrayXd ak2 = derivs(x + a2 * h, ytemp);
 
   // Allowing piece-wise calculating of ytemp for speed reasons
   for (i = 0; i < n; i++)
     ytemp(i) = y(i) + h * (b31 * dydx(i) + b32 * ak2(i));
-  BRVec ak3 = derivs(x + a3 * h, ytemp);
+  ArrayXd ak3 = derivs(x + a3 * h, ytemp);
 
   for (i = 0; i < n; i++)
     ytemp(i) = y(i) + h * (b41 * dydx(i) + b42 * ak2(i) + b43 * ak3(i));
-  BRVec ak4 = derivs(x+a4*h,ytemp);
+  ArrayXd ak4 = derivs(x+a4*h,ytemp);
 
   for (i = 0; i < n; i++)
     ytemp(i) = y(i) + h * (b51 * dydx(i) + b52 * ak2(i) + b53
 				   * ak3(i) + b54 * ak4(i));
-  BRVec ak5 = derivs(x + a5 * h, ytemp);
+  ArrayXd ak5 = derivs(x + a5 * h, ytemp);
 
   for (i = 0; i < n; i++)
     ytemp(i) = y(i) + h * (b61 * dydx(i) + b62 * ak2(i) + b63
 				   * ak3(i) + b64 * ak4(i) + b65 * ak5(i));
-  BRVec ak6 = derivs(x + a6 * h, ytemp);
+  ArrayXd ak6 = derivs(x + a6 * h, ytemp);
 
   for (i = 0; i < n; i++)
     yout(i) = y(i) + h * (c1 * dydx(i) + c3 * ak3(i) + c4 *
@@ -246,3 +238,5 @@ void rungeKuttaStep(const BRVec& y, const BRVec& dydx,
     yerr(i) = h * (dc1 * dydx(i) + dc3 * ak3(i) + 
 		   dc4 * ak4(i) + dc5 * ak5(i) + dc6 * ak6(i));
 }
+
+} // namespace runge_kutta

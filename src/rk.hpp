@@ -1,5 +1,3 @@
-// -*- c++ -*-
-
 /** \file numerics.h
    - Project:     SOFTSUSY 
    - Author:      Ben Allanach 
@@ -55,34 +53,35 @@
    Added proper header info
 */
 
-#ifndef RK_H
-#define RK_H
+#ifndef RK_HPP
+#define RK_HPP
 
 #include <functional>
-#include "mathdefs.hpp"
+#include <Eigen/Dense>
 
-typedef std::function<BRVec(Real, const BRVec&)> Derivs;
+namespace runge_kutta {
+
+typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
 
 /// A single step of Runge Kutta (5th order), input: 
 /// y and dydx (derivative of y), x is independent variable. yout is value
 /// after step. derivs is a user-supplied function
-void rungeKuttaStep(const BRVec& y, const BRVec& dydx,
-	     Real x, Real h, BRVec& yout, BRVec& yerr,
-	     Derivs derivs);
+void rungeKuttaStep(const Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx,
+	double x, double h, Eigen::ArrayXd& yout, Eigen::ArrayXd& yerr,
+	Derivs derivs);
 
 /// organises the variable step-size for Runge-Kutta evolution
-int odeStepper(BRVec& y, const BRVec& dydx, Real *x, Real
-		htry, Real eps, BRVec& yscal, Real *hdid,
-		Real *hnext,		
-		Derivs derivs);
+int odeStepper(Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx, double *x,
+	       double htry, double eps, Eigen::ArrayXd& yscal, double *hdid,
+	       double *hnext, Derivs derivs);
+
+typedef std::function<decltype(odeStepper)> RungeKuttaQuinticStepper;
 
 /// Organises integration of 1st order system of ODEs
-int integrateOdes(BRVec& ystart, Real x1, Real x2, Real eps,
-		  Real h1, Real hmin,
-		  Derivs derivs,
-		  std::function<int(BRVec& y, const BRVec& dydx, Real *x,
-				    Real htry, Real eps, BRVec& yscal, Real
-				    *hdid, Real *hnext, 
-				    Derivs derivs)> rkqs);
+int integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,
+		  double h1, double hmin, Derivs derivs,
+		  RungeKuttaQuinticStepper rkqs);
 
-#endif
+} // namespace runge_kutta
+
+#endif // RK_HPP

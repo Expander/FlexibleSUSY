@@ -20,6 +20,7 @@
 #define lattice_constraint_hpp
 
 
+#include <Eigen/Dense>
 #include "constraint.hpp"
 #include "matching.hpp"
 #include "lattice_solver.hpp"
@@ -180,11 +181,12 @@ public:
 class Lattice_RKRGE : public IntraTheoryConstraint {
 public:
     struct Adapter {
-	void set(BRVec& xD, size_t width) { v = &xD; n = width; }
-	Real& x(size_t i) { return (*v)[i]; }
-	Real& D(size_t i, size_t j) { return (*v)[(i+1)*n + j]; }
+	Adapter() : x(nullptr,0), D(nullptr,0,0) {}
+	void set(Eigen::ArrayXd& xD, size_t width);
 	size_t n;
-	BRVec *v;
+	Eigen::Map<Eigen::VectorXd> x;
+	Eigen::Map<Eigen::MatrixXd> D;
+	Eigen::ArrayXd *v;
     };
 
     // Lattice_RKRGE() {}
@@ -204,9 +206,9 @@ public:
     void operator()();
     int evolve_to(Real t_new, Adapter& a, Real eps = -1);
 
-    BRVec   xD0, xD1;
-    Adapter  a0,  a1;
-    RVec    dx0, dx1;
+    Eigen::ArrayXd xD0, xD1;
+    Adapter         a0,  a1;
+    RVec           dx0, dx1;
 };
 
 class Uniform_dt : public IntraTheoryConstraint {
