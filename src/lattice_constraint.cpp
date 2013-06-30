@@ -6,6 +6,8 @@
 
 
 using namespace std;
+using namespace Eigen;
+using namespace runge_kutta;
 
 
 void Lattice_constraint::activate()
@@ -71,6 +73,15 @@ void Lattice_RGE::set_diff(size_t r, size_t m, size_t i)
     z(r) *= (y(m+1,0)-y(m,0))*u(0)/2;
 }
 
+void Lattice_RKRGE::Adapter::set(ArrayXd& xD, size_t width)
+{
+    v = &xD;
+    n = width;
+    // see http://eigen.tuxfamily.org/dox/TutorialMapClass.html
+    new (&x) Map<VectorXd>(v->data()  , n);
+    new (&D) Map<MatrixXd>(v->data()+n, n, n);
+}
+
 void Lattice_RKRGE::operator()()
 {
     size_t m = mbegin;
@@ -127,25 +138,21 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
     Real guess = (from - to) * 0.1; //first step size
     Real hmin = (from - to) * tol * 1.0e-5;
 
-    BRVec ddx(a.n);
+    RowVectorXd ddx(a.n);
     Adapter b, db;
 
     int err = integrateOdes(*a.v, from, to, tol, guess, hmin,
-	    [=,&ddx,&b,&db](Real t, const BRVec& xD) {
-		b.set((BRVec&)xD, a.n);
+	    [=,&ddx,&b,&db](Real t, const ArrayXd& xD) {
+		b.set((ArrayXd&)xD, a.n);
 
-		BRVec dxD(xD.size());
+		ArrayXd dxD(xD.size());
 		db.set(dxD, b.n);
 
 		for (size_t i = 0; i < db.n; i++) {
 		    db.x(i) = f->efts[T].w->dx(f->a, &b.x(0), i);
 
 		    f->efts[T].w->ddx(f->a, &b.x(0), i, &ddx[0]);
-		    for (size_t j = 0; j < db.n; j++) {
-			db.D(i,j) = 0;
-			for (size_t k = 0; k < db.n; k++)
-			    db.D(i,j) += ddx[k] * b.D(k,j);
-		    }
+		    db.D.block(i,0,1,db.n) = ddx * b.D;
 		}
 
 		return dxD;

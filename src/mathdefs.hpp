@@ -6,13 +6,9 @@
 #include <complex>
 #include <limits>
 
-#include <boost/numeric/ublas/vector.hpp>
-
 
 typedef double Real;
 typedef std::complex<Real> Comp;
-
-typedef boost::numeric::ublas::vector<Real> BRVec;
 
 
 const double pi = M_PI;
