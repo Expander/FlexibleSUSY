@@ -560,7 +560,7 @@ check_gsl_config() {
     exists_in_path "$gsl_config"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Error: GSL needs to be installed to use the lattice algorithm!"
+        message "Error: Gnu Scientific Library (GSL) needs to be installed!"
         message "  Either add the path to the \`gsl-config' program to \$PATH or"
         message "  use $0 --with-gsl-config=<path to gsl-config>"
         exit 1
