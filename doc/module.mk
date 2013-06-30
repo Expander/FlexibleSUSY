@@ -25,4 +25,5 @@ $(INDEX_PADE):
 		( cat $(DOXYFILE) ; \
 		  echo "INPUT = $(MODULES)" ; \
 		  echo "OUTPUT_DIRECTORY = $(DOC_OUTPUT_DIR)" ; \
-		  echo "EXCLUDE = $(ALLDEP)" ) | doxygen -
+		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES)" \
+		) | doxygen -
