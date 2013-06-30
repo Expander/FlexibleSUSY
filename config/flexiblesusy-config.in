@@ -72,7 +72,7 @@ while test $# -gt 0; do
                 out="$out no"
             fi
             ;;
-        --version)       out="$version"       ;;
+        --version)       out="$out $version"  ;;
         --help)
       ### Print a help message
             help
