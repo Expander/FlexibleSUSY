@@ -3,6 +3,7 @@
 
 
 #include "lattice_compound_constraint.hpp"
+#include "small_matrices.hpp"
 
 
 struct Fmssmn_constraint_on_yn_n_ {

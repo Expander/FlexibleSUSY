@@ -24,17 +24,17 @@ public:
     Fmssm_cmssm_constraint
     (double m0, double m12, double a0) {
 	mgc.M1 = mgc.M2 = mgc.M3 = m12;
-	mfc.m2Q = sqr(m0), 0, 0,
-	    	  0, sqr(m0), 0,
-	    	  0, 0, sqr(m0);
+	mfc.m2Q << sqr(m0), 0, 0,
+	    	   0, sqr(m0), 0,
+	    	   0, 0, sqr(m0);
 	mfc.m2U = mfc.m2D = mfc.m2L = mfc.m2E = mfc.m2Q;
 	mhc.m2Hu_fin = mhc.m2Hd_fin = sqr(m0);
 	// to be set by initial guesser
 	// mhc.m2Hu_ini = m2Hu_ini;
 	// mhc.m2Hd_ini = m2Hd_ini;
-	tfc.Au = a0, a0, a0,
-	    	 a0, a0, a0,
-	    	 a0, a0, a0;
+	tfc.Au << a0, a0, a0,
+	    	  a0, a0, a0,
+	    	  a0, a0, a0;
 	tfc.Ad = tfc.Ae = tfc.Au;
     }
 };

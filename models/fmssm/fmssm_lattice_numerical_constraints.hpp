@@ -4,6 +4,7 @@
 
 #include "lattice_compound_constraint.hpp"
 #include "lattice_numerical_constraint.hpp"
+#include "small_matrices.hpp"
 
 
 class Fmssm_constraint_on_ms_n : public NumericalConstraint {
