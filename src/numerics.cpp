@@ -448,21 +448,12 @@ double b22(double p,  double m1, double m2, double q) {
   }
   else {// checked
     double b0Save = b0(p, m1, m2, q);
-    double m2p = m2, m1p = m1, pp = p, qp = q;    
-
-    double ans = 1.0 / 6.0 * 
-      (0.5 * (a0(m1p, qp) + a0(m2p, qp)) + (sqr(m1p) + sqr(m2p) - 0.5 * sqr(pp))
-       * b0Save + (sqr(m2p) - sqr(m1p)) / (2.0 * sqr(pp)) *
-       (a0(m2p, qp) - a0(m1p, qp) - (sqr(m2p) - sqr(m1p)) * b0Save) +
-       sqr(m1p) + sqr(m2p) - sqr(pp) / 3.0);
 
     answer = 1.0 / 6.0 * 
       (0.5 * (a0(m1, q) + a0(m2, q)) + (sqr(m1) + sqr(m2) - 0.5 * sqr(p))
        * b0Save + (sqr(m2) - sqr(m1)) / (2.0 * sqr(p)) *
        (a0(m2, q) - a0(m1, q) - (sqr(m2) - sqr(m1)) * b0Save) +
        sqr(m1) + sqr(m2) - sqr(p) / 3.0);
-
-    answer = ans;
   }
 
   return answer;
