@@ -31,11 +31,14 @@ class Two_scale_model;
 
 class TachyonError : public Error {
 public:
-   TachyonError(Two_scale_model*, const std::string&, int);
+   TachyonError(const Two_scale_model*, const std::string&, int);
    virtual ~TachyonError() {}
    virtual std::string what() const;
+   const Two_scale_model* get_model() const { return model; }
+   const std::string& get_particle_name() const { return particle_name; }
+   int get_particle_index() const { return particle_index; }
 private:
-   Two_scale_model* model;
+   const Two_scale_model* model;
    std::string particle_name;
    int particle_index;
 };

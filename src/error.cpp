@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-TachyonError::TachyonError(Two_scale_model* model_,
+TachyonError::TachyonError(const Two_scale_model* model_,
                            const std::string& particle_name_,
                            int particle_index_)
    : model(model_)
