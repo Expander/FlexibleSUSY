@@ -78,7 +78,7 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
                allBeta1L = allBeta1L <> beta1L;
                allBeta2L = allBeta2L <> "   " <> beta2L;
               ];
-           allBeta = allDecl <> "\n" <> allBeta1L <> "\nif (displayLoops() > 1) {\n" <>
+           allBeta = allDecl <> "\n" <> allBeta1L <> "\nif (get_loops() > 1) {\n" <>
                      allBeta2L <> "\n}\n";
            Return[allBeta];
           ];
@@ -132,8 +132,7 @@ CreateSetFunction[betaFunctions_List, parameterNumberOffset_:0] :=
                beta = GetAllBetaFunctions[betaFunctions[[i]]];
                type = GetType[betaFunctions[[i]]];
                name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
-               (* start counting with 1 *)
-               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount + 1, type];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
                set = set <> assignment;
                paramCount += nAssignments;
               ];
@@ -155,8 +154,7 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
                beta = GetAllBetaFunctions[betaFunctions[[i]]];
                type = GetType[betaFunctions[[i]]];
                name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
-               (* start counting with 1 *)
-               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount + 1, type];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
                display = display <> assignment;
                paramCount += nAssignments;
               ];

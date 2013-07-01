@@ -50,8 +50,8 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
    model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * a(1)));
    model->set_@leftCoupling@(sqrt(4.0 * M_PI * a(2)));
    model->set_@strongCoupling@(sqrt(4.0 * M_PI * a(3)));
-   model->setMu(mtpole);
-   model->setLoops(2);
+   model->set_scale(mtpole);
+   model->set_loops(2);
 
 @applyConstraint@
 
@@ -91,7 +91,7 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
 
    // calculate tree-level spectrum
    model->calculate_DRbar_parameters();
-   model->setThresholds(3);
-   model->setLoops(2);
+   model->set_thresholds(3);
+   model->set_loops(2);
    model->set_ewsb_loop_order(1);
 }

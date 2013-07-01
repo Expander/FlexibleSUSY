@@ -27,12 +27,14 @@ public:
    virtual ~Beta_function() {}
 
    void set_scale(double s) { scale = s; }
-   void set_parameters(unsigned pars) { numPars = pars; }
+   void set_number_of_parameters(unsigned pars) { numPars = pars; }
    void set_loops(unsigned l) { loops = l; }
+   void set_thresholds(unsigned t) { thresholds = t; }
 
-   double get_scale() { return scale; }
-   unsigned get_parameters() { return numPars; }
-   unsigned get_loops() { return loops; }
+   double get_scale() const { return scale; }
+   unsigned get_number_of_parameters() const { return numPars; }
+   unsigned get_loops() const { return loops; }
+   unsigned get_thresholds() const { return thresholds; }
 
    virtual const Eigen::ArrayXd display() const = 0;
    virtual void set(const Eigen::ArrayXd&) = 0;
@@ -44,6 +46,7 @@ public:
 private:
    unsigned numPars;     ///< Number of parameters
    unsigned loops;       ///< To what order does the RG evolution run
+   unsigned thresholds;  ///< thresholds
    double scale;         ///< Renormalisation scale
    double tolerance;     ///< running tolerance
    double min_tolerance; ///< minimum tolerance allowed

@@ -24,26 +24,26 @@
 #define CLASSNAME @ModelName@_susy_parameters
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters()
-   : RGE()
+   : Beta_function()
    @parameterDefaultInit@
 {
-   setPars(numberOfParameters);
+   set_number_of_parameters(numberOfParameters);
 }
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(
    double scale_, double loops_, double thresholds_
    @cCtorParameterList@
 )
-   : RGE()
+   : Beta_function()
    @parameterCopyInit@
 {
-   setPars(numberOfParameters);
-   setMu(scale_);
-   setLoops(loops_);
-   setThresholds(thresholds_);
+   set_number_of_parameters(numberOfParameters);
+   set_scale(scale_);
+   set_loops(loops_);
+   set_thresholds(thresholds_);
 }
 
-DoubleVector @ModelName@_susy_parameters::beta() const
+Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
    return calcBeta().display();
 }
@@ -52,7 +52,7 @@ DoubleVector @ModelName@_susy_parameters::beta() const
 {
 @beta@
 
-   return @ModelName@_susy_parameters(displayMu(), displayLoops(), displayThresholds(),
+   return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(),
                     @betaParameterList@);
 }
 
@@ -63,9 +63,9 @@ void @ModelName@_susy_parameters::clear()
 
 @anomDimFunctions@
 
-const DoubleVector @ModelName@_susy_parameters::display() const
+const Eigen::ArrayXd @ModelName@_susy_parameters::display() const
 {
-   DoubleVector pars(numberOfParameters);
+   Eigen::ArrayXd pars(numberOfParameters);
 
 @display@
 
@@ -78,7 +78,7 @@ void @ModelName@_susy_parameters::print(std::ostream& ostr) const
 @printParameters@
 }
 
-void @ModelName@_susy_parameters::set(const DoubleVector& v)
+void @ModelName@_susy_parameters::set(const Eigen::ArrayXd& v)
 {
 @set@
 }

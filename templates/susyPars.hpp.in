@@ -19,20 +19,20 @@
 #ifndef @ModelName@_susy_parameters_H
 #define @ModelName@_susy_parameters_H
 
-#include "rge.h"
+#include "betafunction.hpp"
 
 #include <iosfwd>
 #include <Eigen/Core>
 
-class @ModelName@_susy_parameters : public RGE {
+class @ModelName@_susy_parameters : public Beta_function {
 public:
    @ModelName@_susy_parameters();
    @ModelName@_susy_parameters(double scale_, double loops_, double thresholds_@cCtorParameterList@);
    virtual ~@ModelName@_susy_parameters() {}
-   virtual DoubleVector beta() const;
-   virtual const DoubleVector display() const;
+   virtual Eigen::ArrayXd beta() const;
+   virtual const Eigen::ArrayXd display() const;
    virtual void print(std::ostream&) const;
-   virtual void set(const DoubleVector&);
+   virtual void set(const Eigen::ArrayXd&);
 
    @ModelName@_susy_parameters calcBeta() const;
    virtual void clear();

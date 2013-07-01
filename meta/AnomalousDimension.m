@@ -92,7 +92,7 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            body = body <> ";\n";
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
-              body = body <> "\nif (displayLoops() > 1) {\n";
+              body = body <> "\nif (get_loops() > 1) {\n";
               body = body <> "   anomDim += " <>
                      RValueToCFormString[(CConversion`twoLoop * GetAnomDim2Loop[anomDim])
                                    /. { Kronecker[i1,i2] -> unitMatrix }
