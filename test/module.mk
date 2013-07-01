@@ -3,6 +3,7 @@ MODNAME  := test
 
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
+		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_rk.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
@@ -74,6 +75,10 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_betafunction.d $(DIR)/test_betafunction.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
