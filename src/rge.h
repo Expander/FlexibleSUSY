@@ -18,6 +18,7 @@
 class DoubleVector; 
 #include "linalg.h"
 #include "numerics.h"
+#include "rk_legacy.hpp"
 using namespace softsusy;
 
 /// Describes a set of parameters and RGEs in general. 

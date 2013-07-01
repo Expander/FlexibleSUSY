@@ -24,19 +24,6 @@ using namespace softsusy;
 /// Comment if you want default softsusy behaviour
 //#define USE_LOOPTOOLS
 
-/// A single step of Runge Kutta (5th order), input: 
-/// y and dydx (derivative of y), x is independent variable. yout is value
-/// after step. derivs is a user-supplied function
-void rungeKuttaStep(const DoubleVector & y, const DoubleVector & dydx, 
-	     double x, double h, DoubleVector & yout, DoubleVector & yerr, 
-	     DoubleVector (*derivs)(double, const DoubleVector &));
-
-/// organises the variable step-size for Runge-Kutta evolution
-int odeStepper(DoubleVector & y, const DoubleVector & dydx, double *x, double
-		htry, double eps, DoubleVector & yscal, double *hdid, 
-		double *hnext,		
-		DoubleVector (*derivs)(double, const DoubleVector &));
-
 /// Calculates log likelihood of a Poisson with k observed events, expecting
 /// lambda>0. 
 double lnLPoisson(unsigned k, double lambda);
@@ -44,16 +31,6 @@ double lnLPoisson(unsigned k, double lambda);
 /// Calculates likelihood of a Poisson with k observed events, expecting
 /// lambda>0. 
 double LPoisson(unsigned k, double lambda);
-
-/// Organises integration of 1st order system of ODEs
-int integrateOdes(DoubleVector & ystart, double x1, double x2, double eps,
-		  double h1, double hmin, 
-		  DoubleVector (*derivs)(double, const DoubleVector &),
-		  int (*rkqs)
-		  (DoubleVector & y, const DoubleVector & dydx, double *x,
-		   double htry, double eps, DoubleVector & yscal, double
-		   *hdid, double *hnext, 
-		   DoubleVector (*derivs)(double, const DoubleVector &)));
 
 /// func is user-supplied, h is an estimate of what step-size to start with
 /// and err returns error flags
@@ -73,7 +50,8 @@ void shft3(double & a, double & b, double & c, double & d);
 double integrandThreshbn(double x);
 /// Returns real part of b function, less accurate than analytic expressions
 double bIntegral(int n, double p, double m1, double m2, double mt);
-DoubleVector dd(double x, const DoubleVector & y);
+// CHECK: is this function to be public?
+// DoubleVector dd(double x, const DoubleVector & y);
 
 /// Passarino-Veltman function definition
 double b0(double p, double m1, double m2, double q);
