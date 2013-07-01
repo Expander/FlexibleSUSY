@@ -38,7 +38,7 @@ public:
 
    void set_scale(double scale) { setMu(scale); }
    double get_scale() const { return displayMu(); }
-   Mssm calcBeta() const { return beta2(); }
+   Mssm calc_beta() const { return beta2(); }
    void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:

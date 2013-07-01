@@ -200,7 +200,7 @@ std::ostream& operator <<(std::ostream& left, const StandardModel<Two_scale>& s)
 }
 
 // Outputs derivatives (DRbar scheme) in the form of ds
-StandardModel<Two_scale> StandardModel<Two_scale>::calcBeta() const
+StandardModel<Two_scale> StandardModel<Two_scale>::calc_beta() const
 {
    static const double oneO16Pisq = 1.0 / (16.0 * PI * PI);
    DoubleMatrix dyu(3, 3), dyd(3, 3), dye(3, 3);
@@ -238,5 +238,5 @@ StandardModel<Two_scale> StandardModel<Two_scale>::calcBeta() const
 
 DoubleVector StandardModel<Two_scale>::beta() const
 {
-   return calcBeta().display();
+   return calc_beta().display();
 }

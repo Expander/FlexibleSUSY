@@ -45,10 +45,10 @@
 
 Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
-   return calcBeta().display();
+   return calc_beta().display();
 }
 
-@ModelName@_susy_parameters @ModelName@_susy_parameters::calcBeta() const
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
 @beta@
 

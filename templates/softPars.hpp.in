@@ -34,7 +34,7 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
 
-   @ModelName@_soft_parameters calcBeta() const;
+   @ModelName@_soft_parameters calc_beta() const;
    virtual void clear();
 
 @setter@

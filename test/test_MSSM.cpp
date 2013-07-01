@@ -66,7 +66,7 @@ void test_high_scale_constraint(MSSM m)
    double mgut_new = mgut;
 
    do {
-      m.runto(mgut);
+      m.run_to(mgut);
       constraint.apply();
       mgut_new = constraint.get_scale();
       diff = std::fabs((mgut - mgut_new)/mgut);
@@ -77,7 +77,7 @@ void test_high_scale_constraint(MSSM m)
    TEST_GREATER(1.0e-7, diff);
    TEST_GREATER(20, iteration);
 
-   m.runto(mgut_new);
+   m.run_to(mgut_new);
    TEST_CLOSE(m.get_g1(), m.get_g2(), 1.0e-6);
    TEST_CLOSE(m.get_mHd2(), sqr(input.m0), 1.0e-6);
    TEST_CLOSE(m.get_mHu2(), sqr(input.m0), 1.0e-6);
@@ -102,9 +102,9 @@ void compare_anomalous_dimensions(const SoftParsMssm& a, const MSSM_soft_paramet
   sBrevity brevity;
   a.anomalousDimension(gEE, gLL, gQQ, gUU, gDD, dg, gH1H1, gH2H2, brevity);
 
-  TEST_EQUALITY(a.displayLoops(), b.displayLoops());
-  TEST_EQUALITY(a.displayMu(), b.displayMu());
-  TEST_EQUALITY(a.displayThresholds(), b.displayThresholds());
+  TEST_EQUALITY(a.displayLoops(), b.get_loops());
+  TEST_EQUALITY(a.displayMu(), b.get_scale());
+  TEST_EQUALITY(a.displayThresholds(), b.get_thresholds());
 
   TEST_EQUALITY(gEE, b.get_SeRSeR());
   TEST_EQUALITY(gLL, b.get_SlSl());
@@ -117,9 +117,9 @@ void compare_anomalous_dimensions(const SoftParsMssm& a, const MSSM_soft_paramet
 
 void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& b)
 {
-   TEST_EQUALITY(a.displayLoops(), b.displayLoops());
-   TEST_EQUALITY(a.displayMu(), b.displayMu());
-   TEST_EQUALITY(a.displayThresholds(), b.displayThresholds());
+   TEST_EQUALITY(a.displayLoops(), b.get_loops());
+   TEST_EQUALITY(a.displayMu(), b.get_scale());
+   TEST_EQUALITY(a.displayThresholds(), b.get_thresholds());
 
    TEST_EQUALITY(a.displayGaugeCoupling(1), b.get_g1());
    TEST_EQUALITY(a.displayGaugeCoupling(2), b.get_g2());
@@ -157,11 +157,11 @@ void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& 
 void test_beta_function_equality(const SoftParsMssm& a, const MSSM_soft_parameters& b)
 {
    SoftParsMssm beta_a(a.beta2());
-   MSSM_soft_parameters beta_b(b.calcBeta());
+   MSSM_soft_parameters beta_b(b.calc_beta());
 
-   TEST_EQUALITY(beta_a.displayLoops(), beta_b.displayLoops());
-   TEST_EQUALITY(beta_a.displayMu(), beta_b.displayMu());
-   TEST_EQUALITY(beta_a.displayThresholds(), beta_b.displayThresholds());
+   TEST_EQUALITY(beta_a.displayLoops(), beta_b.get_loops());
+   TEST_EQUALITY(beta_a.displayMu(), beta_b.get_scale());
+   TEST_EQUALITY(beta_a.displayThresholds(), beta_b.get_thresholds());
 
    TEST_EQUALITY(beta_a.displayGaugeCoupling(1), beta_b.get_g1());
    TEST_EQUALITY(beta_a.displayGaugeCoupling(2), beta_b.get_g2());
@@ -859,7 +859,7 @@ void compare_CP_even_higgs_self_energy(MssmSoftsusy s, MSSM m)
    const double scale = s.displayMu();
    const DoubleVector hh(m.get_Mhh());
 
-   TEST_EQUALITY(s.displayMu(), m.displayMu());
+   TEST_EQUALITY(s.displayMu(), m.get_scale());
 
    if (hh(1) <= hh(2)) {
       TEST_CLOSE(mh0, hh(1), 1.0e-10);
@@ -905,7 +905,7 @@ void compare_CP_odd_higgs_self_energy(MssmSoftsusy s, MSSM m)
    const double scale = s.displayMu();
    const DoubleVector Ah(m.get_MAh());
 
-   TEST_EQUALITY(s.displayMu(), m.displayMu());
+   TEST_EQUALITY(s.displayMu(), m.get_scale());
 
    bool twisted;    // true if Ah(1) == A0, false otherwise
    const double p = mA0;
@@ -954,7 +954,7 @@ void compare_charged_higgs_self_energy(MssmSoftsusy s, MSSM m)
    const double scale = s.displayMu();
    const DoubleVector Hpm(m.get_MHpm());
 
-   TEST_EQUALITY(s.displayMu(), m.displayMu());
+   TEST_EQUALITY(s.displayMu(), m.get_scale());
 
    bool twisted;    // true if Hpm(1) == Hpm, false otherwise
    const double p = mHpm;
@@ -999,11 +999,11 @@ void compare_charged_higgs_self_energy(MssmSoftsusy s, MSSM m)
 void compare_z_self_energy(MssmSoftsusy s, MSSM m)
 {
    const double p = m.get_MVZ();
-   const double scale = m.displayMu();
+   const double scale = m.get_scale();
    const Complex sarah_z_se(m.self_energy_VZ(p));
    const double softsusy_z_se = s.piZZT(p, scale, false);
 
-   TEST_EQUALITY(scale, m.displayMu());
+   TEST_EQUALITY(scale, m.get_scale());
    TEST_EQUALITY(scale, s.displayMu());
    TEST_EQUALITY(m.get_MVZ(), s.displayMzRun());
    TEST_EQUALITY(sarah_z_se.imag(), 0.0);
@@ -1016,11 +1016,11 @@ void compare_z_self_energy(MssmSoftsusy s, MSSM m)
 void compare_w_self_energy(MssmSoftsusy s, MSSM m)
 {
    const double p = m.get_MVWm();
-   const double scale = m.displayMu();
+   const double scale = m.get_scale();
    const Complex sarah_w_se(m.self_energy_VWm(p));
    const double softsusy_w_se = s.piWWT(p, scale, false);
 
-   TEST_EQUALITY(scale, m.displayMu());
+   TEST_EQUALITY(scale, m.get_scale());
    TEST_EQUALITY(scale, s.displayMu());
    TEST_EQUALITY(m.get_MVZ(), s.displayMzRun());
    TEST_EQUALITY(sarah_w_se.imag(), 0.0);
@@ -1037,7 +1037,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM m)
 
    s.setMu(MZ);
    s.calcDrBarPars();
-   m.setMu(MZ);
+   m.set_scale(MZ);
    m.calculate_DRbar_parameters();
 
    const double mtpole = s.displayDataSet().displayPoleMt();
@@ -1059,7 +1059,7 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
 
    s.setMu(MZ);
    s.calcDrBarPars();
-   m.setMu(MZ);
+   m.set_scale(MZ);
    m.calculate_DRbar_parameters();
 
    const double mbpole = s.displayDataSet().displayPoleMb();
@@ -1079,7 +1079,7 @@ void compare_tau_self_energy(MssmSoftsusy s, MSSM m)
 {
    s.setMu(MZ);
    s.calcDrBarPars();
-   m.setMu(MZ);
+   m.set_scale(MZ);
    m.calculate_DRbar_parameters();
 
    const double mtaupole = s.displayDataSet().displayPoleMtau();
@@ -1100,7 +1100,7 @@ void compare_self_energies(MssmSoftsusy s, MSSM m)
    s.calcDrBarPars();
    m.calculate_DRbar_parameters();
 
-   TEST_EQUALITY(s.displayMu(), m.displayMu());
+   TEST_EQUALITY(s.displayMu(), m.get_scale());
 
    compare_gluino_self_energy(s, m);
    compare_neutralino_self_energy(s, m);
@@ -1146,7 +1146,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    s.physical(1);
    m.calculate_1loop_masses();
 
-   TEST_EQUALITY(s.displayMu(), m.displayMu());
+   TEST_EQUALITY(s.displayMu(), m.get_scale());
 
    TEST_CLOSE(s.displayPhys().msnu, m.get_physical().MSv, 1.0e-10);
    TEST_CLOSE(s.displayPhys().mGluino, m.get_physical().MGlu, 1.0e-4);
@@ -1312,8 +1312,8 @@ void compare_models(int loopLevel)
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
    MSSM m;
-   m.setMu(91);
-   m.setLoops(loopLevel);
+   m.set_scale(91);
+   m.set_loops(loopLevel);
    m.set_g1(g1);
    m.set_g2(g2);
    m.set_g3(g3);

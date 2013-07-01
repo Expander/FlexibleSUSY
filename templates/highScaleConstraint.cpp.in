@@ -51,7 +51,7 @@ void @ModelName@_high_scale_constraint::update_scale()
    const double currentScale = model->get_scale();
    const int old_loops = model->get_loops();
    model->set_loops(1);
-   const @ModelName@_soft_parameters beta_functions(model->calcBeta());
+   const @ModelName@_soft_parameters beta_functions(model->calc_beta());
    model->set_loops(old_loops);
 
 @calculateScale@

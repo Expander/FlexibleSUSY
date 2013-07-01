@@ -34,7 +34,7 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
 
-   @ModelName@_susy_parameters calcBeta() const;
+   @ModelName@_susy_parameters calc_beta() const;
    virtual void clear();
 
 @setter@

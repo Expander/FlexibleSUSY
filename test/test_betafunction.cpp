@@ -46,7 +46,7 @@ class Eigen_model : public Beta_function {
 public:
    Eigen_model() : Beta_function(), pars(Eigen::ArrayXd::Zero(10)) {
       set_scale(100.);
-      set_parameters(10);
+      set_number_of_parameters(10);
    }
    virtual ~Eigen_model() {}
    virtual const Eigen::ArrayXd display() const { return pars; }
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_running )
 
    BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
-   BOOST_CHECK_EQUAL(rge.howMany(), eig.get_parameters());
+   BOOST_CHECK_EQUAL(rge.howMany(), eig.get_number_of_parameters());
 
    rge.runto(1.0e10);
    eig.run_to(1.0e10);

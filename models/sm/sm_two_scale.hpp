@@ -64,7 +64,7 @@ public:
    /// Return level of threshold approximation
    int displayThresholds() const { return RGE::displayThresholds(); }
    /// Calculate beta functions
-   StandardModel calcBeta() const;
+   StandardModel calc_beta() const;
 
 protected:
    /// Sets all RGE parameters to elements of vector

@@ -40,14 +40,14 @@
 
 Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
 {
-   return calcBeta().display();
+   return calc_beta().display();
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calcBeta() const
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
 {
 @beta@
 
-   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calcBeta());
+   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta());
 
    return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
 }

@@ -135,7 +135,7 @@ std::ostream& operator <<(std::ostream& left, const StandardModelCW<Two_scale>& 
 }
 
 // Outputs derivatives (DRbar scheme) in the form of ds
-StandardModelCW<Two_scale> StandardModelCW<Two_scale>::calcBeta() const
+StandardModelCW<Two_scale> StandardModelCW<Two_scale>::calc_beta() const
 {
    static const double oneO16Pisq = 1.0 / (16.0 * PI * PI);
    double dg4, dlambda;
@@ -145,12 +145,12 @@ StandardModelCW<Two_scale> StandardModelCW<Two_scale>::calcBeta() const
                                          - 18.0 * g4 * g4 * lambda
                                          + 54.0 * std::pow(g4, 4));
 
-   return StandardModelCW(StandardModel<Two_scale>::calcBeta(), dg4, dlambda, 0.0);
+   return StandardModelCW(StandardModel<Two_scale>::calc_beta(), dg4, dlambda, 0.0);
 }
 
 DoubleVector StandardModelCW<Two_scale>::beta() const
 {
-   return calcBeta().display();
+   return calc_beta().display();
 }
 
 double StandardModelCW<Two_scale>::calcZprimeMass() const
