@@ -145,14 +145,14 @@ bool Convergence_tester_skeleton<T>::scale_has_changed() const
 template <class T>
 double Convergence_tester_skeleton<T>::scale_difference() const
 {
-   return model->getScale() - last_iteration_model.getScale();
+   return model->get_scale() - last_iteration_model.get_scale();
 }
 
 template <class T>
 double Convergence_tester_skeleton<T>::rel_scale_difference() const
 {
    const double diff = scale_difference();
-   const double last_scale = last_iteration_model.getScale();
+   const double last_scale = last_iteration_model.get_scale();
    if (!is_zero(last_scale))
       return diff / last_scale;
    return std::numeric_limits<double>::infinity();

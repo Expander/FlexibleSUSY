@@ -62,7 +62,7 @@ void @ModelName@_low_scale_constraint::update_scale()
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 {
-   const double currentScale = model->displayMu();
+   const double currentScale = model->get_scale();
    static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
 @setDRbarGaugeCouplings@

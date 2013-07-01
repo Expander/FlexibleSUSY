@@ -36,9 +36,9 @@ public:
    virtual int run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
 
-   void setScale(double scale) { setMu(scale); }
-   double getScale() const { return displayMu(); }
-   Mssm calcBeta() const { return beta2(); }
+   void set_scale(double scale) { setMu(scale); }
+   double get_scale() const { return displayMu(); }
+   Mssm calc_beta() const { return beta2(); }
    void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:

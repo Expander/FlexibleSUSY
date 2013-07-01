@@ -121,14 +121,13 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 
   for (nstp = 1; nstp <= MAXSTP; nstp++) {
     dydx = derivs(x, y);
-    for (i = 0; i < nvar; i++)
-      yscal(i) = fabs(y(i)) + fabs(dydx(i) * h) + TINY;
+    yscal = y.abs() + (dydx * h).abs() + TINY;
     if ((x + h - to) * (x + h - from) > 0.0) h = to - x;
     int smallStep = rkqs(y, dydx, &x, h, eps, yscal, &hdid, &hnext, derivs);
     if (smallStep) return 1;
 
     if ((x - to) * (to - from) >= 0.0) {
-      for (i = 0; i < nvar; i++) ystart(i) = y(i);
+      ystart = y;
       return 0;
     }
       
@@ -137,7 +136,7 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
       {
 	ERROR("Step size too small in rk.cpp:integrateOdes\n"
 	      << "**********x = " << x << "*********");
-	for (i = 0;i < nvar;i++) 
+	for (i = 0; i < nvar; i++) 
 	    ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
 		  ") = " << dydx(i));
       }
@@ -163,15 +162,14 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 {
   const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
 
-  int i, n = y.size();
+  int n = y.size();
   double errmax, h, htemp, xnew;
   
   ArrayXd yerr(n), ytemp(n);
   h = htry;
   for (;;) {
     rungeKuttaStep(y, dydx, *x, h, ytemp, yerr, derivs);
-    errmax = 0.0;
-    for (i = 0; i < n;i++) errmax = max(errmax, fabs(yerr(i) / yscal(i)));
+    errmax = (yerr / yscal).abs().maxCoeff();
     errmax  /= eps;
     if (errmax <= 1.0) break;
     htemp = SAFETY * h * pow(errmax, PSHRNK);
@@ -196,7 +194,6 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
 		    double h, ArrayXd& yout, ArrayXd& yerr, Derivs derivs)
 {
-  int i;
   const double a2 = 0.2,a3 = 0.3,a4 = 0.6,a5 = 1.0,a6 = 0.875,b21 =
     0.2,b31 = 3.0 / 40.0,b32 = 9.0 / 40.0,b41 = 0.3,b42 = -0.9,b43 = 1.2,
     b51 = -11.0 / 54.0, b52 = 2.5,b53 = -70.0 / 27.0,b54 = 35.0 / 27.0,
@@ -207,36 +204,24 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
   const double dc1 = c1-2825.0 / 27648.0,dc3 = c3-18575.0 / 48384.0,
     dc4 = c4-13525.0 / 55296.0,dc6 = c6-0.25;
   
-  int n = y.size();
-  
   ArrayXd ytemp = b21 * h * dydx + y;
   ArrayXd ak2 = derivs(x + a2 * h, ytemp);
 
   // Allowing piece-wise calculating of ytemp for speed reasons
-  for (i = 0; i < n; i++)
-    ytemp(i) = y(i) + h * (b31 * dydx(i) + b32 * ak2(i));
+  ytemp = y + h * (b31 * dydx + b32 * ak2);
   ArrayXd ak3 = derivs(x + a3 * h, ytemp);
 
-  for (i = 0; i < n; i++)
-    ytemp(i) = y(i) + h * (b41 * dydx(i) + b42 * ak2(i) + b43 * ak3(i));
+  ytemp = y + h * (b41 * dydx + b42 * ak2 + b43 * ak3);
   ArrayXd ak4 = derivs(x+a4*h,ytemp);
 
-  for (i = 0; i < n; i++)
-    ytemp(i) = y(i) + h * (b51 * dydx(i) + b52 * ak2(i) + b53
-				   * ak3(i) + b54 * ak4(i));
+  ytemp = y + h * (b51 * dydx + b52 * ak2 + b53 * ak3 + b54 * ak4);
   ArrayXd ak5 = derivs(x + a5 * h, ytemp);
 
-  for (i = 0; i < n; i++)
-    ytemp(i) = y(i) + h * (b61 * dydx(i) + b62 * ak2(i) + b63
-				   * ak3(i) + b64 * ak4(i) + b65 * ak5(i));
+  ytemp = y + h * (b61 * dydx + b62 * ak2 + b63 * ak3 + b64 * ak4 + b65 * ak5);
   ArrayXd ak6 = derivs(x + a6 * h, ytemp);
 
-  for (i = 0; i < n; i++)
-    yout(i) = y(i) + h * (c1 * dydx(i) + c3 * ak3(i) + c4 *
-				  ak4(i) + c6 * ak6(i));
-  for (i = 0; i < n; i++)
-    yerr(i) = h * (dc1 * dydx(i) + dc3 * ak3(i) + 
-		   dc4 * ak4(i) + dc5 * ak5(i) + dc6 * ak6(i));
+  yout = y + h * (c1 * dydx + c3 * ak3 + c4 * ak4 + c6 * ak6);
+  yerr = h * (dc1 * dydx + dc3 * ak3 + dc4 * ak4 + dc5 * ak5 + dc6 * ak6);
 }
 
 } // namespace runge_kutta

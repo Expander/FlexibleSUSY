@@ -25,7 +25,7 @@
    : @ModelName@_susy_parameters()
    @parameterDefaultInit@
 {
-   setPars(numberOfParameters);
+   set_number_of_parameters(numberOfParameters);
 }
 
 @ModelName@_soft_parameters::@ModelName@_soft_parameters(
@@ -35,19 +35,19 @@
    : @ModelName@_susy_parameters(susy_model)
    @parameterCopyInit@
 {
-   setPars(numberOfParameters);
+   set_number_of_parameters(numberOfParameters);
 }
 
-DoubleVector @ModelName@_soft_parameters::beta() const
+Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
 {
-   return calcBeta().display();
+   return calc_beta().display();
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calcBeta() const
+@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
 {
 @beta@
 
-   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calcBeta());
+   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta());
 
    return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
 }
@@ -59,10 +59,10 @@ void @ModelName@_soft_parameters::clear()
 @clearParameters@
 }
 
-const DoubleVector @ModelName@_soft_parameters::display() const
+const Eigen::ArrayXd @ModelName@_soft_parameters::display() const
 {
-   DoubleVector pars(@ModelName@_susy_parameters::display());
-   pars.setEnd(numberOfParameters);
+   Eigen::ArrayXd pars(@ModelName@_susy_parameters::display());
+   pars.conservativeResize(numberOfParameters);
 
 @display@
 
@@ -76,7 +76,7 @@ void @ModelName@_soft_parameters::print(std::ostream& ostr) const
 @printParameters@
 }
 
-void @ModelName@_soft_parameters::set(const DoubleVector& v)
+void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
 {
    @ModelName@_susy_parameters::set(v);
 

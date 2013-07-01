@@ -58,13 +58,13 @@ public:
    /// Returns all gauge couplings
    virtual DoubleVector displayGauge() const;
    /// Return renomalisation scale
-   double getScale() const { return RGE::displayMu(); }
+   double get_scale() const { return RGE::displayMu(); }
    /// Return number of loops
    int displayLoops() const { return RGE::displayLoops(); }
    /// Return level of threshold approximation
    int displayThresholds() const { return RGE::displayThresholds(); }
    /// Calculate beta functions
-   StandardModel calcBeta() const;
+   StandardModel calc_beta() const;
 
 protected:
    /// Sets all RGE parameters to elements of vector

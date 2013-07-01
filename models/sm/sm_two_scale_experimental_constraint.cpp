@@ -42,10 +42,10 @@ void StandardModel_exp_constraint::apply()
    assert(sm && "pointer to StandardModel<Two_scale> must not be zero");
 
    VERBOSE_MSG("Applying SM experimental constraints at scale "
-               << sm->getScale());
-   if (std::fabs(Electroweak_constants::MZ - sm->getScale()) > 1.0)
+               << sm->get_scale());
+   if (std::fabs(Electroweak_constants::MZ - sm->get_scale()) > 1.0)
       WARNING("Applying the experimental constraints "
-              "of StandardModel<Two_scale> at scale " << sm->getScale()
+              "of StandardModel<Two_scale> at scale " << sm->get_scale()
               << " != MZ is not save!");
 
    sm->setYukawaElement(StandardModel<Two_scale>::YU, 3, 3, Electroweak_constants::yt);

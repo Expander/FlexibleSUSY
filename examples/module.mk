@@ -58,27 +58,27 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI)
+$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 
-$(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
+$(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
-$(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFMSSM) $(LIBFLEXI)
+$(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
-			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o \
-			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI)
+			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
-$(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBFLEXI) $(LIBSMSSM)
+$(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)

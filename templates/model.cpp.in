@@ -234,42 +234,42 @@ void @ModelName@::print(std::ostream& ostr) const
 
 double @ModelName@::A0(double m) const
 {
-   return a0(m, displayMu());
+   return a0(m, get_scale());
 }
 
 Complex @ModelName@::B0(double p, double m1, double m2) const
 {
-   return Complex(b0(p, m1, m2, displayMu()));
+   return Complex(b0(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::B1(double p, double m1, double m2) const
 {
-   return Complex(-b1(p, m1, m2, displayMu()));
+   return Complex(-b1(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::B00(double p, double m1, double m2) const
 {
-   return Complex(b22(p, m1, m2, displayMu()));
+   return Complex(b22(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::B22(double p, double m1, double m2) const
 {
-   return Complex(b22bar(p, m1, m2, displayMu()));
+   return Complex(b22bar(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::H0(double p, double m1, double m2) const
 {
-   return Complex(hfn(p, m1, m2, displayMu()));
+   return Complex(hfn(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::F0(double p, double m1, double m2) const
 {
-   return Complex(ffn(p, m1, m2, displayMu()));
+   return Complex(ffn(p, m1, m2, get_scale()));
 }
 
 Complex @ModelName@::G0(double p, double m1, double m2) const
 {
-   return Complex(gfn(p, m1, m2, displayMu()));
+   return Complex(gfn(p, m1, m2, get_scale()));
 }
 
 void @ModelName@::calculate_DRbar_parameters()
@@ -307,11 +307,6 @@ void @ModelName@::clear()
    physical.clear();
 }
 
-double @ModelName@::getScale() const
-{
-   return displayMu();
-}
-
 std::string @ModelName@::name() const
 {
    return "@ModelName@";
@@ -319,7 +314,7 @@ std::string @ModelName@::name() const
 
 int @ModelName@::run_to(double scale, double eps)
 {
-   return runto(scale, eps);
+   return @ModelName@_soft_parameters::run_to(scale, eps);
 }
 
 @massCalculationFunctions@

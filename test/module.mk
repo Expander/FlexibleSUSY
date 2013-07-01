@@ -2,7 +2,9 @@ DIR      := test
 MODNAME  := test
 
 TEST_SRC := \
-		$(DIR)/test_logger.cpp
+		$(DIR)/test_logger.cpp \
+		$(DIR)/test_betafunction.cpp \
+		$(DIR)/test_rk.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
@@ -75,27 +77,35 @@ distclean::     distclean-$(MODNAME)
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI)
+$(DIR)/test_betafunction.d $(DIR)/test_betafunction.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_mssm_initial_guesser.d $(DIR)/test_two_scale_mssm_initial_guesser.x: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSMSSM) $(LIBFLEXI)
+$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_two_scale_sm_smcw_integration.x: $(DIR)/test_two_scale_sm_smcw_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI)
+$(DIR)/test_two_scale_sm_smcw_integration.x: $(DIR)/test_two_scale_sm_smcw_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI)
+$(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_MSSM.d $(DIR)/test_MSSM.x: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI)
+$(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 %.x: %.o $(ALLLIB)
