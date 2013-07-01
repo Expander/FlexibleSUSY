@@ -115,7 +115,7 @@ void StandardModelCW<Two_scale>::set(const DoubleVector& y)
 
 std::ostream& operator <<(std::ostream& left, const StandardModelCW<Two_scale>& s)
 {
-   left << "SMCW parameters at Q: " << s.getScale()
+   left << "SMCW parameters at Q: " << s.get_scale()
         << '\n'
         << " Y^U" << s.displayYukawaMatrix(StandardModelCW<Two_scale>::YU)
         << " Y^D" << s.displayYukawaMatrix(StandardModelCW<Two_scale>::YD)
