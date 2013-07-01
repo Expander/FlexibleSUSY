@@ -2,7 +2,8 @@ DIR      := test
 MODNAME  := test
 
 TEST_SRC := \
-		$(DIR)/test_logger.cpp
+		$(DIR)/test_logger.cpp \
+		$(DIR)/test_rk.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
@@ -73,6 +74,10 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
