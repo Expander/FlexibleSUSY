@@ -10,6 +10,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
+		$(DIR)/rk.cpp \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/wrappers.cpp
@@ -27,7 +28,6 @@ LIBFLEXI_SRC += \
 		$(DIR)/lattice_constraint.cpp \
 		$(DIR)/lattice_numerical_constraint.cpp \
 		$(DIR)/lattice_solver.cpp \
-		$(DIR)/rk.cpp \
 		$(DIR)/SM.cpp \
 		$(DIR)/fortran_utils.f
 endif
