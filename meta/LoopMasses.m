@@ -49,9 +49,12 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
 
 Do1DimScalar[particleName_String, selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const Complex self_energy = " <> selfEnergyFunction <> "(p)\n" <>
-    "PHYSICAL(" <> particleName <> ") = AbsSqrt(" <> particleName <>
-    " - Re(self_energy)" <> If[tadpole == "", "", " + " <> tadpole] <> ");\n";
+    "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+    "const double mass_sqr = Sqr(" <> particleName <> ") - self_energy" <>
+    If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
+    "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
+    IndentText["throw TachyonError(this, \"" <> particleName <> "\", 1);"] <> "\n\n" <>
+    "PHYSICAL(" <> particleName <> ") = AbsSqrt(mass_sqr);\n";
 
 Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
@@ -65,8 +68,10 @@ Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
 Do1DimVector[particleName_String, selfEnergyFunction_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-    "PHYSICAL(" <> particleName <> ") = AbsSqrt(Sqr(" <> particleName <>
-    ") - self_energy);\n";
+    "const double mass_sqr = Sqr(" <> particleName <> ") - self_energy;\n\n" <>
+    "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
+    IndentText["throw TachyonError(this, \"" <> particleName <> "\", 1);"] <> "\n\n" <>
+    "PHYSICAL(" <> particleName <> ") = AbsSqrt(mass_sqr);\n";
 
 
 (* ********** fast diagonalization routines ********** *)
@@ -110,6 +115,9 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                           "PHYSICAL(" <> particleName <> "));\n";
                 ];
               result = result <>
+                       "\nint min_element;\n" <>
+                       "if (throw_on_tachyon && " <> particleName <> ".min(min_element) < 0.)\n" <>
+                       IndentText["throw TachyonError(this, \"" <> particleName <> "\", min_element);"] <> "\n\n" <>
                        "PHYSICAL(" <> particleName <> ") = PHYSICAL(" <>
                        particleName <> ").apply(AbsSqrt);\n";
               ,
@@ -235,7 +243,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Vtemp = "mix_" <> V;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> "), " <>
                             Vtemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n" <>
+                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n\n" <>
+                            "if (throw_on_tachyon && eigen_values(es) < 0.)\n" <>
+                            IndentText["throw TachyonError(this, \"" <> particleName <> "\", es);"] <> "\n\n" <>
                             "PHYSICAL(" <> particleName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
                             "if (es == 1) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
@@ -245,7 +255,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               U = ToValidCSymbolString[mixingMatrix];
               Utemp = "mix_" <> U;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", eigen_values);\n" <>
+                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", eigen_values);\n\n" <>
+                            "if (throw_on_tachyon && eigen_values(es) < 0.)\n" <>
+                            IndentText["throw TachyonError(this, \"" <> particleName <> "\", es);"] <> "\n\n" <>
                             "PHYSICAL(" <> particleName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
                             "if (es == 1)\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
@@ -545,7 +557,10 @@ CreateRunningDRbarMassFunction[particle_] :=
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole) const\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-              "return AbsSqrt(Sqr(m_pole) + self_energy);\n";
+              "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
+              "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
+              IndentText["throw TachyonError(this, \"" <> name <> "\", 1);"] <> "\n\n" <>
+              "return AbsSqrt(mass_sqr);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
