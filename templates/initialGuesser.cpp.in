@@ -73,9 +73,9 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
 
 void @ModelName@_initial_guesser::guess_soft_parameters()
 {
-   int err = model->run_to(@highScaleGuess@);
+   int err = model->run_to(high_scale_guess);
    if (err)
-      throw NonPerturbativeRunningError(model, @highScaleGuess@);
+      throw NonPerturbativeRunningError(model, high_scale_guess);
 
    // apply high-scale constraint
    @ModelName@_high_scale_constraint high_constraint(input_pars);
