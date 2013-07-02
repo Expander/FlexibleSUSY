@@ -8,6 +8,8 @@
 
 static const double Pi = M_PI;
 
+double Abs(double);
+double Abs(const Complex&);
 double AbsSqr(double);
 double AbsSqr(const Complex&);
 

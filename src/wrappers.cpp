@@ -3,6 +3,16 @@
 
 #include <Eigen/SVD>
 
+double Abs(double z)
+{
+   return std::fabs(z);
+}
+
+double Abs(const Complex& z)
+{
+   return std::abs(z);
+}
+
 double AbsSqr(double z)
 {
    return z * z;
