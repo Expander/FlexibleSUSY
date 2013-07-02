@@ -23,7 +23,7 @@ ConditionGUTscale = g1 == g2;
 
 (* GUT conditions CNMSSM *)
 
-BoundaryHighScaleFirstGuess = 1.0 10^14;
+BoundaryHighScaleFirstGuess = 1.0 10^16;
 
 BoundaryHighScale={
    {T[Ye], Azero*Ye},
