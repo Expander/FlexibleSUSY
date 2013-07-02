@@ -105,7 +105,7 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
            If[freePhase =!= Null,
               result = "model->set_" <> parameterStr <> "(" <>
                        "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <>
-                       "AbsSqr(" <> gslInput <> "));\n";
+                       "Abs(" <> gslInput <> "));\n";
               ,
               result = "model->set_" <> parameterStr <> "(" <> gslInput <> ");\n";
              ];
