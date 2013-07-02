@@ -7,6 +7,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
 		$(DIR)/error.cpp \
+		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
