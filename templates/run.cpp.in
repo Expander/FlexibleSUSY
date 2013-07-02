@@ -8,12 +8,22 @@
 
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
+#include "coupling_monitor.hpp"
 #include "error.hpp"
+#include "ew_input.hpp"
 
 #include <iostream>
 #include <vector>
 
 using namespace std;
+
+class Parameter_getter {
+public:
+   template <class Rge>
+   Eigen::ArrayXd operator()(const Rge& rge) {
+      return rge.display();
+   }
+};
 
 int main()
 {
@@ -52,6 +62,17 @@ int main()
    } catch (std::string& str) {
       cout << "Error: " << str << endl;
    }
+
+#if 0
+   const double gut_scale = high_scale_input.get_scale();
+   const double MZ = Electroweak_constants::MZ;
+   Coupling_monitor cm;
+   Parameter_getter pg;
+
+   model.run_to(MZ);
+   cm.run(model, pg, MZ, gut_scale, 100, true);
+   cm.write_to_file("@ModelName@_rge_running.dat");
+#endif
 
    return 0;
 }

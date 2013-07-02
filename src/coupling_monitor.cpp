@@ -19,6 +19,7 @@
 #include "coupling_monitor.hpp"
 
 #include <fstream>
+#include <iostream>
 
 Coupling_monitor::Coupling_monitor()
    : couplings(TData())
@@ -32,14 +33,14 @@ Coupling_monitor::~Coupling_monitor()
 /**
  * Get the couplings at the largest scale
  *
- * @return a pair with the scale and a DoubleVector which contains the
+ * @return a pair with the scale and a Eigen::ArrayXd which contains the
  * couplings at this scale
  */
 Coupling_monitor::TTouple Coupling_monitor::get_max_scale() const
 {
    if (couplings.empty()) {
       ERROR("Data container is empty!");
-      return TTouple(0.0, DoubleVector(1));
+      return TTouple(0.0, Eigen::ArrayXd(1));
    }
 
    // find gauge couplings at the greatest scale
@@ -92,7 +93,7 @@ void Coupling_monitor::write_to_file(const std::string& file_name) const
    if (couplings.empty())
       return;
 
-   std::ofstream filestr(file_name.c_str(), ios::out);
+   std::ofstream filestr(file_name.c_str(), std::ios::out);
    VERBOSE_MSG("opening file: " << file_name.c_str());
    if (filestr.fail()) {
       ERROR("can't open file " << file_name
@@ -101,8 +102,7 @@ void Coupling_monitor::write_to_file(const std::string& file_name) const
    }
 
    write_comment_line(coupling_name, filestr,
-                      couplings.front().second.size(),
-                      couplings.front().second.displayStart());
+                      couplings.front().second.size(), 0);
 
    // write data
    for (TData::const_iterator it = couplings.begin();
@@ -113,16 +113,15 @@ void Coupling_monitor::write_to_file(const std::string& file_name) const
       }
 
       filestr.width(16);
-      filestr << left << it->first;
+      filestr << std::left << it->first;
 
       // write all gauge couplings in order
-      for (int i = it->second.displayStart();
-           i <= it->second.displayEnd(); ++i) {
+      for (int i = 0; i < it->second.size(); ++i) {
          filestr.width(16);
-         filestr << left << it->second(i);
+         filestr << std::left << it->second(i);
       }
 
-      filestr << endl;
+      filestr << std::endl;
    }
 
    filestr.close();

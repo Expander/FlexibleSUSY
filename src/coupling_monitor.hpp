@@ -23,7 +23,7 @@
 #include <cmath>
 #include <algorithm>
 
-#include "linalg.h"
+#include <Eigen/Dense>
 #include "logger.hpp"
 
 /**
@@ -38,7 +38,7 @@
  */
 class Coupling_monitor {
 public:
-   typedef std::pair<double, DoubleVector> TTouple;///< touple of scale and couplings
+   typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
 
    Coupling_monitor();
    ~Coupling_monitor();
@@ -66,7 +66,7 @@ private:
 class Gauge_coupling_getter {
 public:
    template <class Rge>
-   DoubleVector operator()(const Rge& rge) {
+   Eigen::ArrayXd operator()(const Rge& rge) {
       return rge.displayGauge();
    }
 };
