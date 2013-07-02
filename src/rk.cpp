@@ -109,7 +109,7 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 		  double h1, double hmin, Derivs derivs,
 		  RungeKuttaQuinticStepper rkqs) {  
   int nvar =  ystart.size();
-  int nstp, i;
+  int nstp;
   double x, hnext, hdid, h;
   ArrayXd yscal(nvar), y(ystart), dydx;
   
@@ -133,25 +133,25 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
       
     if (fabs(hnext) <= hmin) {
       nstp = MAXSTP; // bail out
-      {
+#ifdef VERBOSE
 	ERROR("Step size too small in rk.cpp:integrateOdes\n"
 	      << "**********x = " << x << "*********");
-	for (i = 0; i < nvar; i++) 
+	for (int i = 0; i < nvar; i++)
 	    ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
 		  ") = " << dydx(i));
-      }
+#endif
     }
     
     h = hnext;
   }
   
-  {
+#ifdef VERBOSE
     ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
 	    << "**********x = " << x << "*********");
-    for (i = 0; i < nvar; i++) 
+    for (int i = 0; i < nvar; i++)
 	ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
 	      ") = " << dydx(i));
-  }
+#endif
   
   return 1;
 }
