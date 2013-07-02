@@ -84,7 +84,10 @@ bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
                  << " GeV (" << rel_scale_difference()
                  << "%), parameter comparison might fail");
       }
-      precision_reached = max_rel_diff() < accuracy_goal;
+      const double current_accuracy = max_rel_diff();
+      precision_reached = current_accuracy < accuracy_goal;
+      VERBOSE_MSG("Convergence_tester_skeleton: current accuracy = "
+                  << current_accuracy << ", accuracy goal = " << accuracy_goal);
    }
 
    // save old model parameters
