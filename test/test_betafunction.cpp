@@ -83,3 +83,27 @@ BOOST_AUTO_TEST_CASE( test_running )
    BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
 }
+
+BOOST_AUTO_TEST_CASE( test_custom_precision )
+{
+   DoubleVector pars(10);
+   for (std::size_t i = 1; i <= pars.size(); i++)
+      pars(i) = 0.1 * i;
+
+   RGE_model rge;
+   Eigen_model eig;
+
+   rge.set(pars);
+   eig.set(ToEigenArray(pars));
+
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
+   BOOST_CHECK_EQUAL(rge.howMany(), eig.get_number_of_parameters());
+
+   const double custom_precision = 0.02;
+   rge.runto(1.0e10, custom_precision);
+   eig.run_to(1.0e10, custom_precision);
+
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
+}
