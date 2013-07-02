@@ -60,8 +60,8 @@ Convergence_tester_skeleton<T>::Convergence_tester_skeleton(T* model_, double ac
    , model(model_)
    , last_iteration_model()
    , it_count(0)
-   , accuracy_goal(accuracy_goal_)
    , max_it(static_cast<int>(-log(accuracy_goal_) / log(10.0) * 10))
+   , accuracy_goal(accuracy_goal_)
 {
 }
 
