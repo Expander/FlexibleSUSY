@@ -28,14 +28,15 @@ class Two_scale;
 
 class Mssm_initial_guesser : public Initial_guesser<Two_scale> {
 public:
-   Mssm_initial_guesser(Mssm<Two_scale>*, const QedQcd&, double, double,
+   Mssm_initial_guesser(Mssm<Two_scale>*, double, double,
                         int, const DoubleVector&, bool);
    virtual ~Mssm_initial_guesser();
    virtual void guess();
+   void set_QedQcd(const QedQcd& qedqcd) { oneset = qedqcd; }
 
 private:
    Mssm<Two_scale>* mssm;     ///< Mssm model
-   const QedQcd oneset;       ///< low-energy parameters
+   QedQcd oneset;             ///< low-energy parameters
    double mxGuess;            ///< guessed GUT scale
    double tanb;               ///< tan(beta)
    int sgnMu;                 ///< sign of mu

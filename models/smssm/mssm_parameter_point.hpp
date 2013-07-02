@@ -20,7 +20,6 @@
 #define MSSM_PARAMETER_POINT_H
 
 #include "linalg.h"
-#include "lowe.h"
 
 struct Mssm_parameter_point {
    Mssm_parameter_point()
@@ -30,14 +29,7 @@ struct Mssm_parameter_point {
       , mxGuess(1.0e16)
       , signMu(1)
       , tanBeta(10.0)
-      , oneset()
-   {
-      const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
-      oneset.setAlpha(ALPHAS, alphasMZ);
-      oneset.setPoleMt(mtop);
-      oneset.setMass(mBottom, mbmb);
-      oneset.toMz();
-   }
+   {}
    DoubleVector get_soft_pars() const {
       DoubleVector highScaleSoftPars(3);
       highScaleSoftPars(1) = m0;
@@ -53,13 +45,11 @@ struct Mssm_parameter_point {
          << ", mxGuess=" << pp.mxGuess
          << ", signMu=" << pp.signMu
          << ", tanBeta=" << pp.tanBeta
-         << ", QedQcd=" << pp.oneset
          << '\n';
       return os;
    }
 
    double m0, m12, a0, mxGuess, signMu, tanBeta;
-   QedQcd oneset;
 };
 
 #endif

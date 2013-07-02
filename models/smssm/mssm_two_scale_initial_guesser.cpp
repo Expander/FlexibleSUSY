@@ -23,10 +23,10 @@
 
 #include <cassert>
 
-Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, const QedQcd& oneset_, double mxGuess_, double tanb_, int sgnMu_, const DoubleVector& pars_, bool ewsbBCscale_)
+Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, double mxGuess_, double tanb_, int sgnMu_, const DoubleVector& pars_, bool ewsbBCscale_)
    : Initial_guesser<Two_scale>()
    , mssm(mssm_)
-   , oneset(oneset_)
+   , oneset()
    , mxGuess(mxGuess_)
    , tanb(tanb_)
    , sgnMu(sgnMu_)
@@ -35,6 +35,12 @@ Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, const QedQcd&
 {
    assert(mssm && "Mssm_initial_guesser: Error: pointer to Mssm"
           " cannot be zero");
+
+   const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
+   oneset.setAlpha(ALPHAS, alphasMZ);
+   oneset.setPoleMt(mtop);
+   oneset.setMass(mBottom, mbmb);
+   oneset.toMz();
 }
 
 Mssm_initial_guesser::~Mssm_initial_guesser()

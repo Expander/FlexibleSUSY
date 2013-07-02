@@ -18,7 +18,7 @@
  * @param mssm model class
  * @param pp parameter point
  */
-double softsusy_initial_guess(MssmSoftsusy& mssm, const Mssm_parameter_point& pp)
+double softsusy_initial_guess(MssmSoftsusy& mssm, const Mssm_parameter_point& pp, const QedQcd& oneset)
 {
    double mx = 0.0;
    const double mxGuess = pp.mxGuess;
@@ -37,7 +37,6 @@ double softsusy_initial_guess(MssmSoftsusy& mssm, const Mssm_parameter_point& pp
    double m32 = mssm.displayGravitino();
    double muCondFirst = mssm.displayMuCond();
    double maCondFirst = mssm.displayMaCond();
-   const QedQcd& oneset = pp.oneset;
 
    mssm.setSoftsusy(empty); /// Always starts from an empty object
    /// These are things that are re-written by the new initialisation
@@ -144,13 +143,15 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
 {
    Mssm_parameter_point pp;
    pp.tanBeta = 45.1;
+   QedQcd oneset;
    Mssm<Two_scale> mssm;
-   Mssm_initial_guesser initial_guesser(&mssm, pp.oneset, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+   Mssm_initial_guesser initial_guesser(&mssm, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+   initial_guesser.set_QedQcd(oneset);
 
    initial_guesser.guess();
 
    MssmSoftsusy softsusy;
-   softsusy_initial_guess(softsusy, pp);
+   softsusy_initial_guess(softsusy, pp, oneset);
 
    test_equality(mssm, softsusy);
 }
