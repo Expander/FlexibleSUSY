@@ -25,7 +25,7 @@ ConditionGUTscale = g1 == g2;
 
 (* GUT conditions CE6SSM *)
 
-BoundaryHighScaleFirstGuess = 1.0 10^14;
+BoundaryHighScaleFirstGuess = 1.0 10^16;
 
 BoundaryHighScale={
    {gN, g1},
