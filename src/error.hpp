@@ -43,4 +43,16 @@ private:
    int particle_index;
 };
 
+class NoEWSBError : public Error {
+public:
+   NoEWSBError(const Two_scale_model*, double);
+   virtual ~NoEWSBError() {}
+   virtual std::string what() const;
+   const Two_scale_model* get_model() const { return model; }
+   double get_requested_precision() const { return requested_precision; }
+private:
+   const Two_scale_model* model;
+   double requested_precision;
+};
+
 #endif

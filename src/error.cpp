@@ -36,3 +36,18 @@ std::string TachyonError::what() const
            << particle_name << "(" << particle_index << ")";
    return message.str();
 }
+
+NoEWSBError::NoEWSBError(const Two_scale_model* model_,
+                         double requested_precision_)
+   : model(model_)
+   , requested_precision(requested_precision_)
+{
+}
+
+std::string NoEWSBError::what() const
+{
+   std::stringstream message;
+   message << "NoEWSBError: Could not find a solution to the EWSB"
+      " equations with requested precision " << requested_precision;
+   return message.str();
+}

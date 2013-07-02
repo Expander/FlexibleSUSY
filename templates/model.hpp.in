@@ -73,6 +73,7 @@ private:
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
    bool throw_on_tachyon;
+   bool throw_on_ewsb_fail;
    double ewsb_iteration_precision;
    double mass_iteration_precision;
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;

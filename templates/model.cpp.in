@@ -39,6 +39,7 @@
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
    , throw_on_tachyon(false)
+   , throw_on_ewsb_fail(false)
    , ewsb_iteration_precision(1.0e-7)
    , mass_iteration_precision(1.0e-7)
    , physical()
@@ -145,19 +146,20 @@ int @ModelName@::solve_ewsb()
       }
 #ifdef VERBOSE
       else {
-         WARNING("\tSolver " << i << " could not find a solution!\n"
-                 "\t   (Requested precision: "
-                 << ewsb_iteration_precision << ")");
+         WARNING("\tSolver " << i << " could not find a solution!"
+                 " (requested precision: " << ewsb_iteration_precision << ")");
       }
 #endif
    }
 
-#ifdef VERBOSE
-   if (status != GSL_SUCCESS)
-      WARNING("\tCould not find a solution to the EWSB equations!\n"
-              "\t   (Requested precision: "
-              << ewsb_iteration_precision << ")");
-#endif
+   if (status != GSL_SUCCESS) {
+      if (throw_on_ewsb_fail) {
+         throw NoEWSBError(this, ewsb_iteration_precision);
+      } else {
+         WARNING("\tCould not find a solution to the EWSB equations!"
+                 " (requested precision: " << ewsb_iteration_precision << ")");
+      }
+   }
 
    return status;
 }
@@ -302,6 +304,7 @@ void @ModelName@::calculate_1loop_masses()
 void @ModelName@::calculate_spectrum()
 {
    throw_on_tachyon = true;
+   throw_on_ewsb_fail = true;
 
    // tree-level parameters
    solve_ewsb(0);
@@ -312,6 +315,7 @@ void @ModelName@::calculate_spectrum()
    calculate_1loop_masses();
 
    throw_on_tachyon = false;
+   throw_on_ewsb_fail = false;
 }
 
 void @ModelName@::clear()
