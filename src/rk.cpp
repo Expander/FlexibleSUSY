@@ -1,96 +1,4 @@
 
-/** \file numerics.cpp
-   - Project:     SOFTSUSY 
-   - Author:      Ben Allanach 
-   - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305 
-   - Webpage:     http://allanach.home.cern.ch/allanach/softsusy.html
-
-   $Log: numerics.cpp,v $
-   Revision 1.4  2006/04/25 11:32:22  allanach
-   Fixed B22, B0, B1 - previous expression switched too soon to p=0 
-   expression, leading to convergence failures where there shouldn't have been
-   any (in particular, at high m0 and m12 for instance).
-
-   Revision 1.3  2005/11/09 14:12:24  allanach
-   Updated for SOFTSUSY 2.0.1 - cleaned everything up etc
-
-   Revision 1.8  2005/07/15 15:10:47  allanach
-   Added analytic dilog routine
-
-   Revision 1.7  2005/06/16 13:57:04  allanach
-   Added a Cauchy-distributed random number generator
-
-   Revision 1.6  2005/05/30 14:22:14  allanach
-   Fixed stau mixing in ISAWIG interface to 7.64
-
-   Revision 1.5  2005/05/13 16:07:27  allanach
-   Edited precision due to double precision
-
-   Revision 1.4  2005/04/13 14:53:54  allanach
-   Corrected binning procedure so it does what you expect
-
-   Revision 1.3  2005/04/12 10:44:20  allanach
-   Added bin function to calculate the bin number of some data
-
-   Revision 1.2  2005/04/11 14:06:36  allanach
-   Added random number routines
-
-   Revision 1.18  2004/01/15 13:54:54  allanach
-   New heaer style implemented
-
-   Revision 1.17  2003/08/19 14:26:22  allanach
-   Changing lowOrg to be more sensible about gauge unification. Should now be
-   called with POSITIVE mgut and a flag for gauge unification.
-
-   Revision 1.16  2003/07/28 12:11:37  allanach
-   More error trapping, and rearranging rpvsoftsusy to use correct Higgs VEV
-   (which is sometimes called at MZ)
-
-   Revision 1.15  2003/07/25 13:39:15  allanach
-   Trapped errors properly rather than exiting
-
-   Revision 1.14  2003/05/20 15:19:40  allanach
-   doxygen comment style implemented
-
-   Revision 1.13  2003/03/25 17:03:05  allanach
-   Added extra case for b1(0,m1,0,q)
-
-   Revision 1.12  2003/02/21 13:02:07  allanach
-   Changed headings to new conventions
-
-   Revision 1.10  2002/12/19 18:26:40  allanach
-   Fixed numerical rounding error in d27 function
-
-   Revision 1.7  2002/10/14 17:14:29  allanach
-   Bug-fixed c0 function
-
-   Revision 1.6  2002/09/09 10:42:54  allanach
-   TOLERANCE replaces EPS as being more user-friendly
-
-   Revision 1.5  2002/09/03 14:16:44  allanach
-   Taken PRINTOUT, MIXING, TOLERANCE out of def.h to make it quicker to
-   compile once they are changed.
-
-   Revision 1.4  2002/07/30 12:57:31  allanach
-   SOFTSUSY1.5
-
-   Revision 1.3  2002/04/18 14:32:05  allanach
-   Changed RGEs and anomalous dimensions to be compatible with new notation;
-   started implementation of rewsb in R-parity violation
-
-   Revision 1.6  2001/10/04 19:26:34  allanach
-   New version deals with AMSB correctly
-
-   Revision 1.4  2001/09/28 13:50:13  allanach
-   More careful treatment of limits in Passarino-Veltman functions b0, b1.
-
-   Revision 1.3  2001/08/08 09:52:33  allanach
-   Added dilogarithm function - could be speeded up....
-
-   Revision 1.2  2001/07/18 14:42:51  allanach
-   Added proper header info
-*/
-
 #include <algorithm>
 #include "logger.hpp"
 #include "rk.hpp"
@@ -101,21 +9,21 @@ using namespace Eigen;
 namespace runge_kutta {
 
 /// Returns |a| with sign of b in front
-double sign(double a, double b) 
+double sign(double a, double b)
 { return b >= 0 ? fabs(a) : -fabs(a); }
 
 // returns >0 if there's a problem:
 int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 		  double h1, double hmin, Derivs derivs,
-		  RungeKuttaQuinticStepper rkqs) {  
+		  RungeKuttaQuinticStepper rkqs) {
   int nvar =  ystart.size();
   int nstp;
   double x, hnext, hdid, h;
   ArrayXd yscal(nvar), y(ystart), dydx;
-  
+
   x = from;
   h = sign(h1, to - from);
-  
+
   const int MAXSTP = 400;
   const double TINY = 1.0e-16;
 
@@ -130,7 +38,7 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
       ystart = y;
       return 0;
     }
-      
+
     if (fabs(hnext) <= hmin) {
       nstp = MAXSTP; // bail out
 #ifdef VERBOSE
@@ -141,10 +49,10 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 		  ") = " << dydx(i));
 #endif
     }
-    
+
     h = hnext;
   }
-  
+
 #ifdef VERBOSE
     ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
 	    << "**********x = " << x << "*********");
@@ -152,7 +60,7 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 	ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
 	      ") = " << dydx(i));
 #endif
-  
+
   return 1;
 }
 
@@ -164,7 +72,7 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 
   int n = y.size();
   double errmax, h, htemp, xnew;
-  
+
   ArrayXd yerr(n), ytemp(n);
   h = htry;
   for (;;) {
@@ -175,7 +83,7 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     htemp = SAFETY * h * pow(errmax, PSHRNK);
     h = (h >= 0.0 ? max(htemp ,0.1 * h) : min(htemp, 0.1 * h));
     xnew = (*x) + h;
-    if (xnew == *x) 
+    if (xnew == *x)
       {
 	{
 	  ERROR("At x = " << *x
@@ -203,7 +111,7 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
     dc5 = -277.00 / 14336.0;
   const double dc1 = c1-2825.0 / 27648.0,dc3 = c3-18575.0 / 48384.0,
     dc4 = c4-13525.0 / 55296.0,dc6 = c6-0.25;
-  
+
   ArrayXd ytemp = b21 * h * dydx + y;
   ArrayXd ak2 = derivs(x + a2 * h, ytemp);
 
