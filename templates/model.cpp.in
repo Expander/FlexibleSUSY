@@ -20,6 +20,7 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "error.hpp"
+#include "gsl_utils.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -99,6 +100,12 @@ const @ModelName@_input_parameters& @ModelName@::get_input() const
 
 int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
+   if (contains_nan(x, @numberOfEWSBEquations@)) {
+      for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
+         gsl_vector_set(f, i, std::numeric_limits<double>::max());
+      return 1;
+   }
+
    @ModelName@* model = static_cast<@ModelName@*>(params);
 
    double tadpole[@numberOfEWSBEquations@];
@@ -138,11 +145,19 @@ int @ModelName@::solve_ewsb()
       }
 #ifdef VERBOSE
       else {
-         WARNING("\tSolver " << i << " could not find a solution!");
-         WARNING("\t   Requested precision: " << ewsb_iteration_precision);
+         WARNING("\tSolver " << i << " could not find a solution!\n"
+                 "\t   (Requested precision: "
+                 << ewsb_iteration_precision << ")");
       }
 #endif
    }
+
+#ifdef VERBOSE
+   if (status != GSL_SUCCESS)
+      WARNING("\tCould not find a solution to the EWSB equations!\n"
+              "\t   (Requested precision: "
+              << ewsb_iteration_precision << ")");
+#endif
 
    return status;
 }
