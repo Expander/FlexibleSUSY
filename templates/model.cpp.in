@@ -40,8 +40,8 @@
    , ewsb_loop_order(0)
    , throw_on_tachyon(false)
    , throw_on_ewsb_fail(false)
-   , ewsb_iteration_precision(1.0e-7)
-   , mass_iteration_precision(1.0e-7)
+   , ewsb_iteration_precision(1.0e-5)
+   , mass_iteration_precision(1.0e-5)
    , physical()
    , input(input_)
 @physicalMassesInit@
