@@ -95,6 +95,7 @@ $(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
+$(DIR)/test_two_scale_sm_smcw_integration.d $(DIR)/test_two_scale_sm_smcw_integration.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_two_scale_sm_smcw_integration.x: $(DIR)/test_two_scale_sm_smcw_integration.o $(LIBSMCW) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
