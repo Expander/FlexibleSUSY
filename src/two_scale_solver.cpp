@@ -69,7 +69,7 @@ void RGFlow<Two_scale>::solve()
       ++iteration;
    }
 
-   apply_lowest_constaint();
+   apply_lowest_constraint();
 
    if (!accuracy_reached)
       throw NoConvergenceError(max_iterations);
@@ -183,7 +183,7 @@ void RGFlow<Two_scale>::run_down()
    VERBOSE_MSG("< running down finished");
 }
 
-void RGFlow<Two_scale>::apply_lowest_constaint()
+void RGFlow<Two_scale>::apply_lowest_constraint()
 {
    if (models.empty())
       return;

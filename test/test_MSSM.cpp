@@ -1,6 +1,6 @@
 
 #include "MSSM_model.hpp"
-#include "MSSM_highScaleConstraint.hpp"
+#include "MSSM_high_scale_constraint.hpp"
 #include "test.h"
 #include "softsusy.h"
 #include "wrappers.hpp"

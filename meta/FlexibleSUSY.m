@@ -529,10 +529,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim, Model`Name,
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyPars.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyPars.hpp"}]},
-                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyPars.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyPars.cpp"}]}},
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.hpp"}]},
+                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.cpp"}]}},
                          susyTraceDecl];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
@@ -559,10 +559,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {}, Model`Name,
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "softPars.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.hpp"}]},
-                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "softPars.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_softPars.cpp"}]}},
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.hpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.hpp"}]},
+                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.cpp"}]}},
                          traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
 
            Print["Checking EWSB equations ..."];
@@ -571,8 +571,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[Model`Name, Global`InputParameters, freePhases,
                                     Global`DefaultParameterPoint,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "inputPars.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_inputPars.hpp"}]}}
+                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_input_parameters.hpp"}]}}
                                    ];
 
            massMatrices = ConvertSarahMassMatrices[] /.
@@ -588,10 +588,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[allParticles, Model`Name,
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergenceTester.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergenceTester.cpp"}]}}
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.cpp"}]}}
                                       ];
 
            Print["Creating class for high-scale constraint ..."];
@@ -600,10 +600,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Model`Name,
                                 Global`InputParameters,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "highScaleConstraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_highScaleConstraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "highScaleConstraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_highScaleConstraint.cpp"}]}}
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for susy-scale constraint ..."];
@@ -612,10 +612,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 SARAH`RenormalizationScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Model`Name,
                                 Global`InputParameters,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyScaleConstraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyScaleConstraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susyScaleConstraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susyScaleConstraint.cpp"}]}}
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for low-scale constraint ..."];
@@ -624,20 +624,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 Global`MZ,
                                 Model`Name,
                                 Global`InputParameters,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "lowScaleConstraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_lowScaleConstraint.hpp"}]},
-                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "lowScaleConstraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_lowScaleConstraint.cpp"}]}}
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.cpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                     Global`InitialGuess /. susyBreakingParameterReplacementRules,
                                     Model`Name,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initialGuesser.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initialGuesser.hpp"}]},
-                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initialGuesser.cpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initialGuesser.cpp"}]}}
+                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.cpp"}]}}
                                    ];
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;

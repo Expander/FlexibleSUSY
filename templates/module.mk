@@ -2,26 +2,26 @@ DIR          := templates
 MODNAME      := templates
 
 TEMPLATES    := \
-		$(DIR)/convergenceTester.hpp.in \
-		$(DIR)/convergenceTester.cpp.in \
-		$(DIR)/highScaleConstraint.hpp.in \
-		$(DIR)/highScaleConstraint.cpp.in \
-		$(DIR)/initialGuesser.hpp.in \
-		$(DIR)/initialGuesser.cpp.in \
-		$(DIR)/inputPars.hpp.in \
-		$(DIR)/lowScaleConstraint.hpp.in \
-		$(DIR)/lowScaleConstraint.cpp.in \
+		$(DIR)/convergence_tester.hpp.in \
+		$(DIR)/convergence_tester.cpp.in \
+		$(DIR)/high_scale_constraint.hpp.in \
+		$(DIR)/high_scale_constraint.cpp.in \
+		$(DIR)/initial_guesser.hpp.in \
+		$(DIR)/initial_guesser.cpp.in \
+		$(DIR)/input_parameters.hpp.in \
+		$(DIR)/low_scale_constraint.hpp.in \
+		$(DIR)/low_scale_constraint.cpp.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model.cpp.in \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
-		$(DIR)/softPars.hpp.in \
-		$(DIR)/softPars.cpp.in \
-		$(DIR)/susyPars.hpp.in \
-		$(DIR)/susyPars.cpp.in \
-		$(DIR)/susyScaleConstraint.hpp.in \
-		$(DIR)/susyScaleConstraint.cpp.in
+		$(DIR)/soft_parameters.hpp.in \
+		$(DIR)/soft_parameters.cpp.in \
+		$(DIR)/susy_parameters.hpp.in \
+		$(DIR)/susy_parameters.cpp.in \
+		$(DIR)/susy_scale_constraint.hpp.in \
+		$(DIR)/susy_scale_constraint.cpp.in
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

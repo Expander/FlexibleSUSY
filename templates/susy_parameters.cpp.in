@@ -16,69 +16,69 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "@ModelName@_softPars.hpp"
+#include "@ModelName@_susy_parameters.hpp"
 #include "wrappers.hpp"
 
 #include <iostream>
 
-@ModelName@_soft_parameters::@ModelName@_soft_parameters()
-   : @ModelName@_susy_parameters()
+#define CLASSNAME @ModelName@_susy_parameters
+
+@ModelName@_susy_parameters::@ModelName@_susy_parameters()
+   : Beta_function()
    @parameterDefaultInit@
 {
    set_number_of_parameters(numberOfParameters);
 }
 
-@ModelName@_soft_parameters::@ModelName@_soft_parameters(
-   const @ModelName@_susy_parameters& susy_model
+@ModelName@_susy_parameters::@ModelName@_susy_parameters(
+   double scale_, double loops_, double thresholds_
    @cCtorParameterList@
 )
-   : @ModelName@_susy_parameters(susy_model)
+   : Beta_function()
    @parameterCopyInit@
 {
    set_number_of_parameters(numberOfParameters);
+   set_scale(scale_);
+   set_loops(loops_);
+   set_thresholds(thresholds_);
 }
 
-Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
+Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
    return calc_beta().display();
 }
 
-@ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
+@ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
 @beta@
 
-   const @ModelName@_susy_parameters susy_betas(@ModelName@_susy_parameters::calc_beta());
-
-   return @ModelName@_soft_parameters(susy_betas, @betaParameterList@);
+   return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(),
+                    @betaParameterList@);
 }
 
-void @ModelName@_soft_parameters::clear()
+void @ModelName@_susy_parameters::clear()
 {
-   @ModelName@_susy_parameters::clear();
-
 @clearParameters@
 }
 
-const Eigen::ArrayXd @ModelName@_soft_parameters::display() const
+@anomDimFunctions@
+
+const Eigen::ArrayXd @ModelName@_susy_parameters::display() const
 {
-   Eigen::ArrayXd pars(@ModelName@_susy_parameters::display());
-   pars.conservativeResize(numberOfParameters);
+   Eigen::ArrayXd pars(numberOfParameters);
 
 @display@
 
    return pars;
 }
 
-void @ModelName@_soft_parameters::print(std::ostream& ostr) const
+void @ModelName@_susy_parameters::print(std::ostream& ostr) const
 {
-   @ModelName@_susy_parameters::print(ostr);
-   ostr << "soft parameters:\n";
+   ostr << "susy parameters:\n";
 @printParameters@
 }
 
-void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
+void @ModelName@_susy_parameters::set(const Eigen::ArrayXd& v)
 {
-   @ModelName@_susy_parameters::set(v);
-
 @set@
 }

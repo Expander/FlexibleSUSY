@@ -2,7 +2,7 @@
 #ifndef @ModelName@_INITIAL_GUESSER_H
 #define @ModelName@_INITIAL_GUESSER_H
 
-#include "@ModelName@_inputPars.hpp"
+#include "@ModelName@_input_parameters.hpp"
 #include "two_scale_initial_guesser.hpp"
 #include "error.hpp"
 

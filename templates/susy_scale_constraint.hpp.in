@@ -2,7 +2,7 @@
 #ifndef @ModelName@_SUSY_SCALE_CONSTRAINT_H
 #define @ModelName@_SUSY_SCALE_CONSTRAINT_H
 
-#include "@ModelName@_inputPars.hpp"
+#include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
 
 class @ModelName@;

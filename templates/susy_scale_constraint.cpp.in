@@ -1,5 +1,5 @@
 
-#include "@ModelName@_susyScaleConstraint.hpp"
+#include "@ModelName@_susy_scale_constraint.hpp"
 #include "@ModelName@_model.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"

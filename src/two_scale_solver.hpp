@@ -143,7 +143,7 @@ private:
    void initial_guess();               ///< initial guess
    void run_up();                      ///< run all models up
    void run_down();                    ///< run all models down
-   void apply_lowest_constaint();      ///< apply lowest constraint
+   void apply_lowest_constraint();      ///< apply lowest constraint
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision
 };
