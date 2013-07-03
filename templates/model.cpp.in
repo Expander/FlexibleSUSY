@@ -155,10 +155,13 @@ int @ModelName@::solve_ewsb()
    if (status != GSL_SUCCESS) {
       if (throw_on_ewsb_fail) {
          throw NoEWSBError(this, ewsb_iteration_precision);
-      } else {
+      }
+#ifdef VERBOSE
+      else {
          WARNING("\tCould not find a solution to the EWSB equations!"
                  " (requested precision: " << ewsb_iteration_precision << ")");
       }
+#endif
    }
 
    return status;
