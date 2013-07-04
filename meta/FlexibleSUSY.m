@@ -98,7 +98,7 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
-           clearParameters},
+           clearParameters, parameterNames},
           (* extract list of parameters from the beta functions *)
           parameters = GetName[#]& /@ betaFun;
           (* count number of parameters *)
@@ -115,6 +115,7 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
           clearParameters      = BetaFunction`ClearParameters[betaFun];
+          parameterNames       = BetaFunction`CreateParameterNamesFunction[betaFun, numberOfBaseClassParameters];
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
@@ -135,7 +136,8 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
                    "@anomDimFunctions@"     -> WrapLines[anomDimFunctions],
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
                    "@ModelName@"            -> modelName,
-                   "@printParameters@"      -> IndentText[printParameters]
+                   "@printParameters@"      -> IndentText[printParameters],
+                   "@parameterNames@"       -> IndentText[parameterNames]
                  } ];
           ];
 

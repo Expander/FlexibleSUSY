@@ -33,6 +33,7 @@ public:
    virtual const Eigen::ArrayXd display() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
+   virtual std::vector<std::string> get_parameter_names() const;
 
    @ModelName@_soft_parameters calc_beta() const;
    virtual void clear();

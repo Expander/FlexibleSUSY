@@ -3,6 +3,7 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`"}];
 
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
+CreateParameterNames::usage="";
 
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
@@ -166,6 +167,42 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_,
               ];
            If[rows * cols != count,
               Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
+           Return[{ass, rows * cols}];
+          ];
+
+CreateParameterNames[name_, startIndex_, parameterType_] :=
+    Block[{},
+          Print["Error: CreateParameterNames: unknown parameter type: ",
+                ToString[parameterType]];
+          Quit[];
+          ];
+
+CreateParameterNames[name_String, startIndex_, CConversion`ScalarType["double"]] :=
+    Module[{ass},
+           ass = "names[" <> ToString[startIndex] <> "] = \""
+                 <> name <> "\";\n";
+           Return[{ass, 1}];
+          ];
+
+CreateParameterNames[name_String, startIndex_, CConversion`ScalarType["Complex"]] :=
+    Module[{ass = ""},
+           ass = "names[" <> ToString[startIndex] <> "] = \"Re(" <> name <> ")\";\n" <>
+                 "names[" <> ToString[startIndex + 1] <> "] = \"Im(" <> name <> ")\";\n";
+           Return[{ass, 2}];
+          ];
+
+CreateParameterNames[name_String, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
+    Module[{ass = "", i, j, count = 0},
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
+                   ass = ass <> "names[" <> ToString[startIndex + count] <> "] = \""
+                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
+                          <> ")\";\n";
+                  ];
+              ];
+           If[rows * cols != count,
+              Print["Error: CreateParameterNames: something is wrong with the indices: "
                     <> ToString[rows * cols] <> " != " <> ToString[count]];];
            Return[{ass, rows * cols}];
           ];

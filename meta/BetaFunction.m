@@ -19,6 +19,7 @@ CreateCCtorInitialization::usage="";
 CreateCCtorParameterList::usage="";
 CreateParameterList::usage="";
 ClearParameters::usage="";
+CreateParameterNamesFunction::usage="";
 
 Begin["Private`"];
 
@@ -161,6 +162,26 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            (* sanity check *)
            If[paramCount != numberOfParameters,
               Print["Error: CreateDisplayFunction: number of parameters does not match: ", paramCount,
+                    " != ", numberOfParameters]; Quit[];];
+           Return[display];
+          ];
+
+CreateParameterNamesFunction[betaFunctions_List, parameterNumberOffset_:0] :=
+    Module[{display = "", paramCount = parameterNumberOffset, name = "",
+            beta = {}, type = ErrorType, i, numberOfParameters, assignment = "",
+            nAssignments = 0},
+           numberOfParameters = CountNumberOfParameters[betaFunctions] + parameterNumberOffset;
+           For[i = 1, i <= Length[betaFunctions], i++,
+               beta = GetAllBetaFunctions[betaFunctions[[i]]];
+               type = GetType[betaFunctions[[i]]];
+               name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
+               {assignment, nAssignments} = Parameters`CreateParameterNames[name, paramCount, type];
+               display = display <> assignment;
+               paramCount += nAssignments;
+              ];
+           (* sanity check *)
+           If[paramCount != numberOfParameters,
+              Print["Error: CreateParameterNamesFunction: number of parameters does not match: ", paramCount,
                     " != ", numberOfParameters]; Quit[];];
            Return[display];
           ];

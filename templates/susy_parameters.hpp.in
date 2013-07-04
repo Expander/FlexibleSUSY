@@ -22,6 +22,8 @@
 #include "betafunction.hpp"
 
 #include <iosfwd>
+#include <string>
+#include <vector>
 #include <Eigen/Core>
 
 class @ModelName@_susy_parameters : public Beta_function {
@@ -33,6 +35,7 @@ public:
    virtual const Eigen::ArrayXd display() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
+   virtual std::vector<std::string> get_parameter_names() const;
 
    @ModelName@_susy_parameters calc_beta() const;
    virtual void clear();
