@@ -22,6 +22,9 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
 
 #include <Eigen/Dense>
 #include "logger.hpp"
@@ -36,15 +39,15 @@
  *    rc.run(sm, 100, 1.e12, 50, true); // sm is a two scale model
  *    rc.write_to_file("running_coupling.dat");
  */
+template <class Rge, class DataGetter>
 class Coupling_monitor {
 public:
    typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
 
-   Coupling_monitor();
-   ~Coupling_monitor();
+   Coupling_monitor(const Rge&, const DataGetter&);
+   ~Coupling_monitor() {}
 
-   template <class Rge, class DataGetter>
-   void run(Rge, DataGetter, double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
+   void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
    TTouple get_max_scale() const;
    void reset();
    void write_to_file(const std::string&) const;
@@ -58,18 +61,120 @@ private:
    };
 
    TData couplings;
+   Rge rge;
+   DataGetter data_getter;
+   unsigned width = 16;
 
    /// write a comment line
-   void write_comment_line(char, std::ofstream&, std::size_t, int) const;
+   void write_comment_line(std::ofstream&) const;
 };
 
-class Gauge_coupling_getter {
-public:
-   template <class Rge>
-   Eigen::ArrayXd operator()(const Rge& rge) {
-      return rge.displayGauge();
+template <class Rge, class DataGetter>
+Coupling_monitor<Rge,DataGetter>::Coupling_monitor(const Rge& rge_, const DataGetter& data_getter_)
+   : couplings(TData())
+   , rge(rge_)
+   , data_getter(data_getter_)
+{
+}
+
+/**
+ * Get the couplings at the largest scale
+ *
+ * @return a pair with the scale and a Eigen::ArrayXd which contains the
+ * couplings at this scale
+ */
+template <class Rge, class DataGetter>
+typename Coupling_monitor<Rge,DataGetter>::TTouple Coupling_monitor<Rge,DataGetter>::get_max_scale() const
+{
+   if (couplings.empty()) {
+      ERROR("Data container is empty!");
+      return TTouple(0.0, Eigen::ArrayXd(1));
    }
-};
+
+   // find gauge couplings at the greatest scale
+   TData::const_iterator maxScale
+      = max_element(couplings.begin(), couplings.end(), TDataComp());
+
+   return *maxScale;
+}
+
+/**
+ * Delete all internal couplings.
+ */
+template <class Rge, class DataGetter>
+void Coupling_monitor<Rge,DataGetter>::reset()
+{
+   couplings.clear();
+}
+
+/**
+ * write help line which describes the written data
+ *
+ * @param fout output stream
+ */
+template <class Rge, class DataGetter>
+void Coupling_monitor<Rge,DataGetter>::write_comment_line(std::ofstream& fout) const
+{
+   if (!fout.good() || couplings.empty())
+      return;
+
+   const std::size_t number_of_couplings = couplings.front().second.size();
+   const std::vector<std::string> parameter_names(data_getter.get_parameter_names(rge));
+
+   if (number_of_couplings != parameter_names.size()) {
+      ERROR("number of couplings != length of list of parameter names");
+   }
+
+   fout << std::left << std::setw(width) << "scale";
+
+   for (std::size_t i = 0; i < number_of_couplings; ++i)
+      fout << std::left << std::setw(width) << parameter_names[i];
+
+   fout << std::endl;
+}
+
+/**
+ * Write all couplings to a text file.
+ *
+ * @param file_name name of file to write the data to
+ */
+template <class Rge, class DataGetter>
+void Coupling_monitor<Rge,DataGetter>::write_to_file(const std::string& file_name) const
+{
+   if (couplings.empty())
+      return;
+
+   std::ofstream filestr(file_name.c_str(), std::ios::out);
+   VERBOSE_MSG("opening file: " << file_name.c_str());
+   if (filestr.fail()) {
+      ERROR("can't open file " << file_name
+            << " for writing running couplings");
+      return;
+   }
+
+   write_comment_line(filestr);
+
+   // write data
+   for (TData::const_iterator it = couplings.begin();
+        it != couplings.end(); ++it) {
+      if (!filestr.good()) {
+         ERROR("file " << file_name << " is corrupted");
+         break;
+      }
+
+      filestr << std::left << std::setw(width) << it->first;
+
+      // write all gauge couplings in order
+      for (int i = 0; i < it->second.size(); ++i) {
+         filestr << std::left << std::setw(width) << it->second(i);
+      }
+
+      filestr << std::endl;
+   }
+
+   filestr.close();
+   VERBOSE_MSG("file written: " << file_name.c_str());
+}
 
 /**
  * Add running couplings between scale q1 and q2.
@@ -83,8 +188,8 @@ public:
  *        (false by default)
  */
 template <class Rge, class DataGetter>
-void Coupling_monitor::run(Rge rge, DataGetter data_getter, double q1, double q2,
-                           unsigned int number_of_steps, bool include_endpoint)
+void Coupling_monitor<Rge,DataGetter>::run(double q1, double q2,
+                                           unsigned int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
       ERROR("negative scales are not allowed: q1=" << q1 << ", q2=" << q2);

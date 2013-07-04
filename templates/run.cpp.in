@@ -17,11 +17,14 @@
 
 using namespace std;
 
+template <class Rge>
 class Parameter_getter {
 public:
-   template <class Rge>
    Eigen::ArrayXd operator()(const Rge& rge) {
       return rge.display();
+   }
+   std::vector<std::string> get_parameter_names(const Rge& rge) const {
+      return rge.get_parameter_names();
    }
 };
 
@@ -66,11 +69,12 @@ int main()
 #if 0
    const double gut_scale = high_scale_input.get_scale();
    const double MZ = Electroweak_constants::MZ;
-   Coupling_monitor cm;
-   Parameter_getter pg;
-
    model.run_to(MZ);
-   cm.run(model, pg, MZ, gut_scale, 100, true);
+
+   Parameter_getter<@ModelName@> pg;
+   Coupling_monitor<@ModelName@, Parameter_getter<@ModelName@> > cm(model, pg);
+
+   cm.run(MZ, gut_scale, 100, true);
    cm.write_to_file("@ModelName@_rge_running.dat");
 #endif
 

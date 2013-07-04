@@ -2,7 +2,6 @@ DIR          := src
 MODNAME      := libflexisusy
 
 LIBFLEXI_SRC := \
-		$(DIR)/coupling_monitor.cpp \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
