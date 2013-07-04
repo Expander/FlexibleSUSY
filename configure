@@ -542,6 +542,19 @@ check_boost_thread_incl() {
 }
 
 #_____________________________________________________________________
+check_cxx() {
+    checking_msg "C++ compiler $CXX"
+    exists_in_path "$CXX"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A C++ compiler must be installed to compile the models!"
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_eigen_incl() {
     eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
                      /usr/local/include/eigen3"
@@ -825,6 +838,7 @@ guess_machine_word_size
 check_algorithms
 check_boost_test_incl
 check_boost_test_libs
+check_cxx
 check_eigen_incl
 check_fortran_libs
 check_gsl_config
