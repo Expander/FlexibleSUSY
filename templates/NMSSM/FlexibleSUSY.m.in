@@ -1,20 +1,17 @@
 
 (* CNMSSM input parameters *)
 
-InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
-                    KappaInput, vSInput };
+InputParameters = { m0, m12, TanBeta, Azero, LambdaInput };
 
 DefaultParameterPoint = {
-    {m0, 125},
+    {m0, 200},
     {m12, 500},
     {TanBeta, 10},
     {Azero, 0},
-    {LambdaInput, 0.1},
-    {KappaInput, 0.1},
-    {vSInput, 1000}
+    {LambdaInput, 0.1}
 };
 
-ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
+ParametersToSolveTadpoles = { \[Kappa], vS, ms2 };
 
 RenormalizationScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 RenormalizationScale = Sqrt[M[Su[1]]*M[Su[6]]];
@@ -34,9 +31,10 @@ BoundaryHighScale={
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
-   {\[Kappa], KappaInput},
+   {mHu2, m0^2},
+   {mHd2, m0^2},
    {\[Lambda], LambdaInput},
-   {T[\[Kappa]], Azero KappaInput},
+   {T[\[Kappa]], Azero \[Kappa]},
    {T[\[Lambda]], Azero LambdaInput},
    {MassB, m12},
    {MassWB,m12},
@@ -44,7 +42,6 @@ BoundaryHighScale={
 };
 
 BoundarySUSYScale = {
-    {vS, vSInput}
 };
 
 BoundaryLowScale = MZ;
@@ -56,8 +53,7 @@ BoundaryLowScaleInput={
 
 InitialGuess = {
    Sequence @@ BoundaryLowScaleInput,
-   {vS, vSInput},
-   {mHd2, MZDRbar^2},
-   {mHu2, MZDRbar^2},
+   {\[Kappa], 0.1},
+   {vS, 1000},
    {ms2, MZDRbar^2}
 };
