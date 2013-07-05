@@ -17,17 +17,6 @@
 
 using namespace std;
 
-template <class Rge>
-class Parameter_getter {
-public:
-   Eigen::ArrayXd operator()(const Rge& rge) {
-      return rge.display();
-   }
-   std::vector<std::string> get_parameter_names(const Rge& rge) const {
-      return rge.get_parameter_names();
-   }
-};
-
 int main()
 {
    @ModelName@_input_parameters input;
@@ -58,6 +47,7 @@ int main()
 
    try {
       solver.solve();
+      model.run_to(susy_scale_input.get_scale());
       model.calculate_spectrum();
       model.print(std::cout);
    } catch (Error& error) {
@@ -71,11 +61,21 @@ int main()
    const double MZ = Electroweak_constants::MZ;
    model.run_to(MZ);
 
-   Parameter_getter<@ModelName@> pg;
-   Coupling_monitor<@ModelName@, Parameter_getter<@ModelName@> > cm(model, pg);
+   class Parameter_getter {
+   public:
+      Eigen::ArrayXd operator()(const @ModelName@& rge) {
+         return rge.display();
+      }
+      std::vector<std::string> get_parameter_names(const @ModelName@& rge) const {
+         return rge.get_parameter_names();
+      }
+   };
 
-   cm.run(MZ, gut_scale, 100, true);
-   cm.write_to_file("@ModelName@_rge_running.dat");
+   Parameter_getter parameter_getter;
+   Coupling_monitor<@ModelName@, Parameter_getter> coupling_monitor(model, parameter_getter);
+
+   coupling_monitor.run(MZ, gut_scale, 100, true);
+   coupling_monitor.write_to_file("@ModelName@_rge_running.dat");
 #endif
 
    return 0;
