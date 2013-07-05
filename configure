@@ -585,6 +585,20 @@ check_gsl_config() {
 }
 
 #_____________________________________________________________________
+check_fc() {
+    checking_msg "Fortran compiler $FC"
+    exists_in_path "$FC"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A Fortran compiler must be installed to compile the\
+ two-loop MSSM Higgs contributions"
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_fortran_libs() {
     case "$FC" in
         gfortran)
@@ -839,6 +853,7 @@ check_algorithms
 check_boost_test_incl
 check_boost_test_libs
 check_cxx
+check_fc
 check_eigen_incl
 check_fortran_libs
 check_gsl_config
