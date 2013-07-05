@@ -149,8 +149,8 @@ void Diagonalize2by2(const DoubleMatrix& m, DoubleMatrix& u,
                      DoubleVector& eigenvalues)
 {
    double theta;
-   eigenvalues = m.sym2by2(theta).apply(fabs);
-   if (eigenvalues(1) > eigenvalues(2)) {
+   eigenvalues = m.sym2by2(theta);
+   if (std::fabs(eigenvalues(1)) > std::fabs(eigenvalues(2))) {
       theta += 0.5 * M_PI;
       std::swap(eigenvalues(1), eigenvalues(2));
    }
