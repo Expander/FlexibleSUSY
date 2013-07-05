@@ -2,6 +2,7 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include "linalg.h"
 #include <Eigen/Core>
 
 static const double max_dev = 1.0e-12;

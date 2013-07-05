@@ -1,6 +1,5 @@
 
 #include "MSSM_model.hpp"
-#include "MSSM_high_scale_constraint.hpp"
 #include "test.h"
 #include "softsusy.h"
 #include "wrappers.hpp"
@@ -49,49 +48,6 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
          z.swaprows(idx, (k-1) * cols + i);
       }
    }
-}
-
-void test_high_scale_constraint(MSSM m)
-{
-   double diff;
-   int iteration = 0;
-   MSSM_input_parameters input;
-   input.m0 = 100;
-   input.m12 = 200;
-   input.TanBeta = m.get_vd() / m.get_vu();
-   input.Azero = 300;
-   MSSM_high_scale_constraint constraint(input);
-   constraint.set_model(&m);
-   double mgut = constraint.get_scale(); // initial guess
-   double mgut_new = mgut;
-
-   do {
-      m.run_to(mgut);
-      constraint.apply();
-      mgut_new = constraint.get_scale();
-      diff = std::fabs((mgut - mgut_new)/mgut);
-      mgut = mgut_new;
-      iteration++;
-   } while (diff > 1.0e-7 && iteration < 20);
-
-   TEST_GREATER(1.0e-7, diff);
-   TEST_GREATER(20, iteration);
-
-   m.run_to(mgut_new);
-   TEST_CLOSE(m.get_g1(), m.get_g2(), 1.0e-6);
-   TEST_CLOSE(m.get_mHd2(), sqr(input.m0), 1.0e-6);
-   TEST_CLOSE(m.get_mHu2(), sqr(input.m0), 1.0e-6);
-   TEST_CLOSE(m.get_mq2() , sqr(input.m0) * UNITMATRIX(3), 1.0e-6);
-   TEST_CLOSE(m.get_ml2() , sqr(input.m0) * UNITMATRIX(3), 1.0e-6);
-   TEST_CLOSE(m.get_md2() , sqr(input.m0) * UNITMATRIX(3), 1.0e-6);
-   TEST_CLOSE(m.get_mu2() , sqr(input.m0) * UNITMATRIX(3), 1.0e-6);
-   TEST_CLOSE(m.get_me2() , sqr(input.m0) * UNITMATRIX(3), 1.0e-6);
-   TEST_CLOSE(m.get_MassB() , input.m12, 1.0e-6);
-   TEST_CLOSE(m.get_MassG() , input.m12, 1.0e-6);
-   TEST_CLOSE(m.get_MassWB(), input.m12, 1.0e-6);
-   TEST_CLOSE(m.get_TYu(), input.Azero * m.get_Yu(), 1.0e-6);
-   TEST_CLOSE(m.get_TYd(), input.Azero * m.get_Yd(), 1.0e-6);
-   TEST_CLOSE(m.get_TYe(), input.Azero * m.get_Ye(), 1.0e-6);
 }
 
 void compare_anomalous_dimensions(const SoftParsMssm& a, const MSSM_soft_parameters& b)
@@ -1398,10 +1354,6 @@ void compare_models(int loopLevel)
 
       std::cout << "comparing loop-masses ... ";
       compare_loop_masses(softSusy, m);
-      std::cout << "done\n";
-
-      std::cout << "testing high scale constraint ... ";
-      test_high_scale_constraint(m);
       std::cout << "done\n";
    }
 }
