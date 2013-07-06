@@ -18,7 +18,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_MSSM.cpp \
-		$(DIR)/test_MSSM_high_scale_constraint.cpp
+		$(DIR)/test_MSSM_high_scale_constraint.cpp \
+		$(DIR)/test_MSSM_low_scale_constraint.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
 TEST_SRC += \
@@ -112,6 +113,10 @@ $(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBL
 
 $(DIR)/test_MSSM_high_scale_constraint.d $(DIR)/test_MSSM_high_scale_constraint.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_MSSM_high_scale_constraint.x: $(DIR)/test_MSSM_high_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+
+$(DIR)/test_MSSM_low_scale_constraint.d $(DIR)/test_MSSM_low_scale_constraint.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_MSSM_low_scale_constraint.x: $(DIR)/test_MSSM_low_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 %.x: %.o $(ALLLIB)
