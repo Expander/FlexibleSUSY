@@ -28,9 +28,6 @@
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
           " @ModelName@ must not be zero");
-
-   low_scale_guess = 91.1876; // MZ
-   high_scale_guess = @highScaleGuess@;
 }
 
 @ModelName@_initial_guesser::~@ModelName@_initial_guesser()
@@ -81,6 +78,9 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
 
 void @ModelName@_initial_guesser::guess_soft_parameters()
 {
+   const double low_scale_guess = low_constraint.get_scale();
+   const double high_scale_guess = high_constraint.get_scale();
+
    int err = model->run_to(high_scale_guess);
    if (err)
       throw NonPerturbativeRunningError(model, high_scale_guess);
