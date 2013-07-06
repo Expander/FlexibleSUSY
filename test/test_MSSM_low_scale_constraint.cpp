@@ -101,15 +101,29 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
    const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
-   const double g3_old = m.get_g3();
-   const double prefactor = oneOver16PiSqr * Power(g3_old,3);
+   const double gut_normalization = 3./5.;
+   DoubleVector g_old(3);
+   g_old(1) = m.get_g1();
+   g_old(2) = m.get_g2();
+   g_old(3) = m.get_g3();
+   DoubleVector prefactor(3);
+   for (int i = 1; i <= 3; i++)
+      prefactor(i) = 1. / (oneOver16PiSqr * Power(g_old(i),3));
 
-   const double g3_Q1 = calculate_gauge_couplings(m, constraint, Q1)(3);
-   const double g3_Q2 = calculate_gauge_couplings(m, constraint, Q2)(3);
+   const DoubleVector g_Q1(calculate_gauge_couplings(m, constraint, Q1));
+   const DoubleVector g_Q2(calculate_gauge_couplings(m, constraint, Q2));
 
-   const double beta3_numeric = (g3_Q1 - g3_Q2) / (log(Q1/Q2) * prefactor);
-   const double beta3_SM = -7.;
-   const double beta3_MSSM = -3.;
+   const DoubleVector beta_numeric((g_Q1 - g_Q2) * prefactor * (1. / log(Q1/Q2)));
+   DoubleVector beta_SM(3);
+   beta_SM(1) = 41./6. * gut_normalization;
+   beta_SM(2) = -19./6.;
+   beta_SM(3) = -7.;
+   DoubleVector beta_MSSM(3);
+   beta_MSSM(1) = 11. * gut_normalization;
+   beta_MSSM(2) = 1.;
+   beta_MSSM(3) = -3.;
 
-   BOOST_CHECK_CLOSE_FRACTION(beta3_numeric, beta3_MSSM - beta3_SM, 0.011);
+   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(1), beta_MSSM(1) - beta_SM(1), 0.5);
+   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(2), beta_MSSM(2) - beta_SM(2), 0.5);
+   BOOST_CHECK_CLOSE_FRACTION(beta_numeric(3), beta_MSSM(3) - beta_SM(3), 0.011);
 }
