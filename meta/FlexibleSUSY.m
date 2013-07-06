@@ -88,7 +88,8 @@ GeneralReplacementRules[] :=
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
       "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
       "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
-      "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling]
+      "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling],
+      "@ModelName@"           -> Model`Name
     }
 
 
