@@ -93,7 +93,7 @@ GeneralReplacementRules[] :=
     }
 
 
-WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
+WriteRGEClass[betaFun_List, anomDim_List, files_List,
               additionalDecl_:"", numberOfBaseClassParameters_:0] :=
    Module[{setter, getter, parameterDef, set,
            display, parameterDefaultInit,
@@ -136,25 +136,25 @@ WriteRGEClass[betaFun_List, anomDim_List, modelName_String, files_List,
                    "@anomDimPrototypes@"    -> IndentText[anomDimPrototypes],
                    "@anomDimFunctions@"     -> WrapLines[anomDimFunctions],
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
-                   "@ModelName@"            -> modelName,
                    "@printParameters@"      -> IndentText[printParameters],
-                   "@parameterNames@"       -> IndentText[parameterNames]
+                   "@parameterNames@"       -> IndentText[parameterNames],
+                   Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
 
-WriteInputParameterClass[modelName_String, inputParameters_List, freePhases_List,
+WriteInputParameterClass[inputParameters_List, freePhases_List,
                          defaultValues_List, files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases]];
           defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, freePhases]];
           ReplaceInFiles[files,
-                         { "@ModelName@"             -> modelName,
-                           "@defineInputParameters@" -> IndentText[defineInputParameters],
-                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit]
+                         { "@defineInputParameters@" -> IndentText[defineInputParameters],
+                           "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
+                           Sequence @@ GeneralReplacementRules[]
                          } ];
           ];
 
-WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_String,
+WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      inputParameters_List, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarGaugeCouplings, setDRbarYukawaCouplings},
@@ -168,8 +168,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
           setDRbarGaugeCouplings  = ThresholdCorrections`SetDRbarGaugeCouplings[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
-                 { "@ModelName@"            -> modelName,
-                   "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
+                 { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@setDRbarGaugeCouplings@"  -> IndentText[WrapLines[setDRbarGaugeCouplings]],
@@ -178,29 +177,27 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, modelName_Stri
                  } ];
           ];
 
-WriteInitialGuesserClass[settings_List, modelName_String, files_List] :=
+WriteInitialGuesserClass[settings_List, files_List] :=
    Module[{applyConstraint, setDRbarYukawaCouplings},
           applyConstraint = Constraint`ApplyConstraints[settings];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
-                 { "@ModelName@"            -> modelName,
-                   "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
+                 { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
 
-WriteConvergenceTesterClass[particles_List, modelName_String, files_List] :=
+WriteConvergenceTesterClass[particles_List, files_List] :=
    Module[{compareFunction},
           compareFunction = ConvergenceTester`CreateCompareFunction[particles];
           ReplaceInFiles[files,
-                 { "@ModelName@"            -> modelName,
-                   "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
+                 { "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
 
-WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
+WriteModelClass[massMatrices_List, tadpoleEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
@@ -271,7 +268,6 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
                             "@mixingMatrixGetters@" -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
-                            "@ModelName@"            -> modelName,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
@@ -298,14 +294,15 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List, modelName_String,
                             "@printMasses@"                  -> IndentText[printMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
-                            "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions]
+                            "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
-WriteUserExample[modelName_String, files_List] :=
+WriteUserExample[files_List] :=
     Module[{},
            ReplaceInFiles[files,
-                          { "@ModelName@" -> modelName
+                          { Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
@@ -529,7 +526,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
 
            Print["Creating class for susy parameters ..."];
-           WriteRGEClass[susyBetaFunctions, anomDim, Model`Name,
+           WriteRGEClass[susyBetaFunctions, anomDim,
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
@@ -559,7 +556,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            TreeMasses`SetModelParameters[allParameters];
 
            Print["Creating class for soft parameters ..."];
-           WriteRGEClass[susyBreakingBetaFunctions, {}, Model`Name,
+           WriteRGEClass[susyBreakingBetaFunctions, {},
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
@@ -570,7 +567,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            freePhases = EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[Model`Name, Global`InputParameters, freePhases,
+           WriteInputParameterClass[Global`InputParameters, freePhases,
                                     Global`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_input_parameters.hpp"}]}}
@@ -588,7 +585,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Print["Creating class for convergence tester ..."];
-           WriteConvergenceTesterClass[allParticles, Model`Name,
+           WriteConvergenceTesterClass[allParticles,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.cpp.in"}],
@@ -599,7 +596,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[SARAH`ConditionGUTscale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundaryHighScale /. susyBreakingParameterReplacementRules,
                                 Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                Model`Name,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.hpp"}]},
@@ -611,7 +607,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[SARAH`RenormalizationScale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundarySUSYScale /. susyBreakingParameterReplacementRules,
                                 SARAH`RenormalizationScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                Model`Name,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.hpp"}]},
@@ -623,7 +618,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[Global`BoundaryLowScale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
                                 Global`MZ,
-                                Model`Name,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.hpp"}]},
@@ -633,7 +627,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[Global`InitialGuess /. susyBreakingParameterReplacementRules,
-                                    Model`Name,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],
@@ -660,7 +653,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                eigenstates];
 
            Print["Creating class for model ..."];
-           WriteModelClass[massMatrices, ewsbEquations, Model`Name,
+           WriteModelClass[massMatrices, ewsbEquations,
                            ParametersToSolveTadpoles,
                            nPointFunctions, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
@@ -674,8 +667,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
-           WriteUserExample[Model`Name, {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
-                                          FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> Model`Name <> ".cpp"}]}}];
+           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> Model`Name <> ".cpp"}]}}];
           ];
 
 End[];
