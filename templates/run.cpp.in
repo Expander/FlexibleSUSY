@@ -36,7 +36,8 @@ int main()
    @ModelName@ model(input);
 
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
-   @ModelName@_initial_guesser initial_guesser(&model, input);
+   @ModelName@_initial_guesser initial_guesser(&model, input, low_scale_input,
+                                               susy_scale_input, high_scale_input);
    Two_scale_increasing_precision precision(10.0, 1.0e-5);
 
    RGFlow<Two_scale> solver;

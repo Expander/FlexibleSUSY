@@ -1,6 +1,5 @@
 
 #include "@ModelName@_initial_guesser.hpp"
-#include "@ModelName@_high_scale_constraint.hpp"
 #include "@ModelName@_model.hpp"
 #include "lowe.h"
 #include "ew_input.hpp"
@@ -13,10 +12,19 @@
 #define MODELPARAMETER(p) model->get_##p()
 #define SM(p) Electroweak_constants::p
 
-@ModelName@_initial_guesser::@ModelName@_initial_guesser(@ModelName@* model_, const @ModelName@_input_parameters& input_pars_)
+@ModelName@_initial_guesser::@ModelName@_initial_guesser(
+   @ModelName@* model_,
+   const @ModelName@_input_parameters& input_pars_,
+   @ModelName@_low_scale_constraint& low_constraint_,
+   @ModelName@_susy_scale_constraint& susy_constraint_,
+   @ModelName@_high_scale_constraint& high_constraint_
+)
    : Initial_guesser<Two_scale>()
    , model(model_)
    , input_pars(input_pars_)
+   , low_constraint(low_constraint_)
+   , susy_constraint(susy_constraint_)
+   , high_constraint(high_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
           " @ModelName@ must not be zero");
@@ -78,7 +86,6 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
       throw NonPerturbativeRunningError(model, high_scale_guess);
 
    // apply high-scale constraint
-   @ModelName@_high_scale_constraint high_constraint(input_pars);
    high_constraint.set_model(model);
    high_constraint.apply();
 
