@@ -55,7 +55,7 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                                 {i,dimStart,dim}];
                  ];
               ];
-           Simplify[coupling + (result + DRbarConversion[group]) CConversion`oneOver16PiSqr (coupling)^3]
+           Return[coupling + (result + DRbarConversion[group]) CConversion`oneOver16PiSqr (coupling)^3];
           ];
 
 SetDRbarGaugeCouplings[] :=
