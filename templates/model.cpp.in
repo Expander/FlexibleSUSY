@@ -16,6 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+// File generated at @DateAndTime@
+
 #include "@ModelName@_model.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"

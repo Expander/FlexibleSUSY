@@ -89,7 +89,8 @@ GeneralReplacementRules[] :=
       "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
       "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
       "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling],
-      "@ModelName@"           -> Model`Name
+      "@ModelName@"           -> Model`Name,
+      "@DateAndTime@"         -> DateString[]
     }
 
 
