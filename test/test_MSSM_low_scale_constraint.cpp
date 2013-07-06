@@ -75,13 +75,18 @@ MSSM setup_MSSM()
    return m;
 }
 
-double calculate_g3(MSSM model, MSSM_low_scale_constraint constraint, double scale)
+DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint constraint, double scale)
 {
    model.set_scale(scale);
    constraint.set_model(&model);
    constraint.calculate_DRbar_gauge_couplings();
 
-   return model.get_g3();
+   DoubleVector g(3);
+   g(1) = model.get_g1();
+   g(2) = model.get_g2();
+   g(3) = model.get_g3();
+
+   return g;
 }
 
 BOOST_AUTO_TEST_CASE( test_threshold_corrections )
@@ -99,8 +104,8 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    const double g3_old = m.get_g3();
    const double prefactor = oneOver16PiSqr * Power(g3_old,3);
 
-   const double g3_Q1 = calculate_g3(m, constraint, Q1);
-   const double g3_Q2 = calculate_g3(m, constraint, Q2);
+   const double g3_Q1 = calculate_gauge_couplings(m, constraint, Q1)(3);
+   const double g3_Q2 = calculate_gauge_couplings(m, constraint, Q2)(3);
 
    const double beta3_numeric = (g3_Q1 - g3_Q2) / (log(Q1/Q2) * prefactor);
    const double beta3_SM = -7.;
