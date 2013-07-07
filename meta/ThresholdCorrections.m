@@ -94,7 +94,7 @@ SetDRbarGaugeCouplings[] :=
            (*          CConversion`RValueToCFormString[drBarCouplingSi] <> ";\n\n"; *)
            drBarCouplingG1CVariable = drBarCouplingEmCVariable <> " * " <>
                                       RValueToCFormString[1/Parameters`GetGUTNormalization[couplingG1]] <>
-                                      " / cos(asin(" <> drBarCouplingSiCVariable <> "))";
+                                      " / Sqrt(1.0 - Sqr(" <> drBarCouplingSiCVariable <> "))";
            drBarCouplingG2CVariable = drBarCouplingEmCVariable <> "/" <> drBarCouplingSiCVariable;
            (* write results back to the model *)
            result = result <>
