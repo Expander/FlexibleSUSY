@@ -71,21 +71,19 @@ distclean-$(MODNAME): clean-$(MODNAME)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
-		@echo -n "executing test: $< ... ";
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
 		@$< --log_level=test_suite >> $@ 2>> $@; \
-		if [ $$? = 0 ]; then echo "OK"; else echo "FAILED"; fi
+		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.m.log: $(DIR)/%.m
 		@rm -f $@
-		@echo -n "executing test: $< ... ";
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
 		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>> $@; \
-		if [ $$? = 0 ]; then echo "OK"; else echo "FAILED"; fi
+		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 execute-tests:  $(TEST_LOG)
 
