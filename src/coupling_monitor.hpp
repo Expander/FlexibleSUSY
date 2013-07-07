@@ -63,7 +63,7 @@ private:
    TData couplings;
    Rge rge;
    DataGetter data_getter;
-   unsigned width = 16;
+   unsigned width;
 
    /// write a comment line
    void write_comment_line(std::ofstream&) const;
@@ -74,6 +74,7 @@ Coupling_monitor<Rge,DataGetter>::Coupling_monitor(const Rge& rge_, const DataGe
    : couplings(TData())
    , rge(rge_)
    , data_getter(data_getter_)
+   , width(16)
 {
 }
 
