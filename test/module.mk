@@ -53,24 +53,41 @@ TEST_SCRIPT := \
 TEST_META_SCRIPT := \
 		$(DIR)/execute_meta_code_test.sh
 
+TEST_LOG := \
+		$(TEST_EXE:.x=.x.log) \
+		$(TEST_META:.m=.m.log)
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(TEST_EXE)
 
 clean-$(MODNAME):
 		rm -rf $(TEST_OBJ)
+		rm -rf $(TEST_LOG)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(TEST_DEP)
 		rm -rf $(TEST_EXE)
 
-execute-tests:  all-$(MODNAME)
-		@echo "executing all compiled tests ..."
-		@./$(TEST_SCRIPT) $(TEST_EXE)
-		@echo "all compiled tests finished"
-		@echo "executing all meta code tests ..."
-		@./$(TEST_META_SCRIPT) $(MATH) $(TEST_META)
-		@echo "all meta code tests finished"
+$(DIR)/%.x.log: $(DIR)/%.x
+		@rm -f $@
+		@echo -n "executing test: $< ... ";
+		@echo "**************************************************" >> $@;
+		@echo "* executing test: $< " >> $@;
+		@echo "**************************************************" >> $@;
+		@$< --log_level=test_suite >> $@ 2>> $@; \
+		if [ $$? = 0 ]; then echo "OK"; else echo "FAILED"; fi
+
+$(DIR)/%.m.log: $(DIR)/%.m
+		@rm -f $@
+		@echo -n "executing test: $< ... ";
+		@echo "**************************************************" >> $@;
+		@echo "* executing test: $< " >> $@;
+		@echo "**************************************************" >> $@;
+		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>> $@; \
+		if [ $$? = 0 ]; then echo "OK"; else echo "FAILED"; fi
+
+execute-tests:  $(TEST_LOG)
 
 clean::         clean-$(MODNAME)
 
