@@ -50,10 +50,12 @@ namespace Electroweak_constants {
       const double PMTOP = 173.18; ///< default pole mass from CDF/D0 Run II 1207.1069
       const double PMBOTTOM = 4.9; ///< default pole mass from PDG
       const double aem = 1.0 / 127.916; // at MZ
-      const double sinthWsq = 0.23122;
-      const double sinThetaW = sqrt(sinthWsq);
-      const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinthWsq));
-      const double alpha2 = aem / sinthWsq;
+      const double sinThetaW2 = 0.23122;
+      const double sinThetaW = sqrt(sinThetaW2);
+      const double cosThetaW2 = 1 - sinThetaW2;
+      const double cosThetaW = sqrt(cosThetaW2);
+      const double alpha1 = 5.0 * aem / (3.0 * (1.0 - sinThetaW2));
+      const double alpha2 = aem / sinThetaW2;
       const double alpha3 = 0.1184; // at MZ
       const double e  = sqrt(4.0 * M_PI * aem);
       const double g1 = sqrt(4.0 * M_PI * alpha1);

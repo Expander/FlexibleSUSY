@@ -70,8 +70,7 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
     Module[{def = "",
             localDecl = "", beta1L = "", beta2L = "", allDecl = "", allBeta = "",
             allBeta1L = "", allBeta2L = "", i},
-           allDecl = "const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);\n" <>
-                     "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n";
+           allDecl = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n";
            allDecl = allDecl <> "\n" <> additionalDecl <> "\n";
            For[i = 1, i <= Length[betaFunctions], i++,
                {localDecl, beta1L, beta2L} = CreateBetaFunction[betaFunctions[[i]]];

@@ -72,9 +72,9 @@ BoundaryLowScaleInput={
 InitialGuess = {
    Sequence @@ BoundaryLowScaleInput,
    {vS, vSInput},
-   {mHd2, MZDRbar^2},
-   {mHu2, MZDRbar^2},
-   {ms2, MZDRbar^2},
-   {BmuPrime, MZDRbar^2},
-   {muPrime, MZDRbar}
+   {mHd2, MZ^2},
+   {mHu2, MZ^2},
+   {ms2, MZ^2},
+   {BmuPrime, MZ^2},
+   {muPrime, MZ}
 };

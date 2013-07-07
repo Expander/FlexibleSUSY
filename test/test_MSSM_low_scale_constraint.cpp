@@ -100,7 +100,6 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
-   const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
    const double gut_normalization = 3./5.;
    DoubleVector g_old(3);
    g_old(1) = m.get_g1();

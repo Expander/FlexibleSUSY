@@ -180,7 +180,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
 
 WriteInitialGuesserClass[settings_List, files_List] :=
    Module[{applyConstraint, setDRbarYukawaCouplings},
-          applyConstraint = Constraint`ApplyConstraints[settings];
+          applyConstraint = Constraint`ApplyConstraints[settings /. { Global`MZDRbar -> Global`MZ,
+                                                                      Global`MWDRbar -> Global`MW }];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],

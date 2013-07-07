@@ -55,5 +55,5 @@ InitialGuess = {
    Sequence @@ BoundaryLowScaleInput,
    {\[Kappa], 0.1},
    {vS, 1000},
-   {ms2, MZDRbar^2}
+   {ms2, MZ^2}
 };

@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 
 static const double Pi = M_PI;
+static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
 double Abs(double);
 double Abs(const Complex&);

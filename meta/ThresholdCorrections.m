@@ -90,8 +90,8 @@ SetDRbarGaugeCouplings[] :=
            result = result <> "const double " <> drBarCouplingEmCVariable <> " = " <>
                     CConversion`RValueToCFormString[drBarCouplingEm] <> ";\n\n";
            (* calculate sin(thetaW) *)
-           result = result <> "const double " <> drBarCouplingSiCVariable <> " = " <>
-                    CConversion`RValueToCFormString[drBarCouplingSi] <> ";\n\n";
+           (* result = result <> "const double " <> drBarCouplingSiCVariable <> " = " <> *)
+           (*          CConversion`RValueToCFormString[drBarCouplingSi] <> ";\n\n"; *)
            drBarCouplingG1CVariable = drBarCouplingEmCVariable <> " * " <>
                                       RValueToCFormString[1/Parameters`GetGUTNormalization[couplingG1]] <>
                                       " / cos(asin(" <> drBarCouplingSiCVariable <> "))";
