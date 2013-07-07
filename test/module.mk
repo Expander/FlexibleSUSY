@@ -74,7 +74,7 @@ $(DIR)/%.x.log: $(DIR)/%.x
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< --log_level=test_suite >> $@ 2>> $@; \
+		@$< --log_level=test_suite >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.m.log: $(DIR)/%.m
@@ -83,7 +83,7 @@ $(DIR)/%.m.log: $(DIR)/%.m
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
 		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
-		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>> $@; \
+		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 execute-tests:  $(TEST_LOG)
