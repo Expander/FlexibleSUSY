@@ -87,11 +87,10 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
    const double MZ2 = Sqr(MZ);
    const double MW2 = Sqr(MW);
 
-   const double self_energy_VZ = Re(model->self_energy_VZ_heavy(MZ));
-   const double self_energy_VWm = Re(model->self_energy_VWm_heavy(MW));
-   const double sinThetaW2_drbar = SM(sinThetaW2)
-      - SM(cosThetaW2) * (self_energy_VWm / MW2 - self_energy_VZ / MZ2);
-   const double sinThetaW_drbar = Sqrt(sinThetaW2_drbar);
+   const double self_energy_Z = Re(model->self_energy_@VectorZ@_heavy(MZ));
+   const double self_energy_W = Re(model->self_energy_@VectorW@_heavy(MW));
+   const double sinThetaW_drbar = SM(sinThetaW)
+      - SM(cosThetaW2) * 0.5 * (self_energy_W / MW2 - self_energy_Z / MZ2);
 
 @setDRbarGaugeCouplings@
 }
