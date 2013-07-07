@@ -331,6 +331,10 @@ RValueToCFormString[expr_] :=
                     SARAH`Conj[a_] a_        :> AbsSqr[a] /.
                     a_[SARAH`i1,SARAH`i2]    :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
+                    Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
+                    Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.
+                    Rational[a_?NumericQ, b_?NumericQ] :> N[Rational[a,b]] /.
+                    Power[a_,0.5]            :> Sqrt[a] /.
                     Power[a_,2]              :> Global`Sqr[a] /.
                     Power[E,a_]              :> exp[a];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
