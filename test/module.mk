@@ -82,7 +82,8 @@ $(DIR)/%.m.log: $(DIR)/%.m
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>> $@; \
+		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
+		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>> $@; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 execute-tests:  $(TEST_LOG)
