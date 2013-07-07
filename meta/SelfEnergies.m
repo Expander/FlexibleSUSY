@@ -51,10 +51,16 @@ RegisterFunction[name_String, numberOfIndices_Integer] :=
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     selfEnergy[[2]];
 
+GetExpression[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
+    selfEnergy[[2]];
+
 GetExpression[tadpole_SelfEnergies`Tadpole] :=
     tadpole[[2]];
 
 GetField[selfEnergy_SelfEnergies`FSSelfEnergy] :=
+    selfEnergy[[1]];
+
+GetField[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     selfEnergy[[1]];
 
 GetField[tadpole_SelfEnergies`Tadpole] :=
@@ -65,6 +71,33 @@ GetField[sym_] :=
            Print["Error: GetField is not called with a SelfEnergies`FSSelfEnergy",
                  "or SelfEnergies`Tadpole head: ", sym];
            Quit[];
+          ];
+
+RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__]] :=
+    SelfEnergies`FSSelfEnergy[p,expr];
+
+RemoveSMParticles[SelfEnergies`Tadpole[p_,expr__]] :=
+    SelfEnergies`Tadpole[p,expr];
+
+RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
+    Module[{strippedExpr, smParticles, i, particle, a},
+           strippedExpr = expr /. ReplaceGhosts[];
+           smParticles = TreeMasses`GetSMParticles[];
+           For[i = 1, i <= Length[smParticles], i++,
+               particle = smParticles[[i]];
+               strippedExpr = strippedExpr //. {
+                    SARAH`A0[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`B0[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`B1[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`B00[a__ /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`B22[a__ /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`F0[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`G0[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`H0[a__  /; !FreeQ[{a},particle]] -> 0,
+                    SARAH`A0[0]                            -> 0
+                                            };
+              ];
+           Return[SelfEnergies`FSHeavySelfEnergy[p,strippedExpr]];
           ];
 
 ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
@@ -89,7 +122,7 @@ ConvertSarahTadpoles[tadpoles_List] :=
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
     Module[{result = {}, k, field, fermionSE, left, right, scalar, expr,
-            massESReplacements},
+            massESReplacements, heavySE},
            massESReplacements = Join[
                Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
                Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
@@ -133,6 +166,10 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                   result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
                  ];
               ];
+           (* Create self-energy with only SUSY particles in the loop *)
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
+                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
+           result = Join[result, RemoveSMParticles /@ heavySE];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
@@ -471,6 +508,9 @@ CreateVertexExpressions[expr_] :=
 CreateVertexExpressions[se_SelfEnergies`FSSelfEnergy] :=
     CreateVertexExpressions[GetExpression[se]];
 
+CreateVertexExpressions[se_SelfEnergies`FSHeavySelfEnergy] :=
+    CreateVertexExpressions[GetExpression[se]];
+
 CreateVertexExpressions[se_SelfEnergies`Tadpole] :=
     CreateVertexExpressions[GetExpression[se]];
 
@@ -525,16 +565,26 @@ CreateFunctionNamePrefix[field_]              := ToValidCSymbolString[field];
 CreateSelfEnergyFunctionName[field_] :=
     "self_energy_" <> CreateFunctionNamePrefix[field];
 
+CreateHeavySelfEnergyFunctionName[field_] :=
+    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy";
+
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
 CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
 
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
+    CreateHeavySelfEnergyFunctionName[GetField[selfEnergy]];
+
 CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
     CreateTadpoleFunctionName[GetField[tadpole]];
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
+    CreateFunctionName[selfEnergy] <>
+    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+
+CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
     "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
@@ -556,7 +606,7 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
                              parameterReplacementRules /.
                              C -> 1
                              ,"result"] <>
-                  "\nreturn result / (16. * PI * PI);";
+                  "\nreturn result * oneOver16PiSqr;";
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];
