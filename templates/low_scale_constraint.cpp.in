@@ -84,13 +84,13 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
    const double currentScale = model->get_scale();
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
-   const double MZ2 = Sqr(MZ);
-   const double MW2 = Sqr(MW);
+   // const double MZ2 = Sqr(MZ);
+   // const double MW2 = Sqr(MW);
 
-   const double self_energy_VZ = Re(model->self_energy_VZ(MZ));
-   const double self_energy_VWm = Re(model->self_energy_VWm(MW));
-   const double sinThetaW2_drbar = SM(sinThetaW2) - SM(cosThetaW2) *
-      (self_energy_VWm / MW2 - self_energy_VZ / MZ2);
+   // const double self_energy_VZ = Re(model->self_energy_VZ(MZ));
+   // const double self_energy_VWm = Re(model->self_energy_VWm(MW));
+   const double sinThetaW2_drbar = SM(sinThetaW2);
+      // - SM(cosThetaW2) * (self_energy_VWm / MW2 - self_energy_VZ / MZ2)
    const double sinThetaW_drbar = Sqrt(sinThetaW2_drbar);
 
 @setDRbarGaugeCouplings@
