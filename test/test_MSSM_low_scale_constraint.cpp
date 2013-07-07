@@ -107,6 +107,7 @@ void setup_MSSM(MSSM& m, MssmSoftsusy& s, const MSSM_input_parameters& input)
    s.setM3Squared(BMu);
    s.setHvev(vev);
    s.setTanb(tanBeta);
+   s.setMw(s.displayMwRun());
 }
 
 DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint constraint, double scale)
@@ -178,8 +179,8 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    constraint.apply();
    s.sparticleThresholdCorrections(input.TanBeta);
 
-   // BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.002);
-   // BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.007);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.035);
    BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 0.002);
 
    // test off-diagonal elements
