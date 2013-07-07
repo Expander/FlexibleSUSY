@@ -323,6 +323,48 @@ DoubleMatrix Re(const ComplexMatrix& m)
    return m.real();
 }
 
+Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
+{
+   Eigen::ArrayXd a(v.size());
+   for (int i = v.displayStart(); i <= v.displayEnd(); i++)
+      a(i - 1) = v(i);
+   return a;
+}
+
+DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
+{
+   DoubleVector v(a.rows());
+   for (int i = 0; i < a.rows(); i++)
+      v(i + 1) = a(i);
+   return v;
+}
+
+Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix& m)
+{
+   const int r = m.displayRows();
+   const int c = m.displayCols();
+   Eigen::MatrixXd result(r,c);
+
+   for (int i = 1; i <= r; i++)
+      for (int k = 1; k <= c; k++)
+         result(i-1, k-1) = m(i,k);
+
+   return result;
+}
+
+DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
+{
+   const int r = m.rows();
+   const int c = m.cols();
+   DoubleMatrix result(r,c);
+
+   for (int i = 0; i < r; i++)
+      for (int k = 0; k < c; k++)
+         result(i+1, k+1) = m(i,k);
+
+   return result;
+}
+
 DoubleMatrix Transpose(const DoubleMatrix& m)
 {
    return m.transpose();

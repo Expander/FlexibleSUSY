@@ -96,6 +96,11 @@ T Sqr(T a)
    return a * a;
 }
 
+Eigen::ArrayXd ToEigenArray(const DoubleVector&);
+DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
+Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
+DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);
+
 DoubleMatrix Transpose(const DoubleMatrix&);
 ComplexMatrix Transpose(const ComplexMatrix&);
 

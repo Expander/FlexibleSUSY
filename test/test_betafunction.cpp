@@ -6,22 +6,7 @@
 
 #include "rge.h"
 #include "betafunction.hpp"
-
-Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
-{
-   Eigen::ArrayXd a(v.size());
-   for (int i = v.displayStart(); i <= v.displayEnd(); i++)
-      a(i - 1) = v(i);
-   return a;
-}
-
-DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
-{
-   DoubleVector v(a.rows());
-   for (int i = 0; i < a.rows(); i++)
-      v(i + 1) = a(i);
-   return v;
-}
+#include "wrappers.hpp"
 
 class RGE_model : public RGE {
 public:
