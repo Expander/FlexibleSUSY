@@ -320,6 +320,7 @@ RValueToCFormString[expr_] :=
                     SARAH`F0[p_^2, a__]              :> SARAH`F0[p, a],
                     SARAH`G0[p_^2, a__]              :> SARAH`G0[p, a],
                     SARAH`H0[p_^2, a__]              :> SARAH`H0[p, a] } /.
+                    SARAH`A0[0]              -> 0 /.
                     SARAH`Mass2[a_?NumberQ]  :> Global`Sqr[a] /.
                     SARAH`Mass2[a_]          :> Global`Sqr[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`M[a_?NumberQ]   :> a /.
