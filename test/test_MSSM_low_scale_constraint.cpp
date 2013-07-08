@@ -138,9 +138,9 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    const double Q2 = 2. * Q1;
    const double gut_normalization = 3./5.;
    DoubleVector g_old(3);
-   g_old(1) = m.get_g1();
-   g_old(2) = m.get_g2();
-   g_old(3) = m.get_g3();
+   g_old(1) = Electroweak_constants::g1;
+   g_old(2) = Electroweak_constants::g2;
+   g_old(3) = Electroweak_constants::g3;
    DoubleVector prefactor(3);
    for (int i = 1; i <= 3; i++)
       prefactor(i) = 1. / (oneOver16PiSqr * Power(g_old(i),3));
