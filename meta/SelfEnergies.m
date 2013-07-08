@@ -227,7 +227,7 @@ CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
            strippedExpr = StripIndices[expr, strippedIndices];
            If[FreeQ[strippedExpr,SARAH`sum] && FreeQ[strippedExpr,SARAH`ThetaStep],
               body = body <> "result = " <>
-                     RValueToCFormString[strippedExpr] <> ";\n";
+                     RValueToCFormString[Simplify[strippedExpr]] <> ";\n";
               ,
               body = body <> ExpandSums[strippedExpr, "result"];
              ];
