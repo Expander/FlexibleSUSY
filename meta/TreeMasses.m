@@ -115,7 +115,7 @@ GetParticles[states_:SARAH`EWSB] :=
           ];
 
 GetSusyParticles[states_:SARAH`EWSB] :=
-    Select[GetParticles[states], (!SARAH`SMQ[#])&];
+    Select[GetParticles[states], (!SARAH`SMQ[#] && !IsGhost[#])&];
 
 GetSMParticles[states_:SARAH`EWSB] :=
     Select[GetParticles[states], (SARAH`SMQ[#])&];

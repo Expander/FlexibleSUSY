@@ -29,7 +29,7 @@ CalculateDRbarLeftCoupling[] :=
 CalculateDRbarCoupling[{coupling_, name_, group_}] :=
     Module[{susyParticles, prefactor, i, result = 0, particle, dynkin,
             dim, dimStart, nc, casimir},
-           susyParticles = Select[TreeMasses`GetSusyParticles[], (!TreeMasses`IsGhost[#])&];
+           susyParticles = TreeMasses`GetSusyParticles[];
            For[i = 1, i <= Length[susyParticles], i++,
                particle = susyParticles[[i]];
                dim = GetDimension[particle];
