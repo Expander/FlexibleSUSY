@@ -79,24 +79,23 @@ RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__]] :=
 RemoveSMParticles[SelfEnergies`Tadpole[p_,expr__]] :=
     SelfEnergies`Tadpole[p,expr];
 
+ExprContainsNonOfTheseParticles[expr_, particles_List] :=
+    And @@ (FreeQ[expr,#]& /@ particles);
+
 RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
-    Module[{strippedExpr, smParticles, i, particle, a},
+    Module[{strippedExpr, susyParticles, a},
+           susyParticles = TreeMasses`GetSusyParticles[];
            strippedExpr = expr /. ReplaceGhosts[];
-           smParticles = TreeMasses`GetSMParticles[];
-           For[i = 1, i <= Length[smParticles], i++,
-               particle = smParticles[[i]];
-               strippedExpr = strippedExpr //. {
-                    SARAH`A0[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`B0[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`B1[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`B00[a__ /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`B22[a__ /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`F0[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`G0[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`H0[a__  /; !FreeQ[{a},particle]] -> 0,
-                    SARAH`A0[0]                            -> 0
-                                            };
-              ];
+           strippedExpr = strippedExpr //. {
+               SARAH`A0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`B0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`B1[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`B00[a__ /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`B22[a__ /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`F0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`G0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
+               SARAH`H0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
+                                           };
            Return[SelfEnergies`FSHeavySelfEnergy[p,strippedExpr]];
           ];
 
