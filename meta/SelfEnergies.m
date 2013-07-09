@@ -206,7 +206,8 @@ CreateCouplingSymbol[coupling_] :=
 (* creates a C++ function that calculates a coupling *)
 CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
     Module[{symbol, prototype = "", definition = "",
-            indices = {}, body = "", cFunctionName = "", i, strippedExpr},
+            indices = {}, body = "", cFunctionName = "", i, strippedExpr,
+            type, initalValue},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
@@ -220,15 +221,19 @@ CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
                  ];
               ];
            cFunctionName = cFunctionName <> ")";
-           prototype = "Complex " <> cFunctionName <> " const;\n";
-           definition = "Complex CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = "Complex result;\n\n";
            strippedExpr = StripIndices[expr, strippedIndices];
+           If[Parameters`IsRealExpression[strippedExpr],
+              type = "double";  initalValue = " = 0.0";,
+              type = "Complex"; initalValue = "";];
+           prototype = type <> " " <> cFunctionName <> " const;\n";
+           definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
+           body = type <> " result;\n\n";
            If[FreeQ[strippedExpr,SARAH`sum] && FreeQ[strippedExpr,SARAH`ThetaStep],
               body = body <> "result = " <>
                      RValueToCFormString[Simplify[strippedExpr]] <> ";\n";
               ,
-              body = body <> ExpandSums[strippedExpr, "result"];
+              body = body <> ExpandSums[strippedExpr, "result",
+                                        type, initalValue];
              ];
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
