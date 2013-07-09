@@ -21,6 +21,7 @@
 #include "@ModelName@_convergence_tester.hpp"
 #include <cmath>
 #include <algorithm>
+#include <valarray>
 
 #define OLD1(p) ol->get_##p()
 #define NEW1(p) ne->get_##p()

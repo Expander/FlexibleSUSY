@@ -17,7 +17,7 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
            esStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[dim == 1,
               comma = "OLD1(" <> esStr <> "),NEW1(" <> esStr <> ")";
-              body = diff <> "(" <> ToString[1 + offset] <> ") = " <>
+              body = diff <> "[" <> ToString[offset] <> "] = " <>
                      "std::fabs(1.0 - std::min(" <> comma <> ")/std::max(" <> comma <> "));";
               result = body <> "\n";
               ,
@@ -25,7 +25,7 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
               result = "for (unsigned i = " <> ToString[dimStart] <>
                        "; i <= " <> ToString[dim] <> "; ++i) {\n";
-              body = diff <> "(i + " <> ToString[offset] <> ") = " <>
+              body = diff <> "[i + " <> ToString[offset - 1] <> "] = " <>
                      "std::fabs(1.0 - std::min(" <> comma <> ")/std::max(" <> comma <> "));";
               result = result <> IndentText[body] <> "\n}\n";
              ];
@@ -37,7 +37,7 @@ CreateCompareFunction[particles_List] :=
            massiveSusyParticles = Select[particles /. FlexibleSUSY`M -> Identity,
                                          (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
            numberOfMasses = CountNumberOfMasses[massiveSusyParticles];
-           result = "DoubleVector diff(" <> ToString[numberOfMasses] <> ");\n\n";
+           result = "std::valarray<double> diff(" <> ToString[numberOfMasses] <> ");\n\n";
            For[i = 1, i <= Length[massiveSusyParticles], i++,
                result = result <> CalcDifference[massiveSusyParticles[[i]], offset, "diff"];
                offset += CountNumberOfMasses[massiveSusyParticles[[i]]];
