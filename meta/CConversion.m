@@ -327,8 +327,9 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[bar[a_]]      :> FlexibleSUSY`M[a] /.
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
-                    Susyno`LieGroups`conj    -> SARAH`Conj /.
-                    SARAH`Conj[a_] a_        :> AbsSqr[a] /.
+                    Susyno`LieGroups`conj    -> SARAH`Conj //. {
+                    Times[x___, SARAH`Conj[a_], y___, a_, z___] :> AbsSqr[a] x y z,
+                    Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z } /.
                     a_[SARAH`i1,SARAH`i2]    :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.
@@ -419,7 +420,7 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times, variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_Times /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
            sums = Select[factors, (!FreeQ[#,sum[__]])&];
@@ -447,7 +448,7 @@ ExpandSums[expr_Times, variable_String, type_String:"Complex", initialValue_Stri
            Return[result];
           ];
 
-ExpandSums[expr_?((!FreeQ[#,SARAH`ThetaStep])&), variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{strippedExpr, i, condition = "", result},
            {strippedExpr, condition} = StripThetaStep[expr];
            result = "if (" <> condition <> ") {\n" <>
