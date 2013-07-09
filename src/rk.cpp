@@ -1,7 +1,14 @@
+// \file rk.cpp
+//    - Project:     SOFTSUSY
+//    - Author:      Ben Allanach
+//    - Manual:      hep-ph/0104145, Comp. Phys. Comm. 143 (2002) 305
+//    - Webpage:     http://allanach.home.cern.ch/allanach/softsusy.html
+//    - Description: Integration of ODEs by Runge Kutta, minimum finding and
+//                 derivative calculation
 
-#include <algorithm>
-#include "logger.hpp"
 #include "rk.hpp"
+#include "logger.hpp"
+#include <algorithm>
 
 using namespace std;
 using namespace Eigen;
@@ -85,10 +92,9 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     xnew = (*x) + h;
     if (xnew == *x)
       {
-	{
-	  ERROR("At x = " << *x
-		<< ",stepsize underflow in odeStepper");
-	}
+#ifdef VERBOSE
+         ERROR("At x = " << *x << ",stepsize underflow in odeStepper");
+#endif
 	return 1;
       }
   }
