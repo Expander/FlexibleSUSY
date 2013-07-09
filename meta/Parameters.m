@@ -20,6 +20,7 @@ GetType::usage="";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
+IsRealExpression::usage="";
 
 Begin["Private`"];
 
@@ -36,6 +37,51 @@ IsRealParameter[sym_] :=
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
+
+IsRealExpression[expr_?NumericQ] :=
+    Element[expr, Reals];
+
+IsRealExpression[_Complex] := False;
+
+IsRealExpression[_Real] := True;
+
+IsRealExpression[expr_[i1,i2]] := IsRealExpression[expr];
+
+IsRealExpression[HoldPattern[SARAH`Delta[_,_]]] := True;
+IsRealExpression[HoldPattern[SARAH`ThetaStep[_,_]]] := True;
+IsRealExpression[Cos[_]] := True;
+IsRealExpression[Sin[_]] := True;
+IsRealExpression[ArcCos[_]] := True;
+IsRealExpression[ArcSin[_]] := True;
+IsRealExpression[ArcTan[_]] := True;
+IsRealExpression[Power[a_,b_]] := IsRealExpression[a] && IsRealExpression[b];
+IsRealExpression[Susyno`LieGroups`conj[expr_]] :=
+    IsRealExpression[expr];
+IsRealExpression[SARAH`Conj[expr_]] := IsRealExpression[expr];
+IsRealExpression[Conjugate[expr_]]  := IsRealExpression[expr];
+IsRealExpression[Transpose[expr_]]  := IsRealExpression[expr];
+IsRealExpression[SARAH`Tp[expr_]]   := IsRealExpression[expr];
+IsRealExpression[SARAH`Adj[expr_]]  := IsRealExpression[expr];
+IsRealExpression[bar[expr_]]        := IsRealExpression[expr];
+
+IsRealExpression[expr_Symbol] := IsRealParameter[expr];
+
+IsRealExpression[factors_Times] :=
+    And @@ (IsRealExpression[#]& /@ (List @@ factors));
+
+IsRealExpression[terms_Plus] :=
+    And @@ (IsRealExpression[#]& /@ (List @@ terms));
+
+IsRealExpression[terms_SARAH`trace] :=
+    And @@ (IsRealExpression[#]& /@ (List @@ terms));
+
+IsRealExpression[terms_SARAH`MatMul] :=
+    And @@ (IsRealExpression[#]& /@ (List @@ terms));
+
+IsRealExpression[sum[index_, start_, stop_, expr_]] :=
+    IsRealExpression[expr];
+
+IsRealExpression[otherwise_] := False;
 
 GetTypeFromDimension[sym_Symbol, {}] :=
     If[True || IsRealParameter[sym],
