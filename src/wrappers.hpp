@@ -16,7 +16,7 @@ double AbsSqr(const Complex&);
 
 inline double AbsSqrt(double x)
 {
-   return (x >= 0.0 ? std::sqrt(x) : std::sqrt(-x));
+   return std::sqrt(std::fabs(x));
 }
 
 double ArcTan(double);
