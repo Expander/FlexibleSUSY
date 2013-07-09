@@ -83,7 +83,7 @@ ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
 RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
-    Module[{strippedExpr, susyParticles, a},
+    Module[{strippedExpr, susyParticles, a, goldstones, g, i},
            susyParticles = TreeMasses`GetSusyParticles[];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
@@ -96,6 +96,13 @@ RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
                SARAH`G0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
                SARAH`H0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
                                            };
+           (* remove goldstone bosons *)
+           goldstones = TreeMasses`GetSMGoldstoneBosons[];
+           For[i = 1, i <= Length[goldstones], i++,
+               g = CConversion`GetHead[goldstones[[i]]];
+               strippedExpr = strippedExpr //.
+                  SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingGoldstones[g],endIdx,expression];
+              ];
            Return[SelfEnergies`FSHeavySelfEnergy[p,strippedExpr]];
           ];
 
