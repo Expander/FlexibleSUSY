@@ -429,20 +429,10 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"C
            expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;
            (* add for loops *)
            result = StringJoin[(type <> " " <> #[[2]] <> initialValue <> ";\n" <> #[[1]])& /@ expandedSums];
-           result = result <> variable <> " += ";
-           (* multiply the rest *)
-           For[i = 1, i <= Length[rest], i++,
-               If[i > 1, result = result <> " * ";];
-               If[Head[rest[[i]]] === Plus,
-                  result = result <> "(" <> RValueToCFormString[rest[[i]]] <> ")";
-                  ,
-                  result = result <> RValueToCFormString[rest[[i]]];
-                 ];
-              ];
+           result = result <> variable <> " += (" <> RValueToCFormString[Times @@ rest] <> ")";
            (* multiply the sums *)
            For[i = 1, i <= Length[expandedSums], i++,
-               If[Length[rest] > 0 || i > 1, result = result <> " * ";];
-               result = result <> expandedSums[[i,2]];
+               result = result <> " * " <> expandedSums[[i,2]];
               ];
            result = result <>";\n";
            Return[result];
