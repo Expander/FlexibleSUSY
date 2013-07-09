@@ -34,6 +34,11 @@ inline double AbsSqrt(double x)
    return std::sqrt(std::fabs(x));
 }
 
+inline DoubleVector AbsSqrt(const DoubleVector& x)
+{
+   return x.apply(AbsSqrt);
+}
+
 inline double ArcTan(double a)
 {
    return atan(a);

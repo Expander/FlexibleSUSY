@@ -118,8 +118,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "\nint min_element;\n" <>
                        "if (throw_on_tachyon && " <> particleName <> ".min(min_element) < 0.)\n" <>
                        IndentText["throw TachyonError(this, \"" <> particleName <> "\", min_element);"] <> "\n\n" <>
-                       "PHYSICAL(" <> particleName <> ") = PHYSICAL(" <>
-                       particleName <> ").apply(AbsSqrt);\n";
+                       "PHYSICAL(" <> particleName <> ") = AbsSqrt(PHYSICAL(" <>
+                       particleName <> "));\n";
               ,
               result = Do1DimScalar[particleName, selfEnergyFunction, particleName, "tadpoles"];
              ];
