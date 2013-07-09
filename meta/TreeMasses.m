@@ -41,6 +41,11 @@ GetSusyParticles::usage="returns list of susy particles";
 
 GetSMParticles::usage="returns list of Standard Model particles";
 
+GetGoldstoneBosons::usage="returns list of all goldstone bosons";
+
+GetSMGoldstoneBosons::usage="returns list of all Standard Model
+goldstone bosons";
+
 GetDimension::usage="returns the size of the particle multiplet";
 
 GetDimensionStartSkippingGoldstones::usage="return first index,
@@ -152,6 +157,12 @@ IsRealScalar[sym_Symbol] :=
 
 IsMassless[sym_Symbol, states_:SARAH`EWSB] :=
     MemberQ[SARAH`Massless[states], sym];
+
+GetGoldstoneBosons[] :=
+    Transpose[SARAH`GoldstoneGhost][[2]];
+
+GetSMGoldstoneBosons[] :=
+    Cases[SARAH`GoldstoneGhost, {vector_?SARAH`SMQ, goldstone_} :> goldstone];
 
 GetDimension[sym_[__], states_:SARAH`EWSB] := GetDimension[sym, states];
 
