@@ -4,7 +4,8 @@ MODNAME  := test
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
-		$(DIR)/test_rk.cpp
+		$(DIR)/test_rk.cpp \
+		$(DIR)/test_wrappers.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
@@ -101,6 +102,10 @@ $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_wrappers.d $(DIR)/test_wrappers.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
