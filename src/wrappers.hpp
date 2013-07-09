@@ -9,19 +9,45 @@
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
-double Abs(double);
-double Abs(const Complex&);
-double AbsSqr(double);
-double AbsSqr(const Complex&);
+inline double Abs(double z)
+{
+   return std::fabs(z);
+}
+
+inline double Abs(const Complex& z)
+{
+   return std::abs(z);
+}
+
+inline double AbsSqr(double z)
+{
+   return z * z;
+}
+
+inline double AbsSqr(const Complex& z)
+{
+   return std::norm(z);
+}
 
 inline double AbsSqrt(double x)
 {
    return std::sqrt(std::fabs(x));
 }
 
-double ArcTan(double);
-double ArcSin(double);
-double ArcCos(double);
+inline double ArcTan(double a)
+{
+   return atan(a);
+}
+
+inline double ArcSin(double a)
+{
+   return asin(a);
+}
+
+inline double ArcCos(double a)
+{
+   return acos(a);
+}
 
 
 inline double Conj(double a)
@@ -34,8 +60,15 @@ inline Complex Conj(const Complex& a)
    return std::conj(a);
 }
 
-double Cos(double);
-double Sin(double);
+inline double Cos(double x)
+{
+   return cos(x);
+}
+
+inline double Sin(double x)
+{
+   return sin(x);
+}
 
 inline int Delta(int i, int j)
 {
@@ -79,16 +112,25 @@ inline double Re(double x)
    return x;
 }
 
-double Re(const Complex&);
+inline double Re(const Complex& x)
+{
+   return std::real(x);
+}
 
 inline DoubleMatrix Re(const DoubleMatrix& m)
 {
    return m;
 }
 
-DoubleMatrix Re(const ComplexMatrix&);
+inline DoubleMatrix Re(const ComplexMatrix& m)
+{
+   return m.real();
+}
 
-double Sqrt(double);
+inline double Sqrt(double a)
+{
+   return std::sqrt(a);
+}
 
 template <typename T>
 T Sqr(T a)
@@ -101,11 +143,21 @@ DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
 Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
 DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);
 
-DoubleMatrix Transpose(const DoubleMatrix&);
-ComplexMatrix Transpose(const ComplexMatrix&);
+inline DoubleMatrix Transpose(const DoubleMatrix& m)
+{
+   return m.transpose();
+}
+
+inline ComplexMatrix Transpose(const ComplexMatrix& m)
+{
+   return m.transpose();
+}
 
 #define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
 
-double ZeroSqrt(double);
+inline double ZeroSqrt(double x)
+{
+   return (x > 0.0 ? std::sqrt(x) : 0.0);
+}
 
 #endif

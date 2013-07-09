@@ -3,51 +3,6 @@
 
 #include <Eigen/SVD>
 
-double Abs(double z)
-{
-   return std::fabs(z);
-}
-
-double Abs(const Complex& z)
-{
-   return std::abs(z);
-}
-
-double AbsSqr(double z)
-{
-   return z * z;
-}
-
-double AbsSqr(const Complex& z)
-{
-   return std::norm(z);
-}
-
-double ArcTan(double a)
-{
-   return atan(a);
-}
-
-double ArcSin(double a)
-{
-   return asin(a);
-}
-
-double ArcCos(double a)
-{
-   return acos(a);
-}
-
-double Cos(double x)
-{
-   return cos(x);
-}
-
-double Sin(double x)
-{
-   return sin(x);
-}
-
 Eigen::Matrix3d Diag(const Eigen::Matrix3d& m)
 {
    Eigen::Matrix3d diag(m);
@@ -313,16 +268,6 @@ double MaxRelDiff(const DoubleVector& a, const DoubleVector& b)
    return a.compare(b);
 }
 
-double Re(const Complex& x)
-{
-   return std::real(x);
-}
-
-DoubleMatrix Re(const ComplexMatrix& m)
-{
-   return m.real();
-}
-
 Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
 {
    Eigen::ArrayXd a(v.size());
@@ -363,24 +308,4 @@ DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
          result(i+1, k+1) = m(i,k);
 
    return result;
-}
-
-DoubleMatrix Transpose(const DoubleMatrix& m)
-{
-   return m.transpose();
-}
-
-ComplexMatrix Transpose(const ComplexMatrix& m)
-{
-   return m.transpose();
-}
-
-double Sqrt(double a)
-{
-   return std::sqrt(a);
-}
-
-double ZeroSqrt(double x)
-{
-   return (x > 0.0 ? std::sqrt(x) : 0.0);
 }
