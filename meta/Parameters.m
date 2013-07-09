@@ -66,6 +66,11 @@ IsRealExpression[bar[expr_]]        := IsRealExpression[expr];
 
 IsRealExpression[expr_Symbol] := IsRealParameter[expr];
 
+IsRealExpression[Times[Susyno`LieGroups`conj[a_],a_]] := True;
+IsRealExpression[Times[a_,Susyno`LieGroups`conj[a_]]] := True;
+IsRealExpression[Times[SARAH`Conj[a_],a_]]            := True;
+IsRealExpression[Times[a_,SARAH`Conj[a_]]]            := True;
+
 IsRealExpression[factors_Times] :=
     And @@ (IsRealExpression[#]& /@ (List @@ factors));
 
