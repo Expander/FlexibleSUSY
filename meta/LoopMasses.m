@@ -271,7 +271,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                        "ComplexMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
                        "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
-                       IndentText["const double p = std::fabs(" <> momentum <> "(es));\n" <>
+                       IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 1; i1 <= " <> dimStr <> "; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <> "; ++i2) {\n" <>
                                              IndentText["self_energy(i1,i2) = " <>
@@ -315,7 +315,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                        "ComplexMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
                        "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
-                       IndentText["const double p = std::fabs(" <> momentum <> "(es));\n" <>
+                       IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
                                              IndentText["self_energy_1(i1,i2) = " <>
@@ -373,7 +373,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                 ];
               result = result <>
                        IndentText["PHYSICAL(" <> particleName <>
-                                  "(es)) = std::fabs(eigen_values(es));\n"];
+                                  "(es)) = Abs(eigen_values(es));\n"];
               result = result <> "}\n";
               ,
               (* for a dimension 1 fermion it plays not role if it's a
