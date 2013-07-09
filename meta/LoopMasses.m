@@ -88,18 +88,18 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            If[dim > 1,
               result = tadpoleMatrix <>
-                       "ComplexMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
-                                             "self_energy(i1,i2) = " <>
-                                             selfEnergyFunction <> "(p,i1,i2);\n"] <>
+                                             "self_energy(i1,i2) = Re(" <>
+                                             selfEnergyFunction <> "(p,i1,i2));\n"] <>
                                   "}\n"
                                  ] <>
                        "}\n" <>
                        "const DoubleMatrix M_1loop(" <> massMatrixStr <>
-                       "() - Re(self_energy)" <>
+                       "() - self_energy" <>
                        If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n";
               If[Head[mixingMatrix] === List,
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
@@ -142,26 +142,26 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
-              result = "ComplexMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "ComplexMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "ComplexMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
+              result = "DoubleMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> particleName <> "(i1) * " <> 
                                              particleName <> "(i2));\n" <>
-                                             "self_energy_1(i1,i2) = " <>
-                                             selfEnergyFunctionS <> "(p,i1,i2);\n" <>
-                                             "self_energy_PL(i1,i2) = " <>
-                                             selfEnergyFunctionPL <> "(p,i1,i2);\n" <>
-                                             "self_energy_PR(i1,i2) = " <>
-                                             selfEnergyFunctionPR <> "(p,i1,i2);\n"
+                                             "self_energy_1(i1,i2)  = Re(" <>
+                                             selfEnergyFunctionS <> "(p,i1,i2));\n" <>
+                                             "self_energy_PL(i1,i2) = Re(" <>
+                                             selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
+                                             "self_energy_PR(i1,i2) = Re(" <>
+                                             selfEnergyFunctionPR <> "(p,i1,i2));\n"
                                             ] <>
                                   "}\n"
                                  ] <>
                        "}\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
-                       "const DoubleMatrix delta_M(- Re(self_energy_PR) * M_tree " <>
-                       "- M_tree * Re(self_energy_PL) - Re(self_energy_1));\n";
+                       "const DoubleMatrix delta_M(- self_energy_PR * M_tree " <>
+                       "- M_tree * self_energy_PL - self_energy_1);\n";
               If[IsMajoranaFermion[particle],
                  result = result <>
                           "const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + Transpose(delta_M)));\n";
@@ -268,19 +268,19 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            If[dim > 1,
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = tadpoleMatrix <>
-                       "ComplexMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
                        "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 1; i1 <= " <> dimStr <> "; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <> "; ++i2) {\n" <>
-                                             IndentText["self_energy(i1,i2) = " <>
-                                                        selfEnergyFunction <> "(p,i1,i2);\n"
+                                             IndentText["self_energy(i1,i2) = Re(" <>
+                                                        selfEnergyFunction <> "(p,i1,i2));\n"
                                                        ] <>
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const DoubleMatrix M_1loop(M_tree - Re(self_energy)" <>
+                                  "const DoubleMatrix M_1loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
                                   "DoubleVector eigen_values(" <> dimStr <> ");\n" <>
                                   diagSnippet
@@ -310,26 +310,26 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
-              result = "ComplexMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "ComplexMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "ComplexMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
+              result = "DoubleMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
+                       "DoubleMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
                        "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                             IndentText["self_energy_1(i1,i2) = " <>
-                                                        selfEnergyFunctionS <> "(p,i1,i2);\n" <>
-                                                        "self_energy_PL(i1,i2) = " <>
-                                                        selfEnergyFunctionPL <> "(p,i1,i2);\n" <>
-                                                        "self_energy_PR(i1,i2) = " <>
-                                                        selfEnergyFunctionPR <> "(p,i1,i2);\n"
+                                             IndentText["self_energy_1(i1,i2)  = Re(" <>
+                                                        selfEnergyFunctionS <> "(p,i1,i2));\n" <>
+                                                        "self_energy_PL(i1,i2) = Re(" <>
+                                                        selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
+                                                        "self_energy_PR(i1,i2) = Re(" <>
+                                                        selfEnergyFunctionPR <> "(p,i1,i2));\n"
                                                        ] <>
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const DoubleMatrix delta_M(- Re(self_energy_PR) * M_tree " <>
-                                  "- M_tree * Re(self_energy_PL) - Re(self_energy_1));\n"
+                                  "const DoubleMatrix delta_M(- self_energy_PR * M_tree " <>
+                                  "- M_tree * self_energy_PL - self_energy_1);\n"
                                  ];
               If[IsMajoranaFermion[particle],
                  result = result <>
