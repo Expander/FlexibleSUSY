@@ -39,7 +39,7 @@ double Sin(double);
 
 inline int Delta(int i, int j)
 {
-   return i == j ? 1 : 0;
+   return i == j;
 }
 
 Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
