@@ -18,17 +18,22 @@ TestEquality[val_, expr_, msg_:""] :=
     If[val =!= expr,
        numberOfFailedTests++;
        Print["Error: expressions are not equal: ",
-             InputForm[val], " =!= ", InputForm[expr]];,
+             InputForm[val], " =!= ", InputForm[expr]];
+       Return[False];,
        numberOfPassedTests++;
+       Return[True];
       ];
 
 TestCPPCode[{preface_String, expr_String}, value_String, type_String, expected_String] :=
-    Module[{code = expr, output},
+    Module[{code = expr, output, sourceCode},
            code = code <> "\n" <>
                   type <> " result__ = " <> value <> ";\n" <>
                   "std::cout << result__ << std::endl;";
-           output = RunCPPProgram[{preface, code}];
-           TestEquality[output, expected];
+           {output, sourceCode} = RunCPPProgram[{preface, code}];
+           If[!TestEquality[output, expected],
+              Print["The following source code led to this result (",
+                    output, "):\n", sourceCode];
+             ];
           ];
 
 PrintTestSummary[] :=
@@ -51,16 +56,17 @@ RunCPPProgram[{preface_String, expr_String}, fileName_String:"tmp.cpp"] :=
            errorCode = Run["g++ -o a.out " <> fileName];
            If[errorCode != 0,
               Print["Error: could not compile the following: ", code];
-              Return[""];
+              Return[{"", code}];
              ];
            Run["./a.out > a.out.log"];
            If[errorCode != 0, Return[""]];
            If[MemberQ[FileNames[], "a.out.log"],
               output = Import["a.out.log"];,
               Print["Error: output file \"a.out.log\" not found"];
+              Return[{"", code}];
              ];
            DeleteFile[{"a.out", "a.out.log", fileName}];
-           Return[output];
+           Return[{output, code}];
           ];
 
 End[];
