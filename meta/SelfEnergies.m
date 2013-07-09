@@ -227,7 +227,7 @@ CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
               type = "Complex"; initalValue = "";];
            prototype = type <> " " <> cFunctionName <> " const;\n";
            definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = type <> " result;\n\n";
+           body = type <> " result" <> initalValue <> ";\n\n";
            If[FreeQ[strippedExpr,SARAH`sum] && FreeQ[strippedExpr,SARAH`ThetaStep],
               body = body <> "result = " <>
                      RValueToCFormString[Simplify[strippedExpr]] <> ";\n";
