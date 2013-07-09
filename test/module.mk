@@ -78,7 +78,7 @@ $(DIR)/%.x.log: $(DIR)/%.x
 		@$< --log_level=test_suite >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
-$(DIR)/%.m.log: $(DIR)/%.m
+$(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		@rm -f $@
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
