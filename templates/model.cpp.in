@@ -259,39 +259,39 @@ double @ModelName@::A0(double m) const
    return a0(m, get_scale());
 }
 
-Complex @ModelName@::B0(double p, double m1, double m2) const
+double @ModelName@::B0(double p, double m1, double m2) const
 {
-   return Complex(b0(p, m1, m2, get_scale()));
+   return b0(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::B1(double p, double m1, double m2) const
+double @ModelName@::B1(double p, double m1, double m2) const
 {
-   return Complex(-b1(p, m1, m2, get_scale()));
+   return -b1(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::B00(double p, double m1, double m2) const
+double @ModelName@::B00(double p, double m1, double m2) const
 {
-   return Complex(b22(p, m1, m2, get_scale()));
+   return b22(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::B22(double p, double m1, double m2) const
+double @ModelName@::B22(double p, double m1, double m2) const
 {
-   return Complex(b22bar(p, m1, m2, get_scale()));
+   return b22bar(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::H0(double p, double m1, double m2) const
+double @ModelName@::H0(double p, double m1, double m2) const
 {
-   return Complex(hfn(p, m1, m2, get_scale()));
+   return hfn(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::F0(double p, double m1, double m2) const
+double @ModelName@::F0(double p, double m1, double m2) const
 {
-   return Complex(ffn(p, m1, m2, get_scale()));
+   return ffn(p, m1, m2, get_scale());
 }
 
-Complex @ModelName@::G0(double p, double m1, double m2) const
+double @ModelName@::G0(double p, double m1, double m2) const
 {
-   return Complex(gfn(p, m1, m2, get_scale()));
+   return gfn(p, m1, m2, get_scale());
 }
 
 void @ModelName@::calculate_DRbar_parameters()

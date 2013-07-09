@@ -83,13 +83,13 @@ private:
    @ModelName@_input_parameters input;
 
    double A0(double) const;
-   Complex B0(double, double, double) const;
-   Complex B1(double, double, double) const;
-   Complex B00(double, double, double) const;
-   Complex B22(double, double, double) const;
-   Complex H0(double, double, double) const;
-   Complex F0(double, double, double) const;
-   Complex G0(double, double, double) const;
+   double B0(double, double, double) const;
+   double B1(double, double, double) const;
+   double B00(double, double, double) const;
+   double B22(double, double, double) const;
+   double H0(double, double, double) const;
+   double F0(double, double, double) const;
+   double G0(double, double, double) const;
 
 @physicalMassesDef@
 @mixingMatricesDef@
