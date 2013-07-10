@@ -11,6 +11,9 @@
 #include "numerics.h"
 #include "dilog.h"
 #include "rk.hpp"
+#ifdef USE_LOOPTOOLS
+#include "clooptools.h"
+#endif
 
 using namespace Eigen;
 

@@ -20,9 +20,6 @@
 #include <iostream>
 #include "def.h"
 #include "linalg.h"
-#ifdef USE_LOOPTOOLS
-#include "clooptools.h"
-#endif
 using namespace softsusy;
 
 /// calculates root(1+x), where x<<1 accurately
