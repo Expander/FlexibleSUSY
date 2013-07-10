@@ -294,22 +294,23 @@ double @ModelName@::B00(double p, double m1, double m2) const
 
 double @ModelName@::B22(double p, double m1, double m2) const
 {
-   return b22bar(p, m1, m2, get_scale());
+   return B00(p, m1, m2) - 0.25 * A0(m1) - 0.25 * A0(m2);
 }
 
 double @ModelName@::H0(double p, double m1, double m2) const
 {
-   return hfn(p, m1, m2, get_scale());
+   return 4.0 * B00(p, m1, m2) + G0(p, m1, m2);
 }
 
 double @ModelName@::F0(double p, double m1, double m2) const
 {
-   return ffn(p, m1, m2, get_scale());
+   return A0(m1) - 2.0 * A0(m2) - (2.0 * Sqr(p) + 2.0 * Sqr(m1) - Sqr(m2)) *
+      B0(p, m1, m2);
 }
 
 double @ModelName@::G0(double p, double m1, double m2) const
 {
-   return gfn(p, m1, m2, get_scale());
+   return (Sqr(p) - Sqr(m1) - Sqr(m2)) * B0(p, m1, m2) - A0(m1) - A0(m2);
 }
 
 void @ModelName@::calculate_DRbar_parameters()
