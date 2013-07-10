@@ -654,7 +654,7 @@ CreateDependenceNumPrototypes[] :=
 CreateDependenceNumFunction[Rule[parameter_, value_]] :=
     Module[{result, body, parStr},
            parStr = ToValidCSymbolString[parameter];
-           body = "return " <> RValueToCFormString[value] <> ";\n";
+           body = "return " <> RValueToCFormString[Simplify[value]] <> ";\n";
            result = "double CLASSNAME::" <> parStr <> "() const\n{\n" <>
                     IndentText[body] <> "}\n\n";
            Return[result];
