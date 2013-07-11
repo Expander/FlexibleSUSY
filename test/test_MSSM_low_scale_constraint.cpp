@@ -222,7 +222,6 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    const double alpha_em = Sqr(e) / (4. * PI);
    const double alpha_s = Sqr(g3) / (4. * PI);
    const double scale = m.get_scale();
-   const double mt = s.displayDrBarPars().mt;
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
    const double delta_alpha_s_fs  = constraint.calculate_delta_alpha_s(alpha_s);
@@ -249,7 +248,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.03);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-8);
 
    // test off-diagonal elements
    BOOST_MESSAGE("testing off-diagonal yukawa elements");
