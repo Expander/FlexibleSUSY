@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    DoubleVector beta_SM(3);
    beta_SM(1) = 41./6. * gut_normalization;
    beta_SM(2) = -19./6.;
-   beta_SM(3) = -7.;
+   beta_SM(3) = -7. - 2./3;
    DoubleVector beta_MSSM(3);
    beta_MSSM(1) = 11. * gut_normalization;
    beta_MSSM(2) = 1.;
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 
    // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(1), beta_MSSM(1) - beta_SM(1), 0.04);
    // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(2), beta_MSSM(2) - beta_SM(2), 0.05);
-   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(3), beta_MSSM(3) - beta_SM(3), 0.011);
+   BOOST_CHECK_CLOSE_FRACTION(beta_numeric(3), beta_MSSM(3) - beta_SM(3), 0.075);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_alpha )
