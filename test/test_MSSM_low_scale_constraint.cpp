@@ -272,11 +272,11 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), s.displayYukawaMatrix(YD)(2,2), 0.17);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), s.displayYukawaMatrix(YE)(2,2), 0.02);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.013);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.095);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.016);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.19);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.025);
 
    BOOST_MESSAGE("testing running VEV");
    const double running_vev = Sqrt(Sqr(m.get_vu()) +  Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 0.007);
+   BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 0.012);
 }
