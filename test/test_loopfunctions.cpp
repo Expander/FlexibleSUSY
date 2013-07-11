@@ -57,3 +57,39 @@ BOOST_AUTO_TEST_CASE( test_B00 )
 
    BOOST_CHECK_EQUAL(model.B00(0., 0., 0.), 0.);
 }
+
+BOOST_AUTO_TEST_CASE( test_B22 )
+{
+   MSSM model;
+   const double scale = 100.;
+   model.set_scale(scale);
+
+   BOOST_CHECK_EQUAL(model.B22(0., 0., 0.), 0.);
+}
+
+BOOST_AUTO_TEST_CASE( test_H0 )
+{
+   MSSM model;
+   const double scale = 100.;
+   model.set_scale(scale);
+
+   BOOST_CHECK_EQUAL(model.H0(0., 0., 0.), 0.);
+}
+
+BOOST_AUTO_TEST_CASE( test_F0 )
+{
+   MSSM model;
+   const double scale = 100.;
+   model.set_scale(scale);
+
+   BOOST_CHECK_EQUAL(model.F0(0., 0., 0.), 0.);
+}
+
+BOOST_AUTO_TEST_CASE( test_G0 )
+{
+   MSSM model;
+   const double scale = 100.;
+   model.set_scale(scale);
+
+   BOOST_CHECK_EQUAL(model.G0(0., 0., 0.), 0.);
+}
