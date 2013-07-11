@@ -141,14 +141,14 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
       electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = model->calculate_M@TopQuark@_DRbar_1loop(Electroweak_constants::MUP, 1);
-   topDRbar(1,1)      = model->calculate_M@TopQuark@_DRbar_1loop(Electroweak_constants::MCHARM, 2);
+   topDRbar(0,0)      = Electroweak_constants::MUP;
+   topDRbar(1,1)      = Electroweak_constants::MCHARM;
    topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar_1loop(Electroweak_constants::PMTOP, 3);
-   bottomDRbar(0,0)   = model->calculate_M@BottomQuark@_DRbar_1loop(Electroweak_constants::MDOWN, 1);
-   bottomDRbar(1,1)   = model->calculate_M@BottomQuark@_DRbar_1loop(Electroweak_constants::MSTRANGE, 2);
+   bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
+   bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
    bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
-   electronDRbar(0,0) = model->calculate_M@Electron@_DRbar_1loop(Electroweak_constants::MELECTRON, 1);
-   electronDRbar(1,1) = model->calculate_M@Electron@_DRbar_1loop(Electroweak_constants::MMUON, 2);
+   electronDRbar(0,0) = Electroweak_constants::MELECTRON;
+   electronDRbar(1,1) = Electroweak_constants::MMUON;
    electronDRbar(2,2) = model->calculate_M@Electron@_DRbar_1loop(Electroweak_constants::MTAU, 3);
 
 @setDRbarYukawaCouplings@
