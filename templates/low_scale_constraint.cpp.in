@@ -81,7 +81,6 @@ void @ModelName@_low_scale_constraint::update_scale()
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 {
-   const double currentScale = model->get_scale();
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double MZ2 = Sqr(MZ);
@@ -104,8 +103,37 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 #endif
       sinThetaW_drbar = SM(sinThetaW);
    }
+   const double cosThetaW_drbar = Sqrt(1.0 - Sqr(sinThetaW_drbar));
 
-@setDRbarGaugeCouplings@
+   const double alpha_em = Sqr(SM(e) ) / (4. * Pi);
+   const double alpha_s  = Sqr(SM(g3)) / (4. * Pi);
+
+   const double delta_alpha_em = calculate_delta_alpha_em(alpha_em);
+   const double delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
+
+   const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
+   const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
+
+   const double e_drbar  = Sqrt(4.0 * Pi * alpha_em_drbar);
+   const double g3_drbar = Sqrt(4.0 * Pi * alpha_s_drbar);
+   const double g1_gut_normalization = @hyperchargeCouplingInverseGutNormalization@;
+   const double g2_gut_normalization = @leftCouplingInverseGutNormalization@;
+
+   model->set_g1(e_drbar * g1_gut_normalization / cosThetaW_drbar);
+   model->set_g2(e_drbar * g2_gut_normalization / sinThetaW_drbar);
+   model->set_g3(g3_drbar);
+}
+
+double @ModelName@_low_scale_constraint::calculate_delta_alpha_em(double alphaEm) const
+{
+   const double currentScale = model->get_scale();
+@calculateDeltaAlphaEm@
+}
+
+double @ModelName@_low_scale_constraint::calculate_delta_alpha_s(double alphaS) const
+{
+   const double currentScale = model->get_scale();
+@calculateDeltaAlphaS@
 }
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()

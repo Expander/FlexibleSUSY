@@ -89,6 +89,10 @@ GeneralReplacementRules[] :=
       "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
       "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
       "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling],
+      "@hyperchargeCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
+      "@leftCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]],
+      "@hyperchargeCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
+      "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@ModelName@"           -> Model`Name,
       "@DateAndTime@"         -> DateString[]
     }
@@ -158,7 +162,8 @@ WriteInputParameterClass[inputParameters_List, freePhases_List,
 WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      inputParameters_List, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
-           setDRbarGaugeCouplings, setDRbarYukawaCouplings},
+           setDRbarYukawaCouplings,
+           calculateDeltaAlphaEm, calculateDeltaAlphaS},
           Constraint`SetInputParameters[inputParameters];
           Constraint`SetModelParameters[GetParameters[]];
           Constraint`SetOutputParameters[GetOutputParameters[]];
@@ -166,13 +171,15 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess];
-          setDRbarGaugeCouplings  = ThresholdCorrections`SetDRbarGaugeCouplings[];
+          calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
+          calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
-                   "@setDRbarGaugeCouplings@"  -> IndentText[WrapLines[setDRbarGaugeCouplings]],
+                   "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
+                   "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];

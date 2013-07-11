@@ -1,10 +1,9 @@
 
 BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`"}];
 
-SetDRbarGaugeCouplings::usage="";
+CalculateDeltaAlphaEm::usage="";
+CalculateDeltaAlphaS::usage="";
 SetDRbarYukawaCouplings::usage="";
-CalculateDRbarColorCoupling::usage="";
-CalculateDRbarElectromagneticCoupling::usage="";
 
 Begin["Private`"];
 
@@ -55,52 +54,34 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                                 {i,dimStart,dim}];
                  ];
               ];
-           Return[coupling + (result + DRbarConversion[group]) CConversion`oneOver16PiSqr (coupling)^3];
+           Return[result + DRbarConversion[group]];
           ];
 
-SetDRbarGaugeCouplings[] :=
-    Module[{result,
-            couplingG1, couplingG2, couplingG3, couplingEm,
-            drBarCouplingG3, drBarCouplingEm, drBarCouplingSi,
-            drBarCouplingG1CVariable, drBarCouplingG2CVariable,
-            drBarCouplingG3CVariable,
-            drBarCouplingEmCVariable, drBarCouplingSiCVariable},
-           (* get couplings *)
-           couplingG1 = FindHyperchargeGaugeCoupling[];
-           couplingG2 = FindLeftGaugeCoupling[];
-           couplingG3 = FindColorGaugeCoupling[];
-           couplingEm = SARAH`electricCharge;
-           (* calculate drBar couplings *)
-           drBarCouplingG3 = CalculateDRbarColorCoupling[] /.
-              Rule[couplingG3, SARAH`SM[couplingG3]];
-           drBarCouplingEm = CalculateDRbarElectromagneticCoupling[] /.
-              Rule[couplingEm, SARAH`SM[couplingEm]];
-           drBarCouplingSi = Global`sinThetaW /.
-              Rule[Global`sinThetaW, SARAH`SM[Global`sinThetaW]];
-           (* create C variables *)
-           drBarCouplingG3CVariable = ToValidCSymbolString[couplingG3] <> "_drbar";
-           drBarCouplingEmCVariable = ToValidCSymbolString[couplingEm] <> "_drbar";
-           drBarCouplingSiCVariable = "sinThetaW_drbar";
-           (* create local const refs *)
-           result = Constraint`CreateLocalConstRefs[drBarCouplingG3 + drBarCouplingEm] <> "\n";
-           (* calculate g3 *)
-           result = result <> "const double " <> drBarCouplingG3CVariable <> " = " <>
-                    CConversion`RValueToCFormString[drBarCouplingG3] <> ";\n\n";
-           (* calculate e *)
-           result = result <> "const double " <> drBarCouplingEmCVariable <> " = " <>
-                    CConversion`RValueToCFormString[drBarCouplingEm] <> ";\n\n";
-           (* calculate sin(thetaW) *)
-           (* result = result <> "const double " <> drBarCouplingSiCVariable <> " = " <> *)
-           (*          CConversion`RValueToCFormString[drBarCouplingSi] <> ";\n\n"; *)
-           drBarCouplingG1CVariable = drBarCouplingEmCVariable <> " * " <>
-                                      RValueToCFormString[1/Parameters`GetGUTNormalization[couplingG1]] <>
-                                      " / Sqrt(1.0 - Sqr(" <> drBarCouplingSiCVariable <> "))";
-           drBarCouplingG2CVariable = drBarCouplingEmCVariable <> "/" <> drBarCouplingSiCVariable;
-           (* write results back to the model *)
-           result = result <>
-                    Constraint`SetParameter[couplingG1, drBarCouplingG1CVariable, "model"] <>
-                    Constraint`SetParameter[couplingG2, drBarCouplingG2CVariable, "model"] <>
-                    Constraint`SetParameter[couplingG3, drBarCouplingG3CVariable, "model"];
+CalculateDeltaAlphaEm[] :=
+    Module[{result, deltaSusy, deltaSM, prefactor},
+           prefactor = Global`alphaEm / (2 Pi);
+           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
+           deltaSusy = CalculateDRbarElectromagneticCoupling[];
+           result = Constraint`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+                    "const double delta_alpha_em_SM = " <>
+                    CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
+                    "const double delta_alpha_em = " <>
+                    CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
+                    "return delta_alpha_em + delta_alpha_em_SM;\n";
+           Return[result];
+          ];
+
+CalculateDeltaAlphaS[] :=
+    Module[{result, deltaSusy, deltaSM, prefactor},
+           prefactor = Global`alphaS / (2 Pi);
+           deltaSM = - 2/3 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
+           deltaSusy = CalculateDRbarColorCoupling[];
+           result = Constraint`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+                    "const double delta_alpha_s_SM = " <>
+                    CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
+                    "const double delta_alpha_s = " <>
+                    CConversion`RValueToCFormString[prefactor * deltaSusy] <> ";\n\n" <>
+                    "return delta_alpha_s + delta_alpha_s_SM;\n";
            Return[result];
           ];
 
