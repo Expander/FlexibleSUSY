@@ -88,28 +88,28 @@ IsRealExpression[sum[index_, start_, stop_, expr_]] :=
 
 IsRealExpression[otherwise_] := False;
 
-GetTypeFromDimension[sym_Symbol, {}] :=
+GetTypeFromDimension[sym_, {}] :=
     If[True || IsRealParameter[sym],
        CConversion`ScalarType["double"],
        CConversion`ScalarType["Complex"]
       ];
 
-GetTypeFromDimension[sym_Symbol, {1}] :=
+GetTypeFromDimension[sym_, {1}] :=
     GetTypeFromDimension[sym, {}];
 
-GetTypeFromDimension[sym_Symbol, {num_?NumberQ}] :=
+GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     If[True || IsRealParameter[sym],
        CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
        CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
       ];
 
-GetTypeFromDimension[sym_Symbol, {num1_?NumberQ, num2_?NumberQ}] :=
+GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
     If[True || IsRealParameter[sym],
        CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
        CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
       ];
 
-GetType[sym_Symbol] :=
+GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
 CreateIndexReplacementRules[pars_List] :=

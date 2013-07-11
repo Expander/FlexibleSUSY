@@ -36,7 +36,7 @@ GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 GuessType[sym_[i1,i2]] :=
     Parameters`GetType[sym];
 
-GuessType[sym_Symbol] :=
+GuessType[sym_] :=
     Parameters`GetType[sym];
 
 (*
