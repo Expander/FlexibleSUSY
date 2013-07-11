@@ -272,6 +272,11 @@ double b1(double p, double m1, double m2, double q) {
   //    return b1l;
 #endif
 
+  // protect against infrared divergence
+  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
+      && close(m2, 0.0, EPSTOL))
+     return 0.0;
+
   double ans = 0.;
   double pTest = sqr(p) / maximum(sqr(m1), sqr(m2));
 
@@ -313,6 +318,11 @@ double b22(double p,  double m1, double m2, double q) {
   setmudim(q*q);
   double b22l = B00(p*p, m1*m1, m2*m2).real();
 #endif
+
+  // protect against infrared divergence
+  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
+      && close(m2, 0.0, EPSTOL))
+     return 0.0;
 
   double answer = 0.;
   

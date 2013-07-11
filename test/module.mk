@@ -18,6 +18,7 @@ TEST_SRC += \
 endif
 ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
+		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_MSSM.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
 		$(DIR)/test_MSSM_low_scale_constraint.cpp
@@ -127,6 +128,10 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LI
 
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_loopfunctions.d $(DIR)/test_loopfunctions.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_loopfunctions.x: $(DIR)/test_loopfunctions.o $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(DIR)/test_MSSM.d $(DIR)/test_MSSM.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
