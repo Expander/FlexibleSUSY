@@ -66,8 +66,9 @@ bool testNan(double f) {
 }
 
 bool close(double m1, double m2, double tol) {
-  return (fabs(maximum(fabs(m1), fabs(m2)) - fabs(minimum(fabs(m1), fabs(m2))))
-	  <= tol * maximum(fabs(m1), fabs(m2)));
+   const double max = maximum(fabs(m1), fabs(m2));
+   const double min = minimum(fabs(m1), fabs(m2));
+   return (fabs(max - fabs(min)) <= tol * max);
 }
 
 
