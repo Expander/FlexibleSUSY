@@ -19,9 +19,9 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
-		$(DIR)/test_MSSM.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
-		$(DIR)/test_MSSM_low_scale_constraint.cpp
+		$(DIR)/test_MSSM_low_scale_constraint.cpp \
+		$(DIR)/test_MSSM_model.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
 TEST_SRC += \
@@ -133,8 +133,8 @@ $(DIR)/test_loopfunctions.d $(DIR)/test_loopfunctions.x: CPPFLAGS += $(EIGENFLAG
 $(DIR)/test_loopfunctions.x: $(DIR)/test_loopfunctions.o $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
-$(DIR)/test_MSSM.d $(DIR)/test_MSSM.x: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/test_MSSM.x: $(DIR)/test_MSSM.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_model.d $(DIR)/test_MSSM_model.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_MSSM_model.x: $(DIR)/test_MSSM_model.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(DIR)/test_MSSM_high_scale_constraint.d $(DIR)/test_MSSM_high_scale_constraint.x: CPPFLAGS += $(EIGENFLAGS)
