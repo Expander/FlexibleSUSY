@@ -114,12 +114,12 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 
    const double e_drbar  = Sqrt(4.0 * Pi * alpha_em_drbar);
    const double g3_drbar = Sqrt(4.0 * Pi * alpha_s_drbar);
-   const double g1_gut_normalization = @hyperchargeCouplingInverseGutNormalization@;
-   const double g2_gut_normalization = @leftCouplingInverseGutNormalization@;
+   const double g1_inv_gut_normalization = @hyperchargeCouplingInverseGutNormalization@;
+   const double g2_inv_gut_normalization = @leftCouplingInverseGutNormalization@;
 
-   model->set_g1(e_drbar * g1_gut_normalization / cosThetaW_drbar);
-   model->set_g2(e_drbar * g2_gut_normalization / sinThetaW_drbar);
-   model->set_g3(g3_drbar);
+   model->set_@hyperchargeCoupling@(e_drbar * g1_inv_gut_normalization / cosThetaW_drbar);
+   model->set_@leftCoupling@(e_drbar * g2_inv_gut_normalization / sinThetaW_drbar);
+   model->set_@strongCoupling@(g3_drbar);
 }
 
 double @ModelName@_low_scale_constraint::calculate_delta_alpha_em(double alphaEm) const
