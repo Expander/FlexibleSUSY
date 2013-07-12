@@ -72,45 +72,6 @@ void compare_anomalous_dimensions(const SoftParsMssm& a, const MSSM_soft_paramet
   TEST_EQUALITY(gH2H2, b.get_SHuSHu());
 }
 
-void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& b)
-{
-   TEST_EQUALITY(a.displayLoops(), b.get_loops());
-   TEST_EQUALITY(a.displayMu(), b.get_scale());
-   TEST_EQUALITY(a.displayThresholds(), b.get_thresholds());
-
-   TEST_EQUALITY(a.displayGaugeCoupling(1), b.get_g1());
-   TEST_EQUALITY(a.displayGaugeCoupling(2), b.get_g2());
-   TEST_EQUALITY(a.displayGaugeCoupling(3), b.get_g3());
-
-   TEST_EQUALITY(a.displayYukawaMatrix(YU), b.get_Yu());
-   TEST_EQUALITY(a.displayYukawaMatrix(YD), b.get_Yd());
-   TEST_EQUALITY(a.displayYukawaMatrix(YE), b.get_Ye());
-
-   TEST_EQUALITY(a.displayGaugino(1), b.get_MassB());
-   TEST_EQUALITY(a.displayGaugino(2), b.get_MassWB());
-   TEST_EQUALITY(a.displayGaugino(3), b.get_MassG());
-
-   TEST_EQUALITY(a.displayMh1Squared(), b.get_mHd2());
-   TEST_EQUALITY(a.displayMh2Squared(), b.get_mHu2());
-   TEST_EQUALITY(a.displaySoftMassSquared(mQl), b.get_mq2());
-   TEST_EQUALITY(a.displaySoftMassSquared(mUr), b.get_mu2());
-   TEST_EQUALITY(a.displaySoftMassSquared(mDr), b.get_md2());
-   TEST_EQUALITY(a.displaySoftMassSquared(mLl), b.get_ml2());
-   TEST_EQUALITY(a.displaySoftMassSquared(mEr), b.get_me2());
-
-   TEST_EQUALITY(a.displayTrilinear(UA), b.get_TYu());
-   TEST_EQUALITY(a.displayTrilinear(DA), b.get_TYd());
-   TEST_EQUALITY(a.displayTrilinear(EA), b.get_TYe());
-
-   TEST_EQUALITY(a.displaySusyMu(), b.get_Mu());
-   TEST_EQUALITY(a.displayM3Squared(), b.get_BMu());
-
-   const double tanBeta = b.get_vu() / b.get_vd();
-   const double vev = sqrt(sqr(b.get_vu()) + sqr(b.get_vd()));
-   TEST_EQUALITY(a.displayTanb(), tanBeta);
-   TEST_EQUALITY(a.displayHvev(), vev);
-}
-
 void test_beta_function_equality(const SoftParsMssm& a, const MSSM_soft_parameters& b)
 {
    SoftParsMssm beta_a(a.beta2());
