@@ -3,7 +3,7 @@ MODNAME  := examples
 
 ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
 EXAMPLES_SRC := \
-		$(DIR)/softsusy.cpp
+		$(DIR)/run_softsusy.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
@@ -79,7 +79,7 @@ $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o
 		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
-$(DIR)/softsusy.x: $(DIR)/softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)
