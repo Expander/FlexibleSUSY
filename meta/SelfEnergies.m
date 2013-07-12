@@ -16,6 +16,9 @@ given list of self-energies and tadpoles";
 CreateSelfEnergyFunctionName::usage="creates self-energy function name
 for a given field";
 
+CreateHeavySelfEnergyFunctionName::usage="creates heavy self-energy
+function name for a given field";
+
 SetParameterReplacementRules::usage="replacement rules for model
 parameters";
 
