@@ -92,7 +92,13 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
    electronDRbar(1,1) = Electroweak_constants::MMUON;
    electronDRbar(2,2) = Electroweak_constants::MTAU;
 
+   Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
+
 @setDRbarYukawaCouplings@
+
+   model->set_@UpYukawa@(new_Yu);
+   model->set_@DownYukawa@(new_Yd);
+   model->set_@ElectronYukawa@(new_Ye);
 }
 
 void @ModelName@_initial_guesser::guess_soft_parameters()

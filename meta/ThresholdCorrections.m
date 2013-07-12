@@ -149,9 +149,9 @@ SetDRbarYukawaCouplings[] :=
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
            result = Constraint`CreateLocalConstRefs[top + bot + tau] <>
-                    Constraint`SetParameter[yTop, RValueToCFormString[top], "model"] <>
-                    Constraint`SetParameter[yBot, RValueToCFormString[bot], "model"] <>
-                    Constraint`SetParameter[yTau, RValueToCFormString[tau], "model"];
+                    "new_Yu = " <> RValueToCFormString[top] <> ";\n" <>
+                    "new_Yd = " <> RValueToCFormString[bot] <> ";\n" <>
+                    "new_Ye = " <> RValueToCFormString[tau] <> ";\n";
            Return[result];
           ];
 

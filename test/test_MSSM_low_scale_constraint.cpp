@@ -161,7 +161,7 @@ DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint con
 {
    model.set_scale(scale);
    constraint.set_model(&model);
-   constraint.calculate_DRbar_gauge_couplings();
+   constraint.apply();
 
    DoubleVector g(3);
    g(1) = model.get_g1();
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), s.displayYukawaMatrix(YE)(2,2), 0.02);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.016);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.19);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.25);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.025);
 
    BOOST_MESSAGE("testing running VEV");
