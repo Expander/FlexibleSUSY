@@ -539,8 +539,8 @@ CreateVertexExpressions[nPointFunctions_List] :=
             p, d, r},
            rules = Table[0, {Length[nPointFunctions]}];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["   Calculating vertices appearing in Gamma[",
-                     GetField[nPointFunctions[[k]]], "]"];
+               Print["   Calculating vertices appearing ",
+                     PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d,r} = CreateVertexExpressions[nPointFunctions[[k]]];
                prototypes = prototypes <> p;
                decls = decls <> d;
@@ -632,6 +632,31 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            Return[{prototype, decl}];
           ];
 
+PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
+    "heavy " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
+
+PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_][projector:(1|SARAH`PL|SARAH`PR)],__]] :=
+    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
+    RValueToCFormString[projector] <> "}_{" <>
+    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
+
+PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[projector:(1|SARAH`PL|SARAH`PR)],__]] :=
+    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
+    RValueToCFormString[projector] <> "}";
+
+PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_],__]] :=
+    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}_{" <>
+    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
+
+PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_,__]] :=
+    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}";
+
+PrintNPointFunctionName[SelfEnergies`Tadpole[field_[idx_],__]] :=
+    "tadpole T^{" <> RValueToCFormString[field] <> "}_{" <> RValueToCFormString[idx] <> "}";
+
+PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
+    "tadpole T^{" <> RValueToCFormString[field] <> "}";
+
 CreateNPointFunctions[nPointFunctions_List] :=
     Module[{prototypes = "", decls = "", vertexRules = {}, p, d},
            (* create coupling functions for all vertices in the list *)
@@ -639,7 +664,7 @@ CreateNPointFunctions[nPointFunctions_List] :=
            {prototypes, decls, vertexRules} = CreateVertexExpressions[nPointFunctions];
            (* creating n-point functions *)
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["Writing n-point function for ", GetField[nPointFunctions[[k]]]];
+               Print["Writing ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexRules];
                prototypes = prototypes <> p;
                decls = decls <> d;
