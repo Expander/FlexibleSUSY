@@ -278,5 +278,5 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 
    BOOST_MESSAGE("testing running VEV");
    const double running_vev = Sqrt(Sqr(m.get_vu()) +  Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 0.012);
+   BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 1.0e-9);
 }
