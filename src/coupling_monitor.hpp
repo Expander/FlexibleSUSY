@@ -180,8 +180,6 @@ void Coupling_monitor<Rge,DataGetter>::write_to_file(const std::string& file_nam
 /**
  * Add running couplings between scale q1 and q2.
  *
- * @param rge class with RGEs and parameters
- * @param data_getter functor which pulls the data from the rge object
  * @param q1 scale to start at
  * @param q2 end scale
  * @param number_of_steps number of steps

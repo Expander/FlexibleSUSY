@@ -17,6 +17,7 @@
  *
  * @param mssm model class
  * @param pp parameter point
+ * @param oneset low-energy data set
  */
 double softsusy_initial_guess(MssmSoftsusy& mssm, const Mssm_parameter_point& pp, const QedQcd& oneset)
 {
