@@ -63,6 +63,9 @@ TEST_LOG := \
 
 all-$(MODNAME): $(TEST_EXE)
 
+clean-$(MODNAME)-log:
+		rm -rf $(TEST_LOG)
+
 clean-$(MODNAME):
 		rm -rf $(TEST_OBJ)
 		rm -rf $(TEST_LOG)
