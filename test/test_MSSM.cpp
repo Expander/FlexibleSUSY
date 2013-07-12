@@ -1018,17 +1018,11 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
    m.set_scale(MZ);
    m.calculate_DRbar_parameters();
 
-   const double mbpole = s.displayDataSet().displayPoleMb();
+   const double mb_ms_bar = s.displayDataSet().displayMass(mBottom);
    const double softsusy_mbot = s.calcRunningMb();
-   const double sarah_mbot = m.calculate_MFd_DRbar_1loop(mbpole, 3);
+   const double sarah_mbot = m.calculate_MFd_DRbar_1loop(mb_ms_bar, 3);
 
-   // Softsusy:
-   // * no photon contribution
-   // * resummed mb
-   // * sometimes on-shell masses in the loop functions
-   // FlexibleSUSY:
-   // * allways running DRbar masses in the loop functions
-   TEST_CLOSE(sarah_mbot, softsusy_mbot, 0.06);
+   TEST_CLOSE(sarah_mbot, softsusy_mbot, 0.0013);
 }
 
 void compare_tau_self_energy(MssmSoftsusy s, MSSM m)
