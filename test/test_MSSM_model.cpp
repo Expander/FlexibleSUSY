@@ -1,6 +1,7 @@
 
 #include "MSSM_model.hpp"
 #include "test.h"
+#include "test_MSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include <cmath>
@@ -157,70 +158,6 @@ void test_beta_function_equality(const SoftParsMssm& a, const MSSM_soft_paramete
    TEST_EQUALITY(beta_a.displayTanb(), beta_tanBeta);
    TEST_EQUALITY(a.displayHvev(), vev);
    TEST_EQUALITY(beta_a.displayHvev(), beta_vev);
-}
-
-void ensure_tree_level_ewsb(MSSM& m)
-{
-   // ensure that the EWSB eqs. are satisfied (Drees p.222)
-   const double vu = m.get_vu();
-   const double vd = m.get_vd();
-   const double gY = m.get_g1() * sqrt(0.6);
-   const double g2 = m.get_g2();
-   const double Mu = m.get_Mu();
-   const double BMu = m.get_BMu();
-   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
-   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
-   m.set_mHd2(mHd2);
-   m.set_mHu2(mHu2);
-}
-
-void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
-{
-   const double Mu = softSusy.displaySusyMu();
-   // const int signMu = Mu >= 0.0 ? 1 : -1;
-   const double vev = softSusy.displayHvev();
-   const double tanBeta = softSusy.displayTanb();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-   const double g1 = softSusy.displayGaugeCoupling(1);
-   const double gY = g1 * sqrt(0.6);
-   const double g2 = softSusy.displayGaugeCoupling(2);
-   const double BMu = softSusy.displayM3Squared();
-   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
-   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
-   const double MZrun = 0.5 * vev * sqrt(sqr(gY) + sqr(g2));
-
-   softSusy.setMh1Squared(mHd2);
-   softSusy.setMh2Squared(mHu2);
-
-   TEST_CLOSE(MZrun, softSusy.displayMzRun(), 1.0e-10);
-   TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
-}
-
-void ensure_one_loop_ewsb(MSSM& m)
-{
-   ensure_tree_level_ewsb(m);
-
-   const double precision = m.get_ewsb_iteration_precision();
-   m.set_ewsb_loop_order(1);
-   m.solve_ewsb();
-   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(1).real(), 0.0, precision);
-   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(2).real(), 0.0, precision);
-}
-
-void ensure_one_loop_ewsb(MssmSoftsusy& s)
-{
-   ensure_tree_level_ewsb(s);
-
-   // s.rewsbTreeLevel(m.get_Mu() >= 0.0 ? 1 : -1);
-   const int signMu = s.displaySusyMu() >= 0.0 ? 1 : -1;
-   const double mtrun = s.displayDrBarPars().mt;
-   const DoubleVector pars(3);
-   softsusy::numRewsbLoops = 1;
-   s.rewsb(signMu, mtrun, pars);
 }
 
 void compare_tree_level_masses(MssmSoftsusy s, MSSM m)
