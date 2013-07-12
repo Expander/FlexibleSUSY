@@ -86,24 +86,22 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
    const double MZ2 = Sqr(MZ);
    const double MW2 = Sqr(MW);
    const double cW2 = MW2/MZ2;
-   const double sW2 = 1.0 - cW2;
-   const double sW  = Sqrt(sW2);
 
    const double self_energy_Z = Re(model->self_energy_@VectorZ@_heavy(MZ));
    const double self_energy_W = Re(model->self_energy_@VectorW@_heavy(MW));
    const double delta_sW2 = - cW2 * (self_energy_W / MW2 - self_energy_Z / MZ2);
-   const double delta_sW  = 0.5 * delta_sW2 / sW;
-   double sinThetaW_drbar = SM(sinThetaW) + delta_sW;
+   double sinThetaW2_drbar = Sqr(SM(sinThetaW)) + delta_sW2;
 
-   if (Abs(sinThetaW_drbar) >= 0.99) {
+   if (sinThetaW2_drbar <= 1.0e-4 || sinThetaW2_drbar >= 0.99) {
 #ifdef VERBOSE
       WARNING("@ModelName@_low_scale_constraint: loop corrections to"
               " sinThetaW are non-perturbative, resetting sinThetaW to"
               " the Standard Model value");
 #endif
-      sinThetaW_drbar = SM(sinThetaW);
+      sinThetaW2_drbar = Sqr(SM(sinThetaW));
    }
-   const double cosThetaW_drbar = Sqrt(1.0 - Sqr(sinThetaW_drbar));
+   const double sinThetaW_drbar = Sqrt(sinThetaW2_drbar);
+   const double cosThetaW_drbar = Sqrt(1.0 - sinThetaW2_drbar);
 
    const double alpha_em = Sqr(SM(e) ) / (4. * Pi);
    const double alpha_s  = Sqr(SM(g3)) / (4. * Pi);
