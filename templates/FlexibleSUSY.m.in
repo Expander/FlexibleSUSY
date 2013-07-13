@@ -47,7 +47,8 @@ BoundaryLowScaleInput={
 };
 
 InitialGuess = {
-   Sequence @@ BoundaryLowScaleInput,
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
    {\[Mu]   , MZ},
    {B[\[Mu]], MZ^2}
 };
