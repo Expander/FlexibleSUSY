@@ -84,7 +84,7 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
       electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = Electroweak_constants::MUP;
    topDRbar(1,1)      = Electroweak_constants::MCHARM;
-   topDRbar(2,2)      = Electroweak_constants::MTOP;
+   topDRbar(2,2)      = leAtMt.displayMass(mTop) - 30.0;
    bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
    bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
    bottomDRbar(2,2)   = Electroweak_constants::MBOTTOM;
