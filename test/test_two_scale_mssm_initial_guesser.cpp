@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
    pp.tanBeta = 45.1;
    QedQcd oneset;
    Mssm<Two_scale> mssm;
-   Mssm_initial_guesser initial_guesser(&mssm, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+   Mssm_initial_guesser initial_guesser(&mssm, pp);
    initial_guesser.set_QedQcd(oneset);
 
    initial_guesser.guess();

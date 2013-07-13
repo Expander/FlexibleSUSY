@@ -20,6 +20,7 @@
 #define MSSM_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "two_scale_initial_guesser.hpp"
+#include "mssm_parameter_point.hpp"
 #include "lowe.h"
 #include "linalg.h"
 
@@ -28,8 +29,7 @@ class Two_scale;
 
 class Mssm_initial_guesser : public Initial_guesser<Two_scale> {
 public:
-   Mssm_initial_guesser(Mssm<Two_scale>*, double, double,
-                        int, const DoubleVector&, bool);
+   Mssm_initial_guesser(Mssm<Two_scale>*, const Mssm_parameter_point&);
    virtual ~Mssm_initial_guesser();
    virtual void guess();
    void set_QedQcd(const QedQcd& qedqcd) { oneset = qedqcd; }
@@ -37,10 +37,7 @@ public:
 private:
    Mssm<Two_scale>* mssm;     ///< Mssm model
    QedQcd oneset;             ///< low-energy parameters
-   double mxGuess;            ///< guessed GUT scale
-   double tanb;               ///< tan(beta)
-   int sgnMu;                 ///< sign of mu
-   const DoubleVector pars;   ///< GUT parameters m0, m12, a0
+   Mssm_parameter_point pp;   ///< Mssm parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };
 

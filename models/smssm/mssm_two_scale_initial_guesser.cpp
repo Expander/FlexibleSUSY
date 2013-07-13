@@ -23,15 +23,13 @@
 
 #include <cassert>
 
-Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_, double mxGuess_, double tanb_, int sgnMu_, const DoubleVector& pars_, bool ewsbBCscale_)
+Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_,
+                                           const Mssm_parameter_point& pp_)
    : Initial_guesser<Two_scale>()
    , mssm(mssm_)
    , oneset()
-   , mxGuess(mxGuess_)
-   , tanb(tanb_)
-   , sgnMu(sgnMu_)
-   , pars(pars_)
-   , ewsbBCscale(ewsbBCscale_)
+   , pp(pp_)
+   , ewsbBCscale(false)
 {
    assert(mssm && "Mssm_initial_guesser: Error: pointer to Mssm"
           " cannot be zero");
@@ -71,8 +69,8 @@ void Mssm_initial_guesser::guess()
 
    double mz = mssm->displayMz();
 
-   if (mxGuess > 0.0) {
-      mx = mxGuess;
+   if (pp.mxGuess > 0.0) {
+      mx = pp.mxGuess;
    } else {
       string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
       ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
@@ -84,17 +82,15 @@ void Mssm_initial_guesser::guess()
               << oneset.displayMu() << "instead of " << mz);
    }
 
-   MssmSusy t(mssm->guessAtSusyMt(tanb, oneset));
+   MssmSusy t(mssm->guessAtSusyMt(pp.tanBeta, oneset));
    t.setLoops(2); /// 2 loops should protect against ht Landau pole
    t.runto(mx);
 
    mssm->setSusy(t);
 
    /// Initial guess: B=0, mu=1st parameter, need better guesses
-   const double m0 = pars.display(1);
-   const double m12 = pars.display(2);
-   const double a0 = pars.display(3);
-   mssm->standardSugra(m0, m12, a0);
+   const int sgnMu = pp.signMu;
+   mssm->standardSugra(pp.m0, pp.m12, pp.a0);
 
    if ((sgnMu == 1 || sgnMu == -1) && !ewsbBCscale) {
       mssm->setSusyMu(sgnMu * 1.0);
