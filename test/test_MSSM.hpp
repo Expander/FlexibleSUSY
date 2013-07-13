@@ -206,7 +206,14 @@ void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& 
    TEST_EQUALITY(a.displaySusyMu(), b.get_Mu());
    TEST_EQUALITY(a.displayM3Squared(), b.get_BMu());
 
-   const double tanBeta = b.get_vu() / b.get_vd();
+   const double vu = b.get_vu(), vd = b.get_vd();
+   double tanBeta;
+   if (is_zero(vu))
+      tanBeta = 0.;
+   else if (is_zero(vd))
+      tanBeta = std::numeric_limits<double>::infinity();
+   else
+      tanBeta = vu/vd;
    const double vev = sqrt(sqr(b.get_vu()) + sqr(b.get_vd()));
    TEST_EQUALITY(a.displayTanb(), tanBeta);
    TEST_EQUALITY(a.displayHvev(), vev);
