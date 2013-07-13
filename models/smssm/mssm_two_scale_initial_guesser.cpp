@@ -83,8 +83,12 @@ void Mssm_initial_guesser::guess()
    }
 
    MssmSusy t(mssm->guessAtSusyMt(pp.tanBeta, oneset));
+
    t.setLoops(2); /// 2 loops should protect against ht Landau pole
-   t.runto(mx);
+   int err = t.runto(mx);
+   if (err)
+      ERROR("<Mssm_initial_guesser::guess()>: non-perturbative running to"
+            " mx = " << mx);
 
    mssm->setSusy(t);
 
@@ -105,7 +109,10 @@ void Mssm_initial_guesser::guess()
       }
    }
 
-   mssm->run(mx, mz);
+   err = mssm->run(mx, mz);
+   if (err)
+      ERROR("<Mssm_initial_guesser::guess()>: non-perturbative running from"
+            " mx = " << mx << " to mz = " << mz);
 
    if (sgnMu == 1 || sgnMu == -1)
       mssm->rewsbTreeLevel(sgnMu);
