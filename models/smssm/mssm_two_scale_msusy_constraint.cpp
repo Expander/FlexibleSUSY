@@ -24,17 +24,13 @@
 /**
  * Constructor
  *
- * @param pars_ vector with soft parameters m0, m12, a0
- * @param scale_ first guess for the susy scale
- * @param sgnMu_ sign of superpotential parameter \f$\mu\f$
+ * @param pp_ Mssm parameter point
  */
-Mssm_msusy_constraint::Mssm_msusy_constraint(const DoubleVector& pars_,
-                                             double scale_, int sgnMu_)
+Mssm_msusy_constraint::Mssm_msusy_constraint(const Mssm_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mssm(NULL)
-   , pars(pars_)
-   , scale(scale_)
-   , sgnMu(sgnMu_)
+   , scale(pp_.msGuess)
+   , pp(pp_)
 {
 }
 
@@ -49,7 +45,7 @@ void Mssm_msusy_constraint::apply()
    mssm->calcDrBarPars();
    update_scale();
    const double mtrun = mssm->displayDrBarPars().mt;
-   mssm->rewsb(sgnMu, mtrun, pars);
+   mssm->rewsb(pp.signMu, mtrun, pp.get_soft_pars());
 }
 
 double Mssm_msusy_constraint::get_scale() const

@@ -20,6 +20,7 @@
 #define MSSM_MZ_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
+#include "mssm_parameter_point.hpp"
 
 class Two_scale;
 template<class T> class Mssm;
@@ -37,7 +38,7 @@ template<class T> class Mssm;
 
 class Mssm_mz_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_mz_constraint(double tanBeta_);
+   Mssm_mz_constraint(const Mssm_parameter_point&);
    virtual ~Mssm_mz_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -45,8 +46,8 @@ public:
 
 private:
    Mssm<Two_scale>* mssm;
-   double tanBeta;
    double scale;
+   Mssm_parameter_point pp;   ///< Mssm parameter point
 
    void update_scale();
 };

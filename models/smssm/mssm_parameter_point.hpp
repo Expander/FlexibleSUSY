@@ -27,6 +27,7 @@ struct Mssm_parameter_point {
       , m12(500.0)
       , a0(0.0)
       , mxGuess(1.0e16)
+      , msGuess(1000.)
       , signMu(1)
       , tanBeta(10.0)
    {}
@@ -49,7 +50,7 @@ struct Mssm_parameter_point {
       return os;
    }
 
-   double m0, m12, a0, mxGuess, signMu, tanBeta;
+   double m0, m12, a0, mxGuess, msGuess, signMu, tanBeta;
 };
 
 #endif

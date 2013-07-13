@@ -20,6 +20,7 @@
 #define MSSM_MSUSY_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
+#include "mssm_parameter_point.hpp"
 #include "linalg.h"
 
 class Two_scale;
@@ -37,7 +38,7 @@ template<class T> class Mssm;
 
 class Mssm_msusy_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_msusy_constraint(const DoubleVector& pars_, double scale_, int sgnMu_);
+   Mssm_msusy_constraint(const Mssm_parameter_point&);
    virtual ~Mssm_msusy_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -45,9 +46,8 @@ public:
 
 private:
    Mssm<Two_scale>* mssm;
-   DoubleVector pars;
    double scale;
-   int sgnMu;
+   Mssm_parameter_point pp;   ///< Mssm parameter point
 
    void update_scale();
 };
