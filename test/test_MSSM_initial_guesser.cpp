@@ -7,10 +7,13 @@
 
 #include "MSSM_model.hpp"
 #include "MSSM_initial_guesser.hpp"
+#include "mssm_parameter_point.hpp"
+#include "mssm_two_scale.hpp"
+#include "mssm_two_scale_initial_guesser.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM m;
    MSSM_input_parameters input;
 
    MSSM_low_scale_constraint  low_constraint(input);
@@ -22,18 +25,19 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 
    guesser.guess();
 
-   const double mxGuess = low_constraint.get_scale();
-   DoubleVector pars(3);
-   pars(1) = input.m0;
-   pars(2) = input.m12;
-   pars(3) = input.Azero;
-   const int signMu = input.SignMu;
-   const double tanBeta = input.TanBeta;
-   const bool uni = true;
+   Mssm_parameter_point pp;
+   pp.m0 = input.m0;
+   pp.m12 = input.m12;
+   pp.a0 = input.Azero;
+   pp.mxGuess = low_constraint.get_scale();
+   pp.signMu = input.SignMu;
+   pp.tanBeta = input.TanBeta;
    QedQcd oneset;
+   Mssm<Two_scale> smssm;
+   Mssm_initial_guesser initial_guesser(&smssm, pp.mxGuess, pp.tanBeta, pp.signMu, pp.get_soft_pars(), false);
+   initial_guesser.set_QedQcd(oneset);
 
-   softsusy::TOLERANCE = 10.; // ensures that itLowsoft will return immediately
-   s.lowOrg(sugraBcs, mxGuess, pars, signMu, tanBeta, oneset, uni);
+   initial_guesser.guess();
 
-   // test_parameter_equality(s, m);
+   test_parameter_equality(smssm, m);
 }
