@@ -7,6 +7,7 @@ LowPrecision::usage="";
 MediumPrecision::usage="";
 HighPrecision::usage="";
 softSusyCompatibleRGEs::usage="";
+GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 Begin["Private`"];
 
@@ -48,6 +49,9 @@ CheckModelFileSettings[] :=
               Global`InputParameters = {};
              ];
           ];
+
+GUTNormalization[coupling_] :=
+    Parameters`GetGUTNormalization[coupling];
 
 (*
    @brief Replaces tokens in files.
