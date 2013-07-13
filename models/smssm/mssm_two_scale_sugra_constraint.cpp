@@ -2,15 +2,12 @@
 #include "mssm_two_scale_sugra_constraint.hpp"
 #include <cassert>
 
-Mssm_sugra_constraint::Mssm_sugra_constraint(double mx_guess_, double m0_, double m12_, double a0_, int signMu_)
+Mssm_sugra_constraint::Mssm_sugra_constraint(const Mssm_parameter_point& pp_)
    : Constraint<Two_scale>()
-   , mx_guess(mx_guess_)
+   , mx_guess(pp_.mxGuess)
    , mssm(NULL)
+   , pp(pp_)
    , gut_scale_calculator()
-   , m0(m0_)
-   , m12(m12_)
-   , a0(a0_)
-   , signMu(signMu_)
 {
 }
 
@@ -23,7 +20,7 @@ void Mssm_sugra_constraint::apply()
    assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 
    update_scale();
-   mssm->setSugraBcs(m0, m12, a0);
+   mssm->setSugraBcs(pp.m0, pp.m12, pp.a0);
 }
 
 double Mssm_sugra_constraint::get_scale() const

@@ -86,7 +86,7 @@ int main()
    Mssm_parameter_point pp;
 
    Mssm<Two_scale> mssm;
-   Mssm_sugra_constraint mssm_sugra_constraint(pp.mxGuess, pp.m0, pp.m12, pp.a0, pp.signMu);
+   Mssm_sugra_constraint mssm_sugra_constraint(pp);
    Mssm_mz_constraint mssm_mz_constraint(pp.tanBeta);
    Mssm_msusy_constraint mssm_msusy_constraint(pp.get_soft_pars(), 1000.0, pp.signMu);
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);

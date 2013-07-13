@@ -21,11 +21,12 @@
 
 #include "two_scale_constraint.hpp"
 #include "mssm_two_scale.hpp"
+#include "mssm_parameter_point.hpp"
 #include "gut_scale_calculator.hpp"
 
 class Mssm_sugra_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_sugra_constraint(double, double, double, double, int);
+   Mssm_sugra_constraint(const Mssm_parameter_point&);
    virtual ~Mssm_sugra_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -34,9 +35,8 @@ public:
 private:
    double mx_guess;
    Mssm<Two_scale>* mssm;
+   Mssm_parameter_point pp;   ///< Mssm parameter point
    GUT_scale_calculator<Mssm<Two_scale> > gut_scale_calculator;
-   double m0, m12, a0;
-   int signMu;
 
    void update_scale();
 };
