@@ -28,7 +28,7 @@
  */
 namespace Electroweak_constants {
    namespace {
-      const double vev = 246;
+      const double vev = 246.22;
       const double root2 = sqrt(2.0);
       const double mtoprun = 165;
       const double mbrun = 2.9;
