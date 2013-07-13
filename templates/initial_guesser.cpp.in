@@ -63,10 +63,10 @@ void @ModelName@_initial_guesser::guess()
 void @ModelName@_initial_guesser::guess_susy_parameters()
 {
    QedQcd leAtMt;
-   const double sinThetaW2 = Electroweak_constants::sinThetaW2;
-   const double mtpole = Electroweak_constants::PMTOP;
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
+   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
+   const double mtpole = Electroweak_constants::PMTOP;
 
    // guess gauge couplings at mt
    const DoubleVector a(leAtMt.getGaugeMu(mtpole, sinThetaW2));
