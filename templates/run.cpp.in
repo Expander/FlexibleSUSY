@@ -70,6 +70,7 @@ int main()
       solver.solve();
       model.run_to(susy_scale_input.get_scale());
       model.calculate_spectrum();
+      model.run_to(Electroweak_constants::MZ);
       model.print(std::cout);
    } catch (Error& error) {
       cout << "Error: " << error.what() << endl;
