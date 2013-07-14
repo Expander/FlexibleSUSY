@@ -181,14 +181,11 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveSMParticles /@ heavySE];
-           (* Create Bottom, Tau self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
+           (* Create Top, Bottom, Tau self-energy with only SUSY
+              particles and W and Z bosons in the loop *)
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE];
-           (* Create Top self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_], expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ}]& /@ heavySE];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
