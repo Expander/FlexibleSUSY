@@ -562,6 +562,34 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron] :=
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
+CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark] :=
+    Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
+            selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop},
+           selfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
+           selfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
+           selfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
+           name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           If[IsMassless[particle],
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              body = "return 0.0;\n";
+              ,
+              qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale];
+              qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole, int idx) const\n{\n";
+              body = "const double p = m_pole;\n" <>
+              "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
+              "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
+              "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n\n" <>
+              "const double currentScale = get_scale();\n" <>
+              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n" <>
+              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n\n" <>
+              "const double m_susy_drbar = m_pole + self_energy_1 " <>
+              "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
+              "return m_susy_drbar;\n";
+             ];
+           Return[result <> IndentText[body] <> "}\n\n"];
+          ];
+
 CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name,

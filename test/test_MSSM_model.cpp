@@ -898,12 +898,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM m)
    const double softsusy_mtop = s.calcRunningMt();
    const double sarah_mtop = m.calculate_MFu_DRbar_1loop(mtpole, 3);
 
-   // Softsusy:
-   // * additional two-loop contribution
-   // * mt_pole and mt_run in the loop functions
-   // FlexibleSUSY:
-   // * allways running DRbar masses in the loop functions
-   TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.03);
+   TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.054);
 }
 
 void compare_bot_self_energy(MssmSoftsusy s, MSSM m)
