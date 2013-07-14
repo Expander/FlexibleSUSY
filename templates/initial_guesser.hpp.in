@@ -54,7 +54,11 @@ public:
       double scale;
    };
 
-   @ModelName@_initial_guesser(@ModelName@*, const @ModelName@_input_parameters&, @ModelName@_low_scale_constraint&, @ModelName@_susy_scale_constraint&, @ModelName@_high_scale_constraint&);
+   @ModelName@_initial_guesser(@ModelName@*,
+                               const @ModelName@_input_parameters&,
+                               const @ModelName@_low_scale_constraint&,
+                               const @ModelName@_susy_scale_constraint&,
+                               const @ModelName@_high_scale_constraint&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess();
 
