@@ -90,7 +90,9 @@ int main()
    Mssm_mz_constraint mssm_mz_constraint(pp);
    Mssm_msusy_constraint mssm_msusy_constraint(pp);
    Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
-   Mssm_initial_guesser initial_guesser(&mssm, pp);
+   Mssm_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
+                                        mssm_msusy_constraint,
+                                        mssm_sugra_constraint);
    Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
    std::vector<Constraint<Two_scale>*> mssm_upward_constraints;

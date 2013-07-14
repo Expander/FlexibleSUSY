@@ -10,6 +10,9 @@
 #include "mssm_parameter_point.hpp"
 #include "mssm_two_scale.hpp"
 #include "mssm_two_scale_initial_guesser.hpp"
+#include "mssm_two_scale_sugra_constraint.hpp"
+#include "mssm_two_scale_msusy_constraint.hpp"
+#include "mssm_two_scale_mz_constraint.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
@@ -35,7 +38,12 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    pp.signMu = input.SignMu;
    pp.tanBeta = input.TanBeta;
    QedQcd oneset;
-   Mssm_initial_guesser initial_guesser(&smssm, pp);
+   Mssm_sugra_constraint mssm_sugra_constraint(pp);
+   Mssm_mz_constraint mssm_mz_constraint(pp);
+   Mssm_msusy_constraint mssm_msusy_constraint(pp);
+   Mssm_initial_guesser initial_guesser(&smssm, pp, mssm_mz_constraint,
+                                        mssm_msusy_constraint,
+                                        mssm_sugra_constraint);
    initial_guesser.set_QedQcd(oneset);
 
    // guess both models
