@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayTanb(), tanBeta, 3.0e-4);
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayHvev(), vev    , 1.0e-5);
 
-   // BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(1), m.get_MassB() , 1.0e-5);
-   // BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(2), m.get_MassWB(), 1.0e-5);
-   // BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(3), m.get_MassG() , 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(1), m.get_MassB() , 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(2), m.get_MassWB(), 2.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(3), m.get_MassG() , 2.0e-4);
 }
