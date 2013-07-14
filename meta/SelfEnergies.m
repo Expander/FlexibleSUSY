@@ -85,9 +85,9 @@ RemoveSMParticles[SelfEnergies`Tadpole[p_,expr__], _] :=
 ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
-RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_], removeGoldstones_:True] :=
+RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_], removeGoldstones_:True, except_:{}] :=
     Module[{strippedExpr, susyParticles, a, goldstones, g, i},
-           susyParticles = TreeMasses`GetSusyParticles[];
+           susyParticles = Join[TreeMasses`GetSusyParticles[], except];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
                SARAH`A0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
@@ -181,10 +181,14 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
            result = Join[result, RemoveSMParticles /@ heavySE];
-           (* Create Bottom self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
+           (* Create Bottom, Tau self-energy with only SUSY particles in the loop *)
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles[#,False]& /@ heavySE];
+           result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE];
+           (* Create Top self-energy with only SUSY particles in the loop *)
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_], expr__] :>
+                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
+           result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ}]& /@ heavySE];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
