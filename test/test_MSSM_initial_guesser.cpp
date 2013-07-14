@@ -115,12 +115,12 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    const Eigen::Matrix<double,3,3> TYu(m.get_TYu()),
       TYd(m.get_TYd()), TYe(m.get_TYe());
 
-   BOOST_CHECK_CLOSE_FRACTION(Au(1,1), TYu(0,0), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(Au(1,1), TYu(0,0), 1.1e-4);
    BOOST_CHECK_CLOSE_FRACTION(Au(1,2), TYu(0,1), 1.0e-5);
    BOOST_CHECK_CLOSE_FRACTION(Au(1,3), TYu(0,2), 1.0e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(Au(2,1), TYu(1,0), 1.0e-5);
-   BOOST_CHECK_CLOSE_FRACTION(Au(2,2), TYu(1,1), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(Au(2,2), TYu(1,1), 1.1e-4);
    BOOST_CHECK_CLOSE_FRACTION(Au(2,3), TYu(1,2), 1.0e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(Au(3,1), TYu(2,0), 1.0e-5);
