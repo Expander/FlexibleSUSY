@@ -99,4 +99,55 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(1), m.get_MassB() , 1.0e-4);
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(2), m.get_MassWB(), 2.0e-4);
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(3), m.get_MassG() , 2.0e-4);
+
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayMh1Squared(), m.get_mHd2(), 0.3);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayMh2Squared(), m.get_mHu2(), 2.3e-3);
+
+   // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mQl), m.get_mq2(), 1.0e-5);
+   // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mUr), m.get_mu2(), 1.0e-5);
+   // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mDr), m.get_md2(), 1.0e-5);
+   // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mLl), m.get_ml2(), 1.0e-5);
+   // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mEr), m.get_me2(), 1.0e-5);
+
+   const DoubleMatrix Au(smssm.displayTrilinear(UA)),
+      Ad(smssm.displayTrilinear(DA)),
+      Ae(smssm.displayTrilinear(EA));
+   const Eigen::Matrix<double,3,3> TYu(m.get_TYu()),
+      TYd(m.get_TYd()), TYe(m.get_TYe());
+
+   BOOST_CHECK_CLOSE_FRACTION(Au(1,1), TYu(0,0), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(Au(1,2), TYu(0,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Au(1,3), TYu(0,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Au(2,1), TYu(1,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Au(2,2), TYu(1,1), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(Au(2,3), TYu(1,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Au(3,1), TYu(2,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Au(3,2), TYu(2,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Au(3,3), TYu(2,2), 2.0e-3);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ad(1,1), TYd(0,0), 0.22);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(1,2), TYd(0,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(1,3), TYd(0,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ad(2,1), TYd(1,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(2,2), TYd(1,1), 0.22);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(2,3), TYd(1,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ad(3,1), TYd(2,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(3,2), TYd(2,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ad(3,3), TYd(2,2), 0.21);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ae(1,1), TYe(0,0), 0.2);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(1,2), TYe(0,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(1,3), TYe(0,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ae(2,1), TYe(1,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(2,2), TYe(1,1), 0.2);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(2,3), TYe(1,2), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Ae(3,1), TYe(2,0), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(3,2), TYe(2,1), 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Ae(3,3), TYe(2,2), 0.2);
 }
