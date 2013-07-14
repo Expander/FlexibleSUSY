@@ -24,17 +24,17 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 
    MSSM_low_scale_constraint  low_constraint(input);
    MSSM_susy_scale_constraint susy_constraint(input);
-   MSSM_high_scale_constraint hig_constraint(input);
+   MSSM_high_scale_constraint high_constraint(input);
 
    MSSM_initial_guesser guesser(&m, input, low_constraint,
-                                susy_constraint, hig_constraint);
+                                susy_constraint, high_constraint);
 
    // create Mssm initial guesser
    Mssm_parameter_point pp;
    pp.m0 = input.m0;
    pp.m12 = input.m12;
    pp.a0 = input.Azero;
-   pp.mxGuess = low_constraint.get_scale();
+   pp.mxGuess = high_constraint.get_scale();
    pp.signMu = input.SignMu;
    pp.tanBeta = input.TanBeta;
    QedQcd oneset;
