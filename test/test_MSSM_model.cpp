@@ -898,7 +898,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM m)
    const double softsusy_mtop = s.calcRunningMt();
    const double sarah_mtop = m.calculate_MFu_DRbar_1loop(mtpole, 3);
 
-   TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.054);
+   TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.14);
 }
 
 void compare_bot_self_energy(MssmSoftsusy s, MSSM m)

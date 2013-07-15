@@ -90,14 +90,8 @@ RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_], removeGoldstones_:Tr
            susyParticles = Join[TreeMasses`GetSusyParticles[], except];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
-               SARAH`A0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`B0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`B1[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`B00[a__ /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`B22[a__ /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`F0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`G0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0,
-               SARAH`H0[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]][_] -> 0,
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
                                            };
            (* remove goldstone bosons *)
            If[removeGoldstones,
