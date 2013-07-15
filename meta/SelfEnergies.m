@@ -19,6 +19,9 @@ for a given field";
 CreateHeavySelfEnergyFunctionName::usage="creates heavy self-energy
 function name for a given field";
 
+CreateHeavyRotatedSelfEnergyFunctionName::usage="creates heavy rotated
+self-energy function name for a given field";
+
 SetParameterReplacementRules::usage="replacement rules for model
 parameters";
 
@@ -57,6 +60,9 @@ GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
 GetExpression[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     selfEnergy[[2]];
 
+GetExpression[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
+    selfEnergy[[2]];
+
 GetExpression[tadpole_SelfEnergies`Tadpole] :=
     tadpole[[2]];
 
@@ -64,6 +70,9 @@ GetField[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     selfEnergy[[1]];
 
 GetField[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
+    selfEnergy[[1]];
+
+GetField[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
     selfEnergy[[1]];
 
 GetField[tadpole_SelfEnergies`Tadpole] :=
@@ -85,7 +94,7 @@ RemoveSMParticles[SelfEnergies`Tadpole[p_,expr__], _] :=
 ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
-RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_], removeGoldstones_:True, except_:{}] :=
+RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
     Module[{strippedExpr, susyParticles, a, goldstones, g, i},
            susyParticles = Join[TreeMasses`GetSusyParticles[], except];
            strippedExpr = expr /. ReplaceGhosts[];
@@ -102,7 +111,22 @@ RemoveSMParticles[SelfEnergies`FSHeavySelfEnergy[p_,expr_], removeGoldstones_:Tr
                   SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingGoldstones[g],endIdx,expression];
                  ];
              ];
-           Return[SelfEnergies`FSHeavySelfEnergy[p,strippedExpr]];
+           Return[head[p,strippedExpr]];
+          ];
+
+ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr_]] :=
+    SelfEnergies`FSSelfEnergy[p,expr];
+
+ReplaceUnrotatedFields[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
+    SelfEnergies`FSHeavySelfEnergy[p,expr];
+
+ReplaceUnrotatedFields[SelfEnergies`FSHeavyRotatedSelfEnergy[p_,expr__]] :=
+    Module[{result},
+           result = expr /. {
+               SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
+               SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
+                            };
+           Return[SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]]
           ];
 
 ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
@@ -178,13 +202,15 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE];
+                           SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
+           result = Join[result,
+                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE)];
            (* Create Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_], expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`VectorP}]& /@ heavySE];
+                           SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
+           result = Join[result,
+                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`VectorP}]& /@ heavySE)];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
@@ -441,10 +467,10 @@ ReplaceMixingMatrixByIdentityIn[expr_, coupling_] :=
            Return[unrotatedExpr];
           ];
 
-ReplaceUnrotatedFields[Cp[p__]] :=
+ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
     Cp[Sequence @@ ToRotatedField[{p}]];
 
-ReplaceUnrotatedFields[Cp[p__][lorentz_]] :=
+ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
 FindInnerColorIndices[particles_List] :=
@@ -531,6 +557,9 @@ CreateVertexExpressions[se_SelfEnergies`FSSelfEnergy] :=
 CreateVertexExpressions[se_SelfEnergies`FSHeavySelfEnergy] :=
     CreateVertexExpressions[GetExpression[se]];
 
+CreateVertexExpressions[se_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
+    CreateVertexExpressions[GetExpression[se]];
+
 CreateVertexExpressions[se_SelfEnergies`Tadpole] :=
     CreateVertexExpressions[GetExpression[se]];
 
@@ -588,6 +617,9 @@ CreateSelfEnergyFunctionName[field_] :=
 CreateHeavySelfEnergyFunctionName[field_] :=
     "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy";
 
+CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
+    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy_rotated";
+
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
@@ -597,6 +629,9 @@ CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
 CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
     CreateHeavySelfEnergyFunctionName[GetField[selfEnergy]];
 
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
+    CreateHeavyRotatedSelfEnergyFunctionName[GetField[selfEnergy]];
+
 CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
     CreateTadpoleFunctionName[GetField[tadpole]];
 
@@ -605,6 +640,10 @@ CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
 CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
+    CreateFunctionName[selfEnergy] <>
+    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+
+CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
     CreateFunctionName[selfEnergy] <>
     "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
 
@@ -634,6 +673,9 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
 
 PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
     "heavy " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
+
+PrintNPointFunctionName[SelfEnergies`FSHeavyRotatedSelfEnergy[field_,expr__]] :=
+    "heavy, rotated " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
 
 PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_][projector:(1|SARAH`PL|SARAH`PR)],__]] :=
     "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
