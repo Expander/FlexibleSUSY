@@ -117,6 +117,7 @@ public:
   }
 
   double min(int & p) const;///< minimum element in vector
+  double sum() const { return x.sum(); }
   /// Returns sum of absolute values of all elements
   double sumElements() const { return abs(x).sum(); }  
   std::size_t size() const { return x.size(); }
@@ -279,6 +280,7 @@ public:
   double operator() (int i, int j) const; ///< to reference one element 
   double & operator() (int i, int j); ///< to reference one element 
   double display(int i, int j) const;///< ijth element
+  double sum() const { return x.sum(); }
   double sumElements() const { return abs(x).sum(); }  
   /// Routines for outputting size of matrix
   int displayRows() const { return rows; };
