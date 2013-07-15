@@ -79,11 +79,6 @@ void @ModelName@::set_mass_iteration_precision(double precision)
    mass_iteration_precision = precision;
 }
 
-unsigned @ModelName@::get_ewsb_loop_order() const
-{
-   return ewsb_loop_order;
-}
-
 double @ModelName@::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
@@ -107,12 +102,15 @@ int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
       return 1;
    }
 
-   @ModelName@* model = static_cast<@ModelName@*>(params);
+   @ModelName@::Ewsb_parameters* ewsb_parameters
+      = static_cast<@ModelName@::Ewsb_parameters*>(params);
+   @ModelName@* model = ewsb_parameters->model;
+   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
 
    double tadpole[@numberOfEWSBEquations@];
 
 @calculateTreeLevelTadpoles@
-   if (model->get_ewsb_loop_order() > 0) {
+   if (ewsb_loop_order > 0) {
 @calculateOneLoopTadpoles@
    }
 
@@ -196,7 +194,8 @@ int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* s
    gsl_multiroot_fsolver* s = gsl_multiroot_fsolver_alloc(solver, @numberOfEWSBEquations@);
    int status;
    std::size_t iter = 0;
-   gsl_multiroot_function f = {&tadpole_equations, @numberOfEWSBEquations@, this};
+   Ewsb_parameters params = {this, ewsb_loop_order};
+   gsl_multiroot_function f = {&tadpole_equations, @numberOfEWSBEquations@, &params};
    gsl_vector* x = gsl_vector_alloc(@numberOfEWSBEquations@);
 
    for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
