@@ -102,7 +102,7 @@ int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
       return 1;
    }
 
-   @ModelName@::Ewsb_parameters* ewsb_parameters
+   const @ModelName@::Ewsb_parameters* ewsb_parameters
       = static_cast<@ModelName@::Ewsb_parameters*>(params);
    @ModelName@* model = ewsb_parameters->model;
    const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
