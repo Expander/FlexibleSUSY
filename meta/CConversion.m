@@ -336,7 +336,9 @@ RValueToCFormString[expr_] :=
                     Sqrt[a_?NumericQ]        :> N[Sqrt[a]] /.
                     Rational[a_?NumericQ, b_?NumericQ] :> N[Rational[a,b]] /.
                     Power[a_,0.5]            :> Sqrt[a] /.
+                    Power[a_,-0.5]           :> 1/Sqrt[a] /.
                     Power[a_,2]              :> Global`Sqr[a] /.
+                    Power[a_,-2]             :> 1/Global`Sqr[a] /.
                     Power[E,a_]              :> exp[a];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
