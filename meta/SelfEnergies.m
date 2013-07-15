@@ -715,8 +715,7 @@ CreateNPointFunctions[nPointFunctions_List] :=
           ];
 
 FillArrayWithOneLoopTadpoles[tadpoles_List, arrayName_String:"tadpole"] :=
-    Module[{result, body, f, i = 0, d, field, functionName},
-           result = "if (model->get_ewsb_loop_order() > 0) {\n";
+    Module[{body, f, i = 0, d, field, functionName},
            body = "CALC_DRBAR_PARS(model);\n";
            For[f = 1, f <= Length[tadpoles], f++,
                field = GetField[tadpoles[[f]]];
@@ -727,7 +726,7 @@ FillArrayWithOneLoopTadpoles[tadpoles_List, arrayName_String:"tadpole"] :=
                           "(" <> ToString[d] <> "));\n";
                   ];
               ];
-           Return[result <> IndentText[body] <> "}\n"];
+           Return[IndentText[body]];
           ];
 
 End[];

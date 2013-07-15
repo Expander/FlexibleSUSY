@@ -125,5 +125,4 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
    model->calculate_DRbar_parameters();
    model->set_thresholds(3);
    model->set_loops(2);
-   model->set_ewsb_loop_order(1);
 }
