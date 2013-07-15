@@ -191,13 +191,13 @@ int @ModelName@::solve_ewsb_one_loop()
    return solve_ewsb_iteratively(1);
 }
 
-void @ModelName@::ewsb_initial_guess(double* x_init)
+void @ModelName@::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])
 {
 @initialGuess@
 }
 
 int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
-                                             const double* x_init)
+                                             const double x_init[@numberOfEWSBEquations@])
 {
    gsl_multiroot_fsolver* s = gsl_multiroot_fsolver_alloc(solver, @numberOfEWSBEquations@);
    int status;
