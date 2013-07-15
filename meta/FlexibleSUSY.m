@@ -209,14 +209,14 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
-WriteModelClass[massMatrices_List, tadpoleEquations_List,
+WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
             mixingMatrixGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
-            numberOfEWSBEquations = Length[tadpoleEquations], calculateTreeLevelTadpoles = "",
-            initialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
+            numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
+            ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
             physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "", calculateOneLoopTadpoles = "",
@@ -228,9 +228,9 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List,
             callAllLoopMassFunctions = "", printMasses = "", printMixingMatrices = "",
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
-            clearOutputParameters = ""
+            clearOutputParameters = "", solveEwsbTreeLevel = ""
            },
-           vevs = #[[1]]& /@ tadpoleEquations; (* list of VEVs *)
+           vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
@@ -244,21 +244,22 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List,
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
                calculateAllMasses        = calculateAllMasses <> TreeMasses`CallMassCalculationFunction[massMatrices[[k]]];
               ];
-           For[k = 1, k <= Length[tadpoleEquations], k++,
-               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[tadpoleEquations[[k,1]]];
-               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[tadpoleEquations[[k,1]], tadpoleEquations[[k,2]]];
+           For[k = 1, k <= Length[ewsbEquations], k++,
+               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[ewsbEquations[[k,1]]];
+               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[ewsbEquations[[k,1]], ewsbEquations[[k,2]]];
               ];
            If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
-           calculateTreeLevelTadpoles = EWSB`FillArrayWithEWSBEqs[tadpoleEquations, parametersFixedByEWSB];
-           oneLoopTadpoles = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles   = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
-           initialGuess = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
+           oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[ewsbEquations, parametersFixedByEWSB];
+           ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
+           solveEwsbTreeLevel           = EWSB`SolveTreeLevelEwsb[ewsbEquations, parametersFixedByEWSB];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
-           phasesDefinition = Phases`CreatePhasesDefinition[phases];
+           phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
            phasesInit                   = Phases`CreatePhasesInitialization[phases];
            loopMassesPrototypes         = LoopMasses`CreateLoopMassPrototypes[];
@@ -284,7 +285,7 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List,
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
-                            "@initialGuess@"           -> IndentText[initialGuess],
+                            "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
                             "@physicalMassesInit@"     -> IndentText[WrapLines[physicalMassesInit]],
@@ -307,6 +308,7 @@ WriteModelClass[massMatrices_List, tadpoleEquations_List,
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
                             "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
+                            "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

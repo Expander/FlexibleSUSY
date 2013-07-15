@@ -175,7 +175,7 @@ int @ModelName@::solve_ewsb_iteratively(unsigned loop_order)
 
 int @ModelName@::solve_ewsb_tree_level()
 {
-   return solve_ewsb_iteratively(0);
+@solveEwsbTreeLevel@
 }
 
 int @ModelName@::solve_ewsb_one_loop()
@@ -185,7 +185,7 @@ int @ModelName@::solve_ewsb_one_loop()
 
 void @ModelName@::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])
 {
-@initialGuess@
+@ewsbInitialGuess@
 }
 
 int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,

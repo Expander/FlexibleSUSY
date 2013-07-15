@@ -15,6 +15,8 @@ of the EWSB equations";
 FillInitialGuessArray::usage="fills a C array with initial values for the
 EWSB eqs. solver";
 
+SolveTreeLevelEwsb::usage="Solves tree-level EWSB equations";
+
 Begin["Private`"];
 
 freePhases = {};
@@ -142,6 +144,12 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
                         ToValidCSymbolString[parametersFixedByEWSB[[i]]] <>
                         ";\n";
               ];
+           Return[result];
+          ];
+
+SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
+    Module[{result},
+           result = "return solve_ewsb_iteratively(0);\n";
            Return[result];
           ];
 
