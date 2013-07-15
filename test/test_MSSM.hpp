@@ -54,8 +54,7 @@ void ensure_one_loop_ewsb(MSSM& m)
    ensure_tree_level_ewsb(m);
 
    const double precision = m.get_ewsb_iteration_precision();
-   m.set_ewsb_loop_order(1);
-   m.solve_ewsb();
+   m.solve_ewsb_one_loop();
    TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(1).real(), 0.0, precision);
    TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(2).real(), 0.0, precision);
 }

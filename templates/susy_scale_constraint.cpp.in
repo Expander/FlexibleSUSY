@@ -48,7 +48,7 @@ void @ModelName@_susy_scale_constraint::apply()
    assert(model && "Error: @ModelName@_susy_scale_constraint:"
           " model pointer must not be zero");
 
-   model->solve_ewsb(0);
+   model->solve_ewsb_tree_level();
    model->calculate_DRbar_parameters();
    update_scale();
 

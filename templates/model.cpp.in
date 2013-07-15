@@ -125,7 +125,7 @@ int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
    return GSL_SUCCESS;
 }
 
-int @ModelName@::solve_ewsb()
+int @ModelName@::solve_ewsb_iteratively()
 {
    const gsl_multiroot_fsolver_type* solvers[] =
       {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
@@ -144,7 +144,7 @@ int @ModelName@::solve_ewsb()
    int status;
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solve_ewsb_with(solvers[i], x_init);
+      status = solve_ewsb_iteratively_with(solvers[i], x_init);
       if (status == GSL_SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
@@ -172,13 +172,23 @@ int @ModelName@::solve_ewsb()
    return status;
 }
 
-int @ModelName@::solve_ewsb(unsigned loop_order)
+int @ModelName@::solve_ewsb_iteratively(unsigned loop_order)
 {
    const unsigned old_loop_order = ewsb_loop_order;
    set_ewsb_loop_order(loop_order);
-   const int error_code = solve_ewsb();
+   const int error_code = solve_ewsb_iteratively();
    set_ewsb_loop_order(old_loop_order);
    return error_code;
+}
+
+int @ModelName@::solve_ewsb_tree_level()
+{
+   return solve_ewsb_iteratively(0);
+}
+
+int @ModelName@::solve_ewsb_one_loop()
+{
+   return solve_ewsb_iteratively(1);
 }
 
 void @ModelName@::ewsb_initial_guess(double* x_init)
@@ -186,8 +196,8 @@ void @ModelName@::ewsb_initial_guess(double* x_init)
 @initialGuess@
 }
 
-int @ModelName@::solve_ewsb_with(const gsl_multiroot_fsolver_type* solver,
-                                  const double* x_init)
+int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
+                                             const double* x_init)
 {
    gsl_multiroot_fsolver* s = gsl_multiroot_fsolver_alloc(solver, @numberOfEWSBEquations@);
    int status;
@@ -331,11 +341,11 @@ void @ModelName@::calculate_spectrum()
    throw_on_ewsb_fail = true;
 
    // tree-level parameters
-   solve_ewsb(0);
+   solve_ewsb_tree_level();
    calculate_DRbar_parameters();
 
    // one-loop level parameters
-   solve_ewsb(1);
+   solve_ewsb_one_loop();
    calculate_1loop_masses();
 
    throw_on_tachyon = false;

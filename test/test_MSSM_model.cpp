@@ -1071,8 +1071,7 @@ void test_ewsb_tree(MSSM model, MssmSoftsusy softSusy)
    // TEST_GREATER(m1sq + m2sq + 2*Mu2, 2*std::abs(BMu));
 
    // tree-level
-   model.set_ewsb_loop_order(0);
-   model.solve_ewsb();
+   model.solve_ewsb_tree_level();
    TEST_CLOSE(model.get_ewsb_eq_vd(), 0.0, precision);
    TEST_CLOSE(model.get_ewsb_eq_vu(), 0.0, precision);
 
@@ -1104,8 +1103,7 @@ void test_ewsb_1loop(MSSM model, MssmSoftsusy softSusy)
    TEST_GREATER(sqr(BMu), (m2sq + Mu2)*(m1sq + Mu2));
 
    // one-loop
-   model.set_ewsb_loop_order(1);
-   model.solve_ewsb();
+   model.solve_ewsb_one_loop();
    TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(1).real(), 0.0, precision);
    TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(2).real(), 0.0, precision);
 

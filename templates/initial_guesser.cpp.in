@@ -119,7 +119,7 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
       throw NonPerturbativeRunningError(model, low_scale_guess);
 
    // apply EWSB constraint
-   model->solve_ewsb(0);
+   model->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum
    model->calculate_DRbar_parameters();
