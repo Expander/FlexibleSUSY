@@ -568,8 +568,7 @@ CreateVertexExpressions[nPointFunctions_List] :=
             p, d, r},
            rules = Table[0, {Length[nPointFunctions]}];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["   Calculating vertices appearing ",
-                     PrintNPointFunctionName[nPointFunctions[[k]]]];
+               Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d,r} = CreateVertexExpressions[nPointFunctions[[k]]];
                prototypes = prototypes <> p;
                decls = decls <> d;
@@ -702,11 +701,12 @@ PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
 CreateNPointFunctions[nPointFunctions_List] :=
     Module[{prototypes = "", decls = "", vertexRules = {}, p, d},
            (* create coupling functions for all vertices in the list *)
-           Print["Calculating vertices for all n-point functions ..."];
+           Print["Calculating vertices for ..."];
            {prototypes, decls, vertexRules} = CreateVertexExpressions[nPointFunctions];
            (* creating n-point functions *)
+           Print["Generating C++ code for ..."];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["Writing ", PrintNPointFunctionName[nPointFunctions[[k]]]];
+               Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexRules];
                prototypes = prototypes <> p;
                decls = decls <> d;

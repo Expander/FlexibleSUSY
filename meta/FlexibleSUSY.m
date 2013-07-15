@@ -73,7 +73,7 @@ ReplaceInFiles[files_List, replacementList_List] :=
               cppTemplateFileName = files[[f,2]];
               cppFile             = Import[cppFileName, "String"];
               modifiedCppFile     = StringReplace[cppFile, replacementList];
-              Print["   writing file ", cppTemplateFileName];
+              Print["   Writing file ", cppTemplateFileName];
               Export[cppTemplateFileName, modifiedCppFile, "String"];
              ];
           ];
