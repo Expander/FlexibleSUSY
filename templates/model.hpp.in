@@ -27,6 +27,7 @@
 #include "two_scale_model.hpp"
 
 #include <iosfwd>
+#include <string>
 
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
@@ -58,6 +59,7 @@ public:
    virtual void print(std::ostream&) const;
 
 @massGetters@
+@laTeXNameGetters@
 @mixingMatrixGetters@
 @phasesGetterSetters@
 @massCalculationPrototypes@

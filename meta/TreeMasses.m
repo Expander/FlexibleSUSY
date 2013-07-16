@@ -9,6 +9,9 @@ SARAH's MassMatrix[] function";
 CreateMassGetter::usage="creates a C function for
 the mass getter";
 
+CreateLaTeXNameGetter::usage="creates a getter which returns the
+LaTeX name of a particle";
+
 CreateMixingMatrixGetter::usage="creates a getter for the mixing
 matrix";
 
@@ -285,6 +288,17 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
               returnType = CConversion`VectorType["DoubleVector", dim];
              ];
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
+          ];
+
+CreateLaTeXNameGetter[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{massESSymbol, massESSymbolStr, latexName, result},
+           massESSymbol = GetMassEigenstate[massMatrix];
+           massESSymbolStr = ToValidCSymbolString[massESSymbol];
+           latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
+           result = "std::string get_" <> massESSymbolStr <>
+                    "_latex_name() const { return \"" <>
+                    latexName <> "\"; }\n";
+           Return[result];z
           ];
 
 CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=

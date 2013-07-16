@@ -212,7 +212,7 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
-    Module[{massGetters = "", k,
+    Module[{massGetters = "", laTeXNameGetters = "", k,
             mixingMatrixGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
@@ -232,8 +232,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            },
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
-               massGetters = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
-               mixingMatrixGetters = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
+               massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
+               laTeXNameGetters     = laTeXNameGetters <> TreeMasses`CreateLaTeXNameGetter[massMatrices[[k]]];
+               mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
                physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
@@ -277,8 +278,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[];
            dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
            ReplaceInFiles[files,
-                          { "@massGetters@" -> IndentText[massGetters],
-                            "@mixingMatrixGetters@" -> IndentText[mixingMatrixGetters],
+                          { "@massGetters@"          -> IndentText[massGetters],
+                            "@laTeXNameGetters@"     -> IndentText[laTeXNameGetters],
+                            "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],

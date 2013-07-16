@@ -24,6 +24,7 @@
 #include "linalg.h"
 
 #include <iosfwd>
+#include <string>
 
 struct @ModelName@_physical {
    @ModelName@_physical();
@@ -32,6 +33,7 @@ struct @ModelName@_physical {
 
 @physicalMassesDef@
 @mixingMatricesDef@
+@laTeXNameGetters@
 };
 
 #endif
