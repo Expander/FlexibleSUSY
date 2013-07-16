@@ -22,7 +22,8 @@ TEMPLATES    := \
 		$(DIR)/susy_parameters.cpp.in \
 		$(DIR)/susy_scale_constraint.hpp.in \
 		$(DIR)/susy_scale_constraint.cpp.in \
-		$(DIR)/utilities.hpp.in
+		$(DIR)/utilities.hpp.in \
+		$(DIR)/utilities.cpp.in
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

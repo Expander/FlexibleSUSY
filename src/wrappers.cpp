@@ -276,6 +276,13 @@ Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
    return a;
 }
 
+Eigen::ArrayXd ToEigenArray(double v)
+{
+   Eigen::ArrayXd a(1);
+   a(0) = v;
+   return a;
+}
+
 DoubleVector ToDoubleVector(const Eigen::ArrayXd& a)
 {
    DoubleVector v(a.rows());

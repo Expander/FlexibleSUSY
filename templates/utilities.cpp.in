@@ -1,0 +1,91 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#include "@ModelName@_utilities.hpp"
+#include "logger.hpp"
+#include "wrappers.hpp"
+
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+@ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
+   : spectrum_tree()
+   , spectrum_one_loop()
+   , scale(0.0)
+   , width(16)
+{
+}
+
+
+void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@& model)
+{
+   spectrum_tree.clear();
+   spectrum_one_loop.clear();
+   scale = model.get_scale();
+
+@fillSpectrumVector@
+}
+
+void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) const
+{
+   if (spectrum_tree.empty() && spectrum_one_loop.empty())
+      return;
+
+   std::ofstream filestr(file_name.c_str(), std::ios::out);
+   VERBOSE_MSG("@ModelName@_spectrum_plotter::write_to_file: opening file: "
+               << file_name.c_str());
+   if (filestr.fail()) {
+      ERROR("@ModelName@_spectrum_plotter::write_to_file: can't open file "
+            << file_name);
+      return;
+   }
+
+   write_spectrum(spectrum_tree, filestr);
+   write_spectrum(spectrum_one_loop, filestr);
+
+   filestr.close();
+   VERBOSE_MSG("@ModelName@_spectrum_plotter::write_to_file: file written: "
+               << file_name.c_str());
+}
+
+void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std::ofstream& filestr) const
+{
+   for (std::size_t s = 0; s < spectrum.size(); ++s) {
+      if (!filestr.good()) {
+         ERROR("@ModelName@_spectrum_plotter::write_spectrum: "
+               "file stream is corrupted");
+         break;
+      }
+
+      filestr << std::left << "# " << spectrum[s].first << '\n';
+
+      for (int i = 0; i < spectrum[s].second.rows(); ++i) {
+         std::stringstream latex_name;
+         latex_name << "$" << spectrum[s].first;
+         if (spectrum[s].second.rows() > 1)
+            latex_name << "_{" << (i+1) << "}";
+         latex_name  << "$\n";
+         filestr << std::left << std::setw(width) << s;
+         filestr << std::left << std::setw(width) << spectrum[s].second[i];
+         filestr << latex_name.str();
+      }
+   }
+}

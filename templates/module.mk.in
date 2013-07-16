@@ -14,7 +14,8 @@ LIB@MODEL@_SRC += \
 		$(DIR)/run_@MODEL@.cpp \
 		$(DIR)/@MODEL@_susy_parameters.cpp \
 		$(DIR)/@MODEL@_soft_parameters.cpp \
-		$(DIR)/@MODEL@_susy_scale_constraint.cpp
+		$(DIR)/@MODEL@_susy_scale_constraint.cpp \
+		$(DIR)/@MODEL@_utilities.cpp
 endif
 
 LIB@MODEL@_OBJ := \
@@ -88,6 +89,9 @@ $(DIR)/@MODEL@_initial_guesser.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
 	true
 
 $(DIR)/@MODEL@_utilities.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+	true
+
+$(DIR)/@MODEL@_utilities.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
 	true
 
 $(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ) $(DIR)/run_@MODEL@.o: CPPFLAGS += $(EIGENFLAGS)

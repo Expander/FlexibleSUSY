@@ -12,6 +12,8 @@ the mass getter";
 CreateLaTeXNameGetter::usage="creates a getter which returns the
 LaTeX name of a particle";
 
+FillSpectrumVector::usage="";
+
 CreateMixingMatrixGetter::usage="creates a getter for the mixing
 matrix";
 
@@ -298,7 +300,17 @@ CreateLaTeXNameGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            result = "std::string get_" <> massESSymbolStr <>
                     "_latex_name() const { return \"" <>
                     latexName <> "\"; }\n";
-           Return[result];z
+           Return[result];
+          ];
+
+FillSpectrumVector[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{massESSymbol, massESSymbolStr, latexName, result},
+           massESSymbol = GetMassEigenstate[massMatrix];
+           massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
+           latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
+           result = "spectrum_tree.push_back(TParticle(\"" <> latexName <>
+                    "\", ToEigenArray(model.get_" <> massESSymbolStr <> "())));\n";
+           Return[result];
           ];
 
 CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=

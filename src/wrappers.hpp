@@ -144,6 +144,7 @@ T Sqr(T a)
 }
 
 Eigen::ArrayXd ToEigenArray(const DoubleVector&);
+Eigen::ArrayXd ToEigenArray(double);
 DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
 Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
 DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);

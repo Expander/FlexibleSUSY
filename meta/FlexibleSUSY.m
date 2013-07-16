@@ -212,7 +212,7 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
-    Module[{massGetters = "", laTeXNameGetters = "", k,
+    Module[{massGetters = "", k,
             mixingMatrixGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
@@ -233,7 +233,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
-               laTeXNameGetters     = laTeXNameGetters <> TreeMasses`CreateLaTeXNameGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
@@ -279,7 +278,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
            ReplaceInFiles[files,
                           { "@massGetters@"          -> IndentText[massGetters],
-                            "@laTeXNameGetters@"     -> IndentText[laTeXNameGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
@@ -319,6 +317,19 @@ WriteUserExample[files_List] :=
     Module[{},
            ReplaceInFiles[files,
                           { Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
+WriteUtilitiesClass[massMatrices_List, files_List] :=
+    Module[{k, fillSpectrumVector = "", laTeXNameGetters = ""},
+           For[k = 1, k <= Length[massMatrices], k++,
+               laTeXNameGetters   = laTeXNameGetters <> TreeMasses`CreateLaTeXNameGetter[massMatrices[[k]]];
+               fillSpectrumVector = fillSpectrumVector <> TreeMasses`FillSpectrumVector[massMatrices[[k]]];
+              ];
+           ReplaceInFiles[files,
+                          { "@fillSpectrumVector@" -> IndentText[fillSpectrumVector],
+                            "@laTeXNameGetters@"   -> IndentText[laTeXNameGetters],
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
@@ -608,6 +619,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.cpp"}]}}
                                       ];
 
+           Print["Creating utilities class ..."];
+           WriteUtilitiesClass[massMatrices,
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.cpp"}]}}
+                              ];
+
            Print["Creating class for high-scale constraint ..."];
            WriteConstraintClass[SARAH`ConditionGUTscale /. susyBreakingParameterReplacementRules,
                                 SARAH`BoundaryHighScale /. susyBreakingParameterReplacementRules,
@@ -679,9 +698,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.hpp"}]}},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]}},
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];

@@ -26,6 +26,7 @@
 #include <Eigen/Core>
 #include <string>
 #include <vector>
+#include <utility>
 
 class @ModelName@_parameter_getter {
 public:
@@ -35,6 +36,26 @@ public:
    std::vector<std::string> get_parameter_names(const @ModelName@& model) const {
       return model.get_parameter_names();
    }
+};
+
+class @ModelName@_spectrum_plotter {
+public:
+   @ModelName@_spectrum_plotter();
+   ~@ModelName@_spectrum_plotter() {}
+
+   void extract_spectrum(const @ModelName@&);
+   void write_to_file(const std::string&) const;
+
+@laTeXNameGetters@
+
+private:
+   typedef std::pair<std::string, Eigen::ArrayXd> TParticle;
+   typedef std::vector<TParticle> TSpectrum;
+   TSpectrum spectrum_tree, spectrum_one_loop;
+   double scale;
+   unsigned width;
+
+   void write_spectrum(const TSpectrum&, std::ofstream&) const;
 };
 
 #endif

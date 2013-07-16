@@ -89,6 +89,10 @@ int main()
 
    coupling_monitor.run(MZ, gut_scale, 100, true);
    coupling_monitor.write_to_file("@ModelName@_rge_running.dat");
+
+   @ModelName@_spectrum_plotter plotter;
+   plotter.extract_spectrum(model);
+   plotter.write_to_file("@ModelName@_spectrum.dat");
 #endif
 
    return 0;
