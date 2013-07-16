@@ -36,6 +36,7 @@
 
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model->get_input().parameter
+#define LOCALINPUT(parameter) input.parameter
 
 @ModelName@::@ModelName@(const @ModelName@_input_parameters& input_)
    : Two_scale_model()
@@ -175,7 +176,11 @@ int @ModelName@::solve_ewsb_iteratively(unsigned loop_order)
 
 int @ModelName@::solve_ewsb_tree_level()
 {
+   int error = 0;
+
 @solveEwsbTreeLevel@
+
+   return error;
 }
 
 int @ModelName@::solve_ewsb_one_loop()

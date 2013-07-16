@@ -147,9 +147,114 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
            Return[result];
           ];
 
+SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
+    Module[{realParameters, simplificationRules},
+           realParameters = CConversion`ToValidCSymbol /@ Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
+           simplificationRules = Flatten[{Rule[SARAH`Conj[#],#], Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters];
+           equations /. simplificationRules
+          ];
+
+ExpressionsDifferBySignAtMost[{expr1_, expr2_}] :=
+    (Expand[expr1 - expr2] === 0) || (Expand[expr1 + expr2] === 0);
+
+ExpressionsDifferBySignAtMost[exprs_List] :=
+    Module[{i, k},
+           For[i = 1, i <= Length[exprs], i++,
+               For[k = i+1, k <= Length[exprs], k++,
+                   If[!ExpressionsDifferBySignAtMost[{exprs[[i]], exprs[[k]]}],
+                      Return[False]
+                     ];
+                  ];
+              ];
+           Return[True];
+          ];
+
+ExpressionsAreEqual[{expr1_, expr2_}] :=
+    Expand[expr1 - expr2] === 0;
+
+ExpressionsAreEqual[exprs_List] :=
+    Module[{i, k},
+           For[i = 1, i <= Length[exprs], i++,
+               For[k = i+1, k <= Length[exprs], k++,
+                   If[!ExpressionsAreEqual[{exprs[[i]], exprs[[k]]}],
+                      Return[False]
+                     ];
+                  ];
+              ];
+           Return[True];
+          ];
+
+CanReduceSolution[solution_List, signs_List] :=
+    Module[{allParameters, signedParameters, signedSolutions, i, par,
+            signCheck = True, unsignedCheck = True,
+            unsignedParameters, unsignedSolutions, reducedSolution},
+           If[Length[solution] <= 1, Return[solution]];
+           allParameters = DeleteDuplicates[Flatten[solution /. Rule[p_,_] :> p]];
+           signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
+           unsignedParameters = Complement[allParameters, signedParameters];
+           (* Check 1: Do the solutions for the signed parameters
+              differ by a sign only? *)
+           For[i = 1, i <= Length[signedParameters], i++,
+               par = signedParameters[[i]];
+               signedSolutions = Cases[Flatten[solution], Rule[par,expr_] :> expr];
+               If[!ExpressionsDifferBySignAtMost[signedSolutions],
+                  signCheck = False;
+                 ];
+              ];
+           (* Check 2: Are the solutions for the other parameters
+              equal? *)
+           For[i = 1, i <= Length[unsignedParameters], i++,
+               par = unsignedParameters[[i]];
+               unsignedSolutions = Cases[Flatten[solution], Rule[par,expr_] :> expr];
+               If[!ExpressionsAreEqual[unsignedSolutions],
+                  unsignedCheck = False;
+                 ];
+              ];
+           Return[signCheck && unsignedCheck];
+          ];
+
+ReduceSolution[solution_List, signs_List] :=
+    Module[{signedParameters, reducedSolution},
+           signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
+           reducedSolution = solution[[1]] /.
+              Rule[p_, expr_] /; MemberQ[signedParameters,p] :>
+              Rule[p, Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]] Sqrt[Simplify[expr^2]]];
+           Return[reducedSolution];
+          ];
+
 SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
-    Module[{result},
-           result = "return solve_ewsb_iteratively(0);\n";
+    Module[{result = "", simplifiedEqs, parameters, parameterConversion,
+            solution, signs, reducedSolution, i, par, expr, parStr},
+           simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
+           simplifiedEqs = (#[[2]] == 0)& /@ simplifiedEqs;
+           parameters = CConversion`ToValidCSymbol /@ parametersFixedByEWSB;
+           solution = Solve[simplifiedEqs, parameters];
+           parameterConversion = Rule[#,CConversion`ToValidCSymbol[#]]& /@ parametersFixedByEWSB;
+           signs = Cases[FindFreePhase /@ parametersFixedByEWSB, FlexibleSUSY`Sign[_]] /. parameterConversion;
+           (* Try to reduce the solution *)
+           If[CanReduceSolution[solution, signs],
+              reducedSolution = ReduceSolution[solution, signs];
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  expr = reducedSolution[[i,2]];
+                  parStr = "new_" <> CConversion`ToValidCSymbolString[par];
+                  result = result <>
+                           "const double " <> parStr <> " = " <>
+                           CConversion`RValueToCFormString[expr] <> ";\n";
+                 ];
+              result = result <> "\n";
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <>
+                           "if (!std::isnan(new_" <> parStr <> "))\n" <>
+                               IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
+                           "else\n" <>
+                               IndentText["error = 1;"] <> "\n";
+                 ];
+              ,
+              result = "error = solve_ewsb_iteratively(0);\n";
+             ];
            Return[result];
           ];
 
