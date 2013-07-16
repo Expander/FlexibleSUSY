@@ -95,6 +95,11 @@ const @ModelName@_input_parameters& @ModelName@::get_input() const
    return input;
 }
 
+void @ModelName@::set_input(const @ModelName@_input_parameters& input_)
+{
+   input = input_;
+}
+
 int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
    if (contains_nan(x, @numberOfEWSBEquations@)) {
