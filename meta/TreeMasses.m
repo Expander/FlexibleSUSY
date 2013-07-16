@@ -308,8 +308,8 @@ FillSpectrumVector[massMatrix_TreeMasses`FSMassMatrix] :=
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
-           result = "spectrum_tree.push_back(TParticle(\"" <> latexName <>
-                    "\", ToEigenArray(model.get_" <> massESSymbolStr <> "())));\n";
+           result = "spectrum.push_back(TParticle(\"" <> latexName <>
+                    "\", ToEigenArray(PHYSICAL(" <> massESSymbolStr <> "))));\n";
            Return[result];
           ];
 

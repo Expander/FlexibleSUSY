@@ -26,9 +26,10 @@
 #include <iostream>
 #include <iomanip>
 
+#define PHYSICAL(p) model.get_physical().p
+
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
-   : spectrum_tree()
-   , spectrum_one_loop()
+   : spectrum()
    , scale(0.0)
    , width(16)
 {
@@ -37,8 +38,7 @@
 
 void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@& model)
 {
-   spectrum_tree.clear();
-   spectrum_one_loop.clear();
+   spectrum.clear();
    scale = model.get_scale();
 
 @fillSpectrumVector@
@@ -46,7 +46,7 @@ void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@& model)
 
 void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) const
 {
-   if (spectrum_tree.empty() && spectrum_one_loop.empty())
+   if (spectrum.empty())
       return;
 
    std::ofstream filestr(file_name.c_str(), std::ios::out);
@@ -58,8 +58,8 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
       return;
    }
 
-   write_spectrum(spectrum_tree, filestr);
-   write_spectrum(spectrum_one_loop, filestr);
+   filestr << "### one-loop pole masses (Q = " << scale << " GeV)\n";
+   write_spectrum(spectrum, filestr);
 
    filestr.close();
    VERBOSE_MSG("@ModelName@_spectrum_plotter::write_to_file: file written: "
