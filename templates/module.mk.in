@@ -87,6 +87,9 @@ $(DIR)/@MODEL@_convergence_tester.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
 $(DIR)/@MODEL@_initial_guesser.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
 	true
 
+$(DIR)/@MODEL@_utilities.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+	true
+
 $(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ) $(DIR)/run_@MODEL@.o: CPPFLAGS += $(EIGENFLAGS)
 
 $(LIB@MODEL@): $(LIB@MODEL@_OBJ)

@@ -679,7 +679,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]}},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]},
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.hpp"}]}},
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
