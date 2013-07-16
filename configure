@@ -57,7 +57,8 @@ looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra -Wcast-qual\
- -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor"
+ -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
+ -Wno-unused-local-typedefs"
 FFLAGS="-O2 -frecursive"
 FLIBS=""
 BOOSTTESTLIBS=""
