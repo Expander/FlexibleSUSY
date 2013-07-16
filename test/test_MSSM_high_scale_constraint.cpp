@@ -7,6 +7,12 @@
 #include <functional>
 #include <Eigen/Dense>
 
+#define private public
+
+#include "softsusy.h"
+#include "mssm_parameter_point.hpp"
+#include "mssm_two_scale_sugra_constraint.hpp"
+#include "test_MSSM.hpp"
 #include "MSSM_model.hpp"
 #include "MSSM_high_scale_constraint.hpp"
 #include "wrappers.hpp"
@@ -119,4 +125,29 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    TEST_CLOSE(m.get_TYu(), input.Azero * m.get_Yu(), 1.0e-6);
    TEST_CLOSE(m.get_TYd(), input.Azero * m.get_Yd(), 1.0e-6);
    TEST_CLOSE(m.get_TYe(), input.Azero * m.get_Ye(), 1.0e-6);
+}
+
+BOOST_AUTO_TEST_CASE( test_mx_calculation )
+{
+   MSSM m; Mssm<Two_scale> s;
+   MSSM_input_parameters input;
+   setup_MSSM(m, s, input);
+   Mssm_parameter_point pp;
+   pp.tanBeta = input.TanBeta;
+   pp.a0 = input.Azero;
+   pp.m12 = input.m12;
+   pp.m0 = input.m0;
+   pp.signMu = input.SignMu;
+
+   MSSM_high_scale_constraint MSSM_sugra_constraint(input);
+   Mssm_sugra_constraint mssm_sugra_constraint(pp);
+
+   MSSM_sugra_constraint.set_model(&m);
+   mssm_sugra_constraint.set_model((Two_scale_model*)&s);
+
+   MSSM_sugra_constraint.update_scale();
+   mssm_sugra_constraint.update_scale();
+
+   BOOST_CHECK_CLOSE_FRACTION(MSSM_sugra_constraint.get_scale(),
+                              mssm_sugra_constraint.get_scale(), 1.0e-13);
 }
