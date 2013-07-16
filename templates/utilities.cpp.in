@@ -77,15 +77,19 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 
       filestr << std::left << "# " << spectrum[s].first << '\n';
 
-      for (int i = 0; i < spectrum[s].second.rows(); ++i) {
-         std::stringstream latex_name;
-         latex_name << "$" << spectrum[s].first;
+      for (unsigned i = 0; i < spectrum[s].second.rows(); ++i) {
+         std::stringstream latex_name, latex_name_with_index;
+         latex_name << "$" << spectrum[s].first << "$";
+         latex_name_with_index << "$" << spectrum[s].first;
          if (spectrum[s].second.rows() > 1)
-            latex_name << "_{" << (i+1) << "}";
-         latex_name  << "$\n";
-         filestr << std::left << std::setw(width) << s;
-         filestr << std::left << std::setw(width) << spectrum[s].second[i];
-         filestr << latex_name.str();
+            latex_name_with_index << "_{" << (i+1) << "}";
+         latex_name_with_index  << "$";
+
+         filestr << std::left << std::setw(width) << s
+                 << std::left << std::setw(width) << spectrum[s].second[i]
+                 << std::left << std::setw(2*width) << latex_name.str()
+                 << std::left << std::setw(2*width) << latex_name_with_index.str()
+                 << '\n';
       }
    }
 }
