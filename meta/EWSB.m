@@ -188,7 +188,7 @@ CanReduceSolution[solution_List, signs_List] :=
     Module[{allParameters, signedParameters, signedSolutions, i, par,
             signCheck = True, unsignedCheck = True,
             unsignedParameters, unsignedSolutions, reducedSolution},
-           If[Length[solution] <= 1, Return[solution]];
+           If[Length[solution] <= 1, Return[True]];
            allParameters = DeleteDuplicates[Flatten[solution /. Rule[p_,_] :> p]];
            signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
            unsignedParameters = Complement[allParameters, signedParameters];
