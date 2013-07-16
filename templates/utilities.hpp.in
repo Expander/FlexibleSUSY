@@ -49,7 +49,17 @@ public:
 @laTeXNameGetters@
 
 private:
-   typedef std::pair<std::string, Eigen::ArrayXd> TParticle;
+   struct TParticle {
+      std::string name;
+      std::string latex_name;
+      Eigen::ArrayXd masses;
+      TParticle(const std::string& name_, const std::string& latex_name_,
+                const Eigen::ArrayXd& masses_)
+         : name(name_)
+         , latex_name(latex_name_)
+         , masses(masses_)
+         {}
+   };
    typedef std::vector<TParticle> TSpectrum;
    TSpectrum spectrum;
    double scale;

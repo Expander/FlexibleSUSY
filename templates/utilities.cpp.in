@@ -75,20 +75,25 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
          break;
       }
 
-      filestr << std::left << "# " << spectrum[s].first << '\n';
+      const std::string& name = spectrum[s].name;
+      const std::string& latex_name = spectrum[s].latex_name;
+      const Eigen::ArrayXd& masses = spectrum[s].masses;
 
-      for (unsigned i = 0; i < spectrum[s].second.rows(); ++i) {
-         std::stringstream latex_name, latex_name_with_index;
-         latex_name << "$" << spectrum[s].first << "$";
-         latex_name_with_index << "$" << spectrum[s].first;
-         if (spectrum[s].second.rows() > 1)
-            latex_name_with_index << "_{" << (i+1) << "}";
-         latex_name_with_index  << "$";
+      filestr << std::left << "# " << name << '\n';
+
+      for (unsigned i = 0; i < masses.rows(); ++i) {
+         std::string lname("$" + latex_name + "$");
+         std::stringstream lname_with_index;
+         lname_with_index << "$" << latex_name;
+         if (masses.rows() > 1)
+            lname_with_index << "_{" << (i+1) << "}";
+         lname_with_index  << "$";
 
          filestr << std::left << std::setw(width) << s
-                 << std::left << std::setw(width) << spectrum[s].second[i]
-                 << std::left << std::setw(2*width) << latex_name.str()
-                 << std::left << std::setw(2*width) << latex_name_with_index.str()
+                 << std::left << std::setw(width) << masses[i]
+                 << std::left << std::setw(width) << name
+                 << std::left << std::setw(2*width) << lname
+                 << std::left << std::setw(2*width) << lname_with_index.str()
                  << '\n';
       }
    }

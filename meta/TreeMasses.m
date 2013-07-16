@@ -304,12 +304,14 @@ CreateLaTeXNameGetter[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 FillSpectrumVector[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{massESSymbol, massESSymbolStr, latexName, result},
+    Module[{massESSymbol, massESSymbolStr, massStr, latexName, result},
            massESSymbol = GetMassEigenstate[massMatrix];
-           massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
+           massESSymbolStr = ToValidCSymbolString[massESSymbol];
+           massStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
-           result = "spectrum.push_back(TParticle(\"" <> latexName <>
-                    "\", ToEigenArray(PHYSICAL(" <> massESSymbolStr <> "))));\n";
+           result = "spectrum.push_back(TParticle(\"" <> massESSymbolStr <>
+                    "\", \"" <> latexName <> "\", ToEigenArray(PHYSICAL(" <>
+                    massStr <> "))));\n";
            Return[result];
           ];
 
