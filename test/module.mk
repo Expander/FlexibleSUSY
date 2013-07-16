@@ -22,7 +22,8 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
 		$(DIR)/test_MSSM_initial_guesser.cpp \
 		$(DIR)/test_MSSM_low_scale_constraint.cpp \
-		$(DIR)/test_MSSM_model.cpp
+		$(DIR)/test_MSSM_model.cpp \
+		$(DIR)/test_MSSM_spectrum.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
 TEST_SRC += \
@@ -151,6 +152,10 @@ $(DIR)/test_MSSM_high_scale_constraint.x: $(DIR)/test_MSSM_high_scale_constraint
 
 $(DIR)/test_MSSM_low_scale_constraint.d $(DIR)/test_MSSM_low_scale_constraint.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_MSSM_low_scale_constraint.x: $(DIR)/test_MSSM_low_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+$(DIR)/test_MSSM_spectrum.d $(DIR)/test_MSSM_spectrum.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_MSSM_spectrum.x: $(DIR)/test_MSSM_spectrum.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 %.x: %.o $(ALLLIB)
