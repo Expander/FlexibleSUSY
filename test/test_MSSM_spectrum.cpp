@@ -8,6 +8,7 @@
 #include "error.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
+#include "wrappers.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
 #include "MSSM_model.hpp"
@@ -52,6 +53,7 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
+   MssmSoftsusy get_model() const { return softSusy; }
    void test(const MSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
       // run softsusy
       softsusy::TOLERANCE = 1.0e-4;
@@ -91,6 +93,7 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
+   MSSM get_model() const { return mssm; }
    void test(const MSSM_input_parameters& pp) {
       MSSM_high_scale_constraint sugra_constraint(pp);
       MSSM_low_scale_constraint  low_constraint(pp);
@@ -144,4 +147,33 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
 
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.14);
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.015);
+
+   // compare model parameters
+   const MssmSoftsusy ss(softSusy_tester.get_model());
+   const MSSM fs(mssm_tester.get_model());
+
+   BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
+   BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
+   BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00027);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0013);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 8.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MassB() , ss.displayGaugino(1), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0022);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
+
+   const double vu = fs.get_vu();
+   const double vd = fs.get_vd();
+   const double tanBeta = vu / vd;
+   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
+
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0012);
 }
