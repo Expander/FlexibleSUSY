@@ -331,16 +331,23 @@ WritePlotScripts[files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, files_List] :=
-    Module[{k, particles, fillSpectrumVector = "", particleLaTeXNames = "",
+    Module[{k, particles, susyParticles, smParticles,
+            fillSpectrumVectorWithSusyParticles = "",
+            fillSpectrumVectorWithSMParticles = "",
+            particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = ""},
            particles = GetMassEigenstate /@ massMatrices;
+           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
+           smParticles   = Complement[particles, susyParticles];
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
-           fillSpectrumVector = TreeMasses`FillSpectrumVector[particles];
+           fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
+           fillSpectrumVectorWithSMParticles   = TreeMasses`FillSpectrumVector[smParticles];
            ReplaceInFiles[files,
-                          { "@fillSpectrumVector@" -> IndentText[fillSpectrumVector],
+                          { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
+                            "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
