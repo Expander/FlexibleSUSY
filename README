@@ -55,3 +55,5 @@ Example
    $ ./createmodel --models=MSSM,NMSSM
    $ ./configure --with-models=MSSM,NMSSM
    $ make
+
+   $ ./models/MSSM/run_MSSM.x # run the spectrum generator
