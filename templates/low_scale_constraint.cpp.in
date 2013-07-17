@@ -45,7 +45,7 @@
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
-   initial_scale_guess = scale;
+   scale = initial_scale_guess;
 }
 
 @ModelName@_low_scale_constraint::~@ModelName@_low_scale_constraint()

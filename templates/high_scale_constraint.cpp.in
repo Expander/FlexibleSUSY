@@ -39,7 +39,7 @@
    , inputPars(inputPars_)
 {
 @scaleGuess@
-   initial_scale_guess = scale;
+   scale = initial_scale_guess;
 }
 
 @ModelName@_high_scale_constraint::~@ModelName@_high_scale_constraint()

@@ -114,28 +114,28 @@ CreateLocalConstRefsForBetas[expr_] :=
            Return[result];
           ];
 
-CalculateScale[Null] := "";
+CalculateScale[Null, _] := "";
 
-CalculateScale[False] :=
-    "ERROR(\"GUT scale condition is allways false!\");\n";
+CalculateScale[False, _] :=
+    "ERROR(\"scale condition is allways false!\");\n";
 
-CalculateScale[True] :=
-    "WARNING(\"GUT scale condition is allways true!\");\n";
+CalculateScale[True, _] :=
+    "WARNING(\"scale condition is allways true!\");\n";
 
-CalculateScale[expr_] :=
+CalculateScale[expr_, scaleName_String] :=
     Module[{result},
            result = CreateLocalConstRefs[expr];
            result = result <> "\n";
-           result = result <> CalculateScaleFromExpr[expr];
+           result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
           ];
 
-CalculateScale[expr_Equal] :=
+CalculateScale[expr_Equal, scaleName_String] :=
     Module[{result},
            result = CreateLocalConstRefs[expr];
            result = result <> CreateLocalConstRefsForBetas[expr];
            result = result <> "\n";
-           result = result <> CalculateScaleFromExpr[expr];
+           result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
           ];
 
@@ -175,20 +175,20 @@ CalculateScaleFromExprSymb[False] := Null;
 
 CalculateScaleFromExprSymb[True] := Global`currentScale;
 
-CalculateScaleFromExpr[Equal[expr1_, expr2_]] :=
+CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
     Module[{result, solution},
            solution = CalculateScaleFromExprSymb[Equal[expr1, expr2]];
            If[solution === Null,
               result = "ERROR(\"no solution found for the equation " <>
                         ToString[expr1] <> " == " <> ToString[expr2] <> "\");\n";
               ,
-              result = "scale = " <> RValueToCFormString[solution] <> ";\n";
+              result = scaleName <> " = " <> RValueToCFormString[solution] <> ";\n";
              ];
            Return[result];
           ];
 
-CalculateScaleFromExpr[expr_] :=
-    "scale = " <> RValueToCFormString[expr] <> ";\n";
+CalculateScaleFromExpr[expr_, scaleName_String] :=
+    scaleName <> " = " <> RValueToCFormString[expr] <> ";\n";
 
 DefineParameter[parameter_Symbol] :=
     "double " <> ToValidCSymbolString[parameter] <> ";\n";

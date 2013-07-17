@@ -173,8 +173,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           Constraint`SetOutputParameters[GetOutputParameters[]];
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
-          calculateScale  = Constraint`CalculateScale[condition];
-          scaleGuess      = Constraint`CalculateScale[scaleFirstGuess];
+          calculateScale  = Constraint`CalculateScale[condition, "scale"];
+          scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
