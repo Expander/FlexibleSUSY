@@ -77,7 +77,8 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
    model->set_scale(mtpole);
    model->set_loops(2);
 
-@applyConstraint@
+   // apply user-defined initial guess at the low scale
+@initialGuessAtLowScale@
 
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
@@ -113,6 +114,9 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
    // apply high-scale constraint
    high_constraint.set_model(model);
    high_constraint.apply();
+
+   // apply user-defined initial guess at the high scale
+@initialGuessAtHighScale@
 
    err = model->run_to(low_scale_guess);
    if (err)

@@ -31,8 +31,8 @@ numberOfModelParameters = 0;
 
 CheckModelFileSettings[] :=
     Module[{},
-           If[Head[Global`InitialGuess] =!= List,
-              Global`InitialGuess = {};
+           If[Head[Global`InitialGuessAtLowScale] =!= List,
+              Global`InitialGuessAtLowScale = {};
              ];
            If[!NameQ["Global`BoundaryHighScaleFirstGuess"],
               Print["Warning: Global`BoundaryHighScaleFirstGuess should be",
@@ -192,12 +192,14 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  } ];
           ];
 
-WriteInitialGuesserClass[settings_List, files_List] :=
-   Module[{applyConstraint, setDRbarYukawaCouplings},
-          applyConstraint = Constraint`ApplyConstraints[settings];
+WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
+   Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings},
+          initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
+          initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           ReplaceInFiles[files,
-                 { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
+                 { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
+                   "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
@@ -694,7 +696,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for initial guesser ..."];
-           WriteInitialGuesserClass[Global`InitialGuess /. susyBreakingParameterReplacementRules,
+           WriteInitialGuesserClass[Global`InitialGuessAtLowScale /. susyBreakingParameterReplacementRules,
+                                    Global`InitialGuessAtHighScale /. susyBreakingParameterReplacementRules,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],

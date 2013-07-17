@@ -46,9 +46,11 @@ BoundaryLowScaleInput={
    {vu, 2 MZDRbar / Sqrt[(GUTNormalization[g1]^2 g1^2 + g2^2)] Sin[ArcTan[TanBeta]]}
 };
 
-InitialGuess = {
+InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
    {\[Mu]   , MZ},
    {B[\[Mu]], MZ^2}
 };
+
+InitialGuessAtHighScale = {};
