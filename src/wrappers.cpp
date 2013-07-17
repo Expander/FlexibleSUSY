@@ -272,7 +272,7 @@ Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
 {
    Eigen::ArrayXd a(v.size());
    for (int i = v.displayStart(); i <= v.displayEnd(); i++)
-      a(i - 1) = v(i);
+      a(i - v.displayStart()) = v(i);
    return a;
 }
 
@@ -280,6 +280,21 @@ Eigen::ArrayXd ToEigenArray(double v)
 {
    Eigen::ArrayXd a(1);
    a(0) = v;
+   return a;
+}
+
+std::valarray<double> ToValarray(const DoubleVector& v)
+{
+   std::valarray<double> a(v.size());
+   for (int i = v.displayStart(); i <= v.displayEnd(); i++)
+      a[i - v.displayStart()] = v(i);
+   return a;
+}
+
+std::valarray<double> ToValarray(double v)
+{
+   std::valarray<double> a(1);
+   a[0] = v;
    return a;
 }
 

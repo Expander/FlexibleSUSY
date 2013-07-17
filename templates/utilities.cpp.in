@@ -83,15 +83,16 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 
       const std::string& name = spectrum[s].name;
       const std::string& latex_name = spectrum[s].latex_name;
-      const Eigen::ArrayXd& masses = spectrum[s].masses;
+      const std::valarray<double>& masses = spectrum[s].masses;
+      const std::size_t multiplicity = masses.size();
 
       filestr << std::left << "# " << name << '\n';
 
-      for (unsigned i = 0; i < masses.rows(); ++i) {
+      for (std::size_t i = 0; i < multiplicity; ++i) {
          std::string lname("$" + latex_name + "$");
          std::stringstream lname_with_index;
          lname_with_index << "$" << latex_name;
-         if (masses.rows() > 1)
+         if (multiplicity > 1)
             lname_with_index << "_{" << (i+1) << "}";
          lname_with_index  << "$";
 

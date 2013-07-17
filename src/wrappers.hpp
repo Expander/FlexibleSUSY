@@ -4,6 +4,7 @@
 
 #include "linalg.h"
 #include <cmath>
+#include <valarray>
 #include <Eigen/Core>
 
 static const double Pi = M_PI;
@@ -145,6 +146,8 @@ T Sqr(T a)
 
 Eigen::ArrayXd ToEigenArray(const DoubleVector&);
 Eigen::ArrayXd ToEigenArray(double);
+std::valarray<double> ToValarray(const DoubleVector&);
+std::valarray<double> ToValarray(double);
 DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
 Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
 DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);

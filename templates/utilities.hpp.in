@@ -26,6 +26,7 @@
 #include <Eigen/Core>
 #include <string>
 #include <vector>
+#include <valarray>
 #include <utility>
 
 namespace @ModelName@_info {
@@ -57,9 +58,9 @@ private:
    struct TParticle {
       std::string name;
       std::string latex_name;
-      Eigen::ArrayXd masses;
+      std::valarray<double> masses;
       TParticle(const std::string& name_, const std::string& latex_name_,
-                const Eigen::ArrayXd& masses_)
+                const std::valarray<double>& masses_)
          : name(name_)
          , latex_name(latex_name_)
          , masses(masses_)
