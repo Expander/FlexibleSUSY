@@ -354,15 +354,17 @@ CreateParticleLaTeXNames[particles_List] :=
            Return[result];
           ];
 
-FillSpectrumVector[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{massESSymbol, massESSymbolStr, massStr, latexName, result},
-           massESSymbol = GetMassEigenstate[massMatrix];
-           massESSymbolStr = ToValidCSymbolString[massESSymbol];
-           massStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
-           latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
-           result = "spectrum.push_back(TParticle(\"" <> massESSymbolStr <>
-                    "\", \"" <> latexName <> "\", ToValarray(PHYSICAL(" <>
-                    massStr <> "))));\n";
+FillSpectrumVector[particles_List] :=
+    Module[{par, parStr, massStr, latexName, result = ""},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               parStr = ToValidCSymbolString[par];
+               massStr = ToValidCSymbolString[FlexibleSUSY`M[par]];
+               latexName = StringReplace[SARAH`getLaTeXField[par], "\\" -> "\\\\"];
+               result = result <> "spectrum.push_back(TParticle(\"" <> parStr <>
+                        "\", \"" <> latexName <> "\", ToValarray(PHYSICAL(" <>
+                        massStr <> "))));\n";
+              ];
            Return[result];
           ];
 

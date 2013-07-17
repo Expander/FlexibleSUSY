@@ -338,9 +338,7 @@ WriteUtilitiesClass[massMatrices_List, files_List] :=
            particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
-           For[k = 1, k <= Length[massMatrices], k++,
-               fillSpectrumVector = fillSpectrumVector <> TreeMasses`FillSpectrumVector[massMatrices[[k]]];
-              ];
+           fillSpectrumVector = TreeMasses`FillSpectrumVector[particles];
            ReplaceInFiles[files,
                           { "@fillSpectrumVector@" -> IndentText[fillSpectrumVector],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
