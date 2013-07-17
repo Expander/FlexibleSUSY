@@ -27,6 +27,8 @@ allOutputParameters = {};
 
 GetOutputParameters[] := allOutputParameters;
 
+numberOfModelParameters = 0;
+
 CheckModelFileSettings[] :=
     Module[{},
            If[Head[Global`InitialGuess] =!= List,
@@ -98,6 +100,7 @@ GeneralReplacementRules[] :=
       "@hyperchargeCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
       "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@ModelName@"           -> Model`Name,
+      "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@DateAndTime@"         -> DateString[]
     }
 
@@ -314,6 +317,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteUserExample[files_List] :=
+    Module[{},
+           ReplaceInFiles[files,
+                          { Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
+WritePlotScripts[files_List] :=
     Module[{},
            ReplaceInFiles[files,
                           { Sequence @@ GeneralReplacementRules[]
@@ -588,6 +598,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            TreeMasses`SetModelParameters[allParameters];
 
+           numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
+           numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
+
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {},
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.hpp.in"}],
@@ -598,6 +611,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Checking EWSB equations ..."];
            freePhases = EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
+
+           Print["Creating plot scripts ..."];
+           WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_plot_spectrum.gnuplot"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rge_running.gnuplot.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_plot_rge_running.gnuplot"}]}}
+                           ];
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[Global`InputParameters, freePhases,

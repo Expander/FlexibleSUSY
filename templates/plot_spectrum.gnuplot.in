@@ -1,0 +1,7 @@
+set terminal x11
+
+set title "@ModelName@ particle spectrum"
+set ylabel "mass / GeV"
+unset key
+
+plot "@ModelName@_spectrum.dat" using 1:2:(0.4):(0):xtic(3) with boxxyerrorbars linecolor rgb "black"
