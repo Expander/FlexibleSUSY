@@ -79,7 +79,9 @@ void @ModelName@_high_scale_constraint::update_scale()
 @calculateScale@
 
    if (errno == ERANGE) {
-      ERROR("Overflow error during calculation of high scale: " << strerror(errno));
-   @scaleGuess@
+      ERROR("@ModelName@_high_scale_constraint: Overflow error during"
+            " calculation of high scale: " << strerror(errno));
+      scale = get_initial_scale_guess();
+      errno = 0;
    }
 }
