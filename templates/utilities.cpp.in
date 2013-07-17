@@ -29,6 +29,7 @@
 #define PHYSICAL(p) model.get_physical().p
 
 namespace @ModelName@_info {
+@particleMultiplicity@
 @particleNames@
 @particleLaTeXNames@
 }

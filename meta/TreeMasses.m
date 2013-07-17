@@ -16,6 +16,9 @@ CreateParticleNames::usage="creates a list of the particle's names";
 
 CreateParticleEnum::usage="creates an enum of the particles";
 
+CreateParticleMultiplicity::usage="creates array of the particle
+multiplicities";
+
 FillSpectrumVector::usage="";
 
 CreateMixingMatrixGetter::usage="creates a getter for the mixing
@@ -321,6 +324,19 @@ CreateParticleNames[particles_List] :=
                result = result <> "\"" <> name <> "\"";
               ];
            result = "const char* particle_names[NUMBER_OF_PARTICLES] = {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleMultiplicity[particles_List] :=
+    Module[{i, par, mult, result = ""},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               mult = CConversion`ToValidCSymbolString[GetDimension[par]];
+               If[i > 1, result = result <> ", ";];
+               result = result <> mult;
+              ];
+           result = "const unsigned particle_multiplicities[NUMBER_OF_PARTICLES] = {" <>
                     result <> "};\n";
            Return[result];
           ];

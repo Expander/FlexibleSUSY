@@ -332,9 +332,10 @@ WritePlotScripts[files_List] :=
 
 WriteUtilitiesClass[massMatrices_List, files_List] :=
     Module[{k, particles, fillSpectrumVector = "", particleLaTeXNames = "",
-            particleNames = "", particleEnum = ""},
+            particleNames = "", particleEnum = "", particleMultiplicity = ""},
            particles = GetMassEigenstate /@ massMatrices;
            particleEnum       = TreeMasses`CreateParticleEnum[particles];
+           particleMultiplicity = TreeMasses`CreateParticleMultiplicity[particles];
            particleNames      = TreeMasses`CreateParticleNames[particles];
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
            For[k = 1, k <= Length[massMatrices], k++,
@@ -343,6 +344,7 @@ WriteUtilitiesClass[massMatrices_List, files_List] :=
            ReplaceInFiles[files,
                           { "@fillSpectrumVector@" -> IndentText[fillSpectrumVector],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
+                            "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
                             "@particleLaTeXNames@" -> IndentText[particleLaTeXNames],
                             Sequence @@ GeneralReplacementRules[]
