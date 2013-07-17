@@ -483,9 +483,17 @@ CallLoopMassFunction[particle_Symbol] :=
     "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
 CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
-    Module[{particles, result = ""},
+    Module[{particles, susyParticles, smParticles, callSusy = "",
+            callSM = "", result},
            particles = GetLoopCorrectedParticles[states];
-           (result = result <> CallLoopMassFunction[#])& /@ particles;
+           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
+           smParticles = Complement[particles, susyParticles];
+           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ susyParticles;
+           (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
+           result = callSusy <> "\n" <>
+                    "if (calculate_sm_pole_masses) {\n" <>
+                    IndentText[callSM] <>
+                    "}\n";
            Return[result];
           ];
 

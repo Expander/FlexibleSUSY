@@ -40,6 +40,8 @@ public:
    void calculate_DRbar_parameters();
    void calculate_1loop_masses();
    virtual void clear();
+   void do_calculate_sm_pole_masses(bool);
+   bool do_calculate_sm_pole_masses() const;
    void set_ewsb_iteration_precision(double);
    void set_mass_iteration_precision(double);
    void set_number_of_ewsb_iterations(std::size_t);
@@ -79,6 +81,7 @@ private:
    unsigned ewsb_loop_order;
    bool throw_on_tachyon;
    bool throw_on_ewsb_fail;
+   bool calculate_sm_pole_masses;
    double ewsb_iteration_precision;
    double mass_iteration_precision;
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;

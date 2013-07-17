@@ -46,6 +46,7 @@
    , ewsb_loop_order(0)
    , throw_on_tachyon(false)
    , throw_on_ewsb_fail(false)
+   , calculate_sm_pole_masses(false)
    , ewsb_iteration_precision(1.0e-5)
    , mass_iteration_precision(1.0e-5)
    , physical()
@@ -58,6 +59,16 @@
 
 @ModelName@::~@ModelName@()
 {
+}
+
+void @ModelName@::do_calculate_sm_pole_masses(bool flag)
+{
+   calculate_sm_pole_masses = flag;
+}
+
+bool @ModelName@::do_calculate_sm_pole_masses() const
+{
+   return calculate_sm_pole_masses;
 }
 
 void @ModelName@::set_number_of_ewsb_iterations(std::size_t iterations)
