@@ -344,7 +344,7 @@ WriteUtilitiesClass[massMatrices_List, files_List] :=
                           { "@fillSpectrumVector@" -> IndentText[fillSpectrumVector],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
-                            "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
+                            "@particleLaTeXNames@" -> IndentText[particleLaTeXNames],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

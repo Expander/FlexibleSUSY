@@ -330,11 +330,11 @@ CreateParticleLaTeXNames[particles_List] :=
            For[i = 1, i <= Length[particles], i++,
                par = particles[[i]];
                latexName = StringReplace[SARAH`getLaTeXField[par], "\\" -> "\\\\"];
-               If[i > 1, result = result <> ", ";];
+               If[i > 1, result = result <> ",\n";];
                result = result <> "\"" <> latexName <> "\"";
               ];
-           result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {" <>
-                    result <> "};\n";
+           result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {\n" <>
+                    IndentText[result] <> "\n};\n";
            Return[result];
           ];
 
