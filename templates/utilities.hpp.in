@@ -28,6 +28,12 @@
 #include <vector>
 #include <utility>
 
+namespace @ModelName@_info {
+@particleEnum@
+   extern const char* particle_names[NUMBER_OF_PARTICLES];
+   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
+}
+
 class @ModelName@_parameter_getter {
 public:
    Eigen::ArrayXd operator()(const @ModelName@& model) {
@@ -45,8 +51,6 @@ public:
 
    void extract_spectrum(const @ModelName@&);
    void write_to_file(const std::string&) const;
-
-@laTeXNameGetters@
 
 private:
    struct TParticle {

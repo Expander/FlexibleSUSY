@@ -9,8 +9,12 @@ SARAH's MassMatrix[] function";
 CreateMassGetter::usage="creates a C function for
 the mass getter";
 
-CreateLaTeXNameGetter::usage="creates a getter which returns the
-LaTeX name of a particle";
+CreateParticleLaTeXNames::usage="creates a list of the particle's
+LaTeX names";
+
+CreateParticleNames::usage="creates a list of the particle's names";
+
+CreateParticleEnum::usage="creates an enum of the particles";
 
 FillSpectrumVector::usage="";
 
@@ -292,14 +296,45 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
           ];
 
-CreateLaTeXNameGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{massESSymbol, massESSymbolStr, latexName, result},
-           massESSymbol = GetMassEigenstate[massMatrix];
-           massESSymbolStr = ToValidCSymbolString[massESSymbol];
-           latexName = StringReplace[SARAH`getLaTeXField[massESSymbol], "\\" -> "\\\\"];
-           result = "std::string get_" <> massESSymbolStr <>
-                    "_latex_name() const { return \"" <>
-                    latexName <> "\"; }\n";
+CreateParticleEnum[particles_List] :=
+    Module[{i, par, name, result = ""},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               name = CConversion`ToValidCSymbolString[par];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           (* append enum state for the number of particles *)
+           If[Length[particles] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_PARTICLES";
+           result = "enum Particles {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleNames[particles_List] :=
+    Module[{i, par, name, result = ""},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               name = CConversion`ToValidCSymbolString[par];
+               If[i > 1, result = result <> ", ";];
+               result = result <> "\"" <> name <> "\"";
+              ];
+           result = "const char* particle_names[NUMBER_OF_PARTICLES] = {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParticleLaTeXNames[particles_List] :=
+    Module[{i, par, latexName, result = ""},
+           For[i = 1, i <= Length[particles], i++,
+               par = particles[[i]];
+               latexName = StringReplace[SARAH`getLaTeXField[par], "\\" -> "\\\\"];
+               If[i > 1, result = result <> ", ";];
+               result = result <> "\"" <> latexName <> "\"";
+              ];
+           result = "const char* particle_latex_names[NUMBER_OF_PARTICLES] = {" <>
+                    result <> "};\n";
            Return[result];
           ];
 

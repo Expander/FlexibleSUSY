@@ -28,6 +28,11 @@
 
 #define PHYSICAL(p) model.get_physical().p
 
+namespace @ModelName@_info {
+@particleNames@
+@particleLaTeXNames@
+}
+
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
    , scale(0.0)
