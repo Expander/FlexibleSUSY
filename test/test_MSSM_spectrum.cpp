@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
 {
    MSSM_input_parameters pp;
    const MSSM_high_scale_constraint high_constraint(pp);
-   const double mxGuess = high_constraint.get_scale();
+   const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
    BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));

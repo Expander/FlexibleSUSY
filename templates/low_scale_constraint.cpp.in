@@ -45,6 +45,7 @@
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
+   initial_scale_guess = scale;
 }
 
 @ModelName@_low_scale_constraint::~@ModelName@_low_scale_constraint()
@@ -81,6 +82,11 @@ void @ModelName@_low_scale_constraint::apply()
 double @ModelName@_low_scale_constraint::get_scale() const
 {
    return scale;
+}
+
+double @ModelName@_low_scale_constraint::get_initial_scale_guess() const
+{
+   return initial_scale_guess;
 }
 
 void @ModelName@_low_scale_constraint::set_model(Two_scale_model* model_)

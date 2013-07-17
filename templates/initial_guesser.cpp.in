@@ -103,8 +103,8 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
 
 void @ModelName@_initial_guesser::guess_soft_parameters()
 {
-   const double low_scale_guess = low_constraint.get_scale();
-   const double high_scale_guess = high_constraint.get_scale();
+   const double low_scale_guess = low_constraint.get_initial_scale_guess();
+   const double high_scale_guess = high_constraint.get_initial_scale_guess();
 
    int err = model->run_to(high_scale_guess);
    if (err)

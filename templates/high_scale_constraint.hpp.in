@@ -33,9 +33,11 @@ public:
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
+   double get_initial_scale_guess() const;
 
 private:
    double scale;
+   double initial_scale_guess;
    @ModelName@* model;
    @ModelName@_input_parameters inputPars;
 
