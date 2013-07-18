@@ -100,17 +100,31 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    MSSM_low_scale_constraint constraint(input);
    constraint.set_model(&m);
 
+   const double TanBeta = input.TanBeta;
+   const double g1 = m.get_g1();
+   const double g2 = m.get_g2();
+
    const double ss_mt = s.calcRunningMt();
    const double ss_mb = s.calcRunningMb();
    const double ss_me = s.calcRunningMtau();
+   const double MZ    = s.displayMz();
+   const double pizzt = s.piZZT(MZ, s.displayMu());
+   const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
+   const double ss_vev = s.getVev();
 
    const double fs_mt = m.calculate_MFu_DRbar_1loop(Electroweak_constants::PMTOP, 3);
    const double fs_mb = m.calculate_MFd_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
    const double fs_me = m.calculate_MFe_DRbar_1loop(Electroweak_constants::MTAU, 3);
+   const double fs_MZ = m.calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
+   const double fs_vd = (2*fs_MZ)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
+   const double fs_vu = (2*fs_MZ*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
+   const double fs_vev = Sqrt(Sqr(fs_vu) + Sqr(fs_vd));
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
    BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 4.3e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
+   BOOST_CHECK_CLOSE_FRACTION(fs_vev, ss_vev, 4.5e-10);
 
    // apply constraints
    constraint.apply();
