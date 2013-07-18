@@ -66,6 +66,7 @@ public:
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "Static_model"; }
    virtual int run_to(double, double) { return 0; }
+   virtual void set_precision(double) {}
 };
 
 class Static_constraint : public Constraint<Two_scale> {

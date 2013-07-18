@@ -35,6 +35,7 @@ public:
    virtual std::string name() const { return "Mssm"; }
    virtual int run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
+   virtual void set_precision(double p) { precison = p; }
 
    void set_scale(double scale) { setMu(scale); }
    double get_scale() const { return displayMu(); }
@@ -42,6 +43,7 @@ public:
    void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:
+   double precison;
    Mssm(const SoftParsMssm&);
 };
 

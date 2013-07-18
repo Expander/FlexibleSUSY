@@ -20,6 +20,7 @@
 
 Mssm<Two_scale>::Mssm()
    : Two_scale_model()
+   , precison(1.0e-5)
 {
 }
 

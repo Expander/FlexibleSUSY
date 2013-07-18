@@ -20,6 +20,7 @@ public:
    virtual int run_to(double, double) { return 0; }
    virtual void set_parameters(const DoubleVector& v) { parameters = v; }
    virtual DoubleVector get_parameters() const { return parameters; }
+   virtual void set_precision(double) {}
 private:
    DoubleVector parameters;
 };
@@ -53,6 +54,7 @@ public:
    virtual ~Counting_model() {}
    virtual void calculate_spectrum() {}
    virtual int run_to(double, double) { ++number_of_runs; return 0; }
+   virtual void set_precision(double) {}
    unsigned get_number_of_runs() const {
       return number_of_runs;
    }

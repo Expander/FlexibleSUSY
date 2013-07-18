@@ -33,6 +33,7 @@ public:
       model.print(out);
       return out;
    }
+   virtual void set_precision(double) = 0;
 };
 
 #endif

@@ -47,6 +47,7 @@
    , throw_on_tachyon(false)
    , throw_on_ewsb_fail(false)
    , calculate_sm_pole_masses(false)
+   , precision(1.0e-5)
    , ewsb_iteration_precision(1.0e-5)
    , mass_iteration_precision(1.0e-5)
    , physical()
@@ -79,6 +80,11 @@ void @ModelName@::set_number_of_ewsb_iterations(std::size_t iterations)
 void @ModelName@::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
+}
+
+void @ModelName@::set_precision(double precision_)
+{
+   precision = precision_;
 }
 
 void @ModelName@::set_ewsb_iteration_precision(double precision)
