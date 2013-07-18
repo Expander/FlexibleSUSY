@@ -122,6 +122,7 @@ void RGFlow<Two_scale>::run_up()
    const size_t number_of_models = models.size();
    for (size_t m = 0; m < number_of_models; ++m) {
       TModel* model = models[m];
+      model->model->set_precision(get_precision());
       VERBOSE_MSG("> \tselecting model " << model->model->name());
       // apply all constraints
       const size_t n_upwards_constraints = model->upwards_constraints.size();
@@ -130,7 +131,7 @@ void RGFlow<Two_scale>::run_up()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
-         if (model->model->run_to(scale, get_precision()))
+         if (model->model->run_to(scale))
             throw NonPerturbativeRunningError(model->model, scale);
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
@@ -163,7 +164,7 @@ void RGFlow<Two_scale>::run_down()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
-         if (model->model->run_to(scale, get_precision()))
+         if (model->model->run_to(scale))
             throw NonPerturbativeRunningError(model->model, scale);
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
@@ -197,7 +198,7 @@ void RGFlow<Two_scale>::apply_lowest_constraint()
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
-   if (model->model->run_to(scale, get_precision()))
+   if (model->model->run_to(scale))
       throw NonPerturbativeRunningError(model->model, scale);
    VERBOSE_MSG("| \tapplying constraint");
    constraint->apply();
