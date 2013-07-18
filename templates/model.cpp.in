@@ -84,6 +84,7 @@ void @ModelName@::set_number_of_mass_iterations(std::size_t iterations)
 void @ModelName@::set_precision(double precision_)
 {
    precision = precision_;
+   ewsb_iteration_precision = precision_;
 }
 
 void @ModelName@::set_ewsb_iteration_precision(double precision)
