@@ -429,7 +429,7 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                     outputMomenta <> "(" <> particleName <> ");\n\n" <>
                     "do {\n" <>
                     IndentText[body] <>
-                    "} while (diff > mass_iteration_precision\n" <>
+                    "} while (diff > precision\n" <>
                     "         && iteration < number_of_mass_iterations);\n";
            Return[result];
           ];

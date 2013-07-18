@@ -43,7 +43,6 @@ public:
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void set_ewsb_iteration_precision(double);
-   void set_mass_iteration_precision(double);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
    double get_ewsb_iteration_precision() const;
@@ -85,7 +84,6 @@ private:
    bool calculate_sm_pole_masses;
    double precision;
    double ewsb_iteration_precision;
-   double mass_iteration_precision;
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
    @ModelName@_physical physical;
    @ModelName@_input_parameters input;

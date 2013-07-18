@@ -49,7 +49,6 @@
    , calculate_sm_pole_masses(false)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
-   , mass_iteration_precision(1.0e-5)
    , physical()
    , input(input_)
 @physicalMassesInit@
@@ -90,11 +89,6 @@ void @ModelName@::set_precision(double precision_)
 void @ModelName@::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
-}
-
-void @ModelName@::set_mass_iteration_precision(double precision)
-{
-   mass_iteration_precision = precision;
 }
 
 double @ModelName@::get_ewsb_iteration_precision() const
