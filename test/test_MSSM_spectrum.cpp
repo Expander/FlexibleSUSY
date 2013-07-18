@@ -102,9 +102,10 @@ public:
       MSSM_initial_guesser initial_guesser(&mssm, pp, low_constraint,
                                            susy_constraint,
                                            sugra_constraint);
-      Two_scale_increasing_precision precision(10.0, 1.0e-5);
+      Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.set_input(pp);
+      mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(&low_constraint);
