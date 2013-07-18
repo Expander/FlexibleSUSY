@@ -110,21 +110,26 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    const double MZ    = s.displayMz();
    const double pizzt = s.piZZT(MZ, s.displayMu());
    const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
-   const double ss_vev = s.getVev();
+   const double ss_new_vev = s.getVev();
 
    const double fs_mt = m.calculate_MFu_DRbar_1loop(Electroweak_constants::PMTOP, 3);
    const double fs_mb = m.calculate_MFd_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
    const double fs_me = m.calculate_MFe_DRbar_1loop(Electroweak_constants::MTAU, 3);
    const double fs_MZ = m.calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
-   const double fs_vd = (2*fs_MZ)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
-   const double fs_vu = (2*fs_MZ*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
-   const double fs_vev = Sqrt(Sqr(fs_vu) + Sqr(fs_vd));
+   const double fs_old_vd = m.get_vd();
+   const double fs_old_vu = m.get_vu();
+   // const double fs_old_vev = Sqrt(Sqr(fs_old_vu) + Sqr(fs_old_vd));
+   const double fs_new_vd = (2*fs_MZ)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
+   const double fs_new_vu = (2*fs_MZ*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
+   const double fs_new_vev = Sqrt(Sqr(fs_new_vu) + Sqr(fs_new_vd));
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
    BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 4.3e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
-   BOOST_CHECK_CLOSE_FRACTION(fs_vev, ss_vev, 4.5e-10);
+   BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
+   BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(fs_new_vu / fs_new_vd, s.displayTanb(), 1.0e-10);
 
    // apply constraints
    constraint.apply();
@@ -146,6 +151,12 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
          BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
       }
    }
+
+   // The following Yukawa couplings differ a lot from Softsusy,
+   // because Ben uses the new vev (= the value of the vev after
+   // sparticleThresholdCorrections() was called) to calculate the
+   // Yukawa couplings.  We use the old vev (= combination of vu, vd
+   // from the last run) to calculate the Yukawa couplings.
 
    BOOST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), s.displayYukawaMatrix(YU)(1,1), 0.02);
