@@ -687,7 +687,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for low-scale constraint ..."];
            WriteConstraintClass[Global`LowScale /. susyBreakingParameterReplacementRules,
                                 Global`LowScaleInput /. susyBreakingParameterReplacementRules,
-                                Global`MZ,
+                                Global`LowScaleFirstGuess,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.hpp"}]},

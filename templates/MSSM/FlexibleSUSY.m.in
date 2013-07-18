@@ -12,12 +12,13 @@ DefaultParameterPoint = {
 
 ParametersToSolveTadpoles = { B[\[Mu]], \[Mu] };
 
-SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 
-HighScale = g1 == g2;
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
-(* GUT conditions CMSSM *)
+SUSYScaleInput = {};
+
+HighScale = g1 == g2;
 
 HighScaleFirstGuess = 1.0 10^14;
 
@@ -37,9 +38,9 @@ HighScaleInput={
    {MassG,m12}
 };
 
-SUSYScaleInput={};
-
 LowScale = MZ;
+
+LowScaleFirstGuess = MZ;
 
 LowScaleInput={
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
