@@ -100,6 +100,18 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    MSSM_low_scale_constraint constraint(input);
    constraint.set_model(&m);
 
+   const double ss_mt = s.calcRunningMt();
+   const double ss_mb = s.calcRunningMb();
+   const double ss_me = s.calcRunningMtau();
+
+   const double fs_mt = m.calculate_MFu_DRbar_1loop(Electroweak_constants::PMTOP, 3);
+   const double fs_mb = m.calculate_MFd_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
+   const double fs_me = m.calculate_MFe_DRbar_1loop(Electroweak_constants::MTAU, 3);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 4.3e-7);
+
    // apply constraints
    constraint.apply();
    s.sparticleThresholdCorrections(input.TanBeta);
