@@ -47,7 +47,7 @@
    , throw_on_tachyon(false)
    , throw_on_ewsb_fail(false)
    , calculate_sm_pole_masses(false)
-   , precision(1.0e-5)
+   , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
    , mass_iteration_precision(1.0e-5)
    , physical()
@@ -387,6 +387,8 @@ std::string @ModelName@::name() const
 
 int @ModelName@::run_to(double scale, double eps)
 {
+   if (eps < 0.0)
+      eps = precision;
    return @ModelName@_soft_parameters::run_to(scale, eps);
 }
 
