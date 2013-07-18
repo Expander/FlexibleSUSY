@@ -34,15 +34,15 @@ CheckModelFileSettings[] :=
            If[Head[Global`InitialGuessAtLowScale] =!= List,
               Global`InitialGuessAtLowScale = {};
              ];
-           If[!NameQ["Global`BoundaryHighScaleFirstGuess"],
-              Print["Warning: Global`BoundaryHighScaleFirstGuess should be",
+           If[!NameQ["Global`HighScaleFirstGuess"],
+              Print["Warning: Global`HighScaleFirstGuess should be",
                     " set in the model file!"];
-              Global`BoundaryHighScaleFirstGuess = 1.0 10^14;
+              Global`HighScaleFirstGuess = 1.0 10^14;
              ];
-           If[!NameQ[Global`BoundaryLowScale],
-              Print["Warning: Global`BoundaryLowScale should be",
+           If[!NameQ[Global`LowScale],
+              Print["Warning: Global`LowScale should be",
                     " set in the model file!"];
-              Global`BoundaryLowScale = Global`MZ;
+              Global`LowScale = Global`MZ;
              ];
            If[Head[Global`DefaultParameterPoint] =!= List,
               Global`DefaultParameterPoint = {};
@@ -663,9 +663,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               ];
 
            Print["Creating class for high-scale constraint ..."];
-           WriteConstraintClass[SARAH`ConditionGUTscale /. susyBreakingParameterReplacementRules,
-                                SARAH`BoundaryHighScale /. susyBreakingParameterReplacementRules,
-                                Global`BoundaryHighScaleFirstGuess /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[Global`HighScale /. susyBreakingParameterReplacementRules,
+                                Global`HighScaleInput /. susyBreakingParameterReplacementRules,
+                                Global`HighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.hpp"}]},
@@ -674,9 +674,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for susy-scale constraint ..."];
-           WriteConstraintClass[SARAH`RenormalizationScale /. susyBreakingParameterReplacementRules,
-                                SARAH`BoundarySUSYScale /. susyBreakingParameterReplacementRules,
-                                SARAH`RenormalizationScaleFirstGuess /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[Global`SUSYScale /. susyBreakingParameterReplacementRules,
+                                Global`SUSYScaleInput /. susyBreakingParameterReplacementRules,
+                                Global`SUSYScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.hpp"}]},
@@ -685,8 +685,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for low-scale constraint ..."];
-           WriteConstraintClass[Global`BoundaryLowScale /. susyBreakingParameterReplacementRules,
-                                SARAH`BoundaryLowScaleInput /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[Global`LowScale /. susyBreakingParameterReplacementRules,
+                                Global`LowScaleInput /. susyBreakingParameterReplacementRules,
                                 Global`MZ,
                                 Global`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],

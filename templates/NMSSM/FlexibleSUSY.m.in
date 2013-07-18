@@ -13,16 +13,16 @@ DefaultParameterPoint = {
 
 ParametersToSolveTadpoles = { \[Kappa], vS, ms2 };
 
-RenormalizationScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
-RenormalizationScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 
-ConditionGUTscale = g1 == g2;
+HighScale = g1 == g2;
 
 (* GUT conditions CNMSSM *)
 
-BoundaryHighScaleFirstGuess = 1.0 10^16;
+HighScaleFirstGuess = 1.0 10^16;
 
-BoundaryHighScale={
+HighScaleInput={
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
    {T[Yu], Azero*Yu},
@@ -41,12 +41,12 @@ BoundaryHighScale={
    {MassG,m12}
 };
 
-BoundarySUSYScale = {
+SUSYScaleInput = {
 };
 
-BoundaryLowScale = MZ;
+LowScale = MZ;
 
-BoundaryLowScaleInput={
+LowScaleInput={
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
