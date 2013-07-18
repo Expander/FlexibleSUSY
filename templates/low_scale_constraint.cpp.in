@@ -65,8 +65,6 @@ void @ModelName@_low_scale_constraint::apply()
 
    const double MZDRbar
       = model->calculate_M@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
-   const double MWDRbar
-      = model->calculate_M@VectorW@_DRbar_1loop(Electroweak_constants::MW);
 
 @applyConstraint@
 
