@@ -5,6 +5,7 @@
 
 StandardModel<Two_scale>::StandardModel()
    : yu(3, 3), yd(3, 3), ye(3, 3), g(3)
+   , precision(1.0e-3)
 {
    setPars(numStandardModelPars);
    setMu(0.0);
@@ -33,6 +34,13 @@ StandardModel<Two_scale>::StandardModel(const DoubleMatrix& SMu, const DoubleMat
 
 StandardModel<Two_scale>::~StandardModel()
 {
+}
+
+int StandardModel<Two_scale>::run_to(double scale, double eps)
+{
+   if (eps < 0.0)
+      eps = precision;
+   return RGE::runto(scale, eps);
 }
 
 const StandardModel<Two_scale>& StandardModel<Two_scale>::operator=(const StandardModel<Two_scale>& s)

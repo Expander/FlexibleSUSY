@@ -18,6 +18,7 @@ class StandardModel<Two_scale>: public Two_scale_model, protected RGE {
 private:
    DoubleMatrix yu, yd, ye; ///< Yukawa matrices for ups, downs and leptons
    DoubleVector g;          ///< Gauge couplings (g1 = sqrt(5/3) g_Y)
+   double precision;
 
 public:
    const static int numStandardModelPars = 3 * 3 * 3 + 3;
@@ -32,8 +33,9 @@ public:
 
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "SM"; }
-   virtual int run_to(double scale, double eps = -1.0) { return RGE::runto(scale, eps); }
+   virtual int run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << *this; }
+   virtual void set_precision(double p) { precision = p; }
 
    /// sets object to be equal to another
    const StandardModel & operator=(const StandardModel<Two_scale>& s);
