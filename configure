@@ -718,6 +718,21 @@ check_lapack_libs() {
 }
 
 #_____________________________________________________________________
+check_makelib() {
+    checking_msg "build library command $MAKELIB"
+    # strip arguments from the actual command
+    makelib_cmd=`echo $MAKELIB | awk '{ print $1; }'`
+    exists_in_path "$makelib_cmd"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A program which builds libraries must be installed!"
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_math_cmd() {
     checking_msg "Mathematica kernel $MATH"
     exists_in_path "$MATH"
@@ -916,6 +931,7 @@ if test "x$enable_looptools" = "xyes"; then
     check_looptools_incl
     check_looptools_libs
 fi
+check_makelib
 check_math_cmd
 check_models
 
