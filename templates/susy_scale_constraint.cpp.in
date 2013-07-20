@@ -54,6 +54,10 @@ void @ModelName@_susy_scale_constraint::apply()
    update_scale();
 
 @applyConstraint@
+
+   // the parameters, which are fixed by the EWSB eqs., will now be
+   // defined at this scale (at the one-loop level)
+   model->solve_ewsb_one_loop();
 }
 
 double @ModelName@_susy_scale_constraint::get_scale() const
