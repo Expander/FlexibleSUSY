@@ -38,9 +38,9 @@ HighScaleInput={
    {MassG,m12}
 };
 
-LowScale = MZ;
+LowScale = SM[MZ];
 
-LowScaleFirstGuess = MZ;
+LowScaleFirstGuess = SM[MZ];
 
 LowScaleInput={
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
@@ -50,8 +50,8 @@ LowScaleInput={
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
-   {\[Mu]   , MZ},
-   {B[\[Mu]], MZ^2}
+   {\[Mu]   , SM[MZ]},
+   {B[\[Mu]], SM[MZ]^2}
 };
 
 InitialGuessAtHighScale = {};
