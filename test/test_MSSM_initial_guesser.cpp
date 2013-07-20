@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    else
       tanBeta = vu/vd;
    const double vev = Sqrt(Sqr(m.get_vu()) + Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(smssm.displayTanb(), tanBeta, 6.0e-7);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayTanb(), tanBeta, 6.5e-7);
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayHvev(), vev    , 1.3e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(1), m.get_MassB() , 3.0e-7);
@@ -108,6 +108,9 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mDr), m.get_md2(), 1.0e-5);
    // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mLl), m.get_ml2(), 1.0e-5);
    // BOOST_CHECK_CLOSE_FRACTION(smssm.displaySoftMassSquared(mEr), m.get_me2(), 1.0e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayM3Squared(), m.get_BMu(), 6.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displaySusyMu()   , m.get_Mu() , 2.0e-4);
 
    const DoubleMatrix Au(smssm.displayTrilinear(UA)),
       Ad(smssm.displayTrilinear(DA)),

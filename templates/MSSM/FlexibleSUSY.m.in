@@ -49,9 +49,10 @@ LowScaleInput={
 
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
-   {\[Mu]   , SM[MZ]},
-   {B[\[Mu]], SM[MZ]^2}
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
 };
 
-InitialGuessAtHighScale = {};
+InitialGuessAtHighScale = {
+   {\[Mu]   , 1.0},
+   {B[\[Mu]], 0.0}
+};
