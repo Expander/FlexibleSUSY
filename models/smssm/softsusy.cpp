@@ -45,6 +45,7 @@ const MssmSoftsusy & MssmSoftsusy::operator=(const MssmSoftsusy & s) {
   t2OV2Ms = s.displayTadpole2Ms(); 
   t1OV1Ms1loop = s.displayTadpole1Ms1loop(); 
   t2OV2Ms1loop = s.displayTadpole2Ms1loop(); 
+  alternativeMs = s.alternativeMs;
 
   return *this;
 }
@@ -6040,8 +6041,19 @@ double MssmSoftsusy::calcMs() const {
 
   if (QEWSB < EPSTOL) throw("QEWSB Probably too low\n");
 
+  double msf1, msf2;
+
+  if (alternativeMs) {
+     const DoubleVector sups(tree.mu.flatten());
+     msf1 = sups.min();
+     msf2 = sups.max();
+  } else {
+     msf1 = tree.mu(1,3);
+     msf2 = tree.mu(2,3);
+  }
+
   if (QEWSB < MZ) 
-    return maximum(QEWSB * sqrt(tree.mu(2, 3) * tree.mu(1, 3)), displayMz());
+    return maximum(QEWSB * sqrt(msf1 * msf2), displayMz());
   else return QEWSB;
 }
 
@@ -6127,6 +6139,7 @@ double MssmSoftsusy::lowOrg
     double m32 = displayGravitino();
     double muCondFirst = displayMuCond();
     double maCondFirst = displayMaCond();
+    bool altMs = alternativeMs;
 
     setSoftsusy(empty); /// Always starts from an empty object
     /// These are things that are re-written by the new initialisation
@@ -6137,6 +6150,7 @@ double MssmSoftsusy::lowOrg
     setM32(m32);
     setMuCond(muCondFirst);
     setMaCond(maCondFirst);
+    setAlternativeMs(altMs);
 
     double mz = displayMz();
 

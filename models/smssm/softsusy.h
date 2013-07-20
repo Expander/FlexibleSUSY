@@ -77,6 +77,7 @@ private:
   double predMzSq;    ///< predicted Z mass squared after iteration
   double t1OV1Ms, t2OV2Ms;  ///< DRbar tadpoles(MSusy): incl 2 loops
   double t1OV1Ms1loop, t2OV2Ms1loop; ///< DRbar tadpoles(MSusy): excl 2 loops
+  bool alternativeMs;
 public:
   //  void (*boundaryCondition)(MssmSoftsusy &, const DoubleVector &);
   /// Default constructor fills object with zeroes
@@ -185,6 +186,7 @@ public:
   void useAlternativeEwsb() { altEwsb = true; }
   /// Set MZ^2 predicted after iteration
   void setPredMzSq(double a) { predMzSq = a; }
+  void setAlternativeMs(bool flag) { alternativeMs = flag; }
 
   /// Does the full 2-loop calculation of both tadpoles and sets them
   void doTadpoles(double mt, double sinthDRbar);
@@ -705,7 +707,7 @@ inline MssmSoftsusy::MssmSoftsusy()
     problem(), msusy(0.0), minV(6.66e66), 
     mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), altEwsb(false), 
     predMzSq(0.), t1OV1Ms(0.), t2OV2Ms(0.), t1OV1Ms1loop(0.), 
-    t2OV2Ms1loop(0.) { 
+    t2OV2Ms1loop(0.), alternativeMs(false) { 
       setPars(110);
       setMu(0.0);
       setLoops(0);
@@ -723,7 +725,7 @@ inline MssmSoftsusy::MssmSoftsusy(const MssmSoftsusy & s)
     altEwsb(s.displayAltEwsb()), predMzSq(s.displayPredMzSq()), 
     t1OV1Ms(s.displayTadpole1Ms()), t2OV2Ms(s.displayTadpole2Ms()), 
     t1OV1Ms1loop(s.displayTadpole1Ms1loop()), 
-    t2OV2Ms1loop(s.displayTadpole2Ms1loop()) {
+    t2OV2Ms1loop(s.displayTadpole2Ms1loop()), alternativeMs(s.alternativeMs) {
 
     setPars(110);
     setMu(s.displayMu()); 
@@ -736,7 +738,7 @@ inline MssmSoftsusy::MssmSoftsusy(const MssmSusy &s)
     physpars(), forLoops(), problem(), 
     msusy(0.0), minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), 
     setTbAtMX(false), altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.) { 
+    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(false) { 
   setPars(110);
   setMu(s.displayMu()); 
   setLoops(s.displayLoops());
@@ -749,7 +751,7 @@ inline MssmSoftsusy::MssmSoftsusy
   : SoftParsMssm(s), AltEwsbMssm(), physpars(sp), forLoops(), problem(), msusy(0.0),
     minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), 
     altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.) {
+    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(false) {
   setHvev(hv);
   setPars(110);
   setMu(mu);
