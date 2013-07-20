@@ -64,6 +64,7 @@ public:
       pars(1) = pp.m0;
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
+      softSusy.setAlternativeMs(true);
       mx = softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta, oneset, true);
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
@@ -147,11 +148,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.34);
-
-   // Note: Softsusy uses another definition of Msusy!
-   // Softsusy:     Msusy = sqrt(mstop1 * mstop2)
-   // FlexibleSUSY: Msusy = sqrt(min(sfermions) * max(sfermions))
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.03);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.007);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
@@ -181,10 +178,10 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.002);
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0022);
 
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.005);
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.012);
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.006);
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
 
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(0,0), ss.displaySoftMassSquared(mQl)(1,1), 0.0051);
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(1,1), ss.displaySoftMassSquared(mQl)(2,2), 0.0051);
