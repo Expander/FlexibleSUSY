@@ -103,6 +103,7 @@ public:
     return DoubleVector(x.apply(fn),start,end); 
   }
   double nmin(int & p) const;
+  double min() const { return x.min(); } ///< minimum element in vector
   double max() const { return x.max(); }///< maximum element in vector
 
   double max(int & p) const {
