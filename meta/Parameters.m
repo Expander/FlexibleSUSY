@@ -5,6 +5,8 @@ CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNames::usage="";
 
+SetParameter::usage="set model parameter";
+
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
 (e.g. gY) by normalized ones (e.g. g1).";
@@ -261,6 +263,15 @@ CreateParameterNames[name_String, startIndex_, CConversion`MatrixType[type_, row
            Return[{ass, rows * cols}];
           ];
 
+SetParameter[parameter_, value_String, class_String] :=
+    Module[{parameterStr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           class <> "->set_" <> parameterStr <> "(" <> value <> ");\n"
+          ];
+
+SetParameter[parameter_, value_, class_String] :=
+    SetParameter[parameter, CConversion`RValueToCFormString[value], class];
+
 SaveParameterLocally[parameters_List, prefix_String] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parameters], i++,
@@ -287,7 +298,7 @@ RestoreParameter[parameters_List, prefix_String] :=
 RestoreParameter[parameter_, prefix_String] :=
     Module[{ parStr },
            parStr = CConversion`ToValidCSymbolString[parameter];
-           "model->set_" <> parStr <> "(" <> prefix <> parStr <> ");\n"
+           SetParameter[parameter, prefix <> parStr, "model"]
           ];
 
 End[];

@@ -1,5 +1,5 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
@@ -13,8 +13,6 @@ SetBetaFunctions::usage=""
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
-
-SetParameter::usage="set model parameter";
 
 Begin["Private`"];
 
@@ -59,20 +57,11 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
            Return[{cSymbol, decl}];
           ];
 
-SetParameter[parameter_, value_String, class_String] :=
-    Module[{parameterStr},
-           parameterStr = ToValidCSymbolString[parameter];
-           class <> "->set_" <> parameterStr <> "(" <> value <> ");\n"
-          ];
-
-SetParameter[parameter_, value_, class_String] :=
-    SetParameter[parameter, RValueToCFormString[value], class];
-
 ApplyConstraints[settings_List] :=
     Module[{result},
            result = CreateLocalConstRefs[(#[[2]])& /@ settings];
            result = result <> "\n";
-           (result = result <> SetParameter[#[[1]], #[[2]], "model"])& /@ settings;
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], "model"])& /@ settings;
            Return[result];
           ];
 
