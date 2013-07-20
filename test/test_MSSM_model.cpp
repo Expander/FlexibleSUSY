@@ -994,7 +994,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    TEST_CLOSE(s.displayPhys().msnu, m.get_physical().MSv, 1.0e-10);
    TEST_CLOSE(s.displayPhys().mGluino, m.get_physical().MGlu, 1.0e-4);
    TEST_CLOSE(s.displayPhys().mneut.apply(fabs), m.get_physical().MChi, 1.0e-10);
-   TEST_CLOSE(s.displayPhys().mch.apply(fabs), m.get_physical().MCha, 1.0e-10);
+   TEST_CLOSE(s.displayPhys().mch.apply(fabs), m.get_physical().MCha, 1.0e-11);
 
    TEST_CLOSE(s.displayPhys().me.flatten().sort(), m.get_physical().MSe, 1.0e-10);
    TEST_CLOSE(s.displayPhys().mu.flatten().sort(), m.get_physical().MSu, 1.0e-10);
@@ -1045,6 +1045,41 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    }
    TEST_CLOSE(s.displayPhys().mHpm, Hpm(2), 0.09);
    TEST_CLOSE_REL(s.displayPhys().mHpm, Hpm(2), 1.3e-4);
+
+   TEST_EQUALITY(0.0, m.get_physical().MVG);
+   TEST_EQUALITY(0.0, m.get_physical().MVP);
+
+   TEST_CLOSE(s.displayPhys().mGluino, m.get_physical().MGlu, 1.0e-4);
+   TEST_CLOSE_REL(s.displayPhys().msnu(1), m.get_physical().MSv(1), 0.00013);
+   TEST_CLOSE_REL(s.displayPhys().msnu(2), m.get_physical().MSv(2), 0.00013);
+   TEST_CLOSE_REL(s.displayPhys().msnu(3), m.get_physical().MSv(3), 0.00014);
+   TEST_CLOSE_REL(s.displayPhys().mneut.apply(fabs)(1), m.get_physical().MChi(1), 0.0012);
+   TEST_CLOSE_REL(s.displayPhys().mneut.apply(fabs)(2), m.get_physical().MChi(2), 0.0004);
+   TEST_CLOSE_REL(s.displayPhys().mneut.apply(fabs)(3), m.get_physical().MChi(3), 0.0017);
+   TEST_CLOSE_REL(s.displayPhys().mneut.apply(fabs)(4), m.get_physical().MChi(4), 0.0005);
+   TEST_CLOSE_REL(s.displayPhys().mch.apply(fabs)(1), m.get_physical().MCha(1), 0.0011);
+   TEST_CLOSE_REL(s.displayPhys().mch.apply(fabs)(2), m.get_physical().MCha(2), 0.0008);
+
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(1), m.get_physical().MSe(1), 0.00011);
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(2), m.get_physical().MSe(2), 0.0002);
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(3), m.get_physical().MSe(3), 0.0002);
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(4), m.get_physical().MSe(4), 0.00012);
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(5), m.get_physical().MSe(5), 0.00012);
+   TEST_CLOSE_REL(s.displayPhys().me.flatten().sort()(6), m.get_physical().MSe(6), 0.0001);
+
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(1), m.get_physical().MSu(1), 0.0001);
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(2), m.get_physical().MSu(2), 0.0001);
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(3), m.get_physical().MSu(3), 0.00014);
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(4), m.get_physical().MSu(4), 0.00014);
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(5), m.get_physical().MSu(5), 0.00025);
+   TEST_CLOSE_REL(s.displayPhys().mu.flatten().sort()(6), m.get_physical().MSu(6), 0.00044);
+
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(1), m.get_physical().MSd(1), 0.00003);
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(2), m.get_physical().MSd(2), 0.00007);
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(3), m.get_physical().MSd(3), 0.00007);
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(4), m.get_physical().MSd(4), 0.00001);
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(5), m.get_physical().MSd(5), 0.00001);
+   TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(6), m.get_physical().MSd(6), 0.00005);
 }
 
 void test_ewsb_tree(MSSM model, MssmSoftsusy softSusy)
