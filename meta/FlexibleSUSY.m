@@ -23,6 +23,7 @@ LowScaleFirstGuess;
 LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
+MZ;
 
 Begin["Private`"];
 
@@ -49,16 +50,52 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`InitialGuessAtLowScale] =!= List,
               FlexibleSUSY`InitialGuessAtLowScale = {};
              ];
+           If[Head[FlexibleSUSY`InitialGuessAtHighScale] =!= List,
+              FlexibleSUSY`InitialGuessAtHighScale = {};
+             ];
+           (* HighScale *)
+           If[!NameQ["FlexibleSUSY`HighScale"],
+              Print["Warning: FlexibleSUSY`HighScale should be",
+                    " set in the model file!"];
+              FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
+             ];
            If[!NameQ["FlexibleSUSY`HighScaleFirstGuess"],
               Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
                     " set in the model file!"];
               FlexibleSUSY`HighScaleFirstGuess = 1.0 10^14;
              ];
-           If[!NameQ[FlexibleSUSY`LowScale],
+           If[Head[FlexibleSUSY`HighScaleInput] =!= List,
+              FlexibleSUSY`HighScaleInput = {};
+             ];
+           (* LowScale *)
+           If[!NameQ["FlexibleSUSY`LowScale"],
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
-              FlexibleSUSY`LowScale = Global`MZ;
+              FlexibleSUSY`LowScale := FlexibleSUSY`MZ;
              ];
+           If[!NameQ["FlexibleSUSY`LowScaleFirstGuess"],
+              Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
+                    " set in the model file!"];
+              FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`MZ;
+             ];
+           If[Head[FlexibleSUSY`LowScaleInput] =!= List,
+              FlexibleSUSY`LowScaleInput = {};
+             ];
+           (* SusyScale *)
+           If[!NameQ["FlexibleSUSY`SusyScale"],
+              Print["Warning: FlexibleSUSY`SusyScale should be",
+                    " set in the model file!"];
+              FlexibleSUSY`SusyScale := 1000;
+             ];
+           If[!NameQ["FlexibleSUSY`SusyScaleFirstGuess"],
+              Print["Warning: FlexibleSUSY`SusyScaleFirstGuess should be",
+                    " set in the model file!"];
+              FlexibleSUSY`SusyScaleFirstGuess = 1000;
+             ];
+           If[Head[FlexibleSUSY`SusyScaleInput] =!= List,
+              FlexibleSUSY`SusyScaleInput = {};
+             ];
+
            If[Head[FlexibleSUSY`DefaultParameterPoint] =!= List,
               FlexibleSUSY`DefaultParameterPoint = {};
              ];
