@@ -16,6 +16,9 @@ CreateIndexReplacementRules::usage="";
 
 AddRealParameter::usage="";
 
+SaveParameterLocally::usage="Save parameters in local variables";
+RestoreParameter::usage="Restore parameters from local variables";
+
 GetType::usage="";
 
 IsRealParameter::usage="";
@@ -256,6 +259,35 @@ CreateParameterNames[name_String, startIndex_, CConversion`MatrixType[type_, row
               Print["Error: CreateParameterNames: something is wrong with the indices: "
                     <> ToString[rows * cols] <> " != " <> ToString[count]];];
            Return[{ass, rows * cols}];
+          ];
+
+SaveParameterLocally[parameters_List, prefix_String] :=
+    Module[{i, result = ""},
+           For[i = 1, i <= Length[parameters], i++,
+               result = result <> SaveParameterLocally[parameters[[i]], prefix];
+              ];
+           Return[result];
+          ];
+
+SaveParameterLocally[parameter_, prefix_String] :=
+    Module[{ parStr },
+           parStr = CConversion`ToValidCSymbolString[parameter];
+           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <>
+           parStr <> ");\n"
+          ];
+
+RestoreParameter[parameters_List, prefix_String] :=
+    Module[{i, result = ""},
+           For[i = 1, i <= Length[parameters], i++,
+               result = result <> RestoreParameter[parameters[[i]], prefix];
+              ];
+           Return[result];
+          ];
+
+RestoreParameter[parameter_, prefix_String] :=
+    Module[{ parStr },
+           parStr = CConversion`ToValidCSymbolString[parameter];
+           "model->set_" <> parStr <> "(" <> prefix <> parStr <> ");\n"
           ];
 
 End[];

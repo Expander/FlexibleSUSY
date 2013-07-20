@@ -222,7 +222,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      inputParameters_List, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarYukawaCouplings,
-           calculateDeltaAlphaEm, calculateDeltaAlphaS},
+           calculateDeltaAlphaEm, calculateDeltaAlphaS,
+           saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetInputParameters[inputParameters];
           Constraint`SetModelParameters[GetParameters[]];
           Constraint`SetOutputParameters[GetOutputParameters[]];
@@ -233,6 +234,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
+          saveEwsbOutputParameters    = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "old_"];
+          restoreEwsbOutputParameters = Parameters`RestoreParameter[ParametersToSolveTadpoles, "old_"];
           ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
@@ -240,6 +243,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
+                   "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
+                   "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
