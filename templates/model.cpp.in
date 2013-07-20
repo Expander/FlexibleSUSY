@@ -32,8 +32,6 @@
 
 #define CLASSNAME @ModelName@
 
-#define CALC_DRBAR_PARS(model) model->calculate_DRbar_parameters()
-
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
@@ -129,6 +127,7 @@ int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 
 @calculateTreeLevelTadpoles@
    if (ewsb_loop_order > 0) {
+      model->calculate_DRbar_parameters();
 @calculateOneLoopTadpoles@
    }
 

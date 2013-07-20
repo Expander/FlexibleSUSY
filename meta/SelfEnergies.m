@@ -715,8 +715,7 @@ CreateNPointFunctions[nPointFunctions_List] :=
           ];
 
 FillArrayWithOneLoopTadpoles[tadpoles_List, arrayName_String:"tadpole"] :=
-    Module[{body, f, i = 0, d, field, functionName},
-           body = "CALC_DRBAR_PARS(model);\n";
+    Module[{body = "", f, i = 0, d, field, functionName},
            For[f = 1, f <= Length[tadpoles], f++,
                field = GetField[tadpoles[[f]]];
                functionName = CreateTadpoleFunctionName[field];
