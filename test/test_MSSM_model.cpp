@@ -987,6 +987,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM m)
    ensure_tree_level_ewsb(s);
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
+   m.calculate_DRbar_parameters();
    m.calculate_1loop_masses();
 
    TEST_EQUALITY(s.displayMu(), m.get_scale());

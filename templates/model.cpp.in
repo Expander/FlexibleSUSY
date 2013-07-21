@@ -344,8 +344,6 @@ void @ModelName@::calculate_DRbar_parameters()
 
 void @ModelName@::calculate_1loop_masses()
 {
-   calculate_DRbar_parameters();
-
 @callAllLoopMassFunctions@
 }
 
@@ -354,6 +352,12 @@ void @ModelName@::calculate_spectrum()
    throw_on_tachyon = true;
    throw_on_ewsb_fail = true;
 
+   // tree-level parameters
+   solve_ewsb_tree_level();
+   calculate_DRbar_parameters();
+
+   // one-loop level parameters
+   solve_ewsb_one_loop();
    calculate_1loop_masses();
 
    throw_on_tachyon = false;

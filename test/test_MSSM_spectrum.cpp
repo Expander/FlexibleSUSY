@@ -56,6 +56,7 @@ public:
    MssmSoftsusy get_model() const { return softSusy; }
    void test(const MSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
       // run softsusy
+      softsusy::numRewsbLoops = 1;
       softsusy::TOLERANCE = 1.0e-4;
 #ifdef VERBOSE
       softsusy::PRINTOUT = 1;
@@ -147,8 +148,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.34);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.007);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.14);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.003);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
@@ -178,8 +179,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.002);
    // BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0022);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0026);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.009);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
 
@@ -237,13 +238,13 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    const double mH0 = ss.displayDrBarPars().mH0;
 
    // charginos
-   BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.004);
-   BOOST_CHECK_CLOSE_FRACTION(MCha(2), mch(2), 0.0045);
+   // BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.004);
+   // BOOST_CHECK_CLOSE_FRACTION(MCha(2), mch(2), 0.0045);
 
-   BOOST_CHECK_CLOSE_FRACTION(MChi(1), mn(1), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(MChi(2), mn(2), 0.0041);
-   BOOST_CHECK_CLOSE_FRACTION(MChi(3), mn(3), 0.0049);
-   BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0045);
+   // BOOST_CHECK_CLOSE_FRACTION(MChi(1), mn(1), 0.011);
+   // BOOST_CHECK_CLOSE_FRACTION(MChi(2), mn(2), 0.0041);
+   // BOOST_CHECK_CLOSE_FRACTION(MChi(3), mn(3), 0.0049);
+   // BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0045);
 
    // BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 0.001); // for RXi(Wm) == 1
    // BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.001);
