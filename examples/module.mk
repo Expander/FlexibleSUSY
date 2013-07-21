@@ -60,27 +60,27 @@ distclean::     distclean-$(MODNAME)
 
 $(DIR)/run_smssm.d $(DIR)/run_smssm.o: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 
 $(DIR)/lattice_fmssm.x: $(DIR)/lattice_fmssm.o $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/lattice_numerical_fmssm.x: $(DIR)/lattice_numerical_fmssm.o $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
 			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o \
 			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
 $(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(FLIBS)
+		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)
 ALLEXE += $(EXAMPLES_EXE)
