@@ -39,7 +39,7 @@ ALLTST   :=
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
-.PHONY:  all allhdr allexec alllib alltest \
+.PHONY:  all allhdr allexec alllib alltest remove-executables \
 	 clean clean-dep distclean showbuild tag release
 
 all:     allhdr alllib allexec
@@ -80,6 +80,11 @@ clean-dep:
 # the sed script ensures that the target contains the full path
 	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
+
+remove-executables:
+	rm -f $(ALLEXE)
+
+link: remove-executables $(ALLEXE)
 
 distclean::
 	-rm -f Makefile
