@@ -65,15 +65,13 @@ Dynamic libraries
 If you want to create dynamic libraries (instead of static libraries)
 you have to pass all the following options to the ./configure script
 
+   --disable-static-libs
    --libext=".so"
    --make-lib-cmd="gcc -shared -o"
-   --with-cxxflags="-std=c++11 -O2 -fPIC"
-   --with-fflags="-fPIC -O2"
 
 Example:
 
    $ ./configure --with-models=MSSM,NMSSM \
+     --disable-static-libs \
      --libext=".so" \
-     --make-lib-cmd="gcc -shared -o" \
-     --with-cxxflags="-std=c++11 -O2 -fPIC" \
-     --with-fflags="-fPIC -O2"
+     --make-lib-cmd="gcc -shared -o"
