@@ -17,7 +17,8 @@ default_lib_paths="/usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
 # configure log file
-logfile="config.log"
+logfile="$BASEDIR/config.log"
+statusfile="$BASEDIR/config.status"
 
 # whether we are in 32-bit or 64-bit environment
 machine_word_size=""
@@ -87,7 +88,7 @@ write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
     configargs="$*"
     configargs=`echo $configargs | sed 's,\\\,\\\\,g'`
-    echo "$configargs" > config.status
+    echo "$configargs" > $statusfile
 }
 
 #_____________________________________________________________________
