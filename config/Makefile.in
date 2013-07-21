@@ -44,9 +44,6 @@ FSCONFIG := @FSCONFIG@
 
 all:     allhdr alllib allexec
 
-link: clean-executables
-link: ABSBASEDIR=$(CURDIR)
-
 include $(patsubst %, %/module.mk, $(MODULES))
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -86,8 +83,6 @@ clean-dep:
 
 clean-executables:
 	rm -f $(ALLEXE)
-
-link: $(ALLEXE)
 
 distclean::
 	-rm -f Makefile
