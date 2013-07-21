@@ -272,33 +272,35 @@ SetParameter[parameter_, value_String, class_String] :=
 SetParameter[parameter_, value_, class_String] :=
     SetParameter[parameter, CConversion`RValueToCFormString[value], class];
 
-SaveParameterLocally[parameters_List, prefix_String] :=
+SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parameters], i++,
-               result = result <> SaveParameterLocally[parameters[[i]], prefix];
+               result = result <> SaveParameterLocally[parameters[[i]], prefix, caller];
               ];
            Return[result];
           ];
 
-SaveParameterLocally[parameter_, prefix_String] :=
+SaveParameterLocally[parameter_, prefix_String, caller_String] :=
     Module[{ parStr },
            parStr = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStr <> " = MODELPARAMETER(" <>
-           parStr <> ");\n"
+           "const auto " <> prefix <> parStr <> " = " <>
+           If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
           ];
 
-RestoreParameter[parameters_List, prefix_String] :=
+RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parameters], i++,
-               result = result <> RestoreParameter[parameters[[i]], prefix];
+               result = result <> RestoreParameter[parameters[[i]], prefix, modelPtr];
               ];
            Return[result];
           ];
 
-RestoreParameter[parameter_, prefix_String] :=
+RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
     Module[{ parStr },
            parStr = CConversion`ToValidCSymbolString[parameter];
-           SetParameter[parameter, prefix <> parStr, "model"]
+           If[modelPtr != "",
+              SetParameter[parameter, prefix <> parStr, modelPtr],
+              CConversion`ToValidCSymbolString[parameter] <> " = " <> prefix <> parStr <> ";\n"]
           ];
 
 End[];

@@ -234,8 +234,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
-          saveEwsbOutputParameters    = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "old_"];
-          restoreEwsbOutputParameters = Parameters`RestoreParameter[ParametersToSolveTadpoles, "old_"];
+          saveEwsbOutputParameters    = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "old_", "MODELPARAMETER"];
+          restoreEwsbOutputParameters = Parameters`RestoreParameter[ParametersToSolveTadpoles, "old_", "model"];
           ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
@@ -290,7 +290,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             callAllLoopMassFunctions = "", printMasses = "", printMixingMatrices = "",
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
-            clearOutputParameters = "", solveEwsbTreeLevel = ""
+            clearOutputParameters = "", solveEwsbTreeLevel = "",
+            saveEwsbOutputParameters, restoreEwsbOutputParameters
            },
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
@@ -338,6 +339,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
            dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[];
            dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
+           saveEwsbOutputParameters     = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "one_loop_", ""];
+           restoreEwsbOutputParameters  = Parameters`RestoreParameter[ParametersToSolveTadpoles, "one_loop_", ""];
            ReplaceInFiles[files,
                           { "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
@@ -371,6 +374,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
                             "@dependenceNumFunctions@"       -> WrapLines[dependenceNumFunctions],
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
+                            "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
+                            "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
