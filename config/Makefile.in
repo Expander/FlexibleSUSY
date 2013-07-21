@@ -44,6 +44,9 @@ FSCONFIG := @FSCONFIG@
 
 all:     allhdr alllib allexec
 
+link: remove-executables
+link: ABSBASEDIR=$(CURDIR)
+
 include $(patsubst %, %/module.mk, $(MODULES))
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -83,9 +86,6 @@ clean-dep:
 
 remove-executables:
 	rm -f $(ALLEXE)
-
-link: remove-executables
-	@ABSBASEDIR=$(CURDIR)
 
 link: $(ALLEXE)
 
