@@ -39,12 +39,12 @@ ALLTST   :=
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
-.PHONY:  all allhdr allexec alllib alltest remove-executables \
+.PHONY:  all allhdr allexec alllib alltest clean-executables \
 	 clean clean-dep distclean showbuild tag release
 
 all:     allhdr alllib allexec
 
-link: remove-executables
+link: clean-executables
 link: ABSBASEDIR=$(CURDIR)
 
 include $(patsubst %, %/module.mk, $(MODULES))
@@ -84,7 +84,7 @@ clean-dep:
 	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
-remove-executables:
+clean-executables:
 	rm -f $(ALLEXE)
 
 link: $(ALLEXE)
