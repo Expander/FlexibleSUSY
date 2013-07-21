@@ -38,12 +38,14 @@ options="                    \
    enable_debug              \
    enable_looptools          \
    enable_silent             \
+   enable_static_libs        \
    enable_verbose            \
 "
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
 enable_silent="no"
+enable_static_libs="yes"
 enable_verbose="no"
 
 boost_lib_dir=""
@@ -119,6 +121,36 @@ guess_machine_word_size() {
 	*64) machine_word_size="64"; return 0 ;;
 	*)   message "Warning: could not guess machine word size"; return 1 ;;
     esac
+}
+
+contains() {
+    # Check if string $1 contains $2
+    if test $# -lt 2 ; then
+        echo "contains: Too few arguments"
+        return 1
+    fi
+    string="$1"
+    substring="$2"
+    for f in ${string}; do
+        if test "x$f" = "x$substring" ; then
+            return 0 # found
+        fi
+    done
+    return 1 # not found
+}
+
+contains_not() {
+    # Check if string $1 contains $2
+    if test $# -lt 2 ; then
+        echo "contains: Too few arguments"
+        return 1
+    fi
+    contains "$1" "$2"
+    if [ $? -eq 0 ]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 #_____________________________________________________________________
@@ -722,6 +754,16 @@ check_makelib() {
     checking_msg "build library command $MAKELIB"
     # strip arguments from the actual command
     makelib_cmd=`echo $MAKELIB | awk '{ print $1; }'`
+
+    # check if $makelib_cmd can create shared libraries
+    if test "x$enable_static_libs" = "xno" ; then
+        if test "x$makelib_cmd" = "xar" ; then
+            message "\n   Error: $makelib_cmd cannot be used to create shared libraries!"
+            message "   Please use --make-lib-cmd=\"gcc -shared -o\" or something similar."
+            exit 1
+        fi
+    fi
+
     exists_in_path "$makelib_cmd"
     if [ -z "$cmd" ] ; then
         result "not found"
@@ -774,6 +816,28 @@ enable_defines() {
         CPPFLAGS="$CPPFLAGS -DSILENT"
     fi
 
+    if test "x$enable_static_libs" = "xno" ; then
+        # check if -fPIC is in CXXFLAGS and FFLAGS
+        if test "x$CXX" = "xg++" -o "x$CXX" = "xclang++" ; then
+            if contains_not "$CXXFLAGS" "-fPIC" ; then
+                message "  Warning: could not find -fPIC in CXXFLAGS, appending it"
+                CXXFLAGS="$CXXFLAGS -fPIC"
+            fi
+        fi
+        if test "x$FC" = "xgfortran" ; then
+            if contains_not "$FFLAGS" "-fPIC" ; then
+                message "  Warning: could not find -fPIC in FFLAGS, appending it"
+                FFLAGS="$FFLAGS -fPIC"
+            fi
+        fi
+        # check the library extension
+        if test "x$LIBEXT" = "x.a" ; then
+            message "  Warning: library extension $LIBEXT is reserved for static libraries."
+            message "    Please consider using .so as library extension, or similar, e.g."
+            message "    --libext=\".so\""
+        fi
+    fi
+
     if test "x$enable_verbose" = "xyes" ; then
         if test "x$enable_silent" = "xyes" ; then
             message "Warning: ignoring --enable-verbose because silent mode is enabled!"
@@ -801,6 +865,7 @@ enable/disable options, prefix with either --enable- or --disable-
   debug             Debug messages and assertions
   looptools         Use LoopTools to compute the loop functions
   silent            Suppress all command line output
+  static-libs       Create static libraries (default: $enable_static_libs)
   verbose           Verbose messages
 
 with options, prefix with --with-, enables corresponding support
@@ -959,6 +1024,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
     -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
