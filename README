@@ -75,3 +75,13 @@ Example:
      --disable-static-libs \
      --libext=".so" \
      --make-lib-cmd="gcc -shared -o"
+
+Important remark:
+
+The libraries are linked to the executables with _absolute_ paths.
+This means that, if you move the package directory to another
+location, the executables will no longer work, because the libraries
+are now at another place.  To make the executables work again, you
+have to relink them via
+
+   $ make link
