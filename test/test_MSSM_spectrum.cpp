@@ -256,41 +256,41 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.041);
 
    // down-type squarks
-   // const DoubleVector Sd(fs.get_MSd());
-   // const DoubleVector md(ss.displayDrBarPars().md.flatten().sort());
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(1), md(1), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(2), md(2), 0.0032);
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(3), md(3), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(4), md(4), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(5), md(5), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Sd(6), md(6), 0.0034);
+   const DoubleVector Sd(fs.get_MSd());
+   const DoubleVector md(ss.displayDrBarPars().md.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Sd(1), md(1), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(2), md(2), 0.0032);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(3), md(3), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(4), md(4), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(5), md(5), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(6), md(6), 0.0034);
 
    // up-type squarks
-   // const DoubleVector Su(fs.get_MSu());
-   // const DoubleVector mu(ss.displayDrBarPars().mu.flatten().sort());
-   // BOOST_CHECK_CLOSE_FRACTION(Su(1), mu(1), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Su(2), mu(2), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Su(3), mu(3), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Su(4), mu(4), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Su(5), mu(5), 0.0034);
-   // BOOST_CHECK_CLOSE_FRACTION(Su(6), mu(6), 0.0034);
+   const DoubleVector Su(fs.get_MSu());
+   const DoubleVector mu(ss.displayDrBarPars().mu.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Su(1), mu(1), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Su(2), mu(2), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Su(3), mu(3), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Su(4), mu(4), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Su(5), mu(5), 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(Su(6), mu(6), 0.0034);
 
    // sleptons
-   // const DoubleVector Se(fs.get_MSe());
-   // const DoubleVector me(ss.displayDrBarPars().me.flatten().sort());
-   // BOOST_CHECK_CLOSE_FRACTION(Se(1), me(1), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Se(2), me(2), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Se(3), me(3), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Se(4), me(4), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Se(5), me(5), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Se(6), me(6), 0.003);
+   const DoubleVector Se(fs.get_MSe());
+   const DoubleVector me(ss.displayDrBarPars().me.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Se(1), me(1), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(2), me(2), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(3), me(3), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(4), me(4), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(5), me(5), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(6), me(6), 0.003);
 
    // sneutrinos
-   // const DoubleVector msnu(ss.displayDrBarPars().msnu);
-   // const DoubleVector Snu(fs.get_MSv());
-   // BOOST_CHECK_CLOSE_FRACTION(Snu(1), msnu(1), 0.0055);
-   // BOOST_CHECK_CLOSE_FRACTION(Snu(2), msnu(2), 0.003);
-   // BOOST_CHECK_CLOSE_FRACTION(Snu(3), msnu(3), 0.003);
+   const DoubleVector msnu(ss.displayDrBarPars().msnu);
+   const DoubleVector Snu(fs.get_MSv());
+   BOOST_CHECK_CLOSE_FRACTION(Snu(1), msnu(1), 0.0055);
+   BOOST_CHECK_CLOSE_FRACTION(Snu(2), msnu(2), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Snu(3), msnu(3), 0.003);
 
    BOOST_CHECK_EQUAL(fs.get_MVP(), 0.0);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MVZ() , MzRun, 0.02);
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    BOOST_CHECK_EQUAL(fs.get_MFv()(2), 0.0);
    BOOST_CHECK_EQUAL(fs.get_MFv()(3), 0.0);
 
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.00047);
-   // BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0067);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.00047);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0067);
 }
