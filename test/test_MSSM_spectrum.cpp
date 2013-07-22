@@ -247,13 +247,13 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    // BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0045);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 0.018); // for RXi(Wm) == 1
-   // BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.001);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.04);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 0.014); // for RXi(Wm) == 1
-   // BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0  , 0.001);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0  , 0.041);
 
-   // BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.001);
-   // BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.041);
 
    // down-type squarks
    // const DoubleVector Sd(fs.get_MSd());
