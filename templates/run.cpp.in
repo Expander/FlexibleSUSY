@@ -38,62 +38,106 @@
 
 using namespace std;
 
-int main()
-{
-   @ModelName@_input_parameters input;
-   @ModelName@_high_scale_constraint high_scale_input(input);
-   @ModelName@_susy_scale_constraint susy_scale_input(input);
-   @ModelName@_low_scale_constraint  low_scale_input(input);
+class @ModelName@_runner {
+public:
+   @ModelName@_runner()
+      : model(), high_scale(0.), susy_scale(0.), low_scale(0.) {}
+   ~@ModelName@_runner() {}
 
-   std::vector<Constraint<Two_scale>*> upward_constraints;
-   upward_constraints.push_back(&low_scale_input);
-   upward_constraints.push_back(&high_scale_input);
+   double get_high_scale() const { return high_scale; }
+   double get_susy_scale() const { return susy_scale; }
+   double get_low_scale()  const { return low_scale;  }
+   const @ModelName@& get_model() const { return model; }
 
-   std::vector<Constraint<Two_scale>*> downward_constraints;
-   downward_constraints.push_back(&high_scale_input);
-   downward_constraints.push_back(&susy_scale_input);
-   downward_constraints.push_back(&low_scale_input);
+   unsigned run(const @ModelName@_input_parameters& input) {
+      @ModelName@_high_scale_constraint high_scale_constraint(input);
+      @ModelName@_susy_scale_constraint susy_scale_constraint(input);
+      @ModelName@_low_scale_constraint  low_scale_constraint(input);
 
-   @ModelName@ model(input);
+      std::vector<Constraint<Two_scale>*> upward_constraints;
+      upward_constraints.push_back(&low_scale_constraint);
+      upward_constraints.push_back(&high_scale_constraint);
 
-   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
-   @ModelName@_initial_guesser initial_guesser(&model, input, low_scale_input,
-                                               susy_scale_input, high_scale_input);
-   Two_scale_increasing_precision precision(10.0, 1.0e-5);
+      std::vector<Constraint<Two_scale>*> downward_constraints;
+      downward_constraints.push_back(&high_scale_constraint);
+      downward_constraints.push_back(&susy_scale_constraint);
+      downward_constraints.push_back(&low_scale_constraint);
 
-   RGFlow<Two_scale> solver;
-   solver.set_convergence_tester(&convergence_tester);
-   solver.set_running_precision(&precision);
-   solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model, upward_constraints, downward_constraints);
+      model.set_input(input);
 
-   try {
-      solver.solve();
-      model.run_to(susy_scale_input.get_scale());
-      model.calculate_spectrum();
-      model.run_to(Electroweak_constants::MZ);
-      model.print(std::cout);
-   } catch (Error& error) {
-      cout << "Error: " << error.what() << endl;
-   } catch (std::string& str) {
-      cout << "Error: " << str << endl;
+      @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
+      @ModelName@_initial_guesser initial_guesser(&model, input,
+                                                  low_scale_constraint,
+                                                  susy_scale_constraint,
+                                                  high_scale_constraint);
+      Two_scale_increasing_precision precision(10.0, 1.0e-5);
+
+      RGFlow<Two_scale> solver;
+      solver.set_convergence_tester(&convergence_tester);
+      solver.set_running_precision(&precision);
+      solver.set_initial_guesser(&initial_guesser);
+      solver.add_model(&model, upward_constraints, downward_constraints);
+
+      unsigned error_code = 0;
+      high_scale = susy_scale = low_scale = 0.;
+
+      try {
+         solver.solve();
+         high_scale = high_scale_constraint.get_scale();
+         susy_scale = susy_scale_constraint.get_scale();
+         low_scale  = low_scale_constraint.get_scale();
+         model.run_to(susy_scale);
+         model.calculate_spectrum();
+         model.run_to(low_scale);
+      } catch (Error& error) {
+         cout << "Error: " << error.what() << endl;
+         error_code = 1;
+      } catch (std::string& str) {
+         cout << "Error: " << str << endl;
+         error_code = 2;
+      } catch (const char* str) {
+         cout << "Error: " << str << endl;
+         error_code = 2;
+      }
+
+      return error_code;
    }
 
-#if 0
-   const double gut_scale = high_scale_input.get_scale();
-   const double MZ = Electroweak_constants::MZ;
-   model.run_to(MZ);
+   void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const {
+      @ModelName@ tmp_model(model);
+      tmp_model.run_to(low_scale);
 
-   @ModelName@_parameter_getter parameter_getter;
-   Coupling_monitor<@ModelName@, @ModelName@_parameter_getter> coupling_monitor(model, parameter_getter);
+      @ModelName@_parameter_getter parameter_getter;
+      Coupling_monitor<@ModelName@, @ModelName@_parameter_getter>
+         coupling_monitor(tmp_model, parameter_getter);
 
-   coupling_monitor.run(MZ, gut_scale, 100, true);
-   coupling_monitor.write_to_file("@ModelName@_rge_running.dat");
+      coupling_monitor.run(low_scale, high_scale, 100, true);
+      coupling_monitor.write_to_file(filename);
+   }
 
-   @ModelName@_spectrum_plotter plotter;
-   plotter.extract_spectrum(model);
-   plotter.write_to_file("@ModelName@_spectrum.dat");
-#endif
+   void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const {
+      @ModelName@_spectrum_plotter plotter;
+      plotter.extract_spectrum(model);
+      plotter.write_to_file(filename);
+   }
+
+private:
+   @ModelName@ model;
+   double high_scale, susy_scale, low_scale;
+};
+
+int main()
+{
+   @ModelName@_runner runner;
+   @ModelName@_input_parameters input;
+
+   unsigned error_code = runner.run(input);
+
+   if (error_code == 0) {
+      runner.get_model().print(std::cout);
+      // runner.write_running_couplings();
+      // runner.write_spectrum();
+   }
 
    return 0;
 }
