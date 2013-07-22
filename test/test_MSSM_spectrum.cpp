@@ -338,4 +338,43 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 0.0025);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.0036);
+
+   // down-type squarks
+   const DoubleVector Sd_1l(fs.get_physical().MSd);
+   const DoubleVector md_1l(ss.displayPhys().md.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(1), md_1l(1), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(2), md_1l(2), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(3), md_1l(3), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(4), md_1l(4), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(5), md_1l(5), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(6), md_1l(6), 0.0026);
+
+   // up-type squarks
+   const DoubleVector Su_1l(fs.get_physical().MSu);
+   const DoubleVector mu_1l(ss.displayPhys().mu.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(1), mu_1l(1), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(2), mu_1l(2), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(3), mu_1l(3), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(4), mu_1l(4), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(5), mu_1l(5), 0.0026);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(6), mu_1l(6), 0.0026);
+
+   // sleptons
+   const DoubleVector Se_1l(fs.get_physical().MSe);
+   const DoubleVector me_1l(ss.displayPhys().me.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(1), me_1l(1), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(2), me_1l(2), 0.0008);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(3), me_1l(3), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(4), me_1l(4), 0.0022);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(5), me_1l(5), 0.0022);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(6), me_1l(6), 0.0022);
+
+   // sneutrinos
+   const DoubleVector msnu_1l(ss.displayPhys().msnu);
+   const DoubleVector Snu_1l(fs.get_physical().MSv);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(1), msnu_1l(1), 0.0056);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(2), msnu_1l(2), 0.0023);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(3), msnu_1l(3), 0.0012);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_physical().MGlu, ss.displayPhys().mGluino, 0.0022);
 }
