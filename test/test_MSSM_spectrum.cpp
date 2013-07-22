@@ -57,6 +57,7 @@ public:
    void test(const MSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
       // run softsusy
       softsusy::numRewsbLoops = 1;
+      softsusy::numHiggsMassLoops = 1;
       softsusy::TOLERANCE = 1.0e-4;
 #ifdef VERBOSE
       softsusy::PRINTOUT = 1;
@@ -306,4 +307,35 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.00047);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0067);
+
+
+   // comparing one-loop masses
+
+   const DoubleVector
+      MCha_1l(fs.get_physical().MCha),
+      MChi_1l(fs.get_physical().MChi),
+      MHpm_1l(fs.get_physical().MHpm),
+      MAh_1l(fs.get_physical().MAh),
+      Mhh_1l(fs.get_physical().Mhh);
+   const DoubleVector mch_1l(ss.displayPhys().mch),
+      mn_1l(ss.displayPhys().mneut.apply(fabs));
+   const double mHpm_1l = ss.displayPhys().mHpm;
+   const double mA0_1l  = ss.displayPhys().mA0;
+   const double mh0_1l  = ss.displayPhys().mh0;
+   const double mH0_1l  = ss.displayPhys().mH0;
+
+   // charginos
+   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0011);
+   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(2), mch_1l(2), 0.0045);
+
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(1), mn_1l(1), 0.0047);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(2), mn_1l(2), 0.0012);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0049);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0045);
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 0.0032);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 0.0034);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.0036);
 }
