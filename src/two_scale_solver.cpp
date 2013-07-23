@@ -118,7 +118,7 @@ void RGFlow<Two_scale>::initial_guess()
 
 void RGFlow<Two_scale>::run_up()
 {
-   VERBOSE_MSG("> running tower up ...");
+   VERBOSE_MSG("> running tower up (iteration " << iteration << ") ...");
    const size_t number_of_models = models.size();
    for (size_t m = 0; m < number_of_models; ++m) {
       TModel* model = models[m];
