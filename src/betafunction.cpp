@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "betafunction.hpp"
+#include "logger.hpp"
 #include <cmath>
 
 Beta_function::Beta_function()
@@ -40,6 +41,13 @@ int Beta_function::run(double x1, double x2, double eps)
    using namespace std::placeholders;
 
    const double tol = get_tolerance(eps);
+
+   if (std::fabs(x1) < tol || std::fabs(x2) < tol) {
+      ERROR("Beta_function::run: One of the scales is close to zero:"
+            " starting scale = " << x1 << ", end scale = " << x2);
+      return 1;
+   }
+
    Eigen::ArrayXd y(display());
    runge_kutta::Derivs derivs = std::bind(&Beta_function::derivatives,
                                           this, _1, _2);
