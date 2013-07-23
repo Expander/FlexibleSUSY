@@ -105,7 +105,12 @@ public:
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const {
       @ModelName@ tmp_model(model);
-      tmp_model.run_to(low_scale);
+      const unsigned error = tmp_model.run_to(low_scale);
+      if (error) {
+         ERROR("@ModelName@_runner::write_running_couplings: run to scale "
+               << low_scale << " failed");
+         return;
+      }
 
       @ModelName@_parameter_getter parameter_getter;
       Coupling_monitor<@ModelName@, @ModelName@_parameter_getter>

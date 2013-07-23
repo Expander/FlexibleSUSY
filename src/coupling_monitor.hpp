@@ -206,7 +206,12 @@ void Coupling_monitor<Rge,DataGetter>::run(double q1, double q2,
    // run from q1 to q2
    for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
       const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
-      rge.run_to(scale);
+      const unsigned error = rge.run_to(scale);
+      if (error) {
+         ERROR("Coupling_monitor::run: run to scale "
+               << scale << " failed");
+         break;
+      }
       couplings.push_back(TData::value_type(scale, data_getter(rge)));
    }
 
