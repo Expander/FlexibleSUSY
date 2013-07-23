@@ -41,15 +41,17 @@ using namespace std;
 class @ModelName@_runner {
 public:
    @ModelName@_runner()
-      : model(), high_scale(0.), susy_scale(0.), low_scale(0.) {}
+      : model(), high_scale(0.), susy_scale(0.), low_scale(0.)
+      , precision_goal(1.0e-5) {}
    ~@ModelName@_runner() {}
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const @ModelName@& get_model() const { return model; }
+   void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
 
-   unsigned run(const @ModelName@_input_parameters& input) {
+   void run(const @ModelName@_input_parameters& input) {
       @ModelName@_high_scale_constraint high_scale_constraint(input);
       @ModelName@_susy_scale_constraint susy_scale_constraint(input);
       @ModelName@_low_scale_constraint  low_scale_constraint(input);
@@ -65,12 +67,12 @@ public:
 
       model.set_input(input);
 
-      @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
+      @ModelName@_convergence_tester convergence_tester(&model, precision_goal);
       @ModelName@_initial_guesser initial_guesser(&model, input,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
-      Two_scale_increasing_precision precision(10.0, 1.0e-5);
+      Two_scale_increasing_precision precision(10.0, precision_goal);
 
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&convergence_tester);
@@ -78,29 +80,21 @@ public:
       solver.set_initial_guesser(&initial_guesser);
       solver.add_model(&model, upward_constraints, downward_constraints);
 
-      unsigned error_code = 0;
       high_scale = susy_scale = low_scale = 0.;
 
-      try {
-         solver.solve();
-         high_scale = high_scale_constraint.get_scale();
-         susy_scale = susy_scale_constraint.get_scale();
-         low_scale  = low_scale_constraint.get_scale();
-         model.run_to(susy_scale);
-         model.calculate_spectrum();
-         model.run_to(low_scale);
-      } catch (Error& error) {
-         cout << "Error: " << error.what() << endl;
-         error_code = 1;
-      } catch (std::string& str) {
-         cout << "Error: " << str << endl;
-         error_code = 2;
-      } catch (const char* str) {
-         cout << "Error: " << str << endl;
-         error_code = 2;
-      }
+      solver.solve();
 
-      return error_code;
+      high_scale = high_scale_constraint.get_scale();
+      susy_scale = susy_scale_constraint.get_scale();
+      low_scale  = low_scale_constraint.get_scale();
+
+      if (model.run_to(susy_scale))
+         throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, susy_scale);
+
+      model.calculate_spectrum();
+
+      if (model.run_to(low_scale))
+         throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, low_scale);
    }
 
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const {
@@ -129,6 +123,7 @@ public:
 private:
    @ModelName@ model;
    double high_scale, susy_scale, low_scale;
+   double precision_goal; ///< precision goal
 };
 
 int main()
@@ -136,12 +131,17 @@ int main()
    @ModelName@_runner runner;
    @ModelName@_input_parameters input;
 
-   unsigned error_code = runner.run(input);
-
-   if (error_code == 0) {
+   try {
+      runner.run(input);
       runner.get_model().print(std::cout);
       // runner.write_running_couplings();
       // runner.write_spectrum();
+   } catch (Error& error) {
+      cout << "Error: " << error.what() << endl;
+   } catch (std::string& str) {
+      cout << "Error: " << str << endl;
+   } catch (const char* str) {
+      cout << "Error: " << str << endl;
    }
 
    return 0;
