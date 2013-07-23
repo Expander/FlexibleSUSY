@@ -5,9 +5,9 @@ InputParameters = { m0, m12, TanBeta, Azero, LambdaInput };
 
 DefaultParameterPoint = {
     {m0, 200},
-    {m12, 500},
+    {m12, 200},
     {TanBeta, 10},
-    {Azero, 0},
+    {Azero, -500},
     {LambdaInput, 0.1}
 };
 
