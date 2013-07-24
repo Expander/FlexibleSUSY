@@ -48,7 +48,7 @@ public:
 class SoftSusy_tester {
 public:
    SoftSusy_tester()
-      : mx(0.0), msusy(0.0), softSusy() {}
+      : mx(0.0), msusy(0.0), softSusy(), gaugeUnification(true) {}
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
@@ -67,7 +67,8 @@ public:
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
       softSusy.setAlternativeMs(true);
-      mx = softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta, oneset, true);
+      mx = softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta,
+                           oneset, gaugeUnification);
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
 
@@ -86,6 +87,7 @@ public:
 private:
    double mx, msusy;
    MssmSoftsusy softSusy;
+   bool gaugeUnification;
 };
 
 class MSSM_tester {
