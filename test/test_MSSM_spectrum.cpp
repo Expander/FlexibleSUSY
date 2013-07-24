@@ -137,7 +137,7 @@ private:
    MSSM mssm;
 };
 
-BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
+BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 {
    MSSM_input_parameters pp;
    const MSSM_high_scale_constraint high_constraint(pp);
