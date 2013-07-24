@@ -305,8 +305,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
-               calculateAllMasses        = calculateAllMasses <> TreeMasses`CallMassCalculationFunction[massMatrices[[k]]];
               ];
+           calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            For[k = 1, k <= Length[ewsbEquations], k++,
                tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[ewsbEquations[[k,1]]];
                tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[ewsbEquations[[k,1]], ewsbEquations[[k,2]]];

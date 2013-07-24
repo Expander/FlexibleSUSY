@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0022);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.005);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.009);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0092);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
 
@@ -326,15 +326,15 @@ BOOST_AUTO_TEST_CASE( test_MSSM_GUT_scale )
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0011);
-   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(2), mch_1l(2), 0.0045);
+   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(2), mch_1l(2), 0.0046);
 
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(1), mn_1l(1), 0.0047);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(2), mn_1l(2), 0.0012);
-   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0049);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0050);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0045);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 0.0032);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 0.0034);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 0.0035);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 0.0025);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.0036);

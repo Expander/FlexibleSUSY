@@ -30,8 +30,8 @@ from a mass matrix";
 CreateMassCalculationFunction::usage="creates a C function that
 calculates the mass eigenstates by diagonalizing the mass matrix";
 
-CallMassCalculationFunction::usage="creates a C function call of a
-mass matrix calcualtion function";
+CallMassCalculationFunctions::usage="creates C function calls of all
+mass matrix calcualtion functions";
 
 CreatePhysicalMassDefinition::usage="creates definition of physical
 mass.";
@@ -169,6 +169,26 @@ IsRealScalar[sym_Symbol] :=
 
 IsMassless[sym_Symbol, states_:SARAH`EWSB] :=
     MemberQ[SARAH`Massless[states], sym];
+
+(* Returns list of pairs {p,v}, where p is the given golstone
+   boson and v is the corresponding vector boson.
+
+   Example (MSSM):
+     GetCorrespondingVectorBosons[Ah]      ->  {{Ah[1], VZ}}
+     GetCorrespondingVectorBosons[Ah[1]]   ->  {{Ah[1], VZ}}
+     GetCorrespondingVectorBosons[Ah[{1}]] ->  {{Ah[1], VZ}}
+*)
+GetCorrespondingVectorBosons[goldstone_[idx_Integer]] :=
+    GetCorrespondingVectorBosons[goldstone[{idx}]];
+
+GetCorrespondingVectorBosons[goldstone_[idx_Symbol]] :=
+    GetCorrespondingVectorBosons[goldstone[{idx}]];
+
+GetCorrespondingVectorBosons[goldstone_] :=
+    Module[{vector, idx, sym, association},
+           association = Cases[SARAH`GoldstoneGhost, {vector_, goldstone | goldstone[{idx_}]}];
+           Reverse /@ association /. sym_[{idx_}] :> sym[idx]
+          ];
 
 GetGoldstoneBosons[] :=
     Transpose[SARAH`GoldstoneGhost][[2]];
@@ -401,6 +421,28 @@ CreateMassCalculationPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+CallMassCalculationFunctions[massMatrices_List] :=
+    Module[{result = "", k, sortedMassMatrices, matrix, PredVectorsFirst},
+           (* Predicate function which returns false if m2 is a vector
+              boson and m1 is not.  True otherwise. *)
+           PredVectorsFirst[m1_TreeMasses`FSMassMatrix, m2_TreeMasses`FSMassMatrix] :=
+               Module[{es1, es2},
+                      es1 = GetMassEigenstate[m1];
+                      es2 = GetMassEigenstate[m2];
+                      IsVector[es1] || !IsVector[es2]
+                     ];
+           (* Sort mass matrices such that vector boson masses get
+              calculated first.  This is necessary because the (later
+              calculated) goldstone boson masses will be set to the
+              vector boson masses. *)
+           sortedMassMatrices = Sort[massMatrices, PredVectorsFirst];
+           For[k = 1, k <= Length[sortedMassMatrices], k++,
+               matrix = sortedMassMatrices[[k]];
+               result = result <> CallMassCalculationFunction[matrix];
+              ];
+           Return[result];
+          ];
+
 CallMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", k, massESSymbol},
            massESSymbol = GetMassEigenstate[massMatrix];
@@ -478,6 +520,19 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+SetGoldstoneBosonMassesEqualToVectorBosonMasses[goldstone_] :=
+    Module[{vectors, v, g, i, result = ""},
+           vectors = GetCorrespondingVectorBosons[goldstone];
+           For[i = 1, i <= Length[vectors], i++,
+               g = FlexibleSUSY`M[vectors[[i,1]]]; (* goldstone boson mass *)
+               v = FlexibleSUSY`M[vectors[[i,2]]]; (* vector boson mass *)
+               result = result <>
+                        CConversion`RValueToCFormString[g] <> " = " <>
+                        CConversion`RValueToCFormString[v] <> ";\n";
+              ];
+           Return[result];
+          ];
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev = "", k},
            dim = Length[matrix];
@@ -516,6 +571,9 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                      IndentText["throw TachyonError(this, \"" <> ev <> "\", min_element);"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
+           (* Set the goldstone boson masses equal to the
+              corresponding vector boson masses *)
+           body = body <> SetGoldstoneBosonMassesEqualToVectorBosonMasses[eigenVector];
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
