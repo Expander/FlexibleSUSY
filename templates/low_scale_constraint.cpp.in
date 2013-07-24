@@ -57,9 +57,6 @@ void @ModelName@_low_scale_constraint::apply()
    assert(model && "Error: @ModelName@_low_scale_constraint:"
           " model pointer must not be zero");
 
-@saveEwsbOutputParameters@
-
-   model->solve_ewsb_tree_level();
    model->calculate_DRbar_parameters();
    update_scale();
    calculate_DRbar_gauge_couplings();
@@ -77,8 +74,6 @@ void @ModelName@_low_scale_constraint::apply()
    model->set_@UpYukawa@(new_Yu);
    model->set_@DownYukawa@(new_Yd);
    model->set_@ElectronYukawa@(new_Ye);
-
-@restoreEwsbOutputParameters@
 }
 
 double @ModelName@_low_scale_constraint::get_scale() const

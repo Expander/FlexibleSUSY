@@ -352,18 +352,7 @@ void @ModelName@::calculate_spectrum()
    throw_on_tachyon = true;
    throw_on_ewsb_fail = true;
 
-   // calculate one-loop EWSB parameters
-   solve_ewsb_one_loop();
-   // save one-loop EWSB parameters
-@saveEwsbOutputParameters@
-
-   // calculate tree-level spectrum (with tree-level EWSB parameters)
-   solve_ewsb_tree_level();
    calculate_DRbar_parameters();
-
-   // restore one-loop EWSB parameters
-@restoreEwsbOutputParameters@
-
    calculate_1loop_masses();
 
    throw_on_tachyon = false;
