@@ -77,12 +77,19 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
 
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
 
-   BOOST_MESSAGE("difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
+   BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
                  << new_g1 - softsusy.displayGaugeCoupling(1));
-   BOOST_MESSAGE("difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
+   BOOST_MESSAGE("Difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
                  << new_g2 - softsusy.displayGaugeCoupling(2));
-   BOOST_MESSAGE("difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
+   BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
                  << new_g3 - softsusy.displayGaugeCoupling(3));
+
+   BOOST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
+                 << ToDoubleMatrix(new_Yu) - softsusy.displayYukawaMatrix(YU));
+   BOOST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
+                 << ToDoubleMatrix(new_Yd) - softsusy.displayYukawaMatrix(YD));
+   BOOST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
+                 << ToDoubleMatrix(new_Ye) - softsusy.displayYukawaMatrix(YE));
 
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
