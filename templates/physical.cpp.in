@@ -37,11 +37,11 @@ void @ModelName@_physical::clear()
 void @ModelName@_physical::print(std::ostream& ostr) const
 {
    ostr << "----------------------------------------\n"
-           "one-loop on-shell masses:\n"
+           "one-loop pole masses:\n"
            "----------------------------------------\n";
 @printMasses@
    ostr << "----------------------------------------\n"
-           "one-loop on-shell mixing matrices:\n"
+           "one-loop pole mixing matrices:\n"
            "----------------------------------------\n";
 @printMixingMatrices@
 }
