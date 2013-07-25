@@ -50,6 +50,7 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // couplings
    model->calculate_DRbar_parameters();
    update_scale();
+   calculate_DRbar_gauge_couplings();
 
    const double MZDRbar
       = model->calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
@@ -75,6 +76,13 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    copy(mssm, softsusy);
 
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   BOOST_MESSAGE("difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
+                 << new_g1 - softsusy.displayGaugeCoupling(1));
+   BOOST_MESSAGE("difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
+                 << new_g2 - softsusy.displayGaugeCoupling(2));
+   BOOST_MESSAGE("difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
+                 << new_g3 - softsusy.displayGaugeCoupling(3));
 
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
@@ -104,9 +112,9 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::copy(const MSSM& mssm, M
 
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
-         softsusy.setYukawaElement(YU, i, k, mssm.get_Yu()(i,k));
-         softsusy.setYukawaElement(YD, i, k, mssm.get_Yd()(i,k));
-         softsusy.setYukawaElement(YE, i, k, mssm.get_Ye()(i,k));
+         softsusy.setYukawaElement(YU, i, k, mssm.get_Yu()(i-1,k-1));
+         softsusy.setYukawaElement(YD, i, k, mssm.get_Yd()(i-1,k-1));
+         softsusy.setYukawaElement(YE, i, k, mssm.get_Ye()(i-1,k-1));
       }
    }
 
@@ -121,17 +129,19 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::copy(const MSSM& mssm, M
 
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
-         softsusy.setSoftMassElement(mQl, i, k,  mssm.get_mq2()(i,k));
-         softsusy.setSoftMassElement(mUr, i, k,  mssm.get_mu2()(i,k));
-         softsusy.setSoftMassElement(mDr, i, k,  mssm.get_md2()(i,k));
-         softsusy.setSoftMassElement(mLl, i, k,  mssm.get_ml2()(i,k));
-         softsusy.setSoftMassElement(mEr, i, k,  mssm.get_me2()(i,k));
+         softsusy.setSoftMassElement(mQl, i, k,  mssm.get_mq2()(i-1,k-1));
+         softsusy.setSoftMassElement(mUr, i, k,  mssm.get_mu2()(i-1,k-1));
+         softsusy.setSoftMassElement(mDr, i, k,  mssm.get_md2()(i-1,k-1));
+         softsusy.setSoftMassElement(mLl, i, k,  mssm.get_ml2()(i-1,k-1));
+         softsusy.setSoftMassElement(mEr, i, k,  mssm.get_me2()(i-1,k-1));
 
-         softsusy.setTrilinearElement(UA, i, k, mssm.get_TYu()(i,k));
-         softsusy.setTrilinearElement(DA, i, k, mssm.get_TYd()(i,k));
-         softsusy.setTrilinearElement(EA, i, k, mssm.get_TYe()(i,k));
+         softsusy.setTrilinearElement(UA, i, k, mssm.get_TYu()(i-1,k-1));
+         softsusy.setTrilinearElement(DA, i, k, mssm.get_TYd()(i-1,k-1));
+         softsusy.setTrilinearElement(EA, i, k, mssm.get_TYe()(i-1,k-1));
       }
    }
+
+   softsusy.setMw(softsusy.displayMwRun());
 }
 
 class SoftSusy_error : public Error {
@@ -503,3 +513,20 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 }
 
 // ===== test with gauge couplings determined from the Rho parameter =====
+
+BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
+{
+   MSSM_input_parameters pp;
+   const MSSM_high_scale_constraint high_constraint(pp);
+   const double mxGuess = high_constraint.get_initial_scale_guess();
+
+   MSSM_tester mssm_tester;
+   mssm_tester.set_use_MSSM_low_constraint(false); // use Softsusy low scale constraint
+   BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
+
+   SoftSusy_tester softSusy_tester;
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.08);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.0e-3);
+}
