@@ -536,4 +536,36 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.08);
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.0e-3);
+
+   // compare model parameters
+   const MssmSoftsusy ss(softSusy_tester.get_model());
+   const MSSM fs(mssm_tester.get_model());
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00023);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00066);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00010);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0046);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0085);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0072);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0082);
+
+   // comparing tree-level masses
+
+   const DoubleVector MHpm(fs.get_MHpm()), MAh(fs.get_MAh()), Mhh(fs.get_Mhh());
+   const double MwRun = fs.get_MVWm();
+   const double MzRun = fs.get_MVZ();
+   const double mHpm = ss.displayDrBarPars().mHpm;
+   const double mA0 = ss.displayDrBarPars().mA0;
+   const double mh0 = ss.displayDrBarPars().mh0;
+   const double mH0 = ss.displayDrBarPars().mH0;
+
+   BOOST_CHECK_EQUAL(MHpm(1), MwRun); // for RXi(Wm) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.027);
+
+   BOOST_CHECK_EQUAL(MAh(1), MzRun); // for RXi(VZ) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.028);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.57);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.028);
 }
