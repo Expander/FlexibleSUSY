@@ -398,13 +398,37 @@ public:
 
 void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
 {
-   const MSSM mssm(*model);  // save old model parmeters
+   assert(model && "Error: MSSM_precise_gauge_couplings_low_scale_constraint:"
+          " model pointer must not be zero");
 
-   MSSM_low_scale_constraint::apply();
+   // save old model parmeters
+   const MSSM mssm(*model);
 
-   // Now recalculate the gauge couplings using
+   // run MSSM_low_scale_constraint::apply(), without the gauge
+   // couplings
+   model->calculate_DRbar_parameters();
+   update_scale();
+
+   const double MZDRbar
+      = model->calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
+
+   const double TanBeta = inputPars.TanBeta;
+   const double g1 = model->get_g1();
+   const double g2 = model->get_g2();
+
+   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+      )));
+   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+      TanBeta))));
+
+   calculate_DRbar_yukawa_couplings();
+
+   model->set_Yu(new_Yu);
+   model->set_Yd(new_Yd);
+   model->set_Ye(new_Ye);
+
+   // Now calculate the gauge couplings using
    // MssmSoftsusy::sparticleThresholdCorrections
-
    MssmSoftsusy softsusy;
    copy(mssm, softsusy);
 
