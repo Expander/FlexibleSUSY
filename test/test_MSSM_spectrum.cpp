@@ -21,6 +21,119 @@
 #include "MSSM_convergence_tester.hpp"
 #include "MSSM_initial_guesser.hpp"
 
+/**
+ * @class MSSM_precise_gauge_couplings_low_scale_constraint
+ *
+ * Replacement class for MSSM_low_scale_constraint, which calculates
+ * the gauge couplings at the low scale as Softsusy does it.
+ */
+class MSSM_precise_gauge_couplings_low_scale_constraint
+   : public MSSM_low_scale_constraint {
+public:
+   MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_)
+      : MSSM_low_scale_constraint(inputPars_) {}
+   virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
+
+   virtual void apply();
+   static void copy(const MSSM&, MssmSoftsusy&);
+};
+
+void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
+{
+   assert(model && "Error: MSSM_precise_gauge_couplings_low_scale_constraint:"
+          " model pointer must not be zero");
+
+   // save old model parmeters
+   const MSSM mssm(*model);
+
+   // run MSSM_low_scale_constraint::apply(), without the gauge
+   // couplings
+   model->calculate_DRbar_parameters();
+   update_scale();
+
+   const double MZDRbar
+      = model->calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
+
+   const double TanBeta = inputPars.TanBeta;
+   const double g1 = model->get_g1();
+   const double g2 = model->get_g2();
+
+   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+      )));
+   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+      TanBeta))));
+
+   calculate_DRbar_yukawa_couplings();
+
+   model->set_Yu(new_Yu);
+   model->set_Yd(new_Yd);
+   model->set_Ye(new_Ye);
+
+   // Now calculate the gauge couplings using
+   // MssmSoftsusy::sparticleThresholdCorrections
+   MssmSoftsusy softsusy;
+   copy(mssm, softsusy);
+
+   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   model->set_g1(softsusy.displayGaugeCoupling(1));
+   model->set_g2(softsusy.displayGaugeCoupling(2));
+   model->set_g3(softsusy.displayGaugeCoupling(3));
+}
+
+void MSSM_precise_gauge_couplings_low_scale_constraint::copy(const MSSM& mssm, MssmSoftsusy& softsusy)
+{
+   // copy base class parameters
+   softsusy.setLoops(mssm.get_loops());
+   softsusy.setMu(mssm.get_scale());
+   softsusy.setThresholds(mssm.get_thresholds());
+
+   // copy susy parameters
+   softsusy.setGaugeCoupling(1, mssm.get_g1());
+   softsusy.setGaugeCoupling(2, mssm.get_g2());
+   softsusy.setGaugeCoupling(3, mssm.get_g3());
+
+   const double vu = mssm.get_vu();
+   const double vd = mssm.get_vd();
+   const double tanBeta = vu / vd;
+   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
+
+   softsusy.setSusyMu(mssm.get_Mu());
+   softsusy.setTanb(tanBeta);
+   softsusy.setHvev(vev);
+
+   for (int i = 1; i <= 3; i++) {
+      for (int k = 1; k <= 3; k++) {
+         softsusy.setYukawaElement(YU, i, k, mssm.get_Yu()(i,k));
+         softsusy.setYukawaElement(YD, i, k, mssm.get_Yd()(i,k));
+         softsusy.setYukawaElement(YE, i, k, mssm.get_Ye()(i,k));
+      }
+   }
+
+   // copy soft parameters
+   softsusy.setGauginoMass(1, mssm.get_MassB());
+   softsusy.setGauginoMass(2, mssm.get_MassWB());
+   softsusy.setGauginoMass(3, mssm.get_MassG());
+
+   softsusy.setM3Squared(mssm.get_BMu());
+   softsusy.setMh1Squared(mssm.get_mHd2());
+   softsusy.setMh2Squared(mssm.get_mHu2());
+
+   for (int i = 1; i <= 3; i++) {
+      for (int k = 1; k <= 3; k++) {
+         softsusy.setSoftMassElement(mQl, i, k,  mssm.get_mq2()(i,k));
+         softsusy.setSoftMassElement(mUr, i, k,  mssm.get_mu2()(i,k));
+         softsusy.setSoftMassElement(mDr, i, k,  mssm.get_md2()(i,k));
+         softsusy.setSoftMassElement(mLl, i, k,  mssm.get_ml2()(i,k));
+         softsusy.setSoftMassElement(mEr, i, k,  mssm.get_me2()(i,k));
+
+         softsusy.setTrilinearElement(UA, i, k, mssm.get_TYu()(i,k));
+         softsusy.setTrilinearElement(DA, i, k, mssm.get_TYd()(i,k));
+         softsusy.setTrilinearElement(EA, i, k, mssm.get_TYe()(i,k));
+      }
+   }
+}
+
 class SoftSusy_error : public Error {
 public:
    SoftSusy_error(const std::string& msg_)
@@ -95,18 +208,23 @@ private:
 class MSSM_tester {
 public:
    MSSM_tester()
-      : mx(0.0), msusy(0.0), mssm() {}
+      : mx(0.0), msusy(0.0), mssm(), use_MSSM_low_constraint(true) {}
    ~MSSM_tester() {}
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
    MSSM get_model() const { return mssm; }
+   void set_use_MSSM_low_constraint(bool flag) { use_MSSM_low_constraint = flag; }
    void test(const MSSM_input_parameters& pp) {
       MSSM_high_scale_constraint sugra_constraint(pp);
-      MSSM_low_scale_constraint  low_constraint(pp);
+      MSSM_low_scale_constraint* low_constraint = NULL;
+      if (use_MSSM_low_constraint)
+         low_constraint = new MSSM_low_scale_constraint(pp);
+      else
+         low_constraint = new MSSM_precise_gauge_couplings_low_scale_constraint(pp);
       MSSM_susy_scale_constraint susy_constraint(pp);
       MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
-      MSSM_initial_guesser initial_guesser(&mssm, pp, low_constraint,
+      MSSM_initial_guesser initial_guesser(&mssm, pp, *low_constraint,
                                            susy_constraint,
                                            sugra_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
@@ -115,13 +233,13 @@ public:
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
-      upward_constraints.push_back(&low_constraint);
+      upward_constraints.push_back(low_constraint);
       upward_constraints.push_back(&sugra_constraint);
 
       std::vector<Constraint<Two_scale>*> downward_constraints;
       downward_constraints.push_back(&sugra_constraint);
       downward_constraints.push_back(&susy_constraint);
-      downward_constraints.push_back(&low_constraint);
+      downward_constraints.push_back(low_constraint);
 
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&convergence_tester);
@@ -139,6 +257,7 @@ public:
 private:
    double mx, msusy;
    MSSM mssm;
+   bool use_MSSM_low_constraint;
 };
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
@@ -384,110 +503,3 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 }
 
 // ===== test with gauge couplings determined from the Rho parameter =====
-
-class MSSM_precise_gauge_couplings_low_scale_constraint
-   : public MSSM_low_scale_constraint {
-public:
-   MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_low_scale_constraint(inputPars_) {}
-   virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
-
-   virtual void apply();
-   static void copy(const MSSM&, MssmSoftsusy&);
-};
-
-void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
-{
-   assert(model && "Error: MSSM_precise_gauge_couplings_low_scale_constraint:"
-          " model pointer must not be zero");
-
-   // save old model parmeters
-   const MSSM mssm(*model);
-
-   // run MSSM_low_scale_constraint::apply(), without the gauge
-   // couplings
-   model->calculate_DRbar_parameters();
-   update_scale();
-
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
-
-   const double TanBeta = inputPars.TanBeta;
-   const double g1 = model->get_g1();
-   const double g2 = model->get_g2();
-
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
-      )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
-      TanBeta))));
-
-   calculate_DRbar_yukawa_couplings();
-
-   model->set_Yu(new_Yu);
-   model->set_Yd(new_Yd);
-   model->set_Ye(new_Ye);
-
-   // Now calculate the gauge couplings using
-   // MssmSoftsusy::sparticleThresholdCorrections
-   MssmSoftsusy softsusy;
-   copy(mssm, softsusy);
-
-   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
-
-   model->set_g1(softsusy.displayGaugeCoupling(1));
-   model->set_g2(softsusy.displayGaugeCoupling(2));
-   model->set_g3(softsusy.displayGaugeCoupling(3));
-}
-
-void MSSM_precise_gauge_couplings_low_scale_constraint::copy(const MSSM& mssm, MssmSoftsusy& softsusy)
-{
-   // copy base class parameters
-   softsusy.setLoops(mssm.get_loops());
-   softsusy.setMu(mssm.get_scale());
-   softsusy.setThresholds(mssm.get_thresholds());
-
-   // copy susy parameters
-   softsusy.setGaugeCoupling(1, mssm.get_g1());
-   softsusy.setGaugeCoupling(2, mssm.get_g2());
-   softsusy.setGaugeCoupling(3, mssm.get_g3());
-
-   const double vu = mssm.get_vu();
-   const double vd = mssm.get_vd();
-   const double tanBeta = vu / vd;
-   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
-
-   softsusy.setSusyMu(mssm.get_Mu());
-   softsusy.setTanb(tanBeta);
-   softsusy.setHvev(vev);
-
-   for (int i = 1; i <= 3; i++) {
-      for (int k = 1; k <= 3; k++) {
-         softsusy.setYukawaElement(YU, i, k, mssm.get_Yu()(i,k));
-         softsusy.setYukawaElement(YD, i, k, mssm.get_Yd()(i,k));
-         softsusy.setYukawaElement(YE, i, k, mssm.get_Ye()(i,k));
-      }
-   }
-
-   // copy soft parameters
-   softsusy.setGauginoMass(1, mssm.get_MassB());
-   softsusy.setGauginoMass(2, mssm.get_MassWB());
-   softsusy.setGauginoMass(3, mssm.get_MassG());
-
-   softsusy.setM3Squared(mssm.get_BMu());
-   softsusy.setMh1Squared(mssm.get_mHd2());
-   softsusy.setMh2Squared(mssm.get_mHu2());
-
-   for (int i = 1; i <= 3; i++) {
-      for (int k = 1; k <= 3; k++) {
-         softsusy.setSoftMassElement(mQl, i, k,  mssm.get_mq2()(i,k));
-         softsusy.setSoftMassElement(mUr, i, k,  mssm.get_mu2()(i,k));
-         softsusy.setSoftMassElement(mDr, i, k,  mssm.get_md2()(i,k));
-         softsusy.setSoftMassElement(mLl, i, k,  mssm.get_ml2()(i,k));
-         softsusy.setSoftMassElement(mEr, i, k,  mssm.get_me2()(i,k));
-
-         softsusy.setTrilinearElement(UA, i, k, mssm.get_TYu()(i,k));
-         softsusy.setTrilinearElement(DA, i, k, mssm.get_TYd()(i,k));
-         softsusy.setTrilinearElement(EA, i, k, mssm.get_TYe()(i,k));
-      }
-   }
-}
