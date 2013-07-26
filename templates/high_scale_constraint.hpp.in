@@ -28,6 +28,7 @@ class @ModelName@;
 
 class @ModelName@_high_scale_constraint : public Constraint<Two_scale> {
 public:
+   @ModelName@_high_scale_constraint();
    @ModelName@_high_scale_constraint(const @ModelName@_input_parameters&);
    virtual ~@ModelName@_high_scale_constraint();
    virtual void apply();

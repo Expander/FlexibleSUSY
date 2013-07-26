@@ -33,6 +33,21 @@
 #define BETA(p) beta_##p
 #define SM(p) Electroweak_constants::p
 
+@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint()
+   : Constraint<Two_scale>()
+   , model(0)
+   , inputPars()
+   , new_g1(0.)
+   , new_g2(0.)
+   , new_g3(0.)
+   , new_Yu(Eigen::Matrix<double,3,3>::Zero())
+   , new_Yd(Eigen::Matrix<double,3,3>::Zero())
+   , new_Ye(Eigen::Matrix<double,3,3>::Zero())
+{
+@scaleGuess@
+   scale = initial_scale_guess;
+}
+
 @ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , model(0)
