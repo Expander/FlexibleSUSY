@@ -102,6 +102,65 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
 }
 
+/**
+ * @class MSSM_softsusy_ewsb_susy_scale_constraint
+ *
+ * Replacement class for MSSM_susy_scale_constraint, which does the
+ * one-loop ewsb at the susy scale as Softsusy does it.
+ */
+class MSSM_softsusy_ewsb_susy_scale_constraint
+   : public MSSM_susy_scale_constraint {
+public:
+   MSSM_softsusy_ewsb_susy_scale_constraint()
+      : MSSM_susy_scale_constraint() {}
+   MSSM_softsusy_ewsb_susy_scale_constraint(const MSSM_input_parameters& inputPars_)
+      : MSSM_susy_scale_constraint(inputPars_) {}
+   virtual ~MSSM_softsusy_ewsb_susy_scale_constraint() {}
+
+   virtual void apply();
+};
+
+void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
+{
+   assert(model && "Error: MSSM_softsusy_ewsb_susy_scale_constraint:"
+          " model pointer must not be zero");
+
+   // save old model parmeters
+   const MSSM mssm(*model);
+
+   MSSM_susy_scale_constraint::apply();
+
+   // Now do the one-loop EWSB using MssmSoftsusy::rewsb
+   MssmSoftsusy softsusy;
+   copy_parameters(mssm, softsusy);
+   softsusy.calcDrBarPars();
+   const double new_Msusy = softsusy.calcMs();
+
+   const int signMu = inputPars.SignMu;
+   const double mt = softsusy.displayDrBarPars().mt;
+   DoubleVector highScaleSoftPars(3);
+   highScaleSoftPars(1) = inputPars.m0;
+   highScaleSoftPars(2) = inputPars.m12;
+   highScaleSoftPars(3) = inputPars.Azero;
+
+   softsusy.rewsb(signMu, mt, highScaleSoftPars);
+
+   const double new_Mu  = softsusy.displaySusyMu();
+   const double new_BMu = softsusy.displayM3Squared();
+
+   BOOST_MESSAGE("Difference (Mu_FlexibleSUSY - Mu_softsusy)(Msusy) = "
+                 << model->get_Mu() - new_Mu);
+   BOOST_MESSAGE("Difference (BMu_FlexibleSUSY - BMu_softsusy)(Msusy) = "
+                 << model->get_BMu() - new_BMu);
+   BOOST_MESSAGE("Difference (mt_FlexibleSUSY - mt_softsusy)(Msusy) = "
+                 << model->get_MFu()(3) - mt);
+   BOOST_MESSAGE("Difference (Msusy_FlexibleSUSY - Msusy_softsusy)(Msusy) = "
+                 << get_scale() - new_Msusy);
+
+   model->set_Mu(new_Mu);
+   model->set_BMu(new_BMu);
+}
+
 class SoftSusy_error : public Error {
 public:
    SoftSusy_error(const std::string& msg_)
@@ -495,6 +554,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    MSSM_tester mssm_tester;
    mssm_tester.set_low_scale_constraint(new MSSM_precise_gauge_couplings_low_scale_constraint());
+   // mssm_tester.set_susy_scale_constraint(new MSSM_softsusy_ewsb_susy_scale_constraint());
    BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    SoftSusy_tester softSusy_tester;
