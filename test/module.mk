@@ -39,7 +39,7 @@ endif
 TEST_META := \
 		test/test_CConversion.m \
 		test/test_Constraint.m \
-		test/test_MassEigenstates.m \
+		test/test_TreeMasses.m \
 		test/test_SelfEnergies.m \
 		test/test_TextFormatting.m
 
