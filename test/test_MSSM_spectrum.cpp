@@ -126,12 +126,14 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
           " model pointer must not be zero");
 
    // save old model parmeters
+   model->calculate_DRbar_parameters();
    const MSSM mssm(*model);
 
    MSSM_susy_scale_constraint::apply();
 
    // Now do the one-loop EWSB using MssmSoftsusy::rewsb
    MssmSoftsusy softsusy;
+   softsusy.setAlternativeMs(true);
    copy_parameters(mssm, softsusy);
    softsusy.calcDrBarPars();
    const double new_Msusy = softsusy.calcMs();
