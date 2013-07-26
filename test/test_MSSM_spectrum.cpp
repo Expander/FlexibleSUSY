@@ -96,6 +96,10 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
+
+   // model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
+   // model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
+   // model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
 }
 
 class SoftSusy_error : public Error {
