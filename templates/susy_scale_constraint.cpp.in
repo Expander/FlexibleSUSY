@@ -79,6 +79,12 @@ void @ModelName@_susy_scale_constraint::set_input_parameters(const @ModelName@_i
    inputPars = inputPars_;
 }
 
+void @ModelName@_susy_scale_constraint::reset()
+{
+   scale = initial_scale_guess;
+   model = NULL;
+}
+
 void @ModelName@_susy_scale_constraint::update_scale()
 {
 @calculateScale@

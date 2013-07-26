@@ -96,6 +96,18 @@ void @ModelName@_low_scale_constraint::set_input_parameters(const @ModelName@_in
    inputPars = inputPars_;
 }
 
+void @ModelName@_low_scale_constraint::reset()
+{
+   scale = initial_scale_guess;
+   model = NULL;
+   new_g1 = 0.;
+   new_g2 = 0.;
+   new_g3 = 0.;
+   new_Yu = Eigen::Matrix<double,3,3>::Zero();
+   new_Yd = Eigen::Matrix<double,3,3>::Zero();
+   new_Ye = Eigen::Matrix<double,3,3>::Zero();
+}
+
 void @ModelName@_low_scale_constraint::update_scale()
 {
 @calculateScale@
