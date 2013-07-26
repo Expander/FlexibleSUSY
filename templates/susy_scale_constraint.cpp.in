@@ -74,6 +74,11 @@ void @ModelName@_susy_scale_constraint::set_model(Two_scale_model* model_)
    model = cast_model<@ModelName@>(model_);
 }
 
+void @ModelName@_susy_scale_constraint::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
+{
+   inputPars = inputPars_;
+}
+
 void @ModelName@_susy_scale_constraint::update_scale()
 {
 @calculateScale@
