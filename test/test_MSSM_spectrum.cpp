@@ -229,7 +229,11 @@ public:
    MSSM_tester()
       : mx(0.0), msusy(0.0), mssm()
       , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL) {}
-   ~MSSM_tester() {}
+   ~MSSM_tester() {
+      delete high_constraint;
+      delete susy_constraint;
+      delete low_constraint;
+   }
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
