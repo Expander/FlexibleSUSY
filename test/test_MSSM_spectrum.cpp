@@ -100,6 +100,22 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
    model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
    model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
+
+   const double tanBeta = softsusy.displayTanb();
+   const double vev = softsusy.displayHvev();
+   const double beta = atan(tanBeta);
+   const double sinBeta = sin(beta);
+   const double cosBeta = cos(beta);
+   const double vu = sinBeta * vev;
+   const double vd = cosBeta * vev;
+
+   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
+                 << model->get_vu() - vu);
+   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
+                 << model->get_vd() - vd);
+
+   model->set_vu(vu);
+   model->set_vd(vd);
 }
 
 /**
