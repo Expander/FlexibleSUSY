@@ -97,9 +97,9 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
 
-   // model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   // model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   // model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
+   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
+   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
+   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
 }
 
 /**
@@ -161,6 +161,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
 
    model->set_Mu(new_Mu);
    model->set_BMu(new_BMu);
+   scale = new_Msusy;
 }
 
 class SoftSusy_error : public Error {
@@ -556,14 +557,14 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    MSSM_tester mssm_tester;
    mssm_tester.set_low_scale_constraint(new MSSM_precise_gauge_couplings_low_scale_constraint());
-   // mssm_tester.set_susy_scale_constraint(new MSSM_softsusy_ewsb_susy_scale_constraint());
+   mssm_tester.set_susy_scale_constraint(new MSSM_softsusy_ewsb_susy_scale_constraint());
    BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.08);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.0e-3);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.2e-3);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
