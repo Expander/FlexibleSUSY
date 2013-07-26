@@ -30,6 +30,8 @@
 class MSSM_precise_gauge_couplings_low_scale_constraint
    : public MSSM_low_scale_constraint {
 public:
+   MSSM_precise_gauge_couplings_low_scale_constraint()
+      : MSSM_low_scale_constraint() {}
    MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_)
       : MSSM_low_scale_constraint(inputPars_) {}
    virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
@@ -225,25 +227,34 @@ private:
 class MSSM_tester {
 public:
    MSSM_tester()
-      : mx(0.0), msusy(0.0), mssm(), use_MSSM_low_constraint(true) {}
+      : mx(0.0), msusy(0.0), mssm()
+      , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL) {}
    ~MSSM_tester() {}
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
    MSSM get_model() const { return mssm; }
-   void set_use_MSSM_low_constraint(bool flag) { use_MSSM_low_constraint = flag; }
+   void set_low_scale_constraint(MSSM_low_scale_constraint* c) { low_constraint = c; }
+   void set_susy_scale_constraint(MSSM_susy_scale_constraint* c) { susy_constraint = c; }
+   void set_high_scale_constraint(MSSM_high_scale_constraint* c) { high_constraint = c; }
+   void setup_default_constaints() {
+      if (!high_constraint)
+         high_constraint = new MSSM_high_scale_constraint();
+      if (!susy_constraint)
+         susy_constraint = new MSSM_susy_scale_constraint();
+      if (!low_constraint)
+         low_constraint = new MSSM_low_scale_constraint();
+   }
    void test(const MSSM_input_parameters& pp) {
-      MSSM_high_scale_constraint sugra_constraint(pp);
-      MSSM_low_scale_constraint* low_constraint = NULL;
-      if (use_MSSM_low_constraint)
-         low_constraint = new MSSM_low_scale_constraint(pp);
-      else
-         low_constraint = new MSSM_precise_gauge_couplings_low_scale_constraint(pp);
-      MSSM_susy_scale_constraint susy_constraint(pp);
+      setup_default_constaints();
+      high_constraint->set_input_parameters(pp);
+      low_constraint->set_input_parameters(pp);
+      susy_constraint->set_input_parameters(pp);
+
       MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
       MSSM_initial_guesser initial_guesser(&mssm, pp, *low_constraint,
-                                           susy_constraint,
-                                           sugra_constraint);
+                                           *susy_constraint,
+                                           *high_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.set_input(pp);
@@ -251,11 +262,11 @@ public:
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
-      upward_constraints.push_back(&sugra_constraint);
+      upward_constraints.push_back(high_constraint);
 
       std::vector<Constraint<Two_scale>*> downward_constraints;
-      downward_constraints.push_back(&sugra_constraint);
-      downward_constraints.push_back(&susy_constraint);
+      downward_constraints.push_back(high_constraint);
+      downward_constraints.push_back(susy_constraint);
       downward_constraints.push_back(low_constraint);
 
       RGFlow<Two_scale> solver;
@@ -264,17 +275,19 @@ public:
       solver.set_initial_guesser(&initial_guesser);
       solver.add_model(&mssm, upward_constraints, downward_constraints);
       solver.solve();
-      mssm.run_to(susy_constraint.get_scale());
+      mssm.run_to(susy_constraint->get_scale());
       mssm.calculate_spectrum();
       mssm.run_to(Electroweak_constants::MZ);
 
-      mx = sugra_constraint.get_scale();
-      msusy = susy_constraint.get_scale();
+      mx = high_constraint->get_scale();
+      msusy = susy_constraint->get_scale();
    }
 private:
    double mx, msusy;
    MSSM mssm;
-   bool use_MSSM_low_constraint;
+   MSSM_high_scale_constraint* high_constraint;
+   MSSM_susy_scale_constraint* susy_constraint;
+   MSSM_low_scale_constraint*  low_constraint;
 };
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
@@ -528,7 +541,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
-   mssm_tester.set_use_MSSM_low_constraint(false); // use Softsusy low scale constraint
+   mssm_tester.set_low_scale_constraint(new MSSM_precise_gauge_couplings_low_scale_constraint());
    BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    SoftSusy_tester softSusy_tester;
