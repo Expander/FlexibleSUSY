@@ -339,7 +339,10 @@ double @ModelName@::G0(double p, double m1, double m2) const
 
 void @ModelName@::calculate_DRbar_parameters()
 {
+@saveSoftHiggsMasses@
+@ensureTreeLevelEWSBviaSoftHiggsMasses@
 @calculateAllMasses@
+@restoreSoftHiggsMasses@
 }
 
 void @ModelName@::calculate_1loop_masses()

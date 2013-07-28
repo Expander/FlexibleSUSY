@@ -291,7 +291,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
-            saveEwsbOutputParameters, restoreEwsbOutputParameters
+            saveEwsbOutputParameters, restoreEwsbOutputParameters,
+            softScalarMasses, softHiggsMasses,
+            saveSoftHiggsMasses, restoreSoftHiggsMasses,
+            ensureTreeLevelEWSBviaSoftHiggsMasses
            },
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
@@ -341,6 +344,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[ParametersToSolveTadpoles, "one_loop_", ""];
+           softScalarMasses             = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];
+           softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
+           saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
+           restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
+           ensureTreeLevelEWSBviaSoftHiggsMasses = "";
            ReplaceInFiles[files,
                           { "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
@@ -376,6 +384,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@solveEwsbTreeLevel@"           -> IndentText[WrapLines[solveEwsbTreeLevel]],
                             "@saveEwsbOutputParameters@"     -> IndentText[saveEwsbOutputParameters],
                             "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
+                            "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
+                            "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
+                            "@ensureTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[ensureTreeLevelEWSBviaSoftHiggsMasses],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
