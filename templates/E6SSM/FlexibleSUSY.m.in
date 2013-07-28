@@ -5,15 +5,15 @@ InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
                     KappaInput, vSInput, BmuPrimeInput, muPrimeInput };
 
 DefaultParameterPoint = {
-    {m0, 125},
-    {m12, 500},
+    {m0, 300},
+    {m12, 300},
     {TanBeta, 10},
-    {Azero, 0},
+    {Azero, 500},
     {LambdaInput, 0.1},
     {KappaInput, 0.1},
     {vSInput, 1000},
-    {BmuPrimeInput, 10000^2},
-    {muPrimeInput, 10000}
+    {BmuPrimeInput, 40000},
+    {muPrimeInput, 400}
 };
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
