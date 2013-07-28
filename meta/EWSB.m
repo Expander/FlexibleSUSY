@@ -251,7 +251,7 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
                   par  = reducedSolution[[i,1]];
                   parStr = CConversion`ToValidCSymbolString[par];
                   result = result <>
-                           "if (!std::isnan(new_" <> parStr <> "))\n" <>
+                           "if (std::isfinite(new_" <> parStr <> "))\n" <>
                                IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
                            "else\n" <>
                                IndentText["error = 1;"] <> "\n";
