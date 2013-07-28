@@ -294,7 +294,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
             softScalarMasses, softHiggsMasses,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
-            ensureTreeLevelEWSBviaSoftHiggsMasses
+            solveTreeLevelEWSBviaSoftHiggsMasses
            },
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
@@ -348,7 +348,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
-           ensureTreeLevelEWSBviaSoftHiggsMasses = "";
+           solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
            ReplaceInFiles[files,
                           { "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
@@ -386,7 +386,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@restoreEwsbOutputParameters@"  -> IndentText[restoreEwsbOutputParameters],
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
-                            "@ensureTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[ensureTreeLevelEWSBviaSoftHiggsMasses],
+                            "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

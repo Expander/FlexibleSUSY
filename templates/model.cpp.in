@@ -199,6 +199,15 @@ int @ModelName@::solve_ewsb_tree_level()
    return error;
 }
 
+int @ModelName@::solve_ewsb_tree_level_via_soft_higgs_masses()
+{
+   int error = 0;
+
+@solveTreeLevelEWSBviaSoftHiggsMasses@
+
+   return error;
+}
+
 int @ModelName@::solve_ewsb_one_loop()
 {
    return solve_ewsb_iteratively(1);
@@ -340,7 +349,8 @@ double @ModelName@::G0(double p, double m1, double m2) const
 void @ModelName@::calculate_DRbar_parameters()
 {
 @saveSoftHiggsMasses@
-@ensureTreeLevelEWSBviaSoftHiggsMasses@
+   solve_ewsb_tree_level_via_soft_higgs_masses();
+
 @calculateAllMasses@
 @restoreSoftHiggsMasses@
 }

@@ -17,6 +17,10 @@ EWSB eqs. solver";
 
 SolveTreeLevelEwsb::usage="Solves tree-level EWSB equations";
 
+SolveTreeLevelEwsbVia::usage="Solves tree-level EWSB equations for the
+given list of parameters.  Retuns an empty string if no unique
+solution can be found";
+
 Begin["Private`"];
 
 freePhases = {};
@@ -255,6 +259,39 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
               ,
               result = "error = solve_ewsb_iteratively(0);\n";
              ];
+           Return[result];
+          ];
+
+SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
+    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
+           simplifiedEqs = (#[[2]] == 0)& /@ equations;
+           solution = Solve[simplifiedEqs, parameters];
+           If[solution === {} || Length[solution] > 1,
+              Print["Error: can't solve the EWSB equations for the parameters ",
+                    parameters, " uniquely"];
+              Print["Here are the EWSB equations we have: ", simplifiedEqs];
+              Print["Here is the solution we get: ", solution];
+              Return[result];
+             ];
+           solution = solution[[1]]; (* select first solution *)
+           For[i = 1, i <= Length[solution], i++,
+               par  = solution[[i,1]];
+               expr = solution[[i,2]];
+               parStr = "new_" <> CConversion`ToValidCSymbolString[par];
+               result = result <>
+               "const double " <> parStr <> " = " <>
+               CConversion`RValueToCFormString[expr] <> ";\n";
+              ];
+           result = result <> "\n";
+           For[i = 1, i <= Length[solution], i++,
+               par  = solution[[i,1]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               result = result <>
+               "if (std::isfinite(new_" <> parStr <> "))\n" <>
+               IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
+               "else\n" <>
+               IndentText["error = 1;"] <> "\n";
+              ];
            Return[result];
           ];
 

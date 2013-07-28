@@ -91,6 +91,7 @@ private:
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
    int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[@numberOfEWSBEquations@]);
+   int solve_ewsb_tree_level_via_soft_higgs_masses();
    void ewsb_initial_guess(double[@numberOfEWSBEquations@]);
 
    double A0(double) const;
