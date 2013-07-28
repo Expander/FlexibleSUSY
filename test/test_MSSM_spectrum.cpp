@@ -613,10 +613,10 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
    const double mh0 = ss.displayDrBarPars().mh0;
    const double mH0 = ss.displayDrBarPars().mH0;
 
-   BOOST_CHECK_EQUAL(MHpm(1), MwRun); // for RXi(Wm) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
    BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.027);
 
-   BOOST_CHECK_EQUAL(MAh(1), MzRun); // for RXi(VZ) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
    BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.028);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.57);

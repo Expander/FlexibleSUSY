@@ -520,19 +520,6 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
-SetGoldstoneBosonMassesEqualToVectorBosonMasses[goldstone_] :=
-    Module[{vectors, v, g, i, result = ""},
-           vectors = GetCorrespondingVectorBosons[goldstone];
-           For[i = 1, i <= Length[vectors], i++,
-               g = FlexibleSUSY`M[vectors[[i,1]]]; (* goldstone boson mass *)
-               v = FlexibleSUSY`M[vectors[[i,2]]]; (* vector boson mass *)
-               result = result <>
-                        CConversion`RValueToCFormString[g] <> " = " <>
-                        CConversion`RValueToCFormString[v] <> ";\n";
-              ];
-           Return[result];
-          ];
-
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev = "", k},
            dim = Length[matrix];
@@ -573,7 +560,6 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
              ];
            (* Set the goldstone boson masses equal to the
               corresponding vector boson masses *)
-           body = body <> SetGoldstoneBosonMassesEqualToVectorBosonMasses[eigenVector];
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
