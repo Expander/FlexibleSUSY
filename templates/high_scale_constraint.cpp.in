@@ -60,6 +60,22 @@ void @ModelName@_high_scale_constraint::apply()
    assert(model && "Error: @ModelName@_high_scale_constraint:"
           " model pointer must not be zero");
 
+   if (std::fabs(model->get_@hyperchargeCoupling@()) > 3.0) {
+      ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
+            "coupling @hyperchargeCoupling@ = " << model->get_@hyperchargeCoupling@());
+      model->set_@hyperchargeCoupling@(1.0);
+   }
+   if (std::fabs(model->get_@leftCoupling@()) > 3.0) {
+      ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
+            "coupling @leftCoupling@ = " << model->get_@leftCoupling@());
+      model->set_@leftCoupling@(1.0);
+   }
+   if (std::fabs(model->get_@strongCoupling@()) > 3.0) {
+      ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
+            "coupling @strongCoupling@ = " << model->get_@strongCoupling@());
+      model->set_@strongCoupling@(1.0);
+   }
+
    update_scale();
 
 @applyConstraint@
