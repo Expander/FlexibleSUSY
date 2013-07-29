@@ -12,13 +12,13 @@ DefaultParameterPoint = {
     {ALambdaInput, 500},
     {vSInput, 500},
     {Qq, 1},
-    {Ql, 1},
-    {QHd, 1},
-    {QHu, 1},
-    {Qd, 1},
+    {Ql, 2},
+    {QHd, -3},
+    {QHu, -2},
+    {Qd, 2},
     {Qu, 1},
     {Qe, 1},
-    {Qs, 1}
+    {Qs, 5}
 };
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
