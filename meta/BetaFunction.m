@@ -51,15 +51,15 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
             unitMatrix = CreateUnitMatrix[type];
            (* convert beta function expressions to C form *)
            name          = ToValidCSymbolString[GetName[betaFunction]];
-           betaName     := "beta_" <> name;
-           oneLoopBeta  := (CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction]) /.
+           betaName      = "beta_" <> name;
+           oneLoopBeta   = (CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction]) /.
                            { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
-           oneLoopBetaStr := RValueToCFormString[oneLoopBeta];
+           oneLoopBetaStr = RValueToCFormString[oneLoopBeta];
            beta1L        = beta1L <> betaName <> " = " <> oneLoopBetaStr <> ";\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
-              twoLoopBeta := (CConversion`twoLoop * GetBeta2Loop[betaFunction]) /.
+              twoLoopBeta = (CConversion`twoLoop * GetBeta2Loop[betaFunction]) /.
                              { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
-              twoLoopBetaStr := RValueToCFormString[twoLoopBeta];
+              twoLoopBetaStr = RValueToCFormString[twoLoopBeta];
               beta2L     = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
               ];
            localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
@@ -77,7 +77,7 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
            (* create local const references of all input parameters which
               appear in the beta functions *)
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[
-                               {GetBeta1Loop[#], GetBeta2Loop[#]}& /@ simplifiedBetaFunctions];
+                               {GetBeta1Loop[#], GetBeta2Loop[#]}& /@ betaFunctions];
            allDecl = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n" <>
                      inputParsDecl <> "\n" <> additionalDecl <> "\n" <> traceDecl <> "\n";
            For[i = 1, i <= Length[simplifiedBetaFunctions], i++,
