@@ -27,7 +27,24 @@ IsRealParameter::usage="";
 IsComplexParameter::usage="";
 IsRealExpression::usage="";
 
+SetInputParameters::usage="";
+SetModelParameters::usage="";
+SetOutputParameters::usage="";
+
+CreateLocalConstRefs::usage="creates local const references to model
+parameters / input parameters.";
+
+CreateLocalConstRefsForBetas::usage="";
+
 Begin["Private`"];
+
+allInputParameters = {};
+allModelParameters = {};
+allOutputParameters = {};
+
+SetInputParameters[pars_List] := allInputParameters = pars;
+SetModelParameters[pars_List] := allModelParameters = pars;
+SetOutputParameters[pars_List] := allOutputParameters = pars;
 
 additionalRealParameters = {};
 
@@ -301,6 +318,44 @@ RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
            If[modelPtr != "",
               SetParameter[parameter, prefix <> parStr, modelPtr],
               CConversion`ToValidCSymbolString[parameter] <> " = " <> prefix <> parStr <> ";\n"]
+          ];
+
+RemoveProtectedHeads[expr_] :=
+    expr /. SARAH`SM[__] -> SARAH`SM[];
+
+DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
+    "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
+    macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
+
+CreateLocalConstRefs[expr_] :=
+    Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
+            compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = { Cases[compactExpr, _Symbol, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                     };
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
+           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
+           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
+           Return[result];
+          ];
+
+CreateLocalConstRefsForBetas[expr_] :=
+    Module[{result = "", symbols, modelPars, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = { Cases[compactExpr, _Symbol, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+           (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
+           Return[result];
           ];
 
 End[];

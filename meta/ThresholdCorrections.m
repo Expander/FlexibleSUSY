@@ -62,7 +62,7 @@ CalculateDeltaAlphaEm[] :=
            prefactor = Global`alphaEm / (2 Pi);
            deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
            deltaSusy = CalculateDRbarElectromagneticCoupling[];
-           result = Constraint`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+           result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
                     "const double delta_alpha_em = " <>
@@ -76,7 +76,7 @@ CalculateDeltaAlphaS[] :=
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
            deltaSusy = CalculateDRbarColorCoupling[];
-           result = Constraint`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+           result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_s_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
                     "const double delta_alpha_s = " <>
@@ -148,7 +148,7 @@ SetDRbarYukawaCouplings[] :=
            top = top /. SARAH`TopQuark    -> Global`topDRbar;
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
-           result = Constraint`CreateLocalConstRefs[top + bot + tau] <>
+           result = Parameters`CreateLocalConstRefs[top + bot + tau] <>
                     "new_Yu = " <> RValueToCFormString[top] <> ";\n" <>
                     "new_Yd = " <> RValueToCFormString[bot] <> ";\n" <>
                     "new_Ye = " <> RValueToCFormString[tau] <> ";\n";

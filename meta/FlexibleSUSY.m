@@ -29,8 +29,6 @@ Begin["Private`"];
 
 allParameters = {};
 
-GetParameters[] := allParameters;
-
 allIndexReplacementRules = {};
 
 GetIndexReplacementRules[] := allIndexReplacementRules;
@@ -40,8 +38,6 @@ allBetaFunctions = {};
 GetBetaFunctions[] := allBetaFunctions;
 
 allOutputParameters = {};
-
-GetOutputParameters[] := allOutputParameters;
 
 numberOfModelParameters = 0;
 
@@ -218,15 +214,11 @@ WriteInputParameterClass[inputParameters_List, freePhases_List,
                          } ];
           ];
 
-WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
-                     inputParameters_List, files_List] :=
+WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
-          Constraint`SetInputParameters[inputParameters];
-          Constraint`SetModelParameters[GetParameters[]];
-          Constraint`SetOutputParameters[GetOutputParameters[]];
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
@@ -679,6 +671,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
 
            TreeMasses`SetModelParameters[allParameters];
+           Parameters`SetModelParameters[allParameters];
+           Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
@@ -719,6 +713,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
+          Parameters`SetOutputParameters[allOutputParameters];
+
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[allParticles,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
@@ -739,7 +735,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`HighScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.cpp.in"}],
@@ -750,7 +745,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`SUSYScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`SUSYScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`SUSYScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.cpp.in"}],
@@ -761,7 +755,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`LowScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`LowScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`LowScaleFirstGuess,
-                                FlexibleSUSY`InputParameters,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.cpp.in"}],

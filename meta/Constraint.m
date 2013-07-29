@@ -6,24 +6,12 @@ CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
 
-SetInputParameters::usage="";
-SetModelParameters::usage="";
-SetOutputParameters::usage="";
 SetBetaFunctions::usage=""
-
-CreateLocalConstRefs::usage="creates local const references to model
-parameters / input parameters.";
 
 Begin["Private`"];
 
-allInputParameters = {};
-allModelParameters = {};
-allOutputParameters = {};
 allBetaFunctions = {};
 
-SetInputParameters[pars_List] := allInputParameters = pars;
-SetModelParameters[pars_List] := allModelParameters = pars;
-SetOutputParameters[pars_List] := allOutputParameters = pars;
 SetBetaFunctions[pars_List] := allBetaFunctions = pars;
 
 GetParameter[parameter_Symbol, macro_String, namePrefix_:""] :=
@@ -59,47 +47,9 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
 
 ApplyConstraints[settings_List] :=
     Module[{result},
-           result = CreateLocalConstRefs[(#[[2]])& /@ settings];
+           result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ settings];
            result = result <> "\n";
            (result = result <> Parameters`SetParameter[#[[1]], #[[2]], "model"])& /@ settings;
-           Return[result];
-          ];
-
-RemoveProtectedHeads[expr_] :=
-    expr /. SARAH`SM[__] -> SARAH`SM[];
-
-DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
-    "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
-    macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
-
-CreateLocalConstRefs[expr_] :=
-    Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
-                     };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
-           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
-           (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
-           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
-           (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
-           Return[result];
-          ];
-
-CreateLocalConstRefsForBetas[expr_] :=
-    Module[{result = "", symbols, modelPars, compactExpr},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
-           symbols = DeleteDuplicates[Flatten[symbols]];
-           modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
            Return[result];
           ];
 
@@ -113,7 +63,7 @@ CalculateScale[True, _] :=
 
 CalculateScale[expr_, scaleName_String] :=
     Module[{result},
-           result = CreateLocalConstRefs[expr];
+           result = Parameters`CreateLocalConstRefs[expr];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
@@ -121,8 +71,8 @@ CalculateScale[expr_, scaleName_String] :=
 
 CalculateScale[expr_Equal, scaleName_String] :=
     Module[{result},
-           result = CreateLocalConstRefs[expr];
-           result = result <> CreateLocalConstRefsForBetas[expr];
+           result = Parameters`CreateLocalConstRefs[expr];
+           result = result <> Parameters`CreateLocalConstRefsForBetas[expr];
            result = result <> "\n";
            result = result <> CalculateScaleFromExpr[expr, scaleName];
            Return[result];
