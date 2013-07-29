@@ -499,7 +499,7 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
            matrixSymbol = "mass_matrix_" <> ev;
            matrix = GetMassMatrix[massMatrix];
-           inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix];
+           inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
            result = "DoubleMatrix CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
                     IndentText[body] <>
@@ -561,13 +561,15 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            trans = Identity},
+            trans = Identity, inputParsDecl, expr},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            If[IsVector[massESSymbol] || IsScalar[massESSymbol],
               trans = Sqrt;
              ];
-           body = ev <> " = " <>
-                  RValueToCFormString[trans[mass[[1]]]] <> ";\n";
+           expr = trans[mass[[1]]];
+           inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
+           body = inputParsDecl <> "\n" <> ev <> " = " <>
+                  RValueToCFormString[expr] <> ";\n";
            body = IndentText[body];
            Return[result <> body <> "}\n\n"];
           ];

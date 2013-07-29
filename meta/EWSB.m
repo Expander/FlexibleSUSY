@@ -238,6 +238,9 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
            (* Try to reduce the solution *)
            If[CanReduceSolution[solution, signs],
               reducedSolution = ReduceSolution[solution, signs];
+              (* create local const refs to input parameters appearing
+                 in the solution *)
+              result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"];
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
@@ -274,6 +277,9 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
               Return[result];
              ];
            solution = solution[[1]]; (* select first solution *)
+           (* create local const refs to input parameters appearing
+              in the solution *)
+           result = Parameters`CreateLocalConstRefsForInputParameters[solution, "LOCALINPUT"];
            For[i = 1, i <= Length[solution], i++,
                par  = solution[[i,1]];
                expr = solution[[i,2]];
