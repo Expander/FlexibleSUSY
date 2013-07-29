@@ -33,6 +33,9 @@ FindMultipleTraces[list_List] :=
            Return[traces];
           ];
 
+FindAllTraces[list_List] :=
+    DeleteDuplicates[Flatten[Cases[list, trace[__], Infinity]]];
+
 CreateDoubleTraceAbbrs[traces_List] :=
     Module[{rules, decl = "", i, multipleTraces},
            multipleTraces = FindMultipleTraces[traces];
