@@ -493,12 +493,14 @@ MatrixToCFormString[matrix_List, symbol_String, matrixType_String:"DoubleMatrix"
           ];
 
 CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, body, ev, matrixSymbol, matrix, massESSymbol},
+    Module[{result, body, ev, matrixSymbol, matrix, massESSymbol,
+            inputParsDecl},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
            matrixSymbol = "mass_matrix_" <> ev;
            matrix = GetMassMatrix[massMatrix];
-           body = MatrixToCFormString[matrix, matrixSymbol] <> "\n";
+           inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix];
+           body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
            result = "DoubleMatrix CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
                     IndentText[body] <>
                     "return " <> matrixSymbol <> ";\n}\n";
