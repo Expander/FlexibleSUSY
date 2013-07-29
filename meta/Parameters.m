@@ -38,6 +38,9 @@ parameters / input parameters.";
 
 CreateLocalConstRefsForBetas::usage="";
 
+CreateLocalConstRefsForInputParameters::usage="creates local const
+references for all input parameters in the given expression.";
+
 Begin["Private`"];
 
 allInputParameters = {};
@@ -359,6 +362,19 @@ CreateLocalConstRefsForBetas[expr_] :=
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;
+           Return[result];
+          ];
+
+CreateLocalConstRefsForInputParameters[expr_] :=
+    Module[{result = "", symbols, inputPars, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = Cases[compactExpr, _Symbol, Infinity];
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           Print["symbols: ", symbols];
+           inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
+           Print["input parameters: ", inputPars];
+           (result = result <> DefineLocalConstCopy[#, "INPUT"])& /@ inputPars;
+           Print["decl of input parameters: ", result];
            Return[result];
           ];
 
