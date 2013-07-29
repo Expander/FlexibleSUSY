@@ -44,23 +44,23 @@ GuessType[sym_] :=
  *)
 CreateBetaFunction[betaFunction_BetaFunction] :=
      Module[{beta1L = "", beta2L = "", betaName = "", name = "",
-             oneLoopBeta, localDecl = "", dataType, unitMatrix,
-             twoLoopBeta = "", type = ErrorType},
+             oneLoopBeta, oneLoopBetaStr, localDecl = "", dataType, unitMatrix,
+             twoLoopBeta, twoLoopBetaStr, type = ErrorType},
             type = GetType[betaFunction];
             dataType = GetCParameterType[type];
             unitMatrix = CreateUnitMatrix[type];
            (* convert beta function expressions to C form *)
            name          = ToValidCSymbolString[GetName[betaFunction]];
            betaName     := "beta_" <> name;
-           oneLoopBeta  := RValueToCFormString[(CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction])
-                                         /. { Kronecker[i1,i2] -> unitMatrix }
-                                         /. { a_[i1,i2] :> a }];
-           beta1L        = beta1L <> betaName <> " = " <> oneLoopBeta <> ";\n";
+           oneLoopBeta  := (CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction]) /.
+                           { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+           oneLoopBetaStr := RValueToCFormString[oneLoopBeta];
+           beta1L        = beta1L <> betaName <> " = " <> oneLoopBetaStr <> ";\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
-              twoLoopBeta  := RValueToCFormString[(CConversion`twoLoop * GetBeta2Loop[betaFunction])
-                                            /. { Kronecker[i1,i2] -> unitMatrix }
-                                            /. { a_[i1,i2] :> a }];
-              beta2L        = beta2L <> betaName <> " += " <> twoLoopBeta <> ";\n";
+              twoLoopBeta := (CConversion`twoLoop * GetBeta2Loop[betaFunction]) /.
+                             { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+              twoLoopBetaStr := RValueToCFormString[twoLoopBeta];
+              beta2L     = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
               ];
            localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];
