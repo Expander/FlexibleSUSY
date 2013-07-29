@@ -38,7 +38,7 @@
 
 @ModelName@::@ModelName@(const @ModelName@_input_parameters& input_)
    : Two_scale_model()
-   , @ModelName@_soft_parameters()
+   , @ModelName@_soft_parameters(input_)
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
@@ -48,7 +48,6 @@
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
-   , input(input_)
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
@@ -98,16 +97,6 @@ double @ModelName@::get_ewsb_iteration_precision() const
 const @ModelName@_physical& @ModelName@::get_physical() const
 {
    return physical;
-}
-
-const @ModelName@_input_parameters& @ModelName@::get_input() const
-{
-   return input;
-}
-
-void @ModelName@::set_input(const @ModelName@_input_parameters& input_)
-{
-   input = input_;
 }
 
 int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)

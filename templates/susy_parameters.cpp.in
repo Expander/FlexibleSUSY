@@ -25,19 +25,22 @@
 
 #define CLASSNAME @ModelName@_susy_parameters
 
-@ModelName@_susy_parameters::@ModelName@_susy_parameters()
+@ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()
    @parameterDefaultInit@
+   , input(input_)
 {
    set_number_of_parameters(numberOfParameters);
 }
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(
-   double scale_, double loops_, double thresholds_
+   double scale_, double loops_, double thresholds_,
+   const @ModelName@_input_parameters& input_
    @cCtorParameterList@
 )
    : Beta_function()
    @parameterCopyInit@
+   , input(input_)
 {
    set_number_of_parameters(numberOfParameters);
    set_scale(scale_);
@@ -54,7 +57,7 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
 @beta@
 
-   return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(),
+   return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
                     @betaParameterList@);
 }
 
@@ -92,4 +95,14 @@ std::vector<std::string> @ModelName@_susy_parameters::get_parameter_names() cons
 @parameterNames@
 
    return names;
+}
+
+const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() const
+{
+   return input;
+}
+
+void @ModelName@_susy_parameters::set_input(const @ModelName@_input_parameters& input_)
+{
+   input = input_;
 }

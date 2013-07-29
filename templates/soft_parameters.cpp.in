@@ -23,8 +23,8 @@
 
 #include <iostream>
 
-@ModelName@_soft_parameters::@ModelName@_soft_parameters()
-   : @ModelName@_susy_parameters()
+@ModelName@_soft_parameters::@ModelName@_soft_parameters(const @ModelName@_input_parameters& input_)
+   : @ModelName@_susy_parameters(input_)
    @parameterDefaultInit@
 {
    set_number_of_parameters(numberOfParameters);

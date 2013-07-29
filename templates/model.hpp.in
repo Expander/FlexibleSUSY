@@ -23,7 +23,6 @@
 
 #include "@ModelName@_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"
-#include "@ModelName@_input_parameters.hpp"
 #include "two_scale_model.hpp"
 
 #include <iosfwd>
@@ -47,8 +46,6 @@ public:
    void set_number_of_mass_iterations(std::size_t);
    double get_ewsb_iteration_precision() const;
    const @ModelName@_physical& get_physical() const;
-   const @ModelName@_input_parameters& get_input() const;
-   void set_input(const @ModelName@_input_parameters&);
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    void print_state(std::size_t, gsl_multiroot_fsolver*) const;
@@ -86,7 +83,6 @@ private:
    double ewsb_iteration_precision;
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
    @ModelName@_physical physical;
-   @ModelName@_input_parameters input;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);

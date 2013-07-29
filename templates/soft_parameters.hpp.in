@@ -28,7 +28,7 @@
 
 class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
 public:
-   @ModelName@_soft_parameters();
+   @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
    virtual ~@ModelName@_soft_parameters() {}
    virtual Eigen::ArrayXd beta() const;
