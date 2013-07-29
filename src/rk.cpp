@@ -86,6 +86,12 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     rungeKuttaStep(y, dydx, *x, h, ytemp, yerr, derivs);
     errmax = (yerr / yscal).abs().maxCoeff();
     errmax  /= eps;
+    if (!std::isfinite(errmax)) {
+#ifdef VERBOSE
+       ERROR("odeStepper: non-perturbative running at x = " << *x);
+#endif
+       return 1;
+    }
     if (errmax <= 1.0) break;
     htemp = SAFETY * h * pow(errmax, PSHRNK);
     h = (h >= 0.0 ? max(htemp ,0.1 * h) : min(htemp, 0.1 * h));
