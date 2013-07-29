@@ -632,12 +632,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                          SARAH`BetaMi   };
 
            susyBetaFunctions = ConvertSarahRGEs[susyBetaFunctions];
-           susyBetaFunctions = Select[susyBetaFunctions, (GetAllBetaFunctions[#]!={})&];
+           susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
            susyParameterReplacementRules = BetaFunction`ConvertParameterNames[susyBetaFunctions];
            susyBetaFunctions = susyBetaFunctions /. susyParameterReplacementRules;
 
-           {susyTraceDecl, susyTraceRules} = CreateDoubleTraceAbbrs[FindMultipleTraces[GetAllBetaFunctions[#]& /@ susyBetaFunctions]];
+           {susyTraceDecl, susyTraceRules} = Traces`CreateDoubleTraceAbbrs[BetaFunction`GetAllBetaFunctions[#]& /@ susyBetaFunctions];
            susyBetaFunctions = susyBetaFunctions /. susyTraceRules;
 
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
@@ -653,12 +653,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          susyTraceDecl];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
-           susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (GetAllBetaFunctions[#]!={})&];
+           susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(GetName /@ susyBreakingBetaFunctions) /. a_[i1,i2] :> a];
            susyBreakingParameterReplacementRules = Flatten[{susyParameterReplacementRules, BetaFunction`ConvertParameterNames[susyBreakingBetaFunctions]}];
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. susyBreakingParameterReplacementRules;
 
-           {nonSusyTraceDecl, nonSusyTraceRules} = CreateDoubleTraceAbbrs[FindMultipleTraces[GetAllBetaFunctions[#]& /@ susyBreakingBetaFunctions]];
+           {nonSusyTraceDecl, nonSusyTraceRules} = Traces`CreateDoubleTraceAbbrs[BetaFunction`GetAllBetaFunctions[#]& /@ susyBreakingBetaFunctions];
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 

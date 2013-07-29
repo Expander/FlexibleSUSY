@@ -6,9 +6,6 @@ two-component list, where the first entry is string of C/C++ variable
 definitions that hold the trace values.  The second entry is a list of
 rules to replace the traces by their C/C++ variables.";
 
-FindMultipleTraces::usage="takes a list of expressions and returns a
-list of traces that appear more than once in the list";
-
 CreateTraceAbbr::usage="takes SARAH's `TraceAbbr' and returns a
 two-component list, where the first entry is string of C/C++ variable
 definitions that hold the trace values.  The second entry is a list of
@@ -37,12 +34,13 @@ FindMultipleTraces[list_List] :=
           ];
 
 CreateDoubleTraceAbbrs[traces_List] :=
-    Module[{rules, decl = "", i},
-           rules = (Rule[#, ToValidCSymbol[#]])& /@ traces;
-           For[i = 1, i <= Length[traces], i++,
+    Module[{rules, decl = "", i, multipleTraces},
+           multipleTraces = FindMultipleTraces[traces];
+           rules = (Rule[#, ToValidCSymbol[#]])& /@ multipleTraces;
+           For[i = 1, i <= Length[multipleTraces], i++,
                decl = decl <> "const double " <>
-                      ToValidCSymbolString[traces[[i]]] <>
-                      " = " <> RValueToCFormString[traces[[i]]] <> ";\n";
+                      ToValidCSymbolString[multipleTraces[[i]]] <>
+                      " = " <> RValueToCFormString[multipleTraces[[i]]] <> ";\n";
               ];
            Return[{decl, rules}];
           ];
