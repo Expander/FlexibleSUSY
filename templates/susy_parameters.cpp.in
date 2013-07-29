@@ -24,6 +24,7 @@
 #include <iostream>
 
 #define CLASSNAME @ModelName@_susy_parameters
+#define INPUT(parameter) input.parameter
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()

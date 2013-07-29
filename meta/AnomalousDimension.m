@@ -1,5 +1,5 @@
 
-BeginPackage["AnomalousDimension`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`"}];
+BeginPackage["AnomalousDimension`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`"}];
 
 AnomalousDimension[];
 
@@ -77,31 +77,31 @@ CreateAnomDimPrototypes[anomDim_List] :=
           ];
 
 CreateAnomDimFunction[anomDim_AnomalousDimension] :=
-    Module[{def = "", body = "", type, name, unitMatrix},
+    Module[{def, body, type, name, unitMatrix,
+            exprOneLoop, exprTwoLoop, inputParsDecl},
            type = GetType[anomDim];
            name = ToValidCSymbolString[GetName[anomDim]];
            unitMatrix = CreateUnitMatrix[type];
-           body = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n";
-           body = body <> CreateDefaultDefinition["anomDim", type] <> ";\n";
            (* one-loop *)
-           body = body <> "\nanomDim = " <>
-                  RValueToCFormString[(CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim])
-                                /. { Kronecker[i1,i2] -> unitMatrix }
-                                /. { a_[i1,i2] :> a }];
-           body = body <> ";\n";
+           exprOneLoop = (CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim]) /.
+                         { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+           body = "\nanomDim = " <> RValueToCFormString[exprOneLoop] <> ";\n";
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
-              body = body <> "\nif (get_loops() > 1) {\n";
-              body = body <> "   anomDim += " <>
-                     RValueToCFormString[(CConversion`twoLoop * GetAnomDim2Loop[anomDim])
-                                   /. { Kronecker[i1,i2] -> unitMatrix }
-                                   /. { a_[i1,i2] :> a }];
-              body = body <> ";\n}\n";
+              exprTwoLoop = (CConversion`twoLoop * GetAnomDim2Loop[anomDim]) /.
+                            { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+              body = body <> "\nif (get_loops() > 1) {\n" <>
+                     IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
+                     ";\n}\n";
              ];
-           body = body <> "\nreturn anomDim;\n";
-           body = IndentText[body];
+           inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[exprOneLoop + exprTwoLoop];
+           body = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n" <>
+                  CreateDefaultDefinition["anomDim", type] <> ";\n" <>
+                  inputParsDecl <>
+                  body <>
+                  "\nreturn anomDim;\n";
            def  = GetCParameterType[type] <> " CLASSNAME::get_" <>
-                  name <> "() const\n{\n" <> body <> "}\n\n";
+                  name <> "() const\n{\n" <> IndentText[body] <> "}\n\n";
            Return[def];
           ];
 
