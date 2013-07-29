@@ -670,7 +670,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
 
-           TreeMasses`SetModelParameters[allParameters];
            Parameters`SetModelParameters[allParameters];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 

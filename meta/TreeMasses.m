@@ -70,8 +70,6 @@ SetUnrotatedParticles::usage="set list of unrotated particles in SARAH
 format (result of ListUnmixed[EWSB] or content of
 UnrotatedParticles.m)";
 
-SetModelParameters::usage="set model parameters";
-
 GetMassEigenstate::usage="get mass eigenstates symbol from mass
 matrix";
 
@@ -104,10 +102,6 @@ IsRealScalar::usage="";
 IsMassless::usage="";
 
 Begin["Private`"];
-
-allModelParameters = {};
-
-SetModelParameters[pars_List] := allModelParameters = pars;
 
 unrotatedParticles = {};
 
@@ -738,7 +732,7 @@ FindDependenceNums[] :=
                          ArcSin[hyperchargeCoupling / Sqrt[hyperchargeCoupling^2 + leftCoupling^2]] /.
                          Parameters`ApplyGUTNormalization[]] },
                   Cases[SARAH`ParameterDefinitions,
-                        {parameter_ /; !MemberQ[allModelParameters, parameter] &&
+                        {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
                          parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
                          {___, SARAH`DependenceNum -> value:Except[None], ___}} :>
                         Rule[parameter, value /. Parameters`ApplyGUTNormalization[]]]
@@ -756,7 +750,7 @@ FindDependenceNumRules[] :=
               dependenceNumRules = Join[
                   { SARAH`Weinberg -> SARAH`Weinberg[] },
                   Cases[SARAH`ParameterDefinitions,
-                        {parameter_ /; !MemberQ[allModelParameters, parameter] &&
+                        {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
                          parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
                          {___, SARAH`DependenceNum -> value:Except[None], ___}} :>
                         Rule[parameter, parameter[]]]
