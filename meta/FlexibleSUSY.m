@@ -613,6 +613,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 SARAH`g1^2 Susyno`LieGroups`g2^2 -> 0 };
              ];
 
+           Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
+
            (* pick beta functions of supersymmetric parameters *)
            susyBetaFunctions = { SARAH`BetaWijkl,
                                  SARAH`BetaYijk ,
@@ -669,9 +671,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allParameters = Join[GetName /@ susyBetaFunctions,
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
-
            Parameters`SetModelParameters[allParameters];
-           Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
