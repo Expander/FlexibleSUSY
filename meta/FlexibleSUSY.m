@@ -579,8 +579,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, eigenstates = OptionValue[Eigenstates],
             susyBetaFunctions, susyBreakingBetaFunctions,
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
-            susyTraceDecl, susyTraceRules,
-            nonSusyTraceDecl, nonSusyTraceRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases},
@@ -637,9 +635,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyParameterReplacementRules = BetaFunction`ConvertParameterNames[susyBetaFunctions];
            susyBetaFunctions = susyBetaFunctions /. susyParameterReplacementRules;
 
-           {susyTraceDecl, susyTraceRules} = Traces`CreateDoubleTraceAbbrs[BetaFunction`GetAllBetaFunctions[#]& /@ susyBetaFunctions];
-           susyBetaFunctions = susyBetaFunctions /. susyTraceRules;
-
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
            anomDim = ConvertSarahAnomDim[SARAH`Gij];
            anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
@@ -649,8 +644,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.cpp"}]}},
-                         susyTraceDecl];
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.cpp"}]}}];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
@@ -658,13 +652,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBreakingParameterReplacementRules = Flatten[{susyParameterReplacementRules, BetaFunction`ConvertParameterNames[susyBreakingBetaFunctions]}];
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. susyBreakingParameterReplacementRules;
 
-           {nonSusyTraceDecl, nonSusyTraceRules} = Traces`CreateDoubleTraceAbbrs[BetaFunction`GetAllBetaFunctions[#]& /@ susyBreakingBetaFunctions];
-
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
            {traceDecl, traceRules} = CreateTraceAbbr[SARAH`TraceAbbr /. susyBreakingParameterReplacementRules];
-           traceRules = DeleteDuplicates[Flatten[{traceRules, susyTraceRules, nonSusyTraceRules}]];
-
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. traceRules;
 
            (* store all model parameters *)
@@ -682,7 +672,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.cpp"}]}},
-                         traceDecl <> "\n" <> nonSusyTraceDecl, numberOfSusyParameters];
+                         traceDecl, numberOfSusyParameters];
 
            Print["Checking EWSB equations ..."];
            freePhases = EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];

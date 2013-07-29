@@ -1,5 +1,5 @@
 
-BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
+BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`"}];
 
 BetaFunction[];
 
@@ -69,13 +69,19 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
 CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
     Module[{def = "",
             localDecl = "", beta1L = "", beta2L = "", allDecl = "", allBeta = "",
-            allBeta1L = "", allBeta2L = "", i, inputParsDecl},
+            allBeta1L = "", allBeta2L = "", i, inputParsDecl,
+            traceDecl, traceRules, simplifiedBetaFunctions},
+           (* remove double traces *)
+           {traceDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[GetAllBetaFunctions /@ betaFunctions];
+           simplifiedBetaFunctions = betaFunctions /. traceRules;
+           (* create local const references of all input parameters which
+              appear in the beta functions *)
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[
-                               {GetBeta1Loop[#], GetBeta2Loop[#]}& /@ betaFunctions];
+                               {GetBeta1Loop[#], GetBeta2Loop[#]}& /@ simplifiedBetaFunctions];
            allDecl = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n" <>
-                     inputParsDecl <> "\n" <> additionalDecl <> "\n";
-           For[i = 1, i <= Length[betaFunctions], i++,
-               {localDecl, beta1L, beta2L} = CreateBetaFunction[betaFunctions[[i]]];
+                     inputParsDecl <> "\n" <> additionalDecl <> "\n" <> traceDecl <> "\n";
+           For[i = 1, i <= Length[simplifiedBetaFunctions], i++,
+               {localDecl, beta1L, beta2L} = CreateBetaFunction[simplifiedBetaFunctions[[i]]];
                allDecl = allDecl <> localDecl;
                allBeta1L = allBeta1L <> beta1L;
                allBeta2L = allBeta2L <> "   " <> beta2L;
