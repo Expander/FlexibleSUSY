@@ -1,0 +1,72 @@
+
+InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
+                    ALambdaInput, vSInput, Qq, Ql, QHd, QHu, Qd, Qu,
+                    Qe, Qs };
+
+DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Azero, 0},
+    {LambdaInput, 0.1},
+    {ALambdaInput, 500},
+    {vSInput, 500},
+    {Qq, 1},
+    {Ql, 1},
+    {QHd, 1},
+    {QHu, 1},
+    {Qd, 1},
+    {Qu, 1},
+    {Qe, 1},
+    {Qs, 1}
+};
+
+ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
+
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+
+SUSYScaleFirstGuess = m0^2 + 4 m12^2;
+
+SUSYScaleInput = {
+    {vS, vSInput},  
+    {\[Lambda], LambdaInput}
+};
+
+HighScale = g1 == g2;
+
+HighScaleFirstGuess = 1.0 10^14;
+
+HighScaleInput = {
+    {gp, g1},
+    (* {gpg1,0}, *)
+    (* {g1gp,0}, *)
+    {T[Ye], Azero*Ye},
+    {T[Yd], Azero*Yd},
+    {T[Yu], Azero*Yu},
+    {mq2, UNITMATRIX[3] m0^2},
+    {ml2, UNITMATRIX[3] m0^2},
+    {md2, UNITMATRIX[3] m0^2},
+    {mu2, UNITMATRIX[3] m0^2},
+    {me2, UNITMATRIX[3] m0^2},
+    {T[\[Lambda]], ALambdaInput*\[Lambda]},
+    {MassB, m12},
+    {MassWB, m12},
+    {MassG, m12},
+    {MassU, m12}
+};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput = {
+    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtHighScale = {};
