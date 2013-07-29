@@ -365,13 +365,13 @@ CreateLocalConstRefsForBetas[expr_] :=
            Return[result];
           ];
 
-CreateLocalConstRefsForInputParameters[expr_] :=
+CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
     Module[{result = "", symbols, inputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
            symbols = Cases[compactExpr, _Symbol, Infinity];
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
-           (result = result <> DefineLocalConstCopy[#, "INPUT"])& /@ inputPars;
+           (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
            Return[result];
           ];
 
