@@ -1,5 +1,5 @@
 
-BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`"}];
+BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`"}];
 
 FSSelfEnergy::usage="self-energy head";
 Tadpole::usage="tadpole head";
@@ -269,7 +269,8 @@ CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
               type = "Complex"; initalValue = "";];
            prototype = type <> " " <> cFunctionName <> " const;\n";
            definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = type <> " result" <> initalValue <> ";\n\n";
+           body = Parameters`CreateLocalConstRefsForInputParameters[strippedExpr, "LOCALINPUT"] <> "\n" <>
+                  type <> " result" <> initalValue <> ";\n\n";
            If[FreeQ[strippedExpr,SARAH`sum] && FreeQ[strippedExpr,SARAH`ThetaStep],
               body = body <> "result = " <>
                      RValueToCFormString[Simplify[strippedExpr]] <> ";\n";

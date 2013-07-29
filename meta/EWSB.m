@@ -90,7 +90,8 @@ CreateEWSBEqFunction[vev_Symbol, equation_] :=
            variableName = "ewsb_eq_" <> ToValidCSymbolString[vev];
            result = "double CLASSNAME::get_" <> variableName <>
                     "() const\n{\n";
-           body = "double " <> variableName <> " = " <>
+           body = Parameters`CreateLocalConstRefsForInputParameters[equation, "LOCALINPUT"] <>
+                  "\n" <> "double " <> variableName <> " = " <>
                   RValueToCFormString[equation] <> ";\n";
            body = body <> "\nreturn " <> variableName <> ";\n";
            body = IndentText[WrapLines[body]];
@@ -240,7 +241,7 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
               reducedSolution = ReduceSolution[solution, signs];
               (* create local const refs to input parameters appearing
                  in the solution *)
-              result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"];
+              result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
@@ -279,7 +280,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            solution = solution[[1]]; (* select first solution *)
            (* create local const refs to input parameters appearing
               in the solution *)
-           result = Parameters`CreateLocalConstRefsForInputParameters[solution, "LOCALINPUT"];
+           result = Parameters`CreateLocalConstRefsForInputParameters[solution, "LOCALINPUT"] <> "\n";
            For[i = 1, i <= Length[solution], i++,
                par  = solution[[i,1]];
                expr = solution[[i,2]];
