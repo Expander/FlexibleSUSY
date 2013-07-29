@@ -25,7 +25,7 @@ ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 
-SUSYScaleFirstGuess = m0^2 + 4 m12^2;
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
     {vS, vSInput},  
@@ -66,7 +66,9 @@ LowScaleInput = {
 
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vS, 1000},
+   {\[Lambda], 0.1}
 };
 
 InitialGuessAtHighScale = {};
