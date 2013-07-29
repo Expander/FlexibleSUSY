@@ -370,11 +370,8 @@ CreateLocalConstRefsForInputParameters[expr_] :=
            compactExpr = RemoveProtectedHeads[expr];
            symbols = Cases[compactExpr, _Symbol, Infinity];
            symbols = DeleteDuplicates[Flatten[symbols]];
-           Print["symbols: ", symbols];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
-           Print["input parameters: ", inputPars];
            (result = result <> DefineLocalConstCopy[#, "INPUT"])& /@ inputPars;
-           Print["decl of input parameters: ", result];
            Return[result];
           ];
 
