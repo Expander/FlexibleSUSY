@@ -4,13 +4,13 @@ InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
                     Qe, Qs };
 
 DefaultParameterPoint = {
-    {m0, 125},
+    {m0, 500},
     {m12, 500},
     {TanBeta, 10},
     {Azero, 0},
     {LambdaInput, 0.1},
     {ALambdaInput, 500},
-    {vSInput, 500},
+    {vSInput, 1000},
     (* E6SSM inspired U(1)' charges *)
     {Qq ,  1 / Sqrt[40]},
     {Ql ,  2 / Sqrt[40]},
