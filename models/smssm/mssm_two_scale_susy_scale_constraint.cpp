@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "mssm_two_scale_msusy_constraint.hpp"
+#include "mssm_two_scale_susy_scale_constraint.hpp"
 #include "mssm_two_scale.hpp"
 
 #include <cassert>
