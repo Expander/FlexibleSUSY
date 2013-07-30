@@ -9,6 +9,7 @@ HighPrecision::usage="";
 softSusyCompatibleRGEs::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
+FSModelName;
 InputParameters;
 DefaultParameterPoint;
 ParametersToSolveTadpoles;
@@ -43,6 +44,12 @@ numberOfModelParameters = 0;
 
 CheckModelFileSettings[] :=
     Module[{},
+           (* FlexibleSUSY model name *)
+           If[!NameQ["FlexibleSUSY`FSModelName"] || Head[FlexibleSUSY`FSModelName] =!= String,
+              Print["Warning: FlexibleSUSY`FSModelName not defined!",
+                    " I'm using Model`Name from SARAH: ", Model`Name];
+              FlexibleSUSY`FSModelName = Model`Name;
+             ];
            If[Head[FlexibleSUSY`InitialGuessAtLowScale] =!= List,
               FlexibleSUSY`InitialGuessAtLowScale = {};
              ];
@@ -147,7 +154,7 @@ GeneralReplacementRules[] :=
       "@leftCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@hyperchargeCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
       "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
-      "@ModelName@"           -> Model`Name,
+      "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@DateAndTime@"         -> DateString[]
     }
@@ -642,9 +649,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.hpp"}]},
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_parameters.cpp"}]}}];
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_parameters.cpp"}]}}];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
@@ -669,9 +676,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {},
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.hpp"}]},
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "soft_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_soft_parameters.cpp"}]}},
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_soft_parameters.cpp"}]}},
                          traceDecl, numberOfSusyParameters];
 
            Print["Checking EWSB equations ..."];
@@ -679,16 +686,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating plot scripts ..."];
            WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_plot_spectrum.gnuplot"}]},
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rge_running.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_plot_rge_running.gnuplot"}]}}
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rge_running.gnuplot"}]}}
                            ];
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_input_parameters.hpp"}]}}
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
                                    ];
 
            massMatrices = ConvertSarahMassMatrices[] /.
@@ -707,17 +714,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[allParticles,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.hpp"}]},
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_convergence_tester.cpp"}]}}
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.cpp"}]}}
                                       ];
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.hpp"}]},
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_utilities.cpp"}]}}
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]}}
                               ];
 
            Print["Creating class for high-scale constraint ..."];
@@ -725,9 +732,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`HighScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.hpp"}]},
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_high_scale_constraint.cpp"}]}}
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for susy-scale constraint ..."];
@@ -735,9 +742,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`SUSYScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`SUSYScaleFirstGuess /. susyBreakingParameterReplacementRules,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.hpp"}]},
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_susy_scale_constraint.cpp"}]}}
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for low-scale constraint ..."];
@@ -745,18 +752,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FlexibleSUSY`LowScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`LowScaleFirstGuess,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.hpp"}]},
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.cpp.in"}],
-                                  FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_low_scale_constraint.cpp"}]}}
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.cpp"}]}}
                                ];
 
            Print["Creating class for initial guesser ..."];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale /. susyBreakingParameterReplacementRules,
                                     FlexibleSUSY`InitialGuessAtHighScale /. susyBreakingParameterReplacementRules,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.hpp"}]},
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_initial_guesser.cpp"}]}}
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.cpp"}]}}
                                    ];
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;
@@ -783,18 +790,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            ParametersToSolveTadpoles,
                            nPointFunctions, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_model.hpp"}]},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_model.cpp"}]},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.cpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.hpp"}]},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, Model`Name <> "_physical.cpp"}]}},
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}},
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
            WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> Model`Name <> ".cpp"}]}}];
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}}];
           ];
 
 End[];
