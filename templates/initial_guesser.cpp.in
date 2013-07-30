@@ -71,11 +71,11 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
    const double mtpole = Electroweak_constants::PMTOP;
 
    // guess gauge couplings at mt
-   const DoubleVector a(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
-   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * a(1)));
-   model->set_@leftCoupling@(sqrt(4.0 * M_PI * a(2)));
-   model->set_@strongCoupling@(sqrt(4.0 * M_PI * a(3)));
+   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * alpha_sm(1)));
+   model->set_@leftCoupling@(sqrt(4.0 * M_PI * alpha_sm(2)));
+   model->set_@strongCoupling@(sqrt(4.0 * M_PI * alpha_sm(3)));
    model->set_scale(mtpole);
    model->set_loops(2);
 
