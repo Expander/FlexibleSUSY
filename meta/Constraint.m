@@ -144,7 +144,7 @@ DefineInputParameters[inputParameters_List] :=
            Return[result];
           ];
 
-InitializeInputParameter[{parameter_, value_?NumberQ}] :=
+InitializeInputParameter[{parameter_, value_?NumericQ}] :=
     ToValidCSymbolString[parameter] <> "(" <> RValueToCFormString[value] <> ")";
 
 InitializeInputParameter[FlexibleSUSY`Phase[phase_]] :=
