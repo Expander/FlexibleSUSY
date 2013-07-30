@@ -24,7 +24,7 @@ LowScaleFirstGuess;
 LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
-MZ;
+SM
 
 Begin["Private`"];
 
@@ -74,12 +74,12 @@ CheckModelFileSettings[] :=
            If[!NameQ["FlexibleSUSY`LowScale"],
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
-              FlexibleSUSY`LowScale := FlexibleSUSY`MZ;
+              FlexibleSUSY`LowScale := FlexibleSUSY`SM[MZ];
              ];
            If[!NameQ["FlexibleSUSY`LowScaleFirstGuess"],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
                     " set in the model file!"];
-              FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`MZ;
+              FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`SM[MZ];
              ];
            If[Head[FlexibleSUSY`LowScaleInput] =!= List,
               FlexibleSUSY`LowScaleInput = {};
