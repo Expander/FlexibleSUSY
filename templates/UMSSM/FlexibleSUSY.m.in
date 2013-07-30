@@ -11,14 +11,15 @@ DefaultParameterPoint = {
     {LambdaInput, 0.1},
     {ALambdaInput, 500},
     {vSInput, 500},
-    {Qq, 1},
-    {Ql, 2},
-    {QHd, -3},
-    {QHu, -2},
-    {Qd, 2},
-    {Qu, 1},
-    {Qe, 1},
-    {Qs, 5}
+    (* E6SSM inspired U(1)' charges *)
+    {Qq ,  1 / Sqrt[40]},
+    {Ql ,  2 / Sqrt[40]},
+    {QHd, -3 / Sqrt[40]},
+    {QHu, -2 / Sqrt[40]},
+    {Qd ,  2 / Sqrt[40]},
+    {Qu ,  1 / Sqrt[40]},
+    {Qe ,  1 / Sqrt[40]},
+    {Qs ,  5 / Sqrt[40]}
 };
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
