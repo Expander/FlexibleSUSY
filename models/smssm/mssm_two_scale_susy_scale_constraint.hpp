@@ -29,7 +29,7 @@ class Two_scale;
 template<class T> class Mssm;
 
 /**
- * @class Mssm_msusy_constraint
+ * @class Mssm_susy_scale_constraint
  * @brief MSSM EWSB constraint at the Susy mass scale
  *
  * This class represents the electroweak symmetry breaking (EWSB)
@@ -38,10 +38,10 @@ template<class T> class Mssm;
  * does the EWSB.
  */
 
-class Mssm_msusy_constraint : public Constraint<Two_scale> {
+class Mssm_susy_scale_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_msusy_constraint(const Mssm_parameter_point&);
-   virtual ~Mssm_msusy_constraint();
+   Mssm_susy_scale_constraint(const Mssm_parameter_point&);
+   virtual ~Mssm_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);

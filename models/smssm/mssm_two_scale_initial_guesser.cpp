@@ -27,8 +27,8 @@ namespace flexiblesusy {
 
 Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_,
                                            const Mssm_parameter_point& pp_,
-                                           const Mssm_mz_constraint&,
-                                           const Mssm_msusy_constraint&,
+                                           const Mssm_low_scale_constraint&,
+                                           const Mssm_susy_scale_constraint&,
                                            const Mssm_sugra_constraint&)
    : Initial_guesser<Two_scale>()
    , mssm(mssm_)

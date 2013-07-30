@@ -28,7 +28,7 @@ class Two_scale;
 template<class T> class Mssm;
 
 /**
- * @class Mssm_mz_constraint
+ * @class Mssm_low_scale_constraint
  * @brief MSSM low-energy constraint at the Z mass MZ
  *
  * This class represents the low-energy constraint of the MSSM at the
@@ -38,10 +38,10 @@ template<class T> class Mssm;
  * MssmSoftsusy::setData).
  */
 
-class Mssm_mz_constraint : public Constraint<Two_scale> {
+class Mssm_low_scale_constraint : public Constraint<Two_scale> {
 public:
-   Mssm_mz_constraint(const Mssm_parameter_point&);
-   virtual ~Mssm_mz_constraint();
+   Mssm_low_scale_constraint(const Mssm_parameter_point&);
+   virtual ~Mssm_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);

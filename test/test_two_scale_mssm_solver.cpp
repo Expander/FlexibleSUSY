@@ -192,8 +192,8 @@ public:
       softsusy::TOLERANCE = 1.0e-4;
       // setup the MSSM with the two scale method
       Mssm_sugra_constraint mssm_sugra_constraint(pp);
-      Mssm_mz_constraint mssm_mz_constraint(pp);
-      Mssm_msusy_constraint mssm_msusy_constraint(pp);
+      Mssm_low_scale_constraint mssm_mz_constraint(pp);
+      Mssm_susy_scale_constraint mssm_msusy_constraint(pp);
       Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
       Mssm_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
                                            mssm_msusy_constraint,

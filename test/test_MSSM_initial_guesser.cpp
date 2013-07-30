@@ -39,8 +39,8 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    pp.tanBeta = input.TanBeta;
    QedQcd oneset;
    Mssm_sugra_constraint mssm_sugra_constraint(pp);
-   Mssm_mz_constraint mssm_mz_constraint(pp);
-   Mssm_msusy_constraint mssm_msusy_constraint(pp);
+   Mssm_low_scale_constraint mssm_mz_constraint(pp);
+   Mssm_susy_scale_constraint mssm_msusy_constraint(pp);
    Mssm_initial_guesser initial_guesser(&smssm, pp, mssm_mz_constraint,
                                         mssm_msusy_constraint,
                                         mssm_sugra_constraint);

@@ -28,7 +28,7 @@ namespace flexiblesusy {
  *
  * @param pp_ Mssm parameter point
  */
-Mssm_msusy_constraint::Mssm_msusy_constraint(const Mssm_parameter_point& pp_)
+Mssm_susy_scale_constraint::Mssm_susy_scale_constraint(const Mssm_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mssm(NULL)
    , scale(pp_.msGuess)
@@ -36,11 +36,11 @@ Mssm_msusy_constraint::Mssm_msusy_constraint(const Mssm_parameter_point& pp_)
 {
 }
 
-Mssm_msusy_constraint::~Mssm_msusy_constraint()
+Mssm_susy_scale_constraint::~Mssm_susy_scale_constraint()
 {
 }
 
-void Mssm_msusy_constraint::apply()
+void Mssm_susy_scale_constraint::apply()
 {
    assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 
@@ -50,17 +50,17 @@ void Mssm_msusy_constraint::apply()
    mssm->rewsb(pp.signMu, mtrun, pp.get_soft_pars());
 }
 
-double Mssm_msusy_constraint::get_scale() const
+double Mssm_susy_scale_constraint::get_scale() const
 {
    return scale;
 }
 
-void Mssm_msusy_constraint::set_model(Two_scale_model* model)
+void Mssm_susy_scale_constraint::set_model(Two_scale_model* model)
 {
    mssm = cast_model<Mssm<Two_scale> >(model);
 }
 
-void Mssm_msusy_constraint::update_scale()
+void Mssm_susy_scale_constraint::update_scale()
 {
    mssm->setMsusy(mssm->calcMs());
    scale = mssm->displayMsusy();

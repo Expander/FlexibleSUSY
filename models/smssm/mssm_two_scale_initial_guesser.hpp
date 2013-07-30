@@ -29,15 +29,15 @@ namespace flexiblesusy {
 template<class T> class Mssm;
 class Two_scale;
 
-class Mssm_mz_constraint;
-class Mssm_msusy_constraint;
+class Mssm_low_scale_constraint;
+class Mssm_susy_scale_constraint;
 class Mssm_sugra_constraint;
 
 class Mssm_initial_guesser : public Initial_guesser<Two_scale> {
 public:
    Mssm_initial_guesser(Mssm<Two_scale>*, const Mssm_parameter_point&,
-                        const Mssm_mz_constraint&,
-                        const Mssm_msusy_constraint&,
+                        const Mssm_low_scale_constraint&,
+                        const Mssm_susy_scale_constraint&,
                         const Mssm_sugra_constraint&);
    virtual ~Mssm_initial_guesser();
    virtual void guess();
