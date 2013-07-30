@@ -28,8 +28,7 @@ SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
-    {vS, vSInput},  
-    {\[Lambda], LambdaInput}
+    {vS, vSInput}
 };
 
 HighScale = g1 == g2;
@@ -48,6 +47,7 @@ HighScaleInput = {
     {md2, UNITMATRIX[3] m0^2},
     {mu2, UNITMATRIX[3] m0^2},
     {me2, UNITMATRIX[3] m0^2},
+    {\[Lambda], LambdaInput},
     {T[\[Lambda]], ALambdaInput*\[Lambda]},
     {MassB, m12},
     {MassWB, m12},
@@ -67,8 +67,7 @@ LowScaleInput = {
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
-   {vS, 1000},
-   {\[Lambda], 0.1}
+   {vS, vSInput}
 };
 
 InitialGuessAtHighScale = {};
