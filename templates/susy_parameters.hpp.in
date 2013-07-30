@@ -29,6 +29,8 @@
 #include <vector>
 #include <Eigen/Core>
 
+namespace flexiblesusy {
+
 class @ModelName@_susy_parameters : public Beta_function {
 public:
    @ModelName@_susy_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
@@ -56,5 +58,7 @@ protected:
 private:
    static const int numberOfParameters = @numberOfParameters@;
 };
+
+}
 
 #endif

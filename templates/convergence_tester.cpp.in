@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <valarray>
 
+namespace flexiblesusy {
+
 #define OLD1(p) ol->get_##p()
 #define NEW1(p) ne->get_##p()
 
@@ -44,4 +46,6 @@ double @ModelName@_convergence_tester::max_rel_diff() const
    const @ModelName@* ne = get_model();
 
 @compareFunction@
+}
+
 }

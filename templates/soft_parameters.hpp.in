@@ -26,6 +26,8 @@
 
 #include <iosfwd>
 
+namespace flexiblesusy {
+
 class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
 public:
    @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
@@ -49,5 +51,7 @@ protected:
 private:
    static const int numberOfParameters = @numberOfParameters@;
 };
+
+}
 
 #endif

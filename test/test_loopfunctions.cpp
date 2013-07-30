@@ -8,6 +8,8 @@
 #define private public
 #include "MSSM_model.hpp"
 
+using namespace flexiblesusy;
+
 BOOST_AUTO_TEST_CASE( test_A0 )
 {
    MSSM model;

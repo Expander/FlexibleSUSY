@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+namespace flexiblesusy {
+
 #define CLASSNAME @ModelName@_susy_parameters
 #define INPUT(parameter) input.parameter
 
@@ -106,4 +108,6 @@ const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() con
 void @ModelName@_susy_parameters::set_input(const @ModelName@_input_parameters& input_)
 {
    input = input_;
+}
+
 }

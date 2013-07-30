@@ -27,6 +27,8 @@
 #include <cassert>
 #include <cmath>
 
+namespace flexiblesusy {
+
 #define INPUTPARAMETER(p) inputPars.p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
@@ -199,4 +201,6 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()
    electronDRbar(2,2) = model->calculate_M@Electron@_DRbar_1loop(Electroweak_constants::MTAU, 3);
 
 @setDRbarYukawaCouplings@
+}
+
 }

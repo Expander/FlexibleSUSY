@@ -26,6 +26,8 @@
 #include <cassert>
 #include <cmath>
 
+namespace flexiblesusy {
+
 #define INPUTPARAMETER(p) inputPars.p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
@@ -97,4 +99,6 @@ void @ModelName@_susy_scale_constraint::reset()
 void @ModelName@_susy_scale_constraint::update_scale()
 {
 @calculateScale@
+}
+
 }

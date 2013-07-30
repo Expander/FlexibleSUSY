@@ -38,6 +38,8 @@
 
 using namespace std;
 
+namespace flexiblesusy {
+
 class @ModelName@_runner {
 public:
    @ModelName@_runner()
@@ -126,8 +128,11 @@ private:
    double precision_goal; ///< precision goal
 };
 
+}
+
 int main()
 {
+   using namespace flexiblesusy;
    @ModelName@_runner runner;
    @ModelName@_input_parameters input;
 

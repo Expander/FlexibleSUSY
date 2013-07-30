@@ -28,6 +28,8 @@
 #include <cerrno>
 #include <cstring>
 
+namespace flexiblesusy {
+
 #define INPUTPARAMETER(p) inputPars.p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
@@ -120,4 +122,6 @@ void @ModelName@_high_scale_constraint::update_scale()
       scale = get_initial_scale_guess();
       errno = 0;
    }
+}
+
 }

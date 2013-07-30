@@ -26,6 +26,8 @@
 #include <iosfwd>
 #include <string>
 
+namespace flexiblesusy {
+
 struct @ModelName@_physical {
    @ModelName@_physical();
    void clear();
@@ -34,5 +36,7 @@ struct @ModelName@_physical {
 @physicalMassesDef@
 @mixingMatricesDef@
 };
+
+}
 
 #endif

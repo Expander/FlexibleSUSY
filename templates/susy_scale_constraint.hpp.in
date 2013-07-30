@@ -24,6 +24,8 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
 
+namespace flexiblesusy {
+
 class @ModelName@;
 
 class @ModelName@_susy_scale_constraint : public Constraint<Two_scale> {
@@ -46,5 +48,7 @@ private:
 
    void update_scale();
 };
+
+}
 
 #endif

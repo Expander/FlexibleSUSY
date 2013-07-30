@@ -29,6 +29,8 @@
 #include <valarray>
 #include <utility>
 
+namespace flexiblesusy {
+
 namespace @ModelName@_info {
 @particleEnum@
    extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
@@ -73,5 +75,7 @@ private:
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
 };
+
+}
 
 #endif

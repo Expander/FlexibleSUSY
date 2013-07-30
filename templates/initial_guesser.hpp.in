@@ -30,6 +30,8 @@
 
 #include <sstream>
 
+namespace flexiblesusy {
+
 class @ModelName@;
 
 class @ModelName@_initial_guesser : public Initial_guesser<Two_scale> {
@@ -72,5 +74,7 @@ private:
    void guess_susy_parameters();
    void guess_soft_parameters();
 };
+
+}
 
 #endif

@@ -23,6 +23,8 @@
 
 #include <iostream>
 
+namespace flexiblesusy {
+
 #define INPUT(parameter) input.parameter
 
 @ModelName@_soft_parameters::@ModelName@_soft_parameters(const @ModelName@_input_parameters& input_)
@@ -95,4 +97,6 @@ std::vector<std::string> @ModelName@_soft_parameters::get_parameter_names() cons
 @parameterNames@
 
    return names;
+}
+
 }

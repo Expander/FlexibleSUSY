@@ -27,6 +27,8 @@
 #include <Eigen/Core>
 #include <cassert>
 
+namespace flexiblesusy {
+
 #define INPUTPARAMETER(p) input_pars.p
 #define MODELPARAMETER(p) model->get_##p()
 #define SM(p) Electroweak_constants::p
@@ -129,4 +131,6 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
    model->calculate_DRbar_parameters();
    model->set_thresholds(3);
    model->set_loops(2);
+}
+
 }

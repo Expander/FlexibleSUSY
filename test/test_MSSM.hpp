@@ -8,6 +8,8 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
+using namespace flexiblesusy;
+
 void ensure_tree_level_ewsb(MSSM& m)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222)

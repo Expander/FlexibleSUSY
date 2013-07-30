@@ -31,6 +31,8 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
 
+namespace flexiblesusy {
+
 class @ModelName@ : public Two_scale_model, public @ModelName@_soft_parameters {
 public:
    @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
@@ -106,5 +108,7 @@ private:
 };
 
 int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+
+}
 
 #endif

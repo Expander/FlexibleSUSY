@@ -25,6 +25,8 @@
 #include "two_scale_constraint.hpp"
 #include <Eigen/Core>
 
+namespace flexiblesusy {
+
 class @ModelName@;
 
 class @ModelName@_low_scale_constraint : public Constraint<Two_scale> {
@@ -53,5 +55,7 @@ private:
    double calculate_delta_alpha_s(double) const;
    void update_scale();
 };
+
+}
 
 #endif

@@ -30,6 +30,8 @@
 #include <cmath>
 #include <iostream>
 
+namespace flexiblesusy {
+
 #define CLASSNAME @ModelName@
 
 #define PHYSICAL(parameter) physical.parameter
@@ -392,3 +394,5 @@ int @ModelName@::run_to(double scale, double eps)
 @runningDRbarMassesFunctions@
 
 @dependenceNumFunctions@
+
+}
