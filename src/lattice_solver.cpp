@@ -8,6 +8,8 @@
 #include "logger.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -604,4 +606,6 @@ RGFlow<Lattice>::Inner_status RGFlow<Lattice>::iterate()
     }
     else
 	return ENDLESS;
+}
+
 }

@@ -8,6 +8,8 @@
 #include "betafunction.hpp"
 #include "wrappers.hpp"
 
+using namespace flexiblesusy;
+
 class RGE_model : public RGE {
 public:
    RGE_model() : RGE(), pars(10) {

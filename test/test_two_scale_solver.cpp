@@ -10,6 +10,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace flexiblesusy;
+
 class Static_model: public Two_scale_model {
 public:
    Static_model() : parameters(1) {}

@@ -20,6 +20,8 @@
 #include <limits>
 #include <cmath>
 
+namespace flexiblesusy {
+
 bool contains_nan(const gsl_vector* x, std::size_t length)
 {
    for (std::size_t i = 0; i < length; ++i)
@@ -27,4 +29,6 @@ bool contains_nan(const gsl_vector* x, std::size_t length)
          return true;
 
    return false;
+}
+
 }

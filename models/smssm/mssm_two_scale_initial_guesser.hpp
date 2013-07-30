@@ -24,6 +24,8 @@
 #include "lowe.h"
 #include "linalg.h"
 
+namespace flexiblesusy {
+
 template<class T> class Mssm;
 class Two_scale;
 
@@ -47,5 +49,7 @@ private:
    Mssm_parameter_point pp;   ///< Mssm parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };
+
+}
 
 #endif

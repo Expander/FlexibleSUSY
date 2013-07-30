@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace flexiblesusy {
+
 class Error {
 public:
    virtual ~Error() {}
@@ -54,5 +56,7 @@ private:
    const Two_scale_model* model;
    double requested_precision;
 };
+
+}
 
 #endif

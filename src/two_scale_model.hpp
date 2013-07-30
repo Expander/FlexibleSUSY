@@ -22,6 +22,8 @@
 #include <string>
 #include <ostream>
 
+namespace flexiblesusy {
+
 class Two_scale_model {
 public:
    virtual ~Two_scale_model() {}
@@ -35,5 +37,7 @@ public:
    }
    virtual void set_precision(double) = 0;
 };
+
+}
 
 #endif

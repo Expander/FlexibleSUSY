@@ -5,6 +5,8 @@
 #include <boost/test/unit_test.hpp>
 #include "wrappers.hpp"
 
+using namespace flexiblesusy;
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);

@@ -17,6 +17,8 @@
 #include "rg_flow.hpp"
 #include "error.hpp"
 
+namespace flexiblesusy {
+
 #if 1
 template <class T> class Constraint;
 template <class T> class Matching;
@@ -312,5 +314,6 @@ public:
     void sort_rows();
 };
 
+}
 
 #endif // lattice_solver_hpp

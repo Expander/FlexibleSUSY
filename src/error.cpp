@@ -20,6 +20,8 @@
 
 #include <sstream>
 
+namespace flexiblesusy {
+
 TachyonError::TachyonError(const Two_scale_model* model_,
                            const std::string& particle_name_,
                            int particle_index_)
@@ -50,4 +52,6 @@ std::string NoEWSBError::what() const
    message << "NoEWSBError: Could not find a solution to the EWSB"
       " equations with requested precision " << requested_precision;
    return message.str();
+}
+
 }

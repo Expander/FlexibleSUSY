@@ -6,6 +6,7 @@
 #include <complex>
 #include <limits>
 
+namespace flexiblesusy {
 
 typedef double Real;
 typedef std::complex<Real> Comp;
@@ -67,5 +68,6 @@ template<class T> inline T sign(T x)
     else return -1;
 }
 
+}
 
 #endif // mathdefs_hpp

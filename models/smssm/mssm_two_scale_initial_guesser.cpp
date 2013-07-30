@@ -23,6 +23,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_,
                                            const Mssm_parameter_point& pp_,
                                            const Mssm_mz_constraint&,
@@ -132,4 +134,6 @@ void Mssm_initial_guesser::guess()
       else
          WARNING("<Mssm_initial_guesser::guess()>: problem: " << problem);
    }
+}
+
 }

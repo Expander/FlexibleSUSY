@@ -21,6 +21,8 @@
 
 #include "two_scale_convergence_tester.hpp"
 
+namespace flexiblesusy {
+
 template <class T>
 class StandardModel;
 
@@ -42,5 +44,7 @@ public:
 private:
    StandardModel<Two_scale>* sm; ///< the model to test for convergence
 };
+
+}
 
 #endif

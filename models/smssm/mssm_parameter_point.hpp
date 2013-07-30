@@ -21,6 +21,8 @@
 
 #include "linalg.h"
 
+namespace flexiblesusy {
+
 struct Mssm_parameter_point {
    Mssm_parameter_point()
       : m0(125.0)
@@ -52,5 +54,7 @@ struct Mssm_parameter_point {
 
    double m0, m12, a0, mxGuess, msGuess, signMu, tanBeta;
 };
+
+}
 
 #endif

@@ -25,6 +25,8 @@
 #include <cmath>
 #include <limits>
 
+namespace flexiblesusy {
+
 template <class T>
 class Convergence_tester_skeleton : public Convergence_tester<Two_scale> {
 public:
@@ -159,6 +161,8 @@ double Convergence_tester_skeleton<T>::rel_scale_difference() const
    if (!is_zero(last_scale))
       return diff / last_scale;
    return std::numeric_limits<double>::infinity();
+}
+
 }
 
 #endif

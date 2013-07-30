@@ -5,6 +5,7 @@
 #include "compound_constraint.hpp"
 #include "lattice_constraint.hpp"
 
+namespace flexiblesusy {
 
 class Lattice;
 
@@ -55,5 +56,6 @@ protected:
     std::vector<Matching<Lattice>*> components;
 };
 
+}
 
 #endif // lattice_compound_constraint_hpp

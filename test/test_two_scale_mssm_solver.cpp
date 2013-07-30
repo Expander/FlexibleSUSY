@@ -17,6 +17,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace flexiblesusy;
+
 BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
 {
    DoubleVector highScaleSoftPars(3);

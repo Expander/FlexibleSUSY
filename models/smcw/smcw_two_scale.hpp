@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 /// Formatted output
@@ -70,5 +72,7 @@ private:
    double lambda; ///< scalar potential parameter lambda
    double vs;     ///< VEV of singlet field
 };
+
+}
 
 #endif

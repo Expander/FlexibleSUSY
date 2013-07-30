@@ -22,6 +22,8 @@
 #include "two_scale_convergence_tester.hpp"
 #include <vector>
 
+namespace flexiblesusy {
+
 /**
  * @class Composite_convergence_tester
  * @brief A composite convergence tester
@@ -41,5 +43,7 @@ public:
 private:
    std::vector<Convergence_tester<Two_scale>*> testers;
 };
+
+}
 
 #endif

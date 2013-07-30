@@ -21,6 +21,8 @@
 #include <cmath>
 #include <limits>
 
+namespace flexiblesusy {
+
 Convergence_tester<Two_scale>::~Convergence_tester()
 {
 }
@@ -33,4 +35,6 @@ bool Convergence_tester<Two_scale>::is_equal(double a, double b) const
 bool Convergence_tester<Two_scale>::is_zero(double a) const
 {
    return std::fabs(a) < std::numeric_limits<double>::epsilon();
+}
+
 }

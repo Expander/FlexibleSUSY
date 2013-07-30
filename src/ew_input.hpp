@@ -21,6 +21,8 @@
 
 #include <cmath>
 
+namespace flexiblesusy {
+
 /**
  * @namespace Electroweak_constants
  *
@@ -62,6 +64,8 @@ namespace Electroweak_constants {
       const double g2 = sqrt(4.0 * M_PI * alpha2);
       const double g3 = sqrt(4.0 * M_PI * alpha3);
    }
+}
+
 }
 
 #endif

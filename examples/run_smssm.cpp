@@ -10,6 +10,8 @@
 #include "logger.hpp"
 #include "coupling_monitor.hpp"
 
+using namespace flexiblesusy;
+
 class Sfermion_masses_getter {
 public:
    template <class Rge>

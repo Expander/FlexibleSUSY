@@ -20,6 +20,8 @@
 #include "logger.hpp"
 #include <cmath>
 
+namespace flexiblesusy {
+
 Beta_function::Beta_function()
    : numPars(0)
    , loops(0)
@@ -101,4 +103,6 @@ double Beta_function::get_tolerance(double eps)
       tol = eps;
 
    return tol;
+}
+
 }

@@ -29,6 +29,8 @@
 #include <Eigen/Dense>
 #include "logger.hpp"
 
+namespace flexiblesusy {
+
 /**
  * @class Coupling_monitor
  * @brief stores the gauge couplings at different scales
@@ -216,6 +218,8 @@ void Coupling_monitor<Rge,DataGetter>::run(double q1, double q2,
    }
 
    std::sort(couplings.begin(), couplings.end(), TDataComp());
+}
+
 }
 
 #endif

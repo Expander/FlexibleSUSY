@@ -23,6 +23,8 @@
 #include "ew_input.hpp"
 #include <cmath>
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 template <class T>
@@ -46,5 +48,7 @@ public:
 private:
    StandardModel<Two_scale>* sm; ///< model to apply the constraints to
 };
+
+}
 
 #endif

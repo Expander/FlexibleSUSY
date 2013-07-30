@@ -3,6 +3,8 @@
 
 #include <Eigen/SVD>
 
+namespace flexiblesusy {
+
 Eigen::Matrix3d Diag(const Eigen::Matrix3d& m)
 {
    Eigen::Matrix3d diag(m);
@@ -330,4 +332,6 @@ DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd& m)
          result(i+1, k+1) = m(i,k);
 
    return result;
+}
+
 }

@@ -24,6 +24,8 @@
 #include "mssm_parameter_point.hpp"
 #include "gut_scale_calculator.hpp"
 
+namespace flexiblesusy {
+
 class Mssm_sugra_constraint : public Constraint<Two_scale> {
 public:
    Mssm_sugra_constraint(const Mssm_parameter_point&);
@@ -40,5 +42,7 @@ private:
 
    void update_scale();
 };
+
+}
 
 #endif

@@ -4,6 +4,8 @@
 
 #include "matching.hpp"
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 template<>
@@ -14,5 +16,7 @@ public:
    virtual void match_high_to_low_scale_model() = 0;
    virtual double get_scale() const = 0;
 };
+
+}
 
 #endif

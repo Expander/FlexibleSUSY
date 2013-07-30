@@ -23,6 +23,8 @@
 #include "mssm_parameter_point.hpp"
 #include "linalg.h"
 
+namespace flexiblesusy {
+
 class Two_scale;
 template<class T> class Mssm;
 
@@ -51,5 +53,7 @@ private:
 
    void update_scale();
 };
+
+}
 
 #endif

@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 StandardModelCW<Two_scale>::StandardModelCW()
    : StandardModel<Two_scale>()
    , g4(0.0)
@@ -156,4 +158,6 @@ DoubleVector StandardModelCW<Two_scale>::beta() const
 double StandardModelCW<Two_scale>::calcZprimeMass() const
 {
    return vs * g4;
+}
+
 }

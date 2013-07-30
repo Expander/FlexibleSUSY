@@ -18,6 +18,8 @@
 
 #include "mssm_two_scale_convergence_tester.hpp"
 
+namespace flexiblesusy {
+
 Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_)
    : Convergence_tester_skeleton<Mssm<Two_scale> >(mssm_, accuracy_goal_)
 {
@@ -86,4 +88,6 @@ double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two
       k++;
     }
   return sT.max();
+}
+
 }

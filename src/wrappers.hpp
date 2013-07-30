@@ -7,6 +7,8 @@
 #include <valarray>
 #include <Eigen/Core>
 
+namespace flexiblesusy {
+
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
@@ -167,6 +169,8 @@ inline ComplexMatrix Transpose(const ComplexMatrix& m)
 inline double ZeroSqrt(double x)
 {
    return (x > 0.0 ? std::sqrt(x) : 0.0);
+}
+
 }
 
 #endif

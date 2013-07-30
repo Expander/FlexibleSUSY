@@ -21,6 +21,8 @@
 
 #include "initial_guesser.hpp"
 
+namespace flexiblesusy {
+
 class Lattice;
 
 template<>
@@ -32,5 +34,7 @@ public:
 protected:
     RGFlow<Lattice> *f;
 };
+
+}
 
 #endif // LATTICE_INITIAL_GUESSER_H

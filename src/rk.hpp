@@ -12,6 +12,8 @@
 #include <functional>
 #include <Eigen/Dense>
 
+namespace flexiblesusy {
+
 namespace runge_kutta {
 
 typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
@@ -36,5 +38,7 @@ int integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,
 		  RungeKuttaQuinticStepper rkqs);
 
 } // namespace runge_kutta
+
+}
 
 #endif // RK_HPP

@@ -1,5 +1,6 @@
 #include "lattice_numerical_constraint.hpp"
 
+namespace flexiblesusy {
 
 using namespace std;
 
@@ -74,4 +75,6 @@ double NumericalMatching::c_wrap(double wxj, void *params)
     NumericalMatching *self = static_cast<NumericalMatching *>(params);
     self->wx(self->j) = wxj;
     return self->c(&self->w[0], &self->x[0]);
+}
+
 }

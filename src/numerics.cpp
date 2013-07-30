@@ -165,7 +165,7 @@ double dilog(double x) {
 
 // Returns real part of integral
 double bIntegral(int n1, double p, double m1, double m2, double mt) {
-  using namespace runge_kutta;
+  using namespace flexiblesusy::runge_kutta;
 
   // Set global variables so that integration function can access them
   nInt = n1; pInt = p; m1Int = m1; m2Int = m2; mtInt = mt;

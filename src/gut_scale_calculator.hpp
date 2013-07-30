@@ -7,6 +7,8 @@
 #include <cmath>
 #include <limits>
 
+namespace flexiblesusy {
+
 /**
  * @class GUT_scale_runner
  * @brief calculates the approximate GUT scale
@@ -57,6 +59,8 @@ double GUT_scale_calculator<T>::calculateGUTScale(const T& rge) const
    }
 
    return gutScale;
+}
+
 }
 
 #endif

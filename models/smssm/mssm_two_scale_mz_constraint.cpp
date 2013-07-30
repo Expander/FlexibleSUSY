@@ -21,6 +21,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 Mssm_mz_constraint::Mssm_mz_constraint(const Mssm_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mssm(NULL)
@@ -54,4 +56,6 @@ void Mssm_mz_constraint::set_model(Two_scale_model* model)
 void Mssm_mz_constraint::update_scale()
 {
    scale = mssm->displayMz();
+}
+
 }

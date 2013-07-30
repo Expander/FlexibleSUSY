@@ -10,6 +10,8 @@
 #include "logger.hpp"
 #include <algorithm>
 
+namespace flexiblesusy {
+
 using namespace std;
 using namespace Eigen;
 
@@ -145,3 +147,5 @@ void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,
 }
 
 } // namespace runge_kutta
+
+}

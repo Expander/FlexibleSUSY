@@ -23,6 +23,8 @@
 #include "logger.hpp"
 #include <typeinfo>
 
+namespace flexiblesusy {
+
 class Two_scale;
 class Two_scale_model;
 
@@ -48,6 +50,8 @@ TargetModel* cast_model(Two_scale_model* abstract_model)
 #else
    return static_cast<TargetModel*>(abstract_model);
 #endif
+}
+
 }
 
 #endif

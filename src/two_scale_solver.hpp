@@ -26,6 +26,8 @@
 #include <string>
 #include <sstream>
 
+namespace flexiblesusy {
+
 template <class T> class Constraint;
 template <class T> class Matching;
 template <class T> class Convergence_tester;
@@ -147,5 +149,7 @@ private:
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision
 };
+
+}
 
 #endif

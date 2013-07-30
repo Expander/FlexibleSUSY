@@ -21,6 +21,8 @@
 
 #include "initial_guesser.hpp"
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 template<>
@@ -29,5 +31,7 @@ public:
    virtual ~Initial_guesser() {}
    virtual void guess() = 0;
 };
+
+}
 
 #endif

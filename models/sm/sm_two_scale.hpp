@@ -8,6 +8,8 @@
 
 #include <iostream>
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 /// Formatted output
@@ -76,5 +78,7 @@ protected:
    /// Calculate beta functions
    virtual DoubleVector beta() const;
 };
+
+}
 
 #endif

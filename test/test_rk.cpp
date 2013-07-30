@@ -8,6 +8,8 @@
 #include "rk_legacy.hpp"
 #include <Eigen/Dense>
 
+using namespace flexiblesusy;
+
 typedef DoubleVector (*Derivative_t)(double, const DoubleVector&);
 
 Eigen::ArrayXd ToEigenArray(const DoubleVector& v)

@@ -19,7 +19,11 @@
 #ifndef CONSTRAINT_H
 #define CONSTRAINT_H
 
+namespace flexiblesusy {
+
 template <class T>
 class Constraint;
+
+}
 
 #endif

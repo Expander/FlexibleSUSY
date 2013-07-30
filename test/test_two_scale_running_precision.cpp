@@ -12,6 +12,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace flexiblesusy;
+
 BOOST_AUTO_TEST_CASE( test_constant_running_precision )
 {
    for (int i = 0; i < 5; ++i) {

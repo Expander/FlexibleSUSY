@@ -30,6 +30,8 @@
 #include <iterator>
 #include <cassert>
 
+namespace flexiblesusy {
+
 /**
  * Create empty two scale solver.
  */
@@ -351,4 +353,6 @@ std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const
    message << "RGFlow<Two_scale>::NonPerturbativeRunningError: non-perturbative"
            << " running of model " << model->name() << " to scale " << scale;
    return message.str();
+}
+
 }

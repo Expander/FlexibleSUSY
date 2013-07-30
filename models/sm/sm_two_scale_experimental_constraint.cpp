@@ -22,6 +22,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 StandardModel_exp_constraint::StandardModel_exp_constraint()
    : Constraint<Two_scale>()
    , sm(NULL)
@@ -68,4 +70,6 @@ double StandardModel_exp_constraint::get_scale() const
 void StandardModel_exp_constraint::set_model(Two_scale_model* model)
 {
    sm = cast_model<StandardModel<Two_scale> >(model);
+}
+
 }

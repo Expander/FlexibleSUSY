@@ -22,6 +22,8 @@
 #include "two_scale_constraint.hpp"
 #include "mssm_parameter_point.hpp"
 
+namespace flexiblesusy {
+
 class Two_scale;
 template<class T> class Mssm;
 
@@ -51,5 +53,7 @@ private:
 
    void update_scale();
 };
+
+}
 
 #endif

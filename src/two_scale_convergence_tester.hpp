@@ -21,6 +21,8 @@
 
 #include "convergence_tester.hpp"
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 template<>
@@ -34,5 +36,7 @@ protected:
    bool is_equal(double, double) const;
    bool is_zero(double) const;
 };
+
+}
 
 #endif

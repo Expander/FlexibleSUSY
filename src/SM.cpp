@@ -1,5 +1,6 @@
 #include "SM.hpp"
 
+namespace flexiblesusy {
 
 using namespace std;
 
@@ -34,4 +35,6 @@ CM33 standard_VCKM(Real gamma, Real Vub)
 CM33 standard_VCKM(Real gamma)
 {
     return standard_VCKM(gamma, modVub_cent);
+}
+
 }

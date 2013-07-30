@@ -21,6 +21,8 @@
 
 #include "rk.hpp"
 
+namespace flexiblesusy {
+
 class Beta_function {
 public:
    Beta_function();
@@ -56,5 +58,7 @@ private:
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);
 };
+
+}
 
 #endif

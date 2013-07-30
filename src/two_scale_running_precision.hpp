@@ -19,6 +19,8 @@
 #ifndef TWO_SCALE_RUNNING_PRECISION_H
 #define TWO_SCALE_RUNNING_PRECISION_H
 
+namespace flexiblesusy {
+
 class Two_scale_running_precision {
 public:
    virtual ~Two_scale_running_precision() {}
@@ -43,5 +45,7 @@ private:
    double decreasing_factor;
    double minimum_precision;
 };
+
+}
 
 #endif

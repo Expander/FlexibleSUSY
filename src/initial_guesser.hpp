@@ -19,7 +19,11 @@
 #ifndef INITIAL_GUESSER_H
 #define INITIAL_GUESSER_H
 
+namespace flexiblesusy {
+
 template<class T>
 class Initial_guesser;
+
+}
 
 #endif

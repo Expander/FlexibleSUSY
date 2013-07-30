@@ -19,10 +19,14 @@
 #ifndef compound_constraint_hpp
 #define compound_constraint_hpp
 
+namespace flexiblesusy {
+
 template<class Method>
 class CompoundConstraint;
 
 template<class Method>
 class CompoundMatching;
+
+}
 
 #endif

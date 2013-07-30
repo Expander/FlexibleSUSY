@@ -14,6 +14,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace flexiblesusy;
+
 /**
  * This function is a copy of the initial guess part that Softsusy
  * runs before the iteration starts.

@@ -19,6 +19,8 @@
 #include "two_scale_composite_convergence_tester.hpp"
 #include <cassert>
 
+namespace flexiblesusy {
+
 Composite_convergence_tester::Composite_convergence_tester()
    : Convergence_tester<Two_scale>()
    , testers()
@@ -66,4 +68,6 @@ void Composite_convergence_tester::add_convergence_tester(Convergence_tester<Two
    assert(t && "<Composite_convergence_tester::add_convergence_tester> "
           "convergence tester must not be zero");
    testers.push_back(t);
+}
+
 }

@@ -23,6 +23,8 @@
 #include "two_scale_model.hpp"
 #include "softsusy.h"
 
+namespace flexiblesusy {
+
 class Two_scale;
 
 template<>
@@ -46,5 +48,7 @@ private:
    double precision;
    Mssm(const SoftParsMssm&);
 };
+
+}
 
 #endif

@@ -4,6 +4,7 @@
 
 #include "lattice_constraint.hpp"
 
+namespace flexiblesusy {
 
 class ForeignConstraint : public SingleSiteConstraint {
 public:
@@ -60,5 +61,6 @@ private:
     size_t nr;
 };
 
+}
 
 #endif // LATTICE_FOREIGN_CONSTRAINT_H

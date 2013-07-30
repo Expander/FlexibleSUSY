@@ -25,6 +25,7 @@
 #include "matching.hpp"
 #include "lattice_solver.hpp"
 
+namespace flexiblesusy {
 
 class Lattice;
 
@@ -278,5 +279,6 @@ public:
 	{}
 };
 
+}
 
 #endif // lattice_constraint_hpp

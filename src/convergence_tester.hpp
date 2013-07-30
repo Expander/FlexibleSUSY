@@ -19,7 +19,11 @@
 #ifndef CONVERGENCE_TESTER_H
 #define CONVERGENCE_TESTER_H
 
+namespace flexiblesusy {
+
 template <class T>
 class Convergence_tester;
+
+}
 
 #endif

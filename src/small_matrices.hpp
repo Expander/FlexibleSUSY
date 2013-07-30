@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 #include "mathdefs.hpp"
 
+namespace flexiblesusy {
 
 // NOTE: the following matrices are under column-major storage scheme
 // see http://eigen.tuxfamily.org/dox/TopicStorageOrders.html
@@ -22,5 +23,6 @@ typedef Eigen::Matrix<Real, 3, 1> RVe3;
 typedef Eigen::Matrix<Real, 4, 1> RVe4;
 typedef Eigen::Matrix<Real, 6, 1> RVe6;
 
+}
 
 #endif // small_matrices_hpp

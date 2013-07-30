@@ -18,6 +18,8 @@
 
 #include "mssm_two_scale.hpp"
 
+namespace flexiblesusy {
+
 Mssm<Two_scale>::Mssm()
    : Two_scale_model()
    , precision(1.0e-5)
@@ -45,4 +47,6 @@ int Mssm<Two_scale>::run_to(double scale, double eps)
    if (eps < 0.0)
       eps = precision;
    return runto(scale, eps);
+}
+
 }

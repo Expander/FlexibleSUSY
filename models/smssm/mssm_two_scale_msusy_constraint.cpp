@@ -21,6 +21,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 /**
  * Constructor
  *
@@ -62,4 +64,6 @@ void Mssm_msusy_constraint::update_scale()
 {
    mssm->setMsusy(mssm->calcMs());
    scale = mssm->displayMsusy();
+}
+
 }

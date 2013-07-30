@@ -23,6 +23,8 @@
 #include "smcw_two_scale.hpp"
 #include "gut_scale_calculator.hpp"
 
+namespace flexiblesusy {
+
 class StandardModelCWGUTConstraint : public Constraint<Two_scale> {
 public:
    StandardModelCWGUTConstraint(double, double);
@@ -39,5 +41,7 @@ private:
 
    void update_scale();
 };
+
+}
 
 #endif

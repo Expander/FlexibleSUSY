@@ -23,6 +23,8 @@
 #include <cmath>
 #include <limits>
 
+namespace flexiblesusy {
+
 Two_scale_constant_precision::Two_scale_constant_precision(double precision_)
    : Two_scale_running_precision()
    , precision(precision_)
@@ -56,4 +58,6 @@ double Two_scale_increasing_precision::get_precision(unsigned iteration)
 {
    return std::max(exp(- static_cast<double>(iteration + 1) * log(decreasing_factor)),
                    minimum_precision);
+}
+
 }

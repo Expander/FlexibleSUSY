@@ -4,11 +4,11 @@
 #include "rk.hpp"
 #include "logger.hpp"
 
+namespace flexiblesusy {
 
 using namespace std;
 using namespace Eigen;
 using namespace runge_kutta;
-
 
 void Lattice_constraint::activate()
 {
@@ -161,4 +161,6 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
     if (err == 0) a.x(0) = to;
 
     return err;
+}
+
 }

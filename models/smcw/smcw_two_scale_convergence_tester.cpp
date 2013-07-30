@@ -18,6 +18,8 @@
 
 #include "smcw_two_scale_convergence_tester.hpp"
 
+namespace flexiblesusy {
+
 StandardModelCW_convergence_tester::StandardModelCW_convergence_tester(StandardModelCW<Two_scale>* smcw_, double accuracy_goal_)
    : Convergence_tester_skeleton<StandardModelCW<Two_scale> >(smcw_, accuracy_goal_)
 {
@@ -44,4 +46,6 @@ double StandardModelCW_convergence_tester::max_rel_diff() const
 unsigned int StandardModelCW_convergence_tester::max_iterations() const
 {
    return 10;
+}
+
 }

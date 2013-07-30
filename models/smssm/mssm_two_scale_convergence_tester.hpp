@@ -22,6 +22,8 @@
 #include "two_scale_convergence_tester_skeleton.hpp"
 #include "mssm_two_scale.hpp"
 
+namespace flexiblesusy {
+
 class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
 public:
    Mssm_convergence_tester(Mssm<Two_scale>*, double);
@@ -33,5 +35,7 @@ protected:
 private:
    double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&) const;
 };
+
+}
 
 #endif

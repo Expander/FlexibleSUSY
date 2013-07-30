@@ -22,6 +22,8 @@
 #include "two_scale_convergence_tester_skeleton.hpp"
 #include "smcw_two_scale.hpp"
 
+namespace flexiblesusy {
+
 class StandardModelCW_convergence_tester : public Convergence_tester_skeleton<StandardModelCW<Two_scale> > {
 public:
    StandardModelCW_convergence_tester(StandardModelCW<Two_scale>*, double);
@@ -31,5 +33,7 @@ public:
 protected:
    virtual double max_rel_diff() const;
 };
+
+}
 
 #endif

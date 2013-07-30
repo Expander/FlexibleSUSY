@@ -22,7 +22,11 @@
 #include <cstddef>
 #include <gsl/gsl_vector.h>
 
+namespace flexiblesusy {
+
 /// Returns true if GSL vector contains a Nan, false otherwise
 bool contains_nan(const gsl_vector*, std::size_t);
+
+}
 
 #endif

@@ -6,6 +6,7 @@
 
 #include "lattice_foreign_constraint.hpp"
 
+namespace flexiblesusy {
 
 struct NumericalConstraintCommon {
     static constexpr Real default_epsilon = 1e-8;
@@ -89,5 +90,6 @@ private:
 		       const Real *w, const Real *x)> fxn_;
 };
 
+}
 
 #endif // lattice_numerical_constraint_hpp
