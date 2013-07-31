@@ -54,18 +54,22 @@ public:
    typedef double (*Function_t)(const gsl_vector*, void*);
 
    Minimizer()
-      : max_iterations(100), precision(1.0e-2), initial_step_size(1.0) {}
+      : max_iterations(100), precision(1.0e-2), initial_step_size(1.0)
+      , minimum_value(0.0) {}
    Minimizer(std::size_t max_iterations_, double precision_)
       : max_iterations(max_iterations_)
       , precision(precision_)
-      , initial_step_size(1.0) {}
+      , initial_step_size(1.0)
+      , minimum_value(0.0) {}
    ~Minimizer() {}
 
+   double get_minimum_value() const { return minimum_value; }
    int minimize(void*, Function_t, const double[dimension]);
 
 private:
    std::size_t max_iterations;
    double precision, initial_step_size;
+   double minimum_value;
 };
 
 template <std::size_t dimension>
@@ -115,6 +119,8 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
    gsl_vector_free(starting_point);
    gsl_vector_free(step_size);
    gsl_multimin_fminimizer_free(minimizer);
+
+   minimum_value = minimizer->fval;
 
    return status;
 }
