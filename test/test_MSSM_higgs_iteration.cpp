@@ -57,7 +57,7 @@ public:
       , precision(precision_) {}
    ~Minimizer() {}
 
-   int minimize(void*, Function_t, const double[]);
+   int minimize(void*, Function_t, const double[dimension]);
 
 private:
    std::size_t max_iterations;
@@ -65,7 +65,7 @@ private:
 };
 
 template <std::size_t dimension>
-int Minimizer<dimension>::minimize(void* model, Function_t function, const double start[])
+int Minimizer<dimension>::minimize(void* model, Function_t function, const double start[dimension])
 {
    const gsl_multimin_fminimizer_type *type =
       gsl_multimin_fminimizer_nmsimplex2;
