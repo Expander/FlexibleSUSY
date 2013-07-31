@@ -46,6 +46,10 @@ public:
    ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
+   void set_function(Function_t* f) { function = f; }
+   void set_model(Model_t* m) { model = m; }
+   void set_precision(double p) { precision = p; }
+   void set_max_iterations(std::size_t n) { max_iterations = n; }
    int minimize(const double[dimension]);
 
 private:
