@@ -27,7 +27,7 @@
 #define STANDARD_DEVIATION_MZ 0.0021
 #define STANDARD_DEVIATION_MH 0.4
 
-double mHmZchi2(const gsl_vector* x, void* params)
+double chi_sqr_mH_mZ(const gsl_vector* x, void* params)
 {
    MSSM* model = static_cast<MSSM*>(params);
 
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   Minimizer<MSSM,2> minimizer(&model, mHmZchi2, 100, 1.0e-2);
+   Minimizer<MSSM,2> minimizer(&model, chi_sqr_mH_mZ, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);
