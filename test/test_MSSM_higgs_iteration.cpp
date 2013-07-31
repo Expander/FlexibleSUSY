@@ -188,6 +188,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
    BOOST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
+   BOOST_MESSAGE("Predicted tan(beta) = " << model.get_vu() / model.get_vd());
 
    // check how close we got
    model.calculate_DRbar_parameters();
