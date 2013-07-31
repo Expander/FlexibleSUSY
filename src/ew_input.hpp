@@ -39,8 +39,10 @@ namespace Electroweak_constants {
       const double yb = mbrun * root2 / vev;
       const double ytau = mtau * root2 / vev;
       const double MZ = 91.1876;
+      const double Error_MZ = 0.0021; ///< uncertainty on MZ from PDG
       const double MW = 80.404;
       const double MH = 125.9; ///< Higgs mass from PDG
+      const double Error_MH = 0.4; ///< uncertainty on MH from PDG
       const double MUP = 2.4e-3; ///< default running quark mass from PDG
       const double MDOWN = 4.75e-3; ///< default running quark mass from PDG
       const double MSTRANGE = 0.104; ///< default running quark mass from PDG
