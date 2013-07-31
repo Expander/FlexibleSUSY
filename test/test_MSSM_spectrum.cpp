@@ -8,6 +8,8 @@
 
 #include "softsusy.h"
 #include "error.hpp"
+#include "gsl_utils.hpp"
+#include "minimizer.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
@@ -621,4 +623,102 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.000022);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.0011);
+}
+
+
+/**
+ * @class MSSM_iterative_low_scale_constraint
+ *
+ * Replacement class for MSSM_low_scale_constraint, which inputs the
+ * Higgs mass and eliminates TanBeta.
+ */
+class MSSM_iterative_low_scale_constraint
+   : public MSSM_low_scale_constraint {
+public:
+   MSSM_iterative_low_scale_constraint()
+      : MSSM_low_scale_constraint() {}
+   MSSM_iterative_low_scale_constraint(const MSSM_input_parameters& inputPars_)
+      : MSSM_low_scale_constraint(inputPars_) {}
+   virtual ~MSSM_iterative_low_scale_constraint() {}
+
+   virtual void apply();
+};
+
+void MSSM_iterative_low_scale_constraint::apply()
+{
+   assert(model && "Error: MSSM_low_scale_constraint:"
+          " model pointer must not be zero");
+
+   model->calculate_DRbar_parameters();
+   update_scale();
+   calculate_DRbar_gauge_couplings();
+   calculate_DRbar_yukawa_couplings();
+
+   struct Chi_sqr_mH_mZ {
+      static double func(const gsl_vector* x, void* params) {
+         if (contains_nan(x, 2))
+            return std::numeric_limits<double>::max();
+
+         MSSM* model = static_cast<MSSM*>(params);
+
+         const double vd = gsl_vector_get(x, 0);
+         const double vu = gsl_vector_get(x, 1);
+
+         if (vd < std::numeric_limits<double>::epsilon() ||
+             vu < std::numeric_limits<double>::epsilon())
+            return std::numeric_limits<double>::max();
+
+         model->set_vd(vd);
+         model->set_vu(vu);
+
+         model->calculate_DRbar_parameters();
+         model->calculate_Mhh_pole_1loop();
+         model->calculate_MVZ_pole_1loop();
+
+         const double mH = model->get_physical().Mhh(1);
+         const double mZ = model->get_physical().MVZ;
+
+         #define SM(p) Electroweak_constants::p
+         #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
+
+         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+              + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
+      }
+   };
+
+   Minimizer<MSSM,2> minimizer(model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
+   const double start[2] = { model->get_vd(), model->get_vu() };
+
+   const int status = minimizer.minimize(start);
+
+   BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
+   BOOST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
+   BOOST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
+   BOOST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
+
+   model->set_g1(new_g1);
+   model->set_g2(new_g2);
+   model->set_g3(new_g3);
+
+   model->set_Yu(new_Yu);
+   model->set_Yd(new_Yd);
+   model->set_Ye(new_Ye);
+}
+
+BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_higgs_iteration )
+{
+   MSSM_input_parameters pp;
+   pp.m0 = 500.;
+   pp.Azero = 1000.;
+   pp.TanBeta = 30.;
+
+   MSSM_tester mssm_tester;
+   mssm_tester.set_low_scale_constraint(new MSSM_iterative_low_scale_constraint());
+   // BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
+
+   try {
+      mssm_tester.test(pp);
+   } catch (Error& error) {
+      ERROR(error.what());
+   }
 }
