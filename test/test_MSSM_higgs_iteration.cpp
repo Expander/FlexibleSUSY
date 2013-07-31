@@ -140,9 +140,8 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
    printf("\tMinimization status = %s\n", gsl_strerror(status));
 #endif
 
-   gsl_multimin_fminimizer_free(minimizer);
-
    minimum_value = minimizer->fval;
+   gsl_multimin_fminimizer_free(minimizer);
 
    return status;
 }
