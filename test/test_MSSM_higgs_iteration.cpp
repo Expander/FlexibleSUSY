@@ -48,12 +48,12 @@ double mHmZchi2(const gsl_vector* x, void* params)
         + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
 }
 
-template <std::size_t dimension>
+template <class Model_t, std::size_t dimension>
 class Minimizer {
 public:
    typedef double (*Function_t)(const gsl_vector*, void*);
 
-   Minimizer(void* model_, Function_t function_, std::size_t max_iterations_, double precision_)
+   Minimizer(Model_t* model_, Function_t function_, std::size_t max_iterations_, double precision_)
       : max_iterations(max_iterations_)
       , precision(precision_)
       , initial_step_size(1.0)
@@ -89,14 +89,14 @@ private:
    double precision, initial_step_size;
    double minimum_value;
    gsl_vector *starting_point, *step_size;
-   void* model;
+   Model_t* model;
    Function_t function;
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
 };
 
-template <std::size_t dimension>
-int Minimizer<dimension>::minimize(const double start[dimension])
+template <class Model_t, std::size_t dimension>
+int Minimizer<Model_t,dimension>::minimize(const double start[dimension])
 {
    assert(model && "Minimizer<dimension>::minimize: model pointer"
           " must not be zero!");
@@ -151,9 +151,9 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    return status;
 }
 
-template <std::size_t dimension>
-void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
-                                       std::size_t iteration) const
+template <class Model_t, std::size_t dimension>
+void Minimizer<Model_t,dimension>::print_state(gsl_multimin_fminimizer* minimizer,
+                                               std::size_t iteration) const
 {
    std::cout << "\tIteration " << iteration << ": x =";
    for (std::size_t i = 0; i < dimension; ++i)
@@ -163,8 +163,8 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
-   Minimizer<2> minimizer1(NULL, NULL, 100, 1.0e-2);
-   Minimizer<2> minimizer2(minimizer1);
+   Minimizer<MSSM,2> minimizer1(NULL, NULL, 100, 1.0e-2);
+   Minimizer<MSSM,2> minimizer2(minimizer1);
 }
 
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   Minimizer<2> minimizer(&model, mHmZchi2, 100, 1.0e-2);
+   Minimizer<MSSM,2> minimizer(&model, mHmZchi2, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);
