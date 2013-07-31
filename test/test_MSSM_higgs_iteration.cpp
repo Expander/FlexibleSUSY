@@ -53,17 +53,13 @@ class Minimizer {
 public:
    typedef double (*Function_t)(const gsl_vector*, void*);
 
-   Minimizer()
-      : max_iterations(100), precision(1.0e-2), initial_step_size(1.0)
-      , minimum_value(0.0) {
-      starting_point = gsl_vector_alloc(dimension);
-      step_size = gsl_vector_alloc(dimension);
-   }
-   Minimizer(std::size_t max_iterations_, double precision_)
+   Minimizer(void* model_, Function_t function_, std::size_t max_iterations_, double precision_)
       : max_iterations(max_iterations_)
       , precision(precision_)
       , initial_step_size(1.0)
-      , minimum_value(0.0) {
+      , minimum_value(0.0)
+      , model(model_)
+      , function(function_) {
       starting_point = gsl_vector_alloc(dimension);
       step_size = gsl_vector_alloc(dimension);
    }
@@ -71,7 +67,9 @@ public:
       : max_iterations(other.max_iterations)
       , precision(other.precision)
       , initial_step_size(other.initial_step_size)
-      , minimum_value(other.minimum_value) {
+      , minimum_value(other.minimum_value)
+      , model(other.model)
+      , function(other.function) {
       starting_point = gsl_vector_alloc(dimension);
       step_size = gsl_vector_alloc(dimension);
       // copy vectors
@@ -84,20 +82,27 @@ public:
    }
 
    double get_minimum_value() const { return minimum_value; }
-   int minimize(void*, Function_t, const double[dimension]);
+   int minimize(const double[dimension]);
 
 private:
    std::size_t max_iterations;
    double precision, initial_step_size;
    double minimum_value;
    gsl_vector *starting_point, *step_size;
+   void* model;
+   Function_t function;
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
 };
 
 template <std::size_t dimension>
-int Minimizer<dimension>::minimize(void* model, Function_t function, const double start[dimension])
+int Minimizer<dimension>::minimize(const double start[dimension])
 {
+   assert(model && "Minimizer<dimension>::minimize: model pointer"
+          " must not be zero!");
+   assert(function && "Minimizer<dimension>::minimize: function pointer"
+          " must not be zero!");
+
    const gsl_multimin_fminimizer_type *type =
       gsl_multimin_fminimizer_nmsimplex2;
    gsl_multimin_fminimizer *minimizer;
@@ -158,7 +163,7 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
-   Minimizer<2> minimizer1(100, 1.0e-2);
+   Minimizer<2> minimizer1(NULL, NULL, 100, 1.0e-2);
    Minimizer<2> minimizer2(minimizer1);
 }
 
@@ -224,10 +229,10 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   Minimizer<2> minimizer(100, 1.0e-2);
+   Minimizer<2> minimizer(&model, mHmZchi2, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
-   const int status = minimizer.minimize(&model, mHmZchi2, start);
+   const int status = minimizer.minimize(start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
    BOOST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
