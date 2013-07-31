@@ -45,66 +45,72 @@ double mHmZchi2(const gsl_vector* x, void* params)
    return Sqr(SM(MZ) - mZ) + Sqr(SM(MH) - mH);
 }
 
-int minimize(MSSM* model)
+template <std::size_t dimension>
+class Minimizer {
+public:
+   typedef double (*Function_t)(const gsl_vector*, void*);
+
+   Minimizer()
+      : max_iterations(100), precision(1.0e-2) {}
+   Minimizer(std::size_t max_iterations_, double precision_)
+      : max_iterations(max_iterations_)
+      , precision(precision_) {}
+   ~Minimizer() {}
+
+   int minimize(void*, Function_t, const double[]);
+
+private:
+   std::size_t max_iterations;
+   double precision;
+};
+
+template <std::size_t dimension>
+int Minimizer<dimension>::minimize(void* model, Function_t function, const double start[])
 {
-   const gsl_multimin_fminimizer_type *T =
+   const gsl_multimin_fminimizer_type *type =
       gsl_multimin_fminimizer_nmsimplex2;
-   gsl_multimin_fminimizer *s = NULL;
-   gsl_vector *ss, *x;
+   gsl_multimin_fminimizer *minimizer;
+   gsl_vector *step_size, *starting_point;
    gsl_multimin_function minex_func;
 
-   const size_t max_iter = 100;
-   const size_t dimension = 2;
-   const double precision = 1.0e-2;
+   // Starting point
+   starting_point = gsl_vector_alloc(dimension);
+   for (std::size_t i = 0; i < dimension; i++)
+      gsl_vector_set(starting_point, i, start[i]);
+
+   // Set initial step sizes to 1
+   step_size = gsl_vector_alloc(dimension);
+   gsl_vector_set_all(step_size, 1.0);
+
+   // Initialize method and iterate
+   minex_func.n = dimension;
+   minex_func.f = function;
+   minex_func.params = model;
+
+   minimizer = gsl_multimin_fminimizer_alloc(type, dimension);
+   gsl_multimin_fminimizer_set(minimizer, &minex_func, starting_point, step_size);
 
    size_t iter = 0;
    int status;
 
-   // Starting point
-   x = gsl_vector_alloc(2);
-   gsl_vector_set(x, 0, SM(vev));
-   gsl_vector_set(x, 1, SM(vev));
-
-   // Set initial step sizes to 1
-   ss = gsl_vector_alloc(dimension);
-   gsl_vector_set_all(ss, 1.0);
-
-   // Initialize method and iterate
-   minex_func.n = dimension;
-   minex_func.f = mHmZchi2;
-   minex_func.params = model;
-
-   s = gsl_multimin_fminimizer_alloc(T, dimension);
-   gsl_multimin_fminimizer_set(s, &minex_func, x, ss);
-
-   do
-   {
+   do {
       iter++;
-      status = gsl_multimin_fminimizer_iterate(s);
+      status = gsl_multimin_fminimizer_iterate(minimizer);
 
       if (status)
          break;
 
-      const double size = gsl_multimin_fminimizer_size(s);
+      const double size = gsl_multimin_fminimizer_size(minimizer);
       status = gsl_multimin_test_size(size, precision);
 
-      INFO("it " << iter << ", x = (" << gsl_vector_get(s->x, 0) << ","
-           << gsl_vector_get(s->x, 1) << "), f() = " << s->fval
-           << ", size = " << size);
-   } while (status == GSL_CONTINUE && iter < max_iter);
+      BOOST_MESSAGE("iteration " << iter << ": x = (" << gsl_vector_get(minimizer->x, 0)
+                    << "," << gsl_vector_get(minimizer->x, 1) << "), f() = "
+                    << minimizer->fval << ", size = " << size);
+   } while (status == GSL_CONTINUE && iter < max_iterations);
 
-   BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
-   BOOST_CHECK_LT(iter, max_iter);
-
-   if (status == GSL_SUCCESS && iter < max_iter) {
-      printf("converged at\n");
-      INFO("it " << iter << ", x = (" << gsl_vector_get(s->x, 0) << ","
-           << gsl_vector_get(s->x, 1) << "), f() = " << s->fval);
-   }
-
-   gsl_vector_free(x);
-   gsl_vector_free(ss);
-   gsl_multimin_fminimizer_free (s);
+   gsl_vector_free(starting_point);
+   gsl_vector_free(step_size);
+   gsl_multimin_fminimizer_free(minimizer);
 
    return status;
 }
@@ -171,7 +177,11 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   const int status = minimize(&model);
+   Minimizer<2> minimizer(100, 1.0e-2);
+   const double start[2] = { model.get_vd(), model.get_vu() };
+
+   const int status = minimizer.minimize(&model, mHmZchi2, start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
+   BOOST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
 }
