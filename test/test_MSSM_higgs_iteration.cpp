@@ -24,6 +24,8 @@
 #include "test_MSSM.hpp"
 
 #define SM(p) Electroweak_constants::p
+#define STANDARD_DEVIATION_MZ 0.0021
+#define STANDARD_DEVIATION_MH 0.4
 
 double mHmZchi2(const gsl_vector* x, void* params)
 {
@@ -42,7 +44,8 @@ double mHmZchi2(const gsl_vector* x, void* params)
    const double mH = model->get_physical().Mhh(1);
    const double mZ = model->get_physical().MVZ;
 
-   return Sqr(SM(MZ) - mZ) + Sqr(SM(MH) - mH);
+   return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION_MZ)
+        + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
 }
 
 template <std::size_t dimension>
@@ -185,4 +188,15 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
    BOOST_MESSAGE("New vd = " << model.get_vd() << ", vu = " << model.get_vu());
+
+   // check how close we got
+   model.calculate_DRbar_parameters();
+   model.calculate_Mhh_pole_1loop();
+   model.calculate_MVZ_pole_1loop();
+
+   const double mH = model.get_physical().Mhh(1);
+   const double mZ = model.get_physical().MVZ;
+
+   BOOST_CHECK_CLOSE_FRACTION(mH, 125., 0.400);
+   BOOST_CHECK_CLOSE_FRACTION(mZ, 91. , 0.003);
 }
