@@ -20,6 +20,7 @@ ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
+		$(DIR)/test_MSSM_higgs_iteration.cpp \
 		$(DIR)/test_MSSM_initial_guesser.cpp \
 		$(DIR)/test_MSSM_low_scale_constraint.cpp \
 		$(DIR)/test_MSSM_susy_scale_constraint.cpp \
@@ -145,6 +146,10 @@ $(DIR)/test_MSSM_model.x: $(DIR)/test_MSSM_model.o $(LIBSMSSM) $(LIBMSSM) $(LIBF
 
 $(DIR)/test_MSSM_initial_guesser.d $(DIR)/test_MSSM_initial_guesser.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_MSSM_initial_guesser.x: $(DIR)/test_MSSM_initial_guesser.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+$(DIR)/test_MSSM_higgs_iteration.d $(DIR)/test_MSSM_higgs_iteration.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_MSSM_higgs_iteration.x: $(DIR)/test_MSSM_higgs_iteration.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(DIR)/test_MSSM_high_scale_constraint.d $(DIR)/test_MSSM_high_scale_constraint.x: CPPFLAGS += $(EIGENFLAGS)
