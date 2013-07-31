@@ -8,6 +8,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_multimin.h>
 
+#include "gsl_utils.hpp"
 #include "error.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
@@ -29,6 +30,9 @@
 
 double chi_sqr_mH_mZ(const gsl_vector* x, void* params)
 {
+   if (contains_nan(x, 2))
+      return std::numeric_limits<double>::max();
+
    MSSM* model = static_cast<MSSM*>(params);
 
    const double vd = gsl_vector_get(x, 0);
