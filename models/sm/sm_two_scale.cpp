@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+namespace flexiblesusy {
+
 StandardModel<Two_scale>::StandardModel()
    : yu(3, 3), yd(3, 3), ye(3, 3), g(3)
    , precision(1.0e-3)
@@ -247,4 +249,6 @@ StandardModel<Two_scale> StandardModel<Two_scale>::calc_beta() const
 DoubleVector StandardModel<Two_scale>::beta() const
 {
    return calc_beta().display();
+}
+
 }

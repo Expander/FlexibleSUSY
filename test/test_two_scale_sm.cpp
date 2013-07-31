@@ -6,6 +6,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace flexiblesusy;
+
 #define YU StandardModel<Two_scale>::YU
 #define YD StandardModel<Two_scale>::YD
 #define YE StandardModel<Two_scale>::YE
