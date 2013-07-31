@@ -55,13 +55,22 @@ public:
 
    Minimizer()
       : max_iterations(100), precision(1.0e-2), initial_step_size(1.0)
-      , minimum_value(0.0) {}
+      , minimum_value(0.0) {
+      starting_point = gsl_vector_alloc(dimension);
+      step_size = gsl_vector_alloc(dimension);
+   }
    Minimizer(std::size_t max_iterations_, double precision_)
       : max_iterations(max_iterations_)
       , precision(precision_)
       , initial_step_size(1.0)
-      , minimum_value(0.0) {}
-   ~Minimizer() {}
+      , minimum_value(0.0) {
+      starting_point = gsl_vector_alloc(dimension);
+      step_size = gsl_vector_alloc(dimension);
+   }
+   ~Minimizer() {
+      gsl_vector_free(starting_point);
+      gsl_vector_free(step_size);
+   }
 
    double get_minimum_value() const { return minimum_value; }
    int minimize(void*, Function_t, const double[dimension]);
@@ -70,6 +79,7 @@ private:
    std::size_t max_iterations;
    double precision, initial_step_size;
    double minimum_value;
+   gsl_vector *starting_point, *step_size;
 };
 
 template <std::size_t dimension>
@@ -78,16 +88,13 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
    const gsl_multimin_fminimizer_type *type =
       gsl_multimin_fminimizer_nmsimplex2;
    gsl_multimin_fminimizer *minimizer;
-   gsl_vector *step_size, *starting_point;
    gsl_multimin_function minex_func;
 
-   // Starting point
-   starting_point = gsl_vector_alloc(dimension);
+   // Set starting point
    for (std::size_t i = 0; i < dimension; i++)
       gsl_vector_set(starting_point, i, start[i]);
 
-   // Set initial step sizes to 1
-   step_size = gsl_vector_alloc(dimension);
+   // Set initial step sizes
    gsl_vector_set_all(step_size, initial_step_size);
 
    // Initialize method and iterate
@@ -116,8 +123,6 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
                     << minimizer->fval << ", size = " << size);
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-   gsl_vector_free(starting_point);
-   gsl_vector_free(step_size);
    gsl_multimin_fminimizer_free(minimizer);
 
    minimum_value = minimizer->fval;
