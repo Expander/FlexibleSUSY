@@ -8,6 +8,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_multimin.h>
 
+#include "minimizer.hpp"
 #include "gsl_utils.hpp"
 #include "error.hpp"
 #include "logger.hpp"
@@ -50,119 +51,6 @@ double chi_sqr_mH_mZ(const gsl_vector* x, void* params)
 
    return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION_MZ)
         + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
-}
-
-template <class Model_t, std::size_t dimension>
-class Minimizer {
-public:
-   typedef double (*Function_t)(const gsl_vector*, void*);
-
-   Minimizer(Model_t* model_, Function_t function_, std::size_t max_iterations_, double precision_)
-      : max_iterations(max_iterations_)
-      , precision(precision_)
-      , initial_step_size(1.0)
-      , minimum_value(0.0)
-      , model(model_)
-      , function(function_) {
-      starting_point = gsl_vector_alloc(dimension);
-      step_size = gsl_vector_alloc(dimension);
-   }
-   Minimizer(const Minimizer& other)
-      : max_iterations(other.max_iterations)
-      , precision(other.precision)
-      , initial_step_size(other.initial_step_size)
-      , minimum_value(other.minimum_value)
-      , model(other.model)
-      , function(other.function) {
-      starting_point = gsl_vector_alloc(dimension);
-      step_size = gsl_vector_alloc(dimension);
-      // copy vectors
-      gsl_vector_memcpy(starting_point, other.starting_point);
-      gsl_vector_memcpy(step_size, other.step_size);
-   }
-   ~Minimizer() {
-      gsl_vector_free(starting_point);
-      gsl_vector_free(step_size);
-   }
-
-   double get_minimum_value() const { return minimum_value; }
-   int minimize(const double[dimension]);
-
-private:
-   std::size_t max_iterations;
-   double precision, initial_step_size;
-   double minimum_value;
-   gsl_vector *starting_point, *step_size;
-   Model_t* model;
-   Function_t function;
-
-   void print_state(gsl_multimin_fminimizer*, std::size_t) const;
-};
-
-template <class Model_t, std::size_t dimension>
-int Minimizer<Model_t,dimension>::minimize(const double start[dimension])
-{
-   assert(model && "Minimizer<dimension>::minimize: model pointer"
-          " must not be zero!");
-   assert(function && "Minimizer<dimension>::minimize: function pointer"
-          " must not be zero!");
-
-   const gsl_multimin_fminimizer_type *type =
-      gsl_multimin_fminimizer_nmsimplex2;
-   gsl_multimin_fminimizer *minimizer;
-   gsl_multimin_function minex_func;
-
-   // Set starting point
-   for (std::size_t i = 0; i < dimension; i++)
-      gsl_vector_set(starting_point, i, start[i]);
-
-   // Set initial step sizes
-   gsl_vector_set_all(step_size, initial_step_size);
-
-   // Initialize method and iterate
-   minex_func.n = dimension;
-   minex_func.f = function;
-   minex_func.params = model;
-
-   minimizer = gsl_multimin_fminimizer_alloc(type, dimension);
-   gsl_multimin_fminimizer_set(minimizer, &minex_func, starting_point, step_size);
-
-   size_t iter = 0;
-   int status;
-
-   do {
-      iter++;
-      status = gsl_multimin_fminimizer_iterate(minimizer);
-
-      if (status)
-         break;
-
-      const double size = gsl_multimin_fminimizer_size(minimizer);
-      status = gsl_multimin_test_size(size, precision);
-
-#ifdef VERBOSE
-      print_state(minimizer, iter);
-#endif
-   } while (status == GSL_CONTINUE && iter < max_iterations);
-
-#ifdef VERBOSE
-   printf("\tMinimization status = %s\n", gsl_strerror(status));
-#endif
-
-   minimum_value = minimizer->fval;
-   gsl_multimin_fminimizer_free(minimizer);
-
-   return status;
-}
-
-template <class Model_t, std::size_t dimension>
-void Minimizer<Model_t,dimension>::print_state(gsl_multimin_fminimizer* minimizer,
-                                               std::size_t iteration) const
-{
-   std::cout << "\tIteration " << iteration << ": x =";
-   for (std::size_t i = 0; i < dimension; ++i)
-      std::cout << " " << gsl_vector_get(minimizer->x, i);
-   std::cout << ", f(x) = " << minimizer->fval << '\n';
 }
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
