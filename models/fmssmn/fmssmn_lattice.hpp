@@ -5,6 +5,8 @@
 #include "fmssmn.hpp"
 #include "lattice_solver.hpp"
 
+namespace flexiblesusy {
+
 class Lattice;
 
 template<>
@@ -28,5 +30,6 @@ public:
     Translator operator()(size_t m) const { return Translator(f, T, m); }
 };
 
+}
 
 #endif // fmssmn_lattice_hpp

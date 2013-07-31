@@ -5,6 +5,8 @@
 #include "lattice_foreign_constraint.hpp"
 
 
+namespace flexiblesusy {
+
 #define decl_fmssm_fmssmn_mc(name)					\
 									\
 extern "C" void name##_							\
@@ -99,5 +101,6 @@ public:
     }
 };
 
+}
 
 #endif // fmssm_fmssmn_lattice_matchings.hpp

@@ -2,6 +2,8 @@
 #include "fmssm_lattice_msusy_constraint.hpp"
 
 
+namespace flexiblesusy {
+
 Fmssm_msusy_constraint_::Fmssm_msusy_constraint_() :
     msc(),
     ewsb()
@@ -16,4 +18,6 @@ Fmssm_msusy_constraint::Fmssm_msusy_constraint(double tanBeta) :
 
     msc.vu = ewsb.vu = vu;
     msc.vd = ewsb.vd = vd;
+}
+
 }

@@ -24,6 +24,8 @@
 #include "fmssm_lattice_constraints.hpp"
 
 
+namespace flexiblesusy {
+
 // auxiliary class for initializing own members before the base class
 // see http://www.boost.org/doc/libs/1_53_0/libs/utility/base_from_member.html
 struct Fmssm_mx_constraint_ {
@@ -42,5 +44,6 @@ public:
     Fmssm_mx_constraint();
 };
 
+}
 
 #endif // FMSSM_LATTICE_MX_CONSTRAINT_H

@@ -2,6 +2,8 @@
 #include "fmssm_lattice_numerical_constraints.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -115,4 +117,6 @@ Fmssm_constraint_on_ewsb_n_::~Fmssm_constraint_on_ewsb_n_()
 {
     for (auto m: members)
 	delete static_cast<AnyNumericalConstraint *>(m);
+}
+
 }

@@ -23,6 +23,7 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssm_lattice_numerical_constraints.hpp"
 
+namespace flexiblesusy {
 
 // auxiliary class for initializing own members before the base class
 // see http://www.boost.org/doc/libs/1_53_0/libs/utility/base_from_member.html
@@ -39,5 +40,6 @@ public:
     Fmssm_msusy_constraint_n(double tanBeta);
 };
 
+}
 
 #endif // fmssm_lattice_numerical_msusy_constraint_hpp

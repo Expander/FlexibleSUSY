@@ -6,6 +6,8 @@
 #include "small_matrices.hpp"
 
 
+namespace flexiblesusy {
+
 #define decl_fmssmn_bc(name)						\
 									\
 extern "C" void name##_							\
@@ -243,5 +245,6 @@ public:
     CM33 Yn;
 };
 
+}
 
 #endif // fmssmn_lattice_constraints_hpp

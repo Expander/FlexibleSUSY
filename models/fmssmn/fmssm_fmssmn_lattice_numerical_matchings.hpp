@@ -5,6 +5,8 @@
 #include "lattice_compound_constraint.hpp"
 
 
+namespace flexiblesusy {
+
 struct Fmssm_fmssmn_gauge_couplings_n_ {
     Fmssm_fmssmn_gauge_couplings_n_();
     ~Fmssm_fmssmn_gauge_couplings_n_();
@@ -103,5 +105,6 @@ public:
     Fmssm_fmssmn_trilinears_n() : CompoundMatching(members) {}
 };
 
+}
 
 #endif // fmssm_fmssmn_lattice_numerical_matchings_hpp

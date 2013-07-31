@@ -22,6 +22,8 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
+namespace flexiblesusy {
+
 struct Fmssmn_mx_constraint_ {
     Fmssmn_mx_constraint_();
     Fmssmn_constraint_on_mx mxc;
@@ -38,5 +40,7 @@ class Fmssmn_mx_constraint :
 public:
     Fmssmn_mx_constraint();
 };
+
+}
 
 #endif // FMSSMN_LATTICE_MX_CONSTRAINT_H

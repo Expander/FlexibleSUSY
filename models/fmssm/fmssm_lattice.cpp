@@ -6,6 +6,8 @@ extern "C" double ddxfmssm_(const double& a, const double *x, const int& i,
 			    double *ddx);
 
 
+namespace flexiblesusy {
+
 Fmssm<Lattice>::Fmssm() : Lattice_model(169)
 {
 }
@@ -28,4 +30,6 @@ void Fmssm<Lattice>::calculate_spectrum()
 
 void Fmssm<Lattice>::print(std::ostream& s) const
 {
+}
+
 }

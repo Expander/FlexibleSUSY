@@ -5,6 +5,7 @@
 #include "lattice_foreign_constraint.hpp"
 #include "small_matrices.hpp"
 
+namespace flexiblesusy {
 
 #define fortran_fmssm_bc(name)				\
 							\
@@ -29,7 +30,6 @@ fortran_fmssm_bc(fmssm_ms)
 fortran_fmssm_bc(fmssm_gauge_couplings)
 fortran_fmssm_bc(fmssm_yukawas)
 fortran_fmssm_bc(fmssm_ewsb)
-
 
 class Fmssm_constraint_on_mx : public ForeignConstraint {
 public:
@@ -220,5 +220,6 @@ public:
     CM33 Au, Ad, Ae;
 };
 
+}
 
 #endif // fmssm_lattice_constraints_hpp

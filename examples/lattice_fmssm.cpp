@@ -18,6 +18,7 @@
 
 using namespace std;
 
+namespace flexiblesusy {
 
 class Fmssm_cmssm_constraint : public Fmssm_mx_constraint {
 public:
@@ -136,6 +137,9 @@ private:
     Fmssm_mx_constraint& mxc;
 };
 
+}
+
+using namespace flexiblesusy;
 
 int main(int argc, char *argv[])
 {

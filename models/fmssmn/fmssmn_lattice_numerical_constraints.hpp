@@ -6,6 +6,8 @@
 #include "small_matrices.hpp"
 
 
+namespace flexiblesusy {
+
 struct Fmssmn_constraint_on_yn_n_ {
     Fmssmn_constraint_on_yn_n_();
     ~Fmssmn_constraint_on_yn_n_();
@@ -21,5 +23,6 @@ public:
     Fmssmn_constraint_on_yn_n() : CompoundConstraint(members) {}
 };
 
+}
 
 #endif // fmssmn_lattice_numerical_constraints_hpp

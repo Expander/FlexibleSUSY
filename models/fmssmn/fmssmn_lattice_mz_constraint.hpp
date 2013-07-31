@@ -22,6 +22,8 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
+namespace flexiblesusy {
+
 struct Fmssmn_mz_constraint_ {
     Fmssmn_mz_constraint_();
     Fixed_t fix_scale_to_mz;
@@ -35,5 +37,7 @@ class Fmssmn_mz_constraint :
 public:
     Fmssmn_mz_constraint(double tanBeta);
 };
+
+}
 
 #endif // FMSSMN_LATTICE_MZ_CONSTRAINT_H

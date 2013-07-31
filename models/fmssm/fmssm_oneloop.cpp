@@ -3,6 +3,8 @@
 #include "fmssm_oneloop.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -34,4 +36,6 @@ double g1L3(double mu)
 double MX1L()
 {
     return mZ * exp((8*sqr(pi)*(1/sqr(g2mZ)-1/sqr(g1mZ)))/(b1-b2));
+}
+
 }

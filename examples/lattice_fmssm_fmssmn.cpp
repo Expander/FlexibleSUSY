@@ -19,6 +19,7 @@
 
 using namespace std;
 
+namespace flexiblesusy {
 
 #define fortran_fmssm_fmssmn_mc(name)					\
 									\
@@ -242,6 +243,9 @@ public:
     }
 };
 
+}
+
+using namespace flexiblesusy;
 
 int main(int argc, char *argv[])
 {

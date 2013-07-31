@@ -6,6 +6,7 @@
 #include "lattice_numerical_constraint.hpp"
 #include "small_matrices.hpp"
 
+namespace flexiblesusy {
 
 class Fmssm_constraint_on_ms_n : public NumericalConstraint {
 public:
@@ -61,5 +62,6 @@ public:
     Fmssm_constraint_on_ewsb_n() : CompoundConstraint(members) {}
 };
 
+}
 
 #endif // fmssm_lattice_numerical_constraints_hpp

@@ -22,6 +22,8 @@
 #include "lattice_compound_constraint.hpp"
 #include "fmssmn_lattice_constraints.hpp"
 
+namespace flexiblesusy {
+
 struct Fmssmn_msusy_constraint_ {
     Fmssmn_msusy_constraint_();
     Fmssmn_constraint_on_ms msc;
@@ -34,5 +36,7 @@ class Fmssmn_msusy_constraint :
 public:
     Fmssmn_msusy_constraint(double tanBeta);
 };
+
+}
 
 #endif

@@ -20,6 +20,7 @@
 
 using namespace std;
 
+namespace flexiblesusy {
 
 class Fmssm_fmssmn_initial_guesser : public Initial_guesser<Lattice> {
 public:
@@ -149,6 +150,9 @@ public:
     }
 };
 
+}
+
+using namespace flexiblesusy;
 
 int main(int argc, char *argv[])
 {

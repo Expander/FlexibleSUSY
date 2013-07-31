@@ -3,6 +3,8 @@
 #include "fmssm_fmssmn_lattice_numerical_matchings.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -151,4 +153,6 @@ Fmssm_fmssmn_trilinears_n_::~Fmssm_fmssmn_trilinears_n_()
 {
     for (auto m: members)
 	delete static_cast<AnyNumericalMatching *>(m);
+}
+
 }

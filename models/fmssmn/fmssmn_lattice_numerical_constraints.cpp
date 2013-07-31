@@ -3,6 +3,8 @@
 #include "fmssmn_lattice_numerical_constraints.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -46,4 +48,6 @@ Fmssmn_constraint_on_yn_n_::~Fmssmn_constraint_on_yn_n_()
 {
     for (auto m: members)
 	delete static_cast<AnyNumericalConstraint *>(m);
+}
+
 }

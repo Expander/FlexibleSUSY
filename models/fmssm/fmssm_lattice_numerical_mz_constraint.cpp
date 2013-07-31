@@ -5,6 +5,8 @@
 #include "fmssm_lattice_numerical_mz_constraint.hpp"
 
 
+namespace flexiblesusy {
+
 using namespace std;
 
 
@@ -44,4 +46,6 @@ Fmssm_mz_constraint_n::Fmssm_mz_constraint_n(double tanBeta) :
     ycs.Yu = VCKM.transpose() * MUMW / vu;
     ycs.Yd = MDMW / vd;
     ycs.Ye = MEMW / vd;
+}
+
 }
