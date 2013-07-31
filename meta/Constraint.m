@@ -45,11 +45,39 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
            Return[{cSymbol, decl}];
           ];
 
+ApplyConstraint[{parameter_, value_}, modelName_String] :=
+    Parameters`SetParameter[parameter, value, modelName];
+
+CreateStartPoint[parameters_List, name_String] :=
+    Module[{dim, dimStr, startPoint = "", i},
+           dim = Length[parameters];
+           dimStr = ToString[dim];
+           For[i = 1, i <= dim, i++,
+               startPoint = startPoint <> If[i==1," ",", "] <> "MODELPARAMETER(" <>
+                            CConversion`ToValidCSymbolString[parameters[[i]]] <> ")";
+              ];
+           startPoint = "const double " <> name <> "[" <> dimStr <> "] = {" <>
+                        startPoint <> " };\n";
+           Return[startPoint];
+          ];
+
+ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_String] :=
+    Module[{callMinimizer, dim, dimStr, startPoint},
+           dim = Length[parameters];
+           dimStr = ToString[dim];
+           startPoint = CreateStartPoint[parameters, "start_point"];
+           callMinimizer = startPoint <>
+                           "// Minimizer<" <> FlexibleSUSY`FSModelName <> "," <> dimStr <>
+                           "> minimizer(" <> modelName <> ", func, 100, 1.0e-2);\n" <>
+                           "// const int error = minimizer.minimize(start_point);\n";
+           Return[callMinimizer];
+          ];
+
 ApplyConstraints[settings_List] :=
     Module[{result},
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ settings];
            result = result <> "\n";
-           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], "model"])& /@ settings;
+           (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
            Return[result];
           ];
 

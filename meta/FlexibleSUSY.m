@@ -25,6 +25,7 @@ LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
 Pole;
+FSMinimize;
 
 Begin["Private`"];
 
