@@ -91,6 +91,8 @@ private:
    double precision, initial_step_size;
    double minimum_value;
    gsl_vector *starting_point, *step_size;
+
+   void print_state(gsl_multimin_fminimizer*, std::size_t) const;
 };
 
 template <std::size_t dimension>
@@ -129,16 +131,30 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
       const double size = gsl_multimin_fminimizer_size(minimizer);
       status = gsl_multimin_test_size(size, precision);
 
-      BOOST_MESSAGE("iteration " << iter << ": x = (" << gsl_vector_get(minimizer->x, 0)
-                    << "," << gsl_vector_get(minimizer->x, 1) << "), f() = "
-                    << minimizer->fval << ", size = " << size);
+#ifdef VERBOSE
+      print_state(minimizer, iter);
+#endif
    } while (status == GSL_CONTINUE && iter < max_iterations);
+
+#ifdef VERBOSE
+   printf("\tMinimization status = %s\n", gsl_strerror(status));
+#endif
 
    gsl_multimin_fminimizer_free(minimizer);
 
    minimum_value = minimizer->fval;
 
    return status;
+}
+
+template <std::size_t dimension>
+void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
+                                       std::size_t iteration) const
+{
+   std::cout << "\tIteration " << iteration << ": x =";
+   for (std::size_t i = 0; i < dimension; ++i)
+      std::cout << " " << gsl_vector_get(minimizer->x, i);
+   std::cout << ", f(x) = " << minimizer->fval << '\n';
 }
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
