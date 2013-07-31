@@ -23,6 +23,7 @@ WriteString[filename,
   "#include <vector>\n",
   "#include ",InputForm[headername],"\n",
   "\n",
+  "\nnamespace flexiblesusy {",
   "\n"
 ];
 
@@ -43,5 +44,11 @@ writeNBCDeps[filename, {
     b vu/vd + (g2^2+gY^2) (vu^4-vd^4)/(4(vd^2+vu^2)) - (norm[mu]+m2Hd),
     Im[mu], Im[b]}}
 },{TAu, TAd, TAe}];
+
+WriteString[filename,
+  "\n",
+  "\n}",
+  "\n"
+];
 
 Close[filename];

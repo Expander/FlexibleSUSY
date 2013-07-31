@@ -23,6 +23,7 @@ WriteString[filename,
   "#include <vector>\n",
   "#include ",InputForm[headername],"\n",
   "\n",
+  "\nnamespace flexiblesusy {",
   "\n"
 ];
 
@@ -35,5 +36,11 @@ writeNBCDeps[filename, {
 {"Fmssmn_constraint_on_yn_n_::dependence", Yn - Table[Yni[i,j], {i,3}, {j,3}]}
 },
 {Yn,m2N,TAn}];
+
+WriteString[filename,
+  "\n",
+  "\n}",
+  "\n"
+];
 
 Close[filename];

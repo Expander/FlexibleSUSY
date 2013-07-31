@@ -35,6 +35,7 @@ WriteString[filename,
   "#include <vector>\n",
   "#include ",InputForm[headername],"\n",
   "\n",
+  "\nnamespace flexiblesusy {",
   "\n"
 ];
 
@@ -69,5 +70,12 @@ writeNMCDeps[filename, {},{
     lowerTAe  - TAe }}
 },
 {Yn,m2N,TAn}];
+
+
+WriteString[filename,
+  "\n",
+  "\n}",
+  "\n"
+];
 
 Close[filename];
