@@ -29,30 +29,6 @@
 #define STANDARD_DEVIATION_MZ 0.0021
 #define STANDARD_DEVIATION_MH 0.4
 
-double chi_sqr_mH_mZ(const gsl_vector* x, void* params)
-{
-   if (contains_nan(x, 2))
-      return std::numeric_limits<double>::max();
-
-   MSSM* model = static_cast<MSSM*>(params);
-
-   const double vd = gsl_vector_get(x, 0);
-   const double vu = gsl_vector_get(x, 1);
-
-   model->set_vd(vd);
-   model->set_vu(vu);
-
-   model->calculate_DRbar_parameters();
-   model->calculate_Mhh_pole_1loop();
-   model->calculate_MVZ_pole_1loop();
-
-   const double mH = model->get_physical().Mhh(1);
-   const double mZ = model->get_physical().MVZ;
-
-   return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION_MZ)
-        + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
-}
-
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
    Minimizer<MSSM,2> minimizer1(NULL, NULL, 100, 1.0e-2);
@@ -121,7 +97,32 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   Minimizer<MSSM,2> minimizer(&model, chi_sqr_mH_mZ, 100, 1.0e-2);
+   struct Chi_sqr_mH_mZ {
+      static double func(const gsl_vector* x, void* params) {
+         if (contains_nan(x, 2))
+            return std::numeric_limits<double>::max();
+
+         MSSM* model = static_cast<MSSM*>(params);
+
+         const double vd = gsl_vector_get(x, 0);
+         const double vu = gsl_vector_get(x, 1);
+
+         model->set_vd(vd);
+         model->set_vu(vu);
+
+         model->calculate_DRbar_parameters();
+         model->calculate_Mhh_pole_1loop();
+         model->calculate_MVZ_pole_1loop();
+
+         const double mH = model->get_physical().Mhh(1);
+         const double mZ = model->get_physical().MVZ;
+
+         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION_MZ)
+            + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
+      }
+   };
+
+   Minimizer<MSSM,2> minimizer(&model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);
