@@ -67,6 +67,17 @@ public:
       starting_point = gsl_vector_alloc(dimension);
       step_size = gsl_vector_alloc(dimension);
    }
+   Minimizer(const Minimizer& other)
+      : max_iterations(other.max_iterations)
+      , precision(other.precision)
+      , initial_step_size(other.initial_step_size)
+      , minimum_value(other.minimum_value) {
+      starting_point = gsl_vector_alloc(dimension);
+      step_size = gsl_vector_alloc(dimension);
+      // copy vectors
+      gsl_vector_memcpy(starting_point, other.starting_point);
+      gsl_vector_memcpy(step_size, other.step_size);
+   }
    ~Minimizer() {
       gsl_vector_free(starting_point);
       gsl_vector_free(step_size);
@@ -128,6 +139,12 @@ int Minimizer<dimension>::minimize(void* model, Function_t function, const doubl
    minimum_value = minimizer->fval;
 
    return status;
+}
+
+BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
+{
+   Minimizer<2> minimizer1(100, 1.0e-2);
+   Minimizer<2> minimizer2(minimizer1);
 }
 
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
