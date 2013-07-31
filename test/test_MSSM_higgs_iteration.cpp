@@ -26,8 +26,7 @@
 #include "test_MSSM.hpp"
 
 #define SM(p) Electroweak_constants::p
-#define STANDARD_DEVIATION_MZ 0.0021
-#define STANDARD_DEVIATION_MH 0.4
+#define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
@@ -117,8 +116,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          const double mH = model->get_physical().Mhh(1);
          const double mZ = model->get_physical().MVZ;
 
-         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION_MZ)
-            + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION_MH);
+         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+              + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION(MH));
       }
    };
 
