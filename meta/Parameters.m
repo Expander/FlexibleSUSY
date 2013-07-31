@@ -328,15 +328,22 @@ RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
           ];
 
 RemoveProtectedHeads[expr_] :=
-    expr /. SARAH`SM[__] -> SARAH`SM[];
+    expr /. { SARAH`SM[__] -> SARAH`SM[],
+              FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[] };
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
     macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
 
+PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
+
+CalculateLocalPoleMasses[parameter_] :=
+    "MODEL->" <> PrivateCallLoopMassFunction[parameter];
+
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            compactExpr},
+            compactExpr, poleMasses},
            compactExpr = RemoveProtectedHeads[expr];
            symbols = { Cases[compactExpr, _Symbol, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
@@ -344,13 +351,19 @@ CreateLocalConstRefs[expr_] :=
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
                      };
+           poleMasses = {
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity],
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                        };
            symbols = DeleteDuplicates[Flatten[symbols]];
+           poleMasses = DeleteDuplicates[Flatten[poleMasses]];
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
+           (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
 

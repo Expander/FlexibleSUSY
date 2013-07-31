@@ -24,6 +24,7 @@ LowScaleFirstGuess;
 LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
+Pole;
 
 Begin["Private`"];
 
