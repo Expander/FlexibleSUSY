@@ -46,6 +46,7 @@ public:
    ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
+   double get_minimum_point(std::size_t) const;
    void set_function(Function_t* f) { function = f; }
    void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
@@ -57,7 +58,7 @@ private:
    double precision;           ///< precision goal
    double initial_step_size;   ///< initial step size
    double minimum_value;       ///< minimum function value found
-   gsl_vector* starting_point; ///< GSL vector of starting point
+   gsl_vector* minimum_point;  ///< GSL vector of minimum point
    gsl_vector* step_size;      ///< GSL vector of initial step size
    void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
@@ -84,7 +85,7 @@ Minimizer<dimension>::Minimizer(void* parameters_, Function_t function_,
    , parameters(parameters_)
    , function(function_)
 {
-   starting_point = gsl_vector_alloc(dimension);
+   minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
 }
 
@@ -97,17 +98,17 @@ Minimizer<dimension>::Minimizer(const Minimizer& other)
    , parameters(other.parameters)
    , function(other.function)
 {
-   starting_point = gsl_vector_alloc(dimension);
+   minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
    // copy vectors
-   gsl_vector_memcpy(starting_point, other.starting_point);
+   gsl_vector_memcpy(minimum_point, other.minimum_point);
    gsl_vector_memcpy(step_size, other.step_size);
 }
 
 template <std::size_t dimension>
 Minimizer<dimension>::~Minimizer()
 {
-   gsl_vector_free(starting_point);
+   gsl_vector_free(minimum_point);
    gsl_vector_free(step_size);
 }
 
@@ -131,7 +132,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
 
    // Set starting point
    for (std::size_t i = 0; i < dimension; i++)
-      gsl_vector_set(starting_point, i, start[i]);
+      gsl_vector_set(minimum_point, i, start[i]);
 
    // Set initial step sizes
    gsl_vector_set_all(step_size, initial_step_size);
@@ -142,7 +143,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    minex_func.params = parameters;
 
    minimizer = gsl_multimin_fminimizer_alloc(type, dimension);
-   gsl_multimin_fminimizer_set(minimizer, &minex_func, starting_point, step_size);
+   gsl_multimin_fminimizer_set(minimizer, &minex_func, minimum_point, step_size);
 
    size_t iter = 0;
    int status;
@@ -166,7 +167,10 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    printf("\tMinimization status = %s\n", gsl_strerror(status));
 #endif
 
+   // save minimum point and function value
+   gsl_vector_memcpy(minimum_point, minimizer->x);
    minimum_value = minimizer->fval;
+
    gsl_multimin_fminimizer_free(minimizer);
 
    return status;
@@ -186,6 +190,12 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
    for (std::size_t i = 0; i < dimension; ++i)
       std::cout << " " << gsl_vector_get(minimizer->x, i);
    std::cout << ", f(x) = " << minimizer->fval << '\n';
+}
+
+template <std::size_t dimension>
+double Minimizer<dimension>::get_minimum_point(std::size_t i) const
+{
+   return gsl_vector_get(minimum_point, i);
 }
 
 } // namespace flexiblesusy
