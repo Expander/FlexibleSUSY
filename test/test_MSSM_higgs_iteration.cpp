@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
       }
    };
 
-   Minimizer<2> minimizer(&model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
+   Minimizer<2> minimizer(Chi_sqr_mH_mZ::func, &model, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);

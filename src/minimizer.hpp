@@ -42,7 +42,7 @@ public:
    /// pointer to function to minimize
    typedef double (*Function_t)(const gsl_vector*, void*);
 
-   Minimizer(void*, Function_t, std::size_t, double);
+   Minimizer(Function_t, void*, std::size_t, double);
    Minimizer(const Minimizer&);
    ~Minimizer();
 
@@ -70,13 +70,13 @@ private:
 /**
  * Constructor
  *
- * @param parameters_ pointer to the parameters (for example the model)
  * @param function_ pointer to the function to minimize
+ * @param parameters_ pointer to the parameters (for example the model)
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
  */
 template <std::size_t dimension>
-Minimizer<dimension>::Minimizer(void* parameters_, Function_t function_,
+Minimizer<dimension>::Minimizer(Function_t function_, void* parameters_,
                                 std::size_t max_iterations_,
                                 double precision_)
    : max_iterations(max_iterations_)

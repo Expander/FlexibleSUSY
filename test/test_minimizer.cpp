@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
       }
    };
 
-   Minimizer<2> minimizer(NULL, Parabola::func, 100, 1.0e-5);
+   Minimizer<2> minimizer(Parabola::func, NULL, 100, 1.0e-5);
    const double start[2] = { 10, 10 };
    const int status = minimizer.minimize(start);
 
