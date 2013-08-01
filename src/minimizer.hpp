@@ -42,6 +42,7 @@ public:
    /// pointer to function to minimize
    typedef double (*Function_t)(const gsl_vector*, void*);
 
+   Minimizer();
    Minimizer(Function_t, void*, std::size_t, double);
    Minimizer(const Minimizer&);
    ~Minimizer();
@@ -66,6 +67,22 @@ private:
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
 };
+
+/**
+ * Default constructor
+ */
+template <std::size_t dimension>
+Minimizer<dimension>::Minimizer()
+   : max_iterations(100)
+   , precision(1.0e-2)
+   , initial_step_size(1.0)
+   , minimum_value(0.0)
+   , parameters(NULL)
+   , function(NULL)
+{
+   minimum_point = gsl_vector_alloc(dimension);
+   step_size = gsl_vector_alloc(dimension);
+}
 
 /**
  * Constructor
