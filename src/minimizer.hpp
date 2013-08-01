@@ -20,6 +20,7 @@
 #define MINIMIZER_H
 
 #include <iostream>
+#include <cassert>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multimin.h>
 
@@ -195,6 +196,8 @@ void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
 template <std::size_t dimension>
 double Minimizer<dimension>::get_minimum_point(std::size_t i) const
 {
+   assert(i < dimension && "Minimizer<>::get_minimum_point: index out"
+          " of bounds");
    return gsl_vector_get(minimum_point, i);
 }
 
