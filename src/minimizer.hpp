@@ -35,6 +35,21 @@ namespace flexiblesusy {
  * The user has to provide the function to be minimized of the type
  * Function_t.  This function gets as arguments a GSL vector of lenght
  * `dimension' and a pointer to the parameters (of type void*).
+ *
+ * Example:
+ * @code
+ * struct Parabola {
+ *    static double func(const gsl_vector* x, void*) {
+ *       const double y = gsl_vector_get(x, 0);
+ *       const double z = gsl_vector_get(x, 1);
+ *       return (y - 5.0)*(y - 5.0) + (z - 1.0)*(z - 1.0);
+ *    }
+ * };
+ *
+ * Minimizer<2> minimizer(Parabola::func, NULL, 100, 1.0e-5);
+ * const double start[2] = { 10, 10 };
+ * const int status = minimizer.minimize(start);
+ * @endcode
  */
 template <std::size_t dimension>
 class Minimizer {
