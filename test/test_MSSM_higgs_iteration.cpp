@@ -30,8 +30,8 @@
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 {
-   Minimizer<MSSM,2> minimizer1(NULL, NULL, 100, 1.0e-2);
-   Minimizer<MSSM,2> minimizer2(minimizer1);
+   Minimizer<2> minimizer1(NULL, NULL, 100, 1.0e-2);
+   Minimizer<2> minimizer2(minimizer1);
 }
 
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
       }
    };
 
-   Minimizer<MSSM,2> minimizer(&model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
+   Minimizer<2> minimizer(&model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
    const double start[2] = { model.get_vd(), model.get_vu() };
 
    const int status = minimizer.minimize(start);

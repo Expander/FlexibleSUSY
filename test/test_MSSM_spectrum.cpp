@@ -686,7 +686,7 @@ void MSSM_iterative_low_scale_constraint::apply()
       }
    };
 
-   Minimizer<MSSM,2> minimizer(model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
+   Minimizer<2> minimizer(model, Chi_sqr_mH_mZ::func, 100, 1.0e-2);
    const double start[2] = { model->get_vd(), model->get_vu() };
 
    const int status = minimizer.minimize(start);

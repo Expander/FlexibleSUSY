@@ -33,21 +33,21 @@ namespace flexiblesusy {
  *
  * The user has to provide the function to be minimized of the type
  * Function_t.  This function gets as arguments a GSL vector of lenght
- * `dimension' and a pointer to the model (of type void*).
+ * `dimension' and a pointer to the parameters (of type void*).
  */
-template <class Model_t, std::size_t dimension>
+template <std::size_t dimension>
 class Minimizer {
 public:
    /// pointer to function to minimize
    typedef double (*Function_t)(const gsl_vector*, void*);
 
-   Minimizer(Model_t*, Function_t, std::size_t, double);
+   Minimizer(void*, Function_t, std::size_t, double);
    Minimizer(const Minimizer&);
    ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
    void set_function(Function_t* f) { function = f; }
-   void set_model(Model_t* m) { model = m; }
+   void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    int minimize(const double[dimension]);
@@ -59,7 +59,7 @@ private:
    double minimum_value;       ///< minimum function value found
    gsl_vector* starting_point; ///< GSL vector of starting point
    gsl_vector* step_size;      ///< GSL vector of initial step size
-   Model_t* model;             ///< pointer to model
+   void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
@@ -68,33 +68,33 @@ private:
 /**
  * Constructor
  *
- * @param model_ pointer to the model
+ * @param parameters_ pointer to the parameters (for example the model)
  * @param function_ pointer to the function to minimize
  * @param max_iterations_ maximum number of iterations
  * @param precision_ precision goal
  */
-template <class Model_t, std::size_t dimension>
-Minimizer<Model_t,dimension>::Minimizer(Model_t* model_, Function_t function_,
-                                        std::size_t max_iterations_,
-                                        double precision_)
+template <std::size_t dimension>
+Minimizer<dimension>::Minimizer(void* parameters_, Function_t function_,
+                                std::size_t max_iterations_,
+                                double precision_)
    : max_iterations(max_iterations_)
    , precision(precision_)
    , initial_step_size(1.0)
    , minimum_value(0.0)
-   , model(model_)
+   , parameters(parameters_)
    , function(function_)
 {
    starting_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
 }
 
-template <class Model_t, std::size_t dimension>
-Minimizer<Model_t,dimension>::Minimizer(const Minimizer& other)
+template <std::size_t dimension>
+Minimizer<dimension>::Minimizer(const Minimizer& other)
    : max_iterations(other.max_iterations)
    , precision(other.precision)
    , initial_step_size(other.initial_step_size)
    , minimum_value(other.minimum_value)
-   , model(other.model)
+   , parameters(other.parameters)
    , function(other.function)
 {
    starting_point = gsl_vector_alloc(dimension);
@@ -104,8 +104,8 @@ Minimizer<Model_t,dimension>::Minimizer(const Minimizer& other)
    gsl_vector_memcpy(step_size, other.step_size);
 }
 
-template <class Model_t, std::size_t dimension>
-Minimizer<Model_t,dimension>::~Minimizer()
+template <std::size_t dimension>
+Minimizer<dimension>::~Minimizer()
 {
    gsl_vector_free(starting_point);
    gsl_vector_free(step_size);
@@ -118,11 +118,9 @@ Minimizer<Model_t,dimension>::~Minimizer()
  *
  * @return GSL error code (GSL_SUCCESS if minimum found)
  */
-template <class Model_t, std::size_t dimension>
-int Minimizer<Model_t,dimension>::minimize(const double start[dimension])
+template <std::size_t dimension>
+int Minimizer<dimension>::minimize(const double start[dimension])
 {
-   assert(model && "Minimizer<dimension>::minimize: model pointer"
-          " must not be zero!");
    assert(function && "Minimizer<dimension>::minimize: function pointer"
           " must not be zero!");
 
@@ -141,7 +139,7 @@ int Minimizer<Model_t,dimension>::minimize(const double start[dimension])
    // Initialize method and iterate
    minex_func.n = dimension;
    minex_func.f = function;
-   minex_func.params = model;
+   minex_func.params = parameters;
 
    minimizer = gsl_multimin_fminimizer_alloc(type, dimension);
    gsl_multimin_fminimizer_set(minimizer, &minex_func, starting_point, step_size);
@@ -180,8 +178,8 @@ int Minimizer<Model_t,dimension>::minimize(const double start[dimension])
  * @param minimizer minimizer
  * @param iteration iteration number
  */
-template <class Model_t, std::size_t dimension>
-void Minimizer<Model_t,dimension>::print_state(gsl_multimin_fminimizer* minimizer,
+template <std::size_t dimension>
+void Minimizer<dimension>::print_state(gsl_multimin_fminimizer* minimizer,
                                                std::size_t iteration) const
 {
    std::cout << "\tIteration " << iteration << ": x =";
