@@ -49,7 +49,7 @@ public:
 
    double get_minimum_value() const { return minimum_value; }
    double get_minimum_point(std::size_t) const;
-   void set_function(Function_t* f) { function = f; }
+   void set_function(Function_t f) { function = f; }
    void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
