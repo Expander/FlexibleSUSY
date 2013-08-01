@@ -4,6 +4,7 @@ MODNAME  := test
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
+		$(DIR)/test_minimizer.cpp \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_wrappers.cpp
 
@@ -107,6 +108,10 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_betafunction.d $(DIR)/test_betafunction.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_minimizer.d $(DIR)/test_minimizer.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
