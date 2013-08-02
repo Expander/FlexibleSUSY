@@ -10,7 +10,7 @@
 namespace flexiblesusy {
 
 /**
- * @class GUT_scale_runner
+ * @class GUT_scale_calculator
  * @brief calculates the approximate GUT scale
  *
  * In the default implementation the GUT scale is defined by the scale
