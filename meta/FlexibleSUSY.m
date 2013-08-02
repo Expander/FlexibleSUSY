@@ -24,6 +24,7 @@ LowScaleFirstGuess;
 LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
+OnlyLowEnergyFlexibleSUSY;
 Pole;
 FSMinimize;
 
@@ -50,6 +51,12 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`FSModelName not defined!",
                     " I'm using Model`Name from SARAH: ", Model`Name];
               FlexibleSUSY`FSModelName = Model`Name;
+             ];
+           (* Properly set OnlyLowEnergyFlexibleSUSY *)
+           If[!NameQ["FlexibleSUSY`OnlyLowEnergyFlexibleSUSY"] ||
+              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True ||
+              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= False,
+              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY = False;
              ];
            If[Head[FlexibleSUSY`InitialGuessAtLowScale] =!= List,
               FlexibleSUSY`InitialGuessAtLowScale = {};
