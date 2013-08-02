@@ -101,6 +101,9 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 
+StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
+and removes Delta with the given indices";
+
 Begin["Private`"];
 
 unrotatedParticles = {};
@@ -210,6 +213,22 @@ GetDimensionStartSkippingGoldstones[sym_, states_:SARAH`EWSB] :=
                  Return[max];
                 ];
              ];
+          ];
+
+(* Removes generators and Delta with the given indices *)
+StripGenerators[expr_, indices_List] :=
+    Module[{headers = {SARAH`Delta}, h, indexCombinations, removeSymbols = {}},
+           indexCombinations = DeleteCases[Subsets[indices],{}];
+           For[h = 1, h <= Length[headers], h++,
+               AppendTo[removeSymbols, (headers[[h]] @@ #)& /@ indexCombinations];
+              ];
+           removeSymbols = (Rule[#, 1])& /@ Flatten[removeSymbols];
+           removeSymbols = Join[removeSymbols,
+                                { Rule[SARAH`Lam[__], 2],
+                                  Rule[SARAH`Sig[__], 2],
+                                  Rule[SARAH`fSU2[__], 1],
+                                  Rule[SARAH`fSU3[__], 1] }];
+           expr /. removeSymbols
           ];
 
 FindMixingMatrixSymbolFor[particle_Symbol] :=
@@ -566,7 +585,8 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
            If[IsVector[massESSymbol] || IsScalar[massESSymbol],
               trans = Sqrt;
              ];
-           expr = trans[mass[[1]]];
+           expr = mass[[1]];
+           expr = trans[StripGenerators[expr, {ct1, ct2, ct3, ct4}]];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> ev <> " = " <>
                   RValueToCFormString[expr] <> ";\n";

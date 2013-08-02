@@ -216,22 +216,6 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
-StripIndices[expr_, indices_List] :=
-    Module[{headers = {SARAH`Delta}, h, indexCombinations, removeSymbols = {}},
-           indexCombinations = DeleteCases[Subsets[indices],{}];
-           For[h = 1, h <= Length[headers], h++,
-               AppendTo[removeSymbols, (headers[[h]] @@ #)& /@ indexCombinations];
-              ];
-           removeSymbols = Flatten[removeSymbols];
-           removeSymbols = (Rule[#, 1])& /@ removeSymbols;
-           removeSymbols = Join[removeSymbols,
-                                { Rule[SARAH`Lam[__], 2],
-                                  Rule[SARAH`Sig[__], 2],
-                                  Rule[SARAH`fSU2[__], 1],
-                                  Rule[SARAH`fSU3[__], 1] }];
-           expr /. removeSymbols
-          ];
-
 GetLorentzStructure[Cp[__]] := 1;
 
 GetLorentzStructure[Cp[__][a_]] := a;
@@ -265,7 +249,7 @@ CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
                  ];
               ];
            cFunctionName = cFunctionName <> ")";
-           strippedExpr = StripIndices[expr, strippedIndices];
+           strippedExpr = TreeMasses`StripGenerators[expr, strippedIndices];
            If[Parameters`IsRealExpression[strippedExpr],
               type = "double";  initalValue = " = 0.0";,
               type = "Complex"; initalValue = "";];
