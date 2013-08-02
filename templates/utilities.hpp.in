@@ -40,7 +40,7 @@ namespace @ModelName@_info {
 
 class @ModelName@_parameter_getter {
 public:
-   Eigen::ArrayXd operator()(const @ModelName@& model) {
+   Eigen::ArrayXd get_parameters(const @ModelName@& model) {
       return model.display();
    }
    std::vector<std::string> get_parameter_names(const @ModelName@& model) const {
