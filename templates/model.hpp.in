@@ -50,7 +50,6 @@ public:
    const @ModelName@_physical& get_physical() const;
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
-   void print_state(std::size_t, gsl_multiroot_fsolver*) const;
 
    // interface functions
    virtual void calculate_spectrum();

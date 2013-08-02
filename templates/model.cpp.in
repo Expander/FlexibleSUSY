@@ -22,6 +22,7 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "error.hpp"
+#include "root_finder.hpp"
 #include "gsl_utils.hpp"
 #ifdef ENABLE_LOOPTOOLS
 #include <clooptools.h>
@@ -212,56 +213,14 @@ void @ModelName@::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])
 int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
                                              const double x_init[@numberOfEWSBEquations@])
 {
-   gsl_multiroot_fsolver* s = gsl_multiroot_fsolver_alloc(solver, @numberOfEWSBEquations@);
-   int status;
-   std::size_t iter = 0;
    Ewsb_parameters params = {this, ewsb_loop_order};
-   gsl_multiroot_function f = {&tadpole_equations, @numberOfEWSBEquations@, &params};
-   gsl_vector* x = gsl_vector_alloc(@numberOfEWSBEquations@);
-
-   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
-      gsl_vector_set(x, i, x_init[i]);
-
-   gsl_multiroot_fsolver_set(s, &f, x);
-
-#ifdef VERBOSE
-   print_state(iter, s);
-#endif
-
-   do {
-      iter++;
-      status = gsl_multiroot_fsolver_iterate(s);
-
-#ifdef VERBOSE
-      print_state(iter, s);
-#endif
-
-      if (status)   // check if solver is stuck
-         break;
-
-      status =
-         gsl_multiroot_test_residual(s->f, ewsb_iteration_precision);
-   } while (status == GSL_CONTINUE && iter < number_of_ewsb_iterations);
-
-#ifdef VERBOSE
-   printf("\tEWSB status = %s\n", gsl_strerror(status));
-#endif
-
-   gsl_multiroot_fsolver_free(s);
-   gsl_vector_free(x);
+   Root_finder<@numberOfEWSBEquations@> root_finder(tadpole_equations, &params,
+                              number_of_ewsb_iterations,
+                              ewsb_iteration_precision);
+   root_finder.set_solver_type(solver);
+   const int status = root_finder.find_root(x_init);
 
    return status;
-}
-
-void @ModelName@::print_state(std::size_t iter, gsl_multiroot_fsolver* s) const
-{
-   std::cout << "\tIteration " << iter << ": x =";
-   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
-      std::cout << " " << gsl_vector_get(s->x, i);
-   std::cout << ", f(x) =";
-   for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
-      std::cout << " " << gsl_vector_get(s->f, i);
-   std::cout << '\n';
 }
 
 void @ModelName@::print(std::ostream& ostr) const
