@@ -44,13 +44,11 @@ int main()
    INFO("Running: " << pp);
    try {
       solver.solve();
+      mssm.calculate_spectrum();
+      mssm.print(std::cout);
    } catch (Error& e) {
       ERROR("no solution found: " << e.what());
-      exit(1);
    }
 
-   mssm.calculate_spectrum();
-
-   INFO("Solution found: ");
-   mssm.print(std::cout);
+   return 0;
 }
