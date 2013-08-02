@@ -27,6 +27,7 @@ InitialGuessAtHighScale;
 OnlyLowEnergyFlexibleSUSY;
 Pole;
 FSMinimize;
+MZ;
 
 Begin["Private`"];
 
