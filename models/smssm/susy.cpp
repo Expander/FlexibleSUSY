@@ -10,6 +10,8 @@
 
 #include "susy.h"
 
+namespace softsusy {
+
 #define HR "---------------------------------------------------------------\n"
 
 const sBrevity & sBrevity::operator=(const sBrevity &s) {
@@ -582,3 +584,4 @@ void MssmSusy::diagQuarkBasis(DoubleMatrix & vdl, DoubleMatrix & vdr,
   vdl = u.transpose(); vdr = v.transpose();
 }
 
+} // namespace softsusy

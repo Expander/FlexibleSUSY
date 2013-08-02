@@ -10,6 +10,8 @@
 
 #include <physpars.h>
 
+namespace softsusy {
+
 const drBarPars & drBarPars::operator=(const drBarPars &s) {
   if (this == &s) return *this;
   mz = s.mz; mw = s.mw;
@@ -193,3 +195,5 @@ void drBarPars::mpzCharginos() {
   uBpmz = u; vBpmz = v;
   mchBpmz = mch.apply(fabs); 
 }
+
+} // namespace softsusy

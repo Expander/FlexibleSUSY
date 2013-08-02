@@ -7,6 +7,8 @@
 
 #include "softsusy.h"
 
+namespace softsusy {
+
 double sw2 = 1.0 - sqr(MW / MZ),
   gnuL = 0.5,
   guL = 0.5 - 2.0 * sw2 / 3.0, 
@@ -16798,3 +16800,5 @@ double MssmSoftsusy::twoLpMb() const {
 
   return resmb;
 }
+
+} // namespace softsusy

@@ -10,6 +10,8 @@
 
 #include "softpars.h"
 
+namespace softsusy {
+
 const SoftParsMssm & SoftParsMssm::operator=(const SoftParsMssm & s) {
   if (this == &s) return *this;
   mGaugino = s.mGaugino;
@@ -1370,3 +1372,4 @@ void SoftParsMssm::minimalGmsb(int n5, double lambda, double mMess,
   universalTrilinears(0.0);
 }
 
+} // namespace softsusy

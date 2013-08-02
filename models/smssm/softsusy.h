@@ -28,7 +28,8 @@
 #include <lowe.h>
 #include <softpars.h>
 #include <twoloophiggs.h>
-using namespace softsusy;
+
+namespace softsusy {
 
 class MssmSoftsusy;
 std::istream & operator >>(std::istream &left, MssmSoftsusy &s);
@@ -875,7 +876,7 @@ double lnLHiggs(double mh);
 void nonUniGauginos(MssmSoftsusy & m, const DoubleVector & inputParameters);
 
 void splitGmsb(MssmSoftsusy & m, const DoubleVector & inputParameters);
+
+} // namespace softsusy
+
 #endif
-
-
-

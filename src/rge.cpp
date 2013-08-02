@@ -10,6 +10,8 @@
 
 #include "rge.h"
 
+namespace softsusy {
+
 static RGE * tempRge;
 
 // runto/run functions return >0 if there's a problem with the running
@@ -75,6 +77,5 @@ int RGE::callRK(double x1, double x2, DoubleVector & v,
   setMu(x2);
   return err;
 }
- 
 
- 
+}
