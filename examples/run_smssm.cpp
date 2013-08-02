@@ -12,77 +12,6 @@
 
 using namespace flexiblesusy;
 
-class Sfermion_masses_getter {
-public:
-   template <class Rge>
-   DoubleVector operator()(const Rge& rge) {
-      SoftParsMssm softPars(static_cast<MssmSoftsusy>(rge).displaySoftPars());
-
-      DoubleVector mQ      (softPars.displaySoftMassSquared(mQl).flatten());
-      DoubleVector mU      (softPars.displaySoftMassSquared(mUr).flatten());
-      DoubleVector mD      (softPars.displaySoftMassSquared(mUr).flatten());
-      DoubleVector mL      (softPars.displaySoftMassSquared(mLl).flatten());
-      DoubleVector mE      (softPars.displaySoftMassSquared(mEr).flatten());
-
-      DoubleVector data(mQ.apply(sqrt));
-      data.append(mU.apply(sqrt));
-      data.append(mD.apply(sqrt));
-      data.append(mL.apply(sqrt));
-      data.append(mE.apply(sqrt));
-
-      return data;
-   }
-};
-
-class Gaugino_masses_getter {
-public:
-   template <class Rge>
-   DoubleVector operator()(const Rge& rge) {
-      SoftParsMssm softPars(static_cast<MssmSoftsusy>(rge).displaySoftPars());
-      return softPars.displayGaugino();
-   }
-};
-
-class Triliear_masses_getter {
-public:
-   template <class Rge>
-   DoubleVector operator()(const Rge& rge) {
-      SoftParsMssm softPars(static_cast<MssmSoftsusy>(rge).displaySoftPars());
-
-      DoubleVector Au      (softPars.displayTrilinear(UA).flatten());
-      DoubleVector Ad      (softPars.displayTrilinear(DA).flatten());
-      DoubleVector Ae      (softPars.displayTrilinear(EA).flatten());
-
-      DoubleVector data(Au);
-      data.append(Ad);
-      data.append(Ae);
-
-      return data;
-   }
-};
-
-class Soft_masses_getter {
-public:
-   template <class Rge>
-   DoubleVector operator()(const Rge& rge) {
-      Sfermion_masses_getter smg;
-      Gaugino_masses_getter  gmg;
-      Triliear_masses_getter tmg;
-
-      SoftParsMssm softPars(static_cast<MssmSoftsusy>(rge).displaySoftPars());
-      DoubleVector mH(2);
-      mH(1) = sqrt(softPars.displayMh1Squared());
-      mH(2) = sqrt(softPars.displayMh2Squared());
-
-      DoubleVector data(smg(rge));
-      data.append(gmg(rge));
-      data.append(tmg(rge));
-      data.append(mH);
-
-      return data;
-   }
-};
-
 int main()
 {
    Mssm_parameter_point pp;
@@ -124,17 +53,4 @@ int main()
 
    INFO("Solution found: ");
    mssm.print(std::cout);
-
-#if 0
-   // create data: all gauge couplings at different scales
-   const double gut_scale = mssm_sugra_constraint.get_scale();
-   const double MZ = 91.1876;
-
-   Coupling_monitor cm;
-   Soft_masses_getter smg;
-
-   mssm.run_to(MZ);
-   cm.run(mssm, smg, MZ, gut_scale, 100, true);
-   cm.write_to_file("mssm_soft_masses.dat");
-#endif
 }
