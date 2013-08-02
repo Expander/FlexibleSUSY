@@ -102,4 +102,4 @@ void @ModelName@_susy_scale_constraint::update_scale()
 @calculateScale@
 }
 
-}
+} // namespace flexiblesusy

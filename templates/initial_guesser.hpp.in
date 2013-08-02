@@ -75,6 +75,6 @@ private:
    void guess_soft_parameters();
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

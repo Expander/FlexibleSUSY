@@ -354,4 +354,4 @@ int @ModelName@::run_to(double scale, double eps)
 
 @dependenceNumFunctions@
 
-}
+} // namespace flexiblesusy

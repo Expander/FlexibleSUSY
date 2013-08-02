@@ -48,4 +48,4 @@ void @ModelName@_physical::print(std::ostream& ostr) const
 @printMixingMatrices@
 }
 
-}
+} // namespace flexiblesusy

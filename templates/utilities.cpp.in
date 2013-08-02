@@ -111,4 +111,4 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
    }
 }
 
-}
+} // namespace flexiblesusy

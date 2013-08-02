@@ -52,6 +52,6 @@ private:
    static const int numberOfParameters = @numberOfParameters@;
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

@@ -48,4 +48,4 @@ double @ModelName@_convergence_tester::max_rel_diff() const
 @compareFunction@
 }
 
-}
+} // namespace flexiblesusy

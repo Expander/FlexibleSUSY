@@ -76,6 +76,6 @@ private:
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

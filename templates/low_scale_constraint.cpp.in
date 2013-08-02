@@ -205,4 +205,4 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()
 @setDRbarYukawaCouplings@
 }
 
-}
+} // namespace flexiblesusy

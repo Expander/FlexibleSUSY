@@ -99,4 +99,4 @@ std::vector<std::string> @ModelName@_soft_parameters::get_parameter_names() cons
    return names;
 }
 
-}
+} // namespace flexiblesusy

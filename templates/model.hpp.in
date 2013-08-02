@@ -108,6 +108,6 @@ private:
 
 int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
 
-}
+} // namespace flexiblesusy
 
 #endif

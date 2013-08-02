@@ -35,6 +35,6 @@ protected:
    virtual double max_rel_diff() const;
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

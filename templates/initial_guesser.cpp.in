@@ -134,4 +134,4 @@ void @ModelName@_initial_guesser::guess_soft_parameters()
    model->set_loops(2);
 }
 
-}
+} // namespace flexiblesusy

@@ -37,6 +37,6 @@ struct @ModelName@_physical {
 @mixingMatricesDef@
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

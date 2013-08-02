@@ -49,6 +49,6 @@ private:
    void update_scale();
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

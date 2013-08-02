@@ -110,4 +110,4 @@ void @ModelName@_susy_parameters::set_input(const @ModelName@_input_parameters& 
    input = input_;
 }
 
-}
+} // namespace flexiblesusy
