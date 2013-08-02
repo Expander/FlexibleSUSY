@@ -33,13 +33,35 @@ namespace flexiblesusy {
 
 /**
  * @class Coupling_monitor
- * @brief stores the gauge couplings at different scales
+ * @brief stores model parameters at different scales
  *
- * Usage:
+ * Template arguments are the model type and the parameter getter
+ * type.
  *
- *    Coupling_monitor rc;
- *    rc.run(sm, 100, 1.e12, 50, true); // sm is a two scale model
- *    rc.write_to_file("running_coupling.dat");
+ * Example:
+ * @code
+ * class MSSM_parameter_getter {
+ * public:
+ *    Eigen::ArrayXd operator()(const MSSM& model) {
+ *       return model.display();
+ *    }
+ *    std::vector<std::string> get_parameter_names(const MSSM& model) const {
+ *       return model.get_parameter_names();
+ *    }
+ * };
+ *
+ * MSSM model;
+ * MSSM_parameter_getter getter;
+ * Coupling_monitor<MSSM, MSSM_parameter_getter> cm(model, getter);
+ *
+ * const double start_scale = 100.;
+ * const double stop_scale = 1.0e12;
+ * const unsigned number_of_points = 50;
+ * const bool include_endpoint = true;
+ *
+ * cm.run(start_scale, stop_scale, number_of_points, include_endpoint);
+ * cm.write_to_file("running_coupling.dat");
+ * @endcode
  */
 template <class Rge, class DataGetter>
 class Coupling_monitor {
