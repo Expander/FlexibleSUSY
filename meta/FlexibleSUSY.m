@@ -468,7 +468,7 @@ RGEsHaveBeenCalculated[outputDir_String] :=
            fileNames = { "BetaYijk.m", "BetaGauge.m", "BetaWijkl.m",
                          "BetaMuij.m", "BetaLi.m", "BetaQijkl.m",
                          "BetaTijk.m", "BetaBij.m", "BetaLSi.m",
-                         "Betam2ij.m", "BetaMi.m", "BetaVEV.m" };
+                         "Betam2ij.m", "BetaMi.m", "BetaVEV.m", "BetaDGi.m" };
            FilesExist[rgeDir, fileNames]
           ];
 
@@ -513,7 +513,8 @@ PrepareRGEs[] :=
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
                      SARAH`BetaQijkl, SARAH`BetaTijk, SARAH`BetaBij,
-                     SARAH`BetaSLi, SARAH`Betam2ij, SARAH`BetaMi };
+                     SARAH`BetaSLi, SARAH`Betam2ij, SARAH`BetaMi,
+                     SARAH`BetaDGi };
            If[!ValueQ[#], Set[#,{}]]& /@ betas;
            If[!IsDefined[SARAH`Gij] || Head[SARAH`Gij] =!= List,
               SARAH`Gij = {};
@@ -658,7 +659,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                          SARAH`BetaBij  ,
                                          SARAH`BetaSLi  ,
                                          SARAH`Betam2ij ,
-                                         SARAH`BetaMi   };
+                                         SARAH`BetaMi   ,
+                                         SARAH`BetaDGi  };
 
            susyBetaFunctions = ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
