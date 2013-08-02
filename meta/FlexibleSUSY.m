@@ -515,7 +515,7 @@ PrepareRGEs[] :=
                      SARAH`BetaQijkl, SARAH`BetaTijk, SARAH`BetaBij,
                      SARAH`BetaSLi, SARAH`Betam2ij, SARAH`BetaMi,
                      SARAH`BetaDGi };
-           If[!ValueQ[#], Set[#,{}]]& /@ betas;
+           If[Head[#] === Symbol && !ValueQ[#], Set[#,{}]]& /@ betas;
            If[!IsDefined[SARAH`Gij] || Head[SARAH`Gij] =!= List,
               SARAH`Gij = {};
              ];
