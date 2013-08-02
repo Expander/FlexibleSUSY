@@ -121,7 +121,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "PHYSICAL(" <> particleName <> ") = AbsSqrt(PHYSICAL(" <>
                        particleName <> "));\n";
               ,
-              result = Do1DimScalar[particleName, selfEnergyFunction, particleName, "tadpoles"];
+              result = Do1DimScalar[particleName, selfEnergyFunction, particleName,
+                                    If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
           ];
@@ -288,7 +289,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                        "}\n";
               ,
               result = tadpoleMatrix <>
-                       Do1DimScalar[particleName, selfEnergyFunction, momentum, "tadpoles"];
+                       Do1DimScalar[particleName, selfEnergyFunction, momentum,
+                                    If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
           ];
