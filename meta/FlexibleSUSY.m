@@ -44,18 +44,20 @@ allOutputParameters = {};
 
 numberOfModelParameters = 0;
 
+IsDefined[name_String] := NameQ[name] && ValueQ[name];
+
 CheckModelFileSettings[] :=
     Module[{},
            (* FlexibleSUSY model name *)
-           If[!NameQ["FlexibleSUSY`FSModelName"] || Head[FlexibleSUSY`FSModelName] =!= String,
+           If[!IsDefined["FlexibleSUSY`FSModelName"] || Head[FlexibleSUSY`FSModelName] =!= String,
               Print["Warning: FlexibleSUSY`FSModelName not defined!",
                     " I'm using Model`Name from SARAH: ", Model`Name];
               FlexibleSUSY`FSModelName = Model`Name;
              ];
            (* Properly set OnlyLowEnergyFlexibleSUSY *)
-           If[!NameQ["FlexibleSUSY`OnlyLowEnergyFlexibleSUSY"] ||
-              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True ||
-              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= False,
+           If[!IsDefined["FlexibleSUSY`OnlyLowEnergyFlexibleSUSY"] ||
+              (FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True &&
+               FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= False),
               FlexibleSUSY`OnlyLowEnergyFlexibleSUSY = False;
              ];
            If[Head[FlexibleSUSY`InitialGuessAtLowScale] =!= List,
@@ -65,12 +67,12 @@ CheckModelFileSettings[] :=
               FlexibleSUSY`InitialGuessAtHighScale = {};
              ];
            (* HighScale *)
-           If[!NameQ["FlexibleSUSY`HighScale"],
+           If[!IsDefined["FlexibleSUSY`HighScale"],
               Print["Warning: FlexibleSUSY`HighScale should be",
                     " set in the model file!"];
               FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
              ];
-           If[!NameQ["FlexibleSUSY`HighScaleFirstGuess"],
+           If[!IsDefined["FlexibleSUSY`HighScaleFirstGuess"],
               Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
                     " set in the model file!"];
               FlexibleSUSY`HighScaleFirstGuess = 1.0 10^14;
@@ -79,12 +81,12 @@ CheckModelFileSettings[] :=
               FlexibleSUSY`HighScaleInput = {};
              ];
            (* LowScale *)
-           If[!NameQ["FlexibleSUSY`LowScale"],
+           If[!IsDefined["FlexibleSUSY`LowScale"],
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := SM[MZ];
              ];
-           If[!NameQ["FlexibleSUSY`LowScaleFirstGuess"],
+           If[!IsDefined["FlexibleSUSY`LowScaleFirstGuess"],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScaleFirstGuess = SM[MZ];
@@ -93,12 +95,12 @@ CheckModelFileSettings[] :=
               FlexibleSUSY`LowScaleInput = {};
              ];
            (* SusyScale *)
-           If[!NameQ["FlexibleSUSY`SusyScale"],
+           If[!IsDefined["FlexibleSUSY`SusyScale"],
               Print["Warning: FlexibleSUSY`SusyScale should be",
                     " set in the model file!"];
               FlexibleSUSY`SusyScale := 1000;
              ];
-           If[!NameQ["FlexibleSUSY`SusyScaleFirstGuess"],
+           If[!IsDefined["FlexibleSUSY`SusyScaleFirstGuess"],
               Print["Warning: FlexibleSUSY`SusyScaleFirstGuess should be",
                     " set in the model file!"];
               FlexibleSUSY`SusyScaleFirstGuess = 1000;
