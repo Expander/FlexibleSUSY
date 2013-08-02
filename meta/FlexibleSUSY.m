@@ -463,13 +463,16 @@ FilesExist[path_String, fileNames_List] :=
           ];
 
 RGEsHaveBeenCalculated[outputDir_String] :=
-    Module[{rgeDir, fileNames},
+    Module[{rgeDir, fileNames, diracGauginoBetaExists = True},
            rgeDir = FileNameJoin[{outputDir, "RGEs"}];
            fileNames = { "BetaYijk.m", "BetaGauge.m", "BetaWijkl.m",
                          "BetaMuij.m", "BetaLi.m", "BetaQijkl.m",
                          "BetaTijk.m", "BetaBij.m", "BetaLSi.m",
-                         "Betam2ij.m", "BetaMi.m", "BetaVEV.m", "BetaDGi.m" };
-           FilesExist[rgeDir, fileNames]
+                         "Betam2ij.m", "BetaMi.m", "BetaVEV.m" };
+           If[SARAH`AddDiracGauginos === True,
+              diracGauginoBetaExists = FileExists[rgeDir, "BetaDGi.m"];
+             ];
+           FilesExist[rgeDir, fileNames] && diracGauginoBetaExists
           ];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
