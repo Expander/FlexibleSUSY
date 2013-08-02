@@ -23,11 +23,15 @@
 
 #include "mycomplex.h"
 
+namespace flexiblesusy {
+
 struct @ModelName@_input_parameters {
 @defineInputParameters@
    @ModelName@_input_parameters()
       @defaultInputParametersInit@
    {}
 };
+
+} // namespace flexiblesusy
 
 #endif
