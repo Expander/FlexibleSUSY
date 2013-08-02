@@ -36,8 +36,6 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
 namespace flexiblesusy {
 
 class @ModelName@_runner {
@@ -141,12 +139,12 @@ int main()
       runner.get_model().print(std::cout);
       // runner.write_running_couplings();
       // runner.write_spectrum();
-   } catch (Error& error) {
-      cout << "Error: " << error.what() << endl;
-   } catch (std::string& str) {
-      cout << "Error: " << str << endl;
+   } catch (const Error& error) {
+      ERROR(error.what());
+   } catch (const std::string& str) {
+      ERROR(str);
    } catch (const char* str) {
-      cout << "Error: " << str << endl;
+      ERROR(str);
    }
 
    return 0;
