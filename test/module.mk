@@ -6,6 +6,7 @@ TEST_SRC := \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_minimizer.cpp \
 		$(DIR)/test_rk.cpp \
+		$(DIR)/test_root_finder.cpp \
 		$(DIR)/test_wrappers.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
@@ -116,6 +117,10 @@ $(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI)
 $(DIR)/test_rk.d $(DIR)/test_rk.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_root_finder.d $(DIR)/test_root_finder.x: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_wrappers.d $(DIR)/test_wrappers.x: CPPFLAGS += $(EIGENFLAGS)
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)
