@@ -353,7 +353,11 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[ParametersToSolveTadpoles, "one_loop_", ""];
-           softScalarMasses             = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];
+           If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
+              softScalarMasses          = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];,
+              Print["Error: no soft breaking scalar masses found!"];
+              softScalarMasses          = {};
+             ];
            softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
@@ -789,7 +793,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ewsbEquations = SARAH`TadpoleEquations[eigenstates] /.
                            susyBreakingParameterReplacementRules /.
                            Parameters`ApplyGUTNormalization[];
-           ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
+           If[Length[vevs] === Length[ewsbEquations],
+              ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
+              ,
+              Print["Error: There are ", Length[ewsbEquations],
+                    " EWSB equations but ", Length[vevs], " VEVs"];
+              ewsbEquations = {};
+              ParametersToSolveTadpoles = {};
+             ];
 
            SelfEnergies`SetParameterReplacementRules[susyBreakingParameterReplacementRules];
            SelfEnergies`SetIndexReplacementRules[allIndexReplacementRules];
