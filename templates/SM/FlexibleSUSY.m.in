@@ -1,0 +1,13 @@
+
+(* SM input parameters *)
+
+InputParameters = { LambdaIN };
+
+ParametersToSolveTadpoles = { Mu2 };
+
+BoundaryLowScaleInput = {
+    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+    {\[Lambda], LambdaIN}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;

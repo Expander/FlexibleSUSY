@@ -1,0 +1,13 @@
+
+(* MRSSM input parameters *)
+
+InputParameters = { TanBeta };
+
+ParametersToSolveTadpoles = { mHd2, mHu2, mS2, mT2 };
+
+LowScaleInput = {
+    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;
