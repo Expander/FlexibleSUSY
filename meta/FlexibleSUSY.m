@@ -495,7 +495,7 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
           ];
 
 PrepareRGEs[] :=
-    Module[{rgesHaveBeenCalculated},
+    Module[{rgesHaveBeenCalculated, betas},
            rgesHaveBeenCalculated = RGEsHaveBeenCalculated[$sarahCurrentOutputMainDir];
            If[rgesHaveBeenCalculated,
               Print["RGEs have already been calculated, reading them from file ..."];,
@@ -504,6 +504,15 @@ PrepareRGEs[] :=
            SARAH`CalcRGEs[ReadLists -> rgesHaveBeenCalculated,
                           TwoLoop -> True,
                           NoMatrixMultiplication -> False];
+           (* check if the beta functions were calculated correctly *)
+           betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
+                     SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
+                     SARAH`BetaQijkl, SARAH`BetaTijk, SARAH`BetaBij,
+                     SARAH`BetaSLi, SARAH`Betam2ij, SARAH`BetaMi };
+           If[!ValueQ[#], Set[#,{}]]& /@ betas;
+           If[!IsDefined[SARAH`Gij] || Head[SARAH`Gij] =!= List,
+              SARAH`Gij = {};
+             ];
           ];
 
 PrepareSelfEnergies[eigenstates_] :=
@@ -653,7 +662,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBetaFunctions = susyBetaFunctions /. susyParameterReplacementRules;
 
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
-           anomDim = ConvertSarahAnomDim[SARAH`Gij];
+           anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
            anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
 
            Print["Creating class for susy parameters ..."];
