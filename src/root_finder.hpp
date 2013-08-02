@@ -71,6 +71,7 @@ public:
    void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
+   void set_solver_type(const gsl_multiroot_fsolver_type* t) { solver_type = t; }
    int find_root(const double[dimension]);
 
 private:
