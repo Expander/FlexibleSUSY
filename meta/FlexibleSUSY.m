@@ -94,19 +94,19 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`LowScaleInput] =!= List,
               FlexibleSUSY`LowScaleInput = {};
              ];
-           (* SusyScale *)
-           If[!IsDefined["FlexibleSUSY`SusyScale"],
-              Print["Warning: FlexibleSUSY`SusyScale should be",
+           (* SUSYScale *)
+           If[!IsDefined["FlexibleSUSY`SUSYScale"],
+              Print["Warning: FlexibleSUSY`SUSYScale should be",
                     " set in the model file!"];
-              FlexibleSUSY`SusyScale := 1000;
+              FlexibleSUSY`SUSYScale := 1000;
              ];
-           If[!IsDefined["FlexibleSUSY`SusyScaleFirstGuess"],
-              Print["Warning: FlexibleSUSY`SusyScaleFirstGuess should be",
+           If[!IsDefined["FlexibleSUSY`SUSYScaleFirstGuess"],
+              Print["Warning: FlexibleSUSY`SUSYScaleFirstGuess should be",
                     " set in the model file!"];
-              FlexibleSUSY`SusyScaleFirstGuess = 1000;
+              FlexibleSUSY`SUSYScaleFirstGuess = 1000;
              ];
-           If[Head[FlexibleSUSY`SusyScaleInput] =!= List,
-              FlexibleSUSY`SusyScaleInput = {};
+           If[Head[FlexibleSUSY`SUSYScaleInput] =!= List,
+              FlexibleSUSY`SUSYScaleInput = {};
              ];
 
            If[Head[FlexibleSUSY`DefaultParameterPoint] =!= List,
