@@ -53,7 +53,7 @@ CheckModelFileSettings[] :=
                     " I'm using Model`Name from SARAH: ", Model`Name];
               FlexibleSUSY`FSModelName = Model`Name;
              ];
-           (* Properly set OnlyLowEnergyFlexibleSUSY *)
+           (* Set OnlyLowEnergyFlexibleSUSY to False by default *)
            If[!ValueQ[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY] ||
               (FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True &&
                FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= False),
