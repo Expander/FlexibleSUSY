@@ -740,8 +740,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            ];
 
            Print["Creating class for input parameters ..."];
-           Print["freePhases: ", freePhases];
-           Print["DefaultParameterPoint: ", FlexibleSUSY`DefaultParameterPoint];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
