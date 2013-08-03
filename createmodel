@@ -47,26 +47,31 @@ if [ -z "$models" ] ; then
     help
 fi
 
-for m in ${models}; do
-    sub_model=$(echo $m | awk -F / '{ if (NF > 1) print $NF }')
-    m=$(echo $m | awk -F / '{ print $1 }')
+for model in ${models}; do
+    sub_model=$(echo $model | awk -F / '{ if (NF > 1) print $NF }')
+    model=$(echo $model | awk -F / '{ print $1 }')
 
-    if test -d "models/$m" -a "x$overwrite" = "xno" ; then
-        echo "Error: directory models/$m already exists!"
+    # create target directory name
+    if [ -n "$sub_model" ]; then
+        targetdir="models/${model}-${sub_model}"
+    else
+        targetdir="models/${model}"
+    fi
+
+    if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
+        echo "Error: directory models/$model already exists!"
         echo "Please chose another model name or use the --force option."
         echo "See ./`basename $0` --help for more information."
         continue
     fi
 
     if [ -n "$sub_model" ]; then
-        echo "creating model $m with sub-model $sub_model"
+        echo "creating model $model with sub-model $sub_model"
     else
-        echo "creating model $m"
+        echo "creating model $model"
     fi
 
-    # create target directory
-    targetdir="models/$m"
-    if test ! -d "models/$m" ; then
+    if test ! -d "$targetdir" ; then
         echo -n "creating model directory $targetdir ... "
         mkdir $targetdir
         echo "done"
@@ -74,7 +79,7 @@ for m in ${models}; do
 
     echo -n "creating Makefile module $targetdir/module.mk ... "
     sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@MODEL@|$m|g"           \
+        -e "s|@MODEL@|$model|g"           \
         < templates/module.mk.in > $targetdir/module.mk
     echo "done"
 
@@ -84,7 +89,7 @@ for m in ${models}; do
         sub_model_replacement=", \"$sub_model\""
     fi
     sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@ModelName@|$m|g"       \
+        -e "s|@ModelName@|$model|g"       \
         -e "s|@SubModel@|$sub_model_replacement|g"    \
         < templates/start.m.in > $targetdir/start.m
     echo "done"
@@ -92,13 +97,13 @@ for m in ${models}; do
     # if we provide a FlexibleSUSY model file for this model, we use
     # this one
     modelFileDir="templates"
-    if test -d "$modelFileDir/$m" ; then
-        modelFileDir="$modelFileDir/$m"
+    if test -d "$modelFileDir/$model" ; then
+        modelFileDir="$modelFileDir/$model"
     fi
 
     echo -n "creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
     sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@ModelName@|$m|g"       \
+        -e "s|@ModelName@|$model|g"       \
         < $modelFileDir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
     echo "done"
 done
