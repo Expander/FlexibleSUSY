@@ -30,7 +30,7 @@ CreateValidAnomDimName[names_] :=
     Module[{},
            Print["Error: don't know how to create name for anomalous ",
                  "dimension from symbol: ", names];
-           Quit[];
+           Quit[1];
           ];
 
 (* Converts SARAH anomalous dimensions

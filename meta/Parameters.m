@@ -185,7 +185,7 @@ ApplyGUTNormalization[] :=
 CreateSetAssignment[name_, startIndex_, parameterType_] :=
     Block[{},
           Print["Error: CreateSetAssignment: unknown parameter type: ", ToString[parameterType]];
-          Quit[];
+          Quit[1];
           ];
 
 CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
@@ -219,7 +219,7 @@ CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
     Block[{},
           Print["Error: CreateDisplayAssignment: unknown parameter type: ",
                 ToString[parameterType]];
-          Quit[];
+          Quit[1];
           ];
 
 CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
@@ -255,7 +255,7 @@ CreateParameterNames[name_, startIndex_, parameterType_] :=
     Block[{},
           Print["Error: CreateParameterNames: unknown parameter type: ",
                 ToString[parameterType]];
-          Quit[];
+          Quit[1];
           ];
 
 CreateParameterNames[name_String, startIndex_, CConversion`ScalarType["double"]] :=

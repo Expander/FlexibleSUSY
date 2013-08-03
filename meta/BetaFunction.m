@@ -148,7 +148,7 @@ CreateSetFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            numberOfParameters = CountNumberOfParameters[betaFunctions] + parameterNumberOffset;
            If[paramCount != numberOfParameters,
               Print["Error: CreateSetFunction: number of parameters does not match: ", paramCount,
-                    " != ", numberOfParameters]; Quit[];];
+                    " != ", numberOfParameters]; Quit[1];];
            Return[set];
           ];
 
@@ -169,7 +169,7 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            (* sanity check *)
            If[paramCount != numberOfParameters,
               Print["Error: CreateDisplayFunction: number of parameters does not match: ", paramCount,
-                    " != ", numberOfParameters]; Quit[];];
+                    " != ", numberOfParameters]; Quit[1];];
            Return[display];
           ];
 
@@ -189,7 +189,7 @@ CreateParameterNamesFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            (* sanity check *)
            If[paramCount != numberOfParameters,
               Print["Error: CreateParameterNamesFunction: number of parameters does not match: ", paramCount,
-                    " != ", numberOfParameters]; Quit[];];
+                    " != ", numberOfParameters]; Quit[1];];
            Return[display];
           ];
 

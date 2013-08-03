@@ -147,7 +147,7 @@ GetCParameterType[parameterType_] :=
 CreateUnitMatrix[type_] :=
     Block[{},
           Print["Error: CreateUnitMatrix: can't create unity matrix for type: ", type];
-          Quit[];
+          Quit[1];
          ];
 
 CreateUnitMatrix[CConversion`ScalarType[t_]] := 1;

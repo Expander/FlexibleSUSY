@@ -84,7 +84,7 @@ GetField[sym_] :=
     Module[{},
            Print["Error: GetField is not called with a SelfEnergies`FSSelfEnergy",
                  "or SelfEnergies`Tadpole head: ", sym];
-           Quit[];
+           Quit[1];
           ];
 
 RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__], _] :=

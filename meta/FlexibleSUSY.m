@@ -593,7 +593,7 @@ LoadModelFile[file_String] :=
               CheckModelFileSettings[];
               ,
               Print["Error: model file not found: ", file];
-              Quit[];
+              Quit[1];
              ];
           ];
 
@@ -618,7 +618,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
-              Quit[];
+              Quit[1];
              ];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
