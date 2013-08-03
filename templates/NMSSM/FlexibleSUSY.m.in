@@ -1,4 +1,6 @@
 
+FSModelName = Model`Name;
+
 (* CNMSSM input parameters *)
 
 InputParameters = { m0, m12, TanBeta, Azero, LambdaInput };

@@ -1,4 +1,6 @@
 
+FSModelName = Model`Name;
+
 (* CE6SSM input parameters *)
 
 InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,

@@ -1,4 +1,6 @@
 
+FSModelName = Model`Name;
+
 (* MRSSM input parameters *)
 
 InputParameters = { TanBeta };

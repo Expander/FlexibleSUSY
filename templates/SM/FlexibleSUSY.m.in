@@ -1,4 +1,6 @@
 
+FSModelName = Model`Name;
+
 (* SM input parameters *)
 
 InputParameters = { LambdaIN };
