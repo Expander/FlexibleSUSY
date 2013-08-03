@@ -29,6 +29,8 @@ Pole;
 FSMinimize;
 MZ;
 
+FSEigenstates;
+
 Begin["Private`"];
 
 allParameters = {};
@@ -609,7 +611,7 @@ Options[MakeFlexibleSUSY] :=
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
-    Module[{nPointFunctions, eigenstates = OptionValue[Eigenstates],
+    Module[{nPointFunctions,
             susyBetaFunctions, susyBreakingBetaFunctions,
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
@@ -620,12 +622,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
               Quit[1];
              ];
+           FSEigenstates = OptionValue[Eigenstates];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            (* get RGEs *)
            PrepareRGEs[];
-           nPointFunctions = Join[PrepareSelfEnergies[eigenstates], PrepareTadpoles[eigenstates]];
-           PrepareUnrotatedParticles[eigenstates];
+           nPointFunctions = Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
+           PrepareUnrotatedParticles[FSEigenstates];
            (* adapt SARAH`Conj to our needs *)
            (* Clear[Conj]; *)
            SARAH`Conj[(B_)[b__]] = .;
@@ -710,11 +713,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Checking EWSB equations ..."];
            vevs = #[[1]]& /@ SARAH`BetaVEV;
-           ewsbEquations = SARAH`TadpoleEquations[eigenstates] /.
+           ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[];
            If[Head[ewsbEquations] =!= List,
               Print["Error: Could not find EWSB equations for eigenstates ",
-                    eigenstates];
+                    FSEigenstates];
               Quit[1];
              ];
            If[Length[vevs] === Length[ewsbEquations],
@@ -825,7 +828,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[highPrecision]}],
                Flatten[{OptionValue[mediumPrecision]}],
                Flatten[{OptionValue[lowPrecision]}],
-               eigenstates];
+               FSEigenstates];
 
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,

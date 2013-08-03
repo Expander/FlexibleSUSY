@@ -111,13 +111,13 @@ unrotatedParticles = {};
 SetUnrotatedParticles[list_List] :=
     unrotatedParticles = ({#[[1]], #[[4]]})& /@ list;
 
-GetVectorBosons[states_:SARAH`EWSB] :=
+GetVectorBosons[states_:FlexibleSUSY`FSEigenstates] :=
     #[[1]]& /@ Cases[SARAH`Particles[states], {_,_,_,V,__}] /.
        SARAH`diracSubBack1[SARAH`ALL] /.
        SARAH`diracSubBack2[SARAH`ALL];
 
 (* Create list of mass eigenstate particles *)
-GetParticles[states_:SARAH`EWSB] :=
+GetParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles = {}},
            particles = (GetHead[#[[1,1]]])& /@ SARAH`Masses[states];
            particles = particles /.
@@ -128,16 +128,16 @@ GetParticles[states_:SARAH`EWSB] :=
            Return[DeleteDuplicates[particles]];
           ];
 
-GetSusyParticles[states_:SARAH`EWSB] :=
+GetSusyParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Select[GetParticles[states], (!SARAH`SMQ[#] && !IsGhost[#])&];
 
-GetSMParticles[states_:SARAH`EWSB] :=
+GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Select[GetParticles[states], (SARAH`SMQ[#])&];
 
-IsOfType[sym_Symbol, type_Symbol, states_:SARAH`EWSB] :=
+IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getType[sym, False, states] === type;
 
-IsOfType[sym_[__], type_Symbol, states_:SARAH`EWSB] :=
+IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     IsOfType[sym, type, states];
 
 IsScalar[sym_Symbol] := IsOfType[sym, S];
@@ -164,7 +164,7 @@ IsComplexScalar[sym_Symbol] :=
 IsRealScalar[sym_Symbol] :=
     And[IsScalar[sym], Parameters`IsRealParameter[sym]];
 
-IsMassless[sym_Symbol, states_:SARAH`EWSB] :=
+IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
@@ -193,15 +193,15 @@ GetGoldstoneBosons[] :=
 GetSMGoldstoneBosons[] :=
     Cases[SARAH`GoldstoneGhost, {vector_?SARAH`SMQ, goldstone_} :> goldstone];
 
-GetDimension[sym_[__], states_:SARAH`EWSB] := GetDimension[sym, states];
+GetDimension[sym_[__], states_:FlexibleSUSY`FSEigenstates] := GetDimension[sym, states];
 
-GetDimension[sym_Symbol, states_:SARAH`EWSB] :=
+GetDimension[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getGen[sym, states];
 
-GetDimensionStartSkippingGoldstones[sym_[__], states_:SARAH`EWSB] :=
+GetDimensionStartSkippingGoldstones[sym_[__], states_:FlexibleSUSY`FSEigenstates] :=
     GetDimensionStartSkippingGoldstones[sym, states];
 
-GetDimensionStartSkippingGoldstones[sym_, states_:SARAH`EWSB] :=
+GetDimensionStartSkippingGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
     Module[{goldstones, max = 1},
            goldstones = Transpose[SARAH`GoldstoneGhost][[2]];
            If[FreeQ[goldstones, sym],

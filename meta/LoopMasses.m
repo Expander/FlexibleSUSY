@@ -474,7 +474,7 @@ CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
 CreateLoopMassPrototype[particle_Symbol] :=
     "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
+CreateLoopMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, result = ""},
            particles = GetLoopCorrectedParticles[states];
            (result = result <> CreateLoopMassPrototype[#])& /@ particles;
@@ -484,7 +484,7 @@ CreateLoopMassPrototypes[states_:SARAH`EWSB] :=
 CallLoopMassFunction[particle_Symbol] :=
     "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CallAllLoopMassFunctions[states_:SARAH`EWSB] :=
+CallAllLoopMassFunctions[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result},
            particles = GetLoopCorrectedParticles[states];

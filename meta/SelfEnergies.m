@@ -564,7 +564,7 @@ CreateVertexExpressions[nPointFunctions_List] :=
            Return[{prototypes, decls, Flatten[rules]}];
           ];
 
-ReplaceGhosts[states_:SARAH`EWSB] :=
+ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{vectorBosons = {}, ghostStr, ghostSym, ghostCSym, ghosts = {}, k},
            vectorBosons = GetVectorBosons[states];
            For[k = 1, k <= Length[vectorBosons], k++,
@@ -647,7 +647,7 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            body = "Complex result;\n\n" <>
                   ExpandSums[expr /. vertexRules /.
                              a_[List[i__]] :> a[i] /.
-                             ReplaceGhosts[SARAH`EWSB] /.
+                             ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
                              parameterReplacementRules /.
                              C -> 1
                              ,"result"] <>
