@@ -198,10 +198,10 @@ GetDimension[sym_[__], states_:FlexibleSUSY`FSEigenstates] := GetDimension[sym, 
 GetDimension[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getGen[sym, states];
 
-GetDimensionStartSkippingGoldstones[sym_[__], states_:FlexibleSUSY`FSEigenstates] :=
-    GetDimensionStartSkippingGoldstones[sym, states];
+GetDimensionStartSkippingGoldstones[sym_[__]] :=
+    GetDimensionStartSkippingGoldstones[sym];
 
-GetDimensionStartSkippingGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
+GetDimensionStartSkippingGoldstones[sym_] :=
     Module[{goldstones, max = 1},
            goldstones = Transpose[SARAH`GoldstoneGhost][[2]];
            If[FreeQ[goldstones, sym],
