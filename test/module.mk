@@ -139,32 +139,25 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LI
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_loopfunctions.x: $(DIR)/test_loopfunctions.o $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_model.x: $(DIR)/test_MSSM_model.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_model.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_initial_guesser.x: $(DIR)/test_MSSM_initial_guesser.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_initial_guesser.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_higgs_iteration.x: $(DIR)/test_MSSM_higgs_iteration.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_higgs_iteration.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_high_scale_constraint.x: $(DIR)/test_MSSM_high_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_low_scale_constraint.x: $(DIR)/test_MSSM_low_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_susy_scale_constraint.x: $(DIR)/test_MSSM_susy_scale_constraint.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_spectrum.x: $(DIR)/test_MSSM_spectrum.o $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+$(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-%.x: %.o $(ALLLIB)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+# general test rule which links all libraries needed for a generated model
+$(DIR)/test_%.x: $(DIR)/test_%.o
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
