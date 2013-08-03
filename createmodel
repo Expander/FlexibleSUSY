@@ -18,11 +18,13 @@ models=""
 help() {
     echo "Usage: ./`basename $0` [options] --models=<model1>{,<model2>}"
     echo "Options:"
-    echo "--force,-f               Overwrite existing model files"
-    echo "--models=                Comma separated list of models to create"
-    echo "                         Sub-models can be specified by a /"
-    echo "                         Example: --models=MSSM,E6SSM/NoTEMP"
-    echo "--help,-h                Print this help message"
+    echo "--force,-f     Overwrite existing model files"
+    echo "--models=      Comma separated list of models to create"
+    echo "               Sub-models can be specified after a /"
+    echo "               The class name can be specified before a :"
+    echo "               Syntax: [classname:]model[/submodel]"
+    echo "               Example: --models=MSSM,E6SSM/NoTEMP,MSSMCKM:MSSM/CKM"
+    echo "--help,-h      Print this help message"
 }
 
 if test $# -gt 0 ; then
@@ -49,7 +51,14 @@ fi
 
 for model in ${models}; do
     sub_model=$(echo $model | awk -F / '{ if (NF > 1) print $NF }')
-    model=$(echo $model | awk -F / '{ print $1 }')
+    class_name=$(echo $model | awk -F : '{ if (NF > 1) print $1 }')
+    model=$(echo $model | awk -F : '{ print $NF }' | awk -F / '{ print $1 }')
+
+    # if the user has not provided a class name, use the model name as
+    # class name
+    if [ -z "$class_name" ]; then
+        class_name="$model"
+    fi
 
     # create target directory name
     if [ -n "$sub_model" ]; then
@@ -66,9 +75,9 @@ for model in ${models}; do
     fi
 
     if [ -n "$sub_model" ]; then
-        echo "creating model $model with sub-model $sub_model"
+        echo "creating model $model (class name: $class_name, sub-model: $sub_model)"
     else
-        echo "creating model $model"
+        echo "creating model $model (class name: $class_name)"
     fi
 
     if test ! -d "$targetdir" ; then
@@ -80,6 +89,7 @@ for model in ${models}; do
     echo -n "creating Makefile module $targetdir/module.mk ... "
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@MODEL@|$model|g"           \
+        -e "s|@CLASSNAME@|$class_name|g"  \
         < templates/module.mk.in > $targetdir/module.mk
     echo "done"
 
@@ -91,6 +101,7 @@ for model in ${models}; do
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@ModelName@|$model|g"       \
         -e "s|@SubModel@|$sub_model_replacement|g"    \
+        -e "s|@CLASSNAME@|$class_name|g"  \
         < templates/start.m.in > $targetdir/start.m
     echo "done"
 
@@ -104,6 +115,7 @@ for model in ${models}; do
     echo -n "creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@ModelName@|$model|g"       \
+        -e "s|@CLASSNAME@|$class_name|g"  \
         < $modelFileDir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
     echo "done"
 done

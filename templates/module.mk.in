@@ -1,111 +1,111 @@
 DIR          := @DIR@
-MODNAME      := lib@MODEL@
+MODNAME      := lib@CLASSNAME@
 
-LIB@MODEL@_SRC := 
+LIB@CLASSNAME@_SRC :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-LIB@MODEL@_SRC += \
-		$(DIR)/@MODEL@_convergence_tester.cpp \
-		$(DIR)/@MODEL@_high_scale_constraint.cpp \
-		$(DIR)/@MODEL@_initial_guesser.cpp \
-		$(DIR)/@MODEL@_low_scale_constraint.cpp \
-		$(DIR)/@MODEL@_model.cpp \
-		$(DIR)/@MODEL@_physical.cpp \
-		$(DIR)/run_@MODEL@.cpp \
-		$(DIR)/@MODEL@_susy_parameters.cpp \
-		$(DIR)/@MODEL@_soft_parameters.cpp \
-		$(DIR)/@MODEL@_susy_scale_constraint.cpp \
-		$(DIR)/@MODEL@_utilities.cpp
+LIB@CLASSNAME@_SRC += \
+		$(DIR)/@CLASSNAME@_convergence_tester.cpp \
+		$(DIR)/@CLASSNAME@_high_scale_constraint.cpp \
+		$(DIR)/@CLASSNAME@_initial_guesser.cpp \
+		$(DIR)/@CLASSNAME@_low_scale_constraint.cpp \
+		$(DIR)/@CLASSNAME@_model.cpp \
+		$(DIR)/@CLASSNAME@_physical.cpp \
+		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/@CLASSNAME@_susy_parameters.cpp \
+		$(DIR)/@CLASSNAME@_soft_parameters.cpp \
+		$(DIR)/@CLASSNAME@_susy_scale_constraint.cpp \
+		$(DIR)/@CLASSNAME@_utilities.cpp
 endif
 
-LIB@MODEL@_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@MODEL@_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIB@MODEL@_SRC)))
+LIB@CLASSNAME@_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@CLASSNAME@_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIB@CLASSNAME@_SRC)))
 
-LIB@MODEL@_DEP := \
-		$(LIB@MODEL@_OBJ:.o=.d)
+LIB@CLASSNAME@_DEP := \
+		$(LIB@CLASSNAME@_OBJ:.o=.d)
 
-$(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ): CPPFLAGS += $(GSLFLAGS)
+$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ): CPPFLAGS += $(GSLFLAGS)
 
-LIB@MODEL@     := $(DIR)/$(MODNAME)$(LIBEXT)
+LIB@CLASSNAME@     := $(DIR)/$(MODNAME)$(LIBEXT)
 
-RUN_@MODEL@_EXE := $(DIR)/run_@MODEL@.x
+RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
-all-$(MODNAME): $(LIB@MODEL@)
+all-$(MODNAME): $(LIB@CLASSNAME@)
 
 clean-$(MODNAME):
-		rm -rf $(LIB@MODEL@_OBJ)
+		rm -rf $(LIB@CLASSNAME@_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIB@MODEL@_DEP)
-		rm -rf $(LIB@MODEL@)
+		rm -rf $(LIB@CLASSNAME@_DEP)
+		rm -rf $(LIB@CLASSNAME@)
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/@MODEL@_susy_parameters.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
+$(DIR)/@CLASSNAME@_susy_parameters.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
 	$(MATH) -run "Get[\"$<\"]; Quit[]"
 
-$(DIR)/@MODEL@_susy_parameters.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_susy_parameters.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_soft_parameters.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_soft_parameters.hpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_soft_parameters.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_soft_parameters.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_physical.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_physical.hpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_physical.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_physical.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_model.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_model.hpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_model.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_model.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/run_@MODEL@.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/run_@CLASSNAME@.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_high_scale_constraint.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_high_scale_constraint.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_susy_scale_constraint.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_low_scale_constraint.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_convergence_tester.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_convergence_tester.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_initial_guesser.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_initial_guesser.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_utilities.hpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(DIR)/@MODEL@_utilities.cpp: $(DIR)/@MODEL@_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_utilities.cpp: $(DIR)/@CLASSNAME@_susy_parameters.hpp
 	true
 
-$(LIB@MODEL@_DEP) $(LIB@MODEL@_OBJ) $(DIR)/run_@MODEL@.o: CPPFLAGS += $(EIGENFLAGS)
+$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o: CPPFLAGS += $(EIGENFLAGS)
 
-$(LIB@MODEL@): $(LIB@MODEL@_OBJ)
+$(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MAKELIB) $@ $^
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
-$(LIB@MODEL@_OBJ) $(LIB@MODEL@_DEP): CPPFLAGS += $(LOOPTOOLSFLAGS)
+$(LIB@CLASSNAME@_OBJ) $(LIB@CLASSNAME@_DEP): CPPFLAGS += $(LOOPTOOLSFLAGS)
 endif
 
-$(RUN_@MODEL@_EXE): $(DIR)/run_@MODEL@.o $(LIB@MODEL@) $(LIBFLEXI) $(LIBLEGACY)
+$(RUN_@CLASSNAME@_EXE): $(DIR)/run_@CLASSNAME@.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
-ALLDEP += $(LIB@MODEL@_DEP)
-ALLLIB += $(LIB@MODEL@)
-ALLEXE += $(RUN_@MODEL@_EXE)
+ALLDEP += $(LIB@CLASSNAME@_DEP)
+ALLLIB += $(LIB@CLASSNAME@)
+ALLEXE += $(RUN_@CLASSNAME@_EXE)

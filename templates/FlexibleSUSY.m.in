@@ -1,5 +1,5 @@
 
-FSModelName = Model`Name;
+FSModelName = "@CLASSNAME@";
 
 (* input parameters *)
 

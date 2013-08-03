@@ -1,5 +1,5 @@
 
-FSModelName = Model`Name;
+FSModelName = "@CLASSNAME@";
 
 InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
                     ALambdaInput, vSInput, Qq, Ql, QHd, QHu, Qd, Qu,
