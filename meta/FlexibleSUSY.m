@@ -709,7 +709,28 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          traceDecl, numberOfSusyParameters];
 
            Print["Checking EWSB equations ..."];
-           freePhases = EWSB`CheckEWSBEquations[SARAH`TadpoleEquations[eigenstates], ParametersToSolveTadpoles];
+           vevs = #[[1]]& /@ SARAH`BetaVEV;
+           ewsbEquations = SARAH`TadpoleEquations[eigenstates] /.
+                           Parameters`ApplyGUTNormalization[];
+           If[Head[ewsbEquations] =!= List,
+              Print["Error: Could not find EWSB equations for eigenstates ",
+                    eigenstates];
+              Quit[1];
+             ];
+           If[Length[vevs] === Length[ewsbEquations],
+              ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
+              ,
+              Print["Error: There are ", Length[ewsbEquations],
+                    " EWSB equations but ", Length[vevs], " VEVs"];
+              ewsbEquations = {};
+              ParametersToSolveTadpoles = {};
+              Quit[1];
+             ];
+
+           freePhases = EWSB`CheckEWSBEquations[ewsbEquations, ParametersToSolveTadpoles];
+
+           ewsbEquations = ewsbEquations /.
+                           susyBreakingParameterReplacementRules;
 
            Print["Creating plot scripts ..."];
            WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
@@ -719,6 +740,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            ];
 
            Print["Creating class for input parameters ..."];
+           Print["freePhases: ", freePhases];
+           Print["DefaultParameterPoint: ", FlexibleSUSY`DefaultParameterPoint];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
@@ -792,19 +815,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.cpp"}]}}
                                    ];
-
-           vevs = #[[1]]& /@ SARAH`BetaVEV;
-           ewsbEquations = SARAH`TadpoleEquations[eigenstates] /.
-                           susyBreakingParameterReplacementRules /.
-                           Parameters`ApplyGUTNormalization[];
-           If[Length[vevs] === Length[ewsbEquations],
-              ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
-              ,
-              Print["Error: There are ", Length[ewsbEquations],
-                    " EWSB equations but ", Length[vevs], " VEVs"];
-              ewsbEquations = {};
-              ParametersToSolveTadpoles = {};
-             ];
 
            SelfEnergies`SetParameterReplacementRules[susyBreakingParameterReplacementRules];
            SelfEnergies`SetIndexReplacementRules[allIndexReplacementRules];
