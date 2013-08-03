@@ -85,19 +85,18 @@ CalculateDeltaAlphaS[] :=
            Return[result];
           ];
 
-GetPrefactor[expr_Plus, yukawas_List] := 1;
+GetPrefactor[expr_Plus, _] := 1;
 
-GetPrefactor[expr_Integer, yukawas_List] := 1;
+GetPrefactor[expr_Integer, _] := 1;
 
-GetPrefactor[expr_Symbol, yukawas_List] := 1;
+GetPrefactor[expr_Symbol, _] := 1;
 
-ContainsNoYukawa[expr_, yukawas_List] :=
-    And @@ (FreeQ[expr, #]& /@ yukawas);
+ContainsNoYukawa[expr_, yukawa_] := FreeQ[expr, yukawa];
 
-GetPrefactor[expr_Times, yukawas_List] :=
+GetPrefactor[expr_Times, yukawa_] :=
     Module[{factors, prefactors},
            factors = List @@ expr;
-           prefactors = Select[factors, ContainsNoYukawa[#, yukawas]&];
+           prefactors = Select[factors, ContainsNoYukawa[#, yukawa]&];
            Times @@ prefactors
           ];
 
@@ -125,26 +124,26 @@ InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, SARAH`Adj[expr]};
 InvertRelation[FlexibleSUSY`Diag[sym_], expr_] := {sym, FlexibleSUSY`Diag[expr]};
 InvertRelation[sym_, expr_] := {sym, expr};
 
-InvertMassRelation[fermion_, yukawas_List] :=
+InvertMassRelation[fermion_, yukawa_] :=
     Module[{massMatrix, polynom, prefactor, matrixSymbol},
            massMatrix = SARAH`MassMatrix[fermion];
            polynom = Factor[massMatrix /. List -> Plus];
-           prefactor = GetPrefactor[polynom, yukawas];
+           prefactor = GetPrefactor[polynom, yukawa];
            matrixSymbol = ToMatrixSymbol[massMatrix / prefactor];
            If[matrixSymbol === Null,
               Print["Error: could not convert expression to matrix symbol: ",
                     massMatrix / prefactor];
+              Quit[1];
               Return[{Null, fermion}];
              ];
            InvertRelation[matrixSymbol, fermion / prefactor]
           ];
 
 SetDRbarYukawaCouplings[] :=
-    Module[{result, yTop, top, yBot, bot, yTau, tau, yukawas},
-           yukawas = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
-           {yTop, top} = InvertMassRelation[SARAH`TopQuark   , yukawas];
-           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, yukawas];
-           {yTau, tau} = InvertMassRelation[SARAH`Electron   , yukawas];
+    Module[{result, yTop, top, yBot, bot, yTau, tau},
+           {yTop, top} = InvertMassRelation[SARAH`TopQuark   , SARAH`UpYukawa];
+           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, SARAH`DownYukawa];
+           {yTau, tau} = InvertMassRelation[SARAH`Electron   , SARAH`ElectronYukawa];
            top = top /. SARAH`TopQuark    -> Global`topDRbar;
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
