@@ -118,7 +118,7 @@ ToMatrixExpression[list_List] :=
            dim = Length[list];
            symbol = ExtractSymbols[list[[1,1]]];
            (* expand sum[] *)
-           expandedList = list /. SARAH`sum[idx_,start_,stop_,expr_] :> Sum[expr,{idx,start,stop}];
+           expandedList = Expand[list //. SARAH`sum[idx_,start_,stop_,expr_] :> Sum[expr,{idx,start,stop}]];
            If[Length[symbol] == 1,
               symbol = symbol[[1]];
               matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
@@ -132,7 +132,7 @@ ToMatrixExpression[list_List] :=
               permutations = Permutations[symbol];
               For[i = 1, i <= Length[permutations], i++,
                   matrix = Table[#[i,k],{i,1,dim},{k,1,dim}]& /@ permutations[[i]];
-                  matrix = Dot @@ matrix;
+                  matrix = Expand[Dot @@ matrix];
                   If[matrix === expandedList,
                      (* found a combination which yields our list *)
                      expression = SARAH`MatMul @@ permutations[[i]];

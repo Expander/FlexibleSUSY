@@ -96,5 +96,12 @@ TestEquality[Private`ToMatrixExpression[{{SARAH`sum[i,1,2,Y[1,i] U[i,1]],
              SARAH`MatMul[Y,U]
             ];
 
+TestEquality[Private`ToMatrixExpression[{{SARAH`sum[i,1,2,SARAH`sum[k,1,2,V[1,i] Y[i,k] U[k,1]]],
+                                          SARAH`sum[i,1,2,SARAH`sum[k,1,2,V[1,i] Y[i,k] U[k,2]]]},
+                                         {SARAH`sum[i,1,2,SARAH`sum[k,1,2,V[2,i] Y[i,k] U[k,1]]],
+                                          SARAH`sum[i,1,2,SARAH`sum[k,1,2,V[2,i] Y[i,k] U[k,2]]]}}],
+             SARAH`MatMul[V,Y,U]
+            ];
+
 
 PrintTestSummary[];
