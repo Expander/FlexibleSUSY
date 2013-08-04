@@ -1,6 +1,14 @@
 
 BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
+$flexiblesusyPackageDir = Directory[];
+
+Print["*****************************************************"];
+Print["FlexibleSUSY ", Get[FileNameJoin[{$flexiblesusyPackageDir,"config","version"}]]];
+Print["by P. Athron, J. Park, D. Stöckinger, A. Voigt, 2013"];
+Print["*****************************************************"];
+Print[""];
+
 MakeFlexibleSUSY::usage="";
 
 LowPrecision::usage="";
@@ -625,6 +633,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSEigenstates = OptionValue[Eigenstates];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
+
+           Print["*****************************************************"];
+           Print["FlexibleSUSY model file loaded: ", FlexibleSUSY`FSModelName];
+           Print["Output directory: ", Global`$flexiblesusyOutputDir];
+           Print["*****************************************************"];
+           Print[""];
+
            (* get RGEs *)
            PrepareRGEs[];
            nPointFunctions = Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
