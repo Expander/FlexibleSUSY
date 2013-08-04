@@ -1,4 +1,5 @@
 $flexiblesusyOutputDir   = "@DIR@";
+$flexiblesusyConfigDir   = FileNameJoin[{Directory[], "config"}];
 $flexiblesusyMetaDir     = FileNameJoin[{Directory[], "meta"}];
 $flexiblesusyTemplateDir = FileNameJoin[{Directory[], "templates"}];
 AppendTo[$Path, $flexiblesusyMetaDir];
