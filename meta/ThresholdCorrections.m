@@ -91,12 +91,10 @@ GetPrefactor[expr_Integer, _] := 1;
 
 GetPrefactor[expr_Symbol, _] := 1;
 
-ContainsNoYukawa[expr_, yukawa_] := FreeQ[expr, yukawa];
-
 GetPrefactor[expr_Times, yukawa_] :=
     Module[{factors, prefactors},
            factors = List @@ expr;
-           prefactors = Select[factors, ContainsNoYukawa[#, yukawa]&];
+           prefactors = Select[factors, FreeQ[#, yukawa]&];
            Times @@ prefactors
           ];
 
