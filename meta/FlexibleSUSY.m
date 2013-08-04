@@ -53,6 +53,14 @@ allOutputParameters = {};
 
 numberOfModelParameters = 0;
 
+PrintHeadline[text_] :=
+    Block[{},
+          Print[""];
+          Print["---------------------------------"];
+          Print[text];
+          Print["---------------------------------"];
+         ];
+
 CheckModelFileSettings[] :=
     Module[{},
            (* FlexibleSUSY model name *)
@@ -631,13 +639,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSEigenstates = OptionValue[Eigenstates];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
+           Print["FlexibleSUSY model file loaded"];
+           Print["  Model: ", FlexibleSUSY`FSModelName];
+           Print["  Model file: ", OptionValue[InputFile]];
+           Print["  Model output directory: ", Global`$flexiblesusyOutputDir];
 
-           Print["*****************************************************"];
-           Print["FlexibleSUSY model file loaded: ", FlexibleSUSY`FSModelName];
-           Print["Output directory: ", Global`$flexiblesusyOutputDir];
-           Print["*****************************************************"];
-           Print[""];
-
+           PrintHeadline["Reading SARAH output files"];
            (* get RGEs *)
            PrepareRGEs[];
            nPointFunctions = Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
@@ -689,6 +696,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
            anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
 
+           PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
@@ -748,13 +756,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ewsbEquations = ewsbEquations /.
                            susyBreakingParameterReplacementRules;
 
-           Print["Creating plot scripts ..."];
-           WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rge_running.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rge_running.gnuplot"}]}}
-                           ];
-
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     FlexibleSUSY`DefaultParameterPoint,
@@ -773,8 +774,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Join[allParticles,
                     Flatten[GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
-          Parameters`SetOutputParameters[allOutputParameters];
+           Parameters`SetOutputParameters[allOutputParameters];
 
+           PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[allParticles,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
@@ -791,6 +793,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]}}
                               ];
 
+           Print["Creating plot scripts ..."];
+           WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rge_running.gnuplot.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rge_running.gnuplot"}]}}
+                           ];
+
+           PrintHeadline["Creating constraints"];
            Print["Creating class for high-scale constraint ..."];
            WriteConstraintClass[FlexibleSUSY`HighScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleInput /. susyBreakingParameterReplacementRules,
@@ -843,6 +853,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[lowPrecision]}],
                FSEigenstates];
 
+           PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
                            ParametersToSolveTadpoles,
@@ -860,6 +871,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating user example spectrum generator program ..."];
            WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}}];
+
+           PrintHeadline["FlexibleSUSY has finished"];
           ];
 
 End[];
