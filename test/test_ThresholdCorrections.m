@@ -15,12 +15,44 @@ TestEquality[Private`InvertRelation[Transpose[A],B,A],
              {A,SARAH`Tp[B]}
             ];
 
+TestEquality[Private`InvertRelation[SARAH`Tp[A],B,A],
+             {A,SARAH`Tp[B]}
+            ];
+
 TestEquality[Private`InvertRelation[ConjugateTranspose[A],B,A],
+             {A,SARAH`Adj[B]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`Adj[A],B,A],
              {A,SARAH`Adj[B]}
             ];
 
 TestEquality[Private`InvertRelation[FlexibleSUSY`Diag[A],B,A],
              {A,FlexibleSUSY`Diag[B]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[A,V],C,A],
+             {A,SARAH`MatMul[C,SARAH`Adj[V]]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[V,A],C,A],
+             {A,SARAH`MatMul[SARAH`Adj[V],C]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[U,A,V],C,A],
+             {A,SARAH`MatMul[SARAH`Adj[U],C,SARAH`Adj[V]]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[SARAH`Adj[U],A,V],C,A],
+             {A,SARAH`MatMul[U,C,SARAH`Adj[V]]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[U,A,SARAH`Adj[V]],C,A],
+             {A,SARAH`MatMul[SARAH`Adj[U],C,V]}
+            ];
+
+TestEquality[Private`InvertRelation[SARAH`MatMul[SARAH`Adj[U],A,SARAH`Adj[V]],C,A],
+             {A,SARAH`MatMul[U,C,V]}
             ];
 
 

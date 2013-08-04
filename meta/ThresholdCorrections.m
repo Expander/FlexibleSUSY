@@ -113,7 +113,7 @@ ToMatrixExpression[list_List] :=
            matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
            diag = DiagonalMatrix[Table[symbol[i,i], {i,1,dim}]];
            Which[matrix === list, symbol,
-                 Transpose[matrix] === list, Transpose[symbol],
+                 Transpose[matrix] === list, SARAH`Tp[symbol],
                  diag === list, FlexibleSUSY`Diag[symbol],
                  True, Null
                 ]
@@ -123,7 +123,13 @@ ToMatrixExpression[list_List] :=
 InvertRelation[Transpose[sym_], expr_, sym_] :=
     {sym, SARAH`Tp[expr]};
 
+InvertRelation[SARAH`Tp[sym_], expr_, sym_] :=
+    {sym, SARAH`Tp[expr]};
+
 InvertRelation[ConjugateTranspose[sym_], expr_, sym_] :=
+    {sym, SARAH`Adj[expr]};
+
+InvertRelation[SARAH`Adj[sym_], expr_, sym_] :=
     {sym, SARAH`Adj[expr]};
 
 InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
@@ -132,9 +138,26 @@ InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
 InvertRelation[sym_, expr_, sym_] :=
     {sym, expr};
 
+(* remove matrices from the left *)
+InvertRelation[SARAH`MatMul[SARAH`Adj[U_],X___,sym_,V___], expr_, sym_] :=
+    InvertRelation[SARAH`MatMul[X,sym,V], SARAH`MatMul[U,expr], sym];
+
+InvertRelation[SARAH`MatMul[U_,X___,sym_,V___], expr_, sym_] :=
+    InvertRelation[SARAH`MatMul[X,sym,V], SARAH`MatMul[SARAH`Adj[U],expr], sym];
+
+(* remove matrices from the right *)
+InvertRelation[SARAH`MatMul[sym_,V___,SARAH`Adj[U_]], expr_, sym_] :=
+    InvertRelation[SARAH`MatMul[sym,V], SARAH`MatMul[expr,U], sym];
+
+InvertRelation[SARAH`MatMul[sym_,U__], expr_, sym_] :=
+    InvertRelation[SARAH`MatMul[sym], SARAH`MatMul[expr,SARAH`Adj[U]], sym];
+
+InvertRelation[SARAH`MatMul[sym_], expr_, sym_] :=
+    InvertRelation[sym, expr, sym];
+
 InvertRelation[sym_, expr_, other_] :=
     Block[{},
-          Print["Error: InvertRelation: don't know how to solve equation:",
+          Print["Error: InvertRelation: don't know how to solve equation: ",
                 sym, " == ", expr, " for ", other];
           Quit[1];
          ];
