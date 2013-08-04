@@ -44,7 +44,8 @@ TEST_META := \
 		test/test_Constraint.m \
 		test/test_TreeMasses.m \
 		test/test_SelfEnergies.m \
-		test/test_TextFormatting.m
+		test/test_TextFormatting.m \
+		test/test_ThresholdCorrections.m
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
@@ -55,17 +56,15 @@ TEST_DEP := \
 TEST_EXE := \
 		$(TEST_OBJ:.o=.x)
 
-TEST_SCRIPT := \
-		$(DIR)/execute_test.sh
+TEST_EXE_LOG  := $(TEST_EXE:.x=.x.log)
 
-TEST_META_SCRIPT := \
-		$(DIR)/execute_meta_code_test.sh
+TEST_META_LOG := $(TEST_META:.m=.m.log)
 
-TEST_LOG := \
-		$(TEST_EXE:.x=.x.log) \
-		$(TEST_META:.m=.m.log)
+TEST_LOG      := $(TEST_EXE_LOG) $(TEST_META_LOG)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
+		clean-$(MODNAME)-log \
+		execute-tests execute-meta-tests execute-compiled-tests
 
 all-$(MODNAME): $(TEST_EXE)
 
@@ -98,6 +97,10 @@ $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 execute-tests:  $(TEST_LOG)
+
+execute-meta-tests: $(TEST_META_LOG)
+
+execute-compiled-tests: $(TEST_EXE_LOG)
 
 clean::         clean-$(MODNAME)
 
