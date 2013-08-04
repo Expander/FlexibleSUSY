@@ -285,7 +285,9 @@ ConvertSarahMassMatrices[] :=
     Module[{particles = {}, result = {}, eigenstateName, massMatrix,
             gaugeDefs = {}, gaugeMassES = {}, multiplet = {},
             k, multipletName, rules = {}, mixingMatrixSymbol, dim},
-           particles = GetParticles[];
+           (* the ghost masses will later be replaced explicitely by the
+              corresponding vector boson masses *)
+           particles = Select[GetParticles[], (!IsGhost[#])&];
            For[k = 1, k <= Length[particles], k++,
                eigenstateName = particles[[k]];
                If[IsUnmixed[eigenstateName],
