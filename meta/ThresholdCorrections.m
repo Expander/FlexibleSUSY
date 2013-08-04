@@ -113,22 +113,32 @@ ExtractSymbols[sym_[_,_]] := {sym};
 ToMatrixExpression[{}] := Null;
 
 ToMatrixExpression[list_List] :=
-    Module[{dim, symbol, matrix, i, k, diag, expression = Null},
+    Module[{dim, symbol, matrix, i, k, diag, expression = Null,
+            expandedList, permutations},
            dim = Length[list];
            symbol = ExtractSymbols[list[[1,1]]];
+           (* expand sum[] *)
+           expandedList = list /. SARAH`sum[idx_,start_,stop_,expr_] :> Sum[expr,{idx,start,stop}];
            If[Length[symbol] == 1,
               symbol = symbol[[1]];
               matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
               diag = DiagonalMatrix[Table[symbol[i,i], {i,1,dim}]];
-              Which[matrix === list, expression = symbol;,
-                    Transpose[matrix] === list, expression = SARAH`Tp[symbol];,
-                    diag === list, expression = FlexibleSUSY`Diag[symbol];
+              Which[matrix === expandedList, expression = symbol;,
+                    Transpose[matrix] === expandedList, expression = SARAH`Tp[symbol];,
+                    diag === expandedList, expression = FlexibleSUSY`Diag[symbol];
                    ];
               ,
-              Print["I don't know yet how to handle multiple symbols in ",
-                    "a matrix expression"];
-              matrix = Table[0, {i,1,dim}, {k,1,dim}];
-              diag = DiagonalMatrix[Table[0, {i,1,dim}]];
+              (* create all permutations of matrix products *)
+              permutations = Permutations[symbol];
+              For[i = 1, i <= Length[permutations], i++,
+                  matrix = Table[#[i,k],{i,1,dim},{k,1,dim}]& /@ permutations[[i]];
+                  matrix = Dot @@ matrix;
+                  If[matrix === expandedList,
+                     (* found a combination which yields our list *)
+                     expression = SARAH`MatMul @@ permutations[[i]];
+                     Break[];
+                    ];
+                 ];
              ];
            Return[expression];
           ];

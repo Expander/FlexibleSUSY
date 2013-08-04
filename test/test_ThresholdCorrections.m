@@ -89,12 +89,12 @@ TestEquality[Private`ToMatrixExpression[{{Y[1,1],0},{0,Y[2,2]}}],
              FlexibleSUSY`Diag[Y]
             ];
 
-(* TestEquality[Private`ToMatrixExpression[{{SARAH`sum[i,1,2,Y[1,i] U[i,1]], *)
-(*                                           SARAH`sum[i,1,2,Y[1,i] U[i,2]]}, *)
-(*                                          {SARAH`sum[i,1,2,Y[2,i] U[i,1]], *)
-(*                                           SARAH`sum[i,1,2,Y[2,i] U[i,2]]}}], *)
-(*              SARAH`MatMul[Y,U] *)
-(*             ]; *)
+TestEquality[Private`ToMatrixExpression[{{SARAH`sum[i,1,2,Y[1,i] U[i,1]],
+                                          SARAH`sum[i,1,2,Y[1,i] U[i,2]]},
+                                         {SARAH`sum[i,1,2,Y[2,i] U[i,1]],
+                                          SARAH`sum[i,1,2,Y[2,i] U[i,2]]}}],
+             SARAH`MatMul[Y,U]
+            ];
 
 
 PrintTestSummary[];
