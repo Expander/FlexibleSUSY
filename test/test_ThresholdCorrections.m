@@ -56,4 +56,27 @@ TestEquality[Private`InvertRelation[SARAH`MatMul[SARAH`Adj[U],A,SARAH`Adj[V]],C,
             ];
 
 
+Print["testing ToMatrixExpression[] ..."];
+
+TestEquality[Private`ToMatrixExpression[{}],
+             Null
+            ];
+
+TestEquality[Private`ToMatrixExpression[{{Y[1,1]}}],
+             Y
+            ];
+
+TestEquality[Private`ToMatrixExpression[{{Y[1,1],Y[1,2]},{Y[2,1],Y[2,2]}}],
+             Y
+            ];
+
+TestEquality[Private`ToMatrixExpression[{{Y[1,1],Y[2,1]},{Y[1,2],Y[2,2]}}],
+             SARAH`Tp[Y]
+            ];
+
+TestEquality[Private`ToMatrixExpression[{{Y[1,1],0},{0,Y[2,2]}}],
+             FlexibleSUSY`Diag[Y]
+            ];
+
+
 PrintTestSummary[];
