@@ -98,23 +98,39 @@ GetPrefactor[expr_Times, yukawa_] :=
            Times @@ prefactors
           ];
 
-StripMatrixIndices[sym_Symbol] := sym;
+ExtractSymbols[sym_?NumberQ] := {};
 
-StripMatrixIndices[sym_[_Integer, _Integer]] := sym;
+ExtractSymbols[sym_Symbol] := {sym};
+
+ExtractSymbols[HoldPattern[SARAH`sum[_,_,_,expr_]]] := ExtractSymbols[expr];
+
+ExtractSymbols[expr_Plus] := Flatten[ExtractSymbols /@ (List @@ expr)];
+
+ExtractSymbols[expr_Times] := Flatten[ExtractSymbols /@ (List @@ expr)];
+
+ExtractSymbols[sym_[_,_]] := {sym};
 
 ToMatrixExpression[{}] := Null;
 
 ToMatrixExpression[list_List] :=
-    Module[{dim, symbol, matrix, i, k, diag},
+    Module[{dim, symbol, matrix, i, k, diag, expression = Null},
            dim = Length[list];
-           symbol = StripMatrixIndices[list[[1,1]]];
-           matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
-           diag = DiagonalMatrix[Table[symbol[i,i], {i,1,dim}]];
-           Which[matrix === list, symbol,
-                 Transpose[matrix] === list, SARAH`Tp[symbol],
-                 diag === list, FlexibleSUSY`Diag[symbol],
-                 True, Null
-                ]
+           symbol = ExtractSymbols[list[[1,1]]];
+           If[Length[symbol] == 1,
+              symbol = symbol[[1]];
+              matrix = Table[symbol[i,k], {i,1,dim}, {k,1,dim}];
+              diag = DiagonalMatrix[Table[symbol[i,i], {i,1,dim}]];
+              Which[matrix === list, expression = symbol;,
+                    Transpose[matrix] === list, expression = SARAH`Tp[symbol];,
+                    diag === list, expression = FlexibleSUSY`Diag[symbol];
+                   ];
+              ,
+              Print["I don't know yet how to handle multiple symbols in ",
+                    "a matrix expression"];
+              matrix = Table[0, {i,1,dim}, {k,1,dim}];
+              diag = DiagonalMatrix[Table[0, {i,1,dim}]];
+             ];
+           Return[expression];
           ];
 
 (* Solve the equation #1 == #2 for #3 *)

@@ -56,6 +56,17 @@ TestEquality[Private`InvertRelation[SARAH`MatMul[SARAH`Adj[U],A,SARAH`Adj[V]],C,
             ];
 
 
+Print["testing ExtractSymbols[] ..."];
+
+TestEquality[Private`ExtractSymbols[a], {a}];
+TestEquality[Private`ExtractSymbols[a[i,j]], {a}];
+TestEquality[Private`ExtractSymbols[a[i,j] + b], {b,a}];
+TestEquality[Private`ExtractSymbols[a[i,j] b], {b,a}];
+TestEquality[Private`ExtractSymbols[SARAH`sum[i,1,3,Y]], {Y}];
+TestEquality[Private`ExtractSymbols[SARAH`sum[i,1,3,Y[i,j]]], {Y}];
+TestEquality[Private`ExtractSymbols[SARAH`sum[i,1,3,Y[i,j] U[i,k]]], {U,Y}];
+
+
 Print["testing ToMatrixExpression[] ..."];
 
 TestEquality[Private`ToMatrixExpression[{}],
@@ -77,6 +88,13 @@ TestEquality[Private`ToMatrixExpression[{{Y[1,1],Y[2,1]},{Y[1,2],Y[2,2]}}],
 TestEquality[Private`ToMatrixExpression[{{Y[1,1],0},{0,Y[2,2]}}],
              FlexibleSUSY`Diag[Y]
             ];
+
+(* TestEquality[Private`ToMatrixExpression[{{SARAH`sum[i,1,2,Y[1,i] U[i,1]], *)
+(*                                           SARAH`sum[i,1,2,Y[1,i] U[i,2]]}, *)
+(*                                          {SARAH`sum[i,1,2,Y[2,i] U[i,1]], *)
+(*                                           SARAH`sum[i,1,2,Y[2,i] U[i,2]]}}], *)
+(*              SARAH`MatMul[Y,U] *)
+(*             ]; *)
 
 
 PrintTestSummary[];
