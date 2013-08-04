@@ -119,10 +119,18 @@ ToMatrixSymbol[list_List] :=
                 ]
           ];
 
-InvertRelation[Transpose[sym_], expr_] := {sym, SARAH`Tp[expr]};
-InvertRelation[ConjugateTranspose[sym_], expr_] := {sym, SARAH`Adj[expr]};
-InvertRelation[FlexibleSUSY`Diag[sym_], expr_] := {sym, FlexibleSUSY`Diag[expr]};
-InvertRelation[sym_, expr_] := {sym, expr};
+(* Solve the equation #1 == #2 for #3 *)
+InvertRelation[Transpose[sym_], expr_, sym_] :=
+    {sym, SARAH`Tp[expr]};
+
+InvertRelation[ConjugateTranspose[sym_], expr_, sym_] :=
+    {sym, SARAH`Adj[expr]};
+
+InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
+    {sym, FlexibleSUSY`Diag[expr]};
+
+InvertRelation[sym_, expr_, sym_] :=
+    {sym, expr};
 
 InvertMassRelation[fermion_, yukawa_] :=
     Module[{massMatrix, polynom, prefactor, matrixSymbol},
@@ -136,7 +144,7 @@ InvertMassRelation[fermion_, yukawa_] :=
               Quit[1];
               Return[{Null, fermion}];
              ];
-           InvertRelation[matrixSymbol, fermion / prefactor]
+           InvertRelation[matrixSymbol, fermion / prefactor, yukawa]
           ];
 
 SetDRbarYukawaCouplings[] :=
