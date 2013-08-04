@@ -104,9 +104,9 @@ StripMatrixIndices[sym_Symbol] := sym;
 
 StripMatrixIndices[sym_[_Integer, _Integer]] := sym;
 
-ToMatrixSymbol[{}] := Null;
+ToMatrixExpression[{}] := Null;
 
-ToMatrixSymbol[list_List] :=
+ToMatrixExpression[list_List] :=
     Module[{dim, symbol, matrix, i, k, diag},
            dim = Length[list];
            symbol = StripMatrixIndices[list[[1,1]]];
@@ -132,19 +132,25 @@ InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
 InvertRelation[sym_, expr_, sym_] :=
     {sym, expr};
 
+InvertRelation[sym_, expr_, other_] :=
+    Block[{},
+          Print["Error: InvertRelation: don't know how to solve equation:",
+                sym, " == ", expr, " for ", other];
+          Quit[1];
+         ];
+
 InvertMassRelation[fermion_, yukawa_] :=
-    Module[{massMatrix, polynom, prefactor, matrixSymbol},
+    Module[{massMatrix, polynom, prefactor, matrixExpression},
            massMatrix = SARAH`MassMatrix[fermion];
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawa];
-           matrixSymbol = ToMatrixSymbol[massMatrix / prefactor];
-           If[matrixSymbol === Null,
-              Print["Error: could not convert expression to matrix symbol: ",
+           matrixExpression = ToMatrixExpression[massMatrix / prefactor];
+           If[matrixExpression === Null,
+              Print["Error: could not convert list to matrix expression: ",
                     massMatrix / prefactor];
               Quit[1];
-              Return[{Null, fermion}];
              ];
-           InvertRelation[matrixSymbol, fermion / prefactor, yukawa]
+           InvertRelation[matrixExpression, fermion / prefactor, yukawa]
           ];
 
 SetDRbarYukawaCouplings[] :=
