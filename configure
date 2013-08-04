@@ -1051,4 +1051,6 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
+echo "$PROGRAM_VERSION" > $BASEDIR/config/version
+
 chmod a+x $FSCONFIG
