@@ -67,8 +67,8 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
            callMinimizer = startPoint <>
-                           "// Minimizer<" <> FlexibleSUSY`FSModelName <> "," <> dimStr <>
-                           "> minimizer(" <> modelName <> ", func, 100, 1.0e-2);\n" <>
+                           "// Minimizer<" <> dimStr <>
+                           "> minimizer(func, " <> modelName <> ", 100, 1.0e-2);\n" <>
                            "// const int error = minimizer.minimize(start_point);\n";
            Return[callMinimizer];
           ];
