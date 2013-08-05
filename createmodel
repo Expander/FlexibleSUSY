@@ -64,16 +64,16 @@ for model in ${models}; do
     targetdir="models/${class_name}"
 
     if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
-        echo "Error: directory models/$model already exists!"
+        echo "Error: directory $targetdir already exists!"
         echo "Please chose another model name or use the --force option."
         echo "See ./`basename $0` --help for more information."
         continue
     fi
 
     if [ -n "$sub_model" ]; then
-        echo "creating model $model (class name: $class_name, sub-model: $sub_model)"
+        echo "creating model $class_name (SARAH model: $model, sub-model: $sub_model)"
     else
-        echo "creating model $model (class name: $class_name)"
+        echo "creating model $class_name (SARAH model: $model)"
     fi
 
     if test ! -d "$targetdir" ; then
