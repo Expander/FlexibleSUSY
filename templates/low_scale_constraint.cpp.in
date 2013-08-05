@@ -23,9 +23,12 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
+#include "gsl_utils.hpp"
+#include "minimizer.hpp"
 
 #include <cassert>
 #include <cmath>
+#include <limits>
 
 namespace flexiblesusy {
 
@@ -37,6 +40,7 @@ namespace flexiblesusy {
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
+#define MODELCLASSNAME @ModelName@
 
 @ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()

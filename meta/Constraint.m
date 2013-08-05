@@ -1,5 +1,5 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
@@ -61,15 +61,40 @@ CreateStartPoint[parameters_List, name_String] :=
            Return[startPoint];
           ];
 
+SetModelParametersFromGSLVector[model_String, vector_String, parameters_List] :=
+    Module[{result = "", i, gslElement},
+           For[i = 1, i <= Length[parameters], i++,
+               gslElement = "gsl_vector_get(" <> vector <> "," <> ToString[i-1] <> ")";
+               result = result <> Parameters`SetParameter[parameters[[i]],gslElement,model];
+              ];
+           Return[result];
+          ];
+
+CreateFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
+"struct " <> className <> " {
+   static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
+      if (contains_nan(x, " <> dim <> "))
+         return std::numeric_limits<double>::max();
+
+      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
+" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
+      model->calculate_DRbar_parameters();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
+      return " <> CConversion`RValueToCFormString[function] <> ";
+   }
+};
+";
+
 ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_String] :=
-    Module[{callMinimizer, dim, dimStr, startPoint},
+    Module[{callMinimizer, dim, dimStr, startPoint, functionWrapper},
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           callMinimizer = startPoint <>
-                           "// Minimizer<" <> dimStr <>
-                           "> minimizer(func, " <> modelName <> ", 100, 1.0e-2);\n" <>
-                           "// const int error = minimizer.minimize(start_point);\n";
+           functionWrapper = CreateFunctionWrapper["LocalFunction","func",dimStr,parameters,function];
+           callMinimizer = functionWrapper <> "\n" <> startPoint <>
+                           "Minimizer<" <> dimStr <>
+                           "> minimizer(LocalFunction::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "const int error = minimizer.minimize(start_point);\n";
            Return[callMinimizer];
           ];
 
