@@ -70,6 +70,17 @@ SetModelParametersFromGSLVector[model_String, vector_String, parameters_List] :=
            Return[result];
           ];
 
+SetGSLVectorFromExpressions[vector_String, expressions_List] :=
+    Module[{result = "", i, gslElement},
+           For[i = 1, i <= Length[expressions], i++,
+               gslElement = "gsl_vector_set(" <> vector <> "," <>
+                            ToString[i-1] <> "," <>
+                            CConversion`RValueToCFormString[expressions[[i]]] <> ");\n";
+               result = result <> gslElement;
+              ];
+           Return[result];
+          ];
+
 CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
 "struct " <> className <> " {
    static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
@@ -96,6 +107,35 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
                            "> minimizer(LocalFunctionMinimizer::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
                            "const int error = minimizer.minimize(start_point);\n";
            Return[callMinimizer];
+          ];
+
+CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_List] :=
+"struct " <> className <> " {
+   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f) {
+      if (contains_nan(x, " <> dim <> "))
+         return std::numeric_limits<double>::max();
+
+      MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
+" <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
+      model->calculate_DRbar_parameters();
+" <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
+" <> TextFormatting`IndentText[SetGSLVectorFromExpressions["f",function],6] <> "
+      return GSL_SUCCESS;
+   }
+};
+";
+
+ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelName_String] :=
+    Module[{callRootFinder, dim, dimStr, startPoint, functionWrapper},
+           dim = Length[parameters];
+           dimStr = ToString[dim];
+           startPoint = CreateStartPoint[parameters, "start_point"];
+           functionWrapper = CreateRootFinderFunctionWrapper["LocalFunctionRootFinder","func",dimStr,parameters,function];
+           callRootFinder = functionWrapper <> "\n" <> startPoint <>
+                           "Root_finder<" <> dimStr <>
+                           "> root_finder(LocalFunctionRootFinder::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "const int error = root_finder.find_root(start_point);\n";
+           Return[callRootFinder];
           ];
 
 ApplyConstraints[settings_List] :=
