@@ -90,10 +90,10 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateMinimizationFunctionWrapper["LocalFunction","func",dimStr,parameters,function];
+           functionWrapper = CreateMinimizationFunctionWrapper["LocalFunctionMinimizer","func",dimStr,parameters,function];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
-                           "> minimizer(LocalFunction::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
+                           "> minimizer(LocalFunctionMinimizer::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
                            "const int error = minimizer.minimize(start_point);\n";
            Return[callMinimizer];
           ];
