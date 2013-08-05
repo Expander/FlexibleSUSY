@@ -33,6 +33,7 @@ InitialGuessAtHighScale;
 OnlyLowEnergyFlexibleSUSY;
 Pole;
 FSMinimize;
+FSFindRoot;
 MZ;
 
 FSEigenstates;
