@@ -70,7 +70,7 @@ SetModelParametersFromGSLVector[model_String, vector_String, parameters_List] :=
            Return[result];
           ];
 
-CreateFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
+CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
 "struct " <> className <> " {
    static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
       if (contains_nan(x, " <> dim <> "))
@@ -90,7 +90,7 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            dim = Length[parameters];
            dimStr = ToString[dim];
            startPoint = CreateStartPoint[parameters, "start_point"];
-           functionWrapper = CreateFunctionWrapper["LocalFunction","func",dimStr,parameters,function];
+           functionWrapper = CreateMinimizationFunctionWrapper["LocalFunction","func",dimStr,parameters,function];
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
                            "> minimizer(LocalFunction::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
