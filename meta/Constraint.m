@@ -113,7 +113,7 @@ CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_Strin
 "struct " <> className <> " {
    static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f) {
       if (contains_nan(x, " <> dim <> "))
-         return std::numeric_limits<double>::max();
+         return 1;
 
       MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
 " <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
