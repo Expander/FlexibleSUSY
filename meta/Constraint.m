@@ -74,8 +74,9 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
           ];
 
 ApplyConstraints[settings_List] :=
-    Module[{result},
-           result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ settings];
+    Module[{result, noMacros},
+           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__]];
+           result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> "\n";
            (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
            Return[result];
