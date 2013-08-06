@@ -626,7 +626,7 @@ Options[MakeFlexibleSUSY] :=
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
-    Module[{nPointFunctions, runInputFile,
+    Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
@@ -833,11 +833,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for initial guesser ..."];
+           initialGuesserInputFile = "initial_guesser";
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+              initialGuesserInputFile = "initial_guesser_low_scale_model";
+             ];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale /. susyBreakingParameterReplacementRules,
                                     FlexibleSUSY`InitialGuessAtHighScale /. susyBreakingParameterReplacementRules,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
+                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
-                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.cpp.in"}],
+                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.cpp"}]}}
                                    ];
 

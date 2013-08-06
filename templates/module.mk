@@ -8,6 +8,8 @@ TEMPLATES    := \
 		$(DIR)/high_scale_constraint.cpp.in \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/initial_guesser.cpp.in \
+		$(DIR)/initial_guesser_low_scale_model.hpp.in \
+		$(DIR)/initial_guesser_low_scale_model.cpp.in \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/low_scale_constraint.cpp.in \

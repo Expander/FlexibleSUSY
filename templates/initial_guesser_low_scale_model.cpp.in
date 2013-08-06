@@ -1,0 +1,104 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_model.hpp"
+#include "lowe.h"
+#include "ew_input.hpp"
+#include "wrappers.hpp"
+
+#include <Eigen/Core>
+#include <cassert>
+
+namespace flexiblesusy {
+
+#define INPUTPARAMETER(p) input_pars.p
+#define MODELPARAMETER(p) model->get_##p()
+#define SM(p) Electroweak_constants::p
+#define MODEL model
+
+@ModelName@_initial_guesser::@ModelName@_initial_guesser(
+   @ModelName@* model_,
+   const @ModelName@_input_parameters& input_pars_,
+   const @ModelName@_low_scale_constraint& low_constraint_
+)
+   : Initial_guesser<Two_scale>()
+   , model(model_)
+   , input_pars(input_pars_)
+   , low_constraint(low_constraint_)
+{
+   assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
+          " @ModelName@ must not be zero");
+}
+
+@ModelName@_initial_guesser::~@ModelName@_initial_guesser()
+{
+}
+
+void @ModelName@_initial_guesser::guess()
+{
+   model->clear();
+   guess_susy_parameters();
+   model->run_to(low_constraint.get_scale());
+}
+
+void @ModelName@_initial_guesser::guess_susy_parameters()
+{
+   QedQcd leAtMt;
+   const double MZ = Electroweak_constants::MZ;
+   const double MW = Electroweak_constants::MW;
+   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
+   const double mtpole = Electroweak_constants::PMTOP;
+
+   // guess gauge couplings at mt
+   const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+
+   model->set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * alpha_sm(1)));
+   model->set_@leftCoupling@(sqrt(4.0 * M_PI * alpha_sm(2)));
+   model->set_@strongCoupling@(sqrt(4.0 * M_PI * alpha_sm(3)));
+   model->set_scale(mtpole);
+   model->set_loops(2);
+
+   // apply user-defined initial guess at the low scale
+@initialGuessAtLowScale@
+
+   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
+      bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
+      electronDRbar(Eigen::Matrix<double,3,3>::Zero());
+   topDRbar(0,0)      = Electroweak_constants::MUP;
+   topDRbar(1,1)      = Electroweak_constants::MCHARM;
+   topDRbar(2,2)      = leAtMt.displayMass(mTop) - 30.0;
+   bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
+   bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
+   bottomDRbar(2,2)   = Electroweak_constants::MBOTTOM;
+   electronDRbar(0,0) = Electroweak_constants::MELECTRON;
+   electronDRbar(1,1) = Electroweak_constants::MMUON;
+   electronDRbar(2,2) = Electroweak_constants::MTAU;
+
+   Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
+
+@setDRbarYukawaCouplings@
+
+   model->set_@UpYukawa@(new_Yu);
+   model->set_@DownYukawa@(new_Yd);
+   model->set_@ElectronYukawa@(new_Ye);
+}
+
+} // namespace flexiblesusy
