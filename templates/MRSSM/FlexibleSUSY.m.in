@@ -21,8 +21,30 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
+   {LamSU, 0.1},
+   {LamTD, 0.1},
+   {LamTU, 0.1},
+   {MuD, SM[MZ]},
+   {MuU, SM[MZ]},
+   {Mu, SM[MZ]},
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vT, 1000},
+   {vS, 1000},
+   {BMuD, 0},
+   {BMuU, 0},
+   {BMu, 0},
+   {mq2, UNITMATRIX[3] 300^2},
+   {ml2, UNITMATRIX[3] 400^2},
+   {md2, UNITMATRIX[3] 300^2},
+   {mu2, UNITMATRIX[3] 300^2},
+   {me2, UNITMATRIX[3] 300^2},
+   {moc2, SM[MZ]^2},
+   {mRd2, SM[MZ]^2},
+   {mRu2, SM[MZ]^2},
+   {MDBS, SM[MZ]},
+   {MDWBT, SM[MZ]},
+   {MDGoc, SM[MZ]}
 };
 
 OnlyLowEnergyFlexibleSUSY = True;
