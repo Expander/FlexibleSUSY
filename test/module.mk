@@ -38,6 +38,10 @@ TEST_SRC += \
 		$(DIR)/test_two_scale_sm_smcw_integration.cpp
 endif
 endif
+ifeq ($(shell $(FSCONFIG) --with-MSSM --with-NMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_MSSM_NMSSM_linking.cpp
+endif
 
 TEST_META := \
 		test/test_CConversion.m \
@@ -141,6 +145,9 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LI
 
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
