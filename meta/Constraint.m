@@ -105,7 +105,8 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
            callMinimizer = functionWrapper <> "\n" <> startPoint <>
                            "Minimizer<" <> dimStr <>
                            "> minimizer(LocalFunctionMinimizer::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
-                           "const int error = minimizer.minimize(start_point);\n";
+                           "const int status = minimizer.minimize(start_point);\n" <>
+                           "VERBOSE_MSG(\"\\tminimizer status: \" << gsl_strerror(status));\n";
            Return[callMinimizer];
           ];
 
@@ -134,7 +135,8 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
            callRootFinder = functionWrapper <> "\n" <> startPoint <>
                            "Root_finder<" <> dimStr <>
                            "> root_finder(LocalFunctionRootFinder::func, " <> modelName <> ", 100, 1.0e-2);\n" <>
-                           "const int error = root_finder.find_root(start_point);\n";
+                           "const int status = root_finder.find_root(start_point);\n" <>
+                           "VERBOSE_MSG(\"\\troot finder status: \" << gsl_strerror(status));\n";
            Return[callRootFinder];
           ];
 
