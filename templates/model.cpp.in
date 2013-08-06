@@ -102,7 +102,7 @@ const @ModelName@_physical& @ModelName@::get_physical() const
    return physical;
 }
 
-int tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
+int @ModelName@::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
    if (contains_nan(x, @numberOfEWSBEquations@)) {
       for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
@@ -214,7 +214,8 @@ int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* s
                                              const double x_init[@numberOfEWSBEquations@])
 {
    Ewsb_parameters params = {this, ewsb_loop_order};
-   Root_finder<@numberOfEWSBEquations@> root_finder(tadpole_equations, &params,
+   Root_finder<@numberOfEWSBEquations@> root_finder(@ModelName@::tadpole_equations,
+                              &params,
                               number_of_ewsb_iterations,
                               ewsb_iteration_precision);
    root_finder.set_solver_type(solver);
