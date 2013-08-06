@@ -133,6 +133,21 @@ CheckModelFileSettings[] :=
              ];
           ];
 
+ReplaceIndicesInUserInput[] :=
+    Block[{},
+          FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. allIndexReplacementRules;
+          FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. allIndexReplacementRules;
+          FlexibleSUSY`HighScale               = FlexibleSUSY`HighScale               /. allIndexReplacementRules;
+          FlexibleSUSY`HighScaleFirstGuess     = FlexibleSUSY`HighScaleFirstGuess     /. allIndexReplacementRules;
+          FlexibleSUSY`HighScaleInput          = FlexibleSUSY`HighScaleInput          /. allIndexReplacementRules;
+          FlexibleSUSY`LowScale                = FlexibleSUSY`LowScale                /. allIndexReplacementRules;
+          FlexibleSUSY`LowScaleFirstGuess      = FlexibleSUSY`LowScaleFirstGuess      /. allIndexReplacementRules;
+          FlexibleSUSY`LowScaleInput           = FlexibleSUSY`LowScaleInput           /. allIndexReplacementRules;
+          FlexibleSUSY`SUSYScale               = FlexibleSUSY`SUSYScale               /. allIndexReplacementRules;
+          FlexibleSUSY`SUSYScaleFirstGuess     = FlexibleSUSY`SUSYScaleFirstGuess     /. allIndexReplacementRules;
+          FlexibleSUSY`SUSYScaleInput          = FlexibleSUSY`SUSYScaleInput          /. allIndexReplacementRules;
+         ];
+
 GUTNormalization[coupling_] :=
     Parameters`GetGUTNormalization[coupling];
 
@@ -721,6 +736,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
+
+           (* replace all indices in the user-defined model file variables *)
+           ReplaceIndicesInUserInput[];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
