@@ -64,6 +64,7 @@ void @ModelName@_susy_scale_constraint::apply()
    model->calculate_DRbar_parameters();
    update_scale();
 
+   // apply user-defined susy scale constraints
 @applyConstraint@
 
    // the parameters, which are fixed by the EWSB eqs., will now be
