@@ -26,6 +26,8 @@
 #include "@ModelName@_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
 
+#include "two_scale_running_precision.hpp"
+#include "two_scale_solver.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
 
@@ -40,10 +42,20 @@ int main()
    @ModelName@ model(input);
    @ModelName@_low_scale_constraint low_scale_constraint(input);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
+   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
    @ModelName@_initial_guesser initial_guesser(&model, input, low_scale_constraint);
+   Two_scale_constant_precision precision(1.0e-5);
+
+   RGFlow<Two_scale> solver;
+   solver.set_convergence_tester(&convergence_tester);
+   solver.set_running_precision(&precision);
+   solver.set_initial_guesser(&initial_guesser);
+   std::vector<Constraint<Two_scale>*> constraints;
+   constraints.push_back(&low_scale_constraint);
+   solver.add_model(&model, constraints);
 
    try {
-      initial_guesser.guess();
+      solver.solve();
       model.run_to(susy_scale_constraint.get_scale());
       model.calculate_spectrum();
       model.print(std::cout);
