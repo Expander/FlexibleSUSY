@@ -12,21 +12,18 @@ CountNumberOfMasses[particle_] :=
     TreeMasses`GetDimension[particle];
 
 CalcDifference[particle_, offset_Integer, diff_String] :=
-    Module[{result, body, dim, dimStart, esStr, comma},
+    Module[{result, body, dim, dimStart, esStr},
            dim = TreeMasses`GetDimension[particle];
            esStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[dim == 1,
-              comma = "OLD1(" <> esStr <> "),NEW1(" <> esStr <> ")";
-              body = diff <> "[" <> ToString[offset] <> "] = " <>
-                     "std::fabs(1.0 - std::min(" <> comma <> ")/std::max(" <> comma <> "));";
-              result = body <> "\n";
+              result = diff <> "[" <> ToString[offset] <> "] = " <>
+                       "MaxRelDiff(OLD1(" <> esStr <> "),NEW1(" <> esStr <> "));\n";
               ,
-              comma = "OLD(" <> esStr <> ",i),NEW(" <> esStr <> ",i)";
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
               result = "for (unsigned i = " <> ToString[dimStart] <>
                        "; i <= " <> ToString[dim] <> "; ++i) {\n";
               body = diff <> "[i + " <> ToString[offset - 1] <> "] = " <>
-                     "std::fabs(1.0 - std::min(" <> comma <> ")/std::max(" <> comma <> "));";
+                     "MaxRelDiff(OLD(" <> esStr <> ",i),NEW(" <> esStr <> ",i));";
               result = result <> IndentText[body] <> "\n}\n";
              ];
            Return[result];
