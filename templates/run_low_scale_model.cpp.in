@@ -1,0 +1,66 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#include "@ModelName@_model.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_low_scale_constraint.hpp"
+#include "@ModelName@_convergence_tester.hpp"
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_utilities.hpp"
+
+#include "error.hpp"
+#include "ew_input.hpp"
+
+#include <iostream>
+#include <vector>
+
+#define SM(p) Electroweak_constants::p
+
+int main()
+{
+   using namespace flexiblesusy;
+
+   @ModelName@_input_parameters input;
+   @ModelName@ model(input);
+
+   // initialize model parameters
+   model.set_scale(SM(MZ));
+   model.set_loops(2);
+
+   model.set_@hyperchargeCoupling@(sqrt(4.0 * M_PI * SM(alpha1)));
+   model.set_@leftCoupling@(sqrt(4.0 * M_PI * SM(alpha2)));
+   model.set_@strongCoupling@(sqrt(4.0 * M_PI * SM(alpha3)));
+
+   try {
+      model.calculate_spectrum();
+      model.print(std::cout);
+      // @ModelName@_spectrum_plotter plotter;
+      // plotter.extract_spectrum(model);
+      // plotter.write_to_file("@ModelName@_spectrum.dat");
+   } catch (const Error& error) {
+      ERROR(error.what());
+   } catch (const std::string& str) {
+      ERROR(str);
+   } catch (const char* str) {
+      ERROR(str);
+   }
+
+   return 0;
+}

@@ -626,7 +626,7 @@ Options[MakeFlexibleSUSY] :=
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
-    Module[{nPointFunctions,
+    Module[{nPointFunctions, runInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
@@ -870,7 +870,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
-           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
+           runInputFile = "run.cpp.in";
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY, runInputFile = "run_low_scale_model.cpp.in";];
+           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, runInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}}];
 
            PrintHeadline["FlexibleSUSY has finished"];

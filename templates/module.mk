@@ -16,6 +16,7 @@ TEMPLATES    := \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
+		$(DIR)/run_low_scale_model.cpp.in \
 		$(DIR)/soft_parameters.hpp.in \
 		$(DIR)/soft_parameters.cpp.in \
 		$(DIR)/susy_parameters.hpp.in \
