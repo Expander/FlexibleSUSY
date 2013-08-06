@@ -6,9 +6,9 @@ FSModelName = "@CLASSNAME@";
 InputParameters = { m0, m12, Azero };
 
 DefaultParameterPoint = {
-    {m0, 125},
-    {m12, 500},
-    {Azero, 0}
+    {m0, 4000},
+    {m12, -158},
+    {Azero, -9000}
 };
 
 ParametersToSolveTadpoles = { B[\[Mu]], \[Mu] };
@@ -50,7 +50,7 @@ LowScaleInput={
 
 InitialGuessAtLowScale = {
    {vd, SM[vev]},
-   {vu, SM[vev] 30}
+   {vu, SM[vev] 20}
 };
 
 InitialGuessAtHighScale = {
