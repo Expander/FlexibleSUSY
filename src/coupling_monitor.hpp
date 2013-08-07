@@ -161,7 +161,7 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
    for (std::size_t i = 0; i < number_of_couplings; ++i)
       fout << std::left << std::setw(width) << parameter_names[i];
 
-   fout << std::endl;
+   fout << '\n';
 }
 
 /**
@@ -201,7 +201,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
          filestr << std::left << std::setw(width) << it->second(i);
       }
 
-      filestr << std::endl;
+      filestr << '\n';
    }
 
    filestr.close();
