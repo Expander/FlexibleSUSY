@@ -151,8 +151,7 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
           " set is not defined at the same scale as the low-energy"
           " constraint");
 
-   // @todo read MZ from oneset, because it is a SLHA2 input parameter
-   const double MZ = Electroweak_constants::MZ;
+   const double MZ = oneset.displayMzPole();
    const double MW = Electroweak_constants::MW;
    const double MZ2 = Sqr(MZ);
    const double MW2 = Sqr(MW);
