@@ -32,6 +32,7 @@
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
+#include "command_line_options.hpp"
 
 #include <iostream>
 #include <vector>
@@ -156,9 +157,14 @@ void @ModelName@_runner::write_spectrum(const std::string& filename) const
 
 } // namespace flexiblesusy
 
-int main()
+int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
+
+   Command_line_options options(argc, argv);
+   if (options.must_exit())
+      return options.status();
+
    @ModelName@_runner runner;
    @ModelName@_input_parameters input;
 
