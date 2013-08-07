@@ -53,7 +53,7 @@ public:
    const @ModelName@& get_model() const { return model; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
 
-   void run(const @ModelName@_input_parameters& input);
+   void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
@@ -71,9 +71,11 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
+ * @param oneset Standard Model input parameters
  * @param input model input parameters
  */
-void @ModelName@_runner::run(const @ModelName@_input_parameters& input)
+void @ModelName@_runner::run(const QedQcd& /* oneset */,
+                             const @ModelName@_input_parameters& input)
 {
    @ModelName@_high_scale_constraint high_scale_constraint(input);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
@@ -180,7 +182,7 @@ int main(int argc, const char* argv[])
    @ModelName@_runner runner;
 
    try {
-      runner.run(input);
+      runner.run(oneset, input);
       runner.get_model().print(std::cout);
       // runner.write_running_couplings();
       // runner.write_spectrum();
