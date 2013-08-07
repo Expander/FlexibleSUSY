@@ -37,6 +37,8 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mtauPole = m.mtauPole;
   a = m.a;
   mf = m.mf;
+  mz = m.mz;
+  gmu = m.gmu;
   setLoops(m.displayLoops());
   setThresholds(m.displayThresholds());
   setMu(m.displayMu());
