@@ -16,7 +16,7 @@ static QedQcd *tempLe;
 
 QedQcd::QedQcd()
   : a(2), mf(9), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM), 
-    mtauPole(MTAU) { 
+    mtauPole(MTAU), mz(MZ), gmu(GMU) {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(1) = MUP; mf(2) = MCHARM; 
@@ -435,6 +435,16 @@ DoubleVector QedQcd::getGaugeMu(const double m2, const double sinth) const {
   temp.set(3, oneset.displayAlpha(ALPHAS));
 
   return temp;
+}
+
+double QedQcd::displaySinThetaW() const
+{
+  const double sin2thetasqO4 = PI * displayAlpha(ALPHA) /
+    (sqrt(2.0) * sqr(mz) * gmu);
+  const double sin2theta = sqrt(4.0 * sin2thetasqO4);
+  const double theta = 0.5 * asin(sin2theta);
+
+  return sin(theta);
 }
 
 int accessedReadIn; // Should be initialised to zero at start of prog

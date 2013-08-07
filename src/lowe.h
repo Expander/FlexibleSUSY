@@ -60,6 +60,8 @@ private:
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
+  double mz;       ///< Z pole mass
+  double gmu;      ///< fermi constant
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -75,6 +77,8 @@ public:
   void setMass(mass mno, double m) { mf(mno) = m; }; 
   /// sets QED or QCD structure constant
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
+  void setMzPole(double m) { mz = m; } ///< set Z pole mass
+  void setGmu(double g) { gmu = g; } ///< set fermi constant
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   
@@ -90,6 +94,9 @@ public:
   double displayMass(mass mno) const { return mf.display(mno); };
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
+  double displayMzPole() const { return mz; }
+  double displayGmu() const { return gmu; }
+  double displaySinThetaW() const;
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
