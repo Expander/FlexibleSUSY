@@ -167,13 +167,17 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
+   const std::string slha_input_file(options.get_slha_input_file());
    QedQcd oneset;
+   @ModelName@_input_parameters input;
 
-   @ModelName@_slha_reader slha_reader(options.get_slha_input_file());
-   slha_reader.fill(oneset);
+   if (!slha_input_file.empty()) {
+      @ModelName@_slha_reader slha_reader(slha_input_file);
+      slha_reader.fill(oneset);
+      slha_reader.fill(input);
+   }
 
    @ModelName@_runner runner;
-   @ModelName@_input_parameters input;
 
    try {
       runner.run(input);
