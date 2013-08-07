@@ -40,6 +40,7 @@ public:
    virtual void set_model(Two_scale_model*);
    double get_initial_scale_guess() const;
    void set_input_parameters(const @ModelName@_input_parameters&);
+   void set_sm_parameters(const QedQcd&);
    void reset(); ///< reset to initial state
 
 private:

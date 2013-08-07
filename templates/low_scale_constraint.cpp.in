@@ -123,6 +123,11 @@ void @ModelName@_low_scale_constraint::set_input_parameters(const @ModelName@_in
    inputPars = inputPars_;
 }
 
+void @ModelName@_low_scale_constraint::set_sm_parameters(const QedQcd& oneset_)
+{
+   oneset = oneset_;
+}
+
 void @ModelName@_low_scale_constraint::reset()
 {
    scale = initial_scale_guess;

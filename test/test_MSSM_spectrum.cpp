@@ -282,10 +282,12 @@ public:
       setup_default_constaints();
       high_constraint->set_input_parameters(pp);
       low_constraint->set_input_parameters(pp);
+      low_constraint->set_sm_parameters(oneset);
       susy_constraint->set_input_parameters(pp);
 
       MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
-      MSSM_initial_guesser initial_guesser(&mssm, pp, oneset, *low_constraint,
+      MSSM_initial_guesser initial_guesser(&mssm, pp, oneset,
+                                           *low_constraint,
                                            *susy_constraint,
                                            *high_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
