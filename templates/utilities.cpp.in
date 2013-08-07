@@ -126,8 +126,13 @@ void @ModelName@_slha_reader::fill(QedQcd& oneset)
    std::ifstream ifs(input_filename);
    const SLHAea::Coll input(ifs);
 
-   for (SLHAea::Block::const_iterator line = input.at("SMINPUTS").cbegin();
-        line != input.at("SMINPUTS").cend(); ++line) {
+   if (input.find("SMINPUTS") == input.cend()) {
+      WARNING("Block SMINPUTS not found in SLHA2 file " << input_filename);
+      return;
+   }
+
+   for (SLHAea::Block::const_iterator line = input.at("SMINPUTS").cbegin(),
+        end = input.at("SMINPUTS").cend(); line != end; ++line) {
       if (!line->is_data_line()) continue;
 
       if (line->size() >= 2) {
