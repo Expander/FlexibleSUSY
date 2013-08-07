@@ -21,7 +21,6 @@
 #include "logger.hpp"
 
 #include <cstdio>
-#include <sstream>
 #include <boost/algorithm/string/predicate.hpp>
 
 namespace flexiblesusy {
@@ -82,7 +81,7 @@ void Command_line_options::print_version(std::ostream& ostr) const
 
 void Command_line_options::print_usage(std::ostream& ostr) const
 {
-   ostr << "Usage: " << program << " [slha-input-file] [options]\n"
+   ostr << "Usage: " << program << " [options]\n"
            "Options:\n"
            "  --slha-input-file=<filename>   SLHA input file\n"
            "  --help,-h                      print this help message\n"
