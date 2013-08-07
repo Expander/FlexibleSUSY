@@ -64,7 +64,6 @@ void @ModelName@_initial_guesser::guess()
 void @ModelName@_initial_guesser::guess_susy_parameters()
 {
    QedQcd leAtMt(oneset);
-   // @todo read MZ from oneset, because it is a SLHA2 input parameter
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);

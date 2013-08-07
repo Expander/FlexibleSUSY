@@ -55,7 +55,7 @@ namespace flexiblesusy {
    , new_Yd(Eigen::Matrix<double,3,3>::Zero())
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
-   initial_scale_guess = oneset.displayMzPole();
+@scaleGuess@
    scale = initial_scale_guess;
 }
 
@@ -71,7 +71,7 @@ namespace flexiblesusy {
    , new_Yd(Eigen::Matrix<double,3,3>::Zero())
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
-   initial_scale_guess = oneset.displayMzPole();
+@scaleGuess@
    scale = initial_scale_guess;
 }
 
@@ -143,16 +143,17 @@ void @ModelName@_low_scale_constraint::reset()
 
 void @ModelName@_low_scale_constraint::update_scale()
 {
-   scale = oneset.displayMzPole();
+@calculateScale@
 }
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
 {
    assert(oneset.displayMu() == get_scale() && "Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
-          " constraint");
+          " constraint.  You need to run the low-energy data set to this"
+          " scale!");
 
-   const double MZ = oneset.displayMzPole();
+   const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double MZ2 = Sqr(MZ);
    const double MW2 = Sqr(MW);
@@ -161,7 +162,6 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
    const double self_energy_Z = Re(model->self_energy_@VectorZ@_heavy(MZ));
    const double self_energy_W = Re(model->self_energy_@VectorW@_heavy(MW));
    const double delta_sW2 = - cW2 * (self_energy_W / MW2 - self_energy_Z / MZ2);
-   // @todo read sinThetaW from oneset, because it is a SLHA2 input parameter
    double sinThetaW2_drbar = Sqr(SM(sinThetaW)) + delta_sW2;
 
    if (sinThetaW2_drbar <= 1.0e-4 || sinThetaW2_drbar >= 0.99) {
