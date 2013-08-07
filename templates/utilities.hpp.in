@@ -29,6 +29,10 @@
 #include <valarray>
 #include <utility>
 
+namespace softsusy {
+   class QedQcd;
+}
+
 namespace flexiblesusy {
 
 namespace @ModelName@_info {
@@ -74,6 +78,20 @@ private:
    unsigned width;
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
+};
+
+struct @ModelName@_input_parameters;
+
+class @ModelName@_slha_reader {
+public:
+   @ModelName@_slha_reader(const std::string&);
+   ~@ModelName@_slha_reader() {}
+
+   void fill(QedQcd&);
+   void fill(@ModelName@_input_parameters&);
+
+private:
+   std::string input_filename;
 };
 
 } // namespace flexiblesusy

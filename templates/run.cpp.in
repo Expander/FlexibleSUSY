@@ -32,6 +32,7 @@
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
+#include "lowe.h"
 #include "command_line_options.hpp"
 
 #include <iostream>
@@ -160,10 +161,16 @@ void @ModelName@_runner::write_spectrum(const std::string& filename) const
 int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
+   using namespace softsusy;
 
    Command_line_options options(argc, argv);
    if (options.must_exit())
       return options.status();
+
+   QedQcd oneset;
+
+   @ModelName@_slha_reader slha_reader(options.get_slha_input_file());
+   slha_reader.fill(oneset);
 
    @ModelName@_runner runner;
    @ModelName@_input_parameters input;
