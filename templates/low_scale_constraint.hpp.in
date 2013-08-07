@@ -23,6 +23,7 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
+#include "lowe.h"
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -32,7 +33,7 @@ class @ModelName@;
 class @ModelName@_low_scale_constraint : public Constraint<Two_scale> {
 public:
    @ModelName@_low_scale_constraint();
-   @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&);
+   @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&, const QedQcd&);
    virtual ~@ModelName@_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -46,6 +47,7 @@ private:
    double initial_scale_guess;
    @ModelName@* model;
    @ModelName@_input_parameters inputPars;
+   QedQcd oneset;
    double new_g1, new_g2, new_g3;
    Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
 

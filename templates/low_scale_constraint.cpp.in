@@ -47,6 +47,7 @@ namespace flexiblesusy {
    : Constraint<Two_scale>()
    , model(0)
    , inputPars()
+   , oneset()
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
@@ -58,10 +59,11 @@ namespace flexiblesusy {
    scale = initial_scale_guess;
 }
 
-@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(0)
    , inputPars(inputPars_)
+   , oneset(oneset_)
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)

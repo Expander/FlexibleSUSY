@@ -74,12 +74,12 @@ private:
  * @param oneset Standard Model input parameters
  * @param input model input parameters
  */
-void @ModelName@_runner::run(const QedQcd& /* oneset */,
+void @ModelName@_runner::run(const QedQcd& oneset,
                              const @ModelName@_input_parameters& input)
 {
    @ModelName@_high_scale_constraint high_scale_constraint(input);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
-   @ModelName@_low_scale_constraint  low_scale_constraint(input);
+   @ModelName@_low_scale_constraint  low_scale_constraint(input, oneset);
 
    std::vector<Constraint<Two_scale>*> upward_constraints;
    upward_constraints.push_back(&low_scale_constraint);
@@ -93,7 +93,7 @@ void @ModelName@_runner::run(const QedQcd& /* oneset */,
    model.set_input(input);
 
    @ModelName@_convergence_tester convergence_tester(&model, precision_goal);
-   @ModelName@_initial_guesser initial_guesser(&model, input,
+   @ModelName@_initial_guesser initial_guesser(&model, input, oneset,
                                                low_scale_constraint,
                                                susy_scale_constraint,
                                                high_scale_constraint);

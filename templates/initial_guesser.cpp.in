@@ -37,6 +37,7 @@ namespace flexiblesusy {
 @ModelName@_initial_guesser::@ModelName@_initial_guesser(
    @ModelName@* model_,
    const @ModelName@_input_parameters& input_pars_,
+   const QedQcd& oneset_,
    const @ModelName@_low_scale_constraint& low_constraint_,
    const @ModelName@_susy_scale_constraint& susy_constraint_,
    const @ModelName@_high_scale_constraint& high_constraint_
@@ -44,6 +45,7 @@ namespace flexiblesusy {
    : Initial_guesser<Two_scale>()
    , model(model_)
    , input_pars(input_pars_)
+   , oneset(oneset_)
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
