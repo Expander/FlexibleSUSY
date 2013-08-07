@@ -137,14 +137,15 @@ void @ModelName@_slha_reader::fill(QedQcd& oneset)
          case 1:
             oneset.setAlpha(ALPHA, 1.0 / value);
             break;
-         case 2: // GMU = value;
+         case 2:
+            oneset.setGmu(value);
             break;
          case 3:
             oneset.setAlpha(ALPHAS, value);
             break;
          case 4:
             oneset.setMu(value);
-            // MZ = value;
+            oneset.setMzPole(value);
             break;
          case 5:
             oneset.setMass(mBottom, value);
