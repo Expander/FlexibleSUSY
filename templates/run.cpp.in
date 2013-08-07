@@ -178,6 +178,7 @@ int main(int argc, const char* argv[])
       slha_reader.fill(oneset);
       slha_reader.fill(input);
    }
+   oneset.toMz(); // run SM fermion masses to MZ
 
    @ModelName@_runner runner;
 
