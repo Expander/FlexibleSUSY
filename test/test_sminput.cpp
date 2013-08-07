@@ -12,6 +12,8 @@ BOOST_AUTO_TEST_CASE( test_reading_sminput )
    std::ifstream ifs("test/sminput.slha2");
    const SLHAea::Coll input(ifs);
 
+   BOOST_REQUIRE(!input.empty());
+
    const double alpha_em = SLHAea::to<double>(input.at("SMINPUTS").at("1").at(1));
    const double G_mu     = SLHAea::to<double>(input.at("SMINPUTS").at("2").at(1));
    const double alpha_s  = SLHAea::to<double>(input.at("SMINPUTS").at("3").at(1));
