@@ -3,6 +3,7 @@ MODNAME      := libflexisusy
 
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
+		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
 		$(DIR)/error.cpp \
