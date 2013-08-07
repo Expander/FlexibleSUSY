@@ -55,7 +55,7 @@ namespace flexiblesusy {
    , new_Yd(Eigen::Matrix<double,3,3>::Zero())
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
-@scaleGuess@
+   initial_scale_guess = oneset.displayMzPole();
    scale = initial_scale_guess;
 }
 
@@ -71,7 +71,7 @@ namespace flexiblesusy {
    , new_Yd(Eigen::Matrix<double,3,3>::Zero())
    , new_Ye(Eigen::Matrix<double,3,3>::Zero())
 {
-@scaleGuess@
+   initial_scale_guess = oneset.displayMzPole();
    scale = initial_scale_guess;
 }
 
@@ -142,7 +142,7 @@ void @ModelName@_low_scale_constraint::reset()
 
 void @ModelName@_low_scale_constraint::update_scale()
 {
-@calculateScale@
+   scale = oneset.displayMzPole();
 }
 
 void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
