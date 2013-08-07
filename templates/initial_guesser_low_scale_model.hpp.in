@@ -25,6 +25,7 @@
 #include "@ModelName@_low_scale_constraint.hpp"
 #include "two_scale_initial_guesser.hpp"
 #include "error.hpp"
+#include "lowe.h"
 
 #include <sstream>
 
@@ -56,6 +57,7 @@ public:
 
    @ModelName@_initial_guesser(@ModelName@*,
                                const @ModelName@_input_parameters&,
+                               const QedQcd&,
                                const @ModelName@_low_scale_constraint&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess();
@@ -63,6 +65,7 @@ public:
 private:
    @ModelName@* model;
    @ModelName@_input_parameters input_pars;
+   QedQcd oneset;
    @ModelName@_low_scale_constraint low_constraint;
 
    void guess_susy_parameters();

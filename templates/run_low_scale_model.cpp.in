@@ -30,6 +30,7 @@
 #include "two_scale_solver.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
+#include "lowe.h"
 #include "command_line_options.hpp"
 
 #include <iostream>
@@ -38,17 +39,28 @@
 int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
+   using namespace softsusy;
 
    Command_line_options options(argc, argv);
    if (options.must_exit())
       return options.status();
 
+   const std::string slha_input_file(options.get_slha_input_file());
+   QedQcd oneset;
    @ModelName@_input_parameters input;
+
+   if (!slha_input_file.empty()) {
+      @ModelName@_slha_reader slha_reader(slha_input_file);
+      slha_reader.fill(oneset);
+      slha_reader.fill(input);
+   }
+   oneset.toMz(); // run SM fermion masses to MZ
+
    @ModelName@ model(input);
-   @ModelName@_low_scale_constraint low_scale_constraint(input);
+   @ModelName@_low_scale_constraint low_scale_constraint(input, oneset);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
-   @ModelName@_initial_guesser initial_guesser(&model, input, low_scale_constraint);
+   @ModelName@_initial_guesser initial_guesser(&model, input, oneset, low_scale_constraint);
    Two_scale_constant_precision precision(1.0e-5);
 
    RGFlow<Two_scale> solver;
