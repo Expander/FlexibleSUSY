@@ -18,34 +18,30 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_two_scale_physical.hpp"
+#ifndef @ModelName@_LATTICE_INITIAL_GUESSER_H
+#define @ModelName@_LATTICE_INITIAL_GUESSER_H
 
-#include <iostream>
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "lattice_initial_guesser.hpp"
 
 namespace flexiblesusy {
 
-@ModelName@_physical::@ModelName@_physical()
-   :
-@physicalMassesInitNoLeadingComma@
-@mixingMatricesInit@
-{
-}
+template <class T>
+class @ModelName@;
 
-void @ModelName@_physical::clear()
-{
-@clearOutputParameters@
-}
+class Lattice;
 
-void @ModelName@_physical::print(std::ostream& ostr) const
-{
-   ostr << "----------------------------------------\n"
-           "one-loop pole masses:\n"
-           "----------------------------------------\n";
-@printMasses@
-   ostr << "----------------------------------------\n"
-           "one-loop pole mixing matrices:\n"
-           "----------------------------------------\n";
-@printMixingMatrices@
-}
+template<>
+class @ModelName@_initial_guesser<Lattice> : public Initial_guesser<Lattice> {
+public:
+   @ModelName@_initial_guesser(@ModelName@<Lattice>*,
+                               @ModelName@_input_parameters&,
+                               @ModelName@_low_scale_constraint<Lattice>&);
+   virtual ~@ModelName@_initial_guesser();
+};
 
 } // namespace flexiblesusy
+
+#endif

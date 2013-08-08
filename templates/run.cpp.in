@@ -18,14 +18,14 @@
 
 // File generated at @DateAndTime@
 
+#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include "@ModelName@_two_scale_input_parameters.hpp"
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
-#include "@ModelName@_two_scale_utilities.hpp"
+#include "@ModelName@_utilities.hpp"
 
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -42,7 +42,11 @@ template <class T>
 class @ModelName@_runner {
 public:
    @ModelName@_runner()
-      : model(), high_scale(0.), susy_scale(0.), low_scale(0.)
+      : solver(), model()
+      , high_scale_constraint()
+      , susy_scale_constraint()
+      , low_scale_constraint()
+      , high_scale(0.), susy_scale(0.), low_scale(0.)
       , precision_goal(1.0e-5) {}
    ~@ModelName@_runner() {}
 
@@ -57,7 +61,11 @@ public:
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 private:
+   RGFlow<T> solver;
    @ModelName@<T> model;
+   @ModelName@_high_scale_constraint<T> high_scale_constraint;
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
+   @ModelName@_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double precision_goal; ///< precision goal
 };
@@ -75,9 +83,12 @@ private:
 template <class T>
 void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
 {
-   @ModelName@_high_scale_constraint<T> high_scale_constraint(input);
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint(input);
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint(input);
+   high_scale_constraint.reset();
+   susy_scale_constraint.reset();
+   low_scale_constraint .reset();
+   high_scale_constraint.set_input_parameters(input);
+   susy_scale_constraint.set_input_parameters(input);
+   low_scale_constraint .set_input_parameters(input);
 
    std::vector<Constraint<T>*> upward_constraints;
    upward_constraints.push_back(&low_scale_constraint);
@@ -97,7 +108,7 @@ void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
                                                   high_scale_constraint);
    Two_scale_increasing_precision precision(10.0, precision_goal);
 
-   RGFlow<T> solver;
+   solver.reset();
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);

@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_utilities_H
-#define @ModelName@_TWO_SCALE_utilities_H
+#ifndef @ModelName@_UTILITIES_H
+#define @ModelName@_UTILITIES_H
 
 #include "@ModelName@_two_scale_model.hpp"
 

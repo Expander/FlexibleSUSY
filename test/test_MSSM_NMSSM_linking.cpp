@@ -11,8 +11,8 @@ using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_MSSM_NMSSM_linking )
 {
-   MSSM mssm;
-   NMSSM nmssm;
+   MSSM<Two_scale> mssm;
+   NMSSM<Two_scale> nmssm;
 
    BOOST_CHECK(true);
 }

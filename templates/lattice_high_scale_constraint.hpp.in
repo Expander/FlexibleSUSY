@@ -18,40 +18,27 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
-#define @ModelName@_TWO_SCALE_SUSY_SCALE_CONSTRAINT_H
+#ifndef @ModelName@_LATTICE_HIGH_SCALE_CONSTRAINT_H
+#define @ModelName@_LATTICE_HIGH_SCALE_CONSTRAINT_H
 
-#include "@ModelName@_susy_scale_constraint.hpp"
+#include "@ModelName@_high_scale_constraint.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "two_scale_constraint.hpp"
+#include "lattice_constraint.hpp"
 
 namespace flexiblesusy {
 
 template <class T>
 class @ModelName@;
 
-class Two_scale;
+class Lattice;
 
 template<>
-class @ModelName@_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+class @ModelName@_high_scale_constraint<Lattice> : public Constraint<Lattice> {
 public:
-   @ModelName@_susy_scale_constraint();
-   @ModelName@_susy_scale_constraint(const @ModelName@_input_parameters&);
-   virtual ~@ModelName@_susy_scale_constraint();
-   virtual void apply();
+   @ModelName@_high_scale_constraint();
+   @ModelName@_high_scale_constraint(const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_high_scale_constraint();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
-   double get_initial_scale_guess() const;
-   void set_input_parameters(const @ModelName@_input_parameters&);
-   void reset(); ///< reset to initial state
-
-private:
-   double scale;
-   double initial_scale_guess;
-   @ModelName@<Two_scale>* model;
-   @ModelName@_input_parameters inputPars;
-
-   void update_scale();
 };
 
 } // namespace flexiblesusy

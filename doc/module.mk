@@ -13,9 +13,9 @@ doc: all-$(MODNAME)
 all-$(MODNAME): $(INDEX_PADE)
 
 clean-$(MODNAME):
-		rm -rf $(DOC_OUTPUT_DIR)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		rm -rf $(DOC_OUTPUT_DIR)
 
 clean::         clean-$(MODNAME)
 

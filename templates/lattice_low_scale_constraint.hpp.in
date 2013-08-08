@@ -18,47 +18,27 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
-#define @ModelName@_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
+#ifndef @ModelName@_LATTICE_LOW_SCALE_CONSTRAINT_H
+#define @ModelName@_LATTICE_LOW_SCALE_CONSTRAINT_H
 
 #include "@ModelName@_low_scale_constraint.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "two_scale_constraint.hpp"
-#include <Eigen/Core>
+#include "lattice_constraint.hpp"
 
 namespace flexiblesusy {
 
 template <class T>
 class @ModelName@;
 
-class Two_scale;
+class Lattice;
 
 template<>
-class @ModelName@_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+class @ModelName@_low_scale_constraint<Lattice> : public Constraint<Lattice> {
 public:
    @ModelName@_low_scale_constraint();
    @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&);
    virtual ~@ModelName@_low_scale_constraint();
-   virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
-   double get_initial_scale_guess() const;
-   void set_input_parameters(const @ModelName@_input_parameters&);
-   void reset(); ///< reset to initial state
-
-private:
-   double scale;
-   double initial_scale_guess;
-   @ModelName@<Two_scale>* model;
-   @ModelName@_input_parameters inputPars;
-   double new_g1, new_g2, new_g3;
-   Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
-
-   void calculate_DRbar_gauge_couplings();
-   void calculate_DRbar_yukawa_couplings();
-   double calculate_delta_alpha_em(double) const;
-   double calculate_delta_alpha_s(double) const;
-   void update_scale();
 };
 
 } // namespace flexiblesusy

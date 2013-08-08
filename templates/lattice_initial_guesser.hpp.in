@@ -18,23 +18,32 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_physical_H
-#define @ModelName@_TWO_SCALE_physical_H
+#ifndef @ModelName@_LATTICE_INITIAL_GUESSER_H
+#define @ModelName@_LATTICE_INITIAL_GUESSER_H
 
-#include "linalg.h"
-
-#include <iosfwd>
-#include <string>
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "@ModelName@_lattice_susy_scale_constraint.hpp"
+#include "@ModelName@_lattice_high_scale_constraint.hpp"
+#include "lattice_initial_guesser.hpp"
 
 namespace flexiblesusy {
 
-struct @ModelName@_physical {
-   @ModelName@_physical();
-   void clear();
-   void print(std::ostream&) const;
+template <class T>
+class @ModelName@;
 
-@physicalMassesDef@
-@mixingMatricesDef@
+class Lattice;
+
+template<>
+class @ModelName@_initial_guesser<Lattice> : public Initial_guesser<Lattice> {
+public:
+   @ModelName@_initial_guesser(@ModelName@<Lattice>*,
+                               @ModelName@_input_parameters&,
+                               @ModelName@_low_scale_constraint<Lattice>&,
+                               @ModelName@_susy_scale_constraint<Lattice>&,
+                               @ModelName@_high_scale_constraint<Lattice>&);
+   virtual ~@ModelName@_initial_guesser();
 };
 
 } // namespace flexiblesusy

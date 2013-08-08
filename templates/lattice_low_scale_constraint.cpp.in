@@ -18,20 +18,28 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_INPUT_PARAMETERS_H
-#define @ModelName@_TWO_SCALE_INPUT_PARAMETERS_H
-
-#include "mycomplex.h"
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "@ModelName@_lattice_model.hpp"
 
 namespace flexiblesusy {
 
-struct @ModelName@_input_parameters {
-@defineInputParameters@
-   @ModelName@_input_parameters()
-      @defaultInputParametersInit@
-   {}
-};
+@ModelName@_low_scale_constraint<Lattice>::@ModelName@_low_scale_constraint()
+   : Constraint<Lattice>()
+{
+}
+
+@ModelName@_low_scale_constraint<Lattice>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters&)
+   : Constraint<Lattice>()
+{
+}
+
+@ModelName@_low_scale_constraint<Lattice>::~@ModelName@_low_scale_constraint()
+{
+}
+
+double @ModelName@_low_scale_constraint<Lattice>::get_scale() const
+{
+   return 0.;
+}
 
 } // namespace flexiblesusy
-
-#endif

@@ -18,7 +18,7 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_two_scale_utilities.hpp"
+#include "@ModelName@_utilities.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 
