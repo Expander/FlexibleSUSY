@@ -76,6 +76,15 @@ $(DIR)/@CLASSNAME@_two_scale_model.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parame
 $(DIR)/run_@CLASSNAME@.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_high_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
@@ -86,6 +95,9 @@ $(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_sc
 	true
 
 $(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp

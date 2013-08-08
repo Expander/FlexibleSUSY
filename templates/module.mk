@@ -2,7 +2,11 @@ DIR          := templates
 MODNAME      := templates
 
 TEMPLATES    := \
+		$(DIR)/high_scale_constraint.hpp.in \
+		$(DIR)/initial_guesser.hpp.in \
+		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \
+		$(DIR)/susy_scale_constraint.hpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \
 		$(DIR)/two_scale_high_scale_constraint.hpp.in \

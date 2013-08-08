@@ -824,7 +824,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`HighScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`HighScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.cpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_high_scale_constraint.cpp"}]}}
@@ -834,7 +836,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`SUSYScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`SUSYScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`SUSYScaleFirstGuess /. susyBreakingParameterReplacementRules,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.cpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_scale_constraint.cpp"}]}}
@@ -844,7 +848,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`LowScale /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`LowScaleInput /. susyBreakingParameterReplacementRules,
                                 FlexibleSUSY`LowScaleFirstGuess,
-                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.hpp.in"}],
+                                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.cpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_low_scale_constraint.cpp"}]}}
@@ -857,7 +863,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale /. susyBreakingParameterReplacementRules,
                                     FlexibleSUSY`InitialGuessAtHighScale /. susyBreakingParameterReplacementRules,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
+                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, initialGuesserInputFile <> ".cpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}}
