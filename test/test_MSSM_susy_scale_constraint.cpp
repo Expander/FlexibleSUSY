@@ -7,8 +7,8 @@
 
 #define private public
 
-#include "MSSM_model.hpp"
-#include "MSSM_susy_scale_constraint.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_susy_scale_constraint.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"

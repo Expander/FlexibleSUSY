@@ -21,7 +21,7 @@
 #ifndef @ModelName@_utilities_H
 #define @ModelName@_utilities_H
 
-#include "@ModelName@_model.hpp"
+#include "@ModelName@_two_scale_model.hpp"
 
 #include <Eigen/Core>
 #include <string>

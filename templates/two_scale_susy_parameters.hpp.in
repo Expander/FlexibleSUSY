@@ -22,7 +22,7 @@
 #define @ModelName@_susy_parameters_H
 
 #include "betafunction.hpp"
-#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_two_scale_input_parameters.hpp"
 
 #include <iosfwd>
 #include <string>

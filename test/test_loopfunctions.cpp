@@ -6,7 +6,7 @@
 #include "wrappers.hpp"
 
 #define private public
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
 

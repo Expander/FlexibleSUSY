@@ -2,31 +2,31 @@ DIR          := templates
 MODNAME      := templates
 
 TEMPLATES    := \
-		$(DIR)/convergence_tester.hpp.in \
-		$(DIR)/convergence_tester.cpp.in \
-		$(DIR)/high_scale_constraint.hpp.in \
-		$(DIR)/high_scale_constraint.cpp.in \
-		$(DIR)/initial_guesser.hpp.in \
-		$(DIR)/initial_guesser.cpp.in \
-		$(DIR)/initial_guesser_low_scale_model.hpp.in \
-		$(DIR)/initial_guesser_low_scale_model.cpp.in \
-		$(DIR)/input_parameters.hpp.in \
-		$(DIR)/low_scale_constraint.hpp.in \
-		$(DIR)/low_scale_constraint.cpp.in \
-		$(DIR)/model.hpp.in \
-		$(DIR)/model.cpp.in \
-		$(DIR)/physical.hpp.in \
-		$(DIR)/physical.cpp.in \
+		$(DIR)/two_scale_convergence_tester.hpp.in \
+		$(DIR)/two_scale_convergence_tester.cpp.in \
+		$(DIR)/two_scale_high_scale_constraint.hpp.in \
+		$(DIR)/two_scale_high_scale_constraint.cpp.in \
+		$(DIR)/two_scale_initial_guesser.hpp.in \
+		$(DIR)/two_scale_initial_guesser.cpp.in \
+		$(DIR)/two_scale_initial_guesser_low_scale_model.hpp.in \
+		$(DIR)/two_scale_initial_guesser_low_scale_model.cpp.in \
+		$(DIR)/two_scale_input_parameters.hpp.in \
+		$(DIR)/two_scale_low_scale_constraint.hpp.in \
+		$(DIR)/two_scale_low_scale_constraint.cpp.in \
+		$(DIR)/two_scale_model.hpp.in \
+		$(DIR)/two_scale_model.cpp.in \
+		$(DIR)/two_scale_physical.hpp.in \
+		$(DIR)/two_scale_physical.cpp.in \
 		$(DIR)/run.cpp.in \
 		$(DIR)/run_low_scale_model.cpp.in \
-		$(DIR)/soft_parameters.hpp.in \
-		$(DIR)/soft_parameters.cpp.in \
-		$(DIR)/susy_parameters.hpp.in \
-		$(DIR)/susy_parameters.cpp.in \
-		$(DIR)/susy_scale_constraint.hpp.in \
-		$(DIR)/susy_scale_constraint.cpp.in \
-		$(DIR)/utilities.hpp.in \
-		$(DIR)/utilities.cpp.in
+		$(DIR)/two_scale_soft_parameters.hpp.in \
+		$(DIR)/two_scale_soft_parameters.cpp.in \
+		$(DIR)/two_scale_susy_parameters.hpp.in \
+		$(DIR)/two_scale_susy_parameters.cpp.in \
+		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
+		$(DIR)/two_scale_susy_scale_constraint.cpp.in \
+		$(DIR)/two_scale_utilities.hpp.in \
+		$(DIR)/two_scale_utilities.cpp.in
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

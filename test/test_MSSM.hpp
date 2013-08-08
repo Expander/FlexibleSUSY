@@ -4,7 +4,7 @@
 
 #include "test.h"
 #include "softsusy.h"
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 

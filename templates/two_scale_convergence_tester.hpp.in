@@ -21,7 +21,7 @@
 #ifndef @ModelName@_CONVERGENCE_TESTER_H
 #define @ModelName@_CONVERGENCE_TESTER_H
 
-#include "@ModelName@_model.hpp"
+#include "@ModelName@_two_scale_model.hpp"
 #include "two_scale_convergence_tester_skeleton.hpp"
 
 namespace flexiblesusy {

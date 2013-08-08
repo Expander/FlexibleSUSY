@@ -1,5 +1,5 @@
 
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 #include "test.h"
 #include "test_MSSM.hpp"
 #include "softsusy.h"

@@ -13,8 +13,8 @@
 #include "mssm_parameter_point.hpp"
 #include "mssm_two_scale_sugra_constraint.hpp"
 #include "test_MSSM.hpp"
-#include "MSSM_model.hpp"
-#include "MSSM_high_scale_constraint.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "wrappers.hpp"
 
 MSSM setup_MSSM()

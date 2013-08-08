@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_initial_guesser.hpp"
-#include "@ModelName@_model.hpp"
+#include "@ModelName@_two_scale_initial_guesser.hpp"
+#include "@ModelName@_two_scale_model.hpp"
 #include "lowe.h"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
