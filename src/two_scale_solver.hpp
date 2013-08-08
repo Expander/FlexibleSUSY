@@ -97,10 +97,14 @@ public:
                   Matching<Two_scale>* m,
                   const std::vector<Constraint<Two_scale>*>& upwards_constraints,
                   const std::vector<Constraint<Two_scale>*>& downwards_constraints);
+   /// get model at current scale
+   Two_scale_model* get_model() const;
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
    /// clear all internal data
    void reset();
+   /// pick valid model and run it to the given scale
+   int run_to(double);
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set running precision calculator
@@ -140,6 +144,7 @@ private:
    Initial_guesser<Two_scale>* initial_guesser;       ///< does initial guess
    Two_scale_running_precision* running_precision_calculator; ///< RG running precision calculator
    double running_precision;           ///< RG running precision
+   Two_scale_model* model_at_this_scale; ///< model at current scale
 
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup

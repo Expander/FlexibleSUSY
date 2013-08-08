@@ -145,6 +145,7 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
 
    BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
    BOOST_CHECK_EQUAL(model.get_parameters(), parameters);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model);
 }
 
 BOOST_AUTO_TEST_CASE( test_trival_matching )
@@ -234,4 +235,46 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       BOOST_CHECK_EQUAL(model2_c1.get_number_of_apply_calls(),
                         2 * number_of_iterations);
    }
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_zero_models )
+{
+   RGFlow<Two_scale> solver;
+
+   const int status = solver.run_to(1000.);
+
+   BOOST_CHECK_EQUAL(status, 1);
+   BOOST_CHECK_EQUAL(solver.get_model(), (void*)NULL);
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
+{
+   Static_model model(DoubleVector(10));
+   RGFlow<Two_scale> solver;
+   solver.add_model(&model);
+
+   const int status = solver.run_to(1000.);
+
+   BOOST_CHECK_EQUAL(status, 0);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model);
+}
+
+BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
+{
+   Static_model model1(DoubleVector(10)), model2(DoubleVector(10));
+   Trivial_matching_condition mc(&model1, &model2);
+   const double mc_scale = mc.get_scale();
+
+   RGFlow<Two_scale> solver;
+   solver.add_model(&model1, &mc);
+   solver.add_model(&model2);
+
+   solver.run_to(mc_scale);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to(mc_scale / 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model1);
+
+   solver.run_to(mc_scale * 2.);
+   BOOST_CHECK_EQUAL(solver.get_model(), &model2);
 }

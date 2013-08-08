@@ -28,6 +28,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iterator>
+#include <limits>
 #include <cassert>
 
 namespace flexiblesusy {
@@ -42,6 +43,7 @@ RGFlow<Two_scale>::RGFlow()
    , initial_guesser(NULL)
    , running_precision_calculator(NULL)
    , running_precision(1.0e-3)
+   , model_at_this_scale(NULL)
 {
 }
 
@@ -192,6 +194,7 @@ void RGFlow<Two_scale>::apply_lowest_constraint()
       return;
 
    TModel* model = models[0];
+   model_at_this_scale = model->model;
 
    if (model->downwards_constraints.empty())
       return;
@@ -365,6 +368,70 @@ void RGFlow<Two_scale>::reset()
    initial_guesser = NULL;
    running_precision_calculator = NULL;
    running_precision = 1.0e-3;
+   model_at_this_scale = NULL;
+}
+
+int RGFlow<Two_scale>::run_to(double scale)
+{
+   // find model which is defined at `scale'
+   model_at_this_scale = NULL;
+   const size_t number_of_models = models.size();
+
+   for (size_t m = 0; m < models.size(); ++m) {
+      TModel* model = models[m];
+      double highest_scale, lowest_scale;
+
+      if (!model) {
+         ERROR("RGFlow<Two_scale>::run_to: pointer to model " << m
+               << " is zero");
+         return 1;
+      }
+
+      if (m != number_of_models - 1) {
+         // if this is not the last model, the matching condition is
+         // the highest scale
+         Matching<Two_scale>* mc = model->matching_condition;
+         if (!mc) {
+            ERROR("RGFlow<Two_scale>::run_to: pointer to matching condition"
+                  " of model " << m << " is zero");
+            return 1;
+         }
+         highest_scale = mc->get_scale();
+      } else {
+         // otherwise the last constraint is at the highest scale
+         if (model->upwards_constraints.empty())
+            highest_scale = std::numeric_limits<double>::max();
+         else
+            highest_scale = model->upwards_constraints.back()->get_scale();
+      }
+
+      if (m > 0) {
+         // if this is not the first model, the previous matching
+         // condition is the lowest scale
+         lowest_scale = models[m-1]->matching_condition->get_scale();
+      } else {
+         // otherwise the first constraint is at the lowest scale
+         if (model->upwards_constraints.empty())
+            lowest_scale = 0.;
+         else
+            lowest_scale = model->upwards_constraints[0]->get_scale();
+      }
+
+      if (lowest_scale <= scale && scale <= highest_scale) {
+         model_at_this_scale = model->model;
+         break;
+      }
+   }
+
+   if (model_at_this_scale)
+      return model_at_this_scale->run_to(scale);
+
+   return 1;
+}
+
+Two_scale_model* RGFlow<Two_scale>::get_model() const
+{
+   return model_at_this_scale;
 }
 
 } // namespace flexiblesusy
