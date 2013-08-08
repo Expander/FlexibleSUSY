@@ -24,7 +24,7 @@
 namespace flexiblesusy {
 
 template <class T>
-@ModelName@;
+class @ModelName@;
 
 }
 

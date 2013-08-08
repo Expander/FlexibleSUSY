@@ -15,7 +15,7 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
-DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint constraint, double scale)
+DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model, MSSM_low_scale_constraint constraint, double scale)
 {
    model.set_scale(scale);
    constraint.set_model(&model);
@@ -31,7 +31,7 @@ DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint con
 
 BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 
 BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    MSSM_input_parameters input;
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    setup_MSSM(m, s, input);
 
    MSSM_low_scale_constraint constraint(input);

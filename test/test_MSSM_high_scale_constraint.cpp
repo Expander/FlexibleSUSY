@@ -17,7 +17,7 @@
 #include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "wrappers.hpp"
 
-MSSM setup_MSSM()
+MSSM<Two_scale> setup_MSSM()
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -49,7 +49,7 @@ MSSM setup_MSSM()
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM m;
+   MSSM<Two_scale> m;
    m.set_scale(91);
    m.set_loops(1);
    m.set_g1(g1);
@@ -81,7 +81,7 @@ MSSM setup_MSSM()
 
 BOOST_AUTO_TEST_CASE( test_unification_condition )
 {
-   MSSM m(setup_MSSM());
+   MSSM<Two_scale> m(setup_MSSM());
 
    MSSM_input_parameters input;
    input.m0 = 100;
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
 
 BOOST_AUTO_TEST_CASE( test_mx_calculation )
 {
-   MSSM m; Mssm<Two_scale> s;
+   MSSM<Two_scale> m; Mssm<Two_scale> s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
    Mssm_parameter_point pp;

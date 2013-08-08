@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 {
    MSSM_input_parameters input;
-   MSSM model;
+   MSSM<Two_scale> model;
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          if (contains_nan(x, 2))
             return std::numeric_limits<double>::max();
 
-         MSSM* model = static_cast<MSSM*>(params);
+         MSSM<Two_scale>* model = static_cast<MSSM<Two_scale>*>(params);
 
          const double vd = gsl_vector_get(x, 0);
          const double vu = gsl_vector_get(x, 1);

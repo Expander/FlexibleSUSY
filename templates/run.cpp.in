@@ -38,6 +38,7 @@
 
 namespace flexiblesusy {
 
+template <class T>
 class @ModelName@_runner {
 public:
    @ModelName@_runner()
@@ -48,7 +49,7 @@ public:
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
-   const @ModelName@& get_model() const { return model; }
+   const @ModelName@<T>& get_model() const { return model; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
 
    void run(const @ModelName@_input_parameters& input);
@@ -56,7 +57,7 @@ public:
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 private:
-   @ModelName@ model;
+   @ModelName@<T> model;
    double high_scale, susy_scale, low_scale;
    double precision_goal; ///< precision goal
 };
@@ -71,17 +72,18 @@ private:
  *
  * @param input model input parameters
  */
-void @ModelName@_runner::run(const @ModelName@_input_parameters& input)
+template <class T>
+void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
 {
    @ModelName@_high_scale_constraint high_scale_constraint(input);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
    @ModelName@_low_scale_constraint  low_scale_constraint(input);
 
-   std::vector<Constraint<Two_scale>*> upward_constraints;
+   std::vector<Constraint<T>*> upward_constraints;
    upward_constraints.push_back(&low_scale_constraint);
    upward_constraints.push_back(&high_scale_constraint);
 
-   std::vector<Constraint<Two_scale>*> downward_constraints;
+   std::vector<Constraint<T>*> downward_constraints;
    downward_constraints.push_back(&high_scale_constraint);
    downward_constraints.push_back(&susy_scale_constraint);
    downward_constraints.push_back(&low_scale_constraint);
@@ -95,7 +97,7 @@ void @ModelName@_runner::run(const @ModelName@_input_parameters& input)
                                                high_scale_constraint);
    Two_scale_increasing_precision precision(10.0, precision_goal);
 
-   RGFlow<Two_scale> solver;
+   RGFlow<T> solver;
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
@@ -124,9 +126,10 @@ void @ModelName@_runner::run(const @ModelName@_input_parameters& input)
  *
  * @param filename name of output file
  */
-void @ModelName@_runner::write_running_couplings(const std::string& filename) const
+template <class T>
+void @ModelName@_runner<T>::write_running_couplings(const std::string& filename) const
 {
-   @ModelName@ tmp_model(model);
+   @ModelName@<T> tmp_model(model);
    const unsigned error = tmp_model.run_to(low_scale);
    if (error) {
       ERROR("@ModelName@_runner::write_running_couplings: run to scale "
@@ -135,7 +138,7 @@ void @ModelName@_runner::write_running_couplings(const std::string& filename) co
    }
 
    @ModelName@_parameter_getter parameter_getter;
-   Coupling_monitor<@ModelName@, @ModelName@_parameter_getter>
+   Coupling_monitor<@ModelName@<T>, @ModelName@_parameter_getter>
       coupling_monitor(tmp_model, parameter_getter);
 
    coupling_monitor.run(low_scale, high_scale, 100, true);
@@ -147,7 +150,8 @@ void @ModelName@_runner::write_running_couplings(const std::string& filename) co
  *
  * @param filename output file name
  */
-void @ModelName@_runner::write_spectrum(const std::string& filename) const
+template <class T>
+void @ModelName@_runner<T>::write_spectrum(const std::string& filename) const
 {
    @ModelName@_spectrum_plotter plotter;
    plotter.extract_spectrum(model);
@@ -159,7 +163,9 @@ void @ModelName@_runner::write_spectrum(const std::string& filename) const
 int main()
 {
    using namespace flexiblesusy;
-   @ModelName@_runner runner;
+   typedef Two_scale algorithm_type;
+
+   @ModelName@_runner<algorithm_type> runner;
    @ModelName@_input_parameters input;
 
    try {

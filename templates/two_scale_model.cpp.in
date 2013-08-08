@@ -33,13 +33,13 @@
 
 namespace flexiblesusy {
 
-#define CLASSNAME @ModelName@
+#define CLASSNAME @ModelName@<Two_scale>
 
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 
-@ModelName@::@ModelName@(const @ModelName@_input_parameters& input_)
+CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    : Two_scale_model()
    , @ModelName@_soft_parameters(input_)
    , number_of_ewsb_iterations(100)
@@ -57,52 +57,52 @@ namespace flexiblesusy {
 {
 }
 
-@ModelName@::~@ModelName@()
+CLASSNAME::~@ModelName@()
 {
 }
 
-void @ModelName@::do_calculate_sm_pole_masses(bool flag)
+void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 {
    calculate_sm_pole_masses = flag;
 }
 
-bool @ModelName@::do_calculate_sm_pole_masses() const
+bool CLASSNAME::do_calculate_sm_pole_masses() const
 {
    return calculate_sm_pole_masses;
 }
 
-void @ModelName@::set_number_of_ewsb_iterations(std::size_t iterations)
+void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
 {
    number_of_ewsb_iterations = iterations;
 }
 
-void @ModelName@::set_number_of_mass_iterations(std::size_t iterations)
+void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
 }
 
-void @ModelName@::set_precision(double precision_)
+void CLASSNAME::set_precision(double precision_)
 {
    precision = precision_;
    ewsb_iteration_precision = precision_;
 }
 
-void @ModelName@::set_ewsb_iteration_precision(double precision)
+void CLASSNAME::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
 }
 
-double @ModelName@::get_ewsb_iteration_precision() const
+double CLASSNAME::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
 }
 
-const @ModelName@_physical& @ModelName@::get_physical() const
+const @ModelName@_physical& CLASSNAME::get_physical() const
 {
    return physical;
 }
 
-int @ModelName@::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
+int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
    if (contains_nan(x, @numberOfEWSBEquations@)) {
       for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
@@ -110,8 +110,8 @@ int @ModelName@::tadpole_equations(const gsl_vector* x, void* params, gsl_vector
       return 1;
    }
 
-   const @ModelName@::Ewsb_parameters* ewsb_parameters
-      = static_cast<@ModelName@::Ewsb_parameters*>(params);
+   const CLASSNAME::Ewsb_parameters* ewsb_parameters
+      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
    @ModelName@* model = ewsb_parameters->model;
    const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
 
@@ -129,7 +129,7 @@ int @ModelName@::tadpole_equations(const gsl_vector* x, void* params, gsl_vector
    return GSL_SUCCESS;
 }
 
-int @ModelName@::solve_ewsb_iteratively()
+int CLASSNAME::solve_ewsb_iteratively()
 {
    const gsl_multiroot_fsolver_type* solvers[] =
       {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
@@ -176,13 +176,13 @@ int @ModelName@::solve_ewsb_iteratively()
    return status;
 }
 
-int @ModelName@::solve_ewsb_iteratively(unsigned loop_order)
+int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
 {
    ewsb_loop_order = loop_order;
    return solve_ewsb_iteratively();
 }
 
-int @ModelName@::solve_ewsb_tree_level()
+int CLASSNAME::solve_ewsb_tree_level()
 {
    int error = 0;
 
@@ -191,7 +191,7 @@ int @ModelName@::solve_ewsb_tree_level()
    return error;
 }
 
-int @ModelName@::solve_ewsb_tree_level_via_soft_higgs_masses()
+int CLASSNAME::solve_ewsb_tree_level_via_soft_higgs_masses()
 {
    int error = 0;
 
@@ -200,21 +200,21 @@ int @ModelName@::solve_ewsb_tree_level_via_soft_higgs_masses()
    return error;
 }
 
-int @ModelName@::solve_ewsb_one_loop()
+int CLASSNAME::solve_ewsb_one_loop()
 {
    return solve_ewsb_iteratively(1);
 }
 
-void @ModelName@::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])
+void CLASSNAME::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])
 {
 @ewsbInitialGuess@
 }
 
-int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
+int CLASSNAME::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
                                              const double x_init[@numberOfEWSBEquations@])
 {
    Ewsb_parameters params = {this, ewsb_loop_order};
-   Root_finder<@numberOfEWSBEquations@> root_finder(@ModelName@::tadpole_equations,
+   Root_finder<@numberOfEWSBEquations@> root_finder(CLASSNAME::tadpole_equations,
                               &params,
                               number_of_ewsb_iterations,
                               ewsb_iteration_precision);
@@ -224,7 +224,7 @@ int @ModelName@::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* s
    return status;
 }
 
-void @ModelName@::print(std::ostream& ostr) const
+void CLASSNAME::print(std::ostream& ostr) const
 {
    ostr << "========================================\n"
            "@ModelName@\n"
@@ -241,12 +241,12 @@ void @ModelName@::print(std::ostream& ostr) const
    physical.print(ostr);
 }
 
-double @ModelName@::A0(double m) const
+double CLASSNAME::A0(double m) const
 {
    return a0(m, get_scale());
 }
 
-double @ModelName@::B0(double p, double m1, double m2) const
+double CLASSNAME::B0(double p, double m1, double m2) const
 {
 #ifdef ENABLE_LOOPTOOLS
    setmudim(Sqr(get_scale()));
@@ -256,7 +256,7 @@ double @ModelName@::B0(double p, double m1, double m2) const
 #endif
 }
 
-double @ModelName@::B1(double p, double m1, double m2) const
+double CLASSNAME::B1(double p, double m1, double m2) const
 {
 #ifdef ENABLE_LOOPTOOLS
    setmudim(Sqr(get_scale()));
@@ -266,7 +266,7 @@ double @ModelName@::B1(double p, double m1, double m2) const
 #endif
 }
 
-double @ModelName@::B00(double p, double m1, double m2) const
+double CLASSNAME::B00(double p, double m1, double m2) const
 {
 #ifdef ENABLE_LOOPTOOLS
    setmudim(Sqr(get_scale()));
@@ -276,28 +276,28 @@ double @ModelName@::B00(double p, double m1, double m2) const
 #endif
 }
 
-double @ModelName@::B22(double p, double m1, double m2) const
+double CLASSNAME::B22(double p, double m1, double m2) const
 {
    return B00(p, m1, m2) - 0.25 * A0(m1) - 0.25 * A0(m2);
 }
 
-double @ModelName@::H0(double p, double m1, double m2) const
+double CLASSNAME::H0(double p, double m1, double m2) const
 {
    return 4.0 * B00(p, m1, m2) + G0(p, m1, m2);
 }
 
-double @ModelName@::F0(double p, double m1, double m2) const
+double CLASSNAME::F0(double p, double m1, double m2) const
 {
    return A0(m1) - 2.0 * A0(m2) - (2.0 * Sqr(p) + 2.0 * Sqr(m1) - Sqr(m2)) *
       B0(p, m1, m2);
 }
 
-double @ModelName@::G0(double p, double m1, double m2) const
+double CLASSNAME::G0(double p, double m1, double m2) const
 {
    return (Sqr(p) - Sqr(m1) - Sqr(m2)) * B0(p, m1, m2) - A0(m1) - A0(m2);
 }
 
-void @ModelName@::calculate_DRbar_parameters()
+void CLASSNAME::calculate_DRbar_parameters()
 {
 @saveSoftHiggsMasses@
    solve_ewsb_tree_level_via_soft_higgs_masses();
@@ -306,12 +306,12 @@ void @ModelName@::calculate_DRbar_parameters()
 @restoreSoftHiggsMasses@
 }
 
-void @ModelName@::calculate_1loop_masses()
+void CLASSNAME::calculate_1loop_masses()
 {
 @callAllLoopMassFunctions@
 }
 
-void @ModelName@::calculate_spectrum()
+void CLASSNAME::calculate_spectrum()
 {
    throw_on_tachyon = true;
    throw_on_ewsb_fail = true;
@@ -323,7 +323,7 @@ void @ModelName@::calculate_spectrum()
    throw_on_ewsb_fail = false;
 }
 
-void @ModelName@::clear()
+void CLASSNAME::clear()
 {
    @ModelName@_soft_parameters::clear();
 
@@ -331,12 +331,12 @@ void @ModelName@::clear()
    physical.clear();
 }
 
-std::string @ModelName@::name() const
+std::string CLASSNAME::name() const
 {
    return "@ModelName@";
 }
 
-int @ModelName@::run_to(double scale, double eps)
+int CLASSNAME::run_to(double scale, double eps)
 {
    if (eps < 0.0)
       eps = precision;

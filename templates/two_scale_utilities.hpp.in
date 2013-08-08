@@ -40,10 +40,10 @@ namespace @ModelName@_info {
 
 class @ModelName@_parameter_getter {
 public:
-   Eigen::ArrayXd get_parameters(const @ModelName@& model) {
+   Eigen::ArrayXd get_parameters(const @ModelName@<Two_scale>& model) {
       return model.display();
    }
-   std::vector<std::string> get_parameter_names(const @ModelName@& model) const {
+   std::vector<std::string> get_parameter_names(const @ModelName@<Two_scale>& model) const {
       return model.get_parameter_names();
    }
 };
@@ -53,7 +53,7 @@ public:
    @ModelName@_spectrum_plotter();
    ~@ModelName@_spectrum_plotter() {}
 
-   void extract_spectrum(const @ModelName@&);
+   void extract_spectrum(const @ModelName@<Two_scale>&);
    void write_to_file(const std::string&) const;
 
 private:

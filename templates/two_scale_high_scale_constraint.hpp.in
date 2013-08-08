@@ -26,6 +26,7 @@
 
 namespace flexiblesusy {
 
+template <class T>
 class @ModelName@;
 
 class @ModelName@_high_scale_constraint : public Constraint<Two_scale> {
@@ -43,7 +44,7 @@ public:
 private:
    double scale;
    double initial_scale_guess;
-   @ModelName@* model;
+   @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters inputPars;
 
    void update_scale();

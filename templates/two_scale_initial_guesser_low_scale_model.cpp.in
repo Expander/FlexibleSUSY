@@ -35,7 +35,7 @@ namespace flexiblesusy {
 #define MODEL model
 
 @ModelName@_initial_guesser::@ModelName@_initial_guesser(
-   @ModelName@* model_,
+   @ModelName@<Two_scale>* model_,
    const @ModelName@_input_parameters& input_pars_,
    const @ModelName@_low_scale_constraint& low_constraint_
 )
@@ -45,7 +45,7 @@ namespace flexiblesusy {
    , low_constraint(low_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
-          " @ModelName@ must not be zero");
+          " @ModelName@<Two_scale> must not be zero");
 }
 
 @ModelName@_initial_guesser::~@ModelName@_initial_guesser()

@@ -42,7 +42,7 @@ namespace flexiblesusy {
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
-#define MODELCLASSNAME @ModelName@
+#define MODELCLASSNAME @ModelName@<Two_scale>
 
 @ModelName@_high_scale_constraint::@ModelName@_high_scale_constraint()
    : Constraint<Two_scale>()
@@ -104,7 +104,7 @@ double @ModelName@_high_scale_constraint::get_initial_scale_guess() const
 
 void @ModelName@_high_scale_constraint::set_model(Two_scale_model* model_)
 {
-   model = cast_model<@ModelName@>(model_);
+   model = cast_model<@ModelName@<Two_scale> >(model_);
 }
 
 void @ModelName@_high_scale_constraint::set_input_parameters(const @ModelName@_input_parameters& inputPars_)

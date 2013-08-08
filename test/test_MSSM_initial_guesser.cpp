@@ -16,7 +16,7 @@
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
-   MSSM m;
+   MSSM<Two_scale> m;
    Mssm<Two_scale> smssm;
 
    // create MSSM initial guesser

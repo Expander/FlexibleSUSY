@@ -26,9 +26,9 @@
 
 namespace flexiblesusy {
 
-class @ModelName@_convergence_tester : public Convergence_tester_skeleton<@ModelName@> {
+class @ModelName@_convergence_tester : public Convergence_tester_skeleton<@ModelName@<Two_scale> > {
 public:
-   @ModelName@_convergence_tester(@ModelName@*, double);
+   @ModelName@_convergence_tester(@ModelName@<Two_scale>*, double);
    virtual ~@ModelName@_convergence_tester();
 
 protected:

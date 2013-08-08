@@ -30,6 +30,7 @@
 
 namespace flexiblesusy {
 
+template <class T>
 class @ModelName@;
 
 class @ModelName@_initial_guesser : public Initial_guesser<Two_scale> {
@@ -37,7 +38,7 @@ public:
 
    class NonPerturbativeRunningError : public Error {
    public:
-      NonPerturbativeRunningError(@ModelName@* model_, double scale_)
+      NonPerturbativeRunningError(@ModelName@<Two_scale>* model_, double scale_)
          : model(model_)
          , scale(scale_)
          {}
@@ -45,23 +46,23 @@ public:
       virtual std::string what() const {
          std::stringstream message;
          message << "@ModelName@_initial_guesser::NonPerturbativeRunningError:"
-                    " non-perturbative running of model @ModelName@ to scale "
-                 << scale;
+                    " non-perturbative running of model @ModelName@<Two_scale>"
+                    " to scale " << scale;
          return message.str();
       }
    private:
-      @ModelName@* model;
+      @ModelName@<Two_scale>* model;
       double scale;
    };
 
-   @ModelName@_initial_guesser(@ModelName@*,
+   @ModelName@_initial_guesser(@ModelName@<Two_scale>*,
                                const @ModelName@_input_parameters&,
                                const @ModelName@_low_scale_constraint&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess();
 
 private:
-   @ModelName@* model;
+   @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters input_pars;
    @ModelName@_low_scale_constraint low_constraint;
 

@@ -48,7 +48,7 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
           " model pointer must not be zero");
 
    // save old model parmeters
-   const MSSM mssm(*model);
+   const MSSM<Two_scale> mssm(*model);
 
    // run MSSM_low_scale_constraint::apply(), without the gauge
    // couplings
@@ -145,7 +145,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
 
    // save old model parmeters
    model->calculate_DRbar_parameters();
-   const MSSM mssm(*model);
+   const MSSM<Two_scale> mssm(*model);
 
    MSSM_susy_scale_constraint::apply();
 
@@ -266,7 +266,7 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
-   MSSM get_model() const { return mssm; }
+   MSSM<Two_scale> get_model() const { return mssm; }
    void set_low_scale_constraint(MSSM_low_scale_constraint* c) { low_constraint = c; }
    void set_susy_scale_constraint(MSSM_susy_scale_constraint* c) { susy_constraint = c; }
    void set_high_scale_constraint(MSSM_high_scale_constraint* c) { high_constraint = c; }
@@ -317,7 +317,7 @@ public:
    }
 private:
    double mx, msusy;
-   MSSM mssm;
+   MSSM<Two_scale> mssm;
    MSSM_high_scale_constraint* high_constraint;
    MSSM_susy_scale_constraint* susy_constraint;
    MSSM_low_scale_constraint*  low_constraint;
@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
-   const MSSM fs(mssm_tester.get_model());
+   const MSSM<Two_scale> fs(mssm_tester.get_model());
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
-   const MSSM fs(mssm_tester.get_model());
+   const MSSM<Two_scale> fs(mssm_tester.get_model());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00023);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00066);
@@ -659,7 +659,7 @@ void MSSM_iterative_low_scale_constraint::apply()
          if (contains_nan(x, 2))
             return std::numeric_limits<double>::max();
 
-         MSSM* model = static_cast<MSSM*>(params);
+         MSSM<Two_scale>* model = static_cast<MSSM<Two_scale>*>(params);
 
          const double vd = gsl_vector_get(x, 0);
          const double vu = gsl_vector_get(x, 1);

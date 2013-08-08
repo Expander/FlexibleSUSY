@@ -21,6 +21,7 @@
 #ifndef @ModelName@_TWO_SCALE_H
 #define @ModelName@_TWO_SCALE_H
 
+#include "@ModelName@_model.hpp"
 #include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "@ModelName@_two_scale_physical.hpp"
 #include "two_scale_model.hpp"
@@ -33,7 +34,10 @@
 
 namespace flexiblesusy {
 
-class @ModelName@ : public Two_scale_model, public @ModelName@_soft_parameters {
+class Two_scale;
+
+template<>
+class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_soft_parameters {
 public:
    @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    virtual ~@ModelName@();
@@ -69,7 +73,7 @@ public:
 @dependenceNumPrototypes@
 
    struct Ewsb_parameters {
-      @ModelName@* model;
+      @ModelName@<Two_scale>* model;
       unsigned ewsb_loop_order;
    };
 
