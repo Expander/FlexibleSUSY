@@ -7,7 +7,23 @@ TEMPLATES    := \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \
+		$(DIR)/run.cpp.in \
+		$(DIR)/run_low_scale_model.cpp.in \
 		$(DIR)/susy_scale_constraint.hpp.in \
+		$(DIR)/lattice_convergence_tester.hpp.in \
+		$(DIR)/lattice_convergence_tester.cpp.in \
+		$(DIR)/lattice_high_scale_constraint.hpp.in \
+		$(DIR)/lattice_high_scale_constraint.cpp.in \
+		$(DIR)/lattice_initial_guesser.hpp.in \
+		$(DIR)/lattice_initial_guesser.cpp.in \
+		$(DIR)/lattice_initial_guesser_low_scale_model.hpp.in \
+		$(DIR)/lattice_initial_guesser_low_scale_model.cpp.in \
+		$(DIR)/lattice_low_scale_constraint.hpp.in \
+		$(DIR)/lattice_low_scale_constraint.cpp.in \
+		$(DIR)/lattice_model.hpp.in \
+		$(DIR)/lattice_model.cpp.in \
+		$(DIR)/lattice_susy_scale_constraint.hpp.in \
+		$(DIR)/lattice_susy_scale_constraint.cpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \
 		$(DIR)/two_scale_high_scale_constraint.hpp.in \
@@ -23,8 +39,6 @@ TEMPLATES    := \
 		$(DIR)/two_scale_model.cpp.in \
 		$(DIR)/two_scale_physical.hpp.in \
 		$(DIR)/two_scale_physical.cpp.in \
-		$(DIR)/run.cpp.in \
-		$(DIR)/run_low_scale_model.cpp.in \
 		$(DIR)/two_scale_soft_parameters.hpp.in \
 		$(DIR)/two_scale_soft_parameters.cpp.in \
 		$(DIR)/two_scale_susy_parameters.hpp.in \

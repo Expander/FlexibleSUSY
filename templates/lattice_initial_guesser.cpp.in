@@ -1,0 +1,41 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#include "@ModelName@_lattice_initial_guesser.hpp"
+#include "@ModelName@_lattice_model.hpp"
+
+namespace flexiblesusy {
+
+@ModelName@_initial_guesser<Lattice>::@ModelName@_initial_guesser(
+   @ModelName@<Lattice>* model_,
+   @ModelName@_input_parameters& input_pars_,
+   @ModelName@_low_scale_constraint<Lattice>& low_constraint_,
+   @ModelName@_susy_scale_constraint<Lattice>& susy_constraint_,
+   @ModelName@_high_scale_constraint<Lattice>& high_constraint_
+)
+   : Initial_guesser<Lattice>()
+{
+}
+
+@ModelName@_initial_guesser<Lattice>::~@ModelName@_initial_guesser()
+{
+}
+
+} // namespace flexiblesusy
