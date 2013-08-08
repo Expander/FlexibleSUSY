@@ -24,11 +24,11 @@
 namespace flexiblesusy {
 
 @ModelName@_initial_guesser<Lattice>::@ModelName@_initial_guesser(
-   @ModelName@<Lattice>* model_,
-   @ModelName@_input_parameters& input_pars_,
-   @ModelName@_low_scale_constraint<Lattice>& low_constraint_,
-   @ModelName@_susy_scale_constraint<Lattice>& susy_constraint_,
-   @ModelName@_high_scale_constraint<Lattice>& high_constraint_
+   @ModelName@<Lattice>*,
+   @ModelName@_input_parameters&,
+   @ModelName@_low_scale_constraint<Lattice>&,
+   @ModelName@_susy_scale_constraint<Lattice>&,
+   @ModelName@_high_scale_constraint<Lattice>&
 )
    : Initial_guesser<Lattice>()
 {
