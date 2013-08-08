@@ -362,6 +362,7 @@ void RGFlow<Two_scale>::reset()
 {
    for (size_t m = 0; m < models.size(); ++m)
       delete models[m];
+   models.clear();
 
    iteration = 0;
    convergence_tester = NULL;
