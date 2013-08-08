@@ -42,7 +42,11 @@ template <class T>
 class @ModelName@_runner {
 public:
    @ModelName@_runner()
-      : solver(), model(), high_scale(0.), susy_scale(0.), low_scale(0.)
+      : solver(), model()
+      , high_scale_constraint()
+      , susy_scale_constraint()
+      , low_scale_constraint()
+      , high_scale(0.), susy_scale(0.), low_scale(0.)
       , precision_goal(1.0e-5) {}
    ~@ModelName@_runner() {}
 
@@ -59,6 +63,9 @@ public:
 private:
    RGFlow<T> solver;
    @ModelName@<T> model;
+   @ModelName@_high_scale_constraint<T> high_scale_constraint;
+   @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
+   @ModelName@_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double precision_goal; ///< precision goal
 };
@@ -76,9 +83,12 @@ private:
 template <class T>
 void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
 {
-   @ModelName@_high_scale_constraint<T> high_scale_constraint(input);
-   @ModelName@_susy_scale_constraint<T> susy_scale_constraint(input);
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint(input);
+   high_scale_constraint.reset();
+   susy_scale_constraint.reset();
+   low_scale_constraint .reset();
+   high_scale_constraint.set_input_parameters(input);
+   susy_scale_constraint.set_input_parameters(input);
+   low_scale_constraint .set_input_parameters(input);
 
    std::vector<Constraint<T>*> upward_constraints;
    upward_constraints.push_back(&low_scale_constraint);
