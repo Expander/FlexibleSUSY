@@ -2,6 +2,7 @@ DIR          := templates
 MODNAME      := templates
 
 TEMPLATES    := \
+		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \

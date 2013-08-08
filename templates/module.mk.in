@@ -94,6 +94,9 @@ $(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_s
 $(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_convergence_tester.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 

@@ -284,7 +284,7 @@ public:
       low_constraint->set_input_parameters(pp);
       susy_constraint->set_input_parameters(pp);
 
-      MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
+      MSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
       MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp,
                                                       *low_constraint,
                                                       *susy_constraint,

@@ -32,16 +32,16 @@ namespace flexiblesusy {
 #define OLD(p,i) ol->get_##p()(i)
 #define NEW(p,i) ne->get_##p()(i)
 
-@ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@<Two_scale>* model, double accuracy_goal)
+@ModelName@_convergence_tester<Two_scale>::@ModelName@_convergence_tester(@ModelName@<Two_scale>* model, double accuracy_goal)
    : Convergence_tester_skeleton<@ModelName@<Two_scale> >(model, accuracy_goal)
 {
 }
 
-@ModelName@_convergence_tester::~@ModelName@_convergence_tester()
+@ModelName@_convergence_tester<Two_scale>::~@ModelName@_convergence_tester()
 {
 }
 
-double @ModelName@_convergence_tester::max_rel_diff() const
+double @ModelName@_convergence_tester<Two_scale>::max_rel_diff() const
 {
    const @ModelName@<Two_scale>* ol = get_last_iteration_model();
    const @ModelName@<Two_scale>* ne = get_model();

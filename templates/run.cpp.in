@@ -90,7 +90,7 @@ void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
 
    model.set_input(input);
 
-   @ModelName@_convergence_tester convergence_tester(&model, precision_goal);
+   @ModelName@_convergence_tester<T> convergence_tester(&model, precision_goal);
    @ModelName@_initial_guesser<T> initial_guesser(&model, input,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,

@@ -18,26 +18,13 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_CONVERGENCE_TESTER_H
-#define @ModelName@_TWO_SCALE_CONVERGENCE_TESTER_H
-
-#include "@ModelName@_convergence_tester.hpp"
-#include "@ModelName@_two_scale_model.hpp"
-#include "two_scale_convergence_tester_skeleton.hpp"
+#ifndef @ModelName@_CONVERGENCE_TESTER_H
+#define @ModelName@_CONVERGENCE_TESTER_H
 
 namespace flexiblesusy {
 
-class Two_scale;
-
-template<>
-class @ModelName@_convergence_tester<Two_scale> : public Convergence_tester_skeleton<@ModelName@<Two_scale> > {
-public:
-   @ModelName@_convergence_tester(@ModelName@<Two_scale>*, double);
-   virtual ~@ModelName@_convergence_tester();
-
-protected:
-   virtual double max_rel_diff() const;
-};
+template <class T>
+class @ModelName@_convergence_tester;
 
 } // namespace flexiblesusy
 
