@@ -355,4 +355,16 @@ std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const
    return message.str();
 }
 
+void RGFlow<Two_scale>::reset()
+{
+   for (size_t m = 0; m < models.size(); ++m)
+      delete models[m];
+
+   iteration = 0;
+   convergence_tester = NULL;
+   initial_guesser = NULL;
+   running_precision_calculator = NULL;
+   running_precision = 1.0e-3;
 }
+
+} // namespace flexiblesusy

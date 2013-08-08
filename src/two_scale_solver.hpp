@@ -99,6 +99,8 @@ public:
                   const std::vector<Constraint<Two_scale>*>& downwards_constraints);
    /// get number of used iterations
    unsigned int number_of_iterations_done() const;
+   /// clear all internal data
+   void reset();
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set running precision calculator
