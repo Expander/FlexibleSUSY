@@ -13,6 +13,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/numerics.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
+		$(DIR)/slha_io.cpp \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/wrappers.cpp

@@ -22,16 +22,13 @@
 #define @ModelName@_utilities_H
 
 #include "@ModelName@_model.hpp"
+#include "slha_io.hpp"
 
 #include <Eigen/Core>
 #include <string>
 #include <vector>
 #include <valarray>
 #include <utility>
-
-namespace softsusy {
-   class QedQcd;
-}
 
 namespace flexiblesusy {
 
@@ -82,16 +79,13 @@ private:
 
 struct @ModelName@_input_parameters;
 
-class @ModelName@_slha_reader {
+class @ModelName@_slha_reader : public SLHA_io {
 public:
    @ModelName@_slha_reader(const std::string&);
-   ~@ModelName@_slha_reader() {}
+   virtual ~@ModelName@_slha_reader() {}
 
-   void fill(QedQcd&);
+   using SLHA_io::fill;
    void fill(@ModelName@_input_parameters&);
-
-private:
-   std::string input_filename;
 };
 
 } // namespace flexiblesusy
