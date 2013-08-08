@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_PARAMETER_POINT_H
-#define MSSM_PARAMETER_POINT_H
+#ifndef SMSSM_PARAMETER_POINT_H
+#define SMSSM_PARAMETER_POINT_H
 
 #include "linalg.h"
 

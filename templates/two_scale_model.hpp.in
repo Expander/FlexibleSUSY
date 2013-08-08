@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_H
-#define @ModelName@_H
+#ifndef @ModelName@_TWO_SCALE_H
+#define @ModelName@_TWO_SCALE_H
 
 #include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "@ModelName@_two_scale_physical.hpp"

@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_TWO_SCALE_H
-#define MSSM_TWO_SCALE_H
+#ifndef SMSSM_TWO_SCALE_H
+#define SMSSM_TWO_SCALE_H
 
 #include "mssm.hpp"
 #include "two_scale_model.hpp"

@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_MSUSY_CONSTRAINT_H
-#define MSSM_MSUSY_CONSTRAINT_H
+#ifndef SMSSM_MSUSY_CONSTRAINT_H
+#define SMSSM_MSUSY_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
 #include "mssm_parameter_point.hpp"

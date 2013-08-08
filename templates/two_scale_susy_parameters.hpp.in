@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_susy_parameters_H
-#define @ModelName@_susy_parameters_H
+#ifndef @ModelName@_TWO_SCALE_susy_parameters_H
+#define @ModelName@_TWO_SCALE_susy_parameters_H
 
 #include "betafunction.hpp"
 #include "@ModelName@_two_scale_input_parameters.hpp"

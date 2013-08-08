@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_INITIAL_GUESSER_H
-#define @ModelName@_INITIAL_GUESSER_H
+#ifndef @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
+#define @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "@ModelName@_two_scale_input_parameters.hpp"
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"

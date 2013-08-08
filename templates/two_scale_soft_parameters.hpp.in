@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_soft_parameters_H
-#define @ModelName@_soft_parameters_H
+#ifndef @ModelName@_TWO_SCALE_soft_parameters_H
+#define @ModelName@_TWO_SCALE_soft_parameters_H
 
 #include "rge.h"
 #include "@ModelName@_two_scale_susy_parameters.hpp"

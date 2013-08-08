@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_INPUT_PARAMETERS_H
-#define @ModelName@_INPUT_PARAMETERS_H
+#ifndef @ModelName@_TWO_SCALE_INPUT_PARAMETERS_H
+#define @ModelName@_TWO_SCALE_INPUT_PARAMETERS_H
 
 #include "mycomplex.h"
 
