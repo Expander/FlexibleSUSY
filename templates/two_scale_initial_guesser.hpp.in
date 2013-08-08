@@ -21,6 +21,7 @@
 #ifndef @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
 #define @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
 
+#include "@ModelName@_initial_guesser.hpp"
 #include "@ModelName@_two_scale_input_parameters.hpp"
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
@@ -35,7 +36,10 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
-class @ModelName@_initial_guesser : public Initial_guesser<Two_scale> {
+class Two_scale;
+
+template<>
+class @ModelName@_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
 
    class NonPerturbativeRunningError : public Error {
@@ -59,18 +63,18 @@ public:
 
    @ModelName@_initial_guesser(@ModelName@<Two_scale>*,
                                const @ModelName@_input_parameters&,
-                               const @ModelName@_low_scale_constraint&,
-                               const @ModelName@_susy_scale_constraint&,
-                               const @ModelName@_high_scale_constraint&);
+                               const @ModelName@_low_scale_constraint<Two_scale>&,
+                               const @ModelName@_susy_scale_constraint<Two_scale>&,
+                               const @ModelName@_high_scale_constraint<Two_scale>&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess();
 
 private:
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters input_pars;
-   @ModelName@_low_scale_constraint low_constraint;
-   @ModelName@_susy_scale_constraint susy_constraint;
-   @ModelName@_high_scale_constraint high_constraint;
+   @ModelName@_low_scale_constraint<Two_scale> low_constraint;
+   @ModelName@_susy_scale_constraint<Two_scale> susy_constraint;
+   @ModelName@_high_scale_constraint<Two_scale> high_constraint;
 
    void guess_susy_parameters();
    void guess_soft_parameters();

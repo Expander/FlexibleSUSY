@@ -34,10 +34,10 @@ namespace flexiblesusy {
 #define SM(p) Electroweak_constants::p
 #define MODEL model
 
-@ModelName@_initial_guesser::@ModelName@_initial_guesser(
+@ModelName@_initial_guesser<Two_scale>::@ModelName@_initial_guesser(
    @ModelName@<Two_scale>* model_,
    const @ModelName@_input_parameters& input_pars_,
-   const @ModelName@_low_scale_constraint& low_constraint_
+   const @ModelName@_low_scale_constraint<Two_scale>& low_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
@@ -48,18 +48,18 @@ namespace flexiblesusy {
           " @ModelName@<Two_scale> must not be zero");
 }
 
-@ModelName@_initial_guesser::~@ModelName@_initial_guesser()
+@ModelName@_initial_guesser<Two_scale>::~@ModelName@_initial_guesser()
 {
 }
 
-void @ModelName@_initial_guesser::guess()
+void @ModelName@_initial_guesser<Two_scale>::guess()
 {
    model->clear();
    guess_susy_parameters();
    model->run_to(low_constraint.get_scale());
 }
 
-void @ModelName@_initial_guesser::guess_susy_parameters()
+void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 {
    QedQcd leAtMt;
    const double MZ = Electroweak_constants::MZ;

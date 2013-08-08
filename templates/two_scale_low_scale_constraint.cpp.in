@@ -43,7 +43,7 @@ namespace flexiblesusy {
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 
-@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint()
+@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
    , model(0)
    , inputPars()
@@ -58,7 +58,7 @@ namespace flexiblesusy {
    scale = initial_scale_guess;
 }
 
-@ModelName@_low_scale_constraint::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , model(0)
    , inputPars(inputPars_)
@@ -73,11 +73,11 @@ namespace flexiblesusy {
    scale = initial_scale_guess;
 }
 
-@ModelName@_low_scale_constraint::~@ModelName@_low_scale_constraint()
+@ModelName@_low_scale_constraint<Two_scale>::~@ModelName@_low_scale_constraint()
 {
 }
 
-void @ModelName@_low_scale_constraint::apply()
+void @ModelName@_low_scale_constraint<Two_scale>::apply()
 {
    assert(model && "Error: @ModelName@_low_scale_constraint:"
           " model pointer must not be zero");
@@ -101,27 +101,27 @@ void @ModelName@_low_scale_constraint::apply()
    model->set_@ElectronYukawa@(new_Ye);
 }
 
-double @ModelName@_low_scale_constraint::get_scale() const
+double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
 {
    return scale;
 }
 
-double @ModelName@_low_scale_constraint::get_initial_scale_guess() const
+double @ModelName@_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
 {
    return initial_scale_guess;
 }
 
-void @ModelName@_low_scale_constraint::set_model(Two_scale_model* model_)
+void @ModelName@_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<@ModelName@<Two_scale> >(model_);
 }
 
-void @ModelName@_low_scale_constraint::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
+void @ModelName@_low_scale_constraint<Two_scale>::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
 {
    inputPars = inputPars_;
 }
 
-void @ModelName@_low_scale_constraint::reset()
+void @ModelName@_low_scale_constraint<Two_scale>::reset()
 {
    scale = initial_scale_guess;
    model = NULL;
@@ -133,12 +133,12 @@ void @ModelName@_low_scale_constraint::reset()
    new_Ye = Eigen::Matrix<double,3,3>::Zero();
 }
 
-void @ModelName@_low_scale_constraint::update_scale()
+void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 {
 @calculateScale@
 }
 
-void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
@@ -181,19 +181,19 @@ void @ModelName@_low_scale_constraint::calculate_DRbar_gauge_couplings()
    new_g3 = g3_drbar;
 }
 
-double @ModelName@_low_scale_constraint::calculate_delta_alpha_em(double alphaEm) const
+double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const
 {
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaEm@
 }
 
-double @ModelName@_low_scale_constraint::calculate_delta_alpha_s(double alphaS) const
+double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(double alphaS) const
 {
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaS@
 }
 
-void @ModelName@_low_scale_constraint::calculate_DRbar_yukawa_couplings()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
 {
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),

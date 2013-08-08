@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 #ifndef @ModelName@_HIGH_SCALE_CONSTRAINT_H
-#define @ModelName@_SUSY_SCALE_CONSTRAINT_H
+#define @ModelName@_HIGH_SCALE_CONSTRAINT_H
 
 namespace flexiblesusy {
 

@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
-   MSSM_susy_scale_constraint constraint(input);
+   MSSM_susy_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
    constraint.apply();
 

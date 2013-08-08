@@ -21,6 +21,7 @@
 #ifndef @ModelName@_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 #define @ModelName@_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 
+#include "@ModelName@_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
 #include <Eigen/Core>
@@ -30,7 +31,10 @@ namespace flexiblesusy {
 template <class T>
 class @ModelName@;
 
-class @ModelName@_low_scale_constraint : public Constraint<Two_scale> {
+class Two_scale;
+
+template<>
+class @ModelName@_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_low_scale_constraint();
    @ModelName@_low_scale_constraint(const @ModelName@_input_parameters&);

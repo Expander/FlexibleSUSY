@@ -31,12 +31,12 @@
  * the gauge couplings at the low scale as Softsusy does it.
  */
 class MSSM_precise_gauge_couplings_low_scale_constraint
-   : public MSSM_low_scale_constraint {
+   : public MSSM_low_scale_constraint<Two_scale> {
 public:
    MSSM_precise_gauge_couplings_low_scale_constraint()
-      : MSSM_low_scale_constraint() {}
+      : MSSM_low_scale_constraint<Two_scale>() {}
    MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_low_scale_constraint(inputPars_) {}
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_) {}
    virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
 
    virtual void apply();
@@ -127,12 +127,12 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
  * one-loop ewsb at the susy scale as Softsusy does it.
  */
 class MSSM_softsusy_ewsb_susy_scale_constraint
-   : public MSSM_susy_scale_constraint {
+   : public MSSM_susy_scale_constraint<Two_scale> {
 public:
    MSSM_softsusy_ewsb_susy_scale_constraint()
-      : MSSM_susy_scale_constraint() {}
+      : MSSM_susy_scale_constraint<Two_scale>() {}
    MSSM_softsusy_ewsb_susy_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_susy_scale_constraint(inputPars_) {}
+      : MSSM_susy_scale_constraint<Two_scale>(inputPars_) {}
    virtual ~MSSM_softsusy_ewsb_susy_scale_constraint() {}
 
    virtual void apply();
@@ -147,7 +147,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
    model->calculate_DRbar_parameters();
    const MSSM<Two_scale> mssm(*model);
 
-   MSSM_susy_scale_constraint::apply();
+   MSSM_susy_scale_constraint<Two_scale>::apply();
 
    // Now do the one-loop EWSB using MssmSoftsusy::rewsb
    MssmSoftsusy softsusy;
@@ -267,16 +267,16 @@ public:
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
    MSSM<Two_scale> get_model() const { return mssm; }
-   void set_low_scale_constraint(MSSM_low_scale_constraint* c) { low_constraint = c; }
-   void set_susy_scale_constraint(MSSM_susy_scale_constraint* c) { susy_constraint = c; }
-   void set_high_scale_constraint(MSSM_high_scale_constraint* c) { high_constraint = c; }
+   void set_low_scale_constraint(MSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
+   void set_susy_scale_constraint(MSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
+   void set_high_scale_constraint(MSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
    void setup_default_constaints() {
       if (!high_constraint)
-         high_constraint = new MSSM_high_scale_constraint();
+         high_constraint = new MSSM_high_scale_constraint<Two_scale>();
       if (!susy_constraint)
-         susy_constraint = new MSSM_susy_scale_constraint();
+         susy_constraint = new MSSM_susy_scale_constraint<Two_scale>();
       if (!low_constraint)
-         low_constraint = new MSSM_low_scale_constraint();
+         low_constraint = new MSSM_low_scale_constraint<Two_scale>();
    }
    void test(const MSSM_input_parameters& pp) {
       setup_default_constaints();
@@ -285,9 +285,10 @@ public:
       susy_constraint->set_input_parameters(pp);
 
       MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
-      MSSM_initial_guesser initial_guesser(&mssm, pp, *low_constraint,
-                                           *susy_constraint,
-                                           *high_constraint);
+      MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp,
+                                                      *low_constraint,
+                                                      *susy_constraint,
+                                                      *high_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.set_input(pp);
@@ -318,15 +319,15 @@ public:
 private:
    double mx, msusy;
    MSSM<Two_scale> mssm;
-   MSSM_high_scale_constraint* high_constraint;
-   MSSM_susy_scale_constraint* susy_constraint;
-   MSSM_low_scale_constraint*  low_constraint;
+   MSSM_high_scale_constraint<Two_scale>* high_constraint;
+   MSSM_susy_scale_constraint<Two_scale>* susy_constraint;
+   MSSM_low_scale_constraint<Two_scale>*  low_constraint;
 };
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 {
    MSSM_input_parameters pp;
-   const MSSM_high_scale_constraint high_constraint(pp);
+   const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
@@ -570,7 +571,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 {
    MSSM_input_parameters pp;
-   const MSSM_high_scale_constraint high_constraint(pp);
+   const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
@@ -633,12 +634,12 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
  * Higgs mass and eliminates TanBeta.
  */
 class MSSM_iterative_low_scale_constraint
-   : public MSSM_low_scale_constraint {
+   : public MSSM_low_scale_constraint<Two_scale> {
 public:
    MSSM_iterative_low_scale_constraint()
-      : MSSM_low_scale_constraint() {}
+      : MSSM_low_scale_constraint<Two_scale>() {}
    MSSM_iterative_low_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_low_scale_constraint(inputPars_) {}
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_) {}
    virtual ~MSSM_iterative_low_scale_constraint() {}
 
    virtual void apply();

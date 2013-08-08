@@ -15,7 +15,9 @@
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
-DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model, MSSM_low_scale_constraint constraint, double scale)
+DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model,
+                                       MSSM_low_scale_constraint<Two_scale> constraint,
+                                       double scale)
 {
    model.set_scale(scale);
    constraint.set_model(&model);
@@ -35,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -72,7 +74,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
 
    const double e = Electroweak_constants::e;
@@ -97,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    MSSM<Two_scale> m; MssmSoftsusy s;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
 
    const double TanBeta = input.TanBeta;
