@@ -280,8 +280,8 @@ public:
     Real& y(size_t T, size_t m, size_t i) { return y_[site_offset(T,m) + i]; }
     Real  y(size_t T, size_t m, size_t i) const
     { return y_[site_offset(T,m) + i]; }
-    Real  x(size_t T, size_t m, size_t i) const
-    { return y(T,m,i) * efts[T].units[i]; }
+    Real  u(size_t T, size_t i) const { return efts[T].units[i]; }
+    Real  x(size_t T, size_t m, size_t i) const { return y(T,m,i) * u(T,i); }
     std::vector<Lattice_constraint*> constraints;
     std::vector<size_t> teqidx;
     std::vector<size_t> rgeidx;
