@@ -23,7 +23,7 @@
 
 #include "@ModelName@_model.hpp"
 #include "@ModelName@_two_scale_soft_parameters.hpp"
-#include "@ModelName@_two_scale_physical.hpp"
+#include "@ModelName@_physical.hpp"
 #include "two_scale_model.hpp"
 
 #include <iosfwd>

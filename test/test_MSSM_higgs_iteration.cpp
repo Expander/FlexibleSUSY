@@ -17,7 +17,7 @@
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
 #include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_input_parameters.hpp"
+#include "MSSM_input_parameters.hpp"
 #include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "MSSM_two_scale_susy_scale_constraint.hpp"
 #include "MSSM_two_scale_low_scale_constraint.hpp"

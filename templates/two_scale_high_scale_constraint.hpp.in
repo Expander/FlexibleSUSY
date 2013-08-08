@@ -22,7 +22,7 @@
 #define @ModelName@_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
 
 #include "@ModelName@_high_scale_constraint.hpp"
-#include "@ModelName@_two_scale_input_parameters.hpp"
+#include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
 
 namespace flexiblesusy {

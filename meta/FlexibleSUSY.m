@@ -778,8 +778,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     FlexibleSUSY`DefaultParameterPoint,
-                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_input_parameters.hpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_input_parameters.hpp"}]}}
+                                    {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
                                    ];
 
            massMatrices = ConvertSarahMassMatrices[] /.
@@ -813,10 +813,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices,
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_utilities.hpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_utilities.hpp"}]},
-                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_utilities.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_utilities.cpp"}]}}
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]}}
                               ];
 
            Print["Creating plot scripts ..."];
@@ -926,10 +926,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_lattice_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "lattice_model.cpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_lattice_model.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_physical.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_physical.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_physical.cpp"}]}
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
 

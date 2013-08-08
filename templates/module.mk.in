@@ -6,16 +6,16 @@ LIB@CLASSNAME@_SRC :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/@CLASSNAME@_physical.cpp \
+		$(DIR)/@CLASSNAME@_utilities.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_model.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_physical.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_utilities.cpp
+		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp
 endif
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
@@ -68,10 +68,10 @@ $(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp: $(DIR)/@CLASSNAME@_two_scale_s
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
-$(DIR)/@CLASSNAME@_two_scale_physical.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_physical.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
-$(DIR)/@CLASSNAME@_two_scale_physical.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_physical.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
@@ -116,10 +116,10 @@ $(DIR)/@CLASSNAME@_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parame
 $(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
-$(DIR)/@CLASSNAME@_two_scale_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
-$(DIR)/@CLASSNAME@_two_scale_utilities.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+$(DIR)/@CLASSNAME@_utilities.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o: CPPFLAGS += $(EIGENFLAGS)
