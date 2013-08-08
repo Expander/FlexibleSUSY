@@ -37,20 +37,21 @@
 int main()
 {
    using namespace flexiblesusy;
+   typedef Two_scale algorithm_type;
 
    @ModelName@_input_parameters input;
-   @ModelName@ model(input);
+   @ModelName@<algorithm_type> model(input);
    @ModelName@_low_scale_constraint low_scale_constraint(input);
    @ModelName@_susy_scale_constraint susy_scale_constraint(input);
    @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
    @ModelName@_initial_guesser initial_guesser(&model, input, low_scale_constraint);
    Two_scale_constant_precision precision(1.0e-5);
 
-   RGFlow<Two_scale> solver;
+   RGFlow<algorithm_type> solver;
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   std::vector<Constraint<Two_scale>*> constraints;
+   std::vector<Constraint<algorithm_type>*> constraints;
    constraints.push_back(&low_scale_constraint);
    solver.add_model(&model, constraints);
 
