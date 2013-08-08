@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
    Real pp_mxGuess = MX1L();
    Real mu = pp_m0;		// sign wish enters here
    // one may want to check sign(mu) after solution is found
-   Real b  = pp_m0;
+   Real b  = sqr(pp_m0);
 
    Fmssm<Lattice> fmssm;
 

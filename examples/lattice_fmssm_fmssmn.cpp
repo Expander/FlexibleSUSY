@@ -256,7 +256,7 @@ int main(int argc, char *argv[])
    Real pp_tanBeta = 10;
    Real pp_mxGuess = MX1L();
    Real mu = pp_m0;
-   Real b  = pp_m0;
+   Real b  = sqr(pp_m0);
 
    Fmssm<Lattice> fmssm;
 
