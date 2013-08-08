@@ -64,6 +64,9 @@ $(DIR)/@CLASSNAME@_two_scale_physical.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_par
 $(DIR)/@CLASSNAME@_two_scale_physical.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
