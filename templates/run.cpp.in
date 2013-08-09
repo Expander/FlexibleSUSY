@@ -186,6 +186,7 @@ int main(int argc, const char* argv[])
       return options.status();
 
    const std::string slha_input_file(options.get_slha_input_file());
+   const std::string slha_output_file(options.get_slha_output_file());
    @ModelName@_slha_io slha_io;
    QedQcd oneset;
    @ModelName@_input_parameters input;
@@ -201,7 +202,7 @@ int main(int argc, const char* argv[])
 
    try {
       runner.run(oneset, input);
-      runner.get_model().print(std::cout);
+      slha_io.write_to_file(slha_output_file);
       // runner.write_running_couplings();
       // runner.write_spectrum();
    } catch (const Error& error) {
