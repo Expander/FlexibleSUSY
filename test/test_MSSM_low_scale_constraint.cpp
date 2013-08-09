@@ -75,14 +75,13 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    MSSM_input_parameters input;
    QedQcd oneset;
    setup_MSSM(m, s, input);
+   s.setData(oneset);
 
    MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
-   const double e = Electroweak_constants::e;
-   const double g3 = Electroweak_constants::g3;
-   const double alpha_em = Sqr(e) / (4. * PI);
-   const double alpha_s = Sqr(g3) / (4. * PI);
+   const double alpha_em = oneset.displayAlpha(ALPHA);
+   const double alpha_s  = oneset.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
