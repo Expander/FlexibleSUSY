@@ -7,8 +7,8 @@
 
 #define private public
 
-#include "MSSM_model.hpp"
-#include "MSSM_susy_scale_constraint.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_susy_scale_constraint.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
@@ -16,11 +16,11 @@
 
 BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
 
-   MSSM_susy_scale_constraint constraint(input);
+   MSSM_susy_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
    constraint.apply();
 

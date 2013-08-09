@@ -10,6 +10,10 @@ TestEquality[Private`GetBestSplitPoint["a b",2], 2];
 TestEquality[Private`GetBestSplitPoint["a b c",4], 4];
 TestEquality[Private`GetBestSplitPoint["a b c",10], StringLength["a b c"]];
 
+(* test that we do not split a C string *)
+TestEquality[Private`GetBestSplitPoint["\"a,b\"\"cd\"",2], StringLength["\"a,b\"\"cd\""]];
+TestEquality[Private`GetBestSplitPoint["1 + \"a,b\"",7], 4];
+
 Print["testing SplitLine[] ..."];
 
 TestEquality[Private`SplitLine["",0], {""}];

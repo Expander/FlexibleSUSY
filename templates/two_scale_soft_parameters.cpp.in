@@ -18,7 +18,7 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_soft_parameters.hpp"
+#include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "wrappers.hpp"
 
 #include <iostream>
@@ -87,16 +87,6 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
    @ModelName@_susy_parameters::set(v);
 
 @set@
-}
-
-std::vector<std::string> @ModelName@_soft_parameters::get_parameter_names() const
-{
-   std::vector<std::string> names(@ModelName@_susy_parameters::get_parameter_names());
-   names.resize(@numberOfParameters@);
-
-@parameterNames@
-
-   return names;
 }
 
 } // namespace flexiblesusy

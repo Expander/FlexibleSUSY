@@ -19,7 +19,9 @@ CreateCCtorInitialization::usage="";
 CreateCCtorParameterList::usage="";
 CreateParameterList::usage="";
 ClearParameters::usage="";
-CreateParameterNamesFunction::usage="";
+
+CreateParameterEnum::usage="";
+CreateParameterNames::usage="";
 
 Begin["Private`"];
 
@@ -173,24 +175,35 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            Return[display];
           ];
 
-CreateParameterNamesFunction[betaFunctions_List, parameterNumberOffset_:0] :=
-    Module[{display = "", paramCount = parameterNumberOffset, name = "",
-            beta = {}, type = ErrorType, i, numberOfParameters, assignment = "",
-            nAssignments = 0},
-           numberOfParameters = CountNumberOfParameters[betaFunctions] + parameterNumberOffset;
+CreateParameterNames[betaFunctions_List] :=
+    Module[{i, par, type, name, result = ""},
            For[i = 1, i <= Length[betaFunctions], i++,
-               beta = GetAllBetaFunctions[betaFunctions[[i]]];
+               par = GetName[betaFunctions[[i]]];
                type = GetType[betaFunctions[[i]]];
-               name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
-               {assignment, nAssignments} = Parameters`CreateParameterNames[name, paramCount, type];
-               display = display <> assignment;
-               paramCount += nAssignments;
+               name = Parameters`CreateParameterNamesStr[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
               ];
-           (* sanity check *)
-           If[paramCount != numberOfParameters,
-              Print["Error: CreateParameterNamesFunction: number of parameters does not match: ", paramCount,
-                    " != ", numberOfParameters]; Quit[1];];
-           Return[display];
+           result = "const char* parameter_names[NUMBER_OF_PARAMETERS] = {" <>
+                    result <> "};\n";
+           Return[result];
+          ];
+
+CreateParameterEnum[betaFunctions_List] :=
+    Module[{i, par, type, name, result = ""},
+           For[i = 1, i <= Length[betaFunctions], i++,
+               par = GetName[betaFunctions[[i]]];
+               type = GetType[betaFunctions[[i]]];
+               name = Parameters`CreateParameterEnums[par, type];
+               If[i > 1, result = result <> ", ";];
+               result = result <> name;
+              ];
+           (* append enum state for the number of betaFunctions *)
+           If[Length[betaFunctions] > 0, result = result <> ", ";];
+           result = result <> "NUMBER_OF_PARAMETERS";
+           result = "enum Parameters {" <>
+                    result <> "};\n";
+           Return[result];
           ];
 
 ConvertParameterNames[betaFunctions_List] :=

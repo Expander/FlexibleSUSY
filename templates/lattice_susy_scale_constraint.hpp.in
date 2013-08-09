@@ -18,13 +18,28 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#ifndef @ModelName@_LATTICE_SUSY_SCALE_CONSTRAINT_H
+#define @ModelName@_LATTICE_SUSY_SCALE_CONSTRAINT_H
+
+#include "@ModelName@_susy_scale_constraint.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "lattice_constraint.hpp"
 
 namespace flexiblesusy {
 
 template <class T>
-class @ModelName@_convergence_tester;
+class @ModelName@;
+
+class Lattice;
+
+template<>
+class @ModelName@_susy_scale_constraint<Lattice> : public Constraint<Lattice> {
+public:
+   @ModelName@_susy_scale_constraint();
+   @ModelName@_susy_scale_constraint(const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_susy_scale_constraint();
+   virtual double get_scale() const;
+};
 
 } // namespace flexiblesusy
 

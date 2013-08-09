@@ -18,13 +18,23 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#ifndef @ModelName@_LATTICE_CONVERGENCE_TESTER_H
+#define @ModelName@_LATTICE_CONVERGENCE_TESTER_H
+
+#include "@ModelName@_convergence_tester.hpp"
+#include "@ModelName@_lattice_model.hpp"
+#include "lattice_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+class Lattice;
+
+template<>
+class @ModelName@_convergence_tester<Lattice> : public Convergence_tester<Lattice> {
+public:
+   @ModelName@_convergence_tester(@ModelName@<Lattice>*, double);
+   virtual ~@ModelName@_convergence_tester();
+};
 
 } // namespace flexiblesusy
 

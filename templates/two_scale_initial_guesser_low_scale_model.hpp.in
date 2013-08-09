@@ -18,11 +18,12 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_INITIAL_GUESSER_H
-#define @ModelName@_INITIAL_GUESSER_H
+#ifndef @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
+#define @ModelName@_TWO_SCALE_INITIAL_GUESSER_H
 
+#include "@ModelName@_initial_guesser.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_low_scale_constraint.hpp"
+#include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "two_scale_initial_guesser.hpp"
 #include "error.hpp"
 #include "lowe.h"
@@ -31,14 +32,18 @@
 
 namespace flexiblesusy {
 
+template <class T>
 class @ModelName@;
 
-class @ModelName@_initial_guesser : public Initial_guesser<Two_scale> {
+class Two_scale;
+
+template<>
+class @ModelName@_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
 
    class NonPerturbativeRunningError : public Error {
    public:
-      NonPerturbativeRunningError(@ModelName@* model_, double scale_)
+      NonPerturbativeRunningError(@ModelName@<Two_scale>* model_, double scale_)
          : model(model_)
          , scale(scale_)
          {}
@@ -46,27 +51,27 @@ public:
       virtual std::string what() const {
          std::stringstream message;
          message << "@ModelName@_initial_guesser::NonPerturbativeRunningError:"
-                    " non-perturbative running of model @ModelName@ to scale "
-                 << scale;
+                    " non-perturbative running of model @ModelName@<Two_scale>"
+                    " to scale " << scale;
          return message.str();
       }
    private:
-      @ModelName@* model;
+      @ModelName@<Two_scale>* model;
       double scale;
    };
 
-   @ModelName@_initial_guesser(@ModelName@*,
+   @ModelName@_initial_guesser(@ModelName@<Two_scale>*,
                                const @ModelName@_input_parameters&,
                                const QedQcd&,
-                               const @ModelName@_low_scale_constraint&);
+                               const @ModelName@_low_scale_constraint<Two_scale>&);
    virtual ~@ModelName@_initial_guesser();
    virtual void guess();
 
 private:
-   @ModelName@* model;
+   @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters input_pars;
    QedQcd oneset;
-   @ModelName@_low_scale_constraint low_constraint;
+   @ModelName@_low_scale_constraint<Two_scale> low_constraint;
 
    void guess_susy_parameters();
 };

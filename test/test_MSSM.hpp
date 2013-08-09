@@ -4,13 +4,13 @@
 
 #include "test.h"
 #include "softsusy.h"
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
 using namespace flexiblesusy;
 
-void ensure_tree_level_ewsb(MSSM& m)
+void ensure_tree_level_ewsb(MSSM<Two_scale>& m)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222)
    const double vu = m.get_vu();
@@ -51,7 +51,7 @@ void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
    TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
 }
 
-void ensure_one_loop_ewsb(MSSM& m)
+void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
 {
    ensure_tree_level_ewsb(m);
 
@@ -73,7 +73,7 @@ void ensure_one_loop_ewsb(MssmSoftsusy& s)
    s.rewsb(signMu, mtrun, pars);
 }
 
-void setup_MSSM(MSSM& m, MssmSoftsusy& s, const MSSM_input_parameters& input)
+void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, const MSSM_input_parameters& input)
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -220,7 +220,7 @@ void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& 
    TEST_EQUALITY(a.displayHvev(), vev);
 }
 
-void copy_parameters(const MSSM& mssm, MssmSoftsusy& softsusy)
+void copy_parameters(const MSSM<Two_scale>& mssm, MssmSoftsusy& softsusy)
 {
    // copy base class parameters
    softsusy.setLoops(mssm.get_loops());

@@ -9,13 +9,15 @@
 
 #define private public
 
-#include "MSSM_model.hpp"
-#include "MSSM_low_scale_constraint.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_low_scale_constraint.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
-DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint constraint, double scale)
+DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model,
+                                       MSSM_low_scale_constraint<Two_scale> constraint,
+                                       double scale)
 {
    model.set_scale(scale);
    constraint.set_model(&model);
@@ -31,12 +33,12 @@ DoubleVector calculate_gauge_couplings(MSSM model, MSSM_low_scale_constraint con
 
 BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
    QedQcd oneset;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input, oneset);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -69,12 +71,12 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 
 BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
    QedQcd oneset;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input, oneset);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
    const double e = Electroweak_constants::e;
@@ -97,10 +99,10 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    MSSM_input_parameters input;
    QedQcd oneset;
-   MSSM m; MssmSoftsusy s;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint constraint(input, oneset);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
    const double TanBeta = input.TanBeta;

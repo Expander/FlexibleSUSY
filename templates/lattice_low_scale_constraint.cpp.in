@@ -18,14 +18,28 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "@ModelName@_lattice_model.hpp"
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+@ModelName@_low_scale_constraint<Lattice>::@ModelName@_low_scale_constraint()
+   : Constraint<Lattice>()
+{
+}
+
+@ModelName@_low_scale_constraint<Lattice>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters&)
+   : Constraint<Lattice>()
+{
+}
+
+@ModelName@_low_scale_constraint<Lattice>::~@ModelName@_low_scale_constraint()
+{
+}
+
+double @ModelName@_low_scale_constraint<Lattice>::get_scale() const
+{
+   return 0.;
+}
 
 } // namespace flexiblesusy
-
-#endif

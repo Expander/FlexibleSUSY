@@ -5,8 +5,8 @@
 #include <boost/test/unit_test.hpp>
 #include "test_MSSM.hpp"
 
-#include "MSSM_model.hpp"
-#include "MSSM_initial_guesser.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_initial_guesser.hpp"
 #include "mssm_parameter_point.hpp"
 #include "mssm_two_scale.hpp"
 #include "mssm_two_scale_initial_guesser.hpp"
@@ -16,19 +16,19 @@
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
-   MSSM m;
+   MSSM<Two_scale> m;
    Mssm<Two_scale> smssm;
 
    // create MSSM initial guesser
    MSSM_input_parameters input;
    QedQcd oneset;
 
-   MSSM_low_scale_constraint  low_constraint(input, oneset);
-   MSSM_susy_scale_constraint susy_constraint(input);
-   MSSM_high_scale_constraint high_constraint(input);
+   MSSM_low_scale_constraint<Two_scale>  low_constraint(input, oneset);
+   MSSM_susy_scale_constraint<Two_scale> susy_constraint(input);
+   MSSM_high_scale_constraint<Two_scale> high_constraint(input);
 
-   MSSM_initial_guesser guesser(&m, input, oneset, low_constraint,
-                                susy_constraint, high_constraint);
+   MSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
+                                           susy_constraint, high_constraint);
 
    // create Mssm initial guesser
    Mssm_parameter_point pp;

@@ -18,35 +18,30 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_convergence_tester.hpp"
-#include <cmath>
-#include <algorithm>
-#include <valarray>
-#include "wrappers.hpp"
+#ifndef @ModelName@_LATTICE_INITIAL_GUESSER_H
+#define @ModelName@_LATTICE_INITIAL_GUESSER_H
+
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "lattice_initial_guesser.hpp"
 
 namespace flexiblesusy {
 
-#define OLD1(p) ol->get_##p()
-#define NEW1(p) ne->get_##p()
+template <class T>
+class @ModelName@;
 
-#define OLD(p,i) ol->get_##p()(i)
-#define NEW(p,i) ne->get_##p()(i)
+class Lattice;
 
-@ModelName@_convergence_tester::@ModelName@_convergence_tester(@ModelName@* model, double accuracy_goal)
-   : Convergence_tester_skeleton<@ModelName@>(model, accuracy_goal)
-{
-}
-
-@ModelName@_convergence_tester::~@ModelName@_convergence_tester()
-{
-}
-
-double @ModelName@_convergence_tester::max_rel_diff() const
-{
-   const @ModelName@* ol = get_last_iteration_model();
-   const @ModelName@* ne = get_model();
-
-@compareFunction@
-}
+template<>
+class @ModelName@_initial_guesser<Lattice> : public Initial_guesser<Lattice> {
+public:
+   @ModelName@_initial_guesser(@ModelName@<Lattice>*,
+                               @ModelName@_input_parameters&,
+                               @ModelName@_low_scale_constraint<Lattice>&);
+   virtual ~@ModelName@_initial_guesser();
+};
 
 } // namespace flexiblesusy
+
+#endif

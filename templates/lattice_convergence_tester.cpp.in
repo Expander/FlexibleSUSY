@@ -18,14 +18,17 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#include "@ModelName@_lattice_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+@ModelName@_convergence_tester<Lattice>::@ModelName@_convergence_tester(@ModelName@<Lattice>*, double)
+   : Convergence_tester<Lattice>()
+{
+}
+
+@ModelName@_convergence_tester<Lattice>::~@ModelName@_convergence_tester()
+{
+}
 
 } // namespace flexiblesusy
-
-#endif

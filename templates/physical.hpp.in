@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_physical_H
-#define @ModelName@_physical_H
+#ifndef @ModelName@_PHYSICAL_H
+#define @ModelName@_PHYSICAL_H
 
 #include "linalg.h"
 

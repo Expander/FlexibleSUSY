@@ -18,14 +18,33 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#include "@ModelName@_lattice_model.hpp"
+
+#include <iostream>
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+#define CLASSNAME @ModelName@<Lattice>
+
+CLASSNAME::@ModelName@(const @ModelName@_input_parameters&)
+{
+}
+
+CLASSNAME::~@ModelName@()
+{
+}
+
+void CLASSNAME::print(std::ostream&) const
+{
+}
+
+void CLASSNAME::calculate_spectrum()
+{
+}
+
+int CLASSNAME::run_to(double)
+{
+   return 0;
+}
 
 } // namespace flexiblesusy
-
-#endif

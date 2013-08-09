@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_susy_parameters_H
-#define @ModelName@_susy_parameters_H
+#ifndef @ModelName@_TWO_SCALE_susy_parameters_H
+#define @ModelName@_TWO_SCALE_susy_parameters_H
 
 #include "betafunction.hpp"
 #include "@ModelName@_input_parameters.hpp"
@@ -40,7 +40,6 @@ public:
    virtual const Eigen::ArrayXd display() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
-   virtual std::vector<std::string> get_parameter_names() const;
    const @ModelName@_input_parameters& get_input() const;
    void set_input(const @ModelName@_input_parameters&);
 

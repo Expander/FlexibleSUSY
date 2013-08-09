@@ -18,38 +18,32 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_soft_parameters_H
-#define @ModelName@_soft_parameters_H
+#ifndef @ModelName@_LATTICE_INITIAL_GUESSER_H
+#define @ModelName@_LATTICE_INITIAL_GUESSER_H
 
-#include "rge.h"
-#include "@ModelName@_susy_parameters.hpp"
-
-#include <iosfwd>
+#include "@ModelName@_initial_guesser.hpp"
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_lattice_low_scale_constraint.hpp"
+#include "@ModelName@_lattice_susy_scale_constraint.hpp"
+#include "@ModelName@_lattice_high_scale_constraint.hpp"
+#include "lattice_initial_guesser.hpp"
 
 namespace flexiblesusy {
 
-class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
+template <class T>
+class @ModelName@;
+
+class Lattice;
+
+template<>
+class @ModelName@_initial_guesser<Lattice> : public Initial_guesser<Lattice> {
 public:
-   @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
-   virtual ~@ModelName@_soft_parameters() {}
-   virtual Eigen::ArrayXd beta() const;
-   virtual const Eigen::ArrayXd display() const;
-   virtual void print(std::ostream&) const;
-   virtual void set(const Eigen::ArrayXd&);
-   virtual std::vector<std::string> get_parameter_names() const;
-
-   @ModelName@_soft_parameters calc_beta() const;
-   virtual void clear();
-
-@setter@
-@getter@
-
-protected:
-@parameterDef@
-
-private:
-   static const int numberOfParameters = @numberOfParameters@;
+   @ModelName@_initial_guesser(@ModelName@<Lattice>*,
+                               @ModelName@_input_parameters&,
+                               @ModelName@_low_scale_constraint<Lattice>&,
+                               @ModelName@_susy_scale_constraint<Lattice>&,
+                               @ModelName@_high_scale_constraint<Lattice>&);
+   virtual ~@ModelName@_initial_guesser();
 };
 
 } // namespace flexiblesusy

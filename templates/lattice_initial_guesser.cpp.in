@@ -18,14 +18,24 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#include "@ModelName@_lattice_initial_guesser.hpp"
+#include "@ModelName@_lattice_model.hpp"
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+@ModelName@_initial_guesser<Lattice>::@ModelName@_initial_guesser(
+   @ModelName@<Lattice>*,
+   @ModelName@_input_parameters&,
+   @ModelName@_low_scale_constraint<Lattice>&,
+   @ModelName@_susy_scale_constraint<Lattice>&,
+   @ModelName@_high_scale_constraint<Lattice>&
+)
+   : Initial_guesser<Lattice>()
+{
+}
+
+@ModelName@_initial_guesser<Lattice>::~@ModelName@_initial_guesser()
+{
+}
 
 } // namespace flexiblesusy
-
-#endif

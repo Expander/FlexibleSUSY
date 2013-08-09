@@ -18,13 +18,13 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_model.hpp"
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_low_scale_constraint.hpp"
-#include "@ModelName@_susy_scale_constraint.hpp"
-#include "@ModelName@_convergence_tester.hpp"
-#include "@ModelName@_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
+#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_low_scale_constraint.hpp"
+#include "@ModelName@_two_scale_susy_scale_constraint.hpp"
+#include "@ModelName@_two_scale_convergence_tester.hpp"
+#include "@ModelName@_two_scale_initial_guesser.hpp"
 
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -40,6 +40,7 @@ int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
    using namespace softsusy;
+   typedef Two_scale algorithm_type;
 
    Command_line_options options(argc, argv);
    if (options.must_exit())
@@ -56,18 +57,18 @@ int main(int argc, const char* argv[])
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
-   @ModelName@ model(input);
-   @ModelName@_low_scale_constraint low_scale_constraint(input, oneset);
-   @ModelName@_susy_scale_constraint susy_scale_constraint(input);
-   @ModelName@_convergence_tester convergence_tester(&model, 1.0e-5);
-   @ModelName@_initial_guesser initial_guesser(&model, input, oneset, low_scale_constraint);
+   @ModelName@<algorithm_type> model(input);
+   @ModelName@_low_scale_constraint<algorithm_type> low_scale_constraint(input, oneset);
+   @ModelName@_susy_scale_constraint<algorithm_type> susy_scale_constraint(input);
+   @ModelName@_convergence_tester<algorithm_type> convergence_tester(&model, 1.0e-5);
+   @ModelName@_initial_guesser<algorithm_type> initial_guesser(&model, input, oneset, low_scale_constraint);
    Two_scale_constant_precision precision(1.0e-5);
 
-   RGFlow<Two_scale> solver;
+   RGFlow<algorithm_type> solver;
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   std::vector<Constraint<Two_scale>*> constraints;
+   std::vector<Constraint<algorithm_type>*> constraints;
    constraints.push_back(&low_scale_constraint);
    solver.add_model(&model, constraints);
 

@@ -39,6 +39,7 @@ namespace @ModelName@_info {
 @particleMultiplicity@
 @particleNames@
 @particleLaTeXNames@
+@parameterNames@
 }
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
@@ -49,7 +50,7 @@ namespace @ModelName@_info {
 }
 
 
-void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@& model)
+void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<Two_scale>& model)
 {
    spectrum.clear();
    scale = model.get_scale();

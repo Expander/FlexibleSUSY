@@ -15,13 +15,13 @@
 #include "wrappers.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 #include "MSSM_input_parameters.hpp"
-#include "MSSM_high_scale_constraint.hpp"
-#include "MSSM_susy_scale_constraint.hpp"
-#include "MSSM_low_scale_constraint.hpp"
-#include "MSSM_convergence_tester.hpp"
-#include "MSSM_initial_guesser.hpp"
+#include "MSSM_two_scale_high_scale_constraint.hpp"
+#include "MSSM_two_scale_susy_scale_constraint.hpp"
+#include "MSSM_two_scale_low_scale_constraint.hpp"
+#include "MSSM_two_scale_convergence_tester.hpp"
+#include "MSSM_two_scale_initial_guesser.hpp"
 #include "test_MSSM.hpp"
 
 /**
@@ -31,12 +31,12 @@
  * the gauge couplings at the low scale as Softsusy does it.
  */
 class MSSM_precise_gauge_couplings_low_scale_constraint
-   : public MSSM_low_scale_constraint {
+   : public MSSM_low_scale_constraint<Two_scale> {
 public:
    MSSM_precise_gauge_couplings_low_scale_constraint()
-      : MSSM_low_scale_constraint() {}
+      : MSSM_low_scale_constraint<Two_scale>() {}
    MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
-      : MSSM_low_scale_constraint(inputPars_,oneset_) {}
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_,oneset_) {}
    virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
 
    virtual void apply();
@@ -48,7 +48,7 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
           " model pointer must not be zero");
 
    // save old model parmeters
-   const MSSM mssm(*model);
+   const MSSM<Two_scale> mssm(*model);
 
    // run MSSM_low_scale_constraint::apply(), without the gauge
    // couplings
@@ -127,12 +127,12 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
  * one-loop ewsb at the susy scale as Softsusy does it.
  */
 class MSSM_softsusy_ewsb_susy_scale_constraint
-   : public MSSM_susy_scale_constraint {
+   : public MSSM_susy_scale_constraint<Two_scale> {
 public:
    MSSM_softsusy_ewsb_susy_scale_constraint()
-      : MSSM_susy_scale_constraint() {}
+      : MSSM_susy_scale_constraint<Two_scale>() {}
    MSSM_softsusy_ewsb_susy_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_susy_scale_constraint(inputPars_) {}
+      : MSSM_susy_scale_constraint<Two_scale>(inputPars_) {}
    virtual ~MSSM_softsusy_ewsb_susy_scale_constraint() {}
 
    virtual void apply();
@@ -145,9 +145,9 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
 
    // save old model parmeters
    model->calculate_DRbar_parameters();
-   const MSSM mssm(*model);
+   const MSSM<Two_scale> mssm(*model);
 
-   MSSM_susy_scale_constraint::apply();
+   MSSM_susy_scale_constraint<Two_scale>::apply();
 
    // Now do the one-loop EWSB using MssmSoftsusy::rewsb
    MssmSoftsusy softsusy;
@@ -266,17 +266,17 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
-   MSSM get_model() const { return mssm; }
-   void set_low_scale_constraint(MSSM_low_scale_constraint* c) { low_constraint = c; }
-   void set_susy_scale_constraint(MSSM_susy_scale_constraint* c) { susy_constraint = c; }
-   void set_high_scale_constraint(MSSM_high_scale_constraint* c) { high_constraint = c; }
+   MSSM<Two_scale> get_model() const { return mssm; }
+   void set_low_scale_constraint(MSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
+   void set_susy_scale_constraint(MSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
+   void set_high_scale_constraint(MSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
    void setup_default_constaints() {
       if (!high_constraint)
-         high_constraint = new MSSM_high_scale_constraint();
+         high_constraint = new MSSM_high_scale_constraint<Two_scale>();
       if (!susy_constraint)
-         susy_constraint = new MSSM_susy_scale_constraint();
+         susy_constraint = new MSSM_susy_scale_constraint<Two_scale>();
       if (!low_constraint)
-         low_constraint = new MSSM_low_scale_constraint();
+         low_constraint = new MSSM_low_scale_constraint<Two_scale>();
    }
    void test(const MSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints();
@@ -285,11 +285,11 @@ public:
       low_constraint->set_sm_parameters(oneset);
       susy_constraint->set_input_parameters(pp);
 
-      MSSM_convergence_tester    convergence_tester(&mssm, 1.0e-4);
-      MSSM_initial_guesser initial_guesser(&mssm, pp, oneset,
-                                           *low_constraint,
-                                           *susy_constraint,
-                                           *high_constraint);
+      MSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
+      MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
+                                                      *low_constraint,
+                                                      *susy_constraint,
+                                                      *high_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.set_input(pp);
@@ -319,16 +319,16 @@ public:
    }
 private:
    double mx, msusy;
-   MSSM mssm;
-   MSSM_high_scale_constraint* high_constraint;
-   MSSM_susy_scale_constraint* susy_constraint;
-   MSSM_low_scale_constraint*  low_constraint;
+   MSSM<Two_scale> mssm;
+   MSSM_high_scale_constraint<Two_scale>* high_constraint;
+   MSSM_susy_scale_constraint<Two_scale>* susy_constraint;
+   MSSM_low_scale_constraint<Two_scale>*  low_constraint;
 };
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 {
    MSSM_input_parameters pp;
-   const MSSM_high_scale_constraint high_constraint(pp);
+   const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
-   const MSSM fs(mssm_tester.get_model());
+   const MSSM<Two_scale> fs(mssm_tester.get_model());
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
@@ -572,7 +572,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 {
    MSSM_input_parameters pp;
-   const MSSM_high_scale_constraint high_constraint(pp);
+   const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
-   const MSSM fs(mssm_tester.get_model());
+   const MSSM<Two_scale> fs(mssm_tester.get_model());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00023);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00066);
@@ -635,12 +635,12 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
  * Higgs mass and eliminates TanBeta.
  */
 class MSSM_iterative_low_scale_constraint
-   : public MSSM_low_scale_constraint {
+   : public MSSM_low_scale_constraint<Two_scale> {
 public:
    MSSM_iterative_low_scale_constraint()
-      : MSSM_low_scale_constraint() {}
+      : MSSM_low_scale_constraint<Two_scale>() {}
    MSSM_iterative_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
-      : MSSM_low_scale_constraint(inputPars_,oneset_) {}
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_,oneset_) {}
    virtual ~MSSM_iterative_low_scale_constraint() {}
 
    virtual void apply();
@@ -661,7 +661,7 @@ void MSSM_iterative_low_scale_constraint::apply()
          if (contains_nan(x, 2))
             return std::numeric_limits<double>::max();
 
-         MSSM* model = static_cast<MSSM*>(params);
+         MSSM<Two_scale>* model = static_cast<MSSM<Two_scale>*>(params);
 
          const double vd = gsl_vector_get(x, 0);
          const double vu = gsl_vector_get(x, 1);

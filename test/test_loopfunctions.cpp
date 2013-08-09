@@ -6,13 +6,13 @@
 #include "wrappers.hpp"
 
 #define private public
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_A0 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    model.set_scale(100.);
 
    BOOST_CHECK_EQUAL(model.A0(0.), 0.);
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE( test_A0 )
 
 BOOST_AUTO_TEST_CASE( test_B0 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    const double scale2 = Sqr(scale);
    const double p = 91.0;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_B0 )
 
 BOOST_AUTO_TEST_CASE( test_B1 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    const double p = 91.0;
    model.set_scale(scale);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_B1 )
 
 BOOST_AUTO_TEST_CASE( test_B00 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    model.set_scale(scale);
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_B00 )
 
 BOOST_AUTO_TEST_CASE( test_B22 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    model.set_scale(scale);
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( test_B22 )
 
 BOOST_AUTO_TEST_CASE( test_H0 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    model.set_scale(scale);
 
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( test_H0 )
 
 BOOST_AUTO_TEST_CASE( test_F0 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    model.set_scale(scale);
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( test_F0 )
 
 BOOST_AUTO_TEST_CASE( test_G0 )
 {
-   MSSM model;
+   MSSM<Two_scale> model;
    const double scale = 100.;
    model.set_scale(scale);
 

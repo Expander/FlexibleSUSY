@@ -21,33 +21,10 @@
 #ifndef @ModelName@_SUSY_SCALE_CONSTRAINT_H
 #define @ModelName@_SUSY_SCALE_CONSTRAINT_H
 
-#include "@ModelName@_input_parameters.hpp"
-#include "two_scale_constraint.hpp"
-
 namespace flexiblesusy {
 
-class @ModelName@;
-
-class @ModelName@_susy_scale_constraint : public Constraint<Two_scale> {
-public:
-   @ModelName@_susy_scale_constraint();
-   @ModelName@_susy_scale_constraint(const @ModelName@_input_parameters&);
-   virtual ~@ModelName@_susy_scale_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
-   double get_initial_scale_guess() const;
-   void set_input_parameters(const @ModelName@_input_parameters&);
-   void reset(); ///< reset to initial state
-
-private:
-   double scale;
-   double initial_scale_guess;
-   @ModelName@* model;
-   @ModelName@_input_parameters inputPars;
-
-   void update_scale();
-};
+template <class T>
+class @ModelName@_susy_scale_constraint;
 
 } // namespace flexiblesusy
 

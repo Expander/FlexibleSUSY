@@ -1,0 +1,116 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+#ifndef @ModelName@_TWO_SCALE_H
+#define @ModelName@_TWO_SCALE_H
+
+#include "@ModelName@_model.hpp"
+#include "@ModelName@_two_scale_soft_parameters.hpp"
+#include "@ModelName@_physical.hpp"
+#include "two_scale_model.hpp"
+
+#include <iosfwd>
+#include <string>
+
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_multiroots.h>
+
+namespace flexiblesusy {
+
+class Two_scale;
+
+template<>
+class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_soft_parameters {
+public:
+   @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   virtual ~@ModelName@();
+
+   void calculate_DRbar_parameters();
+   void calculate_1loop_masses();
+   virtual void clear();
+   void do_calculate_sm_pole_masses(bool);
+   bool do_calculate_sm_pole_masses() const;
+   void set_ewsb_iteration_precision(double);
+   void set_number_of_ewsb_iterations(std::size_t);
+   void set_number_of_mass_iterations(std::size_t);
+   double get_ewsb_iteration_precision() const;
+   const @ModelName@_physical& get_physical() const;
+   int solve_ewsb_tree_level();
+   int solve_ewsb_one_loop();
+
+   // interface functions
+   virtual void calculate_spectrum();
+   virtual std::string name() const;
+   virtual int run_to(double scale, double eps = -1.0);
+   virtual void print(std::ostream&) const;
+   virtual void set_precision(double);
+
+@massGetters@
+@mixingMatrixGetters@
+@phasesGetterSetters@
+@massCalculationPrototypes@
+@tadpoleEqPrototypes@
+@selfEnergyPrototypes@
+@loopMassesPrototypes@
+@runningDRbarMassesPrototypes@
+@dependenceNumPrototypes@
+
+   struct Ewsb_parameters {
+      @ModelName@<Two_scale>* model;
+      unsigned ewsb_loop_order;
+   };
+
+private:
+   std::size_t number_of_ewsb_iterations;
+   std::size_t number_of_mass_iterations;
+   unsigned ewsb_loop_order;
+   bool throw_on_tachyon;
+   bool throw_on_ewsb_fail;
+   bool calculate_sm_pole_masses;
+   double precision;
+   double ewsb_iteration_precision;
+   static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
+   @ModelName@_physical physical;
+
+   int solve_ewsb_iteratively();
+   int solve_ewsb_iteratively(unsigned);
+   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[@numberOfEWSBEquations@]);
+   int solve_ewsb_tree_level_via_soft_higgs_masses();
+   void ewsb_initial_guess(double[@numberOfEWSBEquations@]);
+   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+
+   double A0(double) const;
+   double B0(double, double, double) const;
+   double B1(double, double, double) const;
+   double B00(double, double, double) const;
+   double B22(double, double, double) const;
+   double H0(double, double, double) const;
+   double F0(double, double, double) const;
+   double G0(double, double, double) const;
+
+@physicalMassesDef@
+@mixingMatricesDef@
+@phasesDefinition@
+
+};
+
+} // namespace flexiblesusy
+
+#endif

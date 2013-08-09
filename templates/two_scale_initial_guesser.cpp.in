@@ -18,8 +18,8 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_initial_guesser.hpp"
-#include "@ModelName@_model.hpp"
+#include "@ModelName@_two_scale_initial_guesser.hpp"
+#include "@ModelName@_two_scale_model.hpp"
 #include "lowe.h"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
@@ -34,13 +34,13 @@ namespace flexiblesusy {
 #define SM(p) Electroweak_constants::p
 #define MODEL model
 
-@ModelName@_initial_guesser::@ModelName@_initial_guesser(
-   @ModelName@* model_,
+@ModelName@_initial_guesser<Two_scale>::@ModelName@_initial_guesser(
+   @ModelName@<Two_scale>* model_,
    const @ModelName@_input_parameters& input_pars_,
    const QedQcd& oneset_,
-   const @ModelName@_low_scale_constraint& low_constraint_,
-   const @ModelName@_susy_scale_constraint& susy_constraint_,
-   const @ModelName@_high_scale_constraint& high_constraint_
+   const @ModelName@_low_scale_constraint<Two_scale>& low_constraint_,
+   const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_,
+   const @ModelName@_high_scale_constraint<Two_scale>& high_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
@@ -51,21 +51,21 @@ namespace flexiblesusy {
    , high_constraint(high_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
-          " @ModelName@ must not be zero");
+          " @ModelName@<Two_scale> must not be zero");
 }
 
-@ModelName@_initial_guesser::~@ModelName@_initial_guesser()
+@ModelName@_initial_guesser<Two_scale>::~@ModelName@_initial_guesser()
 {
 }
 
-void @ModelName@_initial_guesser::guess()
+void @ModelName@_initial_guesser<Two_scale>::guess()
 {
    model->clear();
    guess_susy_parameters();
    guess_soft_parameters();
 }
 
-void @ModelName@_initial_guesser::guess_susy_parameters()
+void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 {
    QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
@@ -107,7 +107,7 @@ void @ModelName@_initial_guesser::guess_susy_parameters()
    model->set_@ElectronYukawa@(new_Ye);
 }
 
-void @ModelName@_initial_guesser::guess_soft_parameters()
+void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
 {
    const double low_scale_guess = low_constraint.get_initial_scale_guess();
    const double high_scale_guess = high_constraint.get_initial_scale_guess();

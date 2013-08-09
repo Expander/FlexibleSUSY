@@ -16,13 +16,13 @@
 #include "wrappers.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
-#include "MSSM_model.hpp"
+#include "MSSM_two_scale_model.hpp"
 #include "MSSM_input_parameters.hpp"
-#include "MSSM_high_scale_constraint.hpp"
-#include "MSSM_susy_scale_constraint.hpp"
-#include "MSSM_low_scale_constraint.hpp"
-#include "MSSM_convergence_tester.hpp"
-#include "MSSM_initial_guesser.hpp"
+#include "MSSM_two_scale_high_scale_constraint.hpp"
+#include "MSSM_two_scale_susy_scale_constraint.hpp"
+#include "MSSM_two_scale_low_scale_constraint.hpp"
+#include "MSSM_two_scale_convergence_tester.hpp"
+#include "MSSM_two_scale_initial_guesser.hpp"
 #include "test_MSSM.hpp"
 
 #define SM(p) Electroweak_constants::p
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 {
    MSSM_input_parameters input;
-   MSSM model;
+   MSSM<Two_scale> model;
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          if (contains_nan(x, 2))
             return std::numeric_limits<double>::max();
 
-         MSSM* model = static_cast<MSSM*>(params);
+         MSSM<Two_scale>* model = static_cast<MSSM<Two_scale>*>(params);
 
          const double vd = gsl_vector_get(x, 0);
          const double vu = gsl_vector_get(x, 1);

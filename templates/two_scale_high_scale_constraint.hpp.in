@@ -16,44 +16,44 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SMSSM_MSUSY_CONSTRAINT_H
-#define SMSSM_MSUSY_CONSTRAINT_H
+// File generated at @DateAndTime@
 
+#ifndef @ModelName@_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
+#define @ModelName@_TWO_SCALE_HIGH_SCALE_CONSTRAINT_H
+
+#include "@ModelName@_high_scale_constraint.hpp"
+#include "@ModelName@_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
-#include "mssm_parameter_point.hpp"
-#include "linalg.h"
 
 namespace flexiblesusy {
 
+template <class T>
+class @ModelName@;
+
 class Two_scale;
-template<class T> class Mssm;
 
-/**
- * @class Mssm_susy_scale_constraint
- * @brief MSSM EWSB constraint at the Susy mass scale
- *
- * This class represents the electroweak symmetry breaking (EWSB)
- * constraint of the MSSM at the Susy mass scale MSusy.  The apply()
- * function calculates the MSSM \f$\overline{DR}\f$ parameters and
- * does the EWSB.
- */
-
-class Mssm_susy_scale_constraint : public Constraint<Two_scale> {
+template<>
+class @ModelName@_high_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
-   Mssm_susy_scale_constraint(const Mssm_parameter_point&);
-   virtual ~Mssm_susy_scale_constraint();
+   @ModelName@_high_scale_constraint();
+   @ModelName@_high_scale_constraint(const @ModelName@_input_parameters&);
+   virtual ~@ModelName@_high_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
+   double get_initial_scale_guess() const;
+   void set_input_parameters(const @ModelName@_input_parameters&);
+   void reset(); ///< reset to initial state
 
 private:
-   Mssm<Two_scale>* mssm;
    double scale;
-   Mssm_parameter_point pp;   ///< Mssm parameter point
+   double initial_scale_guess;
+   @ModelName@<Two_scale>* model;
+   @ModelName@_input_parameters inputPars;
 
    void update_scale();
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

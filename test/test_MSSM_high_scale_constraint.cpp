@@ -13,11 +13,11 @@
 #include "mssm_parameter_point.hpp"
 #include "mssm_two_scale_sugra_constraint.hpp"
 #include "test_MSSM.hpp"
-#include "MSSM_model.hpp"
-#include "MSSM_high_scale_constraint.hpp"
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "wrappers.hpp"
 
-MSSM setup_MSSM()
+MSSM<Two_scale> setup_MSSM()
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -49,7 +49,7 @@ MSSM setup_MSSM()
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM m;
+   MSSM<Two_scale> m;
    m.set_scale(91);
    m.set_loops(1);
    m.set_g1(g1);
@@ -81,7 +81,7 @@ MSSM setup_MSSM()
 
 BOOST_AUTO_TEST_CASE( test_unification_condition )
 {
-   MSSM m(setup_MSSM());
+   MSSM<Two_scale> m(setup_MSSM());
 
    MSSM_input_parameters input;
    input.m0 = 100;
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    input.TanBeta = m.get_vd() / m.get_vu();
    input.Azero = 300;
 
-   MSSM_high_scale_constraint constraint(input);
+   MSSM_high_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
 
    double mgut = constraint.get_scale(); // initial guess
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
 
 BOOST_AUTO_TEST_CASE( test_mx_calculation )
 {
-   MSSM m; Mssm<Two_scale> s;
+   MSSM<Two_scale> m; Mssm<Two_scale> s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
    Mssm_parameter_point pp;
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.signMu = input.SignMu;
 
-   MSSM_high_scale_constraint MSSM_sugra_constraint(input);
+   MSSM_high_scale_constraint<Two_scale> MSSM_sugra_constraint(input);
    Mssm_sugra_constraint mssm_sugra_constraint(pp);
 
    MSSM_sugra_constraint.set_model(&m);

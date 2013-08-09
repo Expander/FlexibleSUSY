@@ -16,16 +16,21 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
+#ifndef LATTICE_CONVERGENCE_TESTER_H
+#define LATTICE_CONVERGENCE_TESTER_H
 
-#ifndef @ModelName@_CONVERGENCE_TESTER_H
-#define @ModelName@_CONVERGENCE_TESTER_H
+#include "convergence_tester.hpp"
 
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_convergence_tester;
+class Lattice;
 
-} // namespace flexiblesusy
+template<>
+class Convergence_tester<Lattice> {
+public:
+   virtual ~Convergence_tester();
+};
+
+}
 
 #endif
