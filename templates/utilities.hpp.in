@@ -83,10 +83,10 @@ private:
 
 struct @ModelName@_input_parameters;
 
-class @ModelName@_slha_reader {
+class @ModelName@_slha_io {
 public:
-   @ModelName@_slha_reader(const std::string&);
-   ~@ModelName@_slha_reader() {}
+   @ModelName@_slha_io(const std::string&);
+   ~@ModelName@_slha_io() {}
 
    void fill(QedQcd& qedqcd) { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&);

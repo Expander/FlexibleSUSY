@@ -117,30 +117,30 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
    }
 }
 
-@ModelName@_slha_reader::@ModelName@_slha_reader(const std::string& input_filename_)
+@ModelName@_slha_io::@ModelName@_slha_io(const std::string& input_filename_)
    : slha_io(input_filename_)
 {
 }
 
-void @ModelName@_slha_reader::fill(@ModelName@_input_parameters& input)
+void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input)
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor minpar_processor
-      = std::bind(&MSSM_slha_reader::fill_minpar_tuple, input, _1, _2);
+      = std::bind(&MSSM_slha_io::fill_minpar_tuple, input, _1, _2);
    SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&MSSM_slha_reader::fill_extpar_tuple, input, _1, _2);
+      = std::bind(&MSSM_slha_io::fill_extpar_tuple, input, _1, _2);
 
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
 }
 
-void @ModelName@_slha_reader::fill_minpar_tuple(@ModelName@_input_parameters& input,
+void @ModelName@_slha_io::fill_minpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
 @fillInputParametersFromMINPAR@
 }
 
-void @ModelName@_slha_reader::fill_extpar_tuple(@ModelName@_input_parameters& input,
+void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
 @fillInputParametersFromEXTPAR@
