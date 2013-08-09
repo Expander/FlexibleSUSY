@@ -207,7 +207,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
-           clearParameters, parameterNames},
+           clearParameters},
           (* extract list of parameters from the beta functions *)
           parameters = GetName[#]& /@ betaFun;
           (* count number of parameters *)
@@ -224,7 +224,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           parameterCopyInit    = BetaFunction`CreateCCtorInitialization[betaFun];
           betaParameterList    = BetaFunction`CreateParameterList[betaFun, "beta_"];
           clearParameters      = BetaFunction`ClearParameters[betaFun];
-          parameterNames       = BetaFunction`CreateParameterNamesFunction[betaFun, numberOfBaseClassParameters];
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
@@ -245,7 +244,6 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@anomDimFunctions@"     -> WrapLines[anomDimFunctions],
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
                    "@printParameters@"      -> IndentText[printParameters],
-                   "@parameterNames@"       -> IndentText[parameterNames],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -449,12 +447,13 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, files_List] :=
+WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
-            particleNames = "", particleEnum = "", particleMultiplicity = ""},
+            particleNames = "", particleEnum = "", particleMultiplicity = "",
+            parameterNames = "", parameterEnum = "", numberOfParameters = 0},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -464,13 +463,18 @@ WriteUtilitiesClass[massMatrices_List, files_List] :=
            particleLaTeXNames = TreeMasses`CreateParticleLaTeXNames[particles];
            fillSpectrumVectorWithSusyParticles = TreeMasses`FillSpectrumVector[susyParticles];
            fillSpectrumVectorWithSMParticles   = TreeMasses`FillSpectrumVector[smParticles];
+           numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
+           parameterEnum      = BetaFunction`CreateParameterEnum[betaFun];
+           parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
-                            "@particleLaTeXNames@" -> IndentText[particleLaTeXNames],
+                            "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
+                            "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
+                            "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -812,7 +816,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       ];
 
            Print["Creating utilities class ..."];
-           WriteUtilitiesClass[massMatrices,
+           WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],

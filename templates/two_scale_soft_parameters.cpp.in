@@ -89,14 +89,4 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
 @set@
 }
 
-std::vector<std::string> @ModelName@_soft_parameters::get_parameter_names() const
-{
-   std::vector<std::string> names(@ModelName@_susy_parameters::get_parameter_names());
-   names.resize(@numberOfParameters@);
-
-@parameterNames@
-
-   return names;
-}
-
 } // namespace flexiblesusy

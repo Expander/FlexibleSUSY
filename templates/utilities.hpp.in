@@ -33,9 +33,11 @@ namespace flexiblesusy {
 
 namespace @ModelName@_info {
 @particleEnum@
+@parameterEnum@
    extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
    extern const char* particle_names[NUMBER_OF_PARTICLES];
    extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
+   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
 }
 
 class @ModelName@_parameter_getter {
@@ -43,8 +45,10 @@ public:
    Eigen::ArrayXd get_parameters(const @ModelName@<Two_scale>& model) {
       return model.display();
    }
-   std::vector<std::string> get_parameter_names(const @ModelName@<Two_scale>& model) const {
-      return model.get_parameter_names();
+   std::vector<std::string> get_parameter_names(const @ModelName@<Two_scale>&) const {
+      using namespace @ModelName@_info;
+      return std::vector<std::string>(parameter_names,
+                                      parameter_names + NUMBER_OF_PARAMETERS);
    }
 };
 
