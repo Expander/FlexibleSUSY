@@ -99,7 +99,10 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    MSSM_input_parameters input;
    QedQcd oneset;
+   oneset.setPoleMt(175.);       // non-default
+   oneset.setMass(mBottom, 4.3); // non-default
    MSSM<Two_scale> m; MssmSoftsusy s;
+   s.setData(oneset);
    setup_MSSM(m, s, input);
 
    MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
