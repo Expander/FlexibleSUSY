@@ -41,8 +41,8 @@ public:
    void set_input_file(const std::string&);
 
    // reading functions
-   void fill(softsusy::QedQcd&);
-   void read_block(const std::string&, Tuple_processor);
+   void fill(softsusy::QedQcd&) const;
+   void read_block(const std::string&, Tuple_processor) const;
 
    // writing functions
    void set_spinfo();

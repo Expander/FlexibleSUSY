@@ -54,7 +54,7 @@ void SLHA_io::set_input_file(const std::string& f)
    data.read(ifs);
 }
 
-void SLHA_io::fill(QedQcd& oneset)
+void SLHA_io::fill(QedQcd& oneset) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor sminputs_processor
@@ -63,7 +63,7 @@ void SLHA_io::fill(QedQcd& oneset)
    read_block("SMINPUTS", sminputs_processor);
 }
 
-void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor)
+void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor) const
 {
    if (data.find(block_name) == data.cend()) {
       WARNING("Block " << block_name << " not found in SLHA2 file "
