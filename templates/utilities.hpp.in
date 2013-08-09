@@ -90,6 +90,12 @@ public:
 
    using SLHA_io::fill;
    void fill(@ModelName@_input_parameters&);
+
+   void process_minpar_tuple(int, double);
+   void process_extpar_tuple(int, double);
+
+private:
+   @ModelName@_input_parameters* input;
 };
 
 } // namespace flexiblesusy

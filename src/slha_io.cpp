@@ -111,4 +111,30 @@ void SLHA_io::fill(QedQcd& oneset)
    }
 }
 
+void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor)
+{
+   std::ifstream ifs(input_filename);
+   const SLHAea::Coll input(ifs);
+
+   if (input.find(block_name) == input.cend()) {
+      WARNING("Block " << block_name << " not found in SLHA2 file "
+              << input_filename);
+      return;
+   }
+
+   for (SLHAea::Block::const_iterator line = input.at(block_name).cbegin(),
+        end = input.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line())
+         continue;
+
+      if (line->size() >= 2) {
+         const int key = SLHAea::to<int>((*line)[0]);
+         const double value = SLHAea::to<double>((*line)[1]);
+         processor(key, value);
+      } else {
+         WARNING(block_name << " entry has not enough columns");
+      }
+   }
+}
+
 } // namespace flexiblesusy

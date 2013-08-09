@@ -20,6 +20,7 @@
 #define SLHA_IO_H
 
 #include <string>
+#include <functional>
 
 namespace softsusy {
    class QedQcd;
@@ -29,6 +30,8 @@ namespace flexiblesusy {
 
 class SLHA_io {
 public:
+   typedef std::function<void(int, double)> Tuple_processor;
+
    SLHA_io();
    SLHA_io(const std::string&);
    virtual ~SLHA_io() {}
@@ -37,6 +40,7 @@ public:
    void set_input_file(const std::string& f) { input_filename = f; }
 
    void fill(softsusy::QedQcd&);
+   void read_block(const std::string&, Tuple_processor);
 
 private:
    std::string input_filename;

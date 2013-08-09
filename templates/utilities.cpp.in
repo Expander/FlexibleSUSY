@@ -23,11 +23,11 @@
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
-#include "slhaea.h"
 
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
 using namespace softsusy;
 
@@ -119,11 +119,32 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 
 @ModelName@_slha_reader::@ModelName@_slha_reader(const std::string& input_filename_)
    : SLHA_io(input_filename_)
+   , input(NULL)
 {
 }
 
-void @ModelName@_slha_reader::fill(@ModelName@_input_parameters&)
+void @ModelName@_slha_reader::fill(@ModelName@_input_parameters& input_)
 {
+   using namespace std::placeholders;
+   SLHA_io::Tuple_processor minpar_processor
+      = std::bind(&MSSM_slha_reader::process_minpar_tuple, this, _1, _2);
+   SLHA_io::Tuple_processor extpar_processor
+      = std::bind(&MSSM_slha_reader::process_extpar_tuple, this, _1, _2);
+
+   input = &input_;
+   read_block("MINPAR", minpar_processor);
+   read_block("EXTPAR", extpar_processor);
+   input = NULL;
+}
+
+void @ModelName@_slha_reader::process_minpar_tuple(int, double)
+{
+   assert(input);
+}
+
+void @ModelName@_slha_reader::process_extpar_tuple(int, double)
+{
+   assert(input);
 }
 
 } // namespace flexiblesusy
