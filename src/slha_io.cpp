@@ -37,78 +37,11 @@ SLHA_io::SLHA_io(const std::string& input_filename_)
 
 void SLHA_io::fill(QedQcd& oneset)
 {
-   std::ifstream ifs(input_filename);
-   const SLHAea::Coll input(ifs);
+   using namespace std::placeholders;
+   SLHA_io::Tuple_processor sminputs_processor
+      = std::bind(&SLHA_io::process_sminputs_tuple, oneset, _1, _2);
 
-   if (input.find("SMINPUTS") == input.cend()) {
-      WARNING("Block SMINPUTS not found in SLHA2 file " << input_filename);
-      return;
-   }
-
-   for (SLHAea::Block::const_iterator line = input.at("SMINPUTS").cbegin(),
-        end = input.at("SMINPUTS").cend(); line != end; ++line) {
-      if (!line->is_data_line()) continue;
-
-      if (line->size() >= 2) {
-         const int key = SLHAea::to<int>((*line)[0]);
-         const double value = SLHAea::to<double>((*line)[1]);
-         switch (key) {
-         case 1:
-            oneset.setAlpha(ALPHA, 1.0 / value);
-            break;
-         case 2:
-            // Gmu cannot be set yet
-            break;
-         case 3:
-            oneset.setAlpha(ALPHAS, value);
-            break;
-         case 4:
-            // MZ cannot be set yet
-            // oneset.setMu(value);
-            break;
-         case 5:
-            oneset.setMass(mBottom, value);
-            oneset.setMbMb(value);
-            break;
-         case 6:
-            oneset.setPoleMt(value);
-            break;
-         case 7:
-            oneset.setMass(mTau, value);
-            oneset.setPoleMtau(value);
-            break;
-         case 8:
-            break;
-         case 11:
-            oneset.setMass(mElectron, value);
-            break;
-         case 12:
-            break;
-         case 13:
-            oneset.setMass(mMuon, value);
-            break;
-         case 14:
-            break;
-         case 21:
-            oneset.setMass(mDown, value);
-            break;
-         case 22:
-            oneset.setMass(mUp, value);
-            break;
-         case 23:
-            oneset.setMass(mStrange, value);
-            break;
-         case 24:
-            oneset.setMass(mCharm, value);
-            break;
-         default:
-            WARNING("Unrecognized key in SMINPUTS: " << key);
-            break;
-         }
-      } else {
-         WARNING("SMINPUTS entry has not enough columns");
-      }
-   }
+   read_block("SMINPUTS", sminputs_processor);
 }
 
 void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor)
@@ -134,6 +67,70 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
       } else {
          WARNING(block_name << " entry has not enough columns");
       }
+   }
+}
+
+/**
+ * fill oneset from given key - value pair
+ *
+ * @param oneset low-energy data set
+ * @param key SLHA key in SMINPUTS
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
+{
+   switch (key) {
+   case 1:
+      oneset.setAlpha(ALPHA, 1.0 / value);
+      break;
+   case 2:
+      // Gmu cannot be set yet
+      break;
+   case 3:
+      oneset.setAlpha(ALPHAS, value);
+      break;
+   case 4:
+      // MZ cannot be set yet
+      // oneset.setMu(value);
+      break;
+   case 5:
+      oneset.setMass(mBottom, value);
+      oneset.setMbMb(value);
+      break;
+   case 6:
+      oneset.setPoleMt(value);
+      break;
+   case 7:
+      oneset.setMass(mTau, value);
+      oneset.setPoleMtau(value);
+      break;
+   case 8:
+      break;
+   case 11:
+      oneset.setMass(mElectron, value);
+      break;
+   case 12:
+      break;
+   case 13:
+      oneset.setMass(mMuon, value);
+      break;
+   case 14:
+      break;
+   case 21:
+      oneset.setMass(mDown, value);
+      break;
+   case 22:
+      oneset.setMass(mUp, value);
+      break;
+   case 23:
+      oneset.setMass(mStrange, value);
+      break;
+   case 24:
+      oneset.setMass(mCharm, value);
+      break;
+   default:
+      WARNING("Unrecognized key in SMINPUTS: " << key);
+      break;
    }
 }
 

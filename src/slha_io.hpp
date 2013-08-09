@@ -44,6 +44,7 @@ public:
 
 private:
    std::string input_filename;
+   static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
 };
 
 } // namespace flexiblesusy
