@@ -88,8 +88,8 @@ public:
    @ModelName@_slha_io(const std::string&);
    ~@ModelName@_slha_io() {}
 
-   void fill(QedQcd& qedqcd) { slha_io.fill(qedqcd); }
-   void fill(@ModelName@_input_parameters&);
+   void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
+   void fill(@ModelName@_input_parameters&) const;
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);

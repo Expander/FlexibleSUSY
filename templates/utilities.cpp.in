@@ -122,7 +122,7 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 {
 }
 
-void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input)
+void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor minpar_processor
