@@ -53,14 +53,16 @@ public:
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;
 
-   const std::string& get_slha_input_file() const { return slha_file; }
+   const std::string& get_slha_input_file() const { return slha_input_file; }
+   const std::string& get_slha_output_file() const { return slha_output_file; }
    const std::string& get_program_name() const { return program; }
 
 private:
    bool do_exit;
    int exit_status;
    std::string program;
-   std::string slha_file;
+   std::string slha_input_file;
+   std::string slha_output_file;
 };
 
 } // namespace flexiblesusy

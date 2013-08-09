@@ -29,7 +29,8 @@ Command_line_options::Command_line_options()
    : do_exit(false)
    , exit_status(EXIT_SUCCESS)
    , program()
-   , slha_file()
+   , slha_input_file()
+   , slha_output_file()
 {
 }
 
@@ -37,7 +38,8 @@ Command_line_options::Command_line_options(int argc, const char* argv[])
    : do_exit(false)
    , exit_status(EXIT_SUCCESS)
    , program()
-   , slha_file()
+   , slha_input_file()
+   , slha_output_file()
 {
    parse(argc, argv);
 }
@@ -56,11 +58,14 @@ void Command_line_options::parse(int argc, const char* argv[])
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
       if (boost::starts_with(option,"--slha-input-file=")) {
-         slha_file = option.substr(18);
-         if (slha_file.empty())
+         slha_input_file = option.substr(18);
+         if (slha_input_file.empty())
             WARNING("no SLHA input file name given");
-      } else
-      if (option == "--help" || option == "-h") {
+      } else if (boost::starts_with(option,"--slha-output-file=")) {
+         slha_output_file = option.substr(19);
+         if (slha_output_file.empty())
+            WARNING("no SLHA output file name given");
+      } else if (option == "--help" || option == "-h") {
          print_usage(std::cout);
          do_exit = true;
       } else if (option == "--version" || option == "-v") {
@@ -84,6 +89,7 @@ void Command_line_options::print_usage(std::ostream& ostr) const
    ostr << "Usage: " << program << " [options]\n"
            "Options:\n"
            "  --slha-input-file=<filename>   SLHA input file\n"
+           "  --slha-output-file=<filename>  SLHA output file\n"
            "  --help,-h                      print this help message\n"
            "  --version,-v                   print program version"
         << std::endl;
