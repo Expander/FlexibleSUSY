@@ -42,6 +42,8 @@ CreateLocalConstRefsForBetas::usage="";
 CreateLocalConstRefsForInputParameters::usage="creates local const
 references for all input parameters in the given expression.";
 
+FillInputParametersFromTuples::usage="";
+
 Begin["Private`"];
 
 allInputParameters = {};
@@ -409,6 +411,24 @@ CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
+           Return[result];
+          ];
+
+CreateCaseFromTuple[{key_?NumberQ, parameter_}] :=
+    "case " <> ToString[key] <> ": input." <>
+    CConversion`ToValidCSymbolString[parameter] <> " = value; break;\n";
+
+CreateCaseFromTuple[expr_] :=
+    Block[{},
+          Print["Error: not a valid {key,parameter} tuple: ", expr];
+          ""
+         ];
+
+FillInputParametersFromTuples[minpar_List] :=
+    Module[{result = ""},
+           (result = result <> CreateCaseFromTuple[#])& /@ minpar;
+           result = "switch (key) {\n" <> result <>
+                    "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
            Return[result];
           ];
 

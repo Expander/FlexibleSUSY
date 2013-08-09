@@ -134,14 +134,16 @@ void @ModelName@_slha_reader::fill(@ModelName@_input_parameters& input)
    read_block("EXTPAR", extpar_processor);
 }
 
-void @ModelName@_slha_reader::fill_minpar_tuple(@ModelName@_input_parameters&,
-                                                int, double)
+void @ModelName@_slha_reader::fill_minpar_tuple(@ModelName@_input_parameters& input,
+                                                int key, double value)
 {
+@fillInputParametersFromMINPAR@
 }
 
-void @ModelName@_slha_reader::fill_extpar_tuple(@ModelName@_input_parameters&,
-                                                int, double)
+void @ModelName@_slha_reader::fill_extpar_tuple(@ModelName@_input_parameters& input,
+                                                int key, double value)
 {
+@fillInputParametersFromEXTPAR@
 }
 
 } // namespace flexiblesusy

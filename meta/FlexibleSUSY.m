@@ -450,13 +450,14 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
+WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
-            parameterNames = "", parameterEnum = "", numberOfParameters = 0},
+            parameterNames = "", parameterEnum = "", numberOfParameters = 0,
+            fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = ""},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -469,6 +470,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
            numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
            parameterEnum      = BetaFunction`CreateParameterEnum[betaFun];
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
+           fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
+           fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
            ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -478,6 +481,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
                             "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
+                            "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
+                            "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -821,6 +826,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
+                               MINPAR, EXTPAR,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
