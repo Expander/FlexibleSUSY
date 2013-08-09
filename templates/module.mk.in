@@ -77,6 +77,12 @@ $(DIR)/@CLASSNAME@_physical.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hp
 $(DIR)/@CLASSNAME@_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_lattice_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_lattice_model.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_model.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
@@ -95,10 +101,19 @@ $(DIR)/@CLASSNAME@_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_
 $(DIR)/@CLASSNAME@_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_lattice_high_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_lattice_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_lattice_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
@@ -107,10 +122,16 @@ $(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp: $(DIR)/@CLASSNAME@_two_sc
 $(DIR)/@CLASSNAME@_convergence_tester.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
+$(DIR)/@CLASSNAME@_lattice_convergence_tester.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
 $(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_lattice_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
@@ -122,7 +143,7 @@ $(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.h
 $(DIR)/@CLASSNAME@_utilities.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
-$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o: CPPFLAGS += $(EIGENFLAGS)
+$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o: CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MAKELIB) $@ $^
@@ -132,7 +153,7 @@ $(LIB@CLASSNAME@_OBJ) $(LIB@CLASSNAME@_DEP): CPPFLAGS += $(LOOPTOOLSFLAGS)
 endif
 
 $(RUN_@CLASSNAME@_EXE): $(DIR)/run_@CLASSNAME@.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 ALLDEP += $(LIB@CLASSNAME@_DEP)
 ALLLIB += $(LIB@CLASSNAME@)
