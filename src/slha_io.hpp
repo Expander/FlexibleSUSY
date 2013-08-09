@@ -38,13 +38,16 @@ public:
    ~SLHA_io() {}
 
    const std::string& get_input_file() const { return input_filename; }
+   const std::string& get_output_file() const { return output_filename; }
    void set_input_file(const std::string&);
+   void set_output_file(const std::string& f) { output_filename = f; }
 
    void fill(softsusy::QedQcd&);
    void read_block(const std::string&, Tuple_processor);
 
 private:
    std::string input_filename; ///< SHLA input file name
+   std::string output_filename; ///< SHLA output file name
    SLHAea::Coll data;          ///< SHLA data
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
 };

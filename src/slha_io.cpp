@@ -26,6 +26,7 @@ namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
    : input_filename()
+   , output_filename()
    , data()
 {
 }
@@ -37,6 +38,7 @@ SLHA_io::SLHA_io()
  */
 SLHA_io::SLHA_io(const std::string& input_filename_)
    : input_filename(input_filename_)
+   , output_filename(input_filename_)
 {
    std::ifstream ifs(input_filename_);
    data.read(ifs);
