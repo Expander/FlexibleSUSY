@@ -118,7 +118,7 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 }
 
 @ModelName@_slha_reader::@ModelName@_slha_reader(const std::string& input_filename_)
-   : SLHA_io(input_filename_)
+   : slha_io(input_filename_)
 {
 }
 
@@ -130,8 +130,8 @@ void @ModelName@_slha_reader::fill(@ModelName@_input_parameters& input)
    SLHA_io::Tuple_processor extpar_processor
       = std::bind(&MSSM_slha_reader::fill_extpar_tuple, input, _1, _2);
 
-   read_block("MINPAR", minpar_processor);
-   read_block("EXTPAR", extpar_processor);
+   slha_io.read_block("MINPAR", minpar_processor);
+   slha_io.read_block("EXTPAR", extpar_processor);
 }
 
 void @ModelName@_slha_reader::fill_minpar_tuple(@ModelName@_input_parameters& input,

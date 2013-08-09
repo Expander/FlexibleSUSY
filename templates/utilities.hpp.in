@@ -83,16 +83,19 @@ private:
 
 struct @ModelName@_input_parameters;
 
-class @ModelName@_slha_reader : public SLHA_io {
+class @ModelName@_slha_reader {
 public:
    @ModelName@_slha_reader(const std::string&);
-   virtual ~@ModelName@_slha_reader() {}
+   ~@ModelName@_slha_reader() {}
 
-   using SLHA_io::fill;
+   void fill(QedQcd& qedqcd) { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&);
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
+
+private:
+   SLHA_io slha_io; ///< SLHA io class
 };
 
 } // namespace flexiblesusy

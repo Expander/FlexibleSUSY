@@ -34,7 +34,7 @@ public:
 
    SLHA_io();
    SLHA_io(const std::string&);
-   virtual ~SLHA_io() {}
+   ~SLHA_io() {}
 
    const std::string& get_input_file() const { return input_filename; }
    void set_input_file(const std::string& f) { input_filename = f; }
