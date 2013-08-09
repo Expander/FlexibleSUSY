@@ -85,11 +85,16 @@ void SLHA_io::set_spinfo()
 
 void SLHA_io::write_to_file(const std::string& file_name)
 {
+   std::ofstream ofs(file_name);
+   write_to_stream(ofs);
+}
+
+void SLHA_io::write_to_stream(std::ostream& ostr)
+{
    set_spinfo();
 
-   std::ofstream ofs(file_name);
-   if (ofs.good())
-      ofs << data;
+   if (ostr.good())
+      ostr << data;
 }
 
 /**

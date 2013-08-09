@@ -20,6 +20,7 @@
 #define SLHA_IO_H
 
 #include <string>
+#include <iosfwd>
 #include <functional>
 #include "slhaea.h"
 
@@ -44,6 +45,7 @@ public:
    // writing functions
    void set_spinfo();
    void write_to_file(const std::string&);
+   void write_to_stream(std::ostream& = std::cout);
 
 private:
    SLHAea::Coll data;          ///< SHLA data
