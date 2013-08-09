@@ -91,15 +91,6 @@ void @ModelName@_susy_parameters::set(const Eigen::ArrayXd& v)
 @set@
 }
 
-std::vector<std::string> @ModelName@_susy_parameters::get_parameter_names() const
-{
-   std::vector<std::string> names(@numberOfParameters@);
-
-@parameterNames@
-
-   return names;
-}
-
 const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() const
 {
    return input;

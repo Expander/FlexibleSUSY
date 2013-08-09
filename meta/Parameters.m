@@ -3,7 +3,8 @@ BeginPackage["Parameters`", {"SARAH`", "CConversion`"}];
 
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
-CreateParameterNames::usage="";
+CreateParameterNamesStr::usage="";
+CreateParameterEnums::usage="";
 
 SetParameter::usage="set model parameter";
 
@@ -251,40 +252,63 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_,
            Return[{ass, rows * cols}];
           ];
 
-CreateParameterNames[name_, startIndex_, parameterType_] :=
+CreateParameterNamesStr[name_, parameterType_] :=
     Block[{},
-          Print["Error: CreateParameterNames: unknown parameter type: ",
+          Print["Error: CreateParameterNamesStr: unknown parameter type: ",
                 ToString[parameterType]];
           Quit[1];
           ];
 
-CreateParameterNames[name_String, startIndex_, CConversion`ScalarType["double"]] :=
-    Module[{ass},
-           ass = "names[" <> ToString[startIndex] <> "] = \""
-                 <> name <> "\";\n";
-           Return[{ass, 1}];
-          ];
+CreateParameterNamesStr[name_, CConversion`ScalarType["double"]] :=
+    "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
 
-CreateParameterNames[name_String, startIndex_, CConversion`ScalarType["Complex"]] :=
-    Module[{ass = ""},
-           ass = "names[" <> ToString[startIndex] <> "] = \"Re(" <> name <> ")\";\n" <>
-                 "names[" <> ToString[startIndex + 1] <> "] = \"Im(" <> name <> ")\";\n";
-           Return[{ass, 2}];
-          ];
+CreateParameterNamesStr[name_, CConversion`ScalarType["Complex"]] :=
+    "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
+    "), Im(" <> CConversion`ToValidCSymbolString[name] <> ")\"";
 
-CreateParameterNames[name_String, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateParameterNamesStr[name_, CConversion`MatrixType[type_, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
-                   ass = ass <> "names[" <> ToString[startIndex + count] <> "] = \""
-                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                          <> ")\";\n";
+                   If[ass != "", ass = ass <> ", ";];
+                   ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
+                         "(" <> ToString[i] <> "," <> ToString[j] <> ")\"";
                   ];
               ];
            If[rows * cols != count,
-              Print["Error: CreateParameterNames: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, rows * cols}];
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[rows * cols] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
+
+CreateParameterEnums[name_, parameterType_] :=
+    Block[{},
+          Print["Error: CreateParameterEnums: unknown parameter type: ",
+                ToString[parameterType]];
+          Quit[1];
+          ];
+
+CreateParameterEnums[name_, CConversion`ScalarType["double"]] :=
+    CConversion`ToValidCSymbolString[name];
+
+CreateParameterEnums[name_, CConversion`ScalarType["Complex"]] :=
+    CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
+    CConversion`ToValidCSymbolString[Im[name]];
+
+CreateParameterEnums[name_, CConversion`MatrixType[type_, rows_, cols_]] :=
+    Module[{ass = "", i, j, count = 0},
+           For[i = 0, i < rows, i++,
+               For[j = 0, j < cols, j++; count++,
+                   If[ass != "", ass = ass <> ", ";];
+                   ass = ass <> CConversion`ToValidCSymbolString[name[i,j]];
+                  ];
+              ];
+           If[rows * cols != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[rows * cols] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
           ];
 
 SetParameter[parameter_, value_String, class_String] :=

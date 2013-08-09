@@ -34,6 +34,7 @@ namespace @ModelName@_info {
 @particleMultiplicity@
 @particleNames@
 @particleLaTeXNames@
+@parameterNames@
 }
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
