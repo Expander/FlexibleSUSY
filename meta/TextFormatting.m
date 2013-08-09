@@ -7,15 +7,17 @@ IndentText::usage="indents text by a given number of spaces";
 Begin["Private`"];
 
 GetBestSplitPoint[line_String, maxWidth_:79] :=
-    Module[{chars, lastSplitPoint, i, char, nextChar,
+    Module[{chars, lastSplitPoint, i, char, nextChar, numberOfQuotes = 0,
             splitChars = StringSplit["(){}[]*+,;<> ", ""]},
            If[StringLength[line] <= maxWidth, Return[StringLength[line]]];
            chars = StringSplit[line, ""];
            lastSplitPoint = StringLength[line];
            For[i = 1, i < Length[chars] && i <= maxWidth, i++,
                char = chars[[i]];
+               If[char == "\"", numberOfQuotes++;];
                nextChar = chars[[i+1]];
-               If[MemberQ[splitChars, char] || MemberQ[splitChars, nextChar],
+               If[(MemberQ[splitChars, char] || MemberQ[splitChars, nextChar])
+                  && EvenQ[numberOfQuotes],
                   lastSplitPoint = i;
                  ];
               ];
