@@ -3,8 +3,18 @@ FSModelName = "@CLASSNAME@";
 
 (* CE6SSM input parameters *)
 
-InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
-                    KappaInput, vSInput, BmuPrimeInput, muPrimeInput };
+MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {5, Azero}
+         };
+
+EXTPAR = { {61, LambdaInput},
+           {62, KappaInput},
+           {63, muPrimeInput},
+           {64, BmuPrimeInput},
+           {65, vSInput}
+         };
 
 DefaultParameterPoint = {
     {m0, 300},

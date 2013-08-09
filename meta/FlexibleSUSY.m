@@ -128,8 +128,11 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`DefaultParameterPoint] =!= List,
               FlexibleSUSY`DefaultParameterPoint = {};
              ];
-           If[Head[FlexibleSUSY`InputParameters] =!= List,
-              FlexibleSUSY`InputParameters = {};
+           If[Head[SARAH`MINPAR] =!= List,
+              SARAH`MINPAR = {};
+             ];
+           If[Head[SARAH`EXTPAR] =!= List,
+              SARAH`EXTPAR = {};
              ];
           ];
 
@@ -687,6 +690,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 SARAH`g1^2 Susyno`LieGroups`g2^2 -> 0 };
              ];
 
+           FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
            (* pick beta functions of supersymmetric parameters *)

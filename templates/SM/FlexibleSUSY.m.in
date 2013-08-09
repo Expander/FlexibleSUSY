@@ -3,7 +3,7 @@ FSModelName = "@CLASSNAME@";
 
 (* SM input parameters *)
 
-InputParameters = { LambdaIN };
+MINPAR={ {1, LambdaIN} };
 
 ParametersToSolveTadpoles = { Mu2 };
 

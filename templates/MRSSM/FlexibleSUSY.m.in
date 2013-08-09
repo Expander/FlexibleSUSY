@@ -3,7 +3,7 @@ FSModelName = "@CLASSNAME@";
 
 (* MRSSM input parameters *)
 
-InputParameters = { TanBeta };
+MINPAR = { {3, TanBeta} };
 
 DefaultParameterPoint = {
     {TanBeta, 10}
