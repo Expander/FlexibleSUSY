@@ -21,6 +21,7 @@
 
 #include <string>
 #include <functional>
+#include "slhaea.h"
 
 namespace softsusy {
    class QedQcd;
@@ -37,13 +38,14 @@ public:
    ~SLHA_io() {}
 
    const std::string& get_input_file() const { return input_filename; }
-   void set_input_file(const std::string& f) { input_filename = f; }
+   void set_input_file(const std::string&);
 
    void fill(softsusy::QedQcd&);
    void read_block(const std::string&, Tuple_processor);
 
 private:
-   std::string input_filename;
+   std::string input_filename; ///< SHLA input file name
+   SLHAea::Coll data;          ///< SHLA data
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
 };
 

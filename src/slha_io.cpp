@@ -19,7 +19,6 @@
 #include "slha_io.hpp"
 #include "logger.hpp"
 #include "lowe.h"
-#include "slhaea.h"
 
 #include <fstream>
 
@@ -27,12 +26,31 @@ namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
    : input_filename()
+   , data()
 {
 }
 
+/**
+ * Constructor
+ * @brief opens SLHA input file and reads the content
+ * @param input_filename_ SLHA input file name
+ */
 SLHA_io::SLHA_io(const std::string& input_filename_)
    : input_filename(input_filename_)
 {
+   std::ifstream ifs(input_filename_);
+   data.read(ifs);
+}
+
+/**
+ * @brief opens SLHA input file and reads the content
+ * @param f SLHA input file name
+ */
+void SLHA_io::set_input_file(const std::string& f)
+{
+   input_filename = f;
+   std::ifstream ifs(f);
+   data.read(ifs);
 }
 
 void SLHA_io::fill(QedQcd& oneset)
@@ -46,17 +64,14 @@ void SLHA_io::fill(QedQcd& oneset)
 
 void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor)
 {
-   std::ifstream ifs(input_filename);
-   const SLHAea::Coll input(ifs);
-
-   if (input.find(block_name) == input.cend()) {
+   if (data.find(block_name) == data.cend()) {
       WARNING("Block " << block_name << " not found in SLHA2 file "
               << input_filename);
       return;
    }
 
-   for (SLHAea::Block::const_iterator line = input.at(block_name).cbegin(),
-        end = input.at(block_name).cend(); line != end; ++line) {
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
       if (!line->is_data_line())
          continue;
 
