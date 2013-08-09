@@ -19,6 +19,7 @@
 #include "slha_io.hpp"
 #include "logger.hpp"
 #include "lowe.h"
+#include "config.h"
 
 #include <fstream>
 
@@ -85,8 +86,18 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
+void SLHA_io::set_spinfo()
+{
+   data["SPINFO"][0][1] = PKGNAME;
+   data["SPINFO"][0][2] = "# spectrum calculator";
+   data["SPINFO"][1][1] = VERSION;
+   data["SPINFO"][1][2] = "# version number of " PKGNAME;
+}
+
 void SLHA_io::write_to_file(const std::string& file_name)
 {
+   set_spinfo();
+
    std::ofstream ofs(file_name);
    ofs << data;
 }

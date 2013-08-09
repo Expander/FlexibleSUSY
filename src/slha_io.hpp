@@ -40,8 +40,12 @@ public:
    const std::string& get_input_file() const { return input_filename; }
    void set_input_file(const std::string&);
 
+   // reading functions
    void fill(softsusy::QedQcd&);
    void read_block(const std::string&, Tuple_processor);
+
+   // writing functions
+   void set_spinfo();
    void write_to_file(const std::string&);
 
 private:
