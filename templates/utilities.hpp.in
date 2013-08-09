@@ -85,11 +85,12 @@ struct @ModelName@_input_parameters;
 
 class @ModelName@_slha_io {
 public:
-   @ModelName@_slha_io(const std::string&);
+   @ModelName@_slha_io();
    ~@ModelName@_slha_io() {}
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
+   void read_from_file(const std::string& file_name) { slha_io.read_from_file(file_name); }
    void write_to_file(const std::string& file_name) { slha_io.write_to_file(file_name); }
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);

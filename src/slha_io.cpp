@@ -26,31 +26,18 @@
 namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
-   : input_filename()
-   , data()
+   : data()
 {
 }
 
 /**
- * Constructor
  * @brief opens SLHA input file and reads the content
- * @param input_filename_ SLHA input file name
+ * @param file_name SLHA input file name
  */
-SLHA_io::SLHA_io(const std::string& input_filename_)
-   : input_filename(input_filename_)
+void SLHA_io::read_from_file(const std::string& file_name)
 {
-   std::ifstream ifs(input_filename_);
-   data.read(ifs);
-}
-
-/**
- * @brief opens SLHA input file and reads the content
- * @param f SLHA input file name
- */
-void SLHA_io::set_input_file(const std::string& f)
-{
-   input_filename = f;
-   std::ifstream ifs(f);
+   std::ifstream ifs(file_name);
+   data.clear();
    data.read(ifs);
 }
 
@@ -66,8 +53,7 @@ void SLHA_io::fill(QedQcd& oneset) const
 void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor) const
 {
    if (data.find(block_name) == data.cend()) {
-      WARNING("Block " << block_name << " not found in SLHA2 file "
-              << input_filename);
+      WARNING("Block " << block_name << " not found in SLHA2 input file");
       return;
    }
 

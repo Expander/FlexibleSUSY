@@ -47,11 +47,12 @@ int main(int argc, const char* argv[])
       return options.status();
 
    const std::string slha_input_file(options.get_slha_input_file());
+   @ModelName@_slha_io slha_io;
    QedQcd oneset;
    @ModelName@_input_parameters input;
 
    if (!slha_input_file.empty()) {
-      @ModelName@_slha_io slha_io(slha_input_file);
+      slha_io.read_from_file(slha_input_file);
       slha_io.fill(oneset);
       slha_io.fill(input);
    }

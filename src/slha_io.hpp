@@ -34,14 +34,11 @@ public:
    typedef std::function<void(int, double)> Tuple_processor;
 
    SLHA_io();
-   SLHA_io(const std::string&);
    ~SLHA_io() {}
-
-   const std::string& get_input_file() const { return input_filename; }
-   void set_input_file(const std::string&);
 
    // reading functions
    void fill(softsusy::QedQcd&) const;
+   void read_from_file(const std::string&);
    void read_block(const std::string&, Tuple_processor) const;
 
    // writing functions
@@ -49,7 +46,6 @@ public:
    void write_to_file(const std::string&);
 
 private:
-   std::string input_filename; ///< SHLA input file name
    SLHAea::Coll data;          ///< SHLA data
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
 };
