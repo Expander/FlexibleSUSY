@@ -190,9 +190,9 @@ int main(int argc, const char* argv[])
    @ModelName@_input_parameters input;
 
    if (!slha_input_file.empty()) {
-      @ModelName@_slha_reader slha_reader(slha_input_file);
-      slha_reader.fill(oneset);
-      slha_reader.fill(input);
+      @ModelName@_slha_io slha_io(slha_input_file);
+      slha_io.fill(oneset);
+      slha_io.fill(input);
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
