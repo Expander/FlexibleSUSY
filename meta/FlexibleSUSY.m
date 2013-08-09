@@ -472,9 +472,9 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],
                             "@particleMultiplicity@" -> IndentText[WrapLines[particleMultiplicity]],
                             "@particleNames@"      -> IndentText[WrapLines[particleNames]],
-                            "@particleLaTeXNames@" -> IndentText[particleLaTeXNames],
+                            "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
-                            "@parameterNames@"     -> IndentText[parameterNames],
+                            "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
