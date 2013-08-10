@@ -345,7 +345,7 @@ CreateParticleEnum[particles_List] :=
            (* append enum state for the number of particles *)
            If[Length[particles] > 0, result = result <> ", ";];
            result = result <> "NUMBER_OF_PARTICLES";
-           result = "enum Particles {" <>
+           result = "enum Particles : unsigned {" <>
                     result <> "};\n";
            Return[result];
           ];

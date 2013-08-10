@@ -201,7 +201,7 @@ CreateParameterEnum[betaFunctions_List] :=
            (* append enum state for the number of betaFunctions *)
            If[Length[betaFunctions] > 0, result = result <> ", ";];
            result = result <> "NUMBER_OF_PARAMETERS";
-           result = "enum Parameters {" <>
+           result = "enum Parameters : unsigned {" <>
                     result <> "};\n";
            Return[result];
           ];
