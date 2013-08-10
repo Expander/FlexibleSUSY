@@ -83,44 +83,6 @@ private:
    double scale;
 };
 
-class Two_scale_model;
-
-/**
- * @class TachyonError
- * @brief Tachyonic particle
- * @todo remove this class and replace it by a model problem class
- */
-class TachyonError : public Error {
-public:
-   TachyonError(const Two_scale_model*, const std::string&, int);
-   virtual ~TachyonError() {}
-   virtual std::string what() const;
-   const Two_scale_model* get_model() const { return model; }
-   const std::string& get_particle_name() const { return particle_name; }
-   int get_particle_index() const { return particle_index; }
-private:
-   const Two_scale_model* model;
-   std::string particle_name;
-   int particle_index;
-};
-
-/**
- * @class NoEWSBError
- * @brief EWSB eqs. could not be solved
- * @todo remove this class and replace it by a model problem class
- */
-class NoEWSBError : public Error {
-public:
-   NoEWSBError(const Two_scale_model*, double);
-   virtual ~NoEWSBError() {}
-   virtual std::string what() const;
-   const Two_scale_model* get_model() const { return model; }
-   double get_requested_precision() const { return requested_precision; }
-private:
-   const Two_scale_model* model;
-   double requested_precision;
-};
-
 }
 
 #endif
