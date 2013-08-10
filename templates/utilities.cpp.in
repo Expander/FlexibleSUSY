@@ -133,9 +133,9 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor minpar_processor
-      = std::bind(&MSSM_slha_io::fill_minpar_tuple, std::ref(input), _1, _2);
+      = std::bind(&@ModelName@_slha_io::fill_minpar_tuple, std::ref(input), _1, _2);
    SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&MSSM_slha_io::fill_extpar_tuple, std::ref(input), _1, _2);
+      = std::bind(&@ModelName@_slha_io::fill_extpar_tuple, std::ref(input), _1, _2);
 
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
