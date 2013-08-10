@@ -22,6 +22,7 @@
 #define @ModelName@_UTILITIES_H
 
 #include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_info.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -30,15 +31,6 @@
 #include <utility>
 
 namespace flexiblesusy {
-
-namespace @ModelName@_info {
-@particleEnum@
-@parameterEnum@
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-}
 
 class @ModelName@_parameter_getter {
 public:

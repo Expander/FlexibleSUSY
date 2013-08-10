@@ -30,13 +30,6 @@ namespace flexiblesusy {
 
 #define PHYSICAL(p) model.get_physical().p
 
-namespace @ModelName@_info {
-@particleMultiplicity@
-@particleNames@
-@particleLaTeXNames@
-@parameterNames@
-}
-
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
    , scale(0.0)
