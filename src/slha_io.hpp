@@ -43,7 +43,7 @@ public:
    void read_block(const std::string&, Tuple_processor) const;
 
    // writing functions
-   void set_spinfo(const std::vector<std::string>&, const std::vector<std::string>&);
+   void set_spinfo(const std::string&, const std::string&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
 

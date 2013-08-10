@@ -70,8 +70,8 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::set_spinfo(const std::vector<std::string>& warnings,
-                         const std::vector<std::string>& serious_problems)
+void SLHA_io::set_spinfo(const std::string& warnings,
+                         const std::string& serious_problems)
 {
    const std::string spinfo("SPINFO");
 
@@ -89,14 +89,10 @@ void SLHA_io::set_spinfo(const std::vector<std::string>& warnings,
    block.erase(warning_keys);
    block.erase(problem_keys);
 
-   for (std::vector<std::string>::const_iterator it = warnings.begin(),
-           end = warnings.end(); it != end; ++it) {
-      block[""] << 3 << *it;
-   }
-   for (std::vector<std::string>::const_iterator it = serious_problems.begin(),
-           end = serious_problems.end(); it != end; ++it) {
-      block[""] << 4 << *it;
-   }
+   if (!warnings.empty())
+      block[""] << 3 << warnings;
+   if (!serious_problems.empty())
+      block[""] << 4 << serious_problems;
 }
 
 void SLHA_io::write_to_file(const std::string& file_name)
