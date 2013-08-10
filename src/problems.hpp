@@ -19,6 +19,7 @@
 #ifndef PROBLEMS_H
 #define PROBLEMS_H
 
+#include <ostream>
 #include <cassert>
 
 namespace flexiblesusy {
@@ -46,6 +47,8 @@ public:
    bool no_perturbative() const { return non_perturbative; }
 
    void clear();
+   bool have_problem() const;
+   void print(const char*[Number_of_particles], std::ostream& = std::cout) const;
 
 private:
    bool tachyons[Number_of_particles];
@@ -103,6 +106,30 @@ void Problems<Number_of_particles>::clear()
    failed_ewsb = false;
    failed_convergence = false;
    non_perturbative = false;
+}
+
+template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::have_problem() const
+{
+   return have_tachyon() || failed_ewsb || failed_convergence
+      || non_perturbative;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::print(const char* particle_names[Number_of_particles],
+                                          std::ostream& ostr) const
+{
+   ostr << "Problems: ";
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (tachyons[i])
+         ostr << "tachyon " << particle_names[i] << ", ";
+   }
+   if (failed_ewsb)
+      ostr << "no ewsb, ";
+   if (failed_convergence)
+      ostr << "no convergence, ";
+   if (non_perturbative)
+      ostr << "non-perturbative";
 }
 
 } // namespace flexiblesusy
