@@ -4,6 +4,7 @@
 #include <gsl/gsl_spline.h>
 
 #include "mathdefs.hpp"
+#include "lattice_model.hpp"
 #include "lattice_constraint.hpp"
 #include "lattice_initial_guesser.hpp"
 #include "lattice_solver.hpp"
@@ -14,9 +15,6 @@
 namespace flexiblesusy {
 
 using namespace std;
-
-
-// const double lattice_default_scale0 = TeV;
 
 
 ostream& operator<<(ostream &out, const RGFlow<Lattice>& f)
