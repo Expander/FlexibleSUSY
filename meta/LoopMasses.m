@@ -72,7 +72,7 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
     "if (mass_sqr < 0.)\n" <>
-    IndentText["problems.flag_tachyon(" <> massName <> ");"] <> "\n\n" <>
+    IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 
