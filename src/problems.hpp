@@ -27,7 +27,7 @@ namespace flexiblesusy {
 template <unsigned Number_of_particles>
 class Problems {
 public:
-   Problems();
+   Problems(const char**);
    ~Problems() {}
 
    void flag_tachyon(unsigned);
@@ -52,17 +52,19 @@ public:
    void clear();                      ///< clear all problems
    bool have_problem() const;         ///< test for any problem
    bool have_serious_problem() const; ///< problems which yield invalid spectrum
-   void print(const char*[Number_of_particles], std::ostream& = std::cout) const;
+   void print(std::ostream& = std::cout) const;
 
 private:
    bool tachyons[Number_of_particles];
+   const char** particle_names;
    bool thrown;
    bool failed_ewsb, failed_convergence, non_perturbative;
 };
 
 template <unsigned Number_of_particles>
-Problems<Number_of_particles>::Problems()
+Problems<Number_of_particles>::Problems(const char** particle_names_)
    : tachyons() // intializes all elements to zero (= false)
+   , particle_names(particle_names_)
    , thrown(false)
    , failed_ewsb(false)
    , failed_convergence(false)
@@ -129,8 +131,7 @@ bool Problems<Number_of_particles>::have_serious_problem() const
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::print(const char* particle_names[Number_of_particles],
-                                          std::ostream& ostr) const
+void Problems<Number_of_particles>::print(std::ostream& ostr) const
 {
    if (!have_problem())
       return;

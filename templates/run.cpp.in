@@ -222,7 +222,7 @@ int main(int argc, const char* argv[])
    runner.run(oneset, input);
 
    if (runner.get_problems().have_serious_problem()) {
-      runner.get_problems().print(@ModelName@_info::particle_names);
+      runner.get_problems().print();
    } else {
       // runner.write_running_couplings();
       // runner.write_spectrum();
