@@ -11,6 +11,7 @@
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
 #include "stopwatch.hpp"
+#include "error.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_mssm_solver
@@ -285,7 +286,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 
    BOOST_MESSAGE("testing slow convergent " << pp);
    Two_scale_tester two_scale_tester;
-   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), RGFlow<Two_scale>::NoConvergenceError);
+   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), NoConvergenceError);
    SoftSusy_tester softSusy_tester;
    BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NoConvergence_error);
 }
@@ -303,7 +304,7 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
 
    BOOST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
-   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), RGFlow<Two_scale>::NonPerturbativeRunningError);
+   BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), NonPerturbativeRunningError);
    SoftSusy_tester softSusy_tester;
    BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NonPerturbative_error);
 }

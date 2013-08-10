@@ -4,6 +4,7 @@
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
+#include "error.hpp"
 
 #include <cmath>
 
@@ -122,5 +123,5 @@ BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )
    solver.set_convergence_tester(&ccc);
    solver.set_running_precision(&incr_prec);
 
-   BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
+   BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
 }

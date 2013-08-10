@@ -5,6 +5,8 @@ TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/initial_guesser.hpp.in \
+		$(DIR)/info.hpp.in \
+		$(DIR)/info.cpp.in \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \

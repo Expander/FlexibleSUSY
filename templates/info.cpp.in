@@ -16,8 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "error.hpp"
+// File generated at @DateAndTime@
+
+#include "@ModelName@_info.hpp"
 
 namespace flexiblesusy {
 
+namespace @ModelName@_info {
+@particleMultiplicity@
+@particleNames@
+@particleLaTeXNames@
+@parameterNames@
 }
+
+} // namespace flexiblesusy
+

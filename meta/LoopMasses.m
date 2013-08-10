@@ -47,41 +47,44 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-Do1DimScalar[particleName_String, selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
+Do1DimScalar[particleName_String, massName_String, selfEnergyFunction_String,
+             momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-    "const double mass_sqr = Sqr(" <> particleName <> ") - self_energy" <>
+    "const double mass_sqr = Sqr(" <> massName <> ") - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
-    "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
-    IndentText["throw TachyonError(this, \"" <> particleName <> "\", 1);"] <> "\n\n" <>
-    "PHYSICAL(" <> particleName <> ") = AbsSqrt(mass_sqr);\n";
+    "if (mass_sqr < 0.)\n" <>
+    IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+    "PHYSICAL(" <> massName <> ") = ZeroSqrt(mass_sqr);\n";
 
-Do1DimFermion[particleName_String, selfEnergyFunctionS_String,
+Do1DimFermion[massName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
     "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
     "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
-    "PHYSICAL(" <> particleName <> ") = " <> particleName <>
-    " - self_energy_1 - " <> particleName <> " * (self_energy_PL + self_energy_PR);\n";
+    "PHYSICAL(" <> massName <> ") = " <> massName <>
+    " - self_energy_1 - " <> massName <> " * (self_energy_PL + self_energy_PR);\n";
 
-Do1DimVector[particleName_String, selfEnergyFunction_String, momentum_String] :=
+Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
+             momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-    "const double mass_sqr = Sqr(" <> particleName <> ") - self_energy;\n\n" <>
-    "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
-    IndentText["throw TachyonError(this, \"" <> particleName <> "\", 1);"] <> "\n\n" <>
-    "PHYSICAL(" <> particleName <> ") = AbsSqrt(mass_sqr);\n";
+    "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
+    "if (mass_sqr < 0.)\n" <>
+    IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+    "PHYSICAL(" <> massName <> ") = ZeroSqrt(mass_sqr);\n";
 
 
 (* ********** fast diagonalization routines ********** *)
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, selfEnergyFunction,
+    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             tadpoleMatrix, U, V, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
@@ -91,8 +94,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> particleName <> "(i1) * " <> 
-                                             particleName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
+                                             massName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
                                              selfEnergyFunction <> "(p,i1,i2));\n"] <>
                                   "}\n"
@@ -107,36 +110,36 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  result = result <>
                           "Diagonalize(M_1loop, PHYSICAL(" <> U <> "), " <>
                           "PHYSICAL(" <> V <> "), " <>
-                          "PHYSICAL(" <> particleName <> "));\n";
+                          "PHYSICAL(" <> massName <> "));\n";
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           "Diagonalize(M_1loop, PHYSICAL(" <> U <> "), " <>
-                          "PHYSICAL(" <> particleName <> "));\n";
+                          "PHYSICAL(" <> massName <> "));\n";
                 ];
               result = result <>
                        "\nint min_element;\n" <>
-                       "if (throw_on_tachyon && " <> particleName <> ".min(min_element) < 0.)\n" <>
-                       IndentText["throw TachyonError(this, \"" <> particleName <> "\", min_element);"] <> "\n\n" <>
-                       "PHYSICAL(" <> particleName <> ") = AbsSqrt(PHYSICAL(" <>
-                       particleName <> "));\n";
+                       "if (" <> massName <> ".min(min_element) < 0.)\n" <>
+                       IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                       "PHYSICAL(" <> massName <> ") = ZeroSqrt(PHYSICAL(" <>
+                       massName <> "));\n";
               ,
-              result = Do1DimScalar[particleName, selfEnergyFunction, particleName,
+              result = Do1DimScalar[particleName, massName, selfEnergyFunction, massName,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
           ];
 
 DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, U, V,
+    Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
+              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
@@ -148,8 +151,8 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        "DoubleMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> particleName <> "(i1) * " <> 
-                                             particleName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
+                                             massName <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = Re(" <>
                                              selfEnergyFunctionS <> "(p,i1,i2));\n" <>
                                              "self_energy_PL(i1,i2) = Re(" <>
@@ -179,44 +182,45 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                              "Diagonalize2by2(M_1loop, " <>
                              "PHYSICAL(" <> U <> "), " <>
                              "PHYSICAL(" <> V <> "), " <>
-                             "PHYSICAL(" <> particleName <> "));\n";
+                             "PHYSICAL(" <> massName <> "));\n";
                     ,
                     result = result <>
                              "Diagonalize(M_1loop, " <>
                              "PHYSICAL(" <> U <> "), " <>
                              "PHYSICAL(" <> V <> "), " <>
-                             "PHYSICAL(" <> particleName <> "));\n";
+                             "PHYSICAL(" <> massName <> "));\n";
                    ];
                  ,
                  result = result <>
                           "Diagonalize(M_1loop, " <>
                           "PHYSICAL(" <> ToValidCSymbolString[mixingMatrix] <> "), " <>
-                          "PHYSICAL(" <> particleName <> "));\n";
+                          "PHYSICAL(" <> massName <> "));\n";
                 ];
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana ferimion or not *)
-              result = Do1DimFermion[particleName, selfEnergyFunctionS,
+              result = Do1DimFermion[massName, selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
-                                     particleName];
+                                     massName];
              ];
            Return[result];
           ];
 
 DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, selfEnergyFunction},
+    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
+              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
              ];
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = Do1DimVector[particleName, selfEnergyFunction, particleName];
+              result = Do1DimVector[particleName, massName, selfEnergyFunction, massName];
              ];
            Return[result];
           ];
@@ -227,13 +231,14 @@ DoFastDiagonalization[particle_Symbol, _] :=
 (* ********** medium diagonalization routines ********** *)
 
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, selfEnergyFunction,
+    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, diagonalizationFunction = "Diagonalize"},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           If[inputMomentum == "", momentum = particleName];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            If[dim == 2, diagonalizationFunction = "Diagonalize2by2";];
            (* create diagonalisation code snippet *)
@@ -245,9 +250,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> "), " <>
                             Vtemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
                             diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n\n" <>
-                            "if (throw_on_tachyon && eigen_values(es) < 0.)\n" <>
-                            IndentText["throw TachyonError(this, \"" <> particleName <> "\", es);"] <> "\n\n" <>
-                            "PHYSICAL(" <> particleName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
+                            "if (eigen_values(es) < 0.)\n" <>
+                            IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
@@ -257,9 +262,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
                             diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", eigen_values);\n\n" <>
-                            "if (throw_on_tachyon && eigen_values(es) < 0.)\n" <>
-                            IndentText["throw TachyonError(this, \"" <> particleName <> "\", es);"] <> "\n\n" <>
-                            "PHYSICAL(" <> particleName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
+                            "if (eigen_values(es) < 0.)\n" <>
+                            IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
                             "if (es == 1)\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
              ];
@@ -289,22 +294,22 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                        "}\n";
               ,
               result = tadpoleMatrix <>
-                       Do1DimScalar[particleName, selfEnergyFunction, momentum,
+                       Do1DimScalar[particleName, massName, selfEnergyFunction, momentum,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
           ];
 
 DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, _] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, U, V,
+    Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           If[inputMomentum == "", momentum = particleName];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           If[inputMomentum == "", momentum = massName];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
+              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
@@ -374,13 +379,13 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                                     ];
                 ];
               result = result <>
-                       IndentText["PHYSICAL(" <> particleName <>
+                       IndentText["PHYSICAL(" <> massName <>
                                   "(es)) = Abs(eigen_values(es));\n"];
               result = result <> "}\n";
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana fermion or not *)
-              result = Do1DimFermion[particleName, selfEnergyFunctionS,
+              result = Do1DimFermion[massName, selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      momentum];
              ];
@@ -388,21 +393,22 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
           ];
 
 DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _] :=
-    Module[{result, dim, dimStr, particleName, mixingMatrix, selfEnergyFunction,
+    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           If[inputMomentum == "", momentum = particleName];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           If[inputMomentum == "", momentum = massName];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> particleName <> ") = 0;\n"];
+              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
              ];
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = Do1DimVector[particleName, selfEnergyFunction, momentum];
+              result = Do1DimVector[particleName, massName, selfEnergyFunction, momentum];
              ];
            Return[result];
           ];
@@ -413,22 +419,22 @@ DoMediumDiagonalization[particle_Symbol, inputMomentum_:"", _] :=
 (* ********** high precision diagonalization routines ********** *)
 
 DoSlowDiagonalization[particle_Symbol, tadpole_] :=
-    Module[{result, dim, dimStr, particleName, inputMomenta, outputMomenta, body},
+    Module[{result, dim, dimStr, massName, inputMomenta, outputMomenta, body},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           inputMomenta = "old_" <> particleName;
-           outputMomenta = "new_" <> particleName;
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           inputMomenta = "old_" <> massName;
+           outputMomenta = "new_" <> massName;
            body = DoMediumDiagonalization[particle, inputMomenta, tadpole] <> "\n" <>
-                  outputMomenta <> " = PHYSICAL(" <> particleName <> ");\n" <>
+                  outputMomenta <> " = PHYSICAL(" <> massName <> ");\n" <>
                   "diff = MaxRelDiff(" <> outputMomenta <> ", " <> inputMomenta <> ");\n" <>
                   inputMomenta <> " = " <> outputMomenta <> ";\n" <>
                   "iteration++;\n";
            result = "unsigned iteration = 0;\n" <>
                     "double diff = 0.0;\n" <>
-                    "decltype(" <> particleName <> ") " <>
-                    inputMomenta  <> "(" <> particleName <> "), " <>
-                    outputMomenta <> "(" <> particleName <> ");\n\n" <>
+                    "decltype(" <> massName <> ") " <>
+                    inputMomenta  <> "(" <> massName <> "), " <>
+                    outputMomenta <> "(" <> massName <> ");\n\n" <>
                     "do {\n" <>
                     IndentText[body] <>
                     "} while (diff > precision\n" <>
@@ -650,9 +656,7 @@ CreateRunningDRbarMassFunction[particle_] :=
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
-              "if (throw_on_tachyon && mass_sqr < 0.)\n" <>
-              IndentText["throw TachyonError(this, \"" <> name <> "\", 1);"] <> "\n\n" <>
-              "return AbsSqrt(mass_sqr);\n";
+              "return ZeroSqrt(mass_sqr);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];

@@ -20,6 +20,7 @@
 #define ERROR_H
 
 #include <string>
+#include <sstream>
 
 namespace flexiblesusy {
 
@@ -29,32 +30,57 @@ public:
    virtual std::string what() const = 0;
 };
 
-class Two_scale_model;
-
-class TachyonError : public Error {
+/**
+ * @class SetupError
+ * @brief Spectrum generator was not setup correctly
+ */
+class SetupError : public Error {
 public:
-   TachyonError(const Two_scale_model*, const std::string&, int);
-   virtual ~TachyonError() {}
-   virtual std::string what() const;
-   const Two_scale_model* get_model() const { return model; }
-   const std::string& get_particle_name() const { return particle_name; }
-   int get_particle_index() const { return particle_index; }
+   SetupError(const std::string& message_) : message(message_) {}
+   virtual ~SetupError() {}
+   virtual std::string what() const { return message; }
 private:
-   const Two_scale_model* model;
-   std::string particle_name;
-   int particle_index;
+   std::string message;
 };
 
-class NoEWSBError : public Error {
+/**
+ * @class NoConvergenceError
+ * @brief No convergence while solving the RGEs
+ */
+class NoConvergenceError : public Error {
 public:
-   NoEWSBError(const Two_scale_model*, double);
-   virtual ~NoEWSBError() {}
-   virtual std::string what() const;
-   const Two_scale_model* get_model() const { return model; }
-   double get_requested_precision() const { return requested_precision; }
+   NoConvergenceError(unsigned number_of_iterations_)
+      : number_of_iterations(number_of_iterations_) {}
+   virtual ~NoConvergenceError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
+              << " after " << number_of_iterations << " iterations";
+      return message.str();
+   }
+   unsigned get_number_of_iterations() { return number_of_iterations; }
 private:
-   const Two_scale_model* model;
-   double requested_precision;
+   unsigned number_of_iterations;
+};
+
+/**
+ * @class NonPerturbativeRunningError
+ * @brief Non-perturbative RG running
+ */
+class NonPerturbativeRunningError : public Error {
+public:
+   NonPerturbativeRunningError(double scale_)
+      : scale(scale_)
+      {}
+   virtual ~NonPerturbativeRunningError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "NonPerturbativeRunningError: non-perturbative running "
+         " to scale " << scale;
+      return message.str();
+   }
+private:
+   double scale;
 };
 
 }
