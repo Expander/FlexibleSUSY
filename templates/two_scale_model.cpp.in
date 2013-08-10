@@ -33,6 +33,8 @@
 
 namespace flexiblesusy {
 
+using namespace @ModelName@_info;
+
 #define CLASSNAME @ModelName@<Two_scale>
 
 #define PHYSICAL(parameter) physical.parameter
@@ -45,8 +47,6 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
-   , throw_on_tachyon(false)
-   , throw_on_ewsb_fail(false)
    , calculate_sm_pole_masses(false)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
@@ -163,15 +163,13 @@ int CLASSNAME::solve_ewsb_iteratively()
    }
 
    if (status != GSL_SUCCESS) {
-      if (throw_on_ewsb_fail) {
-         throw NoEWSBError(this, ewsb_iteration_precision);
-      }
+      problems.flag_no_ewsb();
 #ifdef VERBOSE
-      else {
-         WARNING("\tCould not find a solution to the EWSB equations!"
-                 " (requested precision: " << ewsb_iteration_precision << ")");
-      }
+      WARNING("\tCould not find a solution to the EWSB equations!"
+              " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
+   } else {
+      problems.unflag_no_ewsb();
    }
 
    return status;
@@ -314,14 +312,8 @@ void CLASSNAME::calculate_1loop_masses()
 
 void CLASSNAME::calculate_spectrum()
 {
-   throw_on_tachyon = true;
-   throw_on_ewsb_fail = true;
-
    calculate_DRbar_parameters();
    calculate_1loop_masses();
-
-   throw_on_tachyon = false;
-   throw_on_ewsb_fail = false;
 }
 
 void CLASSNAME::clear()
@@ -330,6 +322,7 @@ void CLASSNAME::clear()
 
 @clearOutputParameters@
    physical.clear();
+   problems.clear();
 }
 
 std::string CLASSNAME::name() const

@@ -83,8 +83,6 @@ private:
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
-   bool throw_on_tachyon;
-   bool throw_on_ewsb_fail;
    bool calculate_sm_pole_masses;
    double precision;
    double ewsb_iteration_precision;
