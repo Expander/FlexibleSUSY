@@ -5,6 +5,7 @@ TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_minimizer.cpp \
+		$(DIR)/test_problems.cpp \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_root_finder.cpp \
 		$(DIR)/test_wrappers.cpp
