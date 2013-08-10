@@ -33,6 +33,8 @@ class Lattice_constraint;
 typedef Constraint<Lattice> SingleSiteConstraint;
 typedef Matching<Lattice> InterTheoryConstraint;
 
+class Two_scale_running_precision;
+
 
 typedef std::vector<Real> RVec;
 
@@ -89,7 +91,7 @@ public:
     { f = flow; T = theory; }
     virtual void calculate_spectrum() = 0;
     virtual std::string name() const { return "unnamed"; }
-    // virtual int run_to(double, double eps = -1.0) = 0;
+    virtual int run_to(double, double eps = -1.0);
     virtual void print(std::ostream& out) const { out << "Model: " << name(); }
     friend std::ostream& operator<<(std::ostream& out, const Lattice_model& model) {
 	model.print(out);
@@ -220,21 +222,32 @@ public:
     ~RGFlow();
 
     /// add a model and constraints
+    /// order of constraints: ascending t
     void add_model(Lattice_model* model,
 		   const std::vector<SingleSiteConstraint*>& constraints);
     /// add a model, constraints and matching condition
+    /// order of constraints: ascending t
     void add_model(Lattice_model*,
 		   InterTheoryConstraint *m = NULL,
 		   const std::vector<SingleSiteConstraint*>& constraints = std::vector<SingleSiteConstraint*>());
     /// add a model and up- and downwards constraints
+    /// order of upward_constraints: ascending t
+    /// order of downward_constraints: descending t
     void add_model(Lattice_model*,
-		   const std::vector<SingleSiteConstraint*>&,
-		   const std::vector<SingleSiteConstraint*>&);
+		   const std::vector<SingleSiteConstraint*>& upward_constraints,
+		   const std::vector<SingleSiteConstraint*>& downward_constraints);
     /// add a model, up- and downward constraints and matching condition
+    /// order of upward_constraints: ascending t
+    /// order of downward_constraints: descending t
     void add_model(Lattice_model*,
 		   InterTheoryConstraint *m,
-		   const std::vector<SingleSiteConstraint*>& upwards_constraints,
-		   const std::vector<SingleSiteConstraint*>& downwards_constraints);
+		   const std::vector<SingleSiteConstraint*>& upward_constraints,
+		   const std::vector<SingleSiteConstraint*>& downward_constraints);
+    /// set convergence tester
+    void set_convergence_tester(Convergence_tester<Lattice>*);
+    /// set running precision calculator
+    /// TODO: replace Two_scale_running_precision by something lattice
+    void set_running_precision(Two_scale_running_precision*);
     void set_initial_guesser(Initial_guesser<Lattice>*);
 
     void enable_hybrid() { hybrid = true; }

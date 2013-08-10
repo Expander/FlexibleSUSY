@@ -34,6 +34,23 @@ LATTICE_EXAMPLES_DEP := \
 EXAMPLES_SRC += $(LATTICE_EXAMPLES_SRC)
 endif
 
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+ifeq ($(shell $(FSCONFIG) --with-fmssm --with-MSSM),yes yes)
+SWITCH_EXAMPLES_SRC += \
+		$(DIR)/switch_MSSM.cpp
+
+SWITCH_EXAMPLES_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(SWITCH_EXAMPLES_SRC)))
+
+SWITCH_EXAMPLES_DEP := \
+		$(SWITCH_EXAMPLES_OBJ:.o=.d)
+
+EXAMPLES_SRC += $(SWITCH_EXAMPLES_SRC)
+endif
+endif
+endif
+
 EXAMPLES_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXAMPLES_SRC)))
 
@@ -77,6 +94,17 @@ $(DIR)/lattice_fmssm_fmssmn.x: $(DIR)/lattice_fmssm_fmssmn.o \
 $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o \
 			       $(LIBFMSSMN) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
+endif
+
+ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+ifeq ($(shell $(FSCONFIG) --with-fmssm --with-MSSM),yes yes)
+$(SWITCH_EXAMPLES_DEP) $(SWITCH_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
+
+$(DIR)/switch_MSSM.x: $(DIR)/switch_MSSM.o $(LIBMSSM) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(LOOPTOOLSLIBS) $(FLIBS)
+endif
+endif
 endif
 
 $(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)

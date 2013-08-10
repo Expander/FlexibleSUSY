@@ -28,7 +28,8 @@ class Lattice;
 template<>
 class Convergence_tester<Lattice> {
 public:
-   virtual ~Convergence_tester();
+   // temporarily to avoid vtable error
+   // virtual ~Convergence_tester();
 };
 
 }

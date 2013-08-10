@@ -50,11 +50,16 @@ writeBCs[filename,
     m2L - hTable[m2Li, 3],
     m2E - hTable[m2Ei, 3],
     m2N - hTable[m2Ni, 3]}},
-{"Fmssmn_trilinears", {
+{"Fmssmn_trilinear_factors", {
     TAu - Yu Table[Aui[i,j], {i,3}, {j,3}],
     TAd - Yd Table[Adi[i,j], {i,3}, {j,3}],
     TAn - Yn Table[Ani[i,j], {i,3}, {j,3}],
     TAe - Ye Table[Aei[i,j], {i,3}, {j,3}]}},
+{"Fmssmn_real_trilinear_factors", {
+    TAu - Yu Table[Re[Aui[i,j]], {i,3}, {j,3}],
+    TAd - Yd Table[Re[Adi[i,j]], {i,3}, {j,3}],
+    TAn - Yn Table[Re[Ani[i,j]], {i,3}, {j,3}],
+    TAe - Ye Table[Re[Aei[i,j]], {i,3}, {j,3}]}},
 {"Fmssmn_ms", Det[m2stop] - (scale0 Exp[t])^4},
 {"Fmssmn_gauge_couplings", {g1 - g1i, g2 - g2i, g3 - g3i}},
 {"Fmssmn_yude", {

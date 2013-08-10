@@ -122,6 +122,7 @@ public:
     // SingleSiteConstraint() {}
     virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site)
     { IntraTheoryConstraint::init(flow, theory, site, 1); }
+    virtual double get_scale() const { return std::exp(x(0))*f->scl0; }
 protected:
     Real& A(size_t r, size_t j)
     { return IntraTheoryConstraint::A(r, mbegin, j); }

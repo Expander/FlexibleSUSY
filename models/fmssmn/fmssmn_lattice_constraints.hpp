@@ -26,7 +26,8 @@ decl_fmssmn_bc(fmssmn_mx)
 decl_fmssmn_bc(fmssmn_higgs_masses)
 decl_fmssmn_bc(fmssmn_gaugino_masses)
 decl_fmssmn_bc(fmssmn_sfermion_masses)
-decl_fmssmn_bc(fmssmn_trilinears)
+decl_fmssmn_bc(fmssmn_trilinear_factors)
+decl_fmssmn_bc(fmssmn_real_trilinear_factors)
 decl_fmssmn_bc(fmssmn_ms)
 decl_fmssmn_bc(fmssmn_gauge_couplings)
 decl_fmssmn_bc(fmssmn_yude)
@@ -203,25 +204,46 @@ public:
     CM33 m2Q, m2U, m2D, m2L, m2N, m2E;
 };
 
-class Fmssmn_constraint_on_trilinears : public ForeignConstraint {
+class Fmssmn_constraint_trilinear_factors : public ForeignConstraint {
 public:
-    Fmssmn_constraint_on_trilinears() : ForeignConstraint(72) {}
+    Fmssmn_constraint_trilinear_factors() : ForeignConstraint(72) {}
     void operator()() {
 	for (size_t i = 0; i < 72; i++) {
-	    fmssmn_trilinears_(0,0,0,
-			       nullptr,nullptr,nullptr,nullptr,
-			       0,0,
-			       nullptr,nullptr,nullptr,
-			       nullptr,nullptr,nullptr,
-			       Au.data(),Ad.data(),An.data(),Ae.data(),
-			       0,0,0,
-			       0,0,
-			       f->scl0, nullptr, i,
-			       &row[0], &rhs);
+	    fmssmn_trilinear_factors_(0,0,0,
+				      nullptr,nullptr,nullptr,nullptr,
+				      0,0,
+				      nullptr,nullptr,nullptr,
+				      nullptr,nullptr,nullptr,
+				      Au.data(),Ad.data(),An.data(),Ae.data(),
+				      0,0,0,
+				      0,0,
+				      f->scl0, nullptr, i,
+				      &row[0], &rhs);
 	    copy_row(i);
 	}
     }
     CM33 Au, Ad, An, Ae;
+};
+
+class Fmssmn_constraint_real_trilinear_factors : public ForeignConstraint {
+public:
+    Fmssmn_constraint_real_trilinear_factors() : ForeignConstraint(72) {}
+    void operator()() {
+	for (size_t i = 0; i < 72; i++) {
+	    fmssmn_real_trilinear_factors_(0,0,0,
+				      nullptr,nullptr,nullptr,nullptr,
+				      0,0,
+				      nullptr,nullptr,nullptr,
+				      nullptr,nullptr,nullptr,
+				      Au.data(),Ad.data(),An.data(),Ae.data(),
+				      0,0,0,
+				      0,0,
+				      f->scl0, nullptr, i,
+				      &row[0], &rhs);
+	    copy_row(i);
+	}
+    }
+    CM33 Au, Ad, An, Ae;	// imaginary parts are unused
 };
 
 class Fmssmn_constraint_on_yn : public ForeignConstraint {
