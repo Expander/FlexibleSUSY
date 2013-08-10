@@ -55,6 +55,7 @@ public:
    double get_ewsb_iteration_precision() const;
    const @ModelName@_physical& get_physical() const;
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
 

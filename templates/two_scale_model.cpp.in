@@ -108,6 +108,11 @@ const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
    return problems;
 }
 
+Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
+{
+   return problems;
+}
+
 int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
    if (contains_nan(x, @numberOfEWSBEquations@)) {
