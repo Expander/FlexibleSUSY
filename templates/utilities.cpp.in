@@ -115,6 +115,15 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 {
 }
 
+void @ModelName@_slha_io::write_to_file(const std::string& file_name)
+{
+   std::vector<std::string> warnings;
+   std::vector<std::string> serious_problems;
+
+   slha_io.set_spinfo(warnings, serious_problems);
+   slha_io.write_to_file(file_name);
+}
+
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
    using namespace std::placeholders;

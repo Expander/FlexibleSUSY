@@ -70,15 +70,33 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::set_spinfo()
+void SLHA_io::set_spinfo(const std::vector<std::string>& warnings,
+                         const std::vector<std::string>& serious_problems)
 {
    const std::string spinfo("SPINFO");
 
    if (data.find(spinfo) == data.end())
       data[spinfo][""] = "Block SPINFO";
 
-   data[spinfo]["1"] = "    1   " PKGNAME "    # spectrum calculator";
-   data[spinfo]["2"] = "    2   " VERSION "    # version number of " PKGNAME;
+   SLHAea::Coll::reference block = data[spinfo];
+
+   block["1"] = "    1   " PKGNAME "    # spectrum calculator";
+   block["2"] = "    2   " VERSION "    # version number of " PKGNAME;
+
+   // erase old warnings and problems
+   SLHAea::Block::key_type warning_keys(1, "3");
+   SLHAea::Block::key_type problem_keys(1, "4");
+   block.erase(warning_keys);
+   block.erase(problem_keys);
+
+   for (std::vector<std::string>::const_iterator it = warnings.begin(),
+           end = warnings.end(); it != end; ++it) {
+      block[""] << 3 << *it;
+   }
+   for (std::vector<std::string>::const_iterator it = serious_problems.begin(),
+           end = serious_problems.end(); it != end; ++it) {
+      block[""] << 4 << *it;
+   }
 }
 
 void SLHA_io::write_to_file(const std::string& file_name)
@@ -89,8 +107,6 @@ void SLHA_io::write_to_file(const std::string& file_name)
 
 void SLHA_io::write_to_stream(std::ostream& ostr)
 {
-   set_spinfo();
-
    if (ostr.good())
       ostr << data;
 }
