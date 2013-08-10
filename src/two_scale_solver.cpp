@@ -24,6 +24,7 @@
 #include "two_scale_model.hpp"
 #include "two_scale_running_precision.hpp"
 #include "logger.hpp"
+#include "error.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -136,7 +137,7 @@ void RGFlow<Two_scale>::run_up()
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
          if (model->model->run_to(scale))
-            throw NonPerturbativeRunningError(model->model, scale);
+            throw NonPerturbativeRunningError(scale);
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
       }
@@ -169,7 +170,7 @@ void RGFlow<Two_scale>::run_down()
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
          if (model->model->run_to(scale))
-            throw NonPerturbativeRunningError(model->model, scale);
+            throw NonPerturbativeRunningError(scale);
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
          // time.
@@ -204,7 +205,7 @@ void RGFlow<Two_scale>::apply_lowest_constraint()
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
    if (model->model->run_to(scale))
-      throw NonPerturbativeRunningError(model->model, scale);
+      throw NonPerturbativeRunningError(scale);
    VERBOSE_MSG("| \tapplying constraint");
    constraint->apply();
 }
@@ -348,14 +349,6 @@ unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 unsigned int RGFlow<Two_scale>::get_max_iterations() const
 {
    return convergence_tester->max_iterations();
-}
-
-std::string RGFlow<Two_scale>::NonPerturbativeRunningError::what() const
-{
-   std::stringstream message;
-   message << "RGFlow<Two_scale>::NonPerturbativeRunningError: non-perturbative"
-           << " running of model " << model->name() << " to scale " << scale;
-   return message.str();
 }
 
 void RGFlow<Two_scale>::reset()

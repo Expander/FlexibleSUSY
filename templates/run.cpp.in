@@ -123,12 +123,12 @@ void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
    low_scale  = low_scale_constraint.get_scale();
 
    if (model.run_to(susy_scale))
-      throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, susy_scale);
+      throw NonPerturbativeRunningError(susy_scale);
 
    model.calculate_spectrum();
 
    if (model.run_to(low_scale))
-      throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, low_scale);
+      throw NonPerturbativeRunningError(low_scale);
 }
 
 /**

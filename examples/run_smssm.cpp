@@ -9,6 +9,7 @@
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
 #include "coupling_monitor.hpp"
+#include "error.hpp"
 
 using namespace flexiblesusy;
 

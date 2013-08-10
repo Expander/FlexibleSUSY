@@ -20,6 +20,7 @@
 #define ERROR_H
 
 #include <string>
+#include <sstream>
 
 namespace flexiblesusy {
 
@@ -29,8 +30,66 @@ public:
    virtual std::string what() const = 0;
 };
 
+/**
+ * @class SetupError
+ * @brief Spectrum generator was not setup correctly
+ */
+class SetupError : public Error {
+public:
+   SetupError(const std::string& message_) : message(message_) {}
+   virtual ~SetupError() {}
+   virtual std::string what() const { return message; }
+private:
+   std::string message;
+};
+
+/**
+ * @class NoConvergenceError
+ * @brief No convergence while solving the RGEs
+ */
+class NoConvergenceError : public Error {
+public:
+   NoConvergenceError(unsigned number_of_iterations_)
+      : number_of_iterations(number_of_iterations_) {}
+   virtual ~NoConvergenceError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
+              << " after " << number_of_iterations << " iterations";
+      return message.str();
+   }
+   unsigned get_number_of_iterations() { return number_of_iterations; }
+private:
+   unsigned number_of_iterations;
+};
+
+/**
+ * @class NonPerturbativeRunningError
+ * @brief Non-perturbative RG running
+ */
+class NonPerturbativeRunningError : public Error {
+public:
+   NonPerturbativeRunningError(double scale_)
+      : scale(scale_)
+      {}
+   virtual ~NonPerturbativeRunningError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "NonPerturbativeRunningError: non-perturbative running "
+         " to scale " << scale;
+      return message.str();
+   }
+private:
+   double scale;
+};
+
 class Two_scale_model;
 
+/**
+ * @class TachyonError
+ * @brief Tachyonic particle
+ * @todo remove this class and replace it by a model problem class
+ */
 class TachyonError : public Error {
 public:
    TachyonError(const Two_scale_model*, const std::string&, int);
@@ -45,6 +104,11 @@ private:
    int particle_index;
 };
 
+/**
+ * @class NoEWSBError
+ * @brief EWSB eqs. could not be solved
+ * @todo remove this class and replace it by a model problem class
+ */
 class NoEWSBError : public Error {
 public:
    NoEWSBError(const Two_scale_model*, double);
