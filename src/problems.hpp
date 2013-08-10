@@ -45,6 +45,8 @@ public:
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
 
+   void clear();
+
 private:
    bool tachyons[Number_of_particles];
    bool failed_ewsb, failed_convergence, non_perturbative;
@@ -91,6 +93,16 @@ bool Problems<Number_of_particles>::have_tachyon() const
          return true;
    }
    return false;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::clear()
+{
+   for (unsigned i = 0; i < Number_of_particles; ++i)
+      tachyons[i] = false;
+   failed_ewsb = false;
+   failed_convergence = false;
+   non_perturbative = false;
 }
 
 } // namespace flexiblesusy
