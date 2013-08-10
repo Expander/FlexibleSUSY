@@ -54,6 +54,9 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const @ModelName@<T>& get_model() const { return model; }
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const {
+      return model.get_problems();
+   }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
 
    void run(const @ModelName@_input_parameters& input);
@@ -116,19 +119,35 @@ void @ModelName@_runner<T>::run(const @ModelName@_input_parameters& input)
 
    high_scale = susy_scale = low_scale = 0.;
 
-   solver.solve();
+   try {
+      solver.solve();
+      high_scale = high_scale_constraint.get_scale();
+      susy_scale = susy_scale_constraint.get_scale();
+      low_scale  = low_scale_constraint.get_scale();
 
-   high_scale = high_scale_constraint.get_scale();
-   susy_scale = susy_scale_constraint.get_scale();
-   low_scale  = low_scale_constraint.get_scale();
+      if (model.run_to(susy_scale))
+         throw NonPerturbativeRunningError(susy_scale);
 
-   if (model.run_to(susy_scale))
-      throw NonPerturbativeRunningError(susy_scale);
+      model.calculate_spectrum();
 
-   model.calculate_spectrum();
-
-   if (model.run_to(low_scale))
-      throw NonPerturbativeRunningError(low_scale);
+      if (model.run_to(low_scale))
+         throw NonPerturbativeRunningError(low_scale);
+   } catch (const NoConvergenceError& error) {
+      model.get_problems().flag_no_convergence();
+      ERROR(error.what());
+   } catch (const NonPerturbativeRunningError& error) {
+      model.get_problems().flag_no_perturbative();
+      ERROR(error.what());
+   } catch (const Error& error) {
+      model.get_problems().flag_thrown();
+      ERROR(error.what());
+   } catch (const std::string& str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   } catch (const char* str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   }
 }
 
 /**
@@ -179,17 +198,14 @@ int main()
    @ModelName@_runner<algorithm_type> runner;
    @ModelName@_input_parameters input;
 
-   try {
-      runner.run(input);
+   runner.run(input);
+
+   if (runner.get_problems().have_serious_problem()) {
+      runner.get_problems().print(@ModelName@_info::particle_names);
+   } else {
       runner.get_model().print(std::cout);
       // runner.write_running_couplings();
       // runner.write_spectrum();
-   } catch (const Error& error) {
-      ERROR(error.what());
-   } catch (const std::string& str) {
-      ERROR(str);
-   } catch (const char* str) {
-      ERROR(str);
    }
 
    return 0;
