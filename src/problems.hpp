@@ -31,17 +31,20 @@ public:
    ~Problems() {}
 
    void flag_tachyon(unsigned);
+   void flag_thrown()          { thrown = true; }
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
 
    void unflag_tachyon(unsigned);
+   void unflag_thrown()          { thrown = false; }
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
 
    bool is_tachyon(unsigned) const;
    bool have_tachyon() const;
+   bool have_thrown() const     { return thrown; }
    bool no_ewsb() const         { return failed_ewsb; }
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
@@ -53,12 +56,14 @@ public:
 
 private:
    bool tachyons[Number_of_particles];
+   bool thrown;
    bool failed_ewsb, failed_convergence, non_perturbative;
 };
 
 template <unsigned Number_of_particles>
 Problems<Number_of_particles>::Problems()
    : tachyons() // intializes all elements to zero (= false)
+   , thrown(false)
    , failed_ewsb(false)
    , failed_convergence(false)
    , non_perturbative(false)
@@ -107,13 +112,14 @@ void Problems<Number_of_particles>::clear()
    failed_ewsb = false;
    failed_convergence = false;
    non_perturbative = false;
+   thrown = false;
 }
 
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_problem() const
 {
    return have_tachyon() || failed_ewsb || failed_convergence
-      || non_perturbative;
+      || non_perturbative || thrown;
 }
 
 template <unsigned Number_of_particles>
@@ -126,6 +132,9 @@ template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::print(const char* particle_names[Number_of_particles],
                                           std::ostream& ostr) const
 {
+   if (!have_problem())
+      return;
+
    ostr << "Problems: ";
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (tachyons[i])
@@ -136,7 +145,11 @@ void Problems<Number_of_particles>::print(const char* particle_names[Number_of_p
    if (failed_convergence)
       ostr << "no convergence, ";
    if (non_perturbative)
-      ostr << "non-perturbative";
+      ostr << "non-perturbative, ";
+   if (thrown)
+      ostr << "exception thrown";
+
+   ostr << '\n';
 }
 
 } // namespace flexiblesusy
