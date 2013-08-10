@@ -52,10 +52,8 @@ void SLHA_io::fill(QedQcd& oneset) const
 
 void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor) const
 {
-   if (data.find(block_name) == data.cend()) {
-      WARNING("Block " << block_name << " not found in SLHA2 input file");
+   if (data.find(block_name) == data.cend())
       return;
-   }
 
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
