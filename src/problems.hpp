@@ -34,6 +34,11 @@ public:
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
 
+   void unflag_tachyon(unsigned);
+   void unflag_no_ewsb()         { failed_ewsb = false; }
+   void unflag_no_convergence()  { failed_convergence = false; }
+   void unflag_no_perturbative() { non_perturbative = false; }
+
    bool is_tachyon(unsigned) const;
    bool have_tachyon() const;
    bool no_ewsb() const         { return failed_ewsb; }
@@ -60,6 +65,14 @@ void Problems<Number_of_particles>::flag_tachyon(unsigned particle)
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    tachyons[particle] = true;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_tachyon(unsigned particle)
+{
+   assert(particle < Number_of_particles
+          && "Error: particle index out of bounds");
+   tachyons[particle] = false;
 }
 
 template <unsigned Number_of_particles>
