@@ -46,8 +46,9 @@ public:
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
 
-   void clear();
-   bool have_problem() const;
+   void clear();                      ///< clear all problems
+   bool have_problem() const;         ///< test for any problem
+   bool have_serious_problem() const; ///< problems which yield invalid spectrum
    void print(const char*[Number_of_particles], std::ostream& = std::cout) const;
 
 private:
@@ -113,6 +114,12 @@ bool Problems<Number_of_particles>::have_problem() const
 {
    return have_tachyon() || failed_ewsb || failed_convergence
       || non_perturbative;
+}
+
+template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::have_serious_problem() const
+{
+   return have_problem();
 }
 
 template <unsigned Number_of_particles>
