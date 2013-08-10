@@ -51,6 +51,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
+   , problems()
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@

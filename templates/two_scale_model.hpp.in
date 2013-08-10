@@ -24,7 +24,9 @@
 #include "@ModelName@_model.hpp"
 #include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"
+#include "@ModelName@_info.hpp"
 #include "two_scale_model.hpp"
+#include "problems.hpp"
 
 #include <iosfwd>
 #include <string>
@@ -88,6 +90,7 @@ private:
    double ewsb_iteration_precision;
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
    @ModelName@_physical physical;
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
