@@ -587,16 +587,22 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            trans = Identity, inputParsDecl, expr},
+            inputParsDecl, expr, particle},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           If[IsVector[massESSymbol] || IsScalar[massESSymbol],
-              trans = Sqrt;
-             ];
-           expr = mass[[1]];
-           expr = trans[StripGenerators[expr, {ct1, ct2, ct3, ct4}]];
+           expr = StripGenerators[mass[[1]], {ct1, ct2, ct3, ct4}];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> ev <> " = " <>
                   RValueToCFormString[expr] <> ";\n";
+           If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
+              !IsMassless[massESSymbol],
+              (* check for tachyons *)
+              particle = ToValidCSymbolString[massESSymbol];
+              body = body <> "\n" <> "if (" <> ev <> " < 0.)\n" <>
+                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
+                     "else\n" <>
+                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
+              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+             ];
            body = IndentText[body];
            Return[result <> body <> "}\n\n"];
           ];
