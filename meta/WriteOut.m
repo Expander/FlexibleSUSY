@@ -29,9 +29,10 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
            eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
            dim = TreeMasses`GetDimension[eigenstateName];
            pdgList = SARAH`getPDGList[eigenstateName];
-           If[Length[pdgList] != dim,
-              Print["Error: length of PDG list != dimension of particle"];
+           If[Length[pdgList] < dim,
+              Print["Error: length of PDG list < dimension of particle ", eigenstateName];
               Print["       PDG list = ", pdgList];
+              Print["       dimension of particle ", eigenstateName, " = ", dim];
               Quit[1];
              ];
            If[dim == 1,
