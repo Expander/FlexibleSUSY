@@ -30,8 +30,33 @@
 #include <vector>
 #include <valarray>
 #include <utility>
+#include <boost/format.hpp>
 
 namespace flexiblesusy {
+
+   namespace {
+      /// SLHA line formatter for the MASS block entries
+      const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
+      /// SLHA line formatter for the mixing matrix entries (NMIX, UMIX, VMIX, ...)
+      const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
+      /// SLHA number formatter
+      const boost::format number_formatter("%16.8E");
+      /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
+      const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
+      /// SLHA line formatter for the SPINFO block entries
+      const boost::format spinfo_formatter(" %5d   %s\n");
+   }
+
+#define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
+#define FORMAT_MASS(pdg,mass,name) \
+   boost::format(mass_formatter) % pdg % mass % name
+#define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \
+   boost::format(mixing_matrix_formatter) % i % k % entry % name
+#define FORMAT_ELEMENT(pdg,value,name)                                  \
+   boost::format(single_element_formatter) % pdg % value % name
+#define FORMAT_NUMBER(n)                                                \
+   boost::format(number_formatter) % n
 
 class @ModelName@_parameter_getter {
 public:
@@ -45,12 +70,12 @@ public:
    }
 };
 
-template <class T>
 class @ModelName@_spectrum_plotter {
 public:
    @ModelName@_spectrum_plotter();
    ~@ModelName@_spectrum_plotter() {}
 
+   template <class T>
    void extract_spectrum(const @ModelName@<T>&);
    void write_to_file(const std::string&) const;
 
@@ -74,10 +99,22 @@ private:
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
 };
 
+
+template <class T>
+void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<T>& model)
+{
+   spectrum.clear();
+   scale = model.get_scale();
+
+@fillSpectrumVectorWithSusyParticles@
+   if (model.do_calculate_sm_pole_masses()) {
+@fillSpectrumVectorWithSMParticles@
+   }
+}
+
 struct @ModelName@_input_parameters;
 class Program_options;
 
-template <class T>
 class @ModelName@_slha_io {
 public:
    @ModelName@_slha_io();
@@ -91,9 +128,9 @@ public:
    void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const ComplexMatrix&, const std::string&, double scale = 0.);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
-   void set_mass(const @ModelName@<T>&);
-   void set_mixing_matrices(const @ModelName@<T>&);
-   void set_model_parameters(const @ModelName@<T>&);
+   template <class T> void set_mass(const @ModelName@<T>&);
+   template <class T> void set_mixing_matrices(const @ModelName@<T>&);
+   template <class T> void set_model_parameters(const @ModelName@<T>&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 
@@ -104,6 +141,24 @@ public:
 private:
    SLHA_io slha_io; ///< SLHA io class
 };
+
+template <class T>
+void @ModelName@_slha_io::set_mass(const @ModelName@<T>& model)
+{
+@writeSLHAMassBlock@
+}
+
+template <class T>
+void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<T>& model)
+{
+@writeSLHAMixingMatricesBlocks@
+}
+
+template <class T>
+void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
+{
+@writeSLHAModelParametersBlocks@
+}
 
 } // namespace flexiblesusy
 
