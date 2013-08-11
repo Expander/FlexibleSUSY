@@ -36,10 +36,14 @@ using namespace softsusy;
 
 namespace flexiblesusy {
 
+   namespace {
+      const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
+   }
+
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
 #define FORMAT_MASS(pdg,mass,name) \
-   boost::format(" %9d   %16.8E   # %s\n") % pdg % mass % name
+   boost::format(mass_formatter) % pdg % mass % name
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
