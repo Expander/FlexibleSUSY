@@ -25,6 +25,7 @@ namespace flexiblesusy {
 Program_options::Program_options()
    : values() // initializes all values to zero
 {
+   values[precision] = 1.0e-4;
 }
 
 double Program_options::get(Options o) const
