@@ -139,13 +139,14 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    std::ostringstream serious_problems;
    problems.print(serious_problems);
 
+   const boost::format spinfo_formatter(" %5d   %s\n");
    std::ostringstream spinfo;
    spinfo << "Block SPINFO\n"
-          << boost::format(" %5d   %s\n") % 1 % PKGNAME
-          << boost::format(" %5d   %s\n") % 2 % VERSION;
+          << boost::format(spinfo_formatter) % 1 % PKGNAME
+          << boost::format(spinfo_formatter) % 2 % VERSION;
 
    if (!serious_problems.str().empty())
-      spinfo << boost::format(" %5d   %s\n") % 4 % serious_problems.str();
+      spinfo << boost::format(spinfo_formatter) % 4 % serious_problems.str();
 
    slha_io.set_block(spinfo);
 }
