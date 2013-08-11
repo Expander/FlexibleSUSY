@@ -19,7 +19,6 @@
 #include "slha_io.hpp"
 #include "logger.hpp"
 #include "lowe.h"
-#include "config.h"
 
 #include <fstream>
 
@@ -70,29 +69,12 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::set_spinfo(const std::string& warnings,
-                         const std::string& serious_problems)
+void SLHA_io::set_block(const std::stringstream& lines)
 {
-   const std::string spinfo("SPINFO");
-
-   if (data.find(spinfo) == data.end())
-      data[spinfo][""] = "Block SPINFO";
-
-   SLHAea::Coll::reference block = data[spinfo];
-
-   block["1"] = "    1   " PKGNAME "    # spectrum calculator";
-   block["2"] = "    2   " VERSION "    # version number of " PKGNAME;
-
-   // erase old warnings and problems
-   SLHAea::Block::key_type warning_keys(1, "3");
-   SLHAea::Block::key_type problem_keys(1, "4");
-   block.erase(warning_keys);
-   block.erase(problem_keys);
-
-   if (!warnings.empty())
-      block[""] << 3 << warnings;
-   if (!serious_problems.empty())
-      block[""] << 4 << serious_problems;
+   SLHAea::Block block;
+   block.str(lines.str());
+   data.erase(block.name());
+   data.push_back(block);
 }
 
 void SLHA_io::write_to_file(const std::string& file_name)

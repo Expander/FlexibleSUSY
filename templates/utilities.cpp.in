@@ -23,6 +23,7 @@
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
+#include "config.h"
 
 #include <fstream>
 #include <sstream>
@@ -121,7 +122,15 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    std::stringstream serious_problems;
    problems.print(serious_problems);
 
-   slha_io.set_spinfo("", serious_problems.str());
+   std::stringstream spinfo;
+   spinfo << "Block SPINFO\n"
+          << "    1   " << std::left << std::setw(17) << PKGNAME << "    # spectrum calculator\n"
+          << "    2   " << std::left << std::setw(17) << VERSION << "    # version number of " PKGNAME "\n";
+
+   if (!serious_problems.str().empty())
+      spinfo << "    4   " << serious_problems.str();
+
+   slha_io.set_block(spinfo);
 }
 
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
