@@ -43,6 +43,8 @@ namespace flexiblesusy {
       const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
       /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
       const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
+      /// SLHA line formatter for the SPINFO block entries
+      const boost::format spinfo_formatter(" %5d   %s\n");
    }
 
 #define PHYSICAL(p) model.get_physical().p
@@ -139,7 +141,6 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    std::ostringstream serious_problems;
    problems.print(serious_problems);
 
-   const boost::format spinfo_formatter(" %5d   %s\n");
    std::ostringstream spinfo;
    spinfo << "Block SPINFO\n"
           << boost::format(spinfo_formatter) % 1 % PKGNAME
