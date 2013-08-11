@@ -62,7 +62,8 @@ namespace flexiblesusy {
 #define FORMAT_NUMBER(n)                                                \
    boost::format(number_formatter) % n
 
-@ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
+template <class T>
+@ModelName@_spectrum_plotter<T>::@ModelName@_spectrum_plotter()
    : spectrum()
    , scale(0.0)
    , width(16)
@@ -70,7 +71,8 @@ namespace flexiblesusy {
 }
 
 
-void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<Two_scale>& model)
+template <class T>
+void @ModelName@_spectrum_plotter<T>::extract_spectrum(const @ModelName@<T>& model)
 {
    spectrum.clear();
    scale = model.get_scale();
@@ -81,7 +83,8 @@ void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<Two_scale>
    }
 }
 
-void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) const
+template <class T>
+void @ModelName@_spectrum_plotter<T>::write_to_file(const std::string& file_name) const
 {
    if (spectrum.empty())
       return;
@@ -103,7 +106,8 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
                << file_name.c_str());
 }
 
-void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std::ofstream& filestr) const
+template <class T>
+void @ModelName@_spectrum_plotter<T>::write_spectrum(const TSpectrum& spectrum, std::ofstream& filestr) const
 {
    for (std::size_t s = 0; s < spectrum.size(); ++s) {
       if (!filestr.good()) {
@@ -137,12 +141,14 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
    }
 }
 
-@ModelName@_slha_io::@ModelName@_slha_io()
+template <class T>
+@ModelName@_slha_io<T>::@ModelName@_slha_io()
    : slha_io()
 {
 }
 
-void @ModelName@_slha_io::set_block(const std::string& name,
+template <class T>
+void @ModelName@_slha_io<T>::set_block(const std::string& name,
                                     const DoubleMatrix& matrix,
                                     const std::string& symbol, double scale)
 {
@@ -161,7 +167,8 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    slha_io.set_block(ss);
 }
 
-void @ModelName@_slha_io::set_block(const std::string& name,
+template <class T>
+void @ModelName@_slha_io<T>::set_block(const std::string& name,
                                     const Eigen::MatrixXd& matrix,
                                     const std::string& symbol, double scale)
 {
@@ -182,7 +189,8 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    slha_io.set_block(ss);
 }
 
-void @ModelName@_slha_io::set_block(const std::string& name,
+template <class T>
+void @ModelName@_slha_io<T>::set_block(const std::string& name,
                                     const ComplexMatrix& matrix,
                                     const std::string& symbol, double scale)
 {
@@ -202,7 +210,8 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    slha_io.set_block(ss);
 }
 
-void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
+template <class T>
+void @ModelName@_slha_io<T>::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
    std::ostringstream serious_problems;
    problems.print(serious_problems);
@@ -218,60 +227,69 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    slha_io.set_block(spinfo);
 }
 
-void @ModelName@_slha_io::set_mass(const @ModelName@<Two_scale>& model)
+template <class T>
+void @ModelName@_slha_io<T>::set_mass(const @ModelName@<T>& model)
 {
 @writeSLHAMassBlock@
 }
 
-void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<Two_scale>& model)
+template <class T>
+void @ModelName@_slha_io<T>::set_mixing_matrices(const @ModelName@<T>& model)
 {
 @writeSLHAMixingMatricesBlocks@
 }
 
-void @ModelName@_slha_io::set_model_parameters(const @ModelName@<Two_scale>& model)
+template <class T>
+void @ModelName@_slha_io<T>::set_model_parameters(const @ModelName@<T>& model)
 {
 @writeSLHAModelParametersBlocks@
 }
 
-void @ModelName@_slha_io::write_to_file(const std::string& file_name)
+template <class T>
+void @ModelName@_slha_io<T>::write_to_file(const std::string& file_name)
 {
    slha_io.write_to_file(file_name);
 }
 
-void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
+template <class T>
+void @ModelName@_slha_io<T>::fill(@ModelName@_input_parameters& input) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor minpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_minpar_tuple, std::ref(input), _1, _2);
+      = std::bind(&@ModelName@_slha_io<T>::fill_minpar_tuple, std::ref(input), _1, _2);
    SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_extpar_tuple, std::ref(input), _1, _2);
+      = std::bind(&@ModelName@_slha_io<T>::fill_extpar_tuple, std::ref(input), _1, _2);
 
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
 }
 
-void @ModelName@_slha_io::fill(Program_options& options) const
+template <class T>
+void @ModelName@_slha_io<T>::fill(Program_options& options) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor flexiblesusy_processor
-      = std::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, std::ref(options), _1, _2);
+      = std::bind(&@ModelName@_slha_io<T>::fill_flexiblesusy_tuple, std::ref(options), _1, _2);
 
    slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
 }
 
-void @ModelName@_slha_io::fill_minpar_tuple(@ModelName@_input_parameters& input,
+template <class T>
+void @ModelName@_slha_io<T>::fill_minpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
 @fillInputParametersFromMINPAR@
 }
 
-void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
+template <class T>
+void @ModelName@_slha_io<T>::fill_extpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
 @fillInputParametersFromEXTPAR@
 }
 
-void @ModelName@_slha_io::fill_flexiblesusy_tuple(Program_options& options,
+template <class T>
+void @ModelName@_slha_io<T>::fill_flexiblesusy_tuple(Program_options& options,
                                                   int key, double value)
 {
    if (0 <= key && key < static_cast<int>(Program_options::NUMBER_OF_OPTIONS)) {
