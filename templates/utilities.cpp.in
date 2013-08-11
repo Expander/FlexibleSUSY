@@ -159,6 +159,16 @@ void @ModelName@_slha_io::set_mass(const @ModelName@<Two_scale>& model)
    slha_io.set_block(mass);
 }
 
+void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<Two_scale>& model)
+{
+@writeSLHAMixingMatricesBlocks@
+}
+
+void @ModelName@_slha_io::set_model_parameters(const @ModelName@<Two_scale>& model)
+{
+@writeSLHAModelParametersBlocks@
+}
+
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
 {
    slha_io.write_to_file(file_name);

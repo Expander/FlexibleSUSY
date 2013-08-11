@@ -3,6 +3,8 @@ BeginPackage["WriteOut`", {"TextFormatting`", "CConversion`", "Parameters`", "Tr
 
 PrintParameters::usage="Creates parameter printout statements";
 WriteSLHAMassBlock::usage="";
+WriteSLHAMixingMatricesBlocks::usage="";
+WriteSLHAModelParametersBlocks::usage="";
 
 Begin["Private`"];
 
@@ -61,6 +63,16 @@ WriteSLHAMassBlock[massMatrices_List] :=
            result = Parameters`CreateLocalConstRefsForPhysicalParameters[allMasses] <> "\n" <>
                     "mass << \"Block MASS\\n\"\n" <>
                     TextFormatting`IndentText[result] <> ";\n";
+           Return[result];
+          ];
+
+WriteSLHAMixingMatricesBlocks[massMatrices_List] :=
+    Module[{result = ""},
+           Return[result];
+          ];
+
+WriteSLHAModelParametersBlocks[betaFun_List] :=
+    Module[{result = ""},
            Return[result];
           ];
 
