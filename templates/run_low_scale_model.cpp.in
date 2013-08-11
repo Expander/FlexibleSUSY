@@ -72,6 +72,7 @@ int main(int argc, const char* argv[])
    solver.set_initial_guesser(&initial_guesser);
    std::vector<Constraint<algorithm_type>*> constraints;
    constraints.push_back(&low_scale_constraint);
+   constraints.push_back(&susy_scale_constraint);
    solver.add_model(&model, constraints);
 
    try {
@@ -79,16 +80,36 @@ int main(int argc, const char* argv[])
       model.run_to(susy_scale_constraint.get_scale());
       model.calculate_spectrum();
       slha_io.write_to_file(slha_output_file);
+   } catch (const NoConvergenceError& error) {
+      model.get_problems().flag_no_convergence();
+      ERROR(error.what());
+   } catch (const NonPerturbativeRunningError& error) {
+      model.get_problems().flag_no_perturbative();
+      ERROR(error.what());
+   } catch (const Error& error) {
+      model.get_problems().flag_thrown();
+      ERROR(error.what());
+   } catch (const std::string& str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   } catch (const char* str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   }
+
+   if (model.get_problems().have_serious_problem()) {
+      model.get_problems().print();
+   } else {
       // @ModelName@_spectrum_plotter plotter;
       // plotter.extract_spectrum(model);
       // plotter.write_to_file("@ModelName@_spectrum.dat");
-   } catch (const Error& error) {
-      ERROR(error.what());
-   } catch (const std::string& str) {
-      ERROR(str);
-   } catch (const char* str) {
-      ERROR(str);
    }
+
+   slha_io.set_spinfo(model.get_problems());
+   slha_io.set_model_parameters(model);
+   slha_io.set_mass(model);
+   slha_io.set_mixing_matrices(model);
+   slha_io.write_to_file(slha_output_file);
 
    return 0;
 }
