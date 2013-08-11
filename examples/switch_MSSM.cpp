@@ -1,13 +1,13 @@
 #include <cstdlib>
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
-#include "MSSM_two_scale_low_scale_constraint.hpp"
-#include "MSSM_two_scale_convergence_tester.hpp"
-#include "MSSM_two_scale_initial_guesser.hpp"
-#include "MSSM_utilities.hpp"
+#include "models/MSSM/MSSM_two_scale_model.hpp"
+#include "models/MSSM/MSSM_input_parameters.hpp"
+#include "models/MSSM/MSSM_two_scale_high_scale_constraint.hpp"
+#include "models/MSSM/MSSM_two_scale_susy_scale_constraint.hpp"
+#include "models/MSSM/MSSM_two_scale_low_scale_constraint.hpp"
+#include "models/MSSM/MSSM_two_scale_convergence_tester.hpp"
+#include "models/MSSM/MSSM_two_scale_initial_guesser.hpp"
+#include "models/MSSM/MSSM_utilities.hpp"
 
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
