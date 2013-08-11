@@ -132,7 +132,8 @@ const T* Convergence_tester_skeleton<T>::get_last_iteration_model() const
 template <class T>
 void Convergence_tester_skeleton<T>::set_max_iterations(unsigned max_it_)
 {
-   max_it = max_it_;
+   if (max_it_ > 0)
+      max_it = max_it_;
 }
 
 template <class T>
