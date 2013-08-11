@@ -1,5 +1,5 @@
 
-BeginPackage["WriteOut`", {"TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
+BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
 
 PrintParameters::usage="Creates parameter printout statements";
 WriteSLHAMassBlock::usage="";
@@ -68,13 +68,35 @@ WriteSLHAMassBlock[massMatrices_List] :=
            Return[result];
           ];
 
-WriteSLHAMixingMatricesBlocks[massMatrices_List] :=
-    Module[{result = ""},
+GetSLHAMixinMatrices[] :=
+    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+                       MemberQ[Parameters`GetOutputParameters[],#[[1]]]&],
+                {_,None}];
+
+GetSLHAModelParameters[] :=
+    Select[FlexibleSUSY`FSLesHouchesList,
+           MemberQ[Parameters`GetModelParameters[],#[[1]]]&];
+
+WriteSLHAMixingMatrix[{mixingMatrix_, lesHouchesName_}] :=
+    Module[{str, lhs},
+           str = CConversion`ToValidCSymbolString[mixingMatrix];
+           lhs = ToString[lesHouchesName];
+           "set_block(\"" <> lhs <> "\", PHYSICAL(" <> str <> "), \"" <> str <> "\");\n"
+          ];
+
+WriteSLHAMixingMatricesBlocks[] :=
+    Module[{result = "", mixingMatrices},
+           mixingMatrices = GetSLHAMixinMatrices[];
+           (result = result <> WriteSLHAMixingMatrix[#])& /@ mixingMatrices;
+           result = Parameters`CreateLocalConstRefsForPhysicalParameters[(#[[1]])& /@ mixingMatrices] <>
+                    "\n" <> result;
            Return[result];
           ];
 
-WriteSLHAModelParametersBlocks[betaFun_List] :=
-    Module[{result = ""},
+WriteSLHAModelParametersBlocks[] :=
+    Module[{result = "", modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           Print["modelParameters = ", modelParameters];
            Return[result];
           ];
 

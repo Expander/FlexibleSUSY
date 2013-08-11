@@ -23,6 +23,7 @@
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
+#include "linalg.h"
 #include "config.h"
 
 #include <fstream>
@@ -134,6 +135,45 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
 {
+}
+
+void @ModelName@_slha_io::set_block(const std::string& name,
+                                    const DoubleMatrix& matrix,
+                                    const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << scale;
+   ss << '\n';
+
+   for (int i = 1; i <= matrix.displayRows(); ++i)
+      for (int k = 1; k <= matrix.displayCols(); ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i,k)
+            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+      }
+
+   slha_io.set_block(ss);
+}
+
+void @ModelName@_slha_io::set_block(const std::string& name,
+                                    const ComplexMatrix& matrix,
+                                    const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << scale;
+   ss << '\n';
+
+   for (int i = 1; i <= matrix.displayRows(); ++i)
+      for (int k = 1; k <= matrix.displayCols(); ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k
+            % Re(matrix(i,k))
+            % ("Re(" + symbol + "(" + std::to_string(i) + "," + std::to_string(k) + "))");
+      }
+
+   slha_io.set_block(ss);
 }
 
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)

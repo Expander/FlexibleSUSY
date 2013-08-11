@@ -33,6 +33,7 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
 GetModelParameters::usage="";
+GetOutputParameters::usage="";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -59,6 +60,7 @@ SetModelParameters[pars_List] := allModelParameters = pars;
 SetOutputParameters[pars_List] := allOutputParameters = pars;
 
 GetModelParameters[] := allModelParameters;
+GetOutputParameters[] := allOutputParameters;
 
 additionalRealParameters = {};
 

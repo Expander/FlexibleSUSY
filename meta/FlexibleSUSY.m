@@ -16,6 +16,7 @@ softSusyCompatibleRGEs::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 FSModelName;
+FSLesHouchesList;
 InputParameters;
 DefaultParameterPoint;
 ParametersToSolveTadpoles;
@@ -475,8 +476,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
-           writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[massMatrices];
-           writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[betaFun];
+           writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
+           writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -757,6 +758,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
+           FlexibleSUSY`FSLesHouchesList = SA`LHList /. susyBreakingParameterReplacementRules;
 
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
