@@ -42,6 +42,8 @@ namespace flexiblesusy {
       const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
       /// SLHA line formatter for the mixing matrix entries (NMIX, UMIX, VMIX, ...)
       const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
+      /// SLHA number formatter
+      const boost::format number_formatter("%16.8E");
       /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
       const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
       /// SLHA line formatter for the SPINFO block entries
@@ -56,6 +58,8 @@ namespace flexiblesusy {
    boost::format(mixing_matrix_formatter) % i % k % entry % name
 #define FORMAT_ELEMENT(pdg,value,name)                                  \
    boost::format(single_element_formatter) % pdg % value % name
+#define FORMAT_NUMBER(n)                                                \
+   boost::format(number_formatter) % n
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
@@ -144,7 +148,7 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << scale;
+      ss << " Q= " << FORMAT_NUMBER(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)
@@ -163,7 +167,7 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << scale;
+      ss << " Q= " << FORMAT_NUMBER(scale);
    ss << '\n';
 
    const int rows = matrix.rows();
@@ -184,7 +188,7 @@ void @ModelName@_slha_io::set_block(const std::string& name,
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << scale;
+      ss << " Q= " << FORMAT_NUMBER(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)

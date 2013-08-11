@@ -117,10 +117,12 @@ SortBlocks[modelParameters_List] :=
           ];
 
 WriteSLHABlock[{blockName_, tuples_List}] :=
-    Module[{result = "", blockNameStr, t, pdg, parmStr},
+    Module[{result = "", blockNameStr, t, pdg, parmStr, scale},
            blockNameStr = ToString[blockName];
+           scale = "model.get_scale()";
            result = "std::ostringstream block;\n" <>
-                    "block << \"Block " <> blockNameStr <> "\\n\"\n";
+                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_NUMBER(" <>
+                    scale <> ") << '\\n'\n";
            For[t = 1, t <= Length[tuples], t++,
                parmStr = CConversion`ToValidCSymbolString[tuples[[t,1]]];
                pdg = ToString[tuples[[t,2]]];
