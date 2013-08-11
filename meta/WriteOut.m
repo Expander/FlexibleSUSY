@@ -61,8 +61,10 @@ WriteSLHAMassBlock[massMatrices_List] :=
            allMasses = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            (result = result <> WriteSLHAMass[#])& /@ massMatrices;
            result = Parameters`CreateLocalConstRefsForPhysicalParameters[allMasses] <> "\n" <>
+                    "std::ostringstream mass;\n\n" <>
                     "mass << \"Block MASS\\n\"\n" <>
-                    TextFormatting`IndentText[result] <> ";\n";
+                    TextFormatting`IndentText[result] <> ";\n\n" <>
+                    "slha_io.set_block(mass);\n";
            Return[result];
           ];
 

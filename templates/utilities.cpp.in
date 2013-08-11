@@ -136,10 +136,10 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
-   std::stringstream serious_problems;
+   std::ostringstream serious_problems;
    problems.print(serious_problems);
 
-   std::stringstream spinfo;
+   std::ostringstream spinfo;
    spinfo << "Block SPINFO\n"
           << boost::format(" %5d   %s\n") % 1 % PKGNAME
           << boost::format(" %5d   %s\n") % 2 % VERSION;
@@ -152,11 +152,7 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
 
 void @ModelName@_slha_io::set_mass(const @ModelName@<Two_scale>& model)
 {
-   std::stringstream mass;
-
 @writeSLHAMassBlock@
-
-   slha_io.set_block(mass);
 }
 
 void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<Two_scale>& model)

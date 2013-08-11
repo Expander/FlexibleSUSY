@@ -69,7 +69,7 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::set_block(const std::stringstream& lines)
+void SLHA_io::set_block(const std::ostringstream& lines)
 {
    SLHAea::Block block;
    block.str(lines.str());
