@@ -37,7 +37,12 @@ using namespace softsusy;
 namespace flexiblesusy {
 
    namespace {
+      /// SLHA line formatter for the MASS block entries
       const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
+      /// SLHA line formatter for the mixing matrix entries (NMIX, UMIX, VMIX, ...)
+      const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
+      /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
+      const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
    }
 
 #define PHYSICAL(p) model.get_physical().p
