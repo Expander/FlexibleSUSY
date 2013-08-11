@@ -11,7 +11,7 @@ DefaultParameterPoint = {
 
 ParametersToSolveTadpoles = { mHd2, mHu2, mS2, mT2 };
 
-SUSYScale = Sqrt[mu2[3,3]];
+SUSYScale = AbsSqrt[mu2[3,3]];
 
 SUSYScaleFirstGuess = 1000;
 
