@@ -30,6 +30,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+#include "boost/format.hpp"
 
 using namespace softsusy;
 
@@ -124,11 +125,11 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
 
    std::stringstream spinfo;
    spinfo << "Block SPINFO\n"
-          << "    1   " << std::left << std::setw(17) << PKGNAME << "    # spectrum calculator\n"
-          << "    2   " << std::left << std::setw(17) << VERSION << "    # version number of " PKGNAME "\n";
+          << boost::format(" %5d   %s\n") % 1 % PKGNAME
+          << boost::format(" %5d   %s\n") % 2 % VERSION;
 
    if (!serious_problems.str().empty())
-      spinfo << "    4   " << serious_problems.str();
+      spinfo << boost::format(" %5d   %s\n") % 4 % serious_problems.str();
 
    slha_io.set_block(spinfo);
 }
