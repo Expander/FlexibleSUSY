@@ -62,12 +62,18 @@ int main(int argc, const char* argv[])
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
+   const double precision_goal    = program_options.get(Program_options::precision);
+   const unsigned max_iterations  = program_options.get(Program_options::max_iterations);
+   const bool calculate_sm_masses = program_options.get(Program_options::calculate_sm_masses) >= 1.0;
+
    @ModelName@<algorithm_type> model(input);
+   model.calculate_sm_masses(calculate_sm_masses);
    @ModelName@_low_scale_constraint<algorithm_type> low_scale_constraint(input, oneset);
    @ModelName@_susy_scale_constraint<algorithm_type> susy_scale_constraint(input);
-   @ModelName@_convergence_tester<algorithm_type> convergence_tester(&model, 1.0e-5);
+   @ModelName@_convergence_tester<algorithm_type> convergence_tester(&model,
+                                                                     precision_goal);
    @ModelName@_initial_guesser<algorithm_type> initial_guesser(&model, input, oneset, low_scale_constraint);
-   Two_scale_constant_precision precision(1.0e-5);
+   Two_scale_constant_precision precision(precision_goal);
 
    RGFlow<algorithm_type> solver;
    solver.set_convergence_tester(&convergence_tester);
