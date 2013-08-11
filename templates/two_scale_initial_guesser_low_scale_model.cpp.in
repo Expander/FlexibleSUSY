@@ -42,8 +42,8 @@ namespace flexiblesusy {
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
-   , oneset(oneset_)
    , input_pars(input_pars_)
+   , oneset(oneset_)
    , low_constraint(low_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
