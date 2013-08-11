@@ -67,11 +67,13 @@ int main(int argc, const char* argv[])
    const bool calculate_sm_masses = program_options.get(Program_options::calculate_sm_masses) >= 1.0;
 
    @ModelName@<algorithm_type> model(input);
-   model.calculate_sm_masses(calculate_sm_masses);
+   model.do_calculate_sm_pole_masses(calculate_sm_masses);
    @ModelName@_low_scale_constraint<algorithm_type> low_scale_constraint(input, oneset);
    @ModelName@_susy_scale_constraint<algorithm_type> susy_scale_constraint(input);
    @ModelName@_convergence_tester<algorithm_type> convergence_tester(&model,
                                                                      precision_goal);
+   if (max_iterations > 0)
+      convergence_tester.set_max_iterations(max_iterations);
    @ModelName@_initial_guesser<algorithm_type> initial_guesser(&model, input, oneset, low_scale_constraint);
    Two_scale_constant_precision precision(precision_goal);
 
