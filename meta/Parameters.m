@@ -42,6 +42,10 @@ CreateLocalConstRefsForBetas::usage="";
 CreateLocalConstRefsForInputParameters::usage="creates local const
 references for all input parameters in the given expression.";
 
+CreateLocalConstRefsForPhysicalParameters::usage="creates local const
+references for all physical output parameters in the given
+expression.";
+
 FillInputParametersFromTuples::usage="";
 
 Begin["Private`"];
@@ -390,6 +394,20 @@ CreateLocalConstRefs[expr_] :=
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
+           Return[result];
+          ];
+
+CreateLocalConstRefsForPhysicalParameters[expr_] :=
+    Module[{result = "", symbols, outputPars, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = { Cases[compactExpr, _Symbol, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                     };
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           outputPars = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           (result = result <> DefineLocalConstCopy[#,"PHYSICAL"])& /@ outputPars;
            Return[result];
           ];
 

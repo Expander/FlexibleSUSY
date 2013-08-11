@@ -84,6 +84,7 @@ public:
    void fill(@ModelName@_input_parameters&) const;
    void read_from_file(const std::string& file_name) { slha_io.read_from_file(file_name); }
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
+   void set_mass(const @ModelName@<Two_scale>&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
 

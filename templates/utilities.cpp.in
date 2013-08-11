@@ -37,6 +37,9 @@ using namespace softsusy;
 namespace flexiblesusy {
 
 #define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
+#define FORMAT_MASS(pdg,mass,name) \
+   boost::format(" %9d   %16.8E   # %s\n") % pdg % mass % name
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
    : spectrum()
@@ -132,6 +135,15 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
       spinfo << boost::format(" %5d   %s\n") % 4 % serious_problems.str();
 
    slha_io.set_block(spinfo);
+}
+
+void @ModelName@_slha_io::set_mass(const @ModelName@<Two_scale>& model)
+{
+   std::stringstream mass;
+
+@writeSLHAMassBlock@
+
+   slha_io.set_block(mass);
 }
 
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)

@@ -457,7 +457,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
-            fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = ""},
+            fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
+            writeSLHAMassBlock = ""},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -472,6 +473,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
+           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -483,6 +485,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
+                            "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
