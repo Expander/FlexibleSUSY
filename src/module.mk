@@ -11,6 +11,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
+		$(DIR)/program_options.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/slha_io.cpp \

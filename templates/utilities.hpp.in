@@ -74,6 +74,7 @@ private:
 };
 
 struct @ModelName@_input_parameters;
+class Program_options;
 
 class @ModelName@_slha_io {
 public:
@@ -82,6 +83,7 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
+   void fill(Program_options&) const;
    void read_from_file(const std::string& file_name) { slha_io.read_from_file(file_name); }
    void set_block(const std::string&, const Eigen::MatrixXd&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
@@ -95,6 +97,7 @@ public:
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
+   static void fill_flexiblesusy_tuple(Program_options&, int, double);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
