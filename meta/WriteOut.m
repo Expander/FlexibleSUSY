@@ -82,20 +82,21 @@ GetSLHAModelParameters[] :=
                 {_,None}];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
-    Module[{str, lhs, wrapper},
-           str = CConversion`ToValidCSymbolString[mixingMatrix];
-           lhs = ToString[lesHouchesName];
-           wrapper = If[head == "", str, head <> "(" <> str <> ")"];
-           "set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <> "\");\n"
-          ];
+    WriteSLHAMatrix[{mixingMatrix, lesHouchesName}, head, ""];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
     Module[{str, lhs, wrapper},
+           If[SARAH`getDimParameters[mixingMatrix] === {} ||
+              SARAH`getDimParameters[mixingMatrix] === {1},
+              Print["Warning: You are trying to create a SLHA matrix block for"];
+              Print["   ", mixingMatrix, ", which is not a matrix!"];
+              Print["   Please specify a Les Houches index in the SARAH model file."];
+             ];
            str = CConversion`ToValidCSymbolString[mixingMatrix];
            lhs = ToString[lesHouchesName];
            wrapper = If[head == "", str, head <> "(" <> str <> ")"];
            "set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
-           "\", " <> scale <> ");\n"
+           "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
