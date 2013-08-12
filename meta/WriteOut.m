@@ -60,13 +60,22 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 WriteSLHAMassBlock[massMatrices_List] :=
-    Module[{result = "", allMasses},
+    Module[{result, allMasses, smMasses, susyMasses,
+            smMassesStr = "", susyMassesStr = ""},
            allMasses = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
-           (result = result <> WriteSLHAMass[#])& /@ massMatrices;
+           smMasses = Select[massMatrices, (SARAH`SMQ[TreeMasses`GetMassEigenstate[#]])&];
+           susyMasses = Complement[massMatrices, smMasses];
+           (smMassesStr = smMassesStr <> WriteSLHAMass[#])& /@ smMasses;
+           (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
+           susyMassesStr = "mass << \"Block MASS\\n\"\n" <>
+                           TextFormatting`IndentText[susyMassesStr] <> ";\n\n";
+           smMassesStr = "if (model.do_calculate_sm_pole_masses()) {\n" <>
+                         TextFormatting`IndentText["mass\n" <>
+                             TextFormatting`IndentText[smMassesStr] <> ";"] <>
+                         "\n}\n\n";
            result = Parameters`CreateLocalConstRefsForPhysicalParameters[allMasses] <> "\n" <>
                     "std::ostringstream mass;\n\n" <>
-                    "mass << \"Block MASS\\n\"\n" <>
-                    TextFormatting`IndentText[result] <> ";\n\n" <>
+                    susyMassesStr <> smMassesStr <>
                     "slha_io.set_block(mass);\n";
            Return[result];
           ];
