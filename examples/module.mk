@@ -18,14 +18,12 @@ ifneq ($(findstring lattice,$(ALGORITHMS)),)
 ifeq ($(shell $(FSCONFIG) --with-fmssm),yes)
 LATTICE_EXAMPLES_SRC := \
 		$(DIR)/lattice_fmssm.cpp \
-		$(DIR)/lattice_numerical_fmssm.cpp \
-		$(DIR)/lattice_fmssm_fmssmn.cpp \
-		$(DIR)/lattice_numerical_fmssm_fmssmn.cpp
-endif
-ifeq ($(shell $(FSCONFIG) --with-fmssm --with-fmssn),yes yes)
+		$(DIR)/lattice_numerical_fmssm.cpp
+ifeq ($(shell $(FSCONFIG) --with-fmssmn),yes)
 LATTICE_EXAMPLES_SRC += \
 		$(DIR)/lattice_fmssm_fmssmn.cpp \
 		$(DIR)/lattice_numerical_fmssm_fmssmn.cpp
+endif
 endif
 
 LATTICE_EXAMPLES_OBJ := \
