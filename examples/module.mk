@@ -35,6 +35,7 @@ LATTICE_EXAMPLES_DEP := \
 EXAMPLES_SRC += $(LATTICE_EXAMPLES_SRC)
 endif
 
+ifdef BUILD_SWITCH_EXAMPLES
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 ifeq ($(shell $(FSCONFIG) --with-fmssm --with-MSSM),yes yes)
@@ -48,6 +49,7 @@ SWITCH_EXAMPLES_DEP := \
 		$(SWITCH_EXAMPLES_OBJ:.o=.d)
 
 EXAMPLES_SRC += $(SWITCH_EXAMPLES_SRC)
+endif
 endif
 endif
 endif
@@ -97,6 +99,7 @@ $(DIR)/lattice_numerical_fmssm_fmssmn.x: $(DIR)/lattice_numerical_fmssm_fmssmn.o
 		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
+ifdef BUILD_SWITCH_EXAMPLES
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 ifeq ($(shell $(FSCONFIG) --with-fmssm --with-MSSM),yes yes)
@@ -104,6 +107,7 @@ $(SWITCH_EXAMPLES_DEP) $(SWITCH_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFL
 
 $(DIR)/switch_MSSM.x: $(DIR)/switch_MSSM.o $(LIBMSSM) $(LIBFMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(LOOPTOOLSLIBS) $(FLIBS)
+endif
 endif
 endif
 endif
