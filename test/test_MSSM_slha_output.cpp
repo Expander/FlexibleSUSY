@@ -47,24 +47,23 @@ int run_point(const std::string& slha_file,
    return 0;
 }
 
-void compare_block(const std::string& name,
-                   const SLHAea::Coll& coll1, const SLHAea::Coll& coll2)
+void compare_block_gauge(const SLHAea::Coll& coll1, const SLHAea::Coll& coll2)
 {
-   BOOST_REQUIRE(coll1.find(name) != coll1.end());
-   BOOST_REQUIRE(coll2.find(name) != coll2.end());
+   BOOST_REQUIRE(coll1.find("gauge") != coll1.end());
+   BOOST_REQUIRE(coll2.find("gauge") != coll2.end());
 
    // scale
-   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("Block").at(3)),
-                              SLHAea::to<double>(coll2.at(name).at("Block").at(3)), 0.001);
+   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("Block").at(3)),
+                              SLHAea::to<double>(coll2.at("gauge").at("Block").at(3)), 0.001);
 
-   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("1").at(1)) * sqrt(3./5.),
-                              SLHAea::to<double>(coll2.at(name).at("1").at(1)), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("1").at(1)) * sqrt(3./5.),
+                              SLHAea::to<double>(coll2.at("gauge").at("1").at(1)), 0.0005);
 
-   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("2").at(1)),
-                              SLHAea::to<double>(coll2.at(name).at("2").at(1)), 0.0011);
+   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("2").at(1)),
+                              SLHAea::to<double>(coll2.at("gauge").at("2").at(1)), 0.0011);
 
-   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("3").at(1)),
-                              SLHAea::to<double>(coll2.at(name).at("3").at(1)), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at("gauge").at("3").at(1)),
+                              SLHAea::to<double>(coll2.at("gauge").at("3").at(1)), 0.003);
 }
 
 void compare_slha_files(const std::string& file1, const std::string& file2)
@@ -77,7 +76,7 @@ void compare_slha_files(const std::string& file1, const std::string& file2)
    const SLHAea::Coll input2(ifs2);
    BOOST_REQUIRE(!input2.empty());
 
-   compare_block("gauge", input1, input2);
+   compare_block_gauge(input1, input2);
 }
 
 BOOST_AUTO_TEST_CASE( test_slha_output )
