@@ -242,8 +242,7 @@ int main(int argc, const char* argv[])
    runner.set_max_iterations(program_options.get(Program_options::max_iterations));
    runner.set_calculate_sm_masses(
       program_options.get(Program_options::calculate_sm_masses) >= 1.0);
-   // @todo read parameter output scale from Block MODSEL 12
-   runner.set_parameter_output_scale(0.);
+   runner.set_parameter_output_scale(slha_io.get_parameter_output_scale());
 
    runner.run(oneset, input);
 
