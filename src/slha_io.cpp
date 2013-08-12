@@ -28,6 +28,7 @@ namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
    : data()
+   , modsel()
 {
 }
 
@@ -42,11 +43,20 @@ void SLHA_io::read_from_file(const std::string& file_name)
    data.read(ifs);
 }
 
+void SLHA_io::read_modsel()
+{
+   using namespace std::placeholders;
+   SLHA_io::Tuple_processor modsel_processor
+      = std::bind(&SLHA_io::process_modsel_tuple, std::ref(modsel), _1, _2);
+
+   read_block("MODSEL", modsel_processor);
+}
+
 void SLHA_io::fill(QedQcd& oneset) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor sminputs_processor
-      = std::bind(&SLHA_io::process_sminputs_tuple, oneset, _1, _2);
+      = std::bind(&SLHA_io::process_sminputs_tuple, std::ref(oneset), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
 }
@@ -167,6 +177,34 @@ void SLHA_io::write_to_stream(std::ostream& ostr)
 {
    if (ostr.good())
       ostr << data;
+}
+
+/**
+ * fill Modsel struct from given key - value pair
+ *
+ * @param modsel MODSEL data
+ * @param key SLHA key in MODSEL
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
+{
+   switch (key) {
+   case 1:
+   case 3:
+   case 4:
+   case 5:
+   case 6:
+   case 11:
+   case 21:
+      WARNING("MODSEL key " << key << " currently not supported");
+      break;
+   case 12:
+      modsel.parameter_output_scale = value;
+      break;
+   default:
+      WARNING("Unrecognized key in MODSEL: " << key);
+      break;
+   }
 }
 
 /**

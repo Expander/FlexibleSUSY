@@ -65,14 +65,20 @@ class SLHA_io {
 public:
    typedef std::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
+   struct Modsel {
+      double parameter_output_scale; ///< key = 12
+      Modsel() : parameter_output_scale(0.) {}
+   };
 
    SLHA_io();
    ~SLHA_io() {}
 
    // reading functions
    void fill(softsusy::QedQcd&) const;
+   const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
    void read_block(const std::string&, Tuple_processor) const;
+   void read_modsel();
 
    // writing functions
    void set_block(const std::ostringstream&, Position position = back);
@@ -85,7 +91,9 @@ public:
 
 private:
    SLHAea::Coll data;          ///< SHLA data
+   Modsel modsel;              ///< data from block MODSEL
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
+   static void process_modsel_tuple(Modsel&, int, double);
 };
 
 } // namespace flexiblesusy
