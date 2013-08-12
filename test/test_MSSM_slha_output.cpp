@@ -47,6 +47,46 @@ int run_point(const std::string& slha_file,
    return 0;
 }
 
+void compare_2component_block(const std::string& name,
+                              const SLHAea::Coll& coll1, const SLHAea::Coll& coll2)
+{
+   BOOST_REQUIRE(coll1.find(name) != coll1.end());
+   BOOST_REQUIRE(coll2.find(name) != coll2.end());
+
+   for (SLHAea::Block::const_iterator line = coll1.at(name).begin(),
+           end = coll1.at(name).end(); line != end; ++line) {
+      if (!line->is_data_line())
+         continue;
+
+      if (line->size() < 2)
+         continue;
+
+      const std::string index = (*line)[0];
+      const double value = std::fabs(SLHAea::to<double>((*line)[1]));
+
+      // look for index in coll2
+      SLHAea::Block::key_type key;
+      key.push_back(index);
+      SLHAea::Block::const_iterator line2 = coll2.at(name).find(key);
+      if (line2 == coll2.at(name).end()) {
+         BOOST_MESSAGE("Error: there is no line with key " << index << " in coll2");
+         BOOST_CHECK(false);
+         continue;
+      }
+
+      if (line2->size() < 2) {
+         BOOST_MESSAGE("Error: line2 (key = " << index << ") contains no value");
+         BOOST_CHECK(false);
+         continue;
+      }
+
+      if (line->size() >= 3 && line2->size() >= 3)
+         BOOST_MESSAGE("  comparing key " << index << " (" << (*line)[2] << ")");
+
+      BOOST_CHECK_CLOSE_FRACTION(value, std::fabs(SLHAea::to<double>((*line2)[1])), 0.001);
+   }
+}
+
 void compare_block_gauge(const SLHAea::Coll& coll1, const SLHAea::Coll& coll2)
 {
    BOOST_REQUIRE(coll1.find("gauge") != coll1.end());
@@ -77,6 +117,7 @@ void compare_slha_files(const std::string& file1, const std::string& file2)
    BOOST_REQUIRE(!input2.empty());
 
    compare_block_gauge(input1, input2);
+   // compare_2component_block("mass", input1, input2);
 }
 
 BOOST_AUTO_TEST_CASE( test_slha_output )
