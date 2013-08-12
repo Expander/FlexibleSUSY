@@ -33,6 +33,7 @@ namespace flexiblesusy {
 class SLHA_io {
 public:
    typedef std::function<void(int, double)> Tuple_processor;
+   enum Position { front, back };
 
    SLHA_io();
    ~SLHA_io() {}
@@ -43,7 +44,7 @@ public:
    void read_block(const std::string&, Tuple_processor) const;
 
    // writing functions
-   void set_block(const std::ostringstream&);
+   void set_block(const std::ostringstream&, Position position = back);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
 

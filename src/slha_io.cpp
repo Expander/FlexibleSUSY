@@ -69,12 +69,15 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::set_block(const std::ostringstream& lines)
+void SLHA_io::set_block(const std::ostringstream& lines, Position position)
 {
    SLHAea::Block block;
    block.str(lines.str());
    data.erase(block.name());
-   data.push_back(block);
+   if (position == front)
+      data.push_front(block);
+   else
+      data.push_back(block);
 }
 
 void SLHA_io::write_to_file(const std::string& file_name)
