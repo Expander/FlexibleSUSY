@@ -29,6 +29,7 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_low_scale_constraint.cpp \
 		$(DIR)/test_MSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_MSSM_model.cpp \
+		$(DIR)/test_MSSM_slha_output.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
@@ -167,6 +168,8 @@ $(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(L
 $(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_MSSM_slha_output.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
