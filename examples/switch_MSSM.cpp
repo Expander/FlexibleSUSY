@@ -1,7 +1,5 @@
-#include <cstdlib>
-
-#include "models/MSSM/MSSM_two_scale_model.hpp"
 #include "models/MSSM/MSSM_input_parameters.hpp"
+#include "models/MSSM/MSSM_two_scale_model.hpp"
 #include "models/MSSM/MSSM_two_scale_high_scale_constraint.hpp"
 #include "models/MSSM/MSSM_two_scale_susy_scale_constraint.hpp"
 #include "models/MSSM/MSSM_two_scale_low_scale_constraint.hpp"
@@ -14,8 +12,17 @@
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
+#include "program_options.hpp"
+#include "lowe.h"
+#include "command_line_options.hpp"
+
+#include <iostream>
+#include <vector>
+
+#include <cstdlib>
 
 #include "consts.hpp"
+#include "SM.hpp"
 #include "fmssm_oneloop.hpp"
 #include "fmssm_lattice.hpp"
 #include "lattice_initial_guesser.hpp"
@@ -32,7 +39,16 @@ namespace flexiblesusy {
 template<>
 class MSSM<Lattice> : public Fmssm<Lattice> {
 public:
+    MSSM() : Fmssm<Lattice>(), problems(MSSM_info::particle_names)
+	{}
     void set_input(const MSSM_input_parameters&) {}
+    void do_calculate_sm_pole_masses(bool) {}
+    const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const
+    { return problems; }
+    Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems()
+    { return problems; }
+private:
+    Problems<MSSM_info::NUMBER_OF_PARTICLES> problems;
 };
 
 // auxiliary class for initializing own members before the base class
@@ -51,10 +67,15 @@ class MSSM_high_scale_constraint<Lattice> :
     public MSSM_high_scale_constraint_,
     public CompoundConstraint<Lattice> {
 public:
+    MSSM_high_scale_constraint() :
+	CompoundConstraint<Lattice>::CompoundConstraint
+	({&mxc, &mhc, &mgc, &mfc, &tfc})
+	{}
     MSSM_high_scale_constraint(const MSSM_input_parameters& i) :
 	CompoundConstraint<Lattice>::CompoundConstraint
 	({&mxc, &mhc, &mgc, &mfc, &tfc})
-    {
+    { set_input_parameters(i); }
+    void set_input_parameters(const MSSM_input_parameters& i) {
 	double m0  = i.m0   *GeV;
 	double m12 = i.m12  *GeV;
 	double a0  = i.Azero*GeV;
@@ -72,6 +93,7 @@ public:
 	    	  a0, a0, a0;
 	tfc.Ad = tfc.Ae = tfc.Au;
     }
+    void reset() {}		///< reset to initial state
 };
 
 #if 0
@@ -105,24 +127,65 @@ public:
 template<>
 class MSSM_susy_scale_constraint<Lattice> : public Fmssm_msusy_constraint {
 public:
+    MSSM_susy_scale_constraint() :
+	Fmssm_msusy_constraint(10)
+	{}
     MSSM_susy_scale_constraint(const MSSM_input_parameters& input) :
 	Fmssm_msusy_constraint(input.TanBeta)
 	{}
+    void set_input_parameters(const MSSM_input_parameters& i) {
+	Real beta = atan(i.TanBeta);
+	Real vu = vv * sin(beta);
+	Real vd = vv * cos(beta);
+	msc.vu = ewsb.vu = vu;
+	msc.vd = ewsb.vd = vd;
+    }
+    void reset() {}		///< reset to initial state
 };
 
 template<>
 class MSSM_low_scale_constraint<Lattice> : public Fmssm_mz_constraint {
 public:
+    MSSM_low_scale_constraint() :
+	Fmssm_mz_constraint(10)
+	{}
     MSSM_low_scale_constraint(const MSSM_input_parameters& input) :
 	Fmssm_mz_constraint(input.TanBeta)
 	{}
+    void set_input_parameters(const MSSM_input_parameters& i) {
+	Real beta = atan(i.TanBeta);
+	Real vu = vv * sin(beta);
+	Real vd = vv * cos(beta);
+
+	CM33 VCKM = standard_VCKM(60*deg);
+
+	CM33 MUMW;
+	MUMW << muMW, 0,    0,
+	        0,    mcMW, 0,
+	        0,    0,    mtMW;
+	CM33 MDMW;
+	MDMW << mdMW, 0,    0,
+	        0,    msMW, 0,
+	        0,    0,    mbMW;
+	CM33 MEMW;
+	MEMW << me,   0,    0,
+	        0,    mmu,  0,
+	        0,    0,    mtau;
+
+	ycs.Yu = VCKM.transpose() * MUMW / vu;
+	ycs.Yd = MDMW / vd;
+	ycs.Ye = MEMW / vd;
+    }
+    void reset() {}		///< reset to initial state
 };
 
 template<>
 class MSSM_initial_guesser<Lattice> : public Initial_guesser<Lattice> {
 public:
     MSSM_initial_guesser<Lattice>
-    (void *, const MSSM_input_parameters& i,
+    (void *,
+     const MSSM_input_parameters& i,
+     const QedQcd&,
      MSSM_low_scale_constraint<Lattice>& mzc_,
      MSSM_susy_scale_constraint<Lattice>& msc_,
      MSSM_high_scale_constraint<Lattice>& mxc_) :
@@ -221,30 +284,48 @@ class MSSM_convergence_tester<Lattice> : public Convergence_tester<Lattice> {
 public:
    MSSM_convergence_tester(MSSM<Lattice>*, double accuracy_goal) {}
    virtual ~MSSM_convergence_tester();
+   void set_max_iterations(unsigned) {}; ///< set maximum number of iterations
 };
 
-template<class Method>
+template<class T>
 class MSSM_runner {
 public:
    MSSM_runner()
-      : model(), high_scale(0.), susy_scale(0.), low_scale(0.)
-      , precision_goal(1.0e-5) {}
+      : solver(), model()
+      , high_scale_constraint()
+      , susy_scale_constraint()
+      , low_scale_constraint()
+      , high_scale(0.), susy_scale(0.), low_scale(0.)
+      , precision_goal(1.0e-5)
+      , max_iterations(0)
+      , calculate_sm_masses(false) {}
    ~MSSM_runner() {}
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
-   const MSSM<Method>& get_model() const { return model; }
+   const MSSM<T>& get_model() const { return model; }
+   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
+      return model.get_problems();
+   }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
+   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
-   void run(const MSSM_input_parameters& input);
+   void run(const QedQcd& oneset, const MSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "MSSM_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "MSSM_spectrum.dat") const;
 
 private:
-   MSSM<Method> model;
+   RGFlow<T> solver;
+   MSSM<T> model;
+   MSSM_high_scale_constraint<T> high_scale_constraint;
+   MSSM_susy_scale_constraint<T> susy_scale_constraint;
+   MSSM_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double precision_goal; ///< precision goal
+   unsigned max_iterations; ///< maximum number of iterations
+   bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
 /**
@@ -255,34 +336,43 @@ private:
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
  *
+ * @param oneset Standard Model input parameters
  * @param input model input parameters
  */
-template<class Method>
-void MSSM_runner<Method>::run(const MSSM_input_parameters& input)
+template<class T>
+void MSSM_runner<T>::run(const QedQcd& oneset,
+			 const MSSM_input_parameters& input)
 {
-   MSSM_high_scale_constraint<Method> high_scale_constraint(input);
-   MSSM_susy_scale_constraint<Method> susy_scale_constraint(input);
-   MSSM_low_scale_constraint<Method>  low_scale_constraint(input);
+   high_scale_constraint.reset();
+   susy_scale_constraint.reset();
+   low_scale_constraint.reset();
+   high_scale_constraint.set_input_parameters(input);
+   susy_scale_constraint.set_input_parameters(input);
+   low_scale_constraint .set_input_parameters(input);
 
-   std::vector<Constraint<Method>*> upward_constraints;
+   std::vector<Constraint<T>*> upward_constraints;
    upward_constraints.push_back(&low_scale_constraint);
    upward_constraints.push_back(&high_scale_constraint);
 
-   std::vector<Constraint<Method>*> downward_constraints;
+   std::vector<Constraint<T>*> downward_constraints;
    downward_constraints.push_back(&high_scale_constraint);
    downward_constraints.push_back(&susy_scale_constraint);
    downward_constraints.push_back(&low_scale_constraint);
 
    model.set_input(input);
+   model.do_calculate_sm_pole_masses(calculate_sm_masses);
 
-   MSSM_convergence_tester<Method> convergence_tester(&model, precision_goal);
-   MSSM_initial_guesser<Method> initial_guesser(&model, input,
+   MSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
+   if (max_iterations > 0)
+      convergence_tester.set_max_iterations(max_iterations);
+
+   MSSM_initial_guesser<T> initial_guesser(&model, input, oneset,
 					 low_scale_constraint,
 					 susy_scale_constraint,
 					 high_scale_constraint);
    Two_scale_increasing_precision precision(10.0, precision_goal);
 
-   RGFlow<Method> solver;
+   solver.reset();
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
@@ -290,21 +380,35 @@ void MSSM_runner<Method>::run(const MSSM_input_parameters& input)
 
    high_scale = susy_scale = low_scale = 0.;
 
-   solver.solve();
+   try {
+      solver.solve();
+      high_scale = high_scale_constraint.get_scale();
+      susy_scale = susy_scale_constraint.get_scale();
+      low_scale  = low_scale_constraint.get_scale();
 
-   high_scale = high_scale_constraint.get_scale();
-   susy_scale = susy_scale_constraint.get_scale();
-   low_scale  = low_scale_constraint .get_scale();
+      if (model.run_to(susy_scale))
+         throw NonPerturbativeRunningError(susy_scale);
 
-   if (model.run_to(susy_scale)) abort();
-      // FIXME: not sure how to translate this to lattice method
-      // throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, susy_scale);
+      model.calculate_spectrum();
 
-   model.calculate_spectrum();
-
-   if (model.run_to(low_scale)) abort();
-      // FIXME: not sure how to translate this to lattice method
-      // throw RGFlow<Two_scale>::NonPerturbativeRunningError(&model, low_scale);
+      if (model.run_to(low_scale))
+         throw NonPerturbativeRunningError(low_scale);
+   } catch (const NoConvergenceError& error) {
+      model.get_problems().flag_no_convergence();
+      ERROR(error.what());
+   } catch (const NonPerturbativeRunningError& error) {
+      model.get_problems().flag_no_perturbative();
+      ERROR(error.what());
+   } catch (const Error& error) {
+      model.get_problems().flag_thrown();
+      ERROR(error.what());
+   } catch (const std::string& str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   } catch (const char* str) {
+      model.get_problems().flag_thrown();
+      ERROR(str);
+   }
 }
 
 /**
@@ -313,14 +417,14 @@ void MSSM_runner<Method>::run(const MSSM_input_parameters& input)
  *
  * @param filename name of output file
  */
-template<class Method>
-void MSSM_runner<Method>::write_running_couplings(const std::string& filename) const
+template<class T>
+void MSSM_runner<T>::write_running_couplings(const std::string& filename) const
 {
 #if 0
    // FIXME: impossible for lattice method to simulate since tmp_model
    // by itself would be stateless unless linked to an RGFlow
    // POSSIBLE SOLUTION: duplicate entire RGFlow
-   MSSM<Method> tmp_model(model);
+   MSSM<T> tmp_model(model);
    const unsigned error = tmp_model.run_to(low_scale);
    if (error) {
       ERROR("MSSM_runner::write_running_couplings: run to scale "
@@ -329,7 +433,7 @@ void MSSM_runner<Method>::write_running_couplings(const std::string& filename) c
    }
 
    MSSM_parameter_getter parameter_getter;
-   Coupling_monitor<MSSM<Method>, MSSM_parameter_getter>
+   Coupling_monitor<MSSM<T>, MSSM_parameter_getter>
       coupling_monitor(tmp_model, parameter_getter);
 
    coupling_monitor.run(low_scale, high_scale, 100, true);
@@ -342,50 +446,77 @@ void MSSM_runner<Method>::write_running_couplings(const std::string& filename) c
  *
  * @param filename output file name
  */
-template<class Method>
-void MSSM_runner<Method>::write_spectrum(const std::string& filename) const
+template<class T>
+void MSSM_runner<T>::write_spectrum(const std::string& filename) const
 {
 #if 0
    MSSM_spectrum_plotter plotter;
-   plotter.extract_spectrum(model);
+   plotter.extract_spectrum<T>(model);
    plotter.write_to_file(filename);
 #endif
 }
 
 } // namespace flexiblesusy
 
-using namespace flexiblesusy;
-
-template<class Method>
-int main_(int argc, char *argv[])
+template<class T>
+int main_(int argc, const char* argv[])
 {
-   MSSM_runner<Method> runner;
+   using namespace flexiblesusy;
+   using namespace softsusy;
+   typedef T algorithm_type;
+
+   Command_line_options options(argc, argv);
+   if (options.must_exit())
+      return options.status();
+
+   const std::string slha_input_file(options.get_slha_input_file());
+   const std::string slha_output_file(options.get_slha_output_file());
+   MSSM_slha_io slha_io;
+   Program_options program_options;
+   QedQcd oneset;
    MSSM_input_parameters input;
 
-   try {
-      runner.run(input);
-      runner.get_model().print(std::cout);
+   if (!slha_input_file.empty()) {
+      slha_io.read_from_file(slha_input_file);
+      slha_io.fill(oneset);
+      slha_io.fill(input);
+      slha_io.fill(program_options);
+   }
+   oneset.toMz(); // run SM fermion masses to MZ
+
+   MSSM_runner<algorithm_type> runner;
+   runner.set_precision_goal(program_options.get(Program_options::precision));
+   runner.set_max_iterations(program_options.get(Program_options::max_iterations));
+   runner.set_calculate_sm_masses(
+      program_options.get(Program_options::calculate_sm_masses) >= 1.0);
+
+   runner.run(oneset, input);
+
+   if (runner.get_problems().have_serious_problem()) {
+      runner.get_problems().print();
+   } else {
       // runner.write_running_couplings();
       // runner.write_spectrum();
-   } catch (const Error& error) {
-      ERROR(error.what());
-   } catch (const std::string& str) {
-      ERROR(str);
-   } catch (const char* str) {
-      ERROR(str);
    }
 
+#if 0
+   slha_io.set_spinfo(runner.get_problems());
+   slha_io.set_spectrum(runner.get_model());
+   slha_io.write_to_file(slha_output_file);
+#endif
    return 0;
 }
+
+using namespace flexiblesusy;
 
 int main(int argc, char *argv[])
 {
     if (argc > 1)
 	switch (argv[1][0]) {
 	case 't':
-	    return main_<Two_scale>(argc, argv);
+	    return main_<Two_scale>(argc-1, (const char **)(argv+1));
 	case 'l':
-	    return main_<Lattice>  (argc, argv);
+	    return main_<Lattice>  (argc-1, (const char **)(argv+1));
 	}
     return 1;
 }

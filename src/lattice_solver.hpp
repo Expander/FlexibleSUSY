@@ -201,6 +201,8 @@ public:
 		   InterTheoryConstraint *m,
 		   const std::vector<SingleSiteConstraint*>& upward_constraints,
 		   const std::vector<SingleSiteConstraint*>& downward_constraints);
+    /// clear all internal data
+    void reset();
     /// set convergence tester
     void set_convergence_tester(Convergence_tester<Lattice>*);
     /// set running precision calculator
