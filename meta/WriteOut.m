@@ -95,7 +95,7 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
            str = CConversion`ToValidCSymbolString[mixingMatrix];
            lhs = ToString[lesHouchesName];
            wrapper = If[head == "", str, head <> "(" <> str <> ")"];
-           "set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
+           "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
            "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 

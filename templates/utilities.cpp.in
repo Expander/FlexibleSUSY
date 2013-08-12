@@ -24,7 +24,6 @@
 #include "wrappers.hpp"
 #include "program_options.hpp"
 #include "lowe.h"
-#include "linalg.h"
 #include "config.h"
 
 #include <fstream>
@@ -104,85 +103,6 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
 {
 }
 
-/**
- * This function treats a given scalar as 1x1 matrix.  Such a case is
- * not defined in the SLHA standard, but we still handle it to avoid
- * problems.
- */
-void @ModelName@_slha_io::set_block(const std::string& name,
-                                    double value,
-                                    const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
-   ss << '\n'
-      << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
-
-   slha_io.set_block(ss);
-}
-
-void @ModelName@_slha_io::set_block(const std::string& name,
-                                    const DoubleMatrix& matrix,
-                                    const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
-   ss << '\n';
-
-   for (int i = 1; i <= matrix.displayRows(); ++i)
-      for (int k = 1; k <= matrix.displayCols(); ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i,k)
-            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
-      }
-
-   slha_io.set_block(ss);
-}
-
-void @ModelName@_slha_io::set_block(const std::string& name,
-                                    const Eigen::MatrixXd& matrix,
-                                    const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
-   ss << '\n';
-
-   const int rows = matrix.rows();
-   const int cols = matrix.cols();
-   for (int i = 1; i <= rows; ++i)
-      for (int k = 1; k <= cols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
-            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
-      }
-
-   slha_io.set_block(ss);
-}
-
-void @ModelName@_slha_io::set_block(const std::string& name,
-                                    const ComplexMatrix& matrix,
-                                    const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
-   ss << '\n';
-
-   for (int i = 1; i <= matrix.displayRows(); ++i)
-      for (int k = 1; k <= matrix.displayCols(); ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k
-            % Re(matrix(i,k))
-            % ("Re(" + symbol + "(" + std::to_string(i) + "," + std::to_string(k) + "))");
-      }
-
-   slha_io.set_block(ss);
-}
-
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
    std::ostringstream serious_problems;
@@ -192,11 +112,11 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    spinfo << "# FlexibleSUSY " VERSION " SLHA compliant output\n"
              "# P. Athron, J. Park, D. Stöckinger, A. Voigt\n"
              "Block SPINFO\n"
-          << boost::format(spinfo_formatter) % 1 % PKGNAME
-          << boost::format(spinfo_formatter) % 2 % VERSION;
+          << FORMAT_SPINFO(1, PKGNAME)
+          << FORMAT_SPINFO(2, VERSION);
 
    if (!serious_problems.str().empty())
-      spinfo << boost::format(spinfo_formatter) % 4 % serious_problems.str();
+      spinfo << FORMAT_SPINFO(4, serious_problems.str());
 
    slha_io.set_block(spinfo, SLHA_io::front);
 }

@@ -18,7 +18,9 @@
 
 #include "slha_io.hpp"
 #include "logger.hpp"
+#include "wrappers.hpp"
 #include "lowe.h"
+#include "linalg.h"
 
 #include <fstream>
 
@@ -78,6 +80,81 @@ void SLHA_io::set_block(const std::ostringstream& lines, Position position)
       data.push_front(block);
    else
       data.push_back(block);
+}
+
+/**
+ * This function treats a given scalar as 1x1 matrix.  Such a case is
+ * not defined in the SLHA standard, but we still handle it to avoid
+ * problems.
+ */
+void SLHA_io::set_block(const std::string& name, double value,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n'
+      << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
+
+   set_block(ss);
+}
+
+void SLHA_io::set_block(const std::string& name, const DoubleMatrix& matrix,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n';
+
+   for (int i = 1; i <= matrix.displayRows(); ++i)
+      for (int k = 1; k <= matrix.displayCols(); ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i,k)
+            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+      }
+
+   set_block(ss);
+}
+
+void SLHA_io::set_block(const std::string& name, const Eigen::MatrixXd& matrix,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n';
+
+   const int rows = matrix.rows();
+   const int cols = matrix.cols();
+   for (int i = 1; i <= rows; ++i)
+      for (int k = 1; k <= cols; ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
+            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+      }
+
+   set_block(ss);
+}
+
+void SLHA_io::set_block(const std::string& name, const ComplexMatrix& matrix,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n';
+
+   for (int i = 1; i <= matrix.displayRows(); ++i)
+      for (int k = 1; k <= matrix.displayCols(); ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k
+            % Re(matrix(i,k))
+            % ("Re(" + symbol + "(" + std::to_string(i) + "," + std::to_string(k) + "))");
+      }
+
+   set_block(ss);
 }
 
 void SLHA_io::write_to_file(const std::string& file_name)
