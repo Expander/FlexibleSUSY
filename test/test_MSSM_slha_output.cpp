@@ -55,7 +55,7 @@ void compare_block(const std::string& name,
 
    // scale
    BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("Block").at(3)),
-                              SLHAea::to<double>(coll2.at(name).at("Block").at(3)), 1.0e-10);
+                              SLHAea::to<double>(coll2.at(name).at("Block").at(3)), 0.001);
 
    BOOST_CHECK_CLOSE_FRACTION(SLHAea::to<double>(coll1.at(name).at("1").at(1)) * sqrt(3./5.),
                               SLHAea::to<double>(coll2.at(name).at("1").at(1)), 0.0005);

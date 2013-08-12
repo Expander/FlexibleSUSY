@@ -11,7 +11,7 @@ Block SOFTSUSY               # SOFTSUSY specific inputs
 Block MODSEL                 # Select model
     6    0                   # flavour violation
     1    1                   # mSUGRA
-   12    9.118760000e+01     # output scale (MZ)
+#   12    9.118760000e+01     # output scale (MZ)
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
