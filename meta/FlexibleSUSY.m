@@ -17,6 +17,7 @@ GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 FSModelName;
 FSLesHouchesList;
+FSUnfixedParameters;
 InputParameters;
 DefaultParameterPoint;
 ParametersToSolveTadpoles;
@@ -650,6 +651,15 @@ LoadModelFile[file_String] :=
              ];
           ];
 
+FindUnfixedParameters[fixed_List] :=
+    Module[{fixedParameters},
+           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
+                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
+                                            SARAH`strongCoupling, SARAH`UpYukawa, SARAH`DownYukawa,
+                                            SARAH`ElectronYukawa }]]];
+           Complement[allParameters, fixedParameters]
+          ];
+
 Options[MakeFlexibleSUSY] :=
     {
         Eigenstates -> SARAH`EWSB,
@@ -667,7 +677,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
-            diagonalizationPrecision, allParticles, freePhases},
+            diagonalizationPrecision, allParticles, freePhases, fixedParameters},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -759,6 +769,19 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
            FlexibleSUSY`FSLesHouchesList = SA`LHList /. susyBreakingParameterReplacementRules;
+
+           (* search for unfixed parameters *)
+           fixedParameters = Join[ParametersToSolveTadpoles,
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
+                                 ] /. susyBreakingParameterReplacementRules;
+           FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[fixedParameters];
+           If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
+              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True,
+              Print["Warning: the following parameters are not fixed by any constraint:"];
+              Print["  ", FlexibleSUSY`FSUnfixedParameters];
+             ];
 
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
