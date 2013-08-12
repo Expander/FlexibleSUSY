@@ -177,7 +177,7 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    if (!serious_problems.str().empty())
       spinfo << boost::format(spinfo_formatter) % 4 % serious_problems.str();
 
-   slha_io.set_block(spinfo);
+   slha_io.set_block(spinfo, SLHA_io::front);
 }
 
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
