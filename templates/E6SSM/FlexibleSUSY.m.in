@@ -23,9 +23,9 @@ DefaultParameterPoint = {
     {Azero, 500},
     {LambdaInput, 0.1},
     {KappaInput, 0.1},
-    {vSInput, 1000},
+    {muPrimeInput, 400},
     {BmuPrimeInput, 40000},
-    {muPrimeInput, 400}
+    {vSInput, 1000}
 };
 
 ParametersToSolveTadpoles = { mHd2, mHu2, ms2 };
