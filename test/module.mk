@@ -169,7 +169,8 @@ $(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LI
 
 $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_slha_output.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE)
+$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/input_MSSM.slha2
+		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
