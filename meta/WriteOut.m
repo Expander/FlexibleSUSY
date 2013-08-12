@@ -109,9 +109,16 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
-    Module[{result = "", mixingMatrices},
+    Module[{result, mixingMatrices, smMix, susyMix, smMixStr = "", susyMixStr = ""},
            mixingMatrices = GetSLHAMixinMatrices[];
-           (result = result <> WriteSLHAMatrix[#,"PHYSICAL"])& /@ mixingMatrices;
+           smMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@ SARAH`SMParticles];
+           smMix = Select[mixingMatrices, MemberQ[smMix,#[[1]]]&];
+           susyMix = Complement[mixingMatrices, smMix];
+           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"PHYSICAL"])& /@ smMix;
+           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"PHYSICAL"])& /@ susyMix;
+           result = susyMixStr <> "\n" <>
+                    "if (model.do_calculate_sm_pole_masses()) {\n" <>
+                    TextFormatting`IndentText[smMixStr] <> "}\n";
            Return[result];
           ];
 
