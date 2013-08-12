@@ -237,9 +237,7 @@ int main(int argc, const char* argv[])
    }
 
    slha_io.set_spinfo(runner.get_problems());
-   slha_io.set_model_parameters(runner.get_model());
-   slha_io.set_mass(runner.get_model());
-   slha_io.set_mixing_matrices(runner.get_model());
+   slha_io.set_spectrum(runner.get_model());
    slha_io.write_to_file(slha_output_file);
 
    return 0;
