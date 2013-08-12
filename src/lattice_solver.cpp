@@ -133,6 +133,11 @@ void RGFlow<Lattice>::add_model
     add_model(model, matching, combined);
 }
 
+void RGFlow<Lattice>::reset()
+{
+    // TODO: do something reasonable
+}
+
 void RGFlow<Lattice>::set_convergence_tester(Convergence_tester<Lattice>*)
 {
     // TODO: do something reasonable
