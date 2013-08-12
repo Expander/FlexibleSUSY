@@ -116,7 +116,7 @@ SortBlocks[modelParameters_List] :=
            reformed = LesHouchesNameToFront /@ modelParameters;
            allBlocks = DeleteDuplicates[Transpose[reformed][[1]]];
            collected = {#, Cases[reformed, {#, a_} :> a]}& /@ allBlocks;
-           collected = collected /. {a_} :> a
+           collected = collected /. {a_Symbol} :> a
           ];
 
 WriteSLHABlock[{blockName_, tuples_List}] :=
