@@ -25,7 +25,8 @@ fortran_fmssm_bc(fmssm_mx)
 fortran_fmssm_bc(fmssm_higgs_masses)
 fortran_fmssm_bc(fmssm_gaugino_masses)
 fortran_fmssm_bc(fmssm_sfermion_masses)
-fortran_fmssm_bc(fmssm_trilinears)
+fortran_fmssm_bc(fmssm_trilinear_factors)
+fortran_fmssm_bc(fmssm_real_trilinear_factors)
 fortran_fmssm_bc(fmssm_ms)
 fortran_fmssm_bc(fmssm_gauge_couplings)
 fortran_fmssm_bc(fmssm_yukawas)
@@ -199,25 +200,46 @@ public:
     CM33 m2Q, m2U, m2D, m2L, m2E;
 };
 
-class Fmssm_constraint_on_trilinears : public ForeignConstraint {
+class Fmssm_constraint_trilinear_factors : public ForeignConstraint {
 public:
-    Fmssm_constraint_on_trilinears() : ForeignConstraint(54) {}
+    Fmssm_constraint_trilinear_factors() : ForeignConstraint(54) {}
     void operator()() {
 	for (size_t i = 0; i < 54; i++) {
-	    fmssm_trilinears_(0,0,0,
-			      nullptr,nullptr,nullptr,
-			      0,0,
-			      nullptr,nullptr,nullptr,
-			      nullptr,nullptr,
-			      Au.data(),Ad.data(),Ae.data(),
-			      0,0,0,
-			      0,0,
-			      f->scl0, nullptr, i,
-			      &row[0], &rhs);
+	    fmssm_trilinear_factors_(0,0,0,
+				     nullptr,nullptr,nullptr,
+				     0,0,
+				     nullptr,nullptr,nullptr,
+				     nullptr,nullptr,
+				     Au.data(),Ad.data(),Ae.data(),
+				     0,0,0,
+				     0,0,
+				     f->scl0, nullptr, i,
+				     &row[0], &rhs);
 	    copy_row(i);
 	}
     }
     CM33 Au, Ad, Ae;
+};
+
+class Fmssm_constraint_real_trilinear_factors : public ForeignConstraint {
+public:
+    Fmssm_constraint_real_trilinear_factors() : ForeignConstraint(54) {}
+    void operator()() {
+	for (size_t i = 0; i < 54; i++) {
+	    fmssm_real_trilinear_factors_(0,0,0,
+					  nullptr,nullptr,nullptr,
+					  0,0,
+					  nullptr,nullptr,nullptr,
+					  nullptr,nullptr,
+					  Au.data(),Ad.data(),Ae.data(),
+					  0,0,0,
+					  0,0,
+					  f->scl0, nullptr, i,
+					  &row[0], &rhs);
+	    copy_row(i);
+	}
+    }
+    CM33 Au, Ad, Ae;		// imaginary parts are unused
 };
 
 }

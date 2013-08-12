@@ -31,7 +31,7 @@ struct Fmssmn_mx_constraint_ {
     Fmssmn_constraint_on_higgs_masses mhc;
     Fmssmn_constraint_on_gaugino_masses mgc;
     Fmssmn_constraint_on_sfermion_masses mfc;
-    Fmssmn_constraint_on_trilinears tfc;
+    Fmssmn_constraint_trilinear_factors tfc;
 };
 
 class Fmssmn_mx_constraint :

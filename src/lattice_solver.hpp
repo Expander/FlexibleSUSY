@@ -1,3 +1,21 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
 #ifndef lattice_solver_hpp
 #define lattice_solver_hpp
 
@@ -16,6 +34,7 @@
 
 #include "rg_flow.hpp"
 #include "error.hpp"
+#include "lattice_model.hpp"
 
 namespace flexiblesusy {
 
@@ -32,6 +51,8 @@ class Lattice_constraint;
 // class InterTheoryConstraint;
 typedef Constraint<Lattice> SingleSiteConstraint;
 typedef Matching<Lattice> InterTheoryConstraint;
+
+class Two_scale_running_precision;
 
 
 typedef std::vector<Real> RVec;
@@ -61,46 +82,6 @@ private:
 };
 
 			      
-struct Wilson {
-    Wilson(size_t nvars) : width(nvars) {}
-    virtual ~Wilson() {}
-    size_t width;		// 1 + number of Wilson coefficients
-    // derivative wrt t == x[0]
-    virtual Real  dx(const Real *x, size_t i) const = 0;
-    // d dx[i] / d x[j] == d dx[i] / d y[j] / unit[j]
-    virtual void ddx(const Real *x, size_t i, Real *ddx) const = 0;
-};
-
-struct ParWilson {
-    ParWilson(size_t width_) : width(width_) {}
-    virtual ~ParWilson() {}
-    size_t width;		// 1 + number of Wilson coefficients
-    // derivative wrt t == x[0]
-    virtual Real  dx(const Real a, const Real *x, size_t i) const = 0;
-    // d dx[i] / d x[j] == d dx[i] / d y[j] / unit[j]
-    virtual void ddx(const Real a, const Real *x, size_t i, Real *ddx) const=0;
-};
-
-class Lattice_model: public ParWilson {
-public:
-    Lattice_model(size_t width) : ParWilson(width) {}
-    virtual ~Lattice_model() {}
-    virtual void init(RGFlow<Lattice> *flow, size_t theory)
-    { f = flow; T = theory; }
-    virtual void calculate_spectrum() = 0;
-    virtual std::string name() const { return "unnamed"; }
-    // virtual int run_to(double, double eps = -1.0) = 0;
-    virtual void print(std::ostream& out) const { out << "Model: " << name(); }
-    friend std::ostream& operator<<(std::ostream& out, const Lattice_model& model) {
-	model.print(out);
-	return out;
-    }
-
-protected:
-    RGFlow<Lattice> *f;
-    size_t T;
-};
-
 template<>
 class RGFlow<Lattice> {
 public:
@@ -171,27 +152,6 @@ public:
 	double scale;
     };
 
-    struct Translator {
-	template<class T>
-	struct Var {
-	    Var(std::function<T()> get, std::function<void(T)> set) :
-		get_(get), set_(set) {}
-	    operator T() { return get_(); }
-	    T operator=(T value) { set_(value); return get_(); }
-	    T operator=(Var<T>& var) { return operator=(T(var)); }
-	    std::function<T()> get_;
-	    std::function<void(T)> set_;
-	};
-
-	Translator(RGFlow *flow, size_t theory, size_t site) :
-	    f(flow), T(theory), m(site) {}
-	Real  u(size_t i) { return f->efts[T].units[i]; }
-	Real& y(size_t i) { return f->y(T, m, i); }
-	RGFlow *f;
-	size_t T;
-	size_t m;
-    };
-
     struct EFT {
 	EFT(Lattice_model *model, RGFlow *flow) :
 	    w(model), units(w->width, 1), f(flow)
@@ -220,21 +180,32 @@ public:
     ~RGFlow();
 
     /// add a model and constraints
+    /// order of constraints: ascending t
     void add_model(Lattice_model* model,
 		   const std::vector<SingleSiteConstraint*>& constraints);
     /// add a model, constraints and matching condition
+    /// order of constraints: ascending t
     void add_model(Lattice_model*,
 		   InterTheoryConstraint *m = NULL,
 		   const std::vector<SingleSiteConstraint*>& constraints = std::vector<SingleSiteConstraint*>());
     /// add a model and up- and downwards constraints
+    /// order of upward_constraints: ascending t
+    /// order of downward_constraints: descending t
     void add_model(Lattice_model*,
-		   const std::vector<SingleSiteConstraint*>&,
-		   const std::vector<SingleSiteConstraint*>&);
+		   const std::vector<SingleSiteConstraint*>& upward_constraints,
+		   const std::vector<SingleSiteConstraint*>& downward_constraints);
     /// add a model, up- and downward constraints and matching condition
+    /// order of upward_constraints: ascending t
+    /// order of downward_constraints: descending t
     void add_model(Lattice_model*,
 		   InterTheoryConstraint *m,
-		   const std::vector<SingleSiteConstraint*>& upwards_constraints,
-		   const std::vector<SingleSiteConstraint*>& downwards_constraints);
+		   const std::vector<SingleSiteConstraint*>& upward_constraints,
+		   const std::vector<SingleSiteConstraint*>& downward_constraints);
+    /// set convergence tester
+    void set_convergence_tester(Convergence_tester<Lattice>*);
+    /// set running precision calculator
+    /// TODO: replace Two_scale_running_precision by something lattice
+    void set_running_precision(Two_scale_running_precision*);
     void set_initial_guesser(Initial_guesser<Lattice>*);
 
     void enable_hybrid() { hybrid = true; }
@@ -280,8 +251,8 @@ public:
     Real& y(size_t T, size_t m, size_t i) { return y_[site_offset(T,m) + i]; }
     Real  y(size_t T, size_t m, size_t i) const
     { return y_[site_offset(T,m) + i]; }
-    Real  x(size_t T, size_t m, size_t i) const
-    { return y(T,m,i) * efts[T].units[i]; }
+    Real  u(size_t T, size_t i) const { return efts[T].units[i]; }
+    Real  x(size_t T, size_t m, size_t i) const { return y(T,m,i) * u(T,i); }
     std::vector<Lattice_constraint*> constraints;
     std::vector<size_t> teqidx;
     std::vector<size_t> rgeidx;

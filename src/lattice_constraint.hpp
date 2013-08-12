@@ -46,8 +46,10 @@ protected:
     virtual void activate();
     Real& A(size_t r, size_t T, size_t m, size_t j)
     { return f->A(rows[r]->rowSpec.realRow, T, m, j); }
-    Real y(size_t T, size_t m, size_t i) { return f->y(T, m, i); }
+    Real y(size_t T, size_t m, size_t i) const { return f->y(T, m, i); }
     Real& z(size_t r) { return f->z[rows[r]->rowSpec.realRow]; }
+    Real u(size_t T, size_t i) const { return f->u(T, i); }
+    Real x(size_t T, size_t m, size_t i) const { return f->x(T, m, i); }
     void ralloc(size_t nrows, size_t T, size_t m, size_t span);
     void rfree();
 private:
@@ -67,11 +69,14 @@ public:
 protected:
     Real& A(size_t r, size_t To, size_t j)
     { return Lattice_constraint::A(r, TL+To, m(To), j); }
-    Real y(size_t To, size_t i)
+    Real y(size_t To, size_t i) const
     { return Lattice_constraint::y(TL+To, m(To), i); }
     Real& z(size_t r) { return Lattice_constraint::z(r); }
-    Real u(size_t To, size_t i) { return f->efts[TL+To].units[i]; }
-    size_t m(size_t To) { return To ? 0 : f->efts[TL].height - 1; }
+    Real u(size_t To, size_t i) const
+    { return Lattice_constraint::u(TL+To, i); }
+    Real x(size_t To, size_t i) const
+    { return Lattice_constraint::x(TL+To, m(To), i); }
+    size_t m(size_t To) const { return To ? 0 : f->efts[TL].height - 1; }
     void ralloc(size_t nrows)
     { Lattice_constraint::ralloc(nrows, TL, m(0), 2); }
     size_t TL;
@@ -98,9 +103,10 @@ public:
 protected:
     Real& A(size_t r, size_t m, size_t j)
     { return Lattice_constraint::A(r, T, m, j); }
-    Real y(size_t m, size_t i) { return Lattice_constraint::y(T, m, i); }
+    Real y(size_t m, size_t i) const { return Lattice_constraint::y(T, m, i); }
     Real& z(size_t r) { return Lattice_constraint::z(r); }
-    Real u(size_t i) { return f->efts[T].units[i]; }
+    Real u(size_t i) const { return Lattice_constraint::u(T, i); }
+    Real x(size_t m, size_t i) const { return Lattice_constraint::x(T, m, i); }
     void ralloc(size_t nrows, size_t m, size_t span)
     { Lattice_constraint::ralloc(nrows, T, m, span); }
     size_t T;
@@ -116,11 +122,13 @@ public:
     // SingleSiteConstraint() {}
     virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site)
     { IntraTheoryConstraint::init(flow, theory, site, 1); }
+    virtual double get_scale() const { return std::exp(x(0))*f->scl0; }
 protected:
     Real& A(size_t r, size_t j)
     { return IntraTheoryConstraint::A(r, mbegin, j); }
-    Real y(size_t i) { return IntraTheoryConstraint::y(mbegin, i); }
+    Real y(size_t i) const { return IntraTheoryConstraint::y(mbegin, i); }
     Real& z(size_t r) { return IntraTheoryConstraint::z(r); }
+    Real x(size_t i) const { return IntraTheoryConstraint::x(mbegin, i); }
     void ralloc(size_t nrows)
     { IntraTheoryConstraint::ralloc(nrows, mbegin, 1); }
 private:
