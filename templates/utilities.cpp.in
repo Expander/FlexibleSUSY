@@ -126,6 +126,17 @@ void @ModelName@_slha_io::write_to_file(const std::string& file_name)
    slha_io.write_to_file(file_name);
 }
 
+double @ModelName@_slha_io::get_parameter_output_scale() const
+{
+   return slha_io.get_modsel().parameter_output_scale;
+}
+
+void @ModelName@_slha_io::read_from_file(const std::string& file_name)
+{
+   slha_io.read_from_file(file_name);
+   slha_io.read_modsel();
+}
+
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
    using namespace std::placeholders;
