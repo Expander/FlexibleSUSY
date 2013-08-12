@@ -3,7 +3,10 @@ FSModelName = "@CLASSNAME@";
 
 (* CMSSM input parameters *)
 
-InputParameters = { m0, m12, Azero };
+MINPAR = { {1, m0},
+           {2, m12},
+           {5, Azero}
+         };
 
 DefaultParameterPoint = {
     {m0, 4000},

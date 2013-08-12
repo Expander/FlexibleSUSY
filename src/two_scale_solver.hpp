@@ -20,7 +20,6 @@
 #define TWO_SCALE_SOLVER_H
 
 #include "rg_flow.hpp"
-#include "error.hpp"
 
 #include <vector>
 #include <string>
@@ -39,45 +38,6 @@ class Two_scale_running_precision;
 template<>
 class RGFlow<Two_scale> {
 public:
-   class SetupError : public Error {
-   public:
-      SetupError(const std::string& message_) : message(message_) {}
-      virtual ~SetupError() {}
-      virtual std::string what() const { return message; }
-   private:
-      std::string message;
-   };
-
-   class NoConvergenceError : public Error {
-   public:
-      NoConvergenceError(unsigned number_of_iterations_)
-         : number_of_iterations(number_of_iterations_) {}
-      virtual ~NoConvergenceError() {}
-      virtual std::string what() const {
-         std::stringstream message;
-         message << "RGFlow<Two_scale>::NoConvergenceError: no convergence"
-                 << " after " << number_of_iterations << " iterations";
-         return message.str();
-      }
-      unsigned get_number_of_iterations() { return number_of_iterations; }
-   private:
-      unsigned number_of_iterations;
-   };
-
-   class NonPerturbativeRunningError : public Error {
-   public:
-      NonPerturbativeRunningError(Two_scale_model* model_, double scale_)
-         : model(model_)
-         , scale(scale_)
-         {}
-      virtual ~NonPerturbativeRunningError() {}
-      virtual std::string what() const;
-      Two_scale_model* get_model() { return model; }
-   private:
-      Two_scale_model* model;
-      double scale;
-   };
-
    RGFlow();
    ~RGFlow();
 

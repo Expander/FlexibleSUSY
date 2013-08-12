@@ -63,6 +63,7 @@ public:
 
    @ModelName@_initial_guesser(@ModelName@<Two_scale>*,
                                const @ModelName@_input_parameters&,
+                               const QedQcd&,
                                const @ModelName@_low_scale_constraint<Two_scale>&,
                                const @ModelName@_susy_scale_constraint<Two_scale>&,
                                const @ModelName@_high_scale_constraint<Two_scale>&);
@@ -72,6 +73,7 @@ public:
 private:
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters input_pars;
+   QedQcd oneset;
    @ModelName@_low_scale_constraint<Two_scale> low_constraint;
    @ModelName@_susy_scale_constraint<Two_scale> susy_constraint;
    @ModelName@_high_scale_constraint<Two_scale> high_constraint;

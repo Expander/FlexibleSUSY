@@ -33,6 +33,7 @@ SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
 GetModelParameters::usage="";
+GetOutputParameters::usage="";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -41,6 +42,12 @@ CreateLocalConstRefsForBetas::usage="";
 
 CreateLocalConstRefsForInputParameters::usage="creates local const
 references for all input parameters in the given expression.";
+
+CreateLocalConstRefsForPhysicalParameters::usage="creates local const
+references for all physical output parameters in the given
+expression.";
+
+FillInputParametersFromTuples::usage="";
 
 Begin["Private`"];
 
@@ -53,6 +60,7 @@ SetModelParameters[pars_List] := allModelParameters = pars;
 SetOutputParameters[pars_List] := allOutputParameters = pars;
 
 GetModelParameters[] := allModelParameters;
+GetOutputParameters[] := allOutputParameters;
 
 additionalRealParameters = {};
 
@@ -391,6 +399,20 @@ CreateLocalConstRefs[expr_] :=
            Return[result];
           ];
 
+CreateLocalConstRefsForPhysicalParameters[expr_] :=
+    Module[{result = "", symbols, outputPars, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = { Cases[compactExpr, _Symbol, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                     };
+           symbols = DeleteDuplicates[Flatten[symbols]];
+           outputPars = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           (result = result <> DefineLocalConstCopy[#,"PHYSICAL"])& /@ outputPars;
+           Return[result];
+          ];
+
 CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", symbols, modelPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
@@ -409,6 +431,24 @@ CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
+           Return[result];
+          ];
+
+CreateCaseFromTuple[{key_?NumberQ, parameter_}] :=
+    "case " <> ToString[key] <> ": input." <>
+    CConversion`ToValidCSymbolString[parameter] <> " = value; break;\n";
+
+CreateCaseFromTuple[expr_] :=
+    Block[{},
+          Print["Error: not a valid {key,parameter} tuple: ", expr];
+          ""
+         ];
+
+FillInputParametersFromTuples[minpar_List] :=
+    Module[{result = ""},
+           (result = result <> CreateCaseFromTuple[#])& /@ minpar;
+           result = "switch (key) {\n" <> result <>
+                    "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
            Return[result];
           ];
 

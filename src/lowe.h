@@ -149,7 +149,7 @@ double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-    mtauPole(m.mtauPole) { 
+   mtauPole(m.mtauPole) {
   setPars(11); 
   setMu(m.displayMu());
   setLoops(m.displayLoops());

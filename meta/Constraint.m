@@ -6,6 +6,9 @@ CalculateScale::usage="";
 DefineInputParameters::usage="";
 InitializeInputParameters::usage="";
 
+FindFixedParametersFromConstraint::usage="Returns a list of all
+parameters which are fixed by the given constraint";
+
 SetBetaFunctions::usage=""
 
 Begin["Private`"];
@@ -148,6 +151,13 @@ ApplyConstraints[settings_List] :=
            (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
            Return[result];
           ];
+
+FindFixedParametersFromSetting[{parameter_, value_}] := parameter;
+FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, _]] := parameters;
+FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, _]] := parameters;
+
+FindFixedParametersFromConstraint[settings_List] :=
+    DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];
 
 CalculateScale[Null, _] := "";
 

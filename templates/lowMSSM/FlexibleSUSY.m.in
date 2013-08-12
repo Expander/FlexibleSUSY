@@ -1,0 +1,32 @@
+
+FSModelName = "@CLASSNAME@";
+
+MINPAR = { {3, TanBeta} };
+
+DefaultParameterPoint = {
+    {TanBeta, 10}
+};
+
+ParametersToSolveTadpoles = { mHd2, mHu2 };
+
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+
+SUSYScaleFirstGuess = 1000;
+
+SUSYScaleInput = {};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput={
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;

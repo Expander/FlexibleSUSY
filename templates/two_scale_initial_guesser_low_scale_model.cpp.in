@@ -37,12 +37,16 @@ namespace flexiblesusy {
 @ModelName@_initial_guesser<Two_scale>::@ModelName@_initial_guesser(
    @ModelName@<Two_scale>* model_,
    const @ModelName@_input_parameters& input_pars_,
-   const @ModelName@_low_scale_constraint<Two_scale>& low_constraint_
+   const QedQcd& oneset_,
+   const @ModelName@_low_scale_constraint<Two_scale>& low_constraint_,
+   const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
    , input_pars(input_pars_)
+   , oneset(oneset_)
    , low_constraint(low_constraint_)
+   , susy_constraint(susy_constraint_)
 {
    assert(model && "@ModelName@_initial_guesser: Error: pointer to model"
           " @ModelName@<Two_scale> must not be zero");
@@ -56,16 +60,16 @@ void @ModelName@_initial_guesser<Two_scale>::guess()
 {
    model->clear();
    guess_susy_parameters();
-   model->run_to(low_constraint.get_scale());
+   guess_soft_parameters();
 }
 
 void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 {
-   QedQcd leAtMt;
+   QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
-   const double mtpole = Electroweak_constants::PMTOP;
+   const double mtpole = leAtMt.displayPoleMt();
 
    // guess gauge couplings at mt
    const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
@@ -82,15 +86,15 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
       electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = Electroweak_constants::MUP;
-   topDRbar(1,1)      = Electroweak_constants::MCHARM;
+   topDRbar(0,0)      = leAtMt.displayMass(mUp);
+   topDRbar(1,1)      = leAtMt.displayMass(mCharm);
    topDRbar(2,2)      = leAtMt.displayMass(mTop) - 30.0;
-   bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
-   bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
-   bottomDRbar(2,2)   = Electroweak_constants::MBOTTOM;
-   electronDRbar(0,0) = Electroweak_constants::MELECTRON;
-   electronDRbar(1,1) = Electroweak_constants::MMUON;
-   electronDRbar(2,2) = Electroweak_constants::MTAU;
+   bottomDRbar(0,0)   = leAtMt.displayMass(mDown);
+   bottomDRbar(1,1)   = leAtMt.displayMass(mStrange);
+   bottomDRbar(2,2)   = leAtMt.displayMass(mBottom);
+   electronDRbar(0,0) = leAtMt.displayMass(mElectron);
+   electronDRbar(1,1) = leAtMt.displayMass(mMuon);
+   electronDRbar(2,2) = leAtMt.displayMass(mTau);
 
    Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
 
@@ -99,6 +103,32 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    model->set_@UpYukawa@(new_Yu);
    model->set_@DownYukawa@(new_Yd);
    model->set_@ElectronYukawa@(new_Ye);
+}
+
+void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
+{
+   const double low_scale_guess = low_constraint.get_initial_scale_guess();
+   const double susy_scale_guess = susy_constraint.get_initial_scale_guess();
+
+   int err = model->run_to(susy_scale_guess);
+   if (err)
+      throw NonPerturbativeRunningError(model, susy_scale_guess);
+
+   // apply susy-scale constraint
+   susy_constraint.set_model(model);
+   susy_constraint.apply();
+
+   err = model->run_to(low_scale_guess);
+   if (err)
+      throw NonPerturbativeRunningError(model, low_scale_guess);
+
+   // apply EWSB constraint
+   model->solve_ewsb_tree_level();
+
+   // calculate tree-level spectrum
+   model->calculate_DRbar_parameters();
+   model->set_thresholds(3);
+   model->set_loops(2);
 }
 
 } // namespace flexiblesusy

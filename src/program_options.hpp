@@ -16,8 +16,33 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "error.hpp"
+#ifndef PROGRAM_OPTIONS_H
+#define PROGRAM_OPTIONS_H
 
 namespace flexiblesusy {
 
-}
+/**
+ * @class Program_options
+ * @brief stores the program options
+ *
+ * This class stores all program options which can be changed via the
+ * SLHA input file.
+ */
+class Program_options {
+public:
+   enum Options : unsigned { precision, max_iterations,
+         algorithm, calculate_sm_masses, NUMBER_OF_OPTIONS };
+
+   Program_options();
+   ~Program_options() {}
+
+   double get(Options) const;
+   void set(Options, double);
+
+private:
+   double values[NUMBER_OF_OPTIONS];
+};
+
+} // namespace flexiblesusy
+
+#endif

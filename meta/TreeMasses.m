@@ -93,6 +93,7 @@ IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
 IsGhost::usage="";
+IsGolstone::usage="";
 IsAuxiliary::usage="";
 IsVEV::usage="";
 IsMajoranaFermion::usage="";
@@ -147,6 +148,8 @@ IsFermion[sym_Symbol] := IsOfType[sym, F];
 IsVector[sym_Symbol] := IsOfType[sym, V];
 
 IsGhost[sym_Symbol] := IsOfType[sym, G];
+
+IsGolstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
 
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
 
@@ -345,7 +348,7 @@ CreateParticleEnum[particles_List] :=
            (* append enum state for the number of particles *)
            If[Length[particles] > 0, result = result <> ", ";];
            result = result <> "NUMBER_OF_PARTICLES";
-           result = "enum Particles {" <>
+           result = "enum Particles : unsigned {" <>
                     result <> "};\n";
            Return[result];
           ];
@@ -538,11 +541,11 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
-    Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev = "", k},
+    Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
            dim = Length[matrix];
            dimStr = ToString[dim];
-           ev = ToValidCSymbolString[GetHead[eigenVector]];
-           matrixSymbol = "mass_matrix_" <> ev;
+           particle = ToValidCSymbolString[GetHead[eigenVector]];
+           matrixSymbol = "mass_matrix_" <> particle;
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            body = "const DoubleMatrix " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
@@ -571,8 +574,10 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\nint min_element;\n" <>
-                     "if (throw_on_tachyon && " <> ev <> ".min(min_element) < 0.)\n" <>
-                     IndentText["throw TachyonError(this, \"" <> ev <> "\", min_element);"] <> "\n\n";
+                     "if (" <> ev <> ".min(min_element) < 0.)\n" <>
+                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
+                     "else\n" <>
+                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            (* Set the goldstone boson masses equal to the
@@ -582,16 +587,22 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            trans = Identity, inputParsDecl, expr},
+            inputParsDecl, expr, particle},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           If[IsVector[massESSymbol] || IsScalar[massESSymbol],
-              trans = Sqrt;
-             ];
-           expr = mass[[1]];
-           expr = trans[StripGenerators[expr, {ct1, ct2, ct3, ct4}]];
+           expr = StripGenerators[mass[[1]], {ct1, ct2, ct3, ct4}];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> ev <> " = " <>
                   RValueToCFormString[expr] <> ";\n";
+           If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
+              !IsMassless[massESSymbol],
+              (* check for tachyons *)
+              particle = ToValidCSymbolString[massESSymbol];
+              body = body <> "\n" <> "if (" <> ev <> " < 0.)\n" <>
+                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
+                     "else\n" <>
+                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
+              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+             ];
            body = IndentText[body];
            Return[result <> body <> "}\n\n"];
           ];

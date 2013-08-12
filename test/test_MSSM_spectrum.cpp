@@ -35,8 +35,8 @@ class MSSM_precise_gauge_couplings_low_scale_constraint
 public:
    MSSM_precise_gauge_couplings_low_scale_constraint()
       : MSSM_low_scale_constraint<Two_scale>() {}
-   MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_low_scale_constraint<Two_scale>(inputPars_) {}
+   MSSM_precise_gauge_couplings_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_,oneset_) {}
    virtual ~MSSM_precise_gauge_couplings_low_scale_constraint() {}
 
    virtual void apply();
@@ -278,14 +278,15 @@ public:
       if (!low_constraint)
          low_constraint = new MSSM_low_scale_constraint<Two_scale>();
    }
-   void test(const MSSM_input_parameters& pp) {
+   void test(const MSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints();
       high_constraint->set_input_parameters(pp);
       low_constraint->set_input_parameters(pp);
+      low_constraint->set_sm_parameters(oneset);
       susy_constraint->set_input_parameters(pp);
 
       MSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
-      MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp,
+      MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);
@@ -638,8 +639,8 @@ class MSSM_iterative_low_scale_constraint
 public:
    MSSM_iterative_low_scale_constraint()
       : MSSM_low_scale_constraint<Two_scale>() {}
-   MSSM_iterative_low_scale_constraint(const MSSM_input_parameters& inputPars_)
-      : MSSM_low_scale_constraint<Two_scale>(inputPars_) {}
+   MSSM_iterative_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
+      : MSSM_low_scale_constraint<Two_scale>(inputPars_,oneset_) {}
    virtual ~MSSM_iterative_low_scale_constraint() {}
 
    virtual void apply();

@@ -16,6 +16,8 @@ softSusyCompatibleRGEs::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 FSModelName;
+FSLesHouchesList;
+FSUnfixedParameters;
 InputParameters;
 DefaultParameterPoint;
 ParametersToSolveTadpoles;
@@ -128,8 +130,11 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`DefaultParameterPoint] =!= List,
               FlexibleSUSY`DefaultParameterPoint = {};
              ];
-           If[Head[FlexibleSUSY`InputParameters] =!= List,
-              FlexibleSUSY`InputParameters = {};
+           If[Head[SARAH`MINPAR] =!= List,
+              SARAH`MINPAR = {};
+             ];
+           If[Head[SARAH`EXTPAR] =!= List,
+              SARAH`EXTPAR = {};
              ];
           ];
 
@@ -447,13 +452,16 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
+WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
             particleLaTeXNames = "",
             particleNames = "", particleEnum = "", particleMultiplicity = "",
-            parameterNames = "", parameterEnum = "", numberOfParameters = 0},
+            parameterNames = "", parameterEnum = "", numberOfParameters = 0,
+            fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
+            writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
+            writeSLHAModelParametersBlocks = ""},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -466,6 +474,11 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
            numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun];
            parameterEnum      = BetaFunction`CreateParameterEnum[betaFun];
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
+           fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
+           fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
+           writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
+           writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
+           writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -475,6 +488,11 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, files_List] :=
                             "@particleLaTeXNames@" -> IndentText[WrapLines[particleLaTeXNames]],
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
+                            "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
+                            "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
+                            "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
+                            "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
+                            "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -633,6 +651,15 @@ LoadModelFile[file_String] :=
              ];
           ];
 
+FindUnfixedParameters[fixed_List] :=
+    Module[{fixedParameters},
+           fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
+                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
+                                            SARAH`strongCoupling, SARAH`UpYukawa, SARAH`DownYukawa,
+                                            SARAH`ElectronYukawa }]]];
+           Complement[allParameters, fixedParameters]
+          ];
+
 Options[MakeFlexibleSUSY] :=
     {
         Eigenstates -> SARAH`EWSB,
@@ -650,7 +677,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
-            diagonalizationPrecision, allParticles, freePhases},
+            diagonalizationPrecision, allParticles, freePhases, fixedParameters},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -687,6 +714,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 SARAH`g1^2 Susyno`LieGroups`g2^2 -> 0 };
              ];
 
+           FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
            (* pick beta functions of supersymmetric parameters *)
@@ -740,6 +768,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
+           FlexibleSUSY`FSLesHouchesList = SA`LHList /. susyBreakingParameterReplacementRules;
+
+           (* search for unfixed parameters *)
+           fixedParameters = Join[ParametersToSolveTadpoles,
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
+                                 ] /. susyBreakingParameterReplacementRules;
+           FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[fixedParameters];
+           If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
+              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True,
+              Print["Warning: the following parameters are not fixed by any constraint:"];
+              Print["  ", FlexibleSUSY`FSUnfixedParameters];
+             ];
 
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
@@ -817,7 +859,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
+                               MINPAR, EXTPAR,
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.cpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]}}

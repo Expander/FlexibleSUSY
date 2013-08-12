@@ -47,6 +47,7 @@ namespace flexiblesusy {
    : Constraint<Two_scale>()
    , model(0)
    , inputPars()
+   , oneset()
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
@@ -58,10 +59,11 @@ namespace flexiblesusy {
    scale = initial_scale_guess;
 }
 
-@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(0)
    , inputPars(inputPars_)
+   , oneset(oneset_)
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
@@ -121,10 +123,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::set_input_parameters(const @Mo
    inputPars = inputPars_;
 }
 
+void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)
+{
+   oneset = oneset_;
+}
+
 void @ModelName@_low_scale_constraint<Two_scale>::reset()
 {
    scale = initial_scale_guess;
    model = NULL;
+   oneset = QedQcd();
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
@@ -140,6 +148,11 @@ void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
+   assert(oneset.displayMu() == get_scale() && "Error: low-energy data"
+          " set is not defined at the same scale as the low-energy"
+          " constraint.  You need to run the low-energy data set to this"
+          " scale!");
+
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double MZ2 = Sqr(MZ);
@@ -162,8 +175,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
    const double sinThetaW_drbar = Sqrt(sinThetaW2_drbar);
    const double cosThetaW_drbar = Sqrt(1.0 - sinThetaW2_drbar);
 
-   const double alpha_em = Sqr(SM(e) ) / (4. * Pi);
-   const double alpha_s  = Sqr(SM(g3)) / (4. * Pi);
+   const double alpha_em = oneset.displayAlpha(ALPHA);
+   const double alpha_s  = oneset.displayAlpha(ALPHAS);
 
    const double delta_alpha_em = calculate_delta_alpha_em(alpha_em);
    const double delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
@@ -198,15 +211,15 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplin
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
       electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = Electroweak_constants::MUP;
-   topDRbar(1,1)      = Electroweak_constants::MCHARM;
-   topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar_1loop(Electroweak_constants::PMTOP, 3);
-   bottomDRbar(0,0)   = Electroweak_constants::MDOWN;
-   bottomDRbar(1,1)   = Electroweak_constants::MSTRANGE;
-   bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
-   electronDRbar(0,0) = Electroweak_constants::MELECTRON;
-   electronDRbar(1,1) = Electroweak_constants::MMUON;
-   electronDRbar(2,2) = model->calculate_M@Electron@_DRbar_1loop(Electroweak_constants::MTAU, 3);
+   topDRbar(0,0)      = oneset.displayMass(mUp);
+   topDRbar(1,1)      = oneset.displayMass(mCharm);
+   topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar_1loop(oneset.displayPoleMt(), 3);
+   bottomDRbar(0,0)   = oneset.displayMass(mDown);
+   bottomDRbar(1,1)   = oneset.displayMass(mStrange);
+   bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar_1loop(oneset.displayMass(mBottom), 3);
+   electronDRbar(0,0) = oneset.displayMass(mElectron);
+   electronDRbar(1,1) = oneset.displayMass(mMuon);
+   electronDRbar(2,2) = model->calculate_M@Electron@_DRbar_1loop(oneset.displayMass(mTau), 3);
 
 @setDRbarYukawaCouplings@
 }

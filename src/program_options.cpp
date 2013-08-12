@@ -16,8 +16,28 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "error.hpp"
+#include "program_options.hpp"
+
+#include <cassert>
 
 namespace flexiblesusy {
 
+Program_options::Program_options()
+   : values() // initializes all values to zero
+{
+   values[precision] = 1.0e-4;
 }
+
+double Program_options::get(Options o) const
+{
+   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
+   return values[o];
+}
+
+void Program_options::set(Options o, double value)
+{
+   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
+   values[o] = value;
+}
+
+} // namespace flexiblesusy

@@ -1,9 +1,24 @@
 
 FSModelName = "@CLASSNAME@";
 
-InputParameters = { m0, m12, TanBeta, Azero, LambdaInput,
-                    ALambdaInput, vSInput, Qq, Ql, QHd, QHu, Qd, Qu,
-                    Qe, Qs };
+MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {5, Azero}
+         };
+
+EXTPAR = { {61, LambdaInput},
+           {63, ALambdaInput},
+           {65, vSInput},
+           {200, Qq},
+           {201, Ql},
+           {202, QHd},
+           {203, QHu},
+           {204, Qd},
+           {205, Qu},
+           {206, Qe},
+           {207, Qs}
+         };
 
 DefaultParameterPoint = {
     {m0, 500},

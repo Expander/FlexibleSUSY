@@ -5,8 +5,10 @@ TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_minimizer.cpp \
+		$(DIR)/test_problems.cpp \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_root_finder.cpp \
+		$(DIR)/test_sminput.cpp \
 		$(DIR)/test_wrappers.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
@@ -124,6 +126,9 @@ $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
 
 $(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
+
+$(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)

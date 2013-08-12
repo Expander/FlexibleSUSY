@@ -4,6 +4,7 @@
 #include "two_scale_constraint.hpp"
 #include "two_scale_convergence_tester.hpp"
 #include "linalg.h"
+#include "error.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_solver
@@ -143,7 +144,7 @@ BOOST_AUTO_TEST_CASE( test_unchanged_parameters )
    solver.add_model(&model);
    solver.set_convergence_tester(&ccc);
 
-   BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
+   BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
    BOOST_CHECK_EQUAL(model.get_parameters(), parameters);
    BOOST_CHECK_EQUAL(solver.get_model(), &model);
 }
@@ -171,7 +172,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
    solver.add_model(&model2);
    solver.set_convergence_tester(&ccc);
 
-   BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
+   BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
 
    // the high scale parameters should be the same as the low scale
    // parameters
@@ -212,7 +213,7 @@ BOOST_AUTO_TEST_CASE( test_count_method_calls )
       } else {
          // expect NoConvergenceError because the accuracy_goal_reached()
          // function of the convergence tester returns always false
-         BOOST_CHECK_THROW(solver.solve(), RGFlow<Two_scale>::NoConvergenceError);
+         BOOST_CHECK_THROW(solver.solve(), NoConvergenceError);
       }
 
       // check that all iterations were done

@@ -35,9 +35,10 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 {
    MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
+   QedQcd oneset;
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -72,15 +73,15 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
    MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
+   QedQcd oneset;
    setup_MSSM(m, s, input);
+   s.setData(oneset);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
-   const double e = Electroweak_constants::e;
-   const double g3 = Electroweak_constants::g3;
-   const double alpha_em = Sqr(e) / (4. * PI);
-   const double alpha_s = Sqr(g3) / (4. * PI);
+   const double alpha_em = oneset.displayAlpha(ALPHA);
+   const double alpha_s  = oneset.displayAlpha(ALPHAS);
    const double scale = m.get_scale();
 
    const double delta_alpha_em_fs = constraint.calculate_delta_alpha_em(alpha_em);
@@ -96,10 +97,14 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    MSSM_input_parameters input;
+   QedQcd oneset;
+   oneset.setPoleMt(175.);       // non-default
+   oneset.setMass(mBottom, 4.3); // non-default
    MSSM<Two_scale> m; MssmSoftsusy s;
+   s.setData(oneset);
    setup_MSSM(m, s, input);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input);
+   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
    const double TanBeta = input.TanBeta;
@@ -114,9 +119,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    const double ss_MZ = Sqrt(Sqr(MZ) + pizzt);
    const double ss_new_vev = s.getVev();
 
-   const double fs_mt = m.calculate_MFu_DRbar_1loop(Electroweak_constants::PMTOP, 3);
-   const double fs_mb = m.calculate_MFd_DRbar_1loop(Electroweak_constants::MBOTTOM, 3);
-   const double fs_me = m.calculate_MFe_DRbar_1loop(Electroweak_constants::MTAU, 3);
+   const double fs_mt = m.calculate_MFu_DRbar_1loop(oneset.displayPoleMt(), 3);
+   const double fs_mb = m.calculate_MFd_DRbar_1loop(oneset.displayMass(mBottom), 3);
+   const double fs_me = m.calculate_MFe_DRbar_1loop(oneset.displayMass(mTau), 3);
    const double fs_MZ = m.calculate_MVZ_DRbar_1loop(Electroweak_constants::MZ);
    const double fs_old_vd = m.get_vd();
    const double fs_old_vu = m.get_vu();

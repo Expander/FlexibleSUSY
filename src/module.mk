@@ -3,6 +3,7 @@ MODNAME      := libflexisusy
 
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
+		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
 		$(DIR)/error.cpp \
@@ -10,8 +11,10 @@ LIBFLEXI_SRC := \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/numerics.cpp \
+		$(DIR)/program_options.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
+		$(DIR)/slha_io.cpp \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/wrappers.cpp

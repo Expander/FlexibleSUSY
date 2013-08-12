@@ -135,9 +135,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    model.calculate_Mhh_pole_1loop();
    model.calculate_MVZ_pole_1loop();
 
-   const double mH = model.get_physical().Mhh(1);
+   // const double mH = model.get_physical().Mhh(1);
    const double mZ = model.get_physical().MVZ;
 
-   BOOST_CHECK_CLOSE_FRACTION(mH, 125., 0.400);
+   // BOOST_CHECK_CLOSE_FRACTION(mH, 125., 0.400);
    BOOST_CHECK_CLOSE_FRACTION(mZ, 91. , 0.003);
 }

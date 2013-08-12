@@ -6,6 +6,7 @@ LIB@CLASSNAME@_SRC :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp \
@@ -135,6 +136,12 @@ $(DIR)/@CLASSNAME@_lattice_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_sus
 	true
 
 $(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_info.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	true
+
+$(DIR)/@CLASSNAME@_info.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	true
 
 $(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp

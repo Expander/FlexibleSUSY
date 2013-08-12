@@ -3,7 +3,10 @@ FSModelName = "@CLASSNAME@";
 
 (* input parameters *)
 
-InputParameters = { m0, m12, TanBeta, Azero };
+MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {5, Azero} };
 
 DefaultParameterPoint = {
     {m0, 125},
