@@ -81,7 +81,7 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
    }
 }
 
-void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixXd& matrix)
+void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixXd& matrix) const
 {
    if (data.find(block_name) == data.cend())
       return;
@@ -106,7 +106,7 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixXd& matrix)
    }
 }
 
-double SLHA_io::read_entry(const std::string& block_name, int key)
+double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    const SLHAea::Coll::const_iterator block = data.find(block_name);
 

@@ -78,8 +78,8 @@ public:
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
    void read_block(const std::string&, Tuple_processor) const;
-   void read_block(const std::string&, Eigen::MatrixXd&);
-   double read_entry(const std::string&, int);
+   void read_block(const std::string&, Eigen::MatrixXd&) const;
+   double read_entry(const std::string&, int) const;
    void read_modsel();
 
    // writing functions
