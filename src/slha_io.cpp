@@ -84,14 +84,19 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    const SLHAea::Coll::const_iterator block = data.find(block_name);
 
-   if (block == data.cend())
+   if (block == data.cend()) {
+      WARNING("block " << block_name << " not found");
       return 0.;
+   }
 
    const SLHAea::Block::key_type keys(1, std::to_string(key));
    const SLHAea::Block::const_iterator line = block->find(keys);
 
-   if (line == block->end() || !line->is_data_line() || line->size() < 2)
+   if (line == block->end() || !line->is_data_line() || line->size() < 2) {
+      WARNING("no valid entry for key " << key << " in block "
+              << block_name << " found");
       return 0.;
+   }
 
    return SLHAea::to<double>(line->at(1));
 }

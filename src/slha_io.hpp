@@ -105,8 +105,10 @@ private:
 template <class Derived>
 void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (data.find(block_name) == data.cend())
+   if (data.find(block_name) == data.cend()) {
+      WARNING("block " << block_name << " not found");
       return;
+   }
 
    const int cols = matrix.cols(), rows = matrix.rows();
 
