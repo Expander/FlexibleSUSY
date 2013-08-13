@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "slha_io.hpp"
-#include "logger.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
 #include "linalg.h"
@@ -77,31 +76,6 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
          processor(key, value);
       } else {
          WARNING(block_name << " entry has less than 2 columns");
-      }
-   }
-}
-
-void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixXd& matrix) const
-{
-   if (data.find(block_name) == data.cend())
-      return;
-
-   const int cols = matrix.cols(), rows = matrix.rows();
-
-   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
-        end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line())
-         continue;
-
-      if (line->size() >= 3) {
-         const int i = SLHAea::to<int>((*line)[0]) - 1;
-         const int k = SLHAea::to<int>((*line)[1]) - 1;
-         if (0 <= i && i < rows && 0 <= k && k < cols) {
-            const double value = SLHAea::to<double>((*line)[2]);
-            matrix(i,k) = value;
-         }
-      } else {
-         WARNING(block_name << " entry has less than 3 columns");
       }
    }
 }

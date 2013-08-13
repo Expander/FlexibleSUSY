@@ -53,3 +53,29 @@ BOOST_AUTO_TEST_CASE( test_read_block )
    BOOST_CHECK_EQUAL(matrix(1,0), 3.0);
    BOOST_CHECK_EQUAL(matrix(1,1), 4.0);
 }
+
+BOOST_AUTO_TEST_CASE( test_read_block_dense )
+{
+   SLHAea::Coll coll;
+   SLHAea::Block block;
+
+   const std::string str = "Block Matrix\n"
+      "   1  1  1.0      # element 1,1\n"
+      "   1  2  2.0      # element 1,2\n"
+      "   2  1  3.0      # element 2,1\n"
+      "   2  2  4.0      # element 2,2\n";
+
+   block.str(str);
+   coll.push_back(block);
+
+   SLHA_io reader;
+   reader.set_data(coll);
+
+   Eigen::Matrix<double,2,2> matrix(Eigen::Matrix<double,2,2>::Zero());
+   reader.read_block("Matrix", matrix);
+
+   BOOST_CHECK_EQUAL(matrix(0,0), 1.0);
+   BOOST_CHECK_EQUAL(matrix(0,1), 2.0);
+   BOOST_CHECK_EQUAL(matrix(1,0), 3.0);
+   BOOST_CHECK_EQUAL(matrix(1,1), 4.0);
+}

@@ -25,6 +25,7 @@
 #include <Eigen/Core>
 #include <boost/format.hpp>
 #include "slhaea.h"
+#include "logger.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -78,7 +79,8 @@ public:
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
    void read_block(const std::string&, Tuple_processor) const;
-   void read_block(const std::string&, Eigen::MatrixXd&) const;
+   template <class Derived>
+   void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;
    void read_modsel();
 
@@ -98,6 +100,32 @@ private:
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
 };
+
+template <class Derived>
+void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+{
+   if (data.find(block_name) == data.cend())
+      return;
+
+   const int cols = matrix.cols(), rows = matrix.rows();
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line())
+         continue;
+
+      if (line->size() >= 3) {
+         const int i = SLHAea::to<int>((*line)[0]) - 1;
+         const int k = SLHAea::to<int>((*line)[1]) - 1;
+         if (0 <= i && i < rows && 0 <= k && k < cols) {
+            const double value = SLHAea::to<double>((*line)[2]);
+            matrix(i,k) = value;
+         }
+      } else {
+         WARNING(block_name << " entry has less than 3 columns");
+      }
+   }
+}
 
 } // namespace flexiblesusy
 
