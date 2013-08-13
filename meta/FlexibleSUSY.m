@@ -875,7 +875,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR, {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters,
+                               MINPAR, EXTPAR, FlexibleSUSY`FSUnfixedParameters,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],

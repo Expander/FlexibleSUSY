@@ -186,8 +186,12 @@ ReadSLHABlock[{parameter_, blockName_Symbol}] :=
           ];
 
 ReadUnfixedParameters[unfixedParameters_List] :=
-    Module[{result = "", modelParameters},
-           modelParameters = GetSLHAModelParameters[];
+    Module[{result = "", modelParameters, unfixedNames, rules},
+           unfixedNames = (#[[1]])& /@ unfixedParameters;
+           rules = Rule[#[[1]], #[[2]]]& /@ unfixedParameters;
+           (* get block names of all unfixed parameters (unfixedNames) *)
+           modelParameters = Select[GetSLHAModelParameters[], MemberQ[unfixedNames,#[[1]]]&];
+           modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
            (result = result <> ReadSLHABlock[#])& /@ modelParameters;
            Return[result];
           ];
