@@ -5,6 +5,7 @@ PrintParameters::usage="Creates parameter printout statements";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
+ReadUnfixedParameters::usage="";
 
 Begin["Private`"];
 
@@ -163,6 +164,31 @@ WriteSLHAModelParametersBlocks[] :=
            modelParameters = GetSLHAModelParameters[];
            blocks = SortBlocks[modelParameters];
            (result = result <> WriteSLHABlock[#])& /@ blocks;
+           Return[result];
+          ];
+
+ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+    Module[{result, blockNameStr, parmStr, pdgStr},
+           blockNameStr = ToString[blockName];
+           parmStr = CConversion`ToValidCSymbolString[parameter];
+           pdgStr = ToString[pdg];
+           result = "input." <> parmStr <>
+                    " = slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
+                    pdgStr <> ");\n";
+           Return[result];
+          ];
+
+ReadSLHABlock[{parameter_, blockName_Symbol}] :=
+    Module[{str, lhs},
+           str = CConversion`ToValidCSymbolString[parameter];
+           lhs = ToString[blockName];
+           "slha_io.read_block(\"" <> lhs <> "\", input." <> str <> ");\n"
+          ];
+
+ReadUnfixedParameters[unfixedParameters_List] :=
+    Module[{result = "", modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           (result = result <> ReadSLHABlock[#])& /@ modelParameters;
            Return[result];
           ];
 

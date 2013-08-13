@@ -463,7 +463,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
-            writeSLHAModelParametersBlocks = "", fillUnfixedParameters},
+            writeSLHAModelParametersBlocks = "", readUnfixedParameters},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -478,7 +478,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
-           fillUnfixedParameters         = Parameters`FillUnfixedParameters[unfixedParameters];
+           readUnfixedParameters         = WriteOut`ReadUnfixedParameters[unfixedParameters];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -493,7 +493,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
-                            "@fillUnfixedParameters@"         -> IndentText[fillUnfixedParameters],
+                            "@readUnfixedParameters@"         -> IndentText[readUnfixedParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
