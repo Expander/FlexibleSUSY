@@ -254,8 +254,10 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           ];
 
 WriteInputParameterClass[inputParameters_List, freePhases_List,
+                         unfixedParameters_List,
                          defaultValues_List, files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
+          (* @todo pass unfixed parameters to DefineInputParameters and InitializeInputParameters *)
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases]];
           defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, freePhases]];
           ReplaceInFiles[files,
@@ -782,6 +784,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Warning: the following parameters are not fixed by any constraint:"];
               Print["  ", FlexibleSUSY`FSUnfixedParameters];
              ];
+           (* adding the types and their input names to the parameters *)
+           FlexibleSUSY`FSUnfixedParameters = Select[Join[{GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
+                                                          {GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a,
+                                                     MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
 
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
@@ -823,6 +829,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
+                                    FlexibleSUSY`FSUnfixedParameters,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
