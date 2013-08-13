@@ -143,26 +143,6 @@ void SLHA_io::set_block(const std::string& name, const DoubleMatrix& matrix,
    set_block(ss);
 }
 
-void SLHA_io::set_block(const std::string& name, const Eigen::MatrixXd& matrix,
-                        const std::string& symbol, double scale)
-{
-   std::ostringstream ss;
-   ss << "Block " << name;
-   if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
-   ss << '\n';
-
-   const int rows = matrix.rows();
-   const int cols = matrix.cols();
-   for (int i = 1; i <= rows; ++i)
-      for (int k = 1; k <= cols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
-            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
-      }
-
-   set_block(ss);
-}
-
 void SLHA_io::set_block(const std::string& name, const ComplexMatrix& matrix,
                         const std::string& symbol, double scale)
 {

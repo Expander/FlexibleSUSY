@@ -88,7 +88,8 @@ public:
    void set_data(const SLHAea::Coll& data_) { data = data_; }
    void set_block(const std::ostringstream&, Position position = back);
    void set_block(const std::string&, double, const std::string&, double scale = 0.);
-   void set_block(const std::string&, const Eigen::MatrixXd&, const std::string&, double scale = 0.);
+   template <class Derived>
+   void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const ComplexMatrix&, const std::string&, double scale = 0.);
    void write_to_file(const std::string&);
@@ -125,6 +126,28 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
          WARNING(block_name << " entry has less than 3 columns");
       }
    }
+}
+
+template <class Derived>
+void SLHA_io::set_block(const std::string& name,
+                        const Eigen::MatrixBase<Derived>& matrix,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n';
+
+   const int rows = matrix.rows();
+   const int cols = matrix.cols();
+   for (int i = 1; i <= rows; ++i)
+      for (int k = 1; k <= cols; ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
+            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+      }
+
+   set_block(ss);
 }
 
 } // namespace flexiblesusy
