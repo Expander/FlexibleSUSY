@@ -244,6 +244,9 @@ DefineParameter[FlexibleSUSY`Phase[phase_]] :=
 DefineParameter[FlexibleSUSY`Sign[phase_]] :=
     "int " <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> ";\n";
 
+DefineParameter[{parameter_Symbol, type_}] :=
+    CConversion`GetCParameterType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
+
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
            (result = result <> DefineParameter[#])& /@ inputParameters;
@@ -258,6 +261,9 @@ InitializeInputParameter[FlexibleSUSY`Phase[phase_]] :=
 
 InitializeInputParameter[FlexibleSUSY`Sign[phase_]] :=
     ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "(1)";
+
+InitializeInputParameter[{parameter_Symbol, type_}] :=
+    CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[parameter],type];
 
 InitializeInputParameter[pars__] :=
     Module[{},

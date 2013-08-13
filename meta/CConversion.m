@@ -102,7 +102,10 @@ CreateGetterPrototype[parameter_, type_] :=
 
 (* create default constructor initialization list *)
 CreateDefaultConstructor[parameter_, type_] :=
-    Print["Error: unknown parameter type: " <> ToString[type]];
+    Block[{},
+          Print["Error: unknown parameter type: " <> ToString[type]];
+          Return[""];
+         ];
 
 CreateDefaultConstructor[parameter_String, CConversion`ScalarType[type_]] :=
     parameter <> "(0)";

@@ -257,9 +257,8 @@ WriteInputParameterClass[inputParameters_List, freePhases_List,
                          unfixedParameters_List,
                          defaultValues_List, files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
-          (* @todo pass unfixed parameters to DefineInputParameters and InitializeInputParameters *)
-          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases]];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues, freePhases]];
+          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,unfixedParameters]];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,unfixedParameters]];
           ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -829,7 +828,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
-                                    FlexibleSUSY`FSUnfixedParameters,
+                                    {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
