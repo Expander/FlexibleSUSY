@@ -48,6 +48,7 @@ references for all physical output parameters in the given
 expression.";
 
 FillInputParametersFromTuples::usage="";
+FillUnfixedParameters::usage="";
 
 Begin["Private`"];
 
@@ -449,6 +450,11 @@ FillInputParametersFromTuples[minpar_List] :=
            (result = result <> CreateCaseFromTuple[#])& /@ minpar;
            result = "switch (key) {\n" <> result <>
                     "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
+           Return[result];
+          ];
+
+FillUnfixedParameters[unfixedParameters_List] :=
+    Module[{result = ""},
            Return[result];
           ];
 

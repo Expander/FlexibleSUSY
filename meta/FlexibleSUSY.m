@@ -453,7 +453,8 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
-WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, files_List] :=
+WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
+                    unfixedParameters_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
@@ -462,7 +463,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
-            writeSLHAModelParametersBlocks = ""},
+            writeSLHAModelParametersBlocks = "", fillUnfixedParameters},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -477,6 +478,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
+           fillUnfixedParameters         = Parameters`FillUnfixedParameters[unfixedParameters];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -491,6 +493,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List, f
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
+                            "@fillUnfixedParameters@"         -> IndentText[fillUnfixedParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
@@ -872,7 +875,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR,
+                               MINPAR, EXTPAR, {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
