@@ -9,6 +9,7 @@ TEST_SRC := \
 		$(DIR)/test_rk.cpp \
 		$(DIR)/test_root_finder.cpp \
 		$(DIR)/test_sminput.cpp \
+		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_wrappers.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
@@ -129,6 +130,9 @@ $(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)

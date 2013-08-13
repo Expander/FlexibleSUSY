@@ -76,9 +76,50 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
          const double value = SLHAea::to<double>((*line)[1]);
          processor(key, value);
       } else {
-         WARNING(block_name << " entry has not enough columns");
+         WARNING(block_name << " entry has less than 2 columns");
       }
    }
+}
+
+void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixXd& matrix)
+{
+   if (data.find(block_name) == data.cend())
+      return;
+
+   const int cols = matrix.cols(), rows = matrix.rows();
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line())
+         continue;
+
+      if (line->size() >= 3) {
+         const int i = SLHAea::to<int>((*line)[0]) - 1;
+         const int k = SLHAea::to<int>((*line)[1]) - 1;
+         if (0 <= i && i < rows && 0 <= k && k < cols) {
+            const double value = SLHAea::to<double>((*line)[2]);
+            matrix(i,k) = value;
+         }
+      } else {
+         WARNING(block_name << " entry has less than 3 columns");
+      }
+   }
+}
+
+double SLHA_io::read_entry(const std::string& block_name, int key)
+{
+   const SLHAea::Coll::const_iterator block = data.find(block_name);
+
+   if (block == data.cend())
+      return 0.;
+
+   const SLHAea::Block::key_type keys(1, std::to_string(key));
+   const SLHAea::Block::const_iterator line = block->find(keys);
+
+   if (line == block->end() || !line->is_data_line() || line->size() < 2)
+      return 0.;
+
+   return SLHAea::to<double>(line->at(1));
 }
 
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)

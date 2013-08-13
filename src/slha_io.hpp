@@ -78,9 +78,12 @@ public:
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
    void read_block(const std::string&, Tuple_processor) const;
+   void read_block(const std::string&, Eigen::MatrixXd&);
+   double read_entry(const std::string&, int);
    void read_modsel();
 
    // writing functions
+   void set_data(const SLHAea::Coll& data_) { data = data_; }
    void set_block(const std::ostringstream&, Position position = back);
    void set_block(const std::string&, double, const std::string&, double scale = 0.);
    void set_block(const std::string&, const Eigen::MatrixXd&, const std::string&, double scale = 0.);
