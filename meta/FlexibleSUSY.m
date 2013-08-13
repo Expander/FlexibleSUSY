@@ -787,6 +787,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSUnfixedParameters = Select[Join[{GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                           {GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a,
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
+           (* add the unfixed parameters to the susy scale constraint *)
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
+              FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
+                                                 {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+              Parameters`SetInputParameters[Join[FlexibleSUSY`InputParameters,
+                                                 (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
+             ];
 
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
