@@ -8,6 +8,7 @@
 #include "smcw_two_scale_convergence_tester.hpp"
 #include "linalg.h"
 #include "coupling_monitor.hpp"
+#include "error.hpp"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_two_scale_sm_smcw_integration
