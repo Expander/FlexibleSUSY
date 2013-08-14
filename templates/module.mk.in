@@ -64,7 +64,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp: $(DIR)/start.m $(META_SRC) $(TEMPLATES)
+$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp: $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES)
 	$(MATH) -run "Get[\"$<\"]; Quit[]"
 
 $(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
