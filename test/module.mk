@@ -47,6 +47,13 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_NMSSM_linking.cpp
 endif
 
+TEST_SH :=
+
+ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
+TEST_SH += \
+		test/test_lowMSSM.sh
+endif
+
 TEST_META := \
 		test/test_CConversion.m \
 		test/test_Constraint.m \
@@ -66,9 +73,11 @@ TEST_EXE := \
 
 TEST_EXE_LOG  := $(TEST_EXE:.x=.x.log)
 
+TEST_SH_LOG   := $(TEST_SH:.sh=.sh.log)
+
 TEST_META_LOG := $(TEST_META:.m=.m.log)
 
-TEST_LOG      := $(TEST_EXE_LOG) $(TEST_META_LOG)
+TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		clean-$(MODNAME)-log \
@@ -104,6 +113,14 @@ $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
+$(DIR)/%.sh.log: $(DIR)/%.sh
+		@rm -f $@
+		@echo "**************************************************" >> $@;
+		@echo "* executing test: $< " >> $@;
+		@echo "**************************************************" >> $@;
+		@$< >> $@ 2>&1; \
+		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
+
 execute-tests:  $(TEST_LOG)
 
 execute-meta-tests: $(TEST_META_LOG)
@@ -113,6 +130,8 @@ execute-compiled-tests: $(TEST_EXE_LOG)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+$(DIR)/test_lowMSSM.sh.log: $(RUN_MSSM_EXE) $(RUN_lowMSSM_EXE)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
