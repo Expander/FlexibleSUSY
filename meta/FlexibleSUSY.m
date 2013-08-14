@@ -838,7 +838,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
-                                    {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters,
+                                    If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
+                                       {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters],
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
@@ -875,7 +876,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
-                               MINPAR, EXTPAR, FlexibleSUSY`FSUnfixedParameters,
+                               MINPAR, EXTPAR,
+                               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
+                                  FlexibleSUSY`FSUnfixedParameters],
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
