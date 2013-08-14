@@ -134,7 +134,7 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
     Adapter db;
 
     int err = integrateOdes(*a.v, from, to, tol, guess, hmin,
-	    [=,&ddx,&b,&db](Real t, const ArrayXd& xD) {
+	    [=,&ddx,&b,&db](Real, const ArrayXd& xD) -> ArrayXd {
 		b.set(xD, a.n);
 
 		ArrayXd dxD(xD.size());
