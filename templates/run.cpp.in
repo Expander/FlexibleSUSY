@@ -66,6 +66,7 @@ public:
    }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
+   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
@@ -244,6 +245,8 @@ int main(int argc, const char* argv[])
    runner.set_calculate_sm_masses(
       program_options.get(Program_options::calculate_sm_masses) >= 1.0);
    runner.set_parameter_output_scale(slha_io.get_parameter_output_scale());
+   runner.set_pole_mass_loop_order(
+      program_options.get(Program_options::pole_mass_loop_order));
 
    runner.run(oneset, input);
 
