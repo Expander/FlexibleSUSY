@@ -104,12 +104,12 @@ void RGFlow<Lattice>::add_model
 	    combined.push_back(*pu);
 	    pu++; pr++;
 	}
-	else if (pr  == rs.cend() && pu  != us.cend() ||
-		 prn == rs.cend() && pun != us.cend())
+	else if ((pr  == rs.cend() && pu  != us.cend()) ||
+		 (prn == rs.cend() && pun != us.cend()))
 	    while (pu != pun)
 		combined.push_back(*pu++);
-	else if (pu  == us.cend() && pr  != rs.cend() ||
-		 pun == us.cend() && prn != rs.cend())
+	else if ((pu  == us.cend() && pr  != rs.cend()) ||
+		 (pun == us.cend() && prn != rs.cend()))
 	    while (pr != prn)
 		combined.push_back(*pr++);
 	else {
@@ -596,7 +596,7 @@ RGFlow<Lattice>::EqRow *RGFlow<Lattice>::ralloc
     assert(r != nullptr);
     if (r != nullptr) {
 	free_row_list_head = r->next;
-	r->rowSpec = { T, m, span };
+	r->rowSpec = { T, m, span, 0/* to be determined by sort_rows() */ };
     }
     return r;
 }
@@ -615,7 +615,7 @@ void RGFlow<Lattice>::sort_rows()
     for (size_t r = 0; r < layout.size(); r++)
 	layout[r] = &row_pool[r];
     sort(layout.begin(), layout.end(),
-	 [](EqRow *a, EqRow *b) {
+	 [](EqRow *a, EqRow *b) -> bool {
 	     if (a->rowSpec.T < b->rowSpec.T) return true;
 	     if (a->rowSpec.T > b->rowSpec.T) return false;
 	     if (a->rowSpec.m < b->rowSpec.m) return true;
