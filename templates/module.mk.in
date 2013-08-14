@@ -7,6 +7,7 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
+		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp \
@@ -23,6 +24,7 @@ ifneq ($(findstring lattice,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
+		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
 		$(DIR)/@CLASSNAME@_lattice_convergence_tester.cpp \
@@ -74,6 +76,12 @@ $(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp: $(DIR)/@CLASSNAME@_two_scale_s
 	@true
 
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	@true
+
+$(DIR)/@CLASSNAME@_slha_io.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	@true
+
+$(DIR)/@CLASSNAME@_slha_io.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	@true
 
 $(DIR)/@CLASSNAME@_physical.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp

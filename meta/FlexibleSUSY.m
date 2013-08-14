@@ -886,7 +886,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "utilities.cpp.in"}],
-                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]}}
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_utilities.cpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "slha_io.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "slha_io.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_slha_io.cpp"}]}
+               }
                               ];
 
            Print["Creating plot scripts ..."];

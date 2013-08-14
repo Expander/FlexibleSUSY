@@ -49,8 +49,6 @@ namespace flexiblesusy {
       const boost::format spinfo_formatter(" %5d   %s\n");
    }
 
-#define PHYSICAL(p) model.get_physical().p
-#define MODELPARAMETER(p) model.get_##p()
 #define FORMAT_MASS(pdg,mass,name)                                      \
    boost::format(mass_formatter) % pdg % mass % name
 #define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \

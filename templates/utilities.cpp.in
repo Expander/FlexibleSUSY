@@ -22,9 +22,6 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
-#include "program_options.hpp"
-#include "lowe.h"
-#include "config.h"
 
 #include <fstream>
 #include <sstream>
@@ -95,90 +92,6 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
                  << std::left << std::setw(2*width) << lname_with_index.str()
                  << '\n';
       }
-   }
-}
-
-@ModelName@_slha_io::@ModelName@_slha_io()
-   : slha_io()
-{
-}
-
-void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
-{
-   std::ostringstream serious_problems;
-   problems.print(serious_problems);
-
-   std::ostringstream spinfo;
-   spinfo << "# FlexibleSUSY " VERSION " SLHA compliant output\n"
-             "# P. Athron, J. Park, D. Stöckinger, A. Voigt\n"
-             "Block SPINFO\n"
-          << FORMAT_SPINFO(1, PKGNAME)
-          << FORMAT_SPINFO(2, VERSION);
-
-   if (!serious_problems.str().empty())
-      spinfo << FORMAT_SPINFO(4, serious_problems.str());
-
-   slha_io.set_block(spinfo, SLHA_io::front);
-}
-
-void @ModelName@_slha_io::write_to_file(const std::string& file_name)
-{
-   slha_io.write_to_file(file_name);
-}
-
-double @ModelName@_slha_io::get_parameter_output_scale() const
-{
-   return slha_io.get_modsel().parameter_output_scale;
-}
-
-void @ModelName@_slha_io::read_from_file(const std::string& file_name)
-{
-   slha_io.read_from_file(file_name);
-   slha_io.read_modsel();
-}
-
-void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
-{
-   using namespace std::placeholders;
-   SLHA_io::Tuple_processor minpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_minpar_tuple, std::ref(input), _1, _2);
-   SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_extpar_tuple, std::ref(input), _1, _2);
-
-   slha_io.read_block("MINPAR", minpar_processor);
-   slha_io.read_block("EXTPAR", extpar_processor);
-
-@readUnfixedParameters@
-}
-
-void @ModelName@_slha_io::fill(Program_options& options) const
-{
-   using namespace std::placeholders;
-   SLHA_io::Tuple_processor flexiblesusy_processor
-      = std::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, std::ref(options), _1, _2);
-
-   slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
-}
-
-void @ModelName@_slha_io::fill_minpar_tuple(@ModelName@_input_parameters& input,
-                                                int key, double value)
-{
-@fillInputParametersFromMINPAR@
-}
-
-void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
-                                                int key, double value)
-{
-@fillInputParametersFromEXTPAR@
-}
-
-void @ModelName@_slha_io::fill_flexiblesusy_tuple(Program_options& options,
-                                                  int key, double value)
-{
-   if (0 <= key && key < static_cast<int>(Program_options::NUMBER_OF_OPTIONS)) {
-      options.set((Program_options::Options)key, value);
-   } else {
-      WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }
 }
 

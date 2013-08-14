@@ -23,13 +23,15 @@
 
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
-#include "slha_io.hpp"
 
 #include <Eigen/Core>
 #include <string>
 #include <vector>
 #include <valarray>
 #include <utility>
+
+#define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
 
 namespace flexiblesusy {
 
@@ -85,62 +87,6 @@ void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<T>& model)
    if (model.do_calculate_sm_pole_masses()) {
 @fillSpectrumVectorWithSMParticles@
    }
-}
-
-struct @ModelName@_input_parameters;
-class Program_options;
-
-class @ModelName@_slha_io {
-public:
-   @ModelName@_slha_io();
-   ~@ModelName@_slha_io() {}
-
-   void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
-   void fill(@ModelName@_input_parameters&) const;
-   void fill(Program_options&) const;
-   double get_parameter_output_scale() const;
-   void read_from_file(const std::string&);
-   template <class T> void set_spectrum(const @ModelName@<T>&);
-   void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
-   void write_to_file(const std::string&);
-   void write_to_stream(std::ostream& ostr = std::cout) { slha_io.write_to_stream(ostr); }
-
-   static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
-   static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
-   static void fill_flexiblesusy_tuple(Program_options&, int, double);
-
-private:
-   SLHA_io slha_io; ///< SLHA io class
-
-   template <class T> void set_mass(const @ModelName@<T>&);
-   template <class T> void set_mixing_matrices(const @ModelName@<T>&);
-   template <class T> void set_model_parameters(const @ModelName@<T>&);
-};
-
-template <class T>
-void @ModelName@_slha_io::set_mass(const @ModelName@<T>& model)
-{
-@writeSLHAMassBlock@
-}
-
-template <class T>
-void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<T>& model)
-{
-@writeSLHAMixingMatricesBlocks@
-}
-
-template <class T>
-void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
-{
-@writeSLHAModelParametersBlocks@
-}
-
-template <class T>
-void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
-{
-   set_model_parameters(model);
-   set_mass(model);
-   set_mixing_matrices(model);
 }
 
 } // namespace flexiblesusy
