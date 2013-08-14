@@ -338,7 +338,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
             softScalarMasses, softHiggsMasses,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
-            solveTreeLevelEWSBviaSoftHiggsMasses
+            solveTreeLevelEWSBviaSoftHiggsMasses,
+            copyDRbarMassesToPoleMasses = ""
            },
            vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
            For[k = 1, k <= Length[massMatrices], k++,
@@ -350,6 +351,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                physicalMassesInitNoLeadingComma = StringTrim[physicalMassesInit, StartOfString ~~ ","];
                mixingMatricesInit   = mixingMatricesInit <> TreeMasses`CreateMixingMatrixInitialization[massMatrices[[k]]];
                clearOutputParameters = clearOutputParameters <> TreeMasses`ClearOutputParameters[massMatrices[[k]]];
+               copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
@@ -406,6 +408,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
+                            "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],

@@ -47,6 +47,8 @@ initialization of the given mixing matrix";
 
 ClearOutputParameters::usage="clears masses and mixing matrices";
 
+CopyDRBarMassesToPoleMasses::usage="copies DRbar mass to pole mass";
+
 GetParticles::usage="returns list of particles";
 
 GetSusyParticles::usage="returns list of susy particles";
@@ -683,6 +685,31 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
                  ,
                  result = result <> ToValidCSymbolString[mixingMatrixSymbol] <>
                           " = " <> matrixType <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+                ];
+             ];
+           Return[result];
+          ];
+
+CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{result, massESSymbol, mixingMatrixSymbol, matrixType, dim, dimStr,
+            i, massStr, mixStr},
+           massESSymbol = GetMassEigenstate[massMatrix];
+           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
+           dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
+           massStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
+           (* copy mass *)
+           result = "PHYSICAL(" <> massStr <> ") = " <> massStr <> ";\n";
+           If[mixingMatrixSymbol =!= Null,
+              matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
+              If[Head[mixingMatrixSymbol] === List,
+                 For[i = 1, i <= Length[mixingMatrixSymbol], i++,
+                     mixStr = ToValidCSymbolString[mixingMatrixSymbol[[i]]];
+                     result = result <> "PHYSICAL(" <> mixStr <> ") = " <> mixStr <> ";\n";
+                    ];
+                 ,
+                 mixStr = ToValidCSymbolString[mixingMatrixSymbol];
+                 result = result <> "PHYSICAL(" <> mixStr <> ") = " <> mixStr <> ";\n";
                 ];
              ];
            Return[result];

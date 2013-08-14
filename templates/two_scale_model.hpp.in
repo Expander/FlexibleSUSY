@@ -52,6 +52,7 @@ public:
    void set_ewsb_iteration_precision(double);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
+   void set_pole_mass_loop_order(unsigned);
    double get_ewsb_iteration_precision() const;
    const @ModelName@_physical& get_physical() const;
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
@@ -85,6 +86,7 @@ private:
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
+   unsigned pole_mass_loop_order;
    bool calculate_sm_pole_masses;
    double precision;
    double ewsb_iteration_precision;
@@ -98,6 +100,7 @@ private:
    int solve_ewsb_tree_level_via_soft_higgs_masses();
    void ewsb_initial_guess(double[@numberOfEWSBEquations@]);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   void copy_DRbar_masses_to_pole_masses();
 
    double A0(double) const;
    double B0(double, double, double) const;

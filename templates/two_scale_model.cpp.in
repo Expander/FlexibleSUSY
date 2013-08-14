@@ -47,6 +47,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
    , ewsb_loop_order(0)
+   , pole_mass_loop_order(1)
    , calculate_sm_pole_masses(false)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
@@ -86,6 +87,11 @@ void CLASSNAME::set_precision(double precision_)
 {
    precision = precision_;
    ewsb_iteration_precision = precision_;
+}
+
+void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
+{
+   pole_mass_loop_order = loop_order;
 }
 
 void CLASSNAME::set_ewsb_iteration_precision(double precision)
@@ -320,10 +326,18 @@ void CLASSNAME::calculate_1loop_masses()
 @callAllLoopMassFunctions@
 }
 
+void CLASSNAME::copy_DRbar_masses_to_pole_masses()
+{
+@copyDRbarMassesToPoleMasses@
+}
+
 void CLASSNAME::calculate_spectrum()
 {
    calculate_DRbar_parameters();
-   calculate_1loop_masses();
+   if (pole_mass_loop_order > 0)
+      calculate_1loop_masses();
+   else
+      copy_DRbar_masses_to_pole_masses();
 }
 
 void CLASSNAME::clear()
