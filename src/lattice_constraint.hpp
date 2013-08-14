@@ -66,6 +66,7 @@ public:
     (RGFlow<Lattice> *flow, size_t lower_theory)
     { Lattice_constraint::init(flow); TL = lower_theory; }
     virtual void relocate(const std::vector<std::vector<size_t>>&) {}
+    using Lattice_constraint::init;
 protected:
     Real& A(size_t r, size_t To, size_t j)
     { return Lattice_constraint::A(r, TL+To, m(To), j); }
@@ -100,6 +101,7 @@ public:
     virtual void relocate(const std::vector<std::vector<size_t>>& site_maps)
     { relocate(site_maps[T]); }
     size_t mbegin;
+    using Lattice_constraint::init;
 protected:
     Real& A(size_t r, size_t m, size_t j)
     { return Lattice_constraint::A(r, T, m, j); }
@@ -123,6 +125,7 @@ public:
     virtual void init(RGFlow<Lattice> *flow, size_t theory, size_t site)
     { IntraTheoryConstraint::init(flow, theory, site, 1); }
     virtual double get_scale() const { return std::exp(x(0))*f->scl0; }
+    using IntraTheoryConstraint::init;
 protected:
     Real& A(size_t r, size_t j)
     { return IntraTheoryConstraint::A(r, mbegin, j); }
@@ -146,6 +149,7 @@ public:
     void alloc_rows() { ssc->alloc_rows(); }
     void free_rows() { ssc->free_rows(); }
     void operator()() { (*ssc)(); }
+    using InterTheoryConstraint::init;
 private:
     SingleSiteConstraint *ssc;
     size_t To;
@@ -178,7 +182,9 @@ public:
 	    ralloc(f->efts[T].w->width - 1, mbegin + n, 2);
     }
     void operator()();
+    using IntraTheoryConstraint::init;
 
+private:
     RVec x;
     Real dxm0i, dxm1i;
     RVec ddxm0i, ddxm1i;
@@ -213,6 +219,9 @@ public:
 	ralloc(f->efts[T].w->width - 1, mbegin, 2);
     }
     void operator()();
+    using IntraTheoryConstraint::init;
+
+private:
     int evolve_to(Real t_new, Adapter& a, Real eps = -1);
 
     Eigen::ArrayXd xD0, xD1;

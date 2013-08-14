@@ -24,6 +24,7 @@ public:
     }
     void init(RGFlow<Lattice> *flow, size_t theory, size_t site);
     void operator()();
+    using ForeignConstraint::init;
 protected:
     virtual Real c(const Real *x) const = 0;
 private:
@@ -62,6 +63,7 @@ public:
     }
     void init(RGFlow<Lattice> *flow, size_t lower_theory);
     void operator()();
+    using ForeignMatching::init;
 protected:
     virtual Real c(const Real *w, const Real *x) const = 0;
 private:
