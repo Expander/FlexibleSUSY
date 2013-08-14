@@ -63,4 +63,6 @@ if [ -n "$diff_without_comments" ]; then
     echo "Error: difference between $mssm_output and $lowmssm_output larger that $rel_error"
     echo "$diff"
     exit 1
+else
+    echo "$diff"
 fi
