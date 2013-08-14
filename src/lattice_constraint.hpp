@@ -195,14 +195,24 @@ private:
 
 class Lattice_RKRGE : public IntraTheoryConstraint {
 public:
-    struct Adapter {
-	Adapter() : x(nullptr,0), D(nullptr,0,0) {}
-	void set(Eigen::ArrayXd& xD, size_t width);
+    template<class A, class V, class M>
+    struct Adapter_ {
+	Adapter_() : x(nullptr,0), D(nullptr,0,0) {}
+	void set(A& xD, size_t width) {
+	    v = &xD;
+	    n = width;
+	    new (&x) Eigen::Map<V>(v->data()  , n);
+	    new (&D) Eigen::Map<M>(v->data()+n, n, n);
+	}
 	size_t n;
-	Eigen::Map<Eigen::VectorXd> x;
-	Eigen::Map<Eigen::MatrixXd> D;
-	Eigen::ArrayXd *v;
+	Eigen::Map<V> x;
+	Eigen::Map<M> D;
+	A *v;
     };
+
+    typedef Adapter_<Eigen::ArrayXd, Eigen::VectorXd, Eigen::MatrixXd> Adapter;
+    typedef Adapter_<const Eigen::ArrayXd, const Eigen::VectorXd,
+		     const Eigen::MatrixXd> const_Adapter;
 
     // Lattice_RKRGE() {}
     void init(RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span) {

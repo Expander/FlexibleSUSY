@@ -73,15 +73,6 @@ void Lattice_RGE::set_diff(size_t r, size_t m, size_t i)
     z(r) *= (y(m+1,0)-y(m,0))*u(0)/2;
 }
 
-void Lattice_RKRGE::Adapter::set(ArrayXd& xD, size_t width)
-{
-    v = &xD;
-    n = width;
-    // see http://eigen.tuxfamily.org/dox/TutorialMapClass.html
-    new (&x) Map<VectorXd>(v->data()  , n);
-    new (&D) Map<MatrixXd>(v->data()+n, n, n);
-}
-
 void Lattice_RKRGE::operator()()
 {
     size_t m = mbegin;
@@ -139,19 +130,20 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
     Real hmin = (from - to) * tol * 1.0e-5;
 
     RowVectorXd ddx(a.n);
-    Adapter b, db;
+    const_Adapter b;
+    Adapter db;
 
     int err = integrateOdes(*a.v, from, to, tol, guess, hmin,
 	    [=,&ddx,&b,&db](Real t, const ArrayXd& xD) {
-		b.set((ArrayXd&)xD, a.n);
+		b.set(xD, a.n);
 
 		ArrayXd dxD(xD.size());
 		db.set(dxD, b.n);
 
 		for (size_t i = 0; i < db.n; i++) {
-		    db.x(i) = f->efts[T].w->dx(f->a, &b.x(0), i);
+		    db.x(i) = f->efts[T].w->dx(f->a, b.x.data(), i);
 
-		    f->efts[T].w->ddx(f->a, &b.x(0), i, &ddx[0]);
+		    f->efts[T].w->ddx(f->a, b.x.data(), i, &ddx[0]);
 		    db.D.block(i,0,1,db.n) = ddx * b.D;
 		}
 
