@@ -171,6 +171,11 @@ inline double ZeroSqrt(double x)
    return (x > 0.0 ? std::sqrt(x) : 0.0);
 }
 
+inline DoubleVector ZeroSqrt(const DoubleVector& x)
+{
+   return x.apply(ZeroSqrt);
+}
+
 }
 
 #endif
