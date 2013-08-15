@@ -741,7 +741,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                          SARAH`BetaMi   ,
                                          SARAH`BetaDGi  };
 
-           susyBetaFunctions = ConvertSarahRGEs[susyBetaFunctions];
+           susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
            susyParameterReplacementRules = BetaFunction`ConvertParameterNames[susyBetaFunctions];
