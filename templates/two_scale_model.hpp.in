@@ -77,12 +77,12 @@ public:
 @runningDRbarMassesPrototypes@
 @dependenceNumPrototypes@
 
+private:
    struct Ewsb_parameters {
       @ModelName@<Two_scale>* model;
       unsigned ewsb_loop_order;
    };
 
-private:
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
