@@ -46,7 +46,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , @ModelName@_soft_parameters(input_)
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
-   , ewsb_loop_order(0)
+   , ewsb_loop_order(1)
    , pole_mass_loop_order(1)
    , calculate_sm_pole_masses(false)
    , precision(1.0e-3)
@@ -71,6 +71,11 @@ void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 bool CLASSNAME::do_calculate_sm_pole_masses() const
 {
    return calculate_sm_pole_masses;
+}
+
+void CLASSNAME::set_ewsb_loop_order(unsigned loop_order)
+{
+   ewsb_loop_order = loop_order;
 }
 
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
@@ -193,8 +198,13 @@ int CLASSNAME::solve_ewsb_iteratively()
 
 int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
 {
+   // temporarily set `ewsb_loop_order' to `loop_order' and do
+   // iteration
+   const unsigned old_loop_order = ewsb_loop_order;
    ewsb_loop_order = loop_order;
-   return solve_ewsb_iteratively();
+   const int status = solve_ewsb_iteratively();
+   ewsb_loop_order = old_loop_order;
+   return status;
 }
 
 int CLASSNAME::solve_ewsb_tree_level()
@@ -218,6 +228,16 @@ int CLASSNAME::solve_ewsb_tree_level_via_soft_higgs_masses()
 int CLASSNAME::solve_ewsb_one_loop()
 {
    return solve_ewsb_iteratively(1);
+}
+
+int CLASSNAME::solve_ewsb()
+{
+   VERBOSE_MSG("\tSolving EWSB at " << ewsb_loop_order << "-loop order");
+
+   if (ewsb_loop_order == 0)
+      return solve_ewsb_tree_level();
+
+   return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
 void CLASSNAME::ewsb_initial_guess(double x_init[@numberOfEWSBEquations@])

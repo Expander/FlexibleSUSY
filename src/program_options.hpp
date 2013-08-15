@@ -32,7 +32,7 @@ class Program_options {
 public:
    enum Options : unsigned { precision, max_iterations,
          algorithm, calculate_sm_masses, pole_mass_loop_order,
-         NUMBER_OF_OPTIONS };
+         ewsb_loop_order, NUMBER_OF_OPTIONS };
 
    Program_options();
    ~Program_options() {}

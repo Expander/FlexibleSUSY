@@ -50,6 +50,7 @@ public:
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void set_ewsb_iteration_precision(double);
+   void set_ewsb_loop_order(unsigned);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
    void set_pole_mass_loop_order(unsigned);
@@ -59,6 +60,7 @@ public:
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
+   int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
 
    // interface functions
    virtual void calculate_spectrum();

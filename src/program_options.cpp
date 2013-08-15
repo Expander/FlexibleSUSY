@@ -27,6 +27,7 @@ Program_options::Program_options()
 {
    values[precision] = 1.0e-4;
    values[pole_mass_loop_order] = 1.;
+   values[ewsb_loop_order] = 1.;
 }
 
 double Program_options::get(Options o) const
