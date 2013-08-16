@@ -179,10 +179,11 @@ ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
           ];
 
 ReadSLHABlock[{parameter_, blockName_Symbol}] :=
-    Module[{str, lhs},
-           str = CConversion`ToValidCSymbolString[parameter];
-           lhs = ToString[blockName];
-           "slha_io.read_block(\"" <> lhs <> "\", input." <> str <> ");\n"
+    Module[{paramStr, blockNameStr},
+           paramStr = CConversion`ToValidCSymbolString[parameter];
+           blockNameStr = ToString[blockName];
+           "slha_io.read_block(\"" <> blockNameStr <> "\", input." <>
+           paramStr <> ");\n"
           ];
 
 ReadUnfixedParameters[unfixedParameters_List] :=
