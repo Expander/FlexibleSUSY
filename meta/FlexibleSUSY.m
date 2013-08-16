@@ -208,11 +208,11 @@ GeneralReplacementRules[] :=
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
               additionalDecl_:"", numberOfBaseClassParameters_:0] :=
-   Module[{setter, getter, parameterDef, set,
+   Module[{beta, setter, getter, parameterDef, set,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
-           clearParameters},
+           numberOfParameters, clearParameters},
           (* extract list of parameters from the beta functions *)
           parameters = GetName[#]& /@ betaFun;
           (* count number of parameters *)
