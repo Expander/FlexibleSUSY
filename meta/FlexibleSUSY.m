@@ -156,31 +156,6 @@ ReplaceIndicesInUserInput[] :=
 GUTNormalization[coupling_] :=
     Parameters`GetGUTNormalization[coupling];
 
-(*
-   @brief Replaces tokens in files.
-
-   @param files list of two-element lists.  The first entry is the
-   input file and the second entry is the output file.
-   Example:
-      files = {{"input.hpp", "output.hpp"},
-               {"input.cpp", "output.cpp"}}
-
-   @param replacementList list of string replacement rules
-   Example:
-      replacementList = { "@token@" -> "1+2", "@bar@" -> "2+3" }
- *)
-ReplaceInFiles[files_List, replacementList_List] :=
-    Module[{cppFileName, cppTemplateFileName, cppFile, modifiedCppFile, f},
-          For[f = 1, f <= Length[files], f++,
-              cppFileName         = files[[f,1]];
-              cppTemplateFileName = files[[f,2]];
-              cppFile             = Import[cppFileName, "String"];
-              modifiedCppFile     = StringReplace[cppFile, replacementList];
-              Print["   Writing file ", cppTemplateFileName];
-              Export[cppTemplateFileName, modifiedCppFile, "String"];
-             ];
-          ];
-
 GeneralReplacementRules[] :=
     { "@VectorZ@"     -> ToValidCSymbolString[SARAH`VectorZ],
       "@VectorP@"     -> ToValidCSymbolString[SARAH`VectorP],
@@ -232,7 +207,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
-          ReplaceInFiles[files,
+          WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
                    "@parameterDefaultInit@" -> WrapLines[parameterDefaultInit],
@@ -259,7 +234,7 @@ WriteInputParameterClass[inputParameters_List, freePhases_List,
    Module[{defineInputParameters, defaultInputParametersInit},
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,unfixedParameters]];
           defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,unfixedParameters]];
-          ReplaceInFiles[files,
+          WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
                            Sequence @@ GeneralReplacementRules[]
@@ -280,7 +255,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[ParametersToSolveTadpoles, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[ParametersToSolveTadpoles, "old_", "model"];
-          ReplaceInFiles[files,
+          WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
@@ -298,7 +273,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
-          ReplaceInFiles[files,
+          WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
@@ -309,7 +284,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
 WriteConvergenceTesterClass[particles_List, files_List] :=
    Module[{compareFunction},
           compareFunction = ConvergenceTester`CreateCompareFunction[particles];
-          ReplaceInFiles[files,
+          WriteOut`ReplaceInFiles[files,
                  { "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
@@ -399,7 +374,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
-           ReplaceInFiles[files,
+           WriteOut`ReplaceInFiles[files,
                           { "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
@@ -444,14 +419,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 
 WriteUserExample[files_List] :=
     Module[{},
-           ReplaceInFiles[files,
+           WriteOut`ReplaceInFiles[files,
                           { Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
 WritePlotScripts[files_List] :=
     Module[{},
-           ReplaceInFiles[files,
+           WriteOut`ReplaceInFiles[files,
                           { Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -485,7 +460,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
-           ReplaceInFiles[files,
+           WriteOut`ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
                             "@particleEnum@"       -> IndentText[WrapLines[particleEnum]],

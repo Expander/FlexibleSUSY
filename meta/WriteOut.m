@@ -1,6 +1,7 @@
 
 BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
 
+ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -8,6 +9,33 @@ WriteSLHAModelParametersBlocks::usage="";
 ReadUnfixedParameters::usage="";
 
 Begin["Private`"];
+
+(*
+ * @brief Replaces tokens in files.
+ *
+ * @param files list of two-element lists.  The first entry is the
+ * input file and the second entry is the output file.
+ *
+ * Example:
+ *    files = {{"input.hpp", "output.hpp"},
+ *             {"input.cpp", "output.cpp"}}
+ *
+ * @param replacementList list of string replacement rules
+ *
+ * Example:
+ *    replacementList = { "@token@" -> "1+2", "@bar@" -> "2+3" }
+ *)
+ReplaceInFiles[files_List, replacementList_List] :=
+    Module[{cppFileName, cppTemplateFileName, cppFile, modifiedCppFile, f},
+          For[f = 1, f <= Length[files], f++,
+              cppFileName         = files[[f,1]];
+              cppTemplateFileName = files[[f,2]];
+              cppFile             = Import[cppFileName, "String"];
+              modifiedCppFile     = StringReplace[cppFile, replacementList];
+              Print["   Writing file ", cppTemplateFileName];
+              Export[cppTemplateFileName, modifiedCppFile, "String"];
+             ];
+          ];
 
 PrintParameter[Null, streamName_String] := "";
 
