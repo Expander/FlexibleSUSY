@@ -375,6 +375,28 @@ CreateUniqueCVariable[] :=
            Return[variable];
           ];
 
+(*
+ * The following two rules simplify expressions of the form
+ *
+ *    sum[j1, 1, 3, Delta[gO1, 3 + j1] ZD[gI1, 3 + j1]]
+ *
+ * to
+ *
+ *    ThetaStep[4, gO1] ThetaStep[gO1, 6] ZD[gI1, gO1]
+ *
+ * These expressions are not simplified by SARAH.  They appear in the
+ * (very large) 4-scalar vertices with unrotated external fields.
+ *)
+ExpandSums[HoldPattern[sum[index_, start_, stop_, SARAH`Delta[b_,stop_ + index_] Z_[a_,stop_ + index_]]],
+           variable_String, type_String:"Complex", initialValue_String:""] :=
+    ExpandSums[Z[a,b] SARAH`ThetaStep[b,2 stop] SARAH`ThetaStep[1+stop,b],
+               variable, type, initialValue];
+
+ExpandSums[HoldPattern[sum[index_, start_, stop_, SARAH`Delta[b_,stop_ + index_] Susyno`LieGroups`conj[Z_[a_,stop_ + index_]]]],
+           variable_String, type_String:"Complex", initialValue_String:""] :=
+    ExpandSums[Susyno`LieGroups`conj[Z[a,b]] SARAH`ThetaStep[b,2 stop] SARAH`ThetaStep[1+stop,b],
+               variable, type, initialValue];
+
 ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
