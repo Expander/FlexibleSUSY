@@ -197,7 +197,7 @@ WriteSLHAModelParametersBlocks[] :=
 
 ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
     Module[{result, blockNameStr, parmStr, pdgStr},
-           blockNameStr = ToString[blockName];
+           blockNameStr = ToString[blockName] <> "IN";
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
            result = "input." <> parmStr <>
@@ -209,7 +209,7 @@ ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
 ReadSLHABlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
-           blockNameStr = ToString[blockName];
+           blockNameStr = ToString[blockName] <> "IN";
            "slha_io.read_block(\"" <> blockNameStr <> "\", input." <>
            paramStr <> ");\n"
           ];
