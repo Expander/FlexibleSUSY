@@ -146,6 +146,8 @@ T Sqr(T a)
    return a * a;
 }
 
+void Symmetrize(DoubleMatrix&);
+
 Eigen::ArrayXd ToEigenArray(const DoubleVector&);
 Eigen::ArrayXd ToEigenArray(double);
 std::valarray<double> ToValarray(const DoubleVector&);

@@ -270,6 +270,15 @@ double MaxRelDiff(const DoubleVector& a, const DoubleVector& b)
    return a.compare(b);
 }
 
+void Symmetrize(DoubleMatrix& m)
+{
+   const int r = m.displayRows();
+   const int c = m.displayCols();
+   for (int i = 1; i <= r; i++)
+      for (int k = 1; k < i && k <= c; k++)
+         m(i,k) = m(k,i);
+}
+
 Eigen::ArrayXd ToEigenArray(const DoubleVector& v)
 {
    Eigen::ArrayXd a(v.size());

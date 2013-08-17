@@ -1,7 +1,7 @@
 
 BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
                              "CConversion`", "TreeMasses`",
-                             "SelfEnergies`", "TwoLoop`"}];
+                             "SelfEnergies`", "TwoLoop`", "Parameters`"}];
 
 CreateLoopMassFunctions::usage="";
 CreateLoopMassPrototypes::usage="";
@@ -80,7 +80,7 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
-            tadpoleMatrix, U, V, massMatrixStr},
+            tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -90,10 +90,12 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            If[dim > 1,
+              selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               result = tadpoleMatrix <>
                        "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
                        "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
-                       IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
+                       IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","1"] <>
+                                  "; i2 <= " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
                                              massName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
@@ -101,6 +103,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                                   "}\n"
                                  ] <>
                        "}\n" <>
+                       If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
                        "const DoubleMatrix M_1loop(" <> massMatrixStr <>
                        "() - self_energy" <>
                        If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n";
@@ -233,7 +236,7 @@ DoFastDiagonalization[particle_Symbol, _] :=
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
-            massMatrixStr, diagonalizationFunction = "Diagonalize"},
+            massMatrixStr, diagonalizationFunction = "Diagonalize", selfEnergyIsSymmetric},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -272,6 +275,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            tadpoleMatrix = FillTadpoleMatrix[tadpole, "tadpoles"];
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
+              selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = tadpoleMatrix <>
                        "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
@@ -279,13 +283,15 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                        "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 1; i1 <= " <> dimStr <> "; ++i1) {\n" <>
-                                  IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <> "; ++i2) {\n" <>
+                                  IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","1"] <>
+                                             "; i2 <= " <> dimStr <> "; ++i2) {\n" <>
                                              IndentText["self_energy(i1,i2) = Re(" <>
                                                         selfEnergyFunction <> "(p,i1,i2));\n"
                                                        ] <>
                                              "}\n"
                                             ] <>
                                   "}\n" <>
+                                  If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
                                   "const DoubleMatrix M_1loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
                                   "DoubleVector eigen_values(" <> dimStr <> ");\n" <>
