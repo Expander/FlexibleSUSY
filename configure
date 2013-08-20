@@ -4,7 +4,7 @@
 # Author: Alexander Voigt
 
 PROGRAM_NAME=FlexibleSUSY
-PROGRAM_VERSION=0.2
+PROGRAM_VERSION=0.3
 
 # directory of this script
 BASEDIR=$(dirname $0)
