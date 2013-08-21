@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include <ctime>
+#include <chrono>
 
 namespace flexiblesusy {
 
@@ -27,11 +27,10 @@ public:
 
    void start();
    void stop();
-   double get_clicks();
    double get_time_in_seconds();
 
 private:
-   clock_t time;
+   std::chrono::steady_clock::time_point start_point, stop_point;
 };
 
 } // namespace flexiblesusy

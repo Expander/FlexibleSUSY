@@ -21,7 +21,6 @@
 namespace flexiblesusy {
 
 Stopwatch::Stopwatch()
-   : time(0)
 {
 }
 
@@ -31,22 +30,20 @@ Stopwatch::~Stopwatch()
 
 void Stopwatch::start()
 {
-   time = clock();
+   start_point = std::chrono::steady_clock::now();
 }
 
 void Stopwatch::stop()
 {
-   time = clock() - time;
-}
-
-double Stopwatch::get_clicks()
-{
-   return time;
+   stop_point = std::chrono::steady_clock::now();
 }
 
 double Stopwatch::get_time_in_seconds()
 {
-   return static_cast<double>(time)/CLOCKS_PER_SEC;
+   typedef std::chrono::duration<int,std::milli> milliseconds_t;
+   milliseconds_t duration(std::chrono::duration_cast<milliseconds_t>(
+                              stop_point - start_point));
+   return duration.count() * 0.001;
 }
 
 } // namespace flexiblesusy
