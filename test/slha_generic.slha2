@@ -1,0 +1,23 @@
+Block MODSEL		     # Select model
+    6    0                   # flavour violation
+    1    1		     # mSUGRA
+Block SMINPUTS		     # Standard Model inputs
+    1	1.279180000e+02	     # alpha^(-1) SM MSbar(MZ)
+    2   1.166390000e-05	     # G_Fermi
+    3   1.189000000e-01	     # alpha_s(MZ) SM MSbar
+    4   9.118760000e+01	     # MZ(pole)
+    5	4.200000000e+00	     # mb(mb) SM MSbar
+    6   1.709000000e+02	     # mtop(pole)
+    7	1.777000000e+00	     # mtau(pole)
+Block SOFTSUSY               # SOFTSUSY specific inputs
+    1   1.000000000e-04      # tolerance
+    2   2                    # up-quark mixing (=1) or down (=2)
+    5   1                    # 2-loop running
+    3   0                    # printout
+Block FlexibleSUSY
+    0   1.000000000e-04      # precision goal
+    1   0                    # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   0                    # calculate SM pole masses
+    4   1                    # calculate loop masses
+    5   1                    # EWSB loop order
