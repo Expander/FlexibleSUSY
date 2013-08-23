@@ -69,9 +69,9 @@ TestEquality[Private`CalculateScaleFromExprSymb[g1 == MZ],
              FullSimplify[currentScale*E^((-g1 + MZ)/(BETA[g1]))]
             ];
 
-Print["testing for Mathematica 9 bug where the GUT condition cannot be solved ..."];
-TestEquality[Solve[(BETA[g1]-BETA[g2]) Log[x/a] == g1-g2, x, Reals],
-             {{x -> a*E^((g1 - g2)/(BETA[g1] - BETA[g2]))}}
-            ];
+(* Print["testing for Mathematica 9 bug where the GUT condition cannot be solved ..."]; *)
+(* TestEquality[Solve[(BETA[g1]-BETA[g2]) Log[x/a] == g1-g2, x, Reals], *)
+(*              {{x -> a*E^((g1 - g2)/(BETA[g1] - BETA[g2]))}} *)
+(*             ]; *)
 
 PrintTestSummary[];

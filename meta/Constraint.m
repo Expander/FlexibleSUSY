@@ -192,6 +192,12 @@ GetIndexedParameter[BetaFunction`BetaFunction[name_[__], CConversion`MatrixType[
 GetListOfIndexedParameters[] :=
     Flatten[GetIndexedParameter[#]& /@ allBetaFunctions];
 
+StripConditionalExpression[ConditionalExpression[expr_, ___]] :=
+    expr;
+
+StripConditionalExpression[expr_] :=
+    expr;
+
 (* Approximately find scale where equation
      expr1 == expr2
    is fulfilled, using the beta function for each parameter p
@@ -207,11 +213,11 @@ CalculateScaleFromExprSymb[Equal[expr1_, expr2_]] :=
            solution = Solve[Log[scale/Global`currentScale] *
                             (betaFunctions . D[F1[parSeq] - F2[parSeq],
                                                {parameters}])
-                            == F2[parSeq] - F1[parSeq], scale, Reals];
+                            == F2[parSeq] - F1[parSeq], scale];
            If[solution === {{}},
               Print["Error: no solution found for ", expr1 == expr2];
               result = Null;,
-              result = FullSimplify[solution[[1,1,2]]];
+              result = FullSimplify[StripConditionalExpression[solution[[1,1,2]]]];
              ];
            Return[result];
           ];
