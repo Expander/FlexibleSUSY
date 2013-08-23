@@ -207,7 +207,7 @@ CalculateScaleFromExprSymb[Equal[expr1_, expr2_]] :=
            solution = Solve[Log[scale/Global`currentScale] *
                             (betaFunctions . D[F1[parSeq] - F2[parSeq],
                                                {parameters}])
-                            == F2[parSeq] - F1[parSeq], scale];
+                            == F2[parSeq] - F1[parSeq], scale, Reals];
            If[solution === {{}},
               Print["Error: no solution found for ", expr1 == expr2];
               result = Null;,
