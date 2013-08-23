@@ -30,12 +30,12 @@ Stopwatch::~Stopwatch()
 
 void Stopwatch::start()
 {
-   start_point = std::chrono::steady_clock::now();
+   start_point = std::chrono::high_resolution_clock::now();
 }
 
 void Stopwatch::stop()
 {
-   stop_point = std::chrono::steady_clock::now();
+   stop_point = std::chrono::high_resolution_clock::now();
 }
 
 double Stopwatch::get_time_in_seconds()

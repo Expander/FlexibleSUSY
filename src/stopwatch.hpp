@@ -30,7 +30,7 @@ public:
    double get_time_in_seconds();
 
 private:
-   std::chrono::steady_clock::time_point start_point, stop_point;
+   std::chrono::high_resolution_clock::time_point start_point, stop_point;
 };
 
 } // namespace flexiblesusy
