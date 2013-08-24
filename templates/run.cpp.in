@@ -265,9 +265,13 @@ int main(int argc, const char* argv[])
       // runner.write_spectrum();
    }
 
-   slha_io.set_spinfo(runner.get_problems());
-   slha_io.set_spectrum(runner.get_model());
-   slha_io.write_to_file(slha_output_file);
+   if (slha_output_file.empty()) {
+      runner.get_model().print(std::cout);
+   } else {
+      slha_io.set_spinfo(runner.get_problems());
+      slha_io.set_spectrum(runner.get_model());
+      slha_io.write_to_file(slha_output_file);
+   }
 
    return 0;
 }
