@@ -77,8 +77,26 @@ void SLHA_io::read_block(const std::string& block_name, Tuple_processor processo
          continue;
 
       if (line->size() >= 2) {
-         const int key = SLHAea::to<int>((*line)[0]);
-         const double value = SLHAea::to<double>((*line)[1]);
+         const std::string key_str((*line)[0]), value_str((*line)[1]);
+         int key;
+         double value;
+
+         try {
+            key = SLHAea::to<int>(key_str);
+         } catch (const boost::bad_lexical_cast& error) {
+            const std::string msg("cannot convert " + block_name
+                                  + " key to int: " + key_str);
+            throw ReadError(msg);
+         }
+
+         try {
+            value = SLHAea::to<double>((*line)[1]);
+         } catch (const boost::bad_lexical_cast& error) {
+            const std::string msg("cannot convert " + block_name + " entry "
+                                  + key_str + " to double: " + value_str);
+            throw ReadError(msg);
+         }
+
          processor(key, value);
       } else {
          WARNING(block_name << " entry has less than 2 columns");
@@ -104,7 +122,18 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
       return 0.;
    }
 
-   return SLHAea::to<double>(line->at(1));
+   double entry;
+
+   try {
+      entry = SLHAea::to<double>(line->at(1));
+   } catch (const boost::bad_lexical_cast& error) {
+      std::ostringstream msg;
+      msg << "cannot convert " << block_name << " entry " << key
+          << " to double";
+      throw ReadError(msg.str());
+   }
+
+   return entry;
 }
 
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)
