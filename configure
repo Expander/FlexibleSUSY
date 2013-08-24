@@ -549,7 +549,7 @@ check_boost_test_incl() {
 check_boost_thread_libs() {
     check_library "libboost_thread libboost_thread-mt" \
 	"$boost_lib_dir" "$default_lib_paths"
-    if [ -z "x$found_lib" ]; then
+    if [ -z "$found_lib" ]; then
         message "Error: libboost_thread or libboost_thread-mt must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
         message "  You can disable the lattice method with the --with-algorithms= flag."
