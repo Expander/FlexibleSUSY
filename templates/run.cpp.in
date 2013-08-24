@@ -258,18 +258,15 @@ int main(int argc, const char* argv[])
 
    runner.run(oneset, input);
 
-   if (runner.get_problems().have_serious_problem()) {
-      runner.get_problems().print();
-   } else {
-      // runner.write_running_couplings();
-      // runner.write_spectrum();
-   }
-
    if (slha_output_file.empty()) {
-      runner.get_model().print(std::cout);
+      if (runner.get_problems().have_serious_problem())
+         runner.get_problems().print();
+      else
+         runner.get_model().print(std::cout);
    } else {
       slha_io.set_spinfo(runner.get_problems());
-      slha_io.set_spectrum(runner.get_model());
+      if (!runner.get_problems().have_serious_problem())
+         slha_io.set_spectrum(runner.get_model());
       slha_io.write_to_file(slha_output_file);
    }
 
