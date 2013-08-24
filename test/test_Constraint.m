@@ -57,8 +57,9 @@ TestEquality[Private`CalculateScaleFromExprSymb[Yd[3,3] == Yu[3,3]],
              Simplify[currentScale*E^((-Yd[3,3] + Yu[3,3])/(BETA[Yd[3,3]] - BETA[Yu[3,3]]))]
             ];
 
-TestEquality[Private`CalculateScaleFromExprSymb[Sqrt[g1] == g2],
-             FullSimplify[currentScale/E^((-Sqrt[g1] + g2)/(-BETA[g1]/(2 Sqrt[g1]) + BETA[g2]))]
+TestEquality[Simplify[Private`CalculateScaleFromExprSymb[Sqrt[g1] == g2] -
+                      currentScale/E^((-Sqrt[g1] + g2)/(-BETA[g1]/(2 Sqrt[g1]) + BETA[g2]))],
+             0
             ];
 
 TestEquality[Private`CalculateScaleFromExprSymb[g1 == 2],
