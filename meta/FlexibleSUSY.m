@@ -685,6 +685,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            RXi[_] = 1;
            SARAH`Xi = 1;
            SARAH`Xip = 1;
+           SARAH`rMS = 0;
 
            If[OptionValue[softSusyCompatibleRGEs] === True && Model`Name == "MSSM",
               Print["Generating SoftSusy compatible beta function ..."];
