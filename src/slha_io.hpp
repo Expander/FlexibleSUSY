@@ -86,7 +86,7 @@ public:
    void fill(softsusy::QedQcd&) const;
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
-   void read_block(const std::string&, Tuple_processor) const;
+   void read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;

@@ -66,7 +66,7 @@ void SLHA_io::fill(QedQcd& oneset) const
    read_block("SMINPUTS", sminputs_processor);
 }
 
-void SLHA_io::read_block(const std::string& block_name, Tuple_processor processor) const
+void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
    if (data.find(block_name) == data.cend())
       return;
