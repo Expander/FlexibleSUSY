@@ -26,6 +26,7 @@
 #include <boost/format.hpp>
 #include "slhaea.h"
 #include "logger.hpp"
+#include "error.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -67,6 +68,15 @@ public:
    struct Modsel {
       double parameter_output_scale; ///< key = 12
       Modsel() : parameter_output_scale(0.) {}
+   };
+
+   class ReadError : public Error {
+   public:
+      ReadError(const std::string& message_) : message(message_) {}
+      virtual ~ReadError() {}
+      virtual std::string what() const { return message; }
+   private:
+      std::string message;
    };
 
    SLHA_io();

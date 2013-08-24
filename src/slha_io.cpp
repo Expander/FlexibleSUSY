@@ -38,8 +38,14 @@ SLHA_io::SLHA_io()
 void SLHA_io::read_from_file(const std::string& file_name)
 {
    std::ifstream ifs(file_name);
-   data.clear();
-   data.read(ifs);
+   if (ifs.good()) {
+      data.clear();
+      data.read(ifs);
+   } else {
+      std::ostringstream msg;
+      msg << "cannot read SLHA file: \"" << file_name << "\"";
+      throw ReadError(msg.str());
+   }
 }
 
 void SLHA_io::read_modsel()
@@ -177,6 +183,8 @@ void SLHA_io::write_to_stream(std::ostream& ostr)
 {
    if (ostr.good())
       ostr << data;
+   else
+      ERROR("cannot write SLHA file");
 }
 
 /**

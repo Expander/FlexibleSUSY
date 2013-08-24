@@ -224,10 +224,15 @@ int main(int argc, const char* argv[])
    @ModelName@_input_parameters input;
 
    if (!slha_input_file.empty()) {
-      slha_io.read_from_file(slha_input_file);
-      slha_io.fill(oneset);
-      slha_io.fill(input);
-      slha_io.fill(program_options);
+      try {
+         slha_io.read_from_file(slha_input_file);
+         slha_io.fill(oneset);
+         slha_io.fill(input);
+         slha_io.fill(program_options);
+      } catch (const Error& error) {
+         ERROR(error.what());
+         return 1;
+      }
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
