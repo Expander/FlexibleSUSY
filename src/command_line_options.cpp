@@ -89,7 +89,11 @@ void Command_line_options::print_usage(std::ostream& ostr) const
    ostr << "Usage: " << program << " [options]\n"
            "Options:\n"
            "  --slha-input-file=<filename>   SLHA input file\n"
+           "                                 If not given, the default point"
+           " is used\n"
            "  --slha-output-file=<filename>  SLHA output file\n"
+           "                                 If not given, the model parameters are\n"
+           "                                 printed to stdout\n"
            "  --help,-h                      print this help message\n"
            "  --version,-v                   print program version"
         << std::endl;

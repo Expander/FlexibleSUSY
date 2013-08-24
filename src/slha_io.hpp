@@ -26,6 +26,7 @@
 #include <boost/format.hpp>
 #include "slhaea.h"
 #include "logger.hpp"
+#include "error.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -69,6 +70,15 @@ public:
       Modsel() : parameter_output_scale(0.) {}
    };
 
+   class ReadError : public Error {
+   public:
+      ReadError(const std::string& message_) : message(message_) {}
+      virtual ~ReadError() {}
+      virtual std::string what() const { return message; }
+   private:
+      std::string message;
+   };
+
    SLHA_io();
    ~SLHA_io() {}
 
@@ -76,7 +86,7 @@ public:
    void fill(softsusy::QedQcd&) const;
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
-   void read_block(const std::string&, Tuple_processor) const;
+   void read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;

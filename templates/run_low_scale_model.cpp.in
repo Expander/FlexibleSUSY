@@ -224,10 +224,15 @@ int main(int argc, const char* argv[])
    @ModelName@_input_parameters input;
 
    if (!slha_input_file.empty()) {
-      slha_io.read_from_file(slha_input_file);
-      slha_io.fill(oneset);
-      slha_io.fill(input);
-      slha_io.fill(program_options);
+      try {
+         slha_io.read_from_file(slha_input_file);
+         slha_io.fill(oneset);
+         slha_io.fill(input);
+         slha_io.fill(program_options);
+      } catch (const Error& error) {
+         ERROR(error.what());
+         return 1;
+      }
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
@@ -244,16 +249,17 @@ int main(int argc, const char* argv[])
 
    runner.run(oneset, input);
 
-   if (runner.get_problems().have_serious_problem()) {
-      runner.get_problems().print();
+   if (slha_output_file.empty()) {
+      if (runner.get_problems().have_serious_problem())
+         runner.get_problems().print();
+      else
+         runner.get_model().print(std::cout);
    } else {
-      // runner.write_running_couplings();
-      // runner.write_spectrum();
+      slha_io.set_spinfo(runner.get_problems());
+      if (!runner.get_problems().have_serious_problem())
+         slha_io.set_spectrum(runner.get_model());
+      slha_io.write_to_file(slha_output_file);
    }
-
-   slha_io.set_spinfo(runner.get_problems());
-   slha_io.set_spectrum(runner.get_model());
-   slha_io.write_to_file(slha_output_file);
 
    return 0;
 }
