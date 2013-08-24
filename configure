@@ -549,19 +549,33 @@ check_boost_test_incl() {
 check_boost_thread_libs() {
     check_library "libboost_thread libboost_thread-mt" \
 	"$boost_lib_dir" "$default_lib_paths"
-    if test "x$found_lib" = "x" ; then
+    if [ -z "x$found_lib" ]; then
         message "Error: libboost_thread or libboost_thread-mt must be installed"
         message "  to enable multithreading in the lattice method, see http://www.boost.org"
         message "  You can disable the lattice method with the --with-algorithms= flag."
         exit 1
+    fi
+    BOOSTTHREADLIBS_=-l$(echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+
+    check_library "libboost_system libboost_system-mt" \
+	"$boost_lib_dir" "$default_lib_paths"
+    if [ -z "$found_lib" ]; then
+        message "Error: libboost_system or libboost_system-mt must be installed"
+        message "  to enable multithreading in the lattice method, see http://www.boost.org"
+        message "  You can disable the lattice method with the --with-algorithms= flag."
+        exit 1
+    fi
+    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
+	echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+
+    # can we safely assume libpthread is there?
+    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ -lpthread"
+
+    if [ -z "$boost_lib_dir" ]; then
+        # assume that the linker will look in the default paths
+        BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
     else
-        BOOSTTHREADLIBS_=-l$(echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
-        if [ -z "$boost_lib_dir" ]; then
-            # assume that the linker will look in the default paths
-            BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
-        else
-            BOOSTTHREADLIBS="-L$boost_lib_dir $BOOSTTHREADLIBS_"
-        fi
+        BOOSTTHREADLIBS="-L$boost_lib_dir $BOOSTTHREADLIBS_"
     fi
 }
 
