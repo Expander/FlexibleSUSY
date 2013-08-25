@@ -12,6 +12,10 @@ BASEDIR=$(dirname $0)
 # absolute path to this script
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
+# platform information
+linuxdist=""
+debmultiarch=""
+
 # default library directories
 default_lib_paths="/usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
@@ -513,6 +517,33 @@ check_models() {
 }
 
 #_____________________________________________________________________
+check_platform() {
+    # checks which platform we have
+    linuxdist=""
+    debmultiarch=""
+
+    exists_in_path "lsb_release"
+    if [ -n "$cmd" ] ; then
+        if lsb_release -d | grep -i 'ubuntu\|debian\|mint' > /dev/null 2>& 1; then
+            linuxdist="multiarch"
+        fi
+    fi
+
+    if test "x$linuxdist" = "xmultiarch"; then
+        if `which dpkg-architecture > /dev/null 2>&1` ; then
+            if `dpkg-architecture -qDEB_HOST_MULTIARCH > /dev/null 2>&1` ; then
+                checking_msg "dpkg-architecture"
+                debmultiarch=`dpkg-architecture -qDEB_HOST_MULTIARCH 2> /dev/null`
+                result "$debmultiarch"
+            fi
+        else
+            result "`basename $0`: dpkg-architecture MUST be installed"
+            exit 1
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_boost_test_libs() {
     check_library "libboost_unit_test_framework" "$boost_lib_dir" \
 	"$default_lib_paths"
@@ -996,6 +1027,7 @@ if test $# -gt 0 ; then
 fi
 
 guess_machine_word_size
+check_platform
 
 check_algorithms
 check_boost_test_incl
