@@ -606,8 +606,15 @@ check_boost_thread_libs() {
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
 	echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
-    # can we safely assume libpthread is there?
-    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ -lpthread"
+    check_library "libpthread" "" "$default_lib_paths"
+    if [ -z "$found_lib" ]; then
+        message "Error: libpthread must be installed to enable multithreading"
+        message "  in the lattice method.  You can disable the lattice method"
+        message "  with the --with-algorithms= flag."
+        exit 1
+    fi
+    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
+        echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
     if [ -z "$boost_lib_dir" ]; then
         # assume that the linker will look in the default paths
