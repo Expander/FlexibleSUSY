@@ -211,6 +211,13 @@ check_library() {
             libdirs="$libdirs $libdir32"
 	done
     fi
+    # look first in the DEB_HOST_MULTIARCH directories
+    if test "x$debmultiarch" != "x" ; then
+	for p in ${libdirs}; do
+            multiarch_libdir=`echo "$p" | sed "s|lib$|lib/$debmultiarch|"`
+            libdirs="$multiarch_libdir $libdirs"
+	done
+    fi
 
     for p in ${libdirs}; do
         for l in ${libs}; do
