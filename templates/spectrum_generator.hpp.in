@@ -36,9 +36,9 @@
 namespace flexiblesusy {
 
 template <class T>
-class @ModelName@_runner {
+class @ModelName@_spectrum_generator {
 public:
-   @ModelName@_runner()
+   @ModelName@_spectrum_generator()
       : solver(), model()
       , high_scale_constraint()
       , susy_scale_constraint()
@@ -48,7 +48,7 @@ public:
       , precision_goal(1.0e-5)
       , max_iterations(0)
       , calculate_sm_masses(false) {}
-   ~@ModelName@_runner() {}
+   ~@ModelName@_spectrum_generator() {}
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
@@ -93,7 +93,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_runner<T>::run(const QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
    high_scale_constraint.reset();
@@ -175,13 +175,13 @@ void @ModelName@_runner<T>::run(const QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_runner<T>::write_running_couplings(const std::string& filename) const
+void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
 {
    @ModelName@<T> tmp_model(model);
    const unsigned error = tmp_model.run_to(low_scale);
    if (error) {
-      ERROR("@ModelName@_runner::write_running_couplings: run to scale "
-            << low_scale << " failed");
+      ERROR("@ModelName@_spectrum_generator::write_running_couplings:"
+            " run to scale " << low_scale << " failed");
       return;
    }
 
@@ -199,7 +199,7 @@ void @ModelName@_runner<T>::write_running_couplings(const std::string& filename)
  * @param filename output file name
  */
 template <class T>
-void @ModelName@_runner<T>::write_spectrum(const std::string& filename) const
+void @ModelName@_spectrum_generator<T>::write_spectrum(const std::string& filename) const
 {
    @ModelName@_spectrum_plotter plotter;
    plotter.extract_spectrum<T>(model);
