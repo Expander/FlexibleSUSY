@@ -474,19 +474,19 @@ CallMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
 IsSymmetric[matrix_List] := IsHermitian[matrix, Identity];
 
 IsHermitian[matrix_List, op_:Susyno`LieGroups`conj] :=
-    Module[{rows, cols, i, k, otherElement},
+    Module[{rows, cols, i, k, difference},
            rows = Length[matrix];
            For[i = 1, i <= rows, i++,
                cols = Length[matrix[[i]]];
                If[rows =!= cols, Return[False];];
-               For[k = 1, k < i, k++,
-                   otherElement = op[matrix[[k,i]]] /. {
+               For[k = 1, k <= i, k++,
+                   difference = matrix[[i,k]] - op[matrix[[k,i]]] //. {
                        Susyno`LieGroups`conj[SARAH`sum[ind_,a_,b_,expr_]] :>
                            SARAH`sum[ind,a,b,Susyno`LieGroups`conj[expr]],
                        Susyno`LieGroups`conj[m_[a_,b_]] :>
                            m[b,a] /; MemberQ[SARAH`ListSoftBreakingScalarMasses, m]
                    };
-                   If[matrix[[i,k]] =!= otherElement, Return[False];];
+                   If[!PossibleZeroQ[difference], Return[False];];
                   ];
               ];
            Return[True];
