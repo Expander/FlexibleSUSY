@@ -983,7 +983,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]},
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator.hpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]}
                            },
                            diagonalizationPrecision];
 
