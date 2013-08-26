@@ -983,16 +983,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]}
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
-           runInputFile = "run.cpp.in";
-           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY, runInputFile = "run_low_scale_model.cpp.in";];
-           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, runInputFile}],
+           spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+              spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
+           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}}];
 
            PrintHeadline["FlexibleSUSY has finished"];

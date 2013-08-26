@@ -162,9 +162,6 @@ $(DIR)/@CLASSNAME@_info.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 $(DIR)/@CLASSNAME@_spectrum_generator.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	@true
 
-$(DIR)/@CLASSNAME@_spectrum_generator.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
-	@true
-
 $(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	@true
 
