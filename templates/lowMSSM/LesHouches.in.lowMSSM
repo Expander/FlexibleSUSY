@@ -1,4 +1,3 @@
-# Example input in SLHA2 format
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
