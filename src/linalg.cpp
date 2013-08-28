@@ -663,6 +663,18 @@ DoubleMatrix rot2dTwist(double theta) {
   return n;
 }
 
+// LCT: 3 dimensional rotation matrix U
+// Returns U = [ cos theta  sin theta   0 ]
+//             [ sin theta  -cos theta  0 ]
+//             [ 0          0           1 ]
+DoubleMatrix rot3d(double theta) {
+  DoubleMatrix u(3, 3);
+  u(1, 1) = -cos(theta); u(2, 2) = -u(1, 1);
+  u(1, 2) = sin(theta);  u(2, 1) = u(1, 2);
+  u(3, 3) = 1.0;
+  return u;
+}
+
 // Redefines mixing matrices to be complex such that diagonal values are
 // positive for a 2 by 2: if  
 // [ cos thetaL    sin thetaL ]   A   [ cos thetaR -sin thetaR ]  = diag
