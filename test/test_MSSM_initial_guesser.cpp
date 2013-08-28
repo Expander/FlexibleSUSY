@@ -16,6 +16,7 @@
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
+   softsusy::TOLERANCE = 1.0e-3;
    MSSM<Two_scale> m;
    Mssm<Two_scale> smssm;
 

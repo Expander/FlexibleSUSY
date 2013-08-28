@@ -15,7 +15,7 @@ namespace softsusy {
   int MIXING = 1, PRINTOUT = 0;
   /// fractional accuracy required - may need to make smaller for accurate
   /// neutrino masses
-  double TOLERANCE = 1.0e-3;
+  double TOLERANCE = 1.0e-4;
   /// decay constant of muon
   double GMU = 1.16637e-5; 
   /// there are two possible conventions: if QEWSB > MZ, its value is assumed
@@ -26,6 +26,13 @@ namespace softsusy {
   /// scalar mass Higgs parameters? (Other quantities all 2-loop anyway): the
   /// default in SOFTSUSY 3 is to include all 2-loop terms
   bool INCLUDE_2_LOOP_SCALAR_CORRECTIONS = true;
+  /// PA: switch for selecting between the Z3 preserving case and the
+  // Z3 violating case with mu and m3sq allowed
+  // needed fpr selecting which EWSB routines to use.
+  bool Z3 = true;
+  //If true the input value of lambda is set at the GUT scale
+  //If false the input lambda is set at MSUSY.
+  bool GUTlambda = true;
   /// number of loops used to calculate Higgs mass and tadpoles. They should be
   /// identical for a consistent calculation
   int numHiggsMassLoops = 2, numRewsbLoops = 2;
@@ -49,5 +56,13 @@ namespace softsusy {
   bool mAFlag = false;
   /// default is that developer-level debugging printout flag is OFF
   bool printDEBUG = false;
+  /// random number seed
+  long idummySave = -22;
+  /// Default is to not include 2-loop MSSM corrections in degenerate
+  /// gluino/squark mass limit
+  bool includeTwoLoopMssmCorrectionsToMt = false;
+  /// Default: use SOFTSUSY conventions for masses of sparticles in loops, ie
+  /// tree-level masses computed with the 2-loop Higgs potential
+  bool sphenoMassConv = false;
 }
 /// end of global variable declaration

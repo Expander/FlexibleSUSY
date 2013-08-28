@@ -27,7 +27,7 @@ Beta_function::Beta_function()
    , loops(0)
    , thresholds(0)
    , scale(0.0)
-   , tolerance(1.e-3)
+   , tolerance(1.e-4)
    , min_tolerance(1.0e-11)
 {
 }

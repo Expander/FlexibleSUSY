@@ -14,7 +14,7 @@
 
 #include <cmath>
 namespace softsusy{
-  const char SOFTSUSY_VERSION[] = "3.3.6";
+  const char SOFTSUSY_VERSION[] = "3.3.9";
 
   /// uncomment if you want checking of vector/matrices bounds: slows code
   /// down. It also now checks over/underflows in matrix multiplication etc
@@ -27,6 +27,15 @@ namespace softsusy{
   extern bool INCLUDE_2_LOOP_SCALAR_CORRECTIONS;
   /// Set to number of loops to use for calculation of Higgs mass 
   /// (currently up to 2, the default)
+
+  /// PA: switch for selecting between the Z3 preserving case and the
+  // Z3 violating case with mu and m3sq allowed
+  // needed fpr slecting which EWSB routines to use.
+  extern bool Z3;
+  //If true the input value of lambda is set at the GUT scale
+  //If false the input lambda is set at MSUSY.
+  extern bool GUTlambda;
+
   extern int numHiggsMassLoops;
   /// Set to number of loops to use for REWSB condition up to the default of 2
   extern int numRewsbLoops;
@@ -34,6 +43,8 @@ namespace softsusy{
   const double EPSTOL = 1.0e-11; ///< underflow accuracy
   const double PI = atan(1.0) * 4.0; ///< or 3.141592653589793 longhand;
   const double root2 = sqrt(2.0);
+  ///< used to flag diabolical problems
+  const double numberOfTheBeast = 6.66e66; 
 
   extern double GMU;
   extern double MZ; 
@@ -68,7 +79,13 @@ namespace softsusy{
   extern bool tryToConvergeHard;
   /// If =0 (default), sets tachyonic mA=0, otherwise resets mA=sqrt(|mA|^2)
   extern bool mAFlag;
-  /// If true, it prints out special developer debugging
-  extern bool printDEBUG; 
+  /// A handy global variable for random number generator
+  extern long idummySave;
+  extern int numTry;
+  /// Include eq (62) from hep-ph/0210268: degenerate gluino/squark mass limit
+  extern bool includeTwoLoopMssmCorrectionsToMt;
+  /// Switch to use SPHENO conventions for masses in loops
+  extern bool sphenoMassConv;
 }
+
 #endif
