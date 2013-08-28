@@ -160,7 +160,6 @@ public:
            return false;
      return true;
   }
-  bool testNan() const; ///< test for Nan elements
 };
 
 
@@ -328,7 +327,6 @@ public:
   /// resize matrix (Warning: can be slow because it internally copys a std::valarray<double>)
   void resize(int, int);
 
-  bool testNan() const; ///< test for Nan elements
   double trace() const;///< trace must only be performed on a square matrix
   DoubleMatrix transpose() const; ///< can be any size
   DoubleVector flatten() const; ///< matrix to vector, row by row

@@ -86,14 +86,6 @@ void DoubleVector::swap(int i, int j) {
   (*this)(i) = m;
 }
 
-bool DoubleVector::testNan() const
-{
-   for (std::size_t i = 0; i < x.size(); ++i)
-      if (::testNan(x[i]))
-         return true;
-   return false;
-}
-
 /*
  *  STANDARD INPUT / OUTPUT
  */
@@ -252,14 +244,6 @@ void DoubleMatrix::resize(int numberOfRows, int numberOfCols)
 {
    setCols(numberOfCols);
    setRows(numberOfRows);
-}
-
-bool DoubleMatrix::testNan() const
-{
-   for (std::size_t i = 0; i < x.size(); ++i)
-      if (::testNan(x[i]))
-         return true;
-   return false;
 }
 
 double DoubleMatrix::trace() const {
