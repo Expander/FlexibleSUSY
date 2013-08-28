@@ -334,7 +334,8 @@ void DoubleMatrix::symmetrise() {
   }
 #endif
   for (int i=1; i<=rows; ++i)
-    col(i) = row(i);
+     for (int k = 1; k < i && k <= cols; ++k)
+        elmt(i,k) = elmt(k,i);
 }
 
 // Gives sum of difference between two matrices
@@ -1249,7 +1250,8 @@ void ComplexMatrix::symmetrise() {
   }
 #endif
   for (int i=1; i<=rows; ++i)
-    col(i) = row(i);
+     for (int k = 1; k < i && k <= cols; ++k)
+        elmt(i,k) = elmt(k,i);
 }
 
 // Gives sum of difference between two matrices
