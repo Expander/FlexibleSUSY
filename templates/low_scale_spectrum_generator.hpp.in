@@ -43,7 +43,7 @@ public:
       , low_scale_constraint()
       , susy_scale(0.), low_scale(0.)
       , parameter_output_scale(0.)
-      , precision_goal(1.0e-5)
+      , precision_goal(1.0e-4)
       , max_iterations(0)
       , calculate_sm_masses(false) {}
    ~@ModelName@_spectrum_generator() {}
