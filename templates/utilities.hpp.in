@@ -23,6 +23,7 @@
 
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
+#include "wrappers.hpp"
 
 #include <Eigen/Core>
 #include <string>
