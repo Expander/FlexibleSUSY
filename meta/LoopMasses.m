@@ -514,7 +514,7 @@ CreateThreadObject[particlesInThread_List] :=
    }
 };
 
-boost::thread th(Thread(this));
+std::thread th(Thread(this));
 
 "
           ];
