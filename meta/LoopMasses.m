@@ -510,7 +510,11 @@ CreateThreadObject[particlesInThread_List] :=
    CLASSNAME* model;
    Thread(CLASSNAME* model_) : model(model_) {}
    void operator()() {
-" <> IndentText[IndentText[callLoopMassFunctions]] <> "
+      try {
+" <> IndentText[IndentText[IndentText[callLoopMassFunctions]]] <> "
+      } catch (...) {
+         model->thread_exception = std::current_exception();
+      }
    }
 };
 
@@ -534,7 +538,10 @@ CallAllLoopMassFunctions[states_, particlesInThread_:{}] :=
                     IndentText[callSM] <>
                     "}\n";
            If[particlesInThread =!= {},
-              result = result <> "\nth.join();\n";
+              result = result <> "\nth.join();\n\n" <>
+                       "if (thread_exception != nullptr)\n" <>
+                       IndentText["std::rethrow_exception(thread_exception);"]
+                       <> "\n";
              ];
            Return[result];
           ];

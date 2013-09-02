@@ -95,6 +95,7 @@ private:
    static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
    @ModelName@_physical physical;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
+   std::exception_ptr thread_exception;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
