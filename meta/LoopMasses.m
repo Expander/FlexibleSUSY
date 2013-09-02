@@ -521,13 +521,13 @@ boost::thread th(Thread(this));
 
 CallAllLoopMassFunctions[states_, thread_:{}] :=
     Module[{particles, susyParticles, smParticles, callSusy,
-            callSM = "", result, nonThreadParticles},
+            callSM = "", result, nonThreadSusyParticles},
            particles = GetLoopCorrectedParticles[states];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles = Complement[particles, susyParticles];
-           nonThreadParticles = Complement[susyParticles, thread];
+           nonThreadSusyParticles = Complement[susyParticles, thread];
            callSusy = CreateThreadObjects[thread];
-           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ nonThreadParticles;
+           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ nonThreadSusyParticles;
            (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
            result = callSusy <> "\n" <>
                     "if (calculate_sm_pole_masses) {\n" <>
