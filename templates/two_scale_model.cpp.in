@@ -27,6 +27,7 @@
 #ifdef ENABLE_LOOPTOOLS
 #include <clooptools.h>
 #endif
+#include <boost/thread.hpp>
 
 #include <cmath>
 #include <iostream>

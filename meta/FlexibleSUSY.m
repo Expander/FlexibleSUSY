@@ -292,6 +292,7 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
+                thread_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
             mixingMatrixGetters = "",
@@ -356,7 +357,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            loopMassesFunctions          = LoopMasses`CreateLoopMassFunctions[diagonalizationPrecision, {}, {}];
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
            runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
-           callAllLoopMassFunctions     = LoopMasses`CallAllLoopMassFunctions[];
+           callAllLoopMassFunctions     = LoopMasses`CallAllLoopMassFunctions[FlexibleSUSY`FSEigenstates, thread];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
@@ -650,7 +651,8 @@ Options[MakeFlexibleSUSY] :=
         defaultDiagonalizationPrecision -> MediumPrecision,
         highPrecision -> {},
         mediumPrecision -> {},
-        lowPrecision -> {}
+        lowPrecision -> {},
+        Thread -> {SARAH`Selectron, SARAH`Sneutrino, SARAH`TopSquark, SARAH`BottomSquark}
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
@@ -969,7 +971,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
                            ParametersToSolveTadpoles,
-                           nPointFunctions, phases,
+                           nPointFunctions, phases, OptionValue[Thread],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],

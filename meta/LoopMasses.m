@@ -498,21 +498,41 @@ CreateLoopMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallLoopMassFunction[particle_Symbol] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
+CallLoopMassFunction[particle_Symbol, prefix_:""] :=
+    prefix <> "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CallAllLoopMassFunctions[states_:FlexibleSUSY`FSEigenstates] :=
-    Module[{particles, susyParticles, smParticles, callSusy = "",
-            callSM = "", result},
+CreateThreadObjects[{}] := "";
+
+CreateThreadObjects[particlesInThread_List] :=
+    Module[{callLoopMassFunctions = ""},
+           (callLoopMassFunctions = callLoopMassFunctions <> CallLoopMassFunction[#, "model->"])& /@ particlesInThread;
+"struct Thread {
+   CLASSNAME* model;
+   Thread(CLASSNAME* model_) : model(model_) {}
+   void operator()() {
+" <> IndentText[IndentText[callLoopMassFunctions]] <> "
+   }
+};
+
+boost::thread th(Thread(this));
+
+"
+          ];
+
+CallAllLoopMassFunctions[states_, thread_:{}] :=
+    Module[{particles, susyParticles, smParticles, callSusy,
+            callSM = "", result, nonThreadParticles},
            particles = GetLoopCorrectedParticles[states];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles = Complement[particles, susyParticles];
-           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ susyParticles;
+           nonThreadParticles = Complement[susyParticles, thread];
+           callSusy = CreateThreadObjects[thread];
+           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ nonThreadParticles;
            (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
            result = callSusy <> "\n" <>
                     "if (calculate_sm_pole_masses) {\n" <>
                     IndentText[callSM] <>
-                    "}\n";
+                    "}\n\nth.join();\n";
            Return[result];
           ];
 
