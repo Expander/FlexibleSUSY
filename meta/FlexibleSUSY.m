@@ -652,7 +652,7 @@ Options[MakeFlexibleSUSY] :=
         highPrecision -> {},
         mediumPrecision -> {},
         lowPrecision -> {},
-        Thread -> {SARAH`Selectron, SARAH`Sneutrino, SARAH`TopSquark, SARAH`BottomSquark}
+        SeparateThread -> {SARAH`Selectron, SARAH`Sneutrino, SARAH`TopSquark, SARAH`BottomSquark}
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
@@ -971,7 +971,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
                            ParametersToSolveTadpoles,
-                           nPointFunctions, phases, OptionValue[Thread],
+                           nPointFunctions, phases, OptionValue[SeparateThread],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
