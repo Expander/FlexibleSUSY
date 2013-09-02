@@ -501,9 +501,9 @@ CreateLoopMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
 CallLoopMassFunction[particle_Symbol, prefix_:""] :=
     prefix <> "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CreateThreadObjects[{}] := "";
+CreateThreadObject[{}] := "";
 
-CreateThreadObjects[particlesInThread_List] :=
+CreateThreadObject[particlesInThread_List] :=
     Module[{callLoopMassFunctions = ""},
            (callLoopMassFunctions = callLoopMassFunctions <> CallLoopMassFunction[#, "model->"])& /@ particlesInThread;
 "struct Thread {
@@ -526,7 +526,7 @@ CallAllLoopMassFunctions[states_, thread_:{}] :=
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles = Complement[particles, susyParticles];
            nonThreadSusyParticles = Complement[susyParticles, thread];
-           callSusy = CreateThreadObjects[thread];
+           callSusy = CreateThreadObject[thread];
            (callSusy = callSusy <> CallLoopMassFunction[#])& /@ nonThreadSusyParticles;
            (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
            result = callSusy <> "\n" <>
