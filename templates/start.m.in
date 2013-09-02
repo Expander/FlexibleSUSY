@@ -20,5 +20,6 @@ MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
                  defaultDiagonalizationPrecision -> MediumPrecision,
                  highPrecision -> {hh, Ah, Hpm},
                  mediumPrecision -> {},
-                 lowPrecision -> {}
+                 lowPrecision -> {},
+                 Thread -> {SARAH`Selectron, SARAH`Sneutrino, SARAH`TopSquark, SARAH`BottomSquark}
                 ];
