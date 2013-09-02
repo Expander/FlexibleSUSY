@@ -532,7 +532,10 @@ CallAllLoopMassFunctions[states_, thread_:{}] :=
            result = callSusy <> "\n" <>
                     "if (calculate_sm_pole_masses) {\n" <>
                     IndentText[callSM] <>
-                    "}\n\nth.join();\n";
+                    "}\n";
+           If[thread =!= {},
+              result = result <> "\nth.join();\n";
+             ];
            Return[result];
           ];
 
