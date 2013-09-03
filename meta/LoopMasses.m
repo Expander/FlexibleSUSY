@@ -498,50 +498,46 @@ CreateLoopMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallLoopMassFunction[particle_Symbol, prefix_:""] :=
-    prefix <> "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
+CallLoopMassFunction[particle_Symbol] :=
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CreateThreadObject[{}] := "";
-
-CreateThreadObject[particlesInThread_List] :=
-    Module[{callLoopMassFunctions = ""},
-           (callLoopMassFunctions = callLoopMassFunctions <> CallLoopMassFunction[#, "model->"])& /@ particlesInThread;
-"struct Thread {
-   CLASSNAME* model;
-   Thread(CLASSNAME* model_) : model(model_) {}
-   void operator()() {
-      try {
-" <> IndentText[IndentText[IndentText[callLoopMassFunctions]]] <> "
-      } catch (...) {
-         model->thread_exception = std::current_exception();
-      }
-   }
-};
-
-std::thread th(Thread(this));
-
-"
+CallThreadedLoopMassFunction[particle_Symbol] :=
+    Module[{massStr},
+           massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::calculate_" <>
+           massStr <> "_pole_1loop));\n"
           ];
 
+JoinLoopMassFunctionThread[particle_Symbol] :=
+    "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
+
 CallAllLoopMassFunctions[states_, particlesInThread_:{}] :=
-    Module[{particles, susyParticles, smParticles, callSusy,
-            callSM = "", result, nonThreadSusyParticles},
+    Module[{particles, susyParticles, smParticles, callSusy = "",
+            callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles = Complement[particles, susyParticles];
-           nonThreadSusyParticles = Complement[susyParticles, particlesInThread];
-           callSusy = CreateThreadObject[particlesInThread];
-           (callSusy = callSusy <> CallLoopMassFunction[#])& /@ nonThreadSusyParticles;
-           (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
-           result = callSusy <> "\n" <>
-                    "if (calculate_sm_pole_masses) {\n" <>
-                    IndentText[callSM] <>
-                    "}\n";
-           If[particlesInThread =!= {},
-              result = result <> "\nth.join();\n\n" <>
+           If[particlesInThread === {},
+              (callSusy = callSusy <> CallLoopMassFunction[#])& /@ susyParticles;
+              (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
+              result = callSusy <> "\n" <>
+                       "if (calculate_sm_pole_masses) {\n" <>
+                       IndentText[callSM] <>
+                       "}\n";
+              ,
+              (callSusy = callSusy <> CallThreadedLoopMassFunction[#])& /@ susyParticles;
+              (callSM   = callSM   <> CallThreadedLoopMassFunction[#])& /@ smParticles;
+              (joinSmThreads   = joinSmThreads   <> JoinLoopMassFunctionThread[#])& /@ smParticles;
+              (joinSusyThreads = joinSusyThreads <> JoinLoopMassFunctionThread[#])& /@ susyParticles;
+              result = "thread_exception = nullptr;\n\n" <> callSusy <> "\n" <>
+                       "if (calculate_sm_pole_masses) {\n" <>
+                       IndentText[callSM] <>
+                       IndentText[joinSmThreads] <>
+                       "}\n\n" <>
+                       joinSusyThreads <> "\n" <>
                        "if (thread_exception != nullptr)\n" <>
-                       IndentText["std::rethrow_exception(thread_exception);"]
-                       <> "\n";
+                       IndentText["std::rethrow_exception(thread_exception);"] <>
+                       "\n";
              ];
            Return[result];
           ];

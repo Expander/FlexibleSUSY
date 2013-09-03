@@ -85,6 +85,22 @@ private:
       unsigned ewsb_loop_order;
    };
 
+   struct Thread {
+      typedef void(@ModelName@<Two_scale>::*Memfun_t)();
+      @ModelName@<Two_scale>* model;
+      Memfun_t fun;
+
+      Thread(@ModelName@<Two_scale>* model_, Memfun_t fun_)
+         : model(model_), fun(fun_) {}
+      void operator()() {
+         try {
+            (model->*fun)();
+         } catch (...) {
+            model->thread_exception = std::current_exception();
+         }
+      }
+   };
+
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
