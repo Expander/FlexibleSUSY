@@ -511,13 +511,13 @@ CallThreadedLoopMassFunction[particle_Symbol] :=
 JoinLoopMassFunctionThread[particle_Symbol] :=
     "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
 
-CallAllLoopMassFunctions[states_, particlesInThread_:{}] :=
+CallAllLoopMassFunctions[states_, enablePoleMassThreads_:False] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles = Complement[particles, susyParticles];
-           If[particlesInThread === {},
+           If[enablePoleMassThreads =!= True,
               (callSusy = callSusy <> CallLoopMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallLoopMassFunction[#])& /@ smParticles;
               result = callSusy <> "\n" <>
