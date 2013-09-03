@@ -3,9 +3,9 @@ BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
                              "CConversion`", "TreeMasses`",
                              "SelfEnergies`", "TwoLoop`", "Parameters`"}];
 
-CreateLoopMassFunctions::usage="";
-CreateLoopMassPrototypes::usage="";
-CallAllLoopMassFunctions::usage="";
+CreateOneLoopPoleMassFunctions::usage="";
+CreateOneLoopPoleMassPrototypes::usage="";
+CallAllOneLoopPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
 
@@ -470,7 +470,7 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
            Return[result];
           ];
 
-CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
+CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
     Module[{result = "", particle, prec, i = 1, f, d, tadpole, fieldsAndVevs = {}},
            (* create list that associates fields at vevs *)
            For[f = 1, f <= Length[oneLoopTadpoles], f++,
@@ -491,7 +491,7 @@ CreateLoopMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
 CreateLoopMassPrototype[particle_Symbol] :=
     "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
 
-CreateLoopMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
+CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, result = ""},
            particles = GetLoopCorrectedParticles[states];
            (result = result <> CreateLoopMassPrototype[#])& /@ particles;
@@ -511,7 +511,7 @@ CallThreadedLoopMassFunction[particle_Symbol] :=
 JoinLoopMassFunctionThread[particle_Symbol] :=
     "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
 
-CallAllLoopMassFunctions[states_, enablePoleMassThreads_:False] :=
+CallAllOneLoopPoleMassFunctions[states_, enablePoleMassThreads_:False] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
