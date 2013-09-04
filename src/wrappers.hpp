@@ -148,6 +148,17 @@ T Sqr(T a)
 
 void Symmetrize(DoubleMatrix&);
 
+template <typename Derived>
+void Symmetrize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(m.RowsAtCompileTime == m.ColsAtCompileTime,
+                 "Symmetrize is only defined for squared matrices");
+
+   for (int i = 0; i < m.RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = m(k,i);
+}
+
 Eigen::ArrayXd ToEigenArray(const DoubleVector&);
 Eigen::ArrayXd ToEigenArray(double);
 std::valarray<double> ToValarray(const DoubleVector&);
