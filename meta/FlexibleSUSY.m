@@ -551,7 +551,7 @@ PrepareRGEs[] :=
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
                      SARAH`BetaQijkl, SARAH`BetaTijk, SARAH`BetaBij,
-                     SARAH`BetaSLi, SARAH`Betam2ij, SARAH`BetaMi,
+                     SARAH`BetaLSi, SARAH`Betam2ij, SARAH`BetaMi,
                      SARAH`BetaDGi };
            If[Head[#] === Symbol && !ValueQ[#], Set[#,{}]]& /@ betas;
            If[!ValueQ[SARAH`Gij] || Head[SARAH`Gij] =!= List,
@@ -714,7 +714,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBreakingBetaFunctions = { SARAH`BetaQijkl,
                                          SARAH`BetaTijk ,
                                          SARAH`BetaBij  ,
-                                         SARAH`BetaSLi  ,
+                                         SARAH`BetaLSi  ,
                                          SARAH`Betam2ij ,
                                          SARAH`BetaMi   ,
                                          SARAH`BetaDGi  };
