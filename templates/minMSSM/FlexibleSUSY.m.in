@@ -5,12 +5,14 @@ FSModelName = "@CLASSNAME@";
 
 MINPAR = { {1, m0},
            {2, m12},
+           {4, Sign[\[Mu]]},
            {5, Azero}
          };
 
 DefaultParameterPoint = {
     {m0, 4000},
     {m12, -158},
+    {Sign[\[Mu]], 1},
     {Azero, -9000}
 };
 
