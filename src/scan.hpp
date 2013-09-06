@@ -20,8 +20,42 @@
 #define SCAN_H
 
 #include <vector>
+#include <random>
 
 namespace flexiblesusy {
+
+/**
+ * @class Uniform
+ * @brief real uniform distribution
+ *
+ * Usage:
+ * @code
+ * double x = Uniform<>::dice(0., 1.); // uses std::minstd_rand
+ * double y = Uniform<std::mt19937>::dice(0., 1.); // uses std::mt19937
+ * @endcode
+ */
+template <class Generator = std::minstd_rand>
+class Uniform {
+public:
+   /// returns random number between start and stop
+   static double dice(double start, double stop) {
+      return start + (stop - start) * distribution(generator);
+   }
+   /// returns random number between 0. and 1.
+   static double dice() {
+      return distribution(generator);
+   }
+private:
+   static Generator generator;
+   static std::uniform_real_distribution<double> distribution;
+};
+
+template <class Generator>
+Generator Uniform<Generator>::generator = Generator();
+
+template <class Generator>
+std::uniform_real_distribution<double> Uniform<Generator>::distribution
+   = std::uniform_real_distribution<double>(0., 1.);
 
 std::vector<double> float_range(double start, double stop,
                                 unsigned long number_of_steps);
