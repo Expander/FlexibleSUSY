@@ -13,6 +13,7 @@ TEMPLATES    := \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
+		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
 		$(DIR)/slha_io.cpp.in \
 		$(DIR)/susy_scale_constraint.hpp.in \

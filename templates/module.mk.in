@@ -6,6 +6,7 @@ LIB@CLASSNAME@_SRC :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/scan_@CLASSNAME@.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
@@ -23,6 +24,7 @@ endif
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/scan_@CLASSNAME@.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
@@ -51,6 +53,8 @@ LIB@CLASSNAME@     := $(DIR)/$(MODNAME)$(LIBEXT)
 
 RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
 
+SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIB@CLASSNAME@)
@@ -76,6 +80,9 @@ $(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp: $(DIR)/@CLASSNAME@_two_scale_s
 	@true
 
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+	@true
+
+$(DIR)/scan_@CLASSNAME@.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	@true
 
 $(DIR)/@CLASSNAME@_slha_io.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
@@ -168,7 +175,7 @@ $(DIR)/@CLASSNAME@_utilities.hpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.h
 $(DIR)/@CLASSNAME@_utilities.cpp: $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 	@true
 
-$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o: CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIB@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(DIR)/run_@CLASSNAME@.o $(DIR)/scan_@CLASSNAME@.o: CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MAKELIB) $@ $^
@@ -180,6 +187,9 @@ endif
 $(RUN_@CLASSNAME@_EXE): $(DIR)/run_@CLASSNAME@.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
+$(SCAN_@CLASSNAME@_EXE): $(DIR)/scan_@CLASSNAME@.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(abspath $^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
 ALLDEP += $(LIB@CLASSNAME@_DEP)
 ALLLIB += $(LIB@CLASSNAME@)
-ALLEXE += $(RUN_@CLASSNAME@_EXE)
+ALLEXE += $(RUN_@CLASSNAME@_EXE) $(SCAN_@CLASSNAME@_EXE)

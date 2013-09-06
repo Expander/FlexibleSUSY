@@ -165,6 +165,7 @@ GeneralReplacementRules[] :=
       "@BottomQuark@" -> ToValidCSymbolString[SARAH`BottomQuark],
       "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
       "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino],
+      "@HiggsBoson@"  -> ToValidCSymbolString[SARAH`HiggsBoson],
       "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
       "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
@@ -998,7 +999,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}}];
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "scan.cpp.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, "scan_" <> FlexibleSUSY`FSModelName <> ".cpp"}]}
+                            }];
 
            PrintHeadline["FlexibleSUSY has finished"];
           ];

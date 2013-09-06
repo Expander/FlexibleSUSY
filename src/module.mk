@@ -14,6 +14,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/program_options.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
+		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp \
