@@ -21,6 +21,7 @@
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 #include "lowe.h"
+#include "error.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 
@@ -114,7 +115,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
 
    int err = model->run_to(high_scale_guess);
    if (err)
-      throw NonPerturbativeRunningError(model, high_scale_guess);
+      throw NonPerturbativeRunningError(high_scale_guess);
 
    // apply high-scale constraint
    high_constraint.set_model(model);
@@ -125,7 +126,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
 
    err = model->run_to(low_scale_guess);
    if (err)
-      throw NonPerturbativeRunningError(model, low_scale_guess);
+      throw NonPerturbativeRunningError(low_scale_guess);
 
    // apply EWSB constraint
    model->solve_ewsb_tree_level();
