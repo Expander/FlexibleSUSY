@@ -150,9 +150,9 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
          if (model.run_to(parameter_output_scale))
             throw NonPerturbativeRunningError(parameter_output_scale);
       }
-   } catch (const NoConvergenceError& error) {
+   } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
-   } catch (const NonPerturbativeRunningError& error) {
+   } catch (const NonPerturbativeRunningError&) {
       model.get_problems().flag_no_perturbative();
    } catch (const Error& error) {
       model.get_problems().flag_thrown();
