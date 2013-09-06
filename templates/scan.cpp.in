@@ -47,7 +47,7 @@ int main()
    spectrum_generator.set_pole_mass_loop_order(1);
    spectrum_generator.set_ewsb_loop_order(1);
 
-   const std::vector<double> tan_beta_range(float_range(1., 101., 100));
+   const std::vector<double> tan_beta_range(float_range(0., 100., 10));
 
    cout << "# [1] tan(beta) | [2] error | [3] lightest Higgs/GeV | [4] time/s\n";
 
