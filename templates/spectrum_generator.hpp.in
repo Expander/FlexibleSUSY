@@ -152,19 +152,14 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       }
    } catch (const NoConvergenceError& error) {
       model.get_problems().flag_no_convergence();
-      ERROR(error.what());
    } catch (const NonPerturbativeRunningError& error) {
       model.get_problems().flag_no_perturbative();
-      ERROR(error.what());
    } catch (const Error& error) {
       model.get_problems().flag_thrown();
-      ERROR(error.what());
    } catch (const std::string& str) {
       model.get_problems().flag_thrown();
-      ERROR(str);
    } catch (const char* str) {
       model.get_problems().flag_thrown();
-      ERROR(str);
    }
 }
 
