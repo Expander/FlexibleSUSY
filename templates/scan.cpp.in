@@ -49,7 +49,7 @@ int main()
 
    const std::vector<double> tan_beta_range(float_range(1., 101., 100));
 
-   cout << "# [1] tan(beta) | [2] lightest Higgs/GeV | [3] time/s\n";
+   cout << "# [1] tan(beta) | [2] error | [3] lightest Higgs/GeV | [4] time/s\n";
 
    for (std::vector<double>::const_iterator it = tan_beta_range.begin(),
            end = tan_beta_range.end(); it != end; ++it) {
@@ -61,11 +61,20 @@ int main()
 
       const @ModelName@<algorithm_type>& model = spectrum_generator.get_model();
       const @ModelName@_physical& pole_masses = model.get_physical();
+      const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+         = spectrum_generator.get_problems();
       const double higgs = pole_masses.M@HiggsBoson@(1);
+      const bool error = problems.have_serious_problem();
 
       cout << input.TanBeta << '\t'
+           << error << '\t'
            << higgs << '\t'
-           << stopwatch.get_time_in_seconds() << '\n';
+           << stopwatch.get_time_in_seconds();
+      if (error) {
+         cout << "\t# ";
+         problems.print(cout);
+      }
+      cout << '\n';
    }
 
    return 0;
