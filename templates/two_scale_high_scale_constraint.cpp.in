@@ -72,18 +72,24 @@ void @ModelName@_high_scale_constraint<Two_scale>::apply()
           " model pointer must not be zero");
 
    if (std::fabs(model->get_@hyperchargeCoupling@()) > 3.0) {
+#ifdef VERBOSE
       ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
             "coupling @hyperchargeCoupling@ = " << model->get_@hyperchargeCoupling@());
+#endif
       model->set_@hyperchargeCoupling@(1.0);
    }
    if (std::fabs(model->get_@leftCoupling@()) > 3.0) {
+#ifdef VERBOSE
       ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
             "coupling @leftCoupling@ = " << model->get_@leftCoupling@());
+#endif
       model->set_@leftCoupling@(1.0);
    }
    if (std::fabs(model->get_@strongCoupling@()) > 3.0) {
+#ifdef VERBOSE
       ERROR("@ModelName@_high_scale_constraint: Non-perturbative gauge "
             "coupling @strongCoupling@ = " << model->get_@strongCoupling@());
+#endif
       model->set_@strongCoupling@(1.0);
    }
 
@@ -126,8 +132,10 @@ void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 @calculateScale@
 
    if (errno == ERANGE) {
+#ifdef VERBOSE
       ERROR("@ModelName@_high_scale_constraint<Two_scale>: Overflow error"
             " during calculation of high scale: " << strerror(errno));
+#endif
       scale = get_initial_scale_guess();
       errno = 0;
    }
