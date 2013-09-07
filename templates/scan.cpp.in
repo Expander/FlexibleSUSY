@@ -49,11 +49,11 @@ int main()
 
    const std::vector<double> range(float_range(0., 100., 10));
 
-   cout << "# [1] tan(beta) | [2] error | [3] lightest Higgs/GeV | [4] time/s\n";
+   cout << "# [1] @InputParameter_1@ | [2] error | [3] lightest Higgs/GeV | [4] time/s\n";
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
-      input.TanBeta = *it;
+      input.@InputParameter_1@ = *it;
 
       stopwatch.start();
       spectrum_generator.run(oneset, input);
@@ -66,7 +66,7 @@ int main()
       const double higgs = pole_masses.M@HiggsBoson@(1);
       const bool error = problems.have_serious_problem();
 
-      cout << input.TanBeta << '\t'
+      cout << input.@InputParameter_1@ << '\t'
            << error << '\t'
            << higgs << '\t'
            << stopwatch.get_time_in_seconds();
