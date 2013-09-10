@@ -10,7 +10,6 @@ CreateBetaFunction::usage="";
 CountNumberOfParameters::usage="";
 CreateDisplayFunction::usage="";
 CreateSetFunction::usage="";
-ConvertParameterNames::usage="";
 CreateSetters::usage="";
 CreateGetters::usage="";
 CreateParameterDefinitions::usage="";
@@ -205,16 +204,6 @@ CreateParameterEnum[betaFunctions_List] :=
                     result <> "};\n";
            Return[result];
           ];
-
-ConvertParameterNames[betaFunctions_List] :=
-    Module[{names = {}, rules = {}},
-           names = (GetName[#])& /@ betaFunctions;
-           names = Flatten[names /. a_[i1,i2] :> a];
-           rules = (Rule[#, ToValidCSymbol[#]])& /@ names;
-           (If[#[[1]] =!= #[[2]], SARAH`getDimParameters[#[[2]]] = SARAH`getDimParameters[#[[1]]]];)& /@ rules;
-           rules = Cases[rules, HoldPattern[Rule[a_,b_]] /; a=!=b, 1];
-           Return[rules];
-           ];
 
 (* create setters *)
 CreateSetters[betaFunction_BetaFunction] :=

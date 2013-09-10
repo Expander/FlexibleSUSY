@@ -24,23 +24,12 @@ function name for a given field";
 CreateHeavyRotatedSelfEnergyFunctionName::usage="creates heavy rotated
 self-energy function name for a given field";
 
-SetParameterReplacementRules::usage="replacement rules for model
-parameters";
-
 SetIndexReplacementRules::usage="set index replacement rules for model
 parameters";
 
 FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
 Begin["Private`"];
-
-parameterReplacementRules = {};
-
-SetParameterReplacementRules[rules_List] :=
-    parameterReplacementRules = rules;
-
-SetParameterReplacementRules[rules_Rule] :=
-    parameterReplacementRules = {rule};
 
 indexReplacementRules = {};
 
@@ -490,7 +479,7 @@ CreateCouplingFunctions[coupling_, sumOverInternalColors_:False] :=
               strippedIndices = Complement[allIndices, neededIndices];
               vertex = Drop[vertex, 1]; (* drop particle list *)
               lorentz = GetLorentzStructure[coupling];
-              expr = FindLorentzStructure[vertex, lorentz] /. parameterReplacementRules;
+              expr = FindLorentzStructure[vertex, lorentz];
               If[sumOverInternalColors,
                  (* SARAH workaround: to resolve the color factor C
                     which appears in the self-energy of Sd and Su
@@ -648,7 +637,6 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
                   ExpandSums[expr /. vertexRules /.
                              a_[List[i__]] :> a[i] /.
                              ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
-                             parameterReplacementRules /.
                              C -> 1
                              ,"result"] <>
                   "\nreturn result * oneOver16PiSqr;";

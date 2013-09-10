@@ -154,7 +154,7 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
 
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
     Module[{realParameters, simplificationRules},
-           realParameters = CConversion`ToValidCSymbol /@ Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
+           realParameters = Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
            simplificationRules = Flatten[{Rule[SARAH`Conj[#],#], Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters];
            equations /. simplificationRules
           ];
@@ -228,14 +228,13 @@ ReduceSolution[solution_List, signs_List] :=
           ];
 
 SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
-    Module[{result = "", simplifiedEqs, parameters, parameterConversion,
+    Module[{result = "", simplifiedEqs, parameters,
             solution, signs, reducedSolution, i, par, expr, parStr},
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
            simplifiedEqs = (#[[2]] == 0)& /@ simplifiedEqs;
-           parameters = CConversion`ToValidCSymbol /@ parametersFixedByEWSB;
+           parameters = parametersFixedByEWSB;
            solution = Solve[simplifiedEqs, parameters];
-           parameterConversion = Rule[#,CConversion`ToValidCSymbol[#]]& /@ parametersFixedByEWSB;
-           signs = Cases[FindFreePhase /@ parametersFixedByEWSB, FlexibleSUSY`Sign[_]] /. parameterConversion;
+           signs = Cases[FindFreePhase /@ parametersFixedByEWSB, FlexibleSUSY`Sign[_]];
            (* Try to reduce the solution *)
            If[CanReduceSolution[solution, signs],
               reducedSolution = ReduceSolution[solution, signs];

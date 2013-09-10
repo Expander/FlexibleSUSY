@@ -660,7 +660,6 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
-            susyParameterReplacementRules, susyBreakingParameterReplacementRules,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases, fixedParameters},
@@ -724,12 +723,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
-           susyParameterReplacementRules = BetaFunction`ConvertParameterNames[susyBetaFunctions];
-           susyBetaFunctions = susyBetaFunctions /. susyParameterReplacementRules;
 
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
-           anomDim = anomDim /. BetaFunction`ConvertParameterNames[anomDim] /. susyParameterReplacementRules;
 
            PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
@@ -742,12 +738,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(GetName /@ susyBreakingBetaFunctions) /. a_[i1,i2] :> a];
-           susyBreakingParameterReplacementRules = Flatten[{susyParameterReplacementRules, BetaFunction`ConvertParameterNames[susyBreakingBetaFunctions]}];
-           susyBreakingBetaFunctions = susyBreakingBetaFunctions /. susyBreakingParameterReplacementRules;
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
-           {traceDecl, traceRules} = CreateTraceAbbr[SARAH`TraceAbbr /. susyBreakingParameterReplacementRules];
+           {traceDecl, traceRules} = CreateTraceAbbr[SARAH`TraceAbbr];
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. traceRules;
 
            (* store all model parameters *)
@@ -755,14 +749,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
-           FlexibleSUSY`FSLesHouchesList = SA`LHList /. susyBreakingParameterReplacementRules;
+           FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* search for unfixed parameters *)
            fixedParameters = Join[ParametersToSolveTadpoles,
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
-                                 ] /. susyBreakingParameterReplacementRules;
+                                 ];
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[fixedParameters];
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
               FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True,
@@ -818,9 +812,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* remove free phases which are already defined in FlexibleSUSY`InputParameters *)
            freePhases = Complement[freePhases, FlexibleSUSY`InputParameters];
 
-           ewsbEquations = ewsbEquations /.
-                           susyBreakingParameterReplacementRules;
-
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
                                     If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
@@ -831,7 +822,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    ];
 
            massMatrices = ConvertSarahMassMatrices[] /.
-                          susyBreakingParameterReplacementRules /.
                           Parameters`ApplyGUTNormalization[] /.
                           { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) } /.
                           allIndexReplacementRules;
@@ -888,9 +878,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating constraints"];
            Print["Creating class for high-scale constraint ..."];
-           WriteConstraintClass[FlexibleSUSY`HighScale /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`HighScaleInput /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`HighScaleFirstGuess /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[FlexibleSUSY`HighScale,
+                                FlexibleSUSY`HighScaleInput,
+                                FlexibleSUSY`HighScaleFirstGuess,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
@@ -905,9 +895,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for susy-scale constraint ..."];
-           WriteConstraintClass[FlexibleSUSY`SUSYScale /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`SUSYScaleInput /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`SUSYScaleFirstGuess /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[FlexibleSUSY`SUSYScale,
+                                FlexibleSUSY`SUSYScaleInput,
+                                FlexibleSUSY`SUSYScaleFirstGuess,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
@@ -922,8 +912,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                ];
 
            Print["Creating class for low-scale constraint ..."];
-           WriteConstraintClass[FlexibleSUSY`LowScale /. susyBreakingParameterReplacementRules,
-                                FlexibleSUSY`LowScaleInput /. susyBreakingParameterReplacementRules,
+           WriteConstraintClass[FlexibleSUSY`LowScale,
+                                FlexibleSUSY`LowScaleInput,
                                 FlexibleSUSY`LowScaleFirstGuess,
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
@@ -943,8 +933,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               initialGuesserInputFile = "initial_guesser_low_scale_model";
              ];
-           WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale /. susyBreakingParameterReplacementRules,
-                                    FlexibleSUSY`InitialGuessAtHighScale /. susyBreakingParameterReplacementRules,
+           WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
+                                    FlexibleSUSY`InitialGuessAtHighScale,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
@@ -958,7 +948,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-           SelfEnergies`SetParameterReplacementRules[susyBreakingParameterReplacementRules];
            SelfEnergies`SetIndexReplacementRules[allIndexReplacementRules];
 
            phases = ConvertSarahPhases[SARAH`ParticlePhases];
