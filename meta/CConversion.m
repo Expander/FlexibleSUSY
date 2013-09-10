@@ -171,6 +171,18 @@ MakeUnique[name_String] :=
 MakeUniqueStr[name_String] :=
     ToString[MakeUnique[name]];
 
+(* checks if sym contains a greek symbol *)
+GreekQ[sym_] :=
+    (Plus @@ (StringCount[ToString[sym], #]& /@
+              {"\[Alpha]", "\[Beta]", "\[Gamma]", "\[Delta]", "\[Epsilon]",
+               "\[CurlyEpsilon]", "\[Zeta]", "\[Eta]", "\[Theta]",
+               "\[CurlyTheta]", "\[Iota]", "\[Kappa]", "\[CurlyKappa]",
+               "\[Lambda]", "\[Mu]", "\[Nu]", "\[Xi]", "\[Omicron]",
+               "\[Pi]", "\[CurlyPi]", "\[Rho]", "\[CurlyRho]",
+               "\[Sigma]", "\[FinalSigma]", "\[Tau]", "\[Upsilon]",
+               "\[Phi]", "\[CurlyPhi]", "\[Chi]", "\[Psi]", "\[Omega]",
+               "\[Digamma]", "\[Koppa]", "\[Stigma]", "\[Sampi]"})) > 0;
+
 ConvertGreekLetters[text_] :=
    Symbol[StringReplace[ToString[text], {
        (* replace greek symbol by uniqe greek symbol string only if
