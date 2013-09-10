@@ -162,7 +162,7 @@ SortBlocks[modelParameters_List] :=
            reformed = LesHouchesNameToFront /@ modelParameters;
            allBlocks = DeleteDuplicates[Transpose[reformed][[1]]];
            collected = {#, Cases[reformed, {#, a_} :> a]}& /@ allBlocks;
-           collected = collected /. {a_Symbol} :> a
+           Return[collected];
           ];
 
 WriteSLHABlock[{blockName_, tuples_List}] :=
@@ -186,6 +186,9 @@ WriteSLHABlock[{blockName_, tuples_List}] :=
 
 WriteSLHABlock[{blockName_, parameter_}] :=
     WriteSLHAMatrix[{parameter, blockName}, "MODELPARAMETER", "model.get_scale()"];
+
+WriteSLHABlock[{blockName_, {parameter_}}] :=
+    WriteSLHABlock[{blockName, parameter}];
 
 WriteSLHAModelParametersBlocks[] :=
     Module[{result = "", modelParameters, blocks},
