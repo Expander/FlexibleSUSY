@@ -294,8 +294,9 @@ Format[SARAH`T[x_],CForm] :=
 Format[FlexibleSUSY`GreekSymbol[x_],CForm] :=
     Format[ToValidCSymbol[x], OutputForm];
 
-Format[SARAH`Conj[x_],CForm]            :=
-    If[SARAH`getDimParameters[x] === {} || SARAH`getDimParameters[x] === {0},
+Format[SARAH`Conj[x_],CForm] :=
+    If[SARAH`getDimParameters[x /. FlexibleSUSY`GreekSymbol -> Identity] === {} ||
+       SARAH`getDimParameters[x /. FlexibleSUSY`GreekSymbol -> Identity] === {0},
        Format["Conj(" <> ToString[CForm[x]] <> ")", OutputForm],
        Format[ToString[CForm[x]] <> ".conjugate()", OutputForm]
       ];
