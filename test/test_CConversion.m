@@ -77,6 +77,14 @@ TestEquality[RValueToCFormString[a[i1,i2]], "a"];
 TestEquality[RValueToCFormString[a[b][i1,i2]], "a(b)"];
 TestEquality[RValueToCFormString[a[b,c][i1,i2]], "a(b,c)"];
 
+(* test greek symbol conversion *)
+TestEquality[RValueToCFormString[\[Mu]], "Mu"];
+TestEquality[RValueToCFormString[SARAH`B[\[Mu]]], "BMu"];
+TestEquality[RValueToCFormString[A[\[Mu]]], "A(Mu)"];
+TestEquality[RValueToCFormString[\[Mu][1]], "Mu(1)"];
+TestEquality[RValueToCFormString[\[Mu][1,2]], "Mu(1,2)"];
+TestEquality[RValueToCFormString[\[Mu][1,2,3]], "Mu(1,2,3)"];
+
 Print["testing GetHead[] ..."];
 
 TestEquality[GetHead[1], 1];

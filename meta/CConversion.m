@@ -329,7 +329,7 @@ Format[SARAH`trace[HoldPattern[x_]],CForm] :=
  *)
 RValueToCFormString[expr_] :=
     Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
-           symbols = Cases[{expr}, _Symbol, Infinity];
+           symbols = Cases[{expr}, x_Symbol | x_Symbol[__] :> x, Infinity];
            greekSymbols = Select[symbols, GreekQ];
            greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
            result = expr /.
