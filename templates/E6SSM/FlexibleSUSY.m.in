@@ -69,7 +69,7 @@ HighScaleInput={
    {MassWB,m12},
    {MassG,m12},
    {MassU,m12},
-   {BmuPrime, BmuPrimeInput},
+   {B[muPrime], BmuPrimeInput},
    {muPrime, muPrimeInput}
 };
 
@@ -89,7 +89,7 @@ InitialGuessAtLowScale = {
    {mHd2, SM[MZ]^2},
    {mHu2, SM[MZ]^2},
    {ms2, SM[MZ]^2},
-   {BmuPrime, SM[MZ]^2},
+   {B[muPrime], SM[MZ]^2},
    {muPrime, SM[MZ]}
 };
 
