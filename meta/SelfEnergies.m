@@ -29,7 +29,7 @@ parameters";
 
 FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
-Begin["Private`"];
+Begin["`Private`"];
 
 indexReplacementRules = {};
 

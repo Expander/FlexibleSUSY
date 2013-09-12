@@ -112,7 +112,7 @@ IsUnmixed::usage="";
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 unrotatedParticles = {};
 

@@ -3,10 +3,10 @@ Needs["TreeMasses`", "TreeMasses.m"];
 
 Print["testing IsSymmetric[] ..."];
 
-TestEquality[Private`IsSymmetric[{}], True];
-TestEquality[Private`IsSymmetric[{a}], False];
-TestEquality[Private`IsSymmetric[{{a}}], True];
-TestEquality[Private`IsSymmetric[{{a,b},{b,a}}], True];
-TestEquality[Private`IsSymmetric[{{a,b},{c,a}}], False];
+TestEquality[TreeMasses`Private`IsSymmetric[{}], True];
+TestEquality[TreeMasses`Private`IsSymmetric[{a}], False];
+TestEquality[TreeMasses`Private`IsSymmetric[{{a}}], True];
+TestEquality[TreeMasses`Private`IsSymmetric[{{a,b},{b,a}}], True];
+TestEquality[TreeMasses`Private`IsSymmetric[{{a,b},{c,a}}], False];
 
 PrintTestSummary[];

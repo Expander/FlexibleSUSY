@@ -13,7 +13,7 @@ GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for
 ghosts.";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 GetLoopCorrectedParticles[states_] :=
     Module[{particles},
