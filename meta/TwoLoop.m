@@ -9,7 +9,7 @@ GetDeltaMOverMQCDTwoLoop::usage="Returns two-loop QCD contributions to
 Delta m_f/m_f in the DRbar scheme.  Taken from hep-ph/0210258
 Eq. (60)-(61).";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 GetDeltaMOverMQCDTwoLoop[quark_ /; quark === SARAH`TopQuark, renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, log, result},

@@ -21,7 +21,7 @@ SolveTreeLevelEwsbVia::usage="Solves tree-level EWSB equations for the
 given list of parameters.  Retuns an empty string if no unique
 solution can be found";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 freePhases = {};
 

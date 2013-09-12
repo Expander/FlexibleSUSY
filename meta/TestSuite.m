@@ -7,7 +7,7 @@ result";
 PrintTestSummary::usage="prints test summary";
 GetNumberOfFailedTests::usage="returns number of failed tests";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 numberOfFailedTests := 0;
 numberOfPassedTests := 0;
