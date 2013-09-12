@@ -7,7 +7,7 @@ CreateAnomDimFunctions::usage="";
 CreateAnomDimPrototypes::usage="";
 ConvertSarahAnomDim::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 GetName[AnomalousDimension[name_, type_, anom_List]] := name;
 
