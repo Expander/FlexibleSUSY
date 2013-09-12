@@ -40,7 +40,7 @@ MZ;
 
 FSEigenstates;
 
-Begin["Private`"];
+Begin["`Private`"];
 
 allParameters = {};
 
