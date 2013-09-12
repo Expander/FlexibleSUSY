@@ -191,7 +191,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters},
           (* extract list of parameters from the beta functions *)
-          parameters = GetName[#]& /@ betaFun;
+          parameters = BetaFunction`GetName[#]& /@ betaFun;
           (* count number of parameters *)
           numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun] + numberOfBaseClassParameters;
           (* create C++ functions and parameter declarations *)
@@ -722,7 +722,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-           Parameters`AddRealParameter[(GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
+           Parameters`AddRealParameter[(BetaFunction`GetName /@ susyBetaFunctions) /. a_[i1,i2] :> a];
 
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
@@ -737,7 +737,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-           Parameters`AddRealParameter[(GetName /@ susyBreakingBetaFunctions) /. a_[i1,i2] :> a];
+           Parameters`AddRealParameter[(BetaFunction`GetName /@ susyBreakingBetaFunctions) /. a_[i1,i2] :> a];
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
@@ -745,8 +745,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            susyBreakingBetaFunctions = susyBreakingBetaFunctions /. traceRules;
 
            (* store all model parameters *)
-           allParameters = Join[GetName /@ susyBetaFunctions,
-                                GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
+           allParameters = Join[BetaFunction`GetName /@ susyBetaFunctions,
+                                BetaFunction`GetName /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
@@ -764,8 +764,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["  ", FlexibleSUSY`FSUnfixedParameters];
              ];
            (* adding the types and their input names to the parameters *)
-           FlexibleSUSY`FSUnfixedParameters = Select[Join[{GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
-                                                          {GetName[#], Symbol[ToValidCSymbolString[GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a,
+           FlexibleSUSY`FSUnfixedParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
+                                                          {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /. a_[i1,i2] :> a,
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,

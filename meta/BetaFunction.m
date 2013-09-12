@@ -22,7 +22,9 @@ ClearParameters::usage="";
 CreateParameterEnum::usage="";
 CreateParameterNames::usage="";
 
-Begin["Private`"];
+GetName::usage="returns parameter name from beta function";
+
+Begin["`Private`"];
 
 GetName[BetaFunction[name_, type_, beta_List]] := name;
 
