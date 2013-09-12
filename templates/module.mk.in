@@ -107,8 +107,10 @@ $(DIR)/@CLASSNAME@_spectrum_generator.hpp \
 $(DIR)/@CLASSNAME@_utilities.hpp \
 $(DIR)/@CLASSNAME@_utilities.cpp \
 : run-metacode-$(MODNAME)
+	@true
 
 run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
+	@true
 
 $(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES)
 	$(MATH) -run "Get[\"$<\"]; Quit[]"
