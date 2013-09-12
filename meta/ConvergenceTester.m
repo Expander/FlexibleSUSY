@@ -3,7 +3,7 @@ BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMass
 
 CreateCompareFunction::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 CountNumberOfMasses[particles_List] :=
     Plus @@ (TreeMasses`GetDimension /@ particles);
