@@ -80,6 +80,8 @@ matrix";
 GetMixingMatrixSymbol::usage="get mixing matrix symbol from mass
 matrix";
 
+GetMassOfUnmixedParticle::usage="returns mass of unmixed particle";
+
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
 
