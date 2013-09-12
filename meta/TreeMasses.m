@@ -105,6 +105,7 @@ IsDiracFermion::usage="";
 IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
+IsUnmixed::usage="";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
