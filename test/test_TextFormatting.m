@@ -3,27 +3,27 @@ Needs["TextFormatting`", "TextFormatting.m"];
 
 Print["testing GetBestSplitPoint[] ..."];
 
-TestEquality[Private`GetBestSplitPoint["",0], 0];
-TestEquality[Private`GetBestSplitPoint["a",1], 1];
-TestEquality[Private`GetBestSplitPoint["a b",1], 1];
-TestEquality[Private`GetBestSplitPoint["a b",2], 2];
-TestEquality[Private`GetBestSplitPoint["a b c",4], 4];
-TestEquality[Private`GetBestSplitPoint["a b c",10], StringLength["a b c"]];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["",0], 0];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["a",1], 1];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["a b",1], 1];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["a b",2], 2];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["a b c",4], 4];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["a b c",10], StringLength["a b c"]];
 
 (* test that we do not split a C string *)
-TestEquality[Private`GetBestSplitPoint["\"a,b\"\"cd\"",2], StringLength["\"a,b\"\"cd\""]];
-TestEquality[Private`GetBestSplitPoint["1 + \"a,b\"",7], 4];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["\"a,b\"\"cd\"",2], StringLength["\"a,b\"\"cd\""]];
+TestEquality[TextFormatting`Private`GetBestSplitPoint["1 + \"a,b\"",7], 4];
 
 Print["testing SplitLine[] ..."];
 
-TestEquality[Private`SplitLine["",0], {""}];
-TestEquality[Private`SplitLine["",1], {""}];
-TestEquality[Private`SplitLine["a b",1], {"a", " ", "b"}];
-TestEquality[Private`SplitLine["a b",2], {"a ", "b"}];
-TestEquality[Private`SplitLine["a b c",3], {"a b", " c"}];
-TestEquality[Private`SplitLine["a b c",4], {"a b ", "c"}];
+TestEquality[TextFormatting`Private`SplitLine["",0], {""}];
+TestEquality[TextFormatting`Private`SplitLine["",1], {""}];
+TestEquality[TextFormatting`Private`SplitLine["a b",1], {"a", " ", "b"}];
+TestEquality[TextFormatting`Private`SplitLine["a b",2], {"a ", "b"}];
+TestEquality[TextFormatting`Private`SplitLine["a b c",3], {"a b", " c"}];
+TestEquality[TextFormatting`Private`SplitLine["a b c",4], {"a b ", "c"}];
 (* no break possible *)
-TestEquality[Private`SplitLine["abcdefghij",5], {"abcdefghij"}];
+TestEquality[TextFormatting`Private`SplitLine["abcdefghij",5], {"abcdefghij"}];
 
 Print["testing WrapLines[] ..."];
 

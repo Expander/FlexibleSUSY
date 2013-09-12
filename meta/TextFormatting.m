@@ -4,7 +4,7 @@ BeginPackage["TextFormatting`"];
 WrapLines::usage="breaks text lines";
 IndentText::usage="indents text by a given number of spaces";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 GetBestSplitPoint[line_String, maxWidth_:79] :=
     Module[{chars, lastSplitPoint, i, char, nextChar, numberOfQuotes = 0,
