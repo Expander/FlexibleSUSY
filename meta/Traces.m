@@ -11,7 +11,7 @@ two-component list, where the first entry is string of C/C++ variable
 definitions that hold the trace values.  The second entry is a list of
 rules to replace the traces by their C/C++ variables.";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 CreateTraceAbbr[abbrs_] :=
     Module[{def = "", i, j, name, expr, rules = {}},
