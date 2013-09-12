@@ -11,7 +11,7 @@ parameters which are fixed by the given constraint";
 
 SetBetaFunctions::usage=""
 
-Begin["Private`"];
+Begin["`Private`"];
 
 allBetaFunctions = {};
 
