@@ -50,7 +50,7 @@ form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 (* This rule is essential for the ExpandSums[] function.
  * It prevents the following bug:
