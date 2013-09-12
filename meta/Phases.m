@@ -11,7 +11,7 @@ for phase getters and setters";
 CreatePhasesInitialization::usage="creates initialization list of
 phases"
 
-Begin["Private`"];
+Begin["`Private`"];
 
 ConvertSarahPhases[phases_List] :=
     DeleteDuplicates[(#[[2]])& /@ phases];
