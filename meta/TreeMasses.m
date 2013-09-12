@@ -60,6 +60,8 @@ GetGoldstoneBosons::usage="returns list of all goldstone bosons";
 GetSMGoldstoneBosons::usage="returns list of all Standard Model
 goldstone bosons";
 
+GetVectorBosons::usage="returns list of all vector bosons";
+
 GetDimension::usage="returns the size of the particle multiplet";
 
 GetDimensionStartSkippingGoldstones::usage="return first index,
