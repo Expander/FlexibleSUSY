@@ -8,7 +8,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 ReadUnfixedParameters::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 (*
  * @brief Replaces tokens in files.
