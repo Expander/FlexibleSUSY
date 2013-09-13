@@ -6992,8 +6992,8 @@ void Softsusy<SoftPars>::lowOrg
     boundaryCondition(*this, pars);
 
     if ((sgnMu == 1 || sgnMu == -1) && !ewsbBCscale) {
-      setSusyMu(sgnMu * MZ);
-      setM3Squared(1.0e6);
+      setSusyMu(sgnMu * 1.0);
+      setM3Squared(0.);
     }
     else {
       if (altEwsb) {
