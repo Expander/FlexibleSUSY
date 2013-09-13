@@ -102,8 +102,8 @@ void Mssm_initial_guesser::guess()
    mssm->standardSugra(pp.m0, pp.m12, pp.a0);
 
    if ((sgnMu == 1 || sgnMu == -1) && !ewsbBCscale) {
-      mssm->setSusyMu(sgnMu * MZ);
-      mssm->setM3Squared(1.0e6);
+      mssm->setSusyMu(sgnMu * 1.0);
+      mssm->setM3Squared(0.);
    } else {
       if (mssm->displayAltEwsb()) {
          mssm->setSusyMu(mssm->displayMuCond());
