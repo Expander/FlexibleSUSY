@@ -65,9 +65,9 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
  */
 void test_equality(const sPhysical& a, const sPhysical& b, double tolerance)
 {
-   BOOST_CHECK_CLOSE(a.mh0         , b.mh0         , tolerance);
-   BOOST_CHECK_CLOSE(a.mA0         , b.mA0         , tolerance);
-   BOOST_CHECK_CLOSE(a.mH0         , b.mH0         , tolerance);
+   BOOST_CHECK_CLOSE(a.mh0(1)      , b.mh0(1)      , tolerance);
+   BOOST_CHECK_CLOSE(a.mA0(1)      , b.mA0(1)      , tolerance);
+   BOOST_CHECK_CLOSE(a.mh0(2)      , b.mh0(2)      , tolerance);
    BOOST_CHECK_CLOSE(a.mHpm        , b.mHpm        , tolerance);
    BOOST_CHECK_CLOSE(a.mGluino     , b.mGluino     , tolerance);
    BOOST_CHECK_CLOSE(a.thetaL      , b.thetaL      , tolerance);
@@ -155,7 +155,8 @@ public:
 #ifdef VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
-      mx = softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, oneset, true);
+      softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, oneset, true);
+      mx = softSusy.displayMxBC();
       softsusy::PRINTOUT = 0;
 
       stopwatch.stop();

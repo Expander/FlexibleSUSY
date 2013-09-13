@@ -230,8 +230,9 @@ public:
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
       softSusy.setAlternativeMs(true);
-      mx = softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta,
-                           oneset, gaugeUnification);
+      softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta,
+                      oneset, gaugeUnification);
+      mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
 
@@ -422,9 +423,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    const double MwRun = fs.get_MVWm();
    const double MzRun = fs.get_MVZ();
    const double mHpm = ss.displayDrBarPars().mHpm;
-   const double mA0 = ss.displayDrBarPars().mA0;
-   const double mh0 = ss.displayDrBarPars().mh0;
-   const double mH0 = ss.displayDrBarPars().mH0;
+   const double mA0 = ss.displayDrBarPars().mA0(1);
+   const double mh0 = ss.displayDrBarPars().mh0(1);
+   const double mH0 = ss.displayDrBarPars().mh0(2);
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.0013);
@@ -508,9 +509,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    const DoubleVector mch_1l(ss.displayPhys().mch),
       mn_1l(ss.displayPhys().mneut.apply(fabs));
    const double mHpm_1l = ss.displayPhys().mHpm;
-   const double mA0_1l  = ss.displayPhys().mA0;
-   const double mh0_1l  = ss.displayPhys().mh0;
-   const double mH0_1l  = ss.displayPhys().mH0;
+   const double mA0_1l  = ss.displayPhys().mA0(1);
+   const double mh0_1l  = ss.displayPhys().mh0(1);
+   const double mH0_1l  = ss.displayPhys().mh0(2);
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0011);
@@ -613,9 +614,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
    const double MwRun = fs.get_MVWm();
    const double MzRun = fs.get_MVZ();
    const double mHpm = ss.displayDrBarPars().mHpm;
-   const double mA0 = ss.displayDrBarPars().mA0;
-   const double mh0 = ss.displayDrBarPars().mh0;
-   const double mH0 = ss.displayDrBarPars().mH0;
+   const double mA0 = ss.displayDrBarPars().mA0(1);
+   const double mh0 = ss.displayDrBarPars().mh0(1);
+   const double mH0 = ss.displayDrBarPars().mh0(2);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
    BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0011);

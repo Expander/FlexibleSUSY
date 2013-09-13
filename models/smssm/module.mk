@@ -2,8 +2,8 @@ DIR          := models/smssm
 MODNAME      := libsmssm
 
 LIBSMSSM_SRC  := \
+		$(DIR)/mssmUtils.cpp \
 		$(DIR)/physpars.cpp \
-		$(DIR)/softsusy.cpp \
 		$(DIR)/susy.cpp \
 		$(DIR)/twoloophiggs.f
 

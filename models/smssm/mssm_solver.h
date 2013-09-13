@@ -61,7 +61,7 @@ private:
 RGFlow<SoftSusy_t>::RGFlow()
    : fMssmSoftSusy()
    , fHighScaleBoundaryCondition(sugraBcs)
-   , fMxGuess(1.0e16)
+   , fMxGuess(1.9e16)
    , fSoftHighScalePars(3)
    , fSignMu(1)
    , fTanBeta(10)

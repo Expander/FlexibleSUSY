@@ -969,8 +969,8 @@ int main(int argc, char *argv[]) {
     //    double muFirst = 1000.;
     //    r->setSusyMu(muFirst);
 
-    double mgut =  r->lowOrg(boundaryCondition, mgutGuess, pars, sgnMu,
-			     tanb, oneset, gaugeUnification, ewsbBCscale);
+    r->lowOrg(boundaryCondition, mgutGuess, pars, sgnMu,
+              tanb, oneset, gaugeUnification, ewsbBCscale);
 
     /// Fix to mh if additional operators are assumed
     if (desiredMh > 0.1) {
@@ -978,7 +978,7 @@ int main(int argc, char *argv[]) {
     }
     
     r->lesHouchesAccordOutput(cout, modelIdent, pars, sgnMu, tanb, qMax,  
-			      numPoints, mgut, ewsbBCscale);
+			      numPoints, ewsbBCscale);
     
     if (r->displayProblem().test()) {
       cout << "# SOFTSUSY problem with point: " << r->displayProblem() << endl;

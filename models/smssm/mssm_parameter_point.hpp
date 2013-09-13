@@ -28,7 +28,7 @@ struct Mssm_parameter_point {
       : m0(125.0)
       , m12(500.0)
       , a0(0.0)
-      , mxGuess(1.0e16)
+      , mxGuess(1.9e16)
       , msGuess(1000.)
       , signMu(1)
       , tanBeta(10.0)

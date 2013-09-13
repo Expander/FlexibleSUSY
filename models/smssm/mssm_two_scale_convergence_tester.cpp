@@ -42,11 +42,11 @@ double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two
   DoubleVector sT(32);
   int k = 1;
 
-  double sTin  = fabs(inforLoops.mh0); double sTout = fabs(outforLoops.mh0);
+  double sTin  = fabs(inforLoops.mh0(1)); double sTout = fabs(outforLoops.mh0(1));
   sT(k) = fabs(1.0 - minimum(sTin, sTout) / maximum(sTin, sTout)); k++;
-  sTin  = fabs(inforLoops.mA0); sTout = fabs(outforLoops.mA0);
+  sTin  = fabs(inforLoops.mA0(1)); sTout = fabs(outforLoops.mA0(1));
   sT(k) = fabs(1.0 - minimum(sTin, sTout) / maximum(sTin, sTout)); k++;
-  sTin  = fabs(inforLoops.mH0); sTout = fabs(outforLoops.mH0);
+  sTin  = fabs(inforLoops.mh0(2)); sTout = fabs(outforLoops.mh0(2));
   sT(k) = fabs(1.0 - minimum(sTin, sTout) / maximum(sTin, sTout)); k++;
   sTin  = fabs(inforLoops.mHpm); sTout = fabs(outforLoops.mHpm);
   sT(k) = fabs(1.0 - minimum(sTin, sTout) / maximum(sTin, sTout)); k++;

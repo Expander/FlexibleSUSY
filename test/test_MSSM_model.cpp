@@ -136,8 +136,7 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
 
    // neutral CP even Higgs
    DoubleVector hh(m.get_Mhh());
-   TEST_EQUALITY(hh(1), s.displayDrBarPars().mh0);
-   TEST_EQUALITY(hh(2), s.displayDrBarPars().mH0);
+   TEST_EQUALITY(hh, s.displayDrBarPars().mh0);
    TEST_CLOSE(m.get_ZH()(1,1), -sin(alpha), 1.0e-12);
    TEST_CLOSE(m.get_ZH()(1,2), cos(alpha), 1.0e-12);
    TEST_CLOSE(m.get_ZH()(2,1), -cos(alpha), 1.0e-12);
@@ -146,7 +145,7 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    // neutral CP odd Higgs
    DoubleVector Ah(m.get_MAh());
    TEST_CLOSE(Ah(1), s.displayMzRun(), 1.0e-11);
-   TEST_EQUALITY(Ah(2), s.displayDrBarPars().mA0);
+   TEST_EQUALITY(Ah(2), s.displayDrBarPars().mA0(1));
    TEST_CLOSE(m.get_ZA()(1,1), -cos(beta), 1.0e-12);
    TEST_CLOSE(m.get_ZA()(1,2), sin(beta), 1.0e-12);
    TEST_CLOSE(m.get_ZA()(2,1), -sin(beta), 1.0e-12);
@@ -708,8 +707,8 @@ void compare_sdown_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
 void compare_CP_even_higgs_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 {
-   const double mh0 = s.displayDrBarPars().mh0;
-   const double mH0 = s.displayDrBarPars().mH0;
+   const double mh0 = s.displayDrBarPars().mh0(1);
+   const double mH0 = s.displayDrBarPars().mh0(2);
    const double scale = s.displayMu();
    const DoubleVector hh(m.get_Mhh());
 
@@ -754,7 +753,7 @@ void compare_CP_even_higgs_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
 void compare_CP_odd_higgs_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 {
-   const double mA0 = s.displayDrBarPars().mA0;
+   const double mA0 = s.displayDrBarPars().mA0(1);
    const double mZrun = s.displayMzRun();
    const double scale = s.displayMu();
    const DoubleVector Ah(m.get_MAh());
@@ -1022,14 +1021,14 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    s.physical(1);
 
    const DoubleVector hh(m.get_physical().Mhh);
-   TEST_CLOSE(s.displayPhys().mh0, hh(1), 0.114);
-   TEST_CLOSE(s.displayPhys().mH0, hh(2), 0.04);
-   TEST_CLOSE_REL(s.displayPhys().mh0, hh(1), 0.00115);
-   TEST_CLOSE_REL(s.displayPhys().mH0, hh(2), 6.0e-5);
+   TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 0.114);
+   TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 0.04);
+   TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 0.00115);
+   TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 6.0e-5);
 
    const DoubleVector Ah(m.get_physical().MAh);
-   TEST_CLOSE(s.displayPhys().mA0, Ah(2), 0.05);
-   TEST_CLOSE_REL(s.displayPhys().mA0, Ah(2), 6.0e-5);
+   TEST_CLOSE(s.displayPhys().mA0(1), Ah(2), 0.05);
+   TEST_CLOSE_REL(s.displayPhys().mA0(1), Ah(2), 6.0e-5);
 
    const DoubleVector Hpm(m.get_physical().MHpm);
    TEST_CLOSE(s.displayPhys().mHpm, Hpm(2), 0.09);
