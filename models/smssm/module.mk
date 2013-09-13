@@ -3,7 +3,6 @@ MODNAME      := libsmssm
 
 LIBSMSSM_SRC  := \
 		$(DIR)/physpars.cpp \
-		$(DIR)/softpars.cpp \
 		$(DIR)/softsusy.cpp \
 		$(DIR)/susy.cpp \
 		$(DIR)/twoloophiggs.f
