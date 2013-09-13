@@ -6890,7 +6890,7 @@ MssmSusy Softsusy<SoftPars>::guessAtSusyMt(double tanb, const QedQcd & oneset) {
   double ht = (leAtMt.displayMass(mTop) - 30.0) * root2 
     / (vev * sin(beta));
   double hb =  ht * tanb * leAtMt.displayMass(mBottom) /
-    leAtMt.displayMass(mTop);
+    (leAtMt.displayMass(mTop) - 30.0);
   double htau =  hb * leAtMt.displayMass(mTau) /
     leAtMt.displayMass(mBottom); 
   t.setYukawaElement(YU, 3, 3, ht);
