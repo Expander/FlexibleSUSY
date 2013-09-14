@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
 {
    // do small parameter scan of tan(beta)
    Mssm_parameter_point pp;
-   for (double tanb = 3.0; tanb <= 45.1; tanb += 3.0) {
+   for (double tanb = 3.0; tanb <= 44.; tanb += 3.0) {
       pp.tanBeta = tanb;
       BOOST_MESSAGE("testing " << pp);
       test_point(pp);
