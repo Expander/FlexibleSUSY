@@ -307,5 +307,6 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp, oneset), NonPerturbativeRunningError);
    SoftSusy_tester softSusy_tester;
-   BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NonPerturbative_error);
+   // BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_NonPerturbative_error);
+   BOOST_CHECK_THROW(softSusy_tester.test(pp, oneset), SoftSusy_error);
 }
