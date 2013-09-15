@@ -1,6 +1,7 @@
 DIR          := models/snmssm
 MODNAME      := libsnmssm
 
+ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
 LIBSNMSSM_SRC  := \
 		$(DIR)/nmssmUtils.cpp \
 		$(DIR)/nmssmsoftpars.cpp \
@@ -17,6 +18,7 @@ LIBSNMSSM_SRC  += \
 		$(DIR)/snmssm_two_scale_low_scale_constraint.cpp \
 		$(DIR)/snmssm_two_scale_sugra_constraint.cpp \
 		$(DIR)/snmssm_two_scale_susy_scale_constraint.cpp
+endif
 endif
 
 LIBSNMSSM_OBJ  := \
