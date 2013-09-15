@@ -34,6 +34,10 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_slha_output.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
 endif
+ifeq ($(shell $(FSCONFIG) --with-snmssm --with-NMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_NMSSM_beta_functions.cpp
+endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_sm.cpp
@@ -199,6 +203,8 @@ $(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBS
 		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_beta_functions.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
