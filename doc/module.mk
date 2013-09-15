@@ -22,9 +22,13 @@ doc-pdf: $(MANUAL_PDF)
 all-$(MODNAME): $(INDEX_PADE) $(MANUAL_PDF)
 
 clean-$(MODNAME):
+		rm -f $(DIR)/*.aux
+		rm -f $(DIR)/*.log
+		rm -f $(DIR)/*.toc
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(DOC_OUTPUT_DIR)
+		rm -f $(MANUAL_PDF)
 
 clean::         clean-$(MODNAME)
 
