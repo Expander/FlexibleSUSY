@@ -8,6 +8,8 @@
 
 #include "nmssmsoftpars.h"
 
+namespace softsusy {
+
 const SoftParsNmssm & SoftParsNmssm::operator=(const SoftParsNmssm & s) {
   if (this == &s) return *this;
   SoftPars<NmssmSusy, nmsBrevity>::operator=(s);
@@ -816,3 +818,5 @@ istream & operator >>(istream &left, SoftParsNmssm &s) {
   left >> ss;   s.setSusy(ss);
   return left;
 }
+
+} // namespace softsusy
