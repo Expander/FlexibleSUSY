@@ -273,20 +273,23 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_beta_functions )
    setup_NMSSM(m, s, input);
 
    test_parameter_equality(s, m);
+   BOOST_REQUIRE(gErrors == 0);
    if (gErrors) {
-      BOOST_FAIL("Error: parameters are not equal");
+      BOOST_FAIL("parameters are not equal");
       gErrors = 0;
    }
 
    test_anomalous_dimensions_equality(s, m);
+   BOOST_CHECK(gErrors == 0);
    if (gErrors) {
-      BOOST_FAIL("Error: anomalous dimensions are not equal");
+      BOOST_FAIL("anomalous dimensions are not equal");
       gErrors = 0;
    }
 
    test_beta_function_equality(s, m);
+   BOOST_CHECK(gErrors == 0);
    if (gErrors) {
-      BOOST_FAIL("Error: beta functions are not equal");
+      BOOST_FAIL("beta functions are not equal");
       gErrors = 0;
    }
 }
