@@ -1,0 +1,37 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8x]{inputenc}      % input font encoding
+\usepackage[lmargin=2.5cm,rmargin=2.5cm,tmargin=2.5cm,bmargin=3.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}          % output font encoding
+\usepackage{listings}             % source code highlighting
+\lstset{breaklines=true,
+  breakatwhitespace=true,
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  basicstyle=\ttfamily\footnotesize,
+  commentstyle=\ttfamily\color{gray},
+  prebreak={\textbackslash},
+  breakindent=10pt,
+  breakautoindent=false,
+  showspaces=false,
+  showstringspaces=false,
+  frame=single}
+
+\title{\bf FlexibleSUSY --- A spectrum generator generator for
+  supersymmetric models}
+\author{Jae-hyeon Park, Dominik St\"ockinger, Alexander Voigt\\[2em]
+  {\sl Institut f\"ur Kern- und Teilchenphysik, TU Dresden, Dresden,
+    Germany}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\clearpage
+\input{doc/chapters/overview}
+\input{doc/chapters/quick_start}
+\input{doc/chapters/usage}
+\input{doc/chapters/output}
+
+\end{document}
