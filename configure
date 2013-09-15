@@ -148,7 +148,7 @@ contains() {
 }
 
 contains_not() {
-    # Check if string $1 contains $2
+    # Check if string $1 does not contain $2
     if test $# -lt 2 ; then
         echo "contains: Too few arguments"
         return 1
@@ -521,6 +521,15 @@ check_models() {
                 fi ;;
         esac
     done
+
+    # test model dependencies (snmssm depends on smssm)
+    if contains "${MODELS}" "models/snmssm"; then
+        if contains_not "${MODELS}" "models/smssm"; then
+            message "Error: model snmssm requires model smssm"
+            message "Please also select the smssm"
+            exit 1
+        fi
+    fi
 }
 
 #_____________________________________________________________________
