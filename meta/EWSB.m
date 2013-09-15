@@ -227,13 +227,30 @@ ReduceSolution[solution_List, signs_List] :=
            Return[reducedSolution];
           ];
 
+MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
+MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
+MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
+MakeParameterUnique[par_]          :=
+    { MakeParameterUnique[SARAH`L[par]],
+      MakeParameterUnique[SARAH`B[par]],
+      MakeParameterUnique[SARAH`T[par]] };
+
+MakeParametersUnique[parameters_List] :=
+    Flatten[MakeParameterUnique /@ parameters];
+
 SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
     Module[{result = "", simplifiedEqs, parameters,
-            solution, signs, reducedSolution, i, par, expr, parStr},
+            solution, signs, reducedSolution, i, par, expr, parStr,
+            uniqueParameters},
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
            simplifiedEqs = (#[[2]] == 0)& /@ simplifiedEqs;
            parameters = parametersFixedByEWSB;
-           solution = Solve[simplifiedEqs, parameters];
+           (* replace non-symbol parameters by unique symbols *)
+           uniqueParameters = MakeParametersUnique[parameters];
+           solution = Solve[simplifiedEqs /. uniqueParameters, parameters /. uniqueParameters];
+           (* substitute back unique parameters *)
+           uniqueParameters = Reverse /@ uniqueParameters;
+           solution = solution /. uniqueParameters;
            signs = Cases[FindFreePhase /@ parametersFixedByEWSB, FlexibleSUSY`Sign[_]];
            (* Try to reduce the solution *)
            If[CanReduceSolution[solution, signs],
