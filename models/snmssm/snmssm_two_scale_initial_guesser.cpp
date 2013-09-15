@@ -54,7 +54,7 @@ void SNmssm_initial_guesser::guess()
 {
    const static NmssmSoftsusy empty;
 
-   double mx = pp.mxGuess;
+   const double mx = pp.mxGuess;
    const double muFirst = nmssm->displaySusyMu(); /// Remember initial values
    const bool setTbAtMXflag = nmssm->displaySetTbAtMX();
 
