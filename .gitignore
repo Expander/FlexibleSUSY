@@ -19,5 +19,8 @@ doc/*.md5
 doc/*.map
 doc/*.css
 doc/*.dot
+doc/*.aux
+doc/*.log
+doc/*.toc
 
 test/*.log
