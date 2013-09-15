@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
    for (double tanb = 3.0; tanb <= 44.; tanb += 3.0) {
       pp.tanBeta = tanb;
       BOOST_MESSAGE("testing " << pp);
-      test_point(pp);
+      BOOST_CHECK_NO_THROW(test_point(pp));
    }
 }
 
