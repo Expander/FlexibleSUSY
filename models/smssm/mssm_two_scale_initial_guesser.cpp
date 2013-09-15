@@ -54,7 +54,7 @@ void Mssm_initial_guesser::guess()
 {
    const static MssmSoftsusy empty;
 
-   double mx = 0.0;
+   const double mx = pp.mxGuess;
    const double muFirst = mssm->displaySusyMu(); /// Remember initial values
    const bool setTbAtMXflag = mssm->displaySetTbAtMX();
    const bool altFlag = mssm->displayAltEwsb();
@@ -73,14 +73,6 @@ void Mssm_initial_guesser::guess()
    mssm->setMaCond(maCondFirst);
 
    double mz = mssm->displayMz();
-
-   if (pp.mxGuess > 0.0) {
-      mx = pp.mxGuess;
-   } else {
-      string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
-      ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
-      throw ii;
-   }
 
    if (oneset.displayMu() != mz) {
       WARNING("lowOrg in softsusy.cpp called with oneset at scale\n"
