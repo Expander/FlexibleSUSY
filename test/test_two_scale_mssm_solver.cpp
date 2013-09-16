@@ -161,7 +161,7 @@ public:
 
       stopwatch.stop();
       VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
-                  << " seconds (" << stopwatch.get_clicks() << " clicks)");
+                  << " seconds");
 
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
@@ -222,7 +222,7 @@ public:
 
       stopwatch.stop();
       VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
-                  << " seconds (" << stopwatch.get_clicks() << " clicks)");
+                  << " seconds");
 
       mx = mssm_sugra_constraint.get_scale();
    }
