@@ -4,6 +4,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#define private public
+
 #include "test_NMSSM.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
@@ -48,4 +50,19 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level )
    BOOST_CHECK_CLOSE_FRACTION(m.get_Kappa(), s.displayKappa()    , precision * 40.);
    BOOST_CHECK_CLOSE_FRACTION(m.get_vS()   , s.displaySvev()     , precision * 40.);
    BOOST_CHECK_CLOSE_FRACTION(m.get_ms2()  , s.displayMsSquared(), precision * 5.);
+}
+
+BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level_via_soft_higgs_masses )
+{
+   NMSSM_input_parameters input;
+   NMSSM<Two_scale> m;
+   NmssmSoftsusy s;
+   setup_NMSSM(m, s, input);
+
+   const int error = m.solve_ewsb_tree_level_via_soft_higgs_masses();
+
+   BOOST_CHECK_EQUAL(error, 0);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 2.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 1.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 1.0e-09);
 }
