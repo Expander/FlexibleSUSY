@@ -22,6 +22,133 @@ Explain:
 Explain how to write a FlexibleSUSY model file (starting from a SARAH
 model file).
 
+A FlexibleSUSY model file is a Mathematica file, where the following
+pieces are defined:
+
+\paragraph{General model information}
+
+\subparagraph{FSModelName}
+Name of the FlexibleSUSY model.
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+FSModelName = "MSSM";
+\end{lstlisting}
+
+\subparagraph{OnlyLowEnergyFlexibleSUSY} If set to True, creates a
+spectrum generator without high-scale constraint, i.e.\ only a
+low-scale and susy-scale constraint will be created (default: False).
+In this case all model parameters, except for gauge and Yukawa
+couplings are input at the susy scale.  This option is similar to
+\texttt{OnlyLowEnergySPheno} in SARAH/SPheno.
+\\
+Example:
+\begin{lstlisting}[language=Mathematica]
+OnlyLowEnergyFlexibleSUSY = False;  (* default *)
+\end{lstlisting}
+
+\paragraph{Input and output parameters}
+
+\subparagraph{MINPAR} This list of two-component lists defines model
+input parameters and their SLHA keys.  These parameters will be read
+from the MINPAR block in the SLHA file.
+\\
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {4, Sign[\[Mu]]},
+           {5, Azero}
+         };
+\end{lstlisting}
+
+\subparagraph{EXPAR} This list of two-component lists defines further
+model input parameters and their SLHA keys.  These parameters will be
+read from the EXTPAR block in the SLHA file.
+\\
+Example (E6SSM):
+\begin{lstlisting}[language=Mathematica]
+EXTPAR = { {61, LambdaInput},
+           {62, KappaInput},
+           {63, muPrimeInput},
+           {64, BmuPrimeInput},
+           {65, vSInput}
+         };
+\end{lstlisting}
+
+\subparagraph{DefaultParameterPoint} This list of two-component lists
+defines default values for the model input parameters.
+\\
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Sign[\[Mu]], 1},
+    {Azero, 0}
+};
+\end{lstlisting}
+
+\paragraph{Constraints}
+Currently three constraints are supported: low-scale, susy-scale and
+high-scale constraints.  In FlexibleSUSY they are named as
+\texttt{LowScale}, \texttt{SUSYScale} and \texttt{HighScale}.  For
+each constraint there is a scale definition (named after the
+constraint), an initial guess for the scale (concatenation of the
+constraint name and \texttt{FirstGuess}) and a list settings to be
+applied at the constraint (concatenation of the constraint name and
+\texttt{Input}).
+\\
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+(* susy-scale constraint *)
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];        (* scale definition *)
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2]; (* first scale guess *)
+SUSYScaleInput = {};                        (* nothing is set here *)
+
+(* high-scale constraint *)
+HighScale = g1 == g2;                       (* scale definition *)
+HighScaleFirstGuess = 1.0 10^14;            (* first scale guess *)
+HighScaleInput = {
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
+   {mHd2, m0^2},
+   {mHu2, m0^2},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {MassB, m12},
+   {MassWB,m12},
+   {MassG, m12}
+};
+
+LowScale = SM[MZ];                          (* scale definition *)
+LowScaleFirstGuess = SM[MZ];                (* first scale guess *)
+LowScaleInput = {
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+\end{lstlisting}
+
+\paragraph{Initial parameter guesses} At the \texttt{LowScale} and
+\texttt{HighScale} it is recommended to make an initial guess for the
+model parameters.  This can be done via
+\begin{lstlisting}[language=Mathematica]
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtHighScale = {
+   {\[Mu]   , 1.0},
+   {B[\[Mu]], 0.0}
+};
+\end{lstlisting}
+
 \subsection{Makefile modules}
 
 Explain how to write a custom makefile module (module.mk) for a
