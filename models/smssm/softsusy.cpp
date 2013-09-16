@@ -10012,10 +10012,11 @@ void Softsusy<SoftPars>::rhohat(double & outrho, double & outsin, double alphaDR
   
   static int numTries = 0;
   
-  if ((outrho < TOLERANCE || outsin < TOLERANCE) || 
+  if ((outrho < TOLERANCE || outsin < TOLERANCE) || fabs(outsin) > 1. ||
       (numTries - 1 > maxTries)) {  
-    oldrho = 0.23, oldsin = 0.8;
+    oldrho = 0.23; oldsin = 0.8;
     numTries = 0;
+    outrho = 0.23; outsin = 0.8;
     flagNoRhoConvergence(true);
     if (PRINTOUT) cout << flush << "rhohat reached maxtries\n"; 
     return;
