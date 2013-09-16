@@ -44,3 +44,4 @@ $(INDEX_PADE):
 
 $(MANUAL_PDF): $(MANUAL_SRC)
 		pdflatex -output-directory $(DIR) $<
+		pdflatex -output-directory $(DIR) $<
