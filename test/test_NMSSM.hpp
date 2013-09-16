@@ -78,8 +78,8 @@ void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parame
    m.set_TYu(a0 * Yu);
    m.set_TYd(a0 * Yd);
    m.set_TYe(a0 * Ye);
-   m.set_TLambdax(a0);
-   m.set_TKappa(a0);
+   m.set_TLambdax(a0 * lambda);
+   m.set_TKappa(a0 * kappa);
    // m.set_Mu(susyMu);
    // m.set_BMu(BMu);
    m.set_vu(vu);
@@ -110,8 +110,8 @@ void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parame
    s.setTrilinearMatrix(UA, a0 * Yu_SS);
    s.setTrilinearMatrix(DA, a0 * Yd_SS);
    s.setTrilinearMatrix(EA, a0 * Ye_SS);
-   s.setTrialambda(a0);
-   s.setTriakappa(a0);
+   s.setTrialambda(a0 * lambda);
+   s.setTriakappa(a0 * kappa);
    s.setSusyMu(susyMu);
    s.setM3Squared(BMu);
    s.setHvev(vev);
