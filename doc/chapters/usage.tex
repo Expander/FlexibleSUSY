@@ -149,6 +149,33 @@ InitialGuessAtHighScale = {
 };
 \end{lstlisting}
 
+\begin{sidewaystable}[tb]
+  \centering
+  \begin{tabularx}{\textwidth}{>{\ttfamily}l>{\ttfamily}lX}
+    \toprule
+    variable    & default value & description \\
+    \midrule
+    FSModelName & Model`Name & Name of the FlexibleSUSY model \\
+    OnlyLowEnergyFlexibleSUSY & False & low-energy model \\
+    MINPAR & \{\} & list of input parameters in SLHA MINPAR block \\
+    EXTPAR & \{\} & list of input parameters in SLHA EXTPAR block \\
+    DefaultParameterPoint & \{\} & list of default values for the input parameters \\
+    LowScale & SM[MZ] & Standard Model matching scale (in GeV) \\
+    LowScaleFirstGuess & SM[MZ] & first guess for the Standard Model matching scale (in GeV) \\
+    LowScaleInput & \{\} & settings applied at the low scale \\
+    SUSYScale & 1000 & scale of supersymmetric particle masses (in GeV) \\
+    SUSYScaleFirstGuess & 1000 & first guess for the susy scale (in GeV) \\
+    SUSYScaleInput & \{\} & settings applied at the susy scale \\
+    HighScale & SARAH`hyperchargeCoupling == SARAH`leftCoupling
+      & unification scale (in GeV) \\
+    HighScaleFirstGuess & $10^{14}$ & first guess for the unification scale (in GeV) \\
+    HighScaleInput & \{\} & settings applied at the unification scale \\
+    \bottomrule
+  \end{tabularx}
+  \caption{FlexibleSUSY model file variables}
+  \label{tab:model-file-variables}
+\end{sidewaystable}
+
 \subsection{Makefile modules}
 
 Explain how to write a custom makefile module (module.mk) for a
