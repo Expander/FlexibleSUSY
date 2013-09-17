@@ -135,6 +135,16 @@ inline DoubleMatrix Re(const ComplexMatrix& m)
    return m.real();
 }
 
+inline double Im(double x)
+{
+   return x;
+}
+
+inline double Im(const Complex& x)
+{
+   return std::imag(x);
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);
