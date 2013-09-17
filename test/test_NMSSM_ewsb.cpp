@@ -66,3 +66,37 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level_via_soft_higgs_masses )
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 1.0e-09);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 1.0e-09);
 }
+
+BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_tadpoles )
+{
+   NMSSM_input_parameters input;
+   input.m0 = 250.; // avoids tree-level tachyons
+   NMSSM<Two_scale> m;
+   NmssmSoftsusy s;
+   setup_NMSSM(m, s, input);
+
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   const double mt = s.displayDrBarPars().mt;
+   const double sinthDRbar = s.calcSinthdrbar();
+   const double vd = m.get_vd();
+   const double vu = m.get_vu();
+   const double vS = m.get_vS();
+
+   const Complex tadpole_hh_1(m.tadpole_hh(1));
+   const Complex tadpole_hh_2(m.tadpole_hh(2));
+   const Complex tadpole_hh_3(m.tadpole_hh(3));
+
+   const double tadpole_ss_1 = s.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   const double tadpole_ss_2 = s.doCalcTadpole2oneLoop(mt, sinthDRbar);
+   const double tadpole_ss_3 = s.doCalcTadpoleSoneLoop(mt, sinthDRbar);
+
+   BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
+
+   BOOST_CHECK_CLOSE(Re(tadpole_hh_1) / vd, tadpole_ss_1, 1.0e-11);
+   BOOST_CHECK_CLOSE(Re(tadpole_hh_2) / vu, tadpole_ss_2, 1.0e-11);
+   BOOST_CHECK_CLOSE(Re(tadpole_hh_3) / vS, tadpole_ss_3, 1.0e-11);
+}
