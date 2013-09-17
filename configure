@@ -940,26 +940,26 @@ enable/disable options, prefix with either --enable- or --disable-
   static-libs       Create static libraries (default: $enable_static_libs)
   verbose           Verbose messages (default: $enable_verbose)
 
-with options, prefix with --with-, enables corresponding support
+Package directories, compilation settings and model selection
 
-  algorithms        Comma separated list of RG solver algorithms
-                    (default: $ALGORITHMS)
-                    possible values: all $available_algorithms
-  boost-libdir      Path to search for BOOST libraries
-  boost-incdir      Path to search for BOOST headers
-  cxx               C++ compiler (default: $CXX)
-  cxxflags          C++ compiler flags (default: $CXXFLAGS)
-  eigen-incdir      Path to search for Eigen headers
-  fc                Fortran compiler (default: $FC)
-  fflags            Fortran compiler flags (default: $FFLAGS)
-  gsl-config        Path to gsl-config (default: $gsl_config)
-  lapack-libdir     Path to search for LAPACK and BLAS libraries
-  looptools-libdir  Path to search for LoopTools libraries
-  looptools-incdir  Path to search for LoopTools headers
-  math-cmd          Mathematic kernel (default: $MATH)
-  models            Comma separated list of models to be build
-                    (default: $MODELS)
-                    possible values: all <model1>,<model2>,...
+  --with-algorithms=        Comma separated list of RG solver algorithms
+                            (default: $ALGORITHMS)
+                            possible values: all $available_algorithms
+  --with-boost-libdir=      Path to search for BOOST libraries
+  --with-boost-incdir=      Path to search for BOOST headers
+  --with-cxx=               C++ compiler (default: $CXX)
+  --with-cxxflags=          C++ compiler flags (default: $CXXFLAGS)
+  --with-eigen-incdir=      Path to search for Eigen headers
+  --with-fc=                Fortran compiler (default: $FC)
+  --with-fflags=            Fortran compiler flags (default: $FFLAGS)
+  --with-gsl-config=        Path to gsl-config (default: $gsl_config)
+  --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
+  --with-looptools-libdir=  Path to search for LoopTools libraries
+  --with-looptools-incdir=  Path to search for LoopTools headers
+  --with-math-cmd=          Mathematic kernel (default: $MATH)
+  --with-models=            Comma separated list of models to be build
+                            (default: $MODELS)
+                            possible values: all <model1>,<model2>,...
 EOF
 }
 
