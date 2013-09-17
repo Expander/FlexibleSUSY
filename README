@@ -66,15 +66,15 @@ If you want to create dynamic libraries (instead of static libraries)
 you have to pass all the following options to the ./configure script
 
    --disable-static-libs
-   --libext=".so"
-   --make-lib-cmd="gcc -shared -o"
+   --with-lib-ext=".so"
+   --with-make-lib-cmd="gcc -shared -o"
 
 Example:
 
    $ ./configure --with-models=MSSM,NMSSM \
      --disable-static-libs \
-     --libext=".so" \
-     --make-lib-cmd="gcc -shared -o"
+     --with-lib-ext=".so" \
+     --with-make-lib-cmd="gcc -shared -o"
 
 Important remark:
 

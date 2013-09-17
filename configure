@@ -831,7 +831,7 @@ check_makelib() {
     if test "x$enable_static_libs" = "xno" ; then
         if test "x$makelib_cmd" = "xar" ; then
             message "\n   Error: $makelib_cmd cannot be used to create shared libraries!"
-            message "   Please use --make-lib-cmd=\"gcc -shared -o\" or something similar."
+            message "   Please use --with-make-lib-cmd=\"gcc -shared -o\" or something similar."
             exit 1
         fi
     fi
@@ -906,7 +906,7 @@ enable_defines() {
         if test "x$LIBEXT" = "x.a" ; then
             message "  Warning: library extension $LIBEXT is reserved for static libraries."
             message "    Please consider using .so as library extension, or similar, e.g."
-            message "    --libext=\".so\""
+            message "    --with-lib-ext=\".so\""
         fi
     fi
 
@@ -927,8 +927,6 @@ Usage: ./`basename $0` [options]
 Options:
 
   --help,-h         Print this help message
-  --libext          Library extension (default: $LIBEXT)
-  --make-lib-cmd    Command to make library (default: $MAKELIB)
   --version,-v      Print version information
 
 enable/disable options, prefix with either --enable- or --disable-
@@ -954,8 +952,10 @@ Package directories, compilation settings and model selection
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
+  --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
+  --with-make-lib-cmd       Command to make library (default: $MAKELIB)
   --with-math-cmd=          Mathematic kernel (default: $MATH)
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
@@ -1035,13 +1035,13 @@ if test $# -gt 0 ; then
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
+            --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
+            --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
             --help|-h)               help; exit 0 ;;
-            --libext=*)              LIBEXT=$optarg ;;
-            --make-lib-cmd=*)        MAKELIB=$optarg ;;
             --version|-v)            version; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
