@@ -50,6 +50,35 @@ void ensure_tree_level_ewsb(NMSSM<Two_scale>& m, NmssmSoftsusy& s,
    m.set_ms2(s.displayMsSquared());
 }
 
+void ensure_one_loop_ewsb(NMSSM<Two_scale>& m, NmssmSoftsusy& s)
+{
+   const double precision = 1.0e-5;
+
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   const double mt = s.displayDrBarPars().mt;
+   const int signMu = 1;
+
+   m.set_ewsb_iteration_precision(precision);
+   m.solve_ewsb_one_loop();
+
+   softsusy::numRewsbLoops = 1;
+   s.rewsb(signMu, mt);
+
+   const double kappa_ss = s.displayKappa();
+   const double vS_ss    = s.displaySvev();
+   const double ms2_ss   = s.displayMsSquared();
+
+   const double kappa_fs = m.get_Kappa();
+   const double vS_fs    = m.get_vS();
+   const double ms2_fs   = m.get_ms2();
+
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 1.0e-11);
+   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 2.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 2.0e-10);
+}
+
 BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
 {
    NMSSM_input_parameters input;
@@ -160,23 +189,31 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_EQUAL(MFd(2), 0.0);
    // BOOST_CHECK_CLOSE(MFd(3), s.displayPhys().mb, 1.0e-12);
 
-   // // neutral CP even Higgs
-   // const DoubleVector hh(m.get_physical().Mhh);
-   // const DoubleVector mh0(s.displayPhys().mh0);
-   // BOOST_CHECK_CLOSE(hh(1), mh0(1), 1.0e-12);
-   // BOOST_CHECK_CLOSE(hh(2), mh0(2), 1.0e-12);
-   // BOOST_CHECK_CLOSE(hh(3), mh0(3), 1.0e-12);
+   ensure_one_loop_ewsb(m, s);
+   m.calculate_1loop_masses();
+   s.physical(1);
 
-   // // neutral CP odd Higgs
-   // const DoubleVector Ah(m.get_physical().MAh);
-   // const DoubleVector mA0(s.displayPhys().mA0);
-   // BOOST_CHECK_CLOSE(Ah(1), mz    , 1.0e-12);
-   // BOOST_CHECK_CLOSE(Ah(2), mA0(1), 1.0e-12);
-   // BOOST_CHECK_CLOSE(Ah(3), mA0(2), 1.0e-12);
+   if (m.get_problems().have_problem()) {
+      std::ostringstream ostr;
+      m.get_problems().print(ostr);
+      BOOST_FAIL(ostr.str());
+   }
 
-   // // charged Higgs
-   // const DoubleVector Hpm(m.get_physical().MHpm);
-   // const double mHpm = s.displayPhys().mHpm;
-   // BOOST_CHECK_CLOSE(Hpm(1), mw  , 1.0e-12);
-   // BOOST_CHECK_CLOSE(Hpm(2), mHpm, 1.0e-12);
+   // neutral CP even Higgs
+   const DoubleVector hh(m.get_physical().Mhh);
+   const DoubleVector mh0(s.displayPhys().mh0);
+   BOOST_CHECK_CLOSE(hh(1), mh0(1), 0.002);
+   BOOST_CHECK_CLOSE(hh(2), mh0(2), 0.0001);
+   BOOST_CHECK_CLOSE(hh(3), mh0(3), 0.1);
+
+   // neutral CP odd Higgs
+   const DoubleVector Ah(m.get_physical().MAh);
+   const DoubleVector mA0(s.displayPhys().mA0);
+   BOOST_CHECK_CLOSE(Ah(2), mA0(1), 0.0002);
+   BOOST_CHECK_CLOSE(Ah(3), mA0(2), 0.0006);
+
+   // charged Higgs
+   const DoubleVector Hpm(m.get_physical().MHpm);
+   const double mHpm = s.displayPhys().mHpm;
+   BOOST_CHECK_CLOSE(Hpm(2), mHpm, 0.003);
 }
