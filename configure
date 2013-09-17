@@ -947,9 +947,9 @@ with options, prefix with --with-, enables corresponding support
                     possible values: all $available_algorithms
   boost-libdir      Path to search for BOOST libraries
   boost-incdir      Path to search for BOOST headers
-  eigen-incdir      Path to search for Eigen headers
   cxx               C++ compiler (default: $CXX)
   cxxflags          C++ compiler flags (default: $CXXFLAGS)
+  eigen-incdir      Path to search for Eigen headers
   fc                Fortran compiler (default: $FC)
   fflags            Fortran compiler flags (default: $FFLAGS)
   gsl-config        Path to gsl-config (default: $gsl_config)
