@@ -933,12 +933,12 @@ Options:
 
 enable/disable options, prefix with either --enable- or --disable-
 
-  colors            Colored output
-  debug             Debug messages and assertions
-  looptools         Use LoopTools to compute the loop functions
-  silent            Suppress all command line output
+  colors            Colored output (default: $enable_colors)
+  debug             Debug messages and assertions (no default)
+  looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
+  silent            Suppress all command line output (default: $enable_silent)
   static-libs       Create static libraries (default: $enable_static_libs)
-  verbose           Verbose messages
+  verbose           Verbose messages (default: $enable_verbose)
 
 with options, prefix with --with-, enables corresponding support
 
