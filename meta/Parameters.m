@@ -72,12 +72,13 @@ AddRealParameter[parameter_List] :=
 AddRealParameter[parameter_] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
 
-IsMatrix[sym_[i1,i2]] := IsMatrix[sym];
+IsMatrix[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
+    IsMatrix[sym];
 
 IsMatrix[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 2;
 
-IsSymmetricMatrixParameter[sym_[i1,i2]] :=
+IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsSymmetricMatrixParameter[sym];
 
 IsSymmetricMatrixParameter[sym_] :=
@@ -96,7 +97,8 @@ IsRealExpression[_Complex] := False;
 
 IsRealExpression[_Real] := True;
 
-IsRealExpression[expr_[i1,i2]] := IsRealExpression[expr];
+IsRealExpression[expr_[Susyno`LieGroups`i1, SARAH`i2]] :=
+    IsRealExpression[expr];
 
 IsRealExpression[HoldPattern[SARAH`Delta[_,_]]] := True;
 IsRealExpression[HoldPattern[SARAH`ThetaStep[_,_]]] := True;

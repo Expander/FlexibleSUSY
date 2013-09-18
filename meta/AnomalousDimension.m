@@ -49,7 +49,7 @@ ConvertSarahAnomDim[gij_List] :=
                adim = gij[[i]];
                (* adim[[1]] == {name1,name2}, adim[[2]] == 1-loop anom. dim *)
                name = CreateValidAnomDimName[adim[[1]]];
-               If[FreeQ[adim[[2]], a_[i1,i2]],
+               If[FreeQ[adim[[2]], a_[Susyno`LieGroups`i1,SARAH`i2]],
                   type = CConversion`ScalarType["double"];,
                   dim = TreeMasses`GetDimension[adim[[1,1]]];
                   type = CConversion`MatrixType["Eigen::Matrix<double," <>
@@ -84,12 +84,14 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            unitMatrix = CreateUnitMatrix[type];
            (* one-loop *)
            exprOneLoop = (CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim]) /.
-                         { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+                         { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                           a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
            body = "\nanomDim = " <> RValueToCFormString[exprOneLoop] <> ";\n";
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
               exprTwoLoop = (CConversion`twoLoop * GetAnomDim2Loop[anomDim]) /.
-                            { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+                            { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
               body = body <> "\nif (get_loops() > 1) {\n" <>
                      IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
                      ";\n}\n";

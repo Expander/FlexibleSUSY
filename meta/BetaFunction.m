@@ -36,7 +36,7 @@ GetBeta2Loop[BetaFunction[name_, type_, beta_List]] := beta[[2]];
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
-GuessType[sym_[i1,i2]] :=
+GuessType[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     Parameters`GetType[sym];
 
 GuessType[sym_] :=
@@ -56,12 +56,16 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
            name          = ToValidCSymbolString[GetName[betaFunction]];
            betaName      = "beta_" <> name;
            oneLoopBeta   = (CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction]) /.
-                           { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+                           { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                             Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                             a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
            oneLoopBetaStr = RValueToCFormString[oneLoopBeta];
            beta1L        = beta1L <> betaName <> " = " <> oneLoopBetaStr <> ";\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
               twoLoopBeta = (CConversion`twoLoop * GetBeta2Loop[betaFunction]) /.
-                             { Kronecker[i1,i2] -> unitMatrix, a_[i1,i2] :> a };
+                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                               Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
               twoLoopBetaStr = RValueToCFormString[twoLoopBeta];
               beta2L     = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
               ];
