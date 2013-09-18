@@ -23,7 +23,6 @@ TEST_SRC += \
 endif
 ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
 TEST_SRC += \
-		$(DIR)/test_benchmark.cpp \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
 		$(DIR)/test_MSSM_higgs_iteration.cpp \
@@ -31,8 +30,12 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_low_scale_constraint.cpp \
 		$(DIR)/test_MSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_MSSM_model.cpp \
-		$(DIR)/test_MSSM_slha_output.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
+endif
+ifeq ($(shell $(FSCONFIG) --with-smssm --with-snmssm --with-MSSM),yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_benchmark.cpp \
+		$(DIR)/test_MSSM_slha_output.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-snmssm --with-NMSSM),yes yes)
 TEST_SRC += \
