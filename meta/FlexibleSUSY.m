@@ -721,7 +721,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                          SARAH`BetaDGi  };
 
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
-           Print[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
            Parameters`AddRealParameter[(BetaFunction`GetName /@ susyBetaFunctions) /. a_[Susyno`LieGroups`i1,SARAH`i2] :> a];
 
