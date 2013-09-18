@@ -40,6 +40,7 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_ewsb.cpp \
 		$(DIR)/test_NMSSM_high_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_initial_guesser.cpp \
+		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
@@ -217,6 +218,8 @@ $(DIR)/test_NMSSM_ewsb.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIB
 $(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_initial_guesser.x: $(LIBSNMSSM) $(LIBSMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSNMSSM) $(LIBSMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
