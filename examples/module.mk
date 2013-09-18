@@ -5,9 +5,11 @@ EXAMPLES_SRC :=
 
 ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
 EXAMPLES_SRC += \
-		$(DIR)/run_softsusy.cpp \
+		$(DIR)/run_softsusy.cpp
+ifeq ($(shell $(FSCONFIG) --with-snmssm),yes)
+EXAMPLES_SRC += \
 		$(DIR)/run_softpoint.cpp
-
+endif
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
 		$(DIR)/run_smssm.cpp
