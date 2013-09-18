@@ -77,17 +77,17 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    }
 
    BOOST_MESSAGE("testing diagonal yukawa elements");
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), snmssm.displayYukawaMatrix(YU)(1,1), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), snmssm.displayYukawaMatrix(YD)(1,1), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), snmssm.displayYukawaMatrix(YE)(1,1), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), snmssm.displayYukawaMatrix(YU)(1,1), 1.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), snmssm.displayYukawaMatrix(YD)(1,1), 2.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), snmssm.displayYukawaMatrix(YE)(1,1), 1.0e-6);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), snmssm.displayYukawaMatrix(YU)(2,2), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), snmssm.displayYukawaMatrix(YD)(2,2), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), snmssm.displayYukawaMatrix(YE)(2,2), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), snmssm.displayYukawaMatrix(YU)(2,2), 1.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), snmssm.displayYukawaMatrix(YD)(2,2), 2.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), snmssm.displayYukawaMatrix(YE)(2,2), 1.0e-6);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), snmssm.displayYukawaMatrix(YU)(3,3), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), snmssm.displayYukawaMatrix(YD)(3,3), 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), snmssm.displayYukawaMatrix(YE)(3,3), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), snmssm.displayYukawaMatrix(YU)(3,3), 1.0e-6);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), snmssm.displayYukawaMatrix(YD)(3,3), 1.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), snmssm.displayYukawaMatrix(YE)(3,3), 1.0e-6);
 
    const double vu = m.get_vu(), vd = m.get_vd(), vS = m.get_vS();
    double tanBeta;
@@ -98,16 +98,16 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    else
       tanBeta = vu/vd;
    const double vev = Sqrt(Sqr(m.get_vu()) + Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayTanb(), tanBeta, 3.0e-4);
-   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayHvev(), vev    , 0.002);
-   BOOST_CHECK_CLOSE_FRACTION(snmssm.displaySvev(), vS     , 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayTanb(), tanBeta, 3.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayHvev(), vev    , 2.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(snmssm.displaySvev(), vS     , 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(snmssm.displayGaugino(1), m.get_MassB() , 3.0e-5);
    BOOST_CHECK_CLOSE_FRACTION(snmssm.displayGaugino(2), m.get_MassWB(), 4.0e-5);
    BOOST_CHECK_CLOSE_FRACTION(snmssm.displayGaugino(3), m.get_MassG() , 3.0e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayMh1Squared(), m.get_mHd2(), 0.003);
-   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayMh2Squared(), m.get_mHu2(), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayMh1Squared(), m.get_mHd2(), 5.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(snmssm.displayMh2Squared(), m.get_mHu2(), 5.0e-4);
 
    // BOOST_CHECK_CLOSE_FRACTION(snmssm.displaySoftMassSquared(mQl), m.get_mq2(), 1.0e-5);
    // BOOST_CHECK_CLOSE_FRACTION(snmssm.displaySoftMassSquared(mUr), m.get_mu2(), 1.0e-5);
