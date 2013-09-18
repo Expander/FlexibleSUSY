@@ -62,6 +62,7 @@ LowScaleInput={
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {\[Lambda], LambdaInput},
    {\[Kappa], 0.1},
    {vS, 1000},
    {ms2, SM[MZ]^2}
