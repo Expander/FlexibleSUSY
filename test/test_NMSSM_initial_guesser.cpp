@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    pp.a0 = input.Azero;
    pp.mxGuess = high_constraint.get_scale();
    pp.tanBeta = input.TanBeta;
+   pp.lambda = input.LambdaInput;
    pp.kappa = 0.1;  // initial guess at the low-scale
    pp.svev = 1000.; // initial guess at the low-scale
    SNmssm_sugra_constraint mssm_sugra_constraint(pp);
