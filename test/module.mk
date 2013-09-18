@@ -38,6 +38,7 @@ ifeq ($(shell $(FSCONFIG) --with-snmssm --with-NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
+		$(DIR)/test_NMSSM_high_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
 endif
@@ -210,6 +211,8 @@ $(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_NMSSM_beta_functions.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_ewsb.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
