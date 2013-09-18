@@ -539,7 +539,7 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
            Return[""];
           ];
 
-PrepareRGEs[] :=
+FSPrepareRGEs[] :=
     Module[{rgesHaveBeenCalculated, betas},
            rgesHaveBeenCalculated = RGEsHaveBeenCalculated[$sarahCurrentOutputMainDir];
            If[rgesHaveBeenCalculated,
@@ -678,7 +678,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Reading SARAH output files"];
            (* get RGEs *)
-           PrepareRGEs[];
+           FSPrepareRGEs[];
            nPointFunctions = Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
            (* adapt SARAH`Conj to our needs *)
