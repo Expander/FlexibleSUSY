@@ -115,7 +115,7 @@ endif
 $(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
-$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)

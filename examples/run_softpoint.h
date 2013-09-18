@@ -17,6 +17,7 @@
 #include <lowe.h>
 #include <rge.h>
 #include <softsusy.h>
+#include <nmssmsoftsusy.h>
 #include <softpars.h>
 #include <physpars.h>
 #include <susy.h>
@@ -46,4 +47,3 @@ inline double mgutCheck(char * a, bool & gaugeUnification,
 
 /// Incorrect input: gives advice on how to supply it
 void errorCall();
-
