@@ -189,4 +189,16 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
 
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.18);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.006);
+
+   // compare model parameters
+   const NmssmSoftsusy ss(softSusy_tester.get_model());
+   const NMSSM<Two_scale> fs(nmssm_tester.get_model());
+
+   BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
+   BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
+   BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00076);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0015);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00013);
 }
