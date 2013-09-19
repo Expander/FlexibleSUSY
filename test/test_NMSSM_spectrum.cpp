@@ -351,4 +351,75 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.0097);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0027);
+
+
+   // comparing pole masses
+
+   const DoubleVector
+      MCha_1l(fs.get_physical().MCha),
+      MChi_1l(fs.get_physical().MChi),
+      MHpm_1l(fs.get_physical().MHpm),
+      MAh_1l(fs.get_physical().MAh),
+      Mhh_1l(fs.get_physical().Mhh);
+   const DoubleVector mch_1l(ss.displayPhys().mch),
+      mn_1l(ss.displayPhys().mneut.apply(fabs));
+   const double mHpm_1l = ss.displayPhys().mHpm;
+   const DoubleVector mA0_1l(ss.displayPhys().mA0);
+   const DoubleVector mh0_1l(ss.displayPhys().mh0);
+
+   // charginos
+   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0016);
+   BOOST_CHECK_CLOSE_FRACTION(MCha_1l(2), mch_1l(2), 0.0040);
+
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(1), mn_1l(1), 0.0058);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(2), mn_1l(2), 0.0017);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0044);
+   BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l  , 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.004);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh0_1l(3), 0.004);
+
+   // down-type squarks
+   const DoubleVector Sd_1l(fs.get_physical().MSd);
+   const DoubleVector md_1l(ss.displayPhys().md.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(1), md_1l(1), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(2), md_1l(2), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(3), md_1l(3), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(4), md_1l(4), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(5), md_1l(5), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd_1l(6), md_1l(6), 0.006);
+
+   // up-type squarks
+   const DoubleVector Su_1l(fs.get_physical().MSu);
+   const DoubleVector mu_1l(ss.displayPhys().mu.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(1), mu_1l(1), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(2), mu_1l(2), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(3), mu_1l(3), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(4), mu_1l(4), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(5), mu_1l(5), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su_1l(6), mu_1l(6), 0.006);
+
+   // sleptons
+   const DoubleVector Se_1l(fs.get_physical().MSe);
+   const DoubleVector me_1l(ss.displayPhys().me.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(1), me_1l(1), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(2), me_1l(2), 0.0008);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(3), me_1l(3), 0.0008);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(4), me_1l(4), 0.0050);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(5), me_1l(5), 0.0050);
+   BOOST_CHECK_CLOSE_FRACTION(Se_1l(6), me_1l(6), 0.0050);
+
+   // sneutrinos
+   const DoubleVector msnu_1l(ss.displayPhys().msnu.sort());
+   const DoubleVector Snu_1l(fs.get_physical().MSv);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(1), msnu_1l(1), 0.0056);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(2), msnu_1l(2), 0.0056);
+   BOOST_CHECK_CLOSE_FRACTION(Snu_1l(3), msnu_1l(3), 0.0090);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_physical().MGlu, ss.displayPhys().mGluino, 0.005);
 }
