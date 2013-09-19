@@ -34,7 +34,11 @@ CreateCompareFunction[particles_List] :=
            massiveSusyParticles = Select[particles /. FlexibleSUSY`M -> Identity,
                                          (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
            numberOfMasses = CountNumberOfMasses[massiveSusyParticles];
-           result = "std::valarray<double> diff(" <> ToString[numberOfMasses] <> ");\n\n";
+           If[numberOfMasses == 0,
+              Print["Warning: model has no massive susy particles!"];
+              Return["return 0.;"];
+             ];
+           result = "double diff[" <> ToString[numberOfMasses] <> "] = { 0 };\n\n";
            For[i = 1, i <= Length[massiveSusyParticles], i++,
                result = result <> CalcDifference[massiveSusyParticles[[i]], offset, "diff"];
                offset += CountNumberOfMasses[massiveSusyParticles[[i]]];
@@ -43,7 +47,9 @@ CreateCompareFunction[particles_List] :=
               Print["Error: something is wrong with the counting of masses:"];
               Print["  numberOfMasses = ", numberOfMasses, ", offset = ", offset];
              ];
-           result = result <> "\nreturn diff.max();\n";
+           result = result <>
+                    "\nreturn *std::max_element(diff, diff + " <>
+                    ToString[numberOfMasses] <> ");\n";
            Return[result];
           ];
 
