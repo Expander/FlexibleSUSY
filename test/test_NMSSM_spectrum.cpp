@@ -266,4 +266,89 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(vs     , ss.displaySvev(), 0.004);
+
+   // comparing tree-level masses
+
+   const DoubleVector MCha(fs.get_MCha()), MChi(fs.get_MChi()),
+      MHpm(fs.get_MHpm()), MAh(fs.get_MAh()), Mhh(fs.get_Mhh());
+   const DoubleVector mch(ss.displayDrBarPars().mchBpmz),
+      mn(ss.displayDrBarPars().mnBpmz);
+   const double MwRun = fs.get_MVWm();
+   const double MzRun = fs.get_MVZ();
+   const double mHpm = ss.displayDrBarPars().mHpm;
+   const DoubleVector mA0(ss.displayDrBarPars().mA0);
+   const DoubleVector mh0(ss.displayDrBarPars().mh0);
+
+   // charginos
+   BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.002);
+   BOOST_CHECK_CLOSE_FRACTION(MCha(2), mch(2), 0.008);
+
+   BOOST_CHECK_CLOSE_FRACTION(MChi(1), mn(1), 0.0060);
+   BOOST_CHECK_CLOSE_FRACTION(MChi(2), mn(2), 0.0041);
+   BOOST_CHECK_CLOSE_FRACTION(MChi(3), mn(3), 0.0045);
+   BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0040);
+   BOOST_CHECK_CLOSE_FRACTION(MChi(5), mn(5), 0.0040);
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.004);
+
+   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun , 1.0e-10); // for RXi(Wm) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0(1), 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA0(2), 0.0015);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0(1), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh0(2), 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh0(3), 0.004);
+
+   // down-type squarks
+   const DoubleVector Sd(fs.get_MSd());
+   const DoubleVector md(ss.displayDrBarPars().md.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Sd(1), md(1), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(2), md(2), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(3), md(3), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(4), md(4), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(5), md(5), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Sd(6), md(6), 0.006);
+
+   // up-type squarks
+   const DoubleVector Su(fs.get_MSu());
+   const DoubleVector mu(ss.displayDrBarPars().mu.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Su(1), mu(1), 0.0061);
+   BOOST_CHECK_CLOSE_FRACTION(Su(2), mu(2), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su(3), mu(3), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su(4), mu(4), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su(5), mu(5), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(Su(6), mu(6), 0.006);
+
+   // sleptons
+   const DoubleVector Se(fs.get_MSe());
+   const DoubleVector me(ss.displayDrBarPars().me.flatten().sort());
+   BOOST_CHECK_CLOSE_FRACTION(Se(1), me(1), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(2), me(2), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(3), me(3), 0.003);
+   BOOST_CHECK_CLOSE_FRACTION(Se(4), me(4), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(Se(5), me(5), 0.005);
+   BOOST_CHECK_CLOSE_FRACTION(Se(6), me(6), 0.005);
+
+   // sneutrinos
+   const DoubleVector msnu(ss.displayDrBarPars().msnu.sort());
+   const DoubleVector Snu(fs.get_MSv());
+   BOOST_CHECK_CLOSE_FRACTION(Snu(1), msnu(1), 0.0055);
+   BOOST_CHECK_CLOSE_FRACTION(Snu(2), msnu(2), 0.0055);
+   BOOST_CHECK_CLOSE_FRACTION(Snu(3), msnu(3), 0.0085);
+
+   BOOST_CHECK_EQUAL(fs.get_MVP(), 0.0);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MVZ() , MzRun, 0.022);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MVWm(), MwRun, 0.024);
+
+   BOOST_CHECK_EQUAL(fs.get_MVG(), 0.0);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MGlu(), ss.displayDrBarPars().mGluino, 0.005);
+
+   BOOST_CHECK_EQUAL(fs.get_MFv()(1), 0.0);
+   BOOST_CHECK_EQUAL(fs.get_MFv()(2), 0.0);
+   BOOST_CHECK_EQUAL(fs.get_MFv()(3), 0.0);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.0097);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0027);
 }
