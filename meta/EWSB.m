@@ -1,7 +1,9 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
 
-CheckEWSBEquations::usage="";
+FindFreePhasesInEWSB::usage="Searches for free phases or signs in the
+EWSB equations.  The result is stored in the internal variable
+freePhases.";
 
 CreateEWSBEqPrototype::usage="creates C function prototype for a
 given EWSB equation";
@@ -41,7 +43,7 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
-CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
+FindFreePhasesInEWSB[ewsbEqs_List, outputParameters_List] :=
     Module[{i, par, uniquePar, uniqueEqs, rules, newPhases = {}},
            For[i = 1, i <= Length[outputParameters], i++,
                par = outputParameters[[i]];

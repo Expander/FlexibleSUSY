@@ -808,7 +808,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           freePhases = EWSB`CheckEWSBEquations[ewsbEquations, ParametersToSolveTadpoles];
+           freePhases = EWSB`FindFreePhasesInEWSB[ewsbEquations, ParametersToSolveTadpoles];
            (* remove free phases which are already defined in FlexibleSUSY`InputParameters *)
            freePhases = Complement[freePhases, FlexibleSUSY`InputParameters];
 
