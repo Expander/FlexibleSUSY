@@ -13,7 +13,7 @@ EXTPAR = { {23, MuInput},
            {24, BMuInput},
            {61, LambdaInput},
            {66, XiFInput},
-           {66, XiSInput},
+           {67, XiSInput},
            {68, MupInput},
            {69, MSp2Input}
          };
