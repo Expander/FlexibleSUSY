@@ -3,6 +3,8 @@ Needs["EWSB`", "EWSB.m"];
 
 Print["testing MSSM-like EWSB for Mu and BMu ..."];
 
+FlexibleSUSY`FSSolveEWSBTimeConstraint = 120;
+
 mssmEwsbEqs = {
     mu^2 + x^2 + x y + z + 5,
     Bmu  - x^2 + x y + z + 5
