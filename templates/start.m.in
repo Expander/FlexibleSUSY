@@ -18,8 +18,8 @@ MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
                  InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}],
                  softSusyCompatibleRGEs -> True,
                  DefaultDiagonalizationPrecision -> MediumPrecision,
-                 highPrecision -> {hh, Ah, Hpm},
-                 mediumPrecision -> {},
-                 lowPrecision -> {},
+                 HighDiagonalizationPrecision -> {hh, Ah, Hpm},
+                 MediumDiagonalizationPrecision -> {},
+                 LowDiagonalizationPrecision -> {},
                  EnablePoleMassThreads -> True
                 ];

@@ -657,9 +657,9 @@ Options[MakeFlexibleSUSY] :=
         InputFile -> "FlexibleSUSY.m",
         softSusyCompatibleRGEs -> True,
         DefaultDiagonalizationPrecision -> MediumPrecision,
-        highPrecision -> {},
-        mediumPrecision -> {},
-        lowPrecision -> {},
+        HighDiagonalizationPrecision -> {},
+        MediumDiagonalizationPrecision -> {},
+        LowDiagonalizationPrecision -> {},
         EnablePoleMassThreads -> True,
         SolveEWSBTimeConstraint -> 120 (* in seconds *)
     };
@@ -962,9 +962,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determin diagonalization precision for each particle *)
            diagonalizationPrecision = ReadDiagonalizationPrecisions[
                OptionValue[DefaultDiagonalizationPrecision],
-               Flatten[{OptionValue[highPrecision]}],
-               Flatten[{OptionValue[mediumPrecision]}],
-               Flatten[{OptionValue[lowPrecision]}],
+               Flatten[{OptionValue[HighDiagonalizationPrecision]}],
+               Flatten[{OptionValue[MediumDiagonalizationPrecision]}],
+               Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
            PrintHeadline["Creating model"];
