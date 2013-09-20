@@ -246,8 +246,12 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            (* replace non-symbol parameters by unique symbols *)
            uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
-           solution = Solve[simplifiedEqs /. uniqueParameters,
-                            parametersFixedByEWSB /. uniqueParameters];
+           solution = TimeConstrained[
+               Solve[simplifiedEqs /. uniqueParameters,
+                     parametersFixedByEWSB /. uniqueParameters],
+               120,  (* reasonable time *)
+               {}
+              ];
            (* substitute back unique parameters *)
            uniqueParameters = Reverse /@ uniqueParameters;
            solution /. uniqueParameters
