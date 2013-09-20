@@ -220,6 +220,10 @@ CanReduceSolution[solution_List, signs_List] :=
            Return[signCheck && unsignedCheck];
           ];
 
+ReduceSolution[{}, signs_List] := {};
+
+ReduceSolution[{{}}, signs_List] := {};
+
 ReduceSolution[solution_List, signs_List] :=
     Module[{signedParameters, reducedSolution},
            signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
