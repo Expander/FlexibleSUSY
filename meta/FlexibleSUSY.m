@@ -39,7 +39,7 @@ FSFindRoot;
 MZ;
 
 FSEigenstates;
-FSSolveEWSBTimeConstraint;
+FSSolveEWSBTimeConstraint = 120;
 
 Begin["`Private`"];
 
