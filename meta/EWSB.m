@@ -253,7 +253,7 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            solution = TimeConstrained[
                Solve[simplifiedEqs /. uniqueParameters,
                      parametersFixedByEWSB /. uniqueParameters],
-               120,  (* reasonable time *)
+               FlexibleSUSY`FSSolveEWSBTimeConstraint,
                {}
               ];
            (* substitute back unique parameters *)

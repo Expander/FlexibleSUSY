@@ -39,6 +39,7 @@ FSFindRoot;
 MZ;
 
 FSEigenstates;
+FSSolveEWSBTimeConstraint;
 
 Begin["`Private`"];
 
@@ -659,7 +660,8 @@ Options[MakeFlexibleSUSY] :=
         highPrecision -> {},
         mediumPrecision -> {},
         lowPrecision -> {},
-        EnablePoleMassThreads -> True
+        EnablePoleMassThreads -> True,
+        SolveEWSBTimeConstraint -> 120 (* in seconds *)
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
@@ -674,6 +676,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
            FSEigenstates = OptionValue[Eigenstates];
+           FSSolveEWSBTimeConstraint = OptionValue[SolveEWSBTimeConstraint];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
