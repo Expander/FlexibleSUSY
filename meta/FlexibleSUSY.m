@@ -656,7 +656,7 @@ Options[MakeFlexibleSUSY] :=
         Eigenstates -> SARAH`EWSB,
         InputFile -> "FlexibleSUSY.m",
         softSusyCompatibleRGEs -> True,
-        defaultDiagonalizationPrecision -> MediumPrecision,
+        DefaultDiagonalizationPrecision -> MediumPrecision,
         highPrecision -> {},
         mediumPrecision -> {},
         lowPrecision -> {},
@@ -961,7 +961,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* determin diagonalization precision for each particle *)
            diagonalizationPrecision = ReadDiagonalizationPrecisions[
-               OptionValue[defaultDiagonalizationPrecision],
+               OptionValue[DefaultDiagonalizationPrecision],
                Flatten[{OptionValue[highPrecision]}],
                Flatten[{OptionValue[mediumPrecision]}],
                Flatten[{OptionValue[lowPrecision]}],
