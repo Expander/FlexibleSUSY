@@ -1,7 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 
-(* CNMSSM input parameters *)
+(* CSMSSM input parameters *)
 
 MINPAR = { {1, m0},
            {2, m12},
@@ -12,10 +12,10 @@ MINPAR = { {1, m0},
 EXTPAR = { {23, MuInput},
            {24, BMuInput},
            {61, LambdaInput},
-           {66, XiFInput},
-           {67, XiSInput},
-           {68, MupInput},
-           {69, MSp2Input}
+           {66, L1Input},
+           {67, LL1Input},
+           {68, MSInput},
+           {69, BMSInput}
          };
 
 DefaultParameterPoint = {
@@ -26,10 +26,10 @@ DefaultParameterPoint = {
     {MuInput, 0},
     {BMuInput, 0},
     {LambdaInput, 0.1},
-    {XiFInput, 0},
-    {XiSInput, 0},
-    {MupInput, 0},
-    {MSp2Input, 0}
+    {L1Input, 0},
+    {LL1Input, 0},
+    {MSInput, 0},
+    {BMSInput, 0}
 };
 
 ParametersToSolveTadpoles = { \[Kappa], vS, ms2 };
@@ -63,10 +63,10 @@ HighScaleInput={
    {MassG,m12},
    {\[Mu], MuInput},
    {B[\[Mu]], BMuInput},
-   {xiF, XiFInput},
-   {L[xiF], XiSInput},
-   {\[Mu]p, MupInput},
-   {B[\[Mu]p], MSp2Input}
+   {L1, L1Input},
+   {L[L1], LL1Input},
+   {MS, MSInput},
+   {B[MS], BMSInput}
 };
 
 LowScale = SM[MZ];
