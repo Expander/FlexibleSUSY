@@ -121,11 +121,11 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
            Return[result];
           ];
 
-FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
-                      gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
+FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List,
+                     gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
     Module[{i, result = "", vev, par},
-           If[Length[tadpoleEquations] =!= Length[parametersFixedByEWSB],
-              Print["Error: number of EWSB equations (",Length[tadpoleEquations],
+           If[Length[vevs] =!= Length[parametersFixedByEWSB],
+              Print["Error: number of EWSB equations (",Length[vevs],
                     ") is not equal to the number of fixed parameters (",
                     Length[parametersFixedByEWSB],")"];
               Return[""];
@@ -135,8 +135,8 @@ FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
                result = result <> SetParameterWithPhase[par, gslIntputVector, i-1];
               ];
            result = result <> "\n";
-           For[i = 1, i <= Length[tadpoleEquations], i++,
-               vev = tadpoleEquations[[i,1]];
+           For[i = 1, i <= Length[vevs], i++,
+               vev = vevs[[i]];
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "model->get_ewsb_eq_" <>
                         ToValidCSymbolString[vev] <> "();\n";
@@ -245,7 +245,7 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
             solution, signs, reducedSolution, i, par, expr, parStr,
             uniqueParameters},
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
-           simplifiedEqs = (#[[2]] == 0)& /@ simplifiedEqs;
+           simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            parameters = parametersFixedByEWSB;
            (* replace non-symbol parameters by unique symbols *)
            uniqueParameters = MakeParametersUnique[parameters];
@@ -286,7 +286,7 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
 
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
     Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
-           simplifiedEqs = (#[[2]] == 0)& /@ equations;
+           simplifiedEqs = (# == 0)& /@ equations;
            solution = Solve[simplifiedEqs, parameters];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",

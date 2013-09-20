@@ -292,7 +292,7 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
-WriteModelClass[massMatrices_List, ewsbEquations_List,
+WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
                 enablePoleMassThreads_,
                 files_List, diagonalizationPrecision_List] :=
@@ -306,7 +306,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             calculateAllMasses = "", calculateOneLoopTadpoles = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
-            phasesInit = "", vevs,
+            phasesInit = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
             callAllLoopMassFunctions = "", printMasses = "", printMixingMatrices = "",
@@ -319,7 +319,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             copyDRbarMassesToPoleMasses = ""
            },
-           vevs = #[[1]]& /@ ewsbEquations; (* list of VEVs *)
+           If[Length[vevs] != Length[ewsbEquations],
+              Print["Error: number of vevs != number of EWSB equations"];
+              Print["   vevs = ", vevs];
+              Print["   EWSB equations = ", ewsbEquations];
+              Quit[1];
+             ];
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
@@ -335,8 +340,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               ];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            For[k = 1, k <= Length[ewsbEquations], k++,
-               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[ewsbEquations[[k,1]]];
-               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[ewsbEquations[[k,1]], ewsbEquations[[k,2]]];
+               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[vevs[[k]]];
+               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[vevs[[k]], ewsbEquations[[k]]];
               ];
            If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
@@ -345,7 +350,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[ewsbEquations, parametersFixedByEWSB];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`SolveTreeLevelEwsb[ewsbEquations, parametersFixedByEWSB];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
@@ -798,12 +803,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     FSEigenstates];
               Quit[1];
              ];
-           If[Length[vevs] === Length[ewsbEquations],
-              ewsbEquations = MapThread[List, {vevs, ewsbEquations}];
-              ,
+           If[Length[vevs] =!= Length[ewsbEquations],
               Print["Error: There are ", Length[ewsbEquations],
                     " EWSB equations but ", Length[vevs], " VEVs"];
               ewsbEquations = {};
+              vevs = {};
               ParametersToSolveTadpoles = {};
               Quit[1];
              ];
@@ -962,7 +966,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
-           WriteModelClass[massMatrices, ewsbEquations,
+           WriteModelClass[massMatrices, vevs, ewsbEquations,
                            ParametersToSolveTadpoles,
                            nPointFunctions, phases, OptionValue[EnablePoleMassThreads],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
