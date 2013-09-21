@@ -3,7 +3,7 @@ MODNAME  := examples
 
 EXAMPLES_SRC :=
 
-ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softsusy.cpp
 ifeq ($(shell $(FSCONFIG) --with-snmssm),yes)
@@ -12,7 +12,7 @@ EXAMPLES_SRC += \
 endif
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 EXAMPLES_SRC += \
-		$(DIR)/run_smssm.cpp
+		$(DIR)/run_SoftsusyMSSM.cpp
 endif
 endif
 
@@ -80,8 +80,8 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/run_smssm.d $(DIR)/run_smssm.o: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_SoftsusyMSSM.d $(DIR)/run_SoftsusyMSSM.o: CPPFLAGS += $(EIGENFLAGS)
+$(DIR)/run_SoftsusyMSSM.x: $(DIR)/run_SoftsusyMSSM.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)

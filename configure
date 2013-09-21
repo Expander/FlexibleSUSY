@@ -522,11 +522,11 @@ check_models() {
         esac
     done
 
-    # test model dependencies (snmssm depends on smssm)
+    # test model dependencies (snmssm depends on SoftsusyMSSM)
     if contains "${MODELS}" "models/snmssm"; then
-        if contains_not "${MODELS}" "models/smssm"; then
-            message "Error: model snmssm requires model smssm"
-            message "Please also select the smssm"
+        if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
+            message "Error: model snmssm requires model SoftsusyMSSM"
+            message "Please also select the SoftsusyMSSM"
             exit 1
         fi
     fi

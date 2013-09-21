@@ -16,12 +16,12 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
-ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
@@ -32,7 +32,7 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_model.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-smssm --with-snmssm --with-MSSM),yes yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-snmssm --with-MSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_benchmark.cpp \
 		$(DIR)/test_MSSM_slha_output.cpp

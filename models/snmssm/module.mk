@@ -1,7 +1,7 @@
 DIR          := models/snmssm
 MODNAME      := libsnmssm
 
-ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 LIBSNMSSM_SRC  := \
 		$(DIR)/nmssmUtils.cpp \
 		$(DIR)/nmssmsoftpars.cpp \
