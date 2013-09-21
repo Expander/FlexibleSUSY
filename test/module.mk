@@ -216,23 +216,23 @@ $(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBS
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

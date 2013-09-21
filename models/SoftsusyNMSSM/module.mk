@@ -2,7 +2,7 @@ DIR          := models/SoftsusyNMSSM
 MODNAME      := libSoftsusyNMSSM
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
-LIBSNMSSM_SRC  := \
+LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmUtils.cpp \
 		$(DIR)/nmssmsoftpars.cpp \
 		$(DIR)/nmssmsoftsusy.cpp \
@@ -11,7 +11,7 @@ LIBSNMSSM_SRC  := \
 		$(DIR)/nmssm2loop.f
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-LIBSNMSSM_SRC  += \
+LIBSoftsusyNMSSM_SRC  += \
 		$(DIR)/snmssm_two_scale.cpp \
 		$(DIR)/snmssm_two_scale_convergence_tester.cpp \
 		$(DIR)/snmssm_two_scale_initial_guesser.cpp \
@@ -21,32 +21,32 @@ LIBSNMSSM_SRC  += \
 endif
 endif
 
-LIBSNMSSM_OBJ  := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSNMSSM_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIBSNMSSM_SRC)))
+LIBSoftsusyNMSSM_OBJ  := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSoftsusyNMSSM_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIBSoftsusyNMSSM_SRC)))
 
-LIBSNMSSM_DEP  := \
-		$(LIBSNMSSM_OBJ:.o=.d)
+LIBSoftsusyNMSSM_DEP  := \
+		$(LIBSoftsusyNMSSM_OBJ:.o=.d)
 
-LIBSNMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBSoftsusyNMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
-all-$(MODNAME): $(LIBSNMSSM)
+all-$(MODNAME): $(LIBSoftsusyNMSSM)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSNMSSM_OBJ)
+		rm -rf $(LIBSoftsusyNMSSM_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSNMSSM_DEP)
-		rm -rf $(LIBSNMSSM)
+		rm -rf $(LIBSoftsusyNMSSM_DEP)
+		rm -rf $(LIBSoftsusyNMSSM)
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBSNMSSM): $(LIBSNMSSM_OBJ)
+$(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-ALLDEP += $(LIBSNMSSM_DEP)
-ALLLIB += $(LIBSNMSSM)
+ALLDEP += $(LIBSoftsusyNMSSM_DEP)
+ALLLIB += $(LIBSoftsusyNMSSM)

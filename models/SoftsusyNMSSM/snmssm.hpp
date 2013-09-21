@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_H
-#define SNMSSM_H
+#ifndef SoftsusyNMSSM_H
+#define SoftsusyNMSSM_H
 
 namespace flexiblesusy {
 

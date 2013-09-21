@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_TWO_SCALE_H
-#define SNMSSM_TWO_SCALE_H
+#ifndef SoftsusyNMSSM_TWO_SCALE_H
+#define SoftsusyNMSSM_TWO_SCALE_H
 
 #include "snmssm.hpp"
 #include "two_scale_model.hpp"

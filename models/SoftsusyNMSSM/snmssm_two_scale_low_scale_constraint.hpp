@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_MZ_CONSTRAINT_H
-#define SNMSSM_MZ_CONSTRAINT_H
+#ifndef SoftsusyNMSSM_MZ_CONSTRAINT_H
+#define SoftsusyNMSSM_MZ_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
 #include "snmssm_parameter_point.hpp"

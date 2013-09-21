@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_TWO_SCALE_INITIAL_GUESSER_H
-#define SNMSSM_TWO_SCALE_INITIAL_GUESSER_H
+#ifndef SoftsusyNMSSM_TWO_SCALE_INITIAL_GUESSER_H
+#define SoftsusyNMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "two_scale_initial_guesser.hpp"
 #include "snmssm_parameter_point.hpp"

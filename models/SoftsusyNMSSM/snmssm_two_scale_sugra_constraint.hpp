@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_SUGRA_CONSTRAINT_H
-#define SNMSSM_SUGRA_CONSTRAINT_H
+#ifndef SoftsusyNMSSM_SUGRA_CONSTRAINT_H
+#define SoftsusyNMSSM_SUGRA_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
 #include "snmssm_two_scale.hpp"

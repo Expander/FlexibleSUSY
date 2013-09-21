@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
-#define SNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
+#ifndef SoftsusyNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
+#define SoftsusyNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "two_scale_convergence_tester_skeleton.hpp"
 #include "snmssm_two_scale.hpp"
