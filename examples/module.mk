@@ -81,7 +81,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/run_smssm.d $(DIR)/run_smssm.o: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
@@ -114,10 +114,10 @@ endif
 endif
 endif
 
-$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
-$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)

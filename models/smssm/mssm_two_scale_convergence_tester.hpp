@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
-#define SMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
+#ifndef SoftsusyMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
+#define SoftsusyMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "two_scale_convergence_tester_skeleton.hpp"
 #include "mssm_two_scale.hpp"

@@ -1,14 +1,14 @@
 DIR          := models/smssm
 MODNAME      := libsmssm
 
-LIBSMSSM_SRC  := \
+LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/mssmUtils.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/susy.cpp \
 		$(DIR)/twoloophiggs.f
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-LIBSMSSM_SRC  += \
+LIBSoftsusyMSSM_SRC  += \
 		$(DIR)/mssm_two_scale.cpp \
 		$(DIR)/mssm_two_scale_convergence_tester.cpp \
 		$(DIR)/mssm_two_scale_initial_guesser.cpp \
@@ -17,32 +17,32 @@ LIBSMSSM_SRC  += \
 		$(DIR)/mssm_two_scale_sugra_constraint.cpp
 endif
 
-LIBSMSSM_OBJ  := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSMSSM_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIBSMSSM_SRC)))
+LIBSoftsusyMSSM_OBJ  := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSoftsusyMSSM_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIBSoftsusyMSSM_SRC)))
 
-LIBSMSSM_DEP  := \
-		$(LIBSMSSM_OBJ:.o=.d)
+LIBSoftsusyMSSM_DEP  := \
+		$(LIBSoftsusyMSSM_OBJ:.o=.d)
 
-LIBSMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBSoftsusyMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
-all-$(MODNAME): $(LIBSMSSM)
+all-$(MODNAME): $(LIBSoftsusyMSSM)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSMSSM_OBJ)
+		rm -rf $(LIBSoftsusyMSSM_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSMSSM_DEP)
-		rm -rf $(LIBSMSSM)
+		rm -rf $(LIBSoftsusyMSSM_DEP)
+		rm -rf $(LIBSoftsusyMSSM)
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBSMSSM): $(LIBSMSSM_OBJ)
+$(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-ALLDEP += $(LIBSMSSM_DEP)
-ALLLIB += $(LIBSMSSM)
+ALLDEP += $(LIBSoftsusyMSSM_DEP)
+ALLLIB += $(LIBSoftsusyMSSM)
