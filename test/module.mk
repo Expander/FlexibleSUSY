@@ -32,12 +32,12 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_model.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-snmssm --with-MSSM),yes yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-MSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_benchmark.cpp \
 		$(DIR)/test_MSSM_slha_output.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-snmssm --with-NMSSM),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \

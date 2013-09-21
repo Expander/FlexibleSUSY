@@ -6,7 +6,7 @@ EXAMPLES_SRC :=
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softsusy.cpp
-ifeq ($(shell $(FSCONFIG) --with-snmssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softpoint.cpp
 endif
