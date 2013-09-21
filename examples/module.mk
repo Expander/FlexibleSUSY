@@ -10,10 +10,6 @@ ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softpoint.cpp
 endif
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-EXAMPLES_SRC += \
-		$(DIR)/run_SoftsusyMSSM.cpp
-endif
 endif
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
@@ -79,10 +75,6 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
-
-$(DIR)/run_SoftsusyMSSM.d $(DIR)/run_SoftsusyMSSM.o: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/run_SoftsusyMSSM.x: $(DIR)/run_SoftsusyMSSM.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
