@@ -19,10 +19,10 @@ TestEquality[EWSB`FindFreePhasesInEWSB[mssmEwsbEqs, mssmEwsbOutputParameters],
 
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
-TestEquality[mssmFullSolution,
-             { {B[mu] -> -5 + x^2 - x*y - z, mu -> -Sqrt[-5 - x^2 - x*y - z]}, 
-               {B[mu] -> -5 + x^2 - x*y - z, mu -> Sqrt[-5 - x^2 - x*y - z]}
-             }];
+TestEquality[Sort /@ mssmFullSolution,
+             Sort /@ { {B[mu] -> -5 + x^2 - x*y - z, mu -> -Sqrt[-5 - x^2 - x*y - z]},
+                       {B[mu] -> -5 + x^2 - x*y - z, mu -> Sqrt[-5 - x^2 - x*y - z]}
+                     }];
 
 mssmSigns = Cases[EWSB`Private`FindFreePhase /@ mssmEwsbOutputParameters,
               FlexibleSUSY`Sign[_]];
@@ -33,10 +33,10 @@ TestEquality[EWSB`Private`CanReduceSolution[mssmFullSolution, mssmSigns], True];
 
 mssmReducedSolution = EWSB`Private`ReduceSolution[mssmFullSolution, mssmSigns];
 
-TestEquality[mssmReducedSolution,
-             { B[mu] -> -5 + x^2 - x*y - z,
-               mu -> LOCALINPUT[FlexibleSUSY`Signmu] Sqrt[-5 - x^2 - x*y - z]
-             }];
+TestEquality[Sort[mssmReducedSolution],
+             Sort[{ B[mu] -> -5 + x^2 - x*y - z,
+                    mu -> LOCALINPUT[FlexibleSUSY`Signmu] Sqrt[-5 - x^2 - x*y - z]
+                  }]];
 
 Print["testing NMSSM-like EWSB for Kappa, vS and mS2 ..."];
 
