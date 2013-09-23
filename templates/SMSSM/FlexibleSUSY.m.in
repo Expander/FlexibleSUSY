@@ -1,0 +1,90 @@
+
+FSModelName = "@CLASSNAME@";
+
+(* CSMSSM input parameters *)
+
+MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {5, Azero}
+         };
+
+EXTPAR = { {23, MuInput},
+           {24, BMuInput},
+           {61, LambdaInput},
+           {66, L1Input},
+           {67, LL1Input},
+           {68, MSInput},
+           {69, BMSInput}
+         };
+
+DefaultParameterPoint = {
+    {m0, 200},
+    {m12, 200},
+    {TanBeta, 10},
+    {Azero, -500},
+    {MuInput, 0},
+    {BMuInput, 0},
+    {LambdaInput, 0.1},
+    {L1Input, 0},
+    {LL1Input, 0},
+    {MSInput, 0},
+    {BMSInput, 0}
+};
+
+ParametersToSolveTadpoles = { \[Kappa], vS, ms2 };
+
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
+
+SUSYScaleInput = {};
+
+HighScale = g1 == g2;
+
+HighScaleFirstGuess = 1.0 10^16;
+
+HighScaleInput={
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {mHu2, m0^2},
+   {mHd2, m0^2},
+   {\[Lambda], LambdaInput},
+   {T[\[Kappa]], Azero \[Kappa]},
+   {T[\[Lambda]], Azero LambdaInput},
+   {MassB, m12},
+   {MassWB,m12},
+   {MassG,m12},
+   {\[Mu], MuInput},
+   {B[\[Mu]], BMuInput},
+   {L1, L1Input},
+   {L[L1], LL1Input},
+   {MS, MSInput},
+   {B[MS], BMSInput}
+};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput={
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {\[Lambda], LambdaInput},
+   {\[Kappa], 0.1},
+   {vS, 1000},
+   {ms2, SM[MZ]^2}
+};
+
+InitialGuessAtHighScale = {};

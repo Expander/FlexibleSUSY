@@ -16,39 +16,33 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_TWO_SCALE_H
-#define SNMSSM_TWO_SCALE_H
+#ifndef SoftsusyNMSSM_SUGRA_CONSTRAINT_H
+#define SoftsusyNMSSM_SUGRA_CONSTRAINT_H
 
-#include "snmssm.hpp"
-#include "two_scale_model.hpp"
-#include "nmssmsoftsusy.h"
+#include "two_scale_constraint.hpp"
+#include "snmssm_two_scale.hpp"
+#include "snmssm_parameter_point.hpp"
+#include "gut_scale_calculator.hpp"
 
 namespace flexiblesusy {
 
-class Two_scale;
-
-template<>
-class SNmssm<Two_scale>: public Two_scale_model, public NmssmSoftsusy {
+class SNmssm_sugra_constraint : public Constraint<Two_scale> {
 public:
-   SNmssm();
-   virtual ~SNmssm();
-
-   virtual void calculate_spectrum();
-   virtual std::string name() const { return "SNmssm"; }
-   virtual int run_to(double, double eps = -1.0);
-   virtual void print(std::ostream& s) const { s << static_cast<NmssmSoftsusy>(*this); }
-   virtual void set_precision(double p) { precision = p; }
-
-   void set_scale(double scale) { setMu(scale); }
-   double get_scale() const { return displayMu(); }
-   SNmssm calc_beta() const { return beta2(); }
-   void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
+   SNmssm_sugra_constraint(const SNmssm_parameter_point&);
+   virtual ~SNmssm_sugra_constraint();
+   virtual void apply();
+   virtual double get_scale() const;
+   virtual void set_model(Two_scale_model*);
 
 private:
-   double precision;
-   SNmssm(const SoftParsNmssm&);
+   double mx_guess;
+   SNmssm<Two_scale>* mssm;
+   SNmssm_parameter_point pp;   ///< SNmssm parameter point
+   GUT_scale_calculator<SNmssm<Two_scale> > gut_scale_calculator;
+
+   void update_scale();
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

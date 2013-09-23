@@ -16,12 +16,12 @@ ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
-ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-smssm --with-MSSM),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
@@ -32,12 +32,12 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_model.cpp \
 		$(DIR)/test_MSSM_spectrum.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-smssm --with-snmssm --with-MSSM),yes yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-MSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_benchmark.cpp \
 		$(DIR)/test_MSSM_slha_output.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-snmssm --with-NMSSM),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
@@ -45,6 +45,7 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_initial_guesser.cpp \
 		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
+		$(DIR)/test_NMSSM_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
 endif
@@ -72,6 +73,7 @@ endif
 TEST_META := \
 		test/test_CConversion.m \
 		test/test_Constraint.m \
+		test/test_EWSB.m \
 		test/test_TreeMasses.m \
 		test/test_SelfEnergies.m \
 		test/test_TextFormatting.m \
@@ -172,10 +174,10 @@ $(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI)
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_two_scale_mssm_solver.x: $(DIR)/test_two_scale_mssm_solver.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
-$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_two_scale_mssm_initial_guesser.x: $(DIR)/test_two_scale_mssm_initial_guesser.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(FLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_two_scale_running_precision.x: $(DIR)/test_two_scale_running_precision.o $(LIBFLEXI) $(LIBLEGACY)
@@ -197,38 +199,40 @@ $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_model.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_initial_guesser.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_higgs_iteration.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_higgs_iteration.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/input_MSSM.slha2
-		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
+$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/input_MSSM.slha2
+		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
 
-$(DIR)/test_MSSM_spectrum.x: $(LIBSMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_beta_functions.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_ewsb.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSNMSSM) $(LIBSMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSNMSSM) $(LIBSMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSMSSM) $(LIBSNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o

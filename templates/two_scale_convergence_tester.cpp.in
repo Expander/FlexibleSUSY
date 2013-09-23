@@ -21,7 +21,6 @@
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include <cmath>
 #include <algorithm>
-#include <valarray>
 #include "wrappers.hpp"
 
 namespace flexiblesusy {

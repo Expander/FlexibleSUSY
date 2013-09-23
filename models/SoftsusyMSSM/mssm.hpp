@@ -16,25 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
-#define SMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
-
-#include "two_scale_convergence_tester_skeleton.hpp"
-#include "mssm_two_scale.hpp"
+#ifndef SoftsusyMSSM_H
+#define SoftsusyMSSM_H
 
 namespace flexiblesusy {
 
-class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
-public:
-   Mssm_convergence_tester(Mssm<Two_scale>*, double);
-   virtual ~Mssm_convergence_tester();
-
-protected:
-   virtual double max_rel_diff() const;
-
-private:
-   double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&) const;
-};
+template <class T>
+class Mssm;
 
 }
 

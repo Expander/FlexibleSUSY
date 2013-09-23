@@ -1,7 +1,9 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
 
-CheckEWSBEquations::usage="";
+FindFreePhasesInEWSB::usage="Searches for free phases or signs in the
+EWSB equations.  The result is stored in the internal variable
+freePhases.";
 
 CreateEWSBEqPrototype::usage="creates C function prototype for a
 given EWSB equation";
@@ -41,7 +43,7 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
-CheckEWSBEquations[ewsbEqs_List, outputParameters_List] :=
+FindFreePhasesInEWSB[ewsbEqs_List, outputParameters_List] :=
     Module[{i, par, uniquePar, uniqueEqs, rules, newPhases = {}},
            For[i = 1, i <= Length[outputParameters], i++,
                par = outputParameters[[i]];
@@ -119,11 +121,11 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
            Return[result];
           ];
 
-FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
-                      gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
+FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List,
+                     gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
     Module[{i, result = "", vev, par},
-           If[Length[tadpoleEquations] =!= Length[parametersFixedByEWSB],
-              Print["Error: number of EWSB equations (",Length[tadpoleEquations],
+           If[Length[vevs] =!= Length[parametersFixedByEWSB],
+              Print["Error: number of EWSB equations (",Length[vevs],
                     ") is not equal to the number of fixed parameters (",
                     Length[parametersFixedByEWSB],")"];
               Return[""];
@@ -133,8 +135,8 @@ FillArrayWithEWSBEqs[tadpoleEquations_List, parametersFixedByEWSB_List,
                result = result <> SetParameterWithPhase[par, gslIntputVector, i-1];
               ];
            result = result <> "\n";
-           For[i = 1, i <= Length[tadpoleEquations], i++,
-               vev = tadpoleEquations[[i,1]];
+           For[i = 1, i <= Length[vevs], i++,
+               vev = vevs[[i]];
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "model->get_ewsb_eq_" <>
                         ToValidCSymbolString[vev] <> "();\n";
@@ -218,6 +220,10 @@ CanReduceSolution[solution_List, signs_List] :=
            Return[signCheck && unsignedCheck];
           ];
 
+ReduceSolution[{}, signs_List] := {};
+
+ReduceSolution[{{}}, signs_List] := {};
+
 ReduceSolution[solution_List, signs_List] :=
     Module[{signedParameters, reducedSolution},
            signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
@@ -238,20 +244,28 @@ MakeParameterUnique[par_]          :=
 MakeParametersUnique[parameters_List] :=
     Flatten[MakeParameterUnique /@ parameters];
 
-SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
-    Module[{result = "", simplifiedEqs, parameters,
-            solution, signs, reducedSolution, i, par, expr, parStr,
-            uniqueParameters},
+FindSolution[equations_List, parametersFixedByEWSB_List] :=
+    Module[{simplifiedEqs, uniqueParameters, solution},
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
-           simplifiedEqs = (#[[2]] == 0)& /@ simplifiedEqs;
-           parameters = parametersFixedByEWSB;
+           simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            (* replace non-symbol parameters by unique symbols *)
-           uniqueParameters = MakeParametersUnique[parameters];
-           solution = Solve[simplifiedEqs /. uniqueParameters, parameters /. uniqueParameters];
+           uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
+           solution = TimeConstrained[
+               Solve[simplifiedEqs /. uniqueParameters,
+                     parametersFixedByEWSB /. uniqueParameters],
+               FlexibleSUSY`FSSolveEWSBTimeConstraint,
+               {}
+              ];
            (* substitute back unique parameters *)
            uniqueParameters = Reverse /@ uniqueParameters;
-           solution = solution /. uniqueParameters;
-           signs = Cases[FindFreePhase /@ parametersFixedByEWSB, FlexibleSUSY`Sign[_]];
+           solution /. uniqueParameters
+          ];
+
+SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
+    Module[{result = "",
+            solution, signs, reducedSolution, i, par, expr, parStr},
+           signs = Cases[FindFreePhase /@ allParameters, FlexibleSUSY`Sign[_]];
+           solution = FindSolution[equations, parametersFixedByEWSB];
            (* Try to reduce the solution *)
            If[CanReduceSolution[solution, signs],
               reducedSolution = ReduceSolution[solution, signs];
@@ -284,7 +298,7 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
 
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
     Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
-           simplifiedEqs = (#[[2]] == 0)& /@ equations;
+           simplifiedEqs = (# == 0)& /@ equations;
            solution = Solve[simplifiedEqs, parameters];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",

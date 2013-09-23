@@ -16,31 +16,24 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SMSSM_SUGRA_CONSTRAINT_H
-#define SMSSM_SUGRA_CONSTRAINT_H
+#ifndef SoftsusyMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
+#define SoftsusyMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_constraint.hpp"
+#include "two_scale_convergence_tester_skeleton.hpp"
 #include "mssm_two_scale.hpp"
-#include "mssm_parameter_point.hpp"
-#include "gut_scale_calculator.hpp"
 
 namespace flexiblesusy {
 
-class Mssm_sugra_constraint : public Constraint<Two_scale> {
+class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
 public:
-   Mssm_sugra_constraint(const Mssm_parameter_point&);
-   virtual ~Mssm_sugra_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   Mssm_convergence_tester(Mssm<Two_scale>*, double);
+   virtual ~Mssm_convergence_tester();
+
+protected:
+   virtual double max_rel_diff() const;
 
 private:
-   double mx_guess;
-   Mssm<Two_scale>* mssm;
-   Mssm_parameter_point pp;   ///< Mssm parameter point
-   GUT_scale_calculator<Mssm<Two_scale> > gut_scale_calculator;
-
-   void update_scale();
+   double sumTol(const Mssm<Two_scale>&, const Mssm<Two_scale>&) const;
 };
 
 }

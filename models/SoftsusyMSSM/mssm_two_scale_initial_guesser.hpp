@@ -16,40 +16,40 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_TWO_SCALE_INITIAL_GUESSER_H
-#define SNMSSM_TWO_SCALE_INITIAL_GUESSER_H
+#ifndef SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
+#define SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "two_scale_initial_guesser.hpp"
-#include "snmssm_parameter_point.hpp"
+#include "mssm_parameter_point.hpp"
 #include "lowe.h"
 #include "linalg.h"
 
 namespace flexiblesusy {
 
-template<class T> class SNmssm;
+template<class T> class Mssm;
 class Two_scale;
 
-class SNmssm_low_scale_constraint;
-class SNmssm_susy_scale_constraint;
-class SNmssm_sugra_constraint;
+class Mssm_low_scale_constraint;
+class Mssm_susy_scale_constraint;
+class Mssm_sugra_constraint;
 
-class SNmssm_initial_guesser : public Initial_guesser<Two_scale> {
+class Mssm_initial_guesser : public Initial_guesser<Two_scale> {
 public:
-   SNmssm_initial_guesser(SNmssm<Two_scale>*, const SNmssm_parameter_point&,
-                          const SNmssm_low_scale_constraint&,
-                          const SNmssm_susy_scale_constraint&,
-                          const SNmssm_sugra_constraint&);
-   virtual ~SNmssm_initial_guesser();
+   Mssm_initial_guesser(Mssm<Two_scale>*, const Mssm_parameter_point&,
+                        const Mssm_low_scale_constraint&,
+                        const Mssm_susy_scale_constraint&,
+                        const Mssm_sugra_constraint&);
+   virtual ~Mssm_initial_guesser();
    virtual void guess();
    void set_QedQcd(const QedQcd& qedqcd) { oneset = qedqcd; }
 
 private:
-   SNmssm<Two_scale>* nmssm;  ///< SNmssm model
+   Mssm<Two_scale>* mssm;     ///< Mssm model
    QedQcd oneset;             ///< low-energy parameters
-   SNmssm_parameter_point pp; ///< SNmssm parameter point
+   Mssm_parameter_point pp;   ///< Mssm parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };
 
-} // namespace flexiblesusy
+}
 
 #endif

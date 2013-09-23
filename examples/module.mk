@@ -3,16 +3,12 @@ MODNAME  := examples
 
 EXAMPLES_SRC :=
 
-ifeq ($(shell $(FSCONFIG) --with-smssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softsusy.cpp
-ifeq ($(shell $(FSCONFIG) --with-snmssm),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM),yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softpoint.cpp
-endif
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-EXAMPLES_SRC += \
-		$(DIR)/run_smssm.cpp
 endif
 endif
 
@@ -80,10 +76,6 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/run_smssm.d $(DIR)/run_smssm.o: CPPFLAGS += $(EIGENFLAGS)
-$(DIR)/run_smssm.x: $(DIR)/run_smssm.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $(abspath $^) $(FLIBS)
-
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LATTICE_EXAMPLES_DEP) $(LATTICE_EXAMPLES_OBJ): CPPFLAGS += $(EIGENFLAGS) $(GSLFLAGS) $(BOOSTFLAGS)
 
@@ -114,10 +106,10 @@ endif
 endif
 endif
 
-$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
-$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(abspath $^) $(FLIBS)
 
 ALLDEP += $(EXAMPLES_DEP)

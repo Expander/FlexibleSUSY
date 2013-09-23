@@ -16,42 +16,37 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SMSSM_MSUSY_CONSTRAINT_H
-#define SMSSM_MSUSY_CONSTRAINT_H
+#ifndef SoftsusyNMSSM_TWO_SCALE_H
+#define SoftsusyNMSSM_TWO_SCALE_H
 
-#include "two_scale_constraint.hpp"
-#include "mssm_parameter_point.hpp"
-#include "linalg.h"
+#include "snmssm.hpp"
+#include "two_scale_model.hpp"
+#include "nmssmsoftsusy.h"
 
 namespace flexiblesusy {
 
 class Two_scale;
-template<class T> class Mssm;
 
-/**
- * @class Mssm_susy_scale_constraint
- * @brief MSSM EWSB constraint at the Susy mass scale
- *
- * This class represents the electroweak symmetry breaking (EWSB)
- * constraint of the MSSM at the Susy mass scale MSusy.  The apply()
- * function calculates the MSSM \f$\overline{DR}\f$ parameters and
- * does the EWSB.
- */
-
-class Mssm_susy_scale_constraint : public Constraint<Two_scale> {
+template<>
+class SNmssm<Two_scale>: public Two_scale_model, public NmssmSoftsusy {
 public:
-   Mssm_susy_scale_constraint(const Mssm_parameter_point&);
-   virtual ~Mssm_susy_scale_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   SNmssm();
+   virtual ~SNmssm();
+
+   virtual void calculate_spectrum();
+   virtual std::string name() const { return "SNmssm"; }
+   virtual int run_to(double, double eps = -1.0);
+   virtual void print(std::ostream& s) const { s << static_cast<NmssmSoftsusy>(*this); }
+   virtual void set_precision(double p) { precision = p; }
+
+   void set_scale(double scale) { setMu(scale); }
+   double get_scale() const { return displayMu(); }
+   SNmssm calc_beta() const { return beta2(); }
+   void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:
-   Mssm<Two_scale>* mssm;
-   double scale;
-   Mssm_parameter_point pp;   ///< Mssm parameter point
-
-   void update_scale();
+   double precision;
+   SNmssm(const SoftParsNmssm&);
 };
 
 }

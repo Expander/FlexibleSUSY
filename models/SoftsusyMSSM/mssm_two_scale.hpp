@@ -16,13 +16,38 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_H
-#define SNMSSM_H
+#ifndef SoftsusyMSSM_TWO_SCALE_H
+#define SoftsusyMSSM_TWO_SCALE_H
+
+#include "mssm.hpp"
+#include "two_scale_model.hpp"
+#include "softsusy.h"
 
 namespace flexiblesusy {
 
-template <class T>
-class SNmssm;
+class Two_scale;
+
+template<>
+class Mssm<Two_scale>: public Two_scale_model, public MssmSoftsusy {
+public:
+   Mssm();
+   virtual ~Mssm();
+
+   virtual void calculate_spectrum();
+   virtual std::string name() const { return "Mssm"; }
+   virtual int run_to(double, double eps = -1.0);
+   virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
+   virtual void set_precision(double p) { precision = p; }
+
+   void set_scale(double scale) { setMu(scale); }
+   double get_scale() const { return displayMu(); }
+   Mssm calc_beta() const { return beta2(); }
+   void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
+
+private:
+   double precision;
+   Mssm(const SoftParsMssm&);
+};
 
 }
 

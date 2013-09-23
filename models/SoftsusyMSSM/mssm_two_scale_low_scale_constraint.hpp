@@ -16,33 +16,44 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SNMSSM_SUGRA_CONSTRAINT_H
-#define SNMSSM_SUGRA_CONSTRAINT_H
+#ifndef SoftsusyMSSM_MZ_CONSTRAINT_H
+#define SoftsusyMSSM_MZ_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
-#include "snmssm_two_scale.hpp"
-#include "snmssm_parameter_point.hpp"
-#include "gut_scale_calculator.hpp"
+#include "mssm_parameter_point.hpp"
 
 namespace flexiblesusy {
 
-class SNmssm_sugra_constraint : public Constraint<Two_scale> {
+class Two_scale;
+template<class T> class Mssm;
+
+/**
+ * @class Mssm_low_scale_constraint
+ * @brief MSSM low-energy constraint at the Z mass MZ
+ *
+ * This class represents the low-energy constraint of the MSSM at the
+ * Z mass MZ.  The apply() function calculates the threshold
+ * corrections to the gauge and Yukawa couplings.  It is assumed that
+ * the MSSM model class is filled with the low-energy data set (see
+ * MssmSoftsusy::setData).
+ */
+
+class Mssm_low_scale_constraint : public Constraint<Two_scale> {
 public:
-   SNmssm_sugra_constraint(const SNmssm_parameter_point&);
-   virtual ~SNmssm_sugra_constraint();
+   Mssm_low_scale_constraint(const Mssm_parameter_point&);
+   virtual ~Mssm_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
 
 private:
-   double mx_guess;
-   SNmssm<Two_scale>* mssm;
-   SNmssm_parameter_point pp;   ///< SNmssm parameter point
-   GUT_scale_calculator<SNmssm<Two_scale> > gut_scale_calculator;
+   Mssm<Two_scale>* mssm;
+   double scale;
+   Mssm_parameter_point pp;   ///< Mssm parameter point
 
    void update_scale();
 };
 
-} // namespace flexiblesusy
+}
 
 #endif
