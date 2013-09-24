@@ -257,8 +257,13 @@ ReduceSolution[solution_List] :=
     Module[{reducedSolution = {}, s, flattenedSolution, freePhases = {}},
            For[s = 1, s <= Length[solution], s++,
                flattenedSolution = Flatten[solution[[s]]];
-               If[Length[flattenedSolution] < 1 || Length[flattenedSolution] > 2,
-                  Print["Warning: cannont reduce solution ", flattenedSolution];
+               If[Length[flattenedSolution] == 0,
+                  Print["Warning: no solution found for the EWSB eqs."];
+                  Return[{{},{}}];
+                 ];
+               If[Length[flattenedSolution] > 2,
+                  Print["Warning: cannot reduce solution for ", flattenedSolution];
+                  Prtin["   because there are more than two solutions"];
                   Return[{{},{}}];
                  ];
                If[Length[flattenedSolution] == 1,
@@ -274,10 +279,19 @@ ReduceSolution[solution_List] :=
                      AppendTo[reducedSolution, {flattenedSolution[[1]]}];
                      AppendTo[freePhases, FlexibleSUSY`Sign[flattenedSolution[[1,1]]]];
                      Continue[];
+                     ,
+                     Print["Warning: cannot reduce solution for ", flattenedSolution[[1,1]]];
+                     Print["   because the two solutions are not related by a global sign."];
                     ];
                  ];
               ];
-           Print["Note: adding free phases: ", freePhases];
+           If[Length[reducedSolution] != Length[solution],
+              Print["Warning: analytic reduction of EWSB solutions failed"];
+              Return[{{},{}}];
+             ];
+           If[freePhases =!= {},
+              Print["Note: adding free phases: ", freePhases];
+             ];
            Return[{reducedSolution, freePhases}];
           ];
 
