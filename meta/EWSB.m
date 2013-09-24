@@ -286,7 +286,7 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List] :=
           ];
 
 SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
-    Module[{result = "",
+    Module[{result = "", body = "",
             reducedSolution, freePhases, i, par, expr, parStr},
            {reducedSolution, freePhases} = FindSolutionAndFreePhases[equations, parametersFixedByEWSB];
            If[reducedSolution =!= {},
@@ -297,24 +297,46 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
                   FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
                                                    };
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";
+              (* save old parameters *)
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = "new_" <> CConversion`ToValidCSymbolString[par];
+                  parStr = CConversion`ToValidCSymbolString[par];
                   result = result <>
-                           "const double " <> parStr <> " = " <>
+                           "const double old_" <> parStr <> " = " <> parStr <> ";\n";
+                 ];
+              result = result <> "\n";
+              (* write solution *)
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  expr = reducedSolution[[i,2]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <> parStr <> " = " <>
                            CConversion`RValueToCFormString[expr] <> ";\n";
                  ];
               result = result <> "\n";
+              (* check for errors *)
+              result = result <> "const bool is_finite = ";
               For[i = 1, i <= Length[reducedSolution], i++,
-                  par  = reducedSolution[[i,1]];
+                  par    = reducedSolution[[i,1]];
                   parStr = CConversion`ToValidCSymbolString[par];
-                  result = result <>
-                           "if (std::isfinite(new_" <> parStr <> "))\n" <>
-                               IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
-                           "else\n" <>
-                               IndentText["error = 1;"] <> "\n";
+                  result = result <> "std::isfinite(" <> parStr <> ")";
+                  If[i != Length[reducedSolution],
+                     result = result <> " && ";
+                    ];
                  ];
+              result = result <> ";\n\n";
+              body = "";
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par    = reducedSolution[[i,1]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  body = body <> parStr <> " = old_" <> parStr <> ";\n";
+                 ];
+              body = body <> "error = 1;\n";
+              result = result <>
+                       "if (!is_finite) {\n" <>
+                       IndentText[body] <>
+                       "}";
               ,
               result = "error = solve_ewsb_iteratively(0);\n";
              ];
