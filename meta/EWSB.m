@@ -16,7 +16,8 @@ of the EWSB equations";
 FillInitialGuessArray::usage="fills a C array with initial values for the
 EWSB eqs. solver";
 
-SolveTreeLevelEwsb::usage="Solves tree-level EWSB equations";
+CreateTreeLevelEwsbSolver::usage="Converts tree-level EWSB solutions
+to C form";
 
 SolveTreeLevelEwsbVia::usage="Solves tree-level EWSB equations for the
 given list of parameters.  Retuns an empty string if no unique
@@ -299,10 +300,10 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List] :=
            Return[{Flatten[reducedSolution], freePhases}];
           ];
 
-SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
+CreateTreeLevelEwsbSolver[solution_List] :=
     Module[{result = "", body = "",
-            reducedSolution, freePhases, i, par, expr, parStr},
-           {reducedSolution, freePhases} = FindSolutionAndFreePhases[equations, parametersFixedByEWSB];
+            i, par, expr, parStr, reducedSolution},
+           reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
                  in the solution *)

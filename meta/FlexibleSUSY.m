@@ -294,7 +294,7 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
           ];
 
 WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
-                parametersFixedByEWSB_List, freePhases_List,
+                parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, phases_List,
                 enablePoleMassThreads_,
                 files_List, diagonalizationPrecision_List] :=
@@ -354,7 +354,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
-           solveEwsbTreeLevel           = EWSB`SolveTreeLevelEwsb[ewsbEquations, parametersFixedByEWSB];
+           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
@@ -973,7 +973,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, vevs, ewsbEquations,
-                           ParametersToSolveTadpoles, freePhases,
+                           ParametersToSolveTadpoles, ewsbSolution, freePhases,
                            nPointFunctions, phases, OptionValue[EnablePoleMassThreads],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
