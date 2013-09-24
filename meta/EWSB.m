@@ -196,19 +196,26 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
 
 EliminateOneParameter[equations_List, parameters_List] :=
     Module[{independentSubset, reducedEqs, reducedPars, reducedSolution,
-            complementEq, complementPar, complementSolution},
+            complementEq, complementPar, complementSolution,
+            largestIndependentSubset, s},
            independentSubset = FindIndependentSubset[equations, parameters];
            If[independentSubset === {},
               Print["EWSB equations are not reducible"];
               Return[{}];
              ];
-           If[Length[independentSubset] > 1,
-              Print["Warning: more than one reducible subet of EWSB equations found."];
-              Print[independentSubset];
-              Print["I'm using the first one"];
+           If[Length[independentSubset] == 1,
+              largestIndependentSubset = independentSubset[[1]];,
+              Print["Note: more than one reducible subet of EWSB equations found."];
+              Print["   I'm using the larest one."];
+              largestIndependentSubset = independentSubset[[1]];
+              For[s = 1, s <= Length[independentSubset], s++,
+                  If[Length[independentSubset[[s,2]]] > Length[largestIndependentSubset[[2]]],
+                     largestIndependentSubset = independentSubset[[s]];
+                    ];
+                 ];
              ];
-           reducedEqs = independentSubset[[1, 1]];
-           reducedPars = independentSubset[[1, 2]];
+           reducedEqs = largestIndependentSubset[[1]];
+           reducedPars = largestIndependentSubset[[2]];
            reducedSolution = EliminateOneParameter[reducedEqs, reducedPars];
            If[reducedSolution === {},
               Print["Warning: could not solve reduced EWSB eqs. subset"];
