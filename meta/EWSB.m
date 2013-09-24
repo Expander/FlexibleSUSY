@@ -1,9 +1,8 @@
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
 
-FindFreePhasesInEWSB::usage="Searches for free phases or signs in the
-EWSB equations.  The result is stored in the internal variable
-freePhases.";
+FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
+phases / signs."
 
 CreateEWSBEqPrototype::usage="creates C function prototype for a
 given EWSB equation";
@@ -25,8 +24,6 @@ solution can be found";
 
 Begin["`Private`"];
 
-freePhases = {};
-
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
     FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
 
@@ -42,43 +39,6 @@ AppearsNotInEquation[parameter_, equation_] :=
 
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
-
-FindFreePhasesInEWSB[ewsbEqs_List, outputParameters_List] :=
-    Module[{i, par, uniquePar, uniqueEqs, rules, newPhases = {}},
-           For[i = 1, i <= Length[outputParameters], i++,
-               par = outputParameters[[i]];
-               uniquePar = Unique[CConversion`ToValidCSymbol[par]];
-               rules = Join[{ par -> uniquePar},
-                            Rule[#,Unique[CConversion`ToValidCSymbol[#]]]& /@ Select[outputParameters, (# =!= par)&]
-                           ];
-               uniqueEqs = ewsbEqs /. rules;
-               If[CheckInEquations[uniquePar, AppearsNotInEquation, uniqueEqs],
-                  Print["Error: ", par, " does not appear in EWSB equations!"];
-                  Continue[];
-                 ];
-               If[Parameters`IsRealParameter[par],
-                  If[CheckInEquations[uniquePar, AppearsOnlySquaredInEquation, uniqueEqs] ||
-                     CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
-                     Print["   Note: ", par, " appears only squared in EWSB equations."];
-                     AppendTo[newPhases, FlexibleSUSY`Sign[par]];
-                    ];
-                  ,
-                  If[CheckInEquations[uniquePar, AppearsOnlyAbsSquaredInEquation, uniqueEqs],
-                     Print["   Note: ", par, " is complex and appears only ",
-                           "absolute squared in EWSB equations."];
-                     AppendTo[newPhases, FlexibleSUSY`Phase[par]];
-                     ,
-                     Print["   Note: ", par, " is complex and appears in EWSB equations."];
-                     AppendTo[newPhases, FlexibleSUSY`Phase[par]];
-                    ];
-                 ];
-              ];
-           If[Length[newPhases] > 0,
-              Print["   Introducing new free parameters: ", newPhases];
-             ];
-           freePhases = newPhases;
-           Return[newPhases];
-          ];
 
 CreateEWSBEqPrototype[vev_Symbol] :=
     Module[{result = ""},
@@ -100,16 +60,16 @@ CreateEWSBEqFunction[vev_Symbol, equation_] :=
            Return[result <> body <> "}\n\n"];
           ];
 
-FindFreePhase[parameter_] :=
+FindFreePhase[parameter_, freePhases_] :=
     Module[{phases},
            phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | FlexibleSUSY`Sign[parameter]];
            If[phases === {}, Null, phases[[1]]]
           ];
 
-SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
+SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
     Module[{result, parameterStr, freePhase, gslInput},
            parameterStr = ToValidCSymbolString[parameter];
-           freePhase = FindFreePhase[parameter];
+           freePhase = FindFreePhase[parameter, freePhases];
            gslInput = "gsl_vector_get(" <> gslIntputVector <> ", " <> ToString[index] <> ")";
            If[freePhase =!= Null,
               result = "model->set_" <> parameterStr <> "(" <>
@@ -121,7 +81,7 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer] :=
            Return[result];
           ];
 
-FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List,
+FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List, freePhases_List,
                      gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
     Module[{i, result = "", vev, par},
            If[Length[vevs] =!= Length[parametersFixedByEWSB],
@@ -132,7 +92,7 @@ FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List,
              ];
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par = parametersFixedByEWSB[[i]];
-               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1];
+               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
               ];
            result = result <> "\n";
            For[i = 1, i <= Length[vevs], i++,
@@ -161,76 +121,95 @@ SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
            equations /. simplificationRules
           ];
 
-ExpressionsDifferBySignAtMost[{expr1_, expr2_}] :=
-    (Expand[expr1 - expr2] === 0) || (Expand[expr1 + expr2] === 0);
-
-ExpressionsDifferBySignAtMost[exprs_List] :=
-    Module[{i, k},
-           For[i = 1, i <= Length[exprs], i++,
-               For[k = i+1, k <= Length[exprs], k++,
-                   If[!ExpressionsDifferBySignAtMost[{exprs[[i]], exprs[[k]]}],
-                      Return[False]
-                     ];
+FindIndependentSubset[equations_List, parameters_List] :=
+    Module[{equationSubsets, numberOfEquations, parameterSubsets, 
+            numberOfParameters, e, p, result = {}, isFreeOf},
+           numberOfEquations = Length[equations];
+           numberOfParameters = Length[parameters];
+           equationSubsets = Subsets[equations, {1, numberOfEquations - 1}];
+           parameterSubsets = Subsets[parameters, {1, numberOfParameters - 1}];
+           For[e = 1, e <= Length[equationSubsets], e++,
+               For[p = 1, p <= Length[parameterSubsets], p++,
+                   isFreeOf = 
+                   And @@ (FreeQ[equationSubsets[[e]], #] & /@ 
+                           parameterSubsets[[p]]);
+                   If[isFreeOf, 
+                      AppendTo[
+                          result, {equationSubsets[[e]], 
+                                   Complement[parameters, parameterSubsets[[p]]]}]];
                   ];
               ];
-           Return[True];
+           
+           result = Select[result, (Length[#[[1]]] == Length[#[[2]]]) &];
+           Return[result];
           ];
 
-ExpressionsAreEqual[{expr1_, expr2_}] :=
-    Expand[expr1 - expr2] === 0;
+FindMinimumByteCount[{}] := Null;
 
-ExpressionsAreEqual[exprs_List] :=
-    Module[{i, k},
-           For[i = 1, i <= Length[exprs], i++,
-               For[k = i+1, k <= Length[exprs], k++,
-                   If[!ExpressionsAreEqual[{exprs[[i]], exprs[[k]]}],
-                      Return[False]
-                     ];
-                  ];
-              ];
-           Return[True];
+FindMinimumByteCount[lst_List] :=
+    First[Sort[lst, ByteCount[#1] < ByteCount[#2]]];
+
+EliminateOneParameter[{}, {}] := {};
+
+EliminateOneParameter[{eq_}, {p_}] := Solve[eq, p];
+
+EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
+    Module[{reduction = {{}, {}}, rest = {}, solution},
+           If[FreeQ[{eq1, eq2}, p1] || FreeQ[{eq1, eq2}, p2],
+              Return[{}];
+             ];
+           reduction[[1]] = 
+           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2], 10, {}];
+           reduction[[2]] = 
+           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1], 10, {}];
+           If[reduction[[1]] === {} || reduction[[2]] === {} ||
+              
+              reduction[[1]] === {{}} || reduction[[2]] === {{}},
+              Return[{}];
+             ];
+           If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
+              solution = Solve[eq1, p1];
+              If[solution =!= {}, AppendTo[rest, solution]];
+              solution = Solve[eq2, p1];
+              If[solution =!= {}, AppendTo[rest, solution]];
+              If[rest === {}, Return[{}];];
+              rest = FindMinimumByteCount[rest];
+              Return[{reduction[[1]], rest}];
+              ,
+              solution = Solve[eq1, p2];
+              If[solution =!= {{}}, AppendTo[rest, solution]];
+              solution = Solve[eq2, p2];
+              If[solution =!= {{}}, AppendTo[rest, solution]];
+              If[rest === {}, Return[{}];];
+              rest = FindMinimumByteCount[rest];
+              Return[{reduction[[2]], rest}];
+             ];
           ];
 
-CanReduceSolution[solution_List, signs_List] :=
-    Module[{allParameters, signedParameters, signedSolutions, i, par,
-            signCheck = True, unsignedCheck = True,
-            unsignedParameters, unsignedSolutions, reducedSolution},
-           If[Length[solution] <= 1, Return[True]];
-           allParameters = DeleteDuplicates[Flatten[solution /. Rule[p_,_] :> p]];
-           signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
-           unsignedParameters = Complement[allParameters, signedParameters];
-           (* Check 1: Do the solutions for the signed parameters
-              differ by a sign only? *)
-           For[i = 1, i <= Length[signedParameters], i++,
-               par = signedParameters[[i]];
-               signedSolutions = Cases[Flatten[solution], Rule[par,expr_] :> expr];
-               If[!ExpressionsDifferBySignAtMost[signedSolutions],
-                  signCheck = False;
-                 ];
-              ];
-           (* Check 2: Are the solutions for the other parameters
-              equal? *)
-           For[i = 1, i <= Length[unsignedParameters], i++,
-               par = unsignedParameters[[i]];
-               unsignedSolutions = Cases[Flatten[solution], Rule[par,expr_] :> expr];
-               If[!ExpressionsAreEqual[unsignedSolutions],
-                  unsignedCheck = False;
-                 ];
-              ];
-           Return[signCheck && unsignedCheck];
-          ];
-
-ReduceSolution[{}, signs_List] := {};
-
-ReduceSolution[{{}}, signs_List] := {};
-
-ReduceSolution[solution_List, signs_List] :=
-    Module[{signedParameters, reducedSolution},
-           signedParameters = signs /. FlexibleSUSY`Sign -> Identity;
-           reducedSolution = solution[[1]] /.
-              Rule[p_, expr_] /; MemberQ[signedParameters,p] :>
-              Rule[p, Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]] Sqrt[Simplify[expr^2]]];
-           Return[reducedSolution];
+EliminateOneParameter[equations_List, parameters_List] :=
+    Module[{independentSubset, reducedEqs, reducedPars, reducedSolution,
+            complementEq, complementPar, complementSolution},
+           independentSubset = 
+           FindIndependentSubset[nmssmEwsbEqs, nmssmEwsbOutputParameters];
+           If[independentSubset === {},
+              Print["EWSB equations are not reducible"];
+              Return[{}];
+             ];
+           If[Length[independentSubset] > 1,
+              Print[
+                  "Warning: more that one reducible subet of EWSB equations found.  I'm using the first one"];
+             ];
+           reducedEqs = independentSubset[[1, 1]];
+           reducedPars = independentSubset[[1, 2]];
+           reducedSolution = EliminateOneParameter[reducedEqs, reducedPars];
+           If[reducedSolution === {},
+              Print["Warning: could not solve reduced EWSB eqs. subset"];
+              Return[{}];
+             ];
+           complementEq = Complement[equations, reducedEqs];
+           complementPar = Complement[parameters, reducedPars];
+           complementSolution = Solve[complementEq, complementPar];
+           Append[reducedSolution, complementSolution]
           ];
 
 MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
@@ -250,9 +229,9 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            (* replace non-symbol parameters by unique symbols *)
            uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
-           solution = TimeConstrained[
-               Solve[simplifiedEqs /. uniqueParameters,
-                     parametersFixedByEWSB /. uniqueParameters],
+           solution = TimeConstrained[EliminateOneParameter[
+                                      simplifiedEqs /. uniqueParameters,
+                                      parametersFixedByEWSB /. uniqueParameters],
                FlexibleSUSY`FSSolveEWSBTimeConstraint,
                {}
               ];
@@ -261,14 +240,56 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            solution /. uniqueParameters
           ];
 
+StripSign[Times[int_Integer,expr_]] := Abs[int] expr;
+
+StripSign[expr_] := expr;
+
+ReduceSolution[{}] := {{},{}};
+
+ReduceSolution[{{}}] := {{},{}};
+
+ReduceSolution[solution_List] :=
+    Module[{reducedSolution = {}, s, flattenedSolution, freePhases = {}},
+           For[s = 1, s <= Length[solution], s++,
+               flattenedSolution = Flatten[solution[[s]]];
+               If[Length[flattenedSolution] < 1 || Length[flattenedSolution] > 2,
+                  Print["Warning: cannont reduce solution ", flattenedSolution];
+                  Return[{}];
+                 ];
+               If[Length[flattenedSolution] == 1,
+                  AppendTo[reducedSolution, flattenedSolution];
+                  Continue[];
+                 ];
+               If[Length[flattenedSolution] == 2,
+                  If[PossibleZeroQ[
+                      flattenedSolution[[1, 2]] + flattenedSolution[[2, 2]]],
+                     flattenedSolution[[1]] = flattenedSolution[[1]] /.
+                         Rule[p_, expr_] :>
+                         Rule[p, Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[flattenedSolution[[1,1]]]]] StripSign[expr]];
+                     AppendTo[reducedSolution, {flattenedSolution[[1]]}];
+                     AppendTo[freePhases, FlexibleSUSY`Sign[flattenedSolution[[1,1]]]];
+                     Continue[];
+                    ];
+                 ];
+              ];
+           Print["Note: adding free phases: ", freePhases];
+           Return[{reducedSolution, freePhases}];
+          ];
+
+FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List] :=
+    Module[{solution, reducedSolution, freePhases},
+           solution = FindSolution[equations, parametersFixedByEWSB];
+           Print["EWSB solution: ", solution];
+           {reducedSolution, freePhases} = ReduceSolution[solution];
+           Print["reduced EWSB solution: ", reducedSolution];
+           Return[{Flatten[reducedSolution], freePhases}];
+          ];
+
 SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
     Module[{result = "",
-            solution, signs, reducedSolution, i, par, expr, parStr},
-           signs = Cases[FindFreePhase /@ allParameters, FlexibleSUSY`Sign[_]];
-           solution = FindSolution[equations, parametersFixedByEWSB];
-           (* Try to reduce the solution *)
-           If[CanReduceSolution[solution, signs],
-              reducedSolution = ReduceSolution[solution, signs];
+            reducedSolution, freePhases, i, par, expr, parStr},
+           {reducedSolution, freePhases} = FindSolutionAndFreePhases[equations, parametersFixedByEWSB];
+           If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
                  in the solution *)
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";

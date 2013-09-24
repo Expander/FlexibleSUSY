@@ -294,7 +294,8 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
           ];
 
 WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
-                parametersFixedByEWSB_List, nPointFunctions_List, phases_List,
+                parametersFixedByEWSB_List, freePhases_List,
+                nPointFunctions_List, phases_List,
                 enablePoleMassThreads_,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
@@ -351,7 +352,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
              ];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`SolveTreeLevelEwsb[ewsbEquations, parametersFixedByEWSB];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
@@ -669,7 +670,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
-            diagonalizationPrecision, allParticles, freePhases, fixedParameters},
+            diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
+            fixedParameters},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -815,12 +817,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           freePhases = EWSB`FindFreePhasesInEWSB[ewsbEquations, ParametersToSolveTadpoles];
-           (* remove free phases which are already defined in FlexibleSUSY`InputParameters *)
-           freePhases = Complement[freePhases, FlexibleSUSY`InputParameters];
+           {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[FlexibleSUSY`InputParameters, freePhases,
+           WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
                                     If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
                                        {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters],
                                     FlexibleSUSY`DefaultParameterPoint,
@@ -970,7 +970,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, vevs, ewsbEquations,
-                           ParametersToSolveTadpoles,
+                           ParametersToSolveTadpoles, freePhases,
                            nPointFunctions, phases, OptionValue[EnablePoleMassThreads],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
