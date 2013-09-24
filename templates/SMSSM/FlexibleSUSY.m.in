@@ -21,7 +21,7 @@ DefaultParameterPoint = {
     {m0, 200},
     {m12, 200},
     {TanBeta, 10},
-    {Azero, -500},
+    {Azero, 0},
     {LambdaInput, 0.1},
     {KappaInput, 0.1},
     {LambdaSInput, 100},
