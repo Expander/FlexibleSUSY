@@ -151,7 +151,8 @@ FindMinimumByteCount[lst_List] :=
 
 EliminateOneParameter[{}, {}] := {};
 
-EliminateOneParameter[{eq_}, {p_}] := Solve[eq, p];
+EliminateOneParameter[{eq_}, {p_}] :=
+    TimeConstrained[Solve[eq, p], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, rest = {}, solution},
@@ -159,26 +160,32 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               Return[{}];
              ];
            reduction[[1]] = 
-           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2], 10, {}];
+           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
+                           FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            reduction[[2]] = 
-           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1], 10, {}];
+           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
+                           FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[reduction[[1]] === {} || reduction[[2]] === {} ||
               
               reduction[[1]] === {{}} || reduction[[2]] === {{}},
               Return[{}];
              ];
            If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
-              solution = Solve[eq1, p1];
+              solution = TimeConstrained[Solve[eq1, p1],
+                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[solution =!= {}, AppendTo[rest, solution]];
-              solution = Solve[eq2, p1];
+              solution = TimeConstrained[Solve[eq2, p1],
+                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[solution =!= {}, AppendTo[rest, solution]];
               If[rest === {}, Return[{}];];
               rest = FindMinimumByteCount[rest];
               Return[{reduction[[1]], rest}];
               ,
-              solution = Solve[eq1, p2];
+              solution = TimeConstrained[Solve[eq1, p2],
+                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[solution =!= {{}}, AppendTo[rest, solution]];
-              solution = Solve[eq2, p2];
+              solution = TimeConstrained[Solve[eq2, p2],
+                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[solution =!= {{}}, AppendTo[rest, solution]];
               If[rest === {}, Return[{}];];
               rest = FindMinimumByteCount[rest];
@@ -208,7 +215,8 @@ EliminateOneParameter[equations_List, parameters_List] :=
              ];
            complementEq = Complement[equations, reducedEqs];
            complementPar = Complement[parameters, reducedPars];
-           complementSolution = Solve[complementEq, complementPar];
+           complementSolution = TimeConstrained[Solve[complementEq, complementPar],
+                                                FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            Append[reducedSolution, complementSolution]
           ];
 
@@ -229,12 +237,9 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            (* replace non-symbol parameters by unique symbols *)
            uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
-           solution = TimeConstrained[EliminateOneParameter[
-                                      simplifiedEqs /. uniqueParameters,
-                                      parametersFixedByEWSB /. uniqueParameters],
-               FlexibleSUSY`FSSolveEWSBTimeConstraint,
-               {}
-              ];
+           solution = EliminateOneParameter[
+                          simplifiedEqs /. uniqueParameters,
+                          parametersFixedByEWSB /. uniqueParameters];
            (* substitute back unique parameters *)
            uniqueParameters = Reverse /@ uniqueParameters;
            solution /. uniqueParameters
@@ -344,7 +349,8 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
     Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
            simplifiedEqs = (# == 0)& /@ equations;
-           solution = Solve[simplifiedEqs, parameters];
+           solution = TimeConstrained[Solve[simplifiedEqs, parameters],
+                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",
                     parameters, " uniquely"];
