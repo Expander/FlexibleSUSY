@@ -14,28 +14,21 @@ mssmEwsbOutputParameters = { mu, Bmu };
 
 Parameters`AddRealParameter[mssmEwsbOutputParameters];
 
-TestEquality[EWSB`FindFreePhasesInEWSB[mssmEwsbEqs, mssmEwsbOutputParameters],
-             {FlexibleSUSY`Sign[mu]}];
+{mssmSolution, mssmFreePhases} = EWSB`FindSolutionAndFreePhases[mssmEwsbEqs, mssmEwsbOutputParameters];
+
+TestEquality[mssmFreePhases, {FlexibleSUSY`Sign[mu]}];
 
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
 TestEquality[Sort /@ mssmFullSolution,
-             Sort /@ { {B[mu] -> -5 + x^2 - x*y - z, mu -> -Sqrt[-5 - x^2 - x*y - z]},
-                       {B[mu] -> -5 + x^2 - x*y - z, mu -> Sqrt[-5 - x^2 - x*y - z]}
+             Sort /@ { {{B[mu] -> -5 + x^2 - x*y - z}},
+                       {{mu -> -Sqrt[-5 - x^2 - x*y - z]},
+                        {mu -> Sqrt[-5 - x^2 - x*y - z]}}
                      }];
 
-mssmSigns = Cases[EWSB`Private`FindFreePhase /@ mssmEwsbOutputParameters,
-              FlexibleSUSY`Sign[_]];
-
-TestEquality[mssmSigns, {FlexibleSUSY`Sign[mu]}];
-
-TestEquality[EWSB`Private`CanReduceSolution[mssmFullSolution, mssmSigns], True];
-
-mssmReducedSolution = EWSB`Private`ReduceSolution[mssmFullSolution, mssmSigns];
-
-TestEquality[Sort[mssmReducedSolution],
+TestEquality[Sort[mssmSolution],
              Sort[{ B[mu] -> -5 + x^2 - x*y - z,
-                    mu -> LOCALINPUT[FlexibleSUSY`Signmu] Sqrt[-5 - x^2 - x*y - z]
+                    mu -> FlexibleSUSY`Sign[mu] Sqrt[-5 - x^2 - x*y - z]
                   }]];
 
 Print["testing NMSSM-like EWSB for Kappa, vS and mS2 ..."];
@@ -54,11 +47,29 @@ nmssmEwsbOutputParameters = { s, kappa, mS2 };
 
 Parameters`AddRealParameter[nmssmEwsbOutputParameters];
 
-TestEquality[EWSB`FindFreePhasesInEWSB[nmssmEwsbEqs, nmssmEwsbOutputParameters],
-             {}];
+{nmssmSolution, nmssmFreePhases} = EWSB`FindSolutionAndFreePhases[nmssmEwsbEqs, nmssmEwsbOutputParameters];
+
+TestEquality[nmssmFreePhases, {FlexibleSUSY`Sign[s]}];
 
 nmssmFullSolution = EWSB`Private`FindSolution[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
-TestEquality[Length[nmssmFullSolution], 2];
+TestEquality[Sort /@ nmssmFullSolution,
+             Sort /@ {{{s -> -(Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]/
+                               Sqrt[lambda^2*vd^2 - lambda^2*vu^2])},
+                       {s -> Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]/
+                        Sqrt[lambda^2*vd^2 - lambda^2*vu^2]}},
+                      {{kappa ->
+                        (-(Alambda*lambda*s*vd) + mHu2*vu + lambda^2*s^2*vu - g^2*vd^2*vu +
+                         lambda^2*vd^2*vu + g^2*vu^3)/(lambda*s^2*vd)}},
+                      {{mS2 -> (-(Akappa*kappa*s^2) - kappa^2*s^3 - s*X - Y)/s}}
+                     }];
+
+TestEquality[Sort[nmssmSolution],
+             Sort[{ kappa -> (-(Alambda*lambda*s*vd) + mHu2*vu + lambda^2*s^2*vu -
+                              g^2*vd^2*vu + lambda^2*vd^2*vu + g^2*vu^3)/(lambda*s^2*vd),
+                    mS2 -> (-(Akappa*kappa*s^2) - kappa^2*s^3 - s*X - Y)/s,
+                    s -> (Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]*
+                          FlexibleSUSY`Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
+                  }]];
 
 PrintTestSummary[];
