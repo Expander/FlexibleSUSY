@@ -254,7 +254,7 @@ ReduceSolution[solution_List] :=
                flattenedSolution = Flatten[solution[[s]]];
                If[Length[flattenedSolution] < 1 || Length[flattenedSolution] > 2,
                   Print["Warning: cannont reduce solution ", flattenedSolution];
-                  Return[{}];
+                  Return[{{},{}}];
                  ];
                If[Length[flattenedSolution] == 1,
                   AppendTo[reducedSolution, flattenedSolution];
