@@ -205,8 +205,8 @@ EliminateOneParameter[equations_List, parameters_List] :=
              ];
            If[Length[independentSubset] == 1,
               largestIndependentSubset = independentSubset[[1]];,
-              Print["Note: more than one reducible subet of EWSB equations found."];
-              Print["   I'm using the larest one."];
+              Print["Note: More than one reducible subset of EWSB equations found."];
+              Print["   I'm using the largest one."];
               largestIndependentSubset = independentSubset[[1]];
               For[s = 1, s <= Length[independentSubset], s++,
                   If[Length[independentSubset[[s,2]]] > Length[largestIndependentSubset[[2]]],
