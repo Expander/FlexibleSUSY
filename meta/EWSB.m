@@ -240,7 +240,7 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            solution /. uniqueParameters
           ];
 
-StripSign[Times[int_Integer,expr_]] := Abs[int] expr;
+StripSign[Times[int_?NumericQ,expr_]] := Abs[int] expr;
 
 StripSign[expr_] := expr;
 
