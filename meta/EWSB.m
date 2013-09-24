@@ -265,7 +265,7 @@ ReduceSolution[solution_List] :=
                       flattenedSolution[[1, 2]] + flattenedSolution[[2, 2]]],
                      flattenedSolution[[1]] = flattenedSolution[[1]] /.
                          Rule[p_, expr_] :>
-                         Rule[p, Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[flattenedSolution[[1,1]]]]] StripSign[expr]];
+                         Rule[p, FlexibleSUSY`Sign[flattenedSolution[[1,1]]] StripSign[expr]];
                      AppendTo[reducedSolution, {flattenedSolution[[1]]}];
                      AppendTo[freePhases, FlexibleSUSY`Sign[flattenedSolution[[1,1]]]];
                      Continue[];
@@ -292,6 +292,10 @@ SolveTreeLevelEwsb[equations_List, parametersFixedByEWSB_List] :=
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
                  in the solution *)
+              reducedSolution = reducedSolution /. {
+                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
+                  FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
+                                                   };
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
