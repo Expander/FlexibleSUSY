@@ -289,9 +289,6 @@ ReduceSolution[solution_List] :=
               Print["Warning: analytic reduction of EWSB solutions failed"];
               Return[{{},{}}];
              ];
-           If[freePhases =!= {},
-              Print["Note: adding free phases: ", freePhases];
-             ];
            Return[{reducedSolution, freePhases}];
           ];
 

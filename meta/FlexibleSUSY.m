@@ -818,6 +818,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
+           If[freePhases =!= {},
+              Print["Note: adding free phases: ", freePhases];
+             ];
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
