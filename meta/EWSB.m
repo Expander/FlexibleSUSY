@@ -279,9 +279,7 @@ ReduceSolution[solution_List] :=
 FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List] :=
     Module[{solution, reducedSolution, freePhases},
            solution = FindSolution[equations, parametersFixedByEWSB];
-           Print["EWSB solution: ", solution];
            {reducedSolution, freePhases} = ReduceSolution[solution];
-           Print["reduced EWSB solution: ", reducedSolution];
            Return[{Flatten[reducedSolution], freePhases}];
           ];
 
