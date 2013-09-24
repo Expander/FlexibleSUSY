@@ -122,7 +122,7 @@ SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
           ];
 
 FindIndependentSubset[equations_List, parameters_List] :=
-    Module[{equationSubsets, numberOfEquations, parameterSubsets, 
+    Module[{equationSubsets, numberOfEquations, parameterSubsets,
             numberOfParameters, e, p, result = {}, isFreeOf},
            numberOfEquations = Length[equations];
            numberOfParameters = Length[parameters];
@@ -130,16 +130,16 @@ FindIndependentSubset[equations_List, parameters_List] :=
            parameterSubsets = Subsets[parameters, {1, numberOfParameters - 1}];
            For[e = 1, e <= Length[equationSubsets], e++,
                For[p = 1, p <= Length[parameterSubsets], p++,
-                   isFreeOf = 
-                   And @@ (FreeQ[equationSubsets[[e]], #] & /@ 
+                   isFreeOf =
+                   And @@ (FreeQ[equationSubsets[[e]], #] & /@
                            parameterSubsets[[p]]);
-                   If[isFreeOf, 
+                   If[isFreeOf,
                       AppendTo[
-                          result, {equationSubsets[[e]], 
+                          result, {equationSubsets[[e]],
                                    Complement[parameters, parameterSubsets[[p]]]}]];
                   ];
               ];
-           
+
            result = Select[result, (Length[#[[1]]] == Length[#[[2]]]) &];
            Return[result];
           ];
@@ -159,14 +159,14 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            If[FreeQ[{eq1, eq2}, p1] || FreeQ[{eq1, eq2}, p2],
               Return[{}];
              ];
-           reduction[[1]] = 
+           reduction[[1]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           reduction[[2]] = 
+           reduction[[2]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[reduction[[1]] === {} || reduction[[2]] === {} ||
-              
+
               reduction[[1]] === {{}} || reduction[[2]] === {{}},
               Return[{}];
              ];
