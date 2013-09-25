@@ -271,7 +271,7 @@ ReduceSolution[solution_List] :=
                  ];
                If[Length[flattenedSolution] > 2,
                   Print["Warning: cannot reduce solution for ", flattenedSolution];
-                  Prtin["   because there are more than two solutions"];
+                  Print["   because there are more than two solutions"];
                   Return[{{},{}}];
                  ];
                If[Length[flattenedSolution] == 1,
