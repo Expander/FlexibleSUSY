@@ -824,6 +824,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               (* trying to find an analytic solution for the EWSB eqs. *)
               Print["Solving EWSB equations ..."];
               {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
+              If[ewsbSolution === {},
+                 Print["Warning: could not find an analytic solution to the EWSB eqs."];
+                 Print["   An iterative algorithm will be used.  You can try to set"];
+                 Print["   the solution by hand in the model file like this:"];
+                 Print[""];
+                 Print["TreeLevelEWSBSolution = {"];
+                 For[i = 1, i <= Length[ParametersToSolveTadpoles], i++,
+                     Print["   { ", ParametersToSolveTadpoles[[i]], ", ... }" <>
+                           If[i != Length[ParametersToSolveTadpoles], ",", ""]];
+                    ];
+                 Print["};\n"];
+                ];
               ,
               If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
                  Print["Error: not enought EWSB solutions given!"];

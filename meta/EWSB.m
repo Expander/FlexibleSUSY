@@ -286,7 +286,7 @@ ReduceSolution[solution_List] :=
                      ];
               ];
            If[Length[reducedSolution] != Length[solution],
-              Print["Warning: analytic reduction of EWSB solutions failed"];
+              Print["Warning: analytic reduction of EWSB solutions failed."];
               Return[{{},{}}];
              ];
            Return[{reducedSolution, freePhases}];
