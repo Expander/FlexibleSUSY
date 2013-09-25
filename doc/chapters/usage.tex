@@ -39,7 +39,7 @@ spectrum generator without high-scale constraint, i.e.\ only a
 low-scale and susy-scale constraint will be created (default: False).
 In this case all model parameters, except for gauge and Yukawa
 couplings are input at the susy scale.  This option is similar to
-\texttt{OnlyLowEnergySPheno} in SARAH/SPheno.
+\code{OnlyLowEnergySPheno} in SARAH/SPheno.
 \\
 Example:
 \begin{lstlisting}[language=Mathematica]
@@ -93,12 +93,12 @@ DefaultParameterPoint = {
 \paragraph{Constraints}
 Currently three constraints are supported: low-scale, susy-scale and
 high-scale constraints.  In FlexibleSUSY they are named as
-\texttt{LowScale}, \texttt{SUSYScale} and \texttt{HighScale}.  For
+\code{LowScale}, \code{SUSYScale} and \code{HighScale}.  For
 each constraint there is a scale definition (named after the
 constraint), an initial guess for the scale (concatenation of the
-constraint name and \texttt{FirstGuess}) and a list settings to be
+constraint name and \code{FirstGuess}) and a list settings to be
 applied at the constraint (concatenation of the constraint name and
-\texttt{Input}).
+\code{Input}).
 \\
 Example (MSSM):
 \begin{lstlisting}[language=Mathematica]
@@ -134,8 +134,8 @@ LowScaleInput = {
 };
 \end{lstlisting}
 
-\paragraph{Initial parameter guesses} At the \texttt{LowScale} and
-\texttt{HighScale} it is recommended to make an initial guess for the
+\paragraph{Initial parameter guesses} At the \code{LowScale} and
+\code{HighScale} it is recommended to make an initial guess for the
 model parameters.  This can be done via
 \begin{lstlisting}[language=Mathematica]
 InitialGuessAtLowScale = {
