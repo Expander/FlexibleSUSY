@@ -6,6 +6,7 @@
 \usepackage{booktabs,tabularx}
 \usepackage{rotating}             % for sidewaystable
 \usepackage[usenames]{xcolor}
+\usepackage{tikz,tikz-uml}
 \usepackage{listings}             % source code highlighting
 \lstset{breaklines=true,
   breakatwhitespace=true,
@@ -22,6 +23,10 @@
 pdfauthor={Jae-hyeon Park,Dominik Stockinger,Alexander Voigt},
 pdfkeywords={FlexibleSUSY,supersymmetry,spectrum,generator,MSSM,NMSSM,E6SSM},
 bookmarks=true, linktocpage]{hyperref}
+
+\newcommand{\code}[1]{\lstinline|#1|}  % inline source code
+\newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
+\newcommand{\DRbar}{\textoverline{DR}}  % inline source code
 
 \title{\bf FlexibleSUSY --- A spectrum generator generator for
   supersymmetric models}

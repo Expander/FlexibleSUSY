@@ -205,8 +205,7 @@ EliminateOneParameter[equations_List, parameters_List] :=
              ];
            If[Length[independentSubset] == 1,
               largestIndependentSubset = independentSubset[[1]];,
-              Print["Note: More than one reducible subset of EWSB equations found."];
-              Print["   I'm using the largest one."];
+              (* search for the largest independent equation subset *)
               largestIndependentSubset = independentSubset[[1]];
               For[s = 1, s <= Length[independentSubset], s++,
                   If[Length[independentSubset[[s,2]]] > Length[largestIndependentSubset[[2]]],
@@ -264,33 +263,29 @@ ReduceSolution[solution_List] :=
     Module[{reducedSolution = {}, s, flattenedSolution, freePhases = {}},
            For[s = 1, s <= Length[solution], s++,
                flattenedSolution = Flatten[solution[[s]]];
-               If[Length[flattenedSolution] == 0,
-                  Print["Warning: no solution found for the EWSB eqs."];
-                  Return[{{},{}}];
-                 ];
-               If[Length[flattenedSolution] > 2,
-                  Print["Warning: cannot reduce solution for ", flattenedSolution];
-                  Prtin["   because there are more than two solutions"];
-                  Return[{{},{}}];
-                 ];
-               If[Length[flattenedSolution] == 1,
-                  AppendTo[reducedSolution, flattenedSolution];
-                  Continue[];
-                 ];
-               If[Length[flattenedSolution] == 2,
-                  If[PossibleZeroQ[
-                      flattenedSolution[[1, 2]] + flattenedSolution[[2, 2]]],
-                     flattenedSolution[[1]] = flattenedSolution[[1]] /.
+               Switch[Length[flattenedSolution],
+                      0,
+                      Print["Warning: no solution found for the EWSB eqs."];
+                      Return[{{},{}}];,
+                      1,
+                      AppendTo[reducedSolution, flattenedSolution];,
+                      2,
+                      If[PossibleZeroQ[
+                          flattenedSolution[[1, 2]] + flattenedSolution[[2, 2]]],
+                         flattenedSolution[[1]] = flattenedSolution[[1]] /.
                          Rule[p_, expr_] :>
                          Rule[p, FlexibleSUSY`Sign[flattenedSolution[[1,1]]] StripSign[expr]];
-                     AppendTo[reducedSolution, {flattenedSolution[[1]]}];
-                     AppendTo[freePhases, FlexibleSUSY`Sign[flattenedSolution[[1,1]]]];
-                     Continue[];
-                     ,
-                     Print["Warning: cannot reduce solution for ", flattenedSolution[[1,1]]];
-                     Print["   because the two solutions are not related by a global sign."];
-                    ];
-                 ];
+                         AppendTo[reducedSolution, {flattenedSolution[[1]]}];
+                         AppendTo[freePhases, FlexibleSUSY`Sign[flattenedSolution[[1,1]]]];
+                         ,
+                         Print["Warning: cannot reduce solution for ", flattenedSolution[[1,1]]];
+                         Print["   because the two solutions are not related by a global sign."];
+                        ];,
+                      _,
+                      Print["Warning: cannot reduce solution for ", flattenedSolution];
+                      Print["   because there are more than two solutions"];
+                      Return[{{},{}}];
+                     ];
               ];
            If[Length[reducedSolution] != Length[solution],
               Print["Warning: analytic reduction of EWSB solutions failed"];
