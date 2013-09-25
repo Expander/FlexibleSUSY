@@ -65,15 +65,28 @@ work and are plugged together.
     \umlclass[x=0, y=-4]{RGFlow$<$Two\_scale$>$}{}{
       + solve() : void
     }
-    \umlclass[x=0, y=-8]{Constraint$<$Two\_scale$>$}{}{
+    \umlclass[x=8, y=0]{Constraint$<$Two\_scale$>$}{}{
       + \umlvirt{apply() : void}\\
       + \umlvirt{get\_scale() : double}\\
       + \umlvirt{set\_model(model : Two\_scale\_model*) : void}
     }
+    \umlclass[x=0, y=-7]{Initial\_guesser$<$Two\_scale$>$}{}{
+      + \umlvirt{guess() : void}
+    }
+    \umlclass[x=0, y=-11, template={T}]{Initial\_guesser}{}{}
+    \umlclass[x=8, y=-7]{Convergence\_tester$<$Two\_scale$>$}{}{
+      + \umlvirt{accuracy\_goal\_reached() : bool}\\
+      + \umlvirt{max\_iterations() : unsigned}
+    }
+    \umlclass[x=8, y=-11, template={T}]{Convergence\_tester}{}{}
     \umlclass[x=8, y=-4, template={T}]{RGFlow}{}{}
     \umldep[arg1={$<<$bind$>>$}, mult1={T $\rightarrow$ Two\_scale}, pos1=0.5]{RGFlow$<$Two\_scale$>$}{RGFlow}
     \umldep[mult1=1..*]{RGFlow$<$Two\_scale$>$}{Two\_scale\_model}
     \umldep[mult1=1..*]{RGFlow$<$Two\_scale$>$}{Constraint$<$Two\_scale$>$}
+    \umldep{RGFlow$<$Two\_scale$>$}{Initial\_guesser$<$Two\_scale$>$}
+    \umldep{RGFlow$<$Two\_scale$>$}{Convergence\_tester$<$Two\_scale$>$}
+    \umldep[mult1={$<<$bind$>>$}, arg1={T $\rightarrow$ Two\_scale}, pos1=0.5]{Initial\_guesser$<$Two\_scale$>$}{Initial\_guesser}
+    \umldep[mult1={$<<$bind$>>$}, arg1={T $\rightarrow$ Two\_scale}, pos1=0.5]{Convergence\_tester$<$Two\_scale$>$}{Convergence\_tester}
   \end{tikzpicture}
   \caption{Two-scale renormalization group solver class hierarchy}
   \label{fig:two-scale-rgflow-class-hierarchy}
