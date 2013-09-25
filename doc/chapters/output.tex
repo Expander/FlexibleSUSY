@@ -8,6 +8,51 @@ Explain the created C++ files and executables, and how to use them.
 Explain the structure of the two-scale algorithm classes and how they
 work and are plugged together.
 
+The two-scale algorithm works like this:
+%
+Initial guess:
+\begin{enumerate}
+\item Guess gauge couplings $g_{1,2,3}$ at $m_Z$
+\item Apply user-defined low-scale constraint (\code{LowScaleInput})
+\item Guess Yukawa couplings $y^{u,d,e}_{ij}$ at $m_Z$
+\item Run model to the high-scale (\code{HighScaleFirstGuess})
+\item Apply high-scale constraint (\code{HighScaleInput})
+\item Run model to the low-scale (\code{LowScaleFirstGuess})
+\item Solve EWSB eqs.\ at the tree-level
+\item Calculate \DRbar\ masses
+\end{enumerate}
+%
+Solving the renormalization group equations:
+\begin{enumerate}
+\item \label{rge-step-one} Run model to the low-scale (\code{LowScale})
+  \begin{enumerate}
+  \item Calculate \DRbar\ masses
+  \item Recalculate low-scale
+  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y^{u,d,e}_{ij}$
+  \item Apply user-defined low-scale constraint (\code{LowScaleInput})
+  \end{enumerate}
+\item Run model to the high-scale (\code{HighScale})
+  \begin{enumerate}
+  \item Recalculate high-scale
+  \item Apply high-scale constraint (\code{HighScaleInput})
+  \end{enumerate}
+\item Run model to the susy-scale (\code{SUSYScale})
+  \begin{enumerate}
+  \item Calculate \DRbar\ masses
+  \item Recalculate low-scale
+  \item Apply susy-scale constraint (\code{SUSYScaleInput})
+  \item Solve EWSB eqs.\ at the one-loop level
+  \end{enumerate}
+\item If not converged yet, goto \ref{rge-step-one}
+\end{enumerate}
+%
+Calculating the particle spectrum:
+\begin{enumerate}
+\item Run model to the susy-scale
+\item Calculate the pole masses
+\item Run model to the parameter output scale (SLHA block MODSEL 12)
+\end{enumerate}
+
 \begin{figure}[tb]
   \centering
   \tikzumlset{fill class=white}
