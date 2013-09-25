@@ -70,6 +70,7 @@ work and are plugged together.
       + \umlvirt{get\_scale() : double}\\
       + \umlvirt{set\_model(model : Two\_scale\_model*) : void}
     }
+    \umlclass[x=8, y=4, template={T}]{Constraint}{}{}
     \umlclass[x=0, y=-7]{Initial\_guesser$<$Two\_scale$>$}{}{
       + \umlvirt{guess() : void}
     }
@@ -87,6 +88,7 @@ work and are plugged together.
     \umldep{RGFlow$<$Two\_scale$>$}{Convergence\_tester$<$Two\_scale$>$}
     \umldep[mult1={$<<$bind$>>$}, arg1={T $\rightarrow$ Two\_scale}, pos1=0.5]{Initial\_guesser$<$Two\_scale$>$}{Initial\_guesser}
     \umldep[mult1={$<<$bind$>>$}, arg1={T $\rightarrow$ Two\_scale}, pos1=0.5]{Convergence\_tester$<$Two\_scale$>$}{Convergence\_tester}
+    \umldep[arg1={$<<$bind$>>$}, mult1={T $\rightarrow$ Two\_scale}, pos1=0.5]{Constraint$<$Two\_scale$>$}{Constraint}
   \end{tikzpicture}
   \caption{Two-scale renormalization group solver class hierarchy}
   \label{fig:two-scale-rgflow-class-hierarchy}
