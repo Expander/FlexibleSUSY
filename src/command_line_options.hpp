@@ -63,6 +63,8 @@ private:
    std::string program;
    std::string slha_input_file;
    std::string slha_output_file;
+
+   static bool starts_with(const std::string&, const std::string&);
 };
 
 } // namespace flexiblesusy

@@ -21,7 +21,6 @@
 #include "logger.hpp"
 
 #include <cstdio>
-#include <boost/algorithm/string/predicate.hpp>
 
 namespace flexiblesusy {
 
@@ -57,11 +56,11 @@ void Command_line_options::parse(int argc, const char* argv[])
 
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
-      if (boost::starts_with(option,"--slha-input-file=")) {
+      if (starts_with(option,"--slha-input-file=")) {
          slha_input_file = option.substr(18);
          if (slha_input_file.empty())
             WARNING("no SLHA input file name given");
-      } else if (boost::starts_with(option,"--slha-output-file=")) {
+      } else if (starts_with(option,"--slha-output-file=")) {
          slha_output_file = option.substr(19);
          if (slha_output_file.empty())
             WARNING("no SLHA output file name given");
@@ -97,6 +96,12 @@ void Command_line_options::print_usage(std::ostream& ostr) const
            "  --help,-h                      print this help message\n"
            "  --version,-v                   print program version"
         << std::endl;
+}
+
+bool Command_line_options::starts_with(const std::string& str,
+                                       const std::string& prefix)
+{
+   return !str.compare(0, prefix.size(), prefix);
 }
 
 } // namespace flexiblesusy
