@@ -72,4 +72,34 @@ TestEquality[Sort[nmssmSolution],
                           FlexibleSUSY`Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
                   }]];
 
+Print["testing UMSSM-like EWSB for mHu2, mHd2 and mS2 ..."];
+
+umssmEwsbEqs = {
+    vu mHu2 + g^2 (vu^2 - vd^2),
+    vd mHd2 + g^2 (vd^2 - vu^2),
+    s mS2 + X
+};
+
+umssmEwsbOutputParameters = { mHu2, mHd2, mS2 };
+
+Parameters`AddRealParameter[umssmEwsbOutputParameters];
+
+{umssmSolution, umssmFreePhases} = EWSB`FindSolutionAndFreePhases[umssmEwsbEqs, umssmEwsbOutputParameters];
+
+TestEquality[umssmFreePhases, {}];
+
+umssmFullSolution = EWSB`Private`FindSolution[umssmEwsbEqs, umssmEwsbOutputParameters];
+
+TestEquality[Sort /@ umssmFullSolution,
+             Sort /@ { {{mHu2 -> (g^2*(vd^2 - vu^2))/vu}},
+                       {{mHd2 -> -(g^2*(vd^2 - vu^2))/vd}},
+                       {{mS2 -> -(X/s)}}
+                     }];
+
+TestEquality[Sort /@ umssmSolution,
+             Sort /@ { mHu2 -> (g^2*(vd^2 - vu^2))/vu,
+                       mHd2 -> -(g^2*(vd^2 - vu^2))/vd,
+                       mS2 -> -(X/s)
+                     }];
+
 PrintTestSummary[];

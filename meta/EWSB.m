@@ -174,10 +174,10 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
               solution = TimeConstrained[Solve[eq1, p1],
                                          FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {}, AppendTo[rest, solution]];
+              If[solution =!= {} && solution =!= {{}}, AppendTo[rest, solution]];
               solution = TimeConstrained[Solve[eq2, p1],
                                          FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {}, AppendTo[rest, solution]];
+              If[solution =!= {} && solution =!= {{}}, AppendTo[rest, solution]];
               If[rest === {}, Return[{}];];
               rest = FindMinimumByteCount[rest];
               Return[{reduction[[1]], rest}];
