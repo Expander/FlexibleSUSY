@@ -22,7 +22,8 @@ work and are plugged together.
       + \umlvirt{beta() : Eigen::ArrayXd}\\
       + run\_to(scale : double, eps : double) : int\\
     }
-    \umlclass[x=8, y=0, type=abstract]{Two\_scale\_model}{}{
+    \umlclass[x=8, y=-12, template={T}]{MSSM}{}{}
+    \umlclass[x=8, y=-8, type=abstract]{Two\_scale\_model}{}{
       + \umlvirt{calculate\_spectrum() : void}\\
       + \umlvirt{run\_to(scale : double, eps : double) : int}\\
       + \umlvirt{set\_precision(precision : double) : void}
@@ -45,7 +46,8 @@ work and are plugged together.
    \umlinherit{MSSM\_susy\_parameters}{Beta\_function}
    \umlinherit{MSSM\_soft\_parameters}{MSSM\_susy\_parameters}
    \umlinherit{MSSM$<$Two\_scale$>$}{MSSM\_soft\_parameters}
-   \umlinherit[geometry=-|]{MSSM$<$Two\_scale$>$}{Two\_scale\_model}
+   \umlinherit{MSSM$<$Two\_scale$>$}{Two\_scale\_model}
+   \umldep[arg1={$<<$bind$>>$}, mult1={T $\rightarrow$ Two\_scale}, pos1=0.5]{MSSM$<$Two\_scale$>$}{MSSM}
   \end{tikzpicture}
   \caption{Two-scale model class hierarchy}
   \label{fig:two-scale-class-hierarchy}
