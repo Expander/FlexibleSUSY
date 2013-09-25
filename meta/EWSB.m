@@ -265,8 +265,7 @@ ReduceSolution[solution_List] :=
                flattenedSolution = Flatten[solution[[s]]];
                Switch[Length[flattenedSolution],
                       0,
-                      Print["Warning: no solution found for the EWSB eqs."];
-                      Return[{{},{}}];,
+                      Print["Warning: no solution found for the EWSB eqs."];,
                       1,
                       AppendTo[reducedSolution, flattenedSolution];,
                       2,
@@ -284,7 +283,6 @@ ReduceSolution[solution_List] :=
                       _,
                       Print["Warning: cannot reduce solution for ", flattenedSolution];
                       Print["   because there are more than two solutions"];
-                      Return[{{},{}}];
                      ];
               ];
            If[Length[reducedSolution] != Length[solution],
