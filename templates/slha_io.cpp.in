@@ -41,9 +41,6 @@ namespace flexiblesusy {
 
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
-   std::ostringstream serious_problems;
-   problems.print(serious_problems);
-
    std::ostringstream spinfo;
    spinfo << "# FlexibleSUSY " VERSION " SLHA compliant output\n"
              "# P. Athron, J. Park, D. Stöckinger, A. Voigt\n"
@@ -51,8 +48,11 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
           << FORMAT_SPINFO(1, PKGNAME)
           << FORMAT_SPINFO(2, VERSION);
 
-   if (!serious_problems.str().empty())
+   if (problems.have_serious_problem()) {
+      std::ostringstream serious_problems;
+      problems.print(serious_problems);
       spinfo << FORMAT_SPINFO(4, serious_problems.str());
+   }
 
    slha_io.set_block(spinfo, SLHA_io::front);
 }
