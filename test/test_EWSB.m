@@ -102,4 +102,30 @@ TestEquality[Sort /@ umssmSolution,
                        mS2 -> -(X/s)
                      }];
 
+Print["testing EWSB for vu, vd, s ..."];
+
+(* This test ensures that the algorith works even in cases where only
+   one independent sub-equation can be found. *)
+
+oneIndependentSubeq = {
+    vu mHu2 + X vd + s,
+    vd mHd2 + Y vu + s,
+    s mS2 + Z           (* this Eq. is independent of all the others*)
+};
+
+oneIndependentSubeqEwsbOutputParameters = { vu, vd, s };
+
+Parameters`AddRealParameter[oneIndependentSubeqEwsbOutputParameters];
+
+{oneIndependentSubeqSolution, oneIndependentSubeqFreePhases} =
+    EWSB`FindSolutionAndFreePhases[oneIndependentSubeq, oneIndependentSubeqEwsbOutputParameters];
+
+TestEquality[oneIndependentSubeqFreePhases, {}];
+
+TestEquality[Sort /@ oneIndependentSubeqSolution,
+             Sort /@ { s -> -(Z/mS2),
+                       vu -> -((s*(mHd2 - X))/(mHd2*mHu2 - X*Y)),
+                       vd -> (-s - mHu2*vu)/X
+                     }];
+
 PrintTestSummary[];

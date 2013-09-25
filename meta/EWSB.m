@@ -153,7 +153,7 @@ FindMinimumByteCount[lst_List] :=
 EliminateOneParameter[{}, {}] := {};
 
 EliminateOneParameter[{eq_}, {p_}] :=
-    TimeConstrained[Solve[eq, p], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+    TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, rest = {}, solution},
@@ -223,9 +223,8 @@ EliminateOneParameter[equations_List, parameters_List] :=
              ];
            complementEq = Complement[equations, reducedEqs];
            complementPar = Complement[parameters, reducedPars];
-           complementSolution = TimeConstrained[Solve[complementEq, complementPar],
-                                                FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           Append[reducedSolution, complementSolution]
+           complementSolution = EliminateOneParameter[complementEq, complementPar];
+           Join[reducedSolution, complementSolution]
           ];
 
 MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
