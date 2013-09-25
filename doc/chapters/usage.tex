@@ -149,6 +149,19 @@ InitialGuessAtHighScale = {
 };
 \end{lstlisting}
 
+\paragraph{Setting the tree-level EWSB eqs.\ solution by hand} In case
+the meta code cannot find an analytic solution to the tree-level EWSB
+eqs., one can set solutions by hand in the model file using the
+variable \code{TreeLevelEWSBSolution}.
+\\
+Example (MSSM):
+\begin{lstlisting}[language=Mathematica]
+TreeLevelEWSBSolution = {
+  {\[Mu]   , ... },
+  {B[\[Mu]], ... }
+};
+\end{lstlisting}
+
 \begin{sidewaystable}[tb]
   \centering
   \begin{tabularx}{\textwidth}{>{\ttfamily}l>{\ttfamily}lX}
