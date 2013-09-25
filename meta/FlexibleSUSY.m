@@ -33,6 +33,7 @@ LowScaleInput;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
 OnlyLowEnergyFlexibleSUSY;
+TreeLevelEWSBSolution;
 Pole;
 FSMinimize;
 FSFindRoot;
@@ -136,6 +137,9 @@ CheckModelFileSettings[] :=
              ];
            If[Head[SARAH`EXTPAR] =!= List,
               SARAH`EXTPAR = {};
+             ];
+           If[Head[FlexibleSUSY`TreeLevelEWSBSolution] =!= List,
+              FlexibleSUSY`TreeLevelEWSBSolution = {};
              ];
           ];
 
@@ -799,7 +803,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
                          traceDecl, numberOfSusyParameters];
 
-           Print["Solving EWSB equations ..."];
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[];
@@ -817,7 +820,24 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
+           If[FlexibleSUSY`TreeLevelEWSBSolution === {},
+              (* trying to find an analytic solution for the EWSB eqs. *)
+              Print["Solving EWSB equations ..."];
+              {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
+              ,
+              If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
+                 Print["Error: not enought EWSB solutions given!"];
+                 Quit[1];
+                ];
+              If[Sort[#[[1]]& /@ FlexibleSUSY`TreeLevelEWSBSolution] =!= Sort[ParametersToSolveTadpoles],
+                 Print["Error: Parameters given in TreeLevelEWSBSolution, do not match"];
+                 Print["   the Parameters given in ParametersToSolveTadpoles!"];
+                 Quit[1];
+                ];
+              Print["Using user-defined EWSB eqs. solution"];
+              freePhases = {};
+              ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
+             ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
              ];
