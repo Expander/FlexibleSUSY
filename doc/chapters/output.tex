@@ -12,10 +12,15 @@ work and are plugged together.
   \centering
   \tikzumlset{fill class=white}
   \begin{tikzpicture}
-    \umlclass[x=0, y=0, type=abstract]{Beta\_function}{}{
+    \umlclass[x=0, y=0, type=abstract]{Beta\_function}{
+      -- scale : double\\
+      -- loops : unsigned\\
+      -- numPars : unsigned
+    }{
       + \umlvirt{display() : const Eigen::ArrayXd} \\
       + \umlvirt{set(v : const Eigen::ArrayXd\&) : void}\\
-      + \umlvirt{beta() : Eigen::ArrayXd}
+      + \umlvirt{beta() : Eigen::ArrayXd}\\
+      + run\_to(scale : double, eps : double) : int\\
     }
     \umlclass[x=8, y=0, type=abstract]{Two\_scale\_model}{}{
       + \umlvirt{calculate\_spectrum() : void}\\
