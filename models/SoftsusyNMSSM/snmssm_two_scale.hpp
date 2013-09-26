@@ -35,7 +35,7 @@ public:
 
    virtual void calculate_spectrum();
    virtual std::string name() const { return "SNmssm"; }
-   virtual int run_to(double, double eps = -1.0);
+   virtual void run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<NmssmSoftsusy>(*this); }
    virtual void set_precision(double p) { precision = p; }
 
