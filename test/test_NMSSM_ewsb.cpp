@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_NMSSM_beta_functions
+#define BOOST_TEST_MODULE test_NMSSM_ewsb
 
 #include <boost/test/unit_test.hpp>
 
