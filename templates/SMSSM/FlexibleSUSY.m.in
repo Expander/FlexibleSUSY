@@ -6,6 +6,7 @@ FSModelName = "@CLASSNAME@";
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
+           {4, Sign[\[Mu]]},
            {5, Azero}
          };
 
@@ -21,6 +22,7 @@ DefaultParameterPoint = {
     {m0, 200},
     {m12, 200},
     {TanBeta, 10},
+    {Sign[\[Mu]], 1},
     {Azero, 0},
     {LambdaInput, 0.1},
     {KappaInput, 0.1},
@@ -87,3 +89,51 @@ InitialGuessAtLowScale = {
 };
 
 InitialGuessAtHighScale = {};
+
+(* This tree-level EWSB solution was generated with FlexibleSUSY
+   0.3. *)
+TreeLevelEWSBSolution = {
+   { B[\[Mu]],
+    (-20*mHd2*vd*vu + 20*mHu2*vd*vu - 3*g1^2*vd^3*vu -
+      5*g2^2*vd^3*vu + 3*g1^2*vd*vu^3 + 5*g2^2*vd*vu^3 -
+      10*vd^2*\[Lambda]*conj[L1] + 10*vu^2*\[Lambda]*conj[L1] -
+      5*Sqrt[2]*vd^2*vS*\[Lambda]*conj[MS] + 5*Sqrt[2]*vS*vu^2*\[Lambda]*
+       conj[MS] - 5*vd^2*vS^2*\[Lambda]*conj[\[Kappa]] +
+      5*vS^2*vu^2*\[Lambda]*conj[\[Kappa]] - 10*L1*vd^2*conj[\[Lambda]] -
+      5*Sqrt[2]*MS*vd^2*vS*conj[\[Lambda]] + 10*L1*vu^2*conj[\[Lambda]] +
+      5*Sqrt[2]*MS*vS*vu^2*conj[\[Lambda]] - 5*vd^2*vS^2*\[Kappa]*
+       conj[\[Lambda]] + 5*vS^2*vu^2*\[Kappa]*conj[\[Lambda]] +
+      10*vd^3*vu*\[Lambda]*conj[\[Lambda]] - 10*vd*vu^3*\[Lambda]*
+       conj[\[Lambda]] - 5*Sqrt[2]*vd^2*vS*conj[T[\[Lambda]]] +
+      5*Sqrt[2]*vS*vu^2*conj[T[\[Lambda]]] - 5*Sqrt[2]*vd^2*vS*T[\[Lambda]] +
+      5*Sqrt[2]*vS*vu^2*T[\[Lambda]])/(20*(vd^2 - vu^2))
+   },
+   { \[Mu],
+    (-20*Sqrt[2]*vd*vS*\[Lambda] - 20*Sqrt[2]*vd*vS*conj[\[Lambda]] +
+      Sign[\[Mu]] *
+      Sqrt[(20*Sqrt[2]*vd*vS*\[Lambda] + 20*Sqrt[2]*vd*vS*conj[\[Lambda]])^
+         2 - 160*vd*(40*mHd2*vd + 3*g1^2*vd^3 + 5*g2^2*vd^3 -
+          3*g1^2*vd*vu^2 - 5*g2^2*vd*vu^2 - 40*vu*B[\[Mu]] -
+          20*vu*\[Lambda]*conj[L1] - 10*Sqrt[2]*vS*vu*\[Lambda]*conj[MS] -
+          10*vS^2*vu*\[Lambda]*conj[\[Kappa]] - 20*L1*vu*conj[\[Lambda]] -
+          10*Sqrt[2]*MS*vS*vu*conj[\[Lambda]] - 10*vS^2*vu*\[Kappa]*
+           conj[\[Lambda]] + 20*vd*vS^2*\[Lambda]*conj[\[Lambda]] +
+          20*vd*vu^2*\[Lambda]*conj[\[Lambda]] - 10*Sqrt[2]*vS*vu*
+           conj[T[\[Lambda]]] - 10*Sqrt[2]*vS*vu*T[\[Lambda]])])/(80*vd)
+   },
+   { L[L1],
+     -(4*ms2*vS + Sqrt[2]*vd^2*\[Lambda]*\[Mu] +
+       Sqrt[2]*vu^2*\[Lambda]*\[Mu] + 2*vS*B[MS] + 2*Sqrt[2]*MS*conj[L1] +
+       4*vS*\[Kappa]*conj[L1] + 2*Sqrt[2]*L1*conj[MS] + 4*MS*vS*conj[MS] +
+       3*Sqrt[2]*vS^2*\[Kappa]*conj[MS] - Sqrt[2]*vd*vu*\[Lambda]*conj[MS] +
+       4*L1*vS*conj[\[Kappa]] + 3*Sqrt[2]*MS*vS^2*conj[\[Kappa]] +
+       4*vS^3*\[Kappa]*conj[\[Kappa]] - 2*vd*vS*vu*\[Lambda]*conj[\[Kappa]] -
+       Sqrt[2]*MS*vd*vu*conj[\[Lambda]] - 2*vd*vS*vu*\[Kappa]*
+        conj[\[Lambda]] + 2*vd^2*vS*\[Lambda]*conj[\[Lambda]] +
+       2*vS*vu^2*\[Lambda]*conj[\[Lambda]] + Sqrt[2]*vd^2*\[Mu]*
+        conj[\[Lambda]] + Sqrt[2]*vu^2*\[Mu]*conj[\[Lambda]] +
+       2*vS*conj[B[MS]] + Sqrt[2]*vS^2*conj[T[\[Kappa]]] -
+       Sqrt[2]*vd*vu*conj[T[\[Lambda]]] + Sqrt[2]*vS^2*T[\[Kappa]] -
+       Sqrt[2]*vd*vu*T[\[Lambda]])/(4*Sqrt[2])
+   }
+};
