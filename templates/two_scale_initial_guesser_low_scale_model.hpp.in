@@ -41,26 +41,6 @@ class Two_scale;
 template<>
 class @ModelName@_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
-
-   class NonPerturbativeRunningError : public Error {
-   public:
-      NonPerturbativeRunningError(@ModelName@<Two_scale>* model_, double scale_)
-         : model(model_)
-         , scale(scale_)
-         {}
-      virtual ~NonPerturbativeRunningError() {}
-      virtual std::string what() const {
-         std::stringstream message;
-         message << "@ModelName@_initial_guesser::NonPerturbativeRunningError:"
-                    " non-perturbative running of model @ModelName@<Two_scale>"
-                    " to scale " << scale;
-         return message.str();
-      }
-   private:
-      @ModelName@<Two_scale>* model;
-      double scale;
-   };
-
    @ModelName@_initial_guesser(@ModelName@<Two_scale>*,
                                const @ModelName@_input_parameters&,
                                const QedQcd&,

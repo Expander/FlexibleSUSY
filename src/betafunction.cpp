@@ -18,6 +18,7 @@
 
 #include "betafunction.hpp"
 #include "logger.hpp"
+#include "error.hpp"
 #include <cmath>
 
 namespace flexiblesusy {
@@ -32,38 +33,30 @@ Beta_function::Beta_function()
 {
 }
 
-int Beta_function::run_to(double x2, double eps)
+void Beta_function::run_to(double x2, double eps)
 {
    const double tol = get_tolerance(eps);
-   return run(scale, x2, tol);
+   run(scale, x2, tol);
 }
 
-int Beta_function::run(double x1, double x2, double eps)
+void Beta_function::run(double x1, double x2, double eps)
 {
    using namespace std::placeholders;
 
    const double tol = get_tolerance(eps);
 
-   if (std::fabs(x1) < tol || std::fabs(x2) < tol) {
-#ifdef VERBOSE
-      ERROR("Beta_function::run: One of the scales is close to zero:"
-            " starting scale = " << x1 << ", end scale = " << x2);
-#endif
-      return 1;
-   }
+   if (std::fabs(x1) < tol)
+      throw NonPerturbativeRunningError(x1);
+   if (std::fabs(x2) < tol)
+      throw NonPerturbativeRunningError(x2);
 
    Eigen::ArrayXd y(display());
    runge_kutta::Derivs derivs = std::bind(&Beta_function::derivatives,
                                           this, _1, _2);
 
-   int err = call_rk(x1, x2, y, derivs, tol);
-
-   if (err == 0) {
-      set(y);
-      set_scale(x2);
-   }
-
-   return err;
+   call_rk(x1, x2, y, derivs, tol);
+   set(y);
+   set_scale(x2);
 }
 
 Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
@@ -73,11 +66,11 @@ Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
    return beta();
 }
 
-int Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
-                           runge_kutta::Derivs derivs, double eps)
+void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
+                            runge_kutta::Derivs derivs, double eps)
 {
    if (fabs(x1 - x2) < min_tolerance)
-      return 0;
+      return;
 
    const double tol = get_tolerance(eps);
    const double from = log(fabs(x1));
@@ -85,13 +78,10 @@ int Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    const double guess = (from - to) * 0.1; //first step size
    const double hmin = (from - to) * tol * 1.0e-5;
 
-   const int err =
-      runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs,
-                                 runge_kutta::odeStepper);
+   runge_kutta::integrateOdes(v, from, to, tol, guess, hmin, derivs,
+                              runge_kutta::odeStepper);
 
    set_scale(x2);
-
-   return err;
 }
 
 double Beta_function::get_tolerance(double eps)

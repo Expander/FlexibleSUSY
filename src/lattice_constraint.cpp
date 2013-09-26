@@ -133,7 +133,8 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
     const_Adapter b;
     Adapter db;
 
-    int err = integrateOdes(*a.v, from, to, tol, guess, hmin,
+    try {
+       integrateOdes(*a.v, from, to, tol, guess, hmin,
 	    [=,&ddx,&b,&db](Real, const ArrayXd& xD) -> ArrayXd {
 		b.set(xD, a.n);
 
@@ -150,9 +151,11 @@ int Lattice_RKRGE::evolve_to(Real to, Adapter& a, Real eps)
 		return dxD;
 	    }, odeStepper);
 
-    if (err == 0) a.x(0) = to;
-
-    return err;
+       a.x(0) = to;
+    } catch(Error&) {
+       return 1;
+    }
+    return 0;
 }
 
 }

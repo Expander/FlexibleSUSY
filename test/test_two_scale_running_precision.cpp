@@ -68,7 +68,7 @@ public:
    virtual ~Static_model() {}
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "Static_model"; }
-   virtual int run_to(double, double) { return 0; }
+   virtual void run_to(double, double) {}
    virtual void set_precision(double) {}
 };
 

@@ -6,6 +6,7 @@
 
 #include "rk.hpp"
 #include "rk_legacy.hpp"
+#include "error.hpp"
 #include <Eigen/Dense>
 
 using namespace flexiblesusy;
@@ -44,9 +45,13 @@ void check_integrateOdes(DoubleVector& parameters,
       = integrateOdes(parameters, from, to, tol, guess,
                       hmin, beta_legacy, odeStepper);
 
-   const int err_eigen
-      = runge_kutta::integrateOdes(parameter_eigen, from, to, tol, guess,
-                                   hmin, beta_eigen, runge_kutta::odeStepper);
+   int err_eigen = 0;
+   try {
+      runge_kutta::integrateOdes(parameter_eigen, from, to, tol, guess,
+                                 hmin, beta_eigen, runge_kutta::odeStepper);
+   } catch (Error&) {
+      err_eigen = 1;
+   }
 
    BOOST_CHECK_EQUAL(err_legacy, err_eigen);
 

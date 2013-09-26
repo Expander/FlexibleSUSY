@@ -140,16 +140,13 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
 
-      if (model.run_to(susy_scale))
-         throw NonPerturbativeRunningError(susy_scale);
-
+      model.run_to(susy_scale);
       model.calculate_spectrum();
 
       // run to output scale (if scale > 0)
       if (std::fabs(parameter_output_scale)
           > std::numeric_limits<double>::epsilon()) {
-         if (model.run_to(parameter_output_scale))
-            throw NonPerturbativeRunningError(parameter_output_scale);
+         model.run_to(parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
@@ -174,12 +171,7 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
 {
    @ModelName@<T> tmp_model(model);
-   const unsigned error = tmp_model.run_to(low_scale);
-   if (error) {
-      ERROR("@ModelName@_spectrum_generator::write_running_couplings:"
-            " run to scale " << low_scale << " failed");
-      return;
-   }
+   tmp_model.run_to(low_scale);
 
    @ModelName@_parameter_getter parameter_getter;
    Coupling_monitor<@ModelName@<T>, @ModelName@_parameter_getter>

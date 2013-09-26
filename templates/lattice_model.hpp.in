@@ -38,7 +38,7 @@ public:
 
    // interface functions
    virtual void calculate_spectrum();
-   virtual int run_to(double);
+   virtual void run_to(double);
    virtual void print(std::ostream&) const;
 };
 
