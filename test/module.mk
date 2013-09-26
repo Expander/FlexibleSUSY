@@ -12,6 +12,10 @@ TEST_SRC := \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_wrappers.cpp
 
+ifneq ($(findstring lattice,$(ALGORITHMS)),)
+TEST_SRC +=	$(DIR)/test_linalg2.cpp
+endif
+
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
@@ -163,6 +167,9 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
+
+$(DIR)/test_linalg2.x: $(DIR)/test_linalg2.o
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(LAPACKLIBS) $(FLIBS)
 
 $(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
