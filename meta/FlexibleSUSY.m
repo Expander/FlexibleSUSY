@@ -829,12 +829,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  Print["   An iterative algorithm will be used.  You can try to set"];
                  Print["   the solution by hand in the model file like this:"];
                  Print[""];
-                 Print["TreeLevelEWSBSolution = {"];
+                 Print["   TreeLevelEWSBSolution = {"];
                  For[i = 1, i <= Length[ParametersToSolveTadpoles], i++,
-                     Print["   { ", ParametersToSolveTadpoles[[i]], ", ... }" <>
+                     Print["      { ", ParametersToSolveTadpoles[[i]], ", ... }" <>
                            If[i != Length[ParametersToSolveTadpoles], ",", ""]];
                     ];
-                 Print["};\n"];
+                 Print["   };\n"];
                 ];
               ,
               If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
