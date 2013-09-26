@@ -268,6 +268,13 @@ DoubleMatrix DoubleMatrix::transpose() const {
   return temp;
 }
 
+bool DoubleMatrix::testNan() const {
+  for (int i=1; i<=rows; i++)
+    for (int j=1; j<=cols; j++)
+      if (display(i, j) != display(i, j)) return true;
+  return false;
+}
+
 DoubleVector DoubleMatrix::flatten() const {
    DoubleVector v(x.size());
    for (size_t i = 0; i < x.size(); ++i)
@@ -709,8 +716,14 @@ void positivise(double thetaL, double thetaR, const DoubleVector & diag,
 }
 
 // ---------------- diagonalisation algorithms --------------------
-void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v)
-{
+void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v) {
+  if (a.testNan()) {
+    ostringstream ii;
+    ii << "Nans present in linalg.cpp:diagonaliseSvd: diagonalising\n" 
+       << a << endl;
+    throw ii.str();
+  }
+  
   int n = a.displayCols(), m = a.displayRows();
   int flag, i, its, j, jj, k, l = 0, nm = 0; 
   double anorm, c, f, g, h, s, scale, x, y, z; 
@@ -835,7 +848,7 @@ void diagonaliseSvd(DoubleMatrix & a, DoubleVector & w, DoubleMatrix & v)
 	}
 	break; 
       }
-      if (its  ==  30) 
+      if (its  ==  30 || l < 1 || k < 1) 
 	throw "no convergence in 30 diagonaliseSvd iterations"; 
       
       x = w(l); 
