@@ -51,7 +51,8 @@ TEST_SRC += \
 endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-SMSSM),yes yes)
 TEST_SRC += \
-		$(DIR)/test_SMSSM_beta_functions.cpp
+		$(DIR)/test_SMSSM_beta_functions.cpp \
+		$(DIR)/test_SMSSM_ewsb.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-sm),yes)
 TEST_SRC += \
@@ -239,6 +240,8 @@ $(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM
 $(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
