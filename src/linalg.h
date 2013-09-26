@@ -329,6 +329,7 @@ public:
 
   double trace() const;///< trace must only be performed on a square matrix
   DoubleMatrix transpose() const; ///< can be any size
+  bool testNan() const; ///< tests that all elements are not Nans 
   DoubleVector flatten() const; ///< matrix to vector, row by row
 
   /*
