@@ -675,7 +675,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
-            fixedParameters},
+            fixedParameters, treeLevelEwsbOutputFile},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -822,8 +822,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
+              treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                      FlexibleSUSY`FSModelName <> "_tree_level_EWSB_solution.m"}];
               Print["Solving EWSB equations ..."];
-              {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations, ParametersToSolveTadpoles];
+              {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
+                                                                          ParametersToSolveTadpoles,
+                                                                          treeLevelEwsbOutputFile];
               If[ewsbSolution === {},
                  Print["Warning: could not find an analytic solution to the EWSB eqs."];
                  Print["   An iterative algorithm will be used.  You can try to set"];
@@ -835,10 +839,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            If[i != Length[ParametersToSolveTadpoles], ",", ""]];
                     ];
                  Print["   };\n"];
+                 Print["   The tree-level EWSB solution was written to the file:"];
+                 Print["      ", treeLevelEwsbOutputFile];
                 ];
               ,
               If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
-                 Print["Error: not enought EWSB solutions given!"];
+                 Print["Error: not enough EWSB solutions given!"];
                  Quit[1];
                 ];
               If[Sort[#[[1]]& /@ FlexibleSUSY`TreeLevelEWSBSolution] =!= Sort[ParametersToSolveTadpoles],

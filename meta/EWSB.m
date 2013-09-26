@@ -292,13 +292,12 @@ ReduceSolution[solution_List] :=
            Return[{reducedSolution, freePhases}];
           ];
 
-FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List] :=
+FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:""] :=
     Module[{solution, reducedSolution, freePhases},
            solution = FindSolution[equations, parametersFixedByEWSB];
            {reducedSolution, freePhases} = ReduceSolution[solution];
-           If[reducedSolution === {},
-              Print["The full solution is:"];
-              Print[InputForm[solution]];
+           If[reducedSolution === {} && outputFile != "",
+              Put[solution, outputFile];
              ];
            Return[{Flatten[reducedSolution], freePhases}];
           ];
