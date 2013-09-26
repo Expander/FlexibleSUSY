@@ -65,12 +65,12 @@ Calculating the particle spectrum:
       + \umlvirt{display() : const Eigen::ArrayXd} \\
       + \umlvirt{set(v : const Eigen::ArrayXd\&) : void}\\
       + \umlvirt{beta() : Eigen::ArrayXd}\\
-      + run\_to(scale : double, eps : double) : int\\
+      + run\_to(scale : double, eps : double) : void\\
     }
     \umlclass[x=8, y=-12, template={T}]{MSSM}{}{}
     \umlclass[x=8, y=-8, type=abstract]{Two\_scale\_model}{}{
       + \umlvirt{calculate\_spectrum() : void}\\
-      + \umlvirt{run\_to(scale : double, eps : double) : int}\\
+      + \umlvirt{run\_to(scale : double, eps : double) : void}\\
       + \umlvirt{set\_precision(precision : double) : void}
     }
     \umlclass[x=0, y=-4]{MSSM\_susy\_parameters}{}{
@@ -85,7 +85,7 @@ Calculating the particle spectrum:
     }
     \umlclass[x=0, y=-12]{MSSM$<$Two\_scale$>$}{}{
       + calculate\_spectrum() : void\\
-      + run\_to(scale : double, eps : double) : int\\
+      + run\_to(scale : double, eps : double) : void\\
       + set\_precision(precision : double) : void
     }
    \umlinherit{MSSM\_susy\_parameters}{Beta\_function}
@@ -104,7 +104,7 @@ Calculating the particle spectrum:
   \begin{tikzpicture}
     \umlclass[x=0, y=0, type=abstract]{Two\_scale\_model}{}{
       + \umlvirt{calculate\_spectrum() : void}\\
-      + \umlvirt{run\_to(scale : double, eps : double) : int}\\
+      + \umlvirt{run\_to(scale : double, eps : double) : void}\\
       + \umlvirt{set\_precision(precision : double) : void}
     }
     \umlclass[x=0, y=-4]{RGFlow$<$Two\_scale$>$}{}{
