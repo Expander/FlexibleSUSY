@@ -49,7 +49,12 @@ int main()
 
    const std::vector<double> range(float_range(0., 100., 10));
 
-   cout << "# [1] @InputParameter_1@ | [2] error | [3] lightest Higgs/GeV | [4] time/s\n";
+   cout << "# "
+        << std::setw(12) << std::left << "@InputParameter_1@" << ' '
+        << std::setw(12) << std::left << "M@HiggsBoson@(1)/GeV" << ' '
+        << std::setw(12) << std::left << "error" << ' '
+        << std::setw(12) << std::left << "time/s"
+        << '\n';
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
@@ -66,10 +71,11 @@ int main()
       const double higgs = pole_masses.M@HiggsBoson@(1);
       const bool error = problems.have_serious_problem();
 
-      cout << input.@InputParameter_1@ << '\t'
-           << error << '\t'
-           << higgs << '\t'
-           << stopwatch.get_time_in_seconds();
+      cout << "  "
+           << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
+           << std::setw(12) << std::left << higgs << ' '
+           << std::setw(12) << std::left << error << ' '
+           << std::setw(12) << std::left << stopwatch.get_time_in_seconds();
       if (error) {
          cout << "\t# ";
          problems.print(cout);
