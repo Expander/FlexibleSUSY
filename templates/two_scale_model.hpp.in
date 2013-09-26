@@ -65,7 +65,7 @@ public:
    // interface functions
    virtual void calculate_spectrum();
    virtual std::string name() const;
-   virtual int run_to(double scale, double eps = -1.0);
+   virtual void run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream&) const;
    virtual void set_precision(double);
 

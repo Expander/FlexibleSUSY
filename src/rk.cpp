@@ -8,6 +8,7 @@
 
 #include "rk.hpp"
 #include "logger.hpp"
+#include "error.hpp"
 #include <algorithm>
 
 namespace flexiblesusy {
@@ -21,10 +22,9 @@ namespace runge_kutta {
 double sign(double a, double b)
 { return b >= 0 ? fabs(a) : -fabs(a); }
 
-// returns >0 if there's a problem:
-int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
-		  double h1, double hmin, Derivs derivs,
-		  RungeKuttaQuinticStepper rkqs) {
+void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
+                   double h1, double hmin, Derivs derivs,
+                   RungeKuttaQuinticStepper rkqs) {
   int nvar =  ystart.size();
   int nstp;
   double x, hnext, hdid, h;
@@ -40,12 +40,11 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
     dydx = derivs(x, y);
     yscal = y.abs() + (dydx * h).abs() + TINY;
     if ((x + h - to) * (x + h - from) > 0.0) h = to - x;
-    int smallStep = rkqs(y, dydx, &x, h, eps, yscal, &hdid, &hnext, derivs);
-    if (smallStep) return 1;
+    rkqs(y, dydx, &x, h, eps, yscal, &hdid, &hnext, derivs);
 
     if ((x - to) * (to - from) >= 0.0) {
       ystart = y;
-      return 0;
+      return;
     }
 
     if (fabs(hnext) <= hmin) {
@@ -70,12 +69,12 @@ int integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 	      ") = " << dydx(i));
 #endif
 
-  return 1;
+   throw NonPerturbativeRunningError(to);
 }
 
-int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
-	       double eps, ArrayXd& yscal, double *hdid, double *hnext,
-	       Derivs derivs)
+void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
+                double eps, ArrayXd& yscal, double *hdid, double *hnext,
+                Derivs derivs)
 {
   const double SAFETY = 0.9, PGROW = -0.2, PSHRNK = -0.25, ERRCON = 1.89e-4;
 
@@ -92,7 +91,7 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 #ifdef VERBOSE
        ERROR("odeStepper: non-perturbative running at x = " << *x);
 #endif
-       return 1;
+       throw NonPerturbativeRunningError(*x);
     }
     if (errmax <= 1.0) break;
     htemp = SAFETY * h * pow(errmax, PSHRNK);
@@ -103,14 +102,13 @@ int odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
 #ifdef VERBOSE
          ERROR("At x = " << *x << ",stepsize underflow in odeStepper");
 #endif
-	return 1;
+	throw NonPerturbativeRunningError(*x);
       }
   }
   if (errmax > ERRCON) *hnext = SAFETY * h * pow(errmax,PGROW);
   else *hnext = 5.0 * h;
   *x += (*hdid = h);
   y = ytemp;
-  return 0;
 }
 
 void rungeKuttaStep(const ArrayXd& y, const ArrayXd& dydx, double x,

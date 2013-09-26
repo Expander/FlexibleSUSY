@@ -26,16 +26,16 @@ void rungeKuttaStep(const Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx,
 	Derivs derivs);
 
 /// organises the variable step-size for Runge-Kutta evolution
-int odeStepper(Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx, double *x,
-	       double htry, double eps, Eigen::ArrayXd& yscal, double *hdid,
-	       double *hnext, Derivs derivs);
+void odeStepper(Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx, double *x,
+                double htry, double eps, Eigen::ArrayXd& yscal, double *hdid,
+                double *hnext, Derivs derivs);
 
 typedef std::function<decltype(odeStepper)> RungeKuttaQuinticStepper;
 
 /// Organises integration of 1st order system of ODEs
-int integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,
-		  double h1, double hmin, Derivs derivs,
-		  RungeKuttaQuinticStepper rkqs);
+void integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,
+                   double h1, double hmin, Derivs derivs,
+                   RungeKuttaQuinticStepper rkqs);
 
 } // namespace runge_kutta
 

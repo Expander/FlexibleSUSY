@@ -376,11 +376,11 @@ std::string CLASSNAME::name() const
    return "@ModelName@";
 }
 
-int CLASSNAME::run_to(double scale, double eps)
+void CLASSNAME::run_to(double scale, double eps)
 {
    if (eps < 0.0)
       eps = precision;
-   return @ModelName@_soft_parameters::run_to(scale, eps);
+   @ModelName@_soft_parameters::run_to(scale, eps);
 }
 
 @massCalculationFunctions@

@@ -20,7 +20,7 @@ public:
    virtual ~Static_model() {}
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "Static_model"; }
-   virtual int run_to(double, double) { return 0; }
+   virtual void run_to(double, double) {}
    virtual void set_parameters(const DoubleVector& v) { parameters = v; }
    virtual DoubleVector get_parameters() const { return parameters; }
    virtual void set_precision(double) {}
@@ -56,7 +56,7 @@ public:
    Counting_model() : number_of_runs(0) {}
    virtual ~Counting_model() {}
    virtual void calculate_spectrum() {}
-   virtual int run_to(double, double) { ++number_of_runs; return 0; }
+   virtual void run_to(double, double) { ++number_of_runs; }
    virtual void set_precision(double) {}
    unsigned get_number_of_runs() const {
       return number_of_runs;
@@ -242,7 +242,8 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_zero_models )
 {
    RGFlow<Two_scale> solver;
 
-   const int status = solver.run_to(1000.);
+   int status = 0;
+   try { solver.run_to(1000.); } catch (Error&) { status = 1; }
 
    BOOST_CHECK_EQUAL(status, 1);
    BOOST_CHECK_EQUAL(solver.get_model(), (void*)NULL);
@@ -254,7 +255,8 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
    RGFlow<Two_scale> solver;
    solver.add_model(&model);
 
-   const int status = solver.run_to(1000.);
+   int status = 0;
+   try { solver.run_to(1000.); } catch (Error&) { status = 1; }
 
    BOOST_CHECK_EQUAL(status, 0);
    BOOST_CHECK_EQUAL(solver.get_model(), &model);

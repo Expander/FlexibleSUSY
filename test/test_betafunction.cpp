@@ -7,6 +7,8 @@
 #include "rge.h"
 #include "betafunction.hpp"
 #include "wrappers.hpp"
+#include "error.hpp"
+#include "logger.hpp"
 
 using namespace flexiblesusy;
 
@@ -52,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_running )
 {
    DoubleVector pars(10);
    for (std::size_t i = 1; i <= pars.size(); i++)
-      pars(i) = 0.1 * i;
+      pars(i) = 0.01 * i;
 
    RGE_model rge;
    Eigen_model eig;
@@ -64,9 +66,16 @@ BOOST_AUTO_TEST_CASE( test_running )
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
    BOOST_CHECK_EQUAL(rge.howMany(), eig.get_number_of_parameters());
 
-   rge.runto(1.0e10);
-   eig.run_to(1.0e10);
+   int status_rge = rge.runto(1.0e10);
+   int status_beta = 0;
 
+   try {
+      eig.run_to(1.0e10);
+   } catch (Error& error) {
+      status_beta = 1;
+   }
+
+   BOOST_CHECK_EQUAL(status_rge, status_beta);
    BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
 }
@@ -75,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_custom_precision )
 {
    DoubleVector pars(10);
    for (std::size_t i = 1; i <= pars.size(); i++)
-      pars(i) = 0.1 * i;
+      pars(i) = 0.01 * i;
 
    RGE_model rge;
    Eigen_model eig;

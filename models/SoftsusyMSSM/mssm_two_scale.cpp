@@ -42,11 +42,11 @@ void Mssm<Two_scale>::calculate_spectrum()
    runto(displayMz());
 }
 
-int Mssm<Two_scale>::run_to(double scale, double eps)
+void Mssm<Two_scale>::run_to(double scale, double eps)
 {
    if (eps < 0.0)
       eps = precision;
-   return runto(scale, eps);
+   runto(scale, eps);
 }
 
 }

@@ -64,7 +64,7 @@ public:
    /// clear all internal data
    void reset();
    /// pick valid model and run it to the given scale
-   int run_to(double);
+   void run_to(double);
    /// set convergence tester
    void set_convergence_tester(Convergence_tester<Two_scale>*);
    /// set running precision calculator

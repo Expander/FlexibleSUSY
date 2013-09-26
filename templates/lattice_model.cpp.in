@@ -42,9 +42,8 @@ void CLASSNAME::calculate_spectrum()
 {
 }
 
-int CLASSNAME::run_to(double)
+void CLASSNAME::run_to(double)
 {
-   return 0;
 }
 
 } // namespace flexiblesusy

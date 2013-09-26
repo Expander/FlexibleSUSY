@@ -110,17 +110,13 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
    const double low_scale_guess = low_constraint.get_initial_scale_guess();
    const double susy_scale_guess = susy_constraint.get_initial_scale_guess();
 
-   int err = model->run_to(susy_scale_guess);
-   if (err)
-      throw NonPerturbativeRunningError(model, susy_scale_guess);
+   model->run_to(susy_scale_guess);
 
    // apply susy-scale constraint
    susy_constraint.set_model(model);
    susy_constraint.apply();
 
-   err = model->run_to(low_scale_guess);
-   if (err)
-      throw NonPerturbativeRunningError(model, low_scale_guess);
+   model->run_to(low_scale_guess);
 
    // apply EWSB constraint
    model->solve_ewsb_tree_level();

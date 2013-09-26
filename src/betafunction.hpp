@@ -42,8 +42,8 @@ public:
    virtual void set(const Eigen::ArrayXd&) = 0;
    virtual Eigen::ArrayXd beta() const = 0;
 
-   virtual int run(double, double, double eps = -1.0);
-   virtual int run_to(double, double eps = -1.0);
+   virtual void run(double, double, double eps = -1.0);
+   virtual void run_to(double, double eps = -1.0);
 
 private:
    unsigned numPars;     ///< Number of parameters
@@ -53,8 +53,8 @@ private:
    double tolerance;     ///< running tolerance
    double min_tolerance; ///< minimum tolerance allowed
 
-   int call_rk(double, double, Eigen::ArrayXd&,
-               runge_kutta::Derivs, double eps = -1.0);
+   void call_rk(double, double, Eigen::ArrayXd&,
+                runge_kutta::Derivs, double eps = -1.0);
    Eigen::ArrayXd derivatives(double, const Eigen::ArrayXd&);
    double get_tolerance(double eps);
 };

@@ -136,8 +136,7 @@ void RGFlow<Two_scale>::run_up()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
-         if (model->model->run_to(scale))
-            throw NonPerturbativeRunningError(scale);
+         model->model->run_to(scale);
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
       }
@@ -169,8 +168,7 @@ void RGFlow<Two_scale>::run_down()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
-         if (model->model->run_to(scale))
-            throw NonPerturbativeRunningError(scale);
+         model->model->run_to(scale);
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
          // time.
@@ -204,8 +202,7 @@ void RGFlow<Two_scale>::apply_lowest_constraint()
    const double scale = constraint->get_scale();
    VERBOSE_MSG("| selecting constraint 0 at scale " << scale);
    VERBOSE_MSG("| \trunning model " << model->model->name() << " to scale " << scale);
-   if (model->model->run_to(scale))
-      throw NonPerturbativeRunningError(scale);
+   model->model->run_to(scale);
    VERBOSE_MSG("| \tapplying constraint");
    constraint->apply();
 }
@@ -365,7 +362,7 @@ void RGFlow<Two_scale>::reset()
    model_at_this_scale = NULL;
 }
 
-int RGFlow<Two_scale>::run_to(double scale)
+void RGFlow<Two_scale>::run_to(double scale)
 {
    // find model which is defined at `scale'
    model_at_this_scale = NULL;
@@ -376,9 +373,10 @@ int RGFlow<Two_scale>::run_to(double scale)
       double highest_scale, lowest_scale;
 
       if (!model) {
-         ERROR("RGFlow<Two_scale>::run_to: pointer to model " << m
-               << " is zero");
-         return 1;
+         std::ostringstream msg;
+         msg << "RGFlow<Two_scale>::run_to: pointer to model " << m
+             << " is zero";
+         throw SetupError(msg.str());
       }
 
       if (m != number_of_models - 1) {
@@ -386,9 +384,10 @@ int RGFlow<Two_scale>::run_to(double scale)
          // the highest scale
          Matching<Two_scale>* mc = model->matching_condition;
          if (!mc) {
-            ERROR("RGFlow<Two_scale>::run_to: pointer to matching condition"
-                  " of model " << m << " is zero");
-            return 1;
+            std::ostringstream msg;
+            msg << "RGFlow<Two_scale>::run_to: pointer to matching condition"
+                  " of model " << m << " is zero";
+            throw SetupError(msg.str());
          }
          highest_scale = mc->get_scale();
       } else {
@@ -418,9 +417,12 @@ int RGFlow<Two_scale>::run_to(double scale)
    }
 
    if (model_at_this_scale)
-      return model_at_this_scale->run_to(scale);
-
-   return 1;
+      model_at_this_scale->run_to(scale);
+   else {
+      std::ostringstream msg;
+      msg << "No model at scale " << scale << " found!";
+      throw SetupError(msg.str());
+   }
 }
 
 Two_scale_model* RGFlow<Two_scale>::get_model() const
