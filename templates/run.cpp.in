@@ -87,5 +87,7 @@ int main(int argc, const char* argv[])
       slha_io.write_to_file(slha_output_file);
    }
 
-   return 0;
+   const int exit_code = spectrum_generator.get_exit_code();
+
+   return exit_code;
 }

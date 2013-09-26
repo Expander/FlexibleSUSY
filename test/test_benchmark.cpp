@@ -1,5 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_IGNORE_NON_ZERO_CHILD_CODE
 #define BOOST_TEST_MODULE test_benchmark
 
 #include <boost/test/unit_test.hpp>
@@ -19,7 +20,6 @@ int run_cmd(const std::string& cmd)
    }
 
    const int status = system(cmd.c_str());
-   BOOST_REQUIRE(status == 0);
 
    if (status) {
       BOOST_MESSAGE("Command \"" << cmd << "\" returned with exit code "
@@ -42,7 +42,7 @@ int run_point(const std::string& slha_file)
    fs_time = stopwatch.get_time_in_seconds();
 
    if (status) {
-      BOOST_MESSAGE("FlexibleSUSY failed with exit code " << status);
+      BOOST_MESSAGE("FlexibleSUSY returned exit code " << status);
       return status;
    }
 
@@ -52,7 +52,7 @@ int run_point(const std::string& slha_file)
    stopwatch.stop();
 
    if (status) {
-      BOOST_MESSAGE("Softsusy failed with exit code " << status);
+      BOOST_MESSAGE("Softsusy returned exit code " << status);
       return status;
    }
    ss_time = stopwatch.get_time_in_seconds();
