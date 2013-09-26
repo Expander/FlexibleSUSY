@@ -45,8 +45,10 @@ int Beta_function::run(double x1, double x2, double eps)
    const double tol = get_tolerance(eps);
 
    if (std::fabs(x1) < tol || std::fabs(x2) < tol) {
+#ifdef VERBOSE
       ERROR("Beta_function::run: One of the scales is close to zero:"
             " starting scale = " << x1 << ", end scale = " << x2);
+#endif
       return 1;
    }
 
