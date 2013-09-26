@@ -21,7 +21,7 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    const double g2 = sqrt(4 * Pi * alpha2);
    const double g3 = sqrt(4 * Pi * ALPHASMZ);
    const double lambda = input.LambdaInput;
-   const double kappa = 0.01;
+   const double kappa = input.KappaInput;
    const double tanBeta = input.TanBeta;
    const double sinBeta = sin(atan(tanBeta));
    const double cosBeta = cos(atan(tanBeta));
@@ -33,9 +33,14 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    const double vu = vev * sinBeta;
    const double vd = vev * cosBeta;
    const double vS = 1000.;
-   const double susyMu = 0;
-   const double BMu = 0;
+   const double susyMu = MZ;
+   const double BMu = MZ * MZ;
    const double scale = Electroweak_constants::MZ;
+   // Z3 violating terms
+   const double MS = input.MSInput;
+   const double BMS = input.BMSInput;
+   const double L1 = input.L1Input;
+   const double LL1 = 2. * L1;
 
    DoubleMatrix Yu_SS(3,3), Yd_SS(3,3), Ye_SS(3,3);
    Yu_SS(3,3) = 165.0   * root2 / (vev * sinBeta);
@@ -80,11 +85,16 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    m.set_TYe(a0 * Ye);
    m.set_TLambdax(a0 * lambda);
    m.set_TKappa(a0 * kappa);
-   // m.set_Mu(susyMu);
-   // m.set_BMu(BMu);
+   m.set_Mu(susyMu); // EWSB eqs. output
+   m.set_BMu(BMu);   // EWSB eqs. output
    m.set_vu(vu);
    m.set_vd(vd);
    m.set_vS(vS);
+   // Z3 violating terms
+   m.set_MS(MS);
+   m.set_BMS(BMS);
+   m.set_L1(L1);
+   m.set_LL1(LL1);
 
    s.setMu(scale);
    s.setLoops(1);
@@ -112,11 +122,17 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    s.setTrilinearMatrix(EA, a0 * Ye_SS);
    s.setTrialambda(a0 * lambda);
    s.setTriakappa(a0 * kappa);
-   s.setSusyMu(susyMu);
-   s.setM3Squared(BMu);
+   s.setSusyMu(susyMu); // EWSB eqs. output
+   s.setM3Squared(BMu); // EWSB eqs. output
    s.setHvev(vev);
    s.setTanb(tanBeta);
    s.setSvev(vS);
+   // Z3 violating terms
+   s.setMupr(MS);
+   s.setMspSquared(BMS);
+   s.setXiF(L1);
+   s.setXiS(LL1);
+
    s.setMw(s.displayMwRun());
 }
 

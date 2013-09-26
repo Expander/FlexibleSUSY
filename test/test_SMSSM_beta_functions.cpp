@@ -44,8 +44,8 @@ void test_parameter_equality(const SoftParsNmssm& a, const SMSSM_soft_parameters
    TEST_EQUALITY(a.displayTrilinear(DA), b.get_TYd());
    TEST_EQUALITY(a.displayTrilinear(EA), b.get_TYe());
 
-   // TEST_EQUALITY(a.displaySusyMu(), b.get_Mu());
-   // TEST_EQUALITY(a.displayM3Squared(), b.get_BMu());
+   TEST_EQUALITY(a.displaySusyMu(), b.get_Mu());
+   TEST_EQUALITY(a.displayM3Squared(), b.get_BMu());
 
    TEST_EQUALITY(a.displayLambda(), b.get_Lambdax());
    TEST_EQUALITY(a.displayKappa(), b.get_Kappa());
@@ -55,10 +55,11 @@ void test_parameter_equality(const SoftParsNmssm& a, const SMSSM_soft_parameters
    TEST_EQUALITY(a.displayTriakappa(), b.get_TKappa());
    TEST_EQUALITY(a.displayMsSquared(), b.get_ms2());
 
-   TEST_EQUALITY(a.displayMspSquared(), 0.);
-   TEST_EQUALITY(a.displayXiF(), 0.);
-   TEST_EQUALITY(a.displayXiS(), 0.);
-   TEST_EQUALITY(a.displayMupr(), 0.);
+   // Z3 violating terms
+   TEST_EQUALITY(a.displayMspSquared(), b.get_BMS());
+   TEST_EQUALITY(a.displayXiF()       , b.get_L1());
+   TEST_EQUALITY(a.displayXiS()       , b.get_LL1());
+   TEST_EQUALITY(a.displayMupr()      , b.get_MS());
 
    const double vu = b.get_vu(), vd = b.get_vd();
    double tanBeta;
@@ -122,9 +123,9 @@ void test_beta_function_equality(const SoftParsNmssm& a, const SMSSM_soft_parame
    TEST_EQUALITY(beta_a.displayMh1Squared(), beta_b.get_mHd2());
    TEST_CLOSE(beta_a.displayMh2Squared(), beta_b.get_mHu2(), 2.0e-12);
    TEST_EQUALITY(beta_a.displayMsSquared(), beta_b.get_ms2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2());
-   TEST_EQUALITY(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2());
+   TEST_CLOSE(beta_a.displaySoftMassSquared(mQl), beta_b.get_mq2(), 2.0e-12);
+   TEST_CLOSE(beta_a.displaySoftMassSquared(mUr), beta_b.get_mu2(), 4.0e-12);
+   TEST_CLOSE(beta_a.displaySoftMassSquared(mDr), beta_b.get_md2(), 2.0e-12);
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mLl), beta_b.get_ml2());
    TEST_EQUALITY(beta_a.displaySoftMassSquared(mEr), beta_b.get_me2());
 
@@ -134,13 +135,13 @@ void test_beta_function_equality(const SoftParsNmssm& a, const SMSSM_soft_parame
    TEST_EQUALITY(beta_a.displayTrialambda() , beta_b.get_TLambdax());
    TEST_EQUALITY(beta_a.displayTriakappa()  , beta_b.get_TKappa());
 
-   TEST_EQUALITY(beta_a.displayMspSquared(), 0.);
-   TEST_EQUALITY(beta_a.displayXiF(), 0.);
-   TEST_EQUALITY(beta_a.displayXiS(), 0.);
-   TEST_EQUALITY(beta_a.displayMupr(), 0.);
+   TEST_EQUALITY(beta_a.displayMspSquared(), beta_b.get_BMS());
+   TEST_EQUALITY(beta_a.displayXiF()       , beta_b.get_L1());
+   TEST_EQUALITY(beta_a.displayXiS()       , beta_b.get_LL1());
+   TEST_EQUALITY(beta_a.displayMupr()      , beta_b.get_MS());
 
-   // TEST_EQUALITY(beta_a.displaySusyMu(), beta_b.get_Mu());
-   // TEST_EQUALITY(beta_a.displayM3Squared(), beta_b.get_BMu());
+   TEST_EQUALITY(beta_a.displaySusyMu()   , beta_b.get_Mu());
+   TEST_EQUALITY(beta_a.displayM3Squared(), beta_b.get_BMu());
 
    const double vu = b.get_vu();
    const double vd = b.get_vd();
@@ -159,6 +160,17 @@ void test_beta_function_equality(const SoftParsNmssm& a, const SMSSM_soft_parame
 BOOST_AUTO_TEST_CASE( test_SMSSM_beta_functions )
 {
    SMSSM_input_parameters input;
+   input.m0 = 200.;
+   input.m12 = 300.;
+   input.TanBeta = 10;
+   input.SignMu = 1;
+   input.Azero = 200;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.2;
+   input.LambdaSInput = 100;
+   input.L1Input = 400.;
+   input.MSInput = 500.;
+   input.BMSInput = 600.;
    SMSSM<Two_scale> m;
    NmssmSoftsusy s;
    setup_SMSSM(m, s, input);
