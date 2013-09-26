@@ -149,8 +149,6 @@ void Problems<Number_of_particles>::print(std::ostream& ostr) const
       ostr << "non-perturbative, ";
    if (thrown)
       ostr << "exception thrown";
-
-   ostr << '\n';
 }
 
 } // namespace flexiblesusy
