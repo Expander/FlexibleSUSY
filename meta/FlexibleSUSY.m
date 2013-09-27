@@ -1,8 +1,10 @@
 
 BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
+FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
+
 Print["*****************************************************"];
-Print["FlexibleSUSY ", Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
+Print["FlexibleSUSY ", FS`Version];
 Print["by P. Athron, J. Park, D. Stöckinger, A. Voigt, 2013"];
 Print["*****************************************************"];
 Print[""];
