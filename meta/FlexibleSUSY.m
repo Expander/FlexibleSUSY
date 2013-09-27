@@ -77,8 +77,11 @@ CheckSARAHVersion[] :=
            minimRequired = {4,0,0};
            sarahVersion = DecomposeVersionString[SA`Version];
            If[sarahVersion[[1]] < minimRequired[[1]] ||
-              sarahVersion[[2]] < minimRequired[[2]] ||
-              sarahVersion[[3]] < minimRequired[[3]],
+              (sarahVersion[[1]] == minimRequired[[1]] &&
+               sarahVersion[[2]] < minimRequired[[2]]) ||
+              (sarahVersion[[1]] == minimRequired[[1]] &&
+               sarahVersion[[2]] == minimRequired[[2]] &&
+               sarahVersion[[3]] < minimRequired[[2]]),
               Print["Error: SARAH version ", SA`Version, " no longer supported!"];
               Print["Please use version ", ToVersionString[minimRequired],
                     " or higher"];
