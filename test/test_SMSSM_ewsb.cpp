@@ -92,6 +92,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    setup_SMSSM(m, s, input);
 
    softsusy::Z3 = false;
+   softsusy::numRewsbLoops = 1;
    s.calcDrBarPars();
    m.calculate_DRbar_parameters();
 
