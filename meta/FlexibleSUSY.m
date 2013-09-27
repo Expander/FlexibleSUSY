@@ -66,6 +66,26 @@ PrintHeadline[text_] :=
           Print["---------------------------------"];
          ];
 
+DecomposeVersionString[version_String] :=
+    ToExpression /@ StringSplit[version, "."];
+
+ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
+    ToString[major] <> "." <> ToString[minor] <> "." <> ToString[patch];
+
+CheckSARAHVersion[] :=
+    Module[{minimRequired, sarahVersion},
+           minimRequired = {0,1,16};
+           sarahVersion = DecomposeVersionString[SA`Version];
+           If[sarahVersion[[1]] < minimRequired[[1]] ||
+              sarahVersion[[2]] < minimRequired[[2]] ||
+              sarahVersion[[3]] < minimRequired[[3]],
+              Print["Error: SARAH version ", SA`Version, " no longer supported!"];
+              Print["Please use version ", ToVersionString[minimRequired],
+                    " or higher"];
+              Quit[1];
+             ];
+          ];
+
 CheckModelFileSettings[] :=
     Module[{},
            (* FlexibleSUSY model name *)
@@ -681,6 +701,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
               Quit[1];
              ];
+           CheckSARAHVersion[];
            FSEigenstates = OptionValue[Eigenstates];
            FSSolveEWSBTimeConstraint = OptionValue[SolveEWSBTimeConstraint];
            (* load model file *)
