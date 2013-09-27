@@ -74,7 +74,7 @@ ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
 
 CheckSARAHVersion[] :=
     Module[{minimRequired, sarahVersion},
-           minimRequired = {0,1,16};
+           minimRequired = {4,0,0};
            sarahVersion = DecomposeVersionString[SA`Version];
            If[sarahVersion[[1]] < minimRequired[[1]] ||
               sarahVersion[[2]] < minimRequired[[2]] ||
