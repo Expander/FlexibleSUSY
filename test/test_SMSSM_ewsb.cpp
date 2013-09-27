@@ -11,6 +11,7 @@
 #include "ew_input.hpp"
 #include "nmssmsoftsusy.h"
 #include "SMSSM_two_scale_model.hpp"
+#include "logger.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -75,4 +76,54 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_ewsb_tree_level_via_soft_higgs_masses )
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 2.0e-09);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 3.0e-09);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 2.0e-09);
+}
+
+BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
+{
+   // set-up non-tachyonic point
+   SMSSM_input_parameters input;
+   input.m0       = 540.;
+   input.Azero    = -350.;
+   input.MSInput  = 290.;
+   input.BMSInput = 400.;
+   input.L1Input  = 300.;
+   SMSSM<Two_scale> m(input);
+   NmssmSoftsusy s;
+   setup_SMSSM(m, s, input);
+
+   softsusy::Z3 = false;
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   // chech that there this is a valid point
+   if (m.get_problems().have_problem()) {
+      INFO("FlexibleSUSY problem detected: ");
+      m.get_problems().print();
+      INFO("");
+   }
+   BOOST_REQUIRE(!m.get_problems().have_problem());
+   BOOST_REQUIRE(!s.displayProblem().test());
+
+   const double mt = s.displayDrBarPars().mt;
+   const double sinthDRbar = s.calcSinthdrbar();
+   const double vd = m.get_vd();
+   const double vu = m.get_vu();
+   const double vS = m.get_vS();
+
+   const Complex tadpole_hh_1(m.tadpole_hh(1));
+   const Complex tadpole_hh_2(m.tadpole_hh(2));
+   const Complex tadpole_hh_3(m.tadpole_hh(3));
+
+   const double tadpole_ss_1 = s.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   const double tadpole_ss_2 = s.doCalcTadpole2oneLoop(mt, sinthDRbar);
+   const double tadpole_ss_3 = s.doCalcTadpoleSoneLoop(mt, sinthDRbar);
+
+   BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
+
+   // TODO: increase the test precision here
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_1) / vd, tadpole_ss_1, 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_2) / vu, tadpole_ss_2, 0.00007);
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_3) / vS, tadpole_ss_3, 0.095);
 }
