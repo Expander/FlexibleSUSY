@@ -1,5 +1,6 @@
 
 #include "sm_two_scale.hpp"
+#include "error.hpp"
 
 #include <cassert>
 
@@ -38,11 +39,12 @@ StandardModel<Two_scale>::~StandardModel()
 {
 }
 
-int StandardModel<Two_scale>::run_to(double scale, double eps)
+void StandardModel<Two_scale>::run_to(double scale, double eps)
 {
    if (eps < 0.0)
       eps = precision;
-   return RGE::runto(scale, eps);
+   if (RGE::runto(scale, eps))
+      throw NonPerturbativeRunningError(scale);
 }
 
 const StandardModel<Two_scale>& StandardModel<Two_scale>::operator=(const StandardModel<Two_scale>& s)

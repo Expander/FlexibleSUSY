@@ -35,7 +35,7 @@ public:
 
    virtual void calculate_spectrum() {}
    virtual std::string name() const { return "SM"; }
-   virtual int run_to(double scale, double eps = -1.0);
+   virtual void run_to(double scale, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << *this; }
    virtual void set_precision(double p) { precision = p; }
 
