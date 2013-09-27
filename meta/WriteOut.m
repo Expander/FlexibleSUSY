@@ -182,6 +182,12 @@ WriteSLHABlock[{blockName_, tuples_List}] :=
                par = tuples[[t,1]];
                parStr = CConversion`ToValidCSymbolString[par];
                parVal = "MODELPARAMETER(" <> parStr <> ")";
+               (* print unnormalized hypercharge gauge coupling *)
+               If[par === SARAH`hyperchargeCoupling,
+                  parVal = "(" <> parVal <> " * " <>
+                           CConversion`RValueToCFormString[
+                               Parameters`GetGUTNormalization[par]] <> ")";
+                 ];
                pdg = ToString[tuples[[t,2]]];
                result = result <> "      << FORMAT_ELEMENT(" <> pdg <> ", " <>
                         parVal <> ", \"" <> parStr <> "\")" <>
