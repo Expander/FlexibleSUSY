@@ -32,7 +32,7 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    const double vev = 246.0;
    const double vu = vev * sinBeta;
    const double vd = vev * cosBeta;
-   const double vS = 1000.;
+   const double vS = input.LambdaSInput / lambda;
    const double susyMu = MZ;
    const double BMu = MZ * MZ;
    const double scale = Electroweak_constants::MZ;
