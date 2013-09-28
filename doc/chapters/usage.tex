@@ -17,18 +17,61 @@ Explain:
 \item Mathematica interface (see models/<model>/start.m)
 \end{itemize}
 
+\subsubsection{\code{createmodel}}
+
+The \code{createmodel} script sets up a \flexisusy\ model.  This involves
+%
+\begin{itemize}
+\item a model directory \code{models/<flexiblesusy-model>/}
+\item a makefile module \code{models/<flexiblesusy-model>/module.mk}
+\item a \flexisusy\ model file \code{models/<flexiblesusy-model>/FlexibleSUSY.m}
+\item a Mathematica start script \code{models/<flexiblesusy-model>/start.m}
+\end{itemize}
+%
+Usage:
+\begin{lstlisting}[language=bash]
+./createmodel --models=<flexiblesusy-model>:<sarah-model>
+\end{lstlisting}
+Here \code{<flexiblesusy-model>} is the name of \flexisusy\ model
+to be created and \code{<sarah-model>} is the name of the \sarah\
+model file which defines the Lagrangian and the particles.\\
+Example:
+\begin{lstlisting}[language=bash]
+./createmodel --models=MyCMSSM:MSSM
+\end{lstlisting}
+%
+Multiple models can be created at once by separating the models by a
+comma.\\
+Example:
+\begin{lstlisting}[language=bash]
+./createmodel --models=MyCMSSM:MSSM,MyCNMSSM:NMSSM
+\end{lstlisting}
+%
+If a certain \sarah\ sub-model should be used, the name of the sub-model
+has to be appended with at preceeding slash.\\
+Example: use the \code{CKM} sub-model of the \code{MSSM}
+\begin{lstlisting}[language=bash]
+./createmodel --models=MyCMSSM:MSSM/CKM
+\end{lstlisting}
+%
+For further information and options see
+\begin{lstlisting}[language=bash]
+./createmodel --help
+\end{lstlisting}
+
+
 \subsection{Model files}
 
-Explain how to write a FlexibleSUSY model file (starting from a SARAH
+Explain how to write a \flexisusy\ model file (starting from a \sarah\
 model file).
 
-A FlexibleSUSY model file is a Mathematica file, where the following
+A \flexisusy\ model file is a Mathematica file, where the following
 pieces are defined:
 
 \paragraph{General model information}
 
 \subparagraph{FSModelName}
-Name of the FlexibleSUSY model.
+Name of the \flexisusy\ model.
 Example (MSSM):
 \begin{lstlisting}[language=Mathematica]
 FSModelName = "MSSM";
@@ -92,7 +135,7 @@ DefaultParameterPoint = {
 
 \paragraph{Constraints}
 Currently three constraints are supported: low-scale, susy-scale and
-high-scale constraints.  In FlexibleSUSY they are named as
+high-scale constraints.  In \flexisusy\ they are named as
 \code{LowScale}, \code{SUSYScale} and \code{HighScale}.  For
 each constraint there is a scale definition (named after the
 constraint), an initial guess for the scale (concatenation of the
@@ -168,7 +211,7 @@ TreeLevelEWSBSolution = {
     \toprule
     variable    & default value & description \\
     \midrule
-    FSModelName & Model`Name & Name of the FlexibleSUSY model \\
+    FSModelName & Model`Name & Name of the \flexisusy\ model \\
     OnlyLowEnergyFlexibleSUSY & False & low-energy model \\
     MINPAR & \{\} & list of input parameters in SLHA MINPAR block \\
     EXTPAR & \{\} & list of input parameters in SLHA EXTPAR block \\
@@ -185,11 +228,11 @@ TreeLevelEWSBSolution = {
     HighScaleInput & \{\} & settings applied at the unification scale \\
     \bottomrule
   \end{tabularx}
-  \caption{FlexibleSUSY model file variables}
+  \caption{\flexisusy\ model file variables}
   \label{tab:model-file-variables}
 \end{sidewaystable}
 
 \subsection{Makefile modules}
 
 Explain how to write a custom makefile module (module.mk) for a
-FlexibleSUSY model.
+\flexisusy\ model.
