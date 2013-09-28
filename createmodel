@@ -77,19 +77,19 @@ for model in ${models}; do
     fi
 
     if test ! -d "$targetdir" ; then
-        echo -n "  creating model directory $targetdir ... "
+        printf "  creating model directory $targetdir ... "
         mkdir $targetdir
         echo "done"
     fi
 
-    echo -n "  creating Makefile module $targetdir/module.mk ... "
+    printf "  creating Makefile module $targetdir/module.mk ... "
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@MODEL@|$model|g"           \
         -e "s|@CLASSNAME@|$class_name|g"  \
         < templates/module.mk.in > $targetdir/module.mk
     echo "done"
 
-    echo -n "  creating start script $targetdir/start.m ... "
+    printf "  creating start script $targetdir/start.m ... "
     sub_model_replacement=""
     if [ -n "$sub_model" ]; then
         sub_model_replacement=", \"$sub_model\""
@@ -111,7 +111,7 @@ for model in ${models}; do
         echo "  using default model files from $modelFileDir"
     fi
 
-    echo -n "  creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
+    printf "  creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
     sed -e "s|@DIR@|$targetdir|g"         \
         -e "s|@ModelName@|$model|g"       \
         -e "s|@CLASSNAME@|$class_name|g"  \
