@@ -60,11 +60,14 @@ int main(int argc, const char* argv[])
    oneset.toMz(); // run SM fermion masses to MZ
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
-   spectrum_generator.set_precision_goal(program_options.get(Program_options::precision));
-   spectrum_generator.set_max_iterations(program_options.get(Program_options::max_iterations));
+   spectrum_generator.set_precision_goal(
+      program_options.get(Program_options::precision));
+   spectrum_generator.set_max_iterations(
+      program_options.get(Program_options::max_iterations));
    spectrum_generator.set_calculate_sm_masses(
       program_options.get(Program_options::calculate_sm_masses) >= 1.0);
-   spectrum_generator.set_parameter_output_scale(slha_io.get_parameter_output_scale());
+   spectrum_generator.set_parameter_output_scale(
+      slha_io.get_parameter_output_scale());
    spectrum_generator.set_pole_mass_loop_order(
       program_options.get(Program_options::pole_mass_loop_order));
    spectrum_generator.set_ewsb_loop_order(
@@ -72,18 +75,24 @@ int main(int argc, const char* argv[])
 
    spectrum_generator.run(oneset, input);
 
+   const @ModelName@<algorithm_type>& model
+      = spectrum_generator.get_model();
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+      = spectrum_generator.get_problems();
+
    if (slha_output_file.empty()) {
-      if (spectrum_generator.get_problems().have_serious_problem()) {
-         spectrum_generator.get_problems().print();
+      if (problems.have_serious_problem()) {
+         problems.print(std::cout);
+         std::cout << '\n';
       } else {
-         spectrum_generator.get_model().print(std::cout);
+         model.print(std::cout);
          // spectrum_generator.write_spectrum("@ModelName@_spectrum.dat");
          // spectrum_generator.write_running_couplings("@ModelName@_rge_running.dat");
       }
    } else {
-      slha_io.set_spinfo(spectrum_generator.get_problems());
-      if (!spectrum_generator.get_problems().have_serious_problem())
-         slha_io.set_spectrum(spectrum_generator.get_model());
+      slha_io.set_spinfo(problems);
+      if (!problems.have_serious_problem())
+         slha_io.set_spectrum(model);
       slha_io.write_to_file(slha_output_file);
    }
 
