@@ -115,7 +115,7 @@ logmsg() {
     fi
     if test "x$1" = "x-n"; then
        shift
-       echo -n "$*" >> $logfile
+       printf "$*" >> $logfile
     else
        echo "$*" >> $logfile
     fi
@@ -304,18 +304,18 @@ checking_msg() {
         echo "checking_msg: Too few arguments"
         return 1
     fi
-    echo -n "Checking for"
+    printf "Checking for"
     logmsg -n "Checking for"
     while test $# -gt 1 ; do
-        echo -n " $1,"
+        printf " $1,"
         logmsg -n " $1,"
         shift
         if test $# -eq 1 ; then
-            echo -n " or"
+            printf " or"
             logmsg -n " or"
         fi
     done
-    echo -n " $1 ... "
+    printf " $1 ... "
     logmsg -n " $1 ... "
 }
 
@@ -602,7 +602,7 @@ check_boost_thread_libs() {
         message "  You can disable the lattice method with the --with-algorithms= flag."
         exit 1
     fi
-    BOOSTTHREADLIBS_=-l$(echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+    BOOSTTHREADLIBS_=-l$(printf "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
     check_library "libboost_system libboost_system-mt" \
 	"$boost_lib_dir" "$default_lib_paths"
@@ -613,7 +613,7 @@ check_boost_thread_libs() {
         exit 1
     fi
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
-	echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+	printf "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
     check_library "libpthread" "" "$default_lib_paths"
     if [ -z "$found_lib" ]; then
@@ -623,7 +623,7 @@ check_boost_thread_libs() {
         exit 1
     fi
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
-        echo -n "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+        printf "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
     if [ -z "$boost_lib_dir" ]; then
         # assume that the linker will look in the default paths
