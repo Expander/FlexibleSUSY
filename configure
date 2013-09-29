@@ -540,7 +540,7 @@ check_platform() {
 
     exists_in_path "lsb_release"
     if [ -n "$cmd" ] ; then
-        if lsb_release -d | grep -i 'ubuntu\|debian\|mint' > /dev/null 2>& 1; then
+        if lsb_release -d | grep -i 'ubuntu\|debian\|mint' > /dev/null 2>&1; then
             linuxdist="multiarch"
         fi
     fi
