@@ -11,11 +11,8 @@ space_dir_makefile_tmpl="${space_dir}/Makefile.in"
 error=0
 
 cleanup() {
-    if [ -e "${space_dir_makefile}" ]; then
-        cd "${space_dir}" && make clean && cd -
-    fi
-    rm -rf "${space_dir_touched_file}"
-    rm -rf "${space_dir_makefile}"
+    [ -e "${space_dir_makefile}" ] && (cd "$space_dir" && make clean)
+    rm -f "${space_dir_touched_file}" "${space_dir_makefile}"
 }
 
 create_makefile() {
@@ -26,7 +23,7 @@ create_makefile() {
 cleanup
 create_makefile
 
-cd "${space_dir}" && make && cd -
+(cd "${space_dir}" && make)
 
 if [ -e "${space_dir_touched_file}" ]; then
     echo "Info: file found: ${space_dir_touched_file}"
