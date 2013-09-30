@@ -3,10 +3,23 @@ CONFIG_DIR := @CONFIG_DIR@
 
 include $(CONFIG_DIR)/abspathx.mk
 
+TOUCHED_FILES := touched_1 touched_2
+
 .PHONY: clean
 
+all: touched touched-multiple
+
 touched:
+	@echo "trying to touch single file: $@"
 	touch '$(call abspathx,$@)'
+	@echo "done"
+
+touched-multiple:
+	@echo "trying to touch multiple files: $(TOUCHED_FILES)"
+	touch '$(call abspathx,$(TOUCHED_FILES))'
+	@echo "done"
 
 clean:
 	rm -f touched
+	rm -f $(TOUCHED_FILES)
+	rm -f "$(TOUCHED_FILES)"
