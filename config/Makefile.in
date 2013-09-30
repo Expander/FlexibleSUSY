@@ -44,6 +44,7 @@ FSCONFIG := @FSCONFIG@
 
 all:     allhdr alllib allexec
 
+include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
 
 ifneq ($(MAKECMDGOALS),clean)

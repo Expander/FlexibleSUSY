@@ -69,7 +69,8 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_NMSSM_linking.cpp
 endif
 
-TEST_SH :=
+TEST_SH := \
+		test/test_space_dir.sh
 
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
 TEST_SH += \

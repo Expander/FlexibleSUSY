@@ -1,0 +1,12 @@
+
+CONFIG_DIR := @CONFIG_DIR@
+
+include $(CONFIG_DIR)/abspathx.mk
+
+.PHONY: clean
+
+touched:
+	touch '$(call abspathx,$@)'
+
+clean:
+	rm -f touched
