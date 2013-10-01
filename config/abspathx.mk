@@ -1,22 +1,16 @@
 # This module defines the `abspathx' wrapper function.
 #
-# The `abspathx' function takes interprets its argument as one file
-# name and returns the absolute path.  It handles spaces in file name
-# by
+# The `abspathx' function takes the same arguments as the builtin
+# `abspath' but prefixes special characters such as a whitespace with
+# `\' in each path in the returned list.  For example, under
+# /a/weird dir/, $(call abspathx,a b) expands to
+# /a/weird\ dir/a /a/weird\ dir/b, which make understands as two
+# absolute paths.
 #
-# 1. replacing all spaces in the file name by ?
-# 2. applying `abspath' to the result
-# 3. replacing all ? in the file name by spaces
-#
-# Important note: `abspathx' considers the argument to be *one* file
-# name, which might include spaces.  This implies that it does not
-# work with multiple file names which are separated by spaces or tabs.
+# Important note: `abspathx' does not handle a name containing a
+# whitespace in its arguments, as there is no way to distinguish it
+# from multiple names separated by whitespaces.  Therefore, one cannot
+# use the above example to expand a single file named `a b'.
 
-empty:=
-
-# substitute space for ?
-s? = $(subst $(empty) ,?,$1)
-# substitute ? for space
-?s = $(subst ?, ,$1)
-
-abspathx = $(call ?s,$(abspath $(call s?,$1)))
+abspathx = $(foreach name,$(1),\
+	$(shell echo '$(abspath $(name))' | sed s/\[\[:space:\]\]/\\\\\&/g))
