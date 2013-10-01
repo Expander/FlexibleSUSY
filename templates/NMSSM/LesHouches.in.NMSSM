@@ -1,6 +1,7 @@
 Block MODSEL                 # Select model
     1    1                   # mSUGRA
     3    1                   # NMSSM
+#   12    1000                # DRbar parameter output scale (GeV)
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
