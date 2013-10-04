@@ -121,8 +121,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                           "PHYSICAL(" <> massName <> "));\n";
                 ];
               result = result <>
-                       "\nint min_element;\n" <>
-                       "if (" <> massName <> ".min(min_element) < 0.)\n" <>
+                       "\n" <>
+                       "if (" <> massName <> ".min() < 0.)\n" <>
                        IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                        "PHYSICAL(" <> massName <> ") = ZeroSqrt(PHYSICAL(" <>
                        massName <> "));\n";
