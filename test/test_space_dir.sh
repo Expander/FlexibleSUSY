@@ -35,12 +35,14 @@ fi
 if [ -e "${space_dir_touched_file}_1" ]; then
     echo "Info: file found: ${space_dir_touched_file}_1"
 else
-    echo "Warning: file not found: ${space_dir_touched_file}_1"
+    echo "Error: file not found: ${space_dir_touched_file}_1"
+    error=1
 fi
 if [ -e "${space_dir_touched_file}_2" ]; then
     echo "Info: file found: ${space_dir_touched_file}_2"
 else
-    echo "Warning: file not found: ${space_dir_touched_file}_2"
+    echo "Error: file not found: ${space_dir_touched_file}_2"
+    error=1
 fi
 
 cleanup
