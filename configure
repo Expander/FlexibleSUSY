@@ -39,6 +39,10 @@ FSCONFIG_TMPL=$BASEDIR/config/flexiblesusy-config.in
 CONFIGHDR=$BASEDIR/config/config.h
 CONFIGHDR_TMPL=$BASEDIR/config/config.h.in
 
+# target tex file with package version
+TEXVERSION=$BASEDIR/doc/version.tex
+TEXVERSION_TMPL=$BASEDIR/doc/version.tex.in
+
 # options
 deprecated_options=""
 options="                    \
@@ -1119,6 +1123,9 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $CONFIGHDR_TMPL > $CONFIGHDR
+
+sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+    < $TEXVERSION_TMPL > $TEXVERSION
 
 echo "$PROGRAM_VERSION" > $BASEDIR/config/version
 
