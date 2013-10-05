@@ -5,6 +5,7 @@
 \usepackage[T1]{fontenc}          % output font encoding
 \usepackage{booktabs,tabularx}
 \usepackage{rotating}             % for sidewaystable
+\usepackage{xspace}
 \usepackage[usenames]{xcolor}
 \usepackage{tikz,tikz-uml}
 \usepackage{listings}             % source code highlighting
@@ -24,21 +25,21 @@ pdfauthor={Peter Athron,Jae-hyeon Park,Dominik Stockinger,Alexander Voigt},
 pdfkeywords={FlexibleSUSY,supersymmetry,spectrum,generator,MSSM,NMSSM,E6SSM},
 bookmarks=true, linktocpage]{hyperref}
 
+\input{doc/version}
+
 \newcommand{\sarah}{\texttt{SARAH}}
-\newcommand{\flexisusy}{\texttt{FlexibleSUSY}}
+\newcommand{\flexisusy}{\texttt{\FlexibleSUSY}}
 
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
 \newcommand{\DRbar}{\textoverline{DR}}  % inline source code
-
-\input{doc/version}
 
 \begin{document}
 
 \begin{titlepage}
   \vspace*{55mm}
   \begin{center}
-    {\Large\bf FlexibleSUSY --- A spectrum generator generator for
+    {\Large\bf \FlexibleSUSY\ --- A spectrum generator generator for
       supersymmetric models}
     \\[8mm]
     Peter Athron$^{*}$,
@@ -48,7 +49,7 @@ bookmarks=true, linktocpage]{hyperref}
     \\[3mm]
     {\small\it $^*$ ARC Centre of Excellence for Particle Physics at
       the Terascale, School of Chemistry and Physics, University of
-      Adelaide, Adelaide, SA 5005, Australia
+      Adelaide, Adelaide, SA 5005, Australia,
       \\[2mm]
       \small\it $^\dagger$ Institut f\"ur Kern und Teilchenphysik, TU
       Dresden, Dresden, 01062, Germany.\\[2mm]}
@@ -60,7 +61,7 @@ bookmarks=true, linktocpage]{hyperref}
   \end{abstract}
   \vfill
   \begin{flushleft}
-    FlexibleSUSY version \FlexibleSUSYVersion
+    \FlexibleSUSY version \FlexibleSUSYVersion
   \end{flushleft}
 \end{titlepage}
 

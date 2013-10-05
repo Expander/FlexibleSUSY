@@ -1125,6 +1125,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
 echo "$PROGRAM_VERSION" > $BASEDIR/config/version
