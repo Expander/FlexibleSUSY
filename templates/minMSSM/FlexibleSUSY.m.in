@@ -16,7 +16,7 @@ DefaultParameterPoint = {
     {Azero, -9000}
 };
 
-ParametersToSolveTadpoles = { B[\[Mu]], \[Mu] };
+EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 

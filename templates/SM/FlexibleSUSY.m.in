@@ -5,7 +5,7 @@ FSModelName = "@CLASSNAME@";
 
 MINPAR={ {1, LambdaIN} };
 
-ParametersToSolveTadpoles = { Mu2 };
+EWSBOutputParameters = { Mu2 };
 
 BoundaryLowScaleInput = {
     {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},

@@ -19,7 +19,7 @@ DefaultParameterPoint = {
     {LambdaInput, 0.1}
 };
 
-ParametersToSolveTadpoles = { \[Kappa], vS, ms2 };
+EWSBOutputParameters = { \[Kappa], vS, ms2 };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 
