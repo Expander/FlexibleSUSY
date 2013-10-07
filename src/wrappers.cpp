@@ -68,7 +68,7 @@ ComplexMatrix phase_rotation(const DoubleVector& v)
 }
 
 /**
- * diag = u m u^+
+ * diag = u^* m u^+
  *
  * @param m mass matrix
  * @param u mixing matrix
@@ -118,9 +118,10 @@ void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
                      DoubleVector& eigenvalues)
 {
    double theta;
-   eigenvalues = m.sym2by2(theta).apply(fabs);
+   eigenvalues = m.sym2by2(theta);
    const ComplexMatrix a(phase_rotation(eigenvalues).complexConjugate());
    u = a * rot2d(theta);
+   eigenvalues = eigenvalues.apply(fabs);
 }
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
@@ -216,7 +217,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
 }
 
 /**
- * diag = u m v^+
+ * diag = u^* m v^+
  *
  * @param m mass matrix
  * @param u mixing matrix
