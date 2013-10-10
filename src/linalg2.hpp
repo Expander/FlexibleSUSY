@@ -20,6 +20,7 @@
 #define linalg2_hpp
 
 #include <complex>
+#include <algorithm>
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
@@ -167,6 +168,8 @@ def_hermitian_lapack(double, dsyev_, 3*N-1)
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
 // m == u * s.matrix().asDiagonal() * vh (following LAPACK convention)
+// (s >= 0).all()
+// s in descending order
 template<class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
@@ -229,6 +232,7 @@ void svd
 // Eigen::SelfAdjointEigenSolver seems to be faster than ZHEEV of ATLAS
 
 // m == z * w.matrix().asDiagonal() * z.adjoint()
+// w in ascending order
 template<class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
@@ -240,6 +244,7 @@ void diagonalize_hermitian
 
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
+// s in descending order
 template<int N>
 void diagonalize_symmetric
 (const Eigen::Matrix<std::complex<double>, N, N>& m,
@@ -257,6 +262,7 @@ void diagonalize_symmetric
 
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
+// s unordered
 // use diagonalize_hermitian() unless sign of s[i] matters
 template<int N>
 void diagonalize_symmetric
@@ -273,6 +279,55 @@ void diagonalize_symmetric
 				  std::complex<double>(1.0,0.0);
 	}).matrix().asDiagonal();
     s = s.abs();
+}
+
+// m == u * s.matrix().asDiagonal() * vh (following LAPACK convention)
+// (s >= 0).all()
+// s in ascending order
+template<class Scalar, int M, int N>
+void reorder_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<Scalar, M, M>& u,
+ Eigen::Matrix<Scalar, N, N>& vh)
+{
+    svd(m, s, u, vh);
+    s.reverseInPlace();
+    u  = u .rowwise().reverse().eval();
+    vh = vh.colwise().reverse().eval();
+}
+
+// m == u * s.matrix().asDiagonal() * u.transpose()
+// (s >= 0).all()
+// s in ascending order
+template<int N>
+void reorder_diagonalize_symmetric
+(const Eigen::Matrix<std::complex<double>, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ Eigen::Matrix<std::complex<double>, N, N>& u)
+{
+    diagonalize_symmetric(m, s, u);
+    s.reverseInPlace();
+    u = u.rowwise().reverse().eval();
+}
+
+// m == u * s.matrix().asDiagonal() * u.transpose()
+// (s >= 0).all()
+// s in ascending order
+// use diagonalize_hermitian() unless sign of s[i] matters
+template<int N>
+void reorder_diagonalize_symmetric
+(const Eigen::Matrix<double, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ Eigen::Matrix<std::complex<double>, N, N>& u)
+{
+    diagonalize_symmetric(m, s, u);
+    Eigen::PermutationMatrix<N> p;
+    p.setIdentity();
+    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
+	      [&s](int i, int j){ return s[i] < s[j]; });
+    s.matrix().transpose() *= p;
+    u *= p;
 }
 
 } // namespace flexiblesusy

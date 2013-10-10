@@ -29,72 +29,107 @@ using namespace std;
 using namespace Eigen;
 using namespace flexiblesusy;
 
-template<class S, int N>
-void test_svd()
+template<class S, int N, decltype(reorder_svd<S, N, N>) *fxn>
+void test_svd(bool check_ascending_order = false)
 {
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     Array<double, N, 1> s;
     Matrix<S, N, N> u, vh;
 
-    svd(m, s, u, vh);		// following LAPACK convention
+    fxn(m, s, u, vh);		// following LAPACK convention
     Matrix<S, N, N> diag = u.adjoint() * m * vh.adjoint();
 
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
 	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
+
+    if (check_ascending_order)
+	for (size_t i = 0; i < N-1; i++)
+	    BOOST_CHECK(s[i] <= s[i+1]);
 }
 
 BOOST_AUTO_TEST_CASE(test_svd_eigen)
 {
     // uses Eigen::JacobiSVD
-    test_svd<complex<double>, 2>();
-    test_svd<complex<double>, 3>();
-    test_svd<double	    , 2>();
-    test_svd<double	    , 3>();
+    test_svd<complex<double>, 2, svd>();
+    test_svd<complex<double>, 3, svd>();
+    test_svd<double	    , 2, svd>();
+    test_svd<double	    , 3, svd>();
+
+    test_svd<complex<double>, 2, reorder_svd>(true);
+    test_svd<complex<double>, 3, reorder_svd>(true);
+    test_svd<double	    , 2, reorder_svd>(true);
+    test_svd<double	    , 3, reorder_svd>(true);
 }
 
 BOOST_AUTO_TEST_CASE(test_svd_lapack)
 {
     // uses ZGESVD of LAPACK
-    test_svd<complex<double>, 4>();
-    test_svd<complex<double>, 6>();
+    test_svd<complex<double>, 4, svd>();
+    test_svd<complex<double>, 6, svd>();
+
+    test_svd<complex<double>, 4, reorder_svd>(true);
+    test_svd<complex<double>, 6, reorder_svd>(true);
+
     // uses DGESVD of LAPACK
-    test_svd<double	    , 4>();
-    test_svd<double	    , 6>();
+    test_svd<double	    , 4, svd>();
+    test_svd<double	    , 6, svd>();
+
+    test_svd<double	    , 4, reorder_svd>(true);
+    test_svd<double	    , 6, reorder_svd>(true);
 }
 
-template<class S, int N>
-void test_diagonalize_symmetric()
+template<class S, int N,
+	 void fxn(const Matrix<S, N, N>&,
+		  Array<double, N, 1>&, Matrix<complex<double>, N, N>&)>
+void test_diagonalize_symmetric(bool check_ascending_order = false)
 {
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.transpose())/2).eval();
     Array<double, N, 1> s;
     Matrix<complex<double>, N, N> u;
 
-    diagonalize_symmetric(m, s, u);
+    fxn(m, s, u);
     Matrix<complex<double>, N, N> diag = u.adjoint() * m * u.conjugate();
 
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-13);
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
+
+    if (check_ascending_order)
+	for (size_t i = 0; i < N-1; i++)
+	    BOOST_CHECK(s[i] <= s[i+1]);
 }
 
 BOOST_AUTO_TEST_CASE(test_diagonalize_symmetric_eigen)
 {
     // uses Eigen::JacobiSVD
-    test_diagonalize_symmetric<complex<double>, 2>();
-    test_diagonalize_symmetric<complex<double>, 3>();
+    test_diagonalize_symmetric<complex<double>, 2, diagonalize_symmetric>();
+    test_diagonalize_symmetric<complex<double>, 3, diagonalize_symmetric>();
+
+    test_diagonalize_symmetric
+	<complex<double>, 2, reorder_diagonalize_symmetric>(true);
+    test_diagonalize_symmetric
+	<complex<double>, 3, reorder_diagonalize_symmetric>(true);
+
     // uses Eigen::SelfAdjointEigenSolver
-    test_diagonalize_symmetric<double	      , 6>();
+    test_diagonalize_symmetric<double, 6, diagonalize_symmetric>();
+
+    test_diagonalize_symmetric<double, 6, reorder_diagonalize_symmetric>(true);
 }
 
 BOOST_AUTO_TEST_CASE(test_diagonalize_symmetric_lapack)
 {
     // uses ZGESVD of LAPACK
-    test_diagonalize_symmetric<complex<double>, 4>();
-    test_diagonalize_symmetric<complex<double>, 6>();
+    test_diagonalize_symmetric<complex<double>, 4, diagonalize_symmetric>();
+    test_diagonalize_symmetric<complex<double>, 6, diagonalize_symmetric>();
+
+    test_diagonalize_symmetric
+	<complex<double>, 4, reorder_diagonalize_symmetric>(true);
+    test_diagonalize_symmetric
+	<complex<double>, 6, reorder_diagonalize_symmetric>(true);
 }
 
 template<class S, int N, decltype(diagonalize_hermitian<S, N>) *fxn>
