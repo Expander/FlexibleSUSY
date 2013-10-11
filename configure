@@ -23,6 +23,7 @@ default_inc_paths="/usr/include /usr/local/include"
 # configure log file
 logfile="$BASEDIR/config.log"
 statusfile="$BASEDIR/config.status"
+sarahconfig="$BASEDIR/config.sarah"
 
 # whether we are in 32-bit or 64-bit environment
 machine_word_size=""
@@ -866,14 +867,17 @@ check_math_cmd() {
 #_____________________________________________________________________
 check_sarah() {
     checking_msg "SARAH installation"
+    rm -f ${sarahconfig}
     $MATH <<EOF > /dev/null
 Needs["SARAH\`"];
 If[!ValueQ[SA\`Version], Quit[1]];
+Export["${sarahconfig}", SA\`Version, "String"];
 Quit[0];
 EOF
     _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
-        result "ok"
+        sarah_version=`cat ${sarahconfig}`
+        result "ok (${sarah_version})"
     else
         result "not ok"
         message "Error: SARAH is not installed correctly."
