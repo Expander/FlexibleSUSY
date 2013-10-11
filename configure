@@ -24,6 +24,7 @@ default_inc_paths="/usr/include /usr/local/include"
 logfile="$BASEDIR/config.log"
 statusfile="$BASEDIR/config.status"
 sarahconfig="$BASEDIR/config.sarah"
+boostconfig="$BASEDIR/config.boost"
 
 # whether we are in 32-bit or 64-bit environment
 machine_word_size=""
@@ -576,21 +577,32 @@ check_boost_version() {
 
     # clean up
     rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
+    rm -f ${boostconfig}
 
     cat <<EOF > ${_check_boost_version_progr_cpp}
+#include <fstream>
 #include <boost/version.hpp>
 int main() {
    int boost_major = BOOST_VERSION / 100000;
    int boost_minor = BOOST_VERSION / 100 % 1000;
    int boost_patch = BOOST_VERSION % 100;
+   int error = 0;
 
    if (boost_major < ${_required_boost_major})
-      return 1;
+      error = 1;
    else if (boost_minor < ${_required_boost_minor})
-      return 2;
+      error = 2;
    else if (boost_patch < ${_required_boost_patch})
-      return 3;
-   return 0;
+      error = 3;
+
+   std::ofstream ostr("${boostconfig}");
+   if (ostr.good()) {
+      ostr << boost_major << '.' << boost_minor << '.'
+           << boost_patch;
+   }
+   ostr.close();
+
+   return error;
 }
 EOF
     # compile the version check program
@@ -601,11 +613,16 @@ EOF
         # run the version check program
         ${_check_boost_version_progr_exe}
         _error="$?"
+        boost_version=""
+        if test -r "${boostconfig}" ; then
+            boost_version=`cat ${boostconfig}`
+        fi
         if test "x${_error}" = "x0" ; then
-            result "ok"
-            logmsg "   Boost version ${_required_boost_major}.${_required_boost_minor}.${_required_boost_patch} or higher found."
+            result "ok (version ${boost_version})"
+            logmsg "   Required boost version: ${_required_boost_major}.${_required_boost_minor}.${_required_boost_patch}"
+            logmsg "   Boost version found: ${boost_version}"
         else
-            result "not ok"
+            result "not ok (version ${boost_version})"
             message "Error: the installed boost version is too old."
             message "   Please install version ${_required_boost_major}.${_required_boost_minor}.${_required_boost_patch} or higher."
             rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
