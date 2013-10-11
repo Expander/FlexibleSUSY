@@ -876,8 +876,12 @@ Quit[0];
 EOF
     _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
-        sarah_version=`cat ${sarahconfig}`
-        result "ok (${sarah_version})"
+        if test -r "${sarahconfig}" ; then
+            sarah_version=`cat ${sarahconfig}`
+            result "ok (version ${sarah_version})"
+        else
+            result "ok"
+        fi
     else
         result "not ok"
         message "Error: SARAH is not installed correctly."
