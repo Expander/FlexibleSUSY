@@ -864,6 +864,25 @@ check_math_cmd() {
 }
 
 #_____________________________________________________________________
+check_sarah() {
+    checking_msg "SARAH installation"
+    $MATH <<EOF > /dev/null
+Needs["SARAH\`"];
+If[!ValueQ[SA\`Version], Quit[1]];
+Quit[0];
+EOF
+    _sarah_is_available="$?"
+    if test "x${_sarah_is_available}" = "x0" ; then
+        result "ok"
+    else
+        result "not ok"
+        message "Error: SARAH is not installed correctly."
+        message "   Please make sure Needs[\"SARAH\`\"] works correctly."
+        exit 1
+    fi
+}
+
+#_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
         message "Enabling colored output -DCOLOR_PRINTOUT"
@@ -1075,6 +1094,7 @@ if test "x$enable_looptools" = "xyes"; then
 fi
 check_makelib
 check_math_cmd
+check_sarah
 check_models
 
 enable_defines
