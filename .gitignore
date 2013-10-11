@@ -9,6 +9,8 @@ config/config.h
 config/version
 config.status
 config.log
+config.boost
+config.sarah
 flexiblesusy-config
 Makefile
 
@@ -22,5 +24,8 @@ doc/*.dot
 doc/*.aux
 doc/*.log
 doc/*.toc
+doc/*.out
+doc/flexiblesusy.pdf
+doc/version.tex
 
 test/*.log
