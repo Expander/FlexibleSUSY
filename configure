@@ -606,7 +606,7 @@ int main() {
 }
 EOF
     # compile the version check program
-    $CXX -o ${_check_boost_version_progr_exe} ${_check_boost_version_progr_cpp}
+    $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp}
     _error="$?"
 
     if test "x${_error}" = "x0" ; then
@@ -1159,9 +1159,9 @@ check_platform
 check_cxx
 check_fc
 check_algorithms
-check_boost_version
 check_boost_test_incl
 check_boost_test_libs
+check_boost_version
 check_eigen_incl
 check_fortran_libs
 check_gsl_config
