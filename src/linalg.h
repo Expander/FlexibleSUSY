@@ -61,6 +61,14 @@ public:
     return *this;
   }
 
+  DoubleVector& operator=(const DoubleVector& other) {
+    x.resize(other.x.size());
+    x = other.x;
+    start = other.start;
+    end = other.end;
+    return *this;
+  }
+
   DoubleVector& operator=(double value) {
     for (std::size_t i = 0; i < x.size(); ++i)
       x[i] = value;
@@ -263,6 +271,14 @@ public:
   template<class E>
   DoubleMatrix & operator=(const MatXpr<double,E> & x) {
     *this = copy_from(x);
+    return *this;
+  }
+
+  DoubleMatrix& operator=(const DoubleMatrix& other) {
+    x.resize(other.x.size());
+    x = other.x;
+    rows = other.rows;
+    cols = other.cols;
     return *this;
   }
 
@@ -521,6 +537,14 @@ public:
     return *this;
   }
 
+  ComplexVector& operator=(const ComplexVector& other) {
+    x.resize(other.x.size());
+    x = other.x;
+    start = other.start;
+    end = other.end;
+    return *this;
+  }
+
   template <typename E>
   ComplexVector(const Xpr<Complex,E> & v)
     : Indexable<Complex,ComplexVector>(), 
@@ -657,6 +681,14 @@ public:
   template<class E>
   ComplexMatrix & operator=(const MatXpr<Complex,E> & x) {
     *this = copy_from(x);
+    return *this;
+  }
+
+  ComplexMatrix& operator=(const ComplexMatrix& other) {
+    x.resize(other.x.size());
+    x = other.x;
+    rows = other.rows;
+    cols = other.cols;
     return *this;
   }
 
