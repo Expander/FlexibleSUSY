@@ -783,7 +783,7 @@ check_gpp_version() {
     _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
     _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
 
-    checking_msg "${CXX} compiler version > ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch}"
+    checking_msg "${CXX} compiler version >= ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch}"
 
     # clean up
     rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
