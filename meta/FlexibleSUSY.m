@@ -322,6 +322,42 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
+(* Returns a list of three-component list where the information is stored
+   which vev corresponds to which CP even mass eigenstate.
+
+   Example: MRSSM
+   It[] := vevs = {vd,vu,vT,vS};
+   It[] := CreateVEVsToFieldsAssociation[vevs]
+   Out[] = {{vd, hh, 1}, {vu, hh, 2}, {vT, hh, 4}, {vS, hh, 3}}
+ *)
+CreateVEVsToFieldsAssociation[vevs_List] :=
+    Module[{association = {}, v, phi, higgs},
+           For[v = 1, v <= Length[vevs], v++,
+               (* find CP even gauge-eigenstate Higgs for the vev *)
+               phi = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                           {_, {vevs[[v]], _}, {__}, {p_,_}} :> p
+                          ];
+               If[Head[phi] =!= List || Length[phi] != 1,
+                  Print["Error: could not find CP even Higgs field for vev ", vevs[[v]]];
+                  Quit[1];
+                 ];
+               phi = phi[[1]];
+               (* find position of phi in the CP even mass eigenstate vector *)
+               higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
+                             {ps__ /; MemberQ[ps, phi], {h_,_}} :> {h, Position[ps, phi][[1,1]]}
+                            ];
+               If[Head[higgs] =!= List || Length[higgs] != 1,
+                  Print["Error: could not find CP even Higgs field ", phi,
+                        " in MatterSector definitions "];
+                  Quit[1];
+                 ];
+               higgs = higgs[[1]];
+               AppendTo[association, {vevs[[v]], higgs[[1]], higgs[[2]]}];
+              ];
+           Return[association];
+          ];
+
+
 WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, phases_List,
@@ -380,7 +416,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                     " parameters: ", parametersFixedByEWSB];
              ];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[oneLoopTadpoles];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[CreateVEVsToFieldsAssociation[vevs]];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];

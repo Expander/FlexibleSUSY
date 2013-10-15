@@ -689,16 +689,16 @@ CreateNPointFunctions[nPointFunctions_List] :=
            Return[{prototypes, decls}];
           ];
 
-FillArrayWithOneLoopTadpoles[tadpoles_List, arrayName_String:"tadpole"] :=
-    Module[{body = "", f, i = 0, d, field, functionName},
-           For[f = 1, f <= Length[tadpoles], f++,
-               field = GetField[tadpoles[[f]]];
+FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
+    Module[{body = "", v, vev, field, idx, functionName},
+           For[v = 1, v <= Length[vevsAndFields], v++,
+               vev = vevsAndFields[[v,1]];
+               field = vevsAndFields[[v,2]];
+               idx = vevsAndFields[[v,3]];
                functionName = CreateTadpoleFunctionName[field];
-               For[d = 1, d <= GetDimension[field], d++; i++,
-                   body = body <> arrayName <> "[" <> ToString[i] <> "] -= " <>
-                          "Re(model->" <> functionName <>
-                          "(" <> ToString[d] <> "));\n";
-                  ];
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                      "Re(model->" <> functionName <>
+                      "(" <> ToString[idx] <> "));\n";
               ];
            Return[IndentText[body]];
           ];
