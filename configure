@@ -342,6 +342,10 @@ check_symbol() {
     # 0 otherwise, which should be immediately copied, since the variable
     # will be overwritten at next invocation of this function.
 
+    local symbol
+    local symbollib
+    local symboldir
+
     # Assert that we got enough arguments
     if test $# -ne 3 ; then
         echo "check_symbol: not 3 arguments"
@@ -356,9 +360,6 @@ check_symbol() {
 
     if test "x$symbollib" = "x" ; then
         found_symbol=0
-        unset symbol
-        unset symbollib
-        unset symboldir
         return 1
     fi
 
@@ -408,9 +409,6 @@ check_symbol() {
     if test "x$symbolfile" = "x" || test ! -r $symbolfile ; then
        found_symbol=0
        logmsg " Symbol not found"
-       unset symbol
-       unset symbollib
-       unset symboldir
        return 1
     fi
 
@@ -431,15 +429,14 @@ check_symbol() {
             found_symbol=0
         # fi
     fi
+
     if test $found_symbol -eq 1 ; then
         result "ok"
+	return 0
     else
         result "no"
+	return 1
     fi
-
-    unset symbol
-    unset symbollib
-    unset symboldir
 }
 
 #_____________________________________________________________________
