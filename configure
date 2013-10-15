@@ -986,8 +986,7 @@ find_symbol_using_pkgconfig() {
     local pkg
     local ldpaths
     local libnames
-    symbol="$1"
-    pkg="$2"
+    pkg="$1"
     linker_flags=""
     type pkg-config > /dev/null 2>&1 || {
 	logmsg "pkg-config not found"
@@ -999,21 +998,25 @@ find_symbol_using_pkgconfig() {
     }
     ldpaths=$(pkg-config --libs-only-L "$pkg")
     libnames=$(pkg-config --libs-only-l "$pkg")
-    for dopt in $default_lib_paths $ldpaths; do
-	for lopt in $libnames; do
-	    if check_symbol "$symbol" "$lopt" "$dopt"; then
-		logmsg "found $symbol in $dopt $lopt"
-		linker_flags=$(pkg-config --libs "$pkg")
-		return 0
-	    fi
+    shift
+    for symbol; do
+	for dopt in $default_lib_paths $ldpaths; do
+	    for lopt in $libnames; do
+		if check_symbol "$symbol" "$lopt" "$dopt"; then
+		    logmsg "found $symbol in $dopt $lopt"
+		    linker_flags=$(pkg-config --libs "$pkg")
+		    continue 3
+		fi
+	    done
 	done
+	return 1
     done
-    return 1
+    return 0
 }
 
 #_____________________________________________________________________
 check_lapack_libs() {
-    if find_symbol_using_pkgconfig dgbsv_ lapack; then
+    if find_symbol_using_pkgconfig lapack dgbsv_; then
 	LAPACKLIBS="$linker_flags"
     else
 	check_lapack_libs_using_options
