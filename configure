@@ -572,8 +572,8 @@ check_boost_version() {
     _required_boost_major="1"
     _required_boost_minor="49"
     _required_boost_patch="0"
-    _check_boost_version_progr_cpp="${BASEDIR}/check_boost_version.cpp"
-    _check_boost_version_progr_exe="${BASEDIR}/check_boost_version.x"
+    local _check_boost_version_progr_cpp="${BASEDIR}/check_boost_version.cpp"
+    local _check_boost_version_progr_exe="${BASEDIR}/check_boost_version.x"
 
     # clean up
     rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
@@ -606,14 +606,12 @@ int main() {
 }
 EOF
     # compile the version check program
-    $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp}
-    _error="$?"
-
-    if test "x${_error}" = "x0" ; then
+    if $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp};
+    then
         # run the version check program
         ${_check_boost_version_progr_exe}
-        _error="$?"
-        boost_version=""
+        local _error="$?"
+        local boost_version=""
         if test -r "${boostconfig}" ; then
             boost_version=`cat ${boostconfig}`
         fi
@@ -731,8 +729,8 @@ check_boost_thread_incl() {
 #_____________________________________________________________________
 is_gnu_cpp_compiler() {
     checking_msg "${CXX} is GNU compiler"
-    _check_gnu_compiler_cpp="${BASEDIR}/check_gnu_compiler.cpp"
-    _check_gnu_compiler_exe="${BASEDIR}/check_gnu_compiler.x"
+    local _check_gnu_compiler_cpp="${BASEDIR}/check_gnu_compiler.cpp"
+    local _check_gnu_compiler_exe="${BASEDIR}/check_gnu_compiler.x"
     rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
 
     cat <<EOF > ${_check_gnu_compiler_cpp}
@@ -777,8 +775,8 @@ check_gpp_version() {
     _required_gpp_major="4"
     _required_gpp_minor="6"
     _required_gpp_patch="0"
-    _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
-    _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
+    local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
+    local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
 
     checking_msg "${CXX} compiler version >= ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch}"
 
@@ -816,8 +814,8 @@ EOF
     then
         # run the version check program
         ${_check_gpp_version_progr_exe}
-        _error="$?"
-        gpp_version=""
+        local _error="$?"
+        local gpp_version=""
         if test -r "${gppconfig}" ; then
             gpp_version=`cat ${gppconfig}`
         fi
