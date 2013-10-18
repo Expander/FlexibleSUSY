@@ -812,10 +812,8 @@ int main() {
 }
 EOF
     # compile the version check program
-    $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp}
-    _error="$?"
-
-    if test "x${_error}" = "x0" ; then
+    if $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp};
+    then
         # run the version check program
         ${_check_gpp_version_progr_exe}
         _error="$?"
