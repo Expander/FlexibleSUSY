@@ -750,13 +750,11 @@ int main() {
 EOF
     local _result="1"
 
-    $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp}
-    _error="$?"
-    if test "x${_error}" = "x0" ; then
+    if $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp};
+    then
         # run the version check program
-        ${_check_gnu_compiler_exe}
-        _error="$?"
-        if test "x${_error}" = "x0" ; then
+        if ${_check_gnu_compiler_exe};
+        then
             result "yes"
             logmsg "   ${CXX} is a GNU compiler"
             _result="0"
