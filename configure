@@ -748,6 +748,8 @@ int main() {
 #endif
 }
 EOF
+    local _result="1"
+
     $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp}
     _error="$?"
     if test "x${_error}" = "x0" ; then
@@ -757,19 +759,19 @@ EOF
         if test "x${_error}" = "x0" ; then
             result "yes"
             logmsg "   ${CXX} is a GNU compiler"
-            rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
-            return "0"
+            _result="0"
         else
             result "no"
-            rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
-            return "1"
+            _result="1"
         fi
     else
         message "Warning: could not determine compiler type of ${CXX} because"
         message "   compilation of the test program failed."
+        _result="1"
     fi
 
     rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
+    return "${_result}"
 }
 
 #_____________________________________________________________________
