@@ -566,6 +566,22 @@ check_platform() {
 }
 
 #_____________________________________________________________________
+check_boost() {
+    check_header "boost/version.hpp" "$boost_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Error: could not find boost/version.hpp in ${boost_inc_dir} ${default_inc_paths}"
+        message "   Boost must be installed, see http://www.boost.org"
+        exit 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$boost_inc_dir" ]; then
+            BOOSTFLAGS="-I$boost_inc_dir"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_boost_version() {
     checking_msg "boost version"
 
@@ -660,11 +676,6 @@ check_boost_test_incl() {
     if test "x$found_hdr" = "x" ; then
         message "Warning: boost/test/unit_test.hpp must be installed"
         message "  to compile and run the tests, see http://www.boost.org"
-    else
-        # assume that the compiler will look in the default paths
-        if [ -n "$boost_inc_dir" ]; then
-            BOOSTFLAGS="-I$boost_inc_dir"
-        fi
     fi
 }
 
@@ -1279,9 +1290,10 @@ check_platform
 check_cxx
 check_fc
 check_algorithms
+check_boost
+check_boost_version
 check_boost_test_incl
 check_boost_test_libs
-check_boost_version
 check_eigen_incl
 check_fortran_libs
 check_gsl_config
