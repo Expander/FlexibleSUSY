@@ -94,6 +94,12 @@ available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
 
+# required boost version
+required_boost_major="1"
+required_boost_minor="49"
+required_boost_patch="0"
+required_boost_version="${required_boost_major}.${required_boost_minor}.${required_boost_patch}"
+
 #_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
@@ -571,7 +577,8 @@ check_boost() {
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
         message "Error: could not find boost/version.hpp in ${boost_inc_dir} ${default_inc_paths}"
-        message "   Boost must be installed, see http://www.boost.org"
+        message "   Boost ${required_boost_version} or higher must be installed,"
+        message "   see http://www.boost.org"
         exit 1
     else
         # assume that the compiler will look in the default paths
@@ -585,9 +592,6 @@ check_boost() {
 check_boost_version() {
     checking_msg "boost version"
 
-    _required_boost_major="1"
-    _required_boost_minor="49"
-    _required_boost_patch="0"
     local _check_boost_version_progr_cpp="${BASEDIR}/check_boost_version.cpp"
     local _check_boost_version_progr_exe="${BASEDIR}/check_boost_version.x"
 
@@ -604,11 +608,11 @@ int main() {
    int boost_patch = BOOST_VERSION % 100;
    int error = 0;
 
-   if (boost_major < ${_required_boost_major})
+   if (boost_major < ${required_boost_major})
       error = 1;
-   else if (boost_minor < ${_required_boost_minor})
+   else if (boost_minor < ${required_boost_minor})
       error = 2;
-   else if (boost_patch < ${_required_boost_patch})
+   else if (boost_patch < ${required_boost_patch})
       error = 3;
 
    std::ofstream ostr("${boostconfig}");
@@ -633,12 +637,12 @@ EOF
         fi
         if test "x${_error}" = "x0" ; then
             result "ok (version ${boost_version})"
-            logmsg "   Required boost version: ${_required_boost_major}.${_required_boost_minor}.${_required_boost_patch}"
+            logmsg "   Required boost version: ${required_boost_version}"
             logmsg "   Boost version found: ${boost_version}"
         else
             result "not ok (version ${boost_version})"
             message "Error: the installed boost version is too old."
-            message "   Please install version ${_required_boost_major}.${_required_boost_minor}.${_required_boost_patch} or higher."
+            message "   Please install version ${required_boost_version} or higher."
             rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
             exit 1
         fi
