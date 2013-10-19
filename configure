@@ -100,6 +100,12 @@ required_boost_minor="49"
 required_boost_patch="0"
 required_boost_version="${required_boost_major}.${required_boost_minor}.${required_boost_patch}"
 
+# required g++ version
+required_gpp_major="4"
+required_gpp_minor="6"
+required_gpp_patch="0"
+required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
+
 #_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
@@ -787,13 +793,10 @@ EOF
 
 #_____________________________________________________________________
 check_gpp_version() {
-    _required_gpp_major="4"
-    _required_gpp_minor="6"
-    _required_gpp_patch="0"
     local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
     local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
 
-    checking_msg "${CXX} compiler version >= ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch}"
+    checking_msg "${CXX} compiler version >= ${required_gpp_version}"
 
     # clean up
     rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
@@ -807,11 +810,11 @@ int main() {
    int gpp_patch = __GNUC_PATCHLEVEL__;
    int error = 0;
 
-   if (gpp_major < ${_required_gpp_major})
+   if (gpp_major < ${required_gpp_major})
       error = 1;
-   else if (gpp_minor < ${_required_gpp_minor})
+   else if (gpp_minor < ${required_gpp_minor})
       error = 2;
-   else if (gpp_patch < ${_required_gpp_patch})
+   else if (gpp_patch < ${required_gpp_patch})
       error = 3;
 
    std::ofstream ostr("${gppconfig}");
@@ -836,12 +839,12 @@ EOF
         fi
         if test "x${_error}" = "x0" ; then
             result "ok (version ${gpp_version})"
-            logmsg "   Required ${CXX} version: ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch}"
+            logmsg "   Required ${CXX} version: ${required_gpp_version}"
             logmsg "   ${CXX} version found: ${gpp_version}"
         else
             result "not ok (version ${gpp_version})"
             message "Error: the installed ${CXX} version is too old."
-            message "   Please install version ${_required_gpp_major}.${_required_gpp_minor}.${_required_gpp_patch} or higher."
+            message "   Please install version ${required_gpp_version} or higher."
             rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
             rm -f ${gppconfig}
             exit 1
