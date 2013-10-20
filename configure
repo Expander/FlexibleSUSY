@@ -1091,10 +1091,10 @@ If[!ValueQ[SA\`Version], Quit[1]];
 Export["${sarahconfig}", SA\`Version, "String"];
 Quit[0];
 EOF
-    _sarah_is_available="$?"
+    local _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
-            sarah_version=`cat ${sarahconfig}`
+            local sarah_version=`cat ${sarahconfig}`
             result "ok (version ${sarah_version})"
         else
             result "ok"
