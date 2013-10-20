@@ -830,7 +830,7 @@ int main() {
 }
 EOF
     # compile the version check program
-    if $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp};
+    if $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         ${_check_gpp_version_progr_exe}
@@ -852,6 +852,7 @@ EOF
             exit 1
         fi
     else
+        result "unknown"
         message "Warning: could not determine ${CXX} version because"
         message "   compilation of the ${CXX} test program failed."
     fi
