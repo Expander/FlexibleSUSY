@@ -632,7 +632,7 @@ int main() {
 }
 EOF
     # compile the version check program
-    if $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp};
+    if $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         ${_check_boost_version_progr_exe}
@@ -653,6 +653,7 @@ EOF
             exit 1
         fi
     else
+        result "unknown"
         message "Warning: could not determine boost version because"
         message "   compilation of the boost test program failed."
     fi
@@ -769,7 +770,7 @@ int main() {
 EOF
     local _result="1"
 
-    if $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp};
+    if $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         if ${_check_gnu_compiler_exe};
@@ -782,6 +783,7 @@ EOF
             _result="1"
         fi
     else
+        result "unknown"
         message "Warning: could not determine compiler type of ${CXX} because"
         message "   compilation of the test program failed."
         _result="1"
