@@ -533,8 +533,8 @@ check_models() {
                     continue
                 else
                     message "Error: model directory \"$BASEDIR/models/$a\" does not exist!"
-                    message "Please create the directory and put a model file in it."
-                    message "You can use \`./createmodel --models=<model>' to create one."
+                    message "   Please create the directory and put a model file in it."
+                    message "   You can use \`./createmodel --models=<model>' to create one."
                     exit 1
                 fi ;;
         esac
@@ -543,8 +543,8 @@ check_models() {
     # test model dependencies (SoftsusyNMSSM depends on SoftsusyMSSM)
     if contains "${MODELS}" "models/SoftsusyNMSSM"; then
         if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
-            message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM"
-            message "Please also select the SoftsusyMSSM"
+            message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM !"
+            message "   Please also select the model SoftsusyMSSM ."
             exit 1
         fi
     fi
@@ -869,6 +869,7 @@ check_cxx() {
     if [ -z "$cmd" ] ; then
         result "not found"
         message "Error: A C++ compiler must be installed to compile the models!"
+        message "   Use --with-cxx= to specify the C++ compiler to be used."
         exit 1
     else
         result "found $cmd"
@@ -915,8 +916,9 @@ check_fc() {
     exists_in_path "$FC"
     if [ -z "$cmd" ] ; then
         result "not found"
-        message "Error: A Fortran compiler must be installed to compile the\
- two-loop MSSM Higgs contributions"
+        message "Error: A Fortran compiler must be installed to compile the"
+        message "   two-loop MSSM Higgs contributions!"
+        message "   Use --with-fc= to specify the Fortran compiler to be used."
         exit 1
     else
         result "found $cmd"
@@ -1059,6 +1061,7 @@ check_makelib() {
     if [ -z "$cmd" ] ; then
         result "not found"
         message "Error: A program which builds libraries must be installed!"
+        message "   Use --with-make-lib-cmd= to specify the library creator program to be used."
         exit 1
     else
         result "found $cmd"
