@@ -86,3 +86,32 @@ have to rebuild them via
 
    $ make clean-executables
    $ make allexec
+
+
+Looptools
+=========
+
+It is possible to use Looptools (http://www.feynarts.de/looptools/)
+for calculating the loop functions, instead of using Softsusy's loop
+functions.  To enable Looptools configure via
+
+   $ ./configure --enable-looptools
+
+To use the Looptools library and header files from a specific
+directory configure via
+
+   $ ./configure --enable-looptools \
+     --with-looptools-incdir="/path/to/looptools/build/" \
+     --with-looptools-libdir="/path/to/looptools/build/"
+
+Note: Looptools 2.8 or higher is required.  Versions <= 2.7 will fail
+to build with the following compiler error message (or similar):
+
+   In file included from models/MSSM/MSSM_two_scale_model.cpp:28:0:
+   /usr/include/clooptools.h:67:28: error: conflicting declaration ‘typedef struct std::complex<double> Complex’
+   In file included from src/utils.h:15:0,
+                    from src/rge.h:17,
+                    from models/MSSM/MSSM_two_scale_soft_parameters.hpp:24,
+                    from models/MSSM/MSSM_two_scale_model.hpp:25,
+                    from models/MSSM/MSSM_two_scale_model.cpp:21:
+   src/mycomplex.h:17:7: error: ‘class Complex’ has a previous declaration as ‘class Complex’
