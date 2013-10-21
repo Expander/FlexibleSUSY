@@ -82,6 +82,7 @@ FFLAGS="-O2 -frecursive"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
+THREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
 EIGENFLAGS=""
@@ -741,16 +742,6 @@ check_boost_thread_libs() {
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
 	echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
-    check_library "libpthread" "" "$default_lib_paths"
-    if [ -z "$found_lib" ]; then
-        message "Error: libpthread must be installed to enable multithreading"
-        message "  in the lattice method.  You can disable the lattice method"
-        message "  with the --with-algorithms= flag."
-        exit 1
-    fi
-    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
-        echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
-
     if [ -z "$boost_lib_dir" ]; then
         # assume that the linker will look in the default paths
         BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
@@ -774,6 +765,16 @@ check_boost_thread_incl() {
             BOOSTFLAGS="-I$boost_inc_dir"
         fi
     fi
+}
+
+#_____________________________________________________________________
+check_thread_libs() {
+    check_library "libpthread" "" "$default_lib_paths"
+    if [ -z "$found_lib" ]; then
+        message "Error: libpthread must be installed to enable multithreading!"
+        exit 1
+    fi
+    THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 }
 
 #_____________________________________________________________________
@@ -1380,6 +1381,7 @@ if test "x$enable_looptools" = "xyes"; then
     check_looptools_libs
 fi
 check_makelib
+check_thread_libs
 
 check_math_cmd
 check_mathematica_version
@@ -1395,6 +1397,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
