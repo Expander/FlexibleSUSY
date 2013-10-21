@@ -28,8 +28,8 @@ MATH       := @MATH@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
-# the modules add headers to be created to this variable
-ALLHDR   :=
+# the modules add soucre files to be created to this variable
+ALLSRC   :=
 # the modules add their libraries to this variable
 ALLLIB   :=
 # the modules add executables to this variable
@@ -40,13 +40,13 @@ ALLTST   :=
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
-.PHONY:  all allhdr allexec alllib alltest clean-executables \
+.PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep distclean showbuild tag release
 
 ifeq ($(ENABLE_COMPILE),yes)
-all:     allhdr alllib allexec
+all:     allsrc alllib allexec
 else
-all:     allhdr
+all:     allsrc
 endif
 
 include config/abspathx.mk
@@ -70,7 +70,7 @@ endif
 endif
 endif
 
-allhdr:   $(ALLHDR)
+allsrc:   $(ALLSRC)
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
 alltest:  $(ALLTST)
