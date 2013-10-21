@@ -26,6 +26,7 @@ statusfile="$BASEDIR/config.status"
 sarahconfig="$BASEDIR/config.sarah"
 boostconfig="$BASEDIR/config.boost"
 gppconfig="$BASEDIR/config.g++"
+mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
 machine_word_size=""
@@ -105,6 +106,9 @@ required_gpp_major="4"
 required_gpp_minor="6"
 required_gpp_patch="0"
 required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
+
+# required Mathematica version
+required_mathematica_version="7"
 
 #_____________________________________________________________________
 write_configure_parameters() {
@@ -1101,6 +1105,37 @@ check_math_cmd() {
 }
 
 #_____________________________________________________________________
+check_mathematica_version() {
+    local _math_version_check_progr="${BASEDIR}/check_math_version.m"
+    rm -f ${mathconfig} ${_math_version_check_progr}
+    cat <<EOF > ${_math_version_check_progr}
+error = 0;
+Put[\$VersionNumber, "${mathconfig}"];
+If[\$VersionNumber < ${required_mathematica_version},
+   error = 1;
+  ];
+Quit[error];
+EOF
+
+    checking_msg "Mathematica version >= ${required_mathematica_version}"
+    if $MATH -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
+    then
+        if test -r "${mathconfig}" ; then
+            local math_version=`cat ${mathconfig}`
+            result "ok (version ${math_version})"
+        else
+            result "ok"
+        fi
+    else
+        result "not ok"
+        message "Error: Mathematica ${required_mathematica_version} or higher needs to be installed!"
+        rm -f ${_math_version_check_progr}
+        exit 1
+    fi
+    rm -f ${_math_version_check_progr}
+}
+
+#_____________________________________________________________________
 check_sarah() {
     checking_msg "SARAH installation"
     rm -f ${sarahconfig}
@@ -1340,6 +1375,7 @@ if test "x$enable_looptools" = "xyes"; then
 fi
 check_makelib
 check_math_cmd
+check_mathematica_version
 check_sarah
 check_models
 
