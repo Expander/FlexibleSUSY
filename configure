@@ -900,10 +900,6 @@ check_cxx() {
     else
         result "found $cmd"
     fi
-    # check that GNU complier version is sufficiently high
-    if is_gnu_cpp_compiler ; then
-        check_gpp_version
-    fi
 }
 
 #_____________________________________________________________________
@@ -1359,6 +1355,9 @@ guess_machine_word_size
 check_platform
 
 check_cxx
+if is_gnu_cpp_compiler; then
+    check_gpp_version
+fi
 check_fc
 check_algorithms
 check_boost
