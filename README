@@ -1,52 +1,70 @@
-How to compile
-==============
+FlexibleSUSY provides Mathematica and C++ code to create spectrum
+generators for non-minimal supersymmetric models.
 
-1. Make sure that you have the boost libraries version >= 1.36
-   installed.  If not, you can download them from http://www.boost.org
 
-2. Create the makefile using `./configure'.  Run `./configure --help'
-   to see all options.
+Requirements
+============
 
-   If you want to use the boost libraries and headers from specific
-   directories $BOOST_LIB, $BOOST_INC, you can run configure via
+ * C++ compiler (g++ >= 4.6.0 or clang++ >= 3.1)
+ * Fortran compiler (gfortran, ifort)
+ * Mathematica (version 7.0 or higher)
+ * SARAH (version 4.0 or higher)      http://sarah.hepforge.org
+ * Boost (version 1.36.0 or higher)   http://www.boost.org
+ * Eigen 3 (version 3.1 or higher)    http://eigen.tuxfamily.org
+ * GNU scientific library             http://www.gnu.org/software/gsl/
+ * Lapack / Blas                      http://www.netlib.org/lapack/
 
-      $ ./configure --boost-lib-dir=$BOOST_LIB --boost-inc-dir=$BOOST_INC
+Optional:
 
-3. To compile run `make'.  (Parallel make is supported via the -jN
-   option, where N is the number of cores to use.)
+ * Looptools (version 2.8 or higher)  http://www.feynarts.de/looptools/
 
 
 How to create a model
 =====================
 
-1. Create
+0. Before you setup a FlexibleSUSY model, you have to provide a SARAH
+   model file.  The SARAH model file must be loadable via SARAH's
+   Start[] function:
 
-   * a model directory models/<model>/
-   * a makefile module models/<model>/module.mk
-   * and a model file  models/<model>/FlexibleSUSY.m
+   $ math
+   In[]:= Needs["SARAH`"]
+   In[]:= Start["<model>"]
 
-   via
+   Here <model> is the name of your model (e.g. MSSM, NMSSM, etc.).
+   Note, that there are already plenty of pre-installed model files
+   under SARAH/Models/ that can be used.
+
+1. Setup a FlexibleSUSY model
 
    $ ./createmodel --models=<model>
 
-   Here <model> is the name of your model (e.g. MSSM, NMSSM, etc.).
-   See `./createmodel --help' for more details.
+   See `./createmodel --help' for more details.  Afterwards there will
+   be
 
-2. Create the Makefile and register your model via
+   * a model directory models/<model>/
+   * a makefile module models/<model>/module.mk
+   * a Mathematica start script models/<model>/start.m
+   * and a FlexibleSUSY model file models/<model>/FlexibleSUSY.m
+
+   To modify the model details, please edit the FlexibleSUSY model
+   file models/<model>/FlexibleSUSY.m .
+
+2. Create the Makefile and register your model
 
    $ ./configure --with-models=<model>
 
-   Use `./configure --with-models=all' to build all models.
+   Use `./configure --with-models=all' to build all available models.
    See `./configure --help' for more options.
 
-3. Compile by running
+3. Compile
 
    $ make
 
-   When `make' is executed, Mathematica will be called, which will
-   generate the model classes and will write them to models/<model>/ .
-   Afterwards these model classes will be compiled and a user example
-   spectrum generator models/<model>/run_<model>.x will be created.
+   When `make' is executed, Mathematica is called and generates the
+   C++ code for the spectrum generator.  All C++ source files are
+   written to models/<model>/ .  Afterwards this C++ code will be
+   compiled and a user example spectrum generator
+   models/<model>/run_<model>.x will be created.
 
 
 Example
@@ -56,7 +74,8 @@ Example
    $ ./configure --with-models=MSSM,NMSSM
    $ make
 
-   $ ./models/MSSM/run_MSSM.x # run the spectrum generator
+   $ ./models/MSSM/run_MSSM.x
+   $ ./models/NMSSM/run_NMSSM.x
 
 
 Dynamic libraries
