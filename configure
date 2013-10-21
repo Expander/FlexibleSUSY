@@ -1354,34 +1354,36 @@ if test $# -gt 0 ; then
     done
 fi
 
-guess_machine_word_size
-check_platform
-check_multiarch
 check_algorithms
 
-check_cxx
-if is_gnu_cpp_compiler; then
-    check_gpp_version
+if test "x${enable_compile}" = "xyes"; then
+    guess_machine_word_size
+    check_platform
+    check_multiarch
+    check_cxx
+    if is_gnu_cpp_compiler; then
+        check_gpp_version
+    fi
+    check_fc
+    check_boost
+    check_boost_version
+    check_boost_test_incl
+    check_boost_test_libs
+    check_eigen_incl
+    check_fortran_libs
+    check_gsl_config
+    if use_algorithm "lattice"; then
+        check_boost_thread_incl
+        check_boost_thread_libs
+        check_lapack_libs
+    fi
+    if test "x$enable_looptools" = "xyes"; then
+        check_looptools_incl
+        check_looptools_libs
+    fi
+    check_makelib
+    check_thread_libs
 fi
-check_fc
-check_boost
-check_boost_version
-check_boost_test_incl
-check_boost_test_libs
-check_eigen_incl
-check_fortran_libs
-check_gsl_config
-if use_algorithm "lattice"; then
-    check_boost_thread_incl
-    check_boost_thread_libs
-    check_lapack_libs
-fi
-if test "x$enable_looptools" = "xyes"; then
-    check_looptools_incl
-    check_looptools_libs
-fi
-check_makelib
-check_thread_libs
 
 check_math_cmd
 check_mathematica_version
