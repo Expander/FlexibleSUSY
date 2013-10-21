@@ -51,12 +51,14 @@ TEXVERSION_TMPL=$BASEDIR/doc/version.tex.in
 deprecated_options=""
 options="                    \
    enable_colors             \
+   enable_compile            \
    enable_debug              \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
    enable_verbose            \
 "
+enable_compile="yes"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
@@ -1235,6 +1237,7 @@ Options:
 enable/disable options, prefix with either --enable- or --disable-
 
   colors            Colored output (default: $enable_colors)
+  compile           Compile the source code (default: $enable_compile)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
   silent            Suppress all command line output (default: $enable_silent)
@@ -1400,6 +1403,7 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_COMPILE@|$enable_compile|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \

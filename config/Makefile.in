@@ -13,6 +13,7 @@ FC         := @FC@
 GSLLIBS    := @GSLLIBS@
 GSLFLAGS   := @GSLFLAGS@
 LAPACKLIBS := @LAPACKLIBS@
+ENABLE_COMPILE := @ENABLE_COMPILE@
 ENABLE_LOOPTOOLS := @ENABLE_LOOPTOOLS@
 LOOPTOOLSFLAGS := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS  := @LOOPTOOLSLIBS@
@@ -42,7 +43,11 @@ FSCONFIG := @FSCONFIG@
 .PHONY:  all allhdr allexec alllib alltest clean-executables \
 	 clean clean-dep distclean showbuild tag release
 
+ifeq ($(ENABLE_COMPILE),yes)
 all:     allhdr alllib allexec
+else
+all:     allhdr
+endif
 
 include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
