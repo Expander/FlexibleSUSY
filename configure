@@ -144,9 +144,11 @@ logmsg() {
 guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
-	*32) machine_word_size="32"; return 0 ;;
-	*64) machine_word_size="64"; return 0 ;;
-	*)   message "Warning: could not guess machine word size"; return 1 ;;
+        *32) machine_word_size="32"; return 0 ;;
+        *64) machine_word_size="64"; return 0 ;;
+        *)   machine_word_size="unknown"
+             message "Warning: could not guess machine word size"
+             return 1 ;;
     esac
 }
 
@@ -575,6 +577,16 @@ check_platform() {
             exit 1
         fi
     fi
+
+    logmsg "# Platform information"
+    logmsg ""
+    logmsg "hostname = `(hostname || uname -n) 2>/dev/null | sed 1q`"
+    logmsg "uname -m = `(uname -m) 2>/dev/null || echo unknown`"
+    logmsg "uname -r = `(uname -r) 2>/dev/null || echo unknown`"
+    logmsg "uname -s = `(uname -s) 2>/dev/null || echo unknown`"
+    logmsg "uname -v = `(uname -v) 2>/dev/null || echo unknown`"
+    logmsg "Machine word size: ${machine_word_size}"
+    logmsg ""
 }
 
 #_____________________________________________________________________
