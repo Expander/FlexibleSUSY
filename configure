@@ -345,7 +345,8 @@ checking_msg() {
 #_____________________________________________________________________
 result() {
     echo "$*"
-    logmsg "Result: $*"
+    logmsg ""
+    logmsg "   Result: $*"
 }
 
 #_____________________________________________________________________
@@ -431,7 +432,7 @@ check_symbol() {
     nm -D $symbolfile 2>&1 | grep $symbol > /dev/null 2>&1
     if test $? -eq 0 ; then
         found_symbol=1
-        logmsg " Symbol found"
+        logmsg -n "symbol found"
     else
         nm $symbolfile 2>&1 | grep "no symbols" > /dev/null 2>&1
         # if test $? -eq 0 ; then
