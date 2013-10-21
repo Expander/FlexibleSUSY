@@ -684,6 +684,12 @@ PrepareUnrotatedParticles[eigenstates_] :=
 ReadDiagonalizationPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
                               mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
     Module[{particles, particle, i, precisionList = {}},
+           If[!MemberQ[{LowPrecision, MediumPrecision, HighPrecision}, defaultPrecision],
+              Print["Error: ", defaultPrecision, " is not a valid",
+                    " diagonalization precision!"];
+              Print["   Available are: LowPrecision, MediumPrecision, HighPrecision"];
+              Quit[1];
+             ];
            particles = LoopMasses`GetLoopCorrectedParticles[eigenstates];
            For[i = 1, i <= Length[particles], i++,
                particle = particles[[i]];
