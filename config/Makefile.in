@@ -101,6 +101,7 @@ showbuild:
 	@echo "PKGNAME    = $(PKGNAME)"
 	@echo "VERSION    = $(VERSION)"
 	@echo "ABSBASEDIR = $(ABSBASEDIR)"
+	@echo "ENABLE_COMPILE = $(ENABLE_COMPILE)"
 	@echo "CXX        = $(CXX)"
 	@echo "CPPFLAGS   = $(CPPFLAGS)"
 	@echo "CXXFLAGS   = $(CXXFLAGS)"
