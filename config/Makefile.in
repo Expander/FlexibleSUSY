@@ -58,9 +58,11 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
+ifeq ($(ENABLE_COMPILE),yes)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
