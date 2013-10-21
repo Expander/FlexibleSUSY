@@ -7,6 +7,7 @@ DOXYFILE        := $(DIR)/Doxyfile
 MANUAL_PDF      := $(DIR)/flexiblesusy.pdf
 MANUAL_SRC      := \
 		$(DIR)/flexiblesusy.tex \
+		$(DIR)/version.tex \
 		$(DIR)/chapters/overview.tex \
 		$(DIR)/chapters/quick_start.tex \
 		$(DIR)/chapters/usage.tex \
