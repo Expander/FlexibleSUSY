@@ -26,21 +26,23 @@ if test $# -eq 0; then
 fi
 
 help() {
-    echo "Usage: `basename $0` [options]"
-    echo "Options:"
-    echo "  --all-models          Print all models that are build"
-    echo "  --cxx                 Print C++ compiler"
-    echo "  --cxxflags            Print CXXFLAGS"
-    echo "  --cppflags            Print CPPFLAGS"
-    echo "  --fc                  Print Fortran compiler"
-    echo "  --fflags              Print FFLAGS"
-    echo "  --flibs               Print FLIBS"
-    echo "  --make-lib-cmd        Print make library command"
-    echo "  --math-cmd            Print Mathematica kernel command"
-    echo "  --threadlibs          Print thread library"
-    echo "  --with-<model>        Test if <model> is compiled in"
-    echo "  --version             Print the $packagename version"
-    echo "  --help                Print this message"
+cat <<EOF
+Usage: `basename $0` [options]
+Options:
+  --all-models          Print all models that are build
+  --cxx                 Print C++ compiler
+  --cxxflags            Print CXXFLAGS
+  --cppflags            Print CPPFLAGS
+  --fc                  Print Fortran compiler
+  --fflags              Print FFLAGS
+  --flibs               Print FLIBS
+  --make-lib-cmd        Print make library command
+  --math-cmd            Print Mathematica kernel command
+  --threadlibs          Print thread library
+  --with-<model>        Test if <model> is compiled in
+  --version             Print the $packagename version
+  --help                Print this message
+EOF
 }
 
 out=""
