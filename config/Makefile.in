@@ -1,31 +1,40 @@
+# Package information
+PKGNAME    := @PKGNAME@
+VERSION    := @VERSION@
+ABSBASEDIR := @ABSBASEDIR@
+
+# Makefile modules
 MODELS     := @MODELS@
 MODULES    := config src legacy slhaea meta templates $(MODELS) test examples doc
+
+# Variables for Mathematica meta code
+MATH       := @MATH@
+ALGORITHMS := @ALGORITHMS@
+
+# Variables for compilation
+CXX        := @CXX@
 CPPFLAGS   := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS   := @CXXFLAGS@
+FC         := @FC@
 FFLAGS     := @FFLAGS@
 FLIBS      := @FLIBS@
-BOOSTTESTLIBS  := @BOOSTTESTLIBS@
-BOOSTTHREADLIBS  := @BOOSTTHREADLIBS@
+MAKELIB    := @MAKELIB@
+LIBEXT     := @LIBEXT@
+BOOSTTESTLIBS   := @BOOSTTESTLIBS@
+BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
 BOOSTFLAGS := @BOOSTFLAGS@
-CXX        := @CXX@
 EIGENFLAGS := @EIGENFLAGS@
-FC         := @FC@
 GSLLIBS    := @GSLLIBS@
 GSLFLAGS   := @GSLFLAGS@
 LAPACKLIBS := @LAPACKLIBS@
-ENABLE_COMPILE := @ENABLE_COMPILE@
-ENABLE_LOOPTOOLS := @ENABLE_LOOPTOOLS@
 LOOPTOOLSFLAGS := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS  := @LOOPTOOLSLIBS@
-MAKELIB    := @MAKELIB@
-LIBEXT     := @LIBEXT@
-ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
 THREADLIBS := @THREADLIBS@
-VERSION    := @VERSION@
-PKGNAME    := @PKGNAME@
-ABSBASEDIR := @ABSBASEDIR@
-ALGORITHMS := @ALGORITHMS@
-MATH       := @MATH@
+
+# Switches
+ENABLE_COMPILE     := @ENABLE_COMPILE@
+ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
+ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -98,33 +107,36 @@ distclean::
 	-rm -f flexiblesusy-config
 
 showbuild:
-	@echo "PKGNAME    = $(PKGNAME)"
-	@echo "VERSION    = $(VERSION)"
-	@echo "ABSBASEDIR = $(ABSBASEDIR)"
-	@echo "ENABLE_COMPILE = $(ENABLE_COMPILE)"
-	@echo "CXX        = $(CXX)"
-	@echo "CPPFLAGS   = $(CPPFLAGS)"
-	@echo "CXXFLAGS   = $(CXXFLAGS)"
-	@echo "FC         = $(FC)"
-	@echo "FFLAGS     = $(FFLAGS)"
-	@echo "MAKELIB    = $(MAKELIB)"
-	@echo "LIBEXT     = $(LIBEXT)"
+	@echo "PKGNAME            = $(PKGNAME)"
+	@echo "VERSION            = $(VERSION)"
+	@echo "ABSBASEDIR         = $(ABSBASEDIR)"
+	@echo ""
+	@echo "MATH               = $(MATH)"
+	@echo "MODELS             = $(MODELS)"
+	@echo "ALGORITHMS         = $(ALGORITHMS)"
+	@echo ""
+	@echo "CXX                = $(CXX)"
+	@echo "CPPFLAGS           = $(CPPFLAGS)"
+	@echo "CXXFLAGS           = $(CXXFLAGS)"
+	@echo "FC                 = $(FC)"
+	@echo "FFLAGS             = $(FFLAGS)"
+	@echo "FLIBS              = $(FLIBS)"
+	@echo "MAKELIB            = $(MAKELIB)"
+	@echo "LIBEXT             = $(LIBEXT)"
+	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
+	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
+	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"
+	@echo "EIGENFLAGS         = $(EIGENFLAGS)"
+	@echo "GSLLIBS            = $(GSLLIBS)"
+	@echo "GSLFLAGS           = $(GSLFLAGS)"
+	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
+	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
+	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
+	@echo "THREADLIBS         = $(THREADLIBS)"
+	@echo ""
+	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
+	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
-	@echo "FLIBS      = $(FLIBS)"
-	@echo "BOOSTTESTLIBS  = $(BOOSTTESTLIBS)"
-	@echo "BOOSTTHREADLIBS  = $(BOOSTTHREADLIBS)"
-	@echo "BOOSTFLAGS = $(BOOSTFLAGS)"
-	@echo "EIGENFLAGS = $(EIGENFLAGS)"
-	@echo "GSLLIBS    = $(GSLLIBS)"
-	@echo "GSLFLAGS   = $(GSLFLAGS)"
-	@echo "LAPACKLIBS = $(LAPACKLIBS)"
-	@echo "ENABLE_LOOPTOOLS = $(ENABLE_LOOPTOOLS)"
-	@echo "LOOPTOOLSFLAGS = $(LOOPTOOLSFLAGS)"
-	@echo "LOOPTOOLSLIBS  = $(LOOPTOOLSLIBS)"
-	@echo "THREADLIBS = $(THREADLIBS)"
-	@echo "ALGORITHMS = $(ALGORITHMS)"
-	@echo "MATH       = $(MATH)"
-	@echo "MODELS     = $(MODELS)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
