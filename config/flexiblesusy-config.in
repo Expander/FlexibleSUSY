@@ -3,7 +3,7 @@
 # Author: Alexander Voigt
 
 models="@MODELS@"
-version="@VERSION@"
+version="@FLEXIBLESUSY_VERSION@"
 cppflags="@CPPFLAGS@"
 cxxflags="@CXXFLAGS@"
 fflags="@FFLAGS@"

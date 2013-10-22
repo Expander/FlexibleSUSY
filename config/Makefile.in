@@ -1,6 +1,6 @@
 # Package information
 PKGNAME    := @PKGNAME@
-VERSION    := @VERSION@
+VERSION    := @FLEXIBLESUSY_VERSION@
 ABSBASEDIR := @ABSBASEDIR@
 
 # Makefile modules

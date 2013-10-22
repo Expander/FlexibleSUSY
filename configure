@@ -4,7 +4,10 @@
 # Author: Alexander Voigt
 
 PROGRAM_NAME=FlexibleSUSY
-PROGRAM_VERSION=0.4.2
+FLEXIBLESUSY_MAJOR=0
+FLEXIBLESUSY_MINOR=4
+FLEXIBLESUSY_PATCH=2
+FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -1286,7 +1289,7 @@ EOF
 #_____________________________________________________________________
 version() {
 cat <<EOF
-$PROGRAM_NAME $PROGRAM_VERSION
+$PROGRAM_NAME $FLEXIBLESUSY_VERSION
 $PROGRAM_NAME is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -1409,7 +1412,10 @@ check_models
 
 enable_defines
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
@@ -1439,7 +1445,10 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
@@ -1452,14 +1461,20 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@MODELS@|$MODELS|"           \
     < $FSCONFIG_TMPL > $FSCONFIG
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
-echo "$PROGRAM_VERSION" > $BASEDIR/config/version
+echo "$FLEXIBLESUSY_VERSION" > $BASEDIR/config/version
 
 chmod a+x $FSCONFIG
