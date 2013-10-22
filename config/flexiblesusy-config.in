@@ -26,6 +26,7 @@ fi
 
 help() {
     echo "Usage: `basename $0` [options]"
+    echo "Options:"
     echo "  --all-models          Print all models that are build"
     echo "  --cxx                 Print C++ compiler"
     echo "  --cxxflags            Print CXXFLAGS"
