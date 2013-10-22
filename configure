@@ -1459,6 +1459,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
     < $FSCONFIG_TMPL > $FSCONFIG
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

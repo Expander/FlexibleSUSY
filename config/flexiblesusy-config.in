@@ -13,11 +13,12 @@ flibs="@FLIBS@"
 makelib="@MAKELIB@"
 math="@MATH@"
 packagename="@PKGNAME@"
+threadlibs="@THREADLIBS@"
 
 usage="\
 Usage: `basename $0` [--all-models] [--cxx] [--cxxflags] [--cppflags]\
- [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd] [--with-<model>]\
- [--help] [--version]"
+ [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd] [--threadlibs]\
+ [--with-<model>] [--help] [--version]"
 
 if test $# -eq 0; then
     echo "${usage}" 1>&2
@@ -36,6 +37,7 @@ help() {
     echo "  --flibs               Print FLIBS"
     echo "  --make-lib-cmd        Print make library command"
     echo "  --math-cmd            Print Mathematica kernel command"
+    echo "  --threadlibs          Print thread library"
     echo "  --with-<model>        Test if <model> is compiled in"
     echo "  --version             Print the $packagename version"
     echo "  --help                Print this message"
@@ -59,6 +61,7 @@ while test $# -gt 0; do
         --flibs)         out="$out $flibs"    ;;
         --make-lib-cmd)  out="$out $makelib"  ;;
         --math-cmd)      out="$out $math"     ;;
+        --threadlibs)    out="$out $threadlibs" ;;
         --with-*)
       ### Check for model
             f=`echo $1 | sed 's/--with-//'`
