@@ -1355,10 +1355,10 @@ if test $# -gt 0 ; then
 fi
 
 check_algorithms
+guess_machine_word_size
+check_platform
 
 if test "x${enable_compile}" = "xyes"; then
-    guess_machine_word_size
-    check_platform
     check_multiarch
     check_cxx
     if is_gnu_cpp_compiler; then
