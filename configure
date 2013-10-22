@@ -906,6 +906,19 @@ check_cxx() {
 }
 
 #_____________________________________________________________________
+check_cxxflags() {
+    if test "x$enable_static_libs" = "xno" ; then
+        # check if -fPIC is in CXXFLAGS
+        if test "x$CXX" = "xg++" -o "x$CXX" = "xclang++" ; then
+            if contains_not "$CXXFLAGS" "-fPIC" ; then
+                message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
+                CXXFLAGS="$CXXFLAGS -fPIC"
+            fi
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_eigen_incl() {
     eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
                      /usr/local/include/eigen3"
@@ -947,6 +960,19 @@ check_fc() {
         exit 1
     else
         result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_fflags() {
+    if test "x$enable_static_libs" = "xno" ; then
+        # check if -fPIC is in FFLAGS
+        if test "x$FC" = "xgfortran" ; then
+            if contains_not "$FFLAGS" "-fPIC" ; then
+                message "   Warning: could not find -fPIC in FFLAGS, appending it"
+                FFLAGS="$FFLAGS -fPIC"
+            fi
+        fi
     fi
 }
 
@@ -1193,19 +1219,6 @@ enable_defines() {
     fi
 
     if test "x$enable_static_libs" = "xno" ; then
-        # check if -fPIC is in CXXFLAGS and FFLAGS
-        if test "x$CXX" = "xg++" -o "x$CXX" = "xclang++" ; then
-            if contains_not "$CXXFLAGS" "-fPIC" ; then
-                message "  Warning: could not find -fPIC in CXXFLAGS, appending it"
-                CXXFLAGS="$CXXFLAGS -fPIC"
-            fi
-        fi
-        if test "x$FC" = "xgfortran" ; then
-            if contains_not "$FFLAGS" "-fPIC" ; then
-                message "  Warning: could not find -fPIC in FFLAGS, appending it"
-                FFLAGS="$FFLAGS -fPIC"
-            fi
-        fi
         # check the library extension
         if test "x$LIBEXT" = "x.a" ; then
             message "  Warning: library extension $LIBEXT is reserved for static libraries."
@@ -1364,7 +1377,9 @@ if test "x${enable_compile}" = "xyes"; then
     if is_gnu_cpp_compiler; then
         check_gpp_version
     fi
+    check_cxxflags
     check_fc
+    check_fflags
     check_boost
     check_boost_version
     check_boost_test_incl
