@@ -10,6 +10,7 @@ config/version
 config.status
 config.log
 config.boost
+config.math
 config.sarah
 flexiblesusy-config
 Makefile
