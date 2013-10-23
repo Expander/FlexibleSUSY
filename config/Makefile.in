@@ -34,6 +34,7 @@ THREADLIBS := @THREADLIBS@
 # Switches
 ENABLE_COMPILE     := @ENABLE_COMPILE@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
+ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
 
 # the modules add their dependency files to this variable
@@ -53,10 +54,12 @@ FSCONFIG := @FSCONFIG@
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep distclean showbuild tag release
 
-ifeq ($(ENABLE_COMPILE),yes)
-all:     allsrc alllib allexec
-else
+all:
+ifeq ($(ENABLE_META),yes)
 all:     allsrc
+endif
+ifeq ($(ENABLE_COMPILE),yes)
+all:     alllib allexec
 endif
 
 include config/abspathx.mk
@@ -136,6 +139,7 @@ showbuild:
 	@echo ""
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
+	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
 	@echo ""
 	@echo "The list of modules to be built:"

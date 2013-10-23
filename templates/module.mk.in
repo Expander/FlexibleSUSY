@@ -127,8 +127,13 @@ $(DIR)/@CLASSNAME@_utilities.cpp \
 run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
 		@true
 
+ifeq ($(ENABLE_META),yes)
 $(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES)
 		$(MATH) -run "Get[\"$<\"]; Quit[]"
+else
+$(METACODE_STAMP_@CLASSNAME@):
+		@true
+endif
 
 $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
