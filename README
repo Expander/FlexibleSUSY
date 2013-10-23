@@ -78,6 +78,21 @@ Example
    $ ./models/NMSSM/run_NMSSM.x
 
 
+Creating only the source code files -- no compilation
+=====================================================
+
+If you want to only create the C++ source files for your model, but do
+not want to compile the code, you can use the --disable-compile
+configure option:
+
+   $ ./configure --with-models=MSSM --disable-compile
+   $ make
+
+Here, configure will not check for installed compilers or libraries.
+It will only check for Mathematica and SARAH.  The execution of `make'
+will stop as soon as all C++ source code files are generated.
+
+
 Dynamic libraries
 =================
 
