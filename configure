@@ -567,6 +567,25 @@ check_models() {
         fi
     fi
 
+    # check for Makefile module, start script and FlexibleSUSY model
+    # file
+    for m in ${MODELS}; do
+        if ! test -r ${m}/module.mk; then
+            result "not ok"
+            message "Error: No Makefile module found in ${m}"
+            message "   Please create ${m}/module.mk !"
+            exit 1
+        fi
+        if ! test -r ${m}/start.m; then
+            logmsg ""
+            logmsg "Note: No start script not found in ${m}"
+        fi
+        if ! test -r ${m}/FlexibleSUSY.m; then
+            logmsg ""
+            logmsg "Note: No FlexibleSUSY model file found in ${m}"
+        fi
+    done
+
     result "ok"
     logmsg "   Models: ${MODELS}"
 }
