@@ -70,11 +70,9 @@ How to create a model
 Example
 =======
 
-   $ ./createmodel --models=MSSM,NMSSM
-   $ ./configure --with-models=MSSM,NMSSM
+   $ ./createmodel --models=NMSSM
+   $ ./configure --with-models=NMSSM
    $ make
-
-   $ ./models/MSSM/run_MSSM.x
    $ ./models/NMSSM/run_NMSSM.x
 
 
