@@ -59,6 +59,41 @@ For further information and options see
 ./createmodel --help
 \end{lstlisting}
 
+\subsubsection{\code{configure}}
+
+The \code{configure} script checks for the installed compilers,
+libraries and Mathematica.  If all of these exists in a sufficent
+version, the \code{Makefile} is created, which contains the information
+on how to compile the code.  The user has to specify the models which
+should be included in the build via the \code{--with-models=} option,
+e.g.
+%
+\begin{lstlisting}[language=bash]
+./configure --with-models=<flexibsusy-model>
+\end{lstlisting}
+%
+Here \code{<flexibsusy-model>} is either \code{all} or a comma
+separated list of \flexisusy models.
+
+Furthermore, the user can select which RG solver algorithms to use via
+the \code{--with-algorithms=} option.\\
+Example:
+%
+\begin{lstlisting}[language=bash]
+./configure --with-algorithms=two_scale
+\end{lstlisting}
+
+The \code{configure} script further allows to select the C++ and
+Fortran compilers, the Mathematica kernel command as well as paths to
+libraries and header files.  See
+\code{configure --help} for all available options.\\
+Example:
+%
+\begin{lstlisting}[language=bash]
+./configure --with-models=MSSM --with-cxx=clang++
+   --with-boost-incdir=/usr/include/
+   --with-boost-libdir=/usr/lib/
+\end{lstlisting}
 
 \subsection{Model files}
 
