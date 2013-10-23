@@ -561,7 +561,8 @@ check_models() {
         if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
             result "not ok"
             message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM !"
-            message "   Please also select the model SoftsusyMSSM ."
+            message "   Please select the model SoftsusyMSSM as well:"
+            message "   --with-models=SoftsusyMSSM,SoftsusyNMSSM"
             exit 1
         fi
     fi
