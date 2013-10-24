@@ -911,6 +911,14 @@ EOF
             rm -f ${gppconfig}
             exit 1
         fi
+	case "$CXXFLAGS" in
+	    *-std=c++11*)
+		set -- $(echo "$gpp_version" | tr . ' ')
+		if [ "$2" -lt 7 ]; then
+		    message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
+		    CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
+		fi
+	esac
     else
         result "unknown"
         message "Warning: could not determine ${CXX} version because"
