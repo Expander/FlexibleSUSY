@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
 
    // TODO: increase the test precision here
-   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_1) / vd, tadpole_ss_1, 0.0003);
-   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_2) / vu, tadpole_ss_2, 0.00007);
-   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_3) / vS, tadpole_ss_3, 0.095);
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_1) / vd, tadpole_ss_1, 1.0e-12);
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_2) / vu, tadpole_ss_2, 1.0e-12);
+   BOOST_CHECK_CLOSE_FRACTION(Re(tadpole_hh_3) / vS, tadpole_ss_3, 1.0e-12);
 }
