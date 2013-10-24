@@ -37,7 +37,8 @@ DoubleVector NMSSM_input::get_nmpars() const {
    nmpars(2) = get(NMSSM_input::kappa);
    if (is_set(NMSSM_input::lambdaS)) {
       if (!close(get(NMSSM_input::lambda),0.,EPSTOL)) {
-         nmpars(3) = get(NMSSM_input::lambdaS) / get(NMSSM_input::lambda);
+         nmpars(3) = get(NMSSM_input::lambdaS) * sqrt(2.)
+            / get(NMSSM_input::lambda);
       } else {
          std::string msg =
             "# Error: you set lambda * <S> to a non-zero value"
@@ -221,7 +222,7 @@ DoubleVector NMSSM_command_line_parser::get_pars() const {
       for (int i = 41; i <= 49; i++) pars(i) = m0;
       pars(50) = a0; // Alambda
       pars(51) = a0; // Akappa
-      pars(52) = 0.; // mS'^2 @todo which value should we chose here?
+      pars(52) = 0.; // mS'^2
       pars(53) = m0*m0; // mS^2
 
       if (nmssm_input->is_set(NMSSM_input::Alambda))
@@ -236,10 +237,14 @@ DoubleVector NMSSM_command_line_parser::get_pars() const {
          pars(23) = nmssm_input->get(NMSSM_input::mu);
       if (nmssm_input->is_set(NMSSM_input::BmuOverCosBetaSinBeta))
          pars(24) = nmssm_input->get(NMSSM_input::BmuOverCosBetaSinBeta);
-      if (nmssm_input->is_set(NMSSM_input::xiS))
-         ; // currently not set in extendedNMSugraBcs()
-      if (nmssm_input->is_set(NMSSM_input::mPrimeS2))
-         pars(52) = nmssm_input->get(NMSSM_input::mPrimeS2);
+      if (nmssm_input->is_set(NMSSM_input::mPrimeS2) &&
+          nmssm_input->is_set(NMSSM_input::muPrime)) {
+         // setting pars(52) = B' = mS'^2 / mu'
+         const double muPrime  = nmssm_input->get(NMSSM_input::muPrime);
+         const double mPrimeS2 = nmssm_input->get(NMSSM_input::mPrimeS2);
+         if (!close(muPrime, 0.0, EPSTOL))
+            pars(52) = mPrimeS2 / muPrime;
+      }
       if (nmssm_input->is_set(NMSSM_input::mS2))
          pars(53) = nmssm_input->get(NMSSM_input::mS2);
    } else {
@@ -404,7 +409,7 @@ void nuhmINM(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
   m.setTrialambda(m.displayLambda() * Al);
   m.setTriakappa(m.displayKappa() * Ak);
   if(Z3 == false) {
- m.setMspSquared(inputParameters.display(inputParameters.display(52) * m.displayMupr()  ));
+     m.setMspSquared(inputParameters.display(52) * m.displayMupr());
   }
 }
 
@@ -427,7 +432,7 @@ void nuhmIINM(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
   m.setTrialambda(m.displayLambda() * Al);
   m.setTriakappa(m.displayKappa() * Ak);
   if (Z3 == false) {
-    m.setMspSquared(inputParameters.display(inputParameters.display(52) * m.displayMupr()  ));
+    m.setMspSquared(inputParameters.display(52) * m.displayMupr());
   }
 }
 
@@ -438,6 +443,26 @@ void amsbBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
 
   m.standardSugra(m0, 0., 0.);
   m.addAmsb(m32);
+}
+
+/// LCT: Difference between two NMSSM SOFTSUSY objects in and out: EWSB terms only
+double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries) {
+  DoubleVector sT(37);
+  sumTol(in.displayDrBarPars(), out.displayDrBarPars(), sT);
+  /// The predicted value of MZ^2 is an absolute measure of how close to a
+  /// true solution we are:
+  double tbPred = 0.;
+  double predictedMzSq = in.displayPredMzSq();
+  /// We allow an extra factor of 10 for the precision in the predicted value
+  /// of MZ compared to TOLERANCE if the program is struggling and gone beyond
+  /// 10 tries - an extra 2 comes from MZ v MZ^2
+  int k = sT.size() - 2;
+  if (!in.displayProblem().testSeriousProblem()) {
+    sT(k) = 0.5 * sTfn(predictedMzSq, sqr(MZ));
+    if (numTries > 10) sT(k) *= 0.1;
+  }
+
+  return sT.max();
 }
 
 } // namespace softsusy

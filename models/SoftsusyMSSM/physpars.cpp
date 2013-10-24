@@ -32,8 +32,8 @@ const sPhysical & sPhysical::operator=(const sPhysical &s) {
   mch = s.mch; mneut = s.mneut; mixNeut = s.mixNeut;
   thetaL = s.thetaL; thetaR = s.thetaR; mGluino = s.mGluino;
   thetat = s.thetat; thetab = s.thetab; thetatau = s.thetatau;
-  mu = s.mu; md = s.md; me = s.me; thetaH = s.thetaH;
-  mixh0 = s.mixh0; mixA0 = s.mixA0;
+  mu = s.mu; md = s.md; me = s.me; thetaH = s.thetaH;  
+  thetaA0 = s.thetaA0; mixh0 = s.mixh0; 
   return *this;
 }
 
@@ -58,7 +58,7 @@ void sPhysical::display(double *a) const {
   me.fillArray(a,k); k += me.size();
   a[k++] = thetaH;
   mixh0.fillArray(a,k); k += mixh0.size();
-  mixA0.fillArray(a,k); k += mixA0.size();
+  a[k++] = thetaA0;
 }
 
 #define HR "---------------------------------------------------------------\n"
@@ -89,7 +89,7 @@ std::ostream & operator <<(std::ostream & left, const sPhysical &s) {
   left << "neutralinos" << s.mneut;
   left << "neutralino mixing matrix " << s.mixNeut;
   left << "CP even Higgs mixing matrix: " << s.mixh0;
-  left << "CP odd Higgs mixing matrix: " << s.mixA0;
+  left << "CP odd mixing angle: " << s.thetaA0;
   return left;
 }
 
@@ -109,7 +109,6 @@ std::istream & operator >>(std::istream & left, sPhysical &s) {
   left >> s.mneut;
   left >> c >> c >> c >> c >> s.mixNeut;
   left >> c >> c >> c >> c >> s.mixh0;
-  left >> c >> c >> c >> c >> s.mixA0;
   return left;
 }
 

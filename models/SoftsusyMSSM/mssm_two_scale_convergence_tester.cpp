@@ -36,7 +36,7 @@ double Mssm_convergence_tester::max_rel_diff() const
 
 double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out) const
 {
-  drBarPars inforLoops(in.displayDrBarPars()),
+  softsusy::drBarPars inforLoops(in.displayDrBarPars()),
     outforLoops(out.displayDrBarPars());
 
   DoubleVector sT(32);
