@@ -81,7 +81,10 @@ int Softsusy<SoftPars>::rewsbM3sq(double mu, double & m3sq) const {
   
   /// Following means no good rewsb
   if (m3sq < 0.0) flag = 1;
-  
+  else if (testNan(m3sq)) {
+    flag = 1; m3sq = EPSTOL;
+  }
+
   return flag;
 }
 
@@ -7608,6 +7611,9 @@ void Softsusy<SoftPars>::itLowsoft
 	cout << " ***problem point***: " << displayProblem() << ".";
 
       return; 
+    } else if (numTries != 0 && fabs(displayM3Squared()) > 1.0e20) {
+      /// guards against nasty fatal problems 
+      numTries = 0; flagM3sq(true); return;
     }
 
     // All problems should be reset since only the ones of the final iteration
@@ -10016,7 +10022,7 @@ void Softsusy<SoftPars>::rhohat(double & outrho, double & outsin, double alphaDR
       (numTries - 1 > maxTries)) {  
     oldrho = 0.23; oldsin = 0.8;
     numTries = 0;
-    outrho = 0.23; outsin = 0.8;
+    outrho = 0.23; outsin = 0.8; 
     flagNoRhoConvergence(true);
     if (PRINTOUT) cout << flush << "rhohat reached maxtries\n"; 
     return;
