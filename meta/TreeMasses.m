@@ -225,7 +225,15 @@ GetDimensionStartSkippingGoldstones[sym_] :=
              ];
           ];
 
-(* Removes generators and Delta with the given indices *)
+(* Removes generators and Delta with the given indices.
+ * Especially the following replacements are done:
+ *
+ * SARAH`Lam[__] -> 2    corresponds to SU(3) generator T[__] -> 1
+ * SARAH`Sig[__] -> 2    corresponds to SU(2) generator T[__] -> 1
+ * SARAH`fSU2[__] -> 1   SU(2) structure function
+ * SARAH`fSU3[__] -> 1   SU(3) structure function
+ * SARAH`Delta[a,b] -> 1 where a and b are from the `indices' list
+ *)
 StripGenerators[expr_, indices_List] :=
     Module[{headers = {SARAH`Delta}, h, indexCombinations, removeSymbols = {}},
            indexCombinations = DeleteCases[Subsets[indices],{}];
@@ -597,7 +605,13 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
             inputParsDecl, expr, particle},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           expr = StripGenerators[mass[[1]], {ct1, ct2, ct3, ct4}];
+           (* Remove color SU(3) generators, structure functions and
+              Kronecker delta with color indices.
+              Note: ct1 ... ct4 are reserved SU(3) color indices of
+              the fundamental representation of SU(3) in SARAH.
+           *)
+           expr = StripGenerators[mass[[1]],
+                                  {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> ev <> " = " <>
                   RValueToCFormString[expr] <> ";\n";
