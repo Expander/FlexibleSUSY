@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    // gluinos
    const double MGlu = m.get_physical().MGlu;
    const double mGluino = s.displayPhys().mGluino;
-   BOOST_CHECK_CLOSE(MGlu, mGluino, 1.0e-04);
+   BOOST_CHECK_CLOSE(MGlu, mGluino, 4.0e-5);
 
    // down-type squarks
    const DoubleVector Sd(m.get_physical().MSd);
