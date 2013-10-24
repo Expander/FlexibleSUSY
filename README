@@ -70,12 +70,42 @@ How to create a model
 Example
 =======
 
-   $ ./createmodel --models=MSSM,NMSSM
-   $ ./configure --with-models=MSSM,NMSSM
+   $ ./createmodel --models=NMSSM
+   $ ./configure --with-models=NMSSM
+   $ make
+   $ ./models/NMSSM/run_NMSSM.x
+
+
+Creating only the source code files -- no compilation
+=====================================================
+
+If you want to only create the C++ source files for your model, but do
+not want to compile the code, you can use the --disable-compile
+configure option:
+
+   $ ./configure --with-models=MSSM --disable-compile
    $ make
 
-   $ ./models/MSSM/run_MSSM.x
-   $ ./models/NMSSM/run_NMSSM.x
+Here, configure will not check for installed compilers or libraries.
+It will only check for Mathematica and SARAH.  The execution of `make'
+will stop as soon as all C++ source code files are generated.
+
+
+Compile only
+============
+
+If you want to only compile already created the C++ source files for
+your model, you can use the --disable-meta configure option:
+
+   $ ./configure --with-models=MSSM --disable-meta
+   $ make
+
+Here, configure will only check for installed compilers or libraries.
+It will not check for Mathematica and SARAH.
+
+Warning: Please make sure all C++ source files of your model are
+available in the model directory models/<model>/ .  Otherwise the
+compilation will fail.
 
 
 Dynamic libraries

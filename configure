@@ -4,7 +4,10 @@
 # Author: Alexander Voigt
 
 PROGRAM_NAME=FlexibleSUSY
-PROGRAM_VERSION=0.4.2
+FLEXIBLESUSY_MAJOR=0
+FLEXIBLESUSY_MINOR=4
+FLEXIBLESUSY_PATCH=2
+FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -13,7 +16,6 @@ BASEDIR=$(dirname $0)
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
 # platform information
-linuxdist=""
 debmultiarch=""
 
 # default library directories
@@ -51,15 +53,19 @@ TEXVERSION_TMPL=$BASEDIR/doc/version.tex.in
 deprecated_options=""
 options="                    \
    enable_colors             \
+   enable_compile            \
    enable_debug              \
    enable_looptools          \
+   enable_meta               \
    enable_silent             \
    enable_static_libs        \
    enable_verbose            \
 "
+enable_compile="yes"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
+enable_meta="yes"
 enable_silent="no"
 enable_static_libs="yes"
 enable_verbose="no"
@@ -81,6 +87,7 @@ FFLAGS="-O2 -frecursive"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
+THREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
 EIGENFLAGS=""
@@ -527,6 +534,7 @@ check_algorithms() {
 
 #_____________________________________________________________________
 check_models() {
+    checking_msg "models"
     models=`echo $MODELS | tr ',' ' '`
     MODELS=""
     for a in ${models}; do
@@ -539,6 +547,7 @@ check_models() {
                     MODELS="$MODELS models/$a"
                     continue
                 else
+                    result "not ok"
                     message "Error: model directory \"$BASEDIR/models/$a\" does not exist!"
                     message "   Please create the directory and put a model file in it."
                     message "   You can use \`./createmodel --models=<model>' to create one."
@@ -550,11 +559,35 @@ check_models() {
     # test model dependencies (SoftsusyNMSSM depends on SoftsusyMSSM)
     if contains "${MODELS}" "models/SoftsusyNMSSM"; then
         if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
+            result "not ok"
             message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM !"
-            message "   Please also select the model SoftsusyMSSM ."
+            message "   Please select the model SoftsusyMSSM as well:"
+            message "   --with-models=SoftsusyMSSM,SoftsusyNMSSM"
             exit 1
         fi
     fi
+
+    # check for Makefile module, start script and FlexibleSUSY model
+    # file
+    for m in ${MODELS}; do
+        if ! test -r ${m}/module.mk; then
+            result "not ok"
+            message "Error: No Makefile module found in ${m}"
+            message "   Please create ${m}/module.mk !"
+            exit 1
+        fi
+        if ! test -r ${m}/start.m; then
+            logmsg ""
+            logmsg "Note: No start script not found in ${m}"
+        fi
+        if ! test -r ${m}/FlexibleSUSY.m; then
+            logmsg ""
+            logmsg "Note: No FlexibleSUSY model file found in ${m}"
+        fi
+    done
+
+    result "ok"
+    logmsg "   Models: ${MODELS}"
 }
 
 #_____________________________________________________________________
@@ -576,8 +609,11 @@ check_platform() {
         logmsg "PATH: ${p}"
     done
     logmsg ""
+}
 
-    linuxdist=""
+#_____________________________________________________________________
+check_multiarch() {
+    local linuxdist=""
     debmultiarch=""
 
     exists_in_path "lsb_release"
@@ -737,16 +773,6 @@ check_boost_thread_libs() {
     BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
 	echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
-    check_library "libpthread" "" "$default_lib_paths"
-    if [ -z "$found_lib" ]; then
-        message "Error: libpthread must be installed to enable multithreading"
-        message "  in the lattice method.  You can disable the lattice method"
-        message "  with the --with-algorithms= flag."
-        exit 1
-    fi
-    BOOSTTHREADLIBS_="$BOOSTTHREADLIBS_ "-l$(
-        echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
-
     if [ -z "$boost_lib_dir" ]; then
         # assume that the linker will look in the default paths
         BOOSTTHREADLIBS="$BOOSTTHREADLIBS_"
@@ -770,6 +796,16 @@ check_boost_thread_incl() {
             BOOSTFLAGS="-I$boost_inc_dir"
         fi
     fi
+}
+
+#_____________________________________________________________________
+check_thread_libs() {
+    check_library "libpthread" "" "$default_lib_paths"
+    if [ -z "$found_lib" ]; then
+        message "Error: libpthread must be installed to enable multithreading!"
+        exit 1
+    fi
+    THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 }
 
 #_____________________________________________________________________
@@ -898,9 +934,19 @@ check_cxx() {
     else
         result "found $cmd"
     fi
-    # check that GNU complier version is sufficiently high
-    if is_gnu_cpp_compiler ; then
-        check_gpp_version
+}
+
+#_____________________________________________________________________
+check_cxxflags() {
+    if test "x$enable_static_libs" = "xno" ; then
+        # check if -fPIC is in CXXFLAGS
+        case "${CXX}" in
+            g++*|clang++*)
+                if contains_not "${CXXFLAGS}" "-fPIC" ; then
+                    message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
+                    CXXFLAGS="${CXXFLAGS} -fPIC"
+                fi ;;
+        esac
     fi
 }
 
@@ -946,6 +992,20 @@ check_fc() {
         exit 1
     else
         result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_fflags() {
+    if test "x$enable_static_libs" = "xno" ; then
+        # check if -fPIC is in FFLAGS
+        case "${FC}" in
+            gfortran*)
+                if contains_not "${FFLAGS}" "-fPIC" ; then
+                    message "   Warning: could not find -fPIC in FFLAGS, appending it"
+                    FFLAGS="${FFLAGS} -fPIC"
+                fi ;;
+        esac
     fi
 }
 
@@ -1192,19 +1252,6 @@ enable_defines() {
     fi
 
     if test "x$enable_static_libs" = "xno" ; then
-        # check if -fPIC is in CXXFLAGS and FFLAGS
-        if test "x$CXX" = "xg++" -o "x$CXX" = "xclang++" ; then
-            if contains_not "$CXXFLAGS" "-fPIC" ; then
-                message "  Warning: could not find -fPIC in CXXFLAGS, appending it"
-                CXXFLAGS="$CXXFLAGS -fPIC"
-            fi
-        fi
-        if test "x$FC" = "xgfortran" ; then
-            if contains_not "$FFLAGS" "-fPIC" ; then
-                message "  Warning: could not find -fPIC in FFLAGS, appending it"
-                FFLAGS="$FFLAGS -fPIC"
-            fi
-        fi
         # check the library extension
         if test "x$LIBEXT" = "x.a" ; then
             message "  Warning: library extension $LIBEXT is reserved for static libraries."
@@ -1235,8 +1282,10 @@ Options:
 enable/disable options, prefix with either --enable- or --disable-
 
   colors            Colored output (default: $enable_colors)
+  compile           Compile the source code (default: $enable_compile)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
+  meta              Create model classes (default: $enable_meta)
   silent            Suppress all command line output (default: $enable_silent)
   static-libs       Create static libraries (default: $enable_static_libs)
   verbose           Verbose messages (default: $enable_verbose)
@@ -1269,7 +1318,7 @@ EOF
 #_____________________________________________________________________
 version() {
 cat <<EOF
-$PROGRAM_NAME $PROGRAM_VERSION
+$PROGRAM_NAME $FLEXIBLESUSY_VERSION
 $PROGRAM_NAME is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -1352,43 +1401,60 @@ if test $# -gt 0 ; then
     done
 fi
 
+check_algorithms
 guess_machine_word_size
 check_platform
 
-check_cxx
-check_fc
-check_algorithms
-check_boost
-check_boost_version
-check_boost_test_incl
-check_boost_test_libs
-check_eigen_incl
-check_fortran_libs
-check_gsl_config
-if use_algorithm "lattice"; then
-    check_boost_thread_incl
-    check_boost_thread_libs
-    check_lapack_libs
+if test "x${enable_compile}" = "xyes"; then
+    check_multiarch
+    check_cxx
+    if is_gnu_cpp_compiler; then
+        check_gpp_version
+    fi
+    check_cxxflags
+    check_fc
+    check_fflags
+    check_boost
+    check_boost_version
+    check_boost_test_incl
+    check_boost_test_libs
+    check_eigen_incl
+    check_fortran_libs
+    check_gsl_config
+    if use_algorithm "lattice"; then
+        check_boost_thread_incl
+        check_boost_thread_libs
+        check_lapack_libs
+    fi
+    if test "x$enable_looptools" = "xyes"; then
+        check_looptools_incl
+        check_looptools_libs
+    fi
+    check_makelib
+    check_thread_libs
 fi
-if test "x$enable_looptools" = "xyes"; then
-    check_looptools_incl
-    check_looptools_libs
+
+if test "x${enable_meta}" = "xyes"; then
+    check_math_cmd
+    check_mathematica_version
+    check_sarah
 fi
-check_makelib
-check_math_cmd
-check_mathematica_version
-check_sarah
+
 check_models
 
 enable_defines
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
@@ -1400,7 +1466,9 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_COMPILE@|$enable_compile|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
+    -e "s|@ENABLE_META@|$enable_meta|" \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
@@ -1410,7 +1478,10 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
@@ -1421,16 +1492,23 @@ sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
     < $FSCONFIG_TMPL > $FSCONFIG
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
-sed -e "s|@VERSION@|$PROGRAM_VERSION|" \
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
-echo "$PROGRAM_VERSION" > $BASEDIR/config/version
+echo "$FLEXIBLESUSY_VERSION" > $BASEDIR/config/version
 
 chmod a+x $FSCONFIG

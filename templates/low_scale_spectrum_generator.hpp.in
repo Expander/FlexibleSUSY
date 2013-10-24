@@ -149,6 +149,8 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       model.get_problems().flag_thrown();
    } catch (const char* str) {
       model.get_problems().flag_thrown();
+   } catch (const std::exception& error) {
+      model.get_problems().flag_thrown();
    }
 }
 
