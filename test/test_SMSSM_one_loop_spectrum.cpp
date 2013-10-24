@@ -41,8 +41,8 @@ void ensure_tree_level_ewsb(SMSSM<Two_scale>& m, NmssmSoftsusy& s,
    softsusy::Z3 = false;
    s.rewsbTreeLevel(1);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Mu() , s.displaySusyMu()   , precision * 40.);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_BMu(), s.displayM3Squared(), precision * 40.);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Mu() , s.displaySusyMu()   , precision * 15.);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_BMu(), s.displayM3Squared(), precision * 10.);
    BOOST_CHECK_CLOSE_FRACTION(m.get_LL1(), s.displayXiS()      , precision * 5.);
 
    m.set_Mu(s.displaySusyMu());
