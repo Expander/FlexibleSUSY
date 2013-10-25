@@ -141,32 +141,32 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    // down-type squarks
    const DoubleVector Sd(m.get_physical().MSd);
    const DoubleVector md(s.displayPhys().md.flatten().sort());
-   BOOST_CHECK_CLOSE(Sd(1), md(1), 0.01); // @todo increase precision
+   BOOST_CHECK_CLOSE(Sd(1), md(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(2), md(2), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(3), md(3), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(4), md(4), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(5), md(5), 1.0e-12);
-   BOOST_CHECK_CLOSE(Sd(6), md(6), 0.01); // @todo increase precision
+   BOOST_CHECK_CLOSE(Sd(6), md(6), 1.0e-12);
 
    // up-type squarks
    const DoubleVector Su(m.get_physical().MSu);
    const DoubleVector mu(s.displayPhys().mu.flatten().sort());
-   BOOST_CHECK_CLOSE(Su(1), mu(1), 0.8); // @todo increase precision
+   BOOST_CHECK_CLOSE(Su(1), mu(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(2), mu(2), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(3), mu(3), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(4), mu(4), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(5), mu(5), 1.0e-12);
-   BOOST_CHECK_CLOSE(Su(6), mu(6), 0.5); // @todo increase precision
+   BOOST_CHECK_CLOSE(Su(6), mu(6), 1.0e-12);
 
    // down-type sleptons
    const DoubleVector Se(m.get_physical().MSe);
    const DoubleVector me(s.displayPhys().me.flatten().sort());
-   BOOST_CHECK_CLOSE(Se(1), me(1), 0.003); // @todo increase precision
+   BOOST_CHECK_CLOSE(Se(1), me(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(2), me(2), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(3), me(3), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(4), me(4), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(5), me(5), 1.0e-12);
-   BOOST_CHECK_CLOSE(Se(6), me(6), 0.005); // @todo increase precision
+   BOOST_CHECK_CLOSE(Se(6), me(6), 1.0e-12);
 
    // up-type sleptons
    const DoubleVector Sv(m.get_physical().MSv);
