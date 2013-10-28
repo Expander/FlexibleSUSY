@@ -14,7 +14,6 @@ MakeFlexibleSUSY::usage="";
 LowPrecision::usage="";
 MediumPrecision::usage="";
 HighPrecision::usage="";
-softSusyCompatibleRGEs::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
 FSModelName;
@@ -727,7 +726,6 @@ Options[MakeFlexibleSUSY] :=
     {
         Eigenstates -> SARAH`EWSB,
         InputFile -> "FlexibleSUSY.m",
-        softSusyCompatibleRGEs -> True,
         DefaultDiagonalizationPrecision -> MediumPrecision,
         HighDiagonalizationPrecision -> {},
         MediumDiagonalizationPrecision -> {},
@@ -771,16 +769,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xi = 1;
            SARAH`Xip = 1;
            SARAH`rMS = 0;
-
-           If[OptionValue[softSusyCompatibleRGEs] === True && Model`Name == "MSSM",
-              Print["Generating SoftSusy compatible beta function ..."];
-              Print["Note: SoftSusy is missing g^4 two-loop contributions to the VEVs, I'm disabling them."];
-              SARAH`BetaVEV = SARAH`BetaVEV /.
-              { SARAH`g1^4 -> 0,
-                Susyno`LieGroups`g2^4 -> 0,
-                SARAH`g3^4 -> 0,
-                SARAH`g1^2 Susyno`LieGroups`g2^2 -> 0 };
-             ];
 
            FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
