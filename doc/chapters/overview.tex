@@ -10,7 +10,7 @@ FlexibleSUSY is designed with the following points in mind:
 \paragraph{Speed}
 Exploring the parameter space of supersymmetric models with a high
 number of free parameters is quite time consuming.  Therefore
-FlexibleSUSY aims to produce spectrum generators with a short runtime.
+FlexibleSUSY aims to produce spectrum generators with a short run-time.
 
 The two most time consuming parts of a spectrum generator are the
 calculation of the beta functions and the pole masses for mixed
@@ -33,7 +33,7 @@ self-energy matrix $\Sigma^\psi_{ij}(p=m^\text{tree}_{\psi_i})$ has to
 be evaluated.  Each self-energy matrix entry again involves the
 evaluation of $O(50)$ Feynman diagrams, which involves the calculation
 of vertices and loop functions.  All in all, one arrives at $O(500)$
-Feynman diagam or $O(3\cdot 10^4)$ loop function evaluations.  To
+Feynman diagram or $O(3\cdot 10^4)$ loop function evaluations.  To
 speed up the calculation of the pole masses FlexibleSUSY makes use of
 multi-threading, where each pole mass is calculated in a separate
 thread.  By this technique one can gain a speed-up of $20$--$30\%$.

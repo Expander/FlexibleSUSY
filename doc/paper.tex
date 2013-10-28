@@ -1,0 +1,341 @@
+\documentclass[final,3p,times,pdflatex]{elsarticle}
+\usepackage[utf8x]{inputenc}      % input font encoding
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}          % output font encoding
+\usepackage{booktabs,tabularx}
+\usepackage{rotating}             % for sidewaystable
+\usepackage{xspace}
+\usepackage[usenames]{xcolor}
+\usepackage{tikz,tikz-uml}
+\usepackage{listings}   
+\bibstyle{elsarticle-num}
+% source code highlighting
+\lstset{breaklines=true,
+  breakatwhitespace=true,
+  stepnumber=1,
+  basicstyle=\ttfamily\footnotesize,
+  commentstyle=\ttfamily\color{gray},
+  prebreak={\textbackslash},
+  breakindent=10pt,
+  breakautoindent=false,
+  showspaces=false,
+  showstringspaces=false,
+  frame=single}
+\usepackage[pdftitle={FlexibleSUSY --- A spectrum generator generator for supersymmetric models},
+pdfauthor={Peter Athron,Jae-hyeon Park,Dominik Stockinger,Alexander Voigt},
+pdfkeywords={FlexibleSUSY,supersymmetry,spectrum,generator,MSSM,NMSSM,E6SSM},
+bookmarks=true, linktocpage]{hyperref}
+
+%macros
+\newcommand{\sarah}{SARAH\xspace}
+\newcommand{\fs}{FlexibleSUSY\xspace}
+
+\newcommand{\code}[1]{\lstinline|#1|}  % inline source code
+\newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
+\newcommand{\DRbar}{\textoverline{DR}}  % inline source code
+
+\journal{Computer Physics Communications}
+\begin{document}
+\begin{frontmatter}
+
+ \title{\Large\bf FlexibleSUSY --- A spectrum generator generator for supersymmetric models}
+
+\author{Peter Athron}
+\address{ARC Centre of Excellence for Particle Physics at 
+the Tera-scale, School of Chemistry and Physics, University of Adelaide, 
+Adelaide SA 5005 Australia}
+\author{Jae-hyeon Park}
+\author{Dominik St\"ockinger}
+\author{Alexander Voigt}
+\address{Institut f\"ur Kern- und Teilchenphysik,
+TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
+   
+  \begin{abstract}
+   Here we introduce \fs, a MATHEMATICA package which generates a C++
+   spectrum generator for any SUSY model, created with modularity and
+   speed in mind.  \fs makes use of the existing \sarah package to
+   obtain self energies, tadpoles corrections and renormalisation
+   group equations in any model.  \fs then generates C++ code for
+   calculating spectra with a structure that is designed to be
+   flexible. The user specifies the model supplying the superpotential,
+   gauge structure and particle content in a \sarah model file. The
+   user should also specify the boundary conditions in a separate \fs
+   model file. {\color{red}( Do we want to keep this separate and in
+     different places, add a script to put a SARAH model file in the
+     right place or combine them?)}  Flexible SUSY then translates
+   these into C++ code along with numerical routines for solving the
+   renormalisation group equations, one loop electroweak symmetry
+   breaking conditions and a solver routine for simultaneously solving
+   for the spectrum.  The modular structure of the generated code
+   allows for any individual component to be replaced with an
+   alternative if available.  Indeed \fs has been intentionally
+   designed to grow as alternative solvers and calculators are added.
+  \end{abstract}
+\begin{keyword}
+sparticle, 
+supersymmetry, 
+Higgs
+\PACS 12.60.Jv
+\PACS 14.80.Ly
+\end{keyword}
+\end{frontmatter}
+
+\section{Program Summary}
+\noindent{\em Program title:} \fs\\ {\em Program obtainable from:}
+         {\tt http://flexiblesusy.hepforge.org/}\\ {\em Distribution
+           format:}\/ tar.gz\\ {\em Programming language:} {\tt
+           C++}\\ {\em Computer:}\/ Personal computer\\ {\em Operating
+           system:}\/ Tested on Linux 4.x\\ {\em Word size:}\/ 32
+         bits\\ {\em External routines:}\/ SARAH 4.0.0, Boost library,
+         lapack {\color{red} Not sure what counts here?}\\ {\em
+           Typical running time:}\/ 0.1-0.3 seconds per parameter
+         point.\\ {\em Nature of problem:}\/ Determining the mass
+         spectrum and mixings for any supersymmetric model. The
+         generated code must find simultaneous solutions to
+         constraints which are specified at two or more different
+         renormalisation scales, which are connected by
+         renormalisation group equations forming a large set of
+         coupled differential equations. \\ {\em Solution method:}\/
+         Nested iterative algorithm and numerical minimisation of the
+         Higgs potential.  \\ {\em Restrictions:} The couplings must
+         remain perturbative at all scales between the highest and
+         lowest boundary condition.  \fs~ assumes that all couplings
+         of the model are real (i.e.\ $CP-$conserving)?  Due to the
+         modular nature of the generated code adaption and extension
+         to overcome restrictions in scope is quite straight forward.
+
+\newpage
+\section{Introduction}
+Supersymmetry provides the only way to extend the space-time symmetries of the poincar\'e group\cite{}, leading many to suspect that it may be realised in nature in some form. In particular supersymmetric extensions of the standard model where supersymmetry is broken at the TeV scale have been proposed to solve the hierarchy problem\cite{}, allow gauge coupling unification\cite{} and predict a dark matter candidate\cite{} and can fit the observed relic density\cite{}.  Such models have also been used for baryogenesis\cite{} or leptogensis\cite{} to solve the matter-anti-matter asymmetry of the universe and have been considered as the low energy effective models originating from string theory\cite{}. 
+
+Detailed phenonenological studies have been carried out for scenarios with the minimal supersymmetric standard model (MSSM). Many computational tools have been created to aid these studies and to explore the model. In particular there are a number of public spectrum generators for MSSM\cite{} and one for the NMSSM\cite{} which allow one to find the sparticle spectrum and mixings for a particular choices of breaking mechanism inspired boundary conditions and specified parameters.  
+
+However none of the fundamental motivations of supersymmetry require minimality. Yet without minimality as a constraint, constructing specialised tools to study all relevant models would require an enormous amount of work.  So general tools which can automate this process and produce fats and reliable programs can greatly enhance our ability to understand and test non-minimal realisations of supersymmetry.  
+
+From the recent $7$ TeV and $8$ TeV runs at the Large Hadron Collider (LHC) there have been two important developments.  First low energy signatures expected from such models, such as the classic jets plus missing transverse energy signature, have not been observed, substantially raising the lower limit on sparticle masses\cite{}. No other signature of beyond the standard model(BSM) physics has been observed, leaving the fundamental questions which motivated BSM physics unanswered.  
+
+ Secondly ATLAS and CMS discovered\cite{} a light Higgs of $125$ GeV, within the mass range that could be accommodated in the MSSM but requiring stops which are significantly heavier than both the direct collider limits and indirect limits that appears in constrained models from the significantly higher limits on first and second generation squarks.  Alternatively it is possible that a $125$ GeV Higgs in non-minimal models may not require such heavy stops, indeed a number of such models have been constructed to do exactly this by having new tree level contributions to the Higgs mass.
+
+These results lead to a number of different perspectives, for example some may wish to abandon naturalness as a motivation and focus on BSM models which can fit the observed relic density and allow unification of gauge couplings, while others may focus on special models which preserve naturalness.  In both cases exploration of the models can be aided if it is possible to quickly create a spectrum generator to find if there are phenomenologically viable scenarios in the models they are interested and what the general features of such models are. 
+
+
+
+
+
+\subsection{Design goals}
+
+FlexibleSUSY is designed with the following points in mind:
+
+\paragraph{Speed}
+Exploring the parameter space of supersymmetric models with a high
+number of free parameters is quite time consuming.  Therefore
+FlexibleSUSY aims to produce spectrum generators with a short run-time.
+
+The two most time consuming parts of a spectrum generator are the
+calculation of the beta functions and the pole masses for mixed
+particles.
+
+The reason is the following: The RG solving algorithms usually need
+$O(10)$ iterations to calculate a particle spectrum with $0.1\%$
+precision.  During each iteration the Runge--Kutta algorithm needs to
+calculate all beta functions $O(50)$ times.  Most two-loop beta
+functions involve $O(50)$ matrix multiplications and additions.  All
+together one arrives at $O(2.5\cdot 10^4)$ matrix multiplications.  To
+optimize these matrix multiplications FlexibleSUSY uses the fast
+linear algebra package \href{Eigen}{http://eigen.tuxfamily.org}, which
+exploits C++ expression templates to make the matrix multiplications
+easy to write and optimize.
+
+The second most time consuming part is the precise calculation of the
+pole masses for mixed particles.  For each particle $\psi_i$ the full
+self-energy matrix $\Sigma^\psi_{ij}(p=m^\text{tree}_{\psi_i})$ has to
+be evaluated.  Each self-energy matrix entry again involves the
+evaluation of $O(50)$ Feynman diagrams, which involves the calculation
+of vertices and loop functions.  All in all, one arrives at $O(500)$
+Feynman diagram or $O(3\cdot 10^4)$ loop function evaluations.  To
+speed up the calculation of the pole masses FlexibleSUSY makes use of
+multi-threading, where each pole mass is calculated in a separate
+thread.  By this technique one can gain a speed-up of $20$--$30\%$.
+
+\paragraph{Modularity}
+The large variety of supersymmetric models makes it likely that the
+user needs to modify the generated spectrum generator source code.
+FlexibleSUSY uses object orientation with C++ to modularize the source
+code to make it easy for the user to modify and extend the spectrum
+generator.  An important application here are the constraints: The RG
+solvers provide a constraint interface,
+\figurename~\ref{fig:schematic-two-scale-constraint-interface},
+%
+\begin{figure}
+  \centering
+  \tikzumlset{fill class=white}
+  \begin{tikzpicture}
+    \umlclass[x=0, y=0]{RGFlow$<$Two\_scale$>$}{}{
+      + solve()
+    }
+    \umlclass[x=6, y=0, type=abstract]{Constraint$<$Two\_scale$>$}{}{
+      + \umlvirt{apply()}\\
+      + \umlvirt{get\_scale() : double}
+    }
+    \umlclass[x=6, y=-3]{MyConstraint}{}{
+      + apply()\\
+      + get\_scale() : double
+    }
+    \umldep{RGFlow$<$Two\_scale$>$}{Constraint$<$Two\_scale$>$}
+    \umlinherit{MyConstraint}{Constraint$<$Two\_scale$>$}
+  \end{tikzpicture}
+  \caption{Schematic two-scale constraint interface}
+  \label{fig:schematic-two-scale-constraint-interface}
+\end{figure}
+%
+which can be implemented to create the custom constraint
+\code{MyConstraint}.  In the \code{apply()} function the constraint
+application takes place and the \code{get_scale()} function specifies
+the scale at which the constraint is to be applied.
+
+\section{Download and compilation}
+\subsection{Quickstart}
+
+\section{Stucture of the spectrum generator}
+\subsection{boundary conditions}
+Different types, how we match to low energy data.  reference EWSB or merge that section here.
+\subsection{RGEs}
+\subsection{tree level spectrum}
+\subsection{Electroweak symmetry breaking}
+\subsection{pole masses}
+\subsection{two scale fixed point iteration}
+\subsection{Lattice method}
+If ready.
+\subsection{multiple effective models at different scales}
+\section{Implementing new models}
+\section{Adapting the code at the C++ level}
+\appendix
+\section{Examples}
+\section{Tests}
+
+
+\begin{thebibliography}{100}
+%\cite{Allanach:2001kg}
+\bibitem{Allanach:2001kg} 
+  B.~C.~Allanach,
+  %``SOFTSUSY: a program for calculating supersymmetric spectra,''
+  Comput.\ Phys.\ Commun.\  {\bf 143}, 305 (2002)
+  [hep-ph/0104145].
+  %%CITATION = HEP-PH/0104145;%%
+  %716 citations counted in INSPIRE as of 20 Sep 2013
+
+%\cite{Degrassi:2009yq}
+\bibitem{Degrassi:2009yq} 
+  G.~Degrassi and P.~Slavich,
+  %``On the radiative corrections to the neutral Higgs boson masses in the NMSSM,''
+  Nucl.\ Phys.\ B {\bf 825}, 119 (2010)
+  [arXiv:0907.4682 [hep-ph]].
+  %%CITATION = ARXIV:0907.4682;%%
+  %35 citations counted in INSPIRE as of 21 Sep 2013
+%\cite{Allanach:2008qq}
+\bibitem{Allanach:2008qq} 
+  B.~C.~Allanach, C.~Balazs, G.~Belanger, M.~Bernhardt, F.~Boudjema, D.~Choudhury, K.~Desch and U.~Ellwanger {\it et al.},
+  %``SUSY Les Houches Accord 2,''
+  Comput.\ Phys.\ Commun.\  {\bf 180}, 8 (2009)
+  [arXiv:0801.0045 [hep-ph]].
+  %%CITATION = ARXIV:0801.0045;%%
+  %177 citations counted in INSPIRE as of 21 Sep 2013
+
+%\cite{Ellwanger:2009dp}
+\bibitem{Ellwanger:2009dp} 
+  U.~Ellwanger, C.~Hugonie and A.~M.~Teixeira,
+  %``The Next-to-Minimal Supersymmetric Standard Model,''
+  Phys.\ Rept.\  {\bf 496}, 1 (2010)
+  [arXiv:0910.1785 [hep-ph]].
+  %%CITATION = ARXIV:0910.1785;%%
+  %327 citations counted in INSPIRE as of 21 Sep 2013
+
+%\cite{MV94}
+\bibitem{MV94} 
+  S.~P.~Martin and M.~T.~Vaughn,
+  %``Two loop renormalization group equations for soft supersymmetry breaking couplings,''
+  Phys.\ Rev.\ D {\bf 50}, 2282 (1994)
+  [Erratum-ibid.\ D {\bf 78}, 039903 (2008)]
+  [hep-ph/9311340].
+  %%CITATION = HEP-PH/9311340;%%
+  %568 citations counted in INSPIRE as of 24 Sep 2013
+
+%\cite{Yam94}
+\bibitem{Yam94} 
+  Y.~Yamada,
+  %``Two loop renormalization group equations for soft SUSY breaking scalar interactions: Supergraph method,''
+  Phys.\ Rev.\ D {\bf 50}, 3537 (1994)
+  [hep-ph/9401241].
+  %%CITATION = HEP-PH/9401241;%%
+  %225 citations counted in INSPIRE as of 24 Sep 2013
+
+\cite{Sper13}
+\bibitem{Sper13} 
+  M.~Sperling, D.~Stöckinger and A.~Voigt,
+  %``Renormalization of vacuum expectation values in spontaneously broken gauge theories,''
+  JHEP {\bf 1307}, 132 (2013)
+  [arXiv:1305.1548 [hep-ph]].
+  %%CITATION = ARXIV:1305.1548;%%
+  %4 citations counted in INSPIRE as of 14 Oct 2013
+
+%\cite{Ell08}
+\bibitem{Ell08} 
+  U.~Ellwanger, C.~-C.~Jean-Louis and A.~M.~Teixeira,
+  %``Phenomenology of the General NMSSM with Gauge Mediated Supersymmetry Breaking,''
+  JHEP {\bf 0805}, 044 (2008)
+  [arXiv:0803.2962 [hep-ph]].
+  %%CITATION = ARXIV:0803.2962;%%
+  %28 citations counted in INSPIRE as of 24 Sep 2013
+
+
+  %\cite{Staub:2010ty}
+\bibitem{Staub:2010ty} 
+  F.~Staub, W.~Porod and B.~Herrmann,
+  %``The Electroweak sector of the NMSSM at the one-loop level,''
+  JHEP {\bf 1010}, 040 (2010)
+  [arXiv:1007.4049 [hep-ph]].
+  %%CITATION = ARXIV:1007.4049;%%
+  %28 citations counted in INSPIRE as of 12 Oct 2013
+
+%\cite{Staub:2009bi}
+\bibitem{Staub:2009bi} 
+  F.~Staub,
+  %``From Superpotential to Model Files for FeynArts and CalcHep/CompHep,''
+  Comput.\ Phys.\ Commun.\  {\bf 181}, 1077 (2010)
+  [arXiv:0909.2863 [hep-ph]].
+  %%CITATION = ARXIV:0909.2863;%%
+  %64 citations counted in INSPIRE as of 12 Oct 2013
+
+%\cite{Staub:2010jh}
+\bibitem{Staub:2010jh} 
+  F.~Staub,
+  %``Automatic Calculation of supersymmetric Renormalization Group Equations and Self Energies,''
+  Comput.\ Phys.\ Commun.\  {\bf 182}, 808 (2011)
+  [arXiv:1002.0840 [hep-ph]].
+  %%CITATION = ARXIV:1002.0840;%%
+  %60 citations counted in INSPIRE as of 12 Oct 2013
+
+%\cite{Staub:2012pb}
+\bibitem{Staub:2012pb} 
+  F.~Staub,
+  %``SARAH 3.2: Dirac Gauginos, UFO output, and more,''
+  Computer Physics Communications {\bf 184}, pp. 1792 (2013)
+  [Comput.\ Phys.\ Commun.\  {\bf 184}, 1792 (2013)]
+  [arXiv:1207.0906 [hep-ph]].
+  %%CITATION = ARXIV:1207.0906;%%
+  %19 citations counted in INSPIRE as of 12 Oct 2013
+
+%\cite{Staub:2013tta}
+\bibitem{Staub:2013tta} 
+  F.~Staub,
+  %``SARAH 4: A tool for (not only SUSY) model builders,''
+  arXiv:1309.7223 [hep-ph].
+  %%CITATION = ARXIV:1309.7223;%%
+  %2 citations counted in INSPIRE as of 12 Oct 2013
+
+
+
+%
+
+\end{thebibliography}
+\end{document}
