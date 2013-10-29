@@ -212,15 +212,15 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    // neutral CP even Higgs
    const DoubleVector hh(m.get_physical().Mhh);
    const DoubleVector mh0(s.displayPhys().mh0);
-   BOOST_CHECK_CLOSE(hh(1), mh0(1), 0.0025);
-   BOOST_CHECK_CLOSE(hh(2), mh0(2), 0.015);
-   BOOST_CHECK_CLOSE(hh(3), mh0(3), 0.01);
+   BOOST_CHECK_CLOSE(hh(1), mh0(1), 0.0015);
+   BOOST_CHECK_CLOSE(hh(2), mh0(2), 2.0e-5);
+   BOOST_CHECK_CLOSE(hh(3), mh0(3), 0.008);
 
    // neutral CP odd Higgs
    const DoubleVector Ah(m.get_physical().MAh);
    const DoubleVector mA0(s.displayPhys().mA0);
-   BOOST_CHECK_CLOSE(Ah(2), mA0(1), 0.015);
-   BOOST_CHECK_CLOSE(Ah(3), mA0(2), 0.008);
+   BOOST_CHECK_CLOSE(Ah(2), mA0(1), 3.0e-5);
+   BOOST_CHECK_CLOSE(Ah(3), mA0(2), 7.0e-4);
 
    // charged Higgs
    const DoubleVector Hpm(m.get_physical().MHpm);
