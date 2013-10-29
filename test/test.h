@@ -26,7 +26,7 @@ bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
    if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
       return true;
 
-   if (std::fabs(a) < prec)
+   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
       return std::numeric_limits<T>::infinity();
 
    return std::fabs((a - b)/a) < prec;
