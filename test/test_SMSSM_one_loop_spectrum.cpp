@@ -221,9 +221,8 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    const DoubleVector mA0(s.displayPhys().mA0);
    BOOST_CHECK_CLOSE(Ah(2), mA0(1), 3.0e-5);
    BOOST_CHECK_CLOSE(Ah(3), mA0(2), 7.0e-4);
-
    // charged Higgs
    const DoubleVector Hpm(m.get_physical().MHpm);
    const double mHpm = s.displayPhys().mHpm;
-   BOOST_CHECK_CLOSE(Hpm(2), mHpm, 0.02);
+   BOOST_CHECK_CLOSE(Hpm(2), mHpm, 0.0009);
 }
