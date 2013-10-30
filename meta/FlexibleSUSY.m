@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 
@@ -740,7 +740,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             numberOfSusyParameters, anomDim,
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
-            fixedParameters, treeLevelEwsbOutputFile},
+            fixedParameters, treeLevelEwsbOutputFile,
+	    vertexRules,
+	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
@@ -925,10 +927,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
                                    ];
 
-           massMatrices = ConvertSarahMassMatrices[] /.
+	   On[Assert];
+
+           Lat$massMatrices = ConvertSarahMassMatrices[] /.
                           Parameters`ApplyGUTNormalization[] /.
-                          { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) } /.
-                          allIndexReplacementRules;
+                          { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
+           massMatrices = Lat$massMatrices /. allIndexReplacementRules;
+	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
 
            allParticles = FlexibleSUSY`M[GetMassEigenstate[#]]& /@ massMatrices;
            allOutputParameters = DeleteCases[DeleteDuplicates[
@@ -1063,6 +1068,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[MediumDiagonalizationPrecision]}],
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
+
+	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
