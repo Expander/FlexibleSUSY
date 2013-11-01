@@ -19,6 +19,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
@@ -153,6 +154,10 @@ $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(EIGENFLAGS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(GSLFLAGS) $(BOOSTFLAGS)
+endif
+
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+$(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(LOOPTOOLSFLAGS)
 endif
 
 ifeq ($(ENABLE_STATIC_LIBS),yes)
