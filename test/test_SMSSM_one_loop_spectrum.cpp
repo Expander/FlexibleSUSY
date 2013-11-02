@@ -226,3 +226,91 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    const double mHpm = s.displayPhys().mHpm;
    BOOST_CHECK_CLOSE(Hpm(2), mHpm, 0.0009);
 }
+
+BOOST_AUTO_TEST_CASE( test_self_energies )
+{
+   SMSSM_input_parameters input;
+   input.m0       = 540.;
+   input.Azero    = -350.;
+   input.MSInput  = 290.;
+   input.BMSInput = 400.;
+   input.L1Input  = 300.;
+   SMSSM<Two_scale> m(input);
+   NmssmSoftsusy s;
+   setup_SMSSM(m, s, input);
+
+   softsusy::Z3 = false;
+   softsusy::numHiggsMassLoops = 1;
+   softsusy::MIXING = 1;
+   ensure_tree_level_ewsb(m, s, input);
+
+   m.calculate_DRbar_parameters();
+   s.calcDrBarPars();
+
+   if (m.get_problems().have_problem()) {
+      std::ostringstream ostr;
+      m.get_problems().print(ostr);
+      BOOST_FAIL(ostr.str());
+   }
+
+   BOOST_CHECK_EQUAL(s.displayMu(), m.get_scale());
+
+   const double gp = s.displayGaugeCoupling(1) * sqrt(0.6);
+   const double g2 =  s.displayGaugeCoupling(2);
+   const double sw = gp / sqrt(sqr(gp) + sqr(g2));
+
+   const double nmT1 = s.doCalcTadpole1oneLoop(m.get_MFu()(3), sw);
+   const double nmT2 = s.doCalcTadpole2oneLoop(m.get_MFu()(3), sw);
+   const double nmTS = s.doCalcTadpoleSoneLoop(m.get_MFu()(3), sw);
+
+   const double fsT1 = m.tadpole_hh(1).real() / m.get_vd();
+   const double fsT2 = m.tadpole_hh(2).real() / m.get_vu();
+   const double fsTS = m.tadpole_hh(3).real() / m.get_vS();
+
+   BOOST_CHECK_CLOSE(nmT1, fsT1, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmT2, fsT2, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmTS, fsTS, 1.0e-12);
+
+   /// CP-even Higgs self-energies
+   const double momentum = 100.;
+   const double nmHSE11 = s.pis1s1(momentum,s.displayMu());
+   const double fsHSE11 = m.self_energy_hh(momentum, 1, 1).real();
+   const double nmHSE12 = s.pis1s2(momentum,s.displayMu());
+   const double fsHSE12 = m.self_energy_hh(momentum, 1, 2).real();
+   const double nmHSE22 = s.pis2s2(momentum,s.displayMu());
+   const double fsHSE22 = m.self_energy_hh(momentum, 2, 2).real();
+   const double nmHSE13 = s.pis1s3(momentum,s.displayMu());
+   const double fsHSE13 = m.self_energy_hh(momentum, 1, 3).real();
+   const double nmHSE23 = s.pis2s3(momentum,s.displayMu());
+   const double fsHSE23 = m.self_energy_hh(momentum, 2, 3).real();
+   const double nmHSE33 = s.pis3s3(momentum,s.displayMu());
+   const double fsHSE33 = m.self_energy_hh(momentum, 3, 3).real();
+
+   BOOST_CHECK_CLOSE(nmHSE11, fsHSE11, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE12, fsHSE12, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE13, fsHSE13, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE22, fsHSE22, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE23, fsHSE23, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE33, fsHSE33, 1.5e-11);
+
+   /// CP-odd self-energies
+   const double nmPHSE11 = s.pip1p1(momentum,s.displayMu());
+   const double fsPHSE11 = m.self_energy_Ah(momentum, 1, 1).real();
+   const double nmPHSE12 = s.pip1p2(momentum,s.displayMu());
+   const double fsPHSE12 = m.self_energy_Ah(momentum, 1, 2).real();
+   const double nmPHSE22 = s.pip2p2(momentum,s.displayMu());
+   const double fsPHSE22 = m.self_energy_Ah(momentum, 2, 2).real();
+   const double nmPHSE13 = s.pip1p3(momentum,s.displayMu());
+   const double fsPHSE13 = m.self_energy_Ah(momentum, 1, 3).real();
+   const double nmPHSE23 = s.pip2p3(momentum,s.displayMu());
+   const double fsPHSE23 = m.self_energy_Ah(momentum, 2, 3).real();
+   const double nmPHSE33 = s.pip3p3(momentum,s.displayMu());
+   const double fsPHSE33 = m.self_energy_Ah(momentum, 3, 3).real();
+
+   BOOST_CHECK_CLOSE(nmPHSE11, fsPHSE11, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE12, fsPHSE12, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE13, fsPHSE13, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE22, fsPHSE22, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE23, fsPHSE23, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE33, fsPHSE33, 1.0e-12);
+}
