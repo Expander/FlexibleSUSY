@@ -33,10 +33,6 @@
 using namespace std;
 using namespace softsusy;
 
-namespace softsusy {
-   struct drBarPars;
-}
-
 /// returns either sqrt(f) for f>0 or 0 otherwise
 inline double zeroSqrt(double f){ if (f > 0.) return sqrt(f); 
   else return EPSTOL; 
