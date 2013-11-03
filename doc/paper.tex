@@ -194,7 +194,45 @@ application takes place and the \code{get_scale()} function specifies
 the scale at which the constraint is to be applied.
 
 \section{Download and compilation}
-\subsection{Quickstart}
+Flexible SUSY can be downloaded from \url{http://flexiblesusy.hepforge.org}.  
+To use FlexibleSUSY please make sure you have the following installed.  
+\begin{itemize}
+\item Mathematica, version 7 or higher
+\item SARAH, version 4.0.0 or higher \url{http://sarah.hepforge.org}
+\item C++11 compatible compiler (g++ 4.6.0 or higher, clang++ 3.1 or
+  higher)
+\item Fortran compiler (gfortran, ifort etc.)
+\item Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
+\item Boost library, version 1.36.0 or higher
+  \url{http://www.boost.org}
+\item GNU scientific library \url{http://www.gnu.org/software/gsl/}
+\item lapack (needed for the Lattice algorithm only)
+  \url{http://www.netlib.org/lapack/}
+\end{itemize}
+%
+Optional:
+%
+\begin{itemize}
+\item Looptools, version 2.8 or higher
+  \url{http://www.feynarts.de/looptools/}
+\end{itemize}
+
+\subsection{Quick Start}
+Create a MSSM spectrum generator
+  \begin{lstlisting}[language=bash]
+$ ./createmodel --models=MSSM
+$ ./configure --with-models=MSSM
+$ make
+  \end{lstlisting}
+Run the spectrum generator using the default parameter point
+  \begin{lstlisting}[language=bash]
+$ ./models/MSSM/run_MSSM.x
+  \end{lstlisting}
+Run the spectrum generator using a SLHA input file
+  \begin{lstlisting}[language=bash]
+$ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM --slha-output-file=LesHouches.out.MSSM
+  \end{lstlisting}
+
 
 \section{Stucture of the spectrum generator}
 \subsection{boundary conditions}
