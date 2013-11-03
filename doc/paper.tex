@@ -29,7 +29,7 @@ bookmarks=true, linktocpage]{hyperref}
 %macros
 \newcommand{\sarah}{SARAH\xspace}
 \newcommand{\fs}{FlexibleSUSY\xspace}
-
+\newcommand{\ESSM}{E$_6$SSM\xspace}
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
 \newcommand{\DRbar}{\textoverline{DR}}  % inline source code
@@ -104,22 +104,94 @@ Higgs
          modular nature of the generated code adaption and extension
          to overcome restrictions in scope is quite straight forward.
 
+
 \newpage
 \section{Introduction}
-Supersymmetry provides the only way to extend the space-time symmetries of the poincar\'e group\cite{}, leading many to suspect that it may be realised in nature in some form. In particular supersymmetric extensions of the standard model where supersymmetry is broken at the TeV scale have been proposed to solve the hierarchy problem\cite{}, allow gauge coupling unification\cite{} and predict a dark matter candidate\cite{} and can fit the observed relic density\cite{}.  Such models have also been used for baryogenesis\cite{} or leptogensis\cite{} to solve the matter-anti-matter asymmetry of the universe and have been considered as the low energy effective models originating from string theory\cite{}. 
+Supersymmetry provides the only way to extend the space-time
+symmetries of the poincar\'e group\cite{}, leading many to suspect
+that it may be realised in nature in some form. In particular
+supersymmetric extensions of the standard model where supersymmetry is
+broken at the TeV scale have been proposed to solve the hierarchy
+problem\cite{}, allow gauge coupling unification\cite{} and predict a
+dark matter candidate\cite{} and can fit the observed relic
+density\cite{}.  Such models have also been used for
+baryogenesis\cite{} or leptogensis\cite{} to solve the
+matter-anti-matter asymmetry of the universe and have been considered
+as the low energy effective models originating from string
+theory\cite{}.
 
-Detailed phenonenological studies have been carried out for scenarios with the minimal supersymmetric standard model (MSSM). Many computational tools have been created to aid these studies and to explore the model. In particular there are a number of public spectrum generators for MSSM\cite{} and one for the NMSSM\cite{} which allow one to find the sparticle spectrum and mixings for a particular choices of breaking mechanism inspired boundary conditions and specified parameters.  
+Detailed phenonenological studies have been carried out for scenarios
+with the minimal supersymmetric standard model (MSSM). Many
+computational tools have been created to aid these studies and to
+explore the model. In particular there are a number of public spectrum
+generators for MSSM\cite{} and one for the NMSSM\cite{} which allow
+one to find the sparticle spectrum and mixings for a particular
+choices of breaking mechanism inspired boundary conditions and
+specified parameters.
 
-However none of the fundamental motivations of supersymmetry require minimality. Yet without minimality as a constraint, constructing specialised tools to study all relevant models would require an enormous amount of work.  So general tools which can automate this process and produce fats and reliable programs can greatly enhance our ability to understand and test non-minimal realisations of supersymmetry.  
+However none of the fundamental motivations of supersymmetry require
+minimality. Yet without minimality as a constraint, constructing
+specialised tools to study all relevant models would require an
+enormous amount of work.  So general tools which can automate this
+process and produce fats and reliable programs can greatly enhance our
+ability to understand and test non-minimal realisations of
+supersymmetry.
 
-From the recent $7$ TeV and $8$ TeV runs at the Large Hadron Collider (LHC) there have been two important developments.  First low energy signatures expected from such models, such as the classic jets plus missing transverse energy signature, have not been observed, substantially raising the lower limit on sparticle masses\cite{}. No other signature of beyond the standard model(BSM) physics has been observed, leaving the fundamental questions which motivated BSM physics unanswered.  
+From the recent $7$ TeV and $8$ TeV runs at the Large Hadron Collider
+(LHC) there have been two important developments.  First low energy
+signatures expected from such models, such as the classic jets plus
+missing transverse energy signature, have not been observed,
+substantially raising the lower limit on sparticle masses\cite{}. No
+other signature of beyond the standard model(BSM) physics has been
+observed, leaving the fundamental questions which motivated BSM
+physics unanswered.
 
- Secondly ATLAS and CMS discovered\cite{} a light Higgs of $125$ GeV, within the mass range that could be accommodated in the MSSM but requiring stops which are significantly heavier than both the direct collider limits and indirect limits that appears in constrained models from the significantly higher limits on first and second generation squarks.  Alternatively it is possible that a $125$ GeV Higgs in non-minimal models may not require such heavy stops, indeed a number of such models have been constructed to do exactly this by having new tree level contributions to the Higgs mass.
+ Secondly ATLAS and CMS discovered\cite{} a light Higgs of $125$ GeV,
+ within the mass range that could be accommodated in the MSSM but
+ requiring stops which are significantly heavier than both the direct
+ collider limits and indirect limits that appears in constrained
+ models from the significantly higher limits on first and second
+ generation squarks.  Alternatively it is possible that a $125$ GeV
+ Higgs in non-minimal models may not require such heavy stops, indeed
+ a number of such models have been constructed to do exactly this by
+ having new tree level contributions to the Higgs mass.
 
-These results lead to a number of different perspectives, for example some may wish to abandon naturalness as a motivation and focus on BSM models which can fit the observed relic density and allow unification of gauge couplings, while others may focus on special models which preserve naturalness.  In both cases exploration of the models can be aided if it is possible to quickly create a spectrum generator to find if there are phenomenologically viable scenarios in the models they are interested and what the general features of such models are. 
+These results lead to a number of different perspectives, for example
+some may wish to abandon naturalness as a motivation and focus on BSM
+models which can fit the observed relic density and allow unification
+of gauge couplings, while others may focus on special models which
+preserve naturalness.  In both cases exploration of the models can be
+aided if it is possible to quickly create a spectrum generator to find
+if there are phenomenologically viable scenarios in the models they
+are interested and what the general features of such models are.
 
+\subsection{The Program}
+\fs is a MATHEMATICA package designed to create a fast and easily
+adaptable spectrum generator in C++ for any SUSY model and some
+non-supersymmetric models {\color{red} can we?}.  \fs makes use of the
+existing \sarah package to obtain one-loop self energies, one-loop
+tadpoles corrections and two-loop renormalisation group
+equations(RGEs) in any model.  \fs then converts these algerbraic
+expressions from \sarah into C++ code using the C++11 standard. \fs
+uses some parts of SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen
+library \cite{eigen}, as well as the gnu scientific library and the
+boost library to create numerical routines which then use these
+routines to solve the RGEs and EWSB conditions which will be used in
+the spectrum generator. The main solver routine of \fs then calls
+these routines to find simultaneous solutions for the EWSB, low energy
+data, and other, user supplied, boundary conditions (e.g. the usual
+mSUGRA universality conditions) and calculates the mass spectrum.
 
-
+ The modular structure of the generated code allows for any individual
+ components to be replaced with an alternative if available.  Indeed
+ \fs has been intentionally designed to grow as alternative solvers
+ and calculators are added and a subsequent release with an
+ alternative lattice solver is already planned.{\color{red} Or Indeed
+   flexible SUSY is distributed with two diffrent main solvers, the
+   two-scale solver based omn the approach of \cite{} and designed for
+   speed and the a lattice solver designed to solve tricky cases where
+   the fixed point iteration of the two-scale approach fails to
+   converge.}
 
 
 \subsection{Design goals}
@@ -249,6 +321,11 @@ If ready.
 \section{Adapting the code at the C++ level}
 \appendix
 \section{Examples}
+\subsection{NMSSM}
+Detailed steps to create NMSSM model file.
+\subsection{\ESSM}
+Detailed steps to create \ESSM model file.
+
 \section{Tests}
 
 
@@ -371,7 +448,8 @@ If ready.
   %%CITATION = ARXIV:1309.7223;%%
   %2 citations counted in INSPIRE as of 12 Oct 2013
 
-
+\bibitem{eigen}
+Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
 
 %
 
