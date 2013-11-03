@@ -33,6 +33,27 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
 \newcommand{\DRbar}{\textoverline{DR}}  % inline source code
+\def\at{\alpha_t}
+\def\ab{\alpha_b}
+\def\as{\alpha_s}
+\def\atau{\alpha_{\tau}}
+\def\oat{O(\at)}
+\def\oab{O(\ab)}
+\def\oatau{O(\atau)}
+\def\oatab{O(\at\ab)}
+\def\oatas{O(\at\as)}
+\def\oabas{O(\ab\as)}
+\def\oatababq{O(\at\ab + \ab^2)}
+\def\oatqatababq{O(\at^2 + \at\ab + \ab^2)}
+\def\oatasatq{O(\at\as + \at^2)}
+\def\oatasabas{O(\at\as +\ab\as)}
+\def\oatasabasatq{O(\at\as + \at^2 +\ab\as)}
+\def\oatq{O(\at^2)}
+\def\oabq{O(\ab^2)}
+\def\oatauq{O(\atau^2)}
+\def\oabatau{O(\ab \atau)}
+\def\oas{O(\as)}
+\def\oatauqatab{O(\atau^2 +\ab \atau )}
 
 \journal{Computer Physics Communications}
 \begin{document}
@@ -187,8 +208,8 @@ mSUGRA universality conditions) and calculates the mass spectrum.
  \fs has been intentionally designed to grow as alternative solvers
  and calculators are added and a subsequent release with an
  alternative lattice solver is already planned.{\color{red} Or Indeed
-   flexible SUSY is distributed with two diffrent main solvers, the
-   two-scale solver based omn the approach of \cite{} and designed for
+   flexible SUSY is distributed with two different main solvers, the
+   two-scale solver based on the approach of \cite{} and designed for
    speed and the a lattice solver designed to solve tricky cases where
    the fixed point iteration of the two-scale approach fails to
    converge.}
@@ -303,17 +324,36 @@ $ ./models/MSSM/run_MSSM.x
 Run the spectrum generator using a SLHA input file
   \begin{lstlisting}[language=bash]
 $ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM --slha-output-file=LesHouches.out.MSSM
-  \end{lstlisting}
-
+  \end{lstlisting}%% $
 
 \section{Stucture of the spectrum generator}
 \subsection{boundary conditions}
 Different types, how we match to low energy data.  reference EWSB or merge that section here.
+mention two loop qcd parts from softsusy.
 \subsection{RGEs}
+The two loop renormalisation group equations are generated using command ?
+Even in the simplest supersymmetric model the RGEs form a very large set of coupled non-linear differential equations.  To solve these and thereby evolve the parameters between two different scales \fs has... 
 \subsection{tree level spectrum}
+The diagonalised tree level $\overline{DR}$ masses are obtained from expressions...
+The numerical diagonalisation is performed by... with an accuracy set by...   
 \subsection{Electroweak symmetry breaking}
-\subsection{pole masses}
+At tree level the EWSB conditions are written...
+The one loop electroweak symmetry breaking are solved using the gsl routines finding multiple roots, \code{gsl_multiroot_fsolver}.  Iteration. For example in the MSSM \fs generates.. show code.
+ If higher accuracy is required additional routines with higher order corrections can be added in a very simple way.  For example in the MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of $\oatas$, $\oabas$, $\oatq$, $\oabatau$, 
+$\oabq$, $\oatauq$ and $\oatab$  as follows...  
+Something similar is done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}.
+ Corrections from other sources can be added to the generated code by...
 \subsection{two scale fixed point iteration}
+\subsection{pole masses}
+With the solver routine finished and convergence achieved, the $\overline{DR}$ parameters consistent with one loop EWSB, low energy data and all user supplied boundary conditions are then known at any scale between...
+
+The physical mass spectrum can now be calculated.  \fs uses the full one-loop self energies and tree level routines to calculate the pole masses at the one-level.  If higher accuracy is required additional routines with higher order corrections can be added in a very simple way. For example in the MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of $\oatas$, $\oabas$, $\oatq$, $\oabatau$, 
+$\oabq$, $\oatauq$ and $\oatab$  as follows...  
+Something similar is done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}, while for $\oatq$, $\oabatau$, 
+$\oabq$, $\oatauq$ and $\oatab$ the MSSM pieces are used though it should be understood that these are not complete in the NMSSM. For other models since the Higgs mass is a very important measurement and the two loop corrections can be larger than the current experimental error \cite{Degrassi:2009yq} we recommend that the leading log two loop corrections are estimated, by generalising those of the MSSM or NMSSM, as has been done, for example, in the E$_6$SSM\cite{King:2005jy}. 
+
+Corrections to other masses or further corrections to the Higgs states can be added very easily by...
+
 \subsection{Lattice method}
 If ready.
 \subsection{multiple effective models at different scales}
@@ -327,7 +367,9 @@ Detailed steps to create NMSSM model file.
 Detailed steps to create \ESSM model file.
 
 \section{Tests}
+Comparisons against existing spectrum generators to test for deviations, e.g. the tests against MSSM and NMSSM (and E6SSM?).
 
+Comparisons against existing spectrum generators and SARAH generated spheno code for speed.
 
 \begin{thebibliography}{100}
 %\cite{Allanach:2001kg}
@@ -450,6 +492,15 @@ Detailed steps to create \ESSM model file.
 
 \bibitem{eigen}
 Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
+
+%\cite{King:2005jy}
+\bibitem{King:2005jy} 
+  S.~F.~King, S.~Moretti and R.~Nevzorov,
+  %``Theory and phenomenology of an exceptional supersymmetric standard model,''
+  Phys.\ Rev.\ D {\bf 73}, 035009 (2006)
+  [hep-ph/0510419].
+  %%CITATION = HEP-PH/0510419;%%
+  %130 citations counted in INSPIRE as of 03 Nov 2013
 
 %
 
