@@ -212,7 +212,10 @@ mSUGRA universality conditions) and calculates the mass spectrum.
    two-scale solver based on the approach of \cite{} and designed for
    speed and the a lattice solver designed to solve tricky cases where
    the fixed point iteration of the two-scale approach fails to
-   converge.}
+   converge.}  In addition if one already has an existing code for
+ some other purpose and simply wishes to improve upon this by adding,
+ e.g, new RGEs or self energies the modular fraework makes this fairly
+ straightward{\color{red} Is this true?  because it should be...}
 
 
 \subsection{Design goals}
@@ -359,6 +362,7 @@ If ready.
 \subsection{multiple effective models at different scales}
 \section{Implementing new models}
 \section{Adapting the code at the C++ level}
+\section{Using individual modules in your own code}
 \appendix
 \section{Examples}
 \subsection{NMSSM}
