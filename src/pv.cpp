@@ -29,26 +29,28 @@ namespace flexiblesusy {
 
 namespace passarino_veltman {
 
+#ifdef ENABLE_LOOPTOOLS
+
 namespace {
 
-bool not_yet = true;
-
-inline void call_ltini_if_not_yet()
-{
-    if (not_yet) {
+struct Initialize_looptools {
+    Initialize_looptools() {
 	ltini();
-	not_yet = false;
     }
-}
+    ~Initialize_looptools() {
+	ltexi();
+    }
+} initialize_looptools;
 
 }
+
+#endif // ENABLE_LOOPTOOLS
 
 using namespace std;
 
 double ReA0(double m2, double scl2)
 {
 #ifdef ENABLE_LOOPTOOLS
-    call_ltini_if_not_yet();
     setmudim(scl2);
     return ::A0(m2).real();
 #else
@@ -59,7 +61,6 @@ double ReA0(double m2, double scl2)
 double ReB0(double p2, double m21, double m22, double scl2)
 {
 #ifdef ENABLE_LOOPTOOLS
-    call_ltini_if_not_yet();
     setmudim(scl2);
     return ::B0(p2, m21, m22).real();
 #else
@@ -70,7 +71,6 @@ double ReB0(double p2, double m21, double m22, double scl2)
 double ReB1(double p2, double m21, double m22, double scl2)
 {
 #ifdef ENABLE_LOOPTOOLS
-    call_ltini_if_not_yet();
     setmudim(scl2);
     return ::B1(p2, m21, m22).real();
 #else
@@ -81,7 +81,6 @@ double ReB1(double p2, double m21, double m22, double scl2)
 double ReB00(double p2, double m21, double m22, double scl2)
 {
 #ifdef ENABLE_LOOPTOOLS
-    call_ltini_if_not_yet();
     setmudim(scl2);
     return ::B00(p2, m21, m22).real();
 #else
