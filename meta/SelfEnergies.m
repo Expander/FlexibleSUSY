@@ -302,9 +302,7 @@ FindInnerColorIndices[particles_List] :=
 CreateCouplingFunctions[coupling_, expr_, sumOverInternalColors_:False] :=
     Module[{symbol, indices, cFunctionName, prototype = "", definition = "",
             vertex, i, lorentz, rotatedCoupling, particles,
-            allIndices = {}, neededIndices = {}, strippedIndices = {},
             innerColorIndices = {}},
-           indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            If[sumOverInternalColors,
@@ -324,7 +322,7 @@ CreateCouplingFunctions[coupling_, expr_, sumOverInternalColors_:False] :=
                          {ct3, 1, If[FreeQ[innerColorIndices, ct3], 1, 3]},
                          {ct4, 1, If[FreeQ[innerColorIndices, ct4], 1, 3]}];
              ];
-           {prototype, definition} = CreateCouplingFunction[coupling, expr, strippedIndices];
+           {prototype, definition} = CreateCouplingFunction[coupling, expr, {}];
            Return[{prototype, definition, RuleDelayed[Vertices`ToCpPattern[coupling], symbol]}];
           ];
 
