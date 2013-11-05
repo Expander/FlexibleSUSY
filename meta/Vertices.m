@@ -29,7 +29,7 @@ BeginPackage["Vertices`", {
 
 VertexRules::usage;
 ToCpPattern::usage="ToCpPattern[cp] converts field indices inside cp to patterns, e.g. ToCpPattern[Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL]] === Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL].";
-ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. Lattice`Private`ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
+ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
 FieldIndexList::usage;
 
 Begin["`Private`"]
@@ -37,10 +37,9 @@ Begin["`Private`"]
 VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	UnitaryMatrixQ,
 	nCpPatterns,
-	cpPatterns = Union[
+	cpPatterns = DeleteRedundantCpPatterns[
 	    ToCpPattern /@ RenumberCpIndices /@ Cases[
-		nPointFunctions, _SARAH`Cp|_SARAH`Cp[_], {0, Infinity}],
-	    SameTest -> MatchQ]
+		nPointFunctions, _SARAH`Cp|_SARAH`Cp[_], {0, Infinity}]]
     },
     (UnitaryMatrixQ[#] = True)& /@
         Flatten@DeleteCases[massMatrices[[All,3]], Null];
@@ -51,6 +50,10 @@ VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	       "[",First[#2],"/",nCpPatterns,"] calculating ", #1, "... "]&,
 	cpPatterns]
 ];
+
+DeleteRedundantCpPatterns[cpPatterns_] :=
+    First @ Sort[#, MatchQ[#2, #1]&]& /@
+    Gather[cpPatterns, MatchQ[#1, #2] || MatchQ[#2, #1]&];
 
 VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	cp = ToCp[cpPattern],
