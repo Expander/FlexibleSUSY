@@ -272,7 +272,7 @@ CreateCouplingFunctionAndReplacementRule[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = ""},
            symbol = CreateCouplingSymbol[coupling];
            {prototype, definition} = CreateCouplingFunction[coupling, expr];
-           Return[{prototype, definition, RuleDelayed[Vertices`ToCpPattern[coupling], symbol]}];
+           Return[{prototype, definition, RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}];
           ];
 
 CreateVertexExpressions[vertexRules_List] :=
