@@ -241,24 +241,6 @@ CreateCouplingFunction[coupling_, expr_] :=
            Return[{prototype, definition}];
           ];
 
-FindLorentzStructure[list_List, lorentz_Integer] := -I list[[lorentz, 1]];
-
-FindLorentzStructure[list_List, lorentz_] :=
-    Module[{result},
-           result = Select[list, (!FreeQ[#[[2]],lorentz])&];
-           If[Length[result] == 0,
-              Print["Error: can't find lorentz structure ", lorentz,
-                    " in list ", list];
-              Return[0];
-             ];
-           If[Length[result] > 1,
-              Print["Error: lorentz structure ", lorentz,
-                    " is not unique in list ", list];
-              Return[0];
-             ];
-           Return[-I result[[1,1]]];
-          ];
-
 GetParticleList[Cp[a__]] := {a};
 
 GetParticleList[Cp[a__][_]] := {a};
@@ -290,14 +272,6 @@ ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
 ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
-FindInnerColorIndices[particles_List] :=
-    Cases[Flatten[
-        Select[particles,
-               FreeQ[#, gO1 | gO2 | gO3 | gO4]&] //.
-        {symb_[lst_][_] :> lst} //.
-        {symb_[lst_] :> lst}], ct1 | ct2 | ct3 | ct4];
-
-(* creates a C++ function that calculates a coupling *)
 CreateCouplingFunctionAndReplacementRule[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = ""},
            symbol = CreateCouplingSymbol[coupling];
@@ -442,19 +416,19 @@ PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
     "tadpole T^{" <> RValueToCFormString[field] <> "}";
 
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
-    Module[{prototypes = "", decls = "", vertexFunctionNames = {}, p, d},
+    Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
            (* create coupling functions for all vertices in the list *)
            Print["Creating vertex function ..."];
-           {prototypes, decls, vertexFunctionNames} = CreateVertexExpressions[vertexRules];
+           {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[vertexRules];
            (* creating n-point functions *)
            Print["Generating C++ code for ..."];
            For[k = 1, k <= Length[nPointFunctions], k++,
                Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
-               decls = decls <> d;
+               defs = defs <> d;
               ];
-           Return[{prototypes, decls}];
+           Return[{prototypes, defs}];
           ];
 
 FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
