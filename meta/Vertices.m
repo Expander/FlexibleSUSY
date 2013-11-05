@@ -23,7 +23,6 @@
 BeginPackage["Vertices`", {
     "SARAH`",
     "Parameters`",
-    "SelfEnergies`",
     "TreeMasses`",
     "LatticeUtils`"}]
 
@@ -31,6 +30,12 @@ VertexRules::usage;
 ToCpPattern::usage="ToCpPattern[cp] converts field indices inside cp to patterns, e.g. ToCpPattern[Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL]] === Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL].";
 ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
 FieldIndexList::usage;
+
+GetLorentzStructure::usage;
+GetParticleList::usage;
+IsUnrotated::usage;
+ToRotatedField::usage;
+ReplaceUnrotatedFields::usage;
 
 Begin["`Private`"]
 
@@ -64,13 +69,13 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	strippedIndices,
 	contraction
     },
-    rotatedCp = SelfEnergies`Private`ReplaceUnrotatedFields[cp];
-    fieldsInRotatedCp = SelfEnergies`Private`GetParticleList[rotatedCp];
+    rotatedCp = ReplaceUnrotatedFields[cp];
+    fieldsInRotatedCp = GetParticleList[rotatedCp];
     sarahVertex = SARAH`Vertex[fieldsInRotatedCp];
     Assert[MatchQ[sarahVertex, {_, __}]];
     fields = First[sarahVertex];
     vertices = Rest[sarahVertex];
-    lorentzTag = SelfEnergies`Private`GetLorentzStructure[rotatedCp];
+    lorentzTag = GetLorentzStructure[rotatedCp];
     {vertex, lorentz} = FindVertexWithLorentzStructure[vertices, lorentzTag];
     strippedIndices = Complement[Flatten[FieldIndexList /@ fields],
 				 Flatten[FieldIndexList /@ fieldsInRotatedCp]];
@@ -85,7 +90,7 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 	ExpandSarahSum @ SimplifyContraction @
 	InTermsOfRotatedVertex[
 	    vertex, lorentz,
-	    SelfEnergies`Private`GetParticleList[cp], massMatrices]];
+	    GetParticleList[cp], massMatrices]];
     (* Q: is the factor -I right? *)
     -I TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
@@ -215,16 +220,14 @@ Block[{
     },
     (* reconstruct hidden bar applied on a Majorana spinor *)
     fixedFields = MapIndexed[
-	If[MajoranaQ@FieldHead@SelfEnergies`Private`ToRotatedField[#1] &&
-	   First[#2] <= 2, SARAH`bar[#1], #1]&,
+	If[MajoranaQ@FieldHead@ToRotatedField[#1] && First[#2] <= 2,
+	   SARAH`bar[#1], #1]&,
 	uFields];
-    Fold[If[SelfEnergies`Private`IsUnrotated[#2],
+    Fold[If[IsUnrotated[#2],
 	    RewriteUnrotatedField[
 		#1, lorentz, #2,
-		SingleCase[
-		    massMatrices,
-		    _[_,FieldHead@SelfEnergies`Private`ToRotatedField[#2],z_]->
-		    z]],
+		SingleCase[massMatrices,
+			   _[_,FieldHead@ToRotatedField[#2],z_] :> z]],
 	    #1]&,
 	 vertex, fixedFields]
 ];
@@ -281,7 +284,7 @@ RewriteUnrotatedField[
 
 ContractMixingMatrix[expr_, uField_, z_, op_] := Module[{
 	uIndices = FieldIndexList[uField],
-	field = SelfEnergies`Private`ToRotatedField[uField],
+	field = ToRotatedField[uField],
 	uIndex, i = Unique["gl"]
     },
     (* CHECK: does the first index always denote the flavour? *)
@@ -301,12 +304,12 @@ FieldHead[field_Symbol] := field;
 ToCpPattern[cp : _SARAH`Cp|_SARAH`Cp[_]] := cp /.
     ((# -> (# /. Thread[(# -> If[Head[#] === Symbol, Pattern[#, _], #])& /@
 			FieldIndexList[#]]))& /@
-     SelfEnergies`Private`GetParticleList[cp]);
+     GetParticleList[cp]);
 
 ToCp[cpPattern : _SARAH`Cp|_SARAH`Cp[_]] := cpPattern /. p_Pattern :> First[p];
 
 CpType[cp : _SARAH`Cp|_SARAH`Cp[_]] := RotatedCpType @
-    SelfEnergies`Private`ReplaceUnrotatedFields[cp];
+    ReplaceUnrotatedFields[cp];
 
 RotatedCpType[SARAH`Cp[fields__]] := SARAH`getVertexType[{fields}];
 
@@ -386,6 +389,39 @@ SarahInternalGenerationIndexQ[index_Symbol] :=
 
 SarahColorIndexQ[index_Symbol] :=
     StringMatchQ[ToString[index], RegularExpression["ct[[:digit:]]+"]];
+
+GetLorentzStructure[SARAH`Cp[__]] := 1;
+
+GetLorentzStructure[SARAH`Cp[__][a_]] := a;
+
+GetParticleList[SARAH`Cp[a__]] := {a};
+
+GetParticleList[SARAH`Cp[a__][_]] := {a};
+
+IsUnrotated[SARAH`bar[field_]] := IsUnrotated[field];
+
+IsUnrotated[Susyno`LieGroups`conj[field_]] := IsUnrotated[field];
+
+IsUnrotated[field_[__]] := IsUnrotated[field];
+
+IsUnrotated[field_Symbol] := StringTake[ToString[field],1] === "U";
+
+ToRotatedField[field_Symbol] :=
+    Symbol[StringReplace[ToString[field], StartOfString ~~ "U" ~~ rest_ :> rest]];
+
+ToRotatedField[SARAH`bar[field_]] := SARAH`bar[ToRotatedField[field]];
+
+ToRotatedField[Susyno`LieGroups`conj[field_]] := Susyno`LieGroups`conj[ToRotatedField[field]];
+
+ToRotatedField[field_List] := ToRotatedField /@ field;
+
+ToRotatedField[field_[indices__]] := ToRotatedField[field][indices];
+
+ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
+    SARAH`Cp @@ ToRotatedField[{p}];
+
+ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
+    ReplaceUnrotatedFields[SARAH`Cp[p]][lorentz];
 
 End[] (* `Private` *)
 

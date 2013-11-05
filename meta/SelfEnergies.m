@@ -188,10 +188,6 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
-GetLorentzStructure[Cp[__]] := 1;
-
-GetLorentzStructure[Cp[__][a_]] := a;
-
 GetParticleIndices[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
 
 GetParticleIndices[Cp[a__][_]] := GetParticleIndices[Cp[a]];
