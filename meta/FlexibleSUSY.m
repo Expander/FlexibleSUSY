@@ -359,7 +359,7 @@ CreateVEVsToFieldsAssociation[vevs_List] :=
 
 WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
-                nPointFunctions_List, phases_List,
+                nPointFunctions_List, vertexRules_List, phases_List,
                 enablePoleMassThreads_,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
@@ -419,7 +419,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
-           {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions];
+           {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
            phasesInit                   = Phases`CreatePhasesInitialization[phases];
@@ -1057,8 +1057,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-           SelfEnergies`SetIndexReplacementRules[allIndexReplacementRules];
-
            phases = ConvertSarahPhases[SARAH`ParticlePhases];
 
            (* determin diagonalization precision for each particle *)
@@ -1069,13 +1067,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
-	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
+	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices] /. allIndexReplacementRules;
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, vevs, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
-                           nPointFunctions, phases, OptionValue[EnablePoleMassThreads],
+                           nPointFunctions, vertexRules, phases, OptionValue[EnablePoleMassThreads],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
