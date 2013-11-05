@@ -203,62 +203,36 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
-SumOverInternalColors[coupling_, expr_] :=
-    Module[{hasUnresolvedColorFactor, innerColorIndices, colorSummedExpr},
-           hasUnresolvedColorFactor = HasUnresolvedColorPrefactor[coupling, expr];
-           If[hasUnresolvedColorFactor,
-              (* SARAH workaround: to resolve the color factor C
-                 which appears in the self-energy of Sd and Su
-
-                 -C sum[gI1, 1, 6,
-                 A0[Mass2[Sd[{gI1}]]]
-                 Cp[USd[{gO1}], conj[USd[{gO1}]], conj[Sd[{gI1}]], Sd[{gI1}]]]
-
-                 we have to sum over the color indces of Sd[{gI1}] and Sd[{gI1}].
-                 *)
-              innerColorIndices = FindInnerColorIndices[particles];
-              colorSummedExpr = Sum[expr,
-                         {ct1, 1, If[FreeQ[innerColorIndices, ct1], 1, 3]},
-                         {ct2, 1, If[FreeQ[innerColorIndices, ct2], 1, 3]},
-                         {ct3, 1, If[FreeQ[innerColorIndices, ct3], 1, 3]},
-                         {ct4, 1, If[FreeQ[innerColorIndices, ct4], 1, 3]}];
-              ,
-              colorSummedExpr = expr;
-             ];
-           Return[colorSummedExpr];
-          ];
-
 (* creates a C++ function that calculates a coupling *)
 CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
-            type, initalValue, colorSummedExpr},
+            type, initalValue},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            cFunctionName = cFunctionName <> "(";
-           colorSummedExpr = SumOverInternalColors[coupling, expr];
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, cFunctionName = cFunctionName <> ", ";];
                cFunctionName = cFunctionName <> "unsigned ";
                (* variable names must not be integers *)
-               If[!IntegerQ[indices[[i]]] && !FreeQ[colorSummedExpr, indices[[i]]],
+               If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   cFunctionName = cFunctionName <> ToValidCSymbolString[indices[[i]]];
                  ];
               ];
            cFunctionName = cFunctionName <> ")";
-           If[Parameters`IsRealExpression[colorSummedExpr],
+           If[Parameters`IsRealExpression[expr],
               type = "double";  initalValue = " = 0.0";,
               type = "Complex"; initalValue = "";];
            prototype = type <> " " <> cFunctionName <> " const;\n";
            definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[colorSummedExpr, "LOCALINPUT"] <> "\n" <>
+           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
                   type <> " result" <> initalValue <> ";\n\n";
-           If[FreeQ[colorSummedExpr,SARAH`sum] && FreeQ[colorSummedExpr,SARAH`ThetaStep],
+           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
               body = body <> "result = " <>
-                     RValueToCFormString[Simplify[colorSummedExpr]] <> ";\n";
+                     RValueToCFormString[Simplify[expr]] <> ";\n";
               ,
-              body = body <> ExpandSums[colorSummedExpr, "result",
+              body = body <> ExpandSums[expr, "result",
                                         type, initalValue];
              ];
            body = body <> "\nreturn result;\n";
@@ -330,9 +304,6 @@ CreateCouplingFunctionAndReplacementRule[coupling_, expr_] :=
            {prototype, definition} = CreateCouplingFunction[coupling, expr];
            Return[{prototype, definition, RuleDelayed[Vertices`ToCpPattern[coupling], symbol]}];
           ];
-
-HasUnresolvedColorPrefactor[coupling_, expr_] :=
-  !FreeQ[Coefficient[expr //. sum[__, ex_] :> ex, coupling], C];
 
 CreateVertexExpressions[vertexRules_List] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
