@@ -203,37 +203,62 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
+SumOverInternalColors[coupling_, expr_] :=
+    Module[{hasUnresolvedColorFactor, innerColorIndices, colorSummedExpr},
+           hasUnresolvedColorFactor = HasUnresolvedColorPrefactor[coupling, expr];
+           If[hasUnresolvedColorFactor,
+              (* SARAH workaround: to resolve the color factor C
+                 which appears in the self-energy of Sd and Su
+
+                 -C sum[gI1, 1, 6,
+                 A0[Mass2[Sd[{gI1}]]]
+                 Cp[USd[{gO1}], conj[USd[{gO1}]], conj[Sd[{gI1}]], Sd[{gI1}]]]
+
+                 we have to sum over the color indces of Sd[{gI1}] and Sd[{gI1}].
+                 *)
+              innerColorIndices = FindInnerColorIndices[particles];
+              colorSummedExpr = Sum[expr,
+                         {ct1, 1, If[FreeQ[innerColorIndices, ct1], 1, 3]},
+                         {ct2, 1, If[FreeQ[innerColorIndices, ct2], 1, 3]},
+                         {ct3, 1, If[FreeQ[innerColorIndices, ct3], 1, 3]},
+                         {ct4, 1, If[FreeQ[innerColorIndices, ct4], 1, 3]}];
+              ,
+              colorSummedExpr = expr;
+             ];
+           Return[colorSummedExpr];
+          ];
+
 (* creates a C++ function that calculates a coupling *)
-CreateCouplingFunction[coupling_, expr_, strippedIndices_] :=
+CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
-            indices = {}, body = "", cFunctionName = "", i, strippedExpr,
-            type, initalValue},
+            indices = {}, body = "", cFunctionName = "", i,
+            type, initalValue, colorSummedExpr},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            cFunctionName = cFunctionName <> "(";
+           colorSummedExpr = SumOverInternalColors[coupling, expr];
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, cFunctionName = cFunctionName <> ", ";];
                cFunctionName = cFunctionName <> "unsigned ";
                (* variable names must not be integers *)
-               If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
+               If[!IntegerQ[indices[[i]]] && !FreeQ[colorSummedExpr, indices[[i]]],
                   cFunctionName = cFunctionName <> ToValidCSymbolString[indices[[i]]];
                  ];
               ];
            cFunctionName = cFunctionName <> ")";
-           strippedExpr = TreeMasses`StripGenerators[expr, strippedIndices];
-           If[Parameters`IsRealExpression[strippedExpr],
+           If[Parameters`IsRealExpression[colorSummedExpr],
               type = "double";  initalValue = " = 0.0";,
               type = "Complex"; initalValue = "";];
            prototype = type <> " " <> cFunctionName <> " const;\n";
            definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[strippedExpr, "LOCALINPUT"] <> "\n" <>
+           body = Parameters`CreateLocalConstRefsForInputParameters[colorSummedExpr, "LOCALINPUT"] <> "\n" <>
                   type <> " result" <> initalValue <> ";\n\n";
-           If[FreeQ[strippedExpr,SARAH`sum] && FreeQ[strippedExpr,SARAH`ThetaStep],
+           If[FreeQ[colorSummedExpr,SARAH`sum] && FreeQ[colorSummedExpr,SARAH`ThetaStep],
               body = body <> "result = " <>
-                     RValueToCFormString[Simplify[strippedExpr]] <> ";\n";
+                     RValueToCFormString[Simplify[colorSummedExpr]] <> ";\n";
               ,
-              body = body <> ExpandSums[strippedExpr, "result",
+              body = body <> ExpandSums[colorSummedExpr, "result",
                                         type, initalValue];
              ];
            body = body <> "\nreturn result;\n";
@@ -299,30 +324,10 @@ FindInnerColorIndices[particles_List] :=
         {symb_[lst_] :> lst}], ct1 | ct2 | ct3 | ct4];
 
 (* creates a C++ function that calculates a coupling *)
-CreateCouplingFunctions[coupling_, expr_, sumOverInternalColors_:False] :=
-    Module[{symbol, indices, cFunctionName, prototype = "", definition = "",
-            vertex, i, lorentz, rotatedCoupling, particles,
-            innerColorIndices = {}},
+CreateCouplingFunctionAndReplacementRule[coupling_, expr_] :=
+    Module[{symbol, prototype = "", definition = ""},
            symbol = CreateCouplingSymbol[coupling];
-           cFunctionName = ToValidCSymbolString[GetHead[symbol]];
-           If[sumOverInternalColors,
-              (* SARAH workaround: to resolve the color factor C
-                 which appears in the self-energy of Sd and Su
-
-                 -C sum[gI1, 1, 6,
-                 A0[Mass2[Sd[{gI1}]]]
-                 Cp[USd[{gO1}], conj[USd[{gO1}]], conj[Sd[{gI1}]], Sd[{gI1}]]]
-
-                 we have to sum over the color indces of Sd[{gI1}] and Sd[{gI1}].
-                 *)
-              innerColorIndices = FindInnerColorIndices[particles];
-              expr = Sum[expr,
-                         {ct1, 1, If[FreeQ[innerColorIndices, ct1], 1, 3]},
-                         {ct2, 1, If[FreeQ[innerColorIndices, ct2], 1, 3]},
-                         {ct3, 1, If[FreeQ[innerColorIndices, ct3], 1, 3]},
-                         {ct4, 1, If[FreeQ[innerColorIndices, ct4], 1, 3]}];
-             ];
-           {prototype, definition} = CreateCouplingFunction[coupling, expr, {}];
+           {prototype, definition} = CreateCouplingFunction[coupling, expr];
            Return[{prototype, definition, RuleDelayed[Vertices`ToCpPattern[coupling], symbol]}];
           ];
 
@@ -331,14 +336,13 @@ HasUnresolvedColorPrefactor[coupling_, expr_] :=
 
 CreateVertexExpressions[vertexRules_List] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
-            p, d, r, hasUnresolvedColorFactor},
+            p, d, r},
            rules = Table[0, {Length[vertexRules]}];
            For[k = 1, k <= Length[vertexRules], k++,
                coupling = Vertices`ToCp[vertexRules[[k,1]]];
                expr = vertexRules[[k,2]];
                Print["   ", coupling];
-               hasUnresolvedColorFactor = HasUnresolvedColorPrefactor[coupling, expr];
-               {p,d,r} = CreateCouplingFunctions[coupling, expr, hasUnresolvedColorFactor];
+               {p,d,r} = CreateCouplingFunctionAndReplacementRule[coupling, expr];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
