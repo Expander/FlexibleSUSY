@@ -199,7 +199,20 @@ CreateCouplingSymbol[coupling_] :=
            symbol[Sequence @@ indices]
           ];
 
-(* creates a C++ function that calculates a coupling *)
+(* creates a C++ function that calculates a coupling
+ *
+ * Return: {prototypes_String, definitions_String, rules_List}
+ *
+ * prototypes is a string that contains all coupling function
+ * prototypes.  definitions is a string that contains all coupling
+ * function definitions.
+ *
+ * rules is a list of replacement rules of the form
+ * { Cp[bar[UCha[{gO2}]], VZ, Cha[{gI2}]][PR] :>
+ *   CpbarUChaVZChaPR[gO2, gI2],
+ *   ...
+ * }
+ *)
 CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
@@ -234,7 +247,8 @@ CreateCouplingFunction[coupling_, expr_] :=
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
-           Return[{prototype, definition}];
+           Return[{prototype, definition,
+                   RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}];
           ];
 
 GetParticleList[Cp[a__]] := {a};
@@ -268,13 +282,6 @@ ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
 ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
-CreateCouplingFunctionAndReplacementRule[coupling_, expr_] :=
-    Module[{symbol, prototype = "", definition = ""},
-           symbol = CreateCouplingSymbol[coupling];
-           {prototype, definition} = CreateCouplingFunction[coupling, expr];
-           Return[{prototype, definition, RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}];
-          ];
-
 CreateVertexExpressions[vertexRules_List] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
             p, d, r},
@@ -282,12 +289,15 @@ CreateVertexExpressions[vertexRules_List] :=
            For[k = 1, k <= Length[vertexRules], k++,
                coupling = Vertices`ToCp[vertexRules[[k,1]]];
                expr = vertexRules[[k,2]];
-               Print["   ", coupling];
-               {p,d,r} = CreateCouplingFunctionAndReplacementRule[coupling, expr];
+               WriteString["stdout", "."];
+               If[Mod[k, 50] == 0, WriteString["stdout","\n"]];
+               {p,d,r} = CreateCouplingFunction[coupling, expr];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
               ];
+           WriteString["stdout","\n"];
+           Print["All vertices finished."];
            Return[{prototypes, defs, Flatten[rules]}];
           ];
 
