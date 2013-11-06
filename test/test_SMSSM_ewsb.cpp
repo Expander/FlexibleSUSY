@@ -172,9 +172,6 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
 
    const double mt = s.displayDrBarPars().mt;
    const int signMu = 1;
-   const double vd = m.get_vd();
-   const double vu = m.get_vu();
-   const double vS = m.get_vS();
 
    m.set_ewsb_iteration_precision(precision);
    m.solve_ewsb_one_loop();
