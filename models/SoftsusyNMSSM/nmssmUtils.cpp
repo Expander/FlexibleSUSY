@@ -50,7 +50,7 @@ DoubleVector NMSSM_input::get_nmpars() const {
    nmpars(4) = get(NMSSM_input::xiF);
    nmpars(5) = get(NMSSM_input::muPrime);
    return nmpars;
-};
+}
 
 bool NMSSM_input::is_set(NMSSM_parameters par) const {
    assert(par < NUMBER_OF_NMSSM_INPUT_PARAMETERS);
@@ -451,7 +451,7 @@ double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries)
   sumTol(in.displayDrBarPars(), out.displayDrBarPars(), sT);
   /// The predicted value of MZ^2 is an absolute measure of how close to a
   /// true solution we are:
-  double tbPred = 0.;
+  // double tbPred = 0.;
   double predictedMzSq = in.displayPredMzSq();
   /// We allow an extra factor of 10 for the precision in the predicted value
   /// of MZ compared to TOLERANCE if the program is struggling and gone beyond
