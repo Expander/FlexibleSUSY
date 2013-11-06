@@ -424,7 +424,7 @@ PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
     Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
            (* create coupling functions for all vertices in the list *)
-           Print["Creating vertex function ..."];
+           Print["Converting vertex functions ..."];
            {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[vertexRules];
            (* creating n-point functions *)
            Print["Generating C++ code for ..."];
