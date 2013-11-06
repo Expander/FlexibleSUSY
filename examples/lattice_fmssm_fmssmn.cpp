@@ -1,5 +1,6 @@
 #include <complex>
 #include <string>
+#include <cstdlib>
 
 #include "consts.hpp"
 // #include "mssm_parameter_point.hpp"
@@ -337,7 +338,7 @@ int main(int argc, char *argv[])
       solver.solve();
    } catch (Error& e) {
       ERROR("no solution found: " << e.what());
-      exit(1);
+      exit(EXIT_FAILURE);
    }
 
    fmssm.calculate_spectrum();

@@ -21,6 +21,7 @@
 #include "logger.hpp"
 
 #include <cstdio>
+#include <cstdlib>
 
 namespace flexiblesusy {
 

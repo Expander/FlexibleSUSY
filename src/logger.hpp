@@ -69,7 +69,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #ifdef SILENT
    #define FATAL(message)                             \
       do {                                            \
-         exit(1);                                     \
+         exit(EXIT_FAILURE);                          \
          assert(false);                               \
       } while (0)
 #else
@@ -77,7 +77,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       do {                                                            \
          LOG(kFatal, message);                                        \
          std::cout << "*** abort program execution" << std::endl;     \
-         exit(1);                                                     \
+         exit(EXIT_FAILURE);                                          \
          assert(false);                                               \
       } while (0)
 #endif
