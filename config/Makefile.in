@@ -14,6 +14,7 @@ MODULES            += $(MODELS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += test examples
 # END:   NOT EXPORTED ##########################################
+MODULES            += @FFLITE@
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
@@ -141,6 +142,11 @@ depend:  $(ALLDEP)
 %.d: %.f
 # the sed script ensures that the target contains the full path
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	sed 's|.*\.o:|$*.o:|' > $@
+
+%.d: %.F
+# the sed script ensures that the target contains the full path
+	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
 clean-executables:

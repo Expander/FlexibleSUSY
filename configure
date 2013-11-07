@@ -87,6 +87,7 @@ options="                    \
    enable_compile            \
    enable_compiler_warnings  \
    enable_debug              \
+   enable_fflite             \
    enable_looptools          \
    enable_silent             \
    enable_static_libs        \
@@ -104,6 +105,7 @@ enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
+enable_fflite="no"
 enable_looptools="no"
 enable_meta="no"
 # BEGIN: NOT EXPORTED ##########################################
@@ -156,6 +158,7 @@ ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
+FFLITE=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -1750,6 +1753,16 @@ enable_defines() {
         logmsg "   CPPFLAGS = ${CPPFLAGS}"
     fi
 
+    if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
+	message "Error: do not \`--enable-ff' and \`--enable-looptools' at the same time"
+	exit 1
+    fi
+
+    if test "x$enable_fflite" = "xyes" ; then
+        message "Enabling usage of FF -DENABLE_FFLITE"
+        CPPFLAGS="$CPPFLAGS -DENABLE_FFLITE"
+    fi
+
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
         message "Enabling usage of LoopTools"
@@ -1819,6 +1832,7 @@ enable/disable options, prefix with either --enable- or --disable-
   compile           Compile the source code (default: $enable_compile)
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
+  fflite            Use fflite to compute the loop functions (default: $enable_fflite)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
 # BEGIN: NOT EXPORTED ##########################################
@@ -1990,6 +2004,9 @@ if test "x${enable_compile}" = "xyes"; then
         check_boost_thread_incl
         check_boost_thread_libs
     fi
+    if test "x$enable_fflite" = "xyes"; then
+	FFLITE="fflite"
+    fi
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
@@ -2040,6 +2057,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_META@|$enable_meta|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
+    -e "s|@FFLITE@|$FFLITE|"	       \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
