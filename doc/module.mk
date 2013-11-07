@@ -12,15 +12,18 @@ MANUAL_SRC      := \
 		$(DIR)/chapters/quick_start.tex \
 		$(DIR)/chapters/usage.tex \
 		$(DIR)/chapters/output.tex
+PAPER_PDF       := $(DIR)/paper.pdf
+PAPER_SRC       := \
+		$(DIR)/paper.tex \
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		$(INDEX_PADE) doc
 
 doc: all-$(MODNAME)
 
-doc-pdf: $(MANUAL_PDF)
+doc-pdf: $(MANUAL_PDF) $(PAPER_PDF)
 
-all-$(MODNAME): $(INDEX_PADE) $(MANUAL_PDF)
+all-$(MODNAME): $(INDEX_PADE) $(MANUAL_PDF) $(PAPER_PDF)
 
 clean-$(MODNAME):
 		rm -f $(DIR)/*.aux
@@ -29,7 +32,7 @@ clean-$(MODNAME):
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(DOC_OUTPUT_DIR)
-		rm -f $(MANUAL_PDF)
+		rm -f $(MANUAL_PDF) $(PAPER_PDF)
 
 clean::         clean-$(MODNAME)
 
@@ -44,5 +47,9 @@ $(INDEX_PADE):
 		) | doxygen -
 
 $(MANUAL_PDF): $(MANUAL_SRC)
+		pdflatex -output-directory $(DIR) $<
+		pdflatex -output-directory $(DIR) $<
+
+$(PAPER_PDF): $(PAPER_SRC)
 		pdflatex -output-directory $(DIR) $<
 		pdflatex -output-directory $(DIR) $<

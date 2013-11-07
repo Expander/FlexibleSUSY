@@ -26,7 +26,9 @@ doc/*.aux
 doc/*.log
 doc/*.toc
 doc/*.out
+doc/*.spl
 doc/flexiblesusy.pdf
+doc/paper.pdf
 doc/version.tex
 
 test/*.log
