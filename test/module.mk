@@ -4,6 +4,7 @@ MODNAME  := test
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
+		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_rk.cpp \
@@ -13,7 +14,7 @@ TEST_SRC := \
 		$(DIR)/test_wrappers.cpp
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
-TEST_SRC +=	$(DIR)/test_linalg2.cpp
+TEST_SRC +=
 endif
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
