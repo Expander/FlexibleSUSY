@@ -4,9 +4,20 @@ VERSION            := @FLEXIBLESUSY_VERSION@
 ABSBASEDIR         := @ABSBASEDIR@
 INSTALL_DIR        := @INSTALL_DIR@
 
+# Switches
+ENABLE_COMPILE     := @ENABLE_COMPILE@
+ENABLE_FFLITE      := @ENABLE_FFLITE@
+ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
+ENABLE_META        := @ENABLE_META@
+ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_THREADS     := @ENABLE_THREADS@
+
 # Makefile modules
 MODELS             := @MODELS@
 MODULES            := config src legacy slhaea doc
+ifeq ($(ENABLE_FFLITE),yes)
+MODULES	           += fflite
+endif
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
@@ -14,7 +25,6 @@ MODULES            += $(MODELS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += test examples
 # END:   NOT EXPORTED ##########################################
-MODULES            += @FFLITE@
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
@@ -42,13 +52,6 @@ LAPACKLIBS         := @LAPACKLIBS@
 LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
 THREADLIBS         := @THREADLIBS@
-
-# Switches
-ENABLE_COMPILE     := @ENABLE_COMPILE@
-ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
-ENABLE_META        := @ENABLE_META@
-ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
-ENABLE_THREADS     := @ENABLE_THREADS@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -191,6 +194,7 @@ showbuild:
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
+	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"

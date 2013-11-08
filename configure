@@ -158,7 +158,6 @@ ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
-FFLITE=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -1754,7 +1753,7 @@ enable_defines() {
     fi
 
     if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
-	message "Error: do not \`--enable-ff' and \`--enable-looptools' at the same time"
+	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
 	exit 1
     fi
 
@@ -2004,9 +2003,6 @@ if test "x${enable_compile}" = "xyes"; then
         check_boost_thread_incl
         check_boost_thread_libs
     fi
-    if test "x$enable_fflite" = "xyes"; then
-	FFLITE="fflite"
-    fi
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
@@ -2054,10 +2050,10 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
     -e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
     -e "s|@ENABLE_COMPILE@|$enable_compile|" \
+    -e "s|@ENABLE_FFLITE@|$enable_fflite|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_META@|$enable_meta|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
-    -e "s|@FFLITE@|$FFLITE|"	       \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
@@ -2093,6 +2089,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_FFLITE@|$enable_fflite|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
@@ -2126,6 +2123,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_FFLITE@|$enable_fflite|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
