@@ -326,7 +326,11 @@ void reorder_diagonalize_symmetric
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
 	      [&s](int i, int j){ return s[i] < s[j]; });
+#if EIGEN_VERSION_AT_LEAST(3,1,4)
     s.matrix().transpose() *= p;
+#else
+    Eigen::Map<Eigen::Matrix<double, N, 1>>(s.data()).transpose() *= p;
+#endif
     u *= p;
 }
 
