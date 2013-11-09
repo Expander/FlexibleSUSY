@@ -239,9 +239,9 @@ CreateCouplingFunction[coupling_, expr_] :=
                   type <> " result" <> initalValue <> ";\n\n";
            If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
               body = body <> "result = " <>
-                     RValueToCFormString[Simplify[expr]] <> ";\n";
+                     RValueToCFormString[Simplify[DecreaseIndexLiterals[expr]]] <> ";\n";
               ,
-              body = body <> ExpandSums[expr, "result",
+              body = body <> ExpandSums[DecreaseIndexLiterals[expr], "result",
                                         type, initalValue];
              ];
            body = body <> "\nreturn result;\n";

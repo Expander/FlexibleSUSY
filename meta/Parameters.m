@@ -51,6 +51,8 @@ expression.";
 
 FillInputParametersFromTuples::usage="";
 
+DecreaseIndexLiterals::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -465,6 +467,23 @@ FillInputParametersFromTuples[minpar_List] :=
            result = "switch (key) {\n" <> result <>
                     "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
            Return[result];
+          ];
+
+DecreaseIndex[ind_Integer] := ind - 1;
+DecreaseIndex[ind_]        := ind;
+DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
+DecreaseIndices[a_]        := a;
+
+DecreaseIndexLiterals[expr_] :=
+    DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,
+                                     allOutputParameters]];
+
+DecreaseIndexLiterals[expr_, heads_List] :=
+    Module[{indexedSymbols, rules, decrExpr},
+           indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[heads, s], Infinity];
+           rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
+           decrExpr = expr /. rules;
+           Return[decrExpr]
           ];
 
 End[];
