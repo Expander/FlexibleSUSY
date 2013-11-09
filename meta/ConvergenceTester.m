@@ -19,10 +19,10 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
               result = diff <> "[" <> ToString[offset] <> "] = " <>
                        "MaxRelDiff(OLD1(" <> esStr <> "),NEW1(" <> esStr <> "));\n";
               ,
-              dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
+              dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle] - 1;
               result = "for (unsigned i = " <> ToString[dimStart] <>
-                       "; i <= " <> ToString[dim] <> "; ++i) {\n";
-              body = diff <> "[i + " <> ToString[offset - 1] <> "] = " <>
+                       "; i < " <> ToString[dim] <> "; ++i) {\n";
+              body = diff <> "[i + " <> ToString[offset] <> "] = " <>
                      "MaxRelDiff(OLD(" <> esStr <> ",i),NEW(" <> esStr <> ",i));";
               result = result <> IndentText[body] <> "\n}\n";
              ];
