@@ -49,15 +49,15 @@ inline DoubleVector AbsSqrt(const DoubleVector& x)
 }
 
 template <typename Derived>
-void AbsSqrt(Eigen::MatrixBase<Derived>& m)
+Derived AbsSqrt(const Eigen::MatrixBase<Derived>& m)
 {
-   m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
 }
 
 template <typename Derived>
-void AbsSqrt(Eigen::ArrayBase<Derived>& m)
+Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
 {
-   m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
 }
 
 inline double ArcTan(double a)

@@ -604,7 +604,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> "AbsSqrt(" <> ev <> ");\n";
+              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            (* Set the goldstone boson masses equal to the
               corresponding vector boson masses *)
@@ -638,7 +638,7 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> "AbsSqrt(" <> ev <> ");\n";
+              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
            Return[result <> body <> "}\n\n"];
