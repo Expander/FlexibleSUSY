@@ -5,6 +5,7 @@
 #include "linalg.h"
 #include <cmath>
 #include <valarray>
+#include <functional>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -37,9 +38,26 @@ inline double AbsSqrt(double x)
    return std::sqrt(std::fabs(x));
 }
 
+inline double AbsSqrt_d(double x)
+{
+   return AbsSqrt(x);
+}
+
 inline DoubleVector AbsSqrt(const DoubleVector& x)
 {
    return x.apply(AbsSqrt);
+}
+
+template <typename Derived>
+void AbsSqrt(Eigen::MatrixBase<Derived>& m)
+{
+   m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+}
+
+template <typename Derived>
+void AbsSqrt(Eigen::ArrayBase<Derived>& m)
+{
+   m.unaryExpr(std::ptr_fun(AbsSqrt_d));
 }
 
 inline double ArcTan(double a)
@@ -107,6 +125,40 @@ inline double Log(double a)
 
 double MaxRelDiff(double, double);
 double MaxRelDiff(const DoubleVector&, const DoubleVector&);
+
+template <class Derived>
+double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
+                  const Eigen::MatrixBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
+
+template <class Derived>
+double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
+                  const Eigen::ArrayBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
 
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)

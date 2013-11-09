@@ -297,6 +297,21 @@ void reorder_svd
     vh = vh.colwise().reverse().eval();
 }
 
+// m == u * s.matrix().asDiagonal() * vh (following LAPACK convention)
+// (s >= 0).all()
+// s in ascending order
+template<int M, int N>
+void reorder_svd
+(const Eigen::Matrix<double, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<double>, M, M>& u,
+ Eigen::Matrix<std::complex<double>, N, N>& vh)
+{
+   const Eigen::Matrix<std::complex<double>, M, N>
+      m_complex(m.template cast<std::complex<double> >());
+   reorder_svd(m_complex, s, u, vh);
+}
+
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
 // s in ascending order

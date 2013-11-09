@@ -152,8 +152,8 @@ GetTypeFromDimension[sym_, {1}] :=
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
-       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
+       CConversion`VectorType["Eigen::Array<double," <> ToString[num] <> ",1>", num],
+       CConversion`VectorType["Eigen::Array<Complex," <> ToString[num] <> ",1>", num]
       ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=

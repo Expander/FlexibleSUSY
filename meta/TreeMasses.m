@@ -329,25 +329,30 @@ GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 
 GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{type, eigenstate, mixingMatrixSymbol, dim},
+    Module[{type, eigenstate, mixingMatrixSymbol, dim, dimStr},
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = Length[GetMassMatrix[massMatrix]];
-           Which[Parameters`IsRealParameter[mixingMatrixSymbol], type = "DoubleMatrix";,
-                 IsFermion[eigenstate],                     type = "ComplexMatrix";,
-                 True,                                      type = "DoubleMatrix";
+           dimStr = ToString[dim];
+           Which[Parameters`IsRealParameter[mixingMatrixSymbol],
+                 type = "Eigen::Matrix<double," <> dimStr <> "," <> dimStr <> ">";,
+                 IsFermion[eigenstate],
+                 type = "Eigen::Matrix<std::complex<double>," <> dimStr <> "," <> dimStr <> ">";,
+                 True,
+                 type = "Eigen::Matrix<double," <> dimStr <> "," <> dimStr <> ">";
                 ];
            Return[CConversion`MatrixType[type, dim, dim]];
           ];
 
 CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{massESSymbol, returnType, dim, massESSymbolStr},
+    Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
            If[dim == 1,
               returnType = CConversion`ScalarType["double"];,
-              returnType = CConversion`VectorType["DoubleVector", dim];
+              returnType = CConversion`VectorType["Eigen::Array<double," <> dimStr <> ",1>", dim];
              ];
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
           ];
@@ -505,23 +510,25 @@ IsHermitian[matrix_List, op_:Susyno`LieGroups`conj] :=
            Return[True];
           ];
 
-MatrixToCFormString[matrix_List, symbol_String, matrixType_String:"DoubleMatrix"] :=
+MatrixToCFormString[matrix_List, symbol_String, matrixElementType_String:"double"] :=
     Module[{dim, result = "", i, k, isSymmetric = IsSymmetric[matrix],
-            isHermitian = IsHermitian[matrix]},
+            isHermitian = IsHermitian[matrix], matrixType, dimStr},
            dim = Length[matrix];
-           result = matrixType <> " " <> symbol <> "(" <> ToString[dim] <>
-                    "," <> ToString[dim] <> ");\n";
+           dimStr = ToString[dim];
+           matrixType = "Eigen::Matrix<" <> matrixElementType <> "," <>
+                        dimStr <> "," <> dimStr <> ">";
+           result = matrixType <> " " <> symbol <> ";\n"; (* not initialized *)
            For[i = 1, i <= dim, i++,
                For[k = 1, k <= dim, k++,
-                   result = result <> symbol <> "(" <> ToString[i] <>
-                            "," <> ToString[k] <> ") = ";
+                   result = result <> symbol <> "(" <> ToString[i-1] <>
+                            "," <> ToString[k-1] <> ") = ";
                    Which[isSymmetric && i > k,
-                         result = result <> symbol <> "(" <> ToString[k] <>
-                                  "," <> ToString[i] <> ");\n"
+                         result = result <> symbol <> "(" <> ToString[k-1] <>
+                                  "," <> ToString[i-1] <> ");\n"
                          ,
                          isHermitian && i > k,
-                         result = result <> "Conj(" <> symbol <> "(" <> ToString[k] <>
-                                  "," <> ToString[i] <> "));\n"
+                         result = result <> "Conj(" <> symbol <> "(" <> ToString[k-1] <>
+                                  "," <> ToString[i-1] <> "));\n"
                          ,
                          True,
                          result = result <>
@@ -534,25 +541,33 @@ MatrixToCFormString[matrix_List, symbol_String, matrixType_String:"DoubleMatrix"
 
 CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, body, ev, matrixSymbol, matrix, massESSymbol,
-            inputParsDecl},
+            inputParsDecl, matrixType, dim, dimStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
            matrixSymbol = "mass_matrix_" <> ev;
            matrix = GetMassMatrix[massMatrix];
+           dim = Length[matrix];
+           dimStr = ToString[dim];
+           matrixType = "Eigen::Matrix<double," <> dimStr <> "," <> dimStr <> ">";
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
-           result = "DoubleMatrix CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
+           result = matrixType <> " CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
                     IndentText[body] <>
                     "return " <> matrixSymbol <> ";\n}\n";
            Return[result];
           ];
 
 CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, ev, matrixSymbol, massESSymbol},
+    Module[{result, ev, matrixSymbol, matrix, massESSymbol, matrixType,
+            dim, dimStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
+           matrix = GetMassMatrix[massMatrix];
+           dim = Length[matrix];
+           dimStr = ToString[dim];
+           matrixType = "Eigen::Matrix<double," <> dimStr <> "," <> dimStr <> ">";
            matrixSymbol = "mass_matrix_" <> ev;
-           result = "DoubleMatrix get_" <> matrixSymbol <> "() const;\n";
+           result = matrixType <> " get_" <> matrixSymbol <> "() const;\n";
            Return[result];
           ];
 
@@ -564,37 +579,32 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            matrixSymbol = "mass_matrix_" <> particle;
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           body = "const DoubleMatrix " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
+           body = "const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              If[dim == 2,
-                 body = body <> "Diagonalize2by2(" <>
-                        matrixSymbol <> ", " <> U <> ", " <> V <> ", " <> ev <> ");\n";
-                 ,
-                 body = body <> "Diagonalize(" <>
-                        matrixSymbol <> ", " <> U <> ", " <> V <> ", " <> ev <> ");\n";
-                ];
+              body = body <> "reorder_svd(" <>
+                     matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");\n";
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
-              If[dim == 2,
-                 body = body <> "Diagonalize2by2(" <> matrixSymbol <> ", " <>
-                        U <> ", " <> ev <> ");\n";
+              If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
+                 body = body <> "reorder_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
+                        ev <> ", " <> U <> ");\n";
                  ,
-                 body = body <> "Diagonalize(" <> matrixSymbol <> ", " <>
-                        U <> ", " <> ev <> ");\n";
+                 body = body <> "diagonalize_hermitian(" <> matrixSymbol <> ", " <>
+                        ev <> ", " <> U <> ");\n";
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
-                     "if (" <> ev <> ".min() < 0.)\n" <>
+                     "if (" <> ev <> ".minCoeff() < 0.)\n" <>
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+              body = body <> "AbsSqrt(" <> ev <> ");\n";
              ];
            (* Set the goldstone boson masses equal to the
               corresponding vector boson masses *)
@@ -603,7 +613,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle},
+            inputParsDecl, expr, particle, dim},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -612,9 +622,14 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
            *)
            expr = StripGenerators[mass[[1]],
                                   {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
+           dim = GetDimension[massESSymbol];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
-           body = inputParsDecl <> "\n" <> ev <> " = " <>
-                  RValueToCFormString[expr] <> ";\n";
+           If[dim == 1,
+              body = inputParsDecl <> "\n" <> ev <> " = " <>
+                     RValueToCFormString[expr] <> ";\n";,
+              body = inputParsDecl <> "\n" <> ev <>
+                     ".setConstant(" <> RValueToCFormString[expr] <> ");\n";
+             ];
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
               !IsMassless[massESSymbol],
               (* check for tachyons *)
@@ -623,7 +638,7 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+              body = body <> "AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
            Return[result <> body <> "}\n\n"];
@@ -643,10 +658,13 @@ CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result = "", massESSymbol, returnType = "DoubleVector"},
+    Module[{result = "", massESSymbol, dim, dimStr, returnType},
            massESSymbol = GetMassEigenstate[massMatrix];
-           If[GetDimension[massESSymbol] == 1,
-              returnType = "double";
+           dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
+           If[dim == 1,
+              returnType = "double";,
+              returnType = "Eigen::Array<double," <> dimStr <> ",1>";
              ];
            result = returnType <> " " <>
                     ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> ";\n";
@@ -654,13 +672,15 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result = "", massESSymbol, dim},
+    Module[{result = "", massESSymbol, dim, dimStr, matrixType},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
+           matrixType = "Eigen::Array<double," <> dimStr <> ",1>";
            result = ", " <> ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            If[dim == 1,
               result = result <> "(0)";,
-              result = result <> "(" <> ToString[dim] <> ")";
+              result = result <> "(" <> matrixType <> "::Zero())";
              ];
            Return[result];
           ];
@@ -685,26 +705,28 @@ CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, massESSymbol, mixingMatrixSymbol, matrixType, dim, dimStr, i},
+    Module[{result, massESSymbol, mixingMatrixSymbol, matrixType,
+            dim, dimStr, i, massESType},
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = GetDimension[massESSymbol];
            dimStr = ToString[dim];
+           massESType = "Eigen::Array<double," <> dimStr <> ",1>";
            If[dim == 1,
               result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = 0.0;\n";
               ,
-              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = DoubleVector(" <> dimStr <> ");\n";
+              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = " <> massESType <> "::Zero();\n";
              ];
            If[mixingMatrixSymbol =!= Null,
               matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
               If[Head[mixingMatrixSymbol] === List,
                  For[i = 1, i <= Length[mixingMatrixSymbol], i++,
                      result = result <> ToValidCSymbolString[mixingMatrixSymbol[[i]]] <>
-                              " = " <> matrixType <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+                              " = " <> matrixType <> "::Zero();\n";
                     ];
                  ,
                  result = result <> ToValidCSymbolString[mixingMatrixSymbol] <>
-                          " = " <> matrixType <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+                          " = " <> matrixType <> "::Zero();\n";
                 ];
              ];
            Return[result];
@@ -737,22 +759,20 @@ CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
 
 InitializeMatrix[Null, _] := "";
 
-InitializeMatrix[matrix_Symbol, dim_Integer] :=
-    Module[{},
-           Return[", " <> ToValidCSymbolString[matrix] <> "(" <> ToString[dim] <> "," <> ToString[dim] <> ")"];
-          ];
+InitializeMatrix[matrix_Symbol, CConversion`MatrixType[type_, rows_, cols_]] :=
+    ", " <> ToValidCSymbolString[matrix] <> "(" <> type <> "::Zero())";
 
-InitializeMatrix[matrix_List, dim_Integer] :=
+InitializeMatrix[matrix_List, type_] :=
     Module[{result = ""},
-           (result = result <> InitializeMatrix[#, dim])& /@ matrix;
+           (result = result <> InitializeMatrix[#, type])& /@ matrix;
            Return[result];
           ];
 
 CreateMixingMatrixInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, mixingMatrixSymbol, dim},
+    Module[{result, mixingMatrixSymbol, matrixType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           dim = Length[GetMassMatrix[massMatrix]];
-           result = InitializeMatrix[mixingMatrixSymbol, dim];
+           matrixType = GetMixingMatrixType[massMatrix];
+           result = InitializeMatrix[mixingMatrixSymbol, matrixType];
            Return[result];
           ];
 

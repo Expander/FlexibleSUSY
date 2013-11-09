@@ -22,6 +22,7 @@
 #define @ModelName@_PHYSICAL_H
 
 #include "linalg.h"
+#include <Eigen/Core>
 
 #include <iosfwd>
 #include <string>
