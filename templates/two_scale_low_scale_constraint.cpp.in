@@ -167,8 +167,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
    if (sinThetaW2_drbar <= 1.0e-4 || sinThetaW2_drbar >= 0.99) {
 #ifdef VERBOSE
       WARNING("@ModelName@_low_scale_constraint: loop corrections to"
-              " sinThetaW are non-perturbative, resetting sinThetaW to"
-              " the Standard Model value");
+              " sinThetaW are non-perturbative (" << sinThetaW2_drbar
+              << "), resetting sinThetaW to the Standard Model value");
 #endif
       sinThetaW2_drbar = Sqr(SM(sinThetaW));
    }
