@@ -50,7 +50,7 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                If[!NumericQ[dynkin], dynkin = 0];
                If[dim == 1,
                   result -= prefactor dynkin Global`FiniteLog[Abs[FlexibleSUSY`M[particle]/Global`currentScale]];,
-                  result -= Sum[prefactor dynkin Global`FiniteLog[Abs[FlexibleSUSY`M[particle][i]/Global`currentScale]],
+                  result -= Sum[prefactor dynkin Global`FiniteLog[Abs[FlexibleSUSY`M[particle][i-1]/Global`currentScale]],
                                 {i,dimStart,dim}];
                  ];
               ];
@@ -60,7 +60,7 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
 CalculateDeltaAlphaEm[] :=
     Module[{result, deltaSusy, deltaSM, prefactor},
            prefactor = Global`alphaEm / (2 Pi);
-           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
+           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][2]/Global`currentScale]];
            deltaSusy = CalculateDRbarElectromagneticCoupling[];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
@@ -74,7 +74,7 @@ CalculateDeltaAlphaEm[] :=
 CalculateDeltaAlphaS[] :=
     Module[{result, deltaSusy, deltaSM, prefactor},
            prefactor = Global`alphaS / (2 Pi);
-           deltaSM = - 2/3 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][3]/Global`currentScale]];
+           deltaSM = - 2/3 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][2]/Global`currentScale]];
            deltaSusy = CalculateDRbarColorCoupling[];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_s_SM = " <>
