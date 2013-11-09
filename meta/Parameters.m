@@ -471,6 +471,7 @@ FillInputParametersFromTuples[minpar_List] :=
 
 DecreaseIndex[ind_Integer] := ind - 1;
 DecreaseIndex[ind_]        := ind;
+DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
 DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
 DecreaseIndices[a_]        := a;
 

@@ -382,7 +382,8 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = "Complex " <> functionName <> ";\n";
            decl = "\nComplex CLASSNAME::" <> functionName <> "\n{\n";
            body = "Complex result;\n\n" <>
-                  ExpandSums[expr /. vertexRules /.
+                  ExpandSums[DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]] /.
+                             vertexRules /.
                              a_[List[i__]] :> a[i] /.
                              ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
                              C -> 1
