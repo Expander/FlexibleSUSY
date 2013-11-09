@@ -590,7 +590,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
               "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n" <>
-              "const double m_tree = " <> RValueToCFormString[FlexibleSUSY`M[particle][3]] <> ";\n" <>
+              "const double m_tree = " <> RValueToCFormString[FlexibleSUSY`M[particle][2]] <> ";\n" <>
               "const double m_sm_drbar = m_sm_msbar * (" <> RValueToCFormString[drbarConversion] <> ");\n\n" <>
               "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
               "- self_energy_PL - self_energy_PR);\n\n" <>
@@ -644,8 +644,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark] :=
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
               "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n\n" <>
               "const double currentScale = get_scale();\n" <>
-              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n" <>
-              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n\n" <>
+              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][2]] <> ";\n" <>
+              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][2]] <> ";\n\n" <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
               "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";
