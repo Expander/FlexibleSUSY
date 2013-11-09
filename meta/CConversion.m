@@ -408,12 +408,12 @@ CreateUniqueCVariable[] :=
 ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
-           startStr = ToValidCSymbolString[start];
+           startStr = ToValidCSymbolString[start - 1];
            stopStr  = ToValidCSymbolString[stop];
            tmpSum   = CreateUniqueCVariable[];
            result = type <> " " <> tmpSum <> initialValue <> ";\n" <>
                     "for (unsigned " <> idxStr <> " = " <>
-                    startStr <> "; " <> idxStr <> " <= " <> stopStr <>
+                    startStr <> "; " <> idxStr <> " < " <> stopStr <>
                     "; ++" <> idxStr <> ") {\n" <>
                     IndentText[ExpandSums[expr,tmpSum,type,initialValue]] <> "}\n" <>
                     variable <> " += " <> tmpSum <> ";\n";
@@ -426,7 +426,7 @@ ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_Strin
            StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
           ];
 
-ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " <= " <> ToString[i2];
+ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " < " <> ToString[i2];
 
 StripThetaStep[expr_] :=
       Module[{thetas, strippedExpr, i, condition = ""},

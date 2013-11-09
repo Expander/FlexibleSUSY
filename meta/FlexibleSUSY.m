@@ -1067,7 +1067,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
-	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices] /. allIndexReplacementRules;
+	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
