@@ -101,6 +101,11 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+inline int KroneckerDelta(int i, int j)
+{
+   return i == j;
+}
+
 Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);

@@ -474,14 +474,17 @@ DecreaseIndex[ind_]        := ind;
 DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
 DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
 DecreaseIndices[a_]        := a;
+DecreaseIndices[SARAH`Delta[a_, b_]] :=
+    CConversion`KroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
 
 DecreaseIndexLiterals[expr_] :=
     DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,
                                      allOutputParameters]];
 
 DecreaseIndexLiterals[expr_, heads_List] :=
-    Module[{indexedSymbols, rules, decrExpr},
-           indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[heads, s], Infinity];
+    Module[{indexedSymbols, rules, decrExpr, allHeads},
+           allHeads = Join[heads, {SARAH`Delta}];
+           indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
            rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
            decrExpr = expr /. rules;
            Return[decrExpr]
