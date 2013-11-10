@@ -1,5 +1,5 @@
 
-BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`"}];
+BeginPackage["Constraint`", {"CConversion`", "BetaFunction`", "Parameters`", "TextFormatting`", "TreeMasses`"}];
 
 ApplyConstraints::usage="";
 CalculateScale::usage="";
@@ -239,7 +239,7 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
           ];
 
 CalculateScaleFromExpr[expr_, scaleName_String] :=
-    scaleName <> " = " <> RValueToCFormString[expr] <> ";\n";
+    scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]]] <> ";\n";
 
 DefineParameter[parameter_Symbol] :=
     "double " <> ToValidCSymbolString[parameter] <> ";\n";
