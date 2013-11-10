@@ -416,8 +416,11 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 
    // comparing tree-level masses
 
-   const DoubleVector MCha(fs.get_MCha()), MChi(fs.get_MChi()),
-      MHpm(fs.get_MHpm()), MAh(fs.get_MAh()), Mhh(fs.get_Mhh());
+   const DoubleVector MCha(ToDoubleVector(fs.get_MCha())),
+      MChi(ToDoubleVector(fs.get_MChi())),
+      MHpm(ToDoubleVector(fs.get_MHpm())),
+      MAh(ToDoubleVector(fs.get_MAh())),
+      Mhh(ToDoubleVector(fs.get_Mhh()));
    const DoubleVector mch(ss.displayDrBarPars().mchBpmz),
       mn(ss.displayDrBarPars().mnBpmz);
    const double MwRun = fs.get_MVWm();
@@ -446,7 +449,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.004);
 
    // down-type squarks
-   const DoubleVector Sd(fs.get_MSd());
+   const DoubleVector Sd(ToDoubleVector(fs.get_MSd()));
    const DoubleVector md(ss.displayDrBarPars().md.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Sd(1), md(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(Sd(2), md(2), 0.006);
@@ -456,7 +459,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Sd(6), md(6), 0.006);
 
    // up-type squarks
-   const DoubleVector Su(fs.get_MSu());
+   const DoubleVector Su(ToDoubleVector(fs.get_MSu()));
    const DoubleVector mu(ss.displayDrBarPars().mu.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Su(1), mu(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(Su(2), mu(2), 0.006);
@@ -466,7 +469,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Su(6), mu(6), 0.006);
 
    // sleptons
-   const DoubleVector Se(fs.get_MSe());
+   const DoubleVector Se(ToDoubleVector(fs.get_MSe()));
    const DoubleVector me(ss.displayDrBarPars().me.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Se(1), me(1), 0.003);
    BOOST_CHECK_CLOSE_FRACTION(Se(2), me(2), 0.003);
@@ -477,7 +480,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 
    // sneutrinos
    const DoubleVector msnu(ss.displayDrBarPars().msnu);
-   const DoubleVector Snu(fs.get_MSv());
+   const DoubleVector Snu(ToDoubleVector(fs.get_MSv()));
    BOOST_CHECK_CLOSE_FRACTION(Snu(1), msnu(1), 0.0055);
    BOOST_CHECK_CLOSE_FRACTION(Snu(2), msnu(2), 0.0055);
    BOOST_CHECK_CLOSE_FRACTION(Snu(3), msnu(3), 0.0085);
@@ -501,11 +504,11 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    // comparing one-loop masses
 
    const DoubleVector
-      MCha_1l(fs.get_physical().MCha),
-      MChi_1l(fs.get_physical().MChi),
-      MHpm_1l(fs.get_physical().MHpm),
-      MAh_1l(fs.get_physical().MAh),
-      Mhh_1l(fs.get_physical().Mhh);
+      MCha_1l(ToDoubleVector(fs.get_physical().MCha)),
+      MChi_1l(ToDoubleVector(fs.get_physical().MChi)),
+      MHpm_1l(ToDoubleVector(fs.get_physical().MHpm)),
+      MAh_1l(ToDoubleVector(fs.get_physical().MAh)),
+      Mhh_1l(ToDoubleVector(fs.get_physical().Mhh));
    const DoubleVector mch_1l(ss.displayPhys().mch),
       mn_1l(ss.displayPhys().mneut.apply(fabs));
    const double mHpm_1l = ss.displayPhys().mHpm;
@@ -529,7 +532,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.004);
 
    // down-type squarks
-   const DoubleVector Sd_1l(fs.get_physical().MSd);
+   const DoubleVector Sd_1l(ToDoubleVector(fs.get_physical().MSd));
    const DoubleVector md_1l(ss.displayPhys().md.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Sd_1l(1), md_1l(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(Sd_1l(2), md_1l(2), 0.006);
@@ -539,7 +542,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Sd_1l(6), md_1l(6), 0.006);
 
    // up-type squarks
-   const DoubleVector Su_1l(fs.get_physical().MSu);
+   const DoubleVector Su_1l(ToDoubleVector(fs.get_physical().MSu));
    const DoubleVector mu_1l(ss.displayPhys().mu.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Su_1l(1), mu_1l(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(Su_1l(2), mu_1l(2), 0.006);
@@ -549,7 +552,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Su_1l(6), mu_1l(6), 0.006);
 
    // sleptons
-   const DoubleVector Se_1l(fs.get_physical().MSe);
+   const DoubleVector Se_1l(ToDoubleVector(fs.get_physical().MSe));
    const DoubleVector me_1l(ss.displayPhys().me.flatten().sort());
    BOOST_CHECK_CLOSE_FRACTION(Se_1l(1), me_1l(1), 0.0005);
    BOOST_CHECK_CLOSE_FRACTION(Se_1l(2), me_1l(2), 0.0008);
@@ -560,7 +563,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 
    // sneutrinos
    const DoubleVector msnu_1l(ss.displayPhys().msnu);
-   const DoubleVector Snu_1l(fs.get_physical().MSv);
+   const DoubleVector Snu_1l(ToDoubleVector(fs.get_physical().MSv));
    BOOST_CHECK_CLOSE_FRACTION(Snu_1l(1), msnu_1l(1), 0.0056);
    BOOST_CHECK_CLOSE_FRACTION(Snu_1l(2), msnu_1l(2), 0.0056);
    BOOST_CHECK_CLOSE_FRACTION(Snu_1l(3), msnu_1l(3), 0.0090);
@@ -610,7 +613,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 
    // comparing tree-level masses
 
-   const DoubleVector MHpm(fs.get_MHpm()), MAh(fs.get_MAh()), Mhh(fs.get_Mhh());
+   const DoubleVector MHpm(ToDoubleVector(fs.get_MHpm())),
+      MAh(ToDoubleVector(fs.get_MAh())),
+      Mhh(ToDoubleVector(fs.get_Mhh()));
    const double MwRun = fs.get_MVWm();
    const double MzRun = fs.get_MVZ();
    const double mHpm = ss.displayDrBarPars().mHpm;
