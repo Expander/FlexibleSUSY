@@ -505,8 +505,8 @@ If ready.
 \subsection{NMSSM}
 Detailed steps to create NMSSM model file.
 \begin{enumerate}
-\item Create new directory \code{mkdir NMSSM}
-\item Move into this new directory \code{cd NMSSM}
+\item Create new directory \code{mkdir myNMSSM}
+\item Move into this new directory \code{cd myNMSSM}
 \item copy the MSSM model file in \code{cp /path/to/SARAH/Models/MSSM/MSSM.m  NMSSM.m}
 \item Edit NMSSM.m as follows
 \begin{enumerate}
@@ -698,6 +698,11 @@ Once again this is simplified from the general case becasue there are default ve
              Value -> None, 
              LesHouches -> {NMSSMRUN,5},
              OutputName-> vS         }},
+\end{lstlisting}
+\item Navigate to Flexible SUSY directory  \code{cd /path/to/FlexibleSUSY/}
+\item Create Z3NMSSM directory 
+\begin{lstlisting}
+./createmodel --models=Z3NMSSM:myNMSSM
 \end{lstlisting}
 
 \end{enumerate}   
