@@ -350,6 +350,20 @@ void fs_svd
     u.transposeInPlace();
 }
 
+// m == u.transpose() * s.matrix().asDiagonal() * v
+// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
+// (s >= 0).all()
+// s in ascending order
+template<int M, int N>
+void fs_svd
+(const Eigen::Matrix<double, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<double>, M, M>& u,
+ Eigen::Matrix<std::complex<double>, N, N>& v)
+{
+    fs_svd(m.template cast<std::complex<double>>().eval(), s, u, v);
+}
+
 // m == u.transpose() * s.matrix().asDiagonal() * u
 // (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
 // (s >= 0).all()

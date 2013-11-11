@@ -198,6 +198,33 @@ BOOST_AUTO_TEST_CASE(test_fs_svd)
     check_fs_svd<double	   	, 6>();
 }
 
+template<int N>
+void check_casting_fs_svd()
+{
+    Matrix<double, N, N> m = Matrix<double, N, N>::Random();
+    Array<double, N, 1> s;
+    Matrix<complex<double>, N, N> u, v;
+
+    fs_svd(m, s, u, v);	// following SARAH convention
+    Matrix<complex<double>, N, N> diag = u.conjugate() * m * v.adjoint();
+
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < N; i++)
+	for (size_t j = 0; j < N; j++)
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
+
+    for (size_t i = 0; i < N-1; i++)
+	BOOST_CHECK(s[i] <= s[i+1]);
+}
+
+BOOST_AUTO_TEST_CASE(test_casting_fs_svd)
+{
+    check_casting_fs_svd<2>();
+    check_casting_fs_svd<3>();
+    check_casting_fs_svd<4>();
+    check_casting_fs_svd<6>();
+}
+
 template<class S, int N>
 void check_fs_diagonalize_symmetric()
 {
