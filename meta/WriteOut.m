@@ -79,7 +79,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
                   pdg = Abs[pdgList[[i]]];
                   If[pdg != 0,
                      eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "_" <> ToString[i];
-                     massNameStr = CConversion`RValueToCFormString[FlexibleSUSY`M[eigenstateName[i]]];
+                     massNameStr = CConversion`RValueToCFormString[FlexibleSUSY`M[eigenstateName[i-1]]];
                      result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
                               ", " <> massNameStr <> ", \"" <> eigenstateNameStr <> "\")\n";
                     ];
