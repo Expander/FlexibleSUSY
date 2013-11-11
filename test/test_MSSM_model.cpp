@@ -139,8 +139,8 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_EQUALITY(hh, s.displayDrBarPars().mh0);
    TEST_CLOSE(m.get_ZH()(0,0), -sin(alpha), 1.0e-12);
    TEST_CLOSE(m.get_ZH()(0,1), cos(alpha), 1.0e-12);
-   TEST_CLOSE(m.get_ZH()(1,0), -cos(alpha), 1.0e-12);
-   TEST_CLOSE(m.get_ZH()(1,1), -sin(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(1,0), cos(alpha), 1.0e-12);
+   TEST_CLOSE(m.get_ZH()(1,1), sin(alpha), 1.0e-12);
 
    // neutral CP odd Higgs
    DoubleVector Ah(ToDoubleVector(m.get_MAh()));
@@ -148,8 +148,8 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_EQUALITY(Ah(2), s.displayDrBarPars().mA0(1));
    TEST_CLOSE(m.get_ZA()(0,0), -cos(beta), 1.0e-12);
    TEST_CLOSE(m.get_ZA()(0,1), sin(beta), 1.0e-12);
-   TEST_CLOSE(m.get_ZA()(1,0), -sin(beta), 1.0e-12);
-   TEST_CLOSE(m.get_ZA()(1,1), -cos(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(1,0), sin(beta), 1.0e-12);
+   TEST_CLOSE(m.get_ZA()(1,1), cos(beta), 1.0e-12);
 
    // charged Higgs
    DoubleVector Hpm(ToDoubleVector(m.get_MHpm()));
@@ -181,8 +181,10 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    DoubleVector mch(ToDoubleVector(m.get_MCha()));
    TEST_EQUALITY(mch(1), s.displayDrBarPars().mchBpmz(1));
    TEST_EQUALITY(mch(2), s.displayDrBarPars().mchBpmz(2));
-   TEST_CLOSE(ToComplexMatrix(m.get_UM()), s.displayDrBarPars().uBpmz, 1.0e-12);
-   TEST_CLOSE(ToComplexMatrix(m.get_UP()), s.displayDrBarPars().vBpmz, 1.0e-12);
+   const ComplexMatrix UM(ToComplexMatrix(m.get_UM()) * Complex(0.,-1.));
+   const ComplexMatrix UP(ToComplexMatrix(m.get_UP()) * Complex(0.,1.));
+   TEST_CLOSE(UM, s.displayDrBarPars().uBpmz, 1.0e-12);
+   TEST_CLOSE(UP, s.displayDrBarPars().vBpmz, 1.0e-12);
 
    // photon, W and Z mass
    const double vp = m.get_MVP();
