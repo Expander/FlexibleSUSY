@@ -972,8 +972,8 @@ void compare_tadpoles(MssmSoftsusy s, MSSM<Two_scale> m)
    const double vd = m.get_vd();
    const double vu = m.get_vu();
 
-   const double td = m.tadpole_hh(1).real();
-   const double tu = m.tadpole_hh(2).real();
+   const double td = m.tadpole_hh(0).real();
+   const double tu = m.tadpole_hh(1).real();
 
    // check equality of tadpoles
    TEST_CLOSE(td / vd, s.doCalcTadpole1oneLoop(mt, sinthDRbar), 1.0e-11);
@@ -1127,8 +1127,8 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    // one-loop
    model.solve_ewsb_one_loop();
-   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(1).real(), 0.0, precision);
-   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(2).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(0).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(1).real(), 0.0, precision);
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);

@@ -57,8 +57,8 @@ void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
 
    const double precision = m.get_ewsb_iteration_precision();
    m.solve_ewsb_one_loop();
-   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(1).real(), 0.0, precision);
-   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(2).real(), 0.0, precision);
+   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
+   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
 }
 
 void ensure_one_loop_ewsb(MssmSoftsusy& s)

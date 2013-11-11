@@ -447,7 +447,7 @@ FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
                functionName = CreateTadpoleFunctionName[field];
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
                       "Re(model->" <> functionName <>
-                      "(" <> ToString[idx] <> "));\n";
+                      "(" <> ToString[idx - 1] <> "));\n";
               ];
            Return[IndentText[body]];
           ];
