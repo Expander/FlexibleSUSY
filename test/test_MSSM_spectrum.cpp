@@ -173,7 +173,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
    BOOST_MESSAGE("Difference (BMu_FlexibleSUSY - BMu_softsusy)(Msusy) = "
                  << model->get_BMu() - new_BMu);
    BOOST_MESSAGE("Difference (mt_FlexibleSUSY - mt_softsusy)(Msusy) = "
-                 << model->get_MFu()(3) - mt);
+                 << model->get_MFu()(2) - mt);
    BOOST_MESSAGE("Difference (Msusy_FlexibleSUSY - Msusy_softsusy)(Msusy) = "
                  << get_scale() - new_Msusy);
 
@@ -492,13 +492,13 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
    BOOST_CHECK_EQUAL(fs.get_MVG(), 0.0);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MGlu(), ss.displayDrBarPars().mGluino, 0.005);
 
+   BOOST_CHECK_EQUAL(fs.get_MFv()(0), 0.0);
    BOOST_CHECK_EQUAL(fs.get_MFv()(1), 0.0);
    BOOST_CHECK_EQUAL(fs.get_MFv()(2), 0.0);
-   BOOST_CHECK_EQUAL(fs.get_MFv()(3), 0.0);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(3), ss.displayDrBarPars().mtau, 0.00044);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(3), ss.displayDrBarPars().mt  , 0.0097);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(3), ss.displayDrBarPars().mb  , 0.0027);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(2), ss.displayDrBarPars().mtau, 0.00044);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(2), ss.displayDrBarPars().mt  , 0.0097);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(2), ss.displayDrBarPars().mb  , 0.0027);
 
 
    // comparing one-loop masses
@@ -683,7 +683,7 @@ void MSSM_iterative_low_scale_constraint::apply()
          model->calculate_Mhh_pole_1loop();
          model->calculate_MVZ_pole_1loop();
 
-         const double mH = model->get_physical().Mhh(1);
+         const double mH = model->get_physical().Mhh(0);
          const double mZ = model->get_physical().MVZ;
 
          #define SM(p) Electroweak_constants::p
