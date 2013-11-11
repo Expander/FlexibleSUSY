@@ -373,9 +373,9 @@ void compare_neutralino_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    ComplexMatrix sarah_sigma_L(4,4), sarah_sigma_R(4,4), sarah_sigma_S(4,4);
    for (unsigned i = 1; i <= 4; ++i) {
       for (unsigned k = 1; k <= 4; ++k) {
-         sarah_sigma_L(i,k) = m.self_energy_Chi_PL(p,i,k);
-         sarah_sigma_R(i,k) = m.self_energy_Chi_PR(p,i,k);
-         sarah_sigma_S(i,k) = m.self_energy_Chi_1(p,i,k);
+         sarah_sigma_L(i,k) = m.self_energy_Chi_PL(p,i-1,k-1);
+         sarah_sigma_R(i,k) = m.self_energy_Chi_PR(p,i-1,k-1);
+         sarah_sigma_S(i,k) = m.self_energy_Chi_1(p,i-1,k-1);
       }
    }
 
@@ -424,9 +424,9 @@ void compare_chargino_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    ComplexMatrix sarah_sigma_L(2,2), sarah_sigma_R(2,2), sarah_sigma_S(2,2);
    for (unsigned i = 1; i <= 2; ++i) {
       for (unsigned k = 1; k <= 2; ++k) {
-         sarah_sigma_L(i,k) = m.self_energy_Cha_PL(p,i,k);
-         sarah_sigma_R(i,k) = m.self_energy_Cha_PR(p,i,k);
-         sarah_sigma_S(i,k) = m.self_energy_Cha_1(p,i,k);
+         sarah_sigma_L(i,k) = m.self_energy_Cha_PL(p,i-1,k-1);
+         sarah_sigma_R(i,k) = m.self_energy_Cha_PR(p,i-1,k-1);
+         sarah_sigma_S(i,k) = m.self_energy_Cha_1(p,i-1,k-1);
       }
    }
 
