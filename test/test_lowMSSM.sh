@@ -80,7 +80,11 @@ if test ! -r "$lowmssm_output"; then
     exit 1
 fi
 
-diff=`$numdiff_cmd --relative-tolerance $rel_error $mssm_output $lowmssm_output`
+diff=`$numdiff_cmd\
+ --absolute-tolerance=1.0e-12\
+ --relative-tolerance=$rel_error\
+ $mssm_output $lowmssm_output`
+
 diff_without_comments=`echo $diff | $sed_cmd -e '/^ *#/d' | $sed_cmd -e '/^+++/d'`
 
 if [ -n "$diff_without_comments" ]; then
