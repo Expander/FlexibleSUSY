@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
    const double fsT2 = m.tadpole_hh(1).real() / m.get_vu();
    const double fsTS = m.tadpole_hh(2).real() / m.get_vS();
 
-   BOOST_CHECK_CLOSE(nmT1, fsT1, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmT1, fsT1, 1.1e-12);
    BOOST_CHECK_CLOSE(nmT2, fsT2, 1.0e-12);
    BOOST_CHECK_CLOSE(nmTS, fsTS, 1.0e-12);
 
@@ -288,9 +288,9 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
 
    BOOST_CHECK_CLOSE(nmHSE11, fsHSE11, 1.0e-12);
    BOOST_CHECK_CLOSE(nmHSE12, fsHSE12, 1.0e-12);
-   BOOST_CHECK_CLOSE(nmHSE13, fsHSE13, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE13, fsHSE13, 2.0e-12);
    BOOST_CHECK_CLOSE(nmHSE22, fsHSE22, 1.0e-12);
-   BOOST_CHECK_CLOSE(nmHSE23, fsHSE23, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmHSE23, fsHSE23, 2.0e-12);
    BOOST_CHECK_CLOSE(nmHSE33, fsHSE33, 1.5e-11);
 
    /// CP-odd self-energies
@@ -309,8 +309,8 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
 
    BOOST_CHECK_CLOSE(nmPHSE11, fsPHSE11, 1.0e-12);
    BOOST_CHECK_CLOSE(nmPHSE12, fsPHSE12, 1.0e-12);
-   BOOST_CHECK_CLOSE(nmPHSE13, fsPHSE13, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE13, fsPHSE13, 7.0e-12);
    BOOST_CHECK_CLOSE(nmPHSE22, fsPHSE22, 1.0e-12);
-   BOOST_CHECK_CLOSE(nmPHSE23, fsPHSE23, 1.0e-12);
+   BOOST_CHECK_CLOSE(nmPHSE23, fsPHSE23, 1.1e-11);
    BOOST_CHECK_CLOSE(nmPHSE33, fsPHSE33, 1.0e-12);
 }
