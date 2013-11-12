@@ -583,16 +583,16 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              body = body <> "sarah_svd(" <>
+              body = body <> "fs_svd(" <>
                      matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");\n";
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 body = body <> "sarah_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
+                 body = body <> "fs_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
                         ev <> ", " <> U <> ");\n";
                  ,
-                 body = body <> "sarah_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
+                 body = body <> "fs_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
                         ev <> ", " <> U <> ");\n";
                 ];
              ];

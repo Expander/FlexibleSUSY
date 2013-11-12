@@ -114,13 +114,13 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "sarah_svd(M_1loop, PHYSICAL(" <> massName <> "), " <>
+                          "fs_svd(M_1loop, PHYSICAL(" <> massName <> "), " <>
                           "PHYSICAL(" <> U <> "), " <>
                           "PHYSICAL(" <> V <> "));\n";
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                       "sarah_diagonalize_hermitian(M_1loop, PHYSICAL(" <> massName <> "), " <>
+                       "fs_diagonalize_hermitian(M_1loop, PHYSICAL(" <> massName <> "), " <>
                        "PHYSICAL(" <> U <> "));\n";
                 ];
               result = result <>
@@ -190,14 +190,14 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "sarah_svd(M_1loop, " <>
+                          "fs_svd(M_1loop, " <>
                           "PHYSICAL(" <> massName <> "), " <>
                           "PHYSICAL(" <> U <> "), " <>
                           "PHYSICAL(" <> V <> "));\n";
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                          "sarah_diagonalize_symmetric(M_1loop, " <>
+                          "fs_diagonalize_symmetric(M_1loop, " <>
                           "PHYSICAL(" <> massName <> "), " <>
                           "PHYSICAL(" <> U <> "));\n";
                 ];
@@ -259,7 +259,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               Vtemp = "mix_" <> V;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ", " <> Vtemp <> ";\n" <>
-                            "sarah_svd(M_1loop, eigen_values, " <> Utemp <> ", " <> Vtemp <> ");\n\n" <>
+                            "fs_svd(M_1loop, eigen_values, " <> Utemp <> ", " <> Vtemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
@@ -271,7 +271,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               U = ToValidCSymbolString[mixingMatrix];
               Utemp = "mix_" <> U;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ";\n" <>
-                            "sarah_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
+                            "fs_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
@@ -374,7 +374,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                           IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
                                      "decltype(" <> V <> ") mix_" <> V <> ";\n"];
                  result = result <>
-                          IndentText["sarah_svd(M_1loop, eigen_values, " <>
+                          IndentText["fs_svd(M_1loop, eigen_values, " <>
                                      "mix_" <> U <> ", " <> "mix_" <> V <> ");\n"];
                  result = result <>
                           IndentText["if (es == 0) {\n" <>
@@ -386,7 +386,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
                           IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
-                                     "sarah_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
+                                     "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
                                      "if (es == 0)\n" <>
                                      IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
                                     ];
