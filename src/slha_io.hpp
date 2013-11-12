@@ -27,6 +27,7 @@
 #include "slhaea.h"
 #include "logger.hpp"
 #include "error.hpp"
+#include "wrappers.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -153,7 +154,7 @@ void SLHA_io::set_block(const std::string& name,
    const int cols = matrix.cols();
    for (int i = 1; i <= rows; ++i)
       for (int k = 1; k <= cols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
+         ss << boost::format(mixing_matrix_formatter) % i % k % Re(matrix(i-1,k-1))
             % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
       }
 
