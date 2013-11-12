@@ -241,8 +241,8 @@ CreateCouplingFunction[coupling_, expr_] :=
               body = body <> "result = " <>
                      RValueToCFormString[Simplify[DecreaseIndexLiterals[expr]]] <> ";\n";
               ,
-              body = body <> ExpandSums[DecreaseIndexLiterals[expr], "result",
-                                        type, initalValue];
+              body = body <> ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr]],
+                                        "result", type, initalValue];
              ];
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
@@ -382,7 +382,7 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = "Complex " <> functionName <> ";\n";
            decl = "\nComplex CLASSNAME::" <> functionName <> "\n{\n";
            body = "Complex result;\n\n" <>
-                  ExpandSums[DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]] /.
+                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr], TreeMasses`GetParticles[]] /.
                              vertexRules /.
                              a_[List[i__]] :> a[i] /.
                              ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.

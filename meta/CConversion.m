@@ -10,6 +10,7 @@ oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
 KroneckerDelta::usage="";
+IndexSum::usage="";
 
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
@@ -426,11 +427,14 @@ CreateUniqueCVariable[] :=
            Return[variable];
           ];
 
-ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
+    ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
+
+ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
-           startStr = ToValidCSymbolString[start - 1];
-           stopStr  = ToValidCSymbolString[stop];
+           startStr = ToValidCSymbolString[start];
+           stopStr  = ToValidCSymbolString[stop + 1];
            tmpSum   = CreateUniqueCVariable[];
            result = type <> " " <> tmpSum <> initialValue <> ";\n" <>
                     "for (unsigned " <> idxStr <> " = " <>
@@ -476,10 +480,10 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
-           sums = Select[factors, (!FreeQ[#,sum[__]])&];
+           sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
            rest = Complement[factors, sums];
            expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
            expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;

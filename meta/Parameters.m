@@ -53,6 +53,8 @@ FillInputParametersFromTuples::usage="";
 
 DecreaseIndexLiterals::usage="";
 
+DecreaseSumIdices::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -489,6 +491,9 @@ DecreaseIndexLiterals[expr_, heads_List] :=
            decrExpr = expr /. rules;
            Return[decrExpr]
           ];
+
+DecreaseSumIdices[expr_] :=
+    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
 
 End[];
 
