@@ -19,6 +19,7 @@
 #ifndef linalg2_hpp
 #define linalg2_hpp
 
+#include <cmath>
 #include <complex>
 #include <algorithm>
 #include <Eigen/Core>
@@ -332,6 +333,71 @@ void reorder_diagonalize_symmetric
     Eigen::Map<Eigen::Matrix<double, N, 1>>(s.data()).transpose() *= p;
 #endif
     u *= p;
+}
+
+// m == u.transpose() * s.matrix().asDiagonal() * v
+// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
+// (s >= 0).all()
+// s in ascending order
+template<class Scalar, int M, int N>
+void fs_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<Scalar, M, M>& u,
+ Eigen::Matrix<Scalar, N, N>& v)
+{
+    reorder_svd(m, s, u, v);
+    u.transposeInPlace();
+}
+
+// m == u.transpose() * s.matrix().asDiagonal() * v
+// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
+// (s >= 0).all()
+// s in ascending order
+template<int M, int N>
+void fs_svd
+(const Eigen::Matrix<double, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<double>, M, M>& u,
+ Eigen::Matrix<std::complex<double>, N, N>& v)
+{
+    fs_svd(m.template cast<std::complex<double>>().eval(), s, u, v);
+}
+
+// m == u.transpose() * s.matrix().asDiagonal() * u
+// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
+// (s >= 0).all()
+// s in ascending order
+template<class Scalar, int N>
+void fs_diagonalize_symmetric
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ Eigen::Matrix<std::complex<double>, N, N>& u)
+{
+    reorder_diagonalize_symmetric(m, s, u);
+    u.transposeInPlace();
+}
+
+// m == z.adjoint() * w.matrix().asDiagonal() * z
+// (convention of SARAH)
+// abs(w[i]) in ascending order
+template<class Scalar, int N>
+void fs_diagonalize_hermitian
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w,
+ Eigen::Matrix<Scalar, N, N>& z)
+{
+    diagonalize_hermitian(m, w, z);
+    Eigen::PermutationMatrix<N> p;
+    p.setIdentity();
+    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
+	      [&w](int i, int j){ return std::abs(w[i]) < std::abs(w[j]); });
+#if EIGEN_VERSION_AT_LEAST(3,1,4)
+    w.matrix().transpose() *= p;
+#else
+    Eigen::Map<Eigen::Matrix<double, N, 1>>(w.data()).transpose() *= p;
+#endif
+    z = (z * p).adjoint().eval();
 }
 
 } // namespace flexiblesusy
