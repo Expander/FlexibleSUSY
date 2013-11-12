@@ -233,13 +233,13 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
    case 6:
    case 11:
    case 21:
-      WARNING("MODSEL key " << key << " currently not supported");
+      WARNING("Key " << key << " in Block MODSEL currently not supported");
       break;
    case 12:
       modsel.parameter_output_scale = value;
       break;
    default:
-      WARNING("Unrecognized key in MODSEL: " << key);
+      WARNING("Unrecognized key " << key << " in Block MODSEL");
       break;
    }
 }
