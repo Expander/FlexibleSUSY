@@ -7,7 +7,7 @@
 \usepackage{xspace}
 \usepackage[usenames]{xcolor}
 \usepackage{tikz,tikz-uml}
-\usepackage{listings}   
+\usepackage{listings}
 \bibstyle{elsarticle-num}
 % source code highlighting
 \lstset{breaklines=true,
@@ -504,6 +504,208 @@ If ready.
 \section{Examples}
 \subsection{NMSSM}
 Detailed steps to create NMSSM model file.
+\begin{enumerate}
+\item Create new directory \code{mkdir myNMSSM}
+\item Move into this new directory \code{cd myNMSSM}
+\item copy the MSSM model file in \code{cp /path/to/SARAH/Models/MSSM/MSSM.m  NMSSM.m}
+\item Edit NMSSM.m as follows
+\begin{enumerate}
+\item  Change Model name, author and date
+\item Add singlet superfield to SuperFields
+\begin{lstlisting}
+SuperFields[[8]] = {s, 1, sR,    0, 1,  1, RpM};
+\end{lstlisting}
+\item Modify superpotential
+\begin{lstlisting}
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] S.Hu.Hd +  \[Kappa]/3 s.s.s ;
+\end{lstlisting}
+\item Add new VEV
+\begin{lstlisting} DEFINITION[EWSB][VEVs]= 
+  { {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
+    {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
+    {SsR,  {vs, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS,1/Sqrt[2]}}
+};
+\end{lstlisting}
+\item Add new VEV
+\begin{lstlisting} 
+  DEFINITION[EWSB][VEVs]= 
+  { {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
+    {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
+    {SsR,  {vs, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS,1/Sqrt[2]}}
+};
+\end{lstlisting}
+\item  Add the singlino to the list of gauge eigenstate dirac fermions
+\begin{lstlisting}
+  DEFINITION[GaugeES][DiracSpinors]={
+  Bino ->{fB, conj[fB]},
+  Wino -> {fWB, conj[fWB]},
+  Glu -> {fG, conj[fG]},
+  H0 -> {FHd0, conj[FHu0]},
+  HC -> {FHdm, conj[FHup]},
+  Fd1 -> {FdL, 0},
+  Fd2 -> {0, FdR},
+  Fu1 -> {FuL, 0},
+  Fu2 -> {0, FuR},
+  Fe1 -> {FeL, 0},
+  Fe2 -> {0, FeR},
+  Fv -> {FvL,0}
+  FS -> {FsR,conj[FsR]}   
+};
+\end{lstlisting}
+\item Edit mass eigenstates to give how the gauge eigenstates mix into mass eigenstates.  Here we add to the cp even higgs a real singlet, to the CP odd the imaginary part of the singlet and finally to the neutralinos we add the singlino.
+
+\begin{lstlisting}
+ DEFINITION[EWSB][MatterSector]= 
+{    {{SdL, SdR}, {Sd, ZD}},
+     {{SvL}, {Sv, ZV}},
+     {{SuL, SuR}, {Su, ZU}},
+     {{SeL, SeR}, {Se, ZE}},
+     {{phid, phiu, phiS}, {hh, ZH}},       <----------------
+     {{sigmad, sigmau, sigmaS}, {Ah, ZA}}, <----------------
+     {{SHdm,conj[SHup]},{Hpm,ZP}},
+     {{fB, fW0, FHd0, FHu0, FsR}, {L0, ZN}}, <---------------
+     {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
+     {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
+     {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
+     {{{FuL},{conj[FuR]}},{{FUL,ZUL},{FUR,ZUR}}}       }; 
+
+\end{lstlisting}
+\end{enumerate}
+\item Now we copy over particles.m \code{cp /path/to/SARAH/Models/MSSM/particles.m  ./}
+\item Edit particles.m as follows
+\begin{enumerate}  
+\item First we add to particleDefinitions[GaugeES]:
+\begin{lstlisting}
+ ParticleDefinitions[GaugeES] = {
+      {SdL,  { Description -> "Left Down-Squarks"}},
+      {SdR,  { Description -> "Right Down-Squarks"}},
+      ...........
+      ...........
+      ...........
+      {H0,   { Description -> "Neutral Higgsinos"}},
+      {HC,   { Description -> "Charged Higgsinos"}},
+      {SsR, { Description -> "Singlet"}},         <---------------
+      {FS,   { Description -> "Singlino" }},      <---------------
+      {Fd1,  { Description -> "Dirac Left Down-Quark"}},
+      {Fd2,  { Description -> "Dirac Right Down-Quark"}},
+      ............
+      ............
+      };
+\end{lstlisting}
+Note that we are brief in information here becasue there is already some information contained in the default particles.m file in the model directory:
+\begin{lstlisting} 
+{{ Description -> "Singlet", 
+                 PDG -> {0},
+                 PDG.IX -> 0,
+                 Width -> 0, 
+                 Mass -> Automatic,
+                 FeynArtsNr -> 98,
+                 LaTeX -> "S",
+                 OutputName -> "s"
+
+    }},    
+   
+   
+(* -------- Weyl Spinor  ------ *)   
+    
+  {{ Description -> "Weyl Spinor of Singlino", 
+                 PDG -> 99,
+                 Width -> 0, 
+                 Mass -> Automatic,
+                 FeynArtsNr -> 9,
+                 LaTeX -> "\\tilde{S}",
+                 OutputName -> "s"
+
+    }},  
+
+\end{lstlisting}
+ \item Now we edit ParticleDefinitions[EWSB].  Again most states are defined in brief form by a name because they use the default information in the particles.m in the models directory.  But here we need to over write some of the default options for the cp even and cp odd higgs states: 
+\begin{lstlisting}
+ {hh   ,  {  Description -> "Higgs", 
+                 PDG -> {25, 35,45},
+                 PDG.IX ->{101000001,101000002,101000003}
+ }}, 
+       {Ah   ,  {    Description -> "Pseudo-Scalar Higgs",
+                 PDG -> {0, 36, 46},
+                 PDG.IX ->{0,102000001,102000002  } }}, 
+
+\end{lstlisting}
+\item To the WeylFermionAndIndermediate we add the Weyl singlino and the real scalar singlet field and imaginary scalar singlet field:  
+ \begin{lstlisting}
+  {sigmaS,      {Description -> "Scalar Singlet" }}  ,
+  {phiS,      { Description -> "Pseudo Scalar Singlet"}},
+  {FsR,   { Description -> "Weyl Spinor of Singlino"}},
+ \end{lstlisting}
+ 
+Although the WeylFermionAndIndermediate also contains, 
+\begin{lstlisting}
+{SHd,  { Description -> "Down-Higgs"}},
+       {SHu,  { Description -> "Up-Higgs"}},
+\end{lstlisting}
+\noindent we do not add a singlet version becasue for the singlet there is no distinction between these and the individual SU(2) components, as there are for Hu and Hd.
+\end{enumerate} 
+\item Now we copy over parameters.m \code{cp /path/to/SARAH/Models/MSSM/parameters.m  ./}
+\item Add the new parameters lambda, kappa, Alambda and Akappa to the list.
+\begin{lstlisting}
+{\[Kappa],   {Description -> "Singlet Self-Interaction"}},              
+{T[\[Kappa]],  { Description -> "Softbreaking Singlet Self-Interaction" }}, 
+{\[Lambda],   { Description -> "Singlet-Higgs-Interaction"   }},
+{T[\[Lambda]],  {Description -> "Softbreaking Singlet-Higgs-Interaction"}}, 
+{ms2,       { Description -> "Softbreaking Singlet Mass" }},
+{vS,        { Description -> "Singlet-VEV"}}       
+\end{lstlisting}
+Once again this is simplified from the general case becasue there are default versions containedin parameters.m in the Models directory:
+\begin{lstlisting}
+{{  Description -> "Singlet Self-Interaction",
+              LaTeX -> "\\kappa",
+             Real ->False,
+             Dependence -> None, 
+             Value -> None, 
+             LesHouches -> {NMSSMRUN,2},
+             OutputName-> kap         }},                               
+               
+{{ Description -> "Softbreaking Singlet Self-Interaction",
+               LaTeX -> "T_{\\kappa}",
+              Real -> False,
+             Dependence -> None, 
+             Value -> None, 
+             LesHouches ->{NMSSMRUN,4},
+             OutputName-> Tk         }}, 
+
+ {{ Description -> "Singlet-Higgs-Interaction",
+             LaTeX -> "\\lambda",
+             Real -> False,
+	     Dependence -> None, 
+             Value -> None, 
+             LesHouches -> {NMSSMRUN,1},
+             OutputName-> lam          }},                               
+               
+{{Description -> "Softbreaking Singlet-Higgs-Interaction",
+                LaTeX -> "T_{\\lambda}",
+              Real -> False,
+             Dependence -> None, 
+             Value -> None, 
+             LesHouches ->{NMSSMRUN,3},
+             OutputName-> Tlam         }},    
+{{ Description -> "Softbreaking Singlet Mass", 
+              LaTeX -> "m_S^2",
+             DependenceNum ->  None, 
+             LesHouches -> {NMSSMRUN,10},
+             OutputName-> ms2 }},
+              
+{{ Description -> "Singlet-VEV", 
+			 LaTeX -> "v_s",
+             Value -> None, 
+             LesHouches -> {NMSSMRUN,5},
+             OutputName-> vS         }},
+\end{lstlisting}
+\item Navigate to Flexible SUSY directory  \code{cd /path/to/FlexibleSUSY/}
+\item Create Z3NMSSM directory 
+\begin{lstlisting}
+./createmodel --models=Z3NMSSM:myNMSSM
+\end{lstlisting}
+
+\end{enumerate}   
 \subsection{\ESSM}
 Detailed steps to create \ESSM model file.
 
