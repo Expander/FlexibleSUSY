@@ -154,14 +154,14 @@ GetTypeFromDimension[sym_, {1}] :=
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`VectorType["Eigen::Array<double," <> ToString[num] <> ",1>", num],
-       CConversion`VectorType["Eigen::Array<Complex," <> ToString[num] <> ",1>", num]
+       CConversion`VectorType[CConversion`EigenArray["double", ToString[num]], num],
+       CConversion`VectorType[CConversion`EigenArray["Complex", ToString[num]], num]
       ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
-       CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
+       CConversion`MatrixType[CConversion`EigenMatrix["double", ToString[num1], ToString[num2]], num1, num2],
+       CConversion`MatrixType[CConversion`EigenMatrix["Complex", ToString[num1], ToString[num2]], num1, num2]
       ];
 
 GetType[sym_] :=

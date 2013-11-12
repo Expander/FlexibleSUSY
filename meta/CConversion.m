@@ -51,6 +51,10 @@ form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
+EigenMatrix::usage="";
+
+EigenArray::usage="";
+
 Begin["`Private`"];
 
 (* This rule is essential for the ExpandSums[] function.
@@ -61,6 +65,18 @@ Begin["`Private`"];
  *   Out[]= 2
  *)
 SARAH`ThetaStep /: Power[SARAH`ThetaStep[a_,b_],_] := SARAH`ThetaStep[a,b];
+
+EigenMatrix[elementType_String, dim1_String, dim2_String] :=
+    "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
+
+EigenMatrix[elementType_String, dim_String] :=
+    "Eigen::Matrix<" <> elementType <> "," <> dim <> "," <> dim <> ">";
+
+EigenArray[elementType_String, dim1_String, dim2_String] :=
+    "Eigen::Array<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
+
+EigenArray[elementType_String, dim_String] :=
+    "Eigen::Array<" <> elementType <> "," <> dim <> ",1>";
 
 CreateGetterReturnType[type_] :=
     Print["Error: unknown type: " <> ToString[type]];

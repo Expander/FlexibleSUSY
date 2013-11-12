@@ -52,9 +52,7 @@ ConvertSarahAnomDim[gij_List] :=
                If[FreeQ[adim[[2]], a_[Susyno`LieGroups`i1,SARAH`i2]],
                   type = CConversion`ScalarType["double"];,
                   dim = TreeMasses`GetDimension[adim[[1,1]]];
-                  type = CConversion`MatrixType["Eigen::Matrix<double," <>
-                                                ToString[dim] <> "," <>
-                                                ToString[dim] <> ">", dim, dim];
+                  type = CConversion`MatrixType[CConversion`EigenMatrix["double",ToString[dim]], dim, dim];
                  ];
                AppendTo[lst, AnomalousDimension[name, type, Drop[adim, 1]]];
               ];
