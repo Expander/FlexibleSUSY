@@ -451,7 +451,8 @@ ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_Strin
            StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
           ];
 
-ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " < " <> ToString[i2];
+ToCondition[SARAH`ThetaStep[i1_,i2_Integer]] := ToString[i1] <> " < " <> ToString[i2+1];
+ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " <= " <> ToString[i2];
 
 StripThetaStep[expr_] :=
       Module[{thetas, strippedExpr, i, condition = ""},
