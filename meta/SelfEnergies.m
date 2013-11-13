@@ -239,10 +239,10 @@ CreateCouplingFunction[coupling_, expr_] :=
                   type <> " result" <> initalValue <> ";\n\n";
            If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
               body = body <> "result = " <>
-                     RValueToCFormString[Simplify[expr]] <> ";\n";
+                     RValueToCFormString[Simplify[DecreaseIndexLiterals[expr]]] <> ";\n";
               ,
-              body = body <> ExpandSums[expr, "result",
-                                        type, initalValue];
+              body = body <> ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr]],
+                                        "result", type, initalValue];
              ];
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
@@ -382,7 +382,8 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            prototype = "Complex " <> functionName <> ";\n";
            decl = "\nComplex CLASSNAME::" <> functionName <> "\n{\n";
            body = "Complex result;\n\n" <>
-                  ExpandSums[expr /. vertexRules /.
+                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr], TreeMasses`GetParticles[]] /.
+                             vertexRules /.
                              a_[List[i__]] :> a[i] /.
                              ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
                              C -> 1
@@ -446,7 +447,7 @@ FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
                functionName = CreateTadpoleFunctionName[field];
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
                       "Re(model->" <> functionName <>
-                      "(" <> ToString[idx] <> "));\n";
+                      "(" <> ToString[idx - 1] <> "));\n";
               ];
            Return[IndentText[body]];
           ];

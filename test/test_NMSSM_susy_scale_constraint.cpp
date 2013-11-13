@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    constraint.apply();
 
    // check that tree-level EWSB eqs. are fulfilled
-   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vd() - m.tadpole_hh(1)), precision);
-   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vu() - m.tadpole_hh(2)), precision);
-   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vS() - m.tadpole_hh(3)), precision);
+   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vd() - m.tadpole_hh(0)), precision);
+   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vu() - m.tadpole_hh(1)), precision);
+   BOOST_CHECK_LT(std::fabs(m.get_ewsb_eq_vS() - m.tadpole_hh(2)), precision);
 }

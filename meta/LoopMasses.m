@@ -24,12 +24,14 @@ GetLoopCorrectedParticles[states_] :=
 FillTadpoleMatrix[{}, _] := "";
 
 FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
-    Module[{result, dim, dimStr, particle, i, particleIndex, vev},
+    Module[{result, dim, dimStr, particle, i, particleIndex, vev,
+            tadpoleMatrixType},
            particle = tadpoles[[1,1]];
            dim = GetDimension[particle];
            dimStr = ToString[dim];
+           tadpoleMatrixType = CConversion`EigenMatrix["double", dimStr];
            If[dim > 1,
-              result = "DoubleMatrix " <> matrixName <> "(" <> dimStr <> "," <> dimStr <> ");\n";
+              result = tadpoleMatrixType <> " " <> matrixName <> "(" <> dimStr <> "," <> dimStr <> ");\n";
               For[i = 1, i <= Length[tadpoles], i++,
                   particleIndex = ToString[tadpoles[[i,2]]];
                   vev           = ToValidCSymbolString[tadpoles[[i,3]]];
@@ -80,7 +82,7 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
-            tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric},
+            tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric, selfEnergyMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -88,14 +90,15 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            If[dim > 1,
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               result = tadpoleMatrix <>
-                       "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
-                       IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","1"] <>
-                                  "; i2 <= " <> dimStr <>"; ++i2) {\n" <>
+                       selfEnergyMatrixType <> " self_energy;\n" <>
+                       "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                       IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
+                                  "; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
                                              massName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
@@ -104,25 +107,25 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                                  ] <>
                        "}\n" <>
                        If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
-                       "const DoubleMatrix M_1loop(" <> massMatrixStr <>
+                       "const " <> selfEnergyMatrixType <>" M_1loop(" <> massMatrixStr <>
                        "() - self_energy" <>
                        If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n";
               If[Head[mixingMatrix] === List,
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "Diagonalize(M_1loop, PHYSICAL(" <> U <> "), " <>
-                          "PHYSICAL(" <> V <> "), " <>
-                          "PHYSICAL(" <> massName <> "));\n";
+                          "fs_svd(M_1loop, PHYSICAL(" <> massName <> "), " <>
+                          "PHYSICAL(" <> U <> "), " <>
+                          "PHYSICAL(" <> V <> "));\n";
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                          "Diagonalize(M_1loop, PHYSICAL(" <> U <> "), " <>
-                          "PHYSICAL(" <> massName <> "));\n";
+                       "fs_diagonalize_hermitian(M_1loop, PHYSICAL(" <> massName <> "), " <>
+                       "PHYSICAL(" <> U <> "));\n";
                 ];
               result = result <>
                        "\n" <>
-                       "if (" <> massName <> ".min() < 0.)\n" <>
+                       "if (" <> massName <> ".minCoeff() < 0.)\n" <>
                        IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                        "PHYSICAL(" <> massName <> ") = ZeroSqrt(PHYSICAL(" <>
                        massName <> "));\n";
@@ -136,24 +139,28 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
 DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
-            massMatrixStr},
+            massMatrixStr, selfEnergyMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
+              If[dim == 1,
+                 Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
+                 Return["PHYSICAL(" <> massName <> ").setConstant(0.);\n"];
+                ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
+           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
-              result = "DoubleMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "DoubleMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "DoubleMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
-                       IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
+              result = selfEnergyMatrixType <> " self_energy_1;\n" <>
+                       selfEnergyMatrixType <> " self_energy_PL;\n" <>
+                       selfEnergyMatrixType <> " self_energy_PR;\n" <>
+                       "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                       IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
                                              massName <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = Re(" <>
@@ -166,38 +173,33 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                                   "}\n"
                                  ] <>
                        "}\n" <>
-                       "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
-                       "const DoubleMatrix delta_M(- self_energy_PR * M_tree " <>
+                       "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
                        "- M_tree * self_energy_PL - self_energy_1);\n";
               If[IsMajoranaFermion[particle],
                  result = result <>
-                          "const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + Transpose(delta_M)));\n";
+                          "const " <> selfEnergyMatrixType <>
+                          " M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n";
                  ,
                  result = result <>
-                          "const DoubleMatrix M_1loop(M_tree + delta_M);\n";
+                          "const " <> selfEnergyMatrixType <>
+                          " M_1loop(M_tree + delta_M);\n";
                 ];
               If[Head[mixingMatrix] === List,
                  (* two mixing matrixs => SVD *)
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
-                 If[dim == 2,
-                    result = result <>
-                             "Diagonalize2by2(M_1loop, " <>
-                             "PHYSICAL(" <> U <> "), " <>
-                             "PHYSICAL(" <> V <> "), " <>
-                             "PHYSICAL(" <> massName <> "));\n";
-                    ,
-                    result = result <>
-                             "Diagonalize(M_1loop, " <>
-                             "PHYSICAL(" <> U <> "), " <>
-                             "PHYSICAL(" <> V <> "), " <>
-                             "PHYSICAL(" <> massName <> "));\n";
-                   ];
-                 ,
                  result = result <>
-                          "Diagonalize(M_1loop, " <>
-                          "PHYSICAL(" <> ToValidCSymbolString[mixingMatrix] <> "), " <>
-                          "PHYSICAL(" <> massName <> "));\n";
+                          "fs_svd(M_1loop, " <>
+                          "PHYSICAL(" <> massName <> "), " <>
+                          "PHYSICAL(" <> U <> "), " <>
+                          "PHYSICAL(" <> V <> "));\n";
+                 ,
+                 U = ToValidCSymbolString[mixingMatrix];
+                 result = result <>
+                          "fs_diagonalize_symmetric(M_1loop, " <>
+                          "PHYSICAL(" <> massName <> "), " <>
+                          "PHYSICAL(" <> U <> "));\n";
                 ];
               ,
               (* for a dimension 1 fermion it plays not role if it's a
@@ -218,7 +220,10 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
+              If[dim == 1,
+                 Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
+                 Return["PHYSICAL(" <> massName <> ").setConstant(0.);\n"];
+                ];
              ];
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
@@ -236,39 +241,41 @@ DoFastDiagonalization[particle_Symbol, _] :=
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
-            massMatrixStr, diagonalizationFunction = "Diagonalize", selfEnergyIsSymmetric},
+            massMatrixStr, selfEnergyIsSymmetric,
+            selfEnergyMatrixType, eigenVectorType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           If[dim == 2, diagonalizationFunction = "Diagonalize2by2";];
+           mixingMatrixType = CConversion`EigenMatrix["double", dimStr];
+           selfEnergyMatrixType = mixingMatrixType;
+           eigenVectorType = CConversion`EigenArray["double", dimStr];
            (* create diagonalisation code snippet *)
            If[Head[mixingMatrix] === List,
               U = ToValidCSymbolString[mixingMatrix[[1]]];
               V = ToValidCSymbolString[mixingMatrix[[2]]];
               Utemp = "mix_" <> U;
               Vtemp = "mix_" <> V;
-              diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> "), " <>
-                            Vtemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", " <> Vtemp <> ", eigen_values);\n\n" <>
+              diagSnippet = mixingMatrixType <> " " <> Utemp <> ", " <> Vtemp <> ";\n" <>
+                            "fs_svd(M_1loop, eigen_values, " <> Utemp <> ", " <> Vtemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
-                            "if (es == 1) {\n" <>
+                            "if (es == 0) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
                             "}\n";
               ,
               U = ToValidCSymbolString[mixingMatrix];
               Utemp = "mix_" <> U;
-              diagSnippet = "DoubleMatrix " <> Utemp <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                            diagonalizationFunction <> "(M_1loop, " <> Utemp <> ", eigen_values);\n\n" <>
+              diagSnippet = mixingMatrixType <> " " <> Utemp <> ";\n" <>
+                            "fs_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
-                            "if (es == 1)\n" <>
+                            "if (es == 0)\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
              ];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
@@ -278,13 +285,13 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = tadpoleMatrix <>
-                       "DoubleMatrix self_energy(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
-                       "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
+                       selfEnergyMatrixType <> " self_energy;\n" <>
+                       "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
-                                  "for (unsigned i1 = 1; i1 <= " <> dimStr <> "; ++i1) {\n" <>
-                                  IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","1"] <>
-                                             "; i2 <= " <> dimStr <> "; ++i2) {\n" <>
+                                  "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
+                                  IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
+                                             "; i2 < " <> dimStr <> "; ++i2) {\n" <>
                                              IndentText["self_energy(i1,i2) = Re(" <>
                                                         selfEnergyFunction <> "(p,i1,i2));\n"
                                                        ] <>
@@ -292,9 +299,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                                             ] <>
                                   "}\n" <>
                                   If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
-                                  "const DoubleMatrix M_1loop(M_tree - self_energy" <>
+                                  "const " <> selfEnergyMatrixType <> " M_1loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
-                                  "DoubleVector eigen_values(" <> dimStr <> ");\n" <>
+                                  eigenVectorType <> " eigen_values;\n" <>
                                   diagSnippet
                                  ] <>
                        "}\n";
@@ -309,28 +316,34 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
 DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, _] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
-            momentum = inputMomentum, massMatrixStr},
+            momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
+            eigenVectorType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
+              If[dim == 1,
+                 Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
+                 Return["PHYSICAL(" <> massName <> ").setConstant(0.);\n"];
+                ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
+           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
+           eigenVectorType = CConversion`EigenArray["double", dimStr];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
-              result = "DoubleMatrix self_energy_1(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "DoubleMatrix self_energy_PL(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "DoubleMatrix self_energy_PR(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                       "const DoubleMatrix M_tree(" <> massMatrixStr <> "());\n" <>
-                       "for (unsigned es = 1; es <= " <> dimStr <> "; ++es) {\n" <>
+              result = selfEnergyMatrixType <> " self_energy_1;\n" <>
+                       selfEnergyMatrixType <> " self_energy_PL;\n" <>
+                       selfEnergyMatrixType <> " self_energy_PR;\n" <>
+                       "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
-                                  "for (unsigned i1 = 1; i1 <= " <> dimStr <>"; ++i1) {\n" <>
-                                  IndentText["for (unsigned i2 = 1; i2 <= " <> dimStr <>"; ++i2) {\n" <>
+                                  "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
+                                  IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                              IndentText["self_energy_1(i1,i2)  = Re(" <>
                                                         selfEnergyFunctionS <> "(p,i1,i2));\n" <>
                                                         "self_energy_PL(i1,i2) = Re(" <>
@@ -341,36 +354,30 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const DoubleMatrix delta_M(- self_energy_PR * M_tree " <>
+                                  "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
                                   "- M_tree * self_energy_PL - self_energy_1);\n"
                                  ];
               If[IsMajoranaFermion[particle],
                  result = result <>
-                          IndentText["const DoubleMatrix M_1loop(M_tree + 0.5 * (delta_M + Transpose(delta_M)));\n"];
+                          IndentText["const " <> selfEnergyMatrixType <> " M_1loop(M_tree + 0.5 * (delta_M + delta_M.transpose()));\n"];
                  ,
                  result = result <>
-                          IndentText["const DoubleMatrix M_1loop(M_tree + delta_M);\n"];
+                          IndentText["const " <> selfEnergyMatrixType <> " M_1loop(M_tree + delta_M);\n"];
                 ];
               result = result <>
-                       IndentText["DoubleVector eigen_values(" <> dimStr <> ");\n"];
+                       IndentText[eigenVectorType <> " eigen_values;\n"];
               If[Head[mixingMatrix] === List,
                  (* two mixing matrixs => SVD *)
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          IndentText["decltype(" <> U <> ") mix_" <> U <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                                     "decltype(" <> V <> ") mix_" <> V <> "(" <> dimStr <> "," <> dimStr <> ");\n"];
-                 If[dim == 2,
-                    result = result <>
-                             IndentText["Diagonalize2by2(M_1loop, " <>
-                                        "mix_" <> U <> ", " <> "mix_" <> V <> ", eigen_values);\n"];
-                    ,
-                    result = result <>
-                             IndentText["Diagonalize(M_1loop, " <>
-                                        "mix_" <> U <> ", " <> "mix_" <> V <> ", eigen_values);\n"];
-                   ];
+                          IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
+                                     "decltype(" <> V <> ") mix_" <> V <> ";\n"];
                  result = result <>
-                          IndentText["if (es == 1) {\n" <>
+                          IndentText["fs_svd(M_1loop, eigen_values, " <>
+                                     "mix_" <> U <> ", " <> "mix_" <> V <> ");\n"];
+                 result = result <>
+                          IndentText["if (es == 0) {\n" <>
                                      IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n" <>
                                                 "PHYSICAL(" <> V <> ") = mix_" <> V <> ";\n"] <>
                                      "}\n"
@@ -378,9 +385,9 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                          IndentText["decltype(" <> U <> ") mix_" <> U <> "(" <> dimStr <> "," <> dimStr <> ");\n" <>
-                                     "Diagonalize(M_1loop, mix_" <> U <> ", eigen_values);\n" <>
-                                     "if (es == 1)\n" <>
+                          IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
+                                     "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
+                                     "if (es == 0)\n" <>
                                      IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
                                     ];
                 ];
@@ -409,7 +416,10 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
-              Return["PHYSICAL(" <> massName <> ") = 0;\n"];
+              If[dim == 1,
+                 Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
+                 Return["PHYSICAL(" <> massName <> ").setConstant(0.);\n"];
+                ];
              ];
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
@@ -580,7 +590,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
               "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n" <>
-              "const double m_tree = " <> RValueToCFormString[FlexibleSUSY`M[particle][3]] <> ";\n" <>
+              "const double m_tree = " <> RValueToCFormString[FlexibleSUSY`M[particle][2]] <> ";\n" <>
               "const double m_sm_drbar = m_sm_msbar * (" <> RValueToCFormString[drbarConversion] <> ");\n\n" <>
               "const double m_susy_drbar = m_sm_drbar / (1.0 - self_energy_1/m_tree " <>
               "- self_energy_PL - self_energy_PR);\n\n" <>
@@ -634,8 +644,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark] :=
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
               "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p, idx, idx));\n\n" <>
               "const double currentScale = get_scale();\n" <>
-              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n" <>
-              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][3]] <> ";\n\n" <>
+              "const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][2]] <> ";\n" <>
+              "const double qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> FlexibleSUSY`M[particle][2]] <> ";\n\n" <>
               "const double m_susy_drbar = m_pole + self_energy_1 " <>
               "+ m_pole * (self_energy_PL + self_energy_PR + qcd_1l + qcd_2l);\n\n" <>
               "return m_susy_drbar;\n";

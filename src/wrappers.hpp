@@ -5,6 +5,7 @@
 #include "linalg.h"
 #include <cmath>
 #include <valarray>
+#include <functional>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -37,9 +38,26 @@ inline double AbsSqrt(double x)
    return std::sqrt(std::fabs(x));
 }
 
+inline double AbsSqrt_d(double x)
+{
+   return AbsSqrt(x);
+}
+
 inline DoubleVector AbsSqrt(const DoubleVector& x)
 {
    return x.apply(AbsSqrt);
+}
+
+template <typename Derived>
+Derived AbsSqrt(const Eigen::MatrixBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+}
+
+template <typename Derived>
+Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
 }
 
 inline double ArcTan(double a)
@@ -83,6 +101,11 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+inline int KroneckerDelta(int i, int j)
+{
+   return i == j;
+}
+
 Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
 
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
@@ -107,6 +130,40 @@ inline double Log(double a)
 
 double MaxRelDiff(double, double);
 double MaxRelDiff(const DoubleVector&, const DoubleVector&);
+
+template <class Derived>
+double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
+                  const Eigen::MatrixBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
+
+template <class Derived>
+double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
+                  const Eigen::ArrayBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
 
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
@@ -173,9 +230,44 @@ Eigen::ArrayXd ToEigenArray(const DoubleVector&);
 Eigen::ArrayXd ToEigenArray(double);
 std::valarray<double> ToValarray(const DoubleVector&);
 std::valarray<double> ToValarray(double);
-DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
 Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
-DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);
+
+template<class Derived>
+DoubleVector ToDoubleVector(const Eigen::ArrayBase<Derived>& a)
+{
+   DoubleVector v(a.rows());
+   for (int i = 0; i < a.rows(); i++)
+      v(i + 1) = a(i);
+   return v;
+}
+
+template<class Derived>
+ComplexMatrix ToComplexMatrix(const Eigen::MatrixBase<Derived>& m)
+{
+   const int r = m.rows();
+   const int c = m.cols();
+   ComplexMatrix result(r,c);
+
+   for (int i = 0; i < r; i++)
+      for (int k = 0; k < c; k++)
+         result(i+1, k+1) = m(i,k);
+
+   return result;
+}
+
+template<class Derived>
+DoubleMatrix ToDoubleMatrix(const Eigen::MatrixBase<Derived>& m)
+{
+   const int r = m.rows();
+   const int c = m.cols();
+   DoubleMatrix result(r,c);
+
+   for (int i = 0; i < r; i++)
+      for (int k = 0; k < c; k++)
+         result(i+1, k+1) = m(i,k);
+
+   return result;
+}
 
 inline DoubleMatrix Transpose(const DoubleMatrix& m)
 {

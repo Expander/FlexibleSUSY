@@ -9,6 +9,8 @@ UNITMATRIX::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
+KroneckerDelta::usage="";
+IndexSum::usage="";
 
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
@@ -50,6 +52,10 @@ form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
+EigenMatrix::usage="";
+
+EigenArray::usage="";
+
 Begin["`Private`"];
 
 (* This rule is essential for the ExpandSums[] function.
@@ -60,6 +66,18 @@ Begin["`Private`"];
  *   Out[]= 2
  *)
 SARAH`ThetaStep /: Power[SARAH`ThetaStep[a_,b_],_] := SARAH`ThetaStep[a,b];
+
+EigenMatrix[elementType_String, dim1_String, dim2_String] :=
+    "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
+
+EigenMatrix[elementType_String, dim_String] :=
+    "Eigen::Matrix<" <> elementType <> "," <> dim <> "," <> dim <> ">";
+
+EigenArray[elementType_String, dim1_String, dim2_String] :=
+    "Eigen::Array<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
+
+EigenArray[elementType_String, dim_String] :=
+    "Eigen::Array<" <> elementType <> "," <> dim <> ",1>";
 
 CreateGetterReturnType[type_] :=
     Print["Error: unknown type: " <> ToString[type]];
@@ -282,6 +300,10 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
 
+Format[CConversion`KroneckerDelta[a_,b_],CForm] :=
+    Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
 Format[SARAH`L[x_],CForm] :=
     Format[ToValidCSymbol[SARAH`L[x /. FlexibleSUSY`GreekSymbol -> Identity]], OutputForm];
 
@@ -405,15 +427,18 @@ CreateUniqueCVariable[] :=
            Return[variable];
           ];
 
-ExpandSums[sum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
+    ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
+
+ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
            startStr = ToValidCSymbolString[start];
-           stopStr  = ToValidCSymbolString[stop];
+           stopStr  = ToValidCSymbolString[stop + 1];
            tmpSum   = CreateUniqueCVariable[];
            result = type <> " " <> tmpSum <> initialValue <> ";\n" <>
                     "for (unsigned " <> idxStr <> " = " <>
-                    startStr <> "; " <> idxStr <> " <= " <> stopStr <>
+                    startStr <> "; " <> idxStr <> " < " <> stopStr <>
                     "; ++" <> idxStr <> ") {\n" <>
                     IndentText[ExpandSums[expr,tmpSum,type,initialValue]] <> "}\n" <>
                     variable <> " += " <> tmpSum <> ";\n";
@@ -426,6 +451,7 @@ ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_Strin
            StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
           ];
 
+ToCondition[SARAH`ThetaStep[i1_,i2_Integer]] := ToString[i1] <> " < " <> ToString[i2+1];
 ToCondition[SARAH`ThetaStep[i1_,i2_]] := ToString[i1] <> " <= " <> ToString[i2];
 
 StripThetaStep[expr_] :=
@@ -455,10 +481,10 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String, type_String:"Complex", initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
-           sums = Select[factors, (!FreeQ[#,sum[__]])&];
+           sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
            rest = Complement[factors, sums];
            expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
            expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;

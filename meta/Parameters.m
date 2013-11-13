@@ -51,6 +51,10 @@ expression.";
 
 FillInputParametersFromTuples::usage="";
 
+DecreaseIndexLiterals::usage="";
+
+DecreaseSumIdices::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -152,14 +156,14 @@ GetTypeFromDimension[sym_, {1}] :=
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`VectorType["Eigen::Matrix<double," <> ToString[num] <> ",1>", num],
-       CConversion`VectorType["Eigen::Matrix<Complex," <> ToString[num] <> ",1>", num]
+       CConversion`VectorType[CConversion`EigenArray["double", ToString[num]], num],
+       CConversion`VectorType[CConversion`EigenArray["Complex", ToString[num]], num]
       ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`MatrixType["Eigen::Matrix<double," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2],
-       CConversion`MatrixType["Eigen::Matrix<Complex," <> ToString[num1] <> "," <> ToString[num2] <> ">", num1, num2]
+       CConversion`MatrixType[CConversion`EigenMatrix["double", ToString[num1], ToString[num2]], num1, num2],
+       CConversion`MatrixType[CConversion`EigenMatrix["Complex", ToString[num1], ToString[num2]], num1, num2]
       ];
 
 GetType[sym_] :=
@@ -466,6 +470,30 @@ FillInputParametersFromTuples[minpar_List] :=
                     "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
            Return[result];
           ];
+
+DecreaseIndex[ind_Integer] := ind - 1;
+DecreaseIndex[ind_]        := ind;
+DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
+DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
+DecreaseIndices[a_]        := a;
+DecreaseIndices[SARAH`Delta[a_, b_]] :=
+    CConversion`KroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
+
+DecreaseIndexLiterals[expr_] :=
+    DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,
+                                     allOutputParameters]];
+
+DecreaseIndexLiterals[expr_, heads_List] :=
+    Module[{indexedSymbols, rules, decrExpr, allHeads},
+           allHeads = Join[heads, {SARAH`Delta, SARAH`ThetaStep}];
+           indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
+           rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
+           decrExpr = expr /. rules;
+           Return[decrExpr]
+          ];
+
+DecreaseSumIdices[expr_] :=
+    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
 
 End[];
 

@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_EQUAL(s.displayMu(), m.get_scale());
 
    // neutralinos
-   const DoubleVector MChi(m.get_physical().MChi);
+   const DoubleVector MChi(ToDoubleVector(m.get_physical().MChi));
    const DoubleVector mneut = s.displayPhys().mneut.apply(fabs);
    BOOST_CHECK_CLOSE(mneut(1), MChi(1), 1.0e-12);
    BOOST_CHECK_CLOSE(mneut(2), MChi(2), 1.0e-12);
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_CLOSE(mneut(5), MChi(5), 1.0e-12);
 
    // charginos
-   const DoubleVector MCha(m.get_physical().MCha);
+   const DoubleVector MCha(ToDoubleVector(m.get_physical().MCha));
    const DoubleVector mch = s.displayPhys().mch.apply(fabs);
    BOOST_CHECK_CLOSE(mch(1), MCha(1), 1.0e-12);
    BOOST_CHECK_CLOSE(mch(2), MCha(2), 1.0e-12);
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_CLOSE(MGlu, mGluino, 1.0e-04);
 
    // down-type squarks
-   const DoubleVector Sd(m.get_physical().MSd);
+   const DoubleVector Sd(ToDoubleVector(m.get_physical().MSd));
    const DoubleVector md(s.displayPhys().md.flatten().sort());
    BOOST_CHECK_CLOSE(Sd(1), md(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Sd(2), md(2), 1.0e-12);
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_CLOSE(Sd(6), md(6), 1.0e-12);
 
    // up-type squarks
-   const DoubleVector Su(m.get_physical().MSu);
+   const DoubleVector Su(ToDoubleVector(m.get_physical().MSu));
    const DoubleVector mu(s.displayPhys().mu.flatten().sort());
    BOOST_CHECK_CLOSE(Su(1), mu(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Su(2), mu(2), 1.0e-12);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_CLOSE(Su(6), mu(6), 1.0e-12);
 
    // down-type sleptons
-   const DoubleVector Se(m.get_physical().MSe);
+   const DoubleVector Se(ToDoubleVector(m.get_physical().MSe));
    const DoubleVector me(s.displayPhys().me.flatten().sort());
    BOOST_CHECK_CLOSE(Se(1), me(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(2), me(2), 1.0e-12);
@@ -159,32 +159,32 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    BOOST_CHECK_CLOSE(Se(6), me(6), 1.0e-12);
 
    // up-type sleptons
-   const DoubleVector Sv(m.get_physical().MSv);
+   const DoubleVector Sv(ToDoubleVector(m.get_physical().MSv));
    const DoubleVector msnu(s.displayPhys().msnu.sort());
    BOOST_CHECK_CLOSE(Sv(1), msnu(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Sv(2), msnu(2), 1.0e-12);
    BOOST_CHECK_CLOSE(Sv(3), msnu(3), 1.0e-12);
 
    // neutrinos
-   const DoubleVector MFv(m.get_physical().MFv);
+   const DoubleVector MFv(ToDoubleVector(m.get_physical().MFv));
    BOOST_CHECK_EQUAL(MFv(1), 0.0);
    BOOST_CHECK_EQUAL(MFv(2), 0.0);
    BOOST_CHECK_EQUAL(MFv(3), 0.0);
 
    // leptons
-   const DoubleVector MFe(m.get_physical().MFe);
+   const DoubleVector MFe(ToDoubleVector(m.get_physical().MFe));
    BOOST_CHECK_EQUAL(MFe(1), 0.0);
    BOOST_CHECK_EQUAL(MFe(2), 0.0);
    // BOOST_CHECK_CLOSE(MFe(3), s.displayPhys().mtau, 1.0e-12);
 
    // ups
-   const DoubleVector MFu(m.get_physical().MFu);
+   const DoubleVector MFu(ToDoubleVector(m.get_physical().MFu));
    BOOST_CHECK_EQUAL(MFu(1), 0.0);
    BOOST_CHECK_EQUAL(MFu(2), 0.0);
    // BOOST_CHECK_CLOSE(MFu(3), s.displayPhys().mt, 1.0e-12);
 
    // downs
-   const DoubleVector MFd(m.get_physical().MFd);
+   const DoubleVector MFd(ToDoubleVector(m.get_physical().MFd));
    BOOST_CHECK_EQUAL(MFd(1), 0.0);
    BOOST_CHECK_EQUAL(MFd(2), 0.0);
    // BOOST_CHECK_CLOSE(MFd(3), s.displayPhys().mb, 1.0e-12);
@@ -200,20 +200,20 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    }
 
    // neutral CP even Higgs
-   const DoubleVector hh(m.get_physical().Mhh);
+   const DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
    const DoubleVector mh0(s.displayPhys().mh0);
    BOOST_CHECK_CLOSE(hh(1), mh0(1), 0.002);
    BOOST_CHECK_CLOSE(hh(2), mh0(2), 0.0001);
    BOOST_CHECK_CLOSE(hh(3), mh0(3), 0.1);
 
    // neutral CP odd Higgs
-   const DoubleVector Ah(m.get_physical().MAh);
+   const DoubleVector Ah(ToDoubleVector(m.get_physical().MAh));
    const DoubleVector mA0(s.displayPhys().mA0);
    BOOST_CHECK_CLOSE(Ah(2), mA0(1), 0.0002);
    BOOST_CHECK_CLOSE(Ah(3), mA0(2), 0.0006);
 
    // charged Higgs
-   const DoubleVector Hpm(m.get_physical().MHpm);
+   const DoubleVector Hpm(ToDoubleVector(m.get_physical().MHpm));
    const double mHpm = s.displayPhys().mHpm;
    BOOST_CHECK_CLOSE(Hpm(2), mHpm, 0.003);
 }
