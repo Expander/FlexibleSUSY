@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "numerics.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -46,6 +47,7 @@ namespace flexiblesusy {
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint()
    : Constraint<Two_scale>()
+   , fixed_scale(0.)
    , model(0)
    , inputPars()
 {
@@ -118,14 +120,25 @@ void @ModelName@_high_scale_constraint<Two_scale>::set_input_parameters(const @M
    inputPars = inputPars_;
 }
 
+void @ModelName@_high_scale_constraint<Two_scale>::set_scale(double s)
+{
+   fixed_scale = s;
+}
+
 void @ModelName@_high_scale_constraint<Two_scale>::reset()
 {
    scale = initial_scale_guess;
+   fixed_scale = 0.;
    model = NULL;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 {
+   if (!is_zero(fixed_scale)) {
+      scale = fixed_scale;
+      return;
+   }
+
    const double currentScale = model->get_scale();
    const @ModelName@_soft_parameters beta_functions(model->calc_beta());
 
