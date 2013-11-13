@@ -62,6 +62,11 @@ void @ModelName@_slha_io::write_to_file(const std::string& file_name)
    slha_io.write_to_file(file_name);
 }
 
+double @ModelName@_slha_io::get_input_scale() const
+{
+   return slha_io.get_extpar().input_scale;
+}
+
 double @ModelName@_slha_io::get_parameter_output_scale() const
 {
    return slha_io.get_modsel().parameter_output_scale;
@@ -71,6 +76,7 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
    slha_io.read_modsel();
+   slha_io.read_extpar();
 }
 
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
@@ -105,6 +111,11 @@ void @ModelName@_slha_io::fill_minpar_tuple(@ModelName@_input_parameters& input,
 void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
+   // key 0 is the model parameter input scale, which is read in
+   // slha_io.{hpp,cpp}
+   if (key == 0)
+      return;
+
 @fillInputParametersFromEXTPAR@
 }
 

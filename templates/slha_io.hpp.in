@@ -45,6 +45,7 @@ public:
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
    void fill(Program_options&) const;
+   double get_input_scale() const;
    double get_parameter_output_scale() const;
    void read_from_file(const std::string&);
    template <class T> void set_spectrum(const @ModelName@<T>&);

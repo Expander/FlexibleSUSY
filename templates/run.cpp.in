@@ -66,6 +66,8 @@ int main(int argc, const char* argv[])
       program_options.get(Program_options::max_iterations));
    spectrum_generator.set_calculate_sm_masses(
       program_options.get(Program_options::calculate_sm_masses) >= 1.0);
+   spectrum_generator.set_input_scale(
+      slha_io.get_input_scale());
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());
    spectrum_generator.set_pole_mass_loop_order(
