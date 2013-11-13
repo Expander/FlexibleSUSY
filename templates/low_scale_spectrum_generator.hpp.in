@@ -29,6 +29,8 @@
 #include "@ModelName@_utilities.hpp"
 
 #include "coupling_monitor.hpp"
+#include "error.hpp"
+#include "numerics.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 
@@ -55,6 +57,7 @@ public:
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_serious_problem(); };
+   void set_input_scale(double) {}
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
@@ -135,8 +138,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       model.calculate_spectrum();
 
       // run to output scale (if scale > 0)
-      if (std::fabs(parameter_output_scale)
-          > std::numeric_limits<double>::epsilon()) {
+      if (!is_zero(parameter_output_scale)) {
          model.run_to(parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {

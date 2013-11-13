@@ -69,6 +69,10 @@ public:
       double parameter_output_scale; ///< key = 12
       Modsel() : parameter_output_scale(0.) {}
    };
+   struct Extpar {
+      double input_scale; ///< key = 0
+      Extpar() : input_scale(0.) {}
+   };
 
    class ReadError : public Error {
    public:
@@ -84,12 +88,14 @@ public:
 
    // reading functions
    void fill(softsusy::QedQcd&) const;
+   const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
    void read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;
+   void read_extpar();
    void read_modsel();
 
    // writing functions
@@ -105,8 +111,10 @@ public:
 
 private:
    SLHAea::Coll data;          ///< SHLA data
+   Extpar extpar;              ///< data from block EXTPAR
    Modsel modsel;              ///< data from block MODSEL
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
+   static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
 };
 
