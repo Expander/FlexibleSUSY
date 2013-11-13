@@ -27,6 +27,7 @@
 #include "slhaea.h"
 #include "logger.hpp"
 #include "error.hpp"
+#include "wrappers.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -102,6 +103,8 @@ public:
    void set_data(const SLHAea::Coll& data_) { data = data_; }
    void set_block(const std::ostringstream&, Position position = back);
    void set_block(const std::string&, double, const std::string&, double scale = 0.);
+   template<class Scalar, int M, int N>
+   void set_block(const std::string&, const Eigen::Matrix<std::complex<Scalar>, M, N>&, const std::string&, double scale = 0.);
    template <class Derived>
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
@@ -144,6 +147,30 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
          WARNING(block_name << " entry has less than 3 columns");
       }
    }
+}
+
+template<class Scalar, int M, int N>
+void SLHA_io::set_block(const std::string& name,
+                        const Eigen::Matrix<std::complex<Scalar>, M, N>& matrix,
+                        const std::string& symbol, double scale)
+{
+   std::ostringstream ss;
+   ss << "Block " << name;
+   if (scale != 0.)
+      ss << " Q= " << FORMAT_NUMBER(scale);
+   ss << '\n';
+
+   const int rows = matrix.rows();
+   const int cols = matrix.cols();
+   for (int i = 1; i <= rows; ++i)
+      for (int k = 1; k <= cols; ++k) {
+         ss << boost::format(mixing_matrix_formatter) % i % k
+            % Re(matrix(i-1,k-1))
+            % ("Re(" + symbol + "(" + std::to_string(i) + ","
+               + std::to_string(k) + "))");
+      }
+
+   set_block(ss);
 }
 
 template <class Derived>
