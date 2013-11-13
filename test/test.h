@@ -11,6 +11,10 @@ namespace flexiblesusy {
 static const double max_dev = 1.0e-12;
 static int gErrors = 0;
 
+int get_errors() {
+   return gErrors;
+}
+
 bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
 {
    if (a.displayRows() != b.displayRows()) {
@@ -30,7 +34,8 @@ bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
    return true;
 }
 
-bool is_equal(const Eigen::Matrix<double,3,3>& a, const Eigen::Matrix<double,3,3>& b, double max_dev)
+bool is_equal(const Eigen::Matrix<double,3,3>& a,
+              const Eigen::Matrix<double,3,3>& b, double max_dev)
 {
    for (int i = 0; i < 3; ++i) {
       for (int l = 0; l < 3; ++l) {
@@ -53,7 +58,8 @@ void check_equality(T a, T b, const std::string& testMsg, T max_dev)
    }
 }
 
-void check_equality(Complex a, Complex b, const std::string& testMsg, double max_dev)
+void check_equality(Complex a, Complex b,
+                    const std::string& testMsg, double max_dev)
 {
    std::ostringstream msg;
    msg << testMsg << " (real part)";
@@ -205,10 +211,15 @@ void check_relative_dev(T a, T b, const std::string& testMsg, T max_dev)
 #define S(x) #x
 #define S_(x) S(x)
 #define S__LINE__ S_(__LINE__)
-#define TEST_EQUALITY(a, b) check_equality(a, b,"line " S__LINE__ ": " #a " == " #b, max_dev)
-#define TEST_CLOSE(a, b, dev) check_equality(a, b, "line " S__LINE__ ": " #a " == " #b, dev)
-#define TEST_GREATER(a, b) check_greater_than(a, b,"line " S__LINE__ ": " #a " > " #b)
-#define TEST_CLOSE_REL(a, b, dev) check_relative_dev(a, b, "line " S__LINE__ ": " #a " =r= " #b, dev)
-#define TEST(condition) check_condition(condition, #condition);
+#define TEST_EQUALITY(a, b) \
+   flexiblesusy::check_equality(a, b, "line " S__LINE__ ": " #a " == " #b, max_dev)
+#define TEST_CLOSE(a, b, dev) \
+   flexiblesusy::check_equality(a, b, "line " S__LINE__ ": " #a " == " #b, dev)
+#define TEST_GREATER(a, b) \
+   flexiblesusy::check_greater_than(a, b, "line " S__LINE__ ": " #a " > " #b)
+#define TEST_CLOSE_REL(a, b, dev) \
+   flexiblesusy::check_relative_dev(a, b, "line " S__LINE__ ": " #a " =r= " #b, dev)
+#define TEST(condition) \
+   flexiblesusy::check_condition(condition, #condition);
 
 #endif
