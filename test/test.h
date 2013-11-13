@@ -6,6 +6,8 @@
 #include "numerics.hpp"
 #include <Eigen/Core>
 
+namespace flexiblesusy {
+
 static const double max_dev = 1.0e-12;
 static int gErrors = 0;
 
@@ -197,6 +199,8 @@ void check_relative_dev(T a, T b, const std::string& testMsg, T max_dev)
       gErrors++;
    }
 }
+
+} // namespace flexiblesusy
 
 #define S(x) #x
 #define S_(x) S(x)
