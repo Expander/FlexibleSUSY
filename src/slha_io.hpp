@@ -70,8 +70,8 @@ public:
       Modsel() : parameter_output_scale(0.) {}
    };
    struct Extpar {
-      double m_input; ///< key = 0
-      Extpar() : m_input(0.) {}
+      double input_scale; ///< key = 0
+      Extpar() : input_scale(0.) {}
    };
 
    class ReadError : public Error {

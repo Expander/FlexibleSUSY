@@ -237,7 +237,7 @@ void SLHA_io::process_extpar_tuple(Extpar& extpar, int key, double value)
 {
    if (key == 0) {
       if (value > -std::numeric_limits<double>::epsilon()) {
-         extpar.m_input = value;
+         extpar.input_scale = value;
       } else {
          WARNING("Negative values for EXTPAR entry 0 currently not supported");
       }
