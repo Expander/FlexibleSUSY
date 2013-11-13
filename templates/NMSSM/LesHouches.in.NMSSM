@@ -32,4 +32,5 @@ Block MINPAR                 # Input parameters
     3   10                   # TanBeta
     5   -500                 # Azero
 Block EXTPAR  # Input parameters
+    0   0                    # unification scale (0 = automatic)
    61   0.1                  # LambdaInput
