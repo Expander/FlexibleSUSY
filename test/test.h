@@ -3,34 +3,11 @@
 #define TEST_H
 
 #include "linalg.h"
+#include "numerics.hpp"
 #include <Eigen/Core>
 
 static const double max_dev = 1.0e-12;
 static int gErrors = 0;
-
-template <typename T>
-bool is_zero(T a)
-{
-   return std::fabs(a) < std::numeric_limits<T>::epsilon();
-}
-
-template <typename T>
-bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
-{
-   return std::fabs(a - b) < prec;
-}
-
-template <typename T>
-bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
-{
-   if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
-      return true;
-
-   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
-      return std::numeric_limits<T>::infinity();
-
-   return std::fabs((a - b)/a) < prec;
-}
 
 bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
 {
