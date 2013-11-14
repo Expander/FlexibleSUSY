@@ -13,6 +13,7 @@
 #include "logger.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
+#include "conversion.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
 #include "MSSM_two_scale_model.hpp"

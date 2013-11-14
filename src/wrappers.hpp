@@ -1,8 +1,8 @@
 
-#ifndef WRAPPERS_H
-#define WRAPPERS_H
+#ifndef WRAPPERS_HPP
+#define WRAPPERS_HPP
 
-#include "linalg.h"
+#include <complex>
 #include <cmath>
 #include <valarray>
 #include <functional>
@@ -18,7 +18,7 @@ inline double Abs(double z)
    return std::fabs(z);
 }
 
-inline double Abs(const Complex& z)
+inline double Abs(const std::complex<double>& z)
 {
    return std::abs(z);
 }
@@ -28,7 +28,7 @@ inline double AbsSqr(double z)
    return z * z;
 }
 
-inline double AbsSqr(const Complex& z)
+inline double AbsSqr(const std::complex<double>& z)
 {
    return std::norm(z);
 }
@@ -41,11 +41,6 @@ inline double AbsSqrt(double x)
 inline double AbsSqrt_d(double x)
 {
    return AbsSqrt(x);
-}
-
-inline DoubleVector AbsSqrt(const DoubleVector& x)
-{
-   return x.apply(AbsSqrt);
 }
 
 template <typename Derived>
@@ -81,7 +76,7 @@ inline double Conj(double a)
    return a;
 }
 
-inline Complex Conj(const Complex& a)
+inline std::complex<double> Conj(const std::complex<double>& a)
 {
    return std::conj(a);
 }
@@ -166,7 +161,7 @@ inline double Re(double x)
    return x;
 }
 
-inline double Re(const Complex& x)
+inline double Re(const std::complex<double>& x)
 {
    return std::real(x);
 }
@@ -176,7 +171,7 @@ inline double Im(double x)
    return x;
 }
 
-inline double Im(const Complex& x)
+inline double Im(const std::complex<double>& x)
 {
    return std::imag(x);
 }
@@ -201,54 +196,6 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
    for (int i = 0; i < m.RowsAtCompileTime; i++)
       for (int k = 0; k < i; k++)
          m(i,k) = m(k,i);
-}
-
-Eigen::ArrayXd ToEigenArray(const DoubleVector&);
-Eigen::ArrayXd ToEigenArray(double);
-std::valarray<double> ToValarray(const DoubleVector&);
-std::valarray<double> ToValarray(double);
-Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
-
-template<class Derived>
-DoubleVector ToDoubleVector(const Eigen::ArrayBase<Derived>& a)
-{
-   DoubleVector v(a.rows());
-   for (int i = 0; i < a.rows(); i++)
-      v(i + 1) = a(i);
-   return v;
-}
-
-template<class Derived>
-ComplexMatrix ToComplexMatrix(const Eigen::MatrixBase<Derived>& m)
-{
-   const int r = m.rows();
-   const int c = m.cols();
-   ComplexMatrix result(r,c);
-
-   for (int i = 0; i < r; i++)
-      for (int k = 0; k < c; k++)
-         result(i+1, k+1) = m(i,k);
-
-   return result;
-}
-
-template<class Derived>
-DoubleMatrix ToDoubleMatrix(const Eigen::MatrixBase<Derived>& m)
-{
-   const int r = m.rows();
-   const int c = m.cols();
-   DoubleMatrix result(r,c);
-
-   for (int i = 0; i < r; i++)
-      for (int k = 0; k < c; k++)
-         result(i+1, k+1) = m(i,k);
-
-   return result;
-}
-
-inline ComplexMatrix Transpose(const ComplexMatrix& m)
-{
-   return m.transpose();
 }
 
 #define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()

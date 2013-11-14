@@ -1,7 +1,13 @@
 
 #include "diagonalization.hpp"
+#include "wrappers.hpp"
 
 namespace flexiblesusy {
+
+DoubleVector AbsSqrt(const DoubleVector& x)
+{
+   return x.apply(AbsSqrt_d);
+}
 
 /**
  * diag = u m u^T
@@ -226,7 +232,7 @@ void Symmetrize(DoubleMatrix& m)
 }
 
 namespace {
-   double ZeroSqrt(double x)
+   double ZeroSqrt_d(double x)
    {
       return (x > 0.0 ? std::sqrt(x) : 0.0);
    }
@@ -234,7 +240,7 @@ namespace {
 
 DoubleVector ZeroSqrt(const DoubleVector& x)
 {
-   return x.apply(ZeroSqrt);
+   return x.apply(ZeroSqrt_d);
 }
 
 } // namespace flexiblesusy

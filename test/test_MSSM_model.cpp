@@ -4,6 +4,7 @@
 #include "test_MSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
+#include "conversion.hpp"
 #include <cmath>
 #include <iostream>
 #include <limits>

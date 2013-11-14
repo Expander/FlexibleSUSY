@@ -6,6 +6,7 @@
 
 #include "test_SMSSM.hpp"
 #include "wrappers.hpp"
+#include "conversion.hpp"
 #include "nmssmsoftsusy.h"
 #include "SMSSM_two_scale_model.hpp"
 

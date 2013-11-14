@@ -2,6 +2,7 @@ DIR          := legacy
 MODNAME      := liblegacy
 
 LIBLEGACY_SRC := \
+		$(DIR)/conversion.cpp \
 		$(DIR)/diagonalization.cpp \
 		$(DIR)/rk_legacy.cpp
 
@@ -31,6 +32,9 @@ distclean::     distclean-$(MODNAME)
 
 $(LIBLEGACY): $(LIBLEGACY_OBJ)
 		$(MAKELIB) $@ $^
+
+# add boost and eigen flags for the test object files and dependencies
+$(LIBLEGACY_OBJ) $(LIBLEGACY_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
 
 ALLDEP += $(LIBLEGACY_DEP)
 ALLLIB += $(LIBLEGACY)

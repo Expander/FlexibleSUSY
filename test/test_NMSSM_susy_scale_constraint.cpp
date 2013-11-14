@@ -8,6 +8,7 @@
 
 #include "test_NMSSM.hpp"
 #include "wrappers.hpp"
+#include "conversion.hpp"
 #include "ew_input.hpp"
 #include "nmssmsoftsusy.h"
 #include "NMSSM_two_scale_model.hpp"

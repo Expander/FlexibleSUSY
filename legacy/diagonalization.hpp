@@ -6,6 +6,8 @@
 
 namespace flexiblesusy {
 
+DoubleVector AbsSqrt(const DoubleVector&);
+
 void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
 void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
 void Diagonalize2by2(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
@@ -28,6 +30,11 @@ inline DoubleMatrix Re(const DoubleMatrix& m)
 inline DoubleMatrix Re(const ComplexMatrix& m)
 {
    return m.real();
+}
+
+inline ComplexMatrix Transpose(const ComplexMatrix& m)
+{
+   return m.transpose();
 }
 
 inline DoubleMatrix Transpose(const DoubleMatrix& m)
