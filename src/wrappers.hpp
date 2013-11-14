@@ -101,7 +101,18 @@ inline int KroneckerDelta(int i, int j)
    return i == j;
 }
 
-Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
+template <class Derived>
+Eigen::MatrixBase<Derived> Diag(const Eigen::MatrixBase<Derived>& m)
+{
+   Derived diag(m);
+   for (int i = 0; i < m.rows(); ++i) {
+      for (int k = 0; k < m.cols(); ++k) {
+         if (i != k)
+            diag(i,k) = 0.0;
+      }
+   }
+   return diag;
+}
 
 inline double FiniteLog(double a)
 {
