@@ -262,8 +262,9 @@ CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realS
           ];
 
 CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    Module[{ass = ""},
-           ass = name <> " = Complex(v(" <> ToString[startIndex] <>
+    Module[{ass = "", type},
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           ass = name <> " = " <> type <> "(v(" <> ToString[startIndex] <>
                  ", v(" <> ToString[startIndex + 1] <> "));\n";
            Return[{ass, 2}];
           ];

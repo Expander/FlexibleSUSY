@@ -216,7 +216,7 @@ CreateCouplingSymbol[coupling_] :=
 CreateCouplingFunction[coupling_, expr_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
-            type, initalValue},
+            type, typeStr, initalValue},
            indices = GetParticleIndices[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
@@ -231,12 +231,14 @@ CreateCouplingFunction[coupling_, expr_] :=
               ];
            cFunctionName = cFunctionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = "double";  initalValue = " = 0.0";,
-              type = "Complex"; initalValue = "";];
-           prototype = type <> " " <> cFunctionName <> " const;\n";
-           definition = type <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
+              type = CConversion`realScalarCType;    initalValue = " = 0.0";,
+              type = CConversion`complexScalarCType; initalValue = "";];
+           type = CConversion`ScalarType[type];
+           typeStr = CConversion`CreateCType[type];
+           prototype = typeStr <> " " <> cFunctionName <> " const;\n";
+           definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
            body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
-                  type <> " result" <> initalValue <> ";\n\n";
+                  typeStr <> " result" <> initalValue <> ";\n\n";
            If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
               body = body <> "result = " <>
                      RValueToCFormString[Simplify[DecreaseIndexLiterals[expr]]] <> ";\n";
@@ -379,9 +381,10 @@ CreateNPointFunction[nPointFunction_, vertexRules_List] :=
            expr = GetExpression[nPointFunction];
            field = GetField[nPointFunction];
            functionName = CreateFunctionPrototype[nPointFunction];
-           prototype = "Complex " <> functionName <> ";\n";
-           decl = "\nComplex CLASSNAME::" <> functionName <> "\n{\n";
-           body = "Complex result;\n\n" <>
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           prototype = type <> " " <> functionName <> ";\n";
+           decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
+           body = type <> " result;\n\n" <>
                   ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr], TreeMasses`GetParticles[]] /.
                              vertexRules /.
                              a_[List[i__]] :> a[i] /.

@@ -5,6 +5,7 @@ MatrixType::usage="";
 VectorType::usage="";
 ScalarType::usage="";
 
+integerScalarCType::usage="represents an integer C type";
 realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
@@ -79,6 +80,9 @@ EigenArray[elementType_String, dim_String] :=
 
 CreateCType[type_] :=
     Print["Error: CreateCType: unknown type: " <> ToString[type]];
+
+CreateCType[CConversion`ScalarType[integerScalarCType]] :=
+    "int";
 
 CreateCType[CConversion`ScalarType[realScalarCType]] :=
     "double";
@@ -168,11 +172,14 @@ CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, rows_, c
 SetToDefault[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
+SetToDefault[parameter_String, CConversion`ScalarType[integerScalarCType]] :=
+    parameter <> " = 0;\n";
+
 SetToDefault[parameter_String, CConversion`ScalarType[realScalarCType]] :=
     parameter <> " = 0.;\n";
 
 SetToDefault[parameter_String, CConversion`ScalarType[complexScalarCType]] :=
-    parameter <> " = Complex(0.,0.);\n";
+    parameter <> " = " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(0.,0.);\n";
 
 SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
     parameter <> " = " <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero();\n";
@@ -444,16 +451,21 @@ CreateUniqueCVariable[] :=
            Return[variable];
           ];
 
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_ /; !FreeQ[expr,SARAH`sum], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     ExpandSums[expr //. SARAH`sum -> IndexSum, variable, type, initialValue];
 
-ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     Module[{result, tmpSum, idxStr, startStr, stopStr},
            idxStr   = ToValidCSymbolString[index];
            startStr = ToValidCSymbolString[start];
            stopStr  = ToValidCSymbolString[stop + 1];
            tmpSum   = CreateUniqueCVariable[];
-           result = type <> " " <> tmpSum <> initialValue <> ";\n" <>
+           result = CConversion`CreateCType[type] <> " " <> tmpSum <>
+                    initialValue <> ";\n" <>
                     "for (unsigned " <> idxStr <> " = " <>
                     startStr <> "; " <> idxStr <> " < " <> stopStr <>
                     "; ++" <> idxStr <> ") {\n" <>
@@ -462,7 +474,8 @@ ExpandSums[IndexSum[index_, start_, stop_, expr_], variable_String, type_String:
            Return[result];
           ];
 
-ExpandSums[expr_Plus, variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_Plus, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     Module[{summands},
            summands = List @@ expr;
            StringJoin[ExpandSums[#,variable,type,initialValue]& /@ summands]
@@ -484,7 +497,8 @@ StripThetaStep[expr_] :=
           ];
 
 ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
-           type_String:"Complex", initialValue_String:""] :=
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     Module[{strippedExpr, condition, result, expandedExpr},
            expandedExpr = Expand[expr];
            If[expandedExpr === expr,
@@ -498,7 +512,9 @@ ExpandSums[expr_Times /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
            Return[result];
           ];
 
-ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     Module[{factors, sums, rest, expandedSums, sumProduct, result = "", i},
            factors = List @@ expr;
            sums = Select[factors, (!FreeQ[#,IndexSum[__]])&];
@@ -506,7 +522,8 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String, type_String:"Co
            expandedSums = ({#, CreateUniqueCVariable[]})& /@ sums;
            expandedSums = ({ExpandSums[#[[1]], #[[2]], type, initialValue], #[[2]]})& /@ expandedSums;
            (* add for loops *)
-           result = StringJoin[(type <> " " <> #[[2]] <> initialValue <> ";\n" <> #[[1]])& /@ expandedSums];
+           result = StringJoin[(CConversion`CreateCType[type] <> " " <>
+                                #[[2]] <> initialValue <> ";\n" <> #[[1]])& /@ expandedSums];
            result = result <> variable <> " += (" <> RValueToCFormString[Times @@ rest] <> ")";
            (* multiply the sums *)
            For[i = 1, i <= Length[expandedSums], i++,
@@ -516,7 +533,9 @@ ExpandSums[expr_Times /; !FreeQ[expr,IndexSum], variable_String, type_String:"Co
            Return[result];
           ];
 
-ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
+           type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     Module[{strippedExpr, i, condition = "", result},
            {strippedExpr, condition} = StripThetaStep[expr];
            result = "if (" <> condition <> ") {\n" <>
@@ -526,7 +545,8 @@ ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String, type_String:"
            Return[result];
           ];
 
-ExpandSums[expr_, variable_String, type_String:"Complex", initialValue_String:""] :=
+ExpandSums[expr_, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
+           initialValue_String:""] :=
     variable <> " += " <> RValueToCFormString[expr] <> ";\n";
 
 End[];
