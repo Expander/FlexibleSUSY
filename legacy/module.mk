@@ -2,6 +2,7 @@ DIR          := legacy
 MODNAME      := liblegacy
 
 LIBLEGACY_SRC := \
+		$(DIR)/diagonalization.cpp \
 		$(DIR)/rk_legacy.cpp
 
 LIBLEGACY_OBJ := \
