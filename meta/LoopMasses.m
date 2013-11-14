@@ -29,7 +29,7 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            particle = tadpoles[[1,1]];
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           tadpoleMatrixType = CConversion`EigenMatrix["double", dimStr];
+           tadpoleMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            If[dim > 1,
               result = tadpoleMatrixType <> " " <> matrixName <> "(" <> dimStr <> "," <> dimStr <> ");\n";
               For[i = 1, i <= Length[tadpoles], i++,
@@ -90,7 +90,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
+           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            If[dim > 1,
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
@@ -151,7 +151,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                 ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
+           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
@@ -249,9 +249,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           mixingMatrixType = CConversion`EigenMatrix["double", dimStr];
+           mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            selfEnergyMatrixType = mixingMatrixType;
-           eigenVectorType = CConversion`EigenArray["double", dimStr];
+           eigenVectorType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
            (* create diagonalisation code snippet *)
            If[Head[mixingMatrix] === List,
               U = ToValidCSymbolString[mixingMatrix[[1]]];
@@ -329,8 +329,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                 ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           selfEnergyMatrixType = CConversion`EigenMatrix["double", dimStr];
-           eigenVectorType = CConversion`EigenArray["double", dimStr];
+           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           eigenVectorType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];

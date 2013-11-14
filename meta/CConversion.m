@@ -5,12 +5,17 @@ MatrixType::usage="";
 VectorType::usage="";
 ScalarType::usage="";
 
+realScalarCType::usage="represents a real scalar C type";
+complexScalarCType::usage="represents a complex scalar C type";
+
 UNITMATRIX::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
 KroneckerDelta::usage="";
 IndexSum::usage="";
+
+CreateCType::usage="returns string with the C/C++ data type";
 
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
@@ -27,9 +32,6 @@ GetHead[s[a][b]]  ->  s";
 
 CreateUnitMatrix::usage="creates a unit matrix for a given parameter
 type";
-
-GetCParameterType::usage="returns the C/C++ data type of a given
-Mathematica symbol";
 
 CreateGetterPrototype::usage="creates C/C++ getter prototype";
 
@@ -51,10 +53,6 @@ ExpandSums::usage="expands expressions that contain sum symbols of the
 form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
-
-EigenMatrix::usage="";
-
-EigenArray::usage="";
 
 Begin["`Private`"];
 
@@ -79,17 +77,38 @@ EigenArray[elementType_String, dim1_String, dim2_String] :=
 EigenArray[elementType_String, dim_String] :=
     "Eigen::Array<" <> elementType <> "," <> dim <> ",1>";
 
+CreateCType[type_] :=
+    Print["Error: CreateCType: unknown type: " <> ToString[type]];
+
+CreateCType[CConversion`ScalarType[realScalarCType]] :=
+    "double";
+
+CreateCType[CConversion`ScalarType[complexScalarCType]] :=
+    "std::complex<double>";
+
+CreateCType[CConversion`VectorType[realScalarCType, entries_]] :=
+    EigenArray["double", ToString[entries]];
+
+CreateCType[CConversion`VectorType[complexScalarCType, entries_]] :=
+    EigenArray["std::complex<double>", ToString[entries]];
+
+CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
+    EigenMatrix["double", ToString[dim1], ToString[dim2]];
+
+CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
+    EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
+
 CreateGetterReturnType[type_] :=
     Print["Error: unknown type: " <> ToString[type]];
 
 CreateGetterReturnType[CConversion`ScalarType[type_]] :=
-    ToString[type];
+    CreateCType[CConversion`ScalarType[type]];
 
 CreateGetterReturnType[CConversion`VectorType[type_, entries_]] :=
-    "const " <> ToString[type] <> "&";
+    "const " <> CreateCType[CConversion`VectorType[type, entries]] <> "&";
 
-CreateGetterReturnType[CConversion`MatrixType[type_, rows_, cols_]] :=
-    "const " <> ToString[type] <> "&";
+CreateGetterReturnType[CConversion`MatrixType[type_, dim1_, dim2_]] :=
+    "const " <> CreateCType[CConversion`MatrixType[type, dim1, dim2]] <> "&";
 
 CreateSetterInputType[type_] :=
     CreateGetterReturnType[type];
@@ -125,44 +144,41 @@ CreateDefaultConstructor[parameter_, type_] :=
           Return[""];
          ];
 
-CreateDefaultConstructor[parameter_String, CConversion`ScalarType[type_]] :=
+CreateDefaultConstructor[parameter_String, CConversion`ScalarType[_]] :=
     parameter <> "(0)";
 
 CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> type <> "::Zero())";
+    parameter <> "(" <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero())";
 
 CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> "(" <> type <> "::Zero())";
+    parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
 
 CreateDefaultDefinition[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
 CreateDefaultDefinition[parameter_String, CConversion`ScalarType[type_]] :=
-    type <> " " <> parameter <> " = 0";
+    CreateCType[CConversion`ScalarType[type]] <> " " <> parameter <> " = 0";
 
-CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, _]] :=
-    type <> " " <> parameter;
+CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, entries_]] :=
+    CreateCType[CConversion`VectorType[type, entries]] <> " " <> parameter;
 
-CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, _, _]] :=
-    type <> " " <> parameter;
+CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
+    CreateCType[CConversion`MatrixType[type, rows, cols]] <> " " <> parameter;
 
 SetToDefault[parameter_, type_] :=
     Print["Error: unknown parameter type: " <> ToString[type]];
 
-SetToDefault[parameter_String, CConversion`ScalarType["double"]] :=
+SetToDefault[parameter_String, CConversion`ScalarType[realScalarCType]] :=
     parameter <> " = 0.;\n";
 
-SetToDefault[parameter_String, CConversion`ScalarType["Complex"]] :=
+SetToDefault[parameter_String, CConversion`ScalarType[complexScalarCType]] :=
     parameter <> " = Complex(0.,0.);\n";
 
 SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> " = " <> type <> "::Zero();\n";
+    parameter <> " = " <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero();\n";
 
 SetToDefault[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
-    parameter <> " = " <> type <> "::Zero();\n";
-
-GetCParameterType[parameterType_] :=
-    ToString[parameterType[[1]]];
+    parameter <> " = " <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero();\n";
 
 (* create unitary matrix *)
 CreateUnitMatrix[type_] :=
@@ -171,9 +187,10 @@ CreateUnitMatrix[type_] :=
           Quit[1];
          ];
 
-CreateUnitMatrix[CConversion`ScalarType[t_]] := 1;
+CreateUnitMatrix[CConversion`ScalarType[_]] := 1;
 
-CreateUnitMatrix[CConversion`MatrixType[t_, rows_, rows_]] := CConversion`UNITMATRIX[rows];
+CreateUnitMatrix[CConversion`MatrixType[_, rows_, rows_]] :=
+    CConversion`UNITMATRIX[rows];
 
 MakeUnique[name_String] :=
     Module[{appendix = ""},

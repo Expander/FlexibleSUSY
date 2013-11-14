@@ -329,17 +329,16 @@ GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 
 GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{type, eigenstate, mixingMatrixSymbol, dim, dimStr},
+    Module[{type, eigenstate, mixingMatrixSymbol, dim},
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = Length[GetMassMatrix[massMatrix]];
-           dimStr = ToString[dim];
            Which[Parameters`IsRealParameter[mixingMatrixSymbol],
-                 type = CConversion`EigenMatrix["double", dimStr];,
+                 type = CConversion`realScalarCType;,
                  IsFermion[eigenstate],
-                 type = CConversion`EigenMatrix["std::complex<double>", dimStr];,
+                 type = CConversion`complexScalarCType;,
                  True,
-                 type = CConversion`EigenMatrix["double", dimStr];
+                 type = CConversion`realScalarCType;
                 ];
            Return[CConversion`MatrixType[type, dim, dim]];
           ];
@@ -351,8 +350,8 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = GetDimension[massESSymbol];
            dimStr = ToString[dim];
            If[dim == 1,
-              returnType = CConversion`ScalarType["double"];,
-              returnType = CConversion`VectorType[CConversion`EigenArray["double", dimStr], dim];
+              returnType = CConversion`ScalarType[CConversion`realScalarCType];,
+              returnType = CConversion`VectorType[CConversion`realScalarCType, dim];
              ];
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
           ];
@@ -510,12 +509,12 @@ IsHermitian[matrix_List, op_:Susyno`LieGroups`conj] :=
            Return[True];
           ];
 
-MatrixToCFormString[matrix_List, symbol_String, matrixElementType_String:"double"] :=
+MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`realScalarCType] :=
     Module[{dim, result = "", i, k, isSymmetric = IsSymmetric[matrix],
             isHermitian = IsHermitian[matrix], matrixType, dimStr},
            dim = Length[matrix];
            dimStr = ToString[dim];
-           matrixType = CConversion`EigenMatrix[matrixElementType, dimStr];
+           matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
            result = matrixType <> " " <> symbol <> ";\n"; (* not initialized *)
            For[i = 1, i <= dim, i++,
                For[k = 1, k <= dim, k++,
@@ -547,7 +546,7 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            matrix = GetMassMatrix[massMatrix];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           matrixType = CConversion`EigenMatrix["double", dimStr];
+           matrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
            result = matrixType <> " CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
@@ -564,7 +563,7 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            matrix = GetMassMatrix[massMatrix];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           matrixType = CConversion`EigenMatrix["double", dimStr];
+           matrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            matrixSymbol = "mass_matrix_" <> ev;
            result = matrixType <> " get_" <> matrixSymbol <> "() const;\n";
            Return[result];
@@ -662,20 +661,19 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = GetDimension[massESSymbol];
            dimStr = ToString[dim];
            If[dim == 1,
-              returnType = "double";,
-              returnType = CConversion`EigenArray["double", dimStr];
+              returnType = CConversion`ScalarType[CConversion`realScalarCType];,
+              returnType = CConversion`VectorType[CConversion`realScalarCType, dim];
              ];
-           result = returnType <> " " <>
+           result = CreateCType[returnType] <> " " <>
                     ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> ";\n";
            Return[result];
           ];
 
 CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result = "", massESSymbol, dim, dimStr, matrixType},
+    Module[{result = "", massESSymbol, dim, matrixType},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
-           dimStr = ToString[dim];
-           matrixType = CConversion`EigenArray["double", dimStr];
+           matrixType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
            result = ", " <> ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            If[dim == 1,
               result = result <> "(0)";,
@@ -698,26 +696,25 @@ DefineMatrix[matrix_List, type_String] :=
 CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, mixingMatrixSymbol, matrixType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
+           matrixType = CreateCType[GetMixingMatrixType[massMatrix]];
            result = DefineMatrix[mixingMatrixSymbol, matrixType];
            Return[result];
           ];
 
 ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, massESSymbol, mixingMatrixSymbol, matrixType,
-            dim, dimStr, i, massESType},
+            dim, i, massESType},
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = GetDimension[massESSymbol];
-           dimStr = ToString[dim];
-           massESType = CConversion`EigenArray["double", dimStr];
+           massESType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
            If[dim == 1,
               result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = 0.0;\n";
               ,
               result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = " <> massESType <> "::Zero();\n";
              ];
            If[mixingMatrixSymbol =!= Null,
-              matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
+              matrixType = CreateCType[GetMixingMatrixType[massMatrix]];
               If[Head[mixingMatrixSymbol] === List,
                  For[i = 1, i <= Length[mixingMatrixSymbol], i++,
                      result = result <> ToValidCSymbolString[mixingMatrixSymbol[[i]]] <>
@@ -732,7 +729,7 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{result, massESSymbol, mixingMatrixSymbol, matrixType, dim, dimStr,
+    Module[{result, massESSymbol, mixingMatrixSymbol, dim, dimStr,
             i, massStr, mixStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
@@ -742,7 +739,6 @@ CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
            (* copy mass *)
            result = "PHYSICAL(" <> massStr <> ") = " <> massStr <> ";\n";
            If[mixingMatrixSymbol =!= Null,
-              matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
               If[Head[mixingMatrixSymbol] === List,
                  For[i = 1, i <= Length[mixingMatrixSymbol], i++,
                      mixStr = ToValidCSymbolString[mixingMatrixSymbol[[i]]];
@@ -758,10 +754,10 @@ CopyDRBarMassesToPoleMasses[massMatrix_TreeMasses`FSMassMatrix] :=
 
 InitializeMatrix[Null, _] := "";
 
-InitializeMatrix[matrix_Symbol, CConversion`MatrixType[type_, rows_, cols_]] :=
+InitializeMatrix[matrix_Symbol, type_String] :=
     ", " <> ToValidCSymbolString[matrix] <> "(" <> type <> "::Zero())";
 
-InitializeMatrix[matrix_List, type_] :=
+InitializeMatrix[matrix_List, type_String] :=
     Module[{result = ""},
            (result = result <> InitializeMatrix[#, type])& /@ matrix;
            Return[result];
@@ -770,7 +766,7 @@ InitializeMatrix[matrix_List, type_] :=
 CreateMixingMatrixInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, mixingMatrixSymbol, matrixType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           matrixType = GetMixingMatrixType[massMatrix];
+           matrixType = CreateCType[GetMixingMatrixType[massMatrix]];
            result = InitializeMatrix[mixingMatrixSymbol, matrixType];
            Return[result];
           ];

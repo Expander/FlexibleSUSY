@@ -186,8 +186,8 @@ IsRealExpression[otherwise_] := False;
 
 GetTypeFromDimension[sym_, {}] :=
     If[True || IsRealParameter[sym],
-       CConversion`ScalarType["double"],
-       CConversion`ScalarType["Complex"]
+       CConversion`ScalarType[CConversion`realScalarCType],
+       CConversion`ScalarType[CConversion`complexScalarCType]
       ];
 
 GetTypeFromDimension[sym_, {1}] :=
@@ -195,14 +195,14 @@ GetTypeFromDimension[sym_, {1}] :=
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`VectorType[CConversion`EigenArray["double", ToString[num]], num],
-       CConversion`VectorType[CConversion`EigenArray["Complex", ToString[num]], num]
+       CConversion`VectorType[CConversion`realScalarCType, num],
+       CConversion`VectorType[CConversion`complexScalarCType, num]
       ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
     If[True || IsRealParameter[sym],
-       CConversion`MatrixType[CConversion`EigenMatrix["double", ToString[num1], ToString[num2]], num1, num2],
-       CConversion`MatrixType[CConversion`EigenMatrix["Complex", ToString[num1], ToString[num2]], num1, num2]
+       CConversion`MatrixType[CConversion`realScalarCType, num1, num2],
+       CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
 GetType[sym_] :=
@@ -255,20 +255,20 @@ CreateSetAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
     Module[{ass = ""},
            ass = name <> " = v(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     Module[{ass = ""},
            ass = name <> " = Complex(v(" <> ToString[startIndex] <>
                  ", v(" <> ToString[startIndex + 1] <> "));\n";
            Return[{ass, 2}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
@@ -289,21 +289,21 @@ CreateDisplayAssignment[name_, startIndex_, parameterType_] :=
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["double"]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
     Module[{ass = ""},
            ass = "pars(" <> ToString[startIndex] <> ") = "
                  <> name <> ";\n";
            Return[{ass, 1}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType["Complex"]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     Module[{ass = ""},
            ass = "pars(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
                  "pars(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
            Return[{ass, 2}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
@@ -325,14 +325,14 @@ CreateParameterNamesStr[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterNamesStr[name_, CConversion`ScalarType["double"]] :=
+CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
     "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
 
-CreateParameterNamesStr[name_, CConversion`ScalarType["Complex"]] :=
+CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
     "), Im(" <> CConversion`ToValidCSymbolString[name] <> ")\"";
 
-CreateParameterNamesStr[name_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
@@ -355,14 +355,14 @@ CreateParameterEnums[name_, parameterType_] :=
           Quit[1];
           ];
 
-CreateParameterEnums[name_, CConversion`ScalarType["double"]] :=
+CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType]] :=
     CConversion`ToValidCSymbolString[name];
 
-CreateParameterEnums[name_, CConversion`ScalarType["Complex"]] :=
+CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
     CConversion`ToValidCSymbolString[Im[name]];
 
-CreateParameterEnums[name_, CConversion`MatrixType[type_, rows_, cols_]] :=
+CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,

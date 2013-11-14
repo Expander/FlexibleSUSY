@@ -50,9 +50,9 @@ ConvertSarahAnomDim[gij_List] :=
                (* adim[[1]] == {name1,name2}, adim[[2]] == 1-loop anom. dim *)
                name = CreateValidAnomDimName[adim[[1]]];
                If[FreeQ[adim[[2]], a_[Susyno`LieGroups`i1,SARAH`i2]],
-                  type = CConversion`ScalarType["double"];,
+                  type = CConversion`ScalarType[CConversion`realScalarCType];,
                   dim = TreeMasses`GetDimension[adim[[1,1]]];
-                  type = CConversion`MatrixType[CConversion`EigenMatrix["double",ToString[dim]], dim, dim];
+                  type = CConversion`MatrixType[CConversion`realScalarCType, dim, dim];
                  ];
                AppendTo[lst, AnomalousDimension[name, type, Drop[adim, 1]]];
               ];
@@ -64,7 +64,7 @@ CreateAnomDimPrototypes[anomDim_AnomalousDimension] :=
     Module[{prototypes, name, type},
            name = ToValidCSymbolString[GetName[anomDim]];
            type = GetType[anomDim];
-           prototypes = CreateGetterPrototype[name, GetCParameterType[type]];
+           prototypes = CreateGetterPrototype[name, CConversion`CreateCType[type]];
            Return[prototypes];
           ];
 
@@ -100,7 +100,7 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
                   inputParsDecl <>
                   body <>
                   "\nreturn anomDim;\n";
-           def  = GetCParameterType[type] <> " CLASSNAME::get_" <>
+           def  = CConversion`CreateCType[type] <> " CLASSNAME::get_" <>
                   name <> "() const\n{\n" <> IndentText[body] <> "}\n\n";
            Return[def];
           ];

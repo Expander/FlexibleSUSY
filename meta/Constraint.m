@@ -242,16 +242,18 @@ CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]]] <> ";\n";
 
 DefineParameter[parameter_Symbol] :=
-    "double " <> ToValidCSymbolString[parameter] <> ";\n";
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
+    " " <> ToValidCSymbolString[parameter] <> ";\n";
 
 DefineParameter[FlexibleSUSY`Phase[phase_]] :=
-    "Complex " <> ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> ";\n";
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]] <>
+    " " <> ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> ";\n";
 
 DefineParameter[FlexibleSUSY`Sign[phase_]] :=
     "int " <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> ";\n";
 
 DefineParameter[{parameter_Symbol, type_}] :=
-    CConversion`GetCParameterType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
 
 DefineInputParameters[inputParameters_List] :=
     Module[{result = ""},
