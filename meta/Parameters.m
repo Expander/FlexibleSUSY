@@ -76,6 +76,22 @@ AddRealParameter[parameter_List] :=
 AddRealParameter[parameter_] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
 
+(* Returns all parameters within an expression *)
+FindAllParameters[expr_] :=
+    Module[{symbols, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           symbols = { Cases[compactExpr, _Symbol, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
+                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                     };
+           Return[DeleteDuplicates[Flatten[symbols]]];
+          ];
+
+IsScalar[sym_] :=
+    Length[SARAH`getDimParameters[sym]] === 1 || Length[SARAH`getDimParameters[sym]] == 0;
+
 IsMatrix[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsMatrix[sym];
 
@@ -123,6 +139,8 @@ IsRealExpression[bar[expr_]]        := IsRealExpression[expr];
 
 IsRealExpression[expr_Symbol] := IsRealParameter[expr];
 
+IsRealExpression[Times[Conjugate[a_],a_]] := True;
+IsRealExpression[Times[a_,Conjugate[a_]]] := True;
 IsRealExpression[Times[Susyno`LieGroups`conj[a_],a_]] := True;
 IsRealExpression[Times[a_,Susyno`LieGroups`conj[a_]]] := True;
 IsRealExpression[Times[SARAH`Conj[a_],a_]]            := True;
@@ -134,8 +152,29 @@ IsRealExpression[factors_Times] :=
 IsRealExpression[terms_Plus] :=
     And @@ (IsRealExpression[#]& /@ (List @@ terms));
 
-IsRealExpression[terms_SARAH`trace] :=
-    And @@ (IsRealExpression[#]& /@ (List @@ terms));
+IsHermitian[a_] :=
+    Or[IsScalar[a] && IsRealParameter[a],
+       IsSymmetricMatrixParameter[a] && IsRealParameter[a],
+       MemberQ[SARAH`ListSoftBreakingScalarMasses, a]
+      ];
+
+(* helper function which calculates the adjoint of an expression *)
+FSAdj[Susyno`LieGroups`conj[a_]] := SARAH`Tp[a];
+FSAdj[SARAH`Tp[a_]] := a /; IsRealParameter[a];
+FSAdj[SARAH`Tp[a_]] := Susyno`LieGroups`conj[a];
+FSAdj[a_] := a /; IsHermitian[a];
+FSAdj[a_] := SARAH`Adj[a];
+FSAdj[a__] := Sequence @@ (FSAdj /@ Reverse[{a}]);
+
+TraceEquality[SARAH`trace[a__], SARAH`trace[b__]] :=
+    Or @@ (({a} === #)& /@ NestList[RotateLeft, {b}, Length[{b}] - 1]);
+
+(* if all parameters in the trace are real, the trace is real *)
+IsRealExpression[SARAH`trace[a__]] :=
+    True /; And @@ (IsRealParameter /@ FindAllParameters[{a}]);
+
+IsRealExpression[SARAH`trace[a__]] :=
+    TraceEquality[SARAH`trace[a] /. SARAH`Adj -> FSAdj, SARAH`trace[FSAdj[a]]];
 
 IsRealExpression[terms_SARAH`MatMul] :=
     And @@ (IsRealExpression[#]& /@ (List @@ terms));
@@ -394,14 +433,8 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            compactExpr, poleMasses},
-           compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
-                     };
+            poleMasses},
+           symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity],
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
