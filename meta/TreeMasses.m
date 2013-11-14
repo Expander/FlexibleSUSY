@@ -698,7 +698,7 @@ DefineMatrix[matrix_List, type_String] :=
 CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, mixingMatrixSymbol, matrixType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           matrixType = GetMixingMatrixType[massMatrix][[1]];
+           matrixType = GetCParameterType[GetMixingMatrixType[massMatrix]];
            result = DefineMatrix[mixingMatrixSymbol, matrixType];
            Return[result];
           ];
