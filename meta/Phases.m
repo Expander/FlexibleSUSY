@@ -19,18 +19,22 @@ ConvertSarahPhases[phases_List] :=
 CreatePhasesDefinition[phases_List] :=
     Module[{result = "", k},
            For[k = 1, k <= Length[phases], k++,
-               result = result <> "Complex " <>
+               result = result <> CConversion`CreateCType[
+                            CConversion`ScalarType[
+                                CConversion`complexScalarCType]] <> " " <>
                         ToValidCSymbolString[phases[[k]]] <> ";\n";
               ];
            Return[result];
           ];
 
 CreatePhasesGetterSetters[phases_List] :=
-    Module[{result = "", k, phaseName},
+    Module[{result = "", k, phaseName, type},
            For[k = 1, k <= Length[phases], k++,
                phaseName = ToValidCSymbolString[phases[[k]]];
-               result = result <> CConversion`CreateInlineSetter[phaseName, "const Complex&"];
-               result = result <> CConversion`CreateInlineGetter[phaseName, "const Complex&"];
+               type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+               result = result <>
+                        CConversion`CreateInlineSetter[phaseName, "const " <> type <> "&"] <>
+                        CConversion`CreateInlineGetter[phaseName, "const " <> type <> "&"];
               ];
            Return[result];
           ];

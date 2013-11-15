@@ -21,7 +21,7 @@
 #ifndef @ModelName@_INPUT_PARAMETERS_H
 #define @ModelName@_INPUT_PARAMETERS_H
 
-#include "mycomplex.h"
+#include <complex>
 #include <Eigen/Core>
 
 namespace flexiblesusy {

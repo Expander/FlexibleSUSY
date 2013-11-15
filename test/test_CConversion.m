@@ -98,104 +98,128 @@ Print["testing ExpandSums[] ..."];
 TestCPPCode[{"", "int result = 0;" <> ExpandSums[1, "result"]}, "1", "int", "1"];
 TestCPPCode[{"", "int a = 9;" <>
              "int result = 0;" <>
-             ExpandSums[a, "result", "int"]}, "result", "int", "9"];
+             ExpandSums[a, "result", ScalarType[integerScalarCType]]}, "result", "int", "9"];
 TestCPPCode[{"", "int a = 9, b = 2;" <>
              "int result = 0;" <>
-             ExpandSums[a+b, "result", "int"]}, "result", "int", "11"];
+             ExpandSums[a+b, "result", ScalarType[integerScalarCType]]}, "result", "int", "11"];
 TestCPPCode[{"", "int a = 9, b = 2;" <>
              "int result = 0;" <>
-             ExpandSums[a b, "result", "int"]}, "result", "int", "18"];
+             ExpandSums[a b, "result", ScalarType[integerScalarCType]]}, "result", "int", "18"];
 TestCPPCode[{"", "int a = 2;" <>
              "int result = 0;" <>
-             ExpandSums[sum[i,1,3,a], "result", "int"]}, "result", "int", "6"];
+             ExpandSums[sum[i,1,3,a], "result", ScalarType[integerScalarCType]]}, "result", "int", "6"];
 TestCPPCode[{"", "int a = 2, b = 3;" <>
              "int result = 0;" <>
-             ExpandSums[b sum[i,1,3,a], "result", "int"]}, "result", "int", "18"];
+             ExpandSums[b sum[i,1,3,a], "result", ScalarType[integerScalarCType]]}, "result", "int", "18"];
 TestCPPCode[{"", "int a = 2, b = 3, c = 4;" <>
              "int result = 0;" <>
-             ExpandSums[(a+b) sum[i,1,2,c], "result", "int"]}, "result", "int", "40"];
+             ExpandSums[(a+b) sum[i,1,2,c], "result", ScalarType[integerScalarCType]]},
+            "result", "int", "40"];
 TestCPPCode[{"", "int a = 2, b = 3;" <>
              "int result = 0;" <>
-             ExpandSums[sum[i,1,3,sum[k,1,2,b]], "result", "int"]}, "result", "int", "18"];
+             ExpandSums[sum[i,1,3,sum[k,1,2,b]], "result", ScalarType[integerScalarCType]]},
+            "result", "int", "18"];
 TestCPPCode[{"", "int a = 2, b = 3;" <>
              "int result = 0;" <>
-             ExpandSums[sum[i,1,3,a sum[k,1,2,b]], "result", "int"]}, "result", "int", "36"];
+             ExpandSums[sum[i,1,3,a sum[k,1,2,b]], "result", ScalarType[integerScalarCType]]},
+            "result", "int", "36"];
 
 (* use function as sum argument to avoid automatic simplification *)
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
-             ExpandSums[sum[k,1,4,sqr[k]], "result", "int", " = 0"]}, "result", "int", "30"];
+             ExpandSums[sum[k,1,4,sqr[k]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "30"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int a = 2; int result = 0;" <>
-             ExpandSums[a + sum[k,1,4,sqr[k]], "result", "int", " = 0"]}, "result", "int", "32"];
+             ExpandSums[a + sum[k,1,4,sqr[k]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "32"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int a = 2; int result = 0;" <>
-             ExpandSums[a sum[k,1,4,sqr[k]], "result", "int", " = 0"]}, "result", "int", "60"];
+             ExpandSums[a sum[k,1,4,sqr[k]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "60"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int a = 2; int result = 0;" <>
-             ExpandSums[a sum[k,1,4,sqr[k]], "result", "int", " = 0"]}, "result", "int", "60"];
+             ExpandSums[a sum[k,1,4,sqr[k]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "60"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int a = 2, b = 3; int result = 0;" <>
-             ExpandSums[(a + b) sum[k,1,4,sqr[k]], "result", "int", " = 0"]}, "result", "int", "150"];
+             ExpandSums[(a + b) sum[k,1,4,sqr[k]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "150"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
-             ExpandSums[sum[i,1,2,sum[k,1,2,sqr[i k]]], "result", "int", " = 0"]}, "result", "int", "25"];
+             ExpandSums[sum[i,1,2,sum[k,1,2,sqr[i k]]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "25"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
-             ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[k]]], "result", "int", " = 0"]}, "result", "int", "150"];
+             ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[k]]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "150"];
 TestCPPCode[{"int sqr(int n) { return n*n; }",
              "int result = 0;" <>
-             ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[i k]]], "result", "int", " = 0"]}, "result", "int", "420"];
+             ExpandSums[sum[i,1,2,(i+1) sum[k,1,4,sqr[i k]]], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "420"];
 
 Clear[SARAH`sum];
 
 (* Test ThetaStep expansion *)
 TestCPPCode[{"",
              "int result = 0;\n" <>
-             ExpandSums[ThetaStep[1,3], "result", "int", " = 0"]}, "result", "int", "1"];
+             ExpandSums[ThetaStep[1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "1"];
 TestCPPCode[{"",
              "int result = 0;\n" <>
-             ExpandSums[3 ThetaStep[1,3], "result", "int", " = 0"]}, "result", "int", "3"];
+             ExpandSums[3 ThetaStep[1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "3"];
 TestCPPCode[{"",
              "int result = 0, i1 = 1;\n" <>
-             ExpandSums[2 ThetaStep[i1,3], "result", "int", " = 0"]}, "result", "int", "2"];
+             ExpandSums[2 ThetaStep[i1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "2"];
 TestCPPCode[{"",
              "int result = 0, i1 = 3;\n" <>
-             ExpandSums[2 ThetaStep[i1,3], "result", "int", " = 0"]}, "result", "int", "2"];
+             ExpandSums[2 ThetaStep[i1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "2"];
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[2 ThetaStep[i1,3], "result", "int", " = 0"]}, "result", "int", "0"];
+             ExpandSums[2 ThetaStep[i1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "0"];
 
 TestCPPCode[{"#include<cassert>\nint Aborts() { assert(false && \"this should not happen\"); return 1; }",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[Aborts[] ThetaStep[i1,3], "result", "int", " = 0"]}, "result", "int", "0"];
+             ExpandSums[Aborts[] ThetaStep[i1,3], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "0"];
 
 TestCPPCode[{"#include<cassert>\nint Aborts() { assert(false && \"this should not happen\"); return 1; }",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[Aborts[] (ThetaStep[i1,3] + ThetaStep[i1,2]), "result", "int", " = 0"]}, "result", "int", "0"];
+             ExpandSums[Aborts[] (ThetaStep[i1,3] + ThetaStep[i1,2]), "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "0"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[2 (ThetaStep[i1,3] + ThetaStep[i1,4]), "result", "int", " = 0"]}, "result", "int", "2"];
+             ExpandSums[2 (ThetaStep[i1,3] + ThetaStep[i1,4]), "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "2"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[2 ThetaStep[i1,3] ThetaStep[i1,4], "result", "int", " = 0"]}, "result", "int", "0"];
+             ExpandSums[2 ThetaStep[i1,3] ThetaStep[i1,4], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "0"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 3;\n" <>
-             ExpandSums[2 ThetaStep[i1,3] ThetaStep[i1,4], "result", "int", " = 0"]}, "result", "int", "2"];
+             ExpandSums[2 ThetaStep[i1,3] ThetaStep[i1,4], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "2"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[2 ThetaStep[i1,5] (ThetaStep[i1,3] + ThetaStep[i1,4]), "result", "int", " = 0"]}, "result", "int", "2"];
+             ExpandSums[2 ThetaStep[i1,5] (ThetaStep[i1,3] + ThetaStep[i1,4]), "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "2"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[Power[ThetaStep[i1,5],2], "result", "int", " = 0"]}, "result", "int", "1"];
+             ExpandSums[Power[ThetaStep[i1,5],2], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "1"];
 
 TestCPPCode[{"",
              "int result = 0, i1 = 4;\n" <>
-             ExpandSums[Power[ThetaStep[i1,2],2], "result", "int", " = 0"]}, "result", "int", "0"];
+             ExpandSums[Power[ThetaStep[i1,2],2], "result", ScalarType[integerScalarCType], " = 0"]},
+            "result", "int", "0"];
 
 PrintTestSummary[];

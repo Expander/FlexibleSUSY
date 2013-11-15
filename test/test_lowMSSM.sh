@@ -80,7 +80,17 @@ if test ! -r "$lowmssm_output"; then
     exit 1
 fi
 
-diff=`$numdiff_cmd --relative-tolerance $rel_error $mssm_output $lowmssm_output`
+# mixing matrices files because we don't want to compare objects with
+# phase ambiguities
+
+$sed_cmd -i~ -e '197,$d' $mssm_output
+$sed_cmd -i~ -e '197,$d' $lowmssm_output
+
+diff=`$numdiff_cmd\
+ --absolute-tolerance=1.0e-12\
+ --relative-tolerance=$rel_error\
+ $mssm_output $lowmssm_output`
+
 diff_without_comments=`echo $diff | $sed_cmd -e '/^ *#/d' | $sed_cmd -e '/^+++/d'`
 
 if [ -n "$diff_without_comments" ]; then

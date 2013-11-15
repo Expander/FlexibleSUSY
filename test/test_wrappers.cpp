@@ -23,6 +23,7 @@
 #include <complex>
 #include <boost/test/unit_test.hpp>
 #include "wrappers.hpp"
+#include "diagonalization.hpp"
 
 using namespace flexiblesusy;
 

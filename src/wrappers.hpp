@@ -1,10 +1,11 @@
 
-#ifndef WRAPPERS_H
-#define WRAPPERS_H
+#ifndef WRAPPERS_HPP
+#define WRAPPERS_HPP
 
-#include "linalg.h"
+#include <complex>
 #include <cmath>
 #include <valarray>
+#include <functional>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -17,7 +18,7 @@ inline double Abs(double z)
    return std::fabs(z);
 }
 
-inline double Abs(const Complex& z)
+inline double Abs(const std::complex<double>& z)
 {
    return std::abs(z);
 }
@@ -27,7 +28,7 @@ inline double AbsSqr(double z)
    return z * z;
 }
 
-inline double AbsSqr(const Complex& z)
+inline double AbsSqr(const std::complex<double>& z)
 {
    return std::norm(z);
 }
@@ -37,9 +38,21 @@ inline double AbsSqrt(double x)
    return std::sqrt(std::fabs(x));
 }
 
-inline DoubleVector AbsSqrt(const DoubleVector& x)
+inline double AbsSqrt_d(double x)
 {
-   return x.apply(AbsSqrt);
+   return AbsSqrt(x);
+}
+
+template <typename Derived>
+Derived AbsSqrt(const Eigen::MatrixBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+}
+
+template <typename Derived>
+Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
 }
 
 inline double ArcTan(double a)
@@ -63,7 +76,7 @@ inline double Conj(double a)
    return a;
 }
 
-inline Complex Conj(const Complex& a)
+inline std::complex<double> Conj(const std::complex<double>& a)
 {
    return std::conj(a);
 }
@@ -83,17 +96,23 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
-Eigen::Matrix3d Diag(const Eigen::Matrix3d&);
+inline int KroneckerDelta(int i, int j)
+{
+   return i == j;
+}
 
-void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
-void Diagonalize(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
-void Diagonalize2by2(const DoubleMatrix&, DoubleMatrix& , DoubleVector&);
-void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, DoubleVector&);
-
-// SVD
-void Diagonalize(const DoubleMatrix&, DoubleMatrix& , DoubleMatrix& , DoubleVector&);
-void Diagonalize(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
-void Diagonalize2by2(const DoubleMatrix&, ComplexMatrix&, ComplexMatrix&, DoubleVector&);
+template <class Derived>
+Eigen::MatrixBase<Derived> Diag(const Eigen::MatrixBase<Derived>& m)
+{
+   Derived diag(m);
+   for (int i = 0; i < m.rows(); ++i) {
+      for (int k = 0; k < m.cols(); ++k) {
+         if (i != k)
+            diag(i,k) = 0.0;
+      }
+   }
+   return diag;
+}
 
 inline double FiniteLog(double a)
 {
@@ -106,7 +125,40 @@ inline double Log(double a)
 }
 
 double MaxRelDiff(double, double);
-double MaxRelDiff(const DoubleVector&, const DoubleVector&);
+
+template <class Derived>
+double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
+                  const Eigen::MatrixBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
+
+template <class Derived>
+double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
+                  const Eigen::ArrayBase<Derived>& b)
+{
+   Derived sumTol;
+
+   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+      const double max = maximum(a(i), b(i));
+      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
+         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+      else
+         sumTol(i) = 0.;
+   }
+
+   return sumTol.maxCoeff();
+}
 
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
@@ -120,19 +172,9 @@ inline double Re(double x)
    return x;
 }
 
-inline double Re(const Complex& x)
+inline double Re(const std::complex<double>& x)
 {
    return std::real(x);
-}
-
-inline DoubleMatrix Re(const DoubleMatrix& m)
-{
-   return m;
-}
-
-inline DoubleMatrix Re(const ComplexMatrix& m)
-{
-   return m.real();
 }
 
 inline double Im(double x)
@@ -140,7 +182,7 @@ inline double Im(double x)
    return x;
 }
 
-inline double Im(const Complex& x)
+inline double Im(const std::complex<double>& x)
 {
    return std::imag(x);
 }
@@ -156,8 +198,6 @@ T Sqr(T a)
    return a * a;
 }
 
-void Symmetrize(DoubleMatrix&);
-
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {
@@ -169,34 +209,11 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
          m(i,k) = m(k,i);
 }
 
-Eigen::ArrayXd ToEigenArray(const DoubleVector&);
-Eigen::ArrayXd ToEigenArray(double);
-std::valarray<double> ToValarray(const DoubleVector&);
-std::valarray<double> ToValarray(double);
-DoubleVector ToDoubleVector(const Eigen::ArrayXd&);
-Eigen::MatrixXd ToEigenMatrix(const DoubleMatrix&);
-DoubleMatrix ToDoubleMatrix(const Eigen::MatrixXd&);
-
-inline DoubleMatrix Transpose(const DoubleMatrix& m)
-{
-   return m.transpose();
-}
-
-inline ComplexMatrix Transpose(const ComplexMatrix& m)
-{
-   return m.transpose();
-}
-
 #define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
 
 inline double ZeroSqrt(double x)
 {
    return (x > 0.0 ? std::sqrt(x) : 0.0);
-}
-
-inline DoubleVector ZeroSqrt(const DoubleVector& x)
-{
-   return x.apply(ZeroSqrt);
 }
 
 }

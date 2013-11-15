@@ -50,7 +50,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
              oneLoopBeta, oneLoopBetaStr, localDecl = "", dataType, unitMatrix,
              twoLoopBeta, twoLoopBetaStr, type = ErrorType},
             type = GetType[betaFunction];
-            dataType = GetCParameterType[type];
+            dataType = CConversion`CreateCType[type];
             unitMatrix = CreateUnitMatrix[type];
            (* convert beta function expressions to C form *)
            name          = ToValidCSymbolString[GetName[betaFunction]];
@@ -125,12 +125,12 @@ ConvertSarahRGEs[betaFunctions_List] :=
           ];
 
 (* count number of parameters in beta functions list *)
-CountNumberOfParameters[CConversion`ScalarType["double"]] := 1;
-CountNumberOfParameters[CConversion`ScalarType["Complex"]] := 2;
-
-CountNumberOfParameters[CConversion`VectorType[type_, entries_]] := entries;
-
-CountNumberOfParameters[CConversion`MatrixType[type_, rows_, cols_]] := rows * cols;
+CountNumberOfParameters[CConversion`ScalarType[CConversion`realScalarCType]] := 1;
+CountNumberOfParameters[CConversion`ScalarType[CConversion`complexScalarCType]] := 2;
+CountNumberOfParameters[CConversion`VectorType[CConversion`realScalarCType, entries_]] := entries;
+CountNumberOfParameters[CConversion`VectorType[CConversion`complexScalarCType, entries_]] := 2 * entries;
+CountNumberOfParameters[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] := rows * cols;
+CountNumberOfParameters[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] := rows * cols;
 
 CountNumberOfParameters[betaFunctions_List] :=
     Module[{num = 0},
@@ -242,7 +242,7 @@ CreateGetters[betaFunctions_List] :=
 (* create parameter definition in C++ class *)
 CreateParameterDefinitions[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CConversion`CreateCType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            def  = def <> dataType <> " " <> name <> ";\n";
            Return[def];
@@ -257,7 +257,7 @@ CreateParameterDefinitions[betaFunctions_List] :=
 (* create parameter default initialization list *)
 CreateParameterDefaultInitialization[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CConversion`CreateCType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            def  = def <> ", " <> CreateDefaultConstructor[name, GetType[betaFunction]];
            Return[def];
@@ -272,7 +272,7 @@ CreateParameterDefaultInitialization[betaFunctions_List] :=
 (* create copy constructor initialization list *)
 CreateCCtorInitialization[betaFunction_BetaFunction] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CConversion`CreateCType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            def  = def <> ", " <> name <> "(" <> name <> "_)";
            Return[def];
@@ -304,7 +304,7 @@ CreateCCtorParameterList[betaFunctions_List] :=
 (* create parameter list *)
 CreateParameterList[betaFunction_BetaFunction, prefix_] :=
     Module[{def = "", name = "", dataType = ""},
-           dataType = GetCParameterType[GetType[betaFunction]];
+           dataType = CConversion`CreateCType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
            If[def != "", def = def <> ", "];
            def = def <> prefix <> name;

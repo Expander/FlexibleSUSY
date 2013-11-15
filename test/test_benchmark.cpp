@@ -118,5 +118,5 @@ int main()
 {
    test_tanbeta_scan();
 
-   return gErrors;
+   return flexiblesusy::get_errors();
 }

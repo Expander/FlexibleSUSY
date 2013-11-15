@@ -16,27 +16,34 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-#ifndef @ModelName@_PHYSICAL_H
-#define @ModelName@_PHYSICAL_H
-
-#include "linalg2.hpp"
-#include <Eigen/Core>
-
-#include <iosfwd>
-#include <string>
+#ifndef NUMERICS_HPP
+#define NUMERICS_HPP
 
 namespace flexiblesusy {
 
-struct @ModelName@_physical {
-   @ModelName@_physical();
-   void clear();
-   void print(std::ostream&) const;
+template <typename T>
+bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+{
+   return std::fabs(a) < prec;
+}
 
-@physicalMassesDef@
-@mixingMatricesDef@
-};
+template <typename T>
+bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+{
+   return is_zero(a - b, prec);
+}
+
+template <typename T>
+bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+{
+   if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+      return true;
+
+   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
+      return std::numeric_limits<T>::infinity();
+
+   return std::fabs((a - b)/a) < prec;
+}
 
 } // namespace flexiblesusy
 

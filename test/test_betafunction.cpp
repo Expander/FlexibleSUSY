@@ -7,6 +7,7 @@
 #include "rge.h"
 #include "betafunction.hpp"
 #include "wrappers.hpp"
+#include "conversion.hpp"
 #include "error.hpp"
 #include "logger.hpp"
 
