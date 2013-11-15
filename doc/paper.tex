@@ -507,8 +507,8 @@ Detailed steps to create NMSSM model file.
 \begin{enumerate}
 \item Create new directory \code{mkdir myNMSSM}
 \item Move into this new directory \code{cd myNMSSM}
-\item copy the MSSM model file in \code{cp /path/to/SARAH/Models/MSSM/MSSM.m  NMSSM.m}
-\item Edit NMSSM.m as follows
+\item copy the MSSM model file in \code{cp /path/to/SARAH/Models/MSSM/MSSM.m  myNMSSM.m}
+\item Edit myNMSSM.m as follows
 \begin{enumerate}
 \item  Change Model name, author and date
 \item Add singlet superfield to SuperFields
@@ -517,7 +517,7 @@ SuperFields[[8]] = {s, 1, sR,    0, 1,  1, RpM};
 \end{lstlisting}
 \item Modify superpotential
 \begin{lstlisting}
-SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] S.Hu.Hd +  \[Kappa]/3 s.s.s ;
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd +  \[Kappa]/3 s.s.s ;
 \end{lstlisting}
 \item Add new VEV
 \begin{lstlisting} DEFINITION[EWSB][VEVs]= 
@@ -708,7 +708,61 @@ Once again this is simplified from the general case becasue there are default ve
 \end{enumerate}   
 \subsection{\ESSM}
 Detailed steps to create \ESSM model file.
+\begin{enumerate}
+\item Create new directory \code{mkdir myE6SSM}
+\item Move into this new directory \code{cd myE6SSM}
+\item copy the MSSM model file in \code{cp /path/to/SARAH/Models/MSSM/MSSM.m  myE6SSM.m}
+\item Edit myE6SSM.m as follows
+\begin{enumerate}
+\item  Change Model name, author and date
+\item Modify MSSM superfield definitions to include new charges.
+\begin{lstlisting}
+SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, Qq, RpM};  
+SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, Ql, RpM};
+SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, QHd, RpP};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QHu, RpP};
+SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, Qd, RpM};
+SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, Qu, RpM};
+SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, Qe, RpM};
+\end{lstlisting}
+Note that in the \ESSM model the charges are fixed to be those of the $U(1)_N$ as shown in e.g. \cite{King:2005jy}.  However here we leave the charges unassigned at the Mathematica level, and will set them as parameters in the C++ code.  The charges could also simply be fixed here to simplify the C++ code.
 
+\item Add Singlet Higgs superfield to SuperFields
+\begin{lstlisting}
+SuperFields[[8]] = {s, 1, sR,     0, 1,  1, Qs, RpP};
+\end{lstlisting}\end{lstlisting}
+\item Add inert Higgs-like superfields 
+\begin{lstlisting}
+SuperFields[[9]] = {H1I, 2, {H1I0, H1Im},  -1/2, 2, 1, QHu, RpP};
+SuperFields[[10]] = {H2I, 2, {H2Ip, H2I0},   1/2, 2, 1, QHd, RpP};
+SuperFields[[11]] = {sI, 2, sR,    0, 1,  1, Qs, RpM};
+\end{lstlisting}
+\item Add exotics to SuperFields
+\begin{lstlisting}
+SuperFields[[12]] = {Dx, 3, conj[DxR],  1/3, 1, -3, QDx, RpP};
+SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  -1/3, 1, 3, QDxbar, RpP};
+\end{lstlisting}
+\item Add additional survival $SU(2)$ multiplets to SuperFields
+\begin{lstlisting}
+SuperFields[[14]] = {Hp, 1, conj[HpR],    0.5, 2,  1, QHp, RpP};
+SuperFields[[15]] = {Hpbar, 1, conj[HpbarR],    -0.5, 2,  1, QHpbar, RpP};
+\end{lstlisting}
+\item Modify superpotential
+\begin{lstlisting}
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] S.Hu.Hd +  La S.H2I.H1I + \[Kappa] S.Dx.Dxbar;
+\end{lstlisting}
+\item Add new VEV
+\begin{lstlisting} DEFINITION[EWSB][VEVs]= 
+  { {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
+    {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
+    {SsR,  {vs, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS,1/Sqrt[2]}}
+};
+\end{lstlisting}
+
+
+\end{enumerate}  
+ 
+\end{enumerate}   
 \section{Tests}
 Comparisons against existing spectrum generators to test for deviations, e.g. the tests against MSSM and NMSSM (and E6SSM?).
 
