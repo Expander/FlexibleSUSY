@@ -565,32 +565,44 @@ FileExists[path_String, fileName_String] :=
           ];
 
 FilesExist[path_String, fileNames_List] :=
-    Module[{filesExist},
-           filesExist = FileExists[path,#]& /@ fileNames;
-           And @@ filesExist
-          ];
+    And @@ (FileExists[path,#]& /@ fileNames);
+
+FilesExist[fileNames_List] :=
+    And @@ (FileExists /@ fileNames);
+
+LatestModificationTimeInSeconds[file_String] :=
+    If[FileExists[file],
+       AbsoluteTime[FileDate[file, "Modification"]], 0];
+
+LatestModificationTimeInSeconds[files_List] :=
+    Max[LatestModificationTimeInSeconds /@ files];
 
 SARAHModelFileModificationTimeInSeconds[] :=
-    Module[{stamps, files},
+    Module[{files},
            files = Join[{SARAH`ModelFile},
                         FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}
                        ];
-           stamps = AbsoluteTime[FileDate[#, "Modification"]]& /@ files;
-           Return[Max[stamps]];
+           Return[LatestModificationTimeInSeconds[files]];
           ];
 
-RGEsHaveBeenCalculated[outputDir_String] :=
-    Module[{rgeDir, fileNames, diracGauginoBetaExists = True},
+GetRGEFileNames[outputDir_String] :=
+    Module[{rgeDir, fileNames},
            rgeDir = FileNameJoin[{outputDir, "RGEs"}];
            fileNames = { "BetaYijk.m", "BetaGauge.m", "BetaWijkl.m",
                          "BetaMuij.m", "BetaLi.m", "BetaQijkl.m",
                          "BetaTijk.m", "BetaBij.m", "BetaLSi.m",
                          "Betam2ij.m", "BetaMi.m", "BetaVEV.m" };
            If[SARAH`AddDiracGauginos === True,
-              diracGauginoBetaExists = FileExists[rgeDir, "BetaDGi.m"];
+              AppendTo[fileNames, "BetaDGi.m"];
              ];
-           FilesExist[rgeDir, fileNames] && diracGauginoBetaExists
+           FileNameJoin[{rgeDir, #}]& /@ fileNames
           ];
+
+RGEFilesExist[outputDir_String] :=
+    FilesExist[GetRGEFileNames[outputDir]];
+
+RGEsModificationTimeInSeconds[outputDir_String] :=
+    LatestModificationTimeInSeconds[GetRGEFileNames[outputDir]];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
     Module[{seDir, fileName = "SelfEnergy.m"},
@@ -619,14 +631,30 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
            Return[""];
           ];
 
-FSPrepareRGEs[] :=
-    Module[{rgesHaveBeenCalculated, betas},
-           rgesHaveBeenCalculated = RGEsHaveBeenCalculated[$sarahCurrentOutputMainDir];
-           If[rgesHaveBeenCalculated,
-              Print["RGEs have already been calculated, reading them from file ..."];,
+NeedToCalculateRGEs[] :=
+    Module[{rgeFilesExist, rgeFilesTimeStamp, sarahModelFileTimeStamp,
+            needToCalculateRGEs},
+           rgeFilesExist = RGEFilesExist[$sarahCurrentOutputMainDir];
+           rgeFilesTimeStamp = RGEsModificationTimeInSeconds[$sarahCurrentOutputMainDir];
+           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
+           needToCalculateRGEs = Or[!rgeFilesExist,
+                                    rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp)];
+           If[!rgeFilesExist,
               Print["RGEs have not been calculated yet, calculating them ..."];
              ];
-           SARAH`CalcRGEs[ReadLists -> rgesHaveBeenCalculated,
+           If[rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp),
+              Print["SARAH model files are newer than RGE files, recalculating them ..."];
+             ];
+           If[!needToCalculateRGEs,
+              Print["Reading RGEs from files."];
+             ];
+           Return[needToCalculateRGEs];
+          ];
+
+FSPrepareRGEs[] :=
+    Module[{needToCalculateRGEs, betas},
+           needToCalculateRGEs = NeedToCalculateRGEs[];
+           SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
                           TwoLoop -> True,
                           NoMatrixMultiplication -> False];
            (* check if the beta functions were calculated correctly *)
