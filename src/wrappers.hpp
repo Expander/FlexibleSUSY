@@ -102,9 +102,9 @@ inline int KroneckerDelta(int i, int j)
 }
 
 template <class Derived>
-Eigen::MatrixBase<Derived> Diag(const Eigen::MatrixBase<Derived>& m)
+typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m)
 {
-   Derived diag(m);
+   typename Eigen::MatrixBase<Derived>::PlainObject diag(m);
    for (int i = 0; i < m.rows(); ++i) {
       for (int k = 0; k < m.cols(); ++k) {
          if (i != k)
