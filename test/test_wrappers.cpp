@@ -114,3 +114,21 @@ BOOST_AUTO_TEST_CASE(test_symmetric)
 	}
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_Diag)
+{
+   Eigen::Matrix<double,3,3> m;
+   for (int i = 0; i < 3; i++)
+      for (int k = 0; k < 3; k++)
+         m(i,k) = (i+1) * (k+1);
+
+   Eigen::Matrix<double,3,3> diag(Diag(m));
+
+   for (int i = 0; i < 3; i++)
+      for (int k = 0; k < 3; k++) {
+         if (i == k)
+            BOOST_CHECK_PREDICATE(std::not_equal_to<double>(), (diag(i,k))(0.));
+         else
+            BOOST_CHECK_EQUAL(diag(i,k), 0.);
+      }
+}
