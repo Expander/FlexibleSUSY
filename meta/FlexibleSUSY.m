@@ -570,6 +570,15 @@ FilesExist[path_String, fileNames_List] :=
            And @@ filesExist
           ];
 
+SARAHModelFileModificationTimeInSeconds[] :=
+    Module[{stamps, files},
+           files = Join[{SARAH`ModelFile},
+                        FileNameJoin[{$sarahCurrentModelDir, #}]& /@ {"parameters.m", "particles.m"}
+                       ];
+           stamps = AbsoluteTime[FileDate[#, "Modification"]]& /@ files;
+           Return[Max[stamps]];
+          ];
+
 RGEsHaveBeenCalculated[outputDir_String] :=
     Module[{rgeDir, fileNames, diracGauginoBetaExists = True},
            rgeDir = FileNameJoin[{outputDir, "RGEs"}];
