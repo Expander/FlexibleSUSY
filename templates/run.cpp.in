@@ -28,6 +28,7 @@
 #include "command_line_options.hpp"
 
 #include <iostream>
+#include <cstdlib>
 
 int main(int argc, const char* argv[])
 {
@@ -54,7 +55,7 @@ int main(int argc, const char* argv[])
          slha_io.fill(program_options);
       } catch (const Error& error) {
          ERROR(error.what());
-         return 1;
+         return EXIT_FAILURE;
       }
    }
    oneset.toMz(); // run SM fermion masses to MZ
