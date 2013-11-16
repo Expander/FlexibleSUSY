@@ -82,21 +82,20 @@ int main(int argc, const char* argv[])
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
+   // output
+   slha_io.set_spinfo(problems);
+   if (!problems.have_serious_problem())
+      slha_io.set_spectrum(model);
+
    if (slha_output_file.empty()) {
-      if (problems.have_serious_problem()) {
-         problems.print(std::cout);
-         std::cout << '\n';
-      } else {
-         model.print(std::cout);
-         // spectrum_generator.write_spectrum("@ModelName@_spectrum.dat");
-         // spectrum_generator.write_running_couplings("@ModelName@_rge_running.dat");
-      }
+      slha_io.write_to_stream(std::cout);
    } else {
-      slha_io.set_spinfo(problems);
-      if (!problems.have_serious_problem())
-         slha_io.set_spectrum(model);
       slha_io.write_to_file(slha_output_file);
    }
+
+   // model.print(std::cout);
+   // spectrum_generator.write_spectrum("@ModelName@_spectrum.dat");
+   // spectrum_generator.write_running_couplings("@ModelName@_rge_running.dat");
 
    const int exit_code = spectrum_generator.get_exit_code();
 
