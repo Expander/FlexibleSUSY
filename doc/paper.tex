@@ -704,18 +704,22 @@ Once again this is simplified from the general case becasue there are default ve
 \item Configure with the new model \code{./configure --with-models=Z3NMSSM}
 \item The default FlexibleSUSY model file for the MSSM will now be in the models/NMSSM2 directory.  Edit this for the NMSSM as follows:
   \begin{enumerate} 
-    \item Add new input parameter $\lambda$.
-      \begin{lstlisting}
-        EXTPAR = { {61, LambdaInput} };
+    \item Add new input parameter $\lambda$ to EXTPAR and remove the sign of $\mu$ from MINPAR.
+      \begin{lstlisting}    
+        MINPAR = { {1, m0},
+           {2, m12},
+           {3, TanBeta},
+           {5, Azero} };
+
+  EXTPAR = { {61, LambdaInput} };
       \end{lstlisting}
      \item Also add this parameter to the DefaultParameterPoint.
       \begin{lstlisting}
        DefaultParameterPoint = {
-    {m0, 125},
-    {m12, 500},
+    {m0, 200},
+    {m12, 200},
     {TanBeta, 10},
-    {Sign[\[Mu]], 1},
-    {Azero, 0}
+    {Azero, -500}
     {LambdaInput, 0.1}
     };
   \end{lstlisting}
