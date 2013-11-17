@@ -700,10 +700,87 @@ Once again this is simplified from the general case becasue there are default ve
              OutputName-> vS         }},
 \end{lstlisting}
 \item Navigate to Flexible SUSY directory  \code{cd /path/to/FlexibleSUSY/}
-\item Create Z3NMSSM directory 
+\item Create Z3NMSSM directory \code{./createmodel --models=Z3NMSSM:myNMSSM}
+\item Configure with the new model \code{./configure --with-models=Z3NMSSM}
+\item The default FlexibleSUSY model file for the MSSM will now be in the models/NMSSM2 directory.  Edit this for the NMSSM as follows:
+  \begin{enumerate} 
+    \item Add new input parameter $\lambda$.
+      \begin{lstlisting}
+        EXTPAR = { {61, LambdaInput} };
+      \end{lstlisting}
+     \item Also add this parameter to the DefaultParameterPoint.
+      \begin{lstlisting}
+       DefaultParameterPoint = {
+    {m0, 125},
+    {m12, 500},
+    {TanBeta, 10},
+    {Sign[\[Mu]], 1},
+    {Azero, 0}
+    {LambdaInput, 0.1}
+    };
+  \end{lstlisting}
+    \item Name the parameters you wish to be output by the EWSB conditions.  Note you should use the names given for them in parameters.m.    A common choice in the NMSSM is:
 \begin{lstlisting}
-./createmodel --models=Z3NMSSM:myNMSSM
+EWSBOutputParameters = {vS, \[Kappa], ms2};
 \end{lstlisting}
+which will work for the semi-constrained NMSSM.
+\item choose the Highscale and Highscale first guess, if the default is different from what you wish to use.  
+\begin{lstlisting} 
+ HighScale = g1 == g2;
+ HighScaleFirstGuess = 1.0 10^16;
+\end{lstlisting}
+\item Add how the parameters found in parameters.m that are to be set at the highscale:
+\begin{lstlisting} 
+HighScaleInput={
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
+   {mHd2, m0^2},
+   {mHu2, m0^2},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {MassB, m12},
+   {MassWB,m12},
+   {MassG,m12},
+{\[Lambda], LambdaInput},
+   {T[\[Kappa]], Azero \[Kappa]},
+   {T[\[Lambda]], Azero LambdaInput}
+};
+\end{lstlisting}
+\item set lowscale boundary condititions if you want something different from the default.  The defaults are:
+\begin{lstlisting} 
+ LowScale = SM[MZ];
+ LowScaleFirstGuess = SM[MZ];
+\end{lstlisting}
+\item Change the LowscaleInput if necessary.  In this example we keep the same choice as in the MSSM
+  \begin{lstlisting} 
+ LowScaleInput={
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+  \end{lstlisting}
+
+Finally we set the initial guesses for the paremeters.  In this example we overwtite the MSSM version replacing it with:
+ \begin{lstlisting} 
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {\[Lambda], LambdaInput},
+   {\[Kappa], 0.1},
+   {vS, 1000},
+   {ms2, SM[MZ]^2}
+};
+
+InitialGuessAtHighScale = {};
+ \end{lstlisting}
+
+The code can now be created and also compiled (if you didn't select --disable-compile option when you ran the configure script) by typing \code{make -j2}.
+
+
+ \end{enumerate}   
 
 \end{enumerate}   
 \subsection{\ESSM}
@@ -943,4 +1020,5 @@ Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
 %
 
 \end{thebibliography}
-\end{document}
+\end{document
+}
