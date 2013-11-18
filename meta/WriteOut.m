@@ -3,9 +3,11 @@ BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`", "Paramet
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
+WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
+WriteSLHAMinparBlock::usage="";
 ReadUnfixedParameters::usage="";
 
 Begin["`Private`"];
@@ -106,6 +108,43 @@ WriteSLHAMassBlock[massMatrices_List] :=
                     "std::ostringstream mass;\n\n" <>
                     susyMassesStr <> smMassesStr <>
                     "slha_io.set_block(mass);\n";
+           Return[result];
+          ];
+
+WriteParameterTuple[{key_?NumberQ, parameter_}, streamName_String] :=
+    Module[{parameterStr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           streamName <> " << FORMAT_ELEMENT(" <> ToString[key] <> ", input." <>
+           parameterStr <> ", \"" <> parameterStr <> "\");\n"
+          ];
+
+WriteParameterTuple[expr_] :=
+    Block[{},
+          Print["Error: not a valid {key,parameter} tuple: ", expr];
+          ""
+         ];
+
+WriteSLHAExtparBlock[{}] := "";
+
+WriteSLHAExtparBlock[extpar_List] :=
+    Module[{result, body = ""},
+           (body = body <> WriteParameterTuple[#, "extpar"])& /@ extpar;
+           result = "std::ostringstream extpar;\n\n" <>
+                    "extpar << \"Block EXTPAR\\n\";\n" <>
+                    body <>
+                    "slha_io.set_block(extpar);\n";
+           Return[result];
+          ];
+
+WriteSLHAMinparBlock[{}] := "";
+
+WriteSLHAMinparBlock[minpar_List] :=
+    Module[{result, body = ""},
+           (body = body <> WriteParameterTuple[#, "minpar"])& /@ minpar;
+           result = "std::ostringstream minpar;\n\n" <>
+                    "minpar << \"Block MINPAR\\n\";\n" <>
+                    body <>
+                    "slha_io.set_block(minpar);\n";
            Return[result];
           ];
 

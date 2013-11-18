@@ -515,7 +515,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
-            writeSLHAModelParametersBlocks = "", readUnfixedParameters},
+            writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
+            writeSLHAExtparBlock = "", readUnfixedParameters},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -534,6 +535,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
+           writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
+           writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
            WriteOut`ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -549,6 +552,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
+                            "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
+                            "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

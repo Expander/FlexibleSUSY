@@ -48,6 +48,8 @@ public:
    double get_input_scale() const;
    double get_parameter_output_scale() const;
    void read_from_file(const std::string&);
+   void set_extpar(const @ModelName@_input_parameters&);
+   void set_minpar(const @ModelName@_input_parameters&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
    void write_to_file(const std::string&);
