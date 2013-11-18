@@ -83,8 +83,10 @@ fi
 # mixing matrices files because we don't want to compare objects with
 # phase ambiguities
 
-$sed_cmd -i~ -e '197,$d' $mssm_output
-$sed_cmd -i~ -e '197,$d' $lowmssm_output
+cp $mssm_output $mssm_output~
+$awk_cmd -f $BASEDIR/remove_input_blocks.awk < $mssm_output~ > $mssm_output
+$sed_cmd -i~ -e '172,$d' $mssm_output
+$sed_cmd -i~ -e '172,$d' $lowmssm_output
 
 diff=`$numdiff_cmd\
  --absolute-tolerance=1.0e-12\
