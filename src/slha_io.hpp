@@ -109,6 +109,7 @@ public:
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const DoubleMatrix&, const std::string&, double scale = 0.);
    void set_block(const std::string&, const ComplexMatrix&, const std::string&, double scale = 0.);
+   void set_sminputs(const softsusy::QedQcd&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
 

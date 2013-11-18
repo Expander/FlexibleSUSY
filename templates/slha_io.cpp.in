@@ -49,6 +49,11 @@ void @ModelName@_slha_io::set_minpar(const @ModelName@_input_parameters& input)
 @writeSLHAMinparBlock@
 }
 
+void @ModelName@_slha_io::set_sminputs(const softsusy::QedQcd& qedqcd)
+{
+   slha_io.set_sminputs(qedqcd);
+}
+
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
    std::ostringstream spinfo;

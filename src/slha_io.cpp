@@ -20,6 +20,7 @@
 #include "wrappers.hpp"
 #include "lowe.h"
 #include "linalg.h"
+#include "ew_input.hpp"
 
 #include <fstream>
 
@@ -208,6 +209,33 @@ void SLHA_io::set_block(const std::string& name, const ComplexMatrix& matrix,
             % Re(matrix(i,k))
             % ("Re(" + symbol + "(" + std::to_string(i) + "," + std::to_string(k) + "))");
       }
+
+   set_block(ss);
+}
+
+void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
+{
+   std::ostringstream ss;
+
+   const double alphaEmInv = 1./qedqcd.displayAlpha(ALPHA);
+
+   ss << "Block SMINPUTS\n";
+   ss << FORMAT_ELEMENT( 1, alphaEmInv                   , "alpha^(-1) SM MSbar(MZ)");
+   ss << FORMAT_ELEMENT( 2, 1.166370000e-05              , "G_Fermi");
+   ss << FORMAT_ELEMENT( 3, qedqcd.displayAlpha(ALPHAS)  , "alpha_s(MZ) SM MSbar");
+   ss << FORMAT_ELEMENT( 4, Electroweak_constants::MZ    , "MZ(pole)");
+   ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()         , "mb(mb) SM MSbar");
+   ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()       , "mtop(pole)");
+   ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
+   ss << FORMAT_ELEMENT( 8, 0                            , "mnu3(pole)");
+   ss << FORMAT_ELEMENT(11, qedqcd.displayMass(mElectron), "melectron(pole)");
+   ss << FORMAT_ELEMENT(12, 0                            , "mnu1(pole)");
+   ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
+   ss << FORMAT_ELEMENT(14, 0                            , "mnu2(pole)");
+   ss << FORMAT_ELEMENT(21, qedqcd.displayMass(mDown)    , "md");
+   ss << FORMAT_ELEMENT(22, qedqcd.displayMass(mUp)      , "mu");
+   ss << FORMAT_ELEMENT(23, qedqcd.displayMass(mStrange) , "ms");
+   ss << FORMAT_ELEMENT(24, qedqcd.displayMass(mCharm)   , "mc");
 
    set_block(ss);
 }
