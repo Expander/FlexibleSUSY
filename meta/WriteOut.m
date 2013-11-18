@@ -118,7 +118,7 @@ WriteParameterTuple[{key_?NumberQ, parameter_}, streamName_String] :=
            parameterStr <> ", \"" <> parameterStr <> "\");\n"
           ];
 
-WriteParameterTuple[expr_] :=
+WriteParameterTuple[expr_, _] :=
     Block[{},
           Print["Error: not a valid {key,parameter} tuple: ", expr];
           ""
