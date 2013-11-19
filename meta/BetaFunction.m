@@ -39,6 +39,9 @@ GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 GuessType[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     Parameters`GetType[sym];
 
+GuessType[sym_[Susyno`LieGroups`i1]] :=
+    Parameters`GetType[sym];
+
 GuessType[sym_] :=
     Parameters`GetType[sym];
 
