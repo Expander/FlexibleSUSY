@@ -196,6 +196,8 @@ CreateUnitMatrix[type_] :=
 
 CreateUnitMatrix[CConversion`ScalarType[_]] := 1;
 
+CreateUnitMatrix[CConversion`VectorType[__]] := 1;
+
 CreateUnitMatrix[CConversion`MatrixType[_, rows_, rows_]] :=
     CConversion`UNITMATRIX[rows];
 
@@ -309,6 +311,8 @@ ToValidCSymbol[symbol_Integer] := symbol;
 
 ToValidCSymbol[symbol_Real] := symbol;
 
+ToValidCSymbol[symbol_[Susyno`LieGroups`i1]] := ToValidCSymbol[symbol];
+
 ToValidCSymbol[symbol_[Susyno`LieGroups`i1,SARAH`i2]] := ToValidCSymbol[symbol];
 
 ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
@@ -408,6 +412,7 @@ RValueToCFormString[expr_] :=
                     Susyno`LieGroups`conj    -> SARAH`Conj //. {
                     Times[x___, SARAH`Conj[a_], y___, a_, z___] :> AbsSqr[a] x y z,
                     Times[x___, a_, y___, SARAH`Conj[a_], z___] :> AbsSqr[a] x y z } /.
+                    a_[Susyno`LieGroups`i1] :> a /.
                     a_[Susyno`LieGroups`i1, SARAH`i2] :> a /.
                     SARAH`Delta[a_,a_]       -> 1 /.
                     Power[a_?NumericQ,n_?NumericQ] :> N[Power[a,n]] /.

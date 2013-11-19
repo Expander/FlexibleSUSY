@@ -83,12 +83,14 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            (* one-loop *)
            exprOneLoop = (CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim]) /.
                          { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                           a_[Susyno`LieGroups`i1] :> a,
                            a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
            body = "\nanomDim = " <> RValueToCFormString[exprOneLoop] <> ";\n";
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
               exprTwoLoop = (CConversion`twoLoop * GetAnomDim2Loop[anomDim]) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                              a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
               body = body <> "\nif (get_loops() > 1) {\n" <>
                      IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
