@@ -269,6 +269,18 @@ CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`compl
            Return[{ass, 2}];
           ];
 
+CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count++,
+               ass = ass <> name <> "(" <> ToString[i] <> ") = v(" <>
+                     ToString[startIndex + count] <> ");\n";
+              ];
+           If[rows != count,
+              Print["Error: CreateSetAssignment: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];];
+           Return[{ass, rows}];
+          ];
+
 CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
@@ -304,6 +316,18 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`c
            Return[{ass, 2}];
           ];
 
+CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count++,
+               ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
+                     <> name <> "(" <> ToString[i] <> ");\n";
+              ];
+           If[rows != count,
+              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];];
+           Return[{ass, rows}];
+          ];
+
 CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
            For[i = 0, i < rows, i++,
@@ -332,6 +356,20 @@ CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCTyp
 CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
     "), Im(" <> CConversion`ToValidCSymbolString[name] <> ")\"";
+
+CreateParameterNamesStr[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count++,
+               If[ass != "", ass = ass <> ", ";];
+               ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
+                     "(" <> ToString[i] <> ")\"";
+              ];
+           If[rows != count,
+              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
 
 CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
@@ -362,6 +400,19 @@ CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType]]
 CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
     CConversion`ToValidCSymbolString[Im[name]];
+
+CreateParameterEnums[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
+    Module[{ass = "", i, count = 0},
+           For[i = 0, i < rows, i++; count++,
+               If[ass != "", ass = ass <> ", ";];
+               ass = ass <> CConversion`ToValidCSymbolString[name[i]];
+              ];
+           If[rows != count,
+              Print["Error: CreateParameterEnums: something is wrong with the indices: "
+                    <> ToString[rows] <> " != " <> ToString[count]];
+             ];
+           Return[ass];
+          ];
 
 CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     Module[{ass = "", i, j, count = 0},
