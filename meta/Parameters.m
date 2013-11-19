@@ -562,7 +562,7 @@ DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
 DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
 DecreaseIndices[a_]        := a;
 DecreaseIndices[SARAH`Delta[a_, b_]] :=
-    KroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
+    CConversion`KroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
 
 DecreaseIndexLiterals[expr_] :=
     DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,

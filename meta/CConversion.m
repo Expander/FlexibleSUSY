@@ -13,6 +13,7 @@ UNITMATRIX::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
+KroneckerDelta::usage="";
 IndexSum::usage="";
 
 CreateCType::usage="returns string with the C/C++ data type";
@@ -326,6 +327,10 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
    a valid C variable name and removing matrix indices *)
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
+
+Format[CConversion`KroneckerDelta[a_,b_],CForm] :=
+    Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
 
 Format[SARAH`L[x_],CForm] :=
     Format[ToValidCSymbol[SARAH`L[x /. FlexibleSUSY`GreekSymbol -> Identity]], OutputForm];
