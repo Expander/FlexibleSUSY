@@ -16,6 +16,7 @@ twoLoop::usage="";
 AbsSqr::usage="";
 KroneckerDelta::usage="";
 IndexSum::usage="";
+TensorProd::usgae="";
 
 CreateCType::usage="returns string with the C/C++ data type";
 

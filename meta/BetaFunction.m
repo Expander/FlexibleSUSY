@@ -101,6 +101,16 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
            Return[allBeta];
           ];
 
+ProtectTensorProducts[expr_, idx1_, idx2_] :=
+    expr //. { a_[idx1] b_[idx2] :> CConversion`TensorProd[a, b] };
+
+ProtectTensorProducts[expr_, sym_] := sym;
+
+ProtectTensorProducts[expr_, sym_[_]] := sym;
+
+ProtectTensorProducts[expr_, sym_[idx1_, idx2_]] :=
+    ProtectTensorProducts[expr, idx1, idx2];
+
 (* Converts SARAH beta functions to our own format.
  *
  * SARAH format:

@@ -84,6 +84,7 @@ TEST_SH += \
 endif
 
 TEST_META := \
+		test/test_BetaFunction.m \
 		test/test_CConversion.m \
 		test/test_Constraint.m \
 		test/test_EWSB.m \
