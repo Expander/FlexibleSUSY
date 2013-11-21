@@ -391,6 +391,12 @@ Format[SARAH`trace[HoldPattern[x_Symbol]],CForm] :=
 Format[SARAH`trace[HoldPattern[x_]],CForm] :=
     Format["(" <> ToString[CForm[HoldForm[x]]] <> ").trace()", OutputForm];
 
+Format[SARAH`ScalarProd[HoldPattern[x_Symbol], HoldPattern[y_]],CForm] :=
+    Format[ToString[CForm[HoldForm[x]]] <> ".dot(" <> ToString[CForm[HoldForm[y]]] <> ")", OutputForm];
+
+Format[SARAH`ScalarProd[HoldPattern[x_], HoldPattern[y_]],CForm] :=
+    Format["(" <> ToString[CForm[HoldForm[x]]] <> ").dot(" <> ToString[CForm[HoldForm[y]]] <> ")", OutputForm];
+
 (* Converts an expression to CForm and expands SARAH symbols
  *
  *   MatMul[A]      ->   A
