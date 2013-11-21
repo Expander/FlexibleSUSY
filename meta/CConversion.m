@@ -400,6 +400,22 @@ Format[SARAH`ScalarProd[HoldPattern[x_Symbol], HoldPattern[y_]],CForm] :=
 Format[SARAH`ScalarProd[HoldPattern[x_], HoldPattern[y_]],CForm] :=
     Format["(" <> ToString[CForm[HoldForm[x]]] <> ").dot(" <> ToString[CForm[HoldForm[y]]] <> ")", OutputForm];
 
+Format[CConversion`TensorProd[HoldPattern[x_Symbol],HoldPattern[y_Symbol]],CForm] :=
+    Format[ToString[CForm[HoldForm[x]]] <> "*" <>
+           ToString[CForm[HoldForm[y]]] <> ".transpose()", OutputForm];
+
+Format[CConversion`TensorProd[HoldPattern[x_Symbol],HoldPattern[y_]],CForm] :=
+    Format[ToString[CForm[HoldForm[x]]] <> "*(" <>
+           ToString[CForm[HoldForm[y]]] <> ").transpose()", OutputForm];
+
+Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_Symbol]],CForm] :=
+    Format["(" <> ToString[CForm[HoldForm[x]]] <> ")*" <>
+           ToString[CForm[HoldForm[y]]] <> ".transpose()", OutputForm];
+
+Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
+    Format["(" <> ToString[CForm[HoldForm[x]]] <> ")*(" <>
+           ToString[CForm[HoldForm[y]]] <> ").transpose()", OutputForm];
+
 (* Converts an expression to CForm and expands SARAH symbols
  *
  *   MatMul[A]      ->   A
