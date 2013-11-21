@@ -112,7 +112,7 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
  * @param betaFunctions list of SARAH-like formated beta functions
  *)
 ConvertSarahRGEs[betaFunctions_List] :=
-    Module[{lst = {}, beta, i, k, name, type},
+    Module[{lst = {}, beta, i, k, name, type, expr},
            For[i = 1, i <= Length[betaFunctions], i++,
                beta = betaFunctions[[i]];
                (* extract all beta functions and guess type *)
@@ -121,7 +121,8 @@ ConvertSarahRGEs[betaFunctions_List] :=
                    (* beta[[k,1]] == name, beta[[k,2]] == 1 loop beta function *)
                    name = beta[[k,1]];
                    type = GuessType[name];
-                   AppendTo[lst, BetaFunction[name, type, Drop[beta[[k]], 1]]];
+                   expr = Drop[beta[[k]], 1];
+                   AppendTo[lst, BetaFunction[name, type, expr]];
                   ];
               ];
            Return[lst];
