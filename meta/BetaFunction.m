@@ -102,7 +102,7 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
           ];
 
 ProtectTensorProducts[expr_, idx1_, idx2_] :=
-    expr //. { a_[idx1] b_[idx2] :> CConversion`TensorProd[a, b] };
+    expr //. { a_[idx1] b_[idx2] :> CConversion`TensorProd[a, b][idx1,idx2] };
 
 ProtectTensorProducts[expr_, sym_] := expr;
 
