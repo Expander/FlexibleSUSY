@@ -27,4 +27,10 @@ TestEquality[BetaFunction`Private`ProtectTensorProducts[f[y][i] F[a+b][j],i,j],
 TestEquality[BetaFunction`Private`ProtectTensorProducts[(f+g)[i] F[a+b][j],i,j],
              CConversion`TensorProd[f+g,F[a+b]][i,j]];
 
+TestEquality[BetaFunction`Private`ProtectTensorProducts[x[i](f[j]+g[j]),i,j],
+             CConversion`TensorProd[x,f+g][i,j]];
+
+TestEquality[BetaFunction`Private`ProtectTensorProducts[(x[i]+y[i])f[j],i,j],
+             CConversion`TensorProd[x+y,f][i,j]];
+
 PrintTestSummary[];
