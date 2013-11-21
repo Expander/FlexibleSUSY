@@ -269,7 +269,7 @@ CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`compl
            Return[{ass, 2}];
           ];
 
-CreateSetAssignment[name_, startIndex_, CConversion`ArrayType[CConversion`realScalarCType, rows_]] :=
+CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
                ass = ass <> name <> "(" <> ToString[i] <> ") = v(" <>
@@ -316,7 +316,7 @@ CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`c
            Return[{ass, 2}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ArrayType[CConversion`realScalarCType, rows_]] :=
+CreateDisplayAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
                ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
@@ -357,7 +357,7 @@ CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarC
     "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
     "), Im(" <> CConversion`ToValidCSymbolString[name] <> ")\"";
 
-CreateParameterNamesStr[name_, CConversion`ArrayType[CConversion`realScalarCType, rows_]] :=
+CreateParameterNamesStr[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
                If[ass != "", ass = ass <> ", ";];
@@ -401,7 +401,7 @@ CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCTyp
     CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
     CConversion`ToValidCSymbolString[Im[name]];
 
-CreateParameterEnums[name_, CConversion`ArrayType[CConversion`realScalarCType, rows_]] :=
+CreateParameterEnums[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
                If[ass != "", ass = ass <> ", ";];
