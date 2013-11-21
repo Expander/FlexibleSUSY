@@ -194,10 +194,13 @@ GetTypeFromDimension[sym_, {1}] :=
     GetTypeFromDimension[sym, {}];
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
-    If[True || IsRealParameter[sym],
-       CConversion`ArrayType[CConversion`realScalarCType, num],
-       CConversion`ArrayType[CConversion`complexScalarCType, num]
-      ];
+    Module[{scalarType},
+           scalarType = If[True || IsRealParameter[sym],
+                           CConversion`realScalarCType,
+                           CConversion`complexScalarCType
+                          ];
+           CConversion`VectorType[scalarType, num]
+          ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
     If[True || IsRealParameter[sym],
