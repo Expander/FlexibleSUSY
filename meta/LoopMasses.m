@@ -242,7 +242,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
-            selfEnergyMatrixType, eigenVectorType},
+            selfEnergyMatrixType, eigenArrayType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -251,7 +251,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            selfEnergyMatrixType = mixingMatrixType;
-           eigenVectorType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
+           eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            (* create diagonalisation code snippet *)
            If[Head[mixingMatrix] === List,
               U = ToValidCSymbolString[mixingMatrix[[1]]];
@@ -301,7 +301,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                                   If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
                                   "const " <> selfEnergyMatrixType <> " M_1loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
-                                  eigenVectorType <> " eigen_values;\n" <>
+                                  eigenArrayType <> " eigen_values;\n" <>
                                   diagSnippet
                                  ] <>
                        "}\n";
@@ -317,7 +317,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
-            eigenVectorType},
+            eigenArrayType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -330,7 +330,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
-           eigenVectorType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
+           eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
@@ -365,7 +365,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                           IndentText["const " <> selfEnergyMatrixType <> " M_1loop(M_tree + delta_M);\n"];
                 ];
               result = result <>
-                       IndentText[eigenVectorType <> " eigen_values;\n"];
+                       IndentText[eigenArrayType <> " eigen_values;\n"];
               If[Head[mixingMatrix] === List,
                  (* two mixing matrixs => SVD *)
                  U = ToValidCSymbolString[mixingMatrix[[1]]];

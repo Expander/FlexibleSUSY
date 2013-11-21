@@ -351,7 +351,7 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            dimStr = ToString[dim];
            If[dim == 1,
               returnType = CConversion`ScalarType[CConversion`realScalarCType];,
-              returnType = CConversion`VectorType[CConversion`realScalarCType, dim];
+              returnType = CConversion`ArrayType[CConversion`realScalarCType, dim];
              ];
            CConversion`CreateInlineGetter[massESSymbolStr, returnType]
           ];
@@ -662,7 +662,7 @@ CreatePhysicalMassDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
            dimStr = ToString[dim];
            If[dim == 1,
               returnType = CConversion`ScalarType[CConversion`realScalarCType];,
-              returnType = CConversion`VectorType[CConversion`realScalarCType, dim];
+              returnType = CConversion`ArrayType[CConversion`realScalarCType, dim];
              ];
            result = CreateCType[returnType] <> " " <>
                     ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> ";\n";
@@ -673,7 +673,7 @@ CreatePhysicalMassInitialization[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", massESSymbol, dim, matrixType},
            massESSymbol = GetMassEigenstate[massMatrix];
            dim = GetDimension[massESSymbol];
-           matrixType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
+           matrixType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            result = ", " <> ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            If[dim == 1,
               result = result <> "(0)";,
@@ -707,7 +707,7 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = GetDimension[massESSymbol];
-           massESType = CreateCType[CConversion`VectorType[CConversion`realScalarCType, dim]];
+           massESType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            If[dim == 1,
               result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = 0.0;\n";
               ,

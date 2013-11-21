@@ -130,8 +130,8 @@ ConvertSarahRGEs[betaFunctions_List] :=
 (* count number of parameters in beta functions list *)
 CountNumberOfParameters[CConversion`ScalarType[CConversion`realScalarCType]] := 1;
 CountNumberOfParameters[CConversion`ScalarType[CConversion`complexScalarCType]] := 2;
-CountNumberOfParameters[CConversion`VectorType[CConversion`realScalarCType, entries_]] := entries;
-CountNumberOfParameters[CConversion`VectorType[CConversion`complexScalarCType, entries_]] := 2 * entries;
+CountNumberOfParameters[CConversion`ArrayType[CConversion`realScalarCType, entries_]] := entries;
+CountNumberOfParameters[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] := 2 * entries;
 CountNumberOfParameters[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] := rows * cols;
 CountNumberOfParameters[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] := rows * cols;
 

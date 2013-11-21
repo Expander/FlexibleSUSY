@@ -2,7 +2,7 @@
 BeginPackage["CConversion`", {"SARAH`", "TextFormatting`"}];
 
 MatrixType::usage="";
-VectorType::usage="";
+ArrayType::usage="";
 ScalarType::usage="";
 
 integerScalarCType::usage="represents an integer C type";
@@ -90,10 +90,10 @@ CreateCType[CConversion`ScalarType[realScalarCType]] :=
 CreateCType[CConversion`ScalarType[complexScalarCType]] :=
     "std::complex<double>";
 
-CreateCType[CConversion`VectorType[realScalarCType, entries_]] :=
+CreateCType[CConversion`ArrayType[realScalarCType, entries_]] :=
     EigenArray["double", ToString[entries]];
 
-CreateCType[CConversion`VectorType[complexScalarCType, entries_]] :=
+CreateCType[CConversion`ArrayType[complexScalarCType, entries_]] :=
     EigenArray["std::complex<double>", ToString[entries]];
 
 CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
@@ -108,8 +108,8 @@ CreateGetterReturnType[type_] :=
 CreateGetterReturnType[CConversion`ScalarType[type_]] :=
     CreateCType[CConversion`ScalarType[type]];
 
-CreateGetterReturnType[CConversion`VectorType[type_, entries_]] :=
-    "const " <> CreateCType[CConversion`VectorType[type, entries]] <> "&";
+CreateGetterReturnType[CConversion`ArrayType[type_, entries_]] :=
+    "const " <> CreateCType[CConversion`ArrayType[type, entries]] <> "&";
 
 CreateGetterReturnType[CConversion`MatrixType[type_, dim1_, dim2_]] :=
     "const " <> CreateCType[CConversion`MatrixType[type, dim1, dim2]] <> "&";
@@ -151,8 +151,8 @@ CreateDefaultConstructor[parameter_, type_] :=
 CreateDefaultConstructor[parameter_String, CConversion`ScalarType[_]] :=
     parameter <> "(0)";
 
-CreateDefaultConstructor[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> "(" <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero())";
+CreateDefaultConstructor[parameter_String, CConversion`ArrayType[type_, entries_]] :=
+    parameter <> "(" <> CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero())";
 
 CreateDefaultConstructor[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> "(" <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero())";
@@ -163,8 +163,8 @@ CreateDefaultDefinition[parameter_, type_] :=
 CreateDefaultDefinition[parameter_String, CConversion`ScalarType[type_]] :=
     CreateCType[CConversion`ScalarType[type]] <> " " <> parameter <> " = 0";
 
-CreateDefaultDefinition[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    CreateCType[CConversion`VectorType[type, entries]] <> " " <> parameter;
+CreateDefaultDefinition[parameter_String, CConversion`ArrayType[type_, entries_]] :=
+    CreateCType[CConversion`ArrayType[type, entries]] <> " " <> parameter;
 
 CreateDefaultDefinition[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     CreateCType[CConversion`MatrixType[type, rows, cols]] <> " " <> parameter;
@@ -181,8 +181,8 @@ SetToDefault[parameter_String, CConversion`ScalarType[realScalarCType]] :=
 SetToDefault[parameter_String, CConversion`ScalarType[complexScalarCType]] :=
     parameter <> " = " <> CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(0.,0.);\n";
 
-SetToDefault[parameter_String, CConversion`VectorType[type_, entries_]] :=
-    parameter <> " = " <> CreateCType[CConversion`VectorType[type, entries]] <> "::Zero();\n";
+SetToDefault[parameter_String, CConversion`ArrayType[type_, entries_]] :=
+    parameter <> " = " <> CreateCType[CConversion`ArrayType[type, entries]] <> "::Zero();\n";
 
 SetToDefault[parameter_String, CConversion`MatrixType[type_, rows_, cols_]] :=
     parameter <> " = " <> CreateCType[CConversion`MatrixType[type, rows, cols]] <> "::Zero();\n";
@@ -196,7 +196,7 @@ CreateUnitMatrix[type_] :=
 
 CreateUnitMatrix[CConversion`ScalarType[_]] := 1;
 
-CreateUnitMatrix[CConversion`VectorType[__]] := 1;
+CreateUnitMatrix[CConversion`ArrayType[__]] := 1;
 
 CreateUnitMatrix[CConversion`MatrixType[_, rows_, rows_]] :=
     CConversion`UNITMATRIX[rows];
