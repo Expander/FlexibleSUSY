@@ -104,9 +104,9 @@ CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
 ProtectTensorProducts[expr_, idx1_, idx2_] :=
     expr //. { a_[idx1] b_[idx2] :> CConversion`TensorProd[a, b] };
 
-ProtectTensorProducts[expr_, sym_] := sym;
+ProtectTensorProducts[expr_, sym_] := expr;
 
-ProtectTensorProducts[expr_, sym_[_]] := sym;
+ProtectTensorProducts[expr_, sym_[_]] := expr;
 
 ProtectTensorProducts[expr_, sym_[idx1_, idx2_]] :=
     ProtectTensorProducts[expr, idx1, idx2];
@@ -132,6 +132,8 @@ ConvertSarahRGEs[betaFunctions_List] :=
                    name = beta[[k,1]];
                    type = GuessType[name];
                    expr = Drop[beta[[k]], 1];
+                   (* protect tensor products *)
+                   expr = (ProtectTensorProducts[#, name])& /@ expr;
                    AppendTo[lst, BetaFunction[name, type, expr]];
                   ];
               ];
