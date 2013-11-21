@@ -57,6 +57,8 @@ form sum[index,1,3,expression]"
 
 MakeUnique::usage="create a unique symbol from a string";
 
+ProtectTensorProducts::usage="";
+
 Begin["`Private`"];
 
 (* This rule is essential for the ExpandSums[] function.
@@ -584,6 +586,27 @@ ExpandSums[expr_ /; !FreeQ[expr,SARAH`ThetaStep], variable_String,
 ExpandSums[expr_, variable_String, type_:CConversion`ScalarType[CConversion`complexScalarCType],
            initialValue_String:""] :=
     variable <> " += " <> RValueToCFormString[expr] <> ";\n";
+
+ProtectTensorProducts[expr_, idx1_, idx2_] :=
+    Expand[expr] //.
+    { a_[idx1] b_[idx2] :> CConversion`TensorProd[a, b][idx1,idx2],
+      Susyno`LieGroups`conj[a_][idx1] b_[idx2] :>
+      CConversion`TensorProd[Susyno`LieGroups`conj[a], b][idx1,idx2],
+      a_[idx1] Susyno`LieGroups`conj[b_][idx2] :>
+      CConversion`TensorProd[a, Susyno`LieGroups`conj[b]][idx1,idx2]
+    } //.
+    { CConversion`TensorProd[a_, b_][i_,k_] + CConversion`TensorProd[a_, c_][i_,k_] :>
+      CConversion`TensorProd[a, b+c][i,k],
+      CConversion`TensorProd[a_, b_][i_,k_] + CConversion`TensorProd[c_, b_][i_,k_] :>
+      CConversion`TensorProd[a+c, b][i,k]
+    };
+
+ProtectTensorProducts[expr_, sym_] := expr;
+
+ProtectTensorProducts[expr_, sym_[_]] := expr;
+
+ProtectTensorProducts[expr_, sym_[idx1_, idx2_]] :=
+    ProtectTensorProducts[expr, idx1, idx2];
 
 End[];
 
