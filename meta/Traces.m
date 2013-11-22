@@ -13,11 +13,19 @@ rules to replace the traces by their C/C++ variables.";
 
 Begin["`Private`"];
 
+ConvertToScalar[expr_] :=
+    expr /. {
+        SARAH`MatMul[a_, b_] :> SARAH`ScalarProd[a, b],
+        SARAH`MatMul[a_, b__] :> SARAH`ScalarProd[a, SARAH`MatMul[b]]
+            };
+
 CreateTraceAbbr[abbrs_] :=
     Module[{def = "", i, j, name, expr, rules = {}},
            For[i = 1, i <= Length[abbrs], i++,
                For[j = 1, j <= Length[abbrs[[i]]], j++,
                    {name, expr} = abbrs[[i,j]];
+                   (* replace MatMul by ScalarProd *)
+                   expr = ConvertToScalar[expr];
                    AppendTo[rules, Rule[name, ToValidCSymbol[name]]];
                    def = def <> "const double " <> ToValidCSymbolString[name]
                          <> " = " <> RValueToCFormString[expr] <> ";\n";
