@@ -33,6 +33,24 @@ CreateValidAnomDimName[names_] :=
            Quit[1];
           ];
 
+GuessType[{field1_, field2_}] :=
+    Module[{f1, f2, dim1, dim2, type},
+           f1 = GetHead[field1];
+           f2 = GetHead[field2];
+           dim1 = TreeMasses`GetDimension[f1];
+           dim2 = TreeMasses`GetDimension[f2];
+           Which[dim1 > 1 && dim2 > 1,
+                 type = CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2];,
+                 dim1 > 1,
+                 type = CConversion`VectorType[CConversion`realScalarCType, dim1];,
+                 dim2 > 1,
+                 type = CConversion`VectorType[CConversion`realScalarCType, dim2];,
+                 True,
+                 type = CConversion`ScalarType[CConversion`realScalarCType];
+                ];
+           Return[type];
+          ];
+
 (* Converts SARAH anomalous dimensions
  *
  * SARAH format:
@@ -44,16 +62,12 @@ CreateValidAnomDimName[names_] :=
  * @param gij list of SARAH-like formated anomalous dimensions
  *)
 ConvertSarahAnomDim[gij_List] :=
-    Module[{lst = {}, adim, i, name, type, dim, expr},
+    Module[{lst = {}, adim, i, name, type, expr},
            For[i = 1, i <= Length[gij], i++,
                adim = gij[[i]];
                (* adim[[1]] == {name1,name2}, adim[[2]] == 1-loop anom. dim *)
                name = CreateValidAnomDimName[adim[[1]]];
-               If[FreeQ[adim[[2]], a_[Susyno`LieGroups`i1,SARAH`i2]],
-                  type = CConversion`ScalarType[CConversion`realScalarCType];,
-                  dim = TreeMasses`GetDimension[adim[[1,1]]];
-                  type = CConversion`MatrixType[CConversion`realScalarCType, dim, dim];
-                 ];
+               type = GuessType[adim[[1]]];
                expr = Drop[adim, 1];
                AppendTo[lst, AnomalousDimension[name, type, expr]];
               ];
