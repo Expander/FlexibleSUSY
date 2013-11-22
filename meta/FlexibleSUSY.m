@@ -988,7 +988,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
-                           Parameters`ApplyGUTNormalization[];
+                           Parameters`ApplyGUTNormalization[] /.
+                           SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx,start,stop}];
            If[Head[ewsbEquations] =!= List,
               Print["Error: Could not find EWSB equations for eigenstates ",
                     FSEigenstates];
