@@ -231,13 +231,6 @@ void Symmetrize(DoubleMatrix& m)
          m(i,k) = m(k,i);
 }
 
-namespace {
-   double ZeroSqrt_d(double x)
-   {
-      return (x > 0.0 ? std::sqrt(x) : 0.0);
-   }
-}
-
 DoubleVector ZeroSqrt(const DoubleVector& x)
 {
    return x.apply(ZeroSqrt_d);

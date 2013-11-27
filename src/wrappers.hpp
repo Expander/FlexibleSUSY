@@ -216,6 +216,19 @@ inline double ZeroSqrt(double x)
    return (x > 0.0 ? std::sqrt(x) : 0.0);
 }
 
+namespace {
+  inline double ZeroSqrt_d(double x)
+  {
+    return ZeroSqrt(x);
+  }
+}
+
+template <typename Derived>
+Derived ZeroSqrt(const Eigen::ArrayBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(ZeroSqrt_d));
+}
+
 }
 
 #endif
