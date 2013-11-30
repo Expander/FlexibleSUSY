@@ -11,6 +11,8 @@ realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
 UNITMATRIX::usage="";
+ZEROMATRIX::usage="";
+ZEROVECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
