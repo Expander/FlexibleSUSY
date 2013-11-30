@@ -62,6 +62,9 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
                            { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
                              a_[Susyno`LieGroups`i1] :> a,
                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
+            If[oneLoopBeta === 0,
+               oneLoopBeta = CConversion`CreateZero[type];
+              ];
            oneLoopBetaStr = RValueToCFormString[oneLoopBeta];
            beta1L        = beta1L <> betaName <> " = " <> oneLoopBetaStr <> ";\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
@@ -69,8 +72,10 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
                              { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
                                a_[Susyno`LieGroups`i1] :> a,
                                a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
-              twoLoopBetaStr = RValueToCFormString[twoLoopBeta];
-              beta2L     = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
+              If[twoLoopBeta =!= 0,
+                 twoLoopBetaStr = RValueToCFormString[twoLoopBeta];
+                 beta2L = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
+                ];
               ];
            localDecl     = localDecl <> CreateDefaultDefinition[betaName, type] <> ";\n";
            Return[{localDecl, beta1L, beta2L}];
