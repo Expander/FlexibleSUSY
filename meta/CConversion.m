@@ -38,6 +38,9 @@ GetHead[s[a][b]]  ->  s";
 CreateUnitMatrix::usage="creates a unit matrix for a given parameter
 type";
 
+CreateZero::usage="creates a zero matrix for a given parameter
+type";
+
 CreateGetterPrototype::usage="creates C/C++ getter prototype";
 
 CreateInlineSetter::usage="creates C/C++ inline setter"
@@ -229,6 +232,23 @@ CreateUnitMatrix[CConversion`VectorType[__]] := 1;
 
 CreateUnitMatrix[CConversion`MatrixType[_, rows_, rows_]] :=
     CConversion`UNITMATRIX[rows];
+
+CreateZero[type_] :=
+    Block[{},
+          Print["Error: CreateZero: can't create zero for type: ", type];
+          Quit[1];
+         ];
+
+CreateZero[CConversion`ScalarType[_]] := 0;
+
+CreateZero[CConversion`ArrayType[_, entries_]] :=
+    CConversion`ZEROARRAY[entries];
+
+CreateZero[CConversion`VectorType[_, entries_]] :=
+    CConversion`ZEROVECTOR[entries];
+
+CreateZero[CConversion`MatrixType[_, rows_, rows_]] :=
+    CConversion`ZEROMATRIX[rows];
 
 MakeUnique[name_String] :=
     Module[{appendix = ""},
