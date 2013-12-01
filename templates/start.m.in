@@ -9,6 +9,11 @@ Needs["FlexibleSUSY`", "FlexibleSUSY.m"];
 
 workingDirectory = Directory[];
 $sarahOutputDir = FileNameJoin[{workingDirectory, "Output"}];
+SARAH`SARAH[InputDirectories] = {
+    ToFileName[{$sarahDir, "Models"}],
+    FileNameJoin[{workingDirectory, "sarah"}]
+};
+
 Print["Current working directory: ", workingDirectory];
 Print["SARAH output directory: ", $sarahOutputDir];
 
