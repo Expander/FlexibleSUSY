@@ -9,8 +9,18 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadUnfixedParameters::usage="";
+StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
+
+StringJoinWithSeparator[strings_List, separator_String] :=
+    Module[{result = "", i},
+           For[i = 1, i <= Length[strings], i++,
+               If[i > 1, result = result <> separator;];
+               result = result <> ToString[strings[[i]]];
+              ];
+           Return[result];
+          ];
 
 (*
  * @brief Replaces tokens in files.

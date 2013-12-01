@@ -2,10 +2,13 @@
 BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
+FS`Authors = {"P. Athron", "J. Park", "D. Stöckinger", "A. Voigt"};
+FS`Years   = {2013};
 
 Print["*****************************************************"];
 Print["FlexibleSUSY ", FS`Version];
-Print["by P. Athron, J. Park, D. Stöckinger, A. Voigt, 2013"];
+Print["by " <> WriteOut`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
+      WriteOut`StringJoinWithSeparator[FS`Years, ", "]];
 Print["*****************************************************"];
 Print[""];
 
