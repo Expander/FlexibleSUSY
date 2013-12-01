@@ -3,6 +3,9 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Bugfix (commit 58f8f9): Convert beta functions which are identical
    zero to the data type of the corresponding parameter.
 
+ * Bugfix (commit e5f937): Correcting check of SARAH patch level
+   against minimum required patch level.
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
