@@ -59,7 +59,7 @@ RunCPPProgram[{preface_String, expr_String}, fileName_String:"tmp.cpp"] :=
               Return[{"", code}];
              ];
            Run["./a.out > a.out.log"];
-           If[errorCode != 0, Return[""]];
+           If[errorCode != 0, Return[{"", code}]];
            If[MemberQ[FileNames[], "a.out.log"],
               output = Import["a.out.log"];,
               Print["Error: output file \"a.out.log\" not found"];
