@@ -95,7 +95,7 @@ TestEquality[GetHead[f[x[y]]], f];
 
 Print["testing ExpandSums[] ..."];
 
-TestCPPCode[{"", "int result = 0;" <> ExpandSums[1, "result"]}, "1", "int", "1"];
+TestCPPCode[{"", "int result = 0;" <> ExpandSums[1, "result"]}, "result", "int", "1"];
 TestCPPCode[{"", "int a = 9;" <>
              "int result = 0;" <>
              ExpandSums[a, "result", ScalarType[integerScalarCType]]}, "result", "int", "9"];
