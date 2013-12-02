@@ -25,8 +25,8 @@ TestEquality[val_, expr_, msg_:""] :=
       ];
 
 TestCPPCode[{preface_String, expr_String}, value_String, type_String, expected_String] :=
-    Module[{code = expr, output, sourceCode},
-           code = code <> "\n" <>
+    Module[{code, output, sourceCode},
+           code = expr <> "\n" <>
                   type <> " result__ = " <> value <> ";\n" <>
                   "std::cout << result__ << std::endl;";
            {output, sourceCode} = RunCPPProgram[{preface, code}];
