@@ -11,19 +11,23 @@ ce6ssm_specgen="/home/avoigt/tu/research/cE6SSM_SpecGen/softsusy.x"
 fs_specgen="${BASEDIR}/models/TestE6SSM/run_TestE6SSM.x"
 random_float="${BASEDIR}/random_float.x"
 slha_template="${BASEDIR}/ce6ssm_generic.slha2"
+slha_file="${BASEDIR}/${slha_template}.point"
+
+out_ce6ssm="out.spc.ce6ssm"
+out_fse6ssm="out.spc.fse6ssm"
 
 while [ true ]
 do
     # create CE6SSM point
-    lambda=`$random_float 0.1 0.5`
-    kappa=`$random_float 0.1 0.5`
-    tan_beta=`$random_float 5 20`
+    lambda=`$random_float 0.1 0.4`
+    kappa=`$random_float 0.1 0.4`
+    tan_beta=`$random_float 7 15`
     vs=`$random_float 1000 10000`
     muPrime="10000"
     BmuPrime="10000"
     solution="1"
 
-    rm -f out.spc
+    rm -f $out_ce6ssm $out_fse6ssm
 
     # run CE6SSM spectrum generator
     error="0"
@@ -37,7 +41,7 @@ do
         --kappa3 $kappa \
         --vs $vs \
         --mu-prime $muPrime \
-        --output-file out.spc > /dev/null
+        --output-file $out_ce6ssm > /dev/null
 
     error="$?"
 
@@ -45,11 +49,9 @@ do
         continue
     fi
 
-    m0=` awk '{ if ($2 ~ /m0$/ ) print $1 }' out.spc`
-    m12=`awk '{ if ($2 ~ /M12$/) print $1 }' out.spc`
-    a0=` awk '{ if ($2 ~ /A$/  ) print $1 }' out.spc`
-
-    slha_file="${BASEDIR}/${slha_template}.point"
+    m0=` awk '{ if ($2 ~ /m0$/ ) print $1 }' $out_ce6ssm`
+    m12=`awk '{ if ($2 ~ /M12$/) print $1 }' $out_ce6ssm`
+    a0=` awk '{ if ($2 ~ /A$/  ) print $1 }' $out_ce6ssm`
 
     cp $slha_template $slha_file
     echo "Block MINPAR"     >> $slha_file
@@ -66,7 +68,7 @@ do
 
     $fs_specgen \
         --slha-input-file=$slha_file \
-        --slha-output-file=out.spc > /dev/null
+        --slha-output-file=$out_fse6ssm > /dev/null
 
     error="$?"
 
