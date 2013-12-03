@@ -6,6 +6,9 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Bugfix (commit e5f937): Correcting check of SARAH patch level
    against minimum required patch level.
 
+ * Bugfix (commit e2d43b): Adapting free phases of fermion fields if
+   mass is less than zero.
+
  * Set minimum required SARAH version to 4.0.3, because it includes a
    bug fix in the index structure of the charged Higgs self-energies.
 
