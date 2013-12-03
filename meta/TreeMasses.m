@@ -611,7 +611,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle, dim},
+            inputParsDecl, expr, particle, dim, phase},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -627,6 +627,16 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
                      RValueToCFormString[expr] <> ";\n";,
               body = inputParsDecl <> "\n" <> ev <>
                      ".setConstant(" <> RValueToCFormString[expr] <> ");\n";
+             ];
+           phase = Parameters`GetPhase[massESSymbol];
+           If[IsFermion[massESSymbol] && phase =!= Null &&
+              !IsMassless[massESSymbol],
+              particle = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
+              body = body <> "\n" <> "if (" <> ev <> " < 0.) {\n" <>
+                     IndentText[particle <> " *= -1;\n" <>
+                                CConversion`ToValidCSymbolString[phase] <> " = " <>
+                                CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+                                "(0., 1.);"] <> "\n}\n";
              ];
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
               !IsMassless[massESSymbol],
