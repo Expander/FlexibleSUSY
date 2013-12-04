@@ -56,17 +56,17 @@ do
 
     cp $slha_template $slha_file
     echo "Block MINPAR"     >> $slha_file
-    echo "   1   $m0"       >> $slha_file
-    echo "   2   $m12"      >> $slha_file
-    echo "   3   $tan_beta" >> $slha_file
-    echo "   5   $a0"       >> $slha_file
+    echo "   1   $m0        # m0"        >> $slha_file
+    echo "   2   $m12       # m12"       >> $slha_file
+    echo "   3   $tan_beta  # tan(beta)" >> $slha_file
+    echo "   5   $a0        # a0"        >> $slha_file
     echo "Block EXTPAR"     >> $slha_file
-    echo "  61   $lambda"   >> $slha_file
-    echo "  62   $kappa"    >> $slha_file
-    echo "  63   $muPrime"  >> $slha_file
-    echo "  64   $BmuPrime" >> $slha_file
-    echo "  65   $vs"       >> $slha_file
-    echo "  66   $lambda12" >> $slha_file
+    echo "  61   $lambda    # lambda"    >> $slha_file
+    echo "  62   $kappa     # kappa"     >> $slha_file
+    echo "  63   $muPrime   # mu'"       >> $slha_file
+    echo "  64   $BmuPrime  # Bmu'"      >> $slha_file
+    echo "  65   $vs        # vs"        >> $slha_file
+    echo "  66   $lambda12  # lambda12"  >> $slha_file
 
     $fs_specgen \
         --slha-input-file=$slha_file \
