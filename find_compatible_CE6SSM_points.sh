@@ -20,6 +20,7 @@ while [ true ]
 do
     # create CE6SSM point
     lambda=`$random_float 0.1 0.4`
+    lambda12="$lambda"
     kappa=`$random_float 0.1 0.4`
     tan_beta=`$random_float 7 15`
     vs=`$random_float 1000 10000`
@@ -33,8 +34,8 @@ do
     error="0"
     $ce6ssm_specgen --brief \
         --tan-beta $tan_beta \
-        --lambda1 $lambda \
-        --lambda2 $lambda \
+        --lambda1 $lambda12 \
+        --lambda2 $lambda12 \
         --lambda3 $lambda \
         --kappa1 $kappa \
         --kappa2 $kappa \
@@ -65,6 +66,7 @@ do
     echo "  63   $muPrime"  >> $slha_file
     echo "  64   $BmuPrime" >> $slha_file
     echo "  65   $vs"       >> $slha_file
+    echo "  66   $lambda12" >> $slha_file
 
     $fs_specgen \
         --slha-input-file=$slha_file \
@@ -77,6 +79,7 @@ do
     fi
 
     printf "%10g " "$lambda"
+    printf "%10g " "$lambda12"
     printf "%10g " "$kappa"
     printf "%10g " "$tan_beta"
     printf "%10g " "$vs"
