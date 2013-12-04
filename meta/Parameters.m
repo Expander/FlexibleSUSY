@@ -218,6 +218,9 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
+GetType[FlexibleSUSY`M[sym_]] :=
+    GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
+
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
