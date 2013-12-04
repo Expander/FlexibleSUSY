@@ -89,7 +89,8 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     errmax  /= eps;
     if (!std::isfinite(errmax)) {
 #ifdef VERBOSE
-       ERROR("odeStepper: non-perturbative running at x = " << *x);
+       ERROR("odeStepper: non-perturbative running at x = " << *x
+             << " (" << std::exp(*x) << " GeV)");
 #endif
        throw NonPerturbativeRunningError(*x);
     }
@@ -97,13 +98,13 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     htemp = SAFETY * h * pow(errmax, PSHRNK);
     h = (h >= 0.0 ? max(htemp ,0.1 * h) : min(htemp, 0.1 * h));
     xnew = (*x) + h;
-    if (xnew == *x)
-      {
+    if (xnew == *x) {
 #ifdef VERBOSE
-         ERROR("At x = " << *x << ",stepsize underflow in odeStepper");
+       ERROR("At x = " << *x << " (" << std::exp(*x) << " GeV) "
+             "stepsize underflow in odeStepper");
 #endif
-	throw NonPerturbativeRunningError(*x);
-      }
+       throw NonPerturbativeRunningError(*x);
+    }
   }
   if (errmax > ERRCON) *hnext = SAFETY * h * pow(errmax,PGROW);
   else *hnext = 5.0 * h;
