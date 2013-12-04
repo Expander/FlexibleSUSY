@@ -13,7 +13,8 @@ EXTPAR = { {61, LambdaInput},
            {62, KappaInput},
            {63, muPrimeInput},
            {64, BmuPrimeInput},
-           {65, vSInput}
+           {65, vSInput},
+           {66, Lambda12Input}
          };
 
 DefaultParameterPoint = {
@@ -25,7 +26,8 @@ DefaultParameterPoint = {
     {KappaInput, 0.1},
     {muPrimeInput, 400},
     {BmuPrimeInput, 40000},
-    {vSInput, 1000}
+    {vSInput, 1000},
+    {Lambda12Input, 0.1}
 };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };
@@ -35,7 +37,9 @@ SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
-    {vS, vSInput}
+   {B[muPrime], BmuPrimeInput},
+   {muPrime, muPrimeInput},
+   {vS, vSInput}
 };
 
 HighScale = g1 == g2;
@@ -60,17 +64,15 @@ HighScaleInput={
    {mHPrime2, m0^2},
    {mHBarPrime2, m0^2},
    {\[Kappa], UNITMATRIX[3] KappaInput},
-   {\[Lambda], UNITMATRIX[2] LambdaInput},
+   {\[Lambda], UNITMATRIX[2] Lambda12Input},
    {\[Lambda]3, LambdaInput},
    {T[\[Kappa]], UNITMATRIX[3] Azero KappaInput},
-   {T[\[Lambda]], UNITMATRIX[2] Azero LambdaInput},
+   {T[\[Lambda]], UNITMATRIX[2] Azero Lambda12Input},
    {T[\[Lambda]3], Azero LambdaInput},
    {MassB, m12},
    {MassWB,m12},
    {MassG,m12},
-   {MassU,m12},
-   {B[muPrime], BmuPrimeInput},
-   {muPrime, muPrimeInput}
+   {MassU,m12}
 };
 
 LowScale = SM[MZ];
