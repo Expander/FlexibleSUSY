@@ -23,6 +23,8 @@ SaveParameterLocally::usage="Save parameters in local variables";
 RestoreParameter::usage="Restore parameters from local variables";
 
 GetType::usage="";
+GetPhase::usage="";
+HasPhase::usage="";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -183,6 +185,14 @@ IsRealExpression[sum[index_, start_, stop_, expr_]] :=
     IsRealExpression[expr];
 
 IsRealExpression[otherwise_] := False;
+
+HasPhase[particle_] :=
+    MemberQ[#[[1]]& /@ SARAH`ParticlePhases, particle];
+
+GetPhase[particle_ /; HasPhase[particle]] :=
+    Cases[SARAH`ParticlePhases, {particle, phase_} :> phase][[1]];
+
+GetPhase[_] := Null;
 
 GetTypeFromDimension[sym_, {}] :=
     If[True || IsRealParameter[sym],
