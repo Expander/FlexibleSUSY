@@ -49,13 +49,25 @@ ReplaceInFiles[files_List, replacementList_List] :=
              ];
           ];
 
+TransposeIfVector[parameter_, CConversion`ArrayType[__]] :=
+    SARAH`Tp[parameter];
+
+TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
+    SARAH`Tp[parameter];
+
+TransposeIfVector[parameter_, _] := parameter;
+
 PrintParameter[Null, streamName_String] := "";
 
 PrintParameter[parameter_, streamName_String] :=
-    Module[{parameterName},
-           parameterName = CConversion`ToValidCSymbolString[parameter /. a_[Susyno`LieGroups`i1,SARAH`i2] :> a];
+    Module[{parameterName, parameterNameWithoutIndices, expr, type},
+           parameterNameWithoutIndices = parameter /.
+                                         a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
+           parameterName = CConversion`ToValidCSymbolString[parameterNameWithoutIndices];
+           type = Parameters`GetType[parameterNameWithoutIndices];
+           expr = TransposeIfVector[parameterNameWithoutIndices, type];
            Return[streamName <> " << \"" <> parameterName <> " = \" << " <>
-                  parameterName <> " << '\\n';\n"];
+                  CConversion`RValueToCFormString[expr] <> " << '\\n';\n"];
           ];
 
 PrintParameters[parameters_List, streamName_String] :=
