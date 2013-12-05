@@ -28,7 +28,7 @@ void Fmssmn<Lattice>::calculate_spectrum()
 {
 }
 
-void Fmssmn<Lattice>::print(std::ostream& s) const
+void Fmssmn<Lattice>::print(std::ostream& /* s */) const
 {
 }
 
