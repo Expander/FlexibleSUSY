@@ -12,6 +12,8 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Set minimum required SARAH version to 4.0.3, because it includes a
    bug fix in the index structure of the charged Higgs self-energies.
 
+ * Allow setting of single matrix/ vector elements in the constraints.
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.

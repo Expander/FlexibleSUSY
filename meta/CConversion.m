@@ -44,8 +44,12 @@ type";
 CreateGetterPrototype::usage="creates C/C++ getter prototype";
 
 CreateInlineSetter::usage="creates C/C++ inline setter"
+CreateInlineElementSetter::usage="creates C/C++ inline setter for a
+vector or matrix element";
 
 CreateInlineGetter::usage="creates C/C++ inline getter"
+CreateInlineElementGetter::usage="creates C/C++ inline getter for a
+vector or matrix element";
 
 CreateGetterReturnType::usage="creates C/C++ getter return type";
 
@@ -138,6 +142,33 @@ CreateGetterReturnType[CConversion`MatrixType[type_, dim1_, dim2_]] :=
 CreateSetterInputType[type_] :=
     CreateGetterReturnType[type];
 
+(* Creates a C++ inline element setter *)
+CreateInlineElementSetter[parameter_String, elementType_String, dim_Integer] :=
+    "void set_" <> parameter <> "(int i, " <> elementType <>
+    " value) { " <> parameter <> "(i) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer] :=
+    "void set_" <> parameter <> "(int i, int k, " <> elementType <>
+    " value) { " <> parameter <> "(i,k) = value; }\n";
+
+CreateInlineElementSetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_]] :=
+    CreateInlineElementSetter[parameter, "double", entries];
+
+CreateInlineElementSetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_]] :=
+    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
+
+CreateInlineElementSetter[parameter_String, CConversion`VectorType[realScalarCType, entries_]] :=
+    CreateInlineElementSetter[parameter, "double", entries];
+
+CreateInlineElementSetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_]] :=
+    CreateInlineElementSetter[parameter, "const std::complex<double>&", entries];
+
+CreateInlineElementSetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
+    CreateInlineElementSetter[parameter, "double", dim1, dim2];
+
+CreateInlineElementSetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
+    CreateInlineElementSetter[parameter, "const std::complex<double>&", dim1, dim2];
+
 (* Creates a C++ setter *)
 CreateInlineSetter[parameter_String, type_String] :=
     "void set_" <> parameter <> "(" <> type <>
@@ -146,6 +177,33 @@ CreateInlineSetter[parameter_String, type_String] :=
 
 CreateInlineSetter[parameter_String, type_] :=
     CreateInlineSetter[parameter, CreateSetterInputType[type]];
+
+(* Creates a C++ inline element getter *)
+CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer] :=
+    elementType <> " get_" <> parameter <> "(int i) const" <>
+    " { return " <> parameter <> "(i); }\n";
+
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer] :=
+    elementType <> " get_" <> parameter <> "(int i, int k) const" <>
+    " { return " <> parameter <> "(i,k); }\n";
+
+CreateInlineElementGetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_]] :=
+    CreateInlineElementGetter[parameter, "double", entries];
+
+CreateInlineElementGetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_]] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries];
+
+CreateInlineElementGetter[parameter_String, CConversion`VectorType[realScalarCType, entries_]] :=
+    CreateInlineElementGetter[parameter, "double", entries];
+
+CreateInlineElementGetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_]] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries];
+
+CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
+    CreateInlineElementGetter[parameter, "double", dim1, dim2];
+
+CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2];
 
 (* Creates a C++ inline getter *)
 CreateInlineGetter[parameter_String, type_String] :=
