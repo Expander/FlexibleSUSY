@@ -451,6 +451,20 @@ SetParameter[parameter_, value_String, class_String] :=
            class <> "->set_" <> parameterStr <> "(" <> value <> ");\n"
           ];
 
+SetParameter[parameter_[idx_Integer], value_String, class_String] :=
+    Module[{parameterStr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           class <> "->set_" <> parameterStr <> "(" <> ToString[idx] <> ", " <>
+           value <> ");\n"
+          ];
+
+SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String] :=
+    Module[{parameterStr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           class <> "->set_" <> parameterStr <> "(" <> ToString[idx1] <> ", " <>
+           ToString[idx2] <> ", " <> value <> ");\n"
+          ];
+
 SetParameter[parameter_, value_, class_String] :=
     SetParameter[parameter, CConversion`RValueToCFormString[value], class];
 
