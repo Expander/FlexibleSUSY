@@ -225,10 +225,17 @@ CreateParameterEnum[betaFunctions_List] :=
           ];
 
 (* create setters *)
+CreateElementSetter[name_String, CConversion`ScalarType[_]] := "";
+
+CreateElementSetter[name_String, type_] :=
+    CConversion`CreateInlineElementSetter[name, type];
+
 CreateSetters[betaFunction_BetaFunction] :=
-    Module[{setter = "", name = ""},
+    Module[{setter = "", name = "", type},
            name = ToValidCSymbolString[GetName[betaFunction]];
-           setter = setter <> CConversion`CreateInlineSetter[name, GetType[betaFunction]];
+           type = GetType[betaFunction];
+           setter = setter <> CConversion`CreateInlineSetter[name, type];
+           setter = setter <> CreateElementSetter[name, type];
            Return[setter];
           ];
 
@@ -239,10 +246,17 @@ CreateSetters[betaFunctions_List] :=
           ];
 
 (* create getters *)
+CreateElementGetter[name_String, CConversion`ScalarType[_]] := "";
+
+CreateElementGetter[name_String, type_] :=
+    CConversion`CreateInlineElementGetter[name, type];
+
 CreateGetters[betaFunction_BetaFunction] :=
-    Module[{getter = "", name = ""},
+    Module[{getter = "", name = "", type},
            name = ToValidCSymbolString[GetName[betaFunction]];
-           getter = getter <> CConversion`CreateInlineGetter[name, GetType[betaFunction]];
+           type = GetType[betaFunction];
+           getter = getter <> CConversion`CreateInlineGetter[name, type];
+           getter = getter <> CreateElementGetter[name, type];
            Return[getter];
           ];
 
