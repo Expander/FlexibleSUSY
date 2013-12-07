@@ -13,17 +13,18 @@ MANUAL_SRC      := \
 		$(DIR)/chapters/usage.tex \
 		$(DIR)/chapters/output.tex
 PAPER_PDF       := $(DIR)/paper.pdf
-PAPER_SRC       := \
-		$(DIR)/paper.tex \
+PAPER_SRC       := $(DIR)/paper.tex
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PADE) doc
+		$(INDEX_PADE) doc doc-html doc-pdf
 
 doc: all-$(MODNAME)
 
 doc-pdf: $(MANUAL_PDF) $(PAPER_PDF)
 
-all-$(MODNAME): $(INDEX_PADE) $(MANUAL_PDF) $(PAPER_PDF)
+doc-html: $(INDEX_PADE)
+
+all-$(MODNAME): doc-html doc-pdf
 
 clean-$(MODNAME):
 		rm -f $(DIR)/*.aux
