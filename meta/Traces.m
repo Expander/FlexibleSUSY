@@ -46,7 +46,7 @@ FindAllTraces[list_List] :=
 
 CreateDoubleTraceAbbrs[traces_List] :=
     Module[{rules, decl = "", i, multipleTraces},
-           multipleTraces = FindMultipleTraces[traces];
+           multipleTraces = FindAllTraces[traces];
            rules = (Rule[#, ToValidCSymbol[#]])& /@ multipleTraces;
            For[i = 1, i <= Length[multipleTraces], i++,
                decl = decl <> "const double " <>
