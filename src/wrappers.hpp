@@ -148,7 +148,7 @@ double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
 {
    Derived sumTol;
 
-   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
       const double max = maximum(a(i), b(i));
       if (std::fabs(max) > std::numeric_limits<double>::epsilon())
          sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
@@ -165,7 +165,7 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
 {
    Derived sumTol;
 
-   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
       const double max = maximum(a(i), b(i));
       if (std::fabs(max) > std::numeric_limits<double>::epsilon())
          sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
@@ -217,10 +217,11 @@ T Sqr(T a)
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {
-   static_assert(m.RowsAtCompileTime == m.ColsAtCompileTime,
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
                  "Symmetrize is only defined for squared matrices");
 
-   for (int i = 0; i < m.RowsAtCompileTime; i++)
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
       for (int k = 0; k < i; k++)
          m(i,k) = m(k,i);
 }
