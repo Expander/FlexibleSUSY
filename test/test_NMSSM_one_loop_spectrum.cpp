@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
    const DoubleVector me(s.displayPhys().me.flatten().sort());
    BOOST_CHECK_CLOSE(Se(1), me(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(2), me(2), 1.0e-12);
-   BOOST_CHECK_CLOSE(Se(3), me(3), 1.0e-12);
+   BOOST_CHECK_CLOSE(Se(3), me(3), 4.0e-12);
    BOOST_CHECK_CLOSE(Se(4), me(4), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(5), me(5), 1.0e-12);
    BOOST_CHECK_CLOSE(Se(6), me(6), 1.0e-12);
