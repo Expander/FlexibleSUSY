@@ -132,7 +132,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    if (contains_nan(x, @numberOfEWSBEquations@)) {
       for (std::size_t i = 0; i < @numberOfEWSBEquations@; ++i)
          gsl_vector_set(f, i, std::numeric_limits<double>::max());
-      return 1;
+      return GSL_EDOM;
    }
 
    const CLASSNAME::Ewsb_parameters* ewsb_parameters
