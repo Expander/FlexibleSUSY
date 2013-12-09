@@ -120,13 +120,20 @@ inline int KroneckerDelta(int i, int j)
 template <class Derived>
 typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m)
 {
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Diag is only defined for squared matrices");
+
    typename Eigen::MatrixBase<Derived>::PlainObject diag(m);
-   for (int i = 0; i < m.rows(); ++i) {
-      for (int k = 0; k < m.cols(); ++k) {
-         if (i != k)
-            diag(i,k) = 0.0;
-      }
-   }
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
+      for (int k = i + 1; k < Eigen::MatrixBase<Derived>::ColsAtCompileTime; ++k)
+         diag(i,k) = 0.0;
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
+      for (int k = 0; k < i; ++k)
+         diag(i,k) = 0.0;
+
    return diag;
 }
 
