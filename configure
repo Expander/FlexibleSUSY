@@ -1546,6 +1546,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     < $TEXVERSION_TMPL > $TEXVERSION
 
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
-echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version
+echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version.m
 
 chmod a+x $FSCONFIG

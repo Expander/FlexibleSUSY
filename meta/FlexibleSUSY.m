@@ -80,7 +80,7 @@ CheckSARAHVersion[] :=
     Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
            Print["Checking SARAH version ..."];
            minimRequiredVersionFile = FileNameJoin[{Global`$flexiblesusyConfigDir,
-                                                    "required_sarah_version"}];
+                                                    "required_sarah_version.m"}];
            (* reading minimum required SARAH version from config file *)
            minimRequired = Get[minimRequiredVersionFile];
            If[minimRequired === $Failed,

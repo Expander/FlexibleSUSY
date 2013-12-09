@@ -7,6 +7,7 @@
 
 config/config.h
 config/version
+config/required_sarah_version.m
 config.status
 config.log
 config.boost
