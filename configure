@@ -15,6 +15,9 @@ BASEDIR=$(dirname $0)
 # absolute path to this script
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
+# config directory
+CONFIGDIR="${BASEDIR}/config"
+
 # platform information
 debmultiarch=""
 
@@ -35,15 +38,15 @@ machine_word_size=""
 
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
-MAKEFILE_TMPL=$BASEDIR/config/Makefile.in
+MAKEFILE_TMPL=${CONFIGDIR}/Makefile.in
 
 # target config script
 FSCONFIG=$BASEDIR/flexiblesusy-config
-FSCONFIG_TMPL=$BASEDIR/config/flexiblesusy-config.in
+FSCONFIG_TMPL=${CONFIGDIR}/flexiblesusy-config.in
 
 # target config header
-CONFIGHDR=$BASEDIR/config/config.h
-CONFIGHDR_TMPL=$BASEDIR/config/config.h.in
+CONFIGHDR=${CONFIGDIR}/config.h
+CONFIGHDR_TMPL=${CONFIGDIR}/config.h.in
 
 # target tex file with package version
 TEXVERSION=$BASEDIR/doc/version.tex
@@ -1542,6 +1545,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
-echo "$FLEXIBLESUSY_VERSION" > $BASEDIR/config/version
+echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
 
 chmod a+x $FSCONFIG
