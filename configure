@@ -117,6 +117,12 @@ required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp
 # required Mathematica version
 required_mathematica_version="7"
 
+# required SARAH version
+required_sarah_major="4"
+required_sarah_minor="0"
+required_sarah_patch="3"
+required_sarah_version="${required_sarah_major}.${required_sarah_minor}.${required_sarah_patch}"
+
 #_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
@@ -1218,9 +1224,28 @@ EOF
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
             local sarah_version=`cat ${sarahconfig}`
-            result "ok (version ${sarah_version})"
+            local sarah_major=`echo ${sarah_version} | awk -F . '{ print $1 }'`
+            local sarah_minor=`echo ${sarah_version} | awk -F . '{ print $2 }'`
+            local sarah_patch=`echo ${sarah_version} | awk -F . '{ print $3 }'`
+            if test \
+                \( "${sarah_major}" -lt "${required_sarah_major}" \) -o \
+                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
+                   \( "${sarah_minor}" -lt "${required_sarah_minor}" \) \) -o \
+                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
+                   \( "${sarah_minor}" -eq "${required_sarah_minor}" \) -a \
+                   \( "${sarah_patch}" -lt "${required_sarah_patch}" \) \)
+            then
+                result "not ok"
+                message "Error: SARAH version ${sarah_version} no longer supported!"
+                message "   Please use version ${required_sarah_version} or higher."
+                exit 1
+            else
+                result "ok (version ${sarah_version})"
+            fi
         else
-            result "ok"
+            result "not ok"
+            message "Error: Cannot not check SARAH version."
+            exit 1
         fi
     else
         result "not ok"
