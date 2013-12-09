@@ -77,8 +77,18 @@ ToVersionString[{major_Integer, minor_Integer, patch_Integer}] :=
     ToString[major] <> "." <> ToString[minor] <> "." <> ToString[patch];
 
 CheckSARAHVersion[] :=
-    Module[{minimRequired, sarahVersion},
-           minimRequired = {4,0,3};
+    Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
+           Print["Checking SARAH version ..."];
+           minimRequiredVersionFile = FileNameJoin[{Global`$flexiblesusyConfigDir,
+                                                    "required_sarah_version"}];
+           (* reading minimum required SARAH version from config file *)
+           minimRequired = Get[minimRequiredVersionFile];
+           If[minimRequired === $Failed,
+              Print["Error: Cannot read required SARAH version from file ",
+                    minimRequiredVersionFile];
+              Print["   Did you run configure?"];
+              Quit[1];
+             ];
            sarahVersion = DecomposeVersionString[SA`Version];
            If[sarahVersion[[1]] < minimRequired[[1]] ||
               (sarahVersion[[1]] == minimRequired[[1]] &&
