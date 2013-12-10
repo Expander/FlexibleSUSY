@@ -170,17 +170,7 @@ template <class Derived>
 double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
                   const Eigen::ArrayBase<Derived>& b)
 {
-   typename Eigen::ArrayBase<Derived>::PlainObject sumTol;
-
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
-      const double max = maximum(a(i), b(i));
-      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
-      else
-         sumTol(i) = 0.;
-   }
-
-   return sumTol.maxCoeff();
+   return MaxRelDiff(a.matrix(), b.matrix());
 }
 
 template <typename Base, typename Exponent>
