@@ -12,19 +12,42 @@ fi
 # directory of this script
 BASEDIR=$(dirname $0)
 overwrite="no"
-models=""
+default=""
+name=""
+sarah_model=""
+
+#_____________________________________________________________________
+find_default_model_files() {
+    # searches for FlexibleSUSY.m.in files within the templates/
+    # directory.  If a FlexibleSUSY.m.in was found, the corresponding
+    # model name will be stored in the variable $default_models .
+
+    local model_files="`find ${BASEDIR}/templates/ -mindepth 2 -type f -name FlexibleSUSY.m.in -printf '%h\n' | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
+    default_models=$(echo "$model_files" | sed -e 's|${BASEDIR}/templates/||' -e 's|/FlexibleSUSY.m.in||')
+}
 
 #_____________________________________________________________________
 help() {
-    echo "Usage: ./`basename $0` [options] --models=<model1>{,<model2>}"
-    echo "Options:"
-    echo "--force,-f     Overwrite existing model files"
-    echo "--models=      Comma separated list of models to create"
-    echo "               The class name can be specified before a :"
-    echo "               Sub-models can be specified after a /"
-    echo "               Syntax: [classname:]model[/submodel]"
-    echo "               Example: --models=MSSM,E6SSM/NoTEMP,MSSMCKM:MSSM/CKM"
-    echo "--help,-h      Print this help message"
+    find_default_model_files
+    local available_default_model_files="${default_models}"
+
+cat <<EOF
+Usage: ./`basename $0` [options] --name=<model-name>
+Options:
+--name=            Name of the model in FlexibleSUSY.
+                   Example: --name=MyMSSM
+--default-model=   Name of the model whose FlexibleSUSY model file
+                   should be taken.  If empty the MSSM model file
+                   will be used.
+                   Available are: ${available_default_model_files}
+--sarah-model=     Name of the SARAH model.
+                   If empty, the value given by --name= will be used.
+                   A sub-model can be specified after a /
+                   Syntax: <sarah-model>[/<submodel>]
+                   Example: --sarah-model=MSSM/CKM
+--force,-f         Overwrite existing model files.
+--help,-h          Print this help message.
+EOF
 }
 
 if test $# -gt 0 ; then
@@ -37,84 +60,90 @@ if test $# -gt 0 ; then
         case $1 in
             --force|-f)              overwrite="yes" ;;
             --help|-h)               help; exit 0 ;;
-            --models=*)              models=`echo $optarg | tr ',' ' '` ;;
+            --default-model=*)       default="$optarg" ;;
+            --name=*)                name="$optarg" ;;
+            --sarah-model=*)         sarah_model="$optarg" ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
         shift
     done
 fi
 
-if [ -z "$models" ] ; then
+if [ -z "$name" ] ; then
     echo "Error: no model specified!"
     help
+    exit 1
 fi
 
-for model in ${models}; do
-    sub_model=$(echo $model | awk -F / '{ if (NF > 1) print $NF }')
-    class_name=$(echo $model | awk -F : '{ if (NF > 1) print $1 }')
-    model=$(echo $model | awk -F : '{ print $NF }' | awk -F / '{ print $1 }')
+sub_model=$(echo $sarah_model | awk -F / '{ if (NF > 1) print $NF }')
+sarah_model=$(echo $sarah_model | awk -F / '{ print $1 }')
 
-    # if the user has not provided a class name, use the model name as
-    # class name
-    if [ -z "$class_name" ]; then
-        class_name="$model"
-    fi
+if [ -z "$sarah_model" ]; then
+    sarah_model="$name"
+fi
 
-    # create target directory name
-    targetdir="models/${class_name}"
+# create target directory name
+targetdir="models/${name}"
 
-    if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
-        echo "Error: directory $targetdir already exists!"
-        echo "Please chose another model name or use the --force option."
-        echo "See ./`basename $0` --help for more information."
-        continue
-    fi
+if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
+    echo "Error: directory $targetdir already exists!"
+    echo "Please chose another model name or use the --force option."
+    echo "See ./`basename $0` --help for more information."
+    exit 1
+fi
 
-    if [ -n "$sub_model" ]; then
-        echo "creating model $class_name (SARAH model: $model, sub-model: $sub_model)"
+# check if we provide a FlexibleSUSY model file for the given model
+# name
+model_file_dir="templates"
+if [ -n "$default" ]; then
+    if test -d "$model_file_dir/$default"; then
+        model_file_dir="$model_file_dir/$default"
     else
-        echo "creating model $class_name (SARAH model: $model)"
+        echo "Error: there is no default model file for the $default"
+        exit 1
     fi
-
-    if test ! -d "$targetdir" ; then
-        printf "  creating model directory %s ... " "$targetdir"
-        mkdir $targetdir
-        echo "done"
+else
+    # if the user has no default model file specified, we check if one
+    # exists in templates/$name/
+    if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
+        model_file_dir="$model_file_dir/$name"
     fi
+fi
 
-    printf "  creating Makefile module %s/module.mk ... " "$targetdir"
-    sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@MODEL@|$model|g"           \
-        -e "s|@CLASSNAME@|$class_name|g"  \
-        < templates/module.mk.in > $targetdir/module.mk
+if [ -n "$sub_model" ]; then
+    echo "creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
+else
+    echo "creating model $name (SARAH model: $sarah_model)"
+fi
+
+if test ! -d "$targetdir" ; then
+    printf "  creating model directory %s ... " "$targetdir"
+    mkdir $targetdir
     echo "done"
+fi
 
-    printf "  creating start script %s/start.m ... " "$targetdir"
-    sub_model_replacement=""
-    if [ -n "$sub_model" ]; then
-        sub_model_replacement=", \"$sub_model\""
-    fi
-    sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@ModelName@|$model|g"       \
-        -e "s|@SubModel@|$sub_model_replacement|g"    \
-        -e "s|@CLASSNAME@|$class_name|g"  \
-        < templates/start.m.in > $targetdir/start.m
-    echo "done"
+printf "  creating Makefile module %s/module.mk ... " "$targetdir"
+sed -e "s|@DIR@|$targetdir|g"         \
+    -e "s|@MODEL@|$sarah_model|g"     \
+    -e "s|@CLASSNAME@|$name|g"        \
+    < templates/module.mk.in > $targetdir/module.mk
+echo "done"
 
-    # if we provide a FlexibleSUSY model file for this class name, we
-    # use this one
-    modelFileDir="templates"
-    if test -d "$modelFileDir/$class_name" ; then
-        modelFileDir="$modelFileDir/$class_name"
-        echo "  using predefined model files from $modelFileDir"
-    else
-        echo "  using default model files from $modelFileDir"
-    fi
+printf "  creating start script %s/start.m ... " "$targetdir"
+sub_model_replacement=""
+if [ -n "$sub_model" ]; then
+    sub_model_replacement=", \"$sub_model\""
+fi
+sed -e "s|@DIR@|$targetdir|g"                     \
+    -e "s|@ModelName@|$sarah_model|g"             \
+    -e "s|@SubModel@|$sub_model_replacement|g"    \
+    -e "s|@CLASSNAME@|$name|g"                    \
+    < templates/start.m.in > $targetdir/start.m
+echo "done"
 
-    printf "  creating FlexibleSUSY model file %s/FlexibleSUSY.m ... " "$targetdir"
-    sed -e "s|@DIR@|$targetdir|g"         \
-        -e "s|@ModelName@|$model|g"       \
-        -e "s|@CLASSNAME@|$class_name|g"  \
-        < $modelFileDir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
-    echo "done"
-done
+printf "  creating FlexibleSUSY model file %s/FlexibleSUSY.m ... " "$targetdir"
+sed -e "s|@DIR@|$targetdir|g"               \
+    -e "s|@ModelName@|$sarah_model|g"       \
+    -e "s|@CLASSNAME@|$name|g"              \
+    < $model_file_dir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
+echo "done"
