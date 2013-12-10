@@ -73,17 +73,17 @@ Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
 
 inline double ArcTan(double a)
 {
-   return atan(a);
+   return std::atan(a);
 }
 
 inline double ArcSin(double a)
 {
-   return asin(a);
+   return std::asin(a);
 }
 
 inline double ArcCos(double a)
 {
-   return acos(a);
+   return std::acos(a);
 }
 
 
@@ -97,14 +97,19 @@ inline std::complex<double> Conj(const std::complex<double>& a)
    return std::conj(a);
 }
 
+inline double Tan(double a)
+{
+   return std::tan(a);
+}
+
 inline double Cos(double x)
 {
-   return cos(x);
+   return std::cos(x);
 }
 
 inline double Sin(double x)
 {
-   return sin(x);
+   return std::sin(x);
 }
 
 inline int Delta(int i, int j)
