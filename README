@@ -36,7 +36,7 @@ How to create a model
 
 1. Setup a FlexibleSUSY model
 
-   $ ./createmodel --models=<model>
+   $ ./createmodel --name=<model>
 
    See `./createmodel --help' for more details.  Afterwards there will
    be
@@ -70,7 +70,7 @@ How to create a model
 Example
 =======
 
-   $ ./createmodel --models=NMSSM
+   $ ./createmodel --name=NMSSM
    $ ./configure --with-models=NMSSM
    $ make
    $ ./models/NMSSM/run_NMSSM.x
