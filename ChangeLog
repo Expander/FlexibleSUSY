@@ -14,6 +14,9 @@ FlexibleSUSY-0.5.2 [not released yet]
 
  * Allow setting of single matrix/ vector elements in the constraints.
 
+ * Model files are now in the directory model_files/
+   (instead of templates/)
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
