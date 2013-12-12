@@ -530,18 +530,7 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd +  \[Kapp
 \item  Add the singlino to the list of gauge eigenstate dirac fermions
 \begin{lstlisting}
   DEFINITION[GaugeES][DiracSpinors]={
-  Bino ->{fB, conj[fB]},
-  Wino -> {fWB, conj[fWB]},
-  Glu -> {fG, conj[fG]},
-  H0 -> {FHd0, conj[FHu0]},
-  HC -> {FHdm, conj[FHup]},
-  Fd1 -> {FdL, 0},
-  Fd2 -> {0, FdR},
-  Fu1 -> {FuL, 0},
-  Fu2 -> {0, FuR},
-  Fe1 -> {FeL, 0},
-  Fe2 -> {0, FeR},
-  Fv -> {FvL,0}
+ .............
   FS -> {FsR,conj[FsR]}   
 };
 \end{lstlisting}
@@ -549,18 +538,14 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd +  \[Kapp
 
 \begin{lstlisting}
  DEFINITION[EWSB][MatterSector]= 
-{    {{SdL, SdR}, {Sd, ZD}},
-     {{SvL}, {Sv, ZV}},
-     {{SuL, SuR}, {Su, ZU}},
-     {{SeL, SeR}, {Se, ZE}},
-     {{phid, phiu, phiS}, {hh, ZH}},       <----------------
-     {{sigmad, sigmau, sigmaS}, {Ah, ZA}}, <----------------
-     {{SHdm,conj[SHup]},{Hpm,ZP}},
-     {{fB, fW0, FHd0, FHu0, FsR}, {L0, ZN}}, <---------------
-     {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
-     {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
-     {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
-     {{{FuL},{conj[FuR]}},{{FUL,ZUL},{FUR,ZUR}}}       }; 
+{   ................
+    ................
+     {{phid, phiu, phiS}, {hh, ZH}},      
+     {{sigmad, sigmau, sigmaS}, {Ah, ZA}},
+    ................
+     {{fB, fW0, FHd0, FHu0, FsR}, {L0, ZN}},
+     ...............
+}; 
 
 \end{lstlisting}
 \end{enumerate}
@@ -570,18 +555,8 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd +  \[Kapp
 \item First we add to particleDefinitions[GaugeES]:
 \begin{lstlisting}
  ParticleDefinitions[GaugeES] = {
-      {SdL,  { Description -> "Left Down-Squarks"}},
-      {SdR,  { Description -> "Right Down-Squarks"}},
-      ...........
-      ...........
-      ...........
-      {H0,   { Description -> "Neutral Higgsinos"}},
-      {HC,   { Description -> "Charged Higgsinos"}},
-      {SsR, { Description -> "Singlet"}},         <---------------
-      {FS,   { Description -> "Singlino" }},      <---------------
-      {Fd1,  { Description -> "Dirac Left Down-Quark"}},
-      {Fd2,  { Description -> "Dirac Right Down-Quark"}},
-      ............
+      {SsR, { Description -> "Singlet"}},        
+      {FS,   { Description -> "Singlino" }},    
       ............
       };
 \end{lstlisting}
