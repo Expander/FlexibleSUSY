@@ -18,11 +18,11 @@ sarah_model=""
 
 #_____________________________________________________________________
 find_default_model_files() {
-    # searches for FlexibleSUSY.m.in files within the templates/
+    # searches for FlexibleSUSY.m.in files within the model_files/
     # directory.  If a FlexibleSUSY.m.in was found, the corresponding
     # model name will be stored in the variable $default_models .
 
-    default_models="`find ${BASEDIR}/templates/ -mindepth 2 -type f -name FlexibleSUSY.m.in -printf '%h\n' | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
+    default_models="`find ${BASEDIR}/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -printf '%h\n' | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
 }
 
 #_____________________________________________________________________
@@ -93,7 +93,7 @@ fi
 
 # check if we provide a FlexibleSUSY model file for the given model
 # name
-model_file_dir="templates"
+model_file_dir="model_files"
 if [ -n "$default" ]; then
     if test -d "$model_file_dir/$default"; then
         model_file_dir="$model_file_dir/$default"
@@ -103,7 +103,7 @@ if [ -n "$default" ]; then
     fi
 else
     # if the user has no default model file specified, we check if one
-    # exists in templates/$name/
+    # exists in model_files/$name/
     if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
         model_file_dir="$model_file_dir/$name"
     fi
