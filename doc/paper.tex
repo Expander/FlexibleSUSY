@@ -764,51 +764,96 @@ Detailed steps to create \ESSM model file.
 \item Edit myE6SSM.m as follows
 \begin{enumerate}
 \item  Change Model name, author and date
+\item Add new Vector superfield,
+ \begin{lstlisting} 
+   Gauge[[4]]={Bp,  U[1], Ncharge, g1p, False, RpM};
+ \end{lstlisting}
 \item Modify MSSM superfield definitions to include new charges.
 \begin{lstlisting}
-SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, Qq, RpM};  
-SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, Ql, RpM};
-SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, QHd, RpP};
-SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, QHu, RpP};
-SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, Qd, RpM};
-SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, Qu, RpM};
-SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, Qe, RpM};
+SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, 1, RpM};  
+SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, 2, RpM};
+SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, -3, RpP};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, -2, RpP};
+SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, 2, RpM};
+SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, 1, RpM};
+SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, 1, RpM};
 \end{lstlisting}
-Note that in the \ESSM model the charges are fixed to be those of the $U(1)_N$ as shown in e.g. \cite{King:2005jy}.  However here we leave the charges unassigned at the Mathematica level, and will set them as parameters in the C++ code.  The charges could also simply be fixed here to simplify the C++ code.
+Note that in the \ESSM model the charges are fixed to be those of the $U(1)_N$ as shown in e.g. \cite{King:2005jy}.  However here one can leave the charges unassigned vby using parameters in place of the fixed charges.  Here we fix the charges to simplify the C++ code.
 
-\item Add Singlet Higgs superfield to SuperFields
+\item Add Singlet Higgs superfield to SuperField
 \begin{lstlisting}
-SuperFields[[8]] = {s, 1, sR,     0, 1,  1, Qs, RpP};
+SuperFields[[8]] = {s, 1, sR,     0, 1,  1, 5, RpP};
 \end{lstlisting}
 \item Add inert Higgs-like superfields 
 \begin{lstlisting}
-SuperFields[[9]] = {H1I, 2, {H1I0, H1Im},  -1/2, 2, 1, QHu, RpP};
-SuperFields[[10]] = {H2I, 2, {H2Ip, H2I0},   1/2, 2, 1, QHd, RpP};
-SuperFields[[11]] = {sI, 2, sR,    0, 1,  1, Qs, RpM};
+SuperFields[[9]] = {H1I, 2, {H1I0, H1Im},  -1/2, 2, 1, -3, RpP};
+SuperFields[[10]] = {H2I, 2, {H2Ip, H2I0},   1/2, 2, 1, -2, RpP};
+SuperFields[[11]] = {sI, 2, sIR,    0, 1,  1, 5, RpM};
 \end{lstlisting}
 \item Add exotics to SuperFields
 \begin{lstlisting}
-SuperFields[[12]] = {Dx, 3, conj[DxR],  1/3, 1, -3, QDx, RpP};
-SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  -1/3, 1, 3, QDxbar, RpP};
+SuperFields[[12]] = {Dx, 3, DxL,  -1/3, 1, 3, -2, RpP};
+SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  1/3, 1, -3, -3, RpP};
 \end{lstlisting}
 \item Add additional survival $SU(2)$ multiplets to SuperFields
 \begin{lstlisting}
-SuperFields[[14]] = {Hp, 1, conj[HpR],    0.5, 2,  1, QHp, RpP};
-SuperFields[[15]] = {Hpbar, 1, conj[HpbarR],    -0.5, 2,  1, QHpbar, RpP};
+SuperFields[[14]] = {Hp, 1, {Hpd0, Hpdm},  1/2, 2,  1, 2, RpP};
+SuperFields[[15]] = {Hpbar, 1, {Hpup, Hpu0}, -1/2, 2,  1, -2, RpP};
 \end{lstlisting}
 \item Modify superpotential
 \begin{lstlisting}
-SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] S.Hu.Hd +  La S.H2I.H1I + \[Kappa] S.Dx.Dxbar;
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] s.Hu.Hd +  \[Lambda]12 s.H2I.H1I + \[Kappa] s.Dx.Dxbar + \[Mu]Pr Hp.Hpbar;
+\end{lstlisting}
+\item Define new gauge eigenstate Dirac spinors
+\begin{lstlisting}
+  DEFINITION[GaugeES][DiracSpinors]={
+    .............
+    .............
+    FS -> {FsR,conj[FsR]},
+    FBp -> {fBp,conj[fBp]},
+    HI0 -> {FH1I0, conj[FH2I0]},
+    HIC -> {FH1Im, conj[FH2Ip]},
+    FSI -> {FsIR, conj[FsIR]},
+    FDx1 -> {FDxL, 0},
+    FDx2 -> {0, FDxbarR}, 
+    Hp0 -> {FHpd0, conj[FHpu0]},
+    HpC -> {FHpdm, conj[FHpup]}
+  };
 \end{lstlisting}
 \item Add new VEV
-\begin{lstlisting} DEFINITION[EWSB][VEVs]= 
+\begin{lstlisting} 
+  DEFINITION[EWSB][VEVs]= 
   { {SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
     {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}},
     {SsR,  {vs, 1/Sqrt[2]}, {sigmaS, \[ImaginaryI]/Sqrt[2]},{phiS,1/Sqrt[2]}}
 };
 \end{lstlisting}
-
-
+\item Add new gauge boson  mass eigenstate
+\begin{lstlisting} 
+  DEFINITION[EWSB][GaugeSector] =
+  { 
+    {{VB,VWB[3],VBp},{VP,VZ,VZp},ZZ},
+    {{VWB[1],VWB[2]},{VWm,conj[VWm]},ZW},
+    {{fWB[1],fWB[2],fWB[3]},{fWm,fWp,fW0},ZfW}
+  }; 
+\end{lstlisting}
+\item Edit mixings for Higgs and neutralino states and add additional states that mix.
+\begin{lstlisting}
+DEFINITION[EWSB][MatterSector]= 
+{ ...............
+  ...............
+{{phid, phiu, phiS}, {hh, ZH}},
+{{sigmad, sigmau, sigmaS}, {Ah, ZA}},
+  ...............
+{{fB, fW0, FHd0, FHu0, FsR, fBp}, {L0, ZN}},
+ ................ 
+ {{SH1I0,conj[SH2I0]},{SHI0,UHI0}},
+ {{SH1Im,conj[SH2Ip]},{SHIp,UHIp}},
+ {{SHpd0,conj[SHpu0]},{SHp0,UHp0}},
+ {{SHpdm,conj[SHpup]},{SHpp,UHpp}},
+ {{FHpd0,FHpu0},{L0p,ZNp}},
+ {{FH1I0,FH2I0},{L0I,ZNp}}
+\end{lstlisting}
 \end{enumerate}  
  
 \end{enumerate}   
