@@ -66,6 +66,8 @@ RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
 SCAN_@CLASSNAME@_OBJ := $(DIR)/scan_@CLASSNAME@.o
 SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
 
+METACODE_STAMP_@CLASSNAME@ := $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
 		distclean-$(MODNAME) run-metacode-$(MODNAME)
 
@@ -78,6 +80,7 @@ clean-$(MODNAME):
 clean-$(MODNAME)-src:
 		rm -rf $(LIB@CLASSNAME@_SRC)
 		rm -rf $(EXE@CLASSNAME@_SRC)
+		rm -rf $(METACODE_STAMP_@CLASSNAME@)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(LIB@CLASSNAME@_DEP)
@@ -89,8 +92,6 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
-
-METACODE_STAMP_@CLASSNAME@ := $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 
 $(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
