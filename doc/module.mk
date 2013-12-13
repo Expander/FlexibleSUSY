@@ -15,6 +15,13 @@ MANUAL_SRC      := \
 PAPER_PDF       := $(DIR)/paper.pdf
 PAPER_SRC       := $(DIR)/paper.tex
 
+LATEX_TMP       := \
+		$(patsubst %.pdf, %.aux, $(MANUAL_PDF) $(PAPER_PDF)) \
+		$(patsubst %.pdf, %.log, $(MANUAL_PDF) $(PAPER_PDF)) \
+		$(patsubst %.pdf, %.toc, $(MANUAL_PDF) $(PAPER_PDF)) \
+		$(patsubst %.pdf, %.out, $(MANUAL_PDF) $(PAPER_PDF)) \
+		$(patsubst %.pdf, %.spl, $(MANUAL_PDF) $(PAPER_PDF))
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		$(INDEX_PADE) doc doc-html doc-pdf
 
@@ -27,9 +34,7 @@ doc-html: $(INDEX_PADE)
 all-$(MODNAME): doc-html doc-pdf
 
 clean-$(MODNAME):
-		rm -f $(DIR)/*.aux
-		rm -f $(DIR)/*.log
-		rm -f $(DIR)/*.toc
+		rm -f $(LATEX_TMP)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		rm -rf $(DOC_OUTPUT_DIR)
