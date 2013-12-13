@@ -12,7 +12,7 @@ fi
 # directory of this script
 BASEDIR=$(dirname $0)
 overwrite="no"
-default=""
+model_file=""
 name=""
 sarah_model=""
 
@@ -35,7 +35,7 @@ Usage: ./`basename $0` [options] --name=<model-name>
 Options:
 --name=            Name of the model in FlexibleSUSY.
                    Example: --name=MyMSSM
---default-model=   Name of the model whose FlexibleSUSY model file
+--model-file=      Name of the model whose FlexibleSUSY model file
                    should be taken.  If empty the MSSM model file
                    will be used.
                    Available are: ${available_default_model_files}
@@ -59,7 +59,7 @@ if test $# -gt 0 ; then
         case $1 in
             --force|-f)              overwrite="yes" ;;
             --help|-h)               help; exit 0 ;;
-            --default-model=*)       default="$optarg" ;;
+            --model-file=*)          model_file="$optarg" ;;
             --name=*)                name="$optarg" ;;
             --sarah-model=*)         sarah_model="$optarg" ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
@@ -94,11 +94,11 @@ fi
 # check if we provide a FlexibleSUSY model file for the given model
 # name
 model_file_dir="model_files"
-if [ -n "$default" ]; then
-    if test -d "$model_file_dir/$default"; then
-        model_file_dir="$model_file_dir/$default"
+if [ -n "$model_file" ]; then
+    if test -d "$model_file_dir/$model_file"; then
+        model_file_dir="$model_file_dir/$model_file"
     else
-        echo "Error: there is no default model file for the $default"
+        echo "Error: there is no default model file for the $model_file"
         exit 1
     fi
 else
