@@ -7,7 +7,7 @@
 
 BASEDIR=$(dirname $0)
 
-mssm_input="$BASEDIR/../templates/MSSM/LesHouches.in.MSSM"
+mssm_input="$BASEDIR/../model_files/MSSM/LesHouches.in.MSSM"
 mssm_output="$BASEDIR/MSSM.out.spc"
 lowmssm_input="$BASEDIR/lowMSSM.in.spc"
 lowmssm_output="$BASEDIR/lowMSSM.out.spc"
