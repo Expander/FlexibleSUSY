@@ -445,14 +445,22 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, 
            Return[ass];
           ];
 
+CheckParameter[parameter_] :=
+    If[!MemberQ[allModelParameters, parameter] &&
+       !MemberQ[allInputParameters, parameter],
+       Print["Warning: Trying to set unknown parameter ", parameter];
+      ];
+
 SetParameter[parameter_, value_String, class_String] :=
     Module[{parameterStr},
+           CheckParameter[parameter];
            parameterStr = CConversion`ToValidCSymbolString[parameter];
            class <> "->set_" <> parameterStr <> "(" <> value <> ");\n"
           ];
 
 SetParameter[parameter_[idx_Integer], value_String, class_String] :=
     Module[{parameterStr},
+           CheckParameter[parameter];
            parameterStr = CConversion`ToValidCSymbolString[parameter];
            class <> "->set_" <> parameterStr <> "(" <> ToString[idx] <> ", " <>
            value <> ");\n"
@@ -460,6 +468,7 @@ SetParameter[parameter_[idx_Integer], value_String, class_String] :=
 
 SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String] :=
     Module[{parameterStr},
+           CheckParameter[parameter];
            parameterStr = CConversion`ToValidCSymbolString[parameter];
            class <> "->set_" <> parameterStr <> "(" <> ToString[idx1] <> ", " <>
            ToString[idx2] <> ", " <> value <> ");\n"
