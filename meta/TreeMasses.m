@@ -611,7 +611,7 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle, dim, phase},
+            inputParsDecl, expr, particle, dim, dimStr, phase},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -621,12 +621,19 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
            expr = StripGenerators[mass[[1]],
                                   {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            If[dim == 1,
               body = inputParsDecl <> "\n" <> ev <> " = " <>
                      RValueToCFormString[expr] <> ";\n";,
-              body = inputParsDecl <> "\n" <> ev <>
-                     ".setConstant(" <> RValueToCFormString[expr] <> ");\n";
+              If[FreeQ[expr, SARAH`gt1] && FreeQ[expr, SARAH`gt2],
+                 body = inputParsDecl <> "\n" <> ev <>
+                        ".setConstant(" <> RValueToCFormString[expr] <> ");\n";,
+                 body = inputParsDecl <> "\n" <>
+                        "for (int gt1 = 1; gt1 <= " <> dimStr <> "; gt1++) {\n" <>
+                        IndentText[ev <> "(gt1) = " <> RValueToCFormString[expr /. SARAH`gt2 -> SARAH`gt1] <> ";"] <>
+                        "\n}\n";
+                ];
              ];
            phase = Parameters`GetPhase[massESSymbol];
            If[IsFermion[massESSymbol] && phase =!= Null &&
@@ -642,7 +649,11 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
               !IsMassless[massESSymbol],
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
-              body = body <> "\n" <> "if (" <> ev <> " < 0.)\n" <>
+              If[dim == 1,
+                 body = body <> "\n" <> "if (" <> ev <> " < 0.)\n";,
+                 body = body <> "\n" <> "if (" <> ev <> ".minCoeff() < 0.)\n";
+                ];
+              body = body <>
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
