@@ -443,9 +443,26 @@ CreateMixingMatrixGetter[Null, returnType_] := "";
 CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_] :=
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType];
 
-CreateMassCalculationPrototype[TreeMasses`FSMassMatrix[_, massESSymbol_, Null]] :=
-    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]]},
+CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
+    Module[{matrix, dim},
+           dim = GetDimension[massESSymbol];
+           If[dim == 1,
+              Print["Warning: trying to create a mass matrix from the 1-plet ", massESSymbol];
+             ];
+           matrix = Table[expr /. List -> Identity,
+                          {SARAH`gt1, 1, dim}, {SARAH`gt2, 1, dim}];
+           TreeMasses`FSMassMatrix[matrix, massESSymbol, Null]
+          ];
+
+CreateMassCalculationPrototype[m:TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
+    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]],
+            massMatrix},
            result = "void calculate_" <> ev <> "();\n";
+           If[!FreeQ[expr, SARAH`gt1] && !FreeQ[expr, SARAH`gt2],
+              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+              result = CreateMassMatrixGetterPrototype[massMatrix] <>
+                       result;
+             ];
            Return[result];
           ];
 
@@ -609,9 +626,9 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
-CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
+CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle, dim, dimStr, phase},
+            inputParsDecl, expr, particle, dim, dimStr, phase, massMatrix},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -660,7 +677,13 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
-           Return[result <> body <> "}\n\n"];
+           result = result <> body <> "}\n\n";
+           If[!FreeQ[mass, SARAH`gt1] && !FreeQ[mass, SARAH`gt2],
+              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+              result = CreateMassMatrixGetterFunction[massMatrix] <>
+                       "\n" <> result;
+             ];
+           Return[result];
           ];
 
 CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
