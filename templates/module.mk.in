@@ -1,5 +1,6 @@
 DIR          := @DIR@
 MODNAME      := lib@CLASSNAME@
+SARAH_MODEL  := @MODEL@
 
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
@@ -68,6 +69,9 @@ SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
 
 METACODE_STAMP_@CLASSNAME@ := $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
 
+SARAH_MODEL_FILES_@CLASSNAME@ := \
+		$(shell $(SARAH_DEP_GEN) $(SARAH_MODEL))
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
 		distclean-$(MODNAME) run-metacode-$(MODNAME)
 
@@ -134,7 +138,7 @@ run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
 		@true
 
 ifeq ($(ENABLE_META),yes)
-$(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES)
+$(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES) $(SARAH_MODEL_FILES_@CLASSNAME@)
 		$(MATH) -run "Get[\"$<\"]; Quit[]"
 else
 $(METACODE_STAMP_@CLASSNAME@):

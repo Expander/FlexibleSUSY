@@ -51,6 +51,9 @@ ALLTST   :=
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
+# script which lists the SARAH model files
+SARAH_DEP_GEN := @SARAH_DEP_GEN@
+
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep distclean showbuild tag release
 
