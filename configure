@@ -44,6 +44,10 @@ MAKEFILE_TMPL=${CONFIGDIR}/Makefile.in
 FSCONFIG=$BASEDIR/flexiblesusy-config
 FSCONFIG_TMPL=${CONFIGDIR}/flexiblesusy-config.in
 
+# target sarah dependency generation script
+SARAH_DEP_GEN=${CONFIGDIR}/list_sarah_model_files.sh
+SARAH_DEP_GEN_TMPL=${CONFIGDIR}/list_sarah_model_files.sh.in
+
 # target config header
 CONFIGHDR=${CONFIGDIR}/config.h
 CONFIGHDR_TMPL=${CONFIGDIR}/config.h.in
@@ -1545,7 +1549,11 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
+sed -e "s|@MATH@|$MATH|" \
+    < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
+
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
 echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version.m
 
 chmod a+x $FSCONFIG
+chmod a+x $SARAH_DEP_GEN
