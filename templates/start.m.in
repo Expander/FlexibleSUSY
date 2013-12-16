@@ -5,7 +5,7 @@ $flexiblesusyTemplateDir = FileNameJoin[{Directory[], "templates"}];
 AppendTo[$Path, $flexiblesusyMetaDir];
 
 Needs["SARAH`"];
-Needs["FlexibleSUSY`", "FlexibleSUSY.m"];
+Needs["FlexibleSUSY`", FileNameJoin[{$flexiblesusyMetaDir, "FlexibleSUSY.m"}]];
 
 workingDirectory = Directory[];
 $sarahOutputDir = FileNameJoin[{workingDirectory, "Output"}];

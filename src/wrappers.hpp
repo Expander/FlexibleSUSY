@@ -1,10 +1,26 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 #ifndef WRAPPERS_HPP
 #define WRAPPERS_HPP
 
 #include <complex>
 #include <cmath>
-#include <valarray>
 #include <functional>
 #include <Eigen/Core>
 
@@ -57,17 +73,17 @@ Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
 
 inline double ArcTan(double a)
 {
-   return atan(a);
+   return std::atan(a);
 }
 
 inline double ArcSin(double a)
 {
-   return asin(a);
+   return std::asin(a);
 }
 
 inline double ArcCos(double a)
 {
-   return acos(a);
+   return std::acos(a);
 }
 
 
@@ -81,14 +97,19 @@ inline std::complex<double> Conj(const std::complex<double>& a)
    return std::conj(a);
 }
 
+inline double Tan(double a)
+{
+   return std::tan(a);
+}
+
 inline double Cos(double x)
 {
-   return cos(x);
+   return std::cos(x);
 }
 
 inline double Sin(double x)
 {
-   return sin(x);
+   return std::sin(x);
 }
 
 inline int Delta(int i, int j)
@@ -104,13 +125,20 @@ inline int KroneckerDelta(int i, int j)
 template <class Derived>
 typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m)
 {
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Diag is only defined for squared matrices");
+
    typename Eigen::MatrixBase<Derived>::PlainObject diag(m);
-   for (int i = 0; i < m.rows(); ++i) {
-      for (int k = 0; k < m.cols(); ++k) {
-         if (i != k)
-            diag(i,k) = 0.0;
-      }
-   }
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
+      for (int k = i + 1; k < Eigen::MatrixBase<Derived>::ColsAtCompileTime; ++k)
+         diag(i,k) = 0.0;
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
+      for (int k = 0; k < i; ++k)
+         diag(i,k) = 0.0;
+
    return diag;
 }
 
@@ -130,9 +158,9 @@ template <class Derived>
 double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
                   const Eigen::MatrixBase<Derived>& b)
 {
-   Derived sumTol;
+   typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
 
-   for (int i = 0; i < a.RowsAtCompileTime; i++) {
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
       const double max = maximum(a(i), b(i));
       if (std::fabs(max) > std::numeric_limits<double>::epsilon())
          sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
@@ -147,17 +175,7 @@ template <class Derived>
 double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
                   const Eigen::ArrayBase<Derived>& b)
 {
-   Derived sumTol;
-
-   for (int i = 0; i < a.RowsAtCompileTime; i++) {
-      const double max = maximum(a(i), b(i));
-      if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
-      else
-         sumTol(i) = 0.;
-   }
-
-   return sumTol.maxCoeff();
+   return MaxRelDiff(a.matrix(), b.matrix());
 }
 
 template <typename Base, typename Exponent>
@@ -201,10 +219,11 @@ T Sqr(T a)
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {
-   static_assert(m.RowsAtCompileTime == m.ColsAtCompileTime,
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
                  "Symmetrize is only defined for squared matrices");
 
-   for (int i = 0; i < m.RowsAtCompileTime; i++)
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
       for (int k = 0; k < i; k++)
          m(i,k) = m(k,i);
 }

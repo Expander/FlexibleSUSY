@@ -74,7 +74,9 @@ ifneq ($(MAKECMDGOALS),doc)
 ifeq ($(ENABLE_COMPILE),yes)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
+ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif

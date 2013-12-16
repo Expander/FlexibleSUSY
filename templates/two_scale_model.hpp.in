@@ -116,9 +116,9 @@ private:
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[@numberOfEWSBEquations@]);
+   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[numberOfEWSBEquations]);
    int solve_ewsb_tree_level_via_soft_higgs_masses();
-   void ewsb_initial_guess(double[@numberOfEWSBEquations@]);
+   void ewsb_initial_guess(double[numberOfEWSBEquations]);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 

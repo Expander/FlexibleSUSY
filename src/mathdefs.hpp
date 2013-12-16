@@ -44,7 +44,7 @@ struct _power<1, false, T> {
 
 template<class T>
 struct _power<0, true, T> {
-    static T f(T x) {
+    static T f(T /* x */) {
 	return 1;
     }
 };
