@@ -43,6 +43,8 @@ files = Join[{ModelFile},
              FileNameJoin[{modelDir, #}]& /@ {"parameters.m", "particles.m"}
             ];
 
+files = Select[files, FileExistsQ];
+
 WriteString["stderr", files[[1]] <> " " <> files[[2]] <> " " <> files[[3]]];
 
 Quit[];
