@@ -274,9 +274,12 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             "fs_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
-                            "if (es == 0)\n" <>
-                            IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
+                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n";
+              If[mixingMatrix =!= Null,
+                 diagSnippet = diagSnippet <>
+                               "if (es == 0)\n" <>
+                               IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
+                ];
              ];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            tadpoleMatrix = FillTadpoleMatrix[tadpole, "tadpoles"];
@@ -317,7 +320,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
-            eigenArrayType},
+            eigenArrayType, mixingMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -384,12 +387,19 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                                     ];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
-                 result = result <>
-                          IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
-                                     "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
-                                     "if (es == 0)\n" <>
-                                     IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
-                                    ];
+                 If[mixingMatrix =!= Null,
+                    result = result <>
+                             IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
+                                        "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
+                                        "if (es == 0)\n" <>
+                                        IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
+                                       ];
+                    ,
+                    mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]];
+                    result = result <>
+                             IndentText[mixingMatrixType <> " mix_" <> U <> ";\n" <>
+                                        "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n"];
+                   ];
                 ];
               result = result <>
                        IndentText["PHYSICAL(" <> massName <>

@@ -443,9 +443,26 @@ CreateMixingMatrixGetter[Null, returnType_] := "";
 CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_] :=
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType];
 
-CreateMassCalculationPrototype[TreeMasses`FSMassMatrix[_, massESSymbol_, Null]] :=
-    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]]},
+CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
+    Module[{matrix, dim},
+           dim = GetDimension[massESSymbol];
+           If[dim == 1,
+              Print["Warning: trying to create a mass matrix from the 1-plet ", massESSymbol];
+             ];
+           matrix = Table[expr /. List -> Identity,
+                          {SARAH`gt1, 1, dim}, {SARAH`gt2, 1, dim}];
+           TreeMasses`FSMassMatrix[matrix, massESSymbol, Null]
+          ];
+
+CreateMassCalculationPrototype[m:TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
+    Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]],
+            massMatrix},
            result = "void calculate_" <> ev <> "();\n";
+           If[!FreeQ[expr, SARAH`gt1] && !FreeQ[expr, SARAH`gt2],
+              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+              result = CreateMassMatrixGetterPrototype[massMatrix] <>
+                       result;
+             ];
            Return[result];
           ];
 
@@ -609,9 +626,9 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
-CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
+CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle, dim, phase},
+            inputParsDecl, expr, particle, dim, dimStr, phase, massMatrix},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -621,12 +638,19 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
            expr = StripGenerators[mass[[1]],
                                   {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            dim = GetDimension[massESSymbol];
+           dimStr = ToString[dim];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            If[dim == 1,
               body = inputParsDecl <> "\n" <> ev <> " = " <>
                      RValueToCFormString[expr] <> ";\n";,
-              body = inputParsDecl <> "\n" <> ev <>
-                     ".setConstant(" <> RValueToCFormString[expr] <> ");\n";
+              If[FreeQ[expr, SARAH`gt1] && FreeQ[expr, SARAH`gt2],
+                 body = inputParsDecl <> "\n" <> ev <>
+                        ".setConstant(" <> RValueToCFormString[expr] <> ");\n";,
+                 body = inputParsDecl <> "\n" <>
+                        "for (int gt1 = 1; gt1 <= " <> dimStr <> "; gt1++) {\n" <>
+                        IndentText[ev <> "(gt1) = " <> RValueToCFormString[expr /. SARAH`gt2 -> SARAH`gt1] <> ";"] <>
+                        "\n}\n";
+                ];
              ];
            phase = Parameters`GetPhase[massESSymbol];
            If[IsFermion[massESSymbol] && phase =!= Null &&
@@ -642,14 +666,24 @@ CreateMassCalculationFunction[TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null
               !IsMassless[massESSymbol],
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
-              body = body <> "\n" <> "if (" <> ev <> " < 0.)\n" <>
+              If[dim == 1,
+                 body = body <> "\n" <> "if (" <> ev <> " < 0.)\n";,
+                 body = body <> "\n" <> "if (" <> ev <> ".minCoeff() < 0.)\n";
+                ];
+              body = body <>
                      IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
                      "else\n" <>
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
-           Return[result <> body <> "}\n\n"];
+           result = result <> body <> "}\n\n";
+           If[!FreeQ[mass, SARAH`gt1] && !FreeQ[mass, SARAH`gt2],
+              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+              result = CreateMassMatrixGetterFunction[massMatrix] <>
+                       "\n" <> result;
+             ];
+           Return[result];
           ];
 
 CreateMassCalculationFunction[massMatrix_TreeMasses`FSMassMatrix] :=
