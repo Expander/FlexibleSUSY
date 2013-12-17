@@ -17,6 +17,12 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Model files are now in the directory model_files/
    (instead of templates/)
 
+ * The command line arguments of the createmodel script changed.
+   Please see ./createmodel --help for more details.
+
+ * Add support for the LHInput[p] command in constraints, which reads
+   the parameter `p' from the SLHA input file.
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
