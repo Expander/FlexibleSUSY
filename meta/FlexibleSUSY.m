@@ -870,6 +870,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
+            lesHouchesInputParameters,
 	    vertexRules,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
@@ -985,6 +986,37 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
              ];
 
+           lesHouchesInputParameters = DeleteDuplicates[Flatten[Cases[Join[FlexibleSUSY`LowScaleInput,
+                                                                           FlexibleSUSY`SUSYScaleInput,
+                                                                           FlexibleSUSY`HighScaleInput],
+                                                                      SARAH`LHInput[p_] :> p,
+                                                                      Infinity
+                                                                     ]
+                                                               ]
+                                                       ];
+
+           lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
+                                                   {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
+                                              a_[Susyno`LieGroups`i1] :> a /.
+                                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                              MemberQ[lesHouchesInputParameters,#[[1]]]&];
+
+           Parameters`SetInputParameters[Join[Parameters`GetInputParameters[],
+                                              (#[[2]])& /@ lesHouchesInputParameters]];
+
+           (* replace LHInput[p] by pInput in the constraints *)
+           FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
+              lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
+                                               lesHouchesInputParameters];
+             ];
+
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
 
@@ -1059,8 +1091,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
-                                    If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
-                                       {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters],
+                                    {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
@@ -1100,8 +1131,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                                MINPAR, EXTPAR,
-                               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
-                                  FlexibleSUSY`FSUnfixedParameters],
+                               lesHouchesInputParameters,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
