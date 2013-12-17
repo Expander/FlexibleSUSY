@@ -36,6 +36,7 @@ SetInputParameters::usage="";
 SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
+GetInputParameters::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
 
@@ -67,6 +68,7 @@ SetInputParameters[pars_List] := allInputParameters = pars;
 SetModelParameters[pars_List] := allModelParameters = pars;
 SetOutputParameters[pars_List] := allOutputParameters = pars;
 
+GetInputParameters[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 
