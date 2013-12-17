@@ -105,7 +105,7 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
 
-@readUnfixedParameters@
+@readLesHouchesInputParameters@
 }
 
 void @ModelName@_slha_io::fill(Program_options& options) const

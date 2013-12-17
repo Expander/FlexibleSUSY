@@ -273,11 +273,11 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           ];
 
 WriteInputParameterClass[inputParameters_List, freePhases_List,
-                         unfixedParameters_List,
+                         lesHouchesInputParameters_List,
                          defaultValues_List, files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
-          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,unfixedParameters]];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,unfixedParameters]];
+          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,lesHouchesInputParameters]];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,lesHouchesInputParameters]];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -519,7 +519,7 @@ WritePlotScripts[files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
-                    unfixedParameters_List, files_List] :=
+                    lesHouchesInputParameters_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
@@ -529,7 +529,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
-            writeSLHAExtparBlock = "", readUnfixedParameters},
+            writeSLHAExtparBlock = "", readLesHouchesInputParameters},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -544,7 +544,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
-           readUnfixedParameters         = WriteOut`ReadUnfixedParameters[unfixedParameters];
+           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -561,7 +561,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
-                            "@readUnfixedParameters@"         -> IndentText[readUnfixedParameters],
+                            "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
