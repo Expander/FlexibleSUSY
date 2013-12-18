@@ -28,6 +28,7 @@ namespace flexiblesusy {
 
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 
 inline double Abs(double z)
 {

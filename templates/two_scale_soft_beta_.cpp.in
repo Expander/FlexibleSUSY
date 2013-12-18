@@ -30,11 +30,11 @@ namespace flexiblesusy {
  */
 @parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_one_loop() const
 {
-@tracesOneLoop@
+@localDeclOneLoop@
 
    @parameterType@ beta_@parameterName@;
 
-   beta_@parameterName@ = @betaOneLoop@;
+@betaOneLoop@
 
    return beta_@parameterName@;
 }
@@ -46,11 +46,11 @@ namespace flexiblesusy {
  */
 @parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_two_loop() const
 {
-@tracesTwoLoop@
+@localDeclTwoLoop@
 
    @parameterType@ beta_@parameterName@;
 
-   beta_@parameterName@ = @betaTwoLoop@;
+@betaTwoLoop@
 
    return beta_@parameterName@;
 }
