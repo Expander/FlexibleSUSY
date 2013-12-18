@@ -23,6 +23,10 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Add support for the LHInput[p] command in constraints, which reads
    the parameter `p' from the SLHA input file.
 
+ * Constrain time used to simplify the beta functions (default: 120
+   seconds per beta function).  To change the time constraint, set
+   FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint .
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
