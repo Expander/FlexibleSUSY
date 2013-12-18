@@ -128,7 +128,9 @@ ConvertSarahRGEs[betaFunctions_List] :=
                    type = GuessType[name];
                    expr = Drop[beta[[k]], 1];
                    (* protect tensor products *)
-                   expr = Simplify /@ ((CConversion`ProtectTensorProducts[#, name])& /@ expr);
+                   expr = CConversion`ProtectTensorProducts[#, name]& /@ expr;
+                   (* simplify expressions *)
+                   expr = TimeConstrained[Simplify[#], FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint, #]& /@ expr;
                    AppendTo[lst, BetaFunction[name, type, expr]];
                   ];
               ];
