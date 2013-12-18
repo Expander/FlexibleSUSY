@@ -22,6 +22,29 @@ LIB@CLASSNAME@_SRC += \
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
+
+ifneq ($(MAKECMDGOALS),showbuild)
+ifneq ($(MAKECMDGOALS),tag)
+ifneq ($(MAKECMDGOALS),release)
+ifneq ($(MAKECMDGOALS),doc)
+-include $(DIR)/two_scale.mk
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),distclean)
+ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
+ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
+ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
+$(DIR)/two_scale.mk: run-metacode-$(MODNAME)
+		@true
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+endif
+
 endif
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)

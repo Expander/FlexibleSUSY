@@ -518,6 +518,15 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
+WriteMakefileModule[rgeFile_List, files_List] :=
+    Module[{concatenatedFileList},
+           concatenatedFileList = "\t" <> WriteOut`StringJoinWithSeparator[rgeFile, " \\\n\t"];
+           WriteOut`ReplaceInFiles[files,
+                          { "@generatedBetaFunctionModules@" -> concatenatedFileList,
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                     lesHouchesInputParameters_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
@@ -1030,6 +1039,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
                          traceDecl, numberOfSusyParameters];
+
+           Print["Creating makefile module for the two-scale method ..."];
+           WriteMakefileModule[{},
+                               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale.mk"}]}}
+                              ];
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
