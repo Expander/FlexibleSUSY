@@ -24,6 +24,9 @@ CreateParameterNames::usage="";
 
 GetName::usage="returns parameter name from beta function";
 
+CreateSingleBetaFunctionDecl::usage="";
+CreateSingleBetaFunctionDefs::usage="";
+
 Begin["`Private`"];
 
 GetName[BetaFunction[name_, type_, beta_List]] := name;
@@ -44,6 +47,44 @@ GuessType[sym_[Susyno`LieGroups`i1]] :=
 
 GuessType[sym_] :=
     Parameters`GetType[sym];
+
+CreateSingleBetaFunctionDecl[betaFun_List] :=
+    Module[{result = ""},
+           (result = result <> CConversion`CreateCType[GetType[#]] <>
+                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
+                     "_one_loop() const;\n" <>
+                     CConversion`CreateCType[GetType[#]] <>
+                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
+                     "_two_loop() const;\n";)& /@ betaFun;
+           Return[result];
+          ];
+
+CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
+    Module[{b, para, type, paraStr, typeStr, files = {},
+            inputFile, outputFile},
+           For[b = 1, b <= Length[betaFun], b++,
+               para = GetName[betaFun[[b]]];
+               type = GetType[betaFun[[b]]];
+               paraStr = CConversion`ToValidCSymbolString[para];
+               typeStr = CConversion`CreateCType[type];
+               inputFile  = FileNameJoin[{Global`$flexiblesusyTemplateDir, templateFile}];
+               outputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                          FlexibleSUSY`FSModelName <> "_" <>
+                                          StringReplace[templateFile,
+                                                        {".cpp.in" -> paraStr <> ".cpp"}]}];
+               WriteOut`ReplaceInFiles[{{inputFile, outputFile}},
+                     { "@ModelName@"     -> FlexibleSUSY`FSModelName,
+                       "@parameterType@" -> typeStr,
+                       "@parameterName@" -> paraStr,
+                       "@tracesOneLoop@" -> "",
+                       "@tracesTwoLoop@" -> "",
+                       "@betaOneLoop@"   -> "0",
+                       "@betaTwoLoop@"   -> "0"
+                     } ];
+               AppendTo[files, outputFile];
+              ];
+           Return[files];
+          ];
 
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.

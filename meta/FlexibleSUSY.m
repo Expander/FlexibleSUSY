@@ -227,12 +227,14 @@ GeneralReplacementRules[] :=
 
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
+              templateFile_String, makefileModuleTemplates_List,
               additionalDecl_:"", numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
-           numberOfParameters, clearParameters},
+           numberOfParameters, clearParameters,
+           singleBetaFunctionsDecls, singleBetaFunctionsDefsFiles},
           (* extract list of parameters from the beta functions *)
           parameters = BetaFunction`GetName[#]& /@ betaFun;
           (* count number of parameters *)
@@ -252,6 +254,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
+          singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -269,9 +272,14 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@anomDimFunctions@"     -> WrapLines[anomDimFunctions],
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
                    "@printParameters@"      -> IndentText[printParameters],
+                   "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
-          ];
+          singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile];
+          Print["Creating makefile module for the two-scale method ..."];
+          WriteMakefileModule[singleBetaFunctionsDefsFiles,
+                              makefileModuleTemplates];
+         ];
 
 WriteInputParameterClass[inputParameters_List, freePhases_List,
                          lesHouchesInputParameters_List,
@@ -948,7 +956,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}}];
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
+                         "two_scale_susy_beta_.cpp.in",
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_susy.mk"}]}}
+                        ];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
@@ -1039,13 +1051,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
+                         "two_scale_soft_beta_.cpp.in",
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
                          traceDecl, numberOfSusyParameters];
 
-           Print["Creating makefile module for the two-scale method ..."];
-           WriteMakefileModule[{},
-                               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
-                                 FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale.mk"}]}}
-                              ];
+           Return[];
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.

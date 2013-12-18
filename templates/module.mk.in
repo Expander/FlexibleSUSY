@@ -27,13 +27,16 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(DIR)/two_scale.mk
+-include $(DIR)/two_scale_susy.mk
+-include $(DIR)/two_scale_soft.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(DIR)/two_scale.mk: run-metacode-$(MODNAME)
+$(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
+		@true
+$(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
 		@true
 endif
 endif

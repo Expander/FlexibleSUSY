@@ -18,41 +18,41 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_TWO_SCALE_soft_parameters_H
-#define @ModelName@_TWO_SCALE_soft_parameters_H
-
-#include "rge.h"
 #include "@ModelName@_two_scale_susy_parameters.hpp"
-
-#include <iosfwd>
+#include "wrappers.hpp"
 
 namespace flexiblesusy {
 
-class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
-public:
-   @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
-   virtual ~@ModelName@_soft_parameters() {}
-   virtual Eigen::ArrayXd beta() const;
-   virtual const Eigen::ArrayXd display() const;
-   virtual void print(std::ostream&) const;
-   virtual void set(const Eigen::ArrayXd&);
+/**
+ * Calculates the one-loop beta function of @parameterName@.
+ *
+ * @return one-loop beta function
+ */
+@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_one_loop() const
+{
+@tracesOneLoop@
 
-@singleBetaFunctionsDecls@
+   @parameterType@ beta_@parameterName@;
 
-   @ModelName@_soft_parameters calc_beta() const;
-   virtual void clear();
+   beta_@parameterName@ = @betaOneLoop@;
 
-@setter@
-@getter@
+   return beta_@parameterName@;
+}
 
-protected:
-@parameterDef@
+/**
+ * Calculates the two-loop beta function of @parameterName@.
+ *
+ * @return two-loop beta function
+ */
+@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_two_loop() const
+{
+@tracesTwoLoop@
 
-private:
-   static const int numberOfParameters = @numberOfParameters@;
-};
+   @parameterType@ beta_@parameterName@;
+
+   beta_@parameterName@ = @betaTwoLoop@;
+
+   return beta_@parameterName@;
+}
 
 } // namespace flexiblesusy
-
-#endif

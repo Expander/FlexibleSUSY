@@ -30,7 +30,7 @@ namespace flexiblesusy {
  */
 @parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_one_loop() const
 {
-@traces@
+@tracesOneLoop@
 
    @parameterType@ beta_@parameterName@;
 
@@ -46,7 +46,7 @@ namespace flexiblesusy {
  */
 @parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_two_loop() const
 {
-@traces@
+@tracesTwoLoop@
 
    @parameterType@ beta_@parameterName@;
 
