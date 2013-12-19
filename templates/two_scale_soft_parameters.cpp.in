@@ -52,7 +52,8 @@ Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
 
 @ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
 {
-   calc_soft_traces();
+   Soft_traces soft_traces;
+   calc_soft_traces(soft_traces);
 
 @beta@
 
@@ -92,7 +93,7 @@ void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
 @set@
 }
 
-void @ModelName@_soft_parameters::calc_soft_traces()
+void @ModelName@_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) const
 {
 @calcTraces@
 }

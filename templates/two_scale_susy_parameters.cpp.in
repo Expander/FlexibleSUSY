@@ -59,7 +59,8 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 
 @ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
-   calc_susy_traces();
+   Susy_traces susy_traces;
+   calc_susy_traces(susy_traces);
 
 @beta@
 
@@ -104,7 +105,7 @@ void @ModelName@_susy_parameters::set_input(const @ModelName@_input_parameters& 
    input = input_;
 }
 
-void @ModelName@_susy_parameters::calc_susy_traces()
+void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) const
 {
 @calcTraces@
 }

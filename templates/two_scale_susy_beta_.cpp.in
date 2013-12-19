@@ -30,7 +30,7 @@ namespace flexiblesusy {
  *
  * @return one-loop beta function
  */
-@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_one_loop() const
+@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_one_loop(const Susy_traces& susy_traces) const
 {
 @localDeclOneLoop@
 
@@ -46,7 +46,7 @@ namespace flexiblesusy {
  *
  * @return two-loop beta function
  */
-@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_two_loop() const
+@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_two_loop(const Susy_traces& susy_traces) const
 {
 @localDeclTwoLoop@
 

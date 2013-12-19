@@ -52,10 +52,10 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
     Module[{result = ""},
            (result = result <> CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_one_loop() const;\n" <>
+                     "_one_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_two_loop() const;\n";)& /@ betaFun;
+                     "_two_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
            Return[result];
           ];
 
@@ -140,10 +140,10 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
             name          = ToValidCSymbolString[GetName[betaFunction]];
             dataType      = CConversion`CreateCType[GetType[betaFunction]];
             betaName      = "beta_" <> name;
-            oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop()";
+            oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop(TRACE_STRUCT)";
             beta1L        = dataType <> " " <> betaName <> "(" <> oneLoopBetaStr <> ");\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
-              twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop()";
+              twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
               beta2L = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
              ];
             Return[{localDecl, beta1L, beta2L}];
