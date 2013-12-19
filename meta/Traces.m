@@ -16,6 +16,8 @@ CreateTraceCalculation::usage="";
 CreateSARAHTraceDefs::usage="";
 CreateSARAHTraceCalculation::usage="";
 CreateLocalCopiesOfTraces::usage="";
+CreateLocalCopiesOfSARAHTraces::usage="";
+FindSARAHTraces::usage="";
 
 SARAHTrace;
 
@@ -29,6 +31,12 @@ ConvertToScalar[expr_] :=
         SARAH`MatMul[a_, b_] :> SARAH`ScalarProd[a, b],
         SARAH`MatMul[a_, b__] :> SARAH`ScalarProd[a, SARAH`MatMul[b]]
             };
+
+FindSARAHTraces[expr_, sarahTraces_List] :=
+    Module[{traceSymbols},
+           traceSymbols = DeleteDuplicates[Flatten[GetSARAHTraceName /@ sarahTraces]];
+           Select[traceSymbols, (!FreeQ[expr,#])&]
+          ];
 
 ConvertSARAHTraces[abbrs_] :=
     Module[{i, j, name, expr, traces = {}},
@@ -63,6 +71,15 @@ CreateDoubleTraceAbbrs[traces_List] :=
                       " = " <> RValueToCFormString[multipleTraces[[i]]] <> ";\n";
               ];
            Return[{decl, rules}];
+          ];
+
+CreateLocalCopiesOfSARAHTraces[expr_, sarahTraces_List, structName_String] :=
+    Module[{defs = "", traces},
+           traces = FindSARAHTraces[expr, sarahTraces];
+           (defs = defs <> "const double " <> ToValidCSymbolString[#] <>
+            " = " <> structName <> "." <> ToValidCSymbolString[#] <>
+            ";\n")& /@ traces;
+           Return[defs];
           ];
 
 CreateLocalCopiesOfTraces[list_List, structName_String] :=

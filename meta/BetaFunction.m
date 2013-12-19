@@ -115,6 +115,11 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             {localDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[{expr}];
             localDecl  = Traces`CreateLocalCopiesOfTraces[{expr}, "TRACE_STRUCT"];
             beta = beta /. traceRules;
+            (* replace SARAH traces in expr *)
+            traceRules = Rule[#,ToValidCSymbol[#]]& /@ (Traces`FindSARAHTraces[expr, sarahTraces]);
+            beta = beta /. traceRules;
+            (* declare SARAH traces locally *)
+            localDecl  = localDecl <> Traces`CreateLocalCopiesOfSARAHTraces[expr, sarahTraces, "TRACE_STRUCT"];
             If[beta === 0,
                beta = CConversion`CreateZero[type];
               ];
