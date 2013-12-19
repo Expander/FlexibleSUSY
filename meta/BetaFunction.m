@@ -120,7 +120,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
               ];
             betaStr    = RValueToCFormString[beta];
             betaStr    = betaName <> " = " <> betaStr <> ";\n";
-            localDecl  = Parameters`CreateLocalConstRefsForInputParameters[GetBeta1Loop[betaFunction]] <>
+            localDecl  = Parameters`CreateLocalConstRefsForInputParameters[expr] <>
                          localDecl;
             Return[{localDecl, betaStr}];
            ];
