@@ -23,6 +23,8 @@
 
 namespace flexiblesusy {
 
+#define TRACE_STRUCT soft_traces
+
 /**
  * Calculates the one-loop beta function of @parameterName@.
  *

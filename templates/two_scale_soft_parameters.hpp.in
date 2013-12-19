@@ -38,8 +38,6 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
 
-@singleBetaFunctionsDecls@
-
    @ModelName@_soft_parameters calc_beta() const;
    virtual void clear();
 
@@ -51,6 +49,14 @@ protected:
 
 private:
    static const int numberOfParameters = @numberOfParameters@;
+
+   struct Soft_traces {
+@traceDefs@
+   } soft_traces;
+
+   void calc_soft_traces();
+
+@singleBetaFunctionsDecls@
 };
 
 } // namespace flexiblesusy

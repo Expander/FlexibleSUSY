@@ -11,6 +11,10 @@ two-component list, where the first entry is string of C/C++ variable
 definitions that hold the trace values.  The second entry is a list of
 rules to replace the traces by their C/C++ variables.";
 
+CreateTraceDefs::usage="";
+CreateTraceCalculation::usage="";
+CreateLocalCopiesOfTraces::usage="";
+
 Begin["`Private`"];
 
 ConvertToScalar[expr_] :=
@@ -54,6 +58,29 @@ CreateDoubleTraceAbbrs[traces_List] :=
                       " = " <> RValueToCFormString[multipleTraces[[i]]] <> ";\n";
               ];
            Return[{decl, rules}];
+          ];
+
+CreateLocalCopiesOfTraces[list_List, structName_String] :=
+    Module[{defs = "", traces},
+           traces = FindAllTraces[list];
+           (defs = defs <> "const double " <> ToValidCSymbolString[#] <> " = " <>
+            structName <> "." <> ToValidCSymbolString[#] <> ";\n")& /@ traces;
+           Return[defs];
+          ];
+
+CreateTraceDefs[list_List] :=
+    Module[{defs = "", traces},
+           traces = FindAllTraces[list];
+           (defs = defs <> "double " <> ToValidCSymbolString[#] <> ";\n")& /@ traces;
+           Return[defs];
+          ];
+
+CreateTraceCalculation[list_List, structName_String] :=
+    Module[{defs = "", traces},
+           traces = FindAllTraces[list];
+           (defs = defs <> structName <> "." <> ToValidCSymbolString[#] <>
+            " = " <> RValueToCFormString[#] <> ";\n")& /@ traces;
+           Return[defs];
           ];
 
 End[];

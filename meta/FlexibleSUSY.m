@@ -234,7 +234,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters,
-           singleBetaFunctionsDecls, singleBetaFunctionsDefsFiles},
+           singleBetaFunctionsDecls, singleBetaFunctionsDefsFiles,
+           traceDefs, calcTraces},
           (* extract list of parameters from the beta functions *)
           parameters = BetaFunction`GetName[#]& /@ betaFun;
           (* count number of parameters *)
@@ -255,6 +256,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
           singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
+          traceDefs            = Traces`CreateTraceDefs[betaFun];
+          calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -273,6 +276,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
                    "@printParameters@"      -> IndentText[printParameters],
                    "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
+                   "@traceDefs@"            -> IndentText[IndentText[traceDefs]],
+                   "@calcTraces@"           -> IndentText[calcTraces],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile];

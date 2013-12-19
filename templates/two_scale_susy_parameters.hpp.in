@@ -43,8 +43,6 @@ public:
    const @ModelName@_input_parameters& get_input() const;
    void set_input(const @ModelName@_input_parameters&);
 
-@singleBetaFunctionsDecls@
-
    @ModelName@_susy_parameters calc_beta() const;
    virtual void clear();
 
@@ -58,6 +56,14 @@ protected:
 
 private:
    static const int numberOfParameters = @numberOfParameters@;
+
+   struct Susy_traces {
+@traceDefs@
+   } susy_traces;
+
+   void calc_susy_traces();
+
+@singleBetaFunctionsDecls@
 };
 
 } // namespace flexiblesusy

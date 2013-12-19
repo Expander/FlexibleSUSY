@@ -62,7 +62,7 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
 CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
     Module[{b, para, type, paraStr, typeStr, files = {},
             inputFile, outputFile,
-            localDecl, betaOneLoop, betaTwoLoop},
+            localDeclOneLoop, localDeclTwoLoop, betaOneLoop, betaTwoLoop},
            For[b = 1, b <= Length[betaFun], b++,
                para = GetName[betaFun[[b]]];
                type = GetType[betaFun[[b]]];
@@ -108,6 +108,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
                               a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
             {localDeclOneLoop, traceRules} = Traces`CreateDoubleTraceAbbrs[{GetBeta1Loop[betaFunction]}];
+            localDeclOneLoop = Traces`CreateLocalCopiesOfTraces[{GetBeta1Loop[betaFunction]}, "TRACE_STRUCT"];
             oneLoopBeta = oneLoopBeta /. traceRules;
             If[oneLoopBeta === 0,
                oneLoopBeta = CConversion`CreateZero[type];
@@ -119,6 +120,7 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
                             a_[Susyno`LieGroups`i1] :> a,
                             a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
             {localDeclTwoLoop, traceRules} = Traces`CreateDoubleTraceAbbrs[{GetBeta2Loop[betaFunction]}];
+            localDeclTwoLoop = Traces`CreateLocalCopiesOfTraces[{GetBeta2Loop[betaFunction]}, "TRACE_STRUCT"];
             twoLoopBeta = twoLoopBeta /. traceRules;
             If[twoLoopBeta === 0,
                twoLoopBeta = CConversion`CreateZero[type];
