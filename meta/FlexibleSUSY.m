@@ -1061,8 +1061,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
                          SARAH`TraceAbbr, numberOfSusyParameters];
 
-           Return[];
-
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[] /.
