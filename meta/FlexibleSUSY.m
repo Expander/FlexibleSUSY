@@ -283,7 +283,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@calcTraces@"           -> IndentText[WrapLines[calcTraces]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
-          singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile];
+          singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile, sarahTraces];
           Print["Creating makefile module for the two-scale method ..."];
           WriteMakefileModule[singleBetaFunctionsDefsFiles,
                               makefileModuleTemplates];

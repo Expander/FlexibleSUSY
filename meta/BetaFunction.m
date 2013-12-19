@@ -59,7 +59,7 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
            Return[result];
           ];
 
-CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
+CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List] :=
     Module[{b, para, type, paraStr, typeStr, files = {},
             inputFile, outputFile,
             localDeclOneLoop, localDeclTwoLoop, betaOneLoop, betaTwoLoop},
@@ -73,7 +73,8 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
                                           FlexibleSUSY`FSModelName <> "_" <>
                                           StringReplace[templateFile,
                                                         {".cpp.in" -> paraStr <> ".cpp"}]}];
-               {localDeclOneLoop, localDeclTwoLoop, betaOneLoop, betaTwoLoop} = CreateBetaFunction[betaFun[[b]]];
+               {localDeclOneLoop, betaOneLoop} = CreateBetaFunction[betaFun[[b]], 1, sarahTraces];
+               {localDeclTwoLoop, betaTwoLoop} = CreateBetaFunction[betaFun[[b]], 2, sarahTraces];
                WriteOut`ReplaceInFiles[{{inputFile, outputFile}},
                      { "@ModelName@"     -> FlexibleSUSY`FSModelName,
                        "@parameterType@" -> typeStr,
@@ -92,45 +93,36 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
  *)
-CreateBetaFunction[betaFunction_BetaFunction] :=
-     Module[{beta1L = "", beta2L = "", betaName = "", name = "",
-             oneLoopBeta, oneLoopBetaStr, dataType, unitMatrix,
-             twoLoopBeta, twoLoopBetaStr, type = ErrorType,
-             localDeclOneLoop, localDeclTwoLoop,
-             traceRules},
+CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_List] :=
+     Module[{beta, betaName, name, betaStr, dataType, unitMatrix,
+             type = ErrorType, localDecl, traceRules, expr},
             type = GetType[betaFunction];
-            dataType = CConversion`CreateCType[type];
+            expr = GetAllBetaFunctions[betaFunction];
+            If[loopOrder > Length[expr],
+               Print["Warning: there is no beta function of ", loopOrder, " loop order."];
+               Return[{"", RValueToCFormString[CConversion`CreateZero[type]]}];
+              ];
+            expr       = expr[[loopOrder]];
+            dataType   = CConversion`CreateCType[type];
             unitMatrix = CreateUnitMatrix[type];
             (* convert beta function expressions to C form *)
-            name          = ToValidCSymbolString[GetName[betaFunction]];
-            betaName      = "beta_" <> name;
-            oneLoopBeta   = (CConversion`oneOver16PiSqr * GetBeta1Loop[betaFunction]) /.
+            name       = ToValidCSymbolString[GetName[betaFunction]];
+            betaName   = "beta_" <> name;
+            beta       = (CConversion`oneOver16PiSqr * expr) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
                               a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
-            {localDeclOneLoop, traceRules} = Traces`CreateDoubleTraceAbbrs[{GetBeta1Loop[betaFunction]}];
-            localDeclOneLoop = Traces`CreateLocalCopiesOfTraces[{GetBeta1Loop[betaFunction]}, "TRACE_STRUCT"];
-            oneLoopBeta = oneLoopBeta /. traceRules;
-            If[oneLoopBeta === 0,
-               oneLoopBeta = CConversion`CreateZero[type];
+            {localDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[{expr}];
+            localDecl  = Traces`CreateLocalCopiesOfTraces[{expr}, "TRACE_STRUCT"];
+            beta = beta /. traceRules;
+            If[beta === 0,
+               beta = CConversion`CreateZero[type];
               ];
-            oneLoopBetaStr = RValueToCFormString[oneLoopBeta];
-            beta1L         = betaName <> " = " <> oneLoopBetaStr <> ";\n";
-            twoLoopBeta = (CConversion`twoLoop * GetBeta2Loop[betaFunction]) /.
-                          { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
-                            a_[Susyno`LieGroups`i1] :> a,
-                            a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
-            {localDeclTwoLoop, traceRules} = Traces`CreateDoubleTraceAbbrs[{GetBeta2Loop[betaFunction]}];
-            localDeclTwoLoop = Traces`CreateLocalCopiesOfTraces[{GetBeta2Loop[betaFunction]}, "TRACE_STRUCT"];
-            twoLoopBeta = twoLoopBeta /. traceRules;
-            If[twoLoopBeta === 0,
-               twoLoopBeta = CConversion`CreateZero[type];
-              ];
-            twoLoopBetaStr = RValueToCFormString[twoLoopBeta];
-            beta2L         = betaName <> " = " <> twoLoopBetaStr <> ";\n";
-            localDeclOneLoop = Parameters`CreateLocalConstRefsForInputParameters[GetBeta1Loop[betaFunction]] <> localDeclOneLoop;
-            localDeclTwoLoop = Parameters`CreateLocalConstRefsForInputParameters[GetBeta2Loop[betaFunction]] <> localDeclTwoLoop;
-            Return[{localDeclOneLoop, localDeclTwoLoop, beta1L, beta2L}];
+            betaStr    = RValueToCFormString[beta];
+            betaStr    = betaName <> " = " <> betaStr <> ";\n";
+            localDecl  = Parameters`CreateLocalConstRefsForInputParameters[GetBeta1Loop[betaFunction]] <>
+                         localDecl;
+            Return[{localDecl, betaStr}];
            ];
 
 CreateBetaFunctionCall[betaFunction_BetaFunction] :=
