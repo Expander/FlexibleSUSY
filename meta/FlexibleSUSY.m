@@ -260,7 +260,8 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           traceDefs            = Traces`CreateTraceDefs[betaFun];
           traceDefs            = traceDefs <> Traces`CreateSARAHTraceDefs[sarahTraces];
           calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
-          calcTraces           = calcTraces <> Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
+          calcTraces           = calcTraces <> "\n" <>
+                                 Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],

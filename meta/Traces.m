@@ -1,5 +1,5 @@
 
-BeginPackage["Traces`", {"SARAH`", "CConversion`"}];
+BeginPackage["Traces`", {"SARAH`", "CConversion`", "Parameters`"}];
 
 CreateDoubleTraceAbbrs::usage="takes a list of traces and returns a
 two-component list, where the first entry is string of C/C++ variable
@@ -115,6 +115,8 @@ CreateSARAHTraceCalculation[list_List, structName_String] :=
     Module[{defs = ""},
            (defs = defs <> structName <> "." <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
             " = " <> RValueToCFormString[GetSARAHTraceExpr[#]] <> ";\n")& /@ list;
+           defs = Parameters`CreateLocalConstRefsForInputParameters[list] <>
+                  "\n" <> defs;
            Return[defs];
           ];
 
