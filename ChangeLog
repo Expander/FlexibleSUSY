@@ -30,6 +30,9 @@ FlexibleSUSY-0.5.2 [not released yet]
    seconds per beta function).  To change the time constraint, set
    FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint .
 
+ * Avoid swapping by distributing the calculation of the two-scale
+   beta functions among multiple .cpp files.
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
