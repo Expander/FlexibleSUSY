@@ -95,7 +95,11 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
  *)
 CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_List] :=
      Module[{beta, betaName, name, betaStr, dataType, unitMatrix,
-             type = ErrorType, localDecl, traceRules, expr},
+             type = ErrorType, localDecl, traceRules, expr, loopFactor},
+            Switch[loopOrder,
+                   1, loopFactor = CConversion`oneOver16PiSqr;,
+                   2, loopFactor = CConversion`twoLoop;,
+                   _, loopFactor = CConversion`oneOver16PiSqr^loopOrder];
             type = GetType[betaFunction];
             expr = GetAllBetaFunctions[betaFunction];
             If[loopOrder > Length[expr],
@@ -108,7 +112,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             (* convert beta function expressions to C form *)
             name       = ToValidCSymbolString[GetName[betaFunction]];
             betaName   = "beta_" <> name;
-            beta       = (CConversion`oneOver16PiSqr * expr) /.
+            beta       = (loopFactor * expr) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
                               a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
