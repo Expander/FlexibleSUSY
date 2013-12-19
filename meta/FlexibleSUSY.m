@@ -228,20 +228,21 @@ GeneralReplacementRules[] :=
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
               templateFile_String, makefileModuleTemplates_List,
-              additionalDecl_:"", numberOfBaseClassParameters_:0] :=
+              additionalTraces_List:{}, numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
            numberOfParameters, clearParameters,
            singleBetaFunctionsDecls, singleBetaFunctionsDefsFiles,
-           traceDefs, calcTraces},
+           traceDefs, calcTraces, sarahTraces},
           (* extract list of parameters from the beta functions *)
           parameters = BetaFunction`GetName[#]& /@ betaFun;
           (* count number of parameters *)
           numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun] + numberOfBaseClassParameters;
           (* create C++ functions and parameter declarations *)
-          beta                 = BetaFunction`CreateBetaFunction[betaFun, additionalDecl];
+          sarahTraces          = Traces`ConvertSARAHTraces[additionalTraces];
+          beta                 = BetaFunction`CreateBetaFunction[betaFun, sarahTraces];
           setter               = BetaFunction`CreateSetters[betaFun];
           getter               = BetaFunction`CreateGetters[betaFun];
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];
@@ -257,7 +258,9 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
           singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
           traceDefs            = Traces`CreateTraceDefs[betaFun];
+          traceDefs            = traceDefs <> Traces`CreateSARAHTraceDefs[sarahTraces];
           calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
+          calcTraces           = calcTraces <> Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -277,7 +280,7 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@printParameters@"      -> IndentText[printParameters],
                    "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
                    "@traceDefs@"            -> IndentText[IndentText[traceDefs]],
-                   "@calcTraces@"           -> IndentText[calcTraces],
+                   "@calcTraces@"           -> IndentText[WrapLines[calcTraces]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile];
@@ -975,9 +978,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
-           {traceDecl, traceRules} = CreateTraceAbbr[SARAH`TraceAbbr];
-           susyBreakingBetaFunctions = susyBreakingBetaFunctions /. traceRules;
-
            (* store all model parameters *)
            allParameters = Join[BetaFunction`GetName /@ susyBetaFunctions,
                                 BetaFunction`GetName /@ susyBreakingBetaFunctions] /.
@@ -1059,7 +1059,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          "two_scale_soft_beta_.cpp.in",
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
-                         traceDecl, numberOfSusyParameters];
+                         SARAH`TraceAbbr, numberOfSusyParameters];
 
            Return[];
 

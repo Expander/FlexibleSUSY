@@ -134,25 +134,25 @@ CreateBetaFunction[betaFunction_BetaFunction] :=
            ];
 
 CreateBetaFunctionCall[betaFunction_BetaFunction] :=
-     Module[{beta1L = "", beta2L = "", betaName = "", name = "",
-             oneLoopBetaStr, dataType, unitMatrix,
+     Module[{beta1L, beta2L = "", betaName = "", name = "",
+             oneLoopBetaStr, dataType, localDecl = "",
              twoLoopBeta, twoLoopBetaStr, type = ErrorType},
             name          = ToValidCSymbolString[GetName[betaFunction]];
+            dataType      = CConversion`CreateCType[GetType[betaFunction]];
             betaName      = "beta_" <> name;
             oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop()";
-            beta1L        = beta1L <> betaName <> " = " <> oneLoopBetaStr <> ";\n";
+            beta1L        = dataType <> " " <> betaName <> "(" <> oneLoopBetaStr <> ");\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
               twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop()";
               beta2L = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
              ];
-            Return[{"", beta1L, beta2L}];
+            Return[{localDecl, beta1L, beta2L}];
           ];
 
-CreateBetaFunction[betaFunctions_List, additionalDecl_String] :=
+CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
     Module[{def = "",
             localDecl = "", beta1L = "", beta2L = "", allDecl = "", allBeta = "",
             allBeta1L = "", allBeta2L = "", i, inputParsDecl},
-           allDecl = additionalDecl <> "\n";
            For[i = 1, i <= Length[betaFunctions], i++,
                {localDecl, beta1L, beta2L} = CreateBetaFunctionCall[betaFunctions[[i]]];
                allDecl = allDecl <> localDecl;
