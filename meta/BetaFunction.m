@@ -81,7 +81,8 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String] :=
                        "@localDeclOneLoop@" -> WrapLines[IndentText[localDeclOneLoop]],
                        "@localDeclTwoLoop@" -> WrapLines[IndentText[localDeclTwoLoop]],
                        "@betaOneLoop@"   -> WrapLines[IndentText[betaOneLoop]],
-                       "@betaTwoLoop@"   -> WrapLines[IndentText[betaTwoLoop]]
+                       "@betaTwoLoop@"   -> WrapLines[IndentText[betaTwoLoop]],
+                       "@DateAndTime@"   -> DateString[]
                      } ];
                AppendTo[files, outputFile];
               ];
