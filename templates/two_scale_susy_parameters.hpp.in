@@ -43,6 +43,8 @@ public:
    const @ModelName@_input_parameters& get_input() const;
    void set_input(const @ModelName@_input_parameters&);
 
+@singleBetaFunctionsDecls@
+
    @ModelName@_susy_parameters calc_beta() const;
    virtual void clear();
 
