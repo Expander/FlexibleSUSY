@@ -24,9 +24,9 @@ double sign(double a, double b)
 
 void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
                    double h1, double hmin, Derivs derivs,
-                   RungeKuttaQuinticStepper rkqs) {
-  int nvar =  ystart.size();
-  int nstp;
+                   RungeKuttaQuinticStepper rkqs)
+{
+  const int nvar = ystart.size();
   double x, hnext, hdid, h;
   ArrayXd yscal(nvar), y(ystart), dydx;
 
@@ -36,7 +36,7 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
   const int MAXSTP = 400;
   const double TINY = 1.0e-16;
 
-  for (nstp = 1; nstp <= MAXSTP; nstp++) {
+  for (int nstp = 1; nstp <= MAXSTP; nstp++) {
     dydx = derivs(x, y);
     yscal = y.abs() + (dydx * h).abs() + TINY;
     if ((x + h - to) * (x + h - from) > 0.0) h = to - x;
@@ -50,11 +50,11 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
     if (fabs(hnext) <= hmin) {
       nstp = MAXSTP; // bail out
 #ifdef VERBOSE
-	ERROR("Step size too small in rk.cpp:integrateOdes\n"
-	      << "**********x = " << x << "*********");
-	for (int i = 0; i < nvar; i++)
-	    ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
-		  ") = " << dydx(i));
+      ERROR("Step size too small in rk.cpp:integrateOdes\n"
+            "********** x = " << x << " *********");
+      for (int i = 0; i < nvar; i++)
+        ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
+              ") = " << dydx(i));
 #endif
     }
 
@@ -62,11 +62,11 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
   }
 
 #ifdef VERBOSE
-    ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
-	    << "**********x = " << x << "*********");
-    for (int i = 0; i < nvar; i++)
-	ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
-	      ") = " << dydx(i));
+  ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
+        "********** x = " << x << " *********");
+  for (int i = 0; i < nvar; i++)
+    ERROR("y(" << i << ") = " << y(i) << " dydx(" << i <<
+          ") = " << dydx(i));
 #endif
 
    throw NonPerturbativeRunningError(to);
