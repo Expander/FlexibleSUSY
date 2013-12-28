@@ -344,7 +344,7 @@ void CLASSNAME::calculate_DRbar_parameters()
 @restoreSoftHiggsMasses@
 }
 
-void CLASSNAME::calculate_1loop_masses()
+void CLASSNAME::calculate_pole_masses()
 {
 @callAllLoopMassFunctions@
 }
@@ -358,7 +358,7 @@ void CLASSNAME::calculate_spectrum()
 {
    calculate_DRbar_parameters();
    if (pole_mass_loop_order > 0)
-      calculate_1loop_masses();
+      calculate_pole_masses();
    else
       copy_DRbar_masses_to_pole_masses();
 }

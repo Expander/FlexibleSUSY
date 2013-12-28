@@ -46,7 +46,7 @@ public:
    virtual ~@ModelName@();
 
    void calculate_DRbar_parameters();
-   void calculate_1loop_masses();
+   void calculate_pole_masses();
    virtual void clear();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
