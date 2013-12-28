@@ -497,18 +497,28 @@ in this case the NMSSM $\oatas$, $\oabas$ pieces come from
 \cite{Degrassi:2009yq}.  Corrections from other sources can be added
 to the generated code by...
 
-\subsection{tree level spectrum}
-The diagonalised tree level $\overline{DR}$ masses are obtained from expressions...
-The numerical diagonalisation is performed by... with an accuracy set by...   
-\subsection{two scale fixed point iteration}
-The default solver which calls the above routines above and finds the full set of $\overline{DR}$ masses in the model consistent with all constraints is the two-scale solver.  This can be selected by... but if no selection is made this will be used anyway as default. 
+\subsection{Tree-level spectrum}
+The tree-level $\overline{DR}$ masses are calculated by diagonalizing
+the mass matrices returned from \code{SARAH`MassMatrix[]}.  The
+numerical diagonalization is performed by the Eigen library routines
+\code{Eigen::JacobiSVD} and \code{Eigen::SelfAdjointEigenSolver} for
+small matrices, and the Lapack routines \code{zgesvd}, \code{dgesvd},
+\code{zheev}, \code{dsyev} for matrices with more than four rows and
+columns.
 
-This approach is decribed in \cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY spectrum generators.  
+\subsection{Two-scale fixed point iteration}
+The default two-scale RG solver uses above beta functions and boundary
+conditions to find the full set of $\overline{DR}$ masses in the model
+consistent with all constraints.  It does so by iterating between the
+scales of all boundary conditions, applying the constraints and
+checking for convergence.  This approach is decribed in
+\cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY
+spectrum generators.
 
-
-The stucture of the two-scale algorithm used in \fs is as follows,
+The in more detail the two-scale algorithm used in \fs works as
+follows:
 %
-Initial guess:
+\\Initial guess:
 \begin{enumerate}
 \item Guess gauge couplings $g_{1,2,3}$ at $m_Z$
 \item Apply user-defined low-scale constraint (\code{LowScaleInput})
