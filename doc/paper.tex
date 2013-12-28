@@ -331,9 +331,6 @@ $ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM -
   \end{lstlisting}%% $
 
 \section{Stucture of the spectrum generator}
-\subsection{boundary conditions}
-Different types, how we match to low energy data.  reference EWSB or merge that section here.
-mention two loop qcd parts from softsusy.
 
 \subsection{Model parameters and RGEs}
 Even in the simplest supersymmetric model the RGEs form a very large
@@ -379,16 +376,130 @@ implemented via inheritance, see
   \label{fig:parameter-classes}
 \end{figure}
 
+\subsection{Boundary conditions}
+In \fs the RGE boundary conditions are implemented by inheriting from
+a common \code{Constraint<Two\_scale>} interface class and
+implementing the pure virtual functions \code{apply()},
+\code{get\_scale()} and \code{set\_model()}, see
+\figurename~\ref{fig:schematic-two-scale-constraint-interface}.  Per
+default, \fs creates three default boundary conditions:
+%
+\begin{itemize}
+\item \emph{GUT constraint:} Here the \code{apply()} function
+  calculates the value of the unification scale $M_X$ (from the
+  condition given in \code{HighScale}) and sets the model parameters
+  given in \code{HighScaleInput}.
+\item \emph{SUSY constraint:} Here the \code{apply()} function
+  calculates the value of the susy scale $M_S$ and sets the model
+  parameters given in \code{SUSYScaleInput}.  Afterwards the EWSB
+  conditions are solved for the parameters given in
+  \code{EWSBOutputParameters} at the one-loop level, i.e., the the
+  parameters in \code{EWSBOutputParameters} are determined such that
+  the one-loop effective potential is minimized.
+\item \emph{Low-scale constraint:} This constraint matches the gauge
+  and Yukawa couplings of the susy model to the Standard Model values
+  using threshold corrections.  Furthermore the parameters given in
+  \code{LowScaleInput} are set.
+\end{itemize}
+
+{\color{red}Different types, how we match to low energy data.
+  reference EWSB or merge that section here.  mention two loop qcd
+  parts from softsusy.}
+
+\subsubsection{Electroweak symmetry breaking}
+In \fs the one-loop electroweak symmetry breaking conditions are
+formulated as
+%
+\begin{align}
+  0 = \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
+  \label{eq:one-loop-ewsb-eq}
+\end{align}
+%
+where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
+VEVs corresponding to the Higgs field $H_i$ and $t_i$ is the one-loop
+tadpole diagram of $H_i$.
+
+The electroweak symmetry breaking conditions
+\eqref{eq:one-loop-ewsb-eq} are then solved simultaneously using the
+iterative multi-dimensional root finder algorithm
+\code{gsl_multiroot_fsolver_hybrid} from the Gnu Scientific Libraray
+(GSL).  If no root was found, the \code{gsl_multiroot_fsolver_hybrids}
+algorithm is tried as alternative, which uses a variable step size but
+might be a little slower.
+
+For example in the MSSM \fs expresses \eqref{eq:one-loop-ewsb-eq} as
+the function
+%
+\begin{lstlisting}[language=C++]
+int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   ...
+
+   const CLASSNAME::Ewsb_parameters* ewsb_parameters
+      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
+   MSSM* model = ewsb_parameters->model;
+   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
+
+   double tadpole[numberOfEWSBEquations];
+
+   model->set_BMu(gsl_vector_get(x, 0));
+   model->set_Mu(INPUT(SignMu) * Abs(gsl_vector_get(x, 1)));
+
+   // calculate tree-level tadpole eqs.
+   tadpole[0] = model->get_ewsb_eq_vd();
+   tadpole[1] = model->get_ewsb_eq_vu();
+
+   // subtract one-loop tadpoles
+   if (ewsb_loop_order > 0) {
+      model->calculate_DRbar_parameters();
+      tadpole[0] -= Re(model->tadpole_hh(0));
+      tadpole[1] -= Re(model->tadpole_hh(1));
+
+   }
+
+   for (std::size_t i = 0; i < numberOfEWSBEquations; ++i)
+      gsl_vector_set(f, i, tadpole[i]);
+
+   return GSL_SUCCESS;
+}
+\end{lstlisting}
+%
+Here \code{x} is the vector of EWSB output parameters
+(\code{EWSBOutputParameters}) and \code{f} is a vector which contains
+the one-loop EWSB eqs.\ \eqref{eq:one-loop-ewsb-eq}.  This
+\code{tadpole_equations()} function is called inside of
+\code{MSSM<Two_scale>::solve_ewsb_iteratively_with} then via
+%
+\begin{lstlisting}[language=C++]
+// initial guess
+double x_init[numberOfEWSBEquations];
+ewsb_initial_guess(x_init);
+
+// setup root finder
+int ewsb_loop_order = 1;
+Ewsb_parameters params = {this, ewsb_loop_order};
+Root_finder<numberOfEWSBEquations> root_finder(MSSM<Two_scale>::tadpole_equations,
+                           &params,
+                           number_of_ewsb_iterations,
+                           ewsb_iteration_precision);
+root_finder.set_solver_type(gsl_multiroot_fsolver_hybrid);
+
+root_finder.find_root(x_init);
+\end{lstlisting}
+
+If higher accuracy is required additional routines with higher order
+corrections can be added in a very simple way.  For example in the
+MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by
+P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of
+$\oatas$, $\oabas$, $\oatq$, $\oabatau$, $\oabq$, $\oatauq$ and
+$\oatab$ as follows...  Something similar is done for the NMSSM, but
+in this case the NMSSM $\oatas$, $\oabas$ pieces come from
+\cite{Degrassi:2009yq}.  Corrections from other sources can be added
+to the generated code by...
+
 \subsection{tree level spectrum}
 The diagonalised tree level $\overline{DR}$ masses are obtained from expressions...
 The numerical diagonalisation is performed by... with an accuracy set by...   
-\subsection{Electroweak symmetry breaking}
-At tree level the EWSB conditions are written...
-The one loop electroweak symmetry breaking are solved using the gsl routines finding multiple roots, \code{gsl_multiroot_fsolver}.  Iteration. For example in the MSSM \fs generates.. show code.
- If higher accuracy is required additional routines with higher order corrections can be added in a very simple way.  For example in the MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of $\oatas$, $\oabas$, $\oatq$, $\oabatau$, 
-$\oabq$, $\oatauq$ and $\oatab$  as follows...  
-Something similar is done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}.
- Corrections from other sources can be added to the generated code by...
 \subsection{two scale fixed point iteration}
 The default solver which calls the above routines above and finds the full set of $\overline{DR}$ masses in the model consistent with all constraints is the two-scale solver.  This can be selected by... but if no selection is made this will be used anyway as default. 
 
