@@ -334,9 +334,51 @@ $ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM -
 \subsection{boundary conditions}
 Different types, how we match to low energy data.  reference EWSB or merge that section here.
 mention two loop qcd parts from softsusy.
-\subsection{RGEs}
-The two loop renormalisation group equations are generated using command ?
-Even in the simplest supersymmetric model the RGEs form a very large set of coupled non-linear differential equations.  To solve these and thereby evolve the parameters between two different scales \fs has... 
+
+\subsection{Model parameters and RGEs}
+Even in the simplest supersymmetric model the RGEs form a very large
+set of coupled non-linear differential equations.  In a general
+(softly broken) supersymmetric theory the soft-breaking parameters
+depend on themselves and the susy parameters.  However, the susy
+parameters are independent of the soft-breaking parameters [cite: MV,
+Staub, Sperling].  This makes it possible to split the model
+parameters and their into the following two subsets:
+%
+\begin{enumerate}
+\item \emph{susy parameters:} gauge couplings, superpotential
+  parameters and VEVs and
+\item soft-breaking parameters.
+\end{enumerate}
+%
+The susy parameters together with their two-loop renormalisation group
+equations for the are stored in the class
+\code{<model>_susy_parameters}.  The soft-breaking model parameters
+together with their two-loop renormalisation group equations for the
+are stored in the class \code{<model>_soft_parameters}.  The
+dependence of the soft-breaking parameters on the susy parameters is
+implemented via inheritance, see
+\figurename~\ref{fig:parameter-classes}.
+%
+\begin{figure}
+  \centering
+  \tikzumlset{fill class=white}
+  \begin{tikzpicture}
+    \umlclass[x=0, y=3]{model\_susy\_parameters}{
+      - susy parameters
+    }{
+      + beta()
+    }
+    \umlclass[x=0, y=0]{model\_soft\_parameters}{
+      - soft-breaking parameters
+    }{
+      + beta()
+    }
+    \umlinherit{model\_soft\_parameters}{model\_susy\_parameters}
+  \end{tikzpicture}
+  \caption{Model parameter class structure.}
+  \label{fig:parameter-classes}
+\end{figure}
+
 \subsection{tree level spectrum}
 The diagonalised tree level $\overline{DR}$ masses are obtained from expressions...
 The numerical diagonalisation is performed by... with an accuracy set by...   
