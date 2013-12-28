@@ -129,8 +129,8 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
 
 int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
-   if (contains_nan(x, numberOfEWSBEquations)) {
-      for (std::size_t i = 0; i < numberOfEWSBEquations; ++i)
+   if (contains_nan(x, number_of_ewsb_equations)) {
+      for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
          gsl_vector_set(f, i, std::numeric_limits<double>::max());
       return GSL_EDOM;
    }
@@ -140,7 +140,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    @ModelName@* model = ewsb_parameters->model;
    const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
 
-   double tadpole[numberOfEWSBEquations];
+   double tadpole[number_of_ewsb_equations];
 
 @calculateTreeLevelTadpoles@
    if (ewsb_loop_order > 0) {
@@ -148,7 +148,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 @calculateOneLoopTadpoles@
    }
 
-   for (std::size_t i = 0; i < numberOfEWSBEquations; ++i)
+   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
    return GSL_SUCCESS;
@@ -159,13 +159,13 @@ int CLASSNAME::solve_ewsb_iteratively()
    const gsl_multiroot_fsolver_type* solvers[] =
       {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
 
-   double x_init[numberOfEWSBEquations];
+   double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);
 
 #ifdef VERBOSE
    std::cout << "Solving EWSB equations ...\n"
       "\tInitial guess: x_init =";
-   for (std::size_t i = 0; i < numberOfEWSBEquations; ++i)
+   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       std::cout << " " << x_init[i];
    std::cout << '\n';
 #endif
@@ -243,16 +243,16 @@ int CLASSNAME::solve_ewsb()
    return solve_ewsb_iteratively(ewsb_loop_order);
 }
 
-void CLASSNAME::ewsb_initial_guess(double x_init[numberOfEWSBEquations])
+void CLASSNAME::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
 {
 @ewsbInitialGuess@
 }
 
 int CLASSNAME::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
-                                             const double x_init[numberOfEWSBEquations])
+                                           const double x_init[number_of_ewsb_equations])
 {
    Ewsb_parameters params = {this, ewsb_loop_order};
-   Root_finder<numberOfEWSBEquations> root_finder(CLASSNAME::tadpole_equations,
+   Root_finder<number_of_ewsb_equations> root_finder(CLASSNAME::tadpole_equations,
                               &params,
                               number_of_ewsb_iterations,
                               ewsb_iteration_precision);
