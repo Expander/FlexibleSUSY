@@ -109,8 +109,6 @@ void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& p
          }
 
          processor(key, value);
-      } else {
-         WARNING(block_name << " entry has less than 2 columns");
       }
    }
 }
