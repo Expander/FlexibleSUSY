@@ -1,5 +1,5 @@
 // SLHAea - containers for SUSY Les Houches Accord input/output
-// Copyright © 2009-2011 Frank S. Thomas <fthomas@physik.uni-wuerzburg.de>
+// Copyright © 2009-2011 Frank S. Thomas <frank@timepit.eu>
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -94,7 +94,7 @@ to_upper_copy(const std::string& str)
 inline void
 trim_left(std::string& str)
 {
-  std::size_t startpos = str.find_first_not_of(" \t\n\v\f\r");
+  const std::size_t startpos = str.find_first_not_of(" \t\n\v\f\r");
   if (startpos != std::string::npos) str.erase(0, startpos);
   else str.clear();
 }
@@ -102,7 +102,7 @@ trim_left(std::string& str)
 inline void
 trim_right(std::string& str)
 {
-  std::size_t endpos = str.find_last_not_of(" \t\n\v\f\r");
+  const std::size_t endpos = str.find_last_not_of(" \t\n\v\f\r");
   if (endpos != std::string::npos) str.erase(endpos + 1);
   else str.clear();
 }
@@ -759,6 +759,17 @@ public:
   explicit
   Block(std::istream& is) : name_(), impl_()
   { read(is); }
+
+  /**
+   * \brief Constructs a %Block with content from a string.
+   * \param block String to read content from.
+   */
+  static Block
+  from_str(const std::string& block)
+  {
+    std::istringstream input(block);
+    return Block(input);
+  }
 
   /**
    * \brief Sets the name of the %Block.
@@ -1625,6 +1636,17 @@ public:
   explicit
   Coll(std::istream& is) : impl_()
   { read(is); }
+
+  /**
+   * \brief Constructs a %Coll with content from a string.
+   * \param coll String to read content from.
+   */
+  static Coll
+  from_str(const std::string& coll)
+  {
+    std::istringstream input(coll);
+    return Coll(input);
+  }
 
   /**
    * \brief Assigns content from an input stream to the %Coll.
