@@ -117,10 +117,26 @@ private:
    SLHAea::Coll data;          ///< SHLA data
    Extpar extpar;              ///< data from block EXTPAR
    Modsel modsel;              ///< data from block MODSEL
+   template <class Scalar>
+   static Scalar convert_to(const std::string&); ///< convert string
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
 };
+
+template <class Scalar>
+Scalar SLHA_io::convert_to(const std::string& str)
+{
+   Scalar value;
+   try {
+      value = SLHAea::to<Scalar>(str);
+   }  catch (const boost::bad_lexical_cast& error) {
+      const std::string msg("cannot convert string \"" + str + "\" to "
+                            + typeid(Scalar).name());
+      throw ReadError(msg);
+   }
+   return value;
+}
 
 template <class Derived>
 void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
@@ -138,10 +154,10 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
          continue;
 
       if (line->size() >= 3) {
-         const int i = SLHAea::to<int>((*line)[0]) - 1;
-         const int k = SLHAea::to<int>((*line)[1]) - 1;
+         const int i = convert_to<int>((*line)[0]) - 1;
+         const int k = convert_to<int>((*line)[1]) - 1;
          if (0 <= i && i < rows && 0 <= k && k < cols) {
-            const double value = SLHAea::to<double>((*line)[2]);
+            const double value = convert_to<double>((*line)[2]);
             matrix(i,k) = value;
          }
       }
