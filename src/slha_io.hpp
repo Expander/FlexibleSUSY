@@ -144,8 +144,6 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
             const double value = SLHAea::to<double>((*line)[2]);
             matrix(i,k) = value;
          }
-      } else {
-         WARNING(block_name << " entry has less than 3 columns");
       }
    }
 }
