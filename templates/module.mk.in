@@ -93,7 +93,7 @@ RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
 SCAN_@CLASSNAME@_OBJ := $(DIR)/scan_@CLASSNAME@.o
 SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
 
-METACODE_STAMP_@CLASSNAME@ := $(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp
+METACODE_STAMP_@CLASSNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
 SARAH_MODEL_FILES_@CLASSNAME@ := \
 		$(shell $(SARAH_DEP_GEN) $(SARAH_MODEL))
@@ -123,6 +123,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
+$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
 $(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
 $(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
@@ -166,6 +167,11 @@ run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
 ifeq ($(ENABLE_META),yes)
 $(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES) $(SARAH_MODEL_FILES_@CLASSNAME@)
 		$(MATH) -run "Get[\"$<\"]; Quit[]"
+		@touch "$(METACODE_STAMP_@CLASSNAME@)"
+		@echo "Note: to regenerate @CLASSNAME@ source files," \
+		      "please remove the file "
+		@echo "\"$(METACODE_STAMP_@CLASSNAME@)\" and run make"
+		@echo "---------------------------------"
 else
 $(METACODE_STAMP_@CLASSNAME@):
 		@true
