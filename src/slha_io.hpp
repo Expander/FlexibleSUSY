@@ -62,6 +62,50 @@ namespace flexiblesusy {
 #define FORMAT_SPINFO(n,str)                                            \
    boost::format(spinfo_formatter) % n % str
 
+/**
+ * @class SLHA_io
+ * @brief Handles reading and writing of SLHA files
+ *
+ * Reading: There are two ways to read block entries from SLHA files:
+ * a) using the read_block() function with a %SLHA_io::Tuple_processor
+ * or b) using the read_entry() function for each entry.  Note, that
+ * a) is much faster than b) (more than 1000 times) because b) needs
+ * to search for the block each time read_entry() is called.
+ *
+ * Example how to use a tuple processor (fast!):
+ * \code{.cpp}
+void process_tuple(double* array, int key, double value) {
+   array[key] = value;
+}
+
+void read_file() {
+   using namespace std::placeholders;
+   double array[1000];
+
+   SLHA_io reader;
+   reader.read_from_file("file.slha");
+
+   SLHA_io::Tuple_processor processor
+      = std::bind(&process_tuple, array, _1, _2);
+
+   reader.read_block("MyBlock", processor);
+}
+ * \endcode
+ *
+ * Example how to use a for loop (slow!):
+ * \code{.cpp}
+void read_file() {
+   double array[1000];
+
+   SLHA_io reader;
+   reader.read_from_file("file.slha");
+
+   for (int i = 0; i < 1000; i++) {
+      array[i] = reader.read_entry("MyBlock", i);
+   }
+}
+ * \endcode
+ */
 class SLHA_io {
 public:
    typedef std::function<void(int, double)> Tuple_processor;
