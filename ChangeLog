@@ -1,4 +1,4 @@
-FlexibleSUSY-0.5.2 [not released yet]
+FlexibleSUSY-0.5.2 [January 14, 2014]
 
  * Bugfix (commit 58f8f9): Convert beta functions which are identical
    zero to the data type of the corresponding parameter.
