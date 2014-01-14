@@ -33,6 +33,9 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Avoid swapping by distributing the calculation of the two-scale
    beta functions among multiple .cpp files.
 
+ * Introduce separate meta code stamp (triggers running of the meta
+   code) with name models/<model-name>/00_DELETE_ME_TO_RERUN_METACODE
+
 FlexibleSUSY-0.5.1 [November 23, 2013]
 
  * Handle parameters of type vector in the beta functions.
