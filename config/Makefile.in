@@ -112,7 +112,9 @@ clean-executables:
 
 distclean::
 	-rm -f Makefile
-	-rm -f flexiblesusy-config
+	-rm -f $(FSCONFIG)
+	-rm -f $(SARAH_DEP_GEN)
+	-rm -f config.boost config.log config.math config.sarah config.status
 
 showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
