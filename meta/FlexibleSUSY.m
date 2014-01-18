@@ -660,21 +660,9 @@ SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetSelfEnergyFileNames[outputDir, eigenstates]];
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
-    Module[{seFilesExist, seFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           seFilesExist = SelfEnergyFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           seFilesTimeStamp = SelfEnergyFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!seFilesExist,
-                                    seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp)];
-           If[!seFilesExist,
-              Print["Self-energies have not been calculated yet, calculating them ..."];
-             ];
-           If[seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp),
-              Print["SARAH model files are newer than self-energy files, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"self-energy",
+	GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -687,21 +675,9 @@ TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetTadpoleFileName[outputDir, eigenstates]];
 
 NeedToCalculateTadpoles[eigenstates_] :=
-    Module[{tadpoleFilesExist, tadpoleFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateTadpoles},
-           tadpoleFilesExist = TadpoleFileExists[$sarahCurrentOutputMainDir, eigenstates];
-           tadpoleFilesTimeStamp = TadpoleFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateTadpoles = Or[!tadpoleFilesExist,
-                                        tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp)];
-           If[!tadpoleFilesExist,
-              Print["Tadpoles have not been calculated yet, calculating them ..."];
-             ];
-           If[tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp),
-              Print["SARAH model files are newer than tadpoles file, recalculating them ..."];
-             ];
-           Return[needToCalculateTadpoles];
-          ];
+    NeedToUpdateTarget[
+	"tadpole",
+	GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -714,21 +690,9 @@ UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_]
     LatestModificationTimeInSeconds[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
 
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
-    Module[{unrotatedParticlesFilesExist, unrotatedParticlesFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           unrotatedParticlesFilesExist = UnrotatedParticlesFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           unrotatedParticlesFilesTimeStamp = UnrotatedParticlesFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!unrotatedParticlesFilesExist,
-                                    unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp)];
-           If[!unrotatedParticlesFilesExist,
-              Print["Unrotated particles have not been calculated yet, calculating them ..."];
-             ];
-           If[unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp),
-              Print["SARAH model files are newer than unrotated particles file, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"unrotated particle",
+	GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
     Module[{fileName},
@@ -749,24 +713,30 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
           ];
 
 NeedToCalculateRGEs[] :=
-    Module[{rgeFilesExist, rgeFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateRGEs},
-           rgeFilesExist = RGEFilesExist[$sarahCurrentOutputMainDir];
-           rgeFilesTimeStamp = RGEsModificationTimeInSeconds[$sarahCurrentOutputMainDir];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateRGEs = Or[!rgeFilesExist,
-                                    rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp)];
-           If[!rgeFilesExist,
-              Print["RGEs have not been calculated yet, calculating them ..."];
-             ];
-           If[rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp),
-              Print["SARAH model files are newer than RGE files, recalculating them ..."];
-             ];
-           If[!needToCalculateRGEs,
-              Print["Reading RGEs from files."];
-             ];
-           Return[needToCalculateRGEs];
-          ];
+    NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
+
+NeedToUpdateTarget[name_String, targets_List] := Module[{
+	targetsExist = FilesExist[targets],
+	targetTimeStamp = LatestModificationTimeInSeconds[targets],
+	sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[],
+	files = If[Length[targets] === 1, "file", "files"],
+	them = If[Length[targets] === 1, "it", "them"]
+    },
+    If[targetsExist,
+       If[sarahModelFileTimeStamp > targetTimeStamp,
+	  Print["SARAH model files are newer than ", name,
+		" ", files, ", updating ", them, " ..."];
+	  True,
+	  Print["Found up-to-date ", name, " ", files, "."];
+	  False
+       ],
+       Print[name, " ", files, " not found, producing ", them, " ..."];
+       True
+    ]
+];
+
+NeedToUpdateTarget[name_String, target_] :=
+    NeedToUpdateTarget[name, {target}];
 
 FSPrepareRGEs[] :=
     Module[{needToCalculateRGEs, betas},
