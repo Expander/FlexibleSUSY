@@ -118,15 +118,15 @@ TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
 all-$(MODNAME): $(TEST_EXE)
 
 clean-$(MODNAME)-log:
-		rm -rf $(TEST_LOG)
+		-rm -f $(TEST_LOG)
 
 clean-$(MODNAME):
-		rm -rf $(TEST_OBJ)
-		rm -rf $(TEST_LOG)
+		-rm -f $(TEST_OBJ)
+		-rm -f $(TEST_LOG)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(TEST_DEP)
-		rm -rf $(TEST_EXE)
+		-rm -f $(TEST_DEP)
+		-rm -f $(TEST_EXE)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@

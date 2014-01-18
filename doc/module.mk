@@ -35,11 +35,11 @@ doc-html: $(INDEX_PADE)
 all-$(MODNAME): doc-html doc-pdf
 
 clean-$(MODNAME):
-		rm -f $(LATEX_TMP)
+		-rm -f $(LATEX_TMP)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(HTML_OUTPUT_DIR)
-		rm -f $(MANUAL_PDF) $(PAPER_PDF)
+		-rm -rf $(HTML_OUTPUT_DIR)
+		-rm -f $(MANUAL_PDF) $(PAPER_PDF)
 
 clean::         clean-$(MODNAME)
 

@@ -96,7 +96,7 @@ alllib:   $(ALLLIB)
 alltest:  $(ALLTST)
 
 clean-dep:
-	rm -rf $(ALLDEP)
+	-rm -f $(ALLDEP)
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
@@ -108,7 +108,7 @@ clean-dep:
 	sed 's|.*\.o:|$*.o:|' > $@
 
 clean-executables:
-	rm -f $(ALLEXE)
+	-rm -f $(ALLEXE)
 
 distclean::
 	-rm -f Makefile

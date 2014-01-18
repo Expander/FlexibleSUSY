@@ -52,11 +52,11 @@ LIBFLEXI     := $(DIR)/$(MODNAME)$(LIBEXT)
 all-$(MODNAME): $(LIBFLEXI)
 
 clean-$(MODNAME):
-		rm -rf $(LIBFLEXI_OBJ)
+		-rm -f $(LIBFLEXI_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBFLEXI_DEP)
-		rm -rf $(LIBFLEXI)
+		-rm -f $(LIBFLEXI_DEP)
+		-rm -f $(LIBFLEXI)
 
 clean::         clean-$(MODNAME)
 
