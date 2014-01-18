@@ -715,6 +715,15 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
 NeedToCalculateRGEs[] :=
     NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
 
+GetVertexRuleFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+		  "FSVertexRules.m"}];
+
+NeedToCalculateVertices[eigenstates_] :=
+    NeedToUpdateTarget[
+	"vertex",
+	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+
 NeedToUpdateTarget[name_String, targets_List] := Module[{
 	targetsExist = FilesExist[targets],
 	targetTimeStamp = LatestModificationTimeInSeconds[targets],
@@ -868,7 +877,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters,
-	    vertexRules,
+	    vertexRules, vertexRuleFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -1238,7 +1247,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
-	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
+	   vertexRuleFileName =
+	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+	   If[NeedToCalculateVertices[FSEigenstates],
+	      Put[vertexRules =
+		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		  vertexRuleFileName],
+	      vertexRules = Get[vertexRuleFileName]];
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
