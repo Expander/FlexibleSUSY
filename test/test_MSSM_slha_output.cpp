@@ -122,8 +122,8 @@ void compare_slha_files(const std::string& file1, const std::string& file2)
 
 BOOST_AUTO_TEST_CASE( test_slha_output )
 {
-   const std::string input_file("test/input_MSSM.slha2");
-   const std::string output_file(input_file + ".spc");
+   const std::string input_file("test/MSSM.in.spc");
+   const std::string output_file("test/MSSM.out.spc");
 
    int status = run_point(input_file,
                           output_file + ".fs", output_file + ".ss");
