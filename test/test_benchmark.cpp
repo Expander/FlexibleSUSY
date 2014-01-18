@@ -32,7 +32,8 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
 
    stopwatch.start();
    status = run_cmd("./models/MSSM/run_MSSM.x --slha-input-file=" +
-                    slha_file + " --slha-output-file=out.spc > /dev/null");
+                    slha_file + " --slha-output-file="
+                    "test/test_benchmark.out.spc > /dev/null");
    stopwatch.stop();
    fs_time = stopwatch.get_time_in_seconds();
 
@@ -42,7 +43,7 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
 
    stopwatch.start();
    status = run_cmd("./examples/run_softpoint.x leshouches < " +
-                    slha_file + " > out.spc");
+                    slha_file + " > test/test_benchmark.out.spc");
    stopwatch.stop();
    ss_time = stopwatch.get_time_in_seconds();
 
@@ -85,7 +86,7 @@ void test_tanbeta_scan()
    for (unsigned i = 0; i < num_points; i++) {
       const double tanBeta = tanBeta_start + i * tanBeta_step;
       const SLHAea::Coll coll(create_point(tanBeta));
-      const std::string input_file("test/tmp_point.slha2");
+      const std::string input_file("test/test_benchmark.in.spc");
 
       std::ofstream ofs(input_file);
       ofs << coll;
