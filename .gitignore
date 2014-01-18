@@ -33,4 +33,6 @@ doc/flexiblesusy.pdf
 doc/paper.pdf
 doc/version.tex
 
+Output/
+
 test/*.log
