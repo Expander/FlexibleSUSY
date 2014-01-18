@@ -36,3 +36,5 @@ doc/version.tex
 Output/
 
 test/*.log
+test/*.spc
+test/*.spc.*
