@@ -9,7 +9,7 @@
 
 BOOST_AUTO_TEST_CASE( test_reading_sminput )
 {
-   std::ifstream ifs("test/sminput.slha2");
+   std::ifstream ifs("test/test_sminput.in.spc");
    const SLHAea::Coll input(ifs);
 
    BOOST_REQUIRE(!input.empty());
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( test_reading_sminput )
 
 BOOST_AUTO_TEST_CASE( test_iteration_sminput )
 {
-   std::ifstream ifs("test/sminput.slha2");
+   std::ifstream ifs("test/test_sminput.in.spc");
    const SLHAea::Coll input(ifs);
 
    BOOST_REQUIRE(!input.empty());
