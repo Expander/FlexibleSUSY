@@ -870,13 +870,17 @@ FindDependenceNums[] :=
            If[!dependenceNumsUpToDate,
               hyperchargeCoupling = FindHyperchargeGaugeCoupling[];
               leftCoupling = FindLeftGaugeCoupling[];
+              (* @todo derive Weinberg angle in terms of fundamental model
+                 parameters from SARAH's expressions.  The definition below
+                 might not be true in a general model. *)
               dependenceNums = Join[
                   { Rule[SARAH`Weinberg,
                          ArcSin[hyperchargeCoupling / Sqrt[hyperchargeCoupling^2 + leftCoupling^2]] /.
                          Parameters`ApplyGUTNormalization[]] },
                   Cases[SARAH`ParameterDefinitions,
                         {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
-                         parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
+                         parameter =!= SARAH`Weinberg &&
+                         parameter =!= SARAH`electricCharge,
                          {___, SARAH`DependenceNum -> value:Except[None], ___}} :>
                         Rule[parameter, value /. Parameters`ApplyGUTNormalization[]]]
                                    ];
