@@ -56,7 +56,7 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
 
 SLHAea::Coll create_point(double tanBeta)
 {
-   std::ifstream ifs("test/slha_generic.slha2");
+   std::ifstream ifs("test/test_benchmark.in.spc.in");
    SLHAea::Coll coll(ifs);
    SLHAea::Block minpar;
 
