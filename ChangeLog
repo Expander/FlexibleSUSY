@@ -3,6 +3,9 @@ FlexibleSUSY-0.5.3 [not released yet]
  * Bugfix (commit 44903c): correcting malformed print out in
    config/list_sarah_model_files.sh in case model files do not exist
 
+ * Bugfix (commit 3aae11): Prevent hard-coding of the running Weinberg
+   angle in terms of the gauge couplings
+
  * Vertices are saved in a file to avoid repeating same calculation.
 
 FlexibleSUSY-0.5.2 [January 14, 2014]
