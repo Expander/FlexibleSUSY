@@ -40,7 +40,10 @@ FindMass[masses_List, particle_] :=
           ];
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
-    Module[{eqs, reducedEq, solution},
+    Module[{eqs, reducedEq, solution, smValue},
+           (* SM value of the Weinberg angle *)
+           smValue = ArcSin[SARAH`hyperchargeCoupling / Sqrt[SARAH`hyperchargeCoupling^2 + SARAH`leftCoupling^2]] /.
+                     Parameters`ApplyGUTNormalization[];
            (* Assumption: the masses contain GUT normalized gauge
               couplings, but the Weinberg angle does not (because we
               take it directly from SARAH`ParameterDefinitions, where
@@ -53,6 +56,14 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
            reducedEq = Eliminate[eqs, {SARAH`Mass[SARAH`VectorW],
                                        SARAH`Mass[SARAH`VectorZ]}];
            solution = Solve[reducedEq, SARAH`Weinberg, Reals];
+           If[Head[solution] =!= List || solution === {},
+              Print["Error: could not solve the following equation for ",
+                    SARAH`Weinberg, ": "];
+              Print[reducedEq];
+              Print["   I'll use the Standard Model definition for ",
+                    SARAH`Weinberg];
+              Return[smValue];
+             ];
            solution = Simplify[#[[1,2]],
                                Assumptions ->
                                SARAH`Weinberg > 0 && Element[SARAH`Weinberg, Reals] &&
@@ -62,7 +73,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
            If[solution === {},
               Print["Error: Unable to express the Weinberg angle ", SARAH`Weinberg,
                     " in terms of the gauge couplings"];
-              Return[0];
+              Return[smValue];
              ];
            Sort[solution, ByteCount[#1] < ByteCount[#2]&][[1]]
           ];
