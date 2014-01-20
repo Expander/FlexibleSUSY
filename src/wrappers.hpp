@@ -113,6 +113,16 @@ inline double Sin(double x)
    return std::sin(x);
 }
 
+inline double Sec(double x)
+{
+   return 1./Cos(x);
+}
+
+inline double Csc(double x)
+{
+   return 1./Sin(x);
+}
+
 inline int Delta(int i, int j)
 {
    return i == j;
