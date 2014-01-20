@@ -157,6 +157,13 @@ void Problems<Number_of_particles>::print(std::ostream& ostr) const
       ostr << "exception thrown";
 }
 
+template <unsigned Number_of_particles>
+std::ostream& operator<<(std::ostream& ostr, const Problems<Number_of_particles>& problems)
+{
+   problems.print(ostr);
+   return ostr;
+}
+
 } // namespace flexiblesusy
 
 #endif
