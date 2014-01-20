@@ -6,21 +6,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 Begin["`Private`"];
 
 FindWeinbergAngleDef[] :=
-    Module[{weinbergAngleDef},
-           weinbergAngleDef = Cases[SARAH`ParameterDefinitions,
-                                    {SARAH`Weinberg, {___, DependenceNum -> definition_, ___}} :> definition];
-           If[Head[weinbergAngleDef] =!= List || weinbergAngleDef === {},
-              Print["Error: Could not find definition of Weinberg angle ",
-                    SARAH`Weinberg, " in SARAH`ParameterDefinitions"];
-              Return[0];
-             ];
-           If[Length[weinbergAngleDef] > 1,
-              Print["Warning: Weinberg angle ", SARAH`Weinberg,
-                    " defined multiple times"];
-             ];
-           weinbergAngleDef = weinbergAngleDef[[1]];
-           Return[weinbergAngleDef];
-          ];
+    Parameters`FindSymbolDef[SARAH`Weinberg];
 
 FindMassW[masses_List] :=
     FindMass[masses, SARAH`VectorW];
