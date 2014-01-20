@@ -153,28 +153,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
           " constraint.  You need to run the low-energy data set to this"
           " scale!");
 
-   const double MZ = Electroweak_constants::MZ;
-   const double MW = Electroweak_constants::MW;
-   const double MZ2 = Sqr(MZ);
-   const double MW2 = Sqr(MW);
-   const double cW2 = MW2/MZ2;
-
-   const double self_energy_Z = Re(model->self_energy_@VectorZ@_heavy(MZ));
-   const double self_energy_W = Re(model->self_energy_@VectorW@_heavy(MW));
-   const double delta_sW2 = - cW2 * (self_energy_W / MW2 - self_energy_Z / MZ2);
-   double sinThetaW2_drbar = Sqr(SM(sinThetaW)) + delta_sW2;
-
-   if (sinThetaW2_drbar <= 1.0e-4 || sinThetaW2_drbar >= 0.99) {
-#ifdef VERBOSE
-      WARNING("@ModelName@_low_scale_constraint: loop corrections to"
-              " sinThetaW are non-perturbative (" << sinThetaW2_drbar
-              << "), resetting sinThetaW to the Standard Model value");
-#endif
-      sinThetaW2_drbar = Sqr(SM(sinThetaW));
-   }
-   const double sinThetaW_drbar = Sqrt(sinThetaW2_drbar);
-   const double cosThetaW_drbar = Sqrt(1.0 - sinThetaW2_drbar);
-
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
 
@@ -183,15 +161,17 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
    const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
+   const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
-   const double e_drbar  = Sqrt(4.0 * Pi * alpha_em_drbar);
-   const double g3_drbar = Sqrt(4.0 * Pi * alpha_s_drbar);
-   const double g1_inv_gut_normalization = @hyperchargeCouplingInverseGutNormalization@;
-   const double g2_inv_gut_normalization = @leftCouplingInverseGutNormalization@;
+   // interface variables
+   const double MZDRbar
+      = model->calculate_M@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
+   const double MWDRbar
+      = model->calculate_M@VectorW@_DRbar_1loop(Electroweak_constants::MW);
+   const double AlphaS = alpha_s_drbar;
+   const double EDRbar = e_drbar;
 
-   new_g1 = e_drbar * g1_inv_gut_normalization / cosThetaW_drbar;
-   new_g2 = e_drbar * g2_inv_gut_normalization / sinThetaW_drbar;
-   new_g3 = g3_drbar;
+@calculateGaugeCouplings@
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const

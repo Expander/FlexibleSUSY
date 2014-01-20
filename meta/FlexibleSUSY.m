@@ -42,6 +42,9 @@ Pole;
 FSMinimize;
 FSFindRoot;
 MZ;
+MZDRbar;
+MWDRbar;
+EDRbar;
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
@@ -307,6 +310,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
+           calculateGaugeCouplings,
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
@@ -314,6 +318,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
+          calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
@@ -321,6 +326,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
+                   "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
