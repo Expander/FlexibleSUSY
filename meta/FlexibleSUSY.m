@@ -46,6 +46,7 @@ MZ;
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
+FSSolveWeinbergAngleTimeConstraint = 120;
 
 Begin["`Private`"];
 
