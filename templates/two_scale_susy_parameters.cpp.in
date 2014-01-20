@@ -110,4 +110,10 @@ void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) con
 @calcTraces@
 }
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_susy_parameters& susy_pars)
+{
+   susy_pars.print(std::cout);
+   return ostr;
+}
+
 } // namespace flexiblesusy

@@ -137,6 +137,8 @@ private:
 
 };
 
+std::ostream& operator<<(std::ostream&, const @ModelName@<Two_scale>&);
+
 } // namespace flexiblesusy
 
 #endif

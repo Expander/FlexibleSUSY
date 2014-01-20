@@ -98,4 +98,10 @@ void @ModelName@_soft_parameters::calc_soft_traces(Soft_traces& soft_traces) con
 @calcTraces@
 }
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_soft_parameters& soft_pars)
+{
+   soft_pars.print(std::cout);
+   return ostr;
+}
+
 } // namespace flexiblesusy

@@ -396,4 +396,10 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @dependenceNumFunctions@
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@<Two_scale>& model)
+{
+   model.print(ostr);
+   return ostr;
+}
+
 } // namespace flexiblesusy

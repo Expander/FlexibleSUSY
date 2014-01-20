@@ -48,4 +48,10 @@ void @ModelName@_physical::print(std::ostream& ostr) const
 @printMixingMatrices@
 }
 
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_physical& phys_pars)
+{
+   phys_pars.print(std::cout);
+   return ostr;
+}
+
 } // namespace flexiblesusy
