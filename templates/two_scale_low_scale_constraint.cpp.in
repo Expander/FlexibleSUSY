@@ -48,6 +48,7 @@ namespace flexiblesusy {
    , model(0)
    , inputPars()
    , oneset()
+   , MZDRbar(0.)
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
@@ -88,9 +89,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    update_scale();
    calculate_DRbar_gauge_couplings();
    calculate_DRbar_yukawa_couplings();
-
-   const double MZDRbar
-      = model->calculate_M@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
 
 @applyConstraint@
 
@@ -164,7 +162,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   const double MZDRbar
+   MZDRbar
       = model->calculate_M@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
    const double MWDRbar
       = model->calculate_M@VectorW@_DRbar_1loop(Electroweak_constants::MW);
