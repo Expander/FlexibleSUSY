@@ -6,6 +6,9 @@ FlexibleSUSY-0.5.3 [not released yet]
  * Bugfix (commit 3aae11): Prevent hard-coding of the running Weinberg
    angle in terms of the gauge couplings
 
+ * Bugfix (commit ce4a73): Generalize calculation of gauge couplings
+   at the low-scale (fixes #1)
+
  * Vertices are saved in a file to avoid repeating same calculation.
 
 FlexibleSUSY-0.5.2 [January 14, 2014]
