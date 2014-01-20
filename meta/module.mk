@@ -23,6 +23,7 @@ META_SRC     := \
 		$(DIR)/TwoLoop.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
+		$(DIR)/WeinbergAngle.m \
 		$(DIR)/writeRGE.m \
 		$(DIR)/writeNRGE.m
 
