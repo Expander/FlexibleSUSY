@@ -1,5 +1,5 @@
 
-BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
+BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`"}];
 
 FSMassMatrix::usage="Head of a mass matrix";
 
@@ -865,7 +865,7 @@ dependenceNumRulesUpToDate = False;
 dependenceNums = {}; (* replacement rules for all DependenceNum *)
 dependenceNumRules = {}; (* replacement rules for all DependenceNum *)
 
-FindDependenceNums[] :=
+FindDependenceNums[massMatrices_List] :=
     Module[{hyperchargeCoupling, leftCoupling},
            If[!dependenceNumsUpToDate,
               hyperchargeCoupling = FindHyperchargeGaugeCoupling[];
@@ -875,8 +875,7 @@ FindDependenceNums[] :=
                  might not be true in a general model. *)
               dependenceNums = Join[
                   { Rule[SARAH`Weinberg,
-                         ArcSin[hyperchargeCoupling / Sqrt[hyperchargeCoupling^2 + leftCoupling^2]] /.
-                         Parameters`ApplyGUTNormalization[]] },
+                         WeinbergAngle`ExpressWeinbergAngleInTermsOfGaugeCouplings[massMatrices]] },
                   Cases[SARAH`ParameterDefinitions,
                         {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
                          parameter =!= SARAH`Weinberg &&
@@ -910,9 +909,9 @@ FindDependenceNumRules[] :=
 CreateDependenceNumPrototype[Rule[parameter_, _]] :=
     "double " <> ToValidCSymbolString[parameter] <> "() const;\n";
 
-CreateDependenceNumPrototypes[] :=
+CreateDependenceNumPrototypes[massMatrices_List] :=
     Module[{dependenceNums, result = ""},
-           dependenceNums = FindDependenceNums[];
+           dependenceNums = FindDependenceNums[massMatrices];
            (result = result <> CreateDependenceNumPrototype[#])& /@ dependenceNums;
            Return[result];
           ];
@@ -926,9 +925,9 @@ CreateDependenceNumFunction[Rule[parameter_, value_]] :=
            Return[result];
           ];
 
-CreateDependenceNumFunctions[] :=
+CreateDependenceNumFunctions[massMatrices_List] :=
     Module[{dependenceNums, result = ""},
-           dependenceNums = FindDependenceNums[];
+           dependenceNums = FindDependenceNums[massMatrices];
            (result = result <> CreateDependenceNumFunction[#])& /@ dependenceNums;
            Return[result];
           ];

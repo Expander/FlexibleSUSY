@@ -466,8 +466,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
+           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
+           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
