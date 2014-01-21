@@ -1,6 +1,8 @@
 
 BeginPackage["Parameters`", {"SARAH`", "CConversion`"}];
 
+FindSymbolDef::usage="";
+
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
@@ -79,6 +81,22 @@ AddRealParameter[parameter_List] :=
 
 AddRealParameter[parameter_] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
+
+FindSymbolDef[sym_] :=
+    Module[{symDef},
+           symDef = Cases[SARAH`ParameterDefinitions,
+                          {sym, {___, DependenceNum -> definition_, ___}} :> definition];
+           If[Head[symDef] =!= List || symDef === {},
+              Print["Error: Could not find definition of ",
+                    sym, " in SARAH`ParameterDefinitions"];
+              Return[0];
+             ];
+           If[Length[symDef] > 1,
+              Print["Warning: ", sym, " defined multiple times"];
+             ];
+           symDef = symDef[[1]];
+           Return[symDef];
+          ];
 
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=

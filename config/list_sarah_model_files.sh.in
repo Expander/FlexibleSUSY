@@ -45,7 +45,13 @@ files = Join[{ModelFile},
 
 files = Select[files, FileExistsQ];
 
-WriteString["stderr", files[[1]] <> " " <> files[[2]] <> " " <> files[[3]]];
+strList = "";
+For[i = 1, i <= Length[files], i++,
+    If[i > 1, strList = strList <> " ";];
+    strList = strList <> files[[i]];
+   ];
+
+WriteString["stderr", strList];
 
 Quit[];
 EOF

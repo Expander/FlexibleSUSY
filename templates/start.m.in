@@ -16,6 +16,7 @@ SARAH`SARAH[InputDirectories] = {
 
 Print["Current working directory: ", workingDirectory];
 Print["SARAH output directory: ", $sarahOutputDir];
+Print["Starting model: ", ToString[HoldForm[Start["@ModelName@"@SubModel@]]]];
 
 Start["@ModelName@"@SubModel@];
 

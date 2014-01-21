@@ -66,11 +66,11 @@ EXAMPLES_EXE := \
 all-$(MODNAME): $(EXAMPLES_EXE)
 
 clean-$(MODNAME):
-		rm -rf $(EXAMPLES_OBJ)
+		-rm -f $(EXAMPLES_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(EXAMPLES_DEP)
-		rm -rf $(EXAMPLES_EXE)
+		-rm -f $(EXAMPLES_DEP)
+		-rm -f $(EXAMPLES_EXE)
 
 clean::         clean-$(MODNAME)
 

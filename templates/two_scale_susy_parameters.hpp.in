@@ -70,6 +70,8 @@ private:
 @singleBetaFunctionsDecls@
 };
 
+std::ostream& operator<<(std::ostream&, const @ModelName@_susy_parameters&);
+
 } // namespace flexiblesusy
 
 #endif

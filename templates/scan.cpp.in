@@ -68,7 +68,7 @@ int main()
       const @ModelName@_physical& pole_masses = model.get_physical();
       const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
-      const double higgs = pole_masses.M@HiggsBoson@(1);
+      const double higgs = pole_masses.M@HiggsBoson@(0);
       const bool error = problems.have_serious_problem();
 
       cout << "  "
@@ -77,8 +77,7 @@ int main()
            << std::setw(12) << std::left << error << ' '
            << std::setw(12) << std::left << stopwatch.get_time_in_seconds();
       if (error) {
-         cout << "\t# ";
-         problems.print(cout);
+         cout << "\t# " << problems;
       }
       cout << '\n';
    }

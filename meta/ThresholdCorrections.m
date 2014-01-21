@@ -1,6 +1,7 @@
 
 BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`"}];
 
+CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
 SetDRbarYukawaCouplings::usage="";
@@ -212,6 +213,27 @@ SetDRbarYukawaCouplings[] :=
                     "new_Yu = " <> RValueToCFormString[top] <> ";\n" <>
                     "new_Yd = " <> RValueToCFormString[bot] <> ";\n" <>
                     "new_Ye = " <> RValueToCFormString[tau] <> ";\n";
+           Return[result];
+          ];
+
+CalculateGaugeCouplings[] :=
+    Module[{subst, weinbergAngle, g1Def, g2Def, g3Def, result},
+           subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
+                     SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
+                     SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
+           weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
+                    / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
+           g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]
+                    / Parameters`GetGUTNormalization[SARAH`leftCoupling]) /. subst;
+           g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
+                    / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
+           result = Parameters`CreateLocalConstRefs[{weinbergAngle, g1Def, g2Def, g3Def}] <>
+                    "const double " <> CConversion`ToValidCSymbolString[SARAH`Weinberg] <>
+                    " = " <> CConversion`RValueToCFormString[weinbergAngle] <> ";\n" <>
+                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 

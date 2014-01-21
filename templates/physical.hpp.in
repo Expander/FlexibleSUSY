@@ -38,6 +38,8 @@ struct @ModelName@_physical {
 @mixingMatricesDef@
 };
 
+std::ostream& operator<<(std::ostream&, const @ModelName@_physical&);
+
 } // namespace flexiblesusy
 
 #endif

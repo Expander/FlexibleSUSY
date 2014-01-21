@@ -42,10 +42,14 @@ Pole;
 FSMinimize;
 FSFindRoot;
 MZ;
+MZDRbar;
+MWDRbar;
+EDRbar;
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
+FSSolveWeinbergAngleTimeConstraint = 120;
 
 Begin["`Private`"];
 
@@ -307,6 +311,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
+           calculateGaugeCouplings,
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
@@ -314,6 +319,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
+          calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
@@ -321,6 +327,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
+                   "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
@@ -466,8 +473,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
+           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
+           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
@@ -660,21 +667,9 @@ SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetSelfEnergyFileNames[outputDir, eigenstates]];
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
-    Module[{seFilesExist, seFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           seFilesExist = SelfEnergyFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           seFilesTimeStamp = SelfEnergyFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!seFilesExist,
-                                    seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp)];
-           If[!seFilesExist,
-              Print["Self-energies have not been calculated yet, calculating them ..."];
-             ];
-           If[seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp),
-              Print["SARAH model files are newer than self-energy files, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"self-energy",
+	GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -687,21 +682,9 @@ TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetTadpoleFileName[outputDir, eigenstates]];
 
 NeedToCalculateTadpoles[eigenstates_] :=
-    Module[{tadpoleFilesExist, tadpoleFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateTadpoles},
-           tadpoleFilesExist = TadpoleFileExists[$sarahCurrentOutputMainDir, eigenstates];
-           tadpoleFilesTimeStamp = TadpoleFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateTadpoles = Or[!tadpoleFilesExist,
-                                        tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp)];
-           If[!tadpoleFilesExist,
-              Print["Tadpoles have not been calculated yet, calculating them ..."];
-             ];
-           If[tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp),
-              Print["SARAH model files are newer than tadpoles file, recalculating them ..."];
-             ];
-           Return[needToCalculateTadpoles];
-          ];
+    NeedToUpdateTarget[
+	"tadpole",
+	GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -714,21 +697,9 @@ UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_]
     LatestModificationTimeInSeconds[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
 
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
-    Module[{unrotatedParticlesFilesExist, unrotatedParticlesFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           unrotatedParticlesFilesExist = UnrotatedParticlesFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           unrotatedParticlesFilesTimeStamp = UnrotatedParticlesFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!unrotatedParticlesFilesExist,
-                                    unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp)];
-           If[!unrotatedParticlesFilesExist,
-              Print["Unrotated particles have not been calculated yet, calculating them ..."];
-             ];
-           If[unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp),
-              Print["SARAH model files are newer than unrotated particles file, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"unrotated particle",
+	GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
     Module[{fileName},
@@ -749,24 +720,39 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
           ];
 
 NeedToCalculateRGEs[] :=
-    Module[{rgeFilesExist, rgeFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateRGEs},
-           rgeFilesExist = RGEFilesExist[$sarahCurrentOutputMainDir];
-           rgeFilesTimeStamp = RGEsModificationTimeInSeconds[$sarahCurrentOutputMainDir];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateRGEs = Or[!rgeFilesExist,
-                                    rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp)];
-           If[!rgeFilesExist,
-              Print["RGEs have not been calculated yet, calculating them ..."];
-             ];
-           If[rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp),
-              Print["SARAH model files are newer than RGE files, recalculating them ..."];
-             ];
-           If[!needToCalculateRGEs,
-              Print["Reading RGEs from files."];
-             ];
-           Return[needToCalculateRGEs];
-          ];
+    NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
+
+GetVertexRuleFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+		  "FSVertexRules.m"}];
+
+NeedToCalculateVertices[eigenstates_] :=
+    NeedToUpdateTarget[
+	"vertex",
+	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+
+NeedToUpdateTarget[name_String, targets_List] := Module[{
+	targetsExist = FilesExist[targets],
+	targetTimeStamp = LatestModificationTimeInSeconds[targets],
+	sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[],
+	files = If[Length[targets] === 1, "file", "files"],
+	them = If[Length[targets] === 1, "it", "them"]
+    },
+    If[targetsExist,
+       If[sarahModelFileTimeStamp > targetTimeStamp,
+	  Print["SARAH model files are newer than ", name,
+		" ", files, ", updating ", them, " ..."];
+	  True,
+	  Print["Found up-to-date ", name, " ", files, "."];
+	  False
+       ],
+       Print[name, " ", files, " not found, producing ", them, " ..."];
+       True
+    ]
+];
+
+NeedToUpdateTarget[name_String, target_] :=
+    NeedToUpdateTarget[name, {target}];
 
 FSPrepareRGEs[] :=
     Module[{needToCalculateRGEs, betas},
@@ -898,7 +884,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters,
-	    vertexRules,
+	    vertexRules, vertexRuleFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -1268,7 +1254,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
-	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
+	   vertexRuleFileName =
+	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+	   If[NeedToCalculateVertices[FSEigenstates],
+	      Put[vertexRules =
+		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		  vertexRuleFileName],
+	      vertexRules = Get[vertexRuleFileName]];
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
