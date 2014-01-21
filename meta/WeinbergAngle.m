@@ -42,9 +42,11 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                  };
            reducedEq = Eliminate[eqs, {SARAH`Mass[SARAH`VectorW],
                                        SARAH`Mass[SARAH`VectorZ]}];
+           Off[Solve::ifun];
            solution = TimeConstrained[Solve[reducedEq, SARAH`Weinberg, Reals],
                                       FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
                                       {}];
+           On[Solve::ifun];
            If[Head[solution] =!= List || solution === {},
               Print["Error: could not solve the following equation for ",
                     SARAH`Weinberg, ": "];
