@@ -145,6 +145,8 @@ Calculating the particle spectrum:
 \subsubsection{Matching to the Standard Model}
 \label{sec:matching-to-the-standard-model}
 
+\paragraph{Gauge couplings}
+
 At the low-scale $M_Z$ we calculate
 %
 \begin{align}
@@ -187,7 +189,116 @@ where
 %
 are the \MSbar electromagnetic and strong cougling constants in the
 Standard Model including only $5$ quark flavours
-\cite{Beringer:1900zz}.
+\cite{Beringer:1900zz}.  Afterwards, SARAH's tree-level expressions
+for the Weinberg angle and the Hypercharge and left gauge couplings
+$g_Y$ and $g_2$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
+$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ are used to calculate
+$g_{1,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$g_{2,\text{susy}}^{\text{\DRbar}}(M_Z)$.  In the MSSM, for example,
+we'll have
+%
+\begin{align}
+  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \arcsin\sqrt{1 - \left(\frac{M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)}{M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)}\right)^2} ,\\
+  g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \sqrt{\frac{5}{3}} \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\cos\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,\\
+  g_{2,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\sin\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,
+\end{align}
+%
+where
+%
+\begin{align}
+  \left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
+  \left(M_W^{\text{pole}}\right)^2 + \re \Pi_{WW}^T(p^2 = (M_W^{\text{pole}})^2) ,\\
+  \left(M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
+  \left(M_Z^{\text{pole}}\right)^2 + \re \Pi_{ZZ}^T(p^2 = (M_Z^{\text{pole}})^2)
+\end{align}
+%
+and $M_W^{\text{pole}} = 80.404\unit{GeV}$, $M_Z^{\text{pole}} =
+91.1876\unit{GeV}$ \cite{Beringer:1900zz}.
+
+\paragraph{Fermion masses}
+
+\begin{align}
+  \left(y_u^{\text{\DRbar}}(M_Z)\right)_{ij} &= \frac{\sqrt{2} m_{u,ji}}{v_u} ,\\
+  \left(y_d^{\text{\DRbar}}(M_Z)\right)_{ij} &= \frac{\sqrt{2} m_{d,ji}}{v_d} ,\\
+  \left(y_e^{\text{\DRbar}}(M_Z)\right)_{ij} &= \frac{\sqrt{2} m_{e,ji}}{v_e} ,
+\end{align}
+%
+where the fermion mass matrices are given by
+%
+\begin{align}
+  m_{u,11} &= m_{u}^{\userinput} ,\\
+  m_{u,22} &= m_{c}^{\userinput} ,\\
+  m_{u,33} &= m_{t,\text{susy}}^{\text{\DRbar}}(M_Z),\\
+  m_{d,11} &= m_{d}^{\userinput} ,\\
+  m_{d,22} &= m_{s}^{\userinput} ,\\
+  m_{d,33} &= m_{b,\text{susy}}^{\text{\DRbar}}(M_Z),\\
+  m_{e,11} &= m_{e}^{\userinput} ,\\
+  m_{e,22} &= m_{\mu}^{\userinput} ,\\
+  m_{e,33} &= m_{\tau,\text{susy}}^{\text{\DRbar}}(M_Z),\\
+  m_{u,ij} &= m_{d,ij} = m_{u,ij} = 0 \quad \forall i \neq j.
+\end{align}
+%
+Only the 3rd generation quark masses are calculated in the \DRbar
+scheme from the user input quantities $m_t^\text{pole}$,
+$m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$,
+$m_{\tau,\text{SM}}^{\text{\MSbar}}(M_Z)$.  The top quark \DRbar mass
+is calculated via
+%
+\begin{align}
+  m_{t,\text{susy}}^{\text{\DRbar}}(\mu) &= m_t^\text{pole}
+  + \re\Sigma_{tt}^{S,\text{heavy}}(m_t^\text{pole})
+  + m_t^\text{pole} \left[
+    \re\Sigma_{tt}^{L,\text{heavy}}(m_t^\text{pole}) +
+    \re\Sigma_{tt}^{R,\text{heavy}}(m_t^\text{pole}) +
+    \Delta m_t^{(1),\text{qcd}} +
+    \Delta m_t^{(2),\text{qcd}}
+  \right].
+\end{align}
+%
+The QCD contributions $\Delta m_t^{(1),\text{qcd}}$ and $\Delta
+m_t^{(2),\text{qcd}}$ are taken from \cite{Bednyakov:2002sf} and read
+%
+\begin{align}
+  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2 \left(5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right)}{12 \pi^2},\\
+  \Delta m_t^{(2),\text{qcd}} &= \left(\Delta
+    m_t^{(1),\text{qcd}}\right)^2 - \frac{g_3^4 \left[396
+      \log^2\left(\frac{m_t^2}{\mu^2}\right)-1476
+      \log\left(\frac{m_t^2}{\mu^2}\right)-48 \zeta(3)+2011+16 \pi ^2
+      (1+\log(4))\right]}{4608 \pi^4}.
+\end{align}
+%
+The \DRbar mass of the bottom quark is calculated via
+\cite{Baer:2002ek}
+%
+\begin{align}
+  m_{b,\text{susy}}^{\text{\DRbar}}(\mu) &=
+  \frac{m_{b,\text{SM}}^{\text{\DRbar}}(\mu)}{1 -
+    \re\Sigma_{bb}^{S,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar})/m_b
+    - \re\Sigma_{bb}^{L,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar}) -
+    \re\Sigma_{bb}^{R,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar})} ,\\
+  m_{b,\text{SM}}^{\text{\DRbar}}(\mu) &=
+  m_{b,\text{SM}}^{\text{\MSbar}}(\mu) \left(1 - \frac{\alpha_s}{3
+      \pi} - \frac{23}{72} \frac{\alpha_s^2}{\pi^2} + \frac{3
+      g_2^2}{128 \pi^2} + \frac{13 g_1^2}{1152 \pi^2}\right) .
+\end{align}
+%
+The \DRbar mass of the $\tau$ is calculated via
+%
+\begin{align}
+  m_{\tau,\text{susy}}^{\text{\DRbar}}(\mu) &=
+  m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) +
+  \re\Sigma_{\tau\tau}^{S,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar}) +
+  m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) \left[
+    \re\Sigma_{\tau\tau}^{L,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar}) +
+    \re\Sigma_{\tau\tau}^{R,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar})
+  \right] ,\\
+  m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) &= m_{\tau,\text{SM}}^{\text{\MSbar}}(\mu)
+  \left(1 - 3 \frac{g_1^2 - g_2^2}{128 \pi^2}\right).
+\end{align}
 
 \subsection{Lattice algorithm}
 
