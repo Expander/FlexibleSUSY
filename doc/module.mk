@@ -50,7 +50,8 @@ $(INDEX_PADE):
 		  echo "INPUT = $(MODULES)" ; \
 		  echo "OUTPUT_DIRECTORY = $(HTML_OUTPUT_DIR)" ; \
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
-		        $(TEST_SRC) $(TEST_META)" \
+		        $(TEST_SRC) $(TEST_META)"; \
+		  echo "EXCLUDE_PATTERNS = */test/*"; \
 		) | doxygen -
 
 $(MANUAL_PDF): $(MANUAL_SRC)
