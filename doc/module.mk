@@ -55,6 +55,7 @@ $(INDEX_PADE):
 
 $(MANUAL_PDF): $(MANUAL_SRC)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+		bibtex $(shell echo $< | rev | cut -d. -f2 | rev)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 
 $(PAPER_PDF): $(PAPER_SRC)
