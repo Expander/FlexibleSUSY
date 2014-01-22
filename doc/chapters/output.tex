@@ -29,7 +29,9 @@ Solving the renormalization group equations:
   \begin{enumerate}
   \item Calculate \DRbar\ masses
   \item Recalculate low-scale
-  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y^{u,d,e}_{ij}$
+  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$,
+    $y^{u,d,e}_{ij}$, see
+    Section~\ref{sec:matching-to-the-standard-model}.
   \item Apply user-defined low-scale constraint (\code{LowScaleInput})
   \end{enumerate}
 \item Run model to the high-scale (\code{HighScale})
@@ -139,6 +141,41 @@ Calculating the particle spectrum:
   \caption{Two-scale renormalization group solver class hierarchy}
   \label{fig:two-scale-rgflow-class-hierarchy}
 \end{figure}
+
+\subsubsection{Matching to the Standard Model}
+\label{sec:matching-to-the-standard-model}
+
+At the low-scale $M_Z$ we calculate
+%
+\begin{align}
+  \alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
+    \Delta\alpha_{\text{e.m.},\text{SM}}(M_Z) -
+    \Delta\alpha_{\text{e.m.},\text{susy}}(M_Z)} ,\\
+  \Delta\alpha_{\text{e.m.},\text{SM}}(\mu) &=
+  \frac{\alpha_\text{e.m.}}{2\pi} \left[\frac{1}{3}
+    - \frac{16}{9} \log{\frac{m_t}{\mu}} \right],\\
+  \Delta\alpha_{\text{e.m.},\text{susy}}(\mu) &=
+  \frac{\alpha_\text{e.m.}}{2\pi} \left[ -\sum_{\text{susy particle }
+      i}
+    C_i \log{\frac{m_i}{\mu}} \right],\\
+    e_{\text{susy}}^{\text{\DRbar}}(M_Z) &=
+    \sqrt{4\pi\alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z)}
+\end{align}
+%
+\begin{align}
+  \alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
+    \Delta\alpha_{\text{s},\text{SM}}(M_Z)
+    - \Delta\alpha_{\text{s},\text{susy}}(M_Z)} ,\\
+  \Delta\alpha_{\text{s},\text{SM}}(\mu) &=
+  \frac{\alpha_\text{s}}{2\pi} \left[
+    -\frac{2}{3} \log{\frac{m_t}{\mu}} \right],\\
+  \Delta\alpha_{\text{s},\text{susy}}(\mu) &=
+  \frac{\alpha_\text{s}}{2\pi}\left[ \frac{1}{2}-\sum_{\text{susy
+        particle } i} C_i \log{\frac{m_i}{\mu}} \right]
+\end{align}
+%
 
 \subsection{Lattice algorithm}
 
