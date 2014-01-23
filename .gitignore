@@ -34,6 +34,8 @@ doc/*.blg
 doc/flexiblesusy.pdf
 doc/paper.pdf
 doc/version.tex
+doc/mainpage.dox
+doc/html/
 
 # automatically generated files from the hand-written example
 # lattice models

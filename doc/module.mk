@@ -5,6 +5,7 @@ HTML_OUTPUT_DIR := $(DIR)/html
 PDF_OUTPUT_DIR  := $(DIR)
 INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
+DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
 MANUAL_SRC      := \
 		$(DIR)/flexiblesusy.tex \
@@ -39,6 +40,7 @@ clean-$(MODNAME):
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -rf $(HTML_OUTPUT_DIR)
+		-rm -f $(DOXYGEN_MAINPAGE)
 		-rm -f $(MANUAL_PDF) $(PAPER_PDF)
 
 clean::         clean-$(MODNAME)

@@ -1,0 +1,6 @@
+/**
+\mainpage FlexibleSUSY @FLEXIBLESUSY_VERSION@
+
+FlexibleSUSY provides Mathematica and C++ code to create custom
+spectrum generators for (constrained) supersymmetric models.
+*/

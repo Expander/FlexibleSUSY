@@ -56,6 +56,10 @@ CONFIGHDR_TMPL=${CONFIGDIR}/config.h.in
 TEXVERSION=$BASEDIR/doc/version.tex
 TEXVERSION_TMPL=$BASEDIR/doc/version.tex.in
 
+# target dox file with Doxygen \mainpage
+DOC_MAINPAGE=$BASEDIR/doc/mainpage.dox
+DOC_MAINPAGE_TMPL=$BASEDIR/doc/mainpage.dox.in
+
 # options
 deprecated_options=""
 options="                    \
@@ -1549,6 +1553,13 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
+
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    < $DOC_MAINPAGE_TMPL > $DOC_MAINPAGE
 
 sed -e "s|@MATH@|$MATH|" \
     < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
