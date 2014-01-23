@@ -25,6 +25,15 @@ FindMass[masses_List, particle_] :=
            Return[massExpr[[1]] /. SARAH`Weinberg[] -> SARAH`Weinberg];
           ];
 
+SolvesWeinbergEq[eq_, expr_] :=
+    Module[{insertedEq},
+           insertedEq = TimeConstrained[
+               Simplify[eq /. SARAH`Weinberg -> expr],
+               FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
+               False];
+           insertedEq === True
+          ];
+
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{eqs, reducedEq, solution, smValue},
            (* SM value of the Weinberg angle *)
@@ -42,6 +51,10 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                  };
            reducedEq = Eliminate[eqs, {SARAH`Mass[SARAH`VectorW],
                                        SARAH`Mass[SARAH`VectorZ]}];
+           (* Try Standard Model definition first *)
+           If[SolvesWeinbergEq[reducedEq, smValue],
+              Return[smValue];
+             ];
            Off[Solve::ifun];
            solution = TimeConstrained[Solve[reducedEq, SARAH`Weinberg, Reals],
                                       FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
