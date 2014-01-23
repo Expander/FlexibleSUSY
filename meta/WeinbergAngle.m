@@ -29,7 +29,7 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{eqs, reducedEq, solution, smValue},
            (* SM value of the Weinberg angle *)
            smValue = Simplify[
-               ArcSin[SARAH`hyperchargeCoupling / Sqrt[SARAH`hyperchargeCoupling^2 + SARAH`leftCoupling^2]] /.
+               ArcTan[SARAH`hyperchargeCoupling / SARAH`leftCoupling] /.
                Parameters`ApplyGUTNormalization[]];
            (* Assumption: the masses contain GUT normalized gauge
               couplings, but the Weinberg angle does not (because we
