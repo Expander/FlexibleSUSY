@@ -34,6 +34,15 @@ SolvesWeinbergEq[eq_, expr_] :=
            insertedEq === True
           ];
 
+ExpressWeinbergAngleInTermsOfGaugeCouplings::nonSMDef = "Warning: The \
+Standard Model definition of the Weinberg angle `1` does not solve the \
+system of equations `2`.";
+
+ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution = "Error: \
+could not express the Weinberg angle `1` in terms of the gauge \
+couplings.  The equation which could not be solved is: `2`.  I'll use \
+the Standard Model definition `3` instead.";
+
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{eqs, reducedEq, solution, smValue},
            (* SM value of the Weinberg angle *)
@@ -53,7 +62,10 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                                        SARAH`Mass[SARAH`VectorZ]}];
            (* Try Standard Model definition first *)
            If[SolvesWeinbergEq[reducedEq, smValue],
-              Return[smValue];
+              Return[smValue];,
+              Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::nonSMDef,
+                      InputForm[SARAH`Weinberg == smValue],
+                      InputForm[eqs]];
              ];
            Off[Solve::ifun];
            solution = TimeConstrained[Solve[reducedEq, SARAH`Weinberg, Reals],
@@ -61,12 +73,10 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                                       {}];
            On[Solve::ifun];
            If[Head[solution] =!= List || solution === {},
-              Print["Error: could not solve the following equation for ",
-                    SARAH`Weinberg, ": "];
-              Print[reducedEq];
-              Print["   I'll use the Standard Model definition for ",
-                    SARAH`Weinberg, " instead:"];
-              Print["   ", SARAH`Weinberg == smValue];
+              Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution,
+                      InputForm[SARAH`Weinberg],
+                      InputForm[reducedEq],
+                      InputForm[SARAH`Weinberg == smValue]];
               Return[smValue];
              ];
            solution = Simplify[#[[1,2]],
@@ -76,8 +86,10 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                                SARAH`leftCoupling > 0 && Element[SARAH`leftCoupling, Reals]]& /@ solution;
            solution = Select[solution, !NumericQ[#]&];
            If[solution === {},
-              Print["Error: Unable to express the Weinberg angle ", SARAH`Weinberg,
-                    " in terms of the gauge couplings"];
+              Message[ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution,
+                      InputForm[SARAH`Weinberg],
+                      InputForm[reducedEq],
+                      InputForm[SARAH`Weinberg == smValue]];
               Return[smValue];
              ];
            Sort[solution, ByteCount[#1] < ByteCount[#2]&][[1]]
