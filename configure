@@ -726,6 +726,8 @@ EOF
             result "not ok (version ${boost_version})"
             message "Error: the installed boost version is too old."
             message "   Please install version ${required_boost_version} or higher."
+            message "   You can use --with-boost-incdir= and --with-boost-libdir="
+            message "   to use a boost installation from a non-default location."
             rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
             exit 1
         fi
@@ -982,6 +984,8 @@ check_eigen_incl() {
     check_header "Eigen/Core" "$eigen_inc_dir" "$eigen_inc_paths"
     if test "x$found_hdr" = "x" ; then
         message "Error: Eigen 3 must be installed, see http://eigen.tuxfamily.org"
+        message "   You can use --with-eigen-incdir= to use an eigen installation"
+        message "   from a non-default location."
         exit 1
     else
         EIGENFLAGS="-I$found_dir"
