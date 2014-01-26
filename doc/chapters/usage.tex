@@ -1,4 +1,25 @@
 \section{Usage}
+
+\subsection{Workflow}
+
+Creating a spectrum generator with \flexisusy consists of the
+following steps:
+%
+\begin{enumerate}
+\item Creating a \emph{SARAH model file}.  Note, that SARAH already
+  ships a lot of pre-defined model files in \code{SARAH/Models/} that
+  can be used.
+\item Creating a \emph{\flexisusy model file} in
+  \code{models/<model-name>/}.  The \code{createmodel} script will
+  help you creating one, see Section~\ref{sec:createmodel}.  For more
+  details on how to write a \flexisusy model file see
+  Section~\ref{sec:model-files}.
+\item \emph{Configure} \flexisusy with your desired model, see
+  Section~\ref{sec:configure}.
+\item Run \code{make}.  This will create the C++ code for your
+  spectrum generator and compile it, see Section~\ref{sec:make}.
+\end{enumerate}
+
 \subsection{Files and directories}
 
 Explain:
@@ -18,6 +39,7 @@ Explain:
 \end{itemize}
 
 \subsubsection{\code{createmodel}}
+\label{sec:createmodel}
 
 The \code{createmodel} script sets up a \flexisusy\ model.  This involves
 %
@@ -30,28 +52,22 @@ The \code{createmodel} script sets up a \flexisusy\ model.  This involves
 %
 Usage:
 \begin{lstlisting}[language=bash]
-./createmodel --models=<flexiblesusy-model>:<sarah-model>
+./createmodel --name=<flexiblesusy-model> --sarah-model=<sarah-model>
 \end{lstlisting}
 Here \code{<flexiblesusy-model>} is the name of \flexisusy\ model
 to be created and \code{<sarah-model>} is the name of the \sarah\
 model file which defines the Lagrangian and the particles.\\
 Example:
 \begin{lstlisting}[language=bash]
-./createmodel --models=MyCMSSM:MSSM
+./createmodel --name=MyCMSSM --sarah-model=MSSM
 \end{lstlisting}
 %
-Multiple models can be created at once by separating the models by a
-comma.\\
-Example:
-\begin{lstlisting}[language=bash]
-./createmodel --models=MyCMSSM:MSSM,MyCNMSSM:NMSSM
-\end{lstlisting}
 %
 If a certain \sarah\ sub-model should be used, the name of the sub-model
 has to be appended with at preceeding slash.\\
 Example: use the \code{CKM} sub-model of the \code{MSSM}
 \begin{lstlisting}[language=bash]
-./createmodel --models=MyCMSSM:MSSM/CKM
+./createmodel --name=MyCMSSM --sarah-model=MSSM/CKM
 \end{lstlisting}
 %
 For further information and options see
@@ -60,6 +76,7 @@ For further information and options see
 \end{lstlisting}
 
 \subsubsection{\code{configure}}
+\label{sec:configure}
 
 The \code{configure} script checks for the installed compilers,
 libraries and Mathematica.  If all of these exists in a sufficent
@@ -95,7 +112,17 @@ Example:
    --with-boost-libdir=/usr/lib/
 \end{lstlisting}
 
+\subsubsection{\code{make}}
+\label{sec:make}
+
+Running \code{make} will create the C++ source code for your spectrum
+generator and compile it.  These two processes are controled in the
+makefile module \code{models/<model-name>/module.mk}.  See,
+Section~\ref{sec:makefile-modules} for details how to create your own
+makefile module.
+
 \subsection{Model files}
+\label{sec:model-files}
 
 Explain how to write a \flexisusy\ model file (starting from a \sarah\
 model file).
@@ -268,6 +295,7 @@ TreeLevelEWSBSolution = {
 \end{sidewaystable}
 
 \subsection{Makefile modules}
+\label{sec:makefile-modules}
 
 Explain how to write a custom makefile module (module.mk) for a
 \flexisusy\ model.
