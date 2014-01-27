@@ -36,6 +36,9 @@ mathconfig="$BASEDIR/config.math"
 # whether we are in 32-bit or 64-bit environment
 machine_word_size=""
 
+# operating system
+operating_system="unknown"
+
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
 MAKEFILE_TMPL=${CONFIGDIR}/Makefile.in
@@ -626,6 +629,8 @@ check_platform() {
         logmsg "PATH: ${p}"
     done
     logmsg ""
+
+    operating_system="`(uname -s) 2>/dev/null || echo unknown`"
 }
 
 #_____________________________________________________________________
