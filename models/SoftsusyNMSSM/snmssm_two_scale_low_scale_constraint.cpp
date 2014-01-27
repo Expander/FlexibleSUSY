@@ -23,7 +23,7 @@
 
 namespace flexiblesusy {
 
-SNmssm_low_scale_constraint::SNmssm_low_scale_constraint(const SNmssm_parameter_point& pp_)
+SoftsusyNMSSM_low_scale_constraint::SoftsusyNMSSM_low_scale_constraint(const SoftsusyNMSSM_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mssm(NULL)
    , scale(MZ)
@@ -31,11 +31,11 @@ SNmssm_low_scale_constraint::SNmssm_low_scale_constraint(const SNmssm_parameter_
 {
 }
 
-SNmssm_low_scale_constraint::~SNmssm_low_scale_constraint()
+SoftsusyNMSSM_low_scale_constraint::~SoftsusyNMSSM_low_scale_constraint()
 {
 }
 
-void SNmssm_low_scale_constraint::apply()
+void SoftsusyNMSSM_low_scale_constraint::apply()
 {
    assert(mssm && "Error: pointer to SNmssm<Two_scale> cannot be zero");
 
@@ -43,17 +43,17 @@ void SNmssm_low_scale_constraint::apply()
    mssm->sparticleThresholdCorrections(pp.tanBeta);
 }
 
-double SNmssm_low_scale_constraint::get_scale() const
+double SoftsusyNMSSM_low_scale_constraint::get_scale() const
 {
    return scale;
 }
 
-void SNmssm_low_scale_constraint::set_model(Two_scale_model* model)
+void SoftsusyNMSSM_low_scale_constraint::set_model(Two_scale_model* model)
 {
    mssm = cast_model<SNmssm<Two_scale> >(model);
 }
 
-void SNmssm_low_scale_constraint::update_scale()
+void SoftsusyNMSSM_low_scale_constraint::update_scale()
 {
    scale = mssm->displayMz();
 }

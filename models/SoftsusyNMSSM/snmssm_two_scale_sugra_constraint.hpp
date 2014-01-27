@@ -26,10 +26,10 @@
 
 namespace flexiblesusy {
 
-class SNmssm_sugra_constraint : public Constraint<Two_scale> {
+class SoftsusyNMSSM_sugra_constraint : public Constraint<Two_scale> {
 public:
-   SNmssm_sugra_constraint(const SNmssm_parameter_point&);
-   virtual ~SNmssm_sugra_constraint();
+   SoftsusyNMSSM_sugra_constraint(const SoftsusyNMSSM_parameter_point&);
+   virtual ~SoftsusyNMSSM_sugra_constraint();
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
@@ -37,7 +37,7 @@ public:
 private:
    double mx_guess;
    SNmssm<Two_scale>* mssm;
-   SNmssm_parameter_point pp;   ///< SNmssm parameter point
+   SoftsusyNMSSM_parameter_point pp;   ///< SNmssm parameter point
    GUT_scale_calculator<SNmssm<Two_scale> > gut_scale_calculator;
 
    void update_scale();

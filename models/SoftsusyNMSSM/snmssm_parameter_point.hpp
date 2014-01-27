@@ -23,8 +23,8 @@
 
 namespace flexiblesusy {
 
-struct SNmssm_parameter_point {
-   SNmssm_parameter_point()
+struct SoftsusyNMSSM_parameter_point {
+   SoftsusyNMSSM_parameter_point()
       : m0(125.0)
       , m12(500.0)
       , a0(0.0)
@@ -54,7 +54,7 @@ struct SNmssm_parameter_point {
       nmpars(5) = muPrime;
       return nmpars;
    }
-   friend std::ostream& operator<<(std::ostream& os, const SNmssm_parameter_point& pp) {
+   friend std::ostream& operator<<(std::ostream& os, const SoftsusyNMSSM_parameter_point& pp) {
       os << "CNMSSM parameter point:"
          << " m0=" << pp.m0
          << ", m12=" << pp.m12

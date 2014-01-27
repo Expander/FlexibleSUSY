@@ -29,24 +29,24 @@ namespace flexiblesusy {
 template<class T> class SNmssm;
 class Two_scale;
 
-class SNmssm_low_scale_constraint;
-class SNmssm_susy_scale_constraint;
-class SNmssm_sugra_constraint;
+class SoftsusyNMSSM_low_scale_constraint;
+class SoftsusyNMSSM_susy_scale_constraint;
+class SoftsusyNMSSM_sugra_constraint;
 
-class SNmssm_initial_guesser : public Initial_guesser<Two_scale> {
+class SoftsusyNMSSM_initial_guesser : public Initial_guesser<Two_scale> {
 public:
-   SNmssm_initial_guesser(SNmssm<Two_scale>*, const SNmssm_parameter_point&,
-                          const SNmssm_low_scale_constraint&,
-                          const SNmssm_susy_scale_constraint&,
-                          const SNmssm_sugra_constraint&);
-   virtual ~SNmssm_initial_guesser();
+   SoftsusyNMSSM_initial_guesser(SNmssm<Two_scale>*, const SoftsusyNMSSM_parameter_point&,
+                          const SoftsusyNMSSM_low_scale_constraint&,
+                          const SoftsusyNMSSM_susy_scale_constraint&,
+                          const SoftsusyNMSSM_sugra_constraint&);
+   virtual ~SoftsusyNMSSM_initial_guesser();
    virtual void guess();
    void set_QedQcd(const QedQcd& qedqcd) { oneset = qedqcd; }
 
 private:
    SNmssm<Two_scale>* nmssm;  ///< SNmssm model
    QedQcd oneset;             ///< low-energy parameters
-   SNmssm_parameter_point pp; ///< SNmssm parameter point
+   SoftsusyNMSSM_parameter_point pp; ///< SNmssm parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };
 

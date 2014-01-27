@@ -28,7 +28,7 @@ namespace flexiblesusy {
  *
  * @param pp_ SNmssm parameter point
  */
-SNmssm_susy_scale_constraint::SNmssm_susy_scale_constraint(const SNmssm_parameter_point& pp_)
+SoftsusyNMSSM_susy_scale_constraint::SoftsusyNMSSM_susy_scale_constraint(const SoftsusyNMSSM_parameter_point& pp_)
    : Constraint<Two_scale>()
    , snmssm(NULL)
    , scale(pp_.msGuess)
@@ -36,11 +36,11 @@ SNmssm_susy_scale_constraint::SNmssm_susy_scale_constraint(const SNmssm_paramete
 {
 }
 
-SNmssm_susy_scale_constraint::~SNmssm_susy_scale_constraint()
+SoftsusyNMSSM_susy_scale_constraint::~SoftsusyNMSSM_susy_scale_constraint()
 {
 }
 
-void SNmssm_susy_scale_constraint::apply()
+void SoftsusyNMSSM_susy_scale_constraint::apply()
 {
    assert(snmssm && "Error: pointer to SNmssm<Two_scale> cannot be zero");
 
@@ -50,17 +50,17 @@ void SNmssm_susy_scale_constraint::apply()
    snmssm->rewsb(pp.signMu, mtrun);
 }
 
-double SNmssm_susy_scale_constraint::get_scale() const
+double SoftsusyNMSSM_susy_scale_constraint::get_scale() const
 {
    return scale;
 }
 
-void SNmssm_susy_scale_constraint::set_model(Two_scale_model* model)
+void SoftsusyNMSSM_susy_scale_constraint::set_model(Two_scale_model* model)
 {
    snmssm = cast_model<SNmssm<Two_scale> >(model);
 }
 
-void SNmssm_susy_scale_constraint::update_scale()
+void SoftsusyNMSSM_susy_scale_constraint::update_scale()
 {
    snmssm->setMsusy(snmssm->calcMs());
    scale = snmssm->displayMsusy();

@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    setup_NMSSM(m, softSusy, input);
    SNmssm<Two_scale> s(softSusy);
 
-   SNmssm_parameter_point pp;
+   SoftsusyNMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;
    pp.a0 = input.Azero;
    pp.m12 = input.m12;
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.lambda = input.LambdaInput;
 
    NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(input);
-   SNmssm_sugra_constraint snmssm_sugra_constraint(pp);
+   SoftsusyNMSSM_sugra_constraint snmssm_sugra_constraint(pp);
 
    NMSSM_sugra_constraint.set_model(&m);
    snmssm_sugra_constraint.set_model((Two_scale_model*)&s);

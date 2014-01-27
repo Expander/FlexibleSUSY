@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
                                             susy_constraint, high_constraint);
 
    // create SNmssm initial guesser
-   SNmssm_parameter_point pp;
+   SoftsusyNMSSM_parameter_point pp;
    pp.m0 = input.m0;
    pp.m12 = input.m12;
    pp.a0 = input.Azero;
@@ -43,10 +43,10 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    pp.lambda = input.LambdaInput;
    pp.kappa = 0.1;  // initial guess at the low-scale
    pp.svev = 1000.; // initial guess at the low-scale
-   SNmssm_sugra_constraint mssm_sugra_constraint(pp);
-   SNmssm_low_scale_constraint mssm_mz_constraint(pp);
-   SNmssm_susy_scale_constraint mssm_msusy_constraint(pp);
-   SNmssm_initial_guesser initial_guesser(&snmssm, pp, mssm_mz_constraint,
+   SoftsusyNMSSM_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyNMSSM_low_scale_constraint mssm_mz_constraint(pp);
+   SoftsusyNMSSM_susy_scale_constraint mssm_msusy_constraint(pp);
+   SoftsusyNMSSM_initial_guesser initial_guesser(&snmssm, pp, mssm_mz_constraint,
                                           mssm_msusy_constraint,
                                           mssm_sugra_constraint);
    initial_guesser.set_QedQcd(oneset);
