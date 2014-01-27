@@ -20,21 +20,21 @@
 
 namespace flexiblesusy {
 
-Mssm_convergence_tester::Mssm_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_)
+SoftsusyMSSM_convergence_tester::SoftsusyMSSM_convergence_tester(Mssm<Two_scale>* mssm_, double accuracy_goal_)
    : Convergence_tester_skeleton<Mssm<Two_scale> >(mssm_, accuracy_goal_)
 {
 }
 
-Mssm_convergence_tester::~Mssm_convergence_tester()
+SoftsusyMSSM_convergence_tester::~SoftsusyMSSM_convergence_tester()
 {
 }
 
-double Mssm_convergence_tester::max_rel_diff() const
+double SoftsusyMSSM_convergence_tester::max_rel_diff() const
 {
    return sumTol(*get_model(), *get_last_iteration_model());
 }
 
-double Mssm_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out) const
+double SoftsusyMSSM_convergence_tester::sumTol(const Mssm<Two_scale>& in, const Mssm<Two_scale>& out) const
 {
   softsusy::drBarPars inforLoops(in.displayDrBarPars()),
     outforLoops(out.displayDrBarPars());

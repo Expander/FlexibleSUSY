@@ -24,7 +24,7 @@ using namespace flexiblesusy;
  * @param pp parameter point
  * @param oneset low-energy data set
  */
-double softsusy_initial_guess(MssmSoftsusy& mssm, const Mssm_parameter_point& pp, const QedQcd& oneset)
+double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset)
 {
    double mx = 0.0;
    const double mxGuess = pp.mxGuess;
@@ -147,14 +147,14 @@ void test_equality(const SoftParsMssm& a, const SoftParsMssm& b)
 
 BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
 {
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = 45.1;
    QedQcd oneset;
    Mssm<Two_scale> mssm;
-   Mssm_sugra_constraint mssm_sugra_constraint(pp);
-   Mssm_low_scale_constraint mssm_mz_constraint(pp);
-   Mssm_susy_scale_constraint mssm_msusy_constraint(pp);
-   Mssm_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
+   SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyMSSM_low_scale_constraint mssm_mz_constraint(pp);
+   SoftsusyMSSM_susy_scale_constraint mssm_msusy_constraint(pp);
+   SoftsusyMSSM_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
                                         mssm_msusy_constraint,
                                         mssm_sugra_constraint);
    initial_guesser.set_QedQcd(oneset);

@@ -23,8 +23,8 @@
 
 namespace flexiblesusy {
 
-struct Mssm_parameter_point {
-   Mssm_parameter_point()
+struct SoftsusyMSSM_parameter_point {
+   SoftsusyMSSM_parameter_point()
       : m0(125.0)
       , m12(500.0)
       , a0(0.0)
@@ -40,7 +40,7 @@ struct Mssm_parameter_point {
       highScaleSoftPars(3) = a0;
       return highScaleSoftPars;
    }
-   friend std::ostream& operator<<(std::ostream& os, const Mssm_parameter_point& pp) {
+   friend std::ostream& operator<<(std::ostream& os, const SoftsusyMSSM_parameter_point& pp) {
       os << "CMSSM parameter point:"
          << " m0=" << pp.m0
          << ", m12=" << pp.m12

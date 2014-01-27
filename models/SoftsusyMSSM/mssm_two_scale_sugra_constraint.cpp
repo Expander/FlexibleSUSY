@@ -21,7 +21,7 @@
 
 namespace flexiblesusy {
 
-Mssm_sugra_constraint::Mssm_sugra_constraint(const Mssm_parameter_point& pp_)
+SoftsusyMSSM_sugra_constraint::SoftsusyMSSM_sugra_constraint(const SoftsusyMSSM_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mx_guess(pp_.mxGuess)
    , mssm(NULL)
@@ -30,11 +30,11 @@ Mssm_sugra_constraint::Mssm_sugra_constraint(const Mssm_parameter_point& pp_)
 {
 }
 
-Mssm_sugra_constraint::~Mssm_sugra_constraint()
+SoftsusyMSSM_sugra_constraint::~SoftsusyMSSM_sugra_constraint()
 {
 }
 
-void Mssm_sugra_constraint::apply()
+void SoftsusyMSSM_sugra_constraint::apply()
 {
    assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
 
@@ -42,17 +42,17 @@ void Mssm_sugra_constraint::apply()
    mssm->setSugraBcs(pp.m0, pp.m12, pp.a0);
 }
 
-double Mssm_sugra_constraint::get_scale() const
+double SoftsusyMSSM_sugra_constraint::get_scale() const
 {
    return mx_guess;
 }
 
-void Mssm_sugra_constraint::set_model(Two_scale_model* model)
+void SoftsusyMSSM_sugra_constraint::set_model(Two_scale_model* model)
 {
    mssm = cast_model<Mssm<Two_scale> >(model);
 }
 
-void Mssm_sugra_constraint::update_scale()
+void SoftsusyMSSM_sugra_constraint::update_scale()
 {
    mx_guess = gut_scale_calculator.calculateGUTScale(*mssm);
 }

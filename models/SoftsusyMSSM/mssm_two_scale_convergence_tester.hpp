@@ -24,10 +24,10 @@
 
 namespace flexiblesusy {
 
-class Mssm_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
+class SoftsusyMSSM_convergence_tester : public Convergence_tester_skeleton<Mssm<Two_scale> > {
 public:
-   Mssm_convergence_tester(Mssm<Two_scale>*, double);
-   virtual ~Mssm_convergence_tester();
+   SoftsusyMSSM_convergence_tester(Mssm<Two_scale>*, double);
+   virtual ~SoftsusyMSSM_convergence_tester();
 
 protected:
    virtual double max_rel_diff() const;

@@ -25,18 +25,18 @@
 
 namespace flexiblesusy {
 
-Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_,
-                                           const Mssm_parameter_point& pp_,
-                                           const Mssm_low_scale_constraint&,
-                                           const Mssm_susy_scale_constraint&,
-                                           const Mssm_sugra_constraint&)
+SoftsusyMSSM_initial_guesser::SoftsusyMSSM_initial_guesser(Mssm<Two_scale>* mssm_,
+                                           const SoftsusyMSSM_parameter_point& pp_,
+                                           const SoftsusyMSSM_low_scale_constraint&,
+                                           const SoftsusyMSSM_susy_scale_constraint&,
+                                           const SoftsusyMSSM_sugra_constraint&)
    : Initial_guesser<Two_scale>()
    , mssm(mssm_)
    , oneset()
    , pp(pp_)
    , ewsbBCscale(false)
 {
-   assert(mssm && "Mssm_initial_guesser: Error: pointer to Mssm"
+   assert(mssm && "SoftsusyMSSM_initial_guesser: Error: pointer to Mssm"
           " cannot be zero");
 
    const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;
@@ -46,11 +46,11 @@ Mssm_initial_guesser::Mssm_initial_guesser(Mssm<Two_scale>* mssm_,
    oneset.toMz();
 }
 
-Mssm_initial_guesser::~Mssm_initial_guesser()
+SoftsusyMSSM_initial_guesser::~SoftsusyMSSM_initial_guesser()
 {
 }
 
-void Mssm_initial_guesser::guess()
+void SoftsusyMSSM_initial_guesser::guess()
 {
    const static MssmSoftsusy empty;
 
@@ -84,7 +84,7 @@ void Mssm_initial_guesser::guess()
    t.setLoops(2); /// 2 loops should protect against ht Landau pole
    int err = t.runto(mx);
    if (err)
-      ERROR("<Mssm_initial_guesser::guess()>: non-perturbative running to"
+      ERROR("<SoftsusyMSSM_initial_guesser::guess()>: non-perturbative running to"
             " mx = " << mx);
 
    mssm->setSusy(t);
@@ -108,7 +108,7 @@ void Mssm_initial_guesser::guess()
 
    err = mssm->run(mx, mz);
    if (err)
-      ERROR("<Mssm_initial_guesser::guess()>: non-perturbative running from"
+      ERROR("<SoftsusyMSSM_initial_guesser::guess()>: non-perturbative running from"
             " mx = " << mx << " to mz = " << mz);
 
    if (sgnMu == 1 || sgnMu == -1)
@@ -122,9 +122,9 @@ void Mssm_initial_guesser::guess()
    sProblem problem = mssm->displayProblem();
    if (problem.test()) {
       if (problem.testSeriousProblem())
-         WARNING("<Mssm_initial_guesser::guess()>: serious problem: " << problem);
+         WARNING("<SoftsusyMSSM_initial_guesser::guess()>: serious problem: " << problem);
       else
-         WARNING("<Mssm_initial_guesser::guess()>: problem: " << problem);
+         WARNING("<SoftsusyMSSM_initial_guesser::guess()>: problem: " << problem);
    }
 }
 

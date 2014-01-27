@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    MSSM<Two_scale> m; Mssm<Two_scale> s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;
    pp.a0 = input.Azero;
    pp.m12 = input.m12;
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.signMu = input.SignMu;
 
    MSSM_high_scale_constraint<Two_scale> MSSM_sugra_constraint(input);
-   Mssm_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
 
    MSSM_sugra_constraint.set_model(&m);
    mssm_sugra_constraint.set_model((Two_scale_model*)&s);
