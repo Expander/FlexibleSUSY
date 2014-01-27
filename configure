@@ -1193,6 +1193,10 @@ check_math_cmd() {
     if [ -z "$cmd" ] ; then
         result "not found"
         message "Error: Mathematica needs to be installed to run the meta code!"
+        case "$operating_system" in
+            Linux)  message "   It is usually installed in /usr/local/Wolfram/Mathematica/" ;;
+            Darwin) message "   It is usually installed in /Applications/Mathematica.app/"  ;;
+        esac
         exit 1
     else
         result "found $cmd"
