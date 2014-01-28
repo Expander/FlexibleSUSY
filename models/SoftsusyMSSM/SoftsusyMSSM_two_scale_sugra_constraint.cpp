@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "mssm_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
 #include <cassert>
 
 namespace flexiblesusy {

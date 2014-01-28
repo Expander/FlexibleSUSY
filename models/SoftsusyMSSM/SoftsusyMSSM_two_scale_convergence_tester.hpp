@@ -20,7 +20,7 @@
 #define SoftsusyMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "two_scale_convergence_tester_skeleton.hpp"
-#include "mssm_two_scale.hpp"
+#include "SoftsusyMSSM_two_scale.hpp"
 
 namespace flexiblesusy {
 

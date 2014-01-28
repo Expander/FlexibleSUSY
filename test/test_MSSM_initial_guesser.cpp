@@ -7,12 +7,12 @@
 
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_two_scale_initial_guesser.hpp"
-#include "mssm_parameter_point.hpp"
-#include "mssm_two_scale.hpp"
-#include "mssm_two_scale_initial_guesser.hpp"
-#include "mssm_two_scale_sugra_constraint.hpp"
-#include "mssm_two_scale_susy_scale_constraint.hpp"
-#include "mssm_two_scale_low_scale_constraint.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale.hpp"
+#include "SoftsusyMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_susy_scale_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_low_scale_constraint.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {

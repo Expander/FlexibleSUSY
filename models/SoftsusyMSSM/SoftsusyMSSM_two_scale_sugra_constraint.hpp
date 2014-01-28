@@ -20,8 +20,8 @@
 #define SoftsusyMSSM_SUGRA_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
-#include "mssm_two_scale.hpp"
-#include "mssm_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
 #include "gut_scale_calculator.hpp"
 
 namespace flexiblesusy {

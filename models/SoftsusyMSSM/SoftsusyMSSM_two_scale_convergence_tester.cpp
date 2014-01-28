@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "mssm_two_scale_convergence_tester.hpp"
+#include "SoftsusyMSSM_two_scale_convergence_tester.hpp"
 
 namespace flexiblesusy {
 

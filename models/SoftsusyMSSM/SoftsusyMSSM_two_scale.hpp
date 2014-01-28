@@ -19,7 +19,7 @@
 #ifndef SoftsusyMSSM_TWO_SCALE_H
 #define SoftsusyMSSM_TWO_SCALE_H
 
-#include "mssm.hpp"
+#include "SoftsusyMSSM.hpp"
 #include "two_scale_model.hpp"
 #include "softsusy.h"
 

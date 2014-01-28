@@ -10,8 +10,8 @@
 #define private public
 
 #include "softsusy.h"
-#include "mssm_parameter_point.hpp"
-#include "mssm_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
 #include "test_MSSM.hpp"
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_two_scale_high_scale_constraint.hpp"
