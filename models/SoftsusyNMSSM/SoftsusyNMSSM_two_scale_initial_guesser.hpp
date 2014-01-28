@@ -20,7 +20,7 @@
 #define SoftsusyNMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "two_scale_initial_guesser.hpp"
-#include "snmssm_parameter_point.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
 #include "lowe.h"
 #include "linalg.h"
 

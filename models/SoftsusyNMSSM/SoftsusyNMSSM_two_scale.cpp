@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "snmssm_two_scale.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
 
 namespace flexiblesusy {
 

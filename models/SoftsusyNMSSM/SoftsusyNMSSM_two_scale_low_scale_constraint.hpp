@@ -20,7 +20,7 @@
 #define SoftsusyNMSSM_MZ_CONSTRAINT_H
 
 #include "two_scale_constraint.hpp"
-#include "snmssm_parameter_point.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
 
 namespace flexiblesusy {
 

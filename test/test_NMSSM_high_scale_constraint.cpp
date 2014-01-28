@@ -13,9 +13,9 @@
 #include "nmssmsoftsusy.h"
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_two_scale_high_scale_constraint.hpp"
-#include "snmssm_two_scale.hpp"
-#include "snmssm_parameter_point.hpp"
-#include "snmssm_two_scale_sugra_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
+#include "SoftsusyNMSSM_two_scale_sugra_constraint.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;

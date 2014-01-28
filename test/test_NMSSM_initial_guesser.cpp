@@ -8,12 +8,12 @@
 
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_two_scale_initial_guesser.hpp"
-#include "snmssm_parameter_point.hpp"
-#include "snmssm_two_scale.hpp"
-#include "snmssm_two_scale_initial_guesser.hpp"
-#include "snmssm_two_scale_sugra_constraint.hpp"
-#include "snmssm_two_scale_susy_scale_constraint.hpp"
-#include "snmssm_two_scale_low_scale_constraint.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
+#include "SoftsusyNMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyNMSSM_two_scale_sugra_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale_susy_scale_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale_low_scale_constraint.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {

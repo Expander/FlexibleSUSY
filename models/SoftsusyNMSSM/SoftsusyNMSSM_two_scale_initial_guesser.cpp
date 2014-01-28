@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "snmssm_two_scale_initial_guesser.hpp"
-#include "snmssm_two_scale.hpp"
+#include "SoftsusyNMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
 #include "nmssmsoftsusy.h"
 #include "logger.hpp"
 
