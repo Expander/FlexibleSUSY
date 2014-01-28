@@ -1,4 +1,4 @@
-#include "mssm_solver.h"
+#include "mssm_solver.hpp"
 #include "mssm_parameter_point.hpp"
 #include "mssm_two_scale.hpp"
 #include "mssm_two_scale_initial_guesser.hpp"
