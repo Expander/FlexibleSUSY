@@ -26,7 +26,7 @@
 namespace flexiblesusy {
 
 class Two_scale;
-template<class T> class SNmssm;
+template<class T> class SoftsusyNMSSM;
 
 /**
  * @class SoftsusyNMSSM_susy_scale_constraint
@@ -47,9 +47,9 @@ public:
    virtual void set_model(Two_scale_model*);
 
 private:
-   SNmssm<Two_scale>* snmssm;
+   SoftsusyNMSSM<Two_scale>* snmssm;
    double scale;
-   SoftsusyNMSSM_parameter_point pp;   ///< SNmssm parameter point
+   SoftsusyNMSSM_parameter_point pp;   ///< SoftsusyNMSSM parameter point
 
    void update_scale();
 };

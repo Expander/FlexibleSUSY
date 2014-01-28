@@ -25,7 +25,7 @@
 
 namespace flexiblesusy {
 
-SoftsusyNMSSM_initial_guesser::SoftsusyNMSSM_initial_guesser(SNmssm<Two_scale>* nmssm_,
+SoftsusyNMSSM_initial_guesser::SoftsusyNMSSM_initial_guesser(SoftsusyNMSSM<Two_scale>* nmssm_,
                                                const SoftsusyNMSSM_parameter_point& pp_,
                                                const SoftsusyNMSSM_low_scale_constraint&,
                                                const SoftsusyNMSSM_susy_scale_constraint&,
@@ -36,7 +36,7 @@ SoftsusyNMSSM_initial_guesser::SoftsusyNMSSM_initial_guesser(SNmssm<Two_scale>* 
    , pp(pp_)
    , ewsbBCscale(false)
 {
-   assert(nmssm && "SoftsusyNMSSM_initial_guesser: Error: pointer to SNmssm"
+   assert(nmssm && "SoftsusyNMSSM_initial_guesser: Error: pointer to SoftsusyNMSSM"
           " cannot be zero");
 
    const double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;

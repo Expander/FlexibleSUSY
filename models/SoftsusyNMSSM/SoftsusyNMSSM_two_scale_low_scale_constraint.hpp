@@ -25,7 +25,7 @@
 namespace flexiblesusy {
 
 class Two_scale;
-template<class T> class SNmssm;
+template<class T> class SoftsusyNMSSM;
 
 /**
  * @class SoftsusyNMSSM_low_scale_constraint
@@ -35,7 +35,7 @@ template<class T> class SNmssm;
  * Z mass MZ.  The apply() function calculates the threshold
  * corrections to the gauge and Yukawa couplings.  It is assumed that
  * the NMSSM model class is filled with the low-energy data set (see
- * SNmssmSoftsusy::setData).
+ * SoftsusyNMSSMSoftsusy::setData).
  */
 
 class SoftsusyNMSSM_low_scale_constraint : public Constraint<Two_scale> {
@@ -47,9 +47,9 @@ public:
    virtual void set_model(Two_scale_model*);
 
 private:
-   SNmssm<Two_scale>* mssm;
+   SoftsusyNMSSM<Two_scale>* mssm;
    double scale;
-   SoftsusyNMSSM_parameter_point pp;   ///< SNmssm parameter point
+   SoftsusyNMSSM_parameter_point pp;   ///< SoftsusyNMSSM parameter point
 
    void update_scale();
 };

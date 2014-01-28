@@ -37,7 +37,7 @@ SoftsusyNMSSM_low_scale_constraint::~SoftsusyNMSSM_low_scale_constraint()
 
 void SoftsusyNMSSM_low_scale_constraint::apply()
 {
-   assert(mssm && "Error: pointer to SNmssm<Two_scale> cannot be zero");
+   assert(mssm && "Error: pointer to SoftsusyNMSSM<Two_scale> cannot be zero");
 
    update_scale();
    mssm->sparticleThresholdCorrections(pp.tanBeta);
@@ -50,7 +50,7 @@ double SoftsusyNMSSM_low_scale_constraint::get_scale() const
 
 void SoftsusyNMSSM_low_scale_constraint::set_model(Two_scale_model* model)
 {
-   mssm = cast_model<SNmssm<Two_scale> >(model);
+   mssm = cast_model<SoftsusyNMSSM<Two_scale> >(model);
 }
 
 void SoftsusyNMSSM_low_scale_constraint::update_scale()

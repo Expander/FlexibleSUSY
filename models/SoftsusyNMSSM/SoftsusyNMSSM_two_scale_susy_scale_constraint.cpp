@@ -26,7 +26,7 @@ namespace flexiblesusy {
 /**
  * Constructor
  *
- * @param pp_ SNmssm parameter point
+ * @param pp_ SoftsusyNMSSM parameter point
  */
 SoftsusyNMSSM_susy_scale_constraint::SoftsusyNMSSM_susy_scale_constraint(const SoftsusyNMSSM_parameter_point& pp_)
    : Constraint<Two_scale>()
@@ -42,7 +42,7 @@ SoftsusyNMSSM_susy_scale_constraint::~SoftsusyNMSSM_susy_scale_constraint()
 
 void SoftsusyNMSSM_susy_scale_constraint::apply()
 {
-   assert(snmssm && "Error: pointer to SNmssm<Two_scale> cannot be zero");
+   assert(snmssm && "Error: pointer to SoftsusyNMSSM<Two_scale> cannot be zero");
 
    snmssm->calcDrBarPars();
    update_scale();
@@ -57,7 +57,7 @@ double SoftsusyNMSSM_susy_scale_constraint::get_scale() const
 
 void SoftsusyNMSSM_susy_scale_constraint::set_model(Two_scale_model* model)
 {
-   snmssm = cast_model<SNmssm<Two_scale> >(model);
+   snmssm = cast_model<SoftsusyNMSSM<Two_scale> >(model);
 }
 
 void SoftsusyNMSSM_susy_scale_constraint::update_scale()

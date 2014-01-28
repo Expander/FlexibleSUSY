@@ -36,9 +36,9 @@ public:
 
 private:
    double mx_guess;
-   SNmssm<Two_scale>* mssm;
-   SoftsusyNMSSM_parameter_point pp;   ///< SNmssm parameter point
-   GUT_scale_calculator<SNmssm<Two_scale> > gut_scale_calculator;
+   SoftsusyNMSSM<Two_scale>* mssm;
+   SoftsusyNMSSM_parameter_point pp;   ///< SoftsusyNMSSM parameter point
+   GUT_scale_calculator<SoftsusyNMSSM<Two_scale> > gut_scale_calculator;
 
    void update_scale();
 };

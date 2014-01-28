@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    NmssmSoftsusy softSusy;
    NMSSM_input_parameters input;
    setup_NMSSM(m, softSusy, input);
-   SNmssm<Two_scale> s(softSusy);
+   SoftsusyNMSSM<Two_scale> s(softSusy);
 
    SoftsusyNMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;

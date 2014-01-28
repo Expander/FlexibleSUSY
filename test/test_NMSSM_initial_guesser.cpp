@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
    softsusy::TOLERANCE = 1.0e-3;
    NMSSM<Two_scale> m;
-   SNmssm<Two_scale> snmssm;
+   SoftsusyNMSSM<Two_scale> snmssm;
 
    // create NMSSM initial guesser
    NMSSM_input_parameters input;
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    NMSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
                                             susy_constraint, high_constraint);
 
-   // create SNmssm initial guesser
+   // create SoftsusyNMSSM initial guesser
    SoftsusyNMSSM_parameter_point pp;
    pp.m0 = input.m0;
    pp.m12 = input.m12;

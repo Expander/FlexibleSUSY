@@ -20,8 +20,8 @@
 
 namespace flexiblesusy {
 
-SoftsusyNMSSM_convergence_tester::SoftsusyNMSSM_convergence_tester(SNmssm<Two_scale>* snmssm_, double accuracy_goal_)
-   : Convergence_tester_skeleton<SNmssm<Two_scale> >(snmssm_, accuracy_goal_)
+SoftsusyNMSSM_convergence_tester::SoftsusyNMSSM_convergence_tester(SoftsusyNMSSM<Two_scale>* snmssm_, double accuracy_goal_)
+   : Convergence_tester_skeleton<SoftsusyNMSSM<Two_scale> >(snmssm_, accuracy_goal_)
 {
 }
 
@@ -34,7 +34,7 @@ double SoftsusyNMSSM_convergence_tester::max_rel_diff() const
    return sumTol(*get_model(), *get_last_iteration_model());
 }
 
-double SoftsusyNMSSM_convergence_tester::sumTol(const SNmssm<Two_scale>& in, const SNmssm<Two_scale>& out) const
+double SoftsusyNMSSM_convergence_tester::sumTol(const SoftsusyNMSSM<Two_scale>& in, const SoftsusyNMSSM<Two_scale>& out) const
 {
    return softsusy::sumTol(in, out, 100);
 }
