@@ -221,14 +221,14 @@ public:
       mssm.calculate_spectrum();
 
       stopwatch.stop();
-      VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
+      VERBOSE_MSG("SoftsusyMSSM<Two_scale> solved in " << stopwatch.get_time_in_seconds()
                   << " seconds");
 
       mx = mssm_sugra_constraint.get_scale();
    }
 private:
    double mx;
-   Mssm<Two_scale> mssm;
+   SoftsusyMSSM<Two_scale> mssm;
 };
 
 /**

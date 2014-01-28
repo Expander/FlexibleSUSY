@@ -28,25 +28,25 @@ namespace flexiblesusy {
 class Two_scale;
 
 template<>
-class Mssm<Two_scale>: public Two_scale_model, public MssmSoftsusy {
+class SoftsusyMSSM<Two_scale>: public Two_scale_model, public MssmSoftsusy {
 public:
-   Mssm();
-   virtual ~Mssm();
+   SoftsusyMSSM();
+   virtual ~SoftsusyMSSM();
 
    virtual void calculate_spectrum();
-   virtual std::string name() const { return "Mssm"; }
+   virtual std::string name() const { return "SoftsusyMSSM"; }
    virtual void run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<MssmSoftsusy>(*this); }
    virtual void set_precision(double p) { precision = p; }
 
    void set_scale(double scale) { setMu(scale); }
    double get_scale() const { return displayMu(); }
-   Mssm calc_beta() const { return beta2(); }
+   SoftsusyMSSM calc_beta() const { return beta2(); }
    void setSugraBcs(double m0, double m12, double a0) { standardSugra(m0, m12, a0); }
 
 private:
    double precision;
-   Mssm(const SoftParsMssm&);
+   SoftsusyMSSM(const SoftParsMssm&);
 };
 
 }

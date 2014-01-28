@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_softsusy_mssm_initial_guesser )
    SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = 45.1;
    QedQcd oneset;
-   Mssm<Two_scale> mssm;
+   SoftsusyMSSM<Two_scale> mssm;
    SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
    SoftsusyMSSM_low_scale_constraint mssm_mz_constraint(pp);
    SoftsusyMSSM_susy_scale_constraint mssm_msusy_constraint(pp);

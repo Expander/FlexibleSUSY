@@ -36,7 +36,7 @@ SoftsusyMSSM_sugra_constraint::~SoftsusyMSSM_sugra_constraint()
 
 void SoftsusyMSSM_sugra_constraint::apply()
 {
-   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+   assert(mssm && "Error: pointer to SoftsusyMSSM<Two_scale> cannot be zero");
 
    update_scale();
    mssm->setSugraBcs(pp.m0, pp.m12, pp.a0);
@@ -49,7 +49,7 @@ double SoftsusyMSSM_sugra_constraint::get_scale() const
 
 void SoftsusyMSSM_sugra_constraint::set_model(Two_scale_model* model)
 {
-   mssm = cast_model<Mssm<Two_scale> >(model);
+   mssm = cast_model<SoftsusyMSSM<Two_scale> >(model);
 }
 
 void SoftsusyMSSM_sugra_constraint::update_scale()

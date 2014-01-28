@@ -22,7 +22,7 @@
 namespace flexiblesusy {
 
 template <class T>
-class Mssm;
+class SoftsusyMSSM;
 
 }
 

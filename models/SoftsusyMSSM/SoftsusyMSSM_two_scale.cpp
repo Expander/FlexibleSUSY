@@ -20,29 +20,29 @@
 
 namespace flexiblesusy {
 
-Mssm<Two_scale>::Mssm()
+SoftsusyMSSM<Two_scale>::SoftsusyMSSM()
    : Two_scale_model()
    , precision(1.0e-5)
 {
 }
 
-Mssm<Two_scale>::Mssm(const SoftParsMssm& softPars)
+SoftsusyMSSM<Two_scale>::SoftsusyMSSM(const SoftParsMssm& softPars)
 {
    setSoftPars(softPars);
 }
 
-Mssm<Two_scale>::~Mssm()
+SoftsusyMSSM<Two_scale>::~SoftsusyMSSM()
 {
 }
 
-void Mssm<Two_scale>::calculate_spectrum()
+void SoftsusyMSSM<Two_scale>::calculate_spectrum()
 {
    run_to(maximum(displayMsusy(), MZ));
    physical(3);
    runto(displayMz());
 }
 
-void Mssm<Two_scale>::run_to(double scale, double eps)
+void SoftsusyMSSM<Two_scale>::run_to(double scale, double eps)
 {
    if (eps < 0.0)
       eps = precision;

@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
 
 BOOST_AUTO_TEST_CASE( test_mx_calculation )
 {
-   MSSM<Two_scale> m; Mssm<Two_scale> s;
+   MSSM<Two_scale> m; SoftsusyMSSM<Two_scale> s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
    SoftsusyMSSM_parameter_point pp;

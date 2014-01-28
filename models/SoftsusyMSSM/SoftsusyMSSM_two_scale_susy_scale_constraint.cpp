@@ -42,7 +42,7 @@ SoftsusyMSSM_susy_scale_constraint::~SoftsusyMSSM_susy_scale_constraint()
 
 void SoftsusyMSSM_susy_scale_constraint::apply()
 {
-   assert(mssm && "Error: pointer to Mssm<Two_scale> cannot be zero");
+   assert(mssm && "Error: pointer to SoftsusyMSSM<Two_scale> cannot be zero");
 
    mssm->calcDrBarPars();
    update_scale();
@@ -57,7 +57,7 @@ double SoftsusyMSSM_susy_scale_constraint::get_scale() const
 
 void SoftsusyMSSM_susy_scale_constraint::set_model(Two_scale_model* model)
 {
-   mssm = cast_model<Mssm<Two_scale> >(model);
+   mssm = cast_model<SoftsusyMSSM<Two_scale> >(model);
 }
 
 void SoftsusyMSSM_susy_scale_constraint::update_scale()

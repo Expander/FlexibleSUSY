@@ -25,7 +25,7 @@
 
 namespace flexiblesusy {
 
-SoftsusyMSSM_initial_guesser::SoftsusyMSSM_initial_guesser(Mssm<Two_scale>* mssm_,
+SoftsusyMSSM_initial_guesser::SoftsusyMSSM_initial_guesser(SoftsusyMSSM<Two_scale>* mssm_,
                                            const SoftsusyMSSM_parameter_point& pp_,
                                            const SoftsusyMSSM_low_scale_constraint&,
                                            const SoftsusyMSSM_susy_scale_constraint&,
