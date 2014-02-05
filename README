@@ -8,7 +8,7 @@ Requirements
  * C++ compiler (g++ >= 4.6.0 or clang++ >= 3.1)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
- * SARAH (version 4.0 or higher)      http://sarah.hepforge.org
+ * SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
  * Boost (version 1.36.0 or higher)   http://www.boost.org
  * Eigen 3 (version 3.1 or higher)    http://eigen.tuxfamily.org
  * GNU scientific library             http://www.gnu.org/software/gsl/
