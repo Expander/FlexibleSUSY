@@ -134,7 +134,7 @@ required_mathematica_version="7"
 # required SARAH version
 required_sarah_major="4"
 required_sarah_minor="0"
-required_sarah_patch="3"
+required_sarah_patch="4"
 required_sarah_version="${required_sarah_major}.${required_sarah_minor}.${required_sarah_patch}"
 
 #_____________________________________________________________________
