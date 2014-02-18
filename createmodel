@@ -33,19 +33,39 @@ help() {
 cat <<EOF
 Usage: ./`basename $0` [options] --name=<model-name>
 Options:
---name=            Name of the model in FlexibleSUSY.
-                   Example: --name=MyMSSM
---model-file=      Name of the model whose FlexibleSUSY model file
-                   should be taken.  If empty the MSSM model file
-                   will be used.
-                   Available are: ${available_default_model_files}
---sarah-model=     Name of the SARAH model.
-                   If empty, the value given by --name= will be used.
-                   A sub-model can be specified after a /
-                   Syntax: <sarah-model>[/<submodel>]
-                   Example: --sarah-model=MSSM/CKM
---force,-f         Overwrite existing model files.
---help,-h          Print this help message.
+  --name=            Name of the FlexibleSUSY model.
+                     Example: --name=MyMSSM
+
+  --model-file=      Name of the model whose FlexibleSUSY model file
+                     should be used.  If empty, it will be searched for
+                     model_files/<model-name>/FlexibleSUSY.m.in , where
+                     <model-name> is the name of the FlexibleSUSY model
+                     given by --name= .  If no such model file can be found,
+                     the MSSM model file is used.  All FlexibleSUSY
+                     model files are stored in model_files/ .
+                     Available models are: ${available_default_model_files}
+
+  --sarah-model=     Name of the SARAH model, used in SARAH\`Start[].
+                     If empty, the value given by --name= is used.
+                     A sub-model can be specified after a /
+                     Syntax: <sarah-model>[/<sub-model>]
+                     Example: --sarah-model=MSSM/CKM
+
+  --force,-f         Overwrite existing model files.
+
+  --help,-h          Print this help message.
+
+Examples:
+
+  Create a FlexibleSUSY model for the E6SSM:
+
+    ./createmodel --name=E6SSM
+
+  Create a new FlexibleSUSY model named MyMSSM, using the FlexibleSUSY
+  model file model_files/YukawaCMSSM/FlexibleSUSY.m.in and using the
+  MSSM as underlying SARAH model (SARAH\`Start["MSSM"]).
+
+    ./createmodel --name=MyMSSM --model-file=YukawaCMSSM --sarah-model=MSSM
 EOF
 }
 
