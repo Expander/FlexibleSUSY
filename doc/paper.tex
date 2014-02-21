@@ -388,29 +388,56 @@ soft-breaking parameters.
 \end{figure}
 
 \subsection{Boundary conditions}
-In \fs the RGE boundary conditions are implemented by inheriting from
-a common \code{Constraint<Two\_scale>} interface class and
-implementing the pure virtual functions \code{apply()},
-\code{get\_scale()} and \code{set\_model()}, see
-\figurename~\ref{fig:schematic-two-scale-constraint-interface}.  Per
-default, \fs creates three default boundary conditions:
+In \fs the RGE boundary conditions are classes which implement
+\code{Constraint<Two\_scale>} interface, see
+\figurename~\ref{fig:schematic-two-scale-constraint-interface}.
+%
+\begin{lstlisting}[language=C++]
+template<>
+class Constraint<Two_scale> {
+public:
+   virtual ~Constraint() {}
+   virtual void apply() = 0;
+   virtual double get_scale() const = 0;
+   virtual void set_model(Two_scale_model*) = 0;
+};
+\end{lstlisting}
+%
+The three pure virtual functions \code{apply()}, \code{get\_scale()}
+and \code{set\_model()} need to be implemented
+%
+\begin{itemize}
+\item \code{apply()}: implements the constraint by fixing model
+  parameters
+\item \code{get\_scale()}: returns the scale at which the constraint
+  is to be applied.
+\item \code{set\_model()}: connects the constraint to a model class,
+  in order to access the model parameters
+\end{itemize}
+%
+Per default, \fs creates three default boundary conditions for each
+model:
 %
 \begin{itemize}
 \item \emph{GUT constraint:} Here the \code{apply()} function
   calculates the value of the unification scale $M_X$ (from the
   condition given in \code{HighScale}) and sets the model parameters
-  given in \code{HighScaleInput}.
+  given in \code{HighScaleInput}.  The \code{get\_scale()} returns the
+  value of $M_X$.
 \item \emph{SUSY constraint:} Here the \code{apply()} function
   calculates the value of the susy scale $M_S$ and sets the model
   parameters given in \code{SUSYScaleInput}.  Afterwards the EWSB
   conditions are solved for the parameters given in
   \code{EWSBOutputParameters} at the one-loop level, i.e., the the
   parameters in \code{EWSBOutputParameters} are determined such that
-  the one-loop effective potential is minimized.
-\item \emph{Low-scale constraint:} This constraint matches the gauge
-  and Yukawa couplings of the susy model to the Standard Model values
-  using threshold corrections.  Furthermore the parameters given in
-  \code{LowScaleInput} are set.
+  the one-loop effective potential is minimized.  The
+  \code{get\_scale()} returns the value of $M_S$.
+\item \emph{Low-scale constraint:} This constraint calculates the
+  gauge and Yukawa couplings of the susy model from the known Standard
+  Model gauge couplings and fermion masses (at $M_Z$), using threshold
+  corrections.  Furthermore the parameters given in
+  \code{LowScaleInput} are set.  The \code{get\_scale()} returns the
+  value of $M_Z$.
 \end{itemize}
 
 {\color{red}Different types, how we match to low energy data.
