@@ -339,24 +339,33 @@ Even in the simplest supersymmetric model the RGEs form a very large
 set of coupled non-linear differential equations.  In a general
 (softly broken) supersymmetric theory the soft-breaking parameters
 depend on themselves and the susy parameters.  However, the susy
-parameters are independent of the soft-breaking parameters [cite: MV,
-Staub, Sperling].  This makes it possible to split the model
-parameters and their into the following two subsets:
+parameters are independent of the soft-breaking parameters
+\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}.
+This makes it possible to split the model parameters into the
+following two subsets:
 %
 \begin{enumerate}
 \item \emph{susy parameters:} gauge couplings, superpotential
   parameters and VEVs and
-\item soft-breaking parameters.
+\item \emph{soft-breaking parameters} \cite{Girardello:1981wz}: soft
+  linear scalar terms, soft bilinear scalar interactions, soft
+  trilinear scalar interactions, soft gaugino mass terms and soft
+  scalar squared masses.
 \end{enumerate}
 %
 The susy parameters together with their two-loop renormalisation group
-equations for the are stored in the class
-\code{<model>_susy_parameters}.  The soft-breaking model parameters
-together with their two-loop renormalisation group equations for the
-are stored in the class \code{<model>_soft_parameters}.  The
-dependence of the soft-breaking parameters on the susy parameters is
-implemented via inheritance, see
-\figurename~\ref{fig:parameter-classes}.
+equations are stored in the class \code{<model>_susy_parameters}.  The
+soft-breaking model parameters together with their two-loop
+renormalisation group equations are stored in the class
+\code{<model>_soft_parameters}.  The dependence of the soft-breaking
+parameters on the susy parameters is implemented via inheritance, see
+\figurename~\ref{fig:parameter-classes}, where
+\code{<model>_soft_parameters} inherits from
+\code{<model>_susy_parameters}.  In this way, the class
+\code{<model>_soft_parameters} can implement the soft-breaking beta
+functions in terms of the susy and soft-breaking parameters, while the
+class \code{<model>_susy_parameters} is independent of the
+soft-breaking parameters.
 %
 \begin{figure}
   \centering
@@ -1161,6 +1170,14 @@ Comparisons against existing spectrum generators to test for deviations, e.g. th
 Comparisons against existing spectrum generators and SARAH generated spheno code for speed.
 
 \begin{thebibliography}{100}
+%\cite{Girardello:1981wz}
+\bibitem{Girardello:1981wz}
+  L.~Girardello and M.~T.~Grisaru,
+  %``Soft Breaking of Supersymmetry,''
+  Nucl.\ Phys.\ B {\bf 194} (1982) 65.
+  %%CITATION = NUPHA,B194,65;%%
+  %717 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{Allanach:2001kg}
 \bibitem{Allanach:2001kg} 
   B.~C.~Allanach,
@@ -1274,6 +1291,48 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = ARXIV:0910.1785;%%
   %327 citations counted in INSPIRE as of 21 Sep 2013
 
+%\cite{Jones:1974pg}
+\bibitem{Jones:1974pg}
+  D.~R.~T.~Jones,
+  %``Asymptotic Behavior of Supersymmetric Yang-Mills Theories in the Two Loop Approximation,''
+  Nucl.\ Phys.\ B {\bf 87} (1975) 127.
+  %%CITATION = NUPHA,B87,127;%%
+  %123 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Jones:1983vk}
+\bibitem{Jones:1983vk}
+  D.~R.~T.~Jones and L.~Mezincescu,
+  %``The Beta Function in Supersymmetric {Yang-Mills} Theory,''
+  Phys.\ Lett.\ B {\bf 136} (1984) 242.
+  %%CITATION = PHLTA,B136,242;%%
+  %109 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{West:1984dg}
+\bibitem{West:1984dg}
+  P.~C.~West,
+  %``The Yukawa beta Function in N=1 Rigid Supersymmetric Theories,''
+  Phys.\ Lett.\ B {\bf 137} (1984) 371.
+  %%CITATION = PHLTA,B137,371;%%
+  %134 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Martin:1993yx}
+\bibitem{Martin:1993yx}
+  S.~P.~Martin and M.~T.~Vaughn,
+  %``Regularization dependence of running couplings in softly broken supersymmetry,''
+  Phys.\ Lett.\ B {\bf 318} (1993) 331
+  [hep-ph/9308222].
+  %%CITATION = HEP-PH/9308222;%%
+  %220 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Yamada:1993ga}
+\bibitem{Yamada:1993ga}
+  Y.~Yamada,
+  %``Two loop renormalization of gaugino masses in general supersymmetric gauge models,''
+  Phys.\ Rev.\ Lett.\  {\bf 72} (1994) 25
+  [hep-ph/9308304].
+  %%CITATION = HEP-PH/9308304;%%
+  %48 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{MV94}
 \bibitem{MV94} 
   S.~P.~Martin and M.~T.~Vaughn,
@@ -1284,6 +1343,15 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = HEP-PH/9311340;%%
   %568 citations counted in INSPIRE as of 24 Sep 2013
 
+%\cite{Fonseca:2011vn}
+\bibitem{Fonseca:2011vn}
+  R.~M.~Fonseca, M.~Malinsky, W.~Porod and F.~Staub,
+  %``Running soft parameters in SUSY models with multiple U(1) gauge factors,''
+  Nucl.\ Phys.\ B {\bf 854} (2012) 28
+  [arXiv:1107.2670 [hep-ph]].
+  %%CITATION = ARXIV:1107.2670;%%
+  %29 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{Yam94}
 \bibitem{Yam94} 
   Y.~Yamada,
@@ -1293,14 +1361,23 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = HEP-PH/9401241;%%
   %225 citations counted in INSPIRE as of 24 Sep 2013
 
-\cite{Sper13}
-\bibitem{Sper13} 
+%\cite{Sperling:2013eva}
+\bibitem{Sperling:2013eva}
   M.~Sperling, D.~Stöckinger and A.~Voigt,
   %``Renormalization of vacuum expectation values in spontaneously broken gauge theories,''
-  JHEP {\bf 1307}, 132 (2013)
+  JHEP {\bf 1307} (2013) 132
   [arXiv:1305.1548 [hep-ph]].
   %%CITATION = ARXIV:1305.1548;%%
-  %4 citations counted in INSPIRE as of 14 Oct 2013
+  %10 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Sperling:2013xqa}
+\bibitem{Sperling:2013xqa}
+  M.~Sperling, D.~Stöckinger and A.~Voigt,
+  %``Renormalization of vacuum expectation values in spontaneously broken gauge theories: Two-loop results,''
+  JHEP {\bf 1401} (2014) 068
+  [arXiv:1310.7629 [hep-ph]].
+  %%CITATION = ARXIV:1310.7629;%%
+  %4 citations counted in INSPIRE as of 21 Feb 2014
 
 %\cite{Ell08}
 \bibitem{Ell08} 
