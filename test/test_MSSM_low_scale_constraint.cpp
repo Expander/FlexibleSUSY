@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
-   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 4.3e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
