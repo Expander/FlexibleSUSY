@@ -7,6 +7,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Bugfix (commit cfc2562): correcting MS-bar to DR-bar conversion of
    fermion masses mb and mtau.
 
+ * Bugfix (commit ceecc4a): fixing compilation error with Intel icpc
+   14.0, Build 20130728 (and GNU STL 4.6.4 and 4.8.1).
+
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
  * Bugfix (commit 44903c): correcting malformed print out in
