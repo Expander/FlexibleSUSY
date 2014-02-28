@@ -870,11 +870,12 @@ to the generated code by...
 \subsection{Tree-level spectrum}
 The tree-level $\overline{DR}$ masses are calculated by diagonalizing
 the mass matrices returned from \code{SARAH`MassMatrix[]}.  The
-numerical diagonalization is performed by the Eigen library routines
-\code{Eigen::JacobiSVD} and \code{Eigen::SelfAdjointEigenSolver} for
-small matrices, and the Lapack routines \code{zgesvd}, \code{dgesvd},
-\code{zheev}, \code{dsyev} for matrices with more than four rows and
-columns.
+numerical singular value decomposition is performed by the Eigen
+library routine \code{Eigen::JacobiSVD} for matrices with less than
+four rows and columns, and the Lapack routines \code{zgesvd},
+\code{dgesvd} for larger matrices.  For the other types of
+diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
+used regardless of the matrix size.
 
 The mass matrix $M^2$ for real scalar fiels $\phi_i$ is diagonalized
 with an orthogonal matrix $O$ via
@@ -902,8 +903,8 @@ case of complex scalar fields $\phi_i$ we use
   \qquad U^\dagger U = 1 .
 \end{align}
 %
-A symmetric mass matrix $Y$ for Weyl spinors $\psi_i$ is diagonalized
-as
+A (possibly complex) symmetric mass matrix $Y$ for Weyl spinors
+$\psi_i$ is diagonalized as
 %
 \begin{align}
   \Lagr_{m,\text{fermion}}^\text{symm.}
