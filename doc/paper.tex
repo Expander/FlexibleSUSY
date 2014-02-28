@@ -37,6 +37,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\unit}[1]{\,\text{#1}}      % units
 \newcommand{\userinput}{\text{<input>}}
 \newcommand{\pole}{\text{pole}}
+\newcommand{\Lagr}{\mathcal{L}}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\re}{Re}
 \DeclareMathOperator{\im}{Im}
@@ -874,6 +875,63 @@ numerical diagonalization is performed by the Eigen library routines
 small matrices, and the Lapack routines \code{zgesvd}, \code{dgesvd},
 \code{zheev}, \code{dsyev} for matrices with more than four rows and
 columns.
+
+The mass matrix $M^2$ for real scalar fiels $\phi_i$ is diagonalized
+with an orthogonal matrix $O$ via
+%
+\begin{align}
+  \Lagr_{m,\text{real scalar}}
+  &= - \frac{1}{2} \phi^T M^2 \phi
+  = - \frac{1}{2} (\phi^m)^T M^2_D \phi^m, \\
+  \qquad M^2 &= (M^2)^T ,
+  \qquad \phi^m = O \phi ,
+  \qquad M^2_D = O M^2 O^T ,
+  \qquad O^T O = 1 ,
+\end{align}
+%
+where $M^2_D$ is diagonal and $\phi^m_i$ are the mass eigenstates.  In
+case of complex scalar fields $\phi_i$ we use
+%
+\begin{align}
+  \Lagr_{m,\text{complex scalar}}
+  &= - \phi^\dagger M^2 \phi
+  = - (\phi^m)^\dagger M^2_D \phi^m, \\
+  \qquad M^2 &= (M^2)^\dagger ,
+  \qquad \phi^m = U \phi ,
+  \qquad M^2_D = U M^2 U^\dagger ,
+  \qquad U^\dagger U = 1 .
+\end{align}
+%
+A symmetric mass matrix $Y$ for Weyl spinors $\psi_i$ is diagonalized
+as
+%
+\begin{align}
+  \Lagr_{m,\text{fermion}}^\text{symm.}
+  &= - \frac{1}{2} \psi^T Y \psi + \text{h.c.}
+  = - \frac{1}{2} \chi^T Y_D \chi + \text{h.c.}, \\
+  \qquad Y &= Y^T ,
+  \qquad Y_D = Z Y Z^\dagger ,
+  \qquad \chi = Z \psi ,
+  \qquad Z^\dagger Z = 1 ,
+\end{align}
+%
+where $Y_D$ is diagonal and $\chi_i$ are the mass eigenstates.  The
+phases of $Z$ are chosen such that all mass eigenvalues are positive.
+In case of a non-symmetric mass matrix $X$ for Weyl spinors $\psi_i$
+we use
+%
+\begin{align}
+  \Lagr_{m,\text{fermion}}^\text{svd}
+  &= - (\psi^-)^T X \psi^+ + \text{h.c.}
+  = - (\chi^-)^T X_D \chi^+ + \text{h.c.}, \\
+  \qquad \chi^+ &= V \psi^+ ,
+  \qquad \chi^- = U \psi^- ,
+  \qquad X_D = U^* X V^{-1} ,
+  \qquad U^\dagger U = 1 = V^\dagger V ,
+\end{align}
+%
+where we're again chosing the phases of $U$ and $V$ such that all mass
+eigenvalues are positive.
 
 \subsection{Two-scale fixed point iteration}
 The default two-scale RG solver uses above beta functions and boundary
