@@ -68,6 +68,7 @@ clean-dep:
 		-rm -f $(STANDALONE_DEP)
 
 distclean: clean clean-dep
+		-rm -f Makefile
 		-rm -f $(STANDALONE_EXE)
 
 $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
