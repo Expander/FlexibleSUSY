@@ -20,7 +20,7 @@ LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ $(INCFLEXI) $(INCLEGACY) $(INCMODEL) -I.
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCFLEXI) $(INCLEGACY) $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
 FC              := @FC@
 FFLAGS          := @FFLAGS@
