@@ -57,17 +57,19 @@ STANDALONE_EXE := \
 abspathx        = $(foreach name,$(1),\
 		$(shell echo '$(abspath $(name))' | sed s/\[\[:space:\]\]/\\\\\&/g))
 
-.PHONY:         all clean clean-dep distclean showbuild
+.PHONY:         all clean clean-dep clean-obj distclean showbuild
 
 all: $(STANDALONE_EXE)
-
-clean:
-		-rm -f $(STANDALONE_OBJ)
 
 clean-dep:
 		-rm -f $(STANDALONE_DEP)
 
-distclean: clean clean-dep
+clean-obj:
+		-rm -f $(STANDALONE_OBJ)
+
+clean: clean-dep clean-obj
+
+distclean: clean
 		-rm -f Makefile
 		-rm -f $(STANDALONE_EXE)
 
@@ -82,9 +84,11 @@ $(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
+ifneq ($(MAKECMDGOALS),clean-obj)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),showbuild)
 -include $(STANDALONE_DEP)
+endif
 endif
 endif
 endif
