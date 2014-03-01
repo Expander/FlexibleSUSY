@@ -755,7 +755,7 @@ check_boost_test_libs() {
         message "Warning: libboost_unit_test_framework must be installed"
         message "  to compile and run the tests, see http://www.boost.org"
     else
-        BOOSTTESTLIBS_=-lboost_unit_test_framework
+        local BOOSTTESTLIBS_=-lboost_unit_test_framework
         if [ -z "$boost_lib_dir" ]; then
             # assume that the linker will look in the default paths
             BOOSTTESTLIBS="$BOOSTTESTLIBS_"
@@ -785,7 +785,7 @@ check_boost_thread_libs() {
         message "  You can disable the lattice method with the --with-algorithms= flag."
         exit 1
     fi
-    BOOSTTHREADLIBS_=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+    local BOOSTTHREADLIBS_=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
 
     check_library "libboost_system libboost_system-mt" \
 	"$boost_lib_dir" "$default_lib_paths"
@@ -1072,7 +1072,7 @@ check_lapack_libs_using_options() {
         message "  --with-algorithms= flag"
         exit 1
     else
-        LAPACKLIBS_=-llapack
+        local LAPACKLIBS_=-llapack
         if [ -z "$lapack_lib_dir" ]; then
             # assume that the linker will look in the default paths
             LAPACKLIBS="$LAPACKLIBS_"
@@ -1094,7 +1094,7 @@ check_looptools_libs() {
         message "   location of the libooptools library."
         exit 1
     else
-        LOOPTOOLSLIBS_="-looptools"
+        local LOOPTOOLSLIBS_="-looptools"
         if [ -z "$looptools_lib_dir" ]; then
             # assume that the linker will look in the default paths
             LOOPTOOLSLIBS="$LOOPTOOLSLIBS_"
