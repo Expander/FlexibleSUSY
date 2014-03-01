@@ -61,6 +61,9 @@ EXAMPLES_DEP := \
 EXAMPLES_EXE := \
 		$(EXAMPLES_OBJ:.o=.x)
 
+STANDALONE_DIR := \
+		$(DIR)/standalone
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(EXAMPLES_EXE)
@@ -71,6 +74,7 @@ clean-$(MODNAME):
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(EXAMPLES_DEP)
 		-rm -f $(EXAMPLES_EXE)
+		-(cd $(STANDALONE_DIR) && make distclean)
 
 clean::         clean-$(MODNAME)
 
