@@ -1089,7 +1089,9 @@ check_looptools_libs() {
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
         message "Error: libooptools must be installed if you want"
-        message "  to use LoopTools, see http://www.feynarts.de/looptools/"
+        message "   to use LoopTools, see http://www.feynarts.de/looptools/"
+        message "   You can use the --with-looptools-libdir= option to specify the"
+        message "   location of the libooptools library."
         exit 1
     else
         LOOPTOOLSLIBS_="-looptools"
@@ -1108,7 +1110,9 @@ check_looptools_incl() {
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
         message "Error: clooptools.h must be installed if you want"
-        message "  to use LoopTools, see http://www.feynarts.de/looptools/"
+        message "   to use LoopTools, see http://www.feynarts.de/looptools/"
+        message "   You can use the --with-looptools-incdir= option to specify the"
+        message "   location of the clooptools.h header."
         exit 1
     else
         # assume that the compiler will look in the default paths
