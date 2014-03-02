@@ -944,13 +944,13 @@ checking for convergence.  This approach is decribed in
 spectrum generators.
 
 The in more detail the two-scale algorithm used in \fs works as
-follows:
+follows (see \figurename~\ref{fig:two-scale-algorithm}):
 %
 \\Initial guess:
 \begin{enumerate}
 \item Guess gauge couplings $g_{1,2,3}$ at $m_Z$
 \item Apply user-defined low-scale constraint (\code{LowScaleInput})
-\item Guess Yukawa couplings $y^{u,d,e}_{ij}$ at $m_Z$
+\item Guess Yukawa couplings $y_{u,d,e}$ at $m_Z$
 \item Run model to the high-scale (\code{HighScaleFirstGuess})
 \item Apply high-scale constraint (\code{HighScaleInput})
 \item Run model to the low-scale (\code{LowScaleFirstGuess})
@@ -964,7 +964,7 @@ Solving the renormalization group equations:
   \begin{enumerate}
   \item Calculate \DRbar\ masses
   \item Recalculate low-scale
-  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y^{u,d,e}_{ij}$
+  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y_{u,d,e}$
   \item Apply user-defined low-scale constraint (\code{LowScaleInput})
   \end{enumerate}
 \item Run model to the high-scale (\code{HighScale})
@@ -988,6 +988,31 @@ Calculating the particle spectrum:
 \item Calculate the pole masses
 \item Run model to the parameter output scale (SLHA block MODSEL 12)
 \end{enumerate}
+%
+\begin{figure}[tbh]
+  \centering
+  \begin{tikzpicture}[node distance = 2cm, auto]
+    \tikzstyle{block} = [rectangle, draw, text width=16em, text centered, minimum height=3em]
+    \tikzstyle{arrow} = [draw, -latex, thick]
+    \node[block] (guess) {Guess $g_i(M_Z)$, $y_f(M_Z)$ and soft
+      parameters at \code{LowScale}};
+    \node[block,below of=guess] (MZ) {Calculate $g_i(M_Z)$, $y_f(M_Z)$ and apply
+      low-scale boundary conditions (\code{LowScaleInput})};
+    \path[arrow] (guess) -- node {run to \code{LowScale}} (MZ);
+    \node[block,below of=MZ] (MX) {Apply high-scale boundary conditions
+      (\code{HighScaleInput})};
+    \path[arrow] (MZ) -- node {run to \code{HighScale}} (MX);
+    \node[block,below of=MX] (MS) {Apply susy-scale boundary conditions
+      (\code{SUSYScaleInput}) and solve EWSB};
+    \path[arrow] (MX) -- node {run to \code{SUSYScale}} (MS);
+    %\path[arrow] (MS.east) -| node {run to \code{LowScale}} (MZ.east);
+    \path[-latex, thick] (MS.east) edge[bend right=90] node[right] {run to \code{LowScale}} (MZ.east);
+    \node[block,below of=MS] (spec) {Calculate pole masses};
+    \path[arrow,dashed] (MS) -- node[text width=16em] {on convergence\\ run to \code{SUSYScale}} (spec);
+  \end{tikzpicture}
+  \caption{Iterative two-scale algorithm to calculate the spectrum.}
+  \label{fig:two-scale-algorithm}
+\end{figure}
 
 \begin{figure}[tb]
   \centering
