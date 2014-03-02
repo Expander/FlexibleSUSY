@@ -13,6 +13,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Bugfix (commit db60205): fixing linking error of
    test/test_MSSM_NMSSM_linking.x in case LoopTools is used.
 
+ * Set minimum required SARAH version to 4.0.4, because it implements
+   the full two-loop VEV beta functions from arXiv:1310.7629 .
+
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
  * Bugfix (commit 44903c): correcting malformed print out in
