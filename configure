@@ -65,7 +65,7 @@ DOC_MAINPAGE_TMPL=$BASEDIR/doc/mainpage.dox.in
 
 # target makefile file for the standalone example
 STANDALONE_MAKEFILE=${BASEDIR}/examples/standalone/Makefile
-STANDALONE_MAKEFILE_TMPL=${BASEDIR}/examples/standalone/Makefile.in
+STANDALONE_MAKEFILE_TMPL=${BASEDIR}/config/Makefile.standalone.in
 
 # options
 deprecated_options=""
