@@ -64,8 +64,10 @@ DOC_MAINPAGE=$BASEDIR/doc/mainpage.dox
 DOC_MAINPAGE_TMPL=$BASEDIR/doc/mainpage.dox.in
 
 # target makefile file for the standalone example
-STANDALONE_MAKEFILE=${BASEDIR}/examples/standalone/Makefile
-STANDALONE_MAKEFILE_TMPL=${BASEDIR}/config/Makefile.standalone.in
+STANDALONE_MAKEFILES="\
+ ${BASEDIR}/examples/standalone-model/Makefile \
+ ${BASEDIR}/examples/standalone-rge/Makefile"
+STANDALONE_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.standalone.in"
 
 # options
 deprecated_options=""
@@ -1570,7 +1572,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
-    < $STANDALONE_MAKEFILE_TMPL > $STANDALONE_MAKEFILE
+    < $STANDALONE_MAKEFILE_TMPL | tee $STANDALONE_MAKEFILES > /dev/null
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
