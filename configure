@@ -607,7 +607,9 @@ check_models() {
         fi
     done
 
-    result "ok"
+    local model_names="`echo ${MODELS} | sed -e 's|models/||g' -e 's/^ *//' -e 's/ *$//'`"
+
+    result "ok (${model_names})"
     logmsg "   Models: ${MODELS}"
 }
 
