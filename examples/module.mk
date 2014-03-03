@@ -61,6 +61,10 @@ EXAMPLES_DEP := \
 EXAMPLES_EXE := \
 		$(EXAMPLES_OBJ:.o=.x)
 
+STANDALONE_DIR := \
+		$(DIR)/standalone-model \
+		$(DIR)/standalone-rge
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(EXAMPLES_EXE)
@@ -71,6 +75,9 @@ clean-$(MODNAME):
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(EXAMPLES_DEP)
 		-rm -f $(EXAMPLES_EXE)
+		-@for d in $(STANDALONE_DIR); do \
+			(cd $$d && make distclean); \
+		 done
 
 clean::         clean-$(MODNAME)
 

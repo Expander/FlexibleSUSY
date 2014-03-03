@@ -63,6 +63,12 @@ TEXVERSION_TMPL=$BASEDIR/doc/version.tex.in
 DOC_MAINPAGE=$BASEDIR/doc/mainpage.dox
 DOC_MAINPAGE_TMPL=$BASEDIR/doc/mainpage.dox.in
 
+# target makefile file for the standalone example
+STANDALONE_MAKEFILES="\
+ ${BASEDIR}/examples/standalone-model/Makefile \
+ ${BASEDIR}/examples/standalone-rge/Makefile"
+STANDALONE_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.standalone.in"
+
 # options
 deprecated_options=""
 options="                    \
@@ -1544,6 +1550,35 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
+
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
+    -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
+    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
+    -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXX@|$CXX|"                 \
+    -e "s|@FC@|$FC|"                   \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
+    -e "s|@FFLAGS@|$FFLAGS|"           \
+    -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FSCONFIG@|$FSCONFIG|"       \
+    -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
+    -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
+    -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
+    -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+    -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
+    -e "s|@LIBEXT@|$LIBEXT|"           \
+    < $STANDALONE_MAKEFILE_TMPL | tee $STANDALONE_MAKEFILES > /dev/null
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \

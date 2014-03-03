@@ -16,6 +16,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Set minimum required SARAH version to 4.0.4, because it implements
    the full two-loop VEV beta functions from arXiv:1310.7629 .
 
+ * Add stand-alone examples to illustrate how to use FlexibleSUSY's
+   classes and libraries independently of FlexibleSUSY's build system.
+
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
  * Bugfix (commit 44903c): correcting malformed print out in
