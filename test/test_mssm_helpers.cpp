@@ -120,31 +120,10 @@ BOOST_AUTO_TEST_CASE( test_stop )
    mf(2) = s.displayDrBarPars().mu(2,3);
    const double thetat = s.displayDrBarPars().thetat;
 
-   const double vev = s.displayHvev();
-   const double tanBeta = s.displayTanb();
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-
-   mssm_helpers::Sfermion_mass_data stop_data;
-   stop_data.ml2 = s.displaySoftMassSquared(mQl, 3, 3);
-   stop_data.mr2 = s.displaySoftMassSquared(mUr, 3, 3);
-   stop_data.yf  = s.displayYukawaElement(YU, 3, 3);
-   stop_data.vd  = vd;
-   stop_data.vu  = vu;
-   stop_data.gY  = sqrt(0.6) * s.displayGaugeCoupling(1);
-   stop_data.g2  = s.displayGaugeCoupling(2);
-   stop_data.Tyf = s.displayTrilinear(UA, 3, 3);
-   stop_data.mu  = s.displaySusyMu();
-   stop_data.T3  = mssm_helpers::Isospin[mssm_helpers::up];
-   stop_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::up];
-   stop_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::up];
-
    Eigen::Array<double,2,1> mstop;
    double theta_stop;
 
-   theta_stop = mssm_helpers::diagonalize_sfermions_2x2(stop_data, mstop);
+   m.calculate_MFu_3rd_generation(mstop(0), mstop(1), theta_stop);
 
    BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);
@@ -165,31 +144,10 @@ BOOST_AUTO_TEST_CASE( test_sbottom )
    Zf.associateOrderAbs(mf);
    thetab = ArcCos(Abs(Zf(1,1)));
 
-   const double vev = s.displayHvev();
-   const double tanBeta = s.displayTanb();
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-
-   mssm_helpers::Sfermion_mass_data sbottom_data;
-   sbottom_data.ml2 = s.displaySoftMassSquared(mQl, 3, 3);
-   sbottom_data.mr2 = s.displaySoftMassSquared(mDr, 3, 3);
-   sbottom_data.yf  = s.displayYukawaElement(YD, 3, 3);
-   sbottom_data.vd  = vd;
-   sbottom_data.vu  = vu;
-   sbottom_data.gY  = sqrt(0.6) * s.displayGaugeCoupling(1);
-   sbottom_data.g2  = s.displayGaugeCoupling(2);
-   sbottom_data.Tyf = s.displayTrilinear(DA, 3, 3);
-   sbottom_data.mu  = s.displaySusyMu();
-   sbottom_data.T3  = mssm_helpers::Isospin[mssm_helpers::down];
-   sbottom_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::down];
-   sbottom_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::down];
-
    Eigen::Array<double,2,1> msbottom;
    double theta_sbottom;
 
-   theta_sbottom = mssm_helpers::diagonalize_sfermions_2x2(sbottom_data, msbottom);
+   m.calculate_MFd_3rd_generation(msbottom(0), msbottom(1), theta_sbottom);
 
    BOOST_CHECK_CLOSE_FRACTION(msbottom(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msbottom(1), mf(2), 1.0e-9);
@@ -210,31 +168,10 @@ BOOST_AUTO_TEST_CASE( test_stau )
    Zf.associateOrderAbs(mf);
    thetatau = ArcCos(Abs(Zf(1,1)));
 
-   const double vev = s.displayHvev();
-   const double tanBeta = s.displayTanb();
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-
-   mssm_helpers::Sfermion_mass_data stau_data;
-   stau_data.ml2 = s.displaySoftMassSquared(mLl, 3, 3);
-   stau_data.mr2 = s.displaySoftMassSquared(mEr, 3, 3);
-   stau_data.yf  = s.displayYukawaElement(YE, 3, 3);
-   stau_data.vd  = vd;
-   stau_data.vu  = vu;
-   stau_data.gY  = sqrt(0.6) * s.displayGaugeCoupling(1);
-   stau_data.g2  = s.displayGaugeCoupling(2);
-   stau_data.Tyf = s.displayTrilinear(EA, 3, 3);
-   stau_data.mu  = s.displaySusyMu();
-   stau_data.T3  = mssm_helpers::Isospin[mssm_helpers::electron];
-   stau_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::electron];
-   stau_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::electron];
-
    Eigen::Array<double,2,1> mstau;
    double theta_stau;
 
-   theta_stau = mssm_helpers::diagonalize_sfermions_2x2(stau_data, mstau);
+   m.calculate_MFe_3rd_generation(mstau(0), mstau(1), theta_stau);
 
    BOOST_CHECK_CLOSE_FRACTION(mstau(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstau(1), mf(2), 1.0e-9);
@@ -249,31 +186,10 @@ BOOST_AUTO_TEST_CASE( test_snu )
 
    double mf = s.displayDrBarPars().msnu(3);
 
-   const double vev = s.displayHvev();
-   const double tanBeta = s.displayTanb();
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-
-   mssm_helpers::Sfermion_mass_data snu_data;
-   snu_data.ml2 = s.displaySoftMassSquared(mLl, 3, 3);
-   snu_data.mr2 = 0.;
-   snu_data.yf  = 0.;
-   snu_data.vd  = vd;
-   snu_data.vu  = vu;
-   snu_data.gY  = sqrt(0.6) * s.displayGaugeCoupling(1);
-   snu_data.g2  = s.displayGaugeCoupling(2);
-   snu_data.Tyf = 0.;
-   snu_data.mu  = s.displaySusyMu();
-   snu_data.T3  = mssm_helpers::Isospin[mssm_helpers::neutrino];
-   snu_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::neutrino];
-   snu_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::neutrino];
-
    Eigen::Array<double,2,1> msnu;
    double theta_snu;
 
-   theta_snu = mssm_helpers::diagonalize_sfermions_2x2(snu_data, msnu);
+   m.calculate_MFv_3rd_generation(msnu(0), msnu(1), theta_snu);
 
    BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
