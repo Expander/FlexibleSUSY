@@ -463,28 +463,89 @@ FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
            Return[IndentText[body]];
           ];
 
-FillArrayWithTwoLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
-    Module[{body = "", v, vev, field, idx, functionName},
-           For[v = 1, v <= Length[vevsAndFields], v++,
-               vev = vevsAndFields[[v,1]];
-               field = vevsAndFields[[v,2]];
-               idx = vevsAndFields[[v,3]];
-               functionName = CreateTwoLoopTadpoleFunctionName[field];
+FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String:"tadpole"] :=
+    Module[{body, v, field, functionName},
+           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           body = "double two_loop_tadpole[2];\n" <>
+                  "model->" <> functionName <>
+                  "(two_loop_tadpole);\n";
+           For[v = 1, v <= TreeMasses`GetDimension[higgsBoson], v++,
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                      "Re(model->" <> functionName <>
-                      "(" <> ToString[idx - 1] <> "));\n";
+                      "two_loop_tadpole[" <> ToString[v-1] <> "];\n";
               ];
            Return[IndentText[IndentText[body]]];
           ];
 
+GetTwoLoopTadpoleCorrections[] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, tanbStr, muStr, m3Str, mA0Str},
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Global`Mu];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           body = "\
+double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
+double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
+double gs = " <> g3Str <> ",
+  rmtsq = Sqr(" <> mtStr <> "),
+  scalesq = Sqr(get_scale()),
+  vev2 = " <> vev2Str <> ",
+  tanb = " <> tanbStr <> ",
+  amu = " <> muStr <> ",
+  mg = " <> m3Str <> ",
+  mAsq = Sqr(" <> mA0Str <> ");
+
+double sxt = Sin(forLoops.thetat),
+  cxt = Cos(forLoops.thetat);
+double mst1sq = Sqr(forLoops.mu(1, 3)),
+  mst2sq = Sqr(forLoops.mu(2, 3));
+double sxb = Sin(forLoops.thetab),
+  cxb = Cos(forLoops.thetab);
+double sintau = Sin(forLoops.thetatau),
+  costau = Cos(forLoops.thetatau);
+double msnusq = Sqr(forLoops.msnu(3));
+double msb1sq = Sqr(forLoops.md(1, 3)),
+  msb2sq = Sqr(forLoops.md(2, 3));
+double mstau1sq = Sqr(forLoops.me(1, 3)),
+  mstau2sq = Sqr(forLoops.me(2, 3));
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+
+ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
+           &amu, &tanb, &vev2, &gs, &s1s, &s2s);
+ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
+        &s2t);
+ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
+           &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
+tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+
+if (!testNan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
+   result[0] = s1s + s1t + s1b + s1tau;
+   result[1] = s2s + s2t + s2b + s2tau;
+} else {
+   result[0] = 0.;
+   result[1] = 0.;
+}
+";
+           Return[body];
+          ];
+
 CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
-    Module[{prototype, function, functionName, type},
+    Module[{prototype, function, functionName},
            functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
-           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
-           prototype = type <> " " <> functionName <> "(unsigned) const;\n";
-           body = type <> " result;\n\n" <> "return result;";
-           function = type <> " CLASSNAME::" <> functionName <>
-                      "(unsigned idx) const\n{\n" <> IndentText[body] <>
+           prototype = "void " <> functionName <> "(double result[2]) const;\n";
+           body = GetTwoLoopTadpoleCorrections[];
+           function = "void CLASSNAME::" <> functionName <>
+                      "(double result[2]) const\n{\n" <> IndentText[body] <>
                       "\n}\n";
            Return[{prototype, function}];
           ];

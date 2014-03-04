@@ -459,7 +459,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[vevsToFieldsAssociation];
            If[SARAH`UseHiggs2LoopMSSM === True,
-              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[vevsToFieldsAssociation];
+              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
