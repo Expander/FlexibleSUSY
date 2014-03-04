@@ -464,7 +464,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
-              twoLoopHiggsHeaders = "#include \"mssm_helpers.hpp\"\n#include \"twoloophiggs.h\"\n";
+              twoLoopHiggsHeaders = "#include \"mssm_helpers.hpp\"\n#include \"mssm_twoloophiggs.h\"\n";
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];

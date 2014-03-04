@@ -28,7 +28,7 @@
 #include <lowe.h>
 #include <softpars.h>
 
-#include <twoloophiggs.h>
+#include "mssm_twoloophiggs.h"
 #include "mssmUtils.h"
 
 namespace softsusy {
