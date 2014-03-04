@@ -26,6 +26,8 @@ self-energy function name for a given field";
 
 FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
+FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -348,6 +350,9 @@ CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
+CreateTwoLoopTadpoleFunctionName[field_] :=
+    "tadpole_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+
 CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
 
@@ -453,6 +458,20 @@ FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
                       "(" <> ToString[idx - 1] <> "));\n";
               ];
            Return[IndentText[body]];
+          ];
+
+FillArrayWithTwoLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
+    Module[{body = "", v, vev, field, idx, functionName},
+           For[v = 1, v <= Length[vevsAndFields], v++,
+               vev = vevsAndFields[[v,1]];
+               field = vevsAndFields[[v,2]];
+               idx = vevsAndFields[[v,3]];
+               functionName = CreateTwoLoopTadpoleFunctionName[field];
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                      "Re(model->" <> functionName <>
+                      "(" <> ToString[idx - 1] <> "));\n";
+              ];
+           Return[IndentText[IndentText[body]]];
           ];
 
 End[];

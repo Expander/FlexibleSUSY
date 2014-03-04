@@ -407,7 +407,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
             physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
-            calculateAllMasses = "", calculateOneLoopTadpoles = "",
+            calculateAllMasses = "",
+            calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
             phasesInit = "",
@@ -421,7 +422,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             softScalarMasses, softHiggsMasses,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
-            copyDRbarMassesToPoleMasses = ""
+            copyDRbarMassesToPoleMasses = "",
+            vevsToFieldsAssociation
            },
            If[Length[vevs] != Length[ewsbEquations],
               Print["Error: number of vevs != number of EWSB equations"];
@@ -452,8 +454,12 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
+           vevsToFieldsAssociation      = CreateVEVsToFieldsAssociation[vevs];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[CreateVEVsToFieldsAssociation[vevs]];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[vevsToFieldsAssociation];
+           If[SARAH`UseHiggs2LoopMSSM === True,
+              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[vevsToFieldsAssociation];
+             ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
@@ -494,6 +500,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
+                            "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
