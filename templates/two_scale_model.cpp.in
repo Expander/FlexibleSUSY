@@ -25,10 +25,11 @@
 #include "error.hpp"
 #include "root_finder.hpp"
 #include "gsl_utils.hpp"
-#include "mssm_helpers.hpp"
 #ifdef ENABLE_LOOPTOOLS
 #include <clooptools.h>
 #endif
+
+@twoLoopHiggsHeaders@
 
 #include <cmath>
 #include <iostream>
