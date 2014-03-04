@@ -240,3 +240,42 @@ BOOST_AUTO_TEST_CASE( test_stau )
    BOOST_CHECK_CLOSE_FRACTION(mstau(1), mf(2), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(theta_stau, thetatau, 1.0e-9);
 }
+
+BOOST_AUTO_TEST_CASE( test_snu )
+{
+   MSSM<Two_scale> m;
+   MssmSoftsusy s;
+   setup_mssm_models(m, s);
+
+   double mf = s.displayDrBarPars().msnu(3);
+
+   const double vev = s.displayHvev();
+   const double tanBeta = s.displayTanb();
+   const double sinBeta = sin(atan(tanBeta));
+   const double cosBeta = cos(atan(tanBeta));
+   const double vu = vev * sinBeta;
+   const double vd = vev * cosBeta;
+
+   mssm_helpers::Sfermion_mass_data snu_data;
+   snu_data.ml2 = s.displaySoftMassSquared(mLl, 3, 3);
+   snu_data.mr2 = 0.;
+   snu_data.yf  = 0.;
+   snu_data.vd  = vd;
+   snu_data.vu  = vu;
+   snu_data.gY  = sqrt(0.6) * s.displayGaugeCoupling(1);
+   snu_data.g2  = s.displayGaugeCoupling(2);
+   snu_data.Tyf = 0.;
+   snu_data.mu  = s.displaySusyMu();
+   snu_data.T3  = mssm_helpers::Isospin[mssm_helpers::neutrino];
+   snu_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::neutrino];
+   snu_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::neutrino];
+
+   Eigen::Array<double,2,1> msnu;
+   double theta_snu;
+
+   theta_snu = mssm_helpers::diagonalize_sfermions_2x2(snu_data, msnu);
+
+   BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_snu, 0.5 * Pi, 1.0e-9);
+}
