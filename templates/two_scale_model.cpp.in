@@ -393,6 +393,8 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @selfEnergyFunctions@
 
+@twoLoopTadpoleFunctions@
+
 @loopMassesFunctions@
 
 @runningDRbarMassesFunctions@

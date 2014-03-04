@@ -28,6 +28,9 @@ FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
 FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
 
+CreateTwoLoopTadpolesMSSM::usage="Creates function prototypes and
+definitions for two-loop tadpoles in the MSSM";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -472,6 +475,18 @@ FillArrayWithTwoLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
                       "(" <> ToString[idx - 1] <> "));\n";
               ];
            Return[IndentText[IndentText[body]]];
+          ];
+
+CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
+    Module[{prototype, function, functionName, type},
+           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+           prototype = type <> " " <> functionName <> "(unsigned) const;\n";
+           body = type <> " result;\n\n" <> "return result;";
+           function = type <> " CLASSNAME::" <> functionName <>
+                      "(unsigned idx) const\n{\n" <> IndentText[body] <>
+                      "\n}\n";
+           Return[{prototype, function}];
           ];
 
 End[];
