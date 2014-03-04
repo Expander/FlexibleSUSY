@@ -216,6 +216,11 @@ inline double Im(const std::complex<double>& x)
    return std::imag(x);
 }
 
+inline int Sign(double x)
+{
+   return (x >= 0.0 ? 1 : -1);
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);
