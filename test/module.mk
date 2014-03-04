@@ -29,6 +29,7 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
+		$(DIR)/test_mssm_helpers.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
 		$(DIR)/test_MSSM_higgs_iteration.cpp \
 		$(DIR)/test_MSSM_initial_guesser.cpp \
@@ -226,6 +227,8 @@ endif
 $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_mssm_helpers.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
