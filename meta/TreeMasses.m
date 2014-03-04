@@ -112,6 +112,8 @@ IsUnmixed::usage="";
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
 
+CreateThirdGenerationHelpers::usage="";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -934,6 +936,27 @@ CreateDependenceNumFunctions[massMatrices_List] :=
 
 ReplaceDependencies[expr_] :=
     expr /. FindDependenceNumRules[];
+
+CreateThirdGenerationHelperPrototype[fermion_] :=
+    "void calculate_" <>
+    CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
+    "_3rd_generation(double&, double&, double&) const;\n";
+
+CreateThirdGenerationHelperFunction[fermion_] :=
+    "void CLASSNAME::calculate_" <>
+    CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
+    "_3rd_generation(double& msf1, double& msf2, double& theta) const {}\n";
+
+CreateThirdGenerationHelpers[] :=
+    Module[{prototypes, functions},
+           functions = CreateThirdGenerationHelperFunction[SARAH`TopQuark] <>
+                       CreateThirdGenerationHelperFunction[SARAH`BottomQuark] <>
+                       CreateThirdGenerationHelperFunction[SARAH`Electron];
+           prototypes = CreateThirdGenerationHelperPrototype[SARAH`TopQuark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`BottomQuark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`Electron];
+           {prototypes, functions}
+          ];
 
 End[];
 

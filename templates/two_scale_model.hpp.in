@@ -76,6 +76,7 @@ public:
 @massCalculationPrototypes@
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
+@thirdGenerationHelperPrototypes@
 @twoLoopTadpolePrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
