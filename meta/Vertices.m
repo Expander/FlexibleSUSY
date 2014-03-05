@@ -355,7 +355,7 @@ ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] := Module[{
 	  as in SelfEnergies`Private`CreateCouplingFunctions[]?
 	  A: it is a way to strip the color structure of this class
 	  of vertices *)
-       loopArgs = Join[{#, 3}& /@ internalColorIndices,
+       loopArgs = Join[{#, ColorIndexRange[#,fields]}& /@ internalColorIndices,
 		       {#, 1}& /@ externalColorIndices];
        Sum @@ Prepend[loopArgs, vertex],
        vertex
@@ -373,6 +373,15 @@ ExternalColorIndices[fields_List] :=
 		_?SarahColorIndexQ, Infinity];
 
 FieldIndexList[field_] := Flatten@Cases[field, _?VectorQ, {0, Infinity}];
+
+ColorIndexRange[colorIndex_, fields_] := Module[{
+	fieldHead = FieldHead @ First @ Select[fields, !FreeQ[#, colorIndex] &]
+    },
+    SingleCase[
+	SingleCase[SARAH`Particles[FlexibleSUSY`FSEigenstates],
+		   {fieldHead, _, _, _, indices_} :> indices],
+	{color, n_} :> n]
+];
 
 UnresolvedColorFactorFreeQ[cpPattern_, exprs_] := Module[{
 	fstPos = First@Position[exprs, cpPattern],
