@@ -539,8 +539,8 @@ tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
           &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
 
 if (!std::isnan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
-   result[0] = s1s + s1t + s1b + s1tau;
-   result[1] = s2s + s2t + s2b + s2tau;
+   result[0] = (s1s + s1t + s1b + s1tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
+   result[1] = (s2s + s2t + s2b + s2tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
 } else {
    result[0] = 0.;
    result[1] = 0.;

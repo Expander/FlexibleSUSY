@@ -1026,8 +1026,8 @@ void compare_tadpoles_2loop(MssmSoftsusy s, MSSM<Two_scale> m)
    m.tadpole_hh_2loop(two_loop_tadpole);
 
    // check equality of 1-loop tadpoles again
-   TEST_CLOSE(-two_loop_tadpole[0], td_1_and_2loop_ss - td_ss, 1.0e-10);
-   TEST_CLOSE(-two_loop_tadpole[1], tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+   TEST_CLOSE(-two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
+   TEST_CLOSE(-two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
 }
 
 void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
