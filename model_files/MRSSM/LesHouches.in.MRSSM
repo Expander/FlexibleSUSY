@@ -17,7 +17,7 @@ Block FlexibleSUSY
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   0                    # calculate SM pole masses
-    4   1                    # calculate loop masses
+    4   1                    # pole mass loop order
     5   1                    # EWSB loop order
 Block SPhenoInput         # SPheno specific input
     1 -1          # error level
