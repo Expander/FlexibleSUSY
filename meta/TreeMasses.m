@@ -113,6 +113,7 @@ StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
 
 CreateThirdGenerationHelpers::usage="";
+CallThirdGenerationHelperFunctionName::usage="";
 
 Begin["`Private`"];
 
@@ -936,6 +937,11 @@ CreateDependenceNumFunctions[massMatrices_List] :=
 
 ReplaceDependencies[expr_] :=
     expr /. FindDependenceNumRules[];
+
+CallThirdGenerationHelperFunctionName[fermion_, msf1_String, msf2_String, theta_] :=
+    "calculate_" <>
+    CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
+    "_3rd_generation(" <> msf1 <> ", " <> msf2 <> ", " <> theta <> ")";
 
 CreateThirdGenerationHelperPrototype[fermion_] :=
     "void calculate_" <>

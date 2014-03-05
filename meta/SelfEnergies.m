@@ -490,33 +490,43 @@ GetTwoLoopTadpoleCorrections[] :=
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
            mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
            body = "\
-double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
-double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
-double gs = " <> g3Str <> ",
-  rmtsq = Sqr(" <> mtStr <> "),
-  scalesq = Sqr(get_scale()),
-  vev2 = " <> vev2Str <> ",
-  tanb = " <> tanbStr <> ",
-  amu = " <> muStr <> ",
-  mg = " <> m3Str <> ",
-  mAsq = Sqr(" <> mA0Str <> ");
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
 
-double sxt = Sin(forLoops.thetat),
-  cxt = Cos(forLoops.thetat);
-double mst1sq = Sqr(forLoops.mu(1, 3)),
-  mst2sq = Sqr(forLoops.mu(2, 3));
-double sxb = Sin(forLoops.thetab),
-  cxb = Cos(forLoops.thetab);
-double sintau = Sin(forLoops.thetatau),
-  costau = Cos(forLoops.thetatau);
-double msnusq = Sqr(forLoops.msnu(3));
-double msb1sq = Sqr(forLoops.md(1, 3)),
-  msb2sq = Sqr(forLoops.md(2, 3));
-double mstau1sq = Sqr(forLoops.me(1, 3)),
-  mstau2sq = Sqr(forLoops.me(2, 3));
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double tanb = " <> tanbStr <> ";
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
 double cotbeta = 1.0 / tanb;
 double rmbsq = Sqr(" <> mbStr <> ");
 double rmtausq = Sqr(" <> mtauStr <> ");
+
+double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
+double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
 
 ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
            &amu, &tanb, &vev2, &gs, &s1s, &s2s);
