@@ -242,7 +242,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
-            selfEnergyMatrixType, eigenArrayType},
+            selfEnergyMatrixType, eigenArrayType,
+            addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = ""},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -285,11 +286,33 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            tadpoleMatrix = FillTadpoleMatrix[tadpole, "tadpoles"];
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
+              If[SARAH`UseHiggs2LoopMSSM === True,
+                 If[MemberQ[{SARAH`HiggsBoson}, particle],
+                    addTwoLoopHiggsContributions = "
+if (pole_mass_loop_order > 1) {
+" <> IndentText["\
+self_energy(0,0) += two_loop[0];
+self_energy(0,1) += two_loop[1];
+self_energy(1,1) += two_loop[2];
+"] <> "\
+}
+";
+                    calcTwoLoopHiggsContributions = "
+// two-loop Higgs self-energy contributions
+double two_loop[3] = { 0. };
+if (pole_mass_loop_order > 1)
+" <> IndentText["\
+self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
+"] <> "\
+";
+                   ];
+                ];
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       calcTwoLoopHiggsContributions <> "\n" <>
                        "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
@@ -301,6 +324,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                                              "}\n"
                                             ] <>
                                   "}\n" <>
+                                  addTwoLoopHiggsContributions <> "\n" <>
                                   If[selfEnergyIsSymmetric, "Symmetrize(self_energy);\n", ""] <>
                                   "const " <> selfEnergyMatrixType <> " M_1loop(M_tree - self_energy" <>
                                   If[tadpoleMatrix == "", "", " + tadpoles"] <> ");\n" <>
