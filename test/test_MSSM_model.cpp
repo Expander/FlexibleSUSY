@@ -1026,8 +1026,8 @@ void compare_tadpoles_2loop(MssmSoftsusy s, MSSM<Two_scale> m)
    m.tadpole_hh_2loop(two_loop_tadpole);
 
    // check equality of 1-loop tadpoles again
-   TEST_CLOSE(-two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
-   TEST_CLOSE(-two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+   TEST_CLOSE(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
+   TEST_CLOSE(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
 }
 
 void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
@@ -1186,6 +1186,46 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 0.1);
 }
 
+void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_parameters();
+
+   const double BMu = model.get_BMu();
+   const double Mu  = model.get_Mu();
+   const double Mu2 = sqr(Mu);
+   const double m1sq = model.get_mHd2();
+   const double m2sq = -model.get_mHu2();
+   const int signMu = Mu >= 0.0 ? 1 : -1;
+   const DoubleVector pars(3); // unused
+   const double precision = model.get_ewsb_iteration_precision();
+   model.set_mHd2(m1sq);
+   model.set_mHu2(m2sq);
+   softSusy.setMh1Squared(m1sq);
+   softSusy.setMh2Squared(m2sq);
+
+   // these conditions must be fulfilled to have EWSB
+   // see Drees p. 221 and 222
+   TEST_GREATER(sqr(BMu), (m2sq + Mu2)*(m1sq + Mu2));
+
+   // solve two-loop
+   model.set_ewsb_loop_order(2);
+   model.solve_ewsb();
+
+   double two_loop_tadpole[2];
+   model.tadpole_hh_2loop(two_loop_tadpole);
+
+   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(0).real()
+              - two_loop_tadpole[0], 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(1).real()
+              - two_loop_tadpole[1], 0.0, precision);
+
+   softsusy::numRewsbLoops = 2;
+   softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-9);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+}
+
 void compare_models(int loopLevel)
 {
    const double ALPHASMZ = 0.1176;
@@ -1318,6 +1358,10 @@ void compare_models(int loopLevel)
    if (loopLevel == 2) {
       std::cout << "comparing tadpoles 2-loop ... ";
       compare_tadpoles_2loop(softSusy, m);
+      std::cout << "done\n";
+
+      std::cout << "test two-loop ewsb ... ";
+      test_ewsb_2loop(m, softSusy);
       std::cout << "done\n";
    }
 }
