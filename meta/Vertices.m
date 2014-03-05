@@ -341,21 +341,26 @@ RenumberSarahIndex[index_Symbol] := (UsedSarahIndexQ[index] = True; index);
 
 RenumberSarahIndex[index_] := index;
 
-(* see SelfEnergies`Private`CreateCouplingFunctions[] *)
-ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] :=
-    If[UnresolvedColorFactorFreeQ[cpPattern, exprs],
-       vertex,
-       Module[{loopArgs,
-	       internalColorIndices = InternalColorIndices[fields],
-	       externalColorIndices = ExternalColorIndices[fields]},
-	      (* Q: does one need to sum also over external color indices
-		 as in SelfEnergies`Private`CreateCouplingFunctions[]?
-		 A: it is a way to strip the color structure of this class
-		 of vertices *)
-	   loopArgs = Join[{#, 3}& /@ internalColorIndices,
-			   {#, 1}& /@ externalColorIndices];
-	   Sum @@ Prepend[loopArgs, vertex]
-       ]];
+ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] /;
+    UnresolvedColorFactorFreeQ[cpPattern, exprs] := vertex;
+
+(* see SARAH`sumOverNonAbelianIndizes[] *)
+ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] := Module[{
+	loopArgs,
+	internalColorIndices = InternalColorIndices[fields],
+	externalColorIndices = ExternalColorIndices[fields]
+    },
+    If[Length[internalColorIndices]===2 && Length[externalColorIndices]===2,
+       (* Q: does one need to sum also over external color indices
+	  as in SelfEnergies`Private`CreateCouplingFunctions[]?
+	  A: it is a way to strip the color structure of this class
+	  of vertices *)
+       loopArgs = Join[{#, 3}& /@ internalColorIndices,
+		       {#, 1}& /@ externalColorIndices];
+       Sum @@ Prepend[loopArgs, vertex],
+       vertex
+    ]
+];
 
 InternalColorIndices[fields_List] :=
     Union@Cases[DeleteCases[FieldIndexList /@ fields,
