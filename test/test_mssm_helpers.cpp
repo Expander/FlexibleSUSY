@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_stop )
 
    BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);
-   BOOST_CHECK_CLOSE_FRACTION(Abs(theta_stop), Abs(thetat), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_stop, thetat, 1.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_sbottom )
@@ -140,9 +140,6 @@ BOOST_AUTO_TEST_CASE( test_sbottom )
    mf(1) = s.displayDrBarPars().md(1,3);
    mf(2) = s.displayDrBarPars().md(2,3);
    double thetab = s.displayDrBarPars().thetab;
-   DoubleMatrix Zf(rot2d(thetab));
-   Zf.associateOrderAbs(mf);
-   thetab = ArcCos(Abs(Zf(1,1)));
 
    Eigen::Array<double,2,1> msbottom;
    double theta_sbottom;
@@ -164,9 +161,6 @@ BOOST_AUTO_TEST_CASE( test_stau )
    mf(1) = s.displayDrBarPars().me(1,3);
    mf(2) = s.displayDrBarPars().me(2,3);
    double thetatau = s.displayDrBarPars().thetatau;
-   DoubleMatrix Zf(rot2d(thetatau));
-   Zf.associateOrderAbs(mf);
-   thetatau = ArcCos(Abs(Zf(1,1)));
 
    Eigen::Array<double,2,1> mstau;
    double theta_stau;
@@ -193,5 +187,5 @@ BOOST_AUTO_TEST_CASE( test_snu )
 
    BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
-   BOOST_CHECK_CLOSE_FRACTION(theta_snu, 0.5 * Pi, 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_snu, -0.5 * Pi, 1.0e-9);
 }

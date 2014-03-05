@@ -983,6 +983,53 @@ void compare_tadpoles(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(tu / vu, s.doCalcTadpole2oneLoop(mt, sinthDRbar), 1.0e-11);
 }
 
+void compare_tadpoles_2loop(MssmSoftsusy s, MSSM<Two_scale> m)
+{
+   ensure_tree_level_ewsb(m);
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   const double mt = s.displayDrBarPars().mt;
+   const double sinthDRbar = s.calcSinthdrbar();
+   const double vd = m.get_vd();
+   const double vu = m.get_vu();
+
+   const double td_fs = m.tadpole_hh(0).real();
+   const double tu_fs = m.tadpole_hh(1).real();
+
+   double td_ss = s.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   double tu_ss = s.doCalcTadpole2oneLoop(mt, sinthDRbar);
+
+   // check equality of 1-loop tadpoles
+   TEST_CLOSE(td_fs / vd, td_ss, 1.0e-11);
+   TEST_CLOSE(tu_fs / vu, tu_ss, 1.0e-11);
+
+   // make sure the one-loop tadpoles are calculated correctly
+   softsusy::numRewsbLoops = 1;
+   s.doTadpoles(mt, sinthDRbar);
+
+   td_ss = s.displayTadpole1Ms();
+   tu_ss = s.displayTadpole2Ms();
+
+   // check equality of 1-loop tadpoles again
+   TEST_CLOSE(td_fs / vd, td_ss, 1.0e-11);
+   TEST_CLOSE(tu_fs / vu, tu_ss, 1.0e-11);
+
+   // calculate 2-loop tadpoles
+   softsusy::numRewsbLoops = 2;
+   s.doTadpoles(mt, sinthDRbar);
+
+   const double td_1_and_2loop_ss = s.displayTadpole1Ms();
+   const double tu_1_and_2loop_ss = s.displayTadpole2Ms();
+
+   double two_loop_tadpole[2];
+   m.tadpole_hh_2loop(two_loop_tadpole);
+
+   // check equality of 1-loop tadpoles again
+   TEST_CLOSE(-two_loop_tadpole[0], td_1_and_2loop_ss - td_ss, 1.0e-10);
+   TEST_CLOSE(-two_loop_tadpole[1], tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+}
+
 void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
@@ -1265,6 +1312,12 @@ void compare_models(int loopLevel)
 
       std::cout << "comparing loop-masses ... ";
       compare_loop_masses(softSusy, m);
+      std::cout << "done\n";
+   }
+
+   if (loopLevel == 2) {
+      std::cout << "comparing tadpoles 2-loop ... ";
+      compare_tadpoles_2loop(softSusy, m);
       std::cout << "done\n";
    }
 }

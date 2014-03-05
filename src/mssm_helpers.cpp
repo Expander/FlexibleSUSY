@@ -73,7 +73,7 @@ double diagonalize_sfermions_2x2(const Sfermion_mass_data& pars,
    }
 
    Eigen::Matrix<double, 2, 2> Zf;
-   fs_diagonalize_hermitian(mass_matrix, msf, Zf);
+   diagonalize_hermitian(mass_matrix, msf, Zf);
 
 #ifdef VERBOSE
    if (msf.minCoeff() < 0.)
@@ -82,10 +82,18 @@ double diagonalize_sfermions_2x2(const Sfermion_mass_data& pars,
 
    msf = AbsSqrt(msf);
 
-   double theta = ArcCos(Abs(Zf(0,0))); // sign not unique
+   double theta;
 
-   // chose sign such that sin(theta) > 0
-   if (theta > Pi)
+   if (Sign(Zf(0,0)) == Sign(Zf(1,1))) {
+      theta = ArcCos(Abs(Zf(0,0)));
+   } else {
+      theta = ArcCos(Abs(Zf(0,1)));
+      Zf.col(0).swap(Zf.col(1));
+      std::swap(msf(0), msf(1));
+   }
+
+   // chose sign such that sin(theta) < 0
+   if (0 < theta && theta < Pi)
       theta *= -1;
 
    return theta;
