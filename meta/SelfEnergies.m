@@ -31,6 +31,9 @@ FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
 CreateTwoLoopTadpolesMSSM::usage="Creates function prototypes and
 definitions for two-loop tadpoles in the MSSM";
 
+CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
+definitions for two-loop Higgs self-energies in the MSSM";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -356,6 +359,9 @@ CreateTadpoleFunctionName[field_] :=
 CreateTwoLoopTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field] <> "_2loop";
 
+CreateTwoLoopSelfEnergyFunctionName[field_] :=
+    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+
 CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
 
@@ -555,7 +561,94 @@ CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
            prototype = "void " <> functionName <> "(double result[2]) const;\n";
            body = GetTwoLoopTadpoleCorrections[];
            function = "void CLASSNAME::" <> functionName <>
-                      "(double result[2]) const\n{\n" <> IndentText[body] <>
+                      "(double result[3]) const\n{\n" <> IndentText[body] <>
+                      "\n}\n";
+           Return[{prototype, function}];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, tanbStr, muStr, m3Str, mA0Str},
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Global`Mu];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double tanb = " <> tanbStr <> ";
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+
+double s11s = 0., s22s = 0., s12s = 0.;
+double s11b = 0., s12b = 0., s22b = 0.;
+double s11tau = 0., s12tau = 0., s22tau = 0.;
+double s11w = 0., s22w = 0., s12w = 0.;
+int scheme = 0; // chooses DR-bar scheme from slavich et al
+
+// two-loop Higgs corrections: alpha_s alpha_t, alpha_s alpha_b and
+// alpha_b^2, alpha_t*2, alpha_b alpha_t
+dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+          &tanb, &vev2, &gs, &scheme, &s11s, &s22s, &s12s);
+dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+          &cotbeta, &vev2, &gs, &scheme, &s22b, &s11b, &s12b);
+ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+          &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s11w,
+          &s12w, &s22w);
+tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+            &s22tau, &s12tau);
+
+result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
+result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
+result[2] = - s22s - s22w - s22b - s22tau; // 2,2 element
+";
+           Return[body];
+          ];
+
+CreateTwoLoopSelfEnergiesMSSM[higgsBoson_] :=
+    Module[{prototype, function, functionName},
+           functionName = CreateTwoLoopSelfEnergyFunctionName[higgsBoson];
+           prototype = "void " <> functionName <> "(double result[3]) const;\n";
+           body = GetTwoLoopSelfEnergyCorrections[];
+           function = "void CLASSNAME::" <> functionName <>
+                      "(double result[3]) const\n{\n" <> IndentText[body] <>
                       "\n}\n";
            Return[{prototype, function}];
           ];

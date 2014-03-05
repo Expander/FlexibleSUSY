@@ -397,6 +397,8 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @thirdGenerationHelperFunctions@
 
+@twoLoopSelfEnergyFunctions@
+
 @twoLoopTadpoleFunctions@
 
 @loopMassesFunctions@

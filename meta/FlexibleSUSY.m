@@ -411,6 +411,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
+            twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
             phasesInit = "",
@@ -463,6 +464,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            If[SARAH`UseHiggs2LoopMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
+              {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesMSSM[SARAH`HiggsBoson];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
               twoLoopHiggsHeaders = "#include \"mssm_helpers.hpp\"\n#include \"mssm_twoloophiggs.h\"\n";
              ];
@@ -522,6 +524,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                             "@selfEnergyFunctions@"       -> selfEnergyFunctions,
                             "@twoLoopTadpolePrototypes@"  -> IndentText[twoLoopTadpolePrototypes],
                             "@twoLoopTadpoleFunctions@"   -> twoLoopTadpoleFunctions,
+                            "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
+                            "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
