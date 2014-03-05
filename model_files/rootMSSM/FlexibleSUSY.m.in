@@ -61,3 +61,5 @@ InitialGuessAtHighScale = {
    {\[Mu]   , 1.0},
    {B[\[Mu]], 0.0}
 };
+
+UseHiggs2LoopMSSM = True;
