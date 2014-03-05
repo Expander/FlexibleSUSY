@@ -61,7 +61,18 @@ void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
    TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
 }
 
-void ensure_one_loop_ewsb(MssmSoftsusy& s)
+void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
+{
+   ensure_tree_level_ewsb(m);
+
+   const double precision = m.get_ewsb_iteration_precision();
+   m.set_pole_mass_loop_order(loop_level);
+   m.solve_ewsb();
+   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
+   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
+}
+
+void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)
 {
    ensure_tree_level_ewsb(s);
 
@@ -69,7 +80,7 @@ void ensure_one_loop_ewsb(MssmSoftsusy& s)
    const int signMu = s.displaySusyMu() >= 0.0 ? 1 : -1;
    const double mtrun = s.displayDrBarPars().mt;
    const DoubleVector pars(3);
-   softsusy::numRewsbLoops = 1;
+   softsusy::numRewsbLoops = loop_level;
    s.rewsb(signMu, mtrun, pars);
 }
 

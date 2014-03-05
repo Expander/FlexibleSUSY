@@ -1060,8 +1060,8 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 1.0e-10);
    TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
 
-   ensure_one_loop_ewsb(m);
-   ensure_one_loop_ewsb(s);
+   ensure_n_loop_ewsb(m, 1);
+   ensure_n_loop_ewsb(s, 1);
    // check that the important scalar potential parameters are equal
    TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
