@@ -1070,7 +1070,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    m.calculate_pole_masses();
    s.physical(1);
 
-   const DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
+   DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
    TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 0.114);
    TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 0.04);
    TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 0.00115);
@@ -1118,6 +1118,27 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(4), m.get_physical().MSd(3), 0.000026);
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(5), m.get_physical().MSd(4), 0.000026);
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(6), m.get_physical().MSd(5), 0.00005);
+
+   // test two-loop corrections
+   softsusy::numRewsbLoops = 2;
+   softsusy::numHiggsMassLoops = 2;
+   m.set_pole_mass_loop_order(2);
+   m.set_ewsb_loop_order(2);
+   ensure_n_loop_ewsb(m, 2);
+   ensure_n_loop_ewsb(s, 2);
+   // check that the important scalar potential parameters are equal
+   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-7);
+   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-8);
+   TEST_CLOSE_REL(m.get_Mu(), s.displaySusyMu(), 0.0000001);
+   TEST_CLOSE_REL(m.get_BMu(), s.displayM3Squared(), 0.04);
+   m.calculate_pole_masses();
+   s.physical(2);
+
+   hh = ToDoubleVector(m.get_physical().Mhh);
+   TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 0.013);
+   TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 0.014);
+   TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 0.013);
+   TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 0.00002);
 }
 
 void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)

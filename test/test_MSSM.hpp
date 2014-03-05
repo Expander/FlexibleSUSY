@@ -51,16 +51,6 @@ void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
    TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
 }
 
-void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
-{
-   ensure_tree_level_ewsb(m);
-
-   const double precision = m.get_ewsb_iteration_precision();
-   m.solve_ewsb_one_loop();
-   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
-   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
-}
-
 void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
 {
    ensure_tree_level_ewsb(m);
@@ -68,8 +58,16 @@ void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
    const double precision = m.get_ewsb_iteration_precision();
    m.set_pole_mass_loop_order(loop_level);
    m.solve_ewsb();
-   TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
-   TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
+
+   if (loop_level == 1) {
+      TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
+      TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
+   }
+}
+
+void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
+{
+   ensure_n_loop_ewsb(m, 1);
 }
 
 void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)

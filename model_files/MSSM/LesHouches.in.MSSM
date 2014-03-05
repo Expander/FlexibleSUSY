@@ -7,8 +7,8 @@ Block FlexibleSUSY
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   0                    # calculate SM pole masses
-    4   1                    # calculate loop masses
-    5   1                    # EWSB loop order
+    4   2                    # calculate loop masses
+    5   2                    # EWSB loop order
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
