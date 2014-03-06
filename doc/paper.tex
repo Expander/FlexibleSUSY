@@ -32,7 +32,16 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\ESSM}{E$_6$SSM\xspace}
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
-\newcommand{\DRbar}{\textoverline{DR}}  % inline source code
+\newcommand{\DRbar}{\textoverline{DR}\xspace}
+\newcommand{\MSbar}{\textoverline{MS}\xspace}
+\newcommand{\unit}[1]{\,\text{#1}}      % units
+\newcommand{\userinput}{\text{<input>}}
+\newcommand{\pole}{\text{pole}}
+\newcommand{\Lagr}{\mathcal{L}}
+\newcommand{\unity}{\mathbf{1}}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
 \def\at{\alpha_t}
 \def\ab{\alpha_b}
 \def\as{\alpha_s}
@@ -107,8 +116,8 @@ Higgs
          {\tt http://flexiblesusy.hepforge.org/}\\ {\em Distribution
            format:}\/ tar.gz\\ {\em Programming language:} {\tt
            C++}\\ {\em Computer:}\/ Personal computer\\ {\em Operating
-           system:}\/ Tested on Linux 4.x\\ {\em Word size:}\/ 32
-         bits\\ {\em External routines:}\/ SARAH 4.0.0, Boost library,
+           system:}\/ Tested on Linux 3.x\\ {\em Word size:}\/ 64
+         bits\\ {\em External routines:}\/ SARAH 4.0.4, Boost library,
          lapack {\color{red} Not sure what counts here?}\\ {\em
            Typical running time:}\/ 0.1-0.3 seconds per parameter
          point.\\ {\em Nature of problem:}\/ Determining the mass
@@ -295,7 +304,7 @@ Flexible SUSY can be downloaded from \url{http://flexiblesusy.hepforge.org}.
 To use FlexibleSUSY please make sure you have the following installed.  
 \begin{itemize}
 \item Mathematica, version 7 or higher
-\item SARAH, version 4.0.0 or higher \url{http://sarah.hepforge.org}
+\item SARAH, version 4.0.4 or higher \url{http://sarah.hepforge.org}
 \item C++11 compatible compiler (g++ 4.6.0 or higher, clang++ 3.1 or
   higher)
 \item Fortran compiler (gfortran, ifort etc.)
@@ -330,36 +339,618 @@ Run the spectrum generator using a SLHA input file
 $ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM --slha-output-file=LesHouches.out.MSSM
   \end{lstlisting}%% $
 
-\section{Stucture of the spectrum generator}
-\subsection{boundary conditions}
-Different types, how we match to low energy data.  reference EWSB or merge that section here.
-mention two loop qcd parts from softsusy.
-\subsection{RGEs}
-The two loop renormalisation group equations are generated using command ?
-Even in the simplest supersymmetric model the RGEs form a very large set of coupled non-linear differential equations.  To solve these and thereby evolve the parameters between two different scales \fs has... 
-\subsection{tree level spectrum}
-The diagonalised tree level $\overline{DR}$ masses are obtained from expressions...
-The numerical diagonalisation is performed by... with an accuracy set by...   
-\subsection{Electroweak symmetry breaking}
-At tree level the EWSB conditions are written...
-The one loop electroweak symmetry breaking are solved using the gsl routines finding multiple roots, \code{gsl_multiroot_fsolver}.  Iteration. For example in the MSSM \fs generates.. show code.
- If higher accuracy is required additional routines with higher order corrections can be added in a very simple way.  For example in the MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of $\oatas$, $\oabas$, $\oatq$, $\oabatau$, 
-$\oabq$, $\oatauq$ and $\oatab$  as follows...  
-Something similar is done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}.
- Corrections from other sources can be added to the generated code by...
-\subsection{two scale fixed point iteration}
-The default solver which calls the above routines above and finds the full set of $\overline{DR}$ masses in the model consistent with all constraints is the two-scale solver.  This can be selected by... but if no selection is made this will be used anyway as default. 
+\section{Setting up a FlexibleSUSY model}
 
-This approach is decribed in \cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY spectrum generators.  
-
-
-The stucture of the two-scale algorithm used in \fs is as follows,
+A \fs model is configured via a (Mathematica) model file, which in
+case of the MSSM looks like this
 %
-Initial guess:
+\begin{lstlisting}[language=Mathematica]
+FSModelName = "MSSM";
+
+MINPAR = {
+   {1, m0},
+   {2, m12},
+   {3, TanBeta},
+   {4, Sign[\[Mu]]},
+   {5, Azero}
+};
+
+DefaultParameterPoint = {
+   {m0, 125},
+   {m12, 500},
+   {TanBeta, 10},
+   {Sign[\[Mu]], 1},
+   {Azero, 0}
+};
+
+EWSBOutputParameters = { B[\[Mu]], \[Mu] };
+
+HighScale = g1 == g2;
+
+HighScaleFirstGuess = 1.0 10^14;
+
+HighScaleInput = {
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
+   {mHd2, m0^2},
+   {mHu2, m0^2},
+   {mq2, UNITMATRIX[3] m0^2},
+   {ml2, UNITMATRIX[3] m0^2},
+   {md2, UNITMATRIX[3] m0^2},
+   {mu2, UNITMATRIX[3] m0^2},
+   {me2, UNITMATRIX[3] m0^2},
+   {MassB, m12},
+   {MassWB, m12},
+   {MassG, m12}
+};
+
+SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+
+SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
+
+SUSYScaleInput = {};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput = {
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtHighScale = {
+   {\[Mu]   , 1.0},
+   {B[\[Mu]], 0.0}
+};
+
+OnlyLowEnergyFlexibleSUSY = False; (* default *)
+\end{lstlisting}
+%
+The variable \code{FSModelName} contains the name of the \fs model.
+
+All non-Standard Model input variables must be specified in the lists
+\code{MINPAR} and \code{EXTPAR}.  Theses two variables refer to the
+MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
+The list elements are two-component lists where the first entry is the
+SLHA index in the MINPAR or EXTPAR blocks.  The second entry is the
+name of the parameter.  The input parameters can be set to default
+values in the \code{DefaultParameterPoint} list, see above.
+
+Using the the variable \code{EWSBOutputParameters} the user can
+specify the model parameters that are output of the electroweak
+symmetry breaking conditions.  When doing EWSB, \fs will adjust these
+parameters until the EWSB conditons are fulfilled.  In the CMSSM these
+are \code{Mu} and \code{B[\[Mu]]}.
+
+Furthermore, the user has to specify the form of three model
+constraints: low-scale, susy-scale and high-scale constraints.  In \fs
+they are named as \code{LowScale}, \code{SUSYScale} and
+\code{HighScale}.  For each constraint there is a scale definition
+(named after the constraint), an initial guess for the scale
+(concatenation of the constraint name and \code{FirstGuess}) and a
+list of settings to be applied at the constraint (concatenation of the
+constraint name and \code{Input}).
+%
+\begin{itemize}
+\item \emph{High-scale constraint:} The high-scale constraint is
+  usuall the GUT-scale constraint, applied at the scale where the
+  gauge couplings $g_1$ and $g_2$ unify.  The high-scale can be
+  defined by an equation of the form \code{g1 == g2} or by fixed scale
+  value.
+\item \emph{Susy-scale constraint:} The susy-scale constraint is the
+  constraint where \fs will impose the EWSB conditions and calculate
+  the spectrum.  It is usually defined by
+  $\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.
+\item \emph{Low-scale constraint:} The low-scale constraint is the
+  constraint where the gauge couplings $g_1$, $g_2$, $g_3$ and the
+  Yukawa couplings $y_f$ will be calculated from given Standard Model
+  input $\alpha_{\text{e.m.}}(M_Z)$, $\alpha_{s}(M_Z)$, $m_f^\pole$,
+  $M_Z^\pole$, $M_W^\pole$, see
+  Sec.~\ref{sec:calculation-of-gauge-couplings}--\ref{sec:calculation-of-yukawa-couplings}.
+  This should be done at the $Z$ mass scale $M_Z$.  Note that the
+  gauge and Yukawa couplings are calculated automatically and
+  therefore do not need to be specified in the \code{LowScaleInput}
+  variable.
+\end{itemize}
+
+Finally the user can set an initial guess for the model parameters at
+the low- and high-scale using the variables
+\code{InitialGuessAtLowScale} and \code{InitialGuessAtHighScale},
+respectively.  Note, that the gauge and Yukawa couplings will be
+guessed automatically at the low-scale from the known Standard Model
+parameters.
+
+To create a low-energy model one has to set
+\code{OnlyLowEnergyFlexibleSUSY = True}.  In this case the high-scale
+constraint will be ignored and only the low-scale and susy-scale
+constraints are kept.  All model parameters that are not specified in
+\code{MINPAR} or \code{EXTPAR} will be read from the corresponding
+input blocks in the SLHA input file and will be set at the susy-scale.
+
+\section{Stucture of the spectrum generator}
+
+\subsection{Model parameters and RGEs}
+Even in the simplest supersymmetric model the RGEs form a very large
+set of coupled non-linear differential equations.  In a general
+(softly broken) supersymmetric theory the soft-breaking parameters
+depend on themselves and the susy parameters.  However, the susy
+parameters are independent of the soft-breaking parameters
+\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}.
+This makes it possible to split the model parameters into the
+following two subsets:
+%
+\begin{enumerate}
+\item \emph{susy parameters:} gauge couplings, superpotential
+  parameters and VEVs and
+\item \emph{soft-breaking parameters} \cite{Girardello:1981wz}: soft
+  linear scalar terms, soft bilinear scalar interactions, soft
+  trilinear scalar interactions, soft gaugino mass terms and soft
+  scalar squared masses.
+\end{enumerate}
+%
+The susy parameters together with their two-loop renormalisation group
+equations are stored in the class \code{<model>_susy_parameters}.  The
+soft-breaking model parameters together with their two-loop
+renormalisation group equations are stored in the class
+\code{<model>_soft_parameters}.  The dependence of the soft-breaking
+parameters on the susy parameters is implemented via inheritance, see
+\figurename~\ref{fig:parameter-classes}, where
+\code{<model>_soft_parameters} inherits from
+\code{<model>_susy_parameters}.  In this way, the class
+\code{<model>_soft_parameters} can implement the soft-breaking beta
+functions in terms of the susy and soft-breaking parameters, while the
+class \code{<model>_susy_parameters} is independent of the
+soft-breaking parameters.
+%
+\begin{figure}
+  \centering
+  \tikzumlset{fill class=white}
+  \begin{tikzpicture}
+    \umlclass[x=0, y=3]{model\_susy\_parameters}{
+      - susy parameters
+    }{
+      + beta()
+    }
+    \umlclass[x=0, y=0]{model\_soft\_parameters}{
+      - soft-breaking parameters
+    }{
+      + beta()
+    }
+    \umlinherit{model\_soft\_parameters}{model\_susy\_parameters}
+  \end{tikzpicture}
+  \caption{Model parameter class structure.}
+  \label{fig:parameter-classes}
+\end{figure}
+
+\subsection{Boundary conditions}
+In \fs the RGE boundary conditions are classes which implement
+\code{Constraint<Two\_scale>} interface, see
+\figurename~\ref{fig:schematic-two-scale-constraint-interface}.
+%
+\begin{lstlisting}[language=C++]
+template<>
+class Constraint<Two_scale> {
+public:
+   virtual ~Constraint() {}
+   virtual void apply() = 0;
+   virtual double get_scale() const = 0;
+   virtual void set_model(Two_scale_model*) = 0;
+};
+\end{lstlisting}
+%
+The three pure virtual functions \code{apply()}, \code{get\_scale()}
+and \code{set\_model()} need to be implemented
+%
+\begin{itemize}
+\item \code{apply()}: implements the constraint by fixing model
+  parameters
+\item \code{get\_scale()}: returns the scale at which the constraint
+  is to be applied.
+\item \code{set\_model()}: connects the constraint to a model class,
+  in order to access the model parameters
+\end{itemize}
+%
+Per default, \fs creates three default boundary conditions for each
+model:
+%
+\begin{itemize}
+\item \emph{GUT constraint:} Here the \code{apply()} function
+  calculates the value of the unification scale $M_X$ (from the
+  condition given in \code{HighScale}) and sets the model parameters
+  given in \code{HighScaleInput}.  The \code{get\_scale()} returns the
+  value of $M_X$.
+\item \emph{SUSY constraint:} Here the \code{apply()} function
+  calculates the value of the susy scale $M_S$ and sets the model
+  parameters given in \code{SUSYScaleInput}.  Afterwards the EWSB
+  conditions are solved for the parameters given in
+  \code{EWSBOutputParameters} at the one-loop level, i.e., the the
+  parameters in \code{EWSBOutputParameters} are determined such that
+  the one-loop effective potential is minimized.  The
+  \code{get\_scale()} returns the value of $M_S$.
+\item \emph{Low-scale constraint:} This constraint calculates the
+  gauge and Yukawa couplings of the susy model from the known Standard
+  Model gauge couplings and fermion masses (at $M_Z$), using threshold
+  corrections.  Furthermore the parameters given in
+  \code{LowScaleInput} are set.  The \code{get\_scale()} returns the
+  value of $M_Z$.
+\end{itemize}
+
+{\color{red}Different types, how we match to low energy data.
+  reference EWSB or merge that section here.  mention two loop qcd
+  parts from softsusy.}
+
+\subsubsection{Calculation of the gauge couplings $g_i(M_Z)$}
+\label{sec:calculation-of-gauge-couplings}
+
+The low-scale constraint calculates the gauge couplings $g_i(M_Z)$.
+It does so by first calculating $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$
+and $g_{3,\text{susy}}^{\text{\DRbar}}(M_Z)$ via
+%
+\begin{align}
+  \alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
+    \Delta\alpha_{\text{e.m.},\text{SM}}(M_Z) -
+    \Delta\alpha_{\text{e.m.},\text{susy}}(M_Z)} ,\\
+  \Delta\alpha_{\text{e.m.},\text{SM}}(\mu) &=
+  \frac{\alpha_\text{e.m.}}{2\pi} \left[\frac{1}{3}
+    - \frac{16}{9} \log{\frac{m_t}{\mu}} \right],\\
+  \Delta\alpha_{\text{e.m.},\text{susy}}(\mu) &=
+  \frac{\alpha_\text{e.m.}}{2\pi} \left[ -\sum_{\text{susy particle }
+      i}
+    C_i \log{\frac{m_i}{\mu}} \right],\\
+    e_{\text{susy}}^{\text{\DRbar}}(M_Z) &=
+    \sqrt{4\pi\alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z)}
+\end{align}
+%
+\begin{align}
+  \alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
+    \Delta\alpha_{\text{s},\text{SM}}(M_Z)
+    - \Delta\alpha_{\text{s},\text{susy}}(M_Z)} ,\\
+  \Delta\alpha_{\text{s},\text{SM}}(\mu) &=
+  \frac{\alpha_\text{s}}{2\pi} \left[
+    -\frac{2}{3} \log{\frac{m_t}{\mu}} \right],\\
+  \Delta\alpha_{\text{s},\text{susy}}(\mu) &=
+  \frac{\alpha_\text{s}}{2\pi}\left[ \frac{1}{2}-\sum_{\text{susy
+        particle } i} C_i \log{\frac{m_i}{\mu}} \right] ,\\
+  g_{3,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \sqrt{4\pi\alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z)} ,
+\end{align}
+%
+where
+%
+\begin{align}
+  \alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z) &= 1/127.944,\\
+  \alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z) &= 0.1185,
+\end{align}
+%
+are the \MSbar electromagnetic and strong cougling constants in the
+Standard Model including only $5$ quark flavours
+\cite{Beringer:1900zz}.  Afterwards, SARAH's tree-level expressions
+for the Weinberg angle and the $U(1)_Y$ and $SU(2)_L$ gauge couplings
+$g_Y$ and $g_2$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
+$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ are used to calculate
+$g_{1,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$g_{2,\text{susy}}^{\text{\DRbar}}(M_Z)$.  In the MSSM, for example,
+one has
+%
+\begin{align}
+  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \arcsin\sqrt{1 - \left(\frac{M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)}{M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)}\right)^2} ,\\
+  g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \sqrt{\frac{5}{3}} \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\cos\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,\\
+  g_{2,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\sin\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,
+\end{align}
+%
+where
+%
+\begin{align}
+  \left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
+  \left(M_W^{\text{pole}}\right)^2 + \re \Pi_{WW}^T(p^2 = (M_W^{\text{pole}})^2) ,\\
+  \left(M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
+  \left(M_Z^{\text{pole}}\right)^2 + \re \Pi_{ZZ}^T(p^2 = (M_Z^{\text{pole}})^2)
+\end{align}
+%
+and $M_W^{\text{pole}} = 80.404\unit{GeV}$, $M_Z^{\text{pole}} =
+91.1876\unit{GeV}$ \cite{Beringer:1900zz}.
+
+\subsubsection{Calculation of the Yukawa couplings $y_f(M_Z)$}
+\label{sec:calculation-of-yukawa-couplings}
+
+At the low-scale constraint the expressions for the Yukawa coupling
+matrices $y_f(M_Z)$ are calculated from the tree-level mass matrices
+of the SM-fermions $m_u$, $m_d$, $m_e$.  In the MSSM, for example,
+these relations read
+%
+\begin{align}
+  y_u^{\text{\DRbar}}(M_Z) &= \frac{\sqrt{2} m_{u}^T}{v_u} , &
+  y_d^{\text{\DRbar}}(M_Z) &= \frac{\sqrt{2} m_{d}^T}{v_d} , &
+  y_e^{\text{\DRbar}}(M_Z) &= \frac{\sqrt{2} m_{e}^T}{v_d}.
+\end{align}
+%
+At the low-scale the fermion mass matrices are composed as
+%
+\begin{align}
+  m_u =
+  \begin{pmatrix}
+    m_{u}^{\userinput} & 0 & 0 \\
+    0 & m_{c}^{\userinput} & 0 \\
+    0 & 0 & m_{t,\text{susy}}^{\text{\DRbar}}(M_Z)
+  \end{pmatrix} ,\\
+  m_d =
+  \begin{pmatrix}
+    m_{d}^{\userinput} & 0 & 0 \\
+    0 & m_{s}^{\userinput} & 0 \\
+    0 & 0 & m_{b,\text{susy}}^{\text{\DRbar}}(M_Z)
+  \end{pmatrix} ,\\
+  m_e =
+  \begin{pmatrix}
+    m_{e}^{\userinput} & 0 & \\
+    0 & m_{\mu}^{\userinput} & 0 \\
+    0 & 0 & m_{\tau,\text{susy}}^{\text{\DRbar}}(M_Z)
+  \end{pmatrix},
+\end{align}
+%
+where $m_{u,c,d,s,e,\mu}^{\userinput}$ are read from the \code{Block
+  SMINPUTS} of the SLHA input file \cite{Skands:2003cj}.  The 3rd
+generation quark masses are calculated in the \DRbar scheme from the
+SLHA user input quantities $m_t^\text{pole}$,
+$m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$,
+$m_{\tau,\text{SM}}^{\text{\MSbar}}(M_Z)$ \cite{Skands:2003cj}.  In
+detail, the top quark \DRbar mass is calculated via
+%
+\begin{align}
+  \begin{split}
+    m_{t,\text{susy}}^{\text{\DRbar}}(\mu) &= m_t^\text{pole} +
+    \re\Sigma_{tt}^{S,\text{heavy}}(m_t^\text{pole}) \\
+    &\phantom{=\;} + m_t^\text{pole}
+    \left[ \re\Sigma_{tt}^{L,\text{heavy}}(m_t^\text{pole}) +
+      \re\Sigma_{tt}^{R,\text{heavy}}(m_t^\text{pole}) + \Delta
+      m_t^{(1),\text{qcd}} + \Delta m_t^{(2),\text{qcd}} \right] ,
+  \end{split}
+\end{align}
+%
+where the $\Sigma_{ff}^\text{heavy}$ denotes the self-energy of
+fermion $f$ without the Standard Model contributions.  The appearing
+QCD corrections $\Delta m_t^{(1),\text{qcd}}$ and $\Delta
+m_t^{(2),\text{qcd}}$ are taken from
+\cite[Eq.\ (58),(61)]{Bednyakov:2002sf} and read
+%
+\begin{align}
+  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2 \left(5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right)}{12 \pi^2},\\
+  \begin{split}
+    \Delta m_t^{(2),\text{qcd}} &= \left(\Delta
+      m_t^{(1),\text{qcd}}\right)^2 \\
+    &\phantom{=\;} - \frac{g_3^4 \left[396
+        \log^2\left(\frac{m_t^2}{\mu^2}\right)-1476
+        \log\left(\frac{m_t^2}{\mu^2}\right)-48 \zeta(3)+2011+16 \pi
+        ^2 (1+\log 4)\right]}{4608 \pi^4}.
+  \end{split}
+\end{align}
+%
+The \DRbar mass of the bottom quark is calculated via
+\cite{Baer:2002ek,Skands:2003cj}
+%
+\begin{align}
+  m_{b,\text{susy}}^{\text{\DRbar}}(\mu) &=
+  \frac{m_{b,\text{SM}}^{\text{\DRbar}}(\mu)}{1 -
+    \re\Sigma_{bb}^{S,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar})/m_b
+    - \re\Sigma_{bb}^{L,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar}) -
+    \re\Sigma_{bb}^{R,\text{heavy}}(m_{b,\text{SM}}^\text{\MSbar})} ,\\
+  m_{b,\text{SM}}^{\text{\DRbar}}(\mu) &=
+  m_{b,\text{SM}}^{\text{\MSbar}}(\mu) \left(1 - \frac{\alpha_s}{3
+      \pi} - \frac{23}{72} \frac{\alpha_s^2}{\pi^2} + \frac{3
+      g_2^2}{128 \pi^2} + \frac{13 g_Y^2}{1152 \pi^2}\right) ,
+\end{align}
+%
+where $m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$ is user input.  The
+\DRbar mass of the $\tau$ is calculated via
+%
+\begin{align}
+  \begin{split}
+    m_{\tau,\text{susy}}^{\text{\DRbar}}(\mu) &=
+    m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) +
+    \re\Sigma_{\tau\tau}^{S,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar}) \\
+    &\phantom{=\;} + m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) \left[
+      \re\Sigma_{\tau\tau}^{L,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar})
+      +
+      \re\Sigma_{\tau\tau}^{R,\text{heavy}}(m_{\tau,\text{SM}}^\text{\MSbar})
+    \right] ,
+  \end{split}\\
+  m_{\tau,\text{SM}}^{\text{\DRbar}}(\mu) &= m_{\tau,\text{SM}}^{\text{\MSbar}}(\mu)
+  \left(1 - 3 \frac{g_Y^2 - g_2^2}{128 \pi^2}\right),
+\end{align}
+%
+where $m_{\tau,\text{SM}}^{\text{\MSbar}}(M_Z)$ is user input.  To
+convert the fermion masses from the \MSbar to the \DRbar scheme the
+Yukawa coupling conversion from \cite[Eq.~(19)]{Skands:2003cj} was
+used and it was assumed that the VEV is already given in the \DRbar
+scheme.
+
+\subsubsection{Electroweak symmetry breaking}
+In \fs the one-loop electroweak symmetry breaking conditions are
+formulated as
+%
+\begin{align}
+  0 = \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
+  \label{eq:one-loop-ewsb-eq}
+\end{align}
+%
+where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
+VEVs corresponding to the Higgs field $H_i$ and $t_i$ is the one-loop
+tadpole diagram of $H_i$.
+
+The electroweak symmetry breaking conditions
+\eqref{eq:one-loop-ewsb-eq} are then solved simultaneously using the
+iterative multi-dimensional root finder algorithm
+\code{gsl_multiroot_fsolver_hybrid} from the Gnu Scientific Libraray
+(GSL).  If no root was found, the \code{gsl_multiroot_fsolver_hybrids}
+algorithm is tried as alternative, which uses a variable step size but
+might be a little slower.
+
+For example in the MSSM \fs expresses \eqref{eq:one-loop-ewsb-eq} as
+the function
+%
+\begin{lstlisting}[language=C++]
+int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   ...
+
+   const CLASSNAME::Ewsb_parameters* ewsb_parameters
+      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
+   MSSM* model = ewsb_parameters->model;
+   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
+
+   double tadpole[number_of_ewsb_equations];
+
+   model->set_BMu(gsl_vector_get(x, 0));
+   model->set_Mu(INPUT(SignMu) * Abs(gsl_vector_get(x, 1)));
+
+   // calculate tree-level tadpole eqs.
+   tadpole[0] = model->get_ewsb_eq_vd();
+   tadpole[1] = model->get_ewsb_eq_vu();
+
+   // subtract one-loop tadpoles
+   if (ewsb_loop_order > 0) {
+      model->calculate_DRbar_parameters();
+      tadpole[0] -= Re(model->tadpole_hh(0));
+      tadpole[1] -= Re(model->tadpole_hh(1));
+   }
+
+   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
+      gsl_vector_set(f, i, tadpole[i]);
+
+   return GSL_SUCCESS;
+}
+\end{lstlisting}
+%
+Here \code{x} is the vector of EWSB output parameters
+(\code{EWSBOutputParameters}) and \code{f} is a vector which contains
+the one-loop EWSB eqs.\ \eqref{eq:one-loop-ewsb-eq}.  This
+\code{tadpole_equations()} function is called inside of
+\code{MSSM<Two_scale>::solve_ewsb_iteratively_with} then via
+%
+\begin{lstlisting}[language=C++]
+// initial guess
+double x_init[number_of_ewsb_equations];
+ewsb_initial_guess(x_init);
+
+// setup root finder
+int ewsb_loop_order = 1;
+Ewsb_parameters params = {this, ewsb_loop_order};
+Root_finder<number_of_ewsb_equations> root_finder(
+                           MSSM<Two_scale>::tadpole_equations,
+                           &params,
+                           number_of_ewsb_iterations,
+                           ewsb_iteration_precision);
+root_finder.set_solver_type(gsl_multiroot_fsolver_hybrid);
+
+root_finder.find_root(x_init);
+\end{lstlisting}
+
+If higher accuracy is required additional routines with higher order
+corrections can be added in a very simple way.  For example in the
+MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by
+P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of
+$\oatas$, $\oabas$, $\oatq$, $\oabatau$, $\oabq$, $\oatauq$ and
+$\oatab$ as follows...  Something similar is done for the NMSSM, but
+in this case the NMSSM $\oatas$, $\oabas$ pieces come from
+\cite{Degrassi:2009yq}.  Corrections from other sources can be added
+to the generated code by...
+
+\subsection{Tree-level spectrum}
+The tree-level $\overline{DR}$ masses are calculated by diagonalizing
+the mass matrices returned from \code{SARAH`MassMatrix[]}.  The
+numerical singular value decomposition is performed by the Eigen
+library routine \code{Eigen::JacobiSVD} for matrices with less than
+four rows and columns, and the Lapack routines \code{zgesvd},
+\code{dgesvd} for larger matrices.  For the other types of
+diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
+used regardless of the matrix size.
+
+The mass matrix $M^2$ for real scalar fiels $\phi_i$ is diagonalized
+with an orthogonal matrix $O$ via
+%
+\begin{align}
+  \Lagr_{m,\text{real scalar}}
+  &= - \frac{1}{2} \phi^T M^2 \phi
+  = - \frac{1}{2} (\phi^m)^T M^2_D \phi^m, \\
+  \qquad M^2 &= (M^2)^T ,
+  \qquad \phi^m = O \phi ,
+  \qquad M^2_D = O M^2 O^T ,
+  \qquad O^T O = \unity ,
+\end{align}
+%
+where $M^2_D$ is diagonal and $\phi^m_i$ are the mass eigenstates.  In
+case of complex scalar fields $\phi_i$ we use
+%
+\begin{align}
+  \Lagr_{m,\text{complex scalar}}
+  &= - \phi^\dagger M^2 \phi
+  = - (\phi^m)^\dagger M^2_D \phi^m, \\
+  \qquad M^2 &= (M^2)^\dagger ,
+  \qquad \phi^m = U \phi ,
+  \qquad M^2_D = U M^2 U^\dagger ,
+  \qquad U^\dagger U = \unity .
+\end{align}
+%
+A (possibly complex) symmetric mass matrix $Y$ for Weyl spinors
+$\psi_i$ is diagonalized as
+%
+\begin{align}
+  \Lagr_{m,\text{fermion}}^\text{symm.}
+  &= - \frac{1}{2} \psi^T Y \psi + \text{h.c.}
+  = - \frac{1}{2} \chi^T Y_D \chi + \text{h.c.}, \\
+  \qquad Y &= Y^T ,
+  \qquad Y_D = Z^* Y Z^\dagger ,
+  \qquad \chi = Z \psi ,
+  \qquad Z^\dagger Z = \unity ,
+\end{align}
+%
+where $Y_D$ is diagonal and $\chi_i$ are the mass eigenstates.  The
+phases of $Z$ are chosen such that all mass eigenvalues are positive.
+In case of a non-symmetric mass matrix $X$ for Weyl spinors $\psi_i$
+we use
+%
+\begin{align}
+  \Lagr_{m,\text{fermion}}^\text{svd}
+  &= - (\psi^-)^T X \psi^+ + \text{h.c.}
+  = - (\chi^-)^T X_D \chi^+ + \text{h.c.}, \\
+  \qquad \chi^+ &= V \psi^+ ,
+  \qquad \chi^- = U \psi^- ,
+  \qquad X_D = U^* X V^{-1} ,
+  \qquad U^\dagger U = \unity = V^\dagger V ,
+\end{align}
+%
+where we're again chosing the phases of $U$ and $V$ such that all mass
+eigenvalues are positive.
+
+\subsection{Two-scale fixed point iteration}
+The default two-scale RG solver uses above beta functions and boundary
+conditions to find the full set of $\overline{DR}$ masses in the model
+consistent with all constraints.  It does so by iterating between the
+scales of all boundary conditions, applying the constraints and
+checking for convergence.  This approach is decribed in
+\cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY
+spectrum generators.
+
+The in more detail the two-scale algorithm used in \fs works as
+follows (see \figurename~\ref{fig:two-scale-algorithm}):
+%
+\\Initial guess:
 \begin{enumerate}
 \item Guess gauge couplings $g_{1,2,3}$ at $m_Z$
 \item Apply user-defined low-scale constraint (\code{LowScaleInput})
-\item Guess Yukawa couplings $y^{u,d,e}_{ij}$ at $m_Z$
+\item Guess Yukawa couplings $y_{u,d,e}$ at $m_Z$
 \item Run model to the high-scale (\code{HighScaleFirstGuess})
 \item Apply high-scale constraint (\code{HighScaleInput})
 \item Run model to the low-scale (\code{LowScaleFirstGuess})
@@ -373,7 +964,7 @@ Solving the renormalization group equations:
   \begin{enumerate}
   \item Calculate \DRbar\ masses
   \item Recalculate low-scale
-  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y^{u,d,e}_{ij}$
+  \item Calculate \DRbar\ gauge and Yukawa couplings $g_{1,2,3}$, $y_{u,d,e}$
   \item Apply user-defined low-scale constraint (\code{LowScaleInput})
   \end{enumerate}
 \item Run model to the high-scale (\code{HighScale})
@@ -397,6 +988,31 @@ Calculating the particle spectrum:
 \item Calculate the pole masses
 \item Run model to the parameter output scale (SLHA block MODSEL 12)
 \end{enumerate}
+%
+\begin{figure}[tbh]
+  \centering
+  \begin{tikzpicture}[node distance = 2cm, auto]
+    \tikzstyle{block} = [rectangle, draw, text width=16em, text centered, minimum height=3em]
+    \tikzstyle{arrow} = [draw, -latex, thick]
+    \node[block] (guess) {Guess $g_i(M_Z)$, $y_f(M_Z)$ and soft
+      parameters at \code{LowScale}};
+    \node[block,below of=guess] (MZ) {Calculate $g_i(M_Z)$, $y_f(M_Z)$ and apply
+      low-scale boundary conditions (\code{LowScaleInput})};
+    \path[arrow] (guess) -- node {run to \code{LowScale}} (MZ);
+    \node[block,below of=MZ] (MX) {Apply high-scale boundary conditions
+      (\code{HighScaleInput})};
+    \path[arrow] (MZ) -- node {run to \code{HighScale}} (MX);
+    \node[block,below of=MX] (MS) {Apply susy-scale boundary conditions
+      (\code{SUSYScaleInput}) and solve EWSB};
+    \path[arrow] (MX) -- node {run to \code{SUSYScale}} (MS);
+    %\path[arrow] (MS.east) -| node {run to \code{LowScale}} (MZ.east);
+    \path[-latex, thick] (MS.east) edge[bend right=90] node[right] {run to \code{LowScale}} (MZ.east);
+    \node[block,below of=MS] (spec) {Calculate pole masses};
+    \path[arrow,dashed] (MS) -- node[text width=16em] {on convergence\\ run to \code{SUSYScale}} (spec);
+  \end{tikzpicture}
+  \caption{Iterative two-scale algorithm to calculate the spectrum.}
+  \label{fig:two-scale-algorithm}
+\end{figure}
 
 \begin{figure}[tb]
   \centering
@@ -484,22 +1100,221 @@ Calculating the particle spectrum:
   \label{fig:two-scale-rgflow-class-hierarchy}
 \end{figure}
 {\color{red} copied and pasted from latest manual -- not sure how best to maintain this, could split maual up into tiny bits, but we may also want some differences?}
-\subsection{pole masses}
-With the solver routine finished and convergence achieved, the $\overline{DR}$ parameters consistent with one loop EWSB, low energy data and all user supplied boundary conditions are then known at any scale between...
 
-The physical mass spectrum can now be calculated.  \fs uses the full one-loop self energies and tree level routines to calculate the pole masses at the one-level.  If higher accuracy is required additional routines with higher order corrections can be added in a very simple way. For example in the MSSM by default \fs adds two loop Higgs FORTRAN routines supplied by P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of $\oatas$, $\oabas$, $\oatq$, $\oabatau$, 
-$\oabq$, $\oatauq$ and $\oatab$  as follows...  
-Something similar is done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}, while for $\oatq$, $\oabatau$, 
-$\oabq$, $\oatauq$ and $\oatab$ the MSSM pieces are used though it should be understood that these are not complete in the NMSSM. For other models since the Higgs mass is a very important measurement and the two loop corrections can be larger than the current experimental error \cite{Degrassi:2009yq} we recommend that the leading log two loop corrections are estimated, by generalising those of the MSSM or NMSSM, as has been done, for example, in the E$_6$SSM\cite{King:2005jy}. 
+\subsection{Pole masses}
+After the solver routine has finished and convergence has been
+achieved, all $\overline{DR}$ parameters are consistent with the
+one-loop EWSB conditions, low energy data and all user supplied
+boundary conditions are known at any scale between \code{LowScale} and
+\code{HighScale}.
 
-Corrections to other masses or further corrections to the Higgs states can be added very easily by...
+The physical (pole) mass spectrum can now be calculated.  \fs uses the
+full one-loop self-energies and tree-level mass matrices to calculate
+the pole masses at the one-loop level, which means finding the
+eigenvalues $p$ that solve the following equations:
+%
+\begin{align}
+  &\text{scalars } \phi:  & 0 &= p^2\unity - m^2_{\phi,1L}(p^2), \\
+  &\text{fermions } \xi: & 0 &= p\unity - m_{\xi,1L}(p^2),
+\end{align}
+%
+where the one-loop mass matrices are given by
+%
+\begin{align}
+  &\text{scalars } \phi: &
+  m^2_{\phi,1L}(p^2) &= m^2_{\phi} - \Sigma_\phi(p^2), \\
+  &\text{majorana fermions } \chi: &
+  m_{\chi,1L}(p^2) &= m_{\chi} - \frac{1}{2}\Big[
+    \Sigma_\chi^S(p^2) + \Sigma_\chi^{S,T}(p^2)
+    + \Big( \Sigma_\chi^{L,T}(p^2) + \Sigma_\chi^R(p^2) \Big) m_{\chi} \notag \\
+    &&&\phantom{= m_{\chi} - \frac{1}{2}\Big[}
+    + m_{\chi} \Big( \Sigma_\chi^L(p^2) + \Sigma_\chi^{R,T}(p^2) \Big)
+  \Big], \\
+  &\text{dirac fermions } \psi: &
+  m_{\psi,1L}(p^2) &= m_{\psi}
+  - \Sigma_\psi^S(p^2)
+  - \Sigma_\psi^R(p^2) m_{\psi}
+  - m_{\psi} \Sigma_\psi^L(p^2) .
+\end{align}
+%
+Since the one-loop mass matrices depend on $p$, an iterative procedure
+must be used.  \fs provides three different methods with different
+precision and execution speed to determine the mass eigenvalues:
 
-\subsection{Lattice method}
-If ready.
-\subsection{multiple effective models at different scales}
+\code{LowDiagonalizationPrecision}: This option provides the lowest
+precision but is also the fastest one.  Here the one-loop mass matrix
+$m_{\phi,1L,\text{low}}$ is calculated exactly once as
+%
+\begin{align}
+  (m_{\phi,1L,\text{low}})_{ij} = (m_{\phi,1L}(p^2 = m_{\phi_i} m_{\phi_j}))_{ij} ,
+\end{align}
+%
+where $m_{\phi_i}$ is the $i$th mass eigenvalue of the tree-level mass
+matrix $m_\phi$.  Afterwards $m_{\phi,1L,\text{low}}$ is diagonalized
+and the eigenvalues are interpreted as pole masses $m_{\phi_i}^\pole$.
+
+\code{MediumDiagonalizationPrecision} (default): This option provides
+calculation with medium precision with a medium execution time.  Here
+the one-loop mass matrix $m_{\phi,1L,\text{medium}}$ is calculated $n$
+times as
+%
+\begin{align}
+  (m_{\phi,1L,\text{medium}})_{ij}^{(k)} = (m_{\phi,1L}(p^2 = m_{\phi_k}^2))_{ij} ,
+  \qquad k = 1,\ldots,n ,
+\end{align}
+%
+where $m_{\phi_k}$ is the $k$th mass eigenvalue of the tree-level mass
+matrix $m_\phi$.  Afterwards, each mass matrix
+$(m_{\phi,1L,\text{medium}})^{(k)}$ is diagonalized and the $k$th
+eigenvalue is interpreted as pole mass $m_{\phi_k}^\pole$.
+
+\code{HighDiagonalizationPrecision}: This option provides
+diagonalization with highest precision but has also the highest
+execution time.  Here the one-loop mass matrix
+$m_{\phi,1L,\text{high}}$ is diagonalized $n$ times as in the case of
+\code{MediumDiagonalizationPrecision}, resulting in $n$ pole masses
+$m_{\phi_k}^\pole$ ($k = 1,\ldots,n$).  Afterwards, the
+diagonalization is repeated, this time using the so calculated pole
+masses $m_{\phi_k}^\pole$ for the momentum calculation $p^2 =
+(m_{\phi_k}^\pole)^2$, until convergence is reached.
+
+If higher accuracy is required additional routines with higher order
+corrections can be added in a very simple way. For example in the MSSM
+by default \fs adds two-loop Higgs FORTRAN routines supplied by
+P.~Slavich from \cite{slavich-degrassi} to add two loop corrections of
+$\oatas$, $\oabas$, $\oatq$, $\oabatau$, $\oabq$, $\oatauq$ and
+$\oatab$ as follows... {\color{red} This is not yet implemented!}
+
+Something similar is done for the NMSSM, but in this case the NMSSM
+$\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}, while for
+$\oatq$, $\oabatau$, $\oabq$, $\oatauq$ and $\oatab$ the MSSM pieces
+are used though it should be understood that these are not complete in
+the NMSSM. For other models since the Higgs mass is a very important
+measurement and the two loop corrections can be larger than the
+current experimental error \cite{Degrassi:2009yq} we recommend that
+the leading log two loop corrections are estimated, by generalising
+those of the MSSM or NMSSM, as has been done, for example, in the
+E$_6$SSM\cite{King:2005jy}.  {\color{red} This is not yet implemented!}
+
+Corrections to other masses or further corrections to the Higgs states
+can be added very easily by...
+
 \section{Implementing new models}
 \section{Adapting the code at the C++ level}
 \section{Using individual modules in your own code}
+
+\section{Run-time comparison with other spectrum generators}
+
+We compare the run-time of the four different spectrum generators
+FlexibleSUSY (version 0.5.3), Softsusy (version 3.4.0), SPheno
+(3.2.4), SPhenoMSSM (generated with SARAH 4.1.0 and linked against
+SPheno 3.2.4).  FlexibleSUSY and Softsusy were compiled with g++ 4.8.0
+and gfortran 4.8.0.  SPheno and SPhenoMSSM were compiled with Intel
+ifort 13.1.3 20130607\footnote{We are using Intel's ifort compiler,
+  instead of gfortran 4.8.0, because it decreases the run-time of
+  SPheno and SPhenoMSSM by approximately a factor $1.5$.}.  We're
+generating random CMSSM parameter points with $m_0\in [50,1000]$
+$m_{1/2}\in [50,1000]$, $\tan\beta\in [1,100]$, $\sign\mu\in
+\{-1,+1\}$ and $A_0\in [-1000,1000]$.  The following SLHA template
+file was used:
+%
+\begin{verbatim}
+Block MODSEL                 # Select model
+    6    0                   # flavour violation
+    1    1                   # mSUGRA
+Block SMINPUTS               # Standard Model inputs
+    1   1.279180000e+02      # alpha^(-1) SM MSbar(MZ)
+    2   1.166390000e-05      # G_Fermi
+    3   1.189000000e-01      # alpha_s(MZ) SM MSbar
+    4   9.118760000e+01      # MZ(pole)
+    5   4.200000000e+00      # mb(mb) SM MSbar
+    6   1.709000000e+02      # mtop(pole)
+    7   1.777000000e+00      # mtau(pole)
+Block SOFTSUSY               # SOFTSUSY specific inputs
+    1   1.000000000e-04      # tolerance
+    2   2                    # up-quark mixing (=1) or down (=2)
+    3   0                    # printout
+    5   1                    # 2-loop running
+    7   2                    # EWSB and Higgs mass loop order
+Block FlexibleSUSY
+    0   1.000000000e-04      # precision goal
+    1   0                    # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   0                    # calculate SM pole masses
+    4   1                    # calculate loop masses
+    5   1                    # EWSB loop order
+Block SPhenoInput            # SPheno specific input
+    1  -1                    # error level
+    2   1                    # SPA conventions
+    11  0                    # calculate branching ratios
+    13  0                    # include 3-Body decays
+    12  1.000E-04            # write only branching ratios larger than this value
+    31  -1                   # fixed GUT scale (-1: dynamical GUT scale)
+    32  0                    # Strict unification
+    34  1.000E-04            # Precision of mass calculation
+    35  40                   # Maximal number of iterations
+    37  1                    # Set Yukawa scheme
+    38  2                    # 1- or 2-Loop RGEs
+    50  1                    # Majorana phases: use only positive masses
+    51  0                    # Write Output in CKM basis
+    52  0                    # Write spectrum in case of tachyonic states
+    55  1                    # Calculate one loop masses
+    57  0                    # Calculate low energy constraints
+    60  0                    # Include possible, kinetic mixing
+    65  1                    # Solution tadpole equation
+    75  0                    # Write WHIZARD files
+    76  0                    # Write HiggsBounds file
+    86  0.                   # Maximal width to be counted as invisible in Higgs decays
+    510 0.                   # Write tree level values for tadpole solutions
+    515 0                    # Write parameter values at GUT scale
+    520 0.                   # Write effective Higgs couplings (HiggsBounds blocks)
+    525 0.                   # Write loop contributions to diphoton decay of Higgs
+Block MINPAR
+    1   [50..1000]           # m0(MX)
+    2   [50..1000]           # m12(MX)
+    3   [1..100]             # tan(beta)(MZ) DRbar
+    4   {-1,+1}              # sign(mu)
+    5   [-1000..1000]        # A0(MX)
+\end{verbatim}
+%
+The SLHA file was passed to each spectrum generator and the
+(wall-clock) time was measured until the program has finished.  The
+average run-times for three different CPU types can be found in
+\tablename~\ref{tab:run-time-comparison}.  The first row shows the
+run-time on a Intel Core2 Duo (P8600) where only one core was enabled.
+The second row shows the run-time on a Intel Core2 Duo (P8600) where
+both cores were enabled.  In the third row a Intel Xeon (L5640) was
+used, which has $6$ CPU cores.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+                          & Intel Core2 Duo (P8600)    & Intel Core2 Duo (P8600)     & Intel Xeon (L5640)\\
+                          & (1 core, $2.40\unit{GHz}$) & (2 cores, $2.40\unit{GHz}$) & (6 cores, $2.27\unit{GHz}$)\\
+    \midrule
+    FlexibleSUSY 0.5.3    & $0.151\unit{s}$    & $0.114\unit{s}$   & $0.081\unit{s}$\\
+    Softsusy 3.4.0        & $0.178\unit{s}$    & $0.174\unit{s}$   & $0.157\unit{s}$\\
+    SPheno 3.2.4          & $0.120\unit{s}$    & $0.118\unit{s}$   & $0.108\unit{s}$\\
+    SPhenoMSSM 4.1.0${}^*$ & $0.463\unit{s}$    & $0.450\unit{s}$   & $0.403\unit{s}$\\
+    \bottomrule
+  \end{tabular}
+  \caption{Average run-time for random CMSSM parameter points.
+    FlexibleSUSY and Softsusy were compiled
+    with g++ 4.8.0 and gfortran 4.8.0.  SPheno and SPhenoMSSM were
+    compiled with ifort 13.1.3 20130607.
+    ${}^*$ SPhenoMSSM was generated with SARAH 4.1.0 and linked
+    against SPheno 3.2.4.}
+  \label{tab:run-time-comparison}
+\end{table}
+%
+We find that on the single-core machine SPheno is fastest with
+$0.120\unit{s}$, and FlexibleSUSY is second with $0.151\unit{s}$.  In
+the case of 2 or 6 CPU cores, FlexibleSUSY is fastest with
+$0.114\unit{s}$ and $0.081\unit{s}$, respectively.  The reason is that
+FlexibleSUSY calculates each pole mass in a separate thread, and
+therefore benefits from multi-core CPUs.
+
 \appendix
 \section{Examples}
 \subsection{NMSSM}
@@ -863,6 +1678,14 @@ Comparisons against existing spectrum generators to test for deviations, e.g. th
 Comparisons against existing spectrum generators and SARAH generated spheno code for speed.
 
 \begin{thebibliography}{100}
+%\cite{Girardello:1981wz}
+\bibitem{Girardello:1981wz}
+  L.~Girardello and M.~T.~Grisaru,
+  %``Soft Breaking of Supersymmetry,''
+  Nucl.\ Phys.\ B {\bf 194} (1982) 65.
+  %%CITATION = NUPHA,B194,65;%%
+  %717 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{Allanach:2001kg}
 \bibitem{Allanach:2001kg} 
   B.~C.~Allanach,
@@ -958,6 +1781,16 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   [arXiv:0907.4682 [hep-ph]].
   %%CITATION = ARXIV:0907.4682;%%
   %35 citations counted in INSPIRE as of 21 Sep 2013
+
+%\cite{Skands:2003cj}
+\bibitem{Skands:2003cj}
+  P.~Z.~Skands, B.~C.~Allanach, H.~Baer, C.~Balazs, G.~Belanger, F.~Boudjema, A.~Djouadi and R.~Godbole {\it et al.},
+  %``SUSY Les Houches accord: Interfacing SUSY spectrum calculators, decay packages, and event generators,''
+  JHEP {\bf 0407} (2004) 036
+  [hep-ph/0311123].
+  %%CITATION = HEP-PH/0311123;%%
+  %394 citations counted in INSPIRE as of 22 Feb 2014
+
 %\cite{Allanach:2008qq}
 \bibitem{Allanach:2008qq} 
   B.~C.~Allanach, C.~Balazs, G.~Belanger, M.~Bernhardt, F.~Boudjema, D.~Choudhury, K.~Desch and U.~Ellwanger {\it et al.},
@@ -976,6 +1809,48 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = ARXIV:0910.1785;%%
   %327 citations counted in INSPIRE as of 21 Sep 2013
 
+%\cite{Jones:1974pg}
+\bibitem{Jones:1974pg}
+  D.~R.~T.~Jones,
+  %``Asymptotic Behavior of Supersymmetric Yang-Mills Theories in the Two Loop Approximation,''
+  Nucl.\ Phys.\ B {\bf 87} (1975) 127.
+  %%CITATION = NUPHA,B87,127;%%
+  %123 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Jones:1983vk}
+\bibitem{Jones:1983vk}
+  D.~R.~T.~Jones and L.~Mezincescu,
+  %``The Beta Function in Supersymmetric {Yang-Mills} Theory,''
+  Phys.\ Lett.\ B {\bf 136} (1984) 242.
+  %%CITATION = PHLTA,B136,242;%%
+  %109 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{West:1984dg}
+\bibitem{West:1984dg}
+  P.~C.~West,
+  %``The Yukawa beta Function in N=1 Rigid Supersymmetric Theories,''
+  Phys.\ Lett.\ B {\bf 137} (1984) 371.
+  %%CITATION = PHLTA,B137,371;%%
+  %134 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Martin:1993yx}
+\bibitem{Martin:1993yx}
+  S.~P.~Martin and M.~T.~Vaughn,
+  %``Regularization dependence of running couplings in softly broken supersymmetry,''
+  Phys.\ Lett.\ B {\bf 318} (1993) 331
+  [hep-ph/9308222].
+  %%CITATION = HEP-PH/9308222;%%
+  %220 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Yamada:1993ga}
+\bibitem{Yamada:1993ga}
+  Y.~Yamada,
+  %``Two loop renormalization of gaugino masses in general supersymmetric gauge models,''
+  Phys.\ Rev.\ Lett.\  {\bf 72} (1994) 25
+  [hep-ph/9308304].
+  %%CITATION = HEP-PH/9308304;%%
+  %48 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{MV94}
 \bibitem{MV94} 
   S.~P.~Martin and M.~T.~Vaughn,
@@ -986,6 +1861,15 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = HEP-PH/9311340;%%
   %568 citations counted in INSPIRE as of 24 Sep 2013
 
+%\cite{Fonseca:2011vn}
+\bibitem{Fonseca:2011vn}
+  R.~M.~Fonseca, M.~Malinsky, W.~Porod and F.~Staub,
+  %``Running soft parameters in SUSY models with multiple U(1) gauge factors,''
+  Nucl.\ Phys.\ B {\bf 854} (2012) 28
+  [arXiv:1107.2670 [hep-ph]].
+  %%CITATION = ARXIV:1107.2670;%%
+  %29 citations counted in INSPIRE as of 21 Feb 2014
+
 %\cite{Yam94}
 \bibitem{Yam94} 
   Y.~Yamada,
@@ -995,14 +1879,23 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   %%CITATION = HEP-PH/9401241;%%
   %225 citations counted in INSPIRE as of 24 Sep 2013
 
-\cite{Sper13}
-\bibitem{Sper13} 
+%\cite{Sperling:2013eva}
+\bibitem{Sperling:2013eva}
   M.~Sperling, D.~Stöckinger and A.~Voigt,
   %``Renormalization of vacuum expectation values in spontaneously broken gauge theories,''
-  JHEP {\bf 1307}, 132 (2013)
+  JHEP {\bf 1307} (2013) 132
   [arXiv:1305.1548 [hep-ph]].
   %%CITATION = ARXIV:1305.1548;%%
-  %4 citations counted in INSPIRE as of 14 Oct 2013
+  %10 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Sperling:2013xqa}
+\bibitem{Sperling:2013xqa}
+  M.~Sperling, D.~Stöckinger and A.~Voigt,
+  %``Renormalization of vacuum expectation values in spontaneously broken gauge theories: Two-loop results,''
+  JHEP {\bf 1401} (2014) 068
+  [arXiv:1310.7629 [hep-ph]].
+  %%CITATION = ARXIV:1310.7629;%%
+  %4 citations counted in INSPIRE as of 21 Feb 2014
 
 %\cite{Ell08}
 \bibitem{Ell08} 
@@ -1034,7 +1927,31 @@ Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
   %%CITATION = HEP-PH/0510419;%%
   %130 citations counted in INSPIRE as of 03 Nov 2013
 
-%
+%\cite{Beringer:1900zz}
+\bibitem{Beringer:1900zz}
+  J.~Beringer {\it et al.}  [Particle Data Group Collaboration],
+  %``Review of Particle Physics (RPP),''
+  Phys.\ Rev.\ D {\bf 86} (2012) 010001.
+  %%CITATION = PHRVA,D86,010001;%%
+  %3229 citations counted in INSPIRE as of 22 Feb 2014
+
+%\cite{Bednyakov:2002sf}
+\bibitem{Bednyakov:2002sf}
+  A.~Bednyakov, A.~Onishchenko, V.~Velizhanin and O.~Veretin,
+  %``Two loop O(alpha-s**2) MSSM corrections to the pole masses of heavy quarks,''
+  Eur.\ Phys.\ J.\ C {\bf 29} (2003) 87
+  [hep-ph/0210258].
+  %%CITATION = HEP-PH/0210258;%%
+  %35 citations counted in INSPIRE as of 22 Feb 2014
+
+%\cite{Baer:2002ek}
+\bibitem{Baer:2002ek}
+  H.~Baer, J.~Ferrandis, K.~Melnikov and X.~Tata,
+  %``Relating bottom quark mass in DR-BAR and MS-BAR regularization schemes,''
+  Phys.\ Rev.\ D {\bf 66} (2002) 074007
+  [hep-ph/0207126].
+  %%CITATION = HEP-PH/0207126;%%
+  %55 citations counted in INSPIRE as of 22 Feb 2014
 
 \end{thebibliography}
 \end{document}

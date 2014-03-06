@@ -24,7 +24,7 @@
 namespace flexiblesusy {
 
 Beta_function::Beta_function()
-   : numPars(0)
+   : num_pars(0)
    , loops(0)
    , thresholds(0)
    , scale(0.0)

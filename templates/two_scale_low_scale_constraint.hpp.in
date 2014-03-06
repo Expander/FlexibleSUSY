@@ -54,6 +54,7 @@ private:
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters inputPars;
    QedQcd oneset;
+   double MZDRbar;
    double new_g1, new_g2, new_g3;
    Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
 

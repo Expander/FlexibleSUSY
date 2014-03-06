@@ -28,6 +28,11 @@
 
 namespace flexiblesusy {
 
+#ifdef TRACE_STRUCT_TYPE
+   #undef TRACE_STRUCT_TYPE
+#endif
+#define TRACE_STRUCT_TYPE Soft_traces
+
 class @ModelName@_soft_parameters : public @ModelName@_susy_parameters {
 public:
    @ModelName@_soft_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
@@ -49,7 +54,16 @@ protected:
 
 private:
    static const int numberOfParameters = @numberOfParameters@;
+
+   struct Soft_traces {
+@traceDefs@
+   };
+   void calc_soft_traces(Soft_traces&) const;
+
+@singleBetaFunctionsDecls@
 };
+
+std::ostream& operator<<(std::ostream&, const @ModelName@_soft_parameters&);
 
 } // namespace flexiblesusy
 

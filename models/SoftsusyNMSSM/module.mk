@@ -12,12 +12,12 @@ LIBSoftsusyNMSSM_SRC  := \
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSoftsusyNMSSM_SRC  += \
-		$(DIR)/snmssm_two_scale.cpp \
-		$(DIR)/snmssm_two_scale_convergence_tester.cpp \
-		$(DIR)/snmssm_two_scale_initial_guesser.cpp \
-		$(DIR)/snmssm_two_scale_low_scale_constraint.cpp \
-		$(DIR)/snmssm_two_scale_sugra_constraint.cpp \
-		$(DIR)/snmssm_two_scale_susy_scale_constraint.cpp
+		$(DIR)/SoftsusyNMSSM_two_scale.cpp \
+		$(DIR)/SoftsusyNMSSM_two_scale_convergence_tester.cpp \
+		$(DIR)/SoftsusyNMSSM_two_scale_initial_guesser.cpp \
+		$(DIR)/SoftsusyNMSSM_two_scale_low_scale_constraint.cpp \
+		$(DIR)/SoftsusyNMSSM_two_scale_sugra_constraint.cpp \
+		$(DIR)/SoftsusyNMSSM_two_scale_susy_scale_constraint.cpp
 endif
 endif
 

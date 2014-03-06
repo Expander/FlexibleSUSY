@@ -28,6 +28,7 @@ namespace flexiblesusy {
 
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
+static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 
 inline double Abs(double z)
 {
@@ -110,6 +111,16 @@ inline double Cos(double x)
 inline double Sin(double x)
 {
    return std::sin(x);
+}
+
+inline double Sec(double x)
+{
+   return 1./Cos(x);
+}
+
+inline double Csc(double x)
+{
+   return 1./Sin(x);
 }
 
 inline int Delta(int i, int j)

@@ -88,29 +88,9 @@ void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& p
          continue;
 
       if (line->size() >= 2) {
-         const std::string key_str((*line)[0]), value_str((*line)[1]);
-         int key;
-         double value;
-
-         try {
-            key = SLHAea::to<int>(key_str);
-         } catch (const boost::bad_lexical_cast& error) {
-            const std::string msg("cannot convert " + block_name
-                                  + " key to int: " + key_str);
-            throw ReadError(msg);
-         }
-
-         try {
-            value = SLHAea::to<double>((*line)[1]);
-         } catch (const boost::bad_lexical_cast& error) {
-            const std::string msg("cannot convert " + block_name + " entry "
-                                  + key_str + " to double: " + value_str);
-            throw ReadError(msg);
-         }
-
+         const int key = convert_to<int>((*line)[0]);
+         const double value = convert_to<double>((*line)[1]);
          processor(key, value);
-      } else {
-         WARNING(block_name << " entry has less than 2 columns");
       }
    }
 }
@@ -133,16 +113,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
       return 0.;
    }
 
-   double entry;
-
-   try {
-      entry = SLHAea::to<double>(line->at(1));
-   } catch (const boost::bad_lexical_cast& error) {
-      std::ostringstream msg;
-      msg << "cannot convert " << block_name << " entry " << key
-          << " to double";
-      throw ReadError(msg.str());
-   }
+   const double entry = convert_to<double>(line->at(1));
 
    return entry;
 }

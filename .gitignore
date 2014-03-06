@@ -29,8 +29,32 @@ doc/*.log
 doc/*.toc
 doc/*.out
 doc/*.spl
+doc/*.bbl
+doc/*.blg
 doc/flexiblesusy.pdf
 doc/paper.pdf
 doc/version.tex
+doc/mainpage.dox
+doc/html/
+
+# automatically generated files from the hand-written example
+# lattice models
+models/fmssm/fmssm_lattice_constraints.f
+models/fmssm/fmssm_lattice_numerical_constraints_dependence.cpp
+models/fmssm/fmssm_lattice_numerical_constraints_functions.f
+models/fmssm/fmssm_lattice_rge.f
+models/fmssm/fmssm_lattice_translator.inc
+models/fmssmn/fmssm_fmssmn_lattice_matchings.f
+models/fmssmn/fmssm_fmssmn_lattice_numerical_matchings_dependence.cpp
+models/fmssmn/fmssm_fmssmn_lattice_numerical_matchings_functions.f
+models/fmssmn/fmssmn_lattice_constraints.f
+models/fmssmn/fmssmn_lattice_numerical_constraints_dependence.cpp
+models/fmssmn/fmssmn_lattice_numerical_constraints_functions.f
+models/fmssmn/fmssmn_lattice_rge.f
+models/fmssmn/fmssmn_lattice_translator.inc
+
+Output/
 
 test/*.log
+test/*.spc
+test/*.spc.*

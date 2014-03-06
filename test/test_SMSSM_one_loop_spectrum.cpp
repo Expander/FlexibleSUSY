@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
    m.calculate_DRbar_parameters();
-   m.calculate_1loop_masses();
+   m.calculate_pole_masses();
 
    if (m.get_problems().have_problem()) {
       std::ostringstream ostr;
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    // BOOST_CHECK_CLOSE(MFd(3), s.displayPhys().mb, 1.0e-12);
 
    ensure_one_loop_ewsb(m, s);
-   m.calculate_1loop_masses();
+   m.calculate_pole_masses();
    s.physical(1);
 
    if (m.get_problems().have_problem()) {

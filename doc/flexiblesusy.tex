@@ -8,6 +8,12 @@
 \usepackage{xspace}
 \usepackage[usenames]{xcolor}
 \usepackage{tikz,tikz-uml}
+\usetikzlibrary{shapes,arrows,positioning}
+\tikzstyle{block} = [rectangle, draw, text centered, minimum height=2em]
+\tikzstyle{cloud} = [rectangle, draw, dashed, align=left, minimum height=2em]
+\tikzstyle{arrow} = [draw, -latex, thick]
+\tikzstyle{arrow2} = [draw, latex-latex, thick]
+\tikzstyle{dashed-arrow} = [draw, -latex, dashed]
 \usepackage{listings}             % source code highlighting
 \lstset{breaklines=true,
   breakatwhitespace=true,
@@ -31,8 +37,14 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\flexisusy}{\FlexibleSUSY}
 
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
+\newcommand{\unit}[1]{\;\text{#1}}       % units
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
-\newcommand{\DRbar}{\textoverline{DR}}  % inline source code
+\newcommand{\DRbar}{\textoverline{DR}\xspace}
+\newcommand{\MSbar}{\textoverline{MS}\xspace}
+\newcommand{\userinput}{\text{<input>}}
+\newcommand{\figref}[1]{\figurename~\ref{#1}}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
 
 \begin{document}
 
@@ -71,5 +83,14 @@ bookmarks=true, linktocpage]{hyperref}
 \input{doc/chapters/quick_start}
 \input{doc/chapters/usage}
 \input{doc/chapters/output}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+
+\clearpage
+\pagestyle{plain}
+
+\bibliographystyle{unsrt}
+\bibliography{doc/bibliography}
 
 \end{document}

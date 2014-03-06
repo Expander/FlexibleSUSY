@@ -31,6 +31,11 @@
 
 namespace flexiblesusy {
 
+#ifdef TRACE_STRUCT_TYPE
+   #undef TRACE_STRUCT_TYPE
+#endif
+#define TRACE_STRUCT_TYPE Susy_traces
+
 class @ModelName@_susy_parameters : public Beta_function {
 public:
    @ModelName@_susy_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
@@ -56,7 +61,16 @@ protected:
 
 private:
    static const int numberOfParameters = @numberOfParameters@;
+
+   struct Susy_traces {
+@traceDefs@
+   };
+   void calc_susy_traces(Susy_traces&) const;
+
+@singleBetaFunctionsDecls@
 };
+
+std::ostream& operator<<(std::ostream&, const @ModelName@_susy_parameters&);
 
 } // namespace flexiblesusy
 

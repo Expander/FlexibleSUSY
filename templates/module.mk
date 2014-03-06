@@ -45,8 +45,10 @@ TEMPLATES    := \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
+		$(DIR)/two_scale_soft_beta_.cpp.in \
 		$(DIR)/two_scale_soft_parameters.hpp.in \
 		$(DIR)/two_scale_soft_parameters.cpp.in \
+		$(DIR)/two_scale_susy_beta_.cpp.in \
 		$(DIR)/two_scale_susy_parameters.hpp.in \
 		$(DIR)/two_scale_susy_parameters.cpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \

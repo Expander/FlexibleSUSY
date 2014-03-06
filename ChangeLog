@@ -1,4 +1,38 @@
-FlexibleSUSY-0.5.2 [not released yet]
+FlexibleSUSY-0.5.4 [not released yet]
+
+ * Bugfix (commit 399a1c8): renaming SoftsusyMSSM and SoftsusyNMSSM
+   model classes and files to make `make all-test' work on HFS (fixes
+   #2).
+
+ * Bugfix (commit cfc2562): correcting MS-bar to DR-bar conversion of
+   fermion masses mb and mtau.
+
+ * Bugfix (commit ceecc4a): fixing compilation error with Intel icpc
+   14.0, Build 20130728 (and GNU STL 4.6.4 and 4.8.1).
+
+ * Bugfix (commit db60205): fixing linking error of
+   test/test_MSSM_NMSSM_linking.x in case LoopTools is used.
+
+ * Set minimum required SARAH version to 4.0.4, because it implements
+   the full two-loop VEV beta functions from arXiv:1310.7629 .
+
+ * Add stand-alone examples to illustrate how to use FlexibleSUSY's
+   classes and libraries independently of FlexibleSUSY's build system.
+
+FlexibleSUSY-0.5.3 [January, 21 2014]
+
+ * Bugfix (commit 44903c): correcting malformed print out in
+   config/list_sarah_model_files.sh in case model files do not exist
+
+ * Bugfix (commit 3aae11): Prevent hard-coding of the running Weinberg
+   angle in terms of the gauge couplings
+
+ * Bugfix (commit ce4a73): Generalize calculation of gauge couplings
+   at the low-scale (fixes #1)
+
+ * Vertices are saved in a file to avoid repeating same calculation.
+
+FlexibleSUSY-0.5.2 [January 14, 2014]
 
  * Bugfix (commit 58f8f9): Convert beta functions which are identical
    zero to the data type of the corresponding parameter.
@@ -9,6 +43,9 @@ FlexibleSUSY-0.5.2 [not released yet]
  * Bugfix (commit e2d43b): Adapting free phases of fermion fields if
    mass is less than zero.
 
+ * Bugfix (commit e777e1): Converting indices to C convention in
+   tree-level EWSB equations.
+
  * Set minimum required SARAH version to 4.0.3, because it includes a
    bug fix in the index structure of the charged Higgs self-energies.
 
@@ -16,6 +53,22 @@ FlexibleSUSY-0.5.2 [not released yet]
 
  * Model files are now in the directory model_files/
    (instead of templates/)
+
+ * The command line arguments of the createmodel script changed.
+   Please see ./createmodel --help for more details.
+
+ * Add support for the LHInput[p] command in constraints, which reads
+   the parameter `p' from the SLHA input file.
+
+ * Constrain time used to simplify the beta functions (default: 120
+   seconds per beta function).  To change the time constraint, set
+   FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint .
+
+ * Avoid swapping by distributing the calculation of the two-scale
+   beta functions among multiple .cpp files.
+
+ * Introduce separate meta code stamp (triggers running of the meta
+   code) with name models/<model-name>/00_DELETE_ME_TO_RERUN_METACODE
 
 FlexibleSUSY-0.5.1 [November 23, 2013]
 

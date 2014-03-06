@@ -583,7 +583,7 @@ CreateRunningDRbarMassPrototypes[] :=
 
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
-            selfEnergyFunctionPR, name, alphaS, drbarConversion},
+            selfEnergyFunctionPR, name, alphaS, drbarConversion, gPrime},
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
@@ -593,8 +593,9 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
               body = "return 0.0;\n";
               ,
               alphaS = SARAH`strongCoupling^2/(4 Pi);
+              gPrime = SARAH`hyperchargeCoupling /. Parameters`ApplyGUTNormalization[];
               (* convert MSbar to DRbar mass hep-ph/0207126 *)
-              drbarConversion = 1 - alphaS / (3 Pi) - 23 / 72 alphaS^2 / Pi^2 + 3 SARAH`leftCoupling^2 / (128 Pi^2) + 13 SARAH`hyperchargeCoupling^2 / (1152 Pi^2);
+              drbarConversion = 1 - alphaS / (3 Pi) - 23 / 72 alphaS^2 / Pi^2 + 3 SARAH`leftCoupling^2 / (128 Pi^2) + 13 gPrime^2 / (1152 Pi^2);
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_sm_msbar, int idx) const\n{\n";
               body = "const double p = m_sm_msbar;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
@@ -611,7 +612,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
 
 CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
-            selfEnergyFunctionPR, name, drbarConversion},
+            selfEnergyFunctionPR, name, drbarConversion, gPrime},
            selfEnergyFunctionS  = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
@@ -621,7 +622,8 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron] :=
               body = "return 0.0;\n";
               ,
               (* convert MSbar to DRbar mass *)
-              drbarConversion = 1 - 3 (SARAH`hyperchargeCoupling^2 - SARAH`leftCoupling^2) / (128 Pi^2);
+              gPrime = SARAH`hyperchargeCoupling /. Parameters`ApplyGUTNormalization[];
+              drbarConversion = 1 - 3 (gPrime^2 - SARAH`leftCoupling^2) / (128 Pi^2);
               result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_sm_msbar, int idx) const\n{\n";
               body = "const double p = m_sm_msbar;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>

@@ -42,9 +42,14 @@ Pole;
 FSMinimize;
 FSFindRoot;
 MZ;
+MZDRbar;
+MWDRbar;
+EDRbar;
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
+FSSimplifyBetaFunctionsTimeConstraint = 120;
+FSSolveWeinbergAngleTimeConstraint = 120;
 
 Begin["`Private`"];
 
@@ -226,18 +231,22 @@ GeneralReplacementRules[] :=
 
 
 WriteRGEClass[betaFun_List, anomDim_List, files_List,
-              additionalDecl_:"", numberOfBaseClassParameters_:0] :=
+              templateFile_String, makefileModuleTemplates_List,
+              additionalTraces_List:{}, numberOfBaseClassParameters_:0] :=
    Module[{beta, setter, getter, parameterDef, set,
            display, parameterDefaultInit,
            cCtorParameterList, parameterCopyInit, betaParameterList,
            anomDimPrototypes, anomDimFunctions, printParameters, parameters,
-           numberOfParameters, clearParameters},
+           numberOfParameters, clearParameters,
+           singleBetaFunctionsDecls, singleBetaFunctionsDefsFiles,
+           traceDefs, calcTraces, sarahTraces},
           (* extract list of parameters from the beta functions *)
           parameters = BetaFunction`GetName[#]& /@ betaFun;
           (* count number of parameters *)
           numberOfParameters = BetaFunction`CountNumberOfParameters[betaFun] + numberOfBaseClassParameters;
           (* create C++ functions and parameter declarations *)
-          beta                 = BetaFunction`CreateBetaFunction[betaFun, additionalDecl];
+          sarahTraces          = Traces`ConvertSARAHTraces[additionalTraces];
+          beta                 = BetaFunction`CreateBetaFunction[betaFun, sarahTraces];
           setter               = BetaFunction`CreateSetters[betaFun];
           getter               = BetaFunction`CreateGetters[betaFun];
           parameterDef         = BetaFunction`CreateParameterDefinitions[betaFun];
@@ -251,6 +260,12 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
           anomDimPrototypes    = AnomalousDimension`CreateAnomDimPrototypes[anomDim];
           anomDimFunctions     = AnomalousDimension`CreateAnomDimFunctions[anomDim];
           printParameters      = WriteOut`PrintParameters[parameters, "ostr"];
+          singleBetaFunctionsDecls = BetaFunction`CreateSingleBetaFunctionDecl[betaFun];
+          traceDefs            = Traces`CreateTraceDefs[betaFun];
+          traceDefs            = traceDefs <> Traces`CreateSARAHTraceDefs[sarahTraces];
+          calcTraces           = Traces`CreateTraceCalculation[betaFun, "TRACE_STRUCT"];
+          calcTraces           = calcTraces <> "\n" <>
+                                 Traces`CreateSARAHTraceCalculation[sarahTraces, "TRACE_STRUCT"];
           WriteOut`ReplaceInFiles[files,
                  { "@beta@"                 -> IndentText[WrapLines[beta]],
                    "@clearParameters@"      -> IndentText[WrapLines[clearParameters]],
@@ -268,16 +283,23 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                    "@anomDimFunctions@"     -> WrapLines[anomDimFunctions],
                    "@numberOfParameters@"   -> RValueToCFormString[numberOfParameters],
                    "@printParameters@"      -> IndentText[printParameters],
+                   "@singleBetaFunctionsDecls@" -> IndentText[singleBetaFunctionsDecls],
+                   "@traceDefs@"            -> IndentText[IndentText[traceDefs]],
+                   "@calcTraces@"           -> IndentText[WrapLines[calcTraces]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
-          ];
+          singleBetaFunctionsDefsFiles = BetaFunction`CreateSingleBetaFunctionDefs[betaFun, templateFile, sarahTraces];
+          Print["Creating makefile module for the two-scale method ..."];
+          WriteMakefileModule[singleBetaFunctionsDefsFiles,
+                              makefileModuleTemplates];
+         ];
 
 WriteInputParameterClass[inputParameters_List, freePhases_List,
-                         unfixedParameters_List,
+                         lesHouchesInputParameters_List,
                          defaultValues_List, files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
-          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,unfixedParameters]];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,unfixedParameters]];
+          defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,lesHouchesInputParameters]];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,lesHouchesInputParameters]];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -289,6 +311,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
+           calculateGaugeCouplings,
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
@@ -296,6 +319,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
+          calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
@@ -303,6 +327,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
+                   "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
@@ -448,8 +473,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[];
-           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[];
+           dependenceNumPrototypes      = TreeMasses`CreateDependenceNumPrototypes[massMatrices];
+           dependenceNumFunctions       = TreeMasses`CreateDependenceNumFunctions[massMatrices];
            saveEwsbOutputParameters     = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
@@ -518,8 +543,17 @@ WritePlotScripts[files_List] :=
                           } ];
           ];
 
+WriteMakefileModule[rgeFile_List, files_List] :=
+    Module[{concatenatedFileList},
+           concatenatedFileList = "\t" <> WriteOut`StringJoinWithSeparator[rgeFile, " \\\n\t"];
+           WriteOut`ReplaceInFiles[files,
+                          { "@generatedBetaFunctionModules@" -> concatenatedFileList,
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
-                    unfixedParameters_List, files_List] :=
+                    lesHouchesInputParameters_List, files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
@@ -529,7 +563,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
-            writeSLHAExtparBlock = "", readUnfixedParameters},
+            writeSLHAExtparBlock = "", readLesHouchesInputParameters},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
            smParticles   = Complement[particles, susyParticles];
@@ -544,7 +578,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
-           readUnfixedParameters         = WriteOut`ReadUnfixedParameters[unfixedParameters];
+           readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -561,7 +595,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
-                            "@readUnfixedParameters@"         -> IndentText[readUnfixedParameters],
+                            "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
@@ -633,21 +667,9 @@ SelfEnergyFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetSelfEnergyFileNames[outputDir, eigenstates]];
 
 NeedToCalculateSelfEnergies[eigenstates_] :=
-    Module[{seFilesExist, seFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           seFilesExist = SelfEnergyFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           seFilesTimeStamp = SelfEnergyFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!seFilesExist,
-                                    seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp)];
-           If[!seFilesExist,
-              Print["Self-energies have not been calculated yet, calculating them ..."];
-             ];
-           If[seFilesExist && (sarahModelFileTimeStamp > seFilesTimeStamp),
-              Print["SARAH model files are newer than self-energy files, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"self-energy",
+	GetSelfEnergyFileNames[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetTadpoleFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -660,21 +682,9 @@ TadpoleFilesModificationTimeInSeconds[outputDir_String, eigenstates_] :=
     LatestModificationTimeInSeconds[GetTadpoleFileName[outputDir, eigenstates]];
 
 NeedToCalculateTadpoles[eigenstates_] :=
-    Module[{tadpoleFilesExist, tadpoleFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateTadpoles},
-           tadpoleFilesExist = TadpoleFileExists[$sarahCurrentOutputMainDir, eigenstates];
-           tadpoleFilesTimeStamp = TadpoleFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateTadpoles = Or[!tadpoleFilesExist,
-                                        tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp)];
-           If[!tadpoleFilesExist,
-              Print["Tadpoles have not been calculated yet, calculating them ..."];
-             ];
-           If[tadpoleFilesExist && (sarahModelFileTimeStamp > tadpoleFilesTimeStamp),
-              Print["SARAH model files are newer than tadpoles file, recalculating them ..."];
-             ];
-           Return[needToCalculateTadpoles];
-          ];
+    NeedToUpdateTarget[
+	"tadpole",
+	GetTadpoleFileName[$sarahCurrentOutputMainDir, eigenstates]];
 
 GetUnrotatedParticlesFileName[outputDir_String, eigenstates_] :=
     FileNameJoin[{outputDir, ToString[eigenstates],
@@ -687,21 +697,9 @@ UnrotatedParticlesFilesModificationTimeInSeconds[outputDir_String, eigenstates_]
     LatestModificationTimeInSeconds[GetUnrotatedParticlesFileName[outputDir, eigenstates]];
 
 NeedToCalculateUnrotatedParticles[eigenstates_] :=
-    Module[{unrotatedParticlesFilesExist, unrotatedParticlesFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateSEs},
-           unrotatedParticlesFilesExist = UnrotatedParticlesFilesExist[$sarahCurrentOutputMainDir, eigenstates];
-           unrotatedParticlesFilesTimeStamp = UnrotatedParticlesFilesModificationTimeInSeconds[$sarahCurrentOutputMainDir, eigenstates];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateSEs = Or[!unrotatedParticlesFilesExist,
-                                    unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp)];
-           If[!unrotatedParticlesFilesExist,
-              Print["Unrotated particles have not been calculated yet, calculating them ..."];
-             ];
-           If[unrotatedParticlesFilesExist && (sarahModelFileTimeStamp > unrotatedParticlesFilesTimeStamp),
-              Print["SARAH model files are newer than unrotated particles file, recalculating them ..."];
-             ];
-           Return[needToCalculateSEs];
-          ];
+    NeedToUpdateTarget[
+	"unrotated particle",
+	GetUnrotatedParticlesFileName[$sarahCurrentOutputMainDir,eigenstates]];
 
 SearchSelfEnergies[outputDir_String, eigenstates_] :=
     Module[{fileName},
@@ -722,24 +720,39 @@ SearchTadpoles[outputDir_String, eigenstates_] :=
           ];
 
 NeedToCalculateRGEs[] :=
-    Module[{rgeFilesExist, rgeFilesTimeStamp, sarahModelFileTimeStamp,
-            needToCalculateRGEs},
-           rgeFilesExist = RGEFilesExist[$sarahCurrentOutputMainDir];
-           rgeFilesTimeStamp = RGEsModificationTimeInSeconds[$sarahCurrentOutputMainDir];
-           sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[];
-           needToCalculateRGEs = Or[!rgeFilesExist,
-                                    rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp)];
-           If[!rgeFilesExist,
-              Print["RGEs have not been calculated yet, calculating them ..."];
-             ];
-           If[rgeFilesExist && (sarahModelFileTimeStamp > rgeFilesTimeStamp),
-              Print["SARAH model files are newer than RGE files, recalculating them ..."];
-             ];
-           If[!needToCalculateRGEs,
-              Print["Reading RGEs from files."];
-             ];
-           Return[needToCalculateRGEs];
-          ];
+    NeedToUpdateTarget["RGE", GetRGEFileNames[$sarahCurrentOutputMainDir]];
+
+GetVertexRuleFileName[outputDir_String, eigenstates_] :=
+    FileNameJoin[{outputDir, ToString[eigenstates], "Vertices",
+		  "FSVertexRules.m"}];
+
+NeedToCalculateVertices[eigenstates_] :=
+    NeedToUpdateTarget[
+	"vertex",
+	GetVertexRuleFileName[$sarahCurrentOutputMainDir, eigenstates]];
+
+NeedToUpdateTarget[name_String, targets_List] := Module[{
+	targetsExist = FilesExist[targets],
+	targetTimeStamp = LatestModificationTimeInSeconds[targets],
+	sarahModelFileTimeStamp = SARAHModelFileModificationTimeInSeconds[],
+	files = If[Length[targets] === 1, "file", "files"],
+	them = If[Length[targets] === 1, "it", "them"]
+    },
+    If[targetsExist,
+       If[sarahModelFileTimeStamp > targetTimeStamp,
+	  Print["SARAH model files are newer than ", name,
+		" ", files, ", updating ", them, " ..."];
+	  True,
+	  Print["Found up-to-date ", name, " ", files, "."];
+	  False
+       ],
+       Print[name, " ", files, " not found, producing ", them, " ..."];
+       True
+    ]
+];
+
+NeedToUpdateTarget[name_String, target_] :=
+    NeedToUpdateTarget[name, {target}];
 
 FSPrepareRGEs[] :=
     Module[{needToCalculateRGEs, betas},
@@ -870,7 +883,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, massMatrices, phases, vevs,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
-	    vertexRules,
+            lesHouchesInputParameters,
+	    vertexRules, vertexRuleFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
            If[!ValueQ[Model`Name],
@@ -937,7 +951,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}}];
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
+                         "two_scale_susy_beta_.cpp.in",
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_susy.mk"}]}}
+                        ];
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
@@ -946,9 +964,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        a_[Susyno`LieGroups`i1,SARAH`i2] :> a];
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
-
-           {traceDecl, traceRules} = CreateTraceAbbr[SARAH`TraceAbbr];
-           susyBreakingBetaFunctions = susyBreakingBetaFunctions /. traceRules;
 
            (* store all model parameters *)
            allParameters = Join[BetaFunction`GetName /@ susyBetaFunctions,
@@ -985,6 +1000,37 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
              ];
 
+           lesHouchesInputParameters = DeleteDuplicates[Flatten[Cases[Join[FlexibleSUSY`LowScaleInput,
+                                                                           FlexibleSUSY`SUSYScaleInput,
+                                                                           FlexibleSUSY`HighScaleInput],
+                                                                      SARAH`LHInput[p_] :> p,
+                                                                      Infinity
+                                                                     ]
+                                                               ]
+                                                       ];
+
+           lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
+                                                   {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
+                                              a_[Susyno`LieGroups`i1] :> a /.
+                                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                                              MemberQ[lesHouchesInputParameters,#[[1]]]&];
+
+           Parameters`SetInputParameters[Join[Parameters`GetInputParameters[],
+                                              (#[[2]])& /@ lesHouchesInputParameters]];
+
+           (* replace LHInput[p] by pInput in the constraints *)
+           FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+           FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+           FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
+               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
+              lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
+                                               lesHouchesInputParameters];
+             ];
+
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[];
 
@@ -997,11 +1043,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.hpp"}]},
                           {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_soft_parameters.cpp.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_soft_parameters.cpp"}]}},
-                         traceDecl, numberOfSusyParameters];
+                         "two_scale_soft_beta_.cpp.in",
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
+                         SARAH`TraceAbbr, numberOfSusyParameters];
 
            vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[] /.
+                           allIndexReplacementRules /.
                            SARAH`sum[idx_, start_, stop_, expr_] :> Sum[expr, {idx,start,stop}];
            If[Head[ewsbEquations] =!= List,
               Print["Error: Could not find EWSB equations for eigenstates ",
@@ -1059,8 +1109,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
-                                    If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
-                                       {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters],
+                                    {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
                                     FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
@@ -1100,8 +1149,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                                MINPAR, EXTPAR,
-                               If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True, {},
-                                  FlexibleSUSY`FSUnfixedParameters],
+                               lesHouchesInputParameters,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
@@ -1206,7 +1254,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Flatten[{OptionValue[LowDiagonalizationPrecision]}],
                FSEigenstates];
 
-	   vertexRules = Vertices`VertexRules[nPointFunctions, Lat$massMatrices];
+	   vertexRuleFileName =
+	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
+	   If[NeedToCalculateVertices[FSEigenstates],
+	      Put[vertexRules =
+		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		  vertexRuleFileName],
+	      vertexRules = Get[vertexRuleFileName]];
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];

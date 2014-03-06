@@ -8,7 +8,7 @@ WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
-ReadUnfixedParameters::usage="";
+ReadLesHouchesInputParameters::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
@@ -292,12 +292,12 @@ ReadSLHABlock[{parameter_, blockName_Symbol}] :=
            paramStr <> ");\n"
           ];
 
-ReadUnfixedParameters[unfixedParameters_List] :=
-    Module[{result = "", modelParameters, unfixedNames, rules},
-           unfixedNames = (#[[1]])& /@ unfixedParameters;
-           rules = Rule[#[[1]], #[[2]]]& /@ unfixedParameters;
-           (* get block names of all unfixed parameters (unfixedNames) *)
-           modelParameters = Select[GetSLHAModelParameters[], MemberQ[unfixedNames,#[[1]]]&];
+ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
+    Module[{result = "", modelParameters, names, rules},
+           names = (#[[1]])& /@ lesHouchesInputParameters;
+           rules = Rule[#[[1]], #[[2]]]& /@ lesHouchesInputParameters;
+           (* get block names of all les Houches input parameters (names) *)
+           modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
            modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
            (result = result <> ReadSLHABlock[#])& /@ modelParameters;
            Return[result];

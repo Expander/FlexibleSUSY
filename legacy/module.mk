@@ -20,11 +20,11 @@ LIBLEGACY     := $(DIR)/$(MODNAME)$(LIBEXT)
 all-$(MODNAME): $(LIBLEGACY)
 
 clean-$(MODNAME):
-		rm -rf $(LIBLEGACY_OBJ)
+		-rm -f $(LIBLEGACY_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBLEGACY_DEP)
-		rm -rf $(LIBLEGACY)
+		-rm -f $(LIBLEGACY_DEP)
+		-rm -f $(LIBLEGACY)
 
 clean::         clean-$(MODNAME)
 

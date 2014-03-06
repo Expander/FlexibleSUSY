@@ -1,15 +1,17 @@
 \section{Quick start}
 Create a MSSM spectrum generator
-  \begin{lstlisting}[language=bash]
-$ ./createmodel --models=MSSM
-$ ./configure --with-models=MSSM
-$ make
-  \end{lstlisting}
+\begin{lstlisting}[language=bash]
+./createmodel --name=NMSSM
+./configure --with-models=NMSSM
+make
+\end{lstlisting}
 Run the spectrum generator using the default parameter point
-  \begin{lstlisting}[language=bash]
-$ ./models/MSSM/run_MSSM.x
-  \end{lstlisting}
+\begin{lstlisting}[language=bash]
+./models/NMSSM/run_NMSSM.x
+\end{lstlisting}
 Run the spectrum generator using a SLHA input file
-  \begin{lstlisting}[language=bash]
-$ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM --slha-output-file=LesHouches.out.MSSM
-  \end{lstlisting}
+\begin{lstlisting}[language=bash]
+./models/NMSSM/run_NMSSM.x \
+   --slha-input-file=templates/NMSSM/LesHouches.in.NMSSM \
+   --slha-output-file=LesHouches.out.NMSSM
+\end{lstlisting}

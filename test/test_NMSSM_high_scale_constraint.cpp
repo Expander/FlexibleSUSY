@@ -13,9 +13,9 @@
 #include "nmssmsoftsusy.h"
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_two_scale_high_scale_constraint.hpp"
-#include "snmssm_two_scale.hpp"
-#include "snmssm_parameter_point.hpp"
-#include "snmssm_two_scale_sugra_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
+#include "SoftsusyNMSSM_two_scale_sugra_constraint.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -75,9 +75,9 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    NmssmSoftsusy softSusy;
    NMSSM_input_parameters input;
    setup_NMSSM(m, softSusy, input);
-   SNmssm<Two_scale> s(softSusy);
+   SoftsusyNMSSM<Two_scale> s(softSusy);
 
-   SNmssm_parameter_point pp;
+   SoftsusyNMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;
    pp.a0 = input.Azero;
    pp.m12 = input.m12;
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.lambda = input.LambdaInput;
 
    NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(input);
-   SNmssm_sugra_constraint snmssm_sugra_constraint(pp);
+   SoftsusyNMSSM_sugra_constraint snmssm_sugra_constraint(pp);
 
    NMSSM_sugra_constraint.set_model(&m);
    snmssm_sugra_constraint.set_model((Two_scale_model*)&s);

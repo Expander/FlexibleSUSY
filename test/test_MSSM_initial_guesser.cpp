@@ -7,18 +7,18 @@
 
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_two_scale_initial_guesser.hpp"
-#include "mssm_parameter_point.hpp"
-#include "mssm_two_scale.hpp"
-#include "mssm_two_scale_initial_guesser.hpp"
-#include "mssm_two_scale_sugra_constraint.hpp"
-#include "mssm_two_scale_susy_scale_constraint.hpp"
-#include "mssm_two_scale_low_scale_constraint.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale.hpp"
+#include "SoftsusyMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_susy_scale_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_low_scale_constraint.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
    softsusy::TOLERANCE = 1.0e-3;
    MSSM<Two_scale> m;
-   Mssm<Two_scale> smssm;
+   SoftsusyMSSM<Two_scale> smssm;
 
    // create MSSM initial guesser
    MSSM_input_parameters input;
@@ -32,17 +32,17 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
                                            susy_constraint, high_constraint);
 
    // create Mssm initial guesser
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.m0 = input.m0;
    pp.m12 = input.m12;
    pp.a0 = input.Azero;
    pp.mxGuess = high_constraint.get_scale();
    pp.signMu = input.SignMu;
    pp.tanBeta = input.TanBeta;
-   Mssm_sugra_constraint mssm_sugra_constraint(pp);
-   Mssm_low_scale_constraint mssm_mz_constraint(pp);
-   Mssm_susy_scale_constraint mssm_msusy_constraint(pp);
-   Mssm_initial_guesser initial_guesser(&smssm, pp, mssm_mz_constraint,
+   SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyMSSM_low_scale_constraint mssm_mz_constraint(pp);
+   SoftsusyMSSM_susy_scale_constraint mssm_msusy_constraint(pp);
+   SoftsusyMSSM_initial_guesser initial_guesser(&smssm, pp, mssm_mz_constraint,
                                         mssm_msusy_constraint,
                                         mssm_sugra_constraint);
    initial_guesser.set_QedQcd(oneset);

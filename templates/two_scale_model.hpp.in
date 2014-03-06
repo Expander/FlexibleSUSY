@@ -46,7 +46,7 @@ public:
    virtual ~@ModelName@();
 
    void calculate_DRbar_parameters();
-   void calculate_1loop_masses();
+   void calculate_pole_masses();
    virtual void clear();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
@@ -109,16 +109,16 @@ private:
    bool calculate_sm_pole_masses;
    double precision;
    double ewsb_iteration_precision;
-   static const std::size_t numberOfEWSBEquations = @numberOfEWSBEquations@;
+   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
    @ModelName@_physical physical;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[numberOfEWSBEquations]);
+   int solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type*, const double[number_of_ewsb_equations]);
    int solve_ewsb_tree_level_via_soft_higgs_masses();
-   void ewsb_initial_guess(double[numberOfEWSBEquations]);
+   void ewsb_initial_guess(double[number_of_ewsb_equations]);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
@@ -136,6 +136,8 @@ private:
 @phasesDefinition@
 
 };
+
+std::ostream& operator<<(std::ostream&, const @ModelName@<Two_scale>&);
 
 } // namespace flexiblesusy
 

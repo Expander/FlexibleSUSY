@@ -24,6 +24,10 @@
 
 namespace flexiblesusy {
 
+/**
+ * @class Problems
+ * @brief stores problem flags for the spectrum generator
+ */
 template <unsigned Number_of_particles>
 class Problems {
 public:
@@ -55,10 +59,12 @@ public:
    void print(std::ostream& = std::cout) const;
 
 private:
-   bool tachyons[Number_of_particles];
-   const char** particle_names;
-   bool thrown;
-   bool failed_ewsb, failed_convergence, non_perturbative;
+   bool tachyons[Number_of_particles]; ///< tachyonic particles
+   const char** particle_names;        ///< particle names
+   bool thrown;                        ///< excepton thrown
+   bool failed_ewsb;                   ///< no EWSB
+   bool failed_convergence;            ///< no convergence
+   bool non_perturbative;              ///< non-perturbative running
 };
 
 template <unsigned Number_of_particles>
@@ -149,6 +155,13 @@ void Problems<Number_of_particles>::print(std::ostream& ostr) const
       ostr << "non-perturbative, ";
    if (thrown)
       ostr << "exception thrown";
+}
+
+template <unsigned Number_of_particles>
+std::ostream& operator<<(std::ostream& ostr, const Problems<Number_of_particles>& problems)
+{
+   problems.print(ostr);
+   return ostr;
 }
 
 } // namespace flexiblesusy

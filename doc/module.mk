@@ -5,6 +5,7 @@ HTML_OUTPUT_DIR := $(DIR)/html
 PDF_OUTPUT_DIR  := $(DIR)
 INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
+DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
 MANUAL_SRC      := \
 		$(DIR)/flexiblesusy.tex \
@@ -35,11 +36,12 @@ doc-html: $(INDEX_PADE)
 all-$(MODNAME): doc-html doc-pdf
 
 clean-$(MODNAME):
-		rm -f $(LATEX_TMP)
+		-rm -f $(LATEX_TMP)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(HTML_OUTPUT_DIR)
-		rm -f $(MANUAL_PDF) $(PAPER_PDF)
+		-rm -rf $(HTML_OUTPUT_DIR)
+		-rm -f $(DOXYGEN_MAINPAGE)
+		-rm -f $(MANUAL_PDF) $(PAPER_PDF)
 
 clean::         clean-$(MODNAME)
 
@@ -50,11 +52,13 @@ $(INDEX_PADE):
 		  echo "INPUT = $(MODULES)" ; \
 		  echo "OUTPUT_DIRECTORY = $(HTML_OUTPUT_DIR)" ; \
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
-		        $(TEST_SRC) $(TEST_META)" \
+		        $(TEST_SRC) $(TEST_META)"; \
+		  echo "EXCLUDE_PATTERNS = */test/*"; \
 		) | doxygen -
 
 $(MANUAL_PDF): $(MANUAL_SRC)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+		bibtex $(shell echo $< | rev | cut -d. -f2 | rev)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 
 $(PAPER_PDF): $(PAPER_SRC)

@@ -29,12 +29,12 @@ public:
    virtual ~Beta_function() {}
 
    void set_scale(double s) { scale = s; }
-   void set_number_of_parameters(unsigned pars) { numPars = pars; }
+   void set_number_of_parameters(unsigned pars) { num_pars = pars; }
    void set_loops(unsigned l) { loops = l; }
    void set_thresholds(unsigned t) { thresholds = t; }
 
    double get_scale() const { return scale; }
-   unsigned get_number_of_parameters() const { return numPars; }
+   unsigned get_number_of_parameters() const { return num_pars; }
    unsigned get_loops() const { return loops; }
    unsigned get_thresholds() const { return thresholds; }
 
@@ -46,7 +46,7 @@ public:
    virtual void run_to(double, double eps = -1.0);
 
 private:
-   unsigned numPars;     ///< Number of parameters
+   unsigned num_pars;    ///< Number of parameters
    unsigned loops;       ///< To what order does the RG evolution run
    unsigned thresholds;  ///< thresholds
    double scale;         ///< Renormalisation scale

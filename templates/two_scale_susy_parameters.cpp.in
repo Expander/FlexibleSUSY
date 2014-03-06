@@ -27,6 +27,7 @@ namespace flexiblesusy {
 
 #define CLASSNAME @ModelName@_susy_parameters
 #define INPUT(parameter) input.parameter
+#define TRACE_STRUCT susy_traces
 
 @ModelName@_susy_parameters::@ModelName@_susy_parameters(const @ModelName@_input_parameters& input_)
    : Beta_function()
@@ -58,6 +59,9 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 
 @ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
+   Susy_traces susy_traces;
+   calc_susy_traces(susy_traces);
+
 @beta@
 
    return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
@@ -99,6 +103,17 @@ const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() con
 void @ModelName@_susy_parameters::set_input(const @ModelName@_input_parameters& input_)
 {
    input = input_;
+}
+
+void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) const
+{
+@calcTraces@
+}
+
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_susy_parameters& susy_pars)
+{
+   susy_pars.print(std::cout);
+   return ostr;
 }
 
 } // namespace flexiblesusy

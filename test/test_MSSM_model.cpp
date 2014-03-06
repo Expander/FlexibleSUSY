@@ -990,7 +990,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
    m.calculate_DRbar_parameters();
-   m.calculate_1loop_masses();
+   m.calculate_pole_masses();
 
    TEST_EQUALITY(s.displayMu(), m.get_scale());
 
@@ -1020,7 +1020,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
    TEST_CLOSE_REL(m.get_Mu(), s.displaySusyMu(), 0.0007);
    TEST_CLOSE_REL(m.get_BMu(), s.displayM3Squared(), 0.0003);
-   m.calculate_1loop_masses();
+   m.calculate_pole_masses();
    s.physical(1);
 
    const DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));

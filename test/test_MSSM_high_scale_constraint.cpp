@@ -10,8 +10,8 @@
 #define private public
 
 #include "softsusy.h"
-#include "mssm_parameter_point.hpp"
-#include "mssm_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
 #include "test_MSSM.hpp"
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_two_scale_high_scale_constraint.hpp"
@@ -129,10 +129,10 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
 
 BOOST_AUTO_TEST_CASE( test_mx_calculation )
 {
-   MSSM<Two_scale> m; Mssm<Two_scale> s;
+   MSSM<Two_scale> m; SoftsusyMSSM<Two_scale> s;
    MSSM_input_parameters input;
    setup_MSSM(m, s, input);
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;
    pp.a0 = input.Azero;
    pp.m12 = input.m12;
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.signMu = input.SignMu;
 
    MSSM_high_scale_constraint<Two_scale> MSSM_sugra_constraint(input);
-   Mssm_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
 
    MSSM_sugra_constraint.set_model(&m);
    mssm_sugra_constraint.set_model((Two_scale_model*)&s);

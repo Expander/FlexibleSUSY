@@ -1,11 +1,11 @@
-#include "mssm_solver.h"
-#include "mssm_parameter_point.hpp"
-#include "mssm_two_scale.hpp"
-#include "mssm_two_scale_initial_guesser.hpp"
-#include "mssm_two_scale_sugra_constraint.hpp"
-#include "mssm_two_scale_susy_scale_constraint.hpp"
-#include "mssm_two_scale_low_scale_constraint.hpp"
-#include "mssm_two_scale_convergence_tester.hpp"
+#include "SoftsusyMSSM_solver.hpp"
+#include "SoftsusyMSSM_parameter_point.hpp"
+#include "SoftsusyMSSM_two_scale.hpp"
+#include "SoftsusyMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_susy_scale_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_low_scale_constraint.hpp"
+#include "SoftsusyMSSM_two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
@@ -146,7 +146,7 @@ public:
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
-   void test(const Mssm_parameter_point& pp, const QedQcd& oneset) {
+   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for SoftSusy to solve the MSSM
 
@@ -187,17 +187,17 @@ public:
    ~Two_scale_tester() {}
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return mssm.displayPhys(); }
-   void test(const Mssm_parameter_point& pp, const QedQcd& oneset) {
+   void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
       Stopwatch stopwatch;
       stopwatch.start(); // record time for the two scale method to solve the MSSM
 
       softsusy::TOLERANCE = 1.0e-4;
       // setup the MSSM with the two scale method
-      Mssm_sugra_constraint mssm_sugra_constraint(pp);
-      Mssm_low_scale_constraint mssm_mz_constraint(pp);
-      Mssm_susy_scale_constraint mssm_msusy_constraint(pp);
-      Mssm_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
-      Mssm_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
+      SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
+      SoftsusyMSSM_low_scale_constraint mssm_mz_constraint(pp);
+      SoftsusyMSSM_susy_scale_constraint mssm_msusy_constraint(pp);
+      SoftsusyMSSM_convergence_tester mssm_convergence_tester(&mssm, 1.0e-4);
+      SoftsusyMSSM_initial_guesser initial_guesser(&mssm, pp, mssm_mz_constraint,
                                            mssm_msusy_constraint,
                                            mssm_sugra_constraint);
       initial_guesser.set_QedQcd(oneset);
@@ -221,14 +221,14 @@ public:
       mssm.calculate_spectrum();
 
       stopwatch.stop();
-      VERBOSE_MSG("Mssm<Two_scale> solved in " << stopwatch.get_time_in_seconds()
+      VERBOSE_MSG("SoftsusyMSSM<Two_scale> solved in " << stopwatch.get_time_in_seconds()
                   << " seconds");
 
       mx = mssm_sugra_constraint.get_scale();
    }
 private:
    double mx;
-   Mssm<Two_scale> mssm;
+   SoftsusyMSSM<Two_scale> mssm;
 };
 
 /**
@@ -237,7 +237,7 @@ private:
  *
  * @param pp CMSSM parameter point
  */
-void test_point(const Mssm_parameter_point& pp)
+void test_point(const SoftsusyMSSM_parameter_point& pp)
 {
    QedQcd oneset;
 
@@ -254,7 +254,7 @@ void test_point(const Mssm_parameter_point& pp)
 
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 {
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    BOOST_MESSAGE("testing " << pp);
    test_point(pp);
 }
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
 {
    // do small parameter scan of tan(beta)
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    for (double tanb = 3.0; tanb <= 44.; tanb += 3.0) {
       pp.tanBeta = tanb;
       BOOST_MESSAGE("testing " << pp);
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
 BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 {
    // slowly convergent point taken from arXiv:1211.3231 Fig. 7
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = 10.0;
    pp.a0 = 0.0;
    pp.m12 = 337.5;
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
 BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
 {
    // non-perturbative point
-   Mssm_parameter_point pp;
+   SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = 100.0;
    pp.a0 = 0.0;
    pp.m12 = 337.5;

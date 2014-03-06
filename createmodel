@@ -3,18 +3,18 @@
 # configure script for FlexibleSUSY
 # Author: Alexander Voigt
 
-if test $# -lt 1 ; then
-    echo "Error: Too few arguments"
-    echo "Usage: ./`basename $0` <model-name>"
-    exit 1
-fi
-
 # directory of this script
 BASEDIR=$(dirname $0)
 overwrite="no"
 model_file=""
 name=""
 sarah_model=""
+
+# exit codes
+exit_ok="0"
+exit_syntax_error="1"
+exit_model_dir_exists="2"
+exit_no_default_model="3"
 
 #_____________________________________________________________________
 find_default_model_files() {
@@ -33,21 +33,47 @@ help() {
 cat <<EOF
 Usage: ./`basename $0` [options] --name=<model-name>
 Options:
---name=            Name of the model in FlexibleSUSY.
-                   Example: --name=MyMSSM
---model-file=      Name of the model whose FlexibleSUSY model file
-                   should be taken.  If empty the MSSM model file
-                   will be used.
-                   Available are: ${available_default_model_files}
---sarah-model=     Name of the SARAH model.
-                   If empty, the value given by --name= will be used.
-                   A sub-model can be specified after a /
-                   Syntax: <sarah-model>[/<submodel>]
-                   Example: --sarah-model=MSSM/CKM
---force,-f         Overwrite existing model files.
---help,-h          Print this help message.
+  --name=            Name of the FlexibleSUSY model.
+                     Example: --name=MyMSSM
+
+  --model-file=      Name of the model whose FlexibleSUSY model file
+                     should be used.  If empty, it will be searched for
+                     model_files/<model-name>/FlexibleSUSY.m.in , where
+                     <model-name> is the name of the FlexibleSUSY model
+                     given by --name= .  If no such model file can be found,
+                     the MSSM model file is used.  All FlexibleSUSY
+                     model files are stored in model_files/ .
+                     Available models are: ${available_default_model_files}
+
+  --sarah-model=     Name of the SARAH model, used in SARAH\`Start[].
+                     If empty, the value given by --name= is used.
+                     A sub-model can be specified after a /
+                     Syntax: <sarah-model>[/<sub-model>]
+                     Example: --sarah-model=MSSM/CKM
+
+  --force,-f         Overwrite existing model files.
+
+  --help,-h          Print this help message.
+
+Examples:
+
+  Create a FlexibleSUSY model for the E6SSM:
+
+    ./createmodel --name=E6SSM
+
+  Create a new FlexibleSUSY model named MyMSSM, using the FlexibleSUSY
+  model file model_files/YukawaCMSSM/FlexibleSUSY.m.in and using the
+  MSSM as underlying SARAH model (SARAH\`Start["MSSM"]).
+
+    ./createmodel --name=MyMSSM --model-file=YukawaCMSSM --sarah-model=MSSM
 EOF
 }
+
+if test $# -lt 1 ; then
+    echo "Error: Too few arguments"
+    help
+    exit ${exit_syntax_error}
+fi
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
@@ -58,11 +84,11 @@ if test $# -gt 0 ; then
 
         case $1 in
             --force|-f)              overwrite="yes" ;;
-            --help|-h)               help; exit 0 ;;
+            --help|-h)               help; exit ${exit_ok} ;;
             --model-file=*)          model_file="$optarg" ;;
             --name=*)                name="$optarg" ;;
             --sarah-model=*)         sarah_model="$optarg" ;;
-            *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
+            *)  echo "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
         esac
         shift
     done
@@ -71,7 +97,7 @@ fi
 if [ -z "$name" ] ; then
     echo "Error: no model specified!"
     help
-    exit 1
+    exit ${exit_syntax_error}
 fi
 
 sub_model=$(echo $sarah_model | awk -F / '{ if (NF > 1) print $NF }')
@@ -88,7 +114,7 @@ if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
     echo "Error: directory $targetdir already exists!"
     echo "Please chose another model name or use the --force option."
     echo "See ./`basename $0` --help for more information."
-    exit 1
+    exit ${exit_model_dir_exists}
 fi
 
 # check if we provide a FlexibleSUSY model file for the given model
@@ -99,7 +125,7 @@ if [ -n "$model_file" ]; then
         model_file_dir="$model_file_dir/$model_file"
     else
         echo "Error: there is no default model file for the $model_file"
-        exit 1
+        exit ${exit_no_default_model}
     fi
 else
     # if the user has no default model file specified, we check if one

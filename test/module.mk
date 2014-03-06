@@ -78,6 +78,11 @@ endif
 TEST_SH := \
 		test/test_space_dir.sh
 
+ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
+TEST_SH += \
+		test/test_standalone.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
 TEST_SH += \
 		test/test_lowMSSM.sh
@@ -118,15 +123,15 @@ TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
 all-$(MODNAME): $(TEST_EXE)
 
 clean-$(MODNAME)-log:
-		rm -rf $(TEST_LOG)
+		-rm -f $(TEST_LOG)
 
 clean-$(MODNAME):
-		rm -rf $(TEST_OBJ)
-		rm -rf $(TEST_LOG)
+		-rm -f $(TEST_OBJ)
+		-rm -f $(TEST_LOG)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(TEST_DEP)
-		rm -rf $(TEST_EXE)
+		-rm -f $(TEST_DEP)
+		-rm -f $(TEST_EXE)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
@@ -210,8 +215,13 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LI
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+$(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+else
 $(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
+endif
 
 $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY)
 
@@ -229,7 +239,7 @@ $(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEX
 
 $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/input_MSSM.slha2
+$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/test_MSSM_slha_output.in.spc
 		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)

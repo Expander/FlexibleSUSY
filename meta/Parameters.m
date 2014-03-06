@@ -1,6 +1,8 @@
 
 BeginPackage["Parameters`", {"SARAH`", "CConversion`"}];
 
+FindSymbolDef::usage="";
+
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
 CreateParameterNamesStr::usage="";
@@ -36,6 +38,7 @@ SetInputParameters::usage="";
 SetModelParameters::usage="";
 SetOutputParameters::usage="";
 
+GetInputParameters::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
 
@@ -67,6 +70,7 @@ SetInputParameters[pars_List] := allInputParameters = pars;
 SetModelParameters[pars_List] := allModelParameters = pars;
 SetOutputParameters[pars_List] := allOutputParameters = pars;
 
+GetInputParameters[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 
@@ -77,6 +81,22 @@ AddRealParameter[parameter_List] :=
 
 AddRealParameter[parameter_] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
+
+FindSymbolDef[sym_] :=
+    Module[{symDef},
+           symDef = Cases[SARAH`ParameterDefinitions,
+                          {sym, {___, DependenceNum -> definition_, ___}} :> definition];
+           If[Head[symDef] =!= List || symDef === {},
+              Print["Error: Could not find definition of ",
+                    sym, " in SARAH`ParameterDefinitions"];
+              Return[0];
+             ];
+           If[Length[symDef] > 1,
+              Print["Warning: ", sym, " defined multiple times"];
+             ];
+           symDef = symDef[[1]];
+           Return[symDef];
+          ];
 
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
@@ -601,7 +621,7 @@ DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
 DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
 DecreaseIndices[a_]        := a;
 DecreaseIndices[SARAH`Delta[a_, b_]] :=
-    CConversion`KroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
+    CConversion`FSKroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
 
 DecreaseIndexLiterals[expr_] :=
     DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,

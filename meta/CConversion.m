@@ -16,7 +16,7 @@ ZEROVECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
-KroneckerDelta::usage="";
+FSKroneckerDelta::usage="";
 IndexSum::usage="";
 TensorProd::usgae="";
 
@@ -435,7 +435,7 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
 
-Format[CConversion`KroneckerDelta[a_,b_],CForm] :=
+Format[CConversion`FSKroneckerDelta[a_,b_],CForm] :=
     Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
 

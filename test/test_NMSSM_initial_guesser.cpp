@@ -8,18 +8,18 @@
 
 #include "NMSSM_two_scale_model.hpp"
 #include "NMSSM_two_scale_initial_guesser.hpp"
-#include "snmssm_parameter_point.hpp"
-#include "snmssm_two_scale.hpp"
-#include "snmssm_two_scale_initial_guesser.hpp"
-#include "snmssm_two_scale_sugra_constraint.hpp"
-#include "snmssm_two_scale_susy_scale_constraint.hpp"
-#include "snmssm_two_scale_low_scale_constraint.hpp"
+#include "SoftsusyNMSSM_parameter_point.hpp"
+#include "SoftsusyNMSSM_two_scale.hpp"
+#include "SoftsusyNMSSM_two_scale_initial_guesser.hpp"
+#include "SoftsusyNMSSM_two_scale_sugra_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale_susy_scale_constraint.hpp"
+#include "SoftsusyNMSSM_two_scale_low_scale_constraint.hpp"
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
    softsusy::TOLERANCE = 1.0e-3;
    NMSSM<Two_scale> m;
-   SNmssm<Two_scale> snmssm;
+   SoftsusyNMSSM<Two_scale> snmssm;
 
    // create NMSSM initial guesser
    NMSSM_input_parameters input;
@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    NMSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
                                             susy_constraint, high_constraint);
 
-   // create SNmssm initial guesser
-   SNmssm_parameter_point pp;
+   // create SoftsusyNMSSM initial guesser
+   SoftsusyNMSSM_parameter_point pp;
    pp.m0 = input.m0;
    pp.m12 = input.m12;
    pp.a0 = input.Azero;
@@ -43,10 +43,10 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    pp.lambda = input.LambdaInput;
    pp.kappa = 0.1;  // initial guess at the low-scale
    pp.svev = 1000.; // initial guess at the low-scale
-   SNmssm_sugra_constraint mssm_sugra_constraint(pp);
-   SNmssm_low_scale_constraint mssm_mz_constraint(pp);
-   SNmssm_susy_scale_constraint mssm_msusy_constraint(pp);
-   SNmssm_initial_guesser initial_guesser(&snmssm, pp, mssm_mz_constraint,
+   SoftsusyNMSSM_sugra_constraint mssm_sugra_constraint(pp);
+   SoftsusyNMSSM_low_scale_constraint mssm_mz_constraint(pp);
+   SoftsusyNMSSM_susy_scale_constraint mssm_msusy_constraint(pp);
+   SoftsusyNMSSM_initial_guesser initial_guesser(&snmssm, pp, mssm_mz_constraint,
                                           mssm_msusy_constraint,
                                           mssm_sugra_constraint);
    initial_guesser.set_QedQcd(oneset);
