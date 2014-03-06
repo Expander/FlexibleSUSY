@@ -374,14 +374,10 @@ ExternalColorIndices[fields_List] :=
 
 FieldIndexList[field_] := Flatten@Cases[field, _?VectorQ, {0, Infinity}];
 
-ColorIndexRange[colorIndex_, fields_] := Module[{
-	fieldHead = FieldHead @ First @ Select[fields, !FreeQ[#, colorIndex] &]
-    },
+ColorIndexRange[colorIndex_, fields_] :=
     SingleCase[
-	SingleCase[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-		   {fieldHead, _, _, _, indices_} :> indices],
-	{color, n_} :> n]
-];
+	SARAH`getIndizesWI[First @ Select[fields, !FreeQ[#, colorIndex] &]],
+	{color, n_} :> n];
 
 UnresolvedColorFactorFreeQ[cpPattern_, exprs_] := Module[{
 	fstPos = First@Position[exprs, cpPattern],
