@@ -1135,10 +1135,10 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    s.physical(2);
 
    hh = ToDoubleVector(m.get_physical().Mhh);
-   TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 0.013);
-   TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 0.014);
-   TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 0.013);
-   TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 0.00002);
+   TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 5.0e-4);
+   TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 9.0e-4);
+   TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 5.0e-4);
+   TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 5.0e-4);
 }
 
 void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
