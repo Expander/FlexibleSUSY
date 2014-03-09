@@ -110,8 +110,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          model->set_vu(vu);
 
          model->calculate_DRbar_parameters();
-         model->calculate_Mhh_pole_1loop();
-         model->calculate_MVZ_pole_1loop();
+         model->calculate_Mhh_pole();
+         model->calculate_MVZ_pole();
 
          const double mH = model->get_physical().Mhh(1);
          const double mZ = model->get_physical().MVZ;
@@ -132,8 +132,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 
    // check how close we got
    model.calculate_DRbar_parameters();
-   model.calculate_Mhh_pole_1loop();
-   model.calculate_MVZ_pole_1loop();
+   model.calculate_Mhh_pole();
+   model.calculate_MVZ_pole();
 
    // const double mH = model.get_physical().Mhh(1);
    const double mZ = model.get_physical().MVZ;

@@ -501,6 +501,15 @@ DoDiagonalization[particle_Symbol, FlexibleSUSY`MediumPrecision, tadpole_] :=
 DoDiagonalization[particle_Symbol, FlexibleSUSY`HighPrecision, tadpole_] :=
     "// diagonalization with high precision\n" <> DoSlowDiagonalization[particle, tadpole];
 
+CreateLoopMassFunctionName[particle_Symbol] :=
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole";
+
+CallLoopMassFunction[particle_Symbol] :=
+    CreateLoopMassFunctionName[particle] <> "();\n";
+
+CreateLoopMassPrototype[particle_Symbol] :=
+    "void " <> CreateLoopMassFunctionName[particle] <> "();\n";
+
 CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            If[!IsFermion[particle] &&
@@ -509,8 +518,8 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
                      IndentText["return;"] <> "\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
-           result = "void CLASSNAME::calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-                    "_pole_1loop()\n{\n" <> IndentText[body] <> "}\n\n";
+           result = "void CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
+                    "()\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
           ];
 
@@ -532,9 +541,6 @@ CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] 
            Return[result];
           ];
 
-CreateLoopMassPrototype[particle_Symbol] :=
-    "void calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
-
 CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, result = ""},
            particles = GetLoopCorrectedParticles[states];
@@ -542,14 +548,11 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            Return[result];
           ];
 
-CallLoopMassFunction[particle_Symbol] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
-
 CallThreadedLoopMassFunction[particle_Symbol] :=
     Module[{massStr},
            massStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::calculate_" <>
-           massStr <> "_pole_1loop));\n"
+           "std::thread thread_" <> massStr <> "(Thread(this, &CLASSNAME::" <>
+           CreateLoopMassFunctionName[particle] <> "));\n"
           ];
 
 JoinLoopMassFunctionThread[particle_Symbol] :=

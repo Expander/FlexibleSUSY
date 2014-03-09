@@ -681,8 +681,8 @@ void MSSM_iterative_low_scale_constraint::apply()
          model->set_vu(vu);
 
          model->calculate_DRbar_parameters();
-         model->calculate_Mhh_pole_1loop();
-         model->calculate_MVZ_pole_1loop();
+         model->calculate_Mhh_pole();
+         model->calculate_MVZ_pole();
 
          const double mH = model->get_physical().Mhh(0);
          const double mZ = model->get_physical().MVZ;

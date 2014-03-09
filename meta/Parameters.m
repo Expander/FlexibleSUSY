@@ -537,7 +537,7 @@ DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
 
 PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
 
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
