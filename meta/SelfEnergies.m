@@ -569,12 +569,14 @@ CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
 GetTwoLoopSelfEnergyCorrections[] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
-            vev2Str, tanbStr, muStr, m3Str, mA0Str},
+            vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Global`Mu];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
@@ -608,6 +610,9 @@ double rmtsq = Sqr(" <> mtStr <> ");
 double scalesq = Sqr(get_scale());
 double vev2 = " <> vev2Str <> ";
 double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
 double amu = " <> muStr <> ";
 double mg = " <> m3Str <> ";
 double mAsq = Sqr(" <> mA0Str <> ");
@@ -638,6 +643,31 @@ tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
 result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
 result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
 result[2] = - s22s - s22w - s22b - s22tau; // 2,2 element
+
+// calculate dMA, which is the two loop correction to take the DRbar
+// psuedoscalar mass ( = -2m3sq/sin(2beta)) to the pole mass (as in
+// Eq. (8) of hep-ph/0305127)
+
+double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
+
+dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+        &tanb, &vev2, &gs, &p2s);
+dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+        &cotbeta, &vev2, &gs, &p2b);
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2s + p2w + p2b + p2tau;
+
+// dMA contains two loop tadpoles, which we'll subtract
+double tadpole[2];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+result[0] += - dMA * Sqr(sinb) + tadpole[0] / " <> vdStr <> ";
+result[1] += + dMA * sinb * cosb;
+result[2] += - dMA * Sqr(cosb) + tadpole[1] / " <> vuStr <> ";
 ";
            Return[body];
           ];
