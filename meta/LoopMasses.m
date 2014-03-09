@@ -595,11 +595,11 @@ GetRunningOneLoopDRbarParticles[] :=
 
 CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-    "_DRbar_1loop(double, int) const;\n";
+    "_DRbar(double, int) const;\n";
 
 CreateRunningDRbarMassPrototype[particle_] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-    "_DRbar_1loop(double) const;\n";
+    "_DRbar(double) const;\n";
 
 CreateRunningDRbarMassPrototypes[] :=
     Module[{result = "", particles},
@@ -616,14 +616,14 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark] :=
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double, int) const\n{\n";
               body = "return 0.0;\n";
               ,
               alphaS = SARAH`strongCoupling^2/(4 Pi);
               gPrime = SARAH`hyperchargeCoupling /. Parameters`ApplyGUTNormalization[];
               (* convert MSbar to DRbar mass hep-ph/0207126 *)
               drbarConversion = 1 - alphaS / (3 Pi) - 23 / 72 alphaS^2 / Pi^2 + 3 SARAH`leftCoupling^2 / (128 Pi^2) + 13 gPrime^2 / (1152 Pi^2);
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_sm_msbar, int idx) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_sm_msbar, int idx) const\n{\n";
               body = "const double p = m_sm_msbar;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
@@ -645,13 +645,13 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron] :=
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double, int) const\n{\n";
               body = "return 0.0;\n";
               ,
               (* convert MSbar to DRbar mass *)
               gPrime = SARAH`hyperchargeCoupling /. Parameters`ApplyGUTNormalization[];
               drbarConversion = 1 - 3 (gPrime^2 - SARAH`leftCoupling^2) / (128 Pi^2);
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_sm_msbar, int idx) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_sm_msbar, int idx) const\n{\n";
               body = "const double p = m_sm_msbar;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
@@ -672,12 +672,12 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`TopQuark] :=
            selfEnergyFunctionPR = SelfEnergies`CreateHeavyRotatedSelfEnergyFunctionName[particle[PR]];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double, int) const\n{\n";
               body = "return 0.0;\n";
               ,
               qcdOneLoop = - TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale];
               qcdTwoLoop = N[Expand[qcdOneLoop^2 - TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole, int idx) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole, int idx) const\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
@@ -708,10 +708,10 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
               twoLoopCorrectionDecl = "const double two_loop = " <> RValueToCFormString[twoLoopCorrection] <> ";\n";
              ];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double, int) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double, int) const\n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole, int idx) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole, int idx) const\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p, idx, idx));\n" <>
               "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p, idx, idx));\n" <>
@@ -735,10 +735,10 @@ CreateRunningDRbarMassFunction[particle_] :=
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double) const \n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double) const \n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar_1loop(double m_pole) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>

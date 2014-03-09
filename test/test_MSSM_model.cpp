@@ -898,7 +898,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();
-   const double sarah_mtop = m.calculate_MFu_DRbar_1loop(mtpole, 2);
+   const double sarah_mtop = m.calculate_MFu_DRbar(mtpole, 2);
 
    TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.14);
 }
@@ -915,7 +915,7 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mb_ms_bar = s.displayDataSet().displayMass(mBottom);
    const double softsusy_mbot = s.calcRunningMb();
-   const double sarah_mbot = m.calculate_MFd_DRbar_1loop(mb_ms_bar, 2);
+   const double sarah_mbot = m.calculate_MFd_DRbar(mb_ms_bar, 2);
 
    TEST_CLOSE(sarah_mbot, softsusy_mbot, 0.0013);
 }
@@ -929,7 +929,7 @@ void compare_tau_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mtaupole = s.displayDataSet().displayPoleMtau();
    const double softsusy_mtau = s.calcRunningMtau();
-   const double sarah_mtau = m.calculate_MFe_DRbar_1loop(mtaupole, 2);
+   const double sarah_mtau = m.calculate_MFe_DRbar(mtaupole, 2);
 
    // Softsusy:
    // * no photon contribution
@@ -1247,6 +1247,40 @@ void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 }
 
+void test_self_energy_CP_even_higgs_2loop(MSSM<Two_scale> model,
+                                          MssmSoftsusy softSusy)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_parameters();
+
+   softsusy::numRewsbLoops = 2;
+   softsusy::numHiggsMassLoops = 2;
+   model.set_ewsb_loop_order(2);
+   model.set_pole_mass_loop_order(2);
+
+   ensure_n_loop_ewsb(model, 2);
+   ensure_n_loop_ewsb(softSusy, 2);
+
+   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-08);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+
+   const int accuracy = 1;
+   const double piWWT = 0., pizztMS = 0.;
+   softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
+
+   model.set_number_of_mass_iterations(1);
+   model.calculate_Mhh_pole();
+
+   const DoubleVector hh_ss(softSusy.displayPhys().mh0);
+   const Eigen::Array<double,2,1> hh_fs(model.get_physical().Mhh);
+
+   TEST_CLOSE(hh_ss(1), hh_fs(0), 1.0e-10);
+   TEST_CLOSE(hh_ss(2), hh_fs(1), 1.0e-10);
+}
+
 void compare_models(int loopLevel)
 {
    const double ALPHASMZ = 0.1176;
@@ -1383,6 +1417,10 @@ void compare_models(int loopLevel)
 
       std::cout << "test two-loop ewsb ... ";
       test_ewsb_2loop(m, softSusy);
+      std::cout << "done\n";
+
+      std::cout << "test two-loop CP-even higgs self-energy ... ";
+      test_self_energy_CP_even_higgs_2loop(m, softSusy);
       std::cout << "done\n";
    }
 }
