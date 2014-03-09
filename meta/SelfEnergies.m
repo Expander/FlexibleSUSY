@@ -561,7 +561,7 @@ CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
            prototype = "void " <> functionName <> "(double result[2]) const;\n";
            body = GetTwoLoopTadpoleCorrections[];
            function = "void CLASSNAME::" <> functionName <>
-                      "(double result[3]) const\n{\n" <> IndentText[body] <>
+                      "(double result[2]) const\n{\n" <> IndentText[body] <>
                       "\n}\n";
            Return[{prototype, function}];
           ];
