@@ -1325,6 +1325,9 @@ void test_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
    TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 
+   TEST_CLOSE(softSusy.displayMh1Squared(), model.get_mHd2(), 1.0e-10);
+   TEST_CLOSE(softSusy.displayMh2Squared(), model.get_mHu2(), 1.0e-10);
+
    const int accuracy = loop_order;
    const double piWWT = 0., pizztMS = 0.;
 
