@@ -19,8 +19,8 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Add stand-alone examples to illustrate how to use FlexibleSUSY's
    classes and libraries independently of FlexibleSUSY's build system.
 
- * Allow two-loop tadpole and CP-even Higgs self-energy contributions
-   in the MSSM.
+ * Implement two-loop MSSM tadpole and CP-even Higgs self-energy
+   contributions from Slavich.
 
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
