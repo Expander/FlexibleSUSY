@@ -1251,7 +1251,7 @@ void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 }
 
-void test_self_energy_CP_even_higgs(MSSM<Two_scale> model,
+void compare_self_energy_CP_even_higgs(MSSM<Two_scale> model,
                                     MssmSoftsusy softSusy, int loop_order)
 {
    softSusy.calcDrBarPars();
@@ -1299,7 +1299,7 @@ void test_self_energy_CP_even_higgs(MSSM<Two_scale> model,
    TEST_CLOSE(hh_ss(2), hh_fs(1), 1.0e-10);
 }
 
-void test_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
+void compare_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
                                    MssmSoftsusy softSusy, int loop_order)
 {
    softSusy.calcDrBarPars();
@@ -1333,6 +1333,8 @@ void test_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
 
    // setting initial conditions for the iteration
    softsusy::sPhysical physical(softSusy.displayDrBarPars());
+   physical.mh0(1) = softSusy.displayDrBarPars().mh0(1);
+   physical.mh0(2) = softSusy.displayDrBarPars().mh0(2);
    physical.mA0(1) = softSusy.displayDrBarPars().mA0(1);
 
    softSusy.setPhys(physical);
@@ -1471,16 +1473,16 @@ void compare_models(int loopLevel)
       compare_tadpoles(softSusy, m);
       std::cout << "done\n";
 
-      std::cout << "comparing loop-masses ... ";
+      std::cout << "comparing pole masses ... ";
       compare_loop_masses(softSusy, m);
       std::cout << "done\n";
 
-      std::cout << "test one-loop CP-even higgs self-energy ... ";
-      test_self_energy_CP_even_higgs(m, softSusy, loopLevel);
+      std::cout << "comparing one-loop CP-even higgs self-energy ... ";
+      compare_self_energy_CP_even_higgs(m, softSusy, loopLevel);
       std::cout << "done\n";
 
-      std::cout << "test one-loop CP-odd higgs self-energy ... ";
-      test_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
+      std::cout << "comparing one-loop CP-odd higgs self-energy ... ";
+      compare_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
       std::cout << "done\n";
    }
 
@@ -1493,12 +1495,12 @@ void compare_models(int loopLevel)
       test_ewsb_2loop(m, softSusy);
       std::cout << "done\n";
 
-      std::cout << "test two-loop CP-even higgs self-energy ... ";
-      test_self_energy_CP_even_higgs(m, softSusy, loopLevel);
+      std::cout << "comparing two-loop CP-even higgs self-energy ... ";
+      compare_self_energy_CP_even_higgs(m, softSusy, loopLevel);
       std::cout << "done\n";
 
-      std::cout << "test one-loop CP-odd higgs self-energy ... ";
-      test_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
+      std::cout << "comparing one-loop CP-odd higgs self-energy ... ";
+      compare_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
       std::cout << "done\n";
    }
 }
