@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "mssm_helpers.hpp"
+#include "sfermions.hpp"
 #include "linalg2.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 
 namespace flexiblesusy {
-namespace mssm_helpers {
+namespace sfermions {
 
 static const double oneOverRoot2 = 1./sqrt(2.); // 0.7071067811865475
 
@@ -38,7 +38,7 @@ const double Hypercharge_right[NUMBER_OF_MSSM_SPARTICLES] = {
    -4./3., 2./3., 0., 2.
 };
 
-double diagonalize_sfermions_2x2(const Sfermion_mass_data& pars,
+double diagonalize_sfermions_2x2(const Mass_data& pars,
                                  Eigen::Array<double,2,1>& msf)
 {
    const double ml2    = pars.ml2;
@@ -98,5 +98,5 @@ double diagonalize_sfermions_2x2(const Sfermion_mass_data& pars,
    return theta;
 }
 
-} // namespace mssm_helpers
+} // namespace sfermions
 } // namespace flexiblesusy

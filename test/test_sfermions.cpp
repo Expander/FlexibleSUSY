@@ -1,12 +1,12 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_mssm_helpers
+#define BOOST_TEST_MODULE test_sfermions
 
 #include <boost/test/unit_test.hpp>
 
 #include "MSSM_two_scale_model.hpp"
 #include "softsusy.h"
-#include "mssm_helpers.hpp"
+#include "sfermions.hpp"
 #include "wrappers.hpp"
 #include "test_MSSM.hpp"
 

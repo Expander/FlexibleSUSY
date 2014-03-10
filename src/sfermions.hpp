@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_HELPERS_HPP
-#define MSSM_HELPERS_HPP
+#ifndef SFERMIONS_HPP
+#define SFERMIONS_HPP
 
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace mssm_helpers {
+namespace sfermions {
 
 enum Sparticles {
    up = 0,
@@ -36,7 +36,7 @@ extern const double Isospin[NUMBER_OF_MSSM_SPARTICLES];
 extern const double Hypercharge_left[NUMBER_OF_MSSM_SPARTICLES];
 extern const double Hypercharge_right[NUMBER_OF_MSSM_SPARTICLES];
 
-struct Sfermion_mass_data {
+struct Mass_data {
    double ml2;    ///< soft mass of left-handed sfermion
    double mr2;    ///< soft mass of right-handed sfermion
    double yf;     ///< Yukawa coupling
@@ -49,10 +49,10 @@ struct Sfermion_mass_data {
    double Yr;     ///< Hypercharge of right-handed sfermion
 };
 
-double diagonalize_sfermions_2x2(const Sfermion_mass_data&,
+double diagonalize_sfermions_2x2(const Mass_data&,
                                  Eigen::Array<double,2,1>&);
 
-} // namespace mssm_helpers
+} // namespace sfermions
 } // namespace flexiblesusy
 
 #endif

@@ -10,7 +10,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
-		$(DIR)/mssm_helpers.cpp \
+		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/program_options.cpp \

@@ -952,7 +952,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
-   mssm_helpers::Sfermion_mass_data sf_data;
+   sfermions::Mass_data sf_data;
    sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ";
    sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftUp[2,2]] <> ";
    sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`UpYukawa[2,2]] <> ";
@@ -963,13 +963,13 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2]] <> ";
    sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
-   sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::up];
-   sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::up];
-   sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::up];
+   sf_data.T3  = sfermions::Isospin[sfermions::up];
+   sf_data.Yl  = sfermions::Hypercharge_left[sfermions::up];
+   sf_data.Yr  = sfermions::Hypercharge_right[sfermions::up];
 
    Eigen::Array<double,2,1> msf;
 
-   theta = mssm_helpers::diagonalize_sfermions_2x2(sf_data, msf);
+   theta = sfermions::diagonalize_sfermions_2x2(sf_data, msf);
    msf1  = msf(0);
    msf2  = msf(1);
 }
@@ -979,7 +979,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
-   mssm_helpers::Sfermion_mass_data sf_data;
+   sfermions::Mass_data sf_data;
    sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ";
    sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftDown[2,2]] <> ";
    sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`DownYukawa[2,2]] <> ";
@@ -990,13 +990,13 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2]] <> ";
    sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
-   sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::down];
-   sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::down];
-   sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::down];
+   sf_data.T3  = sfermions::Isospin[sfermions::down];
+   sf_data.Yl  = sfermions::Hypercharge_left[sfermions::down];
+   sf_data.Yr  = sfermions::Hypercharge_right[sfermions::down];
 
    Eigen::Array<double,2,1> msf;
 
-   theta = mssm_helpers::diagonalize_sfermions_2x2(sf_data, msf);
+   theta = sfermions::diagonalize_sfermions_2x2(sf_data, msf);
    msf1  = msf(0);
    msf2  = msf(1);
 }
@@ -1006,7 +1006,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
-   mssm_helpers::Sfermion_mass_data sf_data;
+   sfermions::Mass_data sf_data;
    sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ";
    sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftRightLepton[2,2]] <> ";
    sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`ElectronYukawa[2,2]] <> ";
@@ -1017,13 +1017,13 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearLepton[2,2]] <> ";
    sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
-   sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::electron];
-   sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::electron];
-   sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::electron];
+   sf_data.T3  = sfermions::Isospin[sfermions::electron];
+   sf_data.Yl  = sfermions::Hypercharge_left[sfermions::electron];
+   sf_data.Yr  = sfermions::Hypercharge_right[sfermions::electron];
 
    Eigen::Array<double,2,1> msf;
 
-   theta = mssm_helpers::diagonalize_sfermions_2x2(sf_data, msf);
+   theta = sfermions::diagonalize_sfermions_2x2(sf_data, msf);
    msf1  = msf(0);
    msf2  = msf(1);
 }
@@ -1033,7 +1033,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Neutrino] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
-   mssm_helpers::Sfermion_mass_data sf_data;
+   sfermions::Mass_data sf_data;
    sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ";
    sf_data.mr2 = 0.;
    sf_data.yf  = 0.;
@@ -1044,13 +1044,13 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Neutrino] :=
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = 0.;
    sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
-   sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::neutrino];
-   sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::neutrino];
-   sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::neutrino];
+   sf_data.T3  = sfermions::Isospin[sfermions::neutrino];
+   sf_data.Yl  = sfermions::Hypercharge_left[sfermions::neutrino];
+   sf_data.Yr  = sfermions::Hypercharge_right[sfermions::neutrino];
 
    Eigen::Array<double,2,1> msf;
 
-   theta = mssm_helpers::diagonalize_sfermions_2x2(sf_data, msf);
+   theta = sfermions::diagonalize_sfermions_2x2(sf_data, msf);
    msf1  = msf(0);
    msf2  = msf(1);
 }
