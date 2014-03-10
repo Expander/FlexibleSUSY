@@ -3901,17 +3901,9 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	   cxb = cos(displayDrBarPars().thetab);
 	 
 	 double scalesq = sqr(displayMu()); 
-       if(Z3){   
-	 double DMS[3][3], DMP[3][3];
-	 double DMSB[3][3], DMPB[3][3];
-	 for(int i=0; i<=2; i++){
-	   for(int j=0; j<=2; j++){
-	     DMS[i][j]  = 0;
-	     DMP[i][j]  = 0;
-	     DMSB[i][j] = 0;
-	     DMPB[i][j] = 0;
-	   }
-	 }
+
+	 double DMS[3][3] = {{ 0.}}, DMP[3][3] = {{ 0. }};
+	 double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
 	 
 	 double lamS = lam;
 	 double vevS =  vev / root2;
@@ -3928,46 +3920,26 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 
 	 //PA: Make appropriate substitutions for elements following 0907.4682
 	 // bottom of page 9
-	 
-	 double temp = DMSB[0][0];
-	 DMSB[0][0] = DMSB[1][1];
-	 DMSB[1][1] = temp;
-	 temp = DMSB[0][2];
-	 DMSB[0][2] = DMSB[1][2];
-	 DMSB[1][2] = temp;
+         std::swap(DMSB[0][0], DMSB[1][1]);
+         std::swap(DMSB[0][2], DMSB[1][2]);
 
 	 /// LCT: Obtain the O(alpha_b alpha_s) corrections from O(alpha_t alpha_s) 
 	 /// parts by interchanging the (1, 1) <--> (2, 2) and (1, 3) <--> (2, 3) 
 	 /// matrix elements of CP-odd mass matrix (as in 0907.4682)
-	 double temp2 = DMPB[0][0];
-	 DMPB[0][0] = DMPB[1][1];
-	 DMPB[1][1] = temp2;
-	 temp2 = DMPB[0][2];
-	 DMPB[0][2] = DMPB[1][2];
-	 DMPB[1][2] = temp2;
+         std::swap(DMPB[0][0], DMPB[1][1]);
+         std::swap(DMPB[0][2], DMPB[1][2]);
 
 	 for(int i=0; i<=2; i++){
 	   for(int j=0; j<=2; j++){
-	     DMS[i][j] = DMS[i][j] + DMSB[i][j];
-	     DMP[i][j] = DMP[i][j] + DMPB[i][j]; 
+	     DMS[i][j] += DMSB[i][j];
+	     DMP[i][j] += DMPB[i][j];
 	   }
 	 }
 	 double amu = - lam * svev / root2;
-	 int kkk = 0.0;
-	 double s11s = 0.0, s12s = 0.0, s22s = 0.0;
-	 double s11b = 0.0, s12b = 0.0, s22b = 0.0;
 	 double s11w = 0.0, s12w = 0.0, s22w = 0.0;
 	 double s11tau = 0.0, s12tau = 0.0, s22tau = 0.0;
-	 double ps2 = 0.0, p2b = 0.0, p2w = 0.0, p2tau = 0.0;
+	 double p2w = 0.0, p2tau = 0.0;
 	 double fmasq = fabs(MAeffsq);
-	 dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, 
-	           &amu, &tanb, &vev2, &gs, &kkk, &s11s, &s22s, &s12s);
-	 dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
-	         &tanb, &vev2, &gs, &ps2); 
-	 dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
-	           &amu, &cotb, &vev2, &gs, &kkk, &s22b, &s11b, &s12b);
-	 dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
-	         &cotb, &vev2, &gs, &p2b);
 	 //Corrections as in MSSM, not corrected for NMSSM,
 	 //Should be OK for MSSM states when S state is close to decoupled 
 	 ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, 
@@ -4047,8 +4019,6 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 sigmaMA2(1, 3) = sigmaMA2(1, 3) - DMP[0][2];    
 	 sigmaMA2(2, 3) = sigmaMA2(2, 3) - DMP[1][2]; 
 	 sigmaMA2(3, 3) = sigmaMA2(3, 3) - DMP[2][2];
-       }
-      
      
      }
      
