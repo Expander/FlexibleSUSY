@@ -37,6 +37,9 @@ definitions for two-loop tadpoles in the NMSSM";
 CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the MSSM";
 
+CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
+definitions for two-loop Higgs self-energies in the NMSSM";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -671,7 +674,8 @@ CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
 CreateTwoLoopTadpolesNMSSM[higgsBoson_] :=
     CreateTwoLoopTadpoles[higgsBoson, "NMSSM"];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson] :=
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                                model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
@@ -777,7 +781,8 @@ result[2] += - dMA * Sqr(cosb) + tadpole[1] / " <> vuStr <> ";
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar] :=
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                                model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
@@ -863,32 +868,60 @@ result[2] = - cosb2 * (dMA - bA);
            Return[body];
           ];
 
-GetTwoLoopSelfEnergyCorrections[particle_] :=
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                                model_String /; model === "NMSSM"] :=
+    "\
+// @todo implement me
+result[0] = 0.;
+result[1] = 0.;
+result[2] = 0.;
+";
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                                model_String /; model === "NMSSM"] :=
+    "\
+// @todo implement me
+result[0] = 0.;
+result[1] = 0.;
+result[2] = 0.;
+";
+
+GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
     Module[{},
-           Print["Error: two-loop self-energy corrections not available for ", particle];
+           Print["Error: two-loop self-energy corrections not available for ",
+                 particle, " in the ", model];
            ""
           ];
 
-CreateTwoLoopSelfEnergiesMSSM[particle_] :=
-    Module[{prototype, function, functionName},
+CreateTwoLoopSelfEnergy[particle_, model_String] :=
+    Module[{prototype, function, functionName, dim, dimStr},
+           dim = GetDimension[particle];
+           dimStr = ToString[dim];
            functionName = CreateTwoLoopSelfEnergyFunctionName[particle];
-           prototype = "void " <> functionName <> "(double result[3]) const;\n";
-           body = GetTwoLoopSelfEnergyCorrections[particle];
+           prototype = "void " <> functionName <> "(double result[" <>
+                       dimStr <> "]) const;\n";
+           body = GetTwoLoopSelfEnergyCorrections[particle, model];
            function = "void CLASSNAME::" <> functionName <>
-                      "(double result[3]) const\n{\n" <> IndentText[body] <>
-                      "\n}\n";
+                      "(double result[" <> dimStr <> "]) const\n{\n" <>
+                      IndentText[body] <> "\n}\n";
            Return[{prototype, function}];
           ];
 
-CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
+CreateTwoLoopSelfEnergies[particles_List, model_String] :=
     Module[{prototype = "", function = "", i, p, f},
            For[i = 1, i <= Length[particles], i++,
-               {p, f} = CreateTwoLoopSelfEnergiesMSSM[particles[[i]]];
+               {p, f} = CreateTwoLoopSelfEnergy[particles[[i]], model];
                prototype = prototype <> p;
                function = function <> f;
               ];
            Return[{prototype, function}];
           ];
+
+CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
+    CreateTwoLoopSelfEnergies[particles, "MSSM"];
+
+CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
+    CreateTwoLoopSelfEnergies[particles, "NMSSM"];
 
 End[];
 

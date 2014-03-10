@@ -286,7 +286,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            tadpoleMatrix = FillTadpoleMatrix[tadpole, "tadpoles"];
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
-              If[SARAH`UseHiggs2LoopMSSM === True,
+              If[SARAH`UseHiggs2LoopMSSM === True ||
+                 FlexibleSUSY`UseHiggs2LoopNMSSM === True,
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
                     addTwoLoopHiggsContributions = "
 if (pole_mass_loop_order > 1) {
