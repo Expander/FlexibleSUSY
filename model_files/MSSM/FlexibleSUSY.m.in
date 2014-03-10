@@ -65,3 +65,4 @@ InitialGuessAtHighScale = {
 };
 
 UseHiggs2LoopMSSM = True;
+EffectiveMu = \[Mu];

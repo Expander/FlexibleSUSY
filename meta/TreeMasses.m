@@ -962,7 +962,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Global`Mu] <> ";
+   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
    sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::up];
    sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::up];
    sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::up];
@@ -989,7 +989,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Global`Mu] <> ";
+   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
    sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::down];
    sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::down];
    sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::down];
@@ -1016,7 +1016,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearLepton[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Global`Mu] <> ";
+   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
    sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::electron];
    sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::electron];
    sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::electron];
@@ -1043,7 +1043,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Neutrino] :=
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = 0.;
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Global`Mu] <> ";
+   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
    sf_data.T3  = mssm_helpers::Isospin[mssm_helpers::neutrino];
    sf_data.Yl  = mssm_helpers::Hypercharge_left[mssm_helpers::neutrino];
    sf_data.Yr  = mssm_helpers::Hypercharge_right[mssm_helpers::neutrino];

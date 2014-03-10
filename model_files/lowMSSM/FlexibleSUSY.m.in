@@ -32,3 +32,4 @@ InitialGuessAtLowScale = {
 OnlyLowEnergyFlexibleSUSY = True;
 
 UseHiggs2LoopMSSM = True;
+EffectiveMu = \[Mu];

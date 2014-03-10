@@ -45,6 +45,8 @@ MZ;
 MZDRbar;
 MWDRbar;
 EDRbar;
+UseHiggs2LoopNMSSM;
+EffectiveMu;
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
@@ -461,12 +463,19 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            vevsToFieldsAssociation      = CreateVEVsToFieldsAssociation[vevs];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
            calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[vevsToFieldsAssociation];
-           If[SARAH`UseHiggs2LoopMSSM === True,
+           If[SARAH`UseHiggs2LoopMSSM === True ||
+              FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
+              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
+             ];
+           If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
-              {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
               twoLoopHiggsHeaders = "#include \"mssm_helpers.hpp\"\n#include \"mssm_twoloophiggs.h\"\n";
+             ];
+           If[FlexibleSUSY`UseHiggs2LoopNMSSM === True,
+              {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
+              twoLoopHiggsHeaders = "#include \"mssm_helpers.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];

@@ -60,6 +60,11 @@ DecreaseIndexLiterals::usage="";
 
 DecreaseSumIdices::usage="";
 
+GetEffectiveMu::usage="";
+
+GetParameterFromDescription::usage="Returns model parameter from a
+given description string.";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -638,6 +643,35 @@ DecreaseIndexLiterals[expr_, heads_List] :=
 
 DecreaseSumIdices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
+
+GetEffectiveMu[] :=
+    Module[{},
+           If[!ValueQ[FlexibleSUSY`EffectiveMu],
+              Print["Error: effective Mu parameter not defined!"];
+              Print["   Please set EffectiveMu to the expression of the"];
+              Print["   effective Mu parameter."];
+              Quit[1];
+             ];
+           FlexibleSUSY`EffectiveMu
+          ];
+
+GetParameterFromDescription[description_String] :=
+    Module[{parameter},
+           parameter =Cases[SARAH`ParameterDefinitions,
+                            {parameter_,
+                             {___, SARAH`Description -> description, ___}} :>
+                            parameter];
+           If[Length[parameter] == 0,
+              Print["Error: Parameter with description \"", description,
+                    "\" not found."];
+              Return[Null];
+             ];
+           If[Length[parameter] > 1,
+              Print["Warning: Parameter with description \"", description,
+                    "\" not unique."];
+             ];
+           parameter[[1]]
+          ];
 
 End[];
 
