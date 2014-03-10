@@ -12,7 +12,7 @@
 
 using namespace flexiblesusy;
 
-void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
+void set_mssm_parameters(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
 {
    const int loopLevel = 1;
    const double ALPHASMZ = 0.1176;
@@ -103,6 +103,11 @@ void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
    softSusy.setM3Squared(BMu);
    softSusy.setHvev(vev);
    softSusy.setTanb(tanBeta);
+}
+
+void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
+{
+   set_mssm_parameters(m, softSusy);
 
    ensure_tree_level_ewsb(m);
    m.calculate_DRbar_parameters();
@@ -188,4 +193,30 @@ BOOST_AUTO_TEST_CASE( test_snu )
    BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(theta_snu, -0.5 * Pi, 1.0e-9);
+}
+
+BOOST_AUTO_TEST_CASE( test_stop_different_sign )
+{
+   MSSM<Two_scale> m;
+   MssmSoftsusy s;
+   set_mssm_parameters(m, s);
+   m.set_Mu(1200.0);
+   s.setSusyMu(1200.0);
+   ensure_tree_level_ewsb(m);
+   m.calculate_DRbar_parameters();
+   s.calcDrBarPars();
+
+   DoubleVector mf(2);
+   mf(1) = s.displayDrBarPars().mu(1,3);
+   mf(2) = s.displayDrBarPars().mu(2,3);
+   const double thetat = s.displayDrBarPars().thetat;
+
+   Eigen::Array<double,2,1> mstop;
+   double theta_stop;
+
+   m.calculate_MFu_3rd_generation(mstop(0), mstop(1), theta_stop);
+
+   BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_stop, thetat, 1.0e-9);
 }
