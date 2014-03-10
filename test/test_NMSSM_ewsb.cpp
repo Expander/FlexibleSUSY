@@ -205,3 +205,66 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_tadpoles )
    BOOST_CHECK_CLOSE(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tadpole_ss_2, 1.0e-11);
    BOOST_CHECK_CLOSE(two_loop_tadpole[2] / vS, ts_1_and_2loop_ss - tadpole_ss_3, 1.0e-11);
 }
+
+BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
+{
+   NMSSM_input_parameters input;
+   input.m0 = 300.; // avoids tree-level tachyons
+   NMSSM<Two_scale> m;
+   NmssmSoftsusy s;
+   const double precision = 1.0e-5;
+   setup_NMSSM(m, s, input);
+
+   // initial guess
+   m.set_Kappa(0.1);
+   m.set_vS(5000.);
+   m.set_ms2(-Sqr(input.m0));
+   m.set_mHu2(-Sqr(input.m0));
+   m.set_mHd2(Sqr(input.m0));
+
+   s.setKappa(m.get_Kappa());
+   s.setSvev(m.get_vS());
+   s.setMsSquared(m.get_ms2());
+   s.setMh1Squared(m.get_mHd2());
+   s.setMh2Squared(m.get_mHu2());
+
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   const double mt = s.displayDrBarPars().mt;
+   const int signMu = 1;
+
+   m.set_ewsb_iteration_precision(precision);
+   m.set_ewsb_loop_order(2);
+   m.solve_ewsb();
+
+   const Complex tadpole_hh_1(m.tadpole_hh(0));
+   const Complex tadpole_hh_2(m.tadpole_hh(1));
+   const Complex tadpole_hh_3(m.tadpole_hh(2));
+
+   double two_loop_tadpole[3];
+   m.tadpole_hh_2loop(two_loop_tadpole);
+
+   BOOST_CHECK_SMALL(Im(tadpole_hh_1), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
+   BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
+
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(tadpole_hh_1) - two_loop_tadpole[0], precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(tadpole_hh_2) - two_loop_tadpole[1], precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(tadpole_hh_3) - two_loop_tadpole[2], precision);
+
+   softsusy::numRewsbLoops = 2;
+   s.rewsb(signMu, mt);
+
+   const double kappa_ss = s.displayKappa();
+   const double vS_ss    = s.displaySvev();
+   const double ms2_ss   = s.displayMsSquared();
+
+   const double kappa_fs = m.get_Kappa();
+   const double vS_fs    = m.get_vS();
+   const double ms2_fs   = m.get_ms2();
+
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 1.0e-11);
+   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 1.0e-10);
+}
