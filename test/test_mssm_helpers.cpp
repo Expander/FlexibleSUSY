@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE( test_snu )
 
    BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
-   BOOST_CHECK_CLOSE_FRACTION(theta_snu, -0.5 * Pi, 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(theta_snu, 0.5 * Pi, 1.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_stop_different_sign )

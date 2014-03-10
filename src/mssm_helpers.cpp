@@ -92,9 +92,8 @@ double diagonalize_sfermions_2x2(const Sfermion_mass_data& pars,
       std::swap(msf(0), msf(1));
    }
 
-   // chose sign such that sin(theta) < 0
-   if (0 < theta && theta < Pi)
-      theta *= -1;
+   theta = Sign(mass_matrix(0,1) / (mass_matrix(0,0) - mass_matrix(1,1)))
+      * Abs(theta);
 
    return theta;
 }
