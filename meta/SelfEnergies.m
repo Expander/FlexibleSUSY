@@ -719,6 +719,8 @@ double tanb = " <> tanbStr <> ";
 const double tanb2 = Sqr(tanb);
 const double sinb = tanb / Sqrt(1. + tanb2);
 const double cosb = 1. / Sqrt(1. + tanb2);
+const double sinb2 = Sqr(sinb);
+const double cosb2 = Sqr(cosb);
 double amu = " <> muStr <> ";
 double mg = " <> m3Str <> ";
 double mAsq = Sqr(" <> mA0Str <> ");
@@ -744,13 +746,14 @@ const double dMA = p2s + p2w + p2b + p2tau;
 double tadpole[2];
 " <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
 
-const double self_energy = - dMA
-   + tadpole[0] * Sqr(sinb) / " <> vdStr <> "
-   + tadpole[1] * Sqr(cosb) / " <> vuStr <> ";
+const double bA =
+   + tadpole[0] * sinb2 / " <> vdStr <> "
+   + tadpole[1] * cosb2 / " <> vuStr <> ";
 
-result[0] = self_energy;
-result[1] = 0.;
-result[2] = self_energy;
+// see hep-ph/0105096 Eq. (9)
+result[0] = - sinb2 * (dMA - bA);
+result[1] = - sinb * cosb * (dMA - bA);
+result[2] = - cosb2 * (dMA - bA);
 ";
            Return[body];
           ];
