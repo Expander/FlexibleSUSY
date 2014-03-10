@@ -19,8 +19,8 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Add stand-alone examples to illustrate how to use FlexibleSUSY's
    classes and libraries independently of FlexibleSUSY's build system.
 
- * Implement leading two-loop MSSM tadpoles from Slavich (used in the
-   EWSB conditions).
+ * Implement leading two-loop MSSM and NMSSM tadpoles from Slavich
+   (used in the EWSB conditions).
 
  * Implement leading two-loop MSSM CP-even and CP-odd Higgs
    self-energy contributions from Slavich.
