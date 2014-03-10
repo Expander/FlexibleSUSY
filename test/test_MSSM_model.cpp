@@ -1141,7 +1141,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 5.0e-4);
 
    Ah = ToDoubleVector(m.get_physical().MAh);
-   TEST_CLOSE(s.displayPhys().mA0(1), Ah(2), 5.0e-4);
+   TEST_CLOSE(s.displayPhys().mA0(1), Ah(2), 6.0e-3);
    TEST_CLOSE_REL(s.displayPhys().mA0(1), Ah(2), 5.0e-4);
 }
 
@@ -1346,7 +1346,7 @@ void compare_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
    Ah_ss = softSusy.displayPhys().mA0;
    Ah_fs = model.get_physical().MAh;
 
-   TEST_CLOSE(Ah_ss(1), Ah_fs(1), 1.0e-10);
+   TEST_CLOSE(Ah_ss(1), Ah_fs(1), 4.0e-3);
 }
 
 void compare_models(int loopLevel)
