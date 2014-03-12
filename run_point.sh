@@ -57,6 +57,18 @@ fi
 
 rm -f $out_ce6ssm $out_fse6ssm
 
+echo "Parameter point: "
+printf "%10g " "$lambda"
+printf "%10g " "$lambda12"
+printf "%10g " "$kappa"
+printf "%10g " "$tan_beta"
+printf "%10g " "$vs"
+printf "%10g " "$muPrime"
+printf "%10g " "$BmuPrime"
+printf "\n"
+
+echo -n "\nRunning hand-written CE6SSM spectrum generator ... "
+
 # run CE6SSM spectrum generator
 error="0"
 $ce6ssm_specgen --brief \
@@ -74,9 +86,13 @@ $ce6ssm_specgen --brief \
 error="$?"
 
 if test ! "x${error}" = "x0" ; then
+    echo "not ok"
+    echo ""
     echo "Error: hand-written CE6SSM spectrum generator could not"
     echo "   calculate spectrum (error code ${error})"
     exit 1
+else
+    echo "ok"
 fi
 
 m0=` awk '{ if ($2 ~ /m0$/ ) print $1 }' $out_ce6ssm`
@@ -106,14 +122,6 @@ error="$?"
 if test ! "x${error}" = "x0" ; then
     echo "Error: FlexibleSUSY's CE6SSM spectrum generator could not"
     echo "   calculate spectrum (error code ${error})"
-    exit 1
 fi
 
-printf "%10g " "$lambda"
-printf "%10g " "$lambda12"
-printf "%10g " "$kappa"
-printf "%10g " "$tan_beta"
-printf "%10g " "$vs"
-printf "%10g " "$muPrime"
-printf "%10g " "$BmuPrime"
-printf "\n"
+exit $error
