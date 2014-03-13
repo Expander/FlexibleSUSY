@@ -870,12 +870,103 @@ result[2] = - cosb2 * (dMA - bA);
 
 GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                                 model_String /; model === "NMSSM"] :=
-    "\
-// @todo implement me
-result[0] = 0.;
-result[1] = 0.;
-result[2] = 0.;
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, svevStr, tanbStr, muStr, m3Str, mA0Str,
+            lambdaStr},
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           svevStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
+           lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
 ";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double as = Sqr(gs) / (4.0 * Pi);
+double rmt = " <> mtStr <> ";
+double rmtsq = Sqr(rmt);
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double vev = Sqrt(" <> vev2Str <> ");
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmb = " <> mbStr <> ";
+double rmbsq = Sqr(rmb);
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+double lamS = " <> lambdaStr <> ";
+static const double root2 = Sqrt(2.0);
+double vevS =  vev / root2;
+double svevS = " <> svevStr <> " / root2;
+int loop = 2;
+
+double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
+double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+// get alpha_s alpha_t pieces
+effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+// get alpha_s alpha_b pieces
+double cotb = 1.0 / tanb;
+effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Make appropriate substitutions for elements following 0907.4682
+// bottom of page 9
+std::swap(DMSB[0][0], DMSB[1][1]);
+std::swap(DMSB[0][2], DMSB[1][2]);
+
+for (int i = 0; i < 3; i++) {
+   for (int j = 0; j < 3; j++) {
+      DMS[i][j] += DMSB[i][j];
+   }
+}
+
+result[0] = - DMS[0][0]; // 1,1 element
+result[1] = - DMS[0][1]; // 1,2 element
+result[2] = - DMS[0][2]; // 1,3 element
+result[3] = - DMS[1][1]; // 2,2 element
+result[4] = - DMS[1][2]; // 2,3 element
+result[5] = - DMS[2][2]; // 3,3 element
+";
+           Return[body];
+          ];
 
 GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
                                 model_String /; model === "NMSSM"] :=
@@ -884,6 +975,9 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
 result[0] = 0.;
 result[1] = 0.;
 result[2] = 0.;
+result[3] = 0.;
+result[4] = 0.;
+result[5] = 0.;
 ";
 
 GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
@@ -895,7 +989,7 @@ GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
 
 CreateTwoLoopSelfEnergy[particle_, model_String] :=
     Module[{prototype, function, functionName, dim, dimStr},
-           dim = GetDimension[particle];
+           dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
            dimStr = ToString[dim];
            functionName = CreateTwoLoopSelfEnergyFunctionName[particle];
            prototype = "void " <> functionName <> "(double result[" <>

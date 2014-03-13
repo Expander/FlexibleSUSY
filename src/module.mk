@@ -12,6 +12,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
 		$(DIR)/mssm_twoloophiggs.f \
+		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/program_options.cpp \
 		$(DIR)/rge.cpp \

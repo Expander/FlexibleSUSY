@@ -7,8 +7,7 @@ LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmsoftpars.cpp \
 		$(DIR)/nmssmsoftsusy.cpp \
 		$(DIR)/nmssmsusy.cpp \
-		$(DIR)/nmssm1loop.f \
-		$(DIR)/nmssm2loop.f
+		$(DIR)/nmssm1loop.f
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSoftsusyNMSSM_SRC  += \

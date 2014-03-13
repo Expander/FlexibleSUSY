@@ -51,6 +51,7 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_initial_guesser.cpp \
 		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
+		$(DIR)/test_NMSSM_self_energies.cpp \
 		$(DIR)/test_NMSSM_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
@@ -258,6 +259,8 @@ $(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LI
 $(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_self_energies.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 

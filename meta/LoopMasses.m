@@ -243,7 +243,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
             selfEnergyMatrixType, eigenArrayType,
-            addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = ""},
+            addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
+            numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -289,18 +290,24 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               If[SARAH`UseHiggs2LoopMSSM === True ||
                  FlexibleSUSY`UseHiggs2LoopNMSSM === True,
                  If[MemberQ[{SARAH`HiggsBoson, SARAH`PseudoScalar}, particle],
+                    numberOfIndependentMatrixEntries = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[dim];
+                    numberOfIndependentMatrixEntriesStr = ToString[numberOfIndependentMatrixEntries];
+                    addTwoLoopHiggsContributions = "";
+                    For[k = 0; n = 0, k < dim, k++,
+                        For[l = k, l < dim, l++; n++,
+                            addTwoLoopHiggsContributions = addTwoLoopHiggsContributions <>
+                               "self_energy(" <> ToString[k] <> ", " <>
+                               ToString[l] <> ") += two_loop[" <> ToString[n] <> "];\n";
+                           ];
+                       ];
                     addTwoLoopHiggsContributions = "
 if (pole_mass_loop_order > 1) {
-" <> IndentText["\
-self_energy(0,0) += two_loop[0];
-self_energy(0,1) += two_loop[1];
-self_energy(1,1) += two_loop[2];
-"] <> "\
+" <> IndentText[addTwoLoopHiggsContributions] <> "\
 }
 ";
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
-double two_loop[3] = { 0. };
+double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
 if (pole_mass_loop_order > 1)
 " <> IndentText["\
 self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
