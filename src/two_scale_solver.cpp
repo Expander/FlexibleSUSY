@@ -305,6 +305,10 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
            end = tmp_model->downwards_constraints.end(); it != end; ++it)
       (*it)->set_model(model);
 
+   if (!models.empty())
+      models.back()->matching_condition->set_models(models.back()->model,
+						    model);
+
    models.push_back(tmp_model);
 }
 
