@@ -1,0 +1,151 @@
+# Package information
+PKGNAME         := @PKGNAME@
+VERSION         := @FLEXIBLESUSY_VERSION@
+ABSBASEDIR      := @ABSBASEDIR@
+
+LIBEXT          := @LIBEXT@
+
+MODEL1          := MSSM
+MODEL2          := MSSMRHN
+
+MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
+MODEL2DIR       := $(ABSBASEDIR)/models/$(MODEL2)
+FLEXIDIR        := $(ABSBASEDIR)/src
+LEGACYDIR       := $(ABSBASEDIR)/legacy
+SLHAEADIR       := $(ABSBASEDIR)/slhaea
+
+INCMODEL1       := -I$(MODEL1DIR)
+INCMODEL2       := -I$(MODEL2DIR)
+INCFLEXI        := -I$(FLEXIDIR)
+INCLEGACY       := -I$(LEGACYDIR)
+INCSLHAEA       := -I$(SLHAEADIR)
+LIBMODEL1       := $(MODEL1DIR)/lib$(MODEL1)$(LIBEXT)
+LIBMODEL2       := $(MODEL2DIR)/lib$(MODEL2)$(LIBEXT)
+LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(LIBEXT)
+LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
+
+# Variables for compilation
+CXX             := @CXX@
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
+CXXFLAGS        := @CXXFLAGS@
+FC              := @FC@
+FFLAGS          := @FFLAGS@
+FLIBS           := @FLIBS@
+BOOSTTESTLIBS   := @BOOSTTESTLIBS@
+BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
+BOOSTFLAGS      := @BOOSTFLAGS@
+EIGENFLAGS      := @EIGENFLAGS@
+GSLLIBS         := @GSLLIBS@
+GSLFLAGS        := @GSLFLAGS@
+LAPACKLIBS      := @LAPACKLIBS@
+LOOPTOOLSFLAGS  := @LOOPTOOLSFLAGS@
+LOOPTOOLSLIBS   := @LOOPTOOLSLIBS@
+THREADLIBS      := @THREADLIBS@
+
+# Switches
+ENABLE_LOOPTOOLS := @ENABLE_LOOPTOOLS@
+
+TOWER_SRC := \
+		run_tower.cpp \
+		MSSM_MSSMRHN_two_scale_matching.cpp \
+		MSSM_MSSMRHN_two_scale_initial_guesser.cpp
+
+TOWER_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(TOWER_SRC)))
+
+TOWER_DEP := \
+		$(TOWER_OBJ:.o=.d)
+
+TOWER_EXE := \
+		run_tower.x
+
+# returns file name with absolute path, taking whitespace in directory
+# names into account
+abspathx        = $(foreach name,$(1),\
+		$(shell echo '$(abspath $(name))' | sed s/\[\[:space:\]\]/\\\\\&/g))
+
+.PHONY:         all clean clean-dep clean-obj distclean showbuild
+
+all: $(TOWER_EXE)
+
+clean-dep:
+		-rm -f $(TOWER_DEP)
+
+clean-obj:
+		-rm -f $(TOWER_OBJ)
+
+clean: clean-dep clean-obj
+
+distclean: clean
+		-rm -f Makefile
+		-rm -f $(TOWER_EXE)
+
+$(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+$(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPTOOLSFLAGS)
+endif
+
+$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),clean-dep)
+ifneq ($(MAKECMDGOALS),clean-obj)
+ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),showbuild)
+-include $(TOWER_DEP)
+endif
+endif
+endif
+endif
+endif
+
+%.d: %.cpp
+# -MT '$*.o' ensures that the target contains the full path
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
+
+%.d: %.f
+# the sed script ensures that the target contains the full path
+	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	sed 's|.*\.o:|$*.o:|' > $@
+
+showbuild:
+	@echo "# package information"
+	@echo "PKGNAME            = $(PKGNAME)"
+	@echo "VERSION            = $(VERSION)"
+	@echo "ABSBASEDIR         = $(ABSBASEDIR)"
+	@echo ""
+	@echo "# linked FlexibleSUSY libraries"
+	@echo "MODEL1             = $(MODEL1)"
+	@echo "MODEL2             = $(MODEL2)"
+	@echo "MODEL1DIR          = $(MODEL1DIR)"
+	@echo "MODEL2DIR          = $(MODEL2DIR)"
+	@echo "FLEXIDIR           = $(FLEXIDIR)"
+	@echo "LEGACYDIR          = $(LEGACYDIR)"
+	@echo "LIBMODEL1          = $(LIBMODEL1)"
+	@echo "LIBMODEL2          = $(LIBMODEL2)"
+	@echo "LIBFLEXI           = $(LIBFLEXI)"
+	@echo "LIBLEGACY          = $(LIBLEGACY)"
+	@echo ""
+	@echo "# compilation information"
+	@echo "CXX                = $(CXX)"
+	@echo "CPPFLAGS           = $(CPPFLAGS)"
+	@echo "CXXFLAGS           = $(CXXFLAGS)"
+	@echo "FC                 = $(FC)"
+	@echo "FFLAGS             = $(FFLAGS)"
+	@echo "FLIBS              = $(FLIBS)"
+	@echo "LIBEXT             = $(LIBEXT)"
+	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
+	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
+	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"
+	@echo "EIGENFLAGS         = $(EIGENFLAGS)"
+	@echo "GSLLIBS            = $(GSLLIBS)"
+	@echo "GSLFLAGS           = $(GSLFLAGS)"
+	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
+	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
+	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
+	@echo "THREADLIBS         = $(THREADLIBS)"
+	@echo ""
+	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
