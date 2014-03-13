@@ -65,6 +65,9 @@ GetEffectiveMu::usage="";
 GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
 
+NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
+independent parameters of a real symmetric nxn matrix";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -672,6 +675,8 @@ GetParameterFromDescription[description_String] :=
              ];
            parameter[[1]]
           ];
+
+NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 End[];
 
