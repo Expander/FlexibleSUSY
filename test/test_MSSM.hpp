@@ -56,7 +56,7 @@ void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
    ensure_tree_level_ewsb(m);
 
    const double precision = m.get_ewsb_iteration_precision();
-   m.set_pole_mass_loop_order(loop_level);
+   m.set_ewsb_loop_order(loop_level);
    m.solve_ewsb();
 
    if (loop_level == 1) {
