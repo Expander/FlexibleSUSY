@@ -20,6 +20,7 @@ help() {
 cat <<EOF
    --lambda              universal lambda
    --kappa               universal kappa
+   --solution            solution number
    --tan_beta            tan(beta)
    --vs                  vs
    --help, -h            help message
@@ -28,7 +29,6 @@ EOF
 
 # default values
 lambda=0.2
-lambda12="$lambda"
 kappa=0.2
 tan_beta=10
 vs=1000
@@ -46,6 +46,7 @@ if test $# -gt 0 ; then
         case $1 in
             --lambda=*)              lambda=$optarg ;;
             --kappa=*)               kappa=$optarg ;;
+            --solution=*)            solution=$optarg ;;
             --tan_beta=*)            tan_beta=$optarg ;;
             --vs=*)                  vs=$optarg ;;
             --help|-h)               help; exit 0 ;;
@@ -54,6 +55,8 @@ if test $# -gt 0 ; then
         shift
     done
 fi
+
+lambda12="$lambda"
 
 rm -f $out_ce6ssm $out_fse6ssm
 
@@ -79,6 +82,7 @@ $ce6ssm_specgen --brief \
     --kappa1 $kappa \
     --kappa2 $kappa \
     --kappa3 $kappa \
+    --solution-number $solution \
     --vs $vs \
     --mu-prime $muPrime \
     --output-file $out_ce6ssm > /dev/null
