@@ -1168,7 +1168,7 @@ CreateTwoLoopSelfEnergies[particles_List, model_String] :=
            For[i = 1, i <= Length[particles], i++,
                {p, f} = CreateTwoLoopSelfEnergy[particles[[i]], model];
                prototype = prototype <> p;
-               function = function <> f;
+               function = function <> f <> "\n";
               ];
            Return[{prototype, function}];
           ];
