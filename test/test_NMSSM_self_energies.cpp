@@ -14,7 +14,7 @@ using namespace flexiblesusy;
 using namespace softsusy;
 
 
-BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_CP_even_higgs )
+BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
 {
    NMSSM_input_parameters input;
    input.m0 = 300.; // avoids tree-level tachyons
@@ -40,11 +40,15 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_CP_even_higgs )
 
    // check tree-level
    DoubleVector hh_ss(s.displayDrBarPars().mh0);
+   DoubleVector Ah_ss(s.displayDrBarPars().mA0);
    Eigen::Array<double,3,1> hh_fs(m.get_Mhh());
+   Eigen::Array<double,3,1> Ah_fs(m.get_MAh());
 
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(1), hh_fs(0), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(2), hh_fs(1), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(3), hh_fs(2), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(1), Ah_fs(1), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(2), Ah_fs(2), 1.0e-10);
 
    // solve EWSB
    int loop_order = 2;
@@ -85,11 +89,16 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_CP_even_higgs )
 
    m.set_number_of_mass_iterations(1);
    m.calculate_Mhh_pole();
+   m.calculate_MAh_pole();
 
    hh_ss = s.displayPhys().mh0;
    hh_fs = m.get_physical().Mhh;
+   Ah_ss = s.displayPhys().mA0;
+   Ah_fs = m.get_physical().MAh;
 
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(1), hh_fs(0), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(2), hh_fs(1), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(3), hh_fs(2), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(1), Ah_fs(1), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(2), Ah_fs(2), 1.0e-10);
 }
