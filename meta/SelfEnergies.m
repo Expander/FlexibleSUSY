@@ -490,10 +490,22 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String:"tadpole"] :=
            Return[IndentText[IndentText[body]]];
           ];
 
+AssertFieldDimension[field_, dim_, model_] :=
+    Block[{fieldDim},
+          fieldDim = GetDimension[field];
+          If[fieldDim =!= dim,
+             Print["Error: Cannot use ", model, " two-loop routines for ",
+                   field, " (multiplet size ", fieldDim, ").  Multiplet size ",
+                   dim, " required!"];
+             Quit[1];
+            ];
+         ];
+
 GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[SARAH`HiggsBoson, 2, model];
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
@@ -567,6 +579,7 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, svevStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[SARAH`HiggsBoson, 3, model];
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
@@ -679,6 +692,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[particle, 2, model];
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
@@ -786,6 +800,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[particle, 2, model];
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
@@ -874,6 +889,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
             lambdaStr},
+           AssertFieldDimension[particle, 3, model];
            mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
            mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
            mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
@@ -1000,7 +1016,25 @@ result[5] = - DMS[2][2]; // 3,3 element
 
 GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
                                 model_String /; model === "NMSSM"] :=
-    "\
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
+            lambdaStr},
+           AssertFieldDimension[particle, 3, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
+           lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
+           body = "\
 // @todo implement me
 result[0] = 0.;
 result[1] = 0.;
@@ -1009,6 +1043,8 @@ result[3] = 0.;
 result[4] = 0.;
 result[5] = 0.;
 ";
+           Return[body];
+          ];
 
 GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
     Module[{},
