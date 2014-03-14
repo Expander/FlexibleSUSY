@@ -20,7 +20,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_CP_even_higgs )
    input.m0 = 300.; // avoids tree-level tachyons
    NMSSM<Two_scale> m;
    NmssmSoftsusy s;
-   const double precision = 1.0e-5;
    setup_NMSSM(m, s, input);
 
    // initial guess
@@ -77,9 +76,12 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_CP_even_higgs )
    physical.mh0(1) = s.displayDrBarPars().mh0(1);
    physical.mh0(2) = s.displayDrBarPars().mh0(2);
    physical.mh0(3) = s.displayDrBarPars().mh0(3);
+   physical.mA0(1) = s.displayDrBarPars().mA0(1);
+   physical.mA0(2) = s.displayDrBarPars().mA0(2);
 
-   s.setPhys(physical);
+   s.setPhys(physical); // initialization
    s.higgs(accuracy, piWWT, pizztMS, physical); // does one iteration
+   s.setPhys(physical); // now modified
 
    m.set_number_of_mass_iterations(1);
    m.calculate_Mhh_pole();
