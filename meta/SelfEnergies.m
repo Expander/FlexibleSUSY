@@ -1035,13 +1035,109 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
            vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
            body = "\
-// @todo implement me
-result[0] = 0.;
-result[1] = 0.;
-result[2] = 0.;
-result[3] = 0.;
-result[4] = 0.;
-result[5] = 0.;
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double as = Sqr(gs) / (4.0 * Pi);
+double rmt = " <> mtStr <> ";
+double rmtsq = Sqr(rmt);
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double vev = Sqrt(" <> vev2Str <> ");
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+const double sinb2 = Sqr(sinb);
+const double cosb2 = Sqr(cosb);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotb = 1.0 / tanb;
+double rmb = " <> mbStr <> ";
+double rmbsq = Sqr(rmb);
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+double lamS = " <> lambdaStr <> ";
+static const double root2 = Sqrt(2.0);
+double vevS =  vev / root2;
+double svevS = " <> vsStr <> " / root2;
+int loop = 2;
+
+double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
+double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+// get alpha_s alpha_t pieces
+effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+
+// get alpha_s alpha_b pieces
+effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Make appropriate substitutions for elements following 0907.4682
+// bottom of page 9
+std::swap(DMPB[0][0], DMPB[1][1]);
+std::swap(DMPB[0][2], DMPB[1][2]);
+
+for (int i = 0; i < 3; i++) {
+   for (int j = 0; j < 3; j++) {
+      DMP[i][j] += DMPB[i][j];
+   }
+}
+
+// Corrections as in MSSM, not corrected for NMSSM,
+// should be OK for MSSM states when S state is close to decoupled
+
+double p2w = 0., p2tau = 0.;
+
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2w + p2tau;
+
+// subtract two-loop tadpoles
+double tadpole[3];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+const double bA =
+   + tadpole[0] * sinb2 / " <> vdStr <> "
+   + tadpole[1] * cosb2 / " <> vuStr <> ";
+
+DMP[0][0] += (dMA - bA) * sinb2;
+DMP[0][1] += (dMA - bA) * sinb * cosb;
+DMP[1][1] += (dMA - bA) * cosb2;
+DMP[2][2] += - tadpole[2] / " <> vsStr <> ";
+
+result[0] = - DMP[0][0]; // 1,1 element
+result[1] = - DMP[0][1]; // 1,2 element
+result[2] = - DMP[0][2]; // 1,3 element
+result[3] = - DMP[1][1]; // 2,2 element
+result[4] = - DMP[1][2]; // 2,3 element
+result[5] = - DMP[2][2]; // 3,3 element
 ";
            Return[body];
           ];
