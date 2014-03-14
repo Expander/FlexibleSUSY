@@ -876,9 +876,9 @@ const double bA =
    + tadpole[1] * cosb2 / " <> vuStr <> ";
 
 // see hep-ph/0105096 Eq. (9)
-result[0] = - sinb2 * (dMA - bA);
-result[1] = - sinb * cosb * (dMA - bA);
-result[2] = - cosb2 * (dMA - bA);
+result[0] = - (dMA - bA) * sinb2;
+result[1] = - (dMA - bA) * sinb * cosb;
+result[2] = - (dMA - bA) * cosb2;
 ";
            Return[body];
           ];
