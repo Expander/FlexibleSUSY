@@ -96,9 +96,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    Ah_ss = s.displayPhys().mA0;
    Ah_fs = m.get_physical().MAh;
 
-   BOOST_CHECK_CLOSE_FRACTION(hh_ss(1), hh_fs(0), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(hh_ss(2), hh_fs(1), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(hh_ss(3), hh_fs(2), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(hh_ss(1), hh_fs(0), 2.0e-04);
+   BOOST_CHECK_CLOSE_FRACTION(hh_ss(2), hh_fs(1), 4.0e-04);
+   BOOST_CHECK_CLOSE_FRACTION(hh_ss(3), hh_fs(2), 7.0e-04);
    BOOST_CHECK_CLOSE_FRACTION(Ah_ss(1), Ah_fs(1), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(Ah_ss(2), Ah_fs(2), 1.0e-10);
 }
