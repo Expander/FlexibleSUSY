@@ -35,11 +35,11 @@ LIBSoftsusyNMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 all-$(MODNAME): $(LIBSoftsusyNMSSM)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSoftsusyNMSSM_OBJ)
+		-rm -f $(LIBSoftsusyNMSSM_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSoftsusyNMSSM_DEP)
-		rm -rf $(LIBSoftsusyNMSSM)
+		-rm -f $(LIBSoftsusyNMSSM_DEP)
+		-rm -f $(LIBSoftsusyNMSSM)
 
 clean::         clean-$(MODNAME)
 

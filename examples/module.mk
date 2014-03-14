@@ -3,13 +3,9 @@ MODNAME  := examples
 
 EXAMPLES_SRC :=
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
-EXAMPLES_SRC += \
-		$(DIR)/run_softsusy.cpp
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM),yes)
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes)
 EXAMPLES_SRC += \
 		$(DIR)/run_softpoint.cpp
-endif
 endif
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
@@ -112,9 +108,6 @@ endif
 endif
 endif
 endif
-
-$(DIR)/run_softsusy.x: $(DIR)/run_softsusy.o $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $(call abspathx,$^) $(FLIBS)
 
 $(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(FLIBS)
