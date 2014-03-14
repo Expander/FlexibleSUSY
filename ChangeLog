@@ -22,7 +22,7 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Implement leading two-loop MSSM and NMSSM tadpoles from Slavich
    (used in the EWSB conditions).
 
- * Implement leading two-loop MSSM CP-even and CP-odd Higgs
+ * Implement leading two-loop MSSM and NMSSM CP-even and CP-odd Higgs
    self-energy contributions from Slavich.
 
 FlexibleSUSY-0.5.3 [January, 21 2014]
