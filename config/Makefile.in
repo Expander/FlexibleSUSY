@@ -15,9 +15,11 @@ ALGORITHMS := @ALGORITHMS@
 CXX        := @CXX@
 CPPFLAGS   := @CPPFLAGS@ $(patsubst %,-I%,$(MODULES)) -I.
 CXXFLAGS   := @CXXFLAGS@
+CXX_DEP_GEN:= @CXX_DEP_GEN@
 FC         := @FC@
 FFLAGS     := @FFLAGS@
 FLIBS      := @FLIBS@
+FOR_DEP_GEN:= @FOR_DEP_GEN@
 MAKELIB    := @MAKELIB@
 LIBEXT     := @LIBEXT@
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
@@ -100,11 +102,11 @@ clean-dep:
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
+	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
 # the sed script ensures that the target contains the full path
-	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
 clean-executables:
@@ -128,9 +130,11 @@ showbuild:
 	@echo "CXX                = $(CXX)"
 	@echo "CPPFLAGS           = $(CPPFLAGS)"
 	@echo "CXXFLAGS           = $(CXXFLAGS)"
+	@echo "CXX_DEP_GEN        = $(CXX_DEP_GEN)"
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
+	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "MAKELIB            = $(MAKELIB)"
 	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"

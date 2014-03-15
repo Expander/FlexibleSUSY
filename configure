@@ -110,8 +110,10 @@ BOOSTTHREADLIBS=""
 THREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
+CXX_DEP_GEN="${CXX}"
 EIGENFLAGS=""
 FC="gfortran"
+FOR_DEP_GEN="${FC}"
 GSLLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
@@ -992,6 +994,21 @@ check_cxxflags() {
 }
 
 #_____________________________________________________________________
+check_cxx_dep_gen() {
+    checking_msg "C++ file dependency generator $CXX_DEP_GEN"
+    exists_in_path "$CXX_DEP_GEN"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A C++ file dependency generator must be installed!"
+        message "   Use --with-cxx-dep-gen= to specify the dependency generator"
+        message "   that should be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_eigen_incl() {
     eigen_inc_paths="$default_inc_paths /usr/include/eigen3 \
                      /usr/local/include/eigen3"
@@ -1069,6 +1086,21 @@ check_fortran_libs() {
         ifort)
             FLIBS="-lifcore -limf -ldl" ;;
     esac
+}
+
+#_____________________________________________________________________
+check_fortran_dep_gen() {
+    checking_msg "Fortran file dependency generator $FOR_DEP_GEN"
+    exists_in_path "$FOR_DEP_GEN"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A Fortran file dependency generator must be installed!"
+        message "   Use --with-fortran-dep-gen= to specify the dependency generator"
+        message "   that should be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
 }
 
 #_____________________________________________________________________
@@ -1373,9 +1405,11 @@ Package directories, compilation settings and model selection
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
   --with-cxxflags=          C++ compiler flags (default: $CXXFLAGS)
+  --with-cxx-dep-gen=       C++ file dependency generator (default: $CXX_DEP_GEN)
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
+  --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
   --with-lib-ext=           Library extension (default: $LIBEXT)
@@ -1456,9 +1490,11 @@ if test $# -gt 0 ; then
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
+            --with-cxx-dep-gen=*)    CXX_DEP_GEN=$optarg ;;
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
@@ -1486,8 +1522,10 @@ if test "x${enable_compile}" = "xyes"; then
         check_gpp_version
     fi
     check_cxxflags
+    check_cxx_dep_gen
     check_fc
     check_fflags
+    check_fortran_dep_gen
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -1532,11 +1570,13 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
-    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
@@ -1566,10 +1606,12 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
-    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
