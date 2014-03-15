@@ -1084,7 +1084,7 @@ check_fortran_libs() {
         g77|f77)
             FLIBS="-lg2c -lm" ;;
         ifort)
-            FLIBS="-lifcore -limf -ldl" ;;
+            FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
     esac
 }
 
