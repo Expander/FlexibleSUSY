@@ -22,12 +22,15 @@
 
 namespace flexiblesusy {
 
+/**
+ * Default constructor
+ *
+ * Calls reset() to initialize all program options to their default
+ * values.
+ */
 Program_options::Program_options()
-   : values() // initializes all values to zero
 {
-   values[precision] = 1.0e-4;
-   values[pole_mass_loop_order] = 1.;
-   values[ewsb_loop_order] = 1.;
+   reset();
 }
 
 double Program_options::get(Options o) const
@@ -40,6 +43,28 @@ void Program_options::set(Options o, double value)
 {
    assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
    values[o] = value;
+}
+
+/**
+ * Resets all program options to their defaults
+ *
+ * | enum                 | possible values              | default value   |
+ * |----------------------|------------------------------|-----------------|
+ * | precision            | any positive double          | 1.0e-4          |
+ * | max_iterations       | any positive double          | 0 (= automatic) |
+ * | algorithm            | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
+ * | calculate_sm_masses  | 0 or 1                       | 0 (= no)        |
+ * | pole_mass_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
+ * | ewsb_loop_order      | 0, 1, 2                      | 2 (= 2-loop)    |
+ */
+void Program_options::reset()
+{
+   values[precision]            = 1.0e-4;
+   values[max_iterations]       = 0.; // 0 = automatic
+   values[algorithm]            = 0.; // 0 = two-scale
+   values[calculate_sm_masses]  = 0.; // 0 = false
+   values[pole_mass_loop_order] = 2.;
+   values[ewsb_loop_order]      = 2.;
 }
 
 } // namespace flexiblesusy

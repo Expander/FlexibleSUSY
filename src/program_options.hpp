@@ -30,15 +30,23 @@ namespace flexiblesusy {
  */
 class Program_options {
 public:
-   enum Options : unsigned { precision, max_iterations,
-         algorithm, calculate_sm_masses, pole_mass_loop_order,
-         ewsb_loop_order, NUMBER_OF_OPTIONS };
+   /// Spectrum generator options
+   enum Options : unsigned {
+      precision,            ///< overall precision goal
+      max_iterations,       ///< maximum number of iterations (0 = automatic)
+      algorithm,            ///< RG solver algorithm (0 = two-scale)
+      calculate_sm_masses,  ///< calculate Standard Model pole masses
+      pole_mass_loop_order, ///< loop-order for calculation of pole masses
+      ewsb_loop_order,      ///< loop-order for solving the EWSB eqs.
+      NUMBER_OF_OPTIONS     ///< number of possible options
+   };
 
    Program_options();
    ~Program_options() {}
 
    double get(Options) const;
    void set(Options, double);
+   void reset();
 
 private:
    double values[NUMBER_OF_OPTIONS];
