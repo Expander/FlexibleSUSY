@@ -16,7 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "program_options.hpp"
+#include "spectrum_generator_settings.hpp"
 
 #include <cassert>
 
@@ -25,39 +25,39 @@ namespace flexiblesusy {
 /**
  * Default constructor
  *
- * Calls reset() to initialize all program options to their default
- * values.
+ * Calls reset() to initialize all spectrum generator settings to
+ * their default values.
  */
-Program_options::Program_options()
+Spectrum_generator_settings::Spectrum_generator_settings()
 {
    reset();
 }
 
-double Program_options::get(Options o) const
+double Spectrum_generator_settings::get(Settings o) const
 {
-   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
+   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
    return values[o];
 }
 
-void Program_options::set(Options o, double value)
+void Spectrum_generator_settings::set(Settings o, double value)
 {
-   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
+   assert(o < NUMBER_OF_OPTIONS && "Setting key out of range");
    values[o] = value;
 }
 
 /**
- * Resets all program options to their defaults
+ * Resets all spectrum generator settings to their defaults.
  *
  * | enum                 | possible values              | default value   |
  * |----------------------|------------------------------|-----------------|
  * | precision            | any positive double          | 1.0e-4          |
  * | max_iterations       | any positive double          | 0 (= automatic) |
  * | algorithm            | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
- * | calculate_sm_masses  | 0 or 1                       | 0 (= no)        |
+ * | calculate_sm_masses  | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
  * | ewsb_loop_order      | 0, 1, 2                      | 2 (= 2-loop)    |
  */
-void Program_options::reset()
+void Spectrum_generator_settings::reset()
 {
    values[precision]            = 1.0e-4;
    values[max_iterations]       = 0.; // 0 = automatic

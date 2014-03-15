@@ -14,7 +14,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
-		$(DIR)/program_options.cpp \
+		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \

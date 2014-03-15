@@ -16,22 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef PROGRAM_OPTIONS_H
-#define PROGRAM_OPTIONS_H
+#ifndef SPECTRUM_GENERATOR_SETTINGS_HPP
+#define SPECTRUM_GENERATOR_SETTINGS_HPP
 
 namespace flexiblesusy {
 
 /**
- * @class Program_options
- * @brief stores the program options
+ * @class Spectrum_generator_settings
+ * @brief stores the spectrum generator settings
  *
- * This class stores all program options which can be changed via the
- * SLHA input file.
+ * This class stores all spectrum generator settings which can be
+ * changed via the SLHA input file.
  */
-class Program_options {
+class Spectrum_generator_settings {
 public:
-   /// Spectrum generator options
-   enum Options : unsigned {
+   /// Spectrum generator settings
+   enum Settings : unsigned {
       precision,            ///< overall precision goal
       max_iterations,       ///< maximum number of iterations (0 = automatic)
       algorithm,            ///< RG solver algorithm (0 = two-scale)
@@ -41,11 +41,11 @@ public:
       NUMBER_OF_OPTIONS     ///< number of possible options
    };
 
-   Program_options();
-   ~Program_options() {}
+   Spectrum_generator_settings();
+   ~Spectrum_generator_settings() {}
 
-   double get(Options) const;
-   void set(Options, double);
+   double get(Settings) const;
+   void set(Settings, double);
    void reset();
 
 private:
