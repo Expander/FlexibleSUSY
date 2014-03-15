@@ -29,16 +29,35 @@ LIBSoftsusyNMSSM_DEP  := \
 
 LIBSoftsusyNMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
+EXESoftsusyNMSSM_SRC  :=
+
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes)
+EXESoftsusyNMSSM_SRC  += \
+		$(DIR)/run_softpoint.cpp
+endif
+
+EXESoftsusyNMSSM_OBJ  := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXESoftsusyNMSSM_SRC)))
+
+EXESoftsusyNMSSM_DEP  := \
+		$(EXESoftsusyNMSSM_OBJ:.o=.d)
+
+RUN_SOFTPOINT_EXE := \
+		$(EXESoftsusyNMSSM_OBJ:.o=.x)
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBSoftsusyNMSSM)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSoftsusyNMSSM_OBJ)
+		-rm -f $(LIBSoftsusyNMSSM_OBJ)
+		-rm -f $(EXESoftsusyNMSSM_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSoftsusyNMSSM_DEP)
-		rm -rf $(LIBSoftsusyNMSSM)
+		-rm -f $(LIBSoftsusyNMSSM_DEP)
+		-rm -f $(LIBSoftsusyNMSSM)
+		-rm -f $(EXESoftsusyNMSSM_DEP)
+		-rm -f $(RUN_SOFTPOINT_EXE)
 
 clean::         clean-$(MODNAME)
 
@@ -47,5 +66,9 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-ALLDEP += $(LIBSoftsusyNMSSM_DEP)
+$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(FLIBS)
+
+ALLDEP += $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP)
 ALLLIB += $(LIBSoftsusyNMSSM)
+ALLEXE += $(RUN_SOFTPOINT_EXE)

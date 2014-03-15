@@ -248,6 +248,7 @@ WriteSLHABlock[{blockName_, tuples_List}] :=
                   parVal = "(" <> parVal <> " * " <>
                            CConversion`RValueToCFormString[
                                Parameters`GetGUTNormalization[par]] <> ")";
+                  parStr = "gY";
                  ];
                pdg = ToString[tuples[[t,2]]];
                result = result <> "      << FORMAT_ELEMENT(" <> pdg <> ", " <>
