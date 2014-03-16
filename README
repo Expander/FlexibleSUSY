@@ -23,12 +23,14 @@ How to create a model
 =====================
 
 0. Before you setup a FlexibleSUSY model, you have to provide a SARAH
-   model file.  The SARAH model file must be loadable via SARAH's
-   Start[] function:
+   model file.  To make it available in FlexibleSUSY, you can put it
+   either into FlexibleSUSY's SARAH model directory
 
-   $ math
-   In[]:= Needs["SARAH`"]
-   In[]:= Start["<model>"]
+     FlexibleSUSY/sarah/<model>/
+
+   or directly into SARAH's own model directly
+
+     SARAH/Models/<model>/
 
    Here <model> is the name of your model (e.g. MSSM, NMSSM, etc.).
    Note, that there are already plenty of pre-installed model files
@@ -46,8 +48,9 @@ How to create a model
    * a Mathematica start script models/<model>/start.m
    * and a FlexibleSUSY model file models/<model>/FlexibleSUSY.m
 
-   To modify the model details, please edit the FlexibleSUSY model
-   file models/<model>/FlexibleSUSY.m .
+   To modify the model details (input parameters, constraints, etc.),
+   please edit the FlexibleSUSY model file
+   models/<model>/FlexibleSUSY.m .
 
 2. Create the Makefile and register your model
 
