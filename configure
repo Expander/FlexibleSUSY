@@ -109,7 +109,7 @@ CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
  -Wno-unused-local-typedefs"
-FFLAGS="-O2 -frecursive"
+FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
