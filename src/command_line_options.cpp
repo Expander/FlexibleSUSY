@@ -18,6 +18,7 @@
 
 #include "command_line_options.hpp"
 #include "config.h"
+#include "build_info.hpp"
 #include "logger.hpp"
 
 #include <cstdio>
@@ -68,6 +69,9 @@ void Command_line_options::parse(int argc, const char* argv[])
       } else if (option == "--help" || option == "-h") {
          print_usage(std::cout);
          do_exit = true;
+      } else if (option == "--build-info") {
+         print_build_info(std::cout);
+         do_exit = true;
       } else if (option == "--version" || option == "-v") {
          print_version(std::cout);
          do_exit = true;
@@ -77,6 +81,11 @@ void Command_line_options::parse(int argc, const char* argv[])
          exit_status = EXIT_FAILURE;
       }
    }
+}
+
+void Command_line_options::print_build_info(std::ostream& ostr) const
+{
+   flexiblesusy::print_all_info(ostr);
 }
 
 void Command_line_options::print_version(std::ostream& ostr) const
@@ -94,6 +103,7 @@ void Command_line_options::print_usage(std::ostream& ostr) const
            "  --slha-output-file=<filename>  SLHA output file\n"
            "                                 If not given, the model parameters are\n"
            "                                 printed to stdout\n"
+           "  --build-info                   print build information\n"
            "  --help,-h                      print this help message\n"
            "  --version,-v                   print program version"
         << std::endl;

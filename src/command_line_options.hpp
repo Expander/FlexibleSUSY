@@ -50,6 +50,7 @@ public:
    int must_exit() const { return do_exit; }
    int status() const { return exit_status; }
    void parse(int, const char*[]);
+   void print_build_info(std::ostream&) const;
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;
 
