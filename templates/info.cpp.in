@@ -27,6 +27,7 @@ namespace @ModelName@_info {
 @particleNames@
 @particleLaTeXNames@
 @parameterNames@
+   const bool is_low_energy_model = @isLowEnergyModel@;
 }
 
 } // namespace flexiblesusy

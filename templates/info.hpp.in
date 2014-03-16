@@ -30,6 +30,7 @@ namespace @ModelName@_info {
    extern const char* particle_names[NUMBER_OF_PARTICLES];
    extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
    extern const char* parameter_names[NUMBER_OF_PARAMETERS];
+   extern const bool is_low_energy_model;
 }
 
 } // namespace flexiblesusy
