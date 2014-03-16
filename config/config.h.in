@@ -1,7 +1,27 @@
 /* DO NOT EDIT! GENERATED AUTOMATICALLY! */
+/* generated at @DATE@ */
+
+#define PKGNAME "@PKGNAME@"
 
 #define FLEXIBLESUSY_VERSION "@FLEXIBLESUSY_VERSION@"
 #define FLEXIBLESUSY_MAJOR @FLEXIBLESUSY_MAJOR@
 #define FLEXIBLESUSY_MINOR @FLEXIBLESUSY_MINOR@
 #define FLEXIBLESUSY_PATCH @FLEXIBLESUSY_PATCH@
-#define PKGNAME "@PKGNAME@"
+
+#define SARAH_VERSION         "@SARAH_VERSION@"
+#define SARAH_MAJOR           @SARAH_MAJOR@
+#define SARAH_MINOR           @SARAH_MINOR@
+#define SARAH_PATCH           @SARAH_PATCH@
+
+#define MATHEMATICA_VERSION   @MATH_VERSION@
+
+/* System information */
+#define OPERATING_SYSTEM      "@OPERATING_SYSTEM@"
+#define KERNEL_VERSION        "@KERNEL_VERSION@"
+
+/* Build variables */
+#define CXX                   "@CXX@"
+#define CXXFLAGS              "@CXXFLAGS@"
+#define FC                    "@FC@"
+#define FFLAGS                "@FFLAGS@"
+#define FLIBS                 "@FLIBS@"
