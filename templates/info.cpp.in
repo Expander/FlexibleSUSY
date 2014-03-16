@@ -20,6 +20,8 @@
 
 #include "@ModelName@_info.hpp"
 
+#include <iostream>
+
 namespace flexiblesusy {
 
 namespace @ModelName@_info {
@@ -27,8 +29,41 @@ namespace @ModelName@_info {
 @particleNames@
 @particleLaTeXNames@
 @parameterNames@
+   const char* model_name = "@ModelName@";
    const bool is_low_energy_model = @isLowEnergyModel@;
+
+void print(std::ostream& ostr)
+{
+   ostr
+      << "Model information\n"
+      << "=================\n"
+      << "Model name:            " << model_name << '\n'
+      << "Is a low-energy model: "
+      << (is_low_energy_model ? "true" : "false") << '\n'
+      << "Number of particles:   " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:  " << NUMBER_OF_PARAMETERS << '\n'
+      ;
+
+   ostr << "\n"
+      "Particles:             ";
+   for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
+      ostr << particle_names[i]
+           << '[' << particle_multiplicities[i] << ']';
+      if (i + 1 < NUMBER_OF_PARTICLES)
+         ostr << ", ";
+   }
+
+   ostr << "\n\n"
+      "Parameters:            ";
+   for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
+      ostr << parameter_names[i];
+      if (i + 1 < NUMBER_OF_PARAMETERS)
+         ostr << ", ";
+   }
+   ostr << '\n';
 }
+
+} // namespace @ModelName@_info
 
 } // namespace flexiblesusy
 

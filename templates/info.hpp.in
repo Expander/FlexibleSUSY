@@ -21,6 +21,8 @@
 #ifndef @ModelName@_INFO_H
 #define @ModelName@_INFO_H
 
+#include <iosfwd>
+
 namespace flexiblesusy {
 
 namespace @ModelName@_info {
@@ -30,7 +32,10 @@ namespace @ModelName@_info {
    extern const char* particle_names[NUMBER_OF_PARTICLES];
    extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
    extern const char* parameter_names[NUMBER_OF_PARAMETERS];
+   extern const char* model_name;
    extern const bool is_low_energy_model;
+
+   void print(std::ostream&);
 }
 
 } // namespace flexiblesusy
