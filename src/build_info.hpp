@@ -24,6 +24,7 @@
 namespace flexiblesusy {
 
 void print_all_info(std::ostream&);
+void print_flexiblesusy_version(std::ostream&);
 void print_version_info(std::ostream&);
 void print_build_info(std::ostream&);
 void print_system_info(std::ostream&);

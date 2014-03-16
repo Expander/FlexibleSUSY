@@ -46,6 +46,11 @@ void print_all_info(std::ostream& ostr)
    print_build_info(ostr);
 }
 
+void print_flexiblesusy_version(std::ostream& ostr)
+{
+   ostr << FLEXIBLESUSY_VERSION;
+}
+
 void print_version_info(std::ostream& ostr)
 {
    const int boost_major = BOOST_VERSION / 100000;

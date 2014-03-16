@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "command_line_options.hpp"
-#include "config.h"
 #include "build_info.hpp"
 #include "logger.hpp"
 
@@ -96,7 +95,9 @@ void Command_line_options::print_build_info(std::ostream& ostr) const
 
 void Command_line_options::print_version(std::ostream& ostr) const
 {
-   ostr << FLEXIBLESUSY_VERSION << std::endl;
+   ostr << "FlexibleSUSY ";
+   print_flexiblesusy_version(ostr);
+   ostr << std::endl;
 }
 
 void Command_line_options::print_usage(std::ostream& ostr) const
