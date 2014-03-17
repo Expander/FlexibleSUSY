@@ -99,6 +99,6 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(1), hh_fs(0), 2.0e-04);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(2), hh_fs(1), 4.0e-04);
    BOOST_CHECK_CLOSE_FRACTION(hh_ss(3), hh_fs(2), 7.0e-04);
-   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(1), Ah_fs(1), 1.0e-04);
+   BOOST_CHECK_CLOSE_FRACTION(Ah_ss(1), Ah_fs(1), 9.0e-05);
    BOOST_CHECK_CLOSE_FRACTION(Ah_ss(2), Ah_fs(2), 4.0e-04);
 }

@@ -1119,17 +1119,16 @@ tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
 
 const double dMA = p2w + p2tau;
 
+DMP[0][0] += dMA * sinb2;
+DMP[0][1] += dMA * sinb * cosb;
+DMP[1][1] += dMA * cosb2;
+
 // subtract two-loop tadpoles
 double tadpole[3];
 " <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
 
-const double bA =
-   + tadpole[0] * sinb2 / " <> vdStr <> "
-   + tadpole[1] * cosb2 / " <> vuStr <> ";
-
-DMP[0][0] += (dMA - bA) * sinb2;
-DMP[0][1] += (dMA - bA) * sinb * cosb;
-DMP[1][1] += (dMA - bA) * cosb2;
+DMP[0][0] += - tadpole[0] / " <> vdStr <> ";
+DMP[1][1] += - tadpole[1] / " <> vuStr <> ";
 DMP[2][2] += - tadpole[2] / " <> vsStr <> ";
 
 result[0] = - DMP[0][0]; // 1,1 element
