@@ -47,9 +47,11 @@ public:
    Command_line_options(int, const char*[]);
    ~Command_line_options();
 
-   int must_exit() const { return do_exit; }
+   bool must_exit() const { return do_exit; }
+   bool must_print_model_info() const { return do_print_model_info; }
    int status() const { return exit_status; }
    void parse(int, const char*[]);
+   void print_build_info(std::ostream&) const;
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;
 
@@ -59,6 +61,7 @@ public:
 
 private:
    bool do_exit;
+   bool do_print_model_info;
    int exit_status;
    std::string program;
    std::string slha_input_file;

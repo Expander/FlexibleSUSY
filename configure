@@ -18,6 +18,9 @@ ABSBASEDIR=$(cd $BASEDIR; pwd)
 # config directory
 CONFIGDIR="${BASEDIR}/config"
 
+# current date
+DATE="`date --rfc-2822`"
+
 # platform information
 debmultiarch=""
 
@@ -34,10 +37,13 @@ gppconfig="$BASEDIR/config.g++"
 mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
-machine_word_size=""
+machine_word_size="unknown"
 
 # operating system
 operating_system="unknown"
+
+# kernel version (uname -r)
+kernel_version="unknown"
 
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
@@ -103,7 +109,7 @@ CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
  -Wno-unused-local-typedefs"
-FFLAGS="-O2 -frecursive"
+FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
@@ -144,6 +150,13 @@ required_sarah_major="4"
 required_sarah_minor="0"
 required_sarah_patch="4"
 required_sarah_version="${required_sarah_major}.${required_sarah_minor}.${required_sarah_patch}"
+SARAH_VERSION="unknown"
+SARAH_MAJOR="0"
+SARAH_MINOR="0"
+SARAH_PATCH="0"
+
+# Mathematica version
+MATH_VERSION="unknown"
 
 #_____________________________________________________________________
 write_configure_parameters() {
@@ -642,6 +655,7 @@ check_platform() {
     logmsg ""
 
     operating_system="`(uname -s) 2>/dev/null || echo unknown`"
+    kernel_version="`(uname -r) 2>/dev/null || echo unknown`"
 }
 
 #_____________________________________________________________________
@@ -1084,7 +1098,7 @@ check_fortran_libs() {
         g77|f77)
             FLIBS="-lg2c -lm" ;;
         ifort)
-            FLIBS="-lifcore -limf -ldl" ;;
+            FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
     esac
 }
 
@@ -1269,8 +1283,8 @@ EOF
     if $MATH -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
     then
         if test -r "${mathconfig}" ; then
-            local math_version=`cat ${mathconfig}`
-            result "ok (version ${math_version})"
+            MATH_VERSION=`cat ${mathconfig}`
+            result "ok (version ${MATH_VERSION})"
         else
             result "ok"
         fi
@@ -1296,24 +1310,24 @@ EOF
     local _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
-            local sarah_version=`cat ${sarahconfig}`
-            local sarah_major=`echo ${sarah_version} | awk -F . '{ print $1 }'`
-            local sarah_minor=`echo ${sarah_version} | awk -F . '{ print $2 }'`
-            local sarah_patch=`echo ${sarah_version} | awk -F . '{ print $3 }'`
+            SARAH_VERSION=`cat ${sarahconfig}`
+            SARAH_MAJOR=`echo ${SARAH_VERSION} | awk -F . '{ print $1 }'`
+            SARAH_MINOR=`echo ${SARAH_VERSION} | awk -F . '{ print $2 }'`
+            SARAH_PATCH=`echo ${SARAH_VERSION} | awk -F . '{ print $3 }'`
             if test \
-                \( "${sarah_major}" -lt "${required_sarah_major}" \) -o \
-                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
-                   \( "${sarah_minor}" -lt "${required_sarah_minor}" \) \) -o \
-                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
-                   \( "${sarah_minor}" -eq "${required_sarah_minor}" \) -a \
-                   \( "${sarah_patch}" -lt "${required_sarah_patch}" \) \)
+                \( "${SARAH_MAJOR}" -lt "${required_sarah_major}" \) -o \
+                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
+                   \( "${SARAH_MINOR}" -lt "${required_sarah_minor}" \) \) -o \
+                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
+                   \( "${SARAH_MINOR}" -eq "${required_sarah_minor}" \) -a \
+                   \( "${SARAH_PATCH}" -lt "${required_sarah_patch}" \) \)
             then
                 result "not ok"
-                message "Error: SARAH version ${sarah_version} no longer supported!"
+                message "Error: SARAH version ${SARAH_VERSION} no longer supported!"
                 message "   Please use version ${required_sarah_version} or higher."
                 exit 1
             else
-                result "ok (version ${sarah_version})"
+                result "ok (version ${SARAH_VERSION})"
             fi
         else
             result "not ok"
@@ -1645,7 +1659,20 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
-    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
+    -e "s|@CXX@|$CXX|"                               \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
+    -e "s|@FC@|$FC|"                                 \
+    -e "s|@FFLAGS@|$FFLAGS|"                         \
+    -e "s|@FLIBS@|$FLIBS|"                           \
+    -e "s|@MATH_VERSION@|$MATH_VERSION|"             \
+    -e "s|@SARAH_VERSION@|$SARAH_VERSION|"           \
+    -e "s|@SARAH_MAJOR@|$SARAH_MAJOR|"               \
+    -e "s|@SARAH_MINOR@|$SARAH_MINOR|"               \
+    -e "s|@SARAH_PATCH@|$SARAH_PATCH|"               \
+    -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
+    -e "s|@KERNEL_VERSION@|$kernel_version|"         \
+    -e "s|@DATE@|$DATE|"                             \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
