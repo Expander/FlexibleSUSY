@@ -1656,10 +1656,12 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
