@@ -37,6 +37,8 @@ int main(int argc, const char* argv[])
    typedef Two_scale algorithm_type;
 
    Command_line_options options(argc, argv);
+   if (options.must_print_model_info())
+      @ModelName@_info::print(std::cout);
    if (options.must_exit())
       return options.status();
 

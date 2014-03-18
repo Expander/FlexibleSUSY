@@ -16,27 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-#ifndef @ModelName@_INFO_H
-#define @ModelName@_INFO_H
+#ifndef BUILD_INFO_HPP
+#define BUILD_INFO_HPP
 
 #include <iosfwd>
 
 namespace flexiblesusy {
 
-namespace @ModelName@_info {
-@particleEnum@
-@parameterEnum@
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-   extern const char* model_name;
-   extern const bool is_low_energy_model;
-
-   void print(std::ostream&);
-}
+void print_all_info(std::ostream&);
+void print_flexiblesusy_version(std::ostream&);
+void print_version_info(std::ostream&);
+void print_build_info(std::ostream&);
+void print_system_info(std::ostream&);
 
 } // namespace flexiblesusy
 
