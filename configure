@@ -1078,6 +1078,12 @@ check_fflags() {
                 FFLAGS="${FFLAGS} -frecursive"
             fi
             ;;
+        ifort*)
+            if contains_not "${FFLAGS}" "-recursive" ; then
+                logmsg "Note: Adding -recursive to FFLAGS for thread safety."
+                FFLAGS="${FFLAGS} -recursive"
+            fi
+            ;;
     esac
 
     if test "x$enable_static_libs" = "xno" ; then
