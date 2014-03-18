@@ -109,7 +109,7 @@ CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
  -Wno-unused-local-typedefs"
-FFLAGS="-O2 -frecursive"
+FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
@@ -1071,6 +1071,15 @@ check_fc() {
 
 #_____________________________________________________________________
 check_fflags() {
+    case "${FC}" in
+        gfortran*)
+            if contains_not "${FFLAGS}" "-frecursive" ; then
+                logmsg "Note: Adding -frecursive to FFLAGS for thread safety."
+                FFLAGS="${FFLAGS} -frecursive"
+            fi
+            ;;
+    esac
+
     if test "x$enable_static_libs" = "xno" ; then
         # check if -fPIC is in FFLAGS
         case "${FC}" in
