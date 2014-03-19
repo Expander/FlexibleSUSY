@@ -30,13 +30,10 @@ private:
 
 class Trivial_matching_condition: public Matching<Two_scale> {
 public:
-   Trivial_matching_condition(Static_model* mLow_, Static_model* mHigh_)
-      : mLow(mLow_)
-      , mHigh(mHigh_)
-      {
-         BOOST_REQUIRE(mLow != NULL);
-         BOOST_REQUIRE(mHigh != NULL);
-      }
+   Trivial_matching_condition()
+      : mLow(0)
+      , mHigh(0)
+      {}
    virtual ~Trivial_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
       mHigh->set_parameters(mLow->get_parameters());
@@ -46,6 +43,10 @@ public:
    }
    virtual double get_scale() const {
       return 100.0;
+   }
+   virtual void set_models(Two_scale_model* mLow_, Two_scale_model* mHigh_) {
+      mLow = cast_model<Static_model>(mLow_);
+      mHigh = cast_model<Static_model>(mHigh_);
    }
 private:
    Static_model *mLow, *mHigh;
@@ -102,6 +103,8 @@ public:
    virtual double get_scale() const {
       ++number_of_get_scale;
       return scale;
+   }
+   virtual void set_models(Two_scale_model*, Two_scale_model*) {
    }
    unsigned get_number_of_low_to_high_matches() const {
       return number_of_low_to_high_matches;
@@ -165,7 +168,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
-   Trivial_matching_condition mc(&model1, &model2);
+   Trivial_matching_condition mc;
 
    RGFlow<Two_scale> solver;
    solver.add_model(&model1, &mc);
@@ -265,7 +268,7 @@ BOOST_AUTO_TEST_CASE( test_run_to_with_one_model )
 BOOST_AUTO_TEST_CASE( test_run_to_with_two_models )
 {
    Static_model model1(DoubleVector(10)), model2(DoubleVector(10));
-   Trivial_matching_condition mc(&model1, &model2);
+   Trivial_matching_condition mc;
    const double mc_scale = mc.get_scale();
 
    RGFlow<Two_scale> solver;
