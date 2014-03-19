@@ -88,8 +88,6 @@ int main(int argc, const char* argv[])
       = spectrum_generator.get_model_1();
    const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
-   const MSSMRHN<algorithm_type>& model_2
-      = spectrum_generator.get_model_2();
 
    // output
    slha_io_1.set_spinfo(problems);
