@@ -85,6 +85,7 @@ deprecated_options=""
 options="                    \
    enable_colors             \
    enable_compile            \
+   enable_compiler_warnings  \
    enable_debug              \
    enable_looptools          \
    enable_meta               \
@@ -93,6 +94,7 @@ options="                    \
    enable_verbose            \
 "
 enable_compile="yes"
+enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
@@ -1464,6 +1466,7 @@ enable/disable options, prefix with either --enable- or --disable-
 
   colors            Colored output (default: $enable_colors)
   compile           Compile the source code (default: $enable_compile)
+  compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
   meta              Create model classes (default: $enable_meta)
