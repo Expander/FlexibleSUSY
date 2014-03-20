@@ -985,6 +985,47 @@ EOF
 }
 
 #_____________________________________________________________________
+is_intel_cpp_compiler() {
+    checking_msg "${CXX} is Intel(R) compiler"
+    local _check_intel_compiler_cpp="${BASEDIR}/check_intel_compiler.cpp"
+    local _check_intel_compiler_exe="${BASEDIR}/check_intel_compiler.x"
+    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
+
+    cat <<EOF > ${_check_intel_compiler_cpp}
+int main() {
+#ifdef __INTEL_COMPILER
+   return 0;
+#else
+   return 1;
+#endif
+}
+EOF
+    local _result="1"
+
+    if $CXX -o ${_check_intel_compiler_exe} ${_check_intel_compiler_cpp} >> ${logfile} 2>&1;
+    then
+        # run the version check program
+        if ${_check_intel_compiler_exe};
+        then
+            result "yes"
+            logmsg "   ${CXX} is an Intel(R) compiler"
+            _result="0"
+        else
+            result "no"
+            _result="1"
+        fi
+    else
+        result "unknown"
+        message "Warning: could not determine compiler type of ${CXX} because"
+        message "   compilation of the test program failed."
+        _result="1"
+    fi
+
+    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
+    return "${_result}"
+}
+
+#_____________________________________________________________________
 check_cxx() {
     checking_msg "C++ compiler $CXX"
     exists_in_path "$CXX"
