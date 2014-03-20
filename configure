@@ -152,6 +152,12 @@ required_gpp_minor="6"
 required_gpp_patch="0"
 required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
 
+# g++ version
+GPP_VERSION="unknown"
+GPP_MAJOR="0"
+GPP_MINOR="0"
+GPP_PATCH="0"
+
 # required Mathematica version
 required_mathematica_version="7"
 
@@ -977,7 +983,14 @@ check_gpp_version() {
     local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
     local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
 
-    checking_msg "${CXX} compiler version >= ${required_gpp_version}"
+    local gpp
+    if [ "$cxx_dep_gen_type" = "gnu" ]; then
+	gpp="$CXX_DEP_GEN"
+    else
+	gpp="$CXX"
+    fi
+
+    checking_msg "${gpp} compiler version >= ${required_gpp_version}"
 
     # clean up
     rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
@@ -1009,39 +1022,34 @@ int main() {
 }
 EOF
     # compile the version check program
-    if $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
+    if $gpp -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         ${_check_gpp_version_progr_exe}
         local _error="$?"
-        local gpp_version=""
         if test -r "${gppconfig}" ; then
-            gpp_version=`cat ${gppconfig}`
+            GPP_VERSION=`cat ${gppconfig}`
         fi
         if test "x${_error}" = "x0" ; then
-            result "ok (version ${gpp_version})"
-            logmsg "   Required ${CXX} version: ${required_gpp_version}"
-            logmsg "   ${CXX} version found: ${gpp_version}"
+            result "ok (version ${GPP_VERSION})"
+            logmsg "   Required ${gpp} version: ${required_gpp_version}"
+            logmsg "   ${gpp} version found: ${GPP_VERSION}"
         else
-            result "not ok (version ${gpp_version})"
-            message "Error: the installed ${CXX} version is too old."
+            result "not ok (version ${GPP_VERSION})"
+            message "Error: the installed ${gpp} version is too old."
             message "   Please install version ${required_gpp_version} or higher."
             rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
             rm -f ${gppconfig}
             exit 1
         fi
-	case "$CXXFLAGS" in
-	    *-std=c++11*)
-		set -- $(echo "$gpp_version" | tr . ' ')
-		if [ "$2" -lt 7 ]; then
-		    message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
-		    CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
-		fi
-	esac
+	set -- $(echo "$GPP_VERSION" | tr . ' ')
+	GPP_MAJOR="$1"
+	GPP_MINOR="$2"
+	GPP_PATCH="$3"
     else
         result "unknown"
-        message "Warning: could not determine ${CXX} version because"
-        message "   compilation of the ${CXX} test program failed."
+        message "Warning: could not determine ${gpp} version because"
+        message "   compilation of the ${gpp} test program failed."
     fi
 
     # clean up
@@ -1151,6 +1159,14 @@ check_cxx() {
 
 #_____________________________________________________________________
 check_cxxflags() {
+    case "$CXXFLAGS" in
+	*-std=c++11*)
+	    if test "x${cxx_compiler_type}" = "xgnu" -a $GPP_MINOR -lt 7; then
+		message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
+		CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
+	    fi
+    esac
+
     if test "x$enable_compiler_warnings" = "xyes" ; then
         if test "x${cxx_compiler_type}" = "xgnu"; then
             CXXFLAGS="${CXXFLAGS} -Wall -pedantic -Wextra\
@@ -1191,7 +1207,11 @@ check_cxx_dep_gen() {
 #_____________________________________________________________________
 check_cxxflags_dep_gen() {
     if test "x$cxx_dep_gen_type" = "xgnu"; then
-        CXXFLAGS_DEP_GEN="-std=c++11"
+	if test "$GPP_MINOR" -ge 7; then
+            CXXFLAGS_DEP_GEN="-std=c++11"
+	else
+            CXXFLAGS_DEP_GEN="-std=c++0x"
+	fi
     elif test "x$cxx_dep_gen_type" = "xclang"; then
         CXXFLAGS_DEP_GEN="-std=c++11"
     else
@@ -1726,12 +1746,12 @@ if test "x${enable_compile}" = "xyes"; then
     check_multiarch
     check_cxx
     check_cxx_compiler_type
-    if test "x${cxx_compiler_type}" = "xgnu"; then
+    check_cxx_dep_gen
+    check_cxx_dep_gen_type
+    if test "x$cxx_compiler_type" = xgnu -o "x$cxx_dep_gen_type" = xgnu; then
         check_gpp_version
     fi
     check_cxxflags
-    check_cxx_dep_gen
-    check_cxx_dep_gen_type
     check_cxxflags_dep_gen
     check_fc
     check_fflags
