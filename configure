@@ -1003,7 +1003,7 @@ check_cxxflags() {
     if test "x$enable_static_libs" = "xno" ; then
         # check if -fPIC is in CXXFLAGS
         case "${CXX}" in
-            g++*|clang++*)
+            g++*|clang++*|icpc*)
                 if contains_not "${CXXFLAGS}" "-fPIC" ; then
                     message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
                     CXXFLAGS="${CXXFLAGS} -fPIC"
@@ -1094,7 +1094,7 @@ check_fflags() {
     if test "x$enable_static_libs" = "xno" ; then
         # check if -fPIC is in FFLAGS
         case "${FC}" in
-            gfortran*)
+            gfortran*|ifort*)
                 if contains_not "${FFLAGS}" "-fPIC" ; then
                     message "   Warning: could not find -fPIC in FFLAGS, appending it"
                     FFLAGS="${FFLAGS} -fPIC"
