@@ -871,7 +871,7 @@ is_gnu_cpp_compiler() {
 
     cat <<EOF > ${_check_gnu_compiler_cpp}
 int main() {
-#if defined(__llvm__) || defined(__clang__)
+#if defined(__llvm__) || defined(__clang__) || defined(__INTEL_COMPILER)
    return 1;
 #else
    #ifdef __GNUC__
