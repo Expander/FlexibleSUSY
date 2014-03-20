@@ -556,7 +556,7 @@ void compare_selectron_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(Se_softsusy_se(3,3), Se_sarah_se(3,3), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(3,6), Se_sarah_se(3,6), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,3), Se_sarah_se(6,3), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 1.0e-10);
+   TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 2.0e-10);
 }
 
 void compare_sup_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
