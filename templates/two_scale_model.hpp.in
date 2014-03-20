@@ -42,7 +42,7 @@ class Two_scale;
 template<>
 class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_soft_parameters {
 public:
-   @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    virtual ~@ModelName@();
 
    void calculate_DRbar_parameters();

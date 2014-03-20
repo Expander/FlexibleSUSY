@@ -29,7 +29,7 @@ public:
 
 class Two_scale_constant_precision : public Two_scale_running_precision {
 public:
-   Two_scale_constant_precision(double);
+   explicit Two_scale_constant_precision(double);
    virtual ~Two_scale_constant_precision();
    virtual double get_precision(unsigned);
 private:

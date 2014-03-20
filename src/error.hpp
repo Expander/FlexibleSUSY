@@ -36,7 +36,7 @@ public:
  */
 class SetupError : public Error {
 public:
-   SetupError(const std::string& message_) : message(message_) {}
+   explicit SetupError(const std::string& message_) : message(message_) {}
    virtual ~SetupError() {}
    virtual std::string what() const { return message; }
 private:
@@ -49,7 +49,7 @@ private:
  */
 class NoConvergenceError : public Error {
 public:
-   NoConvergenceError(unsigned number_of_iterations_)
+   explicit NoConvergenceError(unsigned number_of_iterations_)
       : number_of_iterations(number_of_iterations_) {}
    virtual ~NoConvergenceError() {}
    virtual std::string what() const {
@@ -69,7 +69,7 @@ private:
  */
 class NonPerturbativeRunningError : public Error {
 public:
-   NonPerturbativeRunningError(double scale_)
+   explicit NonPerturbativeRunningError(double scale_)
       : scale(scale_)
       {}
    virtual ~NonPerturbativeRunningError() {}
