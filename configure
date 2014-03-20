@@ -114,6 +114,7 @@ looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2"
+CXXFLAGS_DEP_GEN="-std=c++11"
 FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
@@ -134,6 +135,10 @@ ALGORITHMS="all"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
+
+# flags
+cxx_compiler_type="unknown"
+cxx_dep_gen_type="unknown"
 
 # required boost version
 required_boost_major="1"
@@ -863,8 +868,72 @@ check_thread_libs() {
 }
 
 #_____________________________________________________________________
-is_gnu_cpp_compiler() {
+check_cxx_compiler_type() {
+    cxx_compiler_type="unknown"
+
     checking_msg "${CXX} is GNU compiler"
+    if is_gnu_cpp_compiler "${CXX}"; then
+        cxx_compiler_type="gnu"
+        result "yes"
+        logmsg "   ${CXX} is a GNU compiler"
+    else
+        result "no"
+        checking_msg "${CXX} is Intel compiler"
+        if is_intel_cpp_compiler "${CXX}"; then
+            result "yes"
+            cxx_compiler_type="intel"
+        else
+            result "no"
+            cxx_compiler_type="unknown"
+        fi
+    fi
+
+    logmsg "C++ compiler type: ${cxx_compiler_type}"
+}
+
+#_____________________________________________________________________
+check_cxx_dep_gen_type() {
+    cxx_dep_gen_type="unknown"
+
+    checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is GNU compiler"
+    if is_gnu_cpp_compiler "${CXX_DEP_GEN}"; then
+        cxx_dep_gen_type="gnu"
+        result "yes"
+        logmsg "   ${CXX_DEP_GEN} is a GNU compiler"
+    else
+        result "no"
+
+        checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Clang compiler"
+        if is_clang_cpp_compiler "${CXX_DEP_GEN}"; then
+            cxx_dep_gen_type="clang"
+            result "yes"
+            logmsg "   ${CXX_DEP_GEN} is a Clang compiler"
+        else
+            result "no"
+
+            checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Intel compiler"
+            if is_intel_cpp_compiler "${CXX_DEP_GEN}"; then
+                result "yes"
+                cxx_dep_gen_type="intel"
+            else
+                result "no"
+                cxx_dep_gen_type="unknown"
+            fi
+        fi
+    fi
+
+    logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
+}
+
+#_____________________________________________________________________
+is_gnu_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_gnu_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
     local _check_gnu_compiler_cpp="${BASEDIR}/check_gnu_compiler.cpp"
     local _check_gnu_compiler_exe="${BASEDIR}/check_gnu_compiler.x"
     rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
@@ -884,22 +953,18 @@ int main() {
 EOF
     local _result="1"
 
-    if $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
+    if $_compiler -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         if ${_check_gnu_compiler_exe};
         then
-            result "yes"
-            logmsg "   ${CXX} is a GNU compiler"
             _result="0"
         else
-            result "no"
             _result="1"
         fi
     else
-        result "unknown"
-        message "Warning: could not determine compiler type of ${CXX} because"
-        message "   compilation of the test program failed."
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
         _result="1"
     fi
 
@@ -986,7 +1051,13 @@ EOF
 
 #_____________________________________________________________________
 is_intel_cpp_compiler() {
-    checking_msg "${CXX} is Intel(R) compiler"
+    if test $# -ne 1; then
+        message "is_intel_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
     local _check_intel_compiler_cpp="${BASEDIR}/check_intel_compiler.cpp"
     local _check_intel_compiler_exe="${BASEDIR}/check_intel_compiler.x"
     rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
@@ -1002,26 +1073,65 @@ int main() {
 EOF
     local _result="1"
 
-    if $CXX -o ${_check_intel_compiler_exe} ${_check_intel_compiler_cpp} >> ${logfile} 2>&1;
+    if $_compiler -o ${_check_intel_compiler_exe} ${_check_intel_compiler_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         if ${_check_intel_compiler_exe};
         then
-            result "yes"
-            logmsg "   ${CXX} is an Intel(R) compiler"
             _result="0"
         else
-            result "no"
             _result="1"
         fi
     else
-        result "unknown"
-        message "Warning: could not determine compiler type of ${CXX} because"
-        message "   compilation of the test program failed."
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
         _result="1"
     fi
 
     rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
+    return "${_result}"
+}
+
+#_____________________________________________________________________
+is_clang_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_clang_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
+    local _check_clang_compiler_cpp="${BASEDIR}/check_clang_compiler.cpp"
+    local _check_clang_compiler_exe="${BASEDIR}/check_clang_compiler.x"
+    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
+
+    cat <<EOF > ${_check_clang_compiler_cpp}
+int main() {
+#if defined(__llvm__) || defined(__clang__)
+   return 0;
+#else
+   return 1;
+#endif
+}
+EOF
+    local _result="1"
+
+    if $_compiler -o ${_check_clang_compiler_exe} ${_check_clang_compiler_cpp} >> ${logfile} 2>&1;
+    then
+        # run the version check program
+        if ${_check_clang_compiler_exe};
+        then
+            _result="0"
+        else
+            _result="1"
+        fi
+    else
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
+        _result="1"
+    fi
+
+    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
     return "${_result}"
 }
 
@@ -1042,11 +1152,11 @@ check_cxx() {
 #_____________________________________________________________________
 check_cxxflags() {
     if test "x$enable_compiler_warnings" = "xyes" ; then
-        if is_gnu_cpp_compiler; then
+        if test "x${cxx_compiler_type}" = "xgnu"; then
             CXXFLAGS="${CXXFLAGS} -Wall -pedantic -Wextra\
  -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
  -Wno-unused-local-typedefs"
-        elif is_intel_cpp_compiler; then
+        elif test "x${cxx_compiler_type}" = "xintel"; then
             CXXFLAGS="${CXXFLAGS} -w3 -Wnon-virtual-dtor"
         fi
     fi
@@ -1075,6 +1185,17 @@ check_cxx_dep_gen() {
         exit 1
     else
         result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_cxxflags_dep_gen() {
+    if test "x$cxx_dep_gen_type" = "xgnu"; then
+        CXXFLAGS_DEP_GEN="-std=c++11"
+    elif test "x$cxx_dep_gen_type" = "xclang"; then
+        CXXFLAGS_DEP_GEN="-std=c++11"
+    else
+        CXXFLAGS_DEP_GEN=""
     fi
 }
 
@@ -1604,11 +1725,14 @@ check_platform
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
     check_cxx
-    if is_gnu_cpp_compiler; then
+    check_cxx_compiler_type
+    if test "x${cxx_compiler_type}" = "xgnu"; then
         check_gpp_version
     fi
     check_cxxflags
     check_cxx_dep_gen
+    check_cxx_dep_gen_type
+    check_cxxflags_dep_gen
     check_fc
     check_fflags
     check_fortran_dep_gen
@@ -1655,6 +1779,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
@@ -1691,6 +1816,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
@@ -1722,6 +1848,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
     -e "s|@CXX@|$CXX|"                 \
     -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
