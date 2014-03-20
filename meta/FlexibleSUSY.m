@@ -978,6 +978,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* search for unfixed parameters *)
+           Constraint`CheckConstraint[FlexibleSUSY`LowScaleInput, "LowScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`SUSYScaleInput, "SUSYScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
            fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
