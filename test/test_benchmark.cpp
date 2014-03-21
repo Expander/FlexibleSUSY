@@ -42,7 +42,7 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
    }
 
    stopwatch.start();
-   status = run_cmd("./examples/run_softpoint.x leshouches < " +
+   status = run_cmd("./models/SoftsusyNMSSM/run_softpoint.x leshouches < " +
                     slha_file + " > test/test_benchmark.out.spc");
    stopwatch.stop();
    ss_time = stopwatch.get_time_in_seconds();
