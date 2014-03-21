@@ -25,7 +25,7 @@
 #include "MSSM_MSSMRHN_spectrum_generator.hpp"
 
 #include "error.hpp"
-#include "program_options.hpp"
+#include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
 
@@ -46,7 +46,7 @@ int main(int argc, const char* argv[])
    const std::string slha_output_file(options.get_slha_output_file());
    MSSM_slha_io    slha_io_1;
    MSSMRHN_slha_io slha_io_2;
-   Program_options program_options;
+   Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
    MSSM_input_parameters    input_1;
    MSSMRHN_input_parameters input_2;
@@ -56,7 +56,7 @@ int main(int argc, const char* argv[])
          slha_io_1.read_from_file(slha_input_file);
          slha_io_1.fill(oneset);
          slha_io_1.fill(input_1);
-         slha_io_1.fill(program_options);
+         slha_io_1.fill(spectrum_generator_settings);
          slha_io_2.read_from_file(slha_input_file);
          slha_io_2.fill(input_2);
       } catch (const Error& error) {
@@ -68,19 +68,19 @@ int main(int argc, const char* argv[])
 
    MSSM_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
-      program_options.get(Program_options::precision));
+      spectrum_generator_settings.get(Spectrum_generator_settings::precision));
    spectrum_generator.set_max_iterations(
-      program_options.get(Program_options::max_iterations));
+      spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations));
    spectrum_generator.set_calculate_sm_masses(
-      program_options.get(Program_options::calculate_sm_masses) >= 1.0);
+      spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
    spectrum_generator.set_input_scale_2(
       slha_io_2.get_input_scale());
    spectrum_generator.set_parameter_output_scale_1(
       slha_io_1.get_parameter_output_scale());
    spectrum_generator.set_pole_mass_loop_order(
-      program_options.get(Program_options::pole_mass_loop_order));
+      spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    spectrum_generator.set_ewsb_loop_order(
-      program_options.get(Program_options::ewsb_loop_order));
+      spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order));
 
    spectrum_generator.run(oneset, input_1, input_2);
 
