@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
    BOOST_CHECK_CLOSE(nmHSE13, fsHSE13, 2.0e-12);
    BOOST_CHECK_CLOSE(nmHSE22, fsHSE22, 1.0e-12);
    BOOST_CHECK_CLOSE(nmHSE23, fsHSE23, 2.0e-12);
-   BOOST_CHECK_CLOSE(nmHSE33, fsHSE33, 4.0e-11);
+   BOOST_CHECK_CLOSE(nmHSE33, fsHSE33, 5.0e-11);
 
    /// CP-odd self-energies
    const double nmPHSE11 = s.pip1p1(momentum,s.displayMu());

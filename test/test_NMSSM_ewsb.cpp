@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level_via_soft_higgs_masses )
    const int error = m.solve_ewsb_tree_level_via_soft_higgs_masses();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 2.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 5.0e-09);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 1.0e-09);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 1.0e-09);
 }
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_tadpoles )
    const double ts_1_and_2loop_ss = s.displayTadpoleSMs();
 
    BOOST_CHECK_CLOSE(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - tadpole_ss_1, 1.0e-10);
-   BOOST_CHECK_CLOSE(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tadpole_ss_2, 1.0e-11);
+   BOOST_CHECK_CLOSE(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tadpole_ss_2, 3.0e-11);
    BOOST_CHECK_CLOSE(two_loop_tadpole[2] / vS, ts_1_and_2loop_ss - tadpole_ss_3, 1.0e-11);
 }
 
