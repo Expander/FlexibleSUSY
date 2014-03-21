@@ -90,6 +90,11 @@ TEST_SH += \
 		test/test_lowMSSM.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-MSSM --with-MSSMRHN),yes yes)
+TEST_SH += \
+		test/test_tower.sh
+endif
+
 TEST_META := \
 		test/test_BetaFunction.m \
 		test/test_CConversion.m \
