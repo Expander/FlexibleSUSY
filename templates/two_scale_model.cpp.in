@@ -29,6 +29,8 @@
 #include <clooptools.h>
 #endif
 
+@twoLoopHiggsHeaders@
+
 #include <cmath>
 #include <iostream>
 #include <thread>
@@ -146,6 +148,9 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    if (ewsb_loop_order > 0) {
       model->calculate_DRbar_parameters();
 @calculateOneLoopTadpoles@
+      if (ewsb_loop_order > 1) {
+@calculateTwoLoopTadpoles@
+      }
    }
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
@@ -389,6 +394,12 @@ void CLASSNAME::run_to(double scale, double eps)
 @tadpoleEqFunctions@
 
 @selfEnergyFunctions@
+
+@thirdGenerationHelperFunctions@
+
+@twoLoopSelfEnergyFunctions@
+
+@twoLoopTadpoleFunctions@
 
 @loopMassesFunctions@
 

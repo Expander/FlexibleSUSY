@@ -16,30 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "program_options.hpp"
+#ifndef NMSSM_TWOLOOPHIGGS_H
+#define NMSSM_TWOLOOPHIGGS_H
 
-#include <cassert>
+#include "mssm_twoloophiggs.h"
+#include "nmssm2loop.h"
 
-namespace flexiblesusy {
-
-Program_options::Program_options()
-   : values() // initializes all values to zero
-{
-   values[precision] = 1.0e-4;
-   values[pole_mass_loop_order] = 1.;
-   values[ewsb_loop_order] = 1.;
-}
-
-double Program_options::get(Options o) const
-{
-   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
-   return values[o];
-}
-
-void Program_options::set(Options o, double value)
-{
-   assert(o < NUMBER_OF_OPTIONS && "Option key out of range");
-   values[o] = value;
-}
-
-} // namespace flexiblesusy
+#endif

@@ -69,3 +69,6 @@ InitialGuessAtLowScale = {
 };
 
 InitialGuessAtHighScale = {};
+
+UseHiggs2LoopNMSSM = True;
+EffectiveMu = \[Lambda] vS / Sqrt[2];

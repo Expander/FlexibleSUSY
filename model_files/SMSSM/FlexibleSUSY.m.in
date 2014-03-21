@@ -137,3 +137,6 @@ TreeLevelEWSBSolution = {
        Sqrt[2]*vd*vu*T[\[Lambda]])/(4*Sqrt[2])
    }
 };
+
+UseHiggs2LoopNMSSM = True;
+EffectiveMu = \[Mu] + \[Lambda] vS / Sqrt[2];

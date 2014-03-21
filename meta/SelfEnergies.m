@@ -26,6 +26,20 @@ self-energy function name for a given field";
 
 FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
 
+FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
+
+CreateTwoLoopTadpolesMSSM::usage="Creates function prototypes and
+definitions for two-loop tadpoles in the MSSM";
+
+CreateTwoLoopTadpolesNMSSM::usage="Creates function prototypes and
+definitions for two-loop tadpoles in the NMSSM";
+
+CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
+definitions for two-loop Higgs self-energies in the MSSM";
+
+CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
+definitions for two-loop Higgs self-energies in the NMSSM";
+
 Begin["`Private`"];
 
 GetExpression[selfEnergy_SelfEnergies`FSSelfEnergy] :=
@@ -348,6 +362,12 @@ CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
 CreateTadpoleFunctionName[field_] :=
     "tadpole_" <> CreateFunctionNamePrefix[field];
 
+CreateTwoLoopTadpoleFunctionName[field_] :=
+    "tadpole_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+
+CreateTwoLoopSelfEnergyFunctionName[field_] :=
+    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_2loop";
+
 CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
     CreateSelfEnergyFunctionName[GetField[selfEnergy]];
 
@@ -454,6 +474,708 @@ FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
               ];
            Return[IndentText[body]];
           ];
+
+FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String:"tadpole"] :=
+    Module[{body, v, field, functionName, dim, dimStr},
+           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           dim = GetDimension[higgsBoson];
+           dimStr = ToString[dim];
+           body = "double two_loop_tadpole[" <> dimStr <> "];\n" <>
+                  "model->" <> functionName <>
+                  "(two_loop_tadpole);\n";
+           For[v = 1, v <= dim, v++,
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                      "two_loop_tadpole[" <> ToString[v-1] <> "];\n";
+              ];
+           Return[IndentText[IndentText[body]]];
+          ];
+
+AssertFieldDimension[field_, dim_, model_] :=
+    Block[{fieldDim},
+          fieldDim = GetDimension[field];
+          If[fieldDim =!= dim,
+             Print["Error: Cannot use ", model, " two-loop routines for ",
+                   field, " (multiplet size ", fieldDim, ").  Multiplet size ",
+                   dim, " required!"];
+             Quit[1];
+            ];
+         ];
+
+GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[SARAH`HiggsBoson, 2, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double tanb = " <> tanbStr <> ";
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+
+double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
+double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
+
+ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
+           &amu, &tanb, &vev2, &gs, &s1s, &s2s);
+ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
+        &s2t);
+ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
+           &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
+tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+
+if (!std::isnan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
+   result[0] = (- s1s - s1t - s1b - s1tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
+   result[1] = (- s2s - s2t - s2b - s2tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
+} else {
+   result[0] = 0.;
+   result[1] = 0.;
+}
+";
+           Return[body];
+          ];
+
+GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, svevStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[SARAH`HiggsBoson, 3, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           svevStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+const double vev = Sqrt(vev2);
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+
+double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
+double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
+
+ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
+           &amu, &tanb, &vev2, &gs, &s1s, &s2s);
+ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
+        &s2t);
+ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
+           &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
+tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+
+// rescale T1 to get TS
+const double sss = s1s * vev * cosb / " <> svevStr <> ";
+const double ssb = s1b * vev * sinb / " <> svevStr <> ";
+
+if (!std::isnan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau
+                * sss * ssb)) {
+   result[0] = (- s1s - s1t - s1b - s1tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
+   result[1] = (- s2s - s2t - s2b - s2tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM2] <> ";
+   result[2] = (- sss - ssb) * " <>  svevStr <> ";
+} else {
+   result[0] = 0.;
+   result[1] = 0.;
+   result[2] = 0.;
+}
+";
+           Return[body];
+          ];
+
+GetTwoLoopTadpoleCorrections[model_] :=
+    Module[{},
+           Print["Error: two-loop tadpoles for ", model, " not available"];
+           ""
+          ];
+
+CreateTwoLoopTadpoles[higgsBoson_, model_String] :=
+    Module[{prototype, function, functionName, dim, dimStr},
+           dim = GetDimension[higgsBoson];
+           dimStr = ToString[dim];
+           functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
+           prototype = "void " <> functionName <> "(double result[" <>
+                       dimStr <> "]) const;\n";
+           body = GetTwoLoopTadpoleCorrections[model];
+           function = "void CLASSNAME::" <> functionName <>
+                      "(double result[" <> dimStr <> "]) const\n{\n" <>
+                      IndentText[body] <> "\n}\n";
+           Return[{prototype, function}];
+          ];
+
+CreateTwoLoopTadpolesMSSM[higgsBoson_] :=
+    CreateTwoLoopTadpoles[higgsBoson, "MSSM"];
+
+CreateTwoLoopTadpolesNMSSM[higgsBoson_] :=
+    CreateTwoLoopTadpoles[higgsBoson, "NMSSM"];
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                                model_String /; model === "MSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[particle, 2, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+
+double s11s = 0., s22s = 0., s12s = 0.;
+double s11b = 0., s12b = 0., s22b = 0.;
+double s11tau = 0., s12tau = 0., s22tau = 0.;
+double s11w = 0., s22w = 0., s12w = 0.;
+int scheme = 0; // chooses DR-bar scheme from slavich et al
+
+// two-loop Higgs corrections: alpha_s alpha_t, alpha_s alpha_b and
+// alpha_b^2, alpha_t*2, alpha_b alpha_t
+dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+          &tanb, &vev2, &gs, &scheme, &s11s, &s22s, &s12s);
+dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+          &cotbeta, &vev2, &gs, &scheme, &s22b, &s11b, &s12b);
+ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+          &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s11w,
+          &s12w, &s22w);
+tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+            &s22tau, &s12tau);
+
+result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
+result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
+result[2] = - s22s - s22w - s22b - s22tau; // 2,2 element
+
+// calculate dMA, which is the two loop correction to take the DRbar
+// psuedoscalar mass ( = -2m3sq/sin(2beta)) to the pole mass (as in
+// Eq. (8) of hep-ph/0305127)
+
+double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
+
+dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+        &tanb, &vev2, &gs, &p2s);
+dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+        &cotbeta, &vev2, &gs, &p2b);
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2s + p2w + p2b + p2tau;
+
+// dMA contains two loop tadpoles, which we'll subtract
+double tadpole[2];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+result[0] += - dMA * Sqr(sinb) + tadpole[0] / " <> vdStr <> ";
+result[1] += + dMA * sinb * cosb;
+result[2] += - dMA * Sqr(cosb) + tadpole[1] / " <> vuStr <> ";
+";
+           Return[body];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                                model_String /; model === "MSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
+           AssertFieldDimension[particle, 2, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double rmtsq = Sqr(" <> mtStr <> ");
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+const double sinb2 = Sqr(sinb);
+const double cosb2 = Sqr(cosb);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotbeta = 1.0 / tanb;
+double rmbsq = Sqr(" <> mbStr <> ");
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+
+double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
+
+dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+        &tanb, &vev2, &gs, &p2s);
+dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+        &cotbeta, &vev2, &gs, &p2b);
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2s + p2w + p2b + p2tau;
+
+// see hep-ph/0105096 Eq. (9)
+result[0] = - dMA * sinb2;
+result[1] = - dMA * sinb * cosb;
+result[2] = - dMA * cosb2;
+
+// dMA contains two loop tadpoles, which we'll now subtract
+double tadpole[2];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+result[0] += tadpole[0] / " <> vdStr <> ";
+result[2] += tadpole[1] / " <> vuStr <> ";
+";
+           Return[body];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                                model_String /; model === "NMSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
+            lambdaStr},
+           AssertFieldDimension[particle, 3, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
+           lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double as = Sqr(gs) / (4.0 * Pi);
+double rmt = " <> mtStr <> ";
+double rmtsq = Sqr(rmt);
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double vev = Sqrt(" <> vev2Str <> ");
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotb = 1.0 / tanb;
+double rmb = " <> mbStr <> ";
+double rmbsq = Sqr(rmb);
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+double lamS = " <> lambdaStr <> ";
+static const double root2 = Sqrt(2.0);
+double vevS =  vev / root2;
+double svevS = " <> vsStr <> " / root2;
+int loop = 2;
+int scheme = 0; // selects DR-bar scheme
+
+double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
+double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+// get alpha_s alpha_t pieces
+effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+
+// get alpha_s alpha_b pieces
+effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Make appropriate substitutions for elements following 0907.4682
+// bottom of page 9
+std::swap(DMSB[0][0], DMSB[1][1]);
+std::swap(DMSB[0][2], DMSB[1][2]);
+
+for (int i = 0; i < 3; i++) {
+   for (int j = 0; j < 3; j++) {
+      DMS[i][j] += DMSB[i][j];
+   }
+}
+
+// Corrections as in MSSM, not corrected for NMSSM,
+// should be OK for MSSM states when S state is close to decoupled
+
+double s11w = 0., s12w = 0., s22w = 0.;
+double s11tau = 0., s12tau = 0., s22tau = 0.;
+double p2w = 0., p2tau = 0.;
+
+ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq,
+          &msb2sq, &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb,
+          &vev2, &s11w, &s12w, &s22w);
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+            &s22tau, &s12tau);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2w + p2tau;
+
+// subtract two-loop tadpoles
+double tadpole[3];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+DMS[0][0] += s11w + s11tau + dMA * Sqr(sinb) - tadpole[0] / " <> vdStr <> ";
+DMS[0][1] += s12w + s12tau - dMA * sinb * cosb;
+DMS[1][1] += s22w + s22tau + dMA * Sqr(cosb) - tadpole[1] / " <> vuStr <> ";
+DMS[2][2] += - tadpole[2] / " <> vsStr <> ";
+
+result[0] = - DMS[0][0]; // 1,1 element
+result[1] = - DMS[0][1]; // 1,2 element
+result[2] = - DMS[0][2]; // 1,3 element
+result[3] = - DMS[1][1]; // 2,2 element
+result[4] = - DMS[1][2]; // 2,3 element
+result[5] = - DMS[2][2]; // 3,3 element
+";
+           Return[body];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
+                                model_String /; model === "NMSSM"] :=
+    Module[{body,
+            g3Str, mtStr, mbStr, mtauStr,
+            vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
+            lambdaStr},
+           AssertFieldDimension[particle, 3, model];
+           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
+           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
+           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
+           muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
+           lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
+           body = "\
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+double mstau_1, mstau_2, theta_tau;
+double msnu_1, msnu_2, theta_nu;
+
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopQuark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomQuark, "msb_1", "msb_2", "theta_b"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Electron, "mstau_1", "mstau_2", "theta_tau"] <>
+";
+" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Neutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+";
+
+double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
+double msb1sq = Sqr(msb_1), msb2sq = Sqr(msb_2);
+double mstau1sq = Sqr(mstau_1), mstau2sq = Sqr(mstau_2);
+double msnusq = Sqr(msnu_2);
+double sxt = Sin(theta_t), cxt = Cos(theta_t);
+double sxb = Sin(theta_b), cxb = Cos(theta_b);
+double sintau = Sin(theta_tau), costau = Cos(theta_tau);
+
+double gs = " <> g3Str <> ";
+double as = Sqr(gs) / (4.0 * Pi);
+double rmt = " <> mtStr <> ";
+double rmtsq = Sqr(rmt);
+double scalesq = Sqr(get_scale());
+double vev2 = " <> vev2Str <> ";
+double vev = Sqrt(" <> vev2Str <> ");
+double tanb = " <> tanbStr <> ";
+const double tanb2 = Sqr(tanb);
+const double sinb = tanb / Sqrt(1. + tanb2);
+const double cosb = 1. / Sqrt(1. + tanb2);
+const double sinb2 = Sqr(sinb);
+const double cosb2 = Sqr(cosb);
+double amu = " <> muStr <> ";
+double mg = " <> m3Str <> ";
+double mAsq = Sqr(" <> mA0Str <> ");
+double cotb = 1.0 / tanb;
+double rmb = " <> mbStr <> ";
+double rmbsq = Sqr(rmb);
+double rmtausq = Sqr(" <> mtauStr <> ");
+double fmasq = Abs(mAsq);
+double lamS = " <> lambdaStr <> ";
+static const double root2 = Sqrt(2.0);
+double vevS =  vev / root2;
+double svevS = " <> vsStr <> " / root2;
+int loop = 2;
+
+double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
+double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+// get alpha_s alpha_t pieces
+effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+
+// get alpha_s alpha_b pieces
+effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Make appropriate substitutions for elements following 0907.4682
+// bottom of page 9
+std::swap(DMPB[0][0], DMPB[1][1]);
+std::swap(DMPB[0][2], DMPB[1][2]);
+
+for (int i = 0; i < 3; i++) {
+   for (int j = 0; j < 3; j++) {
+      DMP[i][j] += DMPB[i][j];
+   }
+}
+
+// Corrections as in MSSM, not corrected for NMSSM,
+// should be OK for MSSM states when S state is close to decoupled
+
+double p2w = 0., p2tau = 0.;
+
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+const double dMA = p2w + p2tau;
+
+DMP[0][0] += dMA * sinb2;
+DMP[0][1] += dMA * sinb * cosb;
+DMP[1][1] += dMA * cosb2;
+
+// subtract two-loop tadpoles
+double tadpole[3];
+" <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+DMP[0][0] += - tadpole[0] / " <> vdStr <> ";
+DMP[1][1] += - tadpole[1] / " <> vuStr <> ";
+DMP[2][2] += - tadpole[2] / " <> vsStr <> ";
+
+result[0] = - DMP[0][0]; // 1,1 element
+result[1] = - DMP[0][1]; // 1,2 element
+result[2] = - DMP[0][2]; // 1,3 element
+result[3] = - DMP[1][1]; // 2,2 element
+result[4] = - DMP[1][2]; // 2,3 element
+result[5] = - DMP[2][2]; // 3,3 element
+";
+           Return[body];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[particle_, model_] :=
+    Module[{},
+           Print["Error: two-loop self-energy corrections not available for ",
+                 particle, " in the ", model];
+           ""
+          ];
+
+CreateTwoLoopSelfEnergy[particle_, model_String] :=
+    Module[{prototype, function, functionName, dim, dimStr},
+           dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
+           dimStr = ToString[dim];
+           functionName = CreateTwoLoopSelfEnergyFunctionName[particle];
+           prototype = "void " <> functionName <> "(double result[" <>
+                       dimStr <> "]) const;\n";
+           body = GetTwoLoopSelfEnergyCorrections[particle, model];
+           function = "void CLASSNAME::" <> functionName <>
+                      "(double result[" <> dimStr <> "]) const\n{\n" <>
+                      IndentText[body] <> "\n}\n";
+           Return[{prototype, function}];
+          ];
+
+CreateTwoLoopSelfEnergies[particles_List, model_String] :=
+    Module[{prototype = "", function = "", i, p, f},
+           For[i = 1, i <= Length[particles], i++,
+               {p, f} = CreateTwoLoopSelfEnergy[particles[[i]], model];
+               prototype = prototype <> p;
+               function = function <> f <> "\n";
+              ];
+           Return[{prototype, function}];
+          ];
+
+CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
+    CreateTwoLoopSelfEnergies[particles, "MSSM"];
+
+CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
+    CreateTwoLoopSelfEnergies[particles, "NMSSM"];
 
 End[];
 
