@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SFERMIONS_HPP
-#define SFERMIONS_HPP
+#ifndef SFERMIONS_H
+#define SFERMIONS_H
 
 #include <Eigen/Core>
 

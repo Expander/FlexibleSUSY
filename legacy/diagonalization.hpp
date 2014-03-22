@@ -1,6 +1,6 @@
 
-#ifndef DIAGONALIZATION_HPP
-#define DIAGONALIZATION_HPP
+#ifndef DIAGONALIZATION_H
+#define DIAGONALIZATION_H
 
 #include "linalg.h"
 

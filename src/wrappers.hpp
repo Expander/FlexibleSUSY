@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef WRAPPERS_HPP
-#define WRAPPERS_HPP
+#ifndef WRAPPERS_H
+#define WRAPPERS_H
 
 #include <complex>
 #include <cmath>

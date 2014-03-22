@@ -6,8 +6,8 @@
 //    - Description: Integration of ODEs by Runge Kutta, minimum finding and
 //                 derivative calculation
 
-#ifndef RK_HPP
-#define RK_HPP
+#ifndef RK_H
+#define RK_H
 
 #include <functional>
 #include <Eigen/Dense>
@@ -41,4 +41,4 @@ void integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,
 
 }
 
-#endif // RK_HPP
+#endif // RK_H

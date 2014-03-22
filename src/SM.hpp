@@ -1,5 +1,5 @@
-#ifndef SM_HPP
-#define SM_HPP
+#ifndef SM_H
+#define SM_H
 
 
 #include "mathdefs.hpp"
@@ -15,4 +15,4 @@ CM33 standard_VCKM(Real gamma);
 
 }
 
-#endif // SM_HPP
+#endif // SM_H

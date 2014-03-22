@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef BUILD_INFO_HPP
-#define BUILD_INFO_HPP
+#ifndef BUILD_INFO_H
+#define BUILD_INFO_H
 
 #include <iosfwd>
 

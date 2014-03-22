@@ -1,6 +1,6 @@
 
-#ifndef CONVERSION_HPP
-#define CONVERSION_HPP
+#ifndef CONVERSION_H
+#define CONVERSION_H
 
 #include "linalg.h"
 #include <Eigen/Core>

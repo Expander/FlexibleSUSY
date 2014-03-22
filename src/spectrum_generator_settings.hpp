@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SPECTRUM_GENERATOR_SETTINGS_HPP
-#define SPECTRUM_GENERATOR_SETTINGS_HPP
+#ifndef SPECTRUM_GENERATOR_SETTINGS_H
+#define SPECTRUM_GENERATOR_SETTINGS_H
 
 namespace flexiblesusy {
 
