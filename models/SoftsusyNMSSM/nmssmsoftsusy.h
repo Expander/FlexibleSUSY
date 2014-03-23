@@ -1,8 +1,12 @@
-/** \file nmssmsoftsusy.cpp
-    Project: NMSSMSOFTSUSY 
-    Author: Ben Allanach, Peter Athron, Lewis Tunstall, Alexander Voigt 
-    Manual: TBW
-    Webpage:  https://github.com/Expander/softsusy.git 
+/** \file nmssmsoftsusy.h
+    - Project: Next-to-Minimal SOFTSUSY 
+    - Author: Ben Allanach, Peter Athron, Lewis Tunstall, Alexander Voigt,
+      Anthony Williams
+    - Manual: http://arxiv.org/abs/1311.7659
+    - Webpage: http://hepforge.cedar.ac.uk/softsusy/
+
+    \brief NmssmSoftsusy object contains all the NMSSM functionality: SUSY
+    breaking and preserving parameters, and physical parameters etc
 */
 
 
@@ -77,7 +81,7 @@ public:
   void  H1SfSfCouplings(DoubleMatrix & lTS1Lr, DoubleMatrix & lBS1Lr, 
 			DoubleMatrix  & lTauS1Lr, double gmzOcthW, 
 			double mu,  double cosb, double v1) const;
-//PA: obtains NMSSM H2-sfermion-sfermion couplings 
+  //PA: obtains NMSSM H2-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void H2SfSfCouplings(DoubleMatrix & lTS1Lr, DoubleMatrix & lBS1Lr, 
 		       DoubleMatrix  & lTauS1Lr, double gmzOcthW, 
@@ -344,11 +348,6 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   /// Calculates transverse part of Z self-energy: for p=external momentum,
   /// Q=renormalisation scale
   virtual double piZZT(double p, double Q, bool usePoleMt = false) const;
-   //Alternative Slavich version of the above. 
-  double testSlavichpiZZT(double g, double gp, double ht, double hb, double htau, double v1, double v2, double p, double Q) const;
-  //gets tree masses for slavich
-  void testSlavichTreeMasses() const;
-
   /// Calculates Higgs contribution to the transverse part of W self-energy: 
   //for p=external momentum, q=renormalisation scale
   virtual double piWWTHiggs(double p, double q, double thetaWDRbar) const;
@@ -359,8 +358,6 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   /// Q=renormalisation scale
   virtual double piWWT(double p, double Q, bool usePoleMt = false) const;
   //PA: self energy routines for pseudo scalar self energies
-   //Alternative Slavich version of the above. 
-  double testSlavichpiWWT(double g, double gp, double ht, double hb, double htau, double v1, double v2, double p, double Q) const;
   double pip1p1(double p, double q) const;
   double pip1p2(double p, double q) const;
   double pip2p2(double p, double q) const;
@@ -430,12 +427,6 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   double pis1s3(double p, double q) const;
   double pis2s3(double p, double q) const;
   double pis3s3(double p, double q) const;
-  //returns slavich calculation of the above pseudo scalar self energies.
-  double getpiPP(double g,double gp, double ll, double kk, double ht, double hb, double htau, double v1, double v2, double xx, double Ak, double Al, double At, double Ab, double Atau, double p, double Q, int i, int j) const;
-
- //returns slavich calculation of the above cp even scalar self energies.
-  double getpiSS(double g,double gp, double ll, double kk, double ht, double hb, double htau, double v1, double v2, double xx, double Ak, double Al, double At, double Ab, double Atau, double p, double Q, int i, int j) const;
-
 
   //PA: gets h1 mixing element with Hu.
   virtual double h1s2Mix();
@@ -577,7 +568,6 @@ inline NmssmSoftsusy::NmssmSoftsusy(const NmssmSoftsusy & s)
 inline NmssmSoftsusy::NmssmSoftsusy(const MssmSoftsusy & s)
 		     : Softsusy<SoftParsNmssm>(s),
                      tSOVSMs(0), tSOVSMs1loop(0)  {
-   cout << "swallowing tasty mssmsoftsusy" << endl;
    setPars(121);   
 }
 
