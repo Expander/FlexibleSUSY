@@ -16,6 +16,15 @@ extern double sw2, gnuL, guL, gdL, geL, guR, gdR, geR, yuL, yuR, ydL,
   ydR, yeL, yeR, ynuL;
 
 
+const NmssmSoftsusy & NmssmSoftsusy::operator=(const NmssmSoftsusy & s) {
+  if (this == &s) return *this;
+  Softsusy<SoftParsNmssm>::operator=(s);
+  tSOVSMs = s.tSOVSMs;
+  tSOVSMs1loop = s.tSOVSMs1loop;
+  return *this;
+}
+
+
 double NmssmSoftsusy::testSlavichpiZZT(double g, double gp, double ht, double hb, double htau, double v1, double v2, double p, double Q) const {
    double piZZT = 0.0;
    getpizz_(&g, &gp, &ht, &hb, &htau, &v1, &v2, &p, &Q, &piZZT);
