@@ -128,6 +128,8 @@ Example:
      --with-lib-ext=".so" \
      --with-make-lib-cmd="gcc -shared -o"
 
+     (when using Intel compilers, replace `gcc' by `icc' or `icpc')
+
 Important remark:
 
 The libraries are linked to the executables with _absolute_ paths.
