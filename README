@@ -5,7 +5,7 @@ generators for non-minimal supersymmetric models.
 Requirements
 ============
 
- * C++ compiler (g++ >= 4.6.0 or clang++ >= 3.1)
+ * C++ compiler (g++ >= 4.6.0 or clang++ >= 3.1 or icpc >= 14.0)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
  * SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
@@ -121,14 +121,14 @@ you have to pass all the following options to the ./configure script
    --with-lib-ext=".so"
    --with-make-lib-cmd="gcc -shared -o"
 
+When using Intel compilers, replace `gcc' by `icc' or `icpc'.
+
 Example:
 
    $ ./configure --with-models=MSSM,NMSSM \
      --disable-static-libs \
      --with-lib-ext=".so" \
      --with-make-lib-cmd="gcc -shared -o"
-
-     (when using Intel compilers, replace `gcc' by `icc' or `icpc')
 
 Important remark:
 
