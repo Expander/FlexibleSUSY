@@ -16,33 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef PROGRAM_OPTIONS_H
-#define PROGRAM_OPTIONS_H
+#ifndef MSSM_MSSMRHN_INITIAL_GUESSER_H
+#define MSSM_MSSMRHN_INITIAL_GUESSER_H
 
 namespace flexiblesusy {
 
-/**
- * @class Program_options
- * @brief stores the program options
- *
- * This class stores all program options which can be changed via the
- * SLHA input file.
- */
-class Program_options {
-public:
-   enum Options : unsigned { precision, max_iterations,
-         algorithm, calculate_sm_masses, pole_mass_loop_order,
-         ewsb_loop_order, NUMBER_OF_OPTIONS };
-
-   Program_options();
-   ~Program_options() {}
-
-   double get(Options) const;
-   void set(Options, double);
-
-private:
-   double values[NUMBER_OF_OPTIONS];
-};
+template <class T>
+class MSSM_MSSMRHN_initial_guesser;
 
 } // namespace flexiblesusy
 

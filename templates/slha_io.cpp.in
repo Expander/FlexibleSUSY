@@ -22,7 +22,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
-#include "program_options.hpp"
+#include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "config.h"
 
@@ -108,11 +108,11 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 @readLesHouchesInputParameters@
 }
 
-void @ModelName@_slha_io::fill(Program_options& options) const
+void @ModelName@_slha_io::fill(Spectrum_generator_settings& settings) const
 {
    using namespace std::placeholders;
    SLHA_io::Tuple_processor flexiblesusy_processor
-      = std::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, std::ref(options), _1, _2);
+      = std::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, std::ref(settings), _1, _2);
 
    slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
 }
@@ -134,11 +134,11 @@ void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
 @fillInputParametersFromEXTPAR@
 }
 
-void @ModelName@_slha_io::fill_flexiblesusy_tuple(Program_options& options,
+void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& settings,
                                                   int key, double value)
 {
-   if (0 <= key && key < static_cast<int>(Program_options::NUMBER_OF_OPTIONS)) {
-      options.set((Program_options::Options)key, value);
+   if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
+      settings.set((Spectrum_generator_settings::Settings)key, value);
    } else {
       WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }

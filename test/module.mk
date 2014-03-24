@@ -29,6 +29,7 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-MSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
+		$(DIR)/test_sfermions.cpp \
 		$(DIR)/test_MSSM_high_scale_constraint.cpp \
 		$(DIR)/test_MSSM_higgs_iteration.cpp \
 		$(DIR)/test_MSSM_initial_guesser.cpp \
@@ -50,6 +51,7 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_initial_guesser.cpp \
 		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
+		$(DIR)/test_NMSSM_self_energies.cpp \
 		$(DIR)/test_NMSSM_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
@@ -86,6 +88,11 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
 TEST_SH += \
 		test/test_lowMSSM.sh
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-MSSM --with-MSSMRHN),yes yes)
+TEST_SH += \
+		test/test_tower.sh
 endif
 
 TEST_META := \
@@ -179,19 +186,19 @@ $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_linalg2.x: $(DIR)/test_linalg2.o
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(LAPACKLIBS) $(FLIBS)
 
-$(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI)
+$(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
 $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI)
+$(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
-$(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI)
+$(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI)
+$(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)
@@ -220,12 +227,14 @@ $(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 else
 $(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
 $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
@@ -255,6 +264,8 @@ $(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LI
 $(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NMSSM_self_energies.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 

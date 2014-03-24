@@ -18,6 +18,9 @@ ABSBASEDIR=$(cd $BASEDIR; pwd)
 # config directory
 CONFIGDIR="${BASEDIR}/config"
 
+# current date
+DATE="`(date --rfc-2822) 2>/dev/null || echo unknown`"
+
 # platform information
 debmultiarch=""
 
@@ -34,10 +37,13 @@ gppconfig="$BASEDIR/config.g++"
 mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
-machine_word_size=""
+machine_word_size="unknown"
 
 # operating system
 operating_system="unknown"
+
+# kernel version (uname -r)
+kernel_version="unknown"
 
 # target makefile
 MAKEFILE=$BASEDIR/Makefile
@@ -69,11 +75,17 @@ STANDALONE_MAKEFILES="\
  ${BASEDIR}/examples/standalone-rge/Makefile"
 STANDALONE_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.standalone.in"
 
+# target makefile file for the tower example
+TOWER_MAKEFILES="
+ ${BASEDIR}/examples/tower/Makefile"
+TOWER_MAKEFILE_TMPL="${BASEDIR}/config/Makefile.tower.in"
+
 # options
 deprecated_options=""
 options="                    \
    enable_colors             \
    enable_compile            \
+   enable_compiler_warnings  \
    enable_debug              \
    enable_looptools          \
    enable_meta               \
@@ -82,6 +94,7 @@ options="                    \
    enable_verbose            \
 "
 enable_compile="yes"
+enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
@@ -100,18 +113,19 @@ looptools_lib_dir=""
 looptools_inc_dir=""
 GSLFLAGS=""
 CPPFLAGS=""
-CXXFLAGS="-std=c++11 -O2 -Wall -pedantic -Wextra\
- -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
- -Wno-unused-local-typedefs"
-FFLAGS="-O2 -frecursive"
+CXXFLAGS="-std=c++11 -O2"
+CXXFLAGS_DEP_GEN="-std=c++11"
+FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
+CXX_DEP_GEN="${CXX}"
 EIGENFLAGS=""
 FC="gfortran"
+FOR_DEP_GEN="${FC}"
 GSLLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
@@ -121,6 +135,10 @@ ALGORITHMS="all"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
+
+# flags
+cxx_compiler_type="unknown"
+cxx_dep_gen_type="unknown"
 
 # required boost version
 required_boost_major="1"
@@ -134,6 +152,12 @@ required_gpp_minor="6"
 required_gpp_patch="0"
 required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
 
+# g++ version
+GPP_VERSION="unknown"
+GPP_MAJOR="0"
+GPP_MINOR="0"
+GPP_PATCH="0"
+
 # required Mathematica version
 required_mathematica_version="7"
 
@@ -142,6 +166,13 @@ required_sarah_major="4"
 required_sarah_minor="0"
 required_sarah_patch="4"
 required_sarah_version="${required_sarah_major}.${required_sarah_minor}.${required_sarah_patch}"
+SARAH_VERSION="unknown"
+SARAH_MAJOR="0"
+SARAH_MINOR="0"
+SARAH_PATCH="0"
+
+# Mathematica version
+MATH_VERSION="unknown"
 
 #_____________________________________________________________________
 write_configure_parameters() {
@@ -640,6 +671,7 @@ check_platform() {
     logmsg ""
 
     operating_system="`(uname -s) 2>/dev/null || echo unknown`"
+    kernel_version="`(uname -r) 2>/dev/null || echo unknown`"
 }
 
 #_____________________________________________________________________
@@ -842,15 +874,79 @@ check_thread_libs() {
 }
 
 #_____________________________________________________________________
-is_gnu_cpp_compiler() {
+check_cxx_compiler_type() {
+    cxx_compiler_type="unknown"
+
     checking_msg "${CXX} is GNU compiler"
+    if is_gnu_cpp_compiler "${CXX}"; then
+        cxx_compiler_type="gnu"
+        result "yes"
+        logmsg "   ${CXX} is a GNU compiler"
+    else
+        result "no"
+        checking_msg "${CXX} is Intel compiler"
+        if is_intel_cpp_compiler "${CXX}"; then
+            result "yes"
+            cxx_compiler_type="intel"
+        else
+            result "no"
+            cxx_compiler_type="unknown"
+        fi
+    fi
+
+    logmsg "C++ compiler type: ${cxx_compiler_type}"
+}
+
+#_____________________________________________________________________
+check_cxx_dep_gen_type() {
+    cxx_dep_gen_type="unknown"
+
+    checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is GNU compiler"
+    if is_gnu_cpp_compiler "${CXX_DEP_GEN}"; then
+        cxx_dep_gen_type="gnu"
+        result "yes"
+        logmsg "   ${CXX_DEP_GEN} is a GNU compiler"
+    else
+        result "no"
+
+        checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Clang compiler"
+        if is_clang_cpp_compiler "${CXX_DEP_GEN}"; then
+            cxx_dep_gen_type="clang"
+            result "yes"
+            logmsg "   ${CXX_DEP_GEN} is a Clang compiler"
+        else
+            result "no"
+
+            checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Intel compiler"
+            if is_intel_cpp_compiler "${CXX_DEP_GEN}"; then
+                result "yes"
+                cxx_dep_gen_type="intel"
+            else
+                result "no"
+                cxx_dep_gen_type="unknown"
+            fi
+        fi
+    fi
+
+    logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
+}
+
+#_____________________________________________________________________
+is_gnu_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_gnu_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
     local _check_gnu_compiler_cpp="${BASEDIR}/check_gnu_compiler.cpp"
     local _check_gnu_compiler_exe="${BASEDIR}/check_gnu_compiler.x"
     rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
 
     cat <<EOF > ${_check_gnu_compiler_cpp}
 int main() {
-#if defined(__llvm__) || defined(__clang__)
+#if defined(__llvm__) || defined(__clang__) || defined(__INTEL_COMPILER)
    return 1;
 #else
    #ifdef __GNUC__
@@ -863,22 +959,18 @@ int main() {
 EOF
     local _result="1"
 
-    if $CXX -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
+    if $_compiler -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         if ${_check_gnu_compiler_exe};
         then
-            result "yes"
-            logmsg "   ${CXX} is a GNU compiler"
             _result="0"
         else
-            result "no"
             _result="1"
         fi
     else
-        result "unknown"
-        message "Warning: could not determine compiler type of ${CXX} because"
-        message "   compilation of the test program failed."
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
         _result="1"
     fi
 
@@ -891,7 +983,14 @@ check_gpp_version() {
     local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
     local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
 
-    checking_msg "${CXX} compiler version >= ${required_gpp_version}"
+    local gpp
+    if [ "$cxx_dep_gen_type" = "gnu" ]; then
+	gpp="$CXX_DEP_GEN"
+    else
+	gpp="$CXX"
+    fi
+
+    checking_msg "${gpp} compiler version >= ${required_gpp_version}"
 
     # clean up
     rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
@@ -923,44 +1022,125 @@ int main() {
 }
 EOF
     # compile the version check program
-    if $CXX -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
+    if $gpp -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
     then
         # run the version check program
         ${_check_gpp_version_progr_exe}
         local _error="$?"
-        local gpp_version=""
         if test -r "${gppconfig}" ; then
-            gpp_version=`cat ${gppconfig}`
+            GPP_VERSION=`cat ${gppconfig}`
         fi
         if test "x${_error}" = "x0" ; then
-            result "ok (version ${gpp_version})"
-            logmsg "   Required ${CXX} version: ${required_gpp_version}"
-            logmsg "   ${CXX} version found: ${gpp_version}"
+            result "ok (version ${GPP_VERSION})"
+            logmsg "   Required ${gpp} version: ${required_gpp_version}"
+            logmsg "   ${gpp} version found: ${GPP_VERSION}"
         else
-            result "not ok (version ${gpp_version})"
-            message "Error: the installed ${CXX} version is too old."
+            result "not ok (version ${GPP_VERSION})"
+            message "Error: the installed ${gpp} version is too old."
             message "   Please install version ${required_gpp_version} or higher."
             rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
             rm -f ${gppconfig}
             exit 1
         fi
-	case "$CXXFLAGS" in
-	    *-std=c++11*)
-		set -- $(echo "$gpp_version" | tr . ' ')
-		if [ "$2" -lt 7 ]; then
-		    message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
-		    CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
-		fi
-	esac
+	set -- $(echo "$GPP_VERSION" | tr . ' ')
+	GPP_MAJOR="$1"
+	GPP_MINOR="$2"
+	GPP_PATCH="$3"
     else
         result "unknown"
-        message "Warning: could not determine ${CXX} version because"
-        message "   compilation of the ${CXX} test program failed."
+        message "Warning: could not determine ${gpp} version because"
+        message "   compilation of the ${gpp} test program failed."
     fi
 
     # clean up
     rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
     rm -f ${gppconfig}
+}
+
+#_____________________________________________________________________
+is_intel_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_intel_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
+    local _check_intel_compiler_cpp="${BASEDIR}/check_intel_compiler.cpp"
+    local _check_intel_compiler_exe="${BASEDIR}/check_intel_compiler.x"
+    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
+
+    cat <<EOF > ${_check_intel_compiler_cpp}
+int main() {
+#ifdef __INTEL_COMPILER
+   return 0;
+#else
+   return 1;
+#endif
+}
+EOF
+    local _result="1"
+
+    if $_compiler -o ${_check_intel_compiler_exe} ${_check_intel_compiler_cpp} >> ${logfile} 2>&1;
+    then
+        # run the version check program
+        if ${_check_intel_compiler_exe};
+        then
+            _result="0"
+        else
+            _result="1"
+        fi
+    else
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
+        _result="1"
+    fi
+
+    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
+    return "${_result}"
+}
+
+#_____________________________________________________________________
+is_clang_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_clang_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local _compiler="$1"
+
+    local _check_clang_compiler_cpp="${BASEDIR}/check_clang_compiler.cpp"
+    local _check_clang_compiler_exe="${BASEDIR}/check_clang_compiler.x"
+    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
+
+    cat <<EOF > ${_check_clang_compiler_cpp}
+int main() {
+#if defined(__llvm__) || defined(__clang__)
+   return 0;
+#else
+   return 1;
+#endif
+}
+EOF
+    local _result="1"
+
+    if $_compiler -o ${_check_clang_compiler_exe} ${_check_clang_compiler_cpp} >> ${logfile} 2>&1;
+    then
+        # run the version check program
+        if ${_check_clang_compiler_exe};
+        then
+            _result="0"
+        else
+            _result="1"
+        fi
+    else
+        logmsg "Warning: could not determine compiler type of ${_compiler} because"
+        logmsg "   compilation of the test program failed."
+        _result="1"
+    fi
+
+    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
+    return "${_result}"
 }
 
 #_____________________________________________________________________
@@ -979,15 +1159,63 @@ check_cxx() {
 
 #_____________________________________________________________________
 check_cxxflags() {
+    case "$CXXFLAGS" in
+	*-std=c++11*)
+	    if test "x${cxx_compiler_type}" = "xgnu" -a $GPP_MINOR -lt 7; then
+		message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
+		CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
+	    fi
+    esac
+
+    if test "x$enable_compiler_warnings" = "xyes" ; then
+        if test "x${cxx_compiler_type}" = "xgnu"; then
+            CXXFLAGS="${CXXFLAGS} -Wall -pedantic -Wextra\
+ -Wcast-align -Woverloaded-virtual -Wnon-virtual-dtor\
+ -Wno-unused-local-typedefs"
+        elif test "x${cxx_compiler_type}" = "xintel"; then
+            CXXFLAGS="${CXXFLAGS} -w3 -Wnon-virtual-dtor"
+        fi
+    fi
+
     if test "x$enable_static_libs" = "xno" ; then
         # check if -fPIC is in CXXFLAGS
         case "${CXX}" in
-            g++*|clang++*)
+            g++*|clang++*|icpc*)
                 if contains_not "${CXXFLAGS}" "-fPIC" ; then
                     message "   Warning: could not find -fPIC in CXXFLAGS, appending it"
                     CXXFLAGS="${CXXFLAGS} -fPIC"
                 fi ;;
         esac
+    fi
+}
+
+#_____________________________________________________________________
+check_cxx_dep_gen() {
+    checking_msg "C++ file dependency generator $CXX_DEP_GEN"
+    exists_in_path "$CXX_DEP_GEN"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A C++ file dependency generator must be installed!"
+        message "   Use --with-cxx-dep-gen= to specify the dependency generator"
+        message "   that should be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
+check_cxxflags_dep_gen() {
+    if test "x$cxx_dep_gen_type" = "xgnu"; then
+	if test "$GPP_MINOR" -ge 7; then
+            CXXFLAGS_DEP_GEN="-std=c++11"
+	else
+            CXXFLAGS_DEP_GEN="-std=c++0x"
+	fi
+    elif test "x$cxx_dep_gen_type" = "xclang"; then
+        CXXFLAGS_DEP_GEN="-std=c++11"
+    else
+        CXXFLAGS_DEP_GEN=""
     fi
 }
 
@@ -1040,10 +1268,25 @@ check_fc() {
 
 #_____________________________________________________________________
 check_fflags() {
+    case "${FC}" in
+        gfortran*)
+            if contains_not "${FFLAGS}" "-frecursive" ; then
+                logmsg "Note: Adding -frecursive to FFLAGS for thread safety."
+                FFLAGS="${FFLAGS} -frecursive"
+            fi
+            ;;
+        ifort*)
+            if contains_not "${FFLAGS}" "-recursive" ; then
+                logmsg "Note: Adding -recursive to FFLAGS for thread safety."
+                FFLAGS="${FFLAGS} -recursive"
+            fi
+            ;;
+    esac
+
     if test "x$enable_static_libs" = "xno" ; then
         # check if -fPIC is in FFLAGS
         case "${FC}" in
-            gfortran*)
+            gfortran*|ifort*)
                 if contains_not "${FFLAGS}" "-fPIC" ; then
                     message "   Warning: could not find -fPIC in FFLAGS, appending it"
                     FFLAGS="${FFLAGS} -fPIC"
@@ -1066,7 +1309,24 @@ check_fortran_libs() {
             fi ;;
         g77|f77)
             FLIBS="-lg2c -lm" ;;
+        ifort)
+            FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
     esac
+}
+
+#_____________________________________________________________________
+check_fortran_dep_gen() {
+    checking_msg "Fortran file dependency generator $FOR_DEP_GEN"
+    exists_in_path "$FOR_DEP_GEN"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A Fortran file dependency generator must be installed!"
+        message "   Use --with-fortran-dep-gen= to specify the dependency generator"
+        message "   that should be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
 }
 
 #_____________________________________________________________________
@@ -1235,8 +1495,8 @@ EOF
     if $MATH -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
     then
         if test -r "${mathconfig}" ; then
-            local math_version=`cat ${mathconfig}`
-            result "ok (version ${math_version})"
+            MATH_VERSION=`cat ${mathconfig}`
+            result "ok (version ${MATH_VERSION})"
         else
             result "ok"
         fi
@@ -1262,24 +1522,24 @@ EOF
     local _sarah_is_available="$?"
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
-            local sarah_version=`cat ${sarahconfig}`
-            local sarah_major=`echo ${sarah_version} | awk -F . '{ print $1 }'`
-            local sarah_minor=`echo ${sarah_version} | awk -F . '{ print $2 }'`
-            local sarah_patch=`echo ${sarah_version} | awk -F . '{ print $3 }'`
+            SARAH_VERSION=`cat ${sarahconfig}`
+            SARAH_MAJOR=`echo ${SARAH_VERSION} | awk -F . '{ print $1 }'`
+            SARAH_MINOR=`echo ${SARAH_VERSION} | awk -F . '{ print $2 }'`
+            SARAH_PATCH=`echo ${SARAH_VERSION} | awk -F . '{ print $3 }'`
             if test \
-                \( "${sarah_major}" -lt "${required_sarah_major}" \) -o \
-                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
-                   \( "${sarah_minor}" -lt "${required_sarah_minor}" \) \) -o \
-                \( \( "${sarah_major}" -eq "${required_sarah_major}" \) -a \
-                   \( "${sarah_minor}" -eq "${required_sarah_minor}" \) -a \
-                   \( "${sarah_patch}" -lt "${required_sarah_patch}" \) \)
+                \( "${SARAH_MAJOR}" -lt "${required_sarah_major}" \) -o \
+                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
+                   \( "${SARAH_MINOR}" -lt "${required_sarah_minor}" \) \) -o \
+                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
+                   \( "${SARAH_MINOR}" -eq "${required_sarah_minor}" \) -a \
+                   \( "${SARAH_PATCH}" -lt "${required_sarah_patch}" \) \)
             then
                 result "not ok"
-                message "Error: SARAH version ${sarah_version} no longer supported!"
+                message "Error: SARAH version ${SARAH_VERSION} no longer supported!"
                 message "   Please use version ${required_sarah_version} or higher."
                 exit 1
             else
-                result "ok (version ${sarah_version})"
+                result "ok (version ${SARAH_VERSION})"
             fi
         else
             result "not ok"
@@ -1355,6 +1615,7 @@ enable/disable options, prefix with either --enable- or --disable-
 
   colors            Colored output (default: $enable_colors)
   compile           Compile the source code (default: $enable_compile)
+  compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
   meta              Create model classes (default: $enable_meta)
@@ -1371,9 +1632,11 @@ Package directories, compilation settings and model selection
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
   --with-cxxflags=          C++ compiler flags (default: $CXXFLAGS)
+  --with-cxx-dep-gen=       C++ file dependency generator (default: $CXX_DEP_GEN)
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
+  --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
   --with-lib-ext=           Library extension (default: $LIBEXT)
@@ -1454,9 +1717,11 @@ if test $# -gt 0 ; then
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
+            --with-cxx-dep-gen=*)    CXX_DEP_GEN=$optarg ;;
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
@@ -1480,12 +1745,17 @@ check_platform
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
     check_cxx
-    if is_gnu_cpp_compiler; then
+    check_cxx_compiler_type
+    check_cxx_dep_gen
+    check_cxx_dep_gen_type
+    if test "x$cxx_compiler_type" = xgnu -o "x$cxx_dep_gen_type" = xgnu; then
         check_gpp_version
     fi
     check_cxxflags
+    check_cxxflags_dep_gen
     check_fc
     check_fflags
+    check_fortran_dep_gen
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -1529,12 +1799,15 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
-    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
@@ -1563,11 +1836,14 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
     -e "s|@FC@|$FC|"                   \
-    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FSCONFIG@|$FSCONFIG|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
@@ -1579,6 +1855,38 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $STANDALONE_MAKEFILE_TMPL | tee $STANDALONE_MAKEFILES > /dev/null
+
+sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
+    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
+    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
+    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
+    -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
+    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
+    -e "s|@THREADLIBS@|$THREADLIBS|"   \
+    -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
+    -e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
+    -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
+    -e "s|@FC@|$FC|"                   \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
+    -e "s|@FFLAGS@|$FFLAGS|"           \
+    -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@FOR_DEP_GEN@|$FOR_DEP_GEN|" \
+    -e "s|@FSCONFIG@|$FSCONFIG|"       \
+    -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
+    -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+    -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
+    -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
+    -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+    -e "s|@MAKELIB@|$MAKELIB|"         \
+    -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
+    -e "s|@LIBEXT@|$LIBEXT|"           \
+    < $TOWER_MAKEFILE_TMPL | tee $TOWER_MAKEFILES > /dev/null
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
@@ -1601,7 +1909,20 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
-    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
+    -e "s|@CXX@|$CXX|"                               \
+    -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
+    -e "s|@FC@|$FC|"                                 \
+    -e "s|@FFLAGS@|$FFLAGS|"                         \
+    -e "s|@FLIBS@|$FLIBS|"                           \
+    -e "s|@MATH_VERSION@|$MATH_VERSION|"             \
+    -e "s|@SARAH_VERSION@|$SARAH_VERSION|"           \
+    -e "s|@SARAH_MAJOR@|$SARAH_MAJOR|"               \
+    -e "s|@SARAH_MINOR@|$SARAH_MINOR|"               \
+    -e "s|@SARAH_PATCH@|$SARAH_PATCH|"               \
+    -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
+    -e "s|@KERNEL_VERSION@|$kernel_version|"         \
+    -e "s|@DATE@|$DATE|"                             \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

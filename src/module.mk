@@ -3,6 +3,7 @@ MODNAME      := libflexisusy
 
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
+		$(DIR)/build_info.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
@@ -10,8 +11,11 @@ LIBFLEXI_SRC := \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
 		$(DIR)/lowe.cpp \
+		$(DIR)/sfermions.cpp \
+		$(DIR)/mssm_twoloophiggs.f \
+		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
-		$(DIR)/program_options.cpp \
+		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
@@ -73,7 +77,7 @@ $(LIBFLEXI): $(LIBFLEXI_OBJ)
 		$(MAKELIB) $@ $^
 else
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS)
+		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
 endif
 
 ALLDEP += $(LIBFLEXI_DEP)

@@ -120,4 +120,31 @@ void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parame
    s.setMw(s.displayMwRun());
 }
 
+void ensure_n_loop_ewsb(NMSSM<Two_scale>& m, int loop_level)
+{
+   const double precision = m.get_ewsb_iteration_precision();
+   m.set_ewsb_loop_order(loop_level);
+   m.solve_ewsb();
+
+   if (loop_level == 1) {
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - m.tadpole_hh(2).real(), precision);
+   } else if (loop_level == 2) {
+      double two_loop_tadpole[3];
+      m.tadpole_hh_2loop(two_loop_tadpole);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(m.tadpole_hh(0)) - two_loop_tadpole[0], precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(m.tadpole_hh(2)) - two_loop_tadpole[2], precision);
+   }
+}
+
+void ensure_n_loop_ewsb(NmssmSoftsusy& s, int loop_level)
+{
+   const int signMu = s.displaySusyMu() >= 0.0 ? 1 : -1;
+   const double mtrun = s.displayDrBarPars().mt;
+   softsusy::numRewsbLoops = loop_level;
+   s.rewsb(signMu, mtrun);
+}
+
 #endif

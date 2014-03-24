@@ -4,8 +4,7 @@ MODNAME      := libSoftsusyMSSM
 LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/mssmUtils.cpp \
 		$(DIR)/physpars.cpp \
-		$(DIR)/susy.cpp \
-		$(DIR)/twoloophiggs.f
+		$(DIR)/susy.cpp
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIBSoftsusyMSSM_SRC  += \
@@ -26,16 +25,31 @@ LIBSoftsusyMSSM_DEP  := \
 
 LIBSoftsusyMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
 
+EXESoftsusyMSSM_SRC := \
+		$(DIR)/run_SoftsusyMSSM.cpp
+
+EXESoftsusyMSSM_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXESoftsusyMSSM_SRC)))
+
+EXESoftsusyMSSM_DEP := \
+		$(EXESoftsusyMSSM_OBJ:.o=.d)
+
+RUN_SoftsusyMSSM_EXE := \
+		$(EXESoftsusyMSSM_OBJ:.o=.x)
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBSoftsusyMSSM)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSoftsusyMSSM_OBJ)
+		-rm -f $(LIBSoftsusyMSSM_OBJ)
+		-rm -f $(EXESoftsusyMSSM_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSoftsusyMSSM_DEP)
-		rm -rf $(LIBSoftsusyMSSM)
+		-rm -f $(LIBSoftsusyMSSM_DEP)
+		-rm -f $(LIBSoftsusyMSSM)
+		-rm -f $(EXESoftsusyMSSM_DEP)
+		-rm -f $(RUN_SoftsusyMSSM_EXE)
 
 clean::         clean-$(MODNAME)
 
@@ -44,5 +58,9 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-ALLDEP += $(LIBSoftsusyMSSM_DEP)
+$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(FLIBS)
+
+ALLDEP += $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP)
 ALLLIB += $(LIBSoftsusyMSSM)
+ALLEXE += $(RUN_SoftsusyMSSM_EXE)

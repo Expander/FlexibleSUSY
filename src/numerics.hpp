@@ -19,6 +19,9 @@
 #ifndef NUMERICS_HPP
 #define NUMERICS_HPP
 
+#include <cmath>
+#include <limits>
+
 namespace flexiblesusy {
 
 template <typename T>

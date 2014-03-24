@@ -38,7 +38,7 @@ int run_point(const std::string& slha_file,
       return status;
    }
 
-   status = run_cmd("./examples/run_softpoint.x leshouches < " +
+   status = run_cmd("./models/SoftsusyNMSSM/run_softpoint.x leshouches < " +
                     slha_file + " > " + softsusy_output_file);
 
    if (status) {

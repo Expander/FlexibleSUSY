@@ -35,7 +35,7 @@
 namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
-class Program_options;
+class Spectrum_generator_settings;
 
 class @ModelName@_slha_io {
 public:
@@ -44,7 +44,7 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
-   void fill(Program_options&) const;
+   void fill(Spectrum_generator_settings&) const;
    double get_input_scale() const;
    double get_parameter_output_scale() const;
    void read_from_file(const std::string&);
@@ -58,7 +58,7 @@ public:
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
-   static void fill_flexiblesusy_tuple(Program_options&, int, double);
+   static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
 private:
    SLHA_io slha_io; ///< SLHA io class

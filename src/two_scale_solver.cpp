@@ -144,6 +144,10 @@ void RGFlow<Two_scale>::run_up()
       if (m != number_of_models - 1) {
          VERBOSE_MSG("> \tmatching to model " << models[m + 1]->model->name());
          Matching<Two_scale>* mc = model->matching_condition;
+         const double scale = mc->get_scale();
+         VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
+	 model->model->run_to(scale);
+         VERBOSE_MSG("> \t\t\tapplying matching condition");
          mc->match_low_to_high_scale_model();
       }
    }
@@ -181,6 +185,10 @@ void RGFlow<Two_scale>::run_down()
       if (m > 0) {
          Matching<Two_scale>* mc = models[m - 1]->matching_condition;
          VERBOSE_MSG("< \tmatching to model " << models[m - 1]->model->name());
+         const double scale = mc->get_scale();
+         VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
+         model->model->run_to(scale);
+         VERBOSE_MSG("> \t\t\tapplying matching condition");
          mc->match_high_to_low_scale_model();
       }
    }
@@ -304,6 +312,10 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
    for (std::vector<Constraint<Two_scale>*>::iterator it = tmp_model->downwards_constraints.begin(),
            end = tmp_model->downwards_constraints.end(); it != end; ++it)
       (*it)->set_model(model);
+
+   if (!models.empty())
+      models.back()->matching_condition->set_models(models.back()->model,
+						    model);
 
    models.push_back(tmp_model);
 }

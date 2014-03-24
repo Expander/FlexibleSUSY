@@ -1,4 +1,7 @@
 
+#ifndef MSSM_TWOLOOPHIGGS_H
+#define MSSM_TWOLOOPHIGGS_H
+
 /** \file twoloophiggs.h
    - Project:     SOFTSUSY 
    - Author:      Ben Allanach 
@@ -213,3 +216,5 @@ extern "C" int tausqtad_(double * t, double * A0, double * BL, double * T1,
 extern "C" int dilogwrap_(double * a, double * b, double * c, double * d);
 
 extern "C" int dummy_();
+
+#endif

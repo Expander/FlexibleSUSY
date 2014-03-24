@@ -556,7 +556,7 @@ void compare_selectron_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(Se_softsusy_se(3,3), Se_sarah_se(3,3), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(3,6), Se_sarah_se(3,6), 1.0e-10);
    TEST_CLOSE(Se_softsusy_se(6,3), Se_sarah_se(6,3), 1.0e-10);
-   TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 1.0e-10);
+   TEST_CLOSE(Se_softsusy_se(6,6), Se_sarah_se(6,6), 2.0e-10);
 }
 
 void compare_sup_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
@@ -898,7 +898,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();
-   const double sarah_mtop = m.calculate_MFu_DRbar_1loop(mtpole, 2);
+   const double sarah_mtop = m.calculate_MFu_DRbar(mtpole, 2);
 
    TEST_CLOSE(sarah_mtop, softsusy_mtop, 0.14);
 }
@@ -915,7 +915,7 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mb_ms_bar = s.displayDataSet().displayMass(mBottom);
    const double softsusy_mbot = s.calcRunningMb();
-   const double sarah_mbot = m.calculate_MFd_DRbar_1loop(mb_ms_bar, 2);
+   const double sarah_mbot = m.calculate_MFd_DRbar(mb_ms_bar, 2);
 
    TEST_CLOSE(sarah_mbot, softsusy_mbot, 0.0013);
 }
@@ -929,7 +929,7 @@ void compare_tau_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
 
    const double mtaupole = s.displayDataSet().displayPoleMtau();
    const double softsusy_mtau = s.calcRunningMtau();
-   const double sarah_mtau = m.calculate_MFe_DRbar_1loop(mtaupole, 2);
+   const double sarah_mtau = m.calculate_MFe_DRbar(mtaupole, 2);
 
    // Softsusy:
    // * no photon contribution
@@ -983,6 +983,53 @@ void compare_tadpoles(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(tu / vu, s.doCalcTadpole2oneLoop(mt, sinthDRbar), 1.0e-11);
 }
 
+void compare_tadpoles_2loop(MssmSoftsusy s, MSSM<Two_scale> m)
+{
+   ensure_tree_level_ewsb(m);
+   s.calcDrBarPars();
+   m.calculate_DRbar_parameters();
+
+   const double mt = s.displayDrBarPars().mt;
+   const double sinthDRbar = s.calcSinthdrbar();
+   const double vd = m.get_vd();
+   const double vu = m.get_vu();
+
+   const double td_fs = m.tadpole_hh(0).real();
+   const double tu_fs = m.tadpole_hh(1).real();
+
+   double td_ss = s.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   double tu_ss = s.doCalcTadpole2oneLoop(mt, sinthDRbar);
+
+   // check equality of 1-loop tadpoles
+   TEST_CLOSE(td_fs / vd, td_ss, 1.0e-11);
+   TEST_CLOSE(tu_fs / vu, tu_ss, 1.0e-11);
+
+   // make sure the one-loop tadpoles are calculated correctly
+   softsusy::numRewsbLoops = 1;
+   s.doTadpoles(mt, sinthDRbar);
+
+   td_ss = s.displayTadpole1Ms();
+   tu_ss = s.displayTadpole2Ms();
+
+   // check equality of 1-loop tadpoles again
+   TEST_CLOSE(td_fs / vd, td_ss, 1.0e-11);
+   TEST_CLOSE(tu_fs / vu, tu_ss, 1.0e-11);
+
+   // calculate 2-loop tadpoles
+   softsusy::numRewsbLoops = 2;
+   s.doTadpoles(mt, sinthDRbar);
+
+   const double td_1_and_2loop_ss = s.displayTadpole1Ms();
+   const double tu_1_and_2loop_ss = s.displayTadpole2Ms();
+
+   double two_loop_tadpole[2];
+   m.tadpole_hh_2loop(two_loop_tadpole);
+
+   // check equality of 1-loop tadpoles again
+   TEST_CLOSE(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
+   TEST_CLOSE(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+}
+
 void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
@@ -1013,8 +1060,8 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE(m.get_Mu(), s.displaySusyMu(), 1.0e-10);
    TEST_CLOSE(m.get_BMu(), s.displayM3Squared(), 1.0e-10);
 
-   ensure_one_loop_ewsb(m);
-   ensure_one_loop_ewsb(s);
+   ensure_n_loop_ewsb(m, 1);
+   ensure_n_loop_ewsb(s, 1);
    // check that the important scalar potential parameters are equal
    TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
@@ -1023,13 +1070,13 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    m.calculate_pole_masses();
    s.physical(1);
 
-   const DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
+   DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
    TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 0.114);
    TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 0.04);
    TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 0.00115);
    TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 6.0e-5);
 
-   const DoubleVector Ah(ToDoubleVector(m.get_physical().MAh));
+   DoubleVector Ah(ToDoubleVector(m.get_physical().MAh));
    TEST_CLOSE(s.displayPhys().mA0(1), Ah(2), 0.05);
    TEST_CLOSE_REL(s.displayPhys().mA0(1), Ah(2), 6.0e-5);
 
@@ -1071,6 +1118,31 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(4), m.get_physical().MSd(3), 0.000026);
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(5), m.get_physical().MSd(4), 0.000026);
    TEST_CLOSE_REL(s.displayPhys().md.flatten().sort()(6), m.get_physical().MSd(5), 0.00005);
+
+   // test two-loop corrections
+   softsusy::numRewsbLoops = 2;
+   softsusy::numHiggsMassLoops = 2;
+   m.set_pole_mass_loop_order(2);
+   m.set_ewsb_loop_order(2);
+   ensure_n_loop_ewsb(m, 2);
+   ensure_n_loop_ewsb(s, 2);
+   // check that the important scalar potential parameters are equal
+   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-7);
+   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-8);
+   TEST_CLOSE_REL(m.get_Mu(), s.displaySusyMu(), 0.0000001);
+   TEST_CLOSE_REL(m.get_BMu(), s.displayM3Squared(), 0.04);
+   m.calculate_pole_masses();
+   s.physical(2);
+
+   hh = ToDoubleVector(m.get_physical().Mhh);
+   TEST_CLOSE(s.displayPhys().mh0(1), hh(1), 5.0e-4);
+   TEST_CLOSE(s.displayPhys().mh0(2), hh(2), 9.0e-4);
+   TEST_CLOSE_REL(s.displayPhys().mh0(1), hh(1), 5.0e-4);
+   TEST_CLOSE_REL(s.displayPhys().mh0(2), hh(2), 5.0e-4);
+
+   Ah = ToDoubleVector(m.get_physical().MAh);
+   TEST_CLOSE(s.displayPhys().mA0(1), Ah(2), 6.0e-3);
+   TEST_CLOSE_REL(s.displayPhys().mA0(1), Ah(2), 5.0e-4);
 }
 
 void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
@@ -1137,6 +1209,144 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
    TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 0.0004);
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 0.1);
+}
+
+void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_parameters();
+
+   const double BMu = model.get_BMu();
+   const double Mu  = model.get_Mu();
+   const double Mu2 = sqr(Mu);
+   const double m1sq = model.get_mHd2();
+   const double m2sq = -model.get_mHu2();
+   const int signMu = Mu >= 0.0 ? 1 : -1;
+   const DoubleVector pars(3); // unused
+   const double precision = model.get_ewsb_iteration_precision();
+   model.set_mHd2(m1sq);
+   model.set_mHu2(m2sq);
+   softSusy.setMh1Squared(m1sq);
+   softSusy.setMh2Squared(m2sq);
+
+   // these conditions must be fulfilled to have EWSB
+   // see Drees p. 221 and 222
+   TEST_GREATER(sqr(BMu), (m2sq + Mu2)*(m1sq + Mu2));
+
+   // solve two-loop
+   model.set_ewsb_loop_order(2);
+   model.solve_ewsb();
+
+   double two_loop_tadpole[2];
+   model.tadpole_hh_2loop(two_loop_tadpole);
+
+   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(0).real()
+              - two_loop_tadpole[0], 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(1).real()
+              - two_loop_tadpole[1], 0.0, precision);
+
+   softsusy::numRewsbLoops = 2;
+   softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-9);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+}
+
+void compare_self_energy_CP_even_higgs(MSSM<Two_scale> model,
+                                    MssmSoftsusy softSusy, int loop_order)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_parameters();
+
+   // check tree-level
+   DoubleVector hh_ss(softSusy.displayDrBarPars().mh0);
+   Eigen::Array<double,2,1> hh_fs(model.get_Mhh());
+
+   TEST_CLOSE(hh_ss(1), hh_fs(0), 1.0e-10);
+   TEST_CLOSE(hh_ss(2), hh_fs(1), 1.0e-10);
+
+   softsusy::numRewsbLoops = loop_order;
+   softsusy::numHiggsMassLoops = loop_order;
+   model.set_ewsb_loop_order(loop_order);
+   model.set_pole_mass_loop_order(loop_order);
+
+   ensure_n_loop_ewsb(model, loop_order);
+   ensure_n_loop_ewsb(softSusy, loop_order);
+
+   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-08);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+
+   const int accuracy = loop_order;
+   const double piWWT = 0., pizztMS = 0.;
+
+   // setting initial conditions for the iteration
+   softsusy::sPhysical physical(softSusy.displayDrBarPars());
+   physical.mh0(1) = softSusy.displayDrBarPars().mh0(1);
+   physical.mh0(2) = softSusy.displayDrBarPars().mh0(2);
+
+   softSusy.setPhys(physical);
+   softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
+
+   model.set_number_of_mass_iterations(1);
+   model.calculate_Mhh_pole();
+
+   hh_ss = softSusy.displayPhys().mh0;
+   hh_fs = model.get_physical().Mhh;
+
+   TEST_CLOSE(hh_ss(1), hh_fs(0), 1.0e-10);
+   TEST_CLOSE(hh_ss(2), hh_fs(1), 1.0e-10);
+}
+
+void compare_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
+                                   MssmSoftsusy softSusy, int loop_order)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_parameters();
+
+   // check tree-level
+   DoubleVector Ah_ss(softSusy.displayDrBarPars().mA0);
+   Eigen::Array<double,2,1> Ah_fs(model.get_MAh());
+
+   TEST_CLOSE(Ah_ss(1), Ah_fs(1), 1.0e-10);
+
+   softsusy::numRewsbLoops = loop_order;
+   softsusy::numHiggsMassLoops = loop_order;
+   model.set_ewsb_loop_order(loop_order);
+   model.set_pole_mass_loop_order(loop_order);
+
+   ensure_n_loop_ewsb(model, loop_order);
+   ensure_n_loop_ewsb(softSusy, loop_order);
+
+   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-08);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+
+   TEST_CLOSE(softSusy.displayMh1Squared(), model.get_mHd2(), 1.0e-10);
+   TEST_CLOSE(softSusy.displayMh2Squared(), model.get_mHu2(), 1.0e-10);
+
+   const int accuracy = loop_order;
+   const double piWWT = 0., pizztMS = 0.;
+
+   // setting initial conditions for the iteration
+   softsusy::sPhysical physical(softSusy.displayDrBarPars());
+   physical.mh0(1) = softSusy.displayDrBarPars().mh0(1);
+   physical.mh0(2) = softSusy.displayDrBarPars().mh0(2);
+   physical.mA0(1) = softSusy.displayDrBarPars().mA0(1);
+
+   softSusy.setPhys(physical);
+   softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
+
+   model.set_number_of_mass_iterations(1);
+   model.calculate_MAh_pole();
+
+   Ah_ss = softSusy.displayPhys().mA0;
+   Ah_fs = model.get_physical().MAh;
+
+   TEST_CLOSE(Ah_ss(1), Ah_fs(1), 4.0e-3);
 }
 
 void compare_models(int loopLevel)
@@ -1263,8 +1473,34 @@ void compare_models(int loopLevel)
       compare_tadpoles(softSusy, m);
       std::cout << "done\n";
 
-      std::cout << "comparing loop-masses ... ";
+      std::cout << "comparing pole masses ... ";
       compare_loop_masses(softSusy, m);
+      std::cout << "done\n";
+
+      std::cout << "comparing one-loop CP-even higgs self-energy ... ";
+      compare_self_energy_CP_even_higgs(m, softSusy, loopLevel);
+      std::cout << "done\n";
+
+      std::cout << "comparing one-loop CP-odd higgs self-energy ... ";
+      compare_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
+      std::cout << "done\n";
+   }
+
+   if (loopLevel == 2) {
+      std::cout << "comparing tadpoles 2-loop ... ";
+      compare_tadpoles_2loop(softSusy, m);
+      std::cout << "done\n";
+
+      std::cout << "test two-loop ewsb ... ";
+      test_ewsb_2loop(m, softSusy);
+      std::cout << "done\n";
+
+      std::cout << "comparing two-loop CP-even higgs self-energy ... ";
+      compare_self_energy_CP_even_higgs(m, softSusy, loopLevel);
+      std::cout << "done\n";
+
+      std::cout << "comparing one-loop CP-odd higgs self-energy ... ";
+      compare_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
       std::cout << "done\n";
    }
 }

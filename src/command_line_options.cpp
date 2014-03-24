@@ -17,7 +17,7 @@
 // ====================================================================
 
 #include "command_line_options.hpp"
-#include "config.h"
+#include "build_info.hpp"
 #include "logger.hpp"
 
 #include <cstdio>
@@ -27,6 +27,7 @@ namespace flexiblesusy {
 
 Command_line_options::Command_line_options()
    : do_exit(false)
+   , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
    , program()
    , slha_input_file()
@@ -36,6 +37,7 @@ Command_line_options::Command_line_options()
 
 Command_line_options::Command_line_options(int argc, const char* argv[])
    : do_exit(false)
+   , do_print_model_info(false)
    , exit_status(EXIT_SUCCESS)
    , program()
    , slha_input_file()
@@ -53,6 +55,7 @@ void Command_line_options::parse(int argc, const char* argv[])
    assert(argc > 0);
    program = argv[0];
    do_exit = false;
+   do_print_model_info = false;
    exit_status = EXIT_SUCCESS;
 
    for (int i = 1; i < argc; ++i) {
@@ -68,6 +71,12 @@ void Command_line_options::parse(int argc, const char* argv[])
       } else if (option == "--help" || option == "-h") {
          print_usage(std::cout);
          do_exit = true;
+      } else if (option == "--build-info") {
+         print_build_info(std::cout);
+         do_exit = true;
+      } else if (option == "--model-info") {
+         do_print_model_info = true;
+         do_exit = true;
       } else if (option == "--version" || option == "-v") {
          print_version(std::cout);
          do_exit = true;
@@ -79,9 +88,16 @@ void Command_line_options::parse(int argc, const char* argv[])
    }
 }
 
+void Command_line_options::print_build_info(std::ostream& ostr) const
+{
+   flexiblesusy::print_all_info(ostr);
+}
+
 void Command_line_options::print_version(std::ostream& ostr) const
 {
-   ostr << FLEXIBLESUSY_VERSION << std::endl;
+   ostr << "FlexibleSUSY ";
+   print_flexiblesusy_version(ostr);
+   ostr << std::endl;
 }
 
 void Command_line_options::print_usage(std::ostream& ostr) const
@@ -94,6 +110,8 @@ void Command_line_options::print_usage(std::ostream& ostr) const
            "  --slha-output-file=<filename>  SLHA output file\n"
            "                                 If not given, the model parameters are\n"
            "                                 printed to stdout\n"
+           "  --build-info                   print build information\n"
+           "  --model-info                   print model information\n"
            "  --help,-h                      print this help message\n"
            "  --version,-v                   print program version"
         << std::endl;

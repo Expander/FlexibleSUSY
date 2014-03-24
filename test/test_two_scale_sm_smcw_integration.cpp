@@ -23,19 +23,14 @@ using namespace flexiblesusy;
 
 class Trivial_SM_SMCW_matching_condition: public Matching<Two_scale> {
 public:
-   Trivial_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
-                                      StandardModelCW<Two_scale>* smcw_)
+   Trivial_SM_SMCW_matching_condition()
       : Matching<Two_scale>()
-      , sm(sm_)
-      , smcw(smcw_)
-      {
-         BOOST_REQUIRE(sm != NULL);
-         BOOST_REQUIRE(smcw != NULL);
-      }
+      , sm(0)
+      , smcw(0)
+      {}
    virtual ~Trivial_SM_SMCW_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
       // ensure that both models are at the matching scale
-      sm->run_to(get_scale());
       smcw->setScale(sm->get_scale());
       // copy parameters
       smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
@@ -46,7 +41,6 @@ public:
    }
    virtual void match_high_to_low_scale_model() {
       // ensure that both models are at the matching scale
-      smcw->run_to(get_scale());
       BOOST_REQUIRE(sm->get_scale() == smcw->get_scale());
       // copy parameters
       sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
@@ -58,6 +52,10 @@ public:
    virtual double get_scale() const {
       return 3000;
    }
+   virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
+      sm = cast_model<StandardModel<Two_scale> >(sm_);
+      smcw = cast_model<StandardModelCW<Two_scale> >(smcw_);
+   }
 private:
    StandardModel<Two_scale>* sm;
    StandardModelCW<Two_scale>* smcw;
@@ -65,20 +63,15 @@ private:
 
 class Dynamic_SM_SMCW_matching_condition: public Matching<Two_scale> {
 public:
-   Dynamic_SM_SMCW_matching_condition(StandardModel<Two_scale>* sm_,
-                                      StandardModelCW<Two_scale>* smcw_)
+   Dynamic_SM_SMCW_matching_condition()
       : Matching<Two_scale>()
-      , sm(sm_)
-      , smcw(smcw_)
+      , sm(0)
+      , smcw(0)
       , scale(3000) // initial guess
-      {
-         BOOST_REQUIRE(sm != NULL);
-         BOOST_REQUIRE(smcw != NULL);
-      }
+      {}
    virtual ~Dynamic_SM_SMCW_matching_condition() {}
    virtual void match_low_to_high_scale_model() {
       // ensure that both models are at the matching scale
-      sm->run_to(get_scale());
       smcw->setScale(sm->get_scale());
       // copy parameters
       smcw->setYukawaMatrix(YU, sm->displayYukawaMatrix(YU));
@@ -89,7 +82,6 @@ public:
    }
    virtual void match_high_to_low_scale_model() {
       // ensure that both models are at the matching scale
-      smcw->run_to(get_scale());
       BOOST_REQUIRE(sm->get_scale() == smcw->get_scale());
       // copy parameters
       sm->setYukawaMatrix(YU, smcw->displayYukawaMatrix(YU));
@@ -101,6 +93,10 @@ public:
    }
    virtual double get_scale() const {
       return scale;
+   }
+   virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
+      sm = cast_model<StandardModel<Two_scale> >(sm_);
+      smcw = cast_model<StandardModelCW<Two_scale> >(smcw_);
    }
    virtual void update_scale() {
       const double new_scale = smcw->calcZprimeMass();
@@ -147,7 +143,7 @@ BOOST_AUTO_TEST_CASE( test_trival_matching )
 
    // this trivial matching condition simply forwards the parameters
    // of one model to the other
-   Trivial_SM_SMCW_matching_condition mc(sm, smcw);
+   Trivial_SM_SMCW_matching_condition mc;
 
    // create convergence tester for the CW-Standard Model
    StandardModelCW_convergence_tester convergence_tester(smcw, 0.01);
@@ -198,7 +194,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_constraints )
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create trivial matching condition
-   Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
+   Trivial_SM_SMCW_matching_condition mc;
 
    // create convergence tester for the CW-Standard Model
    StandardModelCW_convergence_tester convergence_tester(&smcw, 1.0e-4);
@@ -269,7 +265,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_convergence )
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create trivial matching condition
-   Trivial_SM_SMCW_matching_condition mc(&sm, &smcw);
+   Trivial_SM_SMCW_matching_condition mc;
 
    // create convergence tester for the CW-Standard Model
    StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);
@@ -322,7 +318,7 @@ BOOST_AUTO_TEST_CASE( test_sm_smcw_dynamic_convergence )
    const std::vector<Constraint<Two_scale>*> smcw_constraints(1, &smcw_gut_constraint);
 
    // create dynamic matching condition
-   Dynamic_SM_SMCW_matching_condition mc(&sm, &smcw);
+   Dynamic_SM_SMCW_matching_condition mc;
 
    // create convergence tester for the CW-Standard Model
    StandardModelCW_convergence_tester convergence_tester(&smcw, 0.01);

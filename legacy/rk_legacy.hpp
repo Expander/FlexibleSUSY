@@ -9,8 +9,8 @@
    and function minimiser for instance
 */
 
-#ifndef RK_LEGACY_HPP
-#define RK_LEGACY_HPP
+#ifndef RK_LEGACY_H
+#define RK_LEGACY_H
 
 #include "linalg.h"
 
@@ -37,4 +37,4 @@ int integrateOdes(DoubleVector & ystart, double x1, double x2, double eps,
 		   *hdid, double *hnext, 
 		   DoubleVector (*derivs)(double, const DoubleVector &)));
 
-#endif // RK_LEGACY_HPP
+#endif // RK_LEGACY_H

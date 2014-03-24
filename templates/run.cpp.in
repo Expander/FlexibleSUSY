@@ -23,7 +23,7 @@
 #include "@ModelName@_spectrum_generator.hpp"
 
 #include "error.hpp"
-#include "program_options.hpp"
+#include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
 
@@ -37,13 +37,15 @@ int main(int argc, const char* argv[])
    typedef Two_scale algorithm_type;
 
    Command_line_options options(argc, argv);
+   if (options.must_print_model_info())
+      @ModelName@_info::print(std::cout);
    if (options.must_exit())
       return options.status();
 
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
    @ModelName@_slha_io slha_io;
-   Program_options program_options;
+   Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
    @ModelName@_input_parameters input;
 
@@ -52,7 +54,7 @@ int main(int argc, const char* argv[])
          slha_io.read_from_file(slha_input_file);
          slha_io.fill(oneset);
          slha_io.fill(input);
-         slha_io.fill(program_options);
+         slha_io.fill(spectrum_generator_settings);
       } catch (const Error& error) {
          ERROR(error.what());
          return EXIT_FAILURE;
@@ -62,19 +64,19 @@ int main(int argc, const char* argv[])
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
-      program_options.get(Program_options::precision));
+      spectrum_generator_settings.get(Spectrum_generator_settings::precision));
    spectrum_generator.set_max_iterations(
-      program_options.get(Program_options::max_iterations));
+      spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations));
    spectrum_generator.set_calculate_sm_masses(
-      program_options.get(Program_options::calculate_sm_masses) >= 1.0);
+      spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
    spectrum_generator.set_input_scale(
       slha_io.get_input_scale());
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());
    spectrum_generator.set_pole_mass_loop_order(
-      program_options.get(Program_options::pole_mass_loop_order));
+      spectrum_generator_settings.get(Spectrum_generator_settings::pole_mass_loop_order));
    spectrum_generator.set_ewsb_loop_order(
-      program_options.get(Program_options::ewsb_loop_order));
+      spectrum_generator_settings.get(Spectrum_generator_settings::ewsb_loop_order));
 
    spectrum_generator.run(oneset, input);
 

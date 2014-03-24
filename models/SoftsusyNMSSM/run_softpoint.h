@@ -23,7 +23,6 @@
 #include <susy.h>
 #include <utils.h>
 #include <numerics.h>
-#include <twoloophiggs.h>
 using namespace softsusy;
 
 /// Requested by CMS

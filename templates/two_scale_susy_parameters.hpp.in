@@ -38,7 +38,7 @@ namespace flexiblesusy {
 
 class @ModelName@_susy_parameters : public Beta_function {
 public:
-   @ModelName@_susy_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   explicit @ModelName@_susy_parameters(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    @ModelName@_susy_parameters(double scale_, double loops_, double thresholds_, const @ModelName@_input_parameters& input_@cCtorParameterList@);
    virtual ~@ModelName@_susy_parameters() {}
    virtual Eigen::ArrayXd beta() const;

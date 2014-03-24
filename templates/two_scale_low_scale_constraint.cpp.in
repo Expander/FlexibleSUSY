@@ -163,9 +163,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
    // interface variables
    MZDRbar
-      = model->calculate_M@VectorZ@_DRbar_1loop(Electroweak_constants::MZ);
+      = model->calculate_M@VectorZ@_DRbar(Electroweak_constants::MZ);
    const double MWDRbar
-      = model->calculate_M@VectorW@_DRbar_1loop(Electroweak_constants::MW);
+      = model->calculate_M@VectorW@_DRbar(Electroweak_constants::MW);
    const double AlphaS = alpha_s_drbar;
    const double EDRbar = e_drbar;
 
@@ -191,13 +191,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplin
       electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
    topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar_1loop(oneset.displayPoleMt(), 2);
+   topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
    bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar_1loop(oneset.displayMass(mBottom), 2);
+   bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar(oneset.displayMass(mBottom), 2);
    electronDRbar(0,0) = oneset.displayMass(mElectron);
    electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = model->calculate_M@Electron@_DRbar_1loop(oneset.displayMass(mTau), 2);
+   electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarYukawaCouplings@
 }

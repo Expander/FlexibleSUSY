@@ -12,7 +12,7 @@
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
-#include "program_options.hpp"
+#include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
 
@@ -472,7 +472,7 @@ int main_(int argc, const char* argv[])
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
    MSSM_slha_io slha_io;
-   Program_options program_options;
+   Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
    MSSM_input_parameters input;
 
@@ -480,15 +480,17 @@ int main_(int argc, const char* argv[])
       slha_io.read_from_file(slha_input_file);
       slha_io.fill(oneset);
       slha_io.fill(input);
-      slha_io.fill(program_options);
+      slha_io.fill(spectrum_generator_settings);
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
    MSSM_runner<algorithm_type> runner;
-   runner.set_precision_goal(program_options.get(Program_options::precision));
-   runner.set_max_iterations(program_options.get(Program_options::max_iterations));
+   runner.set_precision_goal(
+      spectrum_generator_settings.get(Spectrum_generator_settings::precision));
+   runner.set_max_iterations(
+      spectrum_generator_settings.get(Spectrum_generator_settings::max_iterations));
    runner.set_calculate_sm_masses(
-      program_options.get(Program_options::calculate_sm_masses) >= 1.0);
+      spectrum_generator_settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
 
    runner.run(oneset, input);
 

@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef WRAPPERS_HPP
-#define WRAPPERS_HPP
+#ifndef WRAPPERS_H
+#define WRAPPERS_H
 
 #include <complex>
 #include <cmath>
@@ -214,6 +214,11 @@ inline double Im(double x)
 inline double Im(const std::complex<double>& x)
 {
    return std::imag(x);
+}
+
+inline int Sign(double x)
+{
+   return (x >= 0.0 ? 1 : -1);
 }
 
 inline double Sqrt(double a)

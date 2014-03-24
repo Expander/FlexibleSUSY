@@ -9,6 +9,8 @@ InitializeInputParameters::usage="";
 FindFixedParametersFromConstraint::usage="Returns a list of all
 parameters which are fixed by the given constraint";
 
+CheckConstraint::usage="Checks a given constraint for syntax errors.";
+
 SetBetaFunctions::usage=""
 
 Begin["`Private`"];
@@ -153,11 +155,117 @@ ApplyConstraints[settings_List] :=
           ];
 
 FindFixedParametersFromSetting[{parameter_, value_}] := parameter;
-FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, _]] := parameters;
-FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, _]] := parameters;
+FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
+FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, value_]] := parameters;
 
 FindFixedParametersFromConstraint[settings_List] :=
     DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];
+
+CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_, value_],
+             constraintName_String] :=
+    Module[{modelParameters, unknownParameters},
+           modelParameters = Parameters`GetModelParameters[];
+           If[Head[parameters] =!= List,
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   First parameter must be a list!"];
+              Return[False];
+             ];
+           If[parameters === {},
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   List of parameters is empty!"];
+              Return[False];
+             ];
+           If[MatchQ[patt, FlexibleSUSY`FSFindRoot[___]],
+              If[!MatchQ[patt, FlexibleSUSY`FSFindRoot[_List, _List]],
+                 Print["Error: Syntax error in constraint ", constraintName, ": ", InputForm[patt]];
+                 Print["   Correct syntax: FSFindRoot[{a,b}, {f[a],f[b]}]"];
+                 Return[False];
+                 ,
+                 If[Length[parameters] =!= Length[value],
+                    Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+                    Print["   Argument lists must have the same length!"];
+                    Return[False];
+                   ];
+                ];
+             ];
+           If[MatchQ[patt, FlexibleSUSY`FSMinimize[_List, _List]],
+              Print["Error: Syntax error in constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   Correct syntax: FSMinimize[{a,b}, f[a,b]]"];
+              Return[False];
+             ];
+           unknownParameters = Complement[parameters, modelParameters];
+           If[unknownParameters =!= {},
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   Unknown parameters: ", unknownParameters];
+              Return[False];
+             ];
+           True
+          ];
+
+CheckSetting[patt:{parameter_[idx_Integer], value_}, constraintName_String] :=
+    Module[{modelParameters, dim},
+           modelParameters = Parameters`GetModelParameters[];
+           If[!CheckSetting[{parameter, value}],
+              Return[False];
+             ];
+           dim = SARAH`getDimParameters[parameter];
+           If[Length[dim] =!= 1,
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", parameter, " has ", Length[dim],
+                    " dimensions, but one index is accessed!"];
+              Return[False];
+             ];
+           dim = dim[[1]];
+           If[1 > idx || idx > dim,
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["    ", parameter, " index out of range!",
+                    " Allowed range: 1 ... ", dim];
+              Return[False];
+             ];
+           True
+          ];
+
+CheckSetting[patt:{parameter_[idx1_Integer, idx2_Integer], value_}, constraintName_String] :=
+    Module[{modelParameters, dim},
+           modelParameters = Parameters`GetModelParameters[];
+           If[!CheckSetting[{parameter, value}],
+              Return[False];
+             ];
+           dim = SARAH`getDimParameters[parameter];
+           If[Length[dim] =!= 2,
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", parameter, " has ", Length[dim],
+                    " dimensions, but two indices are accessed!"];
+              Return[False];
+             ];
+           If[1 > idx1 || idx1 > dim[[1]],
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", parameter, " first index out of range! ",
+                    "Allowed range: 1 ... ", dim[[1]]];
+              Return[False];
+             ];
+           If[1 > idx2 || idx2 > dim[[2]],
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", parameter, " second index out of range! ",
+                    "Allowed range: 1 ... ", dim[[2]]];
+              Return[False];
+             ];
+           True
+          ];
+
+CheckSetting[patt:{parameter_, value_}, constraintName_String] :=
+    Module[{modelParameters},
+           modelParameters = Parameters`GetModelParameters[];
+           If[!MemberQ[modelParameters, parameter],
+              Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+              Print["   ", parameter, " is not a model parameter!"];
+              Return[False];
+             ];
+           True
+          ];
+
+CheckConstraint[settings_List, constraintName_String] :=
+    CheckSetting[#,constraintName]& /@ settings;
 
 CalculateScale[Null, _] := "";
 

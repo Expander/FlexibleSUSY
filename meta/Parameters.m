@@ -60,6 +60,14 @@ DecreaseIndexLiterals::usage="";
 
 DecreaseSumIdices::usage="";
 
+GetEffectiveMu::usage="";
+
+GetParameterFromDescription::usage="Returns model parameter from a
+given description string.";
+
+NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
+independent parameters of a real symmetric nxn matrix";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -537,7 +545,7 @@ DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
     macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
 
 PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole_1loop();\n";
+    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
 
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
@@ -638,6 +646,37 @@ DecreaseIndexLiterals[expr_, heads_List] :=
 
 DecreaseSumIdices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
+
+GetEffectiveMu[] :=
+    Module[{},
+           If[!ValueQ[FlexibleSUSY`EffectiveMu],
+              Print["Error: effective Mu parameter not defined!"];
+              Print["   Please set EffectiveMu to the expression of the"];
+              Print["   effective Mu parameter."];
+              Quit[1];
+             ];
+           FlexibleSUSY`EffectiveMu
+          ];
+
+GetParameterFromDescription[description_String] :=
+    Module[{parameter},
+           parameter =Cases[SARAH`ParameterDefinitions,
+                            {parameter_,
+                             {___, SARAH`Description -> description, ___}} :>
+                            parameter];
+           If[Length[parameter] == 0,
+              Print["Error: Parameter with description \"", description,
+                    "\" not found."];
+              Return[Null];
+             ];
+           If[Length[parameter] > 1,
+              Print["Warning: Parameter with description \"", description,
+                    "\" not unique."];
+             ];
+           parameter[[1]]
+          ];
+
+NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 End[];
 

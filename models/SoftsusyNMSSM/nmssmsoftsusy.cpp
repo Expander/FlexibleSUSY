@@ -16,88 +16,12 @@ extern double sw2, gnuL, guL, gdL, geL, guR, gdR, geR, yuL, yuR, ydL,
   ydR, yeL, yeR, ynuL;
 
 
-double NmssmSoftsusy::testSlavichpiZZT(double g, double gp, double ht, double hb, double htau, double v1, double v2, double p, double Q) const {
-   double piZZT = 0.0;
-   getpizz_(&g, &gp, &ht, &hb, &htau, &v1, &v2, &p, &Q, &piZZT);
-   return piZZT;
- }
-
-double NmssmSoftsusy::testSlavichpiWWT(double g, double gp, double ht, double hb, double htau, double v1, double v2, double p, double Q) const {
-   double piWWT = 0.0;
-   getpiww_(&g, &gp, &ht, &hb, &htau, &v1, &v2, &p, &Q, &piWWT);
-   return piWWT;
- }
-
-double NmssmSoftsusy::getpiSS(double g,double gp, double ll, double kk, double ht, double hb, double htau, double v1, double v2, double xx, double Ak, double Al, double At, double Ab, double Atau, double p, double Q, int i, int j) const {
-   double piSS[3][3] = { 0 };
-
-getpiss_(&g,&gp, &ll, &kk, &ht, &hb, &htau, &v1, &v2, &xx, &Ak, &Al, &At, &Ab, &Atau, &p, &Q, &piSS); 
-  return piSS[i-1][j-1];
- }
-
-
-
-double NmssmSoftsusy::getpiPP(double g,double gp, double ll, double kk, double ht, double hb, double htau, double v1, double v2, double xx, double Ak, double Al, double At, double Ab, double Atau, double p, double Q, int i, int j) const {
-   double piPP[3][3] = { 0 };
-
-   getpipp_(&g,&gp, &ll, &kk, &ht, &hb, &htau, &v1, &v2, &xx, &Ak, &Al, &At, 
-	    &Ab, &Atau, &p, &Q, &piPP); 
-  return piPP[i-1][j-1];
- }
-
-
-void NmssmSoftsusy::testSlavichTreeMasses() const {
-
-  double gp = sqrt(0.6) * displayGaugeCoupling(1);
-  double g = displayGaugeCoupling(2);
-  double lam = displayLambda();
-  double kap = displayKappa();
-  double Al  = displaySoftAlambda();
-  double Ak  = displaySoftAkappa();
-  double At  = displaySoftA(UA, 3, 3);
-  double Ab  = displaySoftA(DA, 3, 3);
-  double Atau  = displaySoftA(EA, 3, 3);
-  double mQ3 = sqrt(displaySoftMassSquared(mQl, 3, 3)); 
-  double mQ = sqrt(displaySoftMassSquared(mQl, 1, 1));
-  if (mQ - sqrt(displaySoftMassSquared(mQl, 2, 2)) > 1e-9){
-    cout << "WARNING: called when mQ1 not equal to mQ2" << endl;
-  } 
-  double mL3 = sqrt(displaySoftMassSquared(mLl, 3, 3)); 
-  double mL = sqrt(displaySoftMassSquared(mLl, 1, 1));
-  if (mL - sqrt(displaySoftMassSquared(mLl, 2, 2)) > 1e-9){
-    cout << "WARNING: called when mL1 not equal to mL2" << endl;
-  } 
-  double mtr = sqrt(displaySoftMassSquared(mUr, 3, 3)); 
-  double mur = sqrt(displaySoftMassSquared(mUr, 1, 1));
-  if (mur - sqrt(displaySoftMassSquared(mUr, 2, 2)) > 1e-9){
-    cout << "WARNING: called when mU1 not equal to mU2" << endl;
-  } 
-
-  double mbr = sqrt(displaySoftMassSquared(mDr, 3, 3));
-  double mdr = sqrt(displaySoftMassSquared(mDr, 1, 1));
-  if (mdr - sqrt(displaySoftMassSquared(mDr, 2, 2)) > 1e-9){
-    cout << "WARNING: called when mD1 not equal to mD2" << endl;
-  } 
-  double mtaur = sqrt(displaySoftMassSquared(mEr, 3, 3)); 
-  double mer = sqrt(displaySoftMassSquared(mEr, 1, 1));
-  if (mer - sqrt(displaySoftMassSquared(mEr, 2, 2)) > 1e-9){
-    cout << "WARNING: called when mE1 not equal to mE2" << endl;
-  } 
-  double s   = displaySvev() / root2;
-  double ht = displayDrBarPars().ht;
-  double hb = displayDrBarPars().hb;
-  double htau = displayDrBarPars().htau;
-  //divide by root2 for slavich conventions.
-  double v1 = displayHvev() * cos(atan(displayTanb())) / root2;
-  double v2 = displayHvev() * sin(atan(displayTanb())) / root2;
-  bool errmass = false;
-  double M1 = displayGaugino(1);
-  double M2 = displayGaugino(2);
-  double Q = displayMu();
-
-  treemasses_(&g,&gp,&lam,&kap,&ht,&hb,&htau,&v1,&v2,&s,&M1,&M2, &Ak,&Al,&At,&Ab,&Atau,&mQ3,&mtr,&mbr,&mQ,&mur,&mdr,&mL3,&mtaur,&mL,&mer,&Q,&errmass); 
-
- if(errmass) cout << "Warning tachyon in slavich treemasses."  << endl;
+const NmssmSoftsusy & NmssmSoftsusy::operator=(const NmssmSoftsusy & s) {
+  if (this == &s) return *this;
+  Softsusy<SoftParsNmssm>::operator=(s);
+  tSOVSMs = s.tSOVSMs;
+  tSOVSMs1loop = s.tSOVSMs1loop;
+  return *this;
 }
 
 
@@ -3901,17 +3825,9 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	   cxb = cos(displayDrBarPars().thetab);
 	 
 	 double scalesq = sqr(displayMu()); 
-       if(Z3){   
-	 double DMS[3][3], DMP[3][3];
-	 double DMSB[3][3], DMPB[3][3];
-	 for(int i=0; i<=2; i++){
-	   for(int j=0; j<=2; j++){
-	     DMS[i][j]  = 0;
-	     DMP[i][j]  = 0;
-	     DMSB[i][j] = 0;
-	     DMPB[i][j] = 0;
-	   }
-	 }
+
+	 double DMS[3][3] = {{ 0.}}, DMP[3][3] = {{ 0. }};
+	 double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
 	 
 	 double lamS = lam;
 	 double vevS =  vev / root2;
@@ -3928,46 +3844,26 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 
 	 //PA: Make appropriate substitutions for elements following 0907.4682
 	 // bottom of page 9
-	 
-	 double temp = DMSB[0][0];
-	 DMSB[0][0] = DMSB[1][1];
-	 DMSB[1][1] = temp;
-	 temp = DMSB[0][2];
-	 DMSB[0][2] = DMSB[1][2];
-	 DMSB[1][2] = temp;
+         std::swap(DMSB[0][0], DMSB[1][1]);
+         std::swap(DMSB[0][2], DMSB[1][2]);
 
 	 /// LCT: Obtain the O(alpha_b alpha_s) corrections from O(alpha_t alpha_s) 
 	 /// parts by interchanging the (1, 1) <--> (2, 2) and (1, 3) <--> (2, 3) 
 	 /// matrix elements of CP-odd mass matrix (as in 0907.4682)
-	 double temp2 = DMPB[0][0];
-	 DMPB[0][0] = DMPB[1][1];
-	 DMPB[1][1] = temp2;
-	 temp2 = DMPB[0][2];
-	 DMPB[0][2] = DMPB[1][2];
-	 DMPB[1][2] = temp2;
+         std::swap(DMPB[0][0], DMPB[1][1]);
+         std::swap(DMPB[0][2], DMPB[1][2]);
 
 	 for(int i=0; i<=2; i++){
 	   for(int j=0; j<=2; j++){
-	     DMS[i][j] = DMS[i][j] + DMSB[i][j];
-	     DMP[i][j] = DMP[i][j] + DMPB[i][j]; 
+	     DMS[i][j] += DMSB[i][j];
+	     DMP[i][j] += DMPB[i][j];
 	   }
 	 }
 	 double amu = - lam * svev / root2;
-	 int kkk = 0.0;
-	 double s11s = 0.0, s12s = 0.0, s22s = 0.0;
-	 double s11b = 0.0, s12b = 0.0, s22b = 0.0;
 	 double s11w = 0.0, s12w = 0.0, s22w = 0.0;
 	 double s11tau = 0.0, s12tau = 0.0, s22tau = 0.0;
-	 double ps2 = 0.0, p2b = 0.0, p2w = 0.0, p2tau = 0.0;
+	 double p2w = 0.0, p2tau = 0.0;
 	 double fmasq = fabs(MAeffsq);
-	 dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, 
-	           &amu, &tanb, &vev2, &gs, &kkk, &s11s, &s22s, &s12s);
-	 dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
-	         &tanb, &vev2, &gs, &ps2); 
-	 dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
-	           &amu, &cotb, &vev2, &gs, &kkk, &s22b, &s11b, &s12b);
-	 dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
-	         &cotb, &vev2, &gs, &p2b);
 	 //Corrections as in MSSM, not corrected for NMSSM,
 	 //Should be OK for MSSM states when S state is close to decoupled 
 	 ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, 
@@ -4047,8 +3943,6 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 sigmaMA2(1, 3) = sigmaMA2(1, 3) - DMP[0][2];    
 	 sigmaMA2(2, 3) = sigmaMA2(2, 3) - DMP[1][2]; 
 	 sigmaMA2(3, 3) = sigmaMA2(3, 3) - DMP[2][2];
-       }
-      
      
      }
      
