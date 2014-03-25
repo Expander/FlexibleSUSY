@@ -159,6 +159,7 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
     Assert[MatchQ[sarahVertex, {_, __}]];
     fields = First[sarahVertex];
     vertices = Rest[sarahVertex];
+    Assert[StripFieldIndices[fields] === StripFieldIndices[fieldsInRotatedCp]];
     lorentzTag = GetLorentzStructure[rotatedCp];
     {vertex, lorentz} = FindVertexWithLorentzStructure[vertices, lorentzTag];
     strippedIndices = Complement[Flatten[FieldIndexList /@ fields],
@@ -434,28 +435,29 @@ ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] /;
 ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] := Module[{
 	loopArgs,
 	internalColorIndices = InternalColorIndices[fields],
-	externalColorIndices = ExternalColorIndices[fields]
+	externalColorIndices = ExternalColorIndices[fields],
+	sumIdx, sumRange
     },
-    If[Length[internalColorIndices]===2 && Length[externalColorIndices]===2,
-       (* Q: does one need to sum also over external color indices
-	  as in SelfEnergies`Private`CreateCouplingFunctions[]?
-	  A: it is a way to strip the color structure of this class
-	  of vertices *)
-       loopArgs = Join[{#, ColorIndexRange[#,fields]}& /@ internalColorIndices,
-		       {#, 1}& /@ externalColorIndices];
-       Sum @@ Prepend[loopArgs, vertex],
-       vertex
-    ]
+    Assert[Length[externalColorIndices] === 2];
+    (* Q: does one need to sum also over external color indices?
+       A: it is a way to strip the color structure of this class
+       of vertices *)
+    Length[internalColorIndices] === 2 || (
+	Print["Vertices`Private`ResolveColorFactor[",
+	      vertex, ", ", fields, ", ", cpPattern, ", ", exprs, "] failed."];
+	Abort[]);
+    sumRange = ColorIndexRange[First @ internalColorIndices, fields];
+    loopArgs = Prepend[{#, 1}& /@ externalColorIndices, {sumIdx, sumRange}];
+    Sum @@
+    Prepend[loopArgs, vertex /. Alternatives@@internalColorIndices -> sumIdx]
 ];
 
 InternalColorIndices[fields_List] :=
-    Union@Cases[DeleteCases[FieldIndexList /@ fields,
-			    {___,_?SarahExternalGenerationIndexQ,___}],
+    Union@Cases[Drop[FieldIndexList /@ fields, 2],
 		_?SarahColorIndexQ, Infinity];
 
 ExternalColorIndices[fields_List] :=
-    Union@Cases[Cases[FieldIndexList /@ fields,
-		      {___,_?SarahExternalGenerationIndexQ,___}],
+    Union@Cases[Take[FieldIndexList /@ fields, 2],
 		_?SarahColorIndexQ, Infinity];
 
 FieldIndexList[field_] := Flatten@Cases[field, _?VectorQ, {0, Infinity}];
