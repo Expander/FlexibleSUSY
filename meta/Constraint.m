@@ -13,6 +13,8 @@ CheckConstraint::usage="Checks a given constraint for syntax errors.";
 
 SetBetaFunctions::usage=""
 
+RestrictScale::usage="";
+
 Begin["`Private`"];
 
 allBetaFunctions = {};
@@ -397,6 +399,35 @@ InitializeInputParameters[defaultValues_List] :=
                  ];
                result = result <> InitializeInputParameter[defaultValues[[i]]];
               ];
+           Return[result];
+          ];
+
+RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
+    Module[{result = "", value},
+           If[NumericQ[minimumScale],
+              value = CConversion`RValueToCFormString[minimumScale];
+              result = result <>
+                       "\
+if (" <> scaleName <> " < " <> value <> ") {
+#ifdef VERBOSE
+" <> IndentText["WARNING(\"" <> scaleName <> " < " <> value <> "\");"] <> "
+#endif
+" <> IndentText[scaleName <> " = " <> value] <> ";
+}
+";
+             ];
+           If[NumericQ[maximumScale],
+              value = CConversion`RValueToCFormString[maximumScale];
+              result = result <>
+                       "\
+if (" <> scaleName <> " > " <> value <> ") {
+#ifdef VERBOSE
+" <> IndentText["WARNING(\"" <> scaleName <> " > " <> value <> "\");"] <> "
+#endif
+" <> IndentText[scaleName <> " = " <> value] <> ";
+}
+";
+             ];
            Return[result];
           ];
 

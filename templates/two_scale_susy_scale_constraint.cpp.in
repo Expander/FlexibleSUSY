@@ -110,6 +110,7 @@ void @ModelName@_susy_scale_constraint<Two_scale>::reset()
 void @ModelName@_susy_scale_constraint<Two_scale>::update_scale()
 {
 @calculateScale@
+@restrictScale@
 }
 
 } // namespace flexiblesusy

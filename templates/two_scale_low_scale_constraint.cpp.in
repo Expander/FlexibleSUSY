@@ -142,6 +142,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::reset()
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 {
 @calculateScale@
+@restrictScale@
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()

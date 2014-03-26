@@ -28,12 +28,18 @@ EWSBOutputParameters;
 SUSYScale;
 SUSYScaleFirstGuess;
 SUSYScaleInput;
+SUSYScaleMinimum;
+SUSYScaleMaximum;
 HighScale;
 HighScaleFirstGuess;
 HighScaleInput;
+HighScaleMinimum;
+HighScaleMaximum;
 LowScale;
 LowScaleFirstGuess;
 LowScaleInput;
+LowScaleMinimum;
+LowScaleMaximum;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
 OnlyLowEnergyFlexibleSUSY;
@@ -309,8 +315,10 @@ WriteInputParameterClass[inputParameters_List, freePhases_List,
                          } ];
           ];
 
-WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
+WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
+                     {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
+           restrictScale,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
@@ -319,6 +327,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
           applyConstraint = Constraint`ApplyConstraints[settings];
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
+          restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
@@ -329,6 +338,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_, files_List] :=
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
+                   "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
@@ -1215,6 +1225,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`HighScale,
                                 FlexibleSUSY`HighScaleInput,
                                 FlexibleSUSY`HighScaleFirstGuess,
+                                {FlexibleSUSY`HighScaleMinimum, FlexibleSUSY`HighScaleMaximum},
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "high_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_high_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_high_scale_constraint.hpp.in"}],
@@ -1232,6 +1243,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`SUSYScale,
                                 FlexibleSUSY`SUSYScaleInput,
                                 FlexibleSUSY`SUSYScaleFirstGuess,
+                                {FlexibleSUSY`SUSYScaleMinimum, FlexibleSUSY`SUSYScaleMaximum},
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "susy_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_scale_constraint.hpp.in"}],
@@ -1249,6 +1261,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteConstraintClass[FlexibleSUSY`LowScale,
                                 FlexibleSUSY`LowScaleInput,
                                 FlexibleSUSY`LowScaleFirstGuess,
+                                {FlexibleSUSY`LowScaleMinimum, FlexibleSUSY`LowScaleMaximum},
                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "low_scale_constraint.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_low_scale_constraint.hpp"}]},
                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_low_scale_constraint.hpp.in"}],
