@@ -22,6 +22,7 @@
 
 BeginPackage["Vertices`", {
     "SARAH`",
+    "SelfEnergies`",
     "Parameters`",
     "TreeMasses`",
     "LatticeUtils`"}]
@@ -30,6 +31,8 @@ VertexRules::usage;
 ToCpPattern::usage="ToCpPattern[cp] converts field indices inside cp to patterns, e.g. ToCpPattern[Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL]] === Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL].";
 ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to symbols, e.g. ToCp@Cp[bar[UFd[{gO1_}]], Sd[{gI1_}], Glu[{1}]][PL] === Cp[bar[UFd[{gO1}]], Sd[{gI1}], Glu[{1}]][PL].";
 FieldIndexList::usage;
+EnforceCpColorStructures::usage;
+EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
 
 GetLorentzStructure::usage;
 GetParticleList::usage;
@@ -56,6 +59,87 @@ VertexRules[nPointFunctions_, massMatrices_] := Block[{
 	cpPatterns]
 ];
 
+EnforceCpColorStructures[nPointFunctions_List] :=
+    EnforceCpColorStructures /@ nPointFunctions;
+
+EnforceCpColorStructures[
+    SelfEnergies`FSSelfEnergy[p : f_Symbol[__] | f_Symbol, expr__]] :=
+    SelfEnergies`FSSelfEnergy@@Prepend[EnforceCpColorStructures[f, {expr}], p];
+
+EnforceCpColorStructures[nPointFunction_] := nPointFunction;
+
+EnforceCpColorStructures[externalField_, exprs_List] := Fold[
+    EnforceCpColorStructure[externalField, #1, #2] &,
+    exprs,
+    Select[Cases[exprs, _SARAH`Cp|_SARAH`Cp[_], Infinity],
+	   !UnresolvedColorFactorFreeQ[#, exprs] &]
+];
+
+EnforceCpColorStructure[extField_, exprs_List, cp:SARAH`Cp[fields__]] :=
+    CpColorStructureFunction[extField, {fields}, cp, SARAH`Cp@@# &] @
+    exprs;
+
+EnforceCpColorStructure[extField_, exprs_List, cp:SARAH`Cp[fields__][lor_]] :=
+    CpColorStructureFunction[extField, {fields}, cp, (SARAH`Cp@@#)[lor] &] @
+    exprs;
+
+CpColorStructureFunction[extField_, fields_List, cp_, wrap_] := Module[{
+	reordered = PullExternalFieldsToLeft[extField, fields]
+    },
+    If[fields === reordered,
+       Identity,
+       Message[EnforceCpColorStructures::cpext, extField, cp];
+       # /. cp -> wrap[reordered] &]
+];
+
+(* look for external fields preferably in unrotated basis *)
+
+PullExternalFieldsToLeft[f_, lst:{a_?IsUnrotated, b_?IsUnrotated, ___}] /;
+    FieldHead@ToRotatedField[a] === FieldHead@ToRotatedField[b] === f &&
+    StripFieldIndices[a] === Susyno`LieGroups`conj@StripFieldIndices[b] :=
+	lst;
+
+PullExternalFieldsToLeft[
+    f_,
+    {x___, a_?IsUnrotated, y___, b_Susyno`LieGroups`conj?IsUnrotated, z___} |
+    {x___, b_Susyno`LieGroups`conj?IsUnrotated, y___, a_?IsUnrotated, z___}] /;
+    FieldHead@ToRotatedField[a] === FieldHead@ToRotatedField[b] === f &&
+    StripFieldIndices[a] === Susyno`LieGroups`conj@StripFieldIndices[b] :=
+	{a, b, x, y, z}
+
+(* in case f is colored real scalar *)
+PullExternalFieldsToLeft[
+    f_, {x___, a_?IsUnrotated, y___, b_?IsUnrotated, z___}] /;
+    FieldHead@ToRotatedField[a] === FieldHead@ToRotatedField[b] === f &&
+    StripFieldIndices[a] === StripFieldIndices[b] :=
+	{a, b, x, y, z}
+
+(* fall back on external fields in rotated basis *)
+
+PullExternalFieldsToLeft[f_, lst:{a_, b_, ___}] /;
+    FieldHead[a] === FieldHead[b] === f &&
+    StripFieldIndices[a] === Susyno`LieGroups`conj@StripFieldIndices[b] :=
+	lst;
+
+PullExternalFieldsToLeft[
+    f_, {x___, a_, y___, b_Susyno`LieGroups`conj, z___} |
+        {x___, b_Susyno`LieGroups`conj, y___, a_, z___}] /;
+    FieldHead[a] === FieldHead[b] === f &&
+    StripFieldIndices[a] === Susyno`LieGroups`conj@StripFieldIndices[b] :=
+	{a, b, x, y, z};
+
+(* in case f is colored real scalar *)
+PullExternalFieldsToLeft[f_, {x___, a_, y___, b_, z___}] /;
+    FieldHead[a] === FieldHead[b] === f &&
+    StripFieldIndices[a] === StripFieldIndices[b] :=
+	{a, b, x, y, z};
+
+PullExternalFieldsToLeft[f_, lst_] := (
+    Print["Vertices`Private`PullExternalFieldsToLeft[",
+	  f, ", ", lst, "] failed."];
+    Abort[]
+);
+
 DeleteRedundantCpPatterns[cpPatterns_] :=
     First @ Sort[#, MatchQ[#2, #1]&]& /@
     Gather[cpPatterns, MatchQ[#1, #2] || MatchQ[#2, #1]&];
@@ -75,6 +159,7 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
     Assert[MatchQ[sarahVertex, {_, __}]];
     fields = First[sarahVertex];
     vertices = Rest[sarahVertex];
+    Assert[StripFieldIndices[fields] === StripFieldIndices[fieldsInRotatedCp]];
     lorentzTag = GetLorentzStructure[rotatedCp];
     {vertex, lorentz} = FindVertexWithLorentzStructure[vertices, lorentzTag];
     strippedIndices = Complement[Flatten[FieldIndexList /@ fields],
@@ -301,6 +386,8 @@ FieldHead[field_Symbol[{__}]] := field;
 
 FieldHead[field_Symbol] := field;
 
+StripFieldIndices[field_] := field /. head_[{__}] :> head;
+
 ToCpPattern[cp : _SARAH`Cp|_SARAH`Cp[_]] := cp /.
     ((# -> (# /. Thread[(# -> If[Head[#] === Symbol, Pattern[#, _], #])& /@
 			FieldIndexList[#]]))& /@
@@ -341,33 +428,44 @@ RenumberSarahIndex[index_Symbol] := (UsedSarahIndexQ[index] = True; index);
 
 RenumberSarahIndex[index_] := index;
 
-(* see SelfEnergies`Private`CreateCouplingFunctions[] *)
-ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] :=
-    If[UnresolvedColorFactorFreeQ[cpPattern, exprs],
-       vertex,
-       Module[{loopArgs,
-	       internalColorIndices = InternalColorIndices[fields],
-	       externalColorIndices = ExternalColorIndices[fields]},
-	      (* Q: does one need to sum also over external color indices
-		 as in SelfEnergies`Private`CreateCouplingFunctions[]?
-		 A: it is a way to strip the color structure of this class
-		 of vertices *)
-	   loopArgs = Join[{#, 3}& /@ internalColorIndices,
-			   {#, 1}& /@ externalColorIndices];
-	   Sum @@ Prepend[loopArgs, vertex]
-       ]];
+ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] /;
+    UnresolvedColorFactorFreeQ[cpPattern, exprs] := vertex;
+
+(* see SARAH`sumOverNonAbelianIndizes[] *)
+ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] := Module[{
+	loopArgs,
+	internalColorIndices = InternalColorIndices[fields],
+	externalColorIndices = ExternalColorIndices[fields],
+	sumIdx, sumRange
+    },
+    Assert[Length[externalColorIndices] === 2];
+    (* Q: does one need to sum also over external color indices?
+       A: it is a way to strip the color structure of this class
+       of vertices *)
+    Length[internalColorIndices] === 2 || (
+	Print["Vertices`Private`ResolveColorFactor[",
+	      vertex, ", ", fields, ", ", cpPattern, ", ", exprs, "] failed."];
+	Abort[]);
+    sumRange = ColorIndexRange[First @ internalColorIndices, fields];
+    loopArgs = Prepend[{#, 1}& /@ externalColorIndices, {sumIdx, sumRange}];
+    Sum @@
+    Prepend[loopArgs, vertex /. Alternatives@@internalColorIndices -> sumIdx]
+];
 
 InternalColorIndices[fields_List] :=
-    Union@Cases[DeleteCases[FieldIndexList /@ fields,
-			    {___,_?SarahExternalGenerationIndexQ,___}],
+    Union@Cases[Drop[FieldIndexList /@ fields, 2],
 		_?SarahColorIndexQ, Infinity];
 
 ExternalColorIndices[fields_List] :=
-    Union@Cases[Cases[FieldIndexList /@ fields,
-		      {___,_?SarahExternalGenerationIndexQ,___}],
+    Union@Cases[Take[FieldIndexList /@ fields, 2],
 		_?SarahColorIndexQ, Infinity];
 
 FieldIndexList[field_] := Flatten@Cases[field, _?VectorQ, {0, Infinity}];
+
+ColorIndexRange[colorIndex_, fields_] :=
+    SingleCase[
+	SARAH`getIndizesWI[First @ Select[fields, !FreeQ[#, colorIndex] &]],
+	{color, n_} :> n];
 
 UnresolvedColorFactorFreeQ[cpPattern_, exprs_] := Module[{
 	fstPos = First@Position[exprs, cpPattern],
