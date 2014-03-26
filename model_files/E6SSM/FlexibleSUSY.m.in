@@ -46,6 +46,10 @@ HighScale = g1 == g2;
 
 HighScaleFirstGuess = 1.0 10^16;
 
+HighScaleMinimum = 1.0 10^4;
+
+HighScaleMaximum = 5.0 10^17;
+
 HighScaleInput={
    {gN, g1},
    {T[Ye], Azero*Ye},
