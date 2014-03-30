@@ -142,9 +142,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    constraint.apply();
    s.sparticleThresholdCorrections(input.TanBeta);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.006);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.0075);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.0070);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-10);
 
    // test off-diagonal elements
    BOOST_MESSAGE("testing off-diagonal yukawa elements");
