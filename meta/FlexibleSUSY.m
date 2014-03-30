@@ -145,7 +145,7 @@ CheckModelFileSettings[] :=
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
               Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
                     " set in the model file!"];
-              FlexibleSUSY`HighScaleFirstGuess = 1.0 10^14;
+              FlexibleSUSY`HighScaleFirstGuess = 2.0 10^16;
              ];
            If[Head[FlexibleSUSY`HighScaleInput] =!= List,
               FlexibleSUSY`HighScaleInput = {};

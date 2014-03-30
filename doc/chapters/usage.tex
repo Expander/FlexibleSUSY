@@ -246,7 +246,7 @@ SUSYScaleInput = {};                        (* nothing is set here *)
 
 (* high-scale constraint *)
 HighScale = g1 == g2;                       (* scale definition *)
-HighScaleFirstGuess = 1.0 10^14;            (* first scale guess *)
+HighScaleFirstGuess = 2.0 10^16;            (* first scale guess *)
 HighScaleInput = {
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
@@ -318,7 +318,7 @@ TreeLevelEWSBSolution = {
     SUSYScaleInput & \{\} & settings applied at the susy scale \\
     HighScale & SARAH`hyperchargeCoupling == SARAH`leftCoupling
       & unification scale (in GeV) \\
-    HighScaleFirstGuess & $10^{14}$ & first guess for the unification scale (in GeV) \\
+    HighScaleFirstGuess & $2\cdot 10^{16}$ & first guess for the unification scale (in GeV) \\
     HighScaleInput & \{\} & settings applied at the unification scale \\
     \bottomrule
   \end{tabularx}

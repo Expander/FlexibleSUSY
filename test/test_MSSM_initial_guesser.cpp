@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    else
       tanBeta = vu/vd;
    const double vev = Sqrt(Sqr(m.get_vu()) + Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(smssm.displayTanb(), tanBeta, 6.5e-7);
+   BOOST_CHECK_CLOSE_FRACTION(smssm.displayTanb(), tanBeta, 1.5e-6);
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayHvev(), vev    , 1.3e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(smssm.displayGaugino(1), m.get_MassB() , 3.0e-7);
