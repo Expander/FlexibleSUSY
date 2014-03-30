@@ -59,7 +59,7 @@ FSCONFIG := @FSCONFIG@
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
 
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
-	 clean clean-dep distclean showbuild tag release
+	 clean clean-dep depend distclean showbuild tag release
 
 all:
 ifeq ($(ENABLE_META),yes)
@@ -77,12 +77,14 @@ ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
+ifneq ($(MAKECMDGOALS),depend)
 ifneq ($(MAKECMDGOALS),doc)
 ifeq ($(ENABLE_COMPILE),yes)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -101,6 +103,9 @@ alltest:  $(ALLTST)
 
 clean-dep:
 	-rm -f $(ALLDEP)
+
+depend:  clean-dep
+depend:  $(ALLDEP)
 
 %.d: %.cpp
 # -MT '$*.o' ensures that the target contains the full path
