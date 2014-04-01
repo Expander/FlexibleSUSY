@@ -9,6 +9,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
+ReadLesHouchesOutputParameters::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
@@ -301,6 +302,11 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
            modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
            (result = result <> ReadSLHABlock[#])& /@ modelParameters;
+           Return[result];
+          ];
+
+ReadLesHouchesOutputParameters[] :=
+    Module[{result = ""},
            Return[result];
           ];
 

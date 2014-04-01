@@ -44,6 +44,7 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
+   template <class T> void fill(@ModelName@<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_input_scale() const;
    double get_parameter_output_scale() const;
@@ -67,6 +68,15 @@ private:
    template <class T> void set_mixing_matrices(const @ModelName@<T>&);
    template <class T> void set_model_parameters(const @ModelName@<T>&);
 };
+
+/**
+ * Reads all model parameters from a SLHA output file.
+ */
+template <class T>
+void @ModelName@_slha_io::fill(@ModelName@<T>&) const
+{
+@readLesHouchesOutputParameters@
+}
 
 template <class T>
 void @ModelName@_slha_io::set_mass(const @ModelName@<T>& model)
