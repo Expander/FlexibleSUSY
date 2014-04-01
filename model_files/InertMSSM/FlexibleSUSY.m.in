@@ -44,10 +44,10 @@ HighScaleInput={
    {mInertHu2, UNITMATRIX[2] m0^2},
    {mHdInertHd2, ZEROVECTOR[2]},
    {mHuInertHu2, ZEROVECTOR[2]},
-   {\[Mu]Prime, ZEROMATRIX[2]},
+   {\[Mu]Prime, ZEROMATRIX[2,2]},
    {Xd, ZEROVECTOR[2]},
    {Xu, ZEROVECTOR[2]},
-   {B[\[Mu]Prime], ZEROMATRIX[2]},
+   {B[\[Mu]Prime], ZEROMATRIX[2,2]},
    {B[Xd], ZEROVECTOR[2]},
    {B[Xu], ZEROVECTOR[2]},
    {MassB, m12},
@@ -59,14 +59,20 @@ LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput={
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
 };
 
 InitialGuessAtHighScale = {

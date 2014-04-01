@@ -342,7 +342,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
-                   "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
+                   "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
+                   "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
+                   "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
                    "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
                    Sequence @@ GeneralReplacementRules[]
@@ -357,7 +359,9 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
-                   "@setDRbarYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings]],
+                   "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
+                   "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
+                   "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -907,8 +911,7 @@ FindUnfixedParameters[fixed_List] :=
     Module[{fixedParameters},
            fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
                                           { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling, SARAH`UpYukawa, SARAH`DownYukawa,
-                                            SARAH`ElectronYukawa }]]];
+                                            SARAH`strongCoupling }]]];
            Complement[allParameters, fixedParameters]
           ];
 

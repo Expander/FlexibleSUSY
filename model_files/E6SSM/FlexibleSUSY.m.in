@@ -83,7 +83,10 @@ LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput={
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
@@ -96,7 +99,10 @@ InitialGuessAtLowScale = {
    {mHu2, SM[MZ]^2},
    {ms2, SM[MZ]^2},
    {B[muPrime], SM[MZ]^2},
-   {muPrime, SM[MZ]}
+   {muPrime, SM[MZ]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
 };
 
 InitialGuessAtHighScale = {};

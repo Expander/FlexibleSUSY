@@ -48,14 +48,20 @@ LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput={
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
    FSMinimize[{vd,vu}, (SM[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2
                      + (SM[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
 };
 
 InitialGuessAtLowScale = {
    {vd, SM[vev]},
-   {vu, SM[vev] 20}
+   {vu, SM[vev] 20},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
 };
 
 InitialGuessAtHighScale = {

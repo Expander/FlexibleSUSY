@@ -23,9 +23,9 @@ void rge_example()
    double mHu2 = m02, mHd2 = m02;
    double m_gluino = m12, m_bino = m12, m_wino = m12;
    double BMu = 0.0;
-   Eigen::Matrix<double,3,3> TYd(ZEROMATRIX(3));
-   Eigen::Matrix<double,3,3> TYe(ZEROMATRIX(3));
-   Eigen::Matrix<double,3,3> TYu(ZEROMATRIX(3));
+   Eigen::Matrix<double,3,3> TYd(ZEROMATRIX(3,3));
+   Eigen::Matrix<double,3,3> TYe(ZEROMATRIX(3,3));
+   Eigen::Matrix<double,3,3> TYu(ZEROMATRIX(3,3));
    Eigen::Matrix<double,3,3> mq2(UNITMATRIX(3) * m02);
    Eigen::Matrix<double,3,3> ml2(UNITMATRIX(3) * m02);
    Eigen::Matrix<double,3,3> md2(UNITMATRIX(3) * m02);

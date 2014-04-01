@@ -55,6 +55,15 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
 ApplyConstraint[{parameter_, value_}, modelName_String] :=
     Parameters`SetParameter[parameter, value, modelName];
 
+ApplyConstraint[{parameter_ /; MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
+    "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
+
+ApplyConstraint[{parameter_, value_ /; value === Automatic}, modelName_String] :=
+    Block[{},
+          Print["Error: cannot create determine ", parameter, " automatically!"];
+          Quit[1];
+         ];
+
 CreateStartPoint[parameters_List, name_String] :=
     Module[{dim, dimStr, startPoint = "", i},
            dim = Length[parameters];

@@ -188,8 +188,12 @@ InvertRelation[sym_, expr_, other_] :=
          ];
 
 InvertMassRelation[fermion_, yukawa_] :=
-    Module[{massMatrix, polynom, prefactor, matrixExpression},
+    Module[{massMatrix, polynom, prefactor, matrixExpression, dim},
            massMatrix = SARAH`MassMatrix[fermion];
+           dim = Length[massMatrix];
+           If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
+              Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
+             ];
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawa];
            matrixExpression = ToMatrixExpression[massMatrix / prefactor];
@@ -209,10 +213,13 @@ SetDRbarYukawaCouplings[] :=
            top = top /. SARAH`TopQuark    -> Global`topDRbar;
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
-           result = Parameters`CreateLocalConstRefs[top + bot + tau] <>
-                    "new_Yu = " <> RValueToCFormString[top] <> ";\n" <>
-                    "new_Yd = " <> RValueToCFormString[bot] <> ";\n" <>
-                    "new_Ye = " <> RValueToCFormString[tau] <> ";\n";
+           result = {
+               Parameters`CreateLocalConstRefs[top] <>
+               Parameters`SetParameter[SARAH`UpYukawa, top, "MODEL"],
+               Parameters`CreateLocalConstRefs[bot] <>
+               Parameters`SetParameter[SARAH`DownYukawa, bot, "MODEL"],
+               Parameters`CreateLocalConstRefs[tau] <>
+               Parameters`SetParameter[SARAH`ElectronYukawa, tau, "MODEL"] };
            Return[result];
           ];
 
@@ -231,9 +238,12 @@ CalculateGaugeCouplings[] :=
            result = Parameters`CreateLocalConstRefs[{weinbergAngle, g1Def, g2Def, g3Def}] <>
                     "const double " <> CConversion`ToValidCSymbolString[SARAH`Weinberg] <>
                     " = " <> CConversion`RValueToCFormString[weinbergAngle] <> ";\n" <>
-                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 
