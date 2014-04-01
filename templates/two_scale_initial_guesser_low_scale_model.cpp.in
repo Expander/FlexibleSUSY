@@ -45,6 +45,15 @@ namespace flexiblesusy {
    , model(model_)
    , input_pars(input_pars_)
    , oneset(oneset_)
+   , mu_guess(0.)
+   , mc_guess(0.)
+   , mt_guess(0.)
+   , md_guess(0.)
+   , ms_guess(0.)
+   , mb_guess(0.)
+   , me_guess(0.)
+   , mm_guess(0.)
+   , mtau_guess(0.)
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
 {
@@ -71,6 +80,16 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = leAtMt.displayPoleMt();
 
+   mu_guess = leAtMt.displayMass(mUp);
+   mc_guess = leAtMt.displayMass(mCharm);
+   mt_guess = leAtMt.displayMass(mTop) - 30.0;
+   md_guess = leAtMt.displayMass(mDown);
+   ms_guess = leAtMt.displayMass(mStrange);
+   mb_guess = leAtMt.displayMass(mBottom);
+   me_guess = leAtMt.displayMass(mElectron);
+   mm_guess = leAtMt.displayMass(mMuon);
+   mtau_guess = leAtMt.displayMass(mTau);
+
    // guess gauge couplings at mt
    const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
 
@@ -82,27 +101,55 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 
    // apply user-defined initial guess at the low scale
 @initialGuessAtLowScale@
+}
 
-   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
-      bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
-      electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = leAtMt.displayMass(mUp);
-   topDRbar(1,1)      = leAtMt.displayMass(mCharm);
-   topDRbar(2,2)      = leAtMt.displayMass(mTop) - 30.0;
-   bottomDRbar(0,0)   = leAtMt.displayMass(mDown);
-   bottomDRbar(1,1)   = leAtMt.displayMass(mStrange);
-   bottomDRbar(2,2)   = leAtMt.displayMass(mBottom);
-   electronDRbar(0,0) = leAtMt.displayMass(mElectron);
-   electronDRbar(1,1) = leAtMt.displayMass(mMuon);
-   electronDRbar(2,2) = leAtMt.displayMass(mTau);
+void @ModelName@_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
+{
+   calculate_@UpYukawa@_DRbar();
+   calculate_@DownYukawa@_DRbar();
+   calculate_@ElectronYukawa@_DRbar();
+}
 
-   Eigen::Matrix<double,3,3> new_Yu, new_Yd, new_Ye;
+void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
+{
+   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
+   topDRbar(0,0) = mu_guess;
+   topDRbar(1,1) = mc_guess;
+   topDRbar(2,2) = mt_guess;
 
-@setDRbarYukawaCouplings@
+   Eigen::Matrix<double,3,3> new_@UpYukawa@;
 
-   model->set_@UpYukawa@(new_Yu);
-   model->set_@DownYukawa@(new_Yd);
-   model->set_@ElectronYukawa@(new_Ye);
+@setDRbarUpQuarkYukawaCouplings@
+
+   model->set_@UpYukawa@(new_@UpYukawa@);
+}
+
+void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
+{
+   Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
+   bottomDRbar(0,0) = md_guess;
+   bottomDRbar(1,1) = ms_guess;
+   bottomDRbar(2,2) = mb_guess;
+
+   Eigen::Matrix<double,3,3> new_@DownYukawa@;
+
+@setDRbarDownQuarkYukawaCouplings@
+
+   model->set_@DownYukawa@(new_@DownYukawa@);
+}
+
+void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
+{
+   Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
+   electronDRbar(0,0) = me_guess;
+   electronDRbar(1,1) = mm_guess;
+   electronDRbar(2,2) = mtau_guess;
+
+   Eigen::Matrix<double,3,3> new_@ElectronYukawa@;
+
+@setDRbarElectronYukawaCouplings@
+
+   model->set_@ElectronYukawa@(new_@ElectronYukawa@);
 }
 
 void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
