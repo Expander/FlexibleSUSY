@@ -911,8 +911,7 @@ FindUnfixedParameters[fixed_List] :=
     Module[{fixedParameters},
            fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
                                           { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling, SARAH`UpYukawa, SARAH`DownYukawa,
-                                            SARAH`ElectronYukawa }]]];
+                                            SARAH`strongCoupling }]]];
            Complement[allParameters, fixedParameters]
           ];
 
