@@ -188,8 +188,12 @@ InvertRelation[sym_, expr_, other_] :=
          ];
 
 InvertMassRelation[fermion_, yukawa_] :=
-    Module[{massMatrix, polynom, prefactor, matrixExpression},
+    Module[{massMatrix, polynom, prefactor, matrixExpression, dim},
            massMatrix = SARAH`MassMatrix[fermion];
+           dim = Length[massMatrix];
+           If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
+              Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
+             ];
            polynom = Factor[massMatrix /. List -> Plus];
            prefactor = GetPrefactor[polynom, yukawa];
            matrixExpression = ToMatrixExpression[massMatrix / prefactor];
