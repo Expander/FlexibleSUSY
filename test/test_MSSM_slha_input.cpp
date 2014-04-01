@@ -81,10 +81,26 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    BOOST_CHECK_EQUAL(model.get_g2(), 0.);
    BOOST_CHECK_EQUAL(model.get_g3(), 0.);
 
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_EQUAL(model.get_Yu(i,k), 0.);
+         BOOST_CHECK_EQUAL(model.get_Yd(i,k), 0.);
+         BOOST_CHECK_EQUAL(model.get_Ye(i,k), 0.);
+      }
+   }
+
    slha_io.read_from_file(slha_file);
    slha_io.fill(model);
 
    BOOST_CHECK_CLOSE_FRACTION(model.get_g1(), g1, 1.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(model.get_g2(), g2, 1.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(model.get_g3(), g3, 1.0e-8);
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(model.get_Yu(i,k), Yu(i,k), 1.0e-8);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_Yd(i,k), Yd(i,k), 1.0e-8);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_Ye(i,k), Ye(i,k), 1.0e-8);
+      }
+   }
 }
