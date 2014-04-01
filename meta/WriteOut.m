@@ -332,7 +332,6 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
 ReadLesHouchesOutputParameters[] :=
     Module[{result = "", modelParameters},
            modelParameters = GetSLHAModelParameters[];
-           Print["SLHA modelParameters = ", modelParameters];
            (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
            Return[result];
           ];
