@@ -78,33 +78,35 @@ TEST_SRC += \
 endif
 
 TEST_SH := \
-		test/test_space_dir.sh
+		$(DIR)/test_space_dir.sh
 
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
-		test/test_standalone.sh
+		$(DIR)/test_standalone.sh
+TEST_SRC += \
+		$(DIR)/test_MSSM_slha_input.cpp
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
 TEST_SH += \
-		test/test_lowMSSM.sh
+		$(DIR)/test_lowMSSM.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-MSSM --with-MSSMRHN),yes yes)
 TEST_SH += \
-		test/test_tower.sh
+		$(DIR)/test_tower.sh
 endif
 
 TEST_META := \
-		test/test_BetaFunction.m \
-		test/test_CConversion.m \
-		test/test_Constraint.m \
-		test/test_EWSB.m \
-		test/test_Parameters.m \
-		test/test_TreeMasses.m \
-		test/test_SelfEnergies.m \
-		test/test_TextFormatting.m \
-		test/test_ThresholdCorrections.m
+		$(DIR)/test_BetaFunction.m \
+		$(DIR)/test_CConversion.m \
+		$(DIR)/test_Constraint.m \
+		$(DIR)/test_EWSB.m \
+		$(DIR)/test_Parameters.m \
+		$(DIR)/test_TreeMasses.m \
+		$(DIR)/test_SelfEnergies.m \
+		$(DIR)/test_TextFormatting.m \
+		$(DIR)/test_ThresholdCorrections.m
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
@@ -250,6 +252,8 @@ $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLE
 
 $(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/test_MSSM_slha_output.in.spc
 		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
+
+$(DIR)/test_MSSM_slha_input.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 

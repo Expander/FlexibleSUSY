@@ -113,10 +113,12 @@ public:
    struct Modsel {
       double parameter_output_scale; ///< key = 12
       Modsel() : parameter_output_scale(0.) {}
+      void clear() { parameter_output_scale = 0.; }
    };
    struct Extpar {
       double input_scale; ///< key = 0
       Extpar() : input_scale(0.) {}
+      void clear() { input_scale = 0.; }
    };
 
    class ReadError : public Error {
@@ -130,6 +132,8 @@ public:
 
    SLHA_io();
    ~SLHA_io() {}
+
+   void clear();
 
    // reading functions
    void fill(softsusy::QedQcd&) const;

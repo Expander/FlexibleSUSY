@@ -39,6 +39,11 @@ namespace flexiblesusy {
 {
 }
 
+void @ModelName@_slha_io::clear()
+{
+   slha_io.clear();
+}
+
 void @ModelName@_slha_io::set_extpar(const @ModelName@_input_parameters& input)
 {
 @writeSLHAExtparBlock@

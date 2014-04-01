@@ -33,6 +33,13 @@ SLHA_io::SLHA_io()
 {
 }
 
+void SLHA_io::clear()
+{
+   data.clear();
+   extpar.clear();
+   modsel.clear();
+}
+
 /**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name

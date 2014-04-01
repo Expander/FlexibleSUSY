@@ -9,6 +9,7 @@ WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
+ReadLesHouchesOutputParameters::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
@@ -274,7 +275,7 @@ WriteSLHAModelParametersBlocks[] :=
            Return[result];
           ];
 
-ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
     Module[{result, blockNameStr, parmStr, pdgStr},
            blockNameStr = ToString[blockName] <> "IN";
            parmStr = CConversion`ToValidCSymbolString[parameter];
@@ -285,7 +286,7 @@ ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
            Return[result];
           ];
 
-ReadSLHABlock[{parameter_, blockName_Symbol}] :=
+ReadSLHAInputBlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName] <> "IN";
@@ -300,7 +301,41 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            (* get block names of all les Houches input parameters (names) *)
            modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
            modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
-           (result = result <> ReadSLHABlock[#])& /@ modelParameters;
+           (result = result <> ReadSLHAInputBlock[#])& /@ modelParameters;
+           Return[result];
+          ];
+
+ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+    Module[{result, blockNameStr, parmStr, pdgStr, gutNorm = ""},
+           blockNameStr = ToString[blockName];
+           parmStr = CConversion`ToValidCSymbolString[parameter];
+           pdgStr = ToString[pdg];
+           If[parameter === SARAH`hyperchargeCoupling,
+              gutNorm = " * " <> CConversion`RValueToCFormString[
+                  1/Parameters`GetGUTNormalization[parameter]];
+             ];
+           result = "model.set_" <> parmStr <>
+                    "(slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
+                    pdgStr <> ")" <> gutNorm <> ");\n";
+           Return[result];
+          ];
+
+ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
+    Module[{paramStr, blockNameStr},
+           paramStr = CConversion`ToValidCSymbolString[parameter];
+           blockNameStr = ToString[blockName];
+           "{\n" <> IndentText[
+               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
+               paramStr <> ");\n" <>
+               "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>
+           "}\n"
+          ];
+
+ReadLesHouchesOutputParameters[] :=
+    Module[{result = "", modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
            Return[result];
           ];
 
