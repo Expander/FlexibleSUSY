@@ -48,13 +48,19 @@ LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput={
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
    FSFindRoot[{vd,vu}, {SM[MZ] - Pole[M[VZ]], SM[MH] - Pole[M[hh[1]]]}]
 };
 
 InitialGuessAtLowScale = {
    {vd, SM[vev]},
-   {vu, SM[vev] 20}
+   {vu, SM[vev] 20},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
 };
 
 InitialGuessAtHighScale = {

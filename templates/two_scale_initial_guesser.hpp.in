@@ -69,9 +69,9 @@ private:
    void guess_susy_parameters();
    void guess_soft_parameters();
    void calculate_DRbar_yukawa_couplings();
-   void calculate_Yu_DRbar();
-   void calculate_Yd_DRbar();
-   void calculate_Ye_DRbar();
+   void calculate_@UpYukawa@_DRbar();
+   void calculate_@DownYukawa@_DRbar();
+   void calculate_@ElectronYukawa@_DRbar();
 };
 
 } // namespace flexiblesusy

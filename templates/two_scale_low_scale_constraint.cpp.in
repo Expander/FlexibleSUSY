@@ -52,9 +52,9 @@ namespace flexiblesusy {
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
-   , new_Yu(Eigen::Matrix<double,3,3>::Zero())
-   , new_Yd(Eigen::Matrix<double,3,3>::Zero())
-   , new_Ye(Eigen::Matrix<double,3,3>::Zero())
+   , new_@UpYukawa@(Eigen::Matrix<double,3,3>::Zero())
+   , new_@DownYukawa@(Eigen::Matrix<double,3,3>::Zero())
+   , new_@ElectronYukawa@(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
    scale = initial_scale_guess;
@@ -68,9 +68,9 @@ namespace flexiblesusy {
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
-   , new_Yu(Eigen::Matrix<double,3,3>::Zero())
-   , new_Yd(Eigen::Matrix<double,3,3>::Zero())
-   , new_Ye(Eigen::Matrix<double,3,3>::Zero())
+   , new_@UpYukawa@(Eigen::Matrix<double,3,3>::Zero())
+   , new_@DownYukawa@(Eigen::Matrix<double,3,3>::Zero())
+   , new_@ElectronYukawa@(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
    scale = initial_scale_guess;
@@ -88,7 +88,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->calculate_DRbar_parameters();
    update_scale();
    calculate_DRbar_gauge_couplings();
-   calculate_DRbar_yukawa_couplings();
 
 @applyConstraint@
 
@@ -96,9 +95,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@leftCoupling@(new_g2);
    model->set_@strongCoupling@(new_g3);
 
-   model->set_@UpYukawa@(new_Yu);
-   model->set_@DownYukawa@(new_Yd);
-   model->set_@ElectronYukawa@(new_Ye);
+   model->set_@UpYukawa@(new_@UpYukawa@);
+   model->set_@DownYukawa@(new_@DownYukawa@);
+   model->set_@ElectronYukawa@(new_@ElectronYukawa@);
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
@@ -134,9 +133,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::reset()
    new_g1 = 0.;
    new_g2 = 0.;
    new_g3 = 0.;
-   new_Yu = Eigen::Matrix<double,3,3>::Zero();
-   new_Yd = Eigen::Matrix<double,3,3>::Zero();
-   new_Ye = Eigen::Matrix<double,3,3>::Zero();
+   new_@UpYukawa@ = Eigen::Matrix<double,3,3>::Zero();
+   new_@DownYukawa@ = Eigen::Matrix<double,3,3>::Zero();
+   new_@ElectronYukawa@ = Eigen::Matrix<double,3,3>::Zero();
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
@@ -187,12 +186,12 @@ double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(doub
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
 {
-   calculate_Yu_DRbar();
-   calculate_Yd_DRbar();
-   calculate_Ye_DRbar();
+   calculate_@UpYukawa@_DRbar();
+   calculate_@DownYukawa@_DRbar();
+   calculate_@ElectronYukawa@_DRbar();
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
@@ -202,7 +201,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
 @setDRbarUpQuarkYukawaCouplings@
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
@@ -212,7 +211,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
 @setDRbarDownQuarkYukawaCouplings@
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    electronDRbar(0,0) = oneset.displayMass(mElectron);

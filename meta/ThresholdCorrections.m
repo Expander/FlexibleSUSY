@@ -211,11 +211,14 @@ SetDRbarYukawaCouplings[] :=
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
            result = {
                Parameters`CreateLocalConstRefs[top] <>
-               "new_Yu = " <> RValueToCFormString[top] <> ";\n",
+               "new_" <> CConversion`ToValidCSymbolString[SARAH`UpYukawa] <>
+               " = " <> RValueToCFormString[top] <> ";\n",
                Parameters`CreateLocalConstRefs[bot] <>
-               "new_Yd = " <> RValueToCFormString[bot] <> ";\n",
+               "new_" <> CConversion`ToValidCSymbolString[SARAH`DownYukawa] <>
+               " = " <> RValueToCFormString[bot] <> ";\n",
                Parameters`CreateLocalConstRefs[tau] <>
-               "new_Ye = " <> RValueToCFormString[tau] <> ";\n" };
+               "new_" <> CConversion`ToValidCSymbolString[SARAH`ElectronYukawa] <>
+               " = " <> RValueToCFormString[tau] <> ";\n" };
            Return[result];
           ];
 
