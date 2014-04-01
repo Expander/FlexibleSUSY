@@ -275,7 +275,7 @@ WriteSLHAModelParametersBlocks[] :=
            Return[result];
           ];
 
-ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
     Module[{result, blockNameStr, parmStr, pdgStr},
            blockNameStr = ToString[blockName] <> "IN";
            parmStr = CConversion`ToValidCSymbolString[parameter];
@@ -286,7 +286,7 @@ ReadSLHABlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
            Return[result];
           ];
 
-ReadSLHABlock[{parameter_, blockName_Symbol}] :=
+ReadSLHAInputBlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName] <> "IN";
@@ -301,7 +301,7 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            (* get block names of all les Houches input parameters (names) *)
            modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
            modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
-           (result = result <> ReadSLHABlock[#])& /@ modelParameters;
+           (result = result <> ReadSLHAInputBlock[#])& /@ modelParameters;
            Return[result];
           ];
 
