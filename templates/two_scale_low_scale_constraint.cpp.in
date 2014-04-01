@@ -52,9 +52,6 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
-   , new_@UpYukawa@(Eigen::Matrix<double,3,3>::Zero())
-   , new_@DownYukawa@(Eigen::Matrix<double,3,3>::Zero())
-   , new_@ElectronYukawa@(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
    scale = initial_scale_guess;
@@ -68,9 +65,6 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
-   , new_@UpYukawa@(Eigen::Matrix<double,3,3>::Zero())
-   , new_@DownYukawa@(Eigen::Matrix<double,3,3>::Zero())
-   , new_@ElectronYukawa@(Eigen::Matrix<double,3,3>::Zero())
 {
 @scaleGuess@
    scale = initial_scale_guess;
@@ -94,10 +88,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@hyperchargeCoupling@(new_@hyperchargeCoupling@);
    model->set_@leftCoupling@(new_@leftCoupling@);
    model->set_@strongCoupling@(new_@strongCoupling@);
-
-   model->set_@UpYukawa@(new_@UpYukawa@);
-   model->set_@DownYukawa@(new_@DownYukawa@);
-   model->set_@ElectronYukawa@(new_@ElectronYukawa@);
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
@@ -133,9 +123,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::reset()
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
-   new_@UpYukawa@ = Eigen::Matrix<double,3,3>::Zero();
-   new_@DownYukawa@ = Eigen::Matrix<double,3,3>::Zero();
-   new_@ElectronYukawa@ = Eigen::Matrix<double,3,3>::Zero();
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()

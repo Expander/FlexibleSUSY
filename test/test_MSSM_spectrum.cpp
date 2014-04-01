@@ -71,9 +71,8 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
 
    calculate_DRbar_yukawa_couplings();
 
-   model->set_Yu(new_Yu);
-   model->set_Yd(new_Yd);
-   model->set_Ye(new_Ye);
+   const Eigen::Matrix<double,3,3> new_Yu(model->get_Yu()),
+      new_Yd(model->get_Yd()), new_Ye(model->get_Ye());
 
    // Now calculate the gauge couplings using
    // MssmSoftsusy::sparticleThresholdCorrections
@@ -708,10 +707,6 @@ void MSSM_iterative_low_scale_constraint::apply()
    model->set_g1(new_g1);
    model->set_g2(new_g2);
    model->set_g3(new_g3);
-
-   model->set_Yu(new_Yu);
-   model->set_Yd(new_Yd);
-   model->set_Ye(new_Ye);
 }
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_higgs_iteration )

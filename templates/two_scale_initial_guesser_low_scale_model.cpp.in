@@ -117,11 +117,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
    topDRbar(1,1) = mc_guess;
    topDRbar(2,2) = mt_guess;
 
-   Eigen::Matrix<double,3,3> new_@UpYukawa@;
-
 @setDRbarUpQuarkYukawaCouplings@
-
-   model->set_@UpYukawa@(new_@UpYukawa@);
 }
 
 void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
@@ -131,11 +127,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
    bottomDRbar(1,1) = ms_guess;
    bottomDRbar(2,2) = mb_guess;
 
-   Eigen::Matrix<double,3,3> new_@DownYukawa@;
-
 @setDRbarDownQuarkYukawaCouplings@
-
-   model->set_@DownYukawa@(new_@DownYukawa@);
 }
 
 void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
@@ -145,11 +137,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
    electronDRbar(1,1) = mm_guess;
    electronDRbar(2,2) = mtau_guess;
 
-   Eigen::Matrix<double,3,3> new_@ElectronYukawa@;
-
 @setDRbarElectronYukawaCouplings@
-
-   model->set_@ElectronYukawa@(new_@ElectronYukawa@);
 }
 
 void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()

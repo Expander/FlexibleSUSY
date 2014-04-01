@@ -56,7 +56,6 @@ private:
    QedQcd oneset;
    double MZDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
-   Eigen::Matrix<double,3,3> new_@UpYukawa@, new_@DownYukawa@, new_@ElectronYukawa@;
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();
