@@ -209,10 +209,13 @@ SetDRbarYukawaCouplings[] :=
            top = top /. SARAH`TopQuark    -> Global`topDRbar;
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
-           result = Parameters`CreateLocalConstRefs[top + bot + tau] <>
-                    "new_Yu = " <> RValueToCFormString[top] <> ";\n" <>
-                    "new_Yd = " <> RValueToCFormString[bot] <> ";\n" <>
-                    "new_Ye = " <> RValueToCFormString[tau] <> ";\n";
+           result = {
+               Parameters`CreateLocalConstRefs[top] <>
+               "new_Yu = " <> RValueToCFormString[top] <> ";\n",
+               Parameters`CreateLocalConstRefs[bot] <>
+               "new_Yd = " <> RValueToCFormString[bot] <> ";\n",
+               Parameters`CreateLocalConstRefs[tau] <>
+               "new_Ye = " <> RValueToCFormString[tau] <> ";\n" };
            Return[result];
           ];
 

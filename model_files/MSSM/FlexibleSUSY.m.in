@@ -49,7 +49,7 @@ LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput={
+LowScaleInput = {
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };

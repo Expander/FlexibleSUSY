@@ -187,20 +187,39 @@ double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(doub
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
 {
-   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
-      bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
-      electronDRbar(Eigen::Matrix<double,3,3>::Zero());
+   calculate_Yu_DRbar();
+   calculate_Yd_DRbar();
+   calculate_Ye_DRbar();
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
+{
+   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
    topDRbar(1,1)      = oneset.displayMass(mCharm);
    topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
+
+@setDRbarUpQuarkYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
+{
+   Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
    bottomDRbar(1,1)   = oneset.displayMass(mStrange);
    bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar(oneset.displayMass(mBottom), 2);
+
+@setDRbarDownQuarkYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
+{
+   Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    electronDRbar(0,0) = oneset.displayMass(mElectron);
    electronDRbar(1,1) = oneset.displayMass(mMuon);
    electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
-@setDRbarYukawaCouplings@
+@setDRbarElectronYukawaCouplings@
 }
 
 } // namespace flexiblesusy
