@@ -306,13 +306,17 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
           ];
 
 ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
-    Module[{result, blockNameStr, parmStr, pdgStr},
+    Module[{result, blockNameStr, parmStr, pdgStr, gutNorm = ""},
            blockNameStr = ToString[blockName];
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
+           If[parameter === SARAH`hyperchargeCoupling,
+              gutNorm = " * " <> CConversion`RValueToCFormString[
+                  1/Parameters`GetGUTNormalization[parameter]];
+             ];
            result = "model.set_" <> parmStr <>
                     "(slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
-                    pdgStr <> "));\n";
+                    pdgStr <> ")" <> gutNorm <> ");\n";
            Return[result];
           ];
 

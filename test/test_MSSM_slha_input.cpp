@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    slha_io.read_from_file(slha_file);
    slha_io.fill(model);
 
-   BOOST_CHECK_EQUAL(model.get_g1(), g1);
-   BOOST_CHECK_EQUAL(model.get_g2(), g2);
-   BOOST_CHECK_EQUAL(model.get_g3(), g3);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_g1(), g1, 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_g2(), g2, 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_g3(), g3, 1.0e-8);
 }
