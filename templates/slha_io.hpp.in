@@ -42,6 +42,8 @@ public:
    @ModelName@_slha_io();
    ~@ModelName@_slha_io() {}
 
+   void clear();
+
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
    template <class T> void fill(@ModelName@<T>&) const;
