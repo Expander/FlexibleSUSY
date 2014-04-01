@@ -305,8 +305,8 @@ CreateZero[CConversion`ArrayType[_, entries_]] :=
 CreateZero[CConversion`VectorType[_, entries_]] :=
     CConversion`ZEROVECTOR[entries];
 
-CreateZero[CConversion`MatrixType[_, rows_, rows_]] :=
-    CConversion`ZEROMATRIX[rows];
+CreateZero[CConversion`MatrixType[_, rows_, cols_]] :=
+    CConversion`ZEROMATRIX[rows,cols];
 
 MakeUnique[name_String] :=
     Module[{appendix = ""},

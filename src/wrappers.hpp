@@ -245,7 +245,7 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 }
 
 #define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
-#define ZEROMATRIX(rows) Eigen::Matrix<double,rows,rows>::Zero()
+#define ZEROMATRIX(rows,cols) Eigen::Matrix<double,rows,cols>::Zero()
 #define ZEROVECTOR(rows) Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows) Eigen::Array<double,rows,1>::Zero()
 
