@@ -237,9 +237,12 @@ CalculateGaugeCouplings[] :=
            result = Parameters`CreateLocalConstRefs[{weinbergAngle, g1Def, g2Def, g3Def}] <>
                     "const double " <> CConversion`ToValidCSymbolString[SARAH`Weinberg] <>
                     " = " <> CConversion`RValueToCFormString[weinbergAngle] <> ";\n" <>
-                    "new_g1 = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
-                    "new_g2 = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
-                    "new_g3 = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g2Def] <> ";\n" <>
+                    "new_" <> CConversion`ToValidCSymbolString[SARAH`strongCoupling] <>
+                    " = " <> CConversion`RValueToCFormString[g3Def] <> ";\n";
            Return[result];
           ];
 
