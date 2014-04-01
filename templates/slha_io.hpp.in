@@ -73,7 +73,7 @@ private:
  * Reads all model parameters from a SLHA output file.
  */
 template <class T>
-void @ModelName@_slha_io::fill(@ModelName@<T>&) const
+void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
 {
 @readLesHouchesOutputParameters@
 }

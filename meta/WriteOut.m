@@ -305,8 +305,35 @@ ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
            Return[result];
           ];
 
+ReadSLHAOutputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+    Module[{result, blockNameStr, parmStr, pdgStr},
+           blockNameStr = ToString[blockName];
+           parmStr = CConversion`ToValidCSymbolString[parameter];
+           pdgStr = ToString[pdg];
+           result = "model.set_" <> parmStr <>
+                    "(slha_io.read_entry(\"" <> blockNameStr <> "\", " <>
+                    pdgStr <> "));\n";
+           Return[result];
+          ];
+
+ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
+    Module[{paramStr, blockNameStr},
+           paramStr = CConversion`ToValidCSymbolString[parameter];
+           blockNameStr = ToString[blockName];
+           "{\n" <> IndentText[
+               "typename std::remove_reference<decltype(model.get_" <>
+               paramStr <> "())>::type " <> paramStr <> ";\n" <>
+               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
+               paramStr <> ");\n" <>
+               "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>
+           "}\n"
+          ];
+
 ReadLesHouchesOutputParameters[] :=
-    Module[{result = ""},
+    Module[{result = "", modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           Print["SLHA modelParameters = ", modelParameters];
+           (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
            Return[result];
           ];
 
