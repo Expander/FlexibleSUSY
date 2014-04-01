@@ -325,8 +325,7 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
-               "typename std::remove_reference<decltype(model.get_" <>
-               paramStr <> "())>::type " <> paramStr <> ";\n" <>
+               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
                "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
                paramStr <> ");\n" <>
                "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>

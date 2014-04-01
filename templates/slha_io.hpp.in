@@ -31,6 +31,8 @@
 
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
+#define DEFINE_PARAMETER(p)                                            \
+   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 
 namespace flexiblesusy {
 
