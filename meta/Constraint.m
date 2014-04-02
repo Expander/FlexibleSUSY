@@ -288,6 +288,16 @@ CheckSetting[patt:{parameter_, value_}, constraintName_String] :=
            True
           ];
 
+CheckSetting[patt_, constraintName_String] :=
+    Module[{},
+           Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
+           Print["   This is not a valid constraint setting!"];
+           If[patt === Null,
+              Print["   Maybe there is a trailing comma in the constraint list?"];
+             ];
+           False
+          ];
+
 CheckConstraint[settings_List, constraintName_String] :=
     CheckSetting[#,constraintName]& /@ settings;
 

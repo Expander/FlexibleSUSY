@@ -1030,6 +1030,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`LowScaleInput, "LowScaleInput"];
            Constraint`CheckConstraint[FlexibleSUSY`SUSYScaleInput, "SUSYScaleInput"];
            Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
            fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
