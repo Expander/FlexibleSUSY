@@ -60,7 +60,7 @@ ApplyConstraint[{parameter_ /; MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`
 
 ApplyConstraint[{parameter_, value_ /; value === Automatic}, modelName_String] :=
     Block[{},
-          Print["Error: cannot create determine ", parameter, " automatically!"];
+          Print["Error: cannot determine ", parameter, " automatically!"];
           Quit[1];
          ];
 
@@ -155,6 +155,19 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
                            "VERBOSE_MSG(\"\\troot finder status: \" << gsl_strerror(status));\n";
            Return[callRootFinder];
           ];
+
+ApplyConstraint[Null, _] :=
+    Block[{},
+          Print["Error: Null is not a valid constraint setting!"];
+          Print["   Maybe there is a trailing comma in the constraint list?"];
+          Quit[1];
+         ];
+
+ApplyConstraint[p_, _] :=
+    Block[{},
+          Print["Error: This is not a valid constraint setting: ", p];
+          Quit[1];
+         ];
 
 ApplyConstraints[settings_List] :=
     Module[{result, noMacros},
