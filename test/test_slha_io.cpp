@@ -5,7 +5,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "slha_io.hpp"
-#include "stopwatch.hpp"
 #include <Eigen/Core>
 
 using namespace flexiblesusy;
