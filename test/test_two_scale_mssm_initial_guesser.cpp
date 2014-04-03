@@ -6,7 +6,6 @@
 #include "SoftsusyMSSM_two_scale_low_scale_constraint.hpp"
 #include "softsusy.h"
 #include "logger.hpp"
-#include "stopwatch.hpp"
 #include "test.h"
 
 #define BOOST_TEST_DYN_LINK

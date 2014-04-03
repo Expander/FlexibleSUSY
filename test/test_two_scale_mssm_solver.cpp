@@ -10,7 +10,6 @@
 #include "softsusy.h"
 #include "two_scale_solver.hpp"
 #include "logger.hpp"
-#include "stopwatch.hpp"
 #include "error.hpp"
 
 #define BOOST_TEST_DYN_LINK
@@ -147,9 +146,6 @@ public:
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
-      Stopwatch stopwatch;
-      stopwatch.start(); // record time for SoftSusy to solve the MSSM
-
       // run softsusy
       softsusy::TOLERANCE = 1.0e-4;
 #ifdef VERBOSE
@@ -159,9 +155,7 @@ public:
       mx = softSusy.displayMxBC();
       softsusy::PRINTOUT = 0;
 
-      stopwatch.stop();
-      VERBOSE_MSG("MssmSoftsusy solved in " << stopwatch.get_time_in_seconds()
-                  << " seconds");
+      VERBOSE_MSG("MssmSoftsusy solved.");
 
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
@@ -188,9 +182,6 @@ public:
    double get_mx() const { return mx; }
    sPhysical get_physical() const { return mssm.displayPhys(); }
    void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
-      Stopwatch stopwatch;
-      stopwatch.start(); // record time for the two scale method to solve the MSSM
-
       softsusy::TOLERANCE = 1.0e-4;
       // setup the MSSM with the two scale method
       SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
@@ -220,9 +211,7 @@ public:
       solver.solve();
       mssm.calculate_spectrum();
 
-      stopwatch.stop();
-      VERBOSE_MSG("SoftsusyMSSM<Two_scale> solved in " << stopwatch.get_time_in_seconds()
-                  << " seconds");
+      VERBOSE_MSG("SoftsusyMSSM<Two_scale> solved.");
 
       mx = mssm_sugra_constraint.get_scale();
    }
