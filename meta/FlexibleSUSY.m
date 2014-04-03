@@ -443,7 +443,8 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             copyDRbarMassesToPoleMasses = "",
             vevsToFieldsAssociation,
-            twoLoopHiggsHeaders = ""
+            twoLoopHiggsHeaders = "",
+            threadHeaders = ""
            },
            If[Length[vevs] != Length[ewsbEquations],
               Print["Error: number of vevs != number of EWSB equations"];
@@ -491,6 +492,9 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesNMSSM[SARAH`HiggsBoson];
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
+             ];
+           If[enablePoleMassThreads === True,
+              threadHeaders = "#include <thread>\n";
              ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
@@ -551,6 +555,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
+                            "@threadHeaders@"             -> threadHeaders,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],

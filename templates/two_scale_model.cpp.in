@@ -33,7 +33,7 @@
 
 #include <cmath>
 #include <iostream>
-#include <thread>
+@threadHeaders@
 
 namespace flexiblesusy {
 
