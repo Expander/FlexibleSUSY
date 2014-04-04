@@ -1583,7 +1583,7 @@ enable_defines() {
         message "Enabling usage of LoopTools"
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS"
     else
-        message "Disabling usage of LoopTools"
+        logmsg "Disabling usage of LoopTools"
         DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
     fi
 
@@ -1611,7 +1611,7 @@ enable_defines() {
     fi
 
     if test "x${enable_threads}" = "xyes" ; then
-        message "Enabling multi-threading"
+        logmsg "Enabling multi-threading"
         DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
     else
         message "Disabling multi-threading"
