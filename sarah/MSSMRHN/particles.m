@@ -42,7 +42,8 @@ ParticleDefinitions[GaugeES] = {
       {Sd ,  { Description -> "Down-Squarks"}},
       {Su ,  { Description -> "Up-Squarks"}},   
       {Se ,  { Description -> "Sleptons"}}, 
-      {Sv ,  { Description -> "Sneutrinos"}},                                
+      {Sv ,  { Description -> "Sneutrinos",
+               PDG -> {1000012,1000014,1000016,2000012,2000014,2000016}}},
       {hh ,  { Description -> "Higgs"}}, 
       {Ah ,  { Description -> "Pseudo-Scalar Higgs"}},                       
       {Hpm,  { Description -> "Charged Higgs"}},                                                   
@@ -58,7 +59,9 @@ ParticleDefinitions[GaugeES] = {
       {Fd,   { Description -> "Down-Quarks"}},   
       {Fu,   { Description -> "Up-Quarks"}},   
       {Fe,   { Description -> "Leptons" }},
-      {Fv,   { Description -> "Neutrinos" }},                                                                     
+      {Fv,   { Description -> "Neutrinos",
+	       (* "private" particle codes begin in 99 *)
+	       PDG -> {12,14,16,9900012,9900014,9900016}}},
       {Glu,  { Description -> "Gluino" }},
       {Chi,  { Description -> "Neutralinos"}},
       {Cha,  { Description -> "Charginos"}}                                                                                               
