@@ -22,7 +22,7 @@ model="$1"
 cat <<EOF | @MATH@ 2> /dev/stdout 1> /dev/null
 Needs["SARAH\`"];
 
-If[StringFreeQ["${model}","/"] == False,
+If[!StringFreeQ["${model}","/"],
    splitted = StringSplit["${model}","/"];
    modelName = splitted[[1]];
    submodeldir = splitted[[2]];
