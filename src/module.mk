@@ -20,7 +20,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
-		$(DIR)/stopwatch.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/wrappers.cpp
 

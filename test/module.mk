@@ -1,6 +1,18 @@
 DIR      := test
 MODNAME  := test
 
+LIBTEST_SRC := \
+		$(DIR)/stopwatch.cpp
+
+LIBTEST_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBTEST_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIBTEST_SRC)))
+
+LIBTEST_DEP := \
+		$(LIBTEST_OBJ:.o=.d)
+
+LIBTEST     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+
 TEST_SRC := \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
@@ -129,16 +141,19 @@ TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
 		clean-$(MODNAME)-log \
 		execute-tests execute-meta-tests execute-compiled-tests
 
-all-$(MODNAME): $(TEST_EXE)
+all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
 
 clean-$(MODNAME)-log:
 		-rm -f $(TEST_LOG)
 
 clean-$(MODNAME):
+		-rm -f $(LIBTEST_OBJ)
 		-rm -f $(TEST_OBJ)
 		-rm -f $(TEST_LOG)
 
 distclean-$(MODNAME): clean-$(MODNAME)
+		-rm -f $(LIBTEST_DEP)
+		-rm -f $(LIBTEST)
 		-rm -f $(TEST_DEP)
 		-rm -f $(TEST_EXE)
 
@@ -200,7 +215,7 @@ $(DIR)/test_root_finder.x: $(DIR)/test_root_finder.o $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-$(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY)
@@ -232,7 +247,7 @@ $(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
-$(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST)
 
 $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
@@ -292,5 +307,14 @@ $(DIR)/test_%.x: $(DIR)/test_%.o
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
 
-ALLDEP += $(TEST_DEP)
+ifeq ($(ENABLE_STATIC_LIBS),yes)
+$(LIBTEST): $(LIBTEST_OBJ)
+		$(MAKELIB) $@ $^
+else
+$(LIBTEST): $(LIBTEST_OBJ)
+		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
+endif
+
+ALLDEP += $(LIBTEST_DEP) $(TEST_DEP)
+ALLLIB += $(LIBTEST)
 ALLTST += $(TEST_EXE)
