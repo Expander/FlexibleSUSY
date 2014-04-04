@@ -25,6 +25,7 @@
 #include "error.hpp"
 #include "root_finder.hpp"
 #include "gsl_utils.hpp"
+#include "config.h"
 #ifdef ENABLE_LOOPTOOLS
 #include <clooptools.h>
 #endif
@@ -33,7 +34,10 @@
 
 #include <cmath>
 #include <iostream>
-@threadHeaders@
+
+#ifdef ENABLE_THREADS
+#include <thread>
+#endif
 
 namespace flexiblesusy {
 
@@ -351,7 +355,11 @@ void CLASSNAME::calculate_DRbar_parameters()
 
 void CLASSNAME::calculate_pole_masses()
 {
+#ifdef ENABLE_THREADS
+@callAllLoopMassFunctionsInThreads@
+#else
 @callAllLoopMassFunctions@
+#endif
 }
 
 void CLASSNAME::copy_DRbar_masses_to_pole_masses()

@@ -25,3 +25,8 @@
 #define FC                    "@FC@"
 #define FFLAGS                "@FFLAGS@"
 #define FLIBS                 "@FLIBS@"
+
+/* Switches */
+
+/* Enable multi-threading */
+#undef ENABLE_THREADS

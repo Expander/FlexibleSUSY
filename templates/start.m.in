@@ -25,6 +25,5 @@ MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
                  DefaultDiagonalizationPrecision -> MediumPrecision,
                  HighDiagonalizationPrecision -> {hh, Ah, Hpm},
                  MediumDiagonalizationPrecision -> {},
-                 LowDiagonalizationPrecision -> {},
-                 EnablePoleMassThreads -> True
+                 LowDiagonalizationPrecision -> {}
                 ];

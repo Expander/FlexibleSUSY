@@ -414,7 +414,6 @@ CreateVEVsToFieldsAssociation[vevs_List] :=
 WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
-                enablePoleMassThreads_,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
             mixingMatrixGetters = "",
@@ -433,7 +432,9 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             phasesInit = "",
             loopMassesPrototypes = "", loopMassesFunctions = "",
             runningDRbarMassesPrototypes = "", runningDRbarMassesFunctions = "",
-            callAllLoopMassFunctions = "", printMasses = "", printMixingMatrices = "",
+            callAllLoopMassFunctions = "",
+            callAllLoopMassFunctionsInThreads = "",
+            printMasses = "", printMixingMatrices = "",
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
@@ -444,7 +445,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             copyDRbarMassesToPoleMasses = "",
             vevsToFieldsAssociation,
             twoLoopHiggsHeaders = "",
-            threadHeaders = ""
+            enablePoleMassThreads = True
            },
            If[Length[vevs] != Length[ewsbEquations],
               Print["Error: number of vevs != number of EWSB equations"];
@@ -493,9 +494,6 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
-           If[enablePoleMassThreads === True,
-              threadHeaders = "#include <thread>\n";
-             ];
            calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
@@ -510,7 +508,10 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            loopMassesFunctions          = LoopMasses`CreateOneLoopPoleMassFunctions[diagonalizationPrecision, {}, {}];
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
            runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
+           enablePoleMassThreads = False;
            callAllLoopMassFunctions     = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
+           enablePoleMassThreads = True;
+           callAllLoopMassFunctionsInThreads = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
@@ -555,7 +556,6 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                             "@twoLoopSelfEnergyPrototypes@" -> IndentText[twoLoopSelfEnergyPrototypes],
                             "@twoLoopSelfEnergyFunctions@"  -> twoLoopSelfEnergyFunctions,
                             "@twoLoopHiggsHeaders@"       -> twoLoopHiggsHeaders,
-                            "@threadHeaders@"             -> threadHeaders,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
                             "@thirdGenerationHelperFunctions@"  -> thirdGenerationHelperFunctions,
                             "@phasesDefinition@"          -> IndentText[phasesDefinition],
@@ -566,6 +566,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                             "@runningDRbarMassesPrototypes@" -> IndentText[runningDRbarMassesPrototypes],
                             "@runningDRbarMassesFunctions@"  -> WrapLines[runningDRbarMassesFunctions],
                             "@callAllLoopMassFunctions@"     -> IndentText[callAllLoopMassFunctions],
+                            "@callAllLoopMassFunctionsInThreads@" -> IndentText[callAllLoopMassFunctionsInThreads],
                             "@printMasses@"                  -> IndentText[printMasses],
                             "@printMixingMatrices@"          -> IndentText[printMixingMatrices],
                             "@dependenceNumPrototypes@"      -> IndentText[dependenceNumPrototypes],
@@ -928,7 +929,6 @@ Options[MakeFlexibleSUSY] :=
         HighDiagonalizationPrecision -> {},
         MediumDiagonalizationPrecision -> {},
         LowDiagonalizationPrecision -> {},
-        EnablePoleMassThreads -> True,
         SolveEWSBTimeConstraint -> 120 (* in seconds *)
     };
 
@@ -1331,7 +1331,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, vevs, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
-                           nPointFunctions, vertexRules, phases, OptionValue[EnablePoleMassThreads],
+                           nPointFunctions, vertexRules, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
