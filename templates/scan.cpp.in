@@ -23,7 +23,6 @@
 
 #include "error.hpp"
 #include "scan.hpp"
-#include "stopwatch.hpp"
 #include "lowe.h"
 
 #include <iostream>
@@ -34,7 +33,6 @@ int main()
    using namespace softsusy;
    typedef Two_scale algorithm_type;
 
-   Stopwatch stopwatch;
    @ModelName@_input_parameters input;
    QedQcd oneset;
    oneset.toMz();
@@ -52,17 +50,14 @@ int main()
    cout << "# "
         << std::setw(12) << std::left << "@InputParameter_1@" << ' '
         << std::setw(12) << std::left << "M@HiggsBoson@(1)/GeV" << ' '
-        << std::setw(12) << std::left << "error" << ' '
-        << std::setw(12) << std::left << "time/s"
+        << std::setw(12) << std::left << "error"
         << '\n';
 
    for (std::vector<double>::const_iterator it = range.begin(),
            end = range.end(); it != end; ++it) {
       input.@InputParameter_1@ = *it;
 
-      stopwatch.start();
       spectrum_generator.run(oneset, input);
-      stopwatch.stop();
 
       const @ModelName@<algorithm_type>& model = spectrum_generator.get_model();
       const @ModelName@_physical& pole_masses = model.get_physical();
@@ -74,8 +69,7 @@ int main()
       cout << "  "
            << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
            << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << error << ' '
-           << std::setw(12) << std::left << stopwatch.get_time_in_seconds();
+           << std::setw(12) << std::left << error;
       if (error) {
          cout << "\t# " << problems;
       }
