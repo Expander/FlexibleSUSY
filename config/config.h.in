@@ -29,4 +29,4 @@
 /* Switches */
 
 /* Enable multi-threading */
-#undef ENABLE_THREADS
+@DEFINE_ENABLE_THREADS@

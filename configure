@@ -91,6 +91,7 @@ options="                    \
    enable_meta               \
    enable_silent             \
    enable_static_libs        \
+   enable_threads            \
    enable_verbose            \
 "
 enable_compile="yes"
@@ -101,7 +102,11 @@ enable_looptools="no"
 enable_meta="yes"
 enable_silent="no"
 enable_static_libs="yes"
+enable_threads="yes"
 enable_verbose="no"
+
+# corresponding preprocessor define statements
+DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
 
 boost_lib_dir=""
 boost_inc_dir=""
@@ -1600,6 +1605,14 @@ enable_defines() {
             CPPFLAGS="$CPPFLAGS -DVERBOSE"
         fi
     fi
+
+    if test "x${enable_threads}" = "xyes" ; then
+        message "Enabling multi-threading"
+        DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
+    else
+        message "Disabling multi-threading"
+        DEFINE_ENABLE_THREADS="#undef ENABLE_THREADS"
+    fi
 }
 
 #_____________________________________________________________________
@@ -1621,6 +1634,7 @@ enable/disable options, prefix with either --enable- or --disable-
   meta              Create model classes (default: $enable_meta)
   silent            Suppress all command line output (default: $enable_silent)
   static-libs       Create static libraries (default: $enable_static_libs)
+  threads           Enable multi-threading (default: $enable_threads)
   verbose           Verbose messages (default: $enable_verbose)
 
 Package directories, compilation settings and model selection
@@ -1815,6 +1829,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_COMPILE@|$enable_compile|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_META@|$enable_meta|" \
+    -e "s|@ENABLE_THREADS@|$enable_threads|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
@@ -1849,6 +1864,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
+    -e "s|@ENABLE_THREADS@|$enable_threads|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MAKELIB@|$MAKELIB|"         \
@@ -1881,6 +1897,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
+    -e "s|@ENABLE_THREADS@|$enable_threads|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MAKELIB@|$MAKELIB|"         \
@@ -1923,6 +1940,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \
+    -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|" \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

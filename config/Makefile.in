@@ -40,6 +40,7 @@ ENABLE_COMPILE     := @ENABLE_COMPILE@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_THREADS     := @ENABLE_THREADS@
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -160,6 +161,7 @@ showbuild:
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
+	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"

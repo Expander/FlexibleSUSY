@@ -41,6 +41,7 @@ THREADLIBS      := @THREADLIBS@
 
 # Switches
 ENABLE_LOOPTOOLS := @ENABLE_LOOPTOOLS@
+ENABLE_THREADS   := @ENABLE_THREADS@
 
 STANDALONE_SRC := \
 		standalone.cpp
@@ -144,3 +145,4 @@ showbuild:
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
+	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
