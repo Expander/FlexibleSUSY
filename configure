@@ -106,6 +106,7 @@ enable_threads="yes"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
+DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
 
 boost_lib_dir=""
@@ -1579,8 +1580,11 @@ enable_defines() {
     fi
 
     if test "x$enable_looptools" = "xyes" ; then
-        message "Enabling usage of LoopTools -DENABLE_LOOPTOOLS"
-        CPPFLAGS="$CPPFLAGS -DENABLE_LOOPTOOLS"
+        message "Enabling usage of LoopTools"
+        DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS"
+    else
+        message "Disabling usage of LoopTools"
+        DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
     fi
 
     if test "x$enable_silent" = "xyes" ; then
@@ -1941,6 +1945,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|" \
+    -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

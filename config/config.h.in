@@ -28,5 +28,8 @@
 
 /* Switches */
 
+/* Enable LoopTools */
+@DEFINE_ENABLE_LOOPTOOLS@
+
 /* Enable multi-threading */
 @DEFINE_ENABLE_THREADS@
