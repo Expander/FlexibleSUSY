@@ -1,5 +1,5 @@
 DIR          := legacy
-MODNAME      := liblegacy
+MODNAME      := legacy
 
 LIBLEGACY_SRC := \
 		$(DIR)/conversion.cpp \
@@ -13,7 +13,7 @@ LIBLEGACY_OBJ := \
 LIBLEGACY_DEP := \
 		$(LIBLEGACY_OBJ:.o=.d)
 
-LIBLEGACY     := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

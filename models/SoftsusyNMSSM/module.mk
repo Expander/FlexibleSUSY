@@ -1,5 +1,5 @@
 DIR          := models/SoftsusyNMSSM
-MODNAME      := libSoftsusyNMSSM
+MODNAME      := SoftsusyNMSSM
 
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
 LIBSoftsusyNMSSM_SRC  := \
@@ -27,7 +27,7 @@ LIBSoftsusyNMSSM_OBJ  := \
 LIBSoftsusyNMSSM_DEP  := \
 		$(LIBSoftsusyNMSSM_OBJ:.o=.d)
 
-LIBSoftsusyNMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBSoftsusyNMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 EXESoftsusyNMSSM_SRC  :=
 

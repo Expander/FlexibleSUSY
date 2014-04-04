@@ -1,5 +1,5 @@
 DIR          := models/SoftsusyMSSM
-MODNAME      := libSoftsusyMSSM
+MODNAME      := SoftsusyMSSM
 
 LIBSoftsusyMSSM_SRC  := \
 		$(DIR)/mssmUtils.cpp \
@@ -23,7 +23,7 @@ LIBSoftsusyMSSM_OBJ  := \
 LIBSoftsusyMSSM_DEP  := \
 		$(LIBSoftsusyMSSM_OBJ:.o=.d)
 
-LIBSoftsusyMSSM      := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBSoftsusyMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 EXESoftsusyMSSM_SRC := \
 		$(DIR)/run_SoftsusyMSSM.cpp

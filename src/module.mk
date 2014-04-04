@@ -1,5 +1,5 @@
 DIR          := src
-MODNAME      := libflexisusy
+MODNAME      := flexisusy
 
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
@@ -48,7 +48,7 @@ LIBFLEXI_OBJ := \
 LIBFLEXI_DEP := \
 		$(LIBFLEXI_OBJ:.o=.d)
 
-LIBFLEXI     := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
