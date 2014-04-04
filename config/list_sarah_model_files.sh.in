@@ -22,6 +22,21 @@ model="$1"
 cat <<EOF | @MATH@ 2> /dev/stdout 1> /dev/null
 Needs["SARAH\`"];
 
+FindModelFiles[dir_String, modelName_String, submodeldir_] :=
+    Module[{files, modelFile, modelDir},
+           If[submodeldir =!= False,
+              modelDir  = ToFileName[ToFileName[{dir, modelName}], submodeldir];
+              modelFile = ToFileName[{modelDir}, modelName <> "-" <> submodeldir <> ".m"];
+              ,
+              modelDir  = ToFileName[{dir, modelName}];
+              modelFile = ToFileName[{modelDir}, modelName <> ".m"];
+             ];
+           files = Join[{modelFile},
+                        FileNameJoin[{modelDir, #}]& /@ {"parameters.m", "particles.m"}
+                       ];
+           Select[files, FileExistsQ]
+          ];
+
 If[!StringFreeQ["${model}","/"],
    splitted = StringSplit["${model}","/"];
    modelName = splitted[[1]];
@@ -31,19 +46,13 @@ If[!StringFreeQ["${model}","/"],
    submodeldir = False;
 ];
 
-If[submodeldir =!= False,
-   modelDir  = ToFileName[ToFileName[{\$sarahModelDir, modelName}], submodeldir];
-   ModelFile = ToFileName[{modelDir}, modelName <> "-" <> submodeldir <> ".m"];
-   ,
-   modelDir  = ToFileName[{\$sarahModelDir, modelName}];
-   ModelFile = ToFileName[{modelDir}, modelName <> ".m"];
+(* search in SARAH/Models/ directory *)
+files = FindModelFiles[\$sarahModelDir, modelName, submodeldir];
+
+(* search in FlexibleSUSY/sarah/ directory *)
+If[files === {},
+   files = FindModelFiles["${BASEDIR}/../sarah", modelName, submodeldir];
   ];
-
-files = Join[{ModelFile},
-             FileNameJoin[{modelDir, #}]& /@ {"parameters.m", "particles.m"}
-            ];
-
-files = Select[files, FileExistsQ];
 
 strList = "";
 For[i = 1, i <= Length[files], i++,
