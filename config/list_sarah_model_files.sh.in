@@ -10,7 +10,12 @@
 
 if test $# -ne 1; then
     echo "Error: 1 argument required"
-    echo "Usage: $0 <sarah-model-name>"
+    echo "Usage: $0 <sarah-model-name>[/<sub-model>]"
+    echo ""
+    echo "Examples:"
+    echo ""
+    echo "   $0 MSSM"
+    echo "   $0 MSSM/CKM"
     exit 1
 fi
 
