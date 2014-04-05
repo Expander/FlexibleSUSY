@@ -22,6 +22,8 @@ fi
 # directory of this script
 BASEDIR=$(dirname $0)
 
+FLEXIBLESUSY_SARAH_DIR="${BASEDIR}/../sarah"
+
 model="$1"
 
 cat <<EOF | @MATH@ 2> /dev/stdout 1> /dev/null
@@ -60,7 +62,7 @@ files = FindModelFiles[\$sarahModelDir, modelName, submodeldir];
 
 (* search in FlexibleSUSY/sarah/ directory *)
 If[files === {},
-   files = FindModelFiles["${BASEDIR}/../sarah", modelName, submodeldir];
+   files = FindModelFiles["${FLEXIBLESUSY_SARAH_DIR}", modelName, submodeldir];
   ];
 
 strList = "";
