@@ -986,15 +986,14 @@ EOF
 
 #_____________________________________________________________________
 check_gpp_version() {
+    if test $# -ne 1; then
+        message "check_gpp_version(): too few arguments"
+        exit 1
+    fi
+
     local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
     local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
-
-    local gpp
-    if [ "$cxx_dep_gen_type" = "gnu" ]; then
-	gpp="$CXX_DEP_GEN"
-    else
-	gpp="$CXX"
-    fi
+    local gpp="$1"
 
     checking_msg "${gpp} compiler version >= ${required_gpp_version}"
 
@@ -1766,8 +1765,8 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_compiler_type
     check_cxx_dep_gen
     check_cxx_dep_gen_type
-    if test "x$cxx_compiler_type" = xgnu -o "x$cxx_dep_gen_type" = xgnu; then
-        check_gpp_version
+    if test "x$cxx_compiler_type" = xgnu; then
+        check_gpp_version "$CXX"
     fi
     check_cxxflags
     check_cxxflags_dep_gen
