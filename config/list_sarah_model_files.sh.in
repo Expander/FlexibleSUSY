@@ -25,8 +25,6 @@ BASEDIR=$(dirname $0)
 model="$1"
 
 cat <<EOF | @MATH@ 2> /dev/stdout 1> /dev/null
-Needs["SARAH\`"];
-
 FindModelFiles[dir_String, modelName_String, submodeldir_] :=
     Module[{files, modelFile, modelDir},
            If[submodeldir =!= False,
@@ -41,6 +39,12 @@ FindModelFiles[dir_String, modelName_String, submodeldir_] :=
                        ];
            Select[files, FileExistsQ]
           ];
+
+sarahLoaded = Needs["SARAH\`"];
+
+If[sarahLoaded === \$Failed || !ValueQ[\$sarahModelDir],
+   Quit[1];
+  ];
 
 If[!StringFreeQ["${model}","/"],
    splitted = StringSplit["${model}","/"];
