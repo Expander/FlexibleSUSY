@@ -1132,15 +1132,16 @@ boundary conditions are known at any scale between \code{LowScale} and
 
 The physical (pole) mass spectrum can now be calculated.  \fs uses the
 full one-loop self-energies and tree-level mass matrices to calculate
-the pole masses at the one-loop level, which means finding the
-eigenvalues $p$ that solve the following equations:
+the pole masses at the one-loop level, which means finding the values
+$p$ that solve the equation
 %
 \begin{align}
-  &\text{scalars } \phi:  & 0 &= p^2\unity - m^2_{\phi,1L}(p^2), \\
-  &\text{fermions } \xi: & 0 &= p\unity - m_{\xi,1L}(p^2),
+  0 = \det\left[p^2\unity - m^2_{f,1L}(p^2)\right],
 \end{align}
 %
-where the one-loop mass matrices are given by
+where the one-loop mass matrices $m_{f,1L}(p^2)$ are given in terms of
+the tree-level mass matrices $m_f$ and the self-energies
+$\Sigma_f(p^2)$ as
 %
 \begin{align}
   &\text{scalars } \phi: &
@@ -1165,40 +1166,40 @@ precision and execution speed to determine the mass eigenvalues:
 
 \code{LowDiagonalizationPrecision}: This option provides the lowest
 precision but is also the fastest one.  Here the one-loop mass matrix
-$m_{\phi,1L,\text{low}}$ is calculated exactly once as
+$m_{f,1L}^\text{low}$ is calculated exactly once as
 %
 \begin{align}
-  (m_{\phi,1L,\text{low}})_{ij} = (m_{\phi,1L}(p^2 = m_{\phi_i} m_{\phi_j}))_{ij} ,
+  \forall i,j: (m_{f,1L}^\text{low})_{ij} = (m_{f,1L}(p^2 = m_{f_i} m_{f_j}))_{ij} ,
 \end{align}
 %
-where $m_{\phi_i}$ is the $i$th mass eigenvalue of the tree-level mass
-matrix $m_\phi$.  Afterwards $m_{\phi,1L,\text{low}}$ is diagonalized
-and the eigenvalues are interpreted as pole masses $m_{\phi_i}^\pole$.
+where $m_{f_i}$ is the $i$th mass eigenvalue of the tree-level mass
+matrix $m_f$.  Afterwards $m_{f,1L}^\text{low}$ is diagonalized and
+the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
 
 \code{MediumDiagonalizationPrecision} (default): This option provides
 calculation with medium precision with a medium execution time.  Here
-the one-loop mass matrix $m_{\phi,1L,\text{medium}}$ is calculated $n$
+the one-loop mass matrix $m_{f,1L}^\text{medium}$ is calculated $n$
 times as
 %
 \begin{align}
-  (m_{\phi,1L,\text{medium}})_{ij}^{(k)} = (m_{\phi,1L}(p^2 = m_{\phi_k}^2))_{ij} ,
+  (m_{f,1L}^\text{medium})_{ij}^{(k)} = (m_{f,1L}(p^2 = m_{f_k}^2))_{ij} ,
   \qquad k = 1,\ldots,n ,
 \end{align}
 %
-where $m_{\phi_k}$ is the $k$th mass eigenvalue of the tree-level mass
-matrix $m_\phi$.  Afterwards, each mass matrix
-$(m_{\phi,1L,\text{medium}})^{(k)}$ is diagonalized and the $k$th
-eigenvalue is interpreted as pole mass $m_{\phi_k}^\pole$.
+where $m_{f_k}$ is the $k$th mass eigenvalue of the tree-level mass
+matrix $m_f$.  Afterwards, each mass matrix
+$(m_{f,1L}^\text{medium})^{(k)}$ is diagonalized and the $k$th
+eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.
 
 \code{HighDiagonalizationPrecision}: This option provides
-diagonalization with highest precision but has also the highest
-execution time.  Here the one-loop mass matrix
-$m_{\phi,1L,\text{high}}$ is diagonalized $n$ times as in the case of
+diagonalization with highest precision, but has also the highest
+execution time.  Here the one-loop mass matrix $m_{f,1L}^\text{high}$
+is diagonalized $n$ times, as in the case of
 \code{MediumDiagonalizationPrecision}, resulting in $n$ pole masses
-$m_{\phi_k}^\pole$ ($k = 1,\ldots,n$).  Afterwards, the
-diagonalization is repeated, this time using the so calculated pole
-masses $m_{\phi_k}^\pole$ for the momentum calculation $p^2 =
-(m_{\phi_k}^\pole)^2$, until convergence is reached.
+$m_{f_k}^\pole$ ($k = 1,\ldots,n$).  Afterwards, the diagonalization
+is repeated, this time using the calculated pole masses
+$m_{f_k}^\pole$ for the momentum calculation $p^2 =
+(m_{f_k}^\pole)^2$.  The iteration stops until convergence is reached.
 
 If higher accuracy is required additional routines with higher order
 corrections can be added in a very simple way. For example in the MSSM
