@@ -410,6 +410,9 @@ InitialGuessAtHighScale = {
    {B[\[Mu]], 0.0}
 };
 
+UseHiggs2LoopMSSM = True;
+EffectiveMu = \[Mu];
+
 OnlyLowEnergyFlexibleSUSY = False; (* default *)
 \end{lstlisting}
 %
@@ -466,6 +469,25 @@ the low- and high-scale using the variables
 respectively.  Note, that the gauge and Yukawa couplings will be
 guessed automatically at the low-scale from the known Standard Model
 parameters.
+
+\fs allows to add leading two-loop contributions to the CP-even Higgs
+tadpoles and self-energies.  For MSSM-like models (with two CP-even
+Higgs bosons, one CP-odd Higgs boson, one neutral Goldstone boson)
+these corrections can be enabled by setting \code{UseHiggs2LoopMSSM =
+  True;} in the model file and by defining the effectiv $\mu$-term
+\code{EffectiveMu = \[Mu]}.  This will add the zero-momentum
+corrections of the order $O(y_t^4 + y_b^2 y_t^2 + y_b^4)$, $O(y_t^2
+g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$, $O(y_\tau^2 y_b^2)$ from
+\cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}.
+For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
+Higgs bosons, one neutral Goldstone boson) the two-loop contributions
+are enabled by setting \code{UseHiggs2LoopNMSSM = True;} and by
+defining the effectiv $\mu$-term like \code{EffectiveMu = \[Lambda] vS
+  / Sqrt[2]}, for example.  This will add the the zero-momentum
+corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
+\cite{Degrassi:2009yq}, plus leading MSSM-like contributions of the
+order $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
+\cite{Brignole:2001jy,Dedes:2003km}.
 
 To create a low-energy model one has to set
 \code{OnlyLowEnergyFlexibleSUSY = True}.  In this case the high-scale
@@ -1953,6 +1975,60 @@ Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
   [hep-ph/0207126].
   %%CITATION = HEP-PH/0207126;%%
   %55 citations counted in INSPIRE as of 22 Feb 2014
+
+%\cite{Degrassi:2001yf}
+\bibitem{Degrassi:2001yf}
+  G.~Degrassi, P.~Slavich and F.~Zwirner,
+  %``On the neutral Higgs boson masses in the MSSM for arbitrary stop mixing,''
+  Nucl.\ Phys.\ B {\bf 611} (2001) 403
+  [hep-ph/0105096].
+  %%CITATION = HEP-PH/0105096;%%
+  %166 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Brignole:2001jy}
+\bibitem{Brignole:2001jy}
+  A.~Brignole, G.~Degrassi, P.~Slavich and F.~Zwirner,
+  %``On the O(alpha(t)**2) two loop corrections to the neutral Higgs boson masses in the MSSM,''
+  Nucl.\ Phys.\ B {\bf 631} (2002) 195
+  [hep-ph/0112177].
+  %%CITATION = HEP-PH/0112177;%%
+  %192 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Dedes:2002dy}
+\bibitem{Dedes:2002dy}
+  A.~Dedes and P.~Slavich,
+  %``Two loop corrections to radiative electroweak symmetry breaking in the MSSM,''
+  Nucl.\ Phys.\ B {\bf 657} (2003) 333
+  [hep-ph/0212132].
+  %%CITATION = HEP-PH/0212132;%%
+  %53 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Brignole:2002bz}
+\bibitem{Brignole:2002bz}
+  A.~Brignole, G.~Degrassi, P.~Slavich and F.~Zwirner,
+  %``On the two loop sbottom corrections to the neutral Higgs boson masses in the MSSM,''
+  Nucl.\ Phys.\ B {\bf 643} (2002) 79
+  [hep-ph/0206101].
+  %%CITATION = HEP-PH/0206101;%%
+  %152 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Dedes:2003km}
+\bibitem{Dedes:2003km}
+  A.~Dedes, G.~Degrassi and P.~Slavich,
+  %``On the two loop Yukawa corrections to the MSSM Higgs boson masses at large tan beta,''
+  Nucl.\ Phys.\ B {\bf 672} (2003) 144
+  [hep-ph/0305127].
+  %%CITATION = HEP-PH/0305127;%%
+  %99 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Degrassi:2009yq}
+\bibitem{Degrassi:2009yq}
+  G.~Degrassi and P.~Slavich,
+  %``On the radiative corrections to the neutral Higgs boson masses in the NMSSM,''
+  Nucl.\ Phys.\ B {\bf 825} (2010) 119
+  [arXiv:0907.4682 [hep-ph]].
+  %%CITATION = ARXIV:0907.4682;%%
+  %44 citations counted in INSPIRE as of 04 Apr 2014
 
 \end{thebibliography}
 \end{document}
