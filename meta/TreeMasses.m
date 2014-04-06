@@ -489,9 +489,9 @@ CallMassCalculationFunctions[massMatrices_List] :=
                       IsVector[es1] || !IsVector[es2]
                      ];
            (* Sort mass matrices such that vector boson masses get
-              calculated first.  This is necessary because the (later
-              calculated) goldstone boson masses will be set to the
-              vector boson masses. *)
+              calculated first.  This is necessary because the later
+              calculated masses might depend on some SM mixing angles,
+              as ThetaW. *)
            sortedMassMatrices = Sort[massMatrices, PredVectorsFirst];
            For[k = 1, k <= Length[sortedMassMatrices], k++,
                matrix = sortedMassMatrices[[k]];
