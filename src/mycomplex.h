@@ -29,12 +29,12 @@ public:
   void setIm(double a) { *this = Complex(real(),a); }///< sets imaginary part
   *********************************************************************************/
 
-  double mod() const { return std::abs(*this); }///< returns modulus of number
-  double norm() const { return std::norm(*this); } ///< returns the square of the modulus
-  double arg() const { return std::arg(*this); }///< returns angle (in Argand diagram): theta=-pi->pi
+  double mod() const { return std::abs(*static_cast<const std::complex<double>*>(this)); }///< returns modulus of number
+  double norm() const { return std::norm(*static_cast<const std::complex<double>*>(this)); } ///< returns the square of the modulus
+  double arg() const { return std::arg(*static_cast<const std::complex<double>*>(this)); }///< returns angle (in Argand diagram): theta=-pi->pi
 
-  Complex conj() const { return std::conj(*this); }///< Complex conjugate
-  Complex cc()   const { return std::conj(*this); }///< Complex conjugate
+  Complex conj() const { return Complex(std::conj(*static_cast<const std::complex<double>*>(this))); }///< Complex conjugate
+  Complex cc()   const { return Complex(std::conj(*static_cast<const std::complex<double>*>(this))); }///< Complex conjugate
  
   /// Returns true if either real part or imaginary part is bigger than
   /// relevant bit of a
@@ -64,10 +64,10 @@ inline std::istream & operator >> (std::istream & left, Complex & v) {
 }
 
 //David: the std:: versions of these work fine
-inline Complex conj(const Complex &a) { return std::conj(a); }
-inline Complex log(const Complex &a) { return std::log(a); } ///< Principal log
-inline Complex exp(const Complex &a) { return std::exp(a); }
-inline Complex sqrt(const Complex &a) { return std::sqrt(a); }
+inline Complex conj(const Complex &a) { return std::conj(static_cast<const std::complex<double> >(a)); }
+inline Complex log(const Complex &a) { return std::log(static_cast<const std::complex<double> >(a)); } ///< Principal log
+inline Complex exp(const Complex &a) { return std::exp(static_cast<const std::complex<double> >(a)); }
+inline Complex sqrt(const Complex &a) { return std::sqrt(static_cast<const std::complex<double> >(a)); }
 
 template <typename T>
 inline std::complex<T> operator*(std::complex<T> lhs, const int rhs)
