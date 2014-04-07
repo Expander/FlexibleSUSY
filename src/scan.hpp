@@ -16,10 +16,18 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef SCAN_H
-#define SCAN_H
+#ifndef SCAN_HPP
+#define SCAN_HPP
 
 #include <vector>
+
+#define GCC_VERSION (__GNUC__ * 10000                 \
+                     + __GNUC_MINOR__ * 100           \
+                     + __GNUC_PATCHLEVEL__)
+
+// Random number generator available since gcc 4.6
+#if !defined(__GNUC__) || (defined(__GNUC__) && GCC_VERSION >= 40600)
+
 #include <random>
 
 namespace flexiblesusy {
@@ -56,6 +64,12 @@ Generator Uniform<Generator>::generator = Generator();
 template <class Generator>
 std::uniform_real_distribution<double> Uniform<Generator>::distribution
    = std::uniform_real_distribution<double>(0., 1.);
+
+} // namespace flexiblesusy
+
+#endif
+
+namespace flexiblesusy {
 
 std::vector<double> float_range(double start, double stop,
                                 unsigned long number_of_steps);
