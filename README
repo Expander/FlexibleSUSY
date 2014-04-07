@@ -5,7 +5,7 @@ generators for non-minimal supersymmetric models.
 Requirements
 ============
 
- * C++ compiler (g++ >= 4.6.0 or clang++ >= 3.1 or icpc >= 14.0)
+ * C++ compiler (g++ >= 4.4.7 or clang++ >= 3.1 or icpc >= 14.0)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
  * SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
