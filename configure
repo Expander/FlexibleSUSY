@@ -107,7 +107,7 @@ enable_verbose="no"
 
 # corresponding preprocessor define statements
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
-DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
+DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 
 boost_lib_dir=""
@@ -1592,7 +1592,7 @@ enable_defines() {
 
     if test "x$enable_looptools" = "xyes" ; then
         message "Enabling usage of LoopTools"
-        DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS"
+        DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
     else
         logmsg "Disabling usage of LoopTools"
         DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
@@ -1622,7 +1622,7 @@ enable_defines() {
         DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
     else
         logmsg "Enabling <random> header"
-        DEFINE_ENABLE_RANDOM="#define ENABLE_RANDOM"
+        DEFINE_ENABLE_RANDOM="#define ENABLE_RANDOM 1"
     fi
 
     if test "x$enable_verbose" = "xyes" ; then
@@ -1636,7 +1636,7 @@ enable_defines() {
 
     if test "x${enable_threads}" = "xyes" ; then
         logmsg "Enabling multi-threading"
-        DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
+        DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
     else
         message "Disabling multi-threading"
         DEFINE_ENABLE_THREADS="#undef ENABLE_THREADS"
