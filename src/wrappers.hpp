@@ -22,6 +22,7 @@
 #include <complex>
 #include <cmath>
 #include <functional>
+#include <sstream>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -248,6 +249,14 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define ZEROMATRIX(rows,cols) Eigen::Matrix<double,rows,cols>::Zero()
 #define ZEROVECTOR(rows) Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows) Eigen::Array<double,rows,1>::Zero()
+
+template <typename T>
+std::string ToString(T a)
+{
+   std::ostringstream ostr;
+   ostr << a;
+   return ostr.str();
+}
 
 inline double ZeroSqrt(double x)
 {
