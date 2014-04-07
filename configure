@@ -154,8 +154,8 @@ required_boost_version="${required_boost_major}.${required_boost_minor}.${requir
 
 # required g++ version
 required_gpp_major="4"
-required_gpp_minor="6"
-required_gpp_patch="0"
+required_gpp_minor="4"
+required_gpp_patch="7"
 required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
 
 # g++ version
