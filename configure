@@ -1612,11 +1612,13 @@ enable_defines() {
         fi
     fi
 
-    # disable <random> header for g++ version <= 4.4
+    # enable <random> header for g++ version >= 4.5
+    local _random_required_gpp_major="4"
+    local _random_required_gpp_minor="5"
     if test \
-        \( "${GPP_MAJOR}" -lt "4" \) -o \
-        \( \( "${GPP_MAJOR}" -eq "4" \) -a \
-           \( "${GPP_MINOR}" -le "4" \) \)
+        \( "${GPP_MAJOR}" -lt "${_random_required_gpp_major}" \) -o \
+        \( \( "${GPP_MAJOR}" -eq "${_random_required_gpp_major}" \) -a \
+           \( "${GPP_MINOR}" -lt "${_random_required_gpp_minor}" \) \)
     then
         logmsg "Disabling <random> header"
         DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
