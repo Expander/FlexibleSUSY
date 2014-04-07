@@ -29,6 +29,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <boost/bind.hpp>
 
 using namespace softsusy;
 
@@ -101,11 +102,10 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
-   using namespace std::placeholders;
    SLHA_io::Tuple_processor minpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_minpar_tuple, std::ref(input), _1, _2);
+      = boost::bind(&@ModelName@_slha_io::fill_minpar_tuple, boost::ref(input), _1, _2);
    SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&@ModelName@_slha_io::fill_extpar_tuple, std::ref(input), _1, _2);
+      = boost::bind(&@ModelName@_slha_io::fill_extpar_tuple, boost::ref(input), _1, _2);
 
    slha_io.read_block("MINPAR", minpar_processor);
    slha_io.read_block("EXTPAR", extpar_processor);
@@ -115,9 +115,8 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 
 void @ModelName@_slha_io::fill(Spectrum_generator_settings& settings) const
 {
-   using namespace std::placeholders;
    SLHA_io::Tuple_processor flexiblesusy_processor
-      = std::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, std::ref(settings), _1, _2);
+      = boost::bind(&@ModelName@_slha_io::fill_flexiblesusy_tuple, boost::ref(settings), _1, _2);
 
    slha_io.read_block("FlexibleSUSY", flexiblesusy_processor);
 }

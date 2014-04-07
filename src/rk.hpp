@@ -9,14 +9,14 @@
 #ifndef RK_H
 #define RK_H
 
-#include <functional>
+#include <boost/function.hpp>
 #include <Eigen/Dense>
 
 namespace flexiblesusy {
 
 namespace runge_kutta {
 
-typedef std::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
+typedef boost::function<Eigen::ArrayXd(double, const Eigen::ArrayXd&)> Derivs;
 
 /// A single step of Runge Kutta (5th order), input:
 /// y and dydx (derivative of y), x is independent variable. yout is value
@@ -30,7 +30,7 @@ void odeStepper(Eigen::ArrayXd& y, const Eigen::ArrayXd& dydx, double *x,
                 double htry, double eps, Eigen::ArrayXd& yscal, double *hdid,
                 double *hnext, Derivs derivs);
 
-typedef std::function<decltype(odeStepper)> RungeKuttaQuinticStepper;
+typedef boost::function<decltype(odeStepper)> RungeKuttaQuinticStepper;
 
 /// Organises integration of 1st order system of ODEs
 void integrateOdes(Eigen::ArrayXd& ystart, double x1, double x2, double eps,

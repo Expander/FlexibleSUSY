@@ -21,9 +21,9 @@
 
 #include <string>
 #include <iosfwd>
-#include <functional>
 #include <Eigen/Core>
 #include <boost/format.hpp>
+#include <boost/function.hpp>
 #include "slhaea.h"
 #include "logger.hpp"
 #include "error.hpp"
@@ -79,14 +79,13 @@ void process_tuple(double* array, int key, double value) {
 }
 
 void read_file() {
-   using namespace std::placeholders;
    double array[1000];
 
    SLHA_io reader;
    reader.read_from_file("file.slha");
 
    SLHA_io::Tuple_processor processor
-      = std::bind(&process_tuple, array, _1, _2);
+      = boost::bind(&process_tuple, array, _1, _2);
 
    reader.read_block("MyBlock", processor);
 }
@@ -108,7 +107,7 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef std::function<void(int, double)> Tuple_processor;
+   typedef boost::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
       double parameter_output_scale; ///< key = 12

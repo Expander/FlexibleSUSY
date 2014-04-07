@@ -23,6 +23,7 @@
 #include "ew_input.hpp"
 
 #include <fstream>
+#include <boost/bind.hpp>
 
 namespace flexiblesusy {
 
@@ -59,27 +60,24 @@ void SLHA_io::read_from_file(const std::string& file_name)
 
 void SLHA_io::read_extpar()
 {
-   using namespace std::placeholders;
    SLHA_io::Tuple_processor extpar_processor
-      = std::bind(&SLHA_io::process_extpar_tuple, std::ref(extpar), _1, _2);
+      = boost::bind(&SLHA_io::process_extpar_tuple, boost::ref(extpar), _1, _2);
 
    read_block("EXTPAR", extpar_processor);
 }
 
 void SLHA_io::read_modsel()
 {
-   using namespace std::placeholders;
    SLHA_io::Tuple_processor modsel_processor
-      = std::bind(&SLHA_io::process_modsel_tuple, std::ref(modsel), _1, _2);
+      = boost::bind(&SLHA_io::process_modsel_tuple, boost::ref(modsel), _1, _2);
 
    read_block("MODSEL", modsel_processor);
 }
 
 void SLHA_io::fill(QedQcd& oneset) const
 {
-   using namespace std::placeholders;
    SLHA_io::Tuple_processor sminputs_processor
-      = std::bind(&SLHA_io::process_sminputs_tuple, std::ref(oneset), _1, _2);
+      = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
 }
