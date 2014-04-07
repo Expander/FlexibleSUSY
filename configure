@@ -108,6 +108,7 @@ enable_verbose="no"
 # corresponding preprocessor define statements
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS"
+DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 
 boost_lib_dir=""
 boost_inc_dir=""
@@ -1016,12 +1017,16 @@ int main() {
    int gpp_patch = __GNUC_PATCHLEVEL__;
    int error = 0;
 
-   if (gpp_major < ${required_gpp_major})
+   if (gpp_major < ${required_gpp_major}) {
       error = 1;
-   else if (gpp_minor < ${required_gpp_minor})
+   } else if (gpp_major == ${required_gpp_major} &&
+              gpp_minor < ${required_gpp_minor}) {
       error = 2;
-   else if (gpp_patch < ${required_gpp_patch})
+   } else if (gpp_major == ${required_gpp_major} &&
+              gpp_minor == ${required_gpp_minor} &&
+              gpp_patch < ${required_gpp_patch}) {
       error = 3;
+   }
 
    std::ofstream ostr("${gppconfig}");
    if (ostr.good()) {
@@ -1607,6 +1612,19 @@ enable_defines() {
         fi
     fi
 
+    # disable <random> header for g++ version <= 4.4
+    if test \
+        \( "${GPP_MAJOR}" -lt "4" \) -o \
+        \( \( "${GPP_MAJOR}" -eq "4" \) -a \
+           \( "${GPP_MINOR}" -le "4" \) \)
+    then
+        logmsg "Disabling <random> header"
+        DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
+    else
+        logmsg "Enabling <random> header"
+        DEFINE_ENABLE_RANDOM="#define ENABLE_RANDOM"
+    fi
+
     if test "x$enable_verbose" = "xyes" ; then
         if test "x$enable_silent" = "xyes" ; then
             message "Warning: ignoring --enable-verbose because silent mode is enabled!"
@@ -1950,6 +1968,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \
+    -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"   \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     < $CONFIGHDR_TMPL > $CONFIGHDR

@@ -19,14 +19,10 @@
 #ifndef SCAN_HPP
 #define SCAN_HPP
 
+#include "config.h"
 #include <vector>
 
-#define GCC_VERSION (__GNUC__ * 10000                 \
-                     + __GNUC_MINOR__ * 100           \
-                     + __GNUC_PATCHLEVEL__)
-
-// Random number generator available since gcc 4.6
-#if !defined(__GNUC__) || (defined(__GNUC__) && GCC_VERSION >= 40600)
+#ifdef ENABLE_RANDOM
 
 #include <random>
 
