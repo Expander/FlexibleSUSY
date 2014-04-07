@@ -109,7 +109,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
       return 0.;
    }
 
-   const SLHAea::Block::key_type keys(1, std::to_string(key));
+   const SLHAea::Block::key_type keys(1, ToString(key));
    const SLHAea::Block::const_iterator line = block->find(keys);
 
    if (line == block->end() || !line->is_data_line() || line->size() < 2) {
@@ -164,7 +164,7 @@ void SLHA_io::set_block(const std::string& name, const DoubleMatrix& matrix,
    for (int i = 1; i <= matrix.displayRows(); ++i)
       for (int k = 1; k <= matrix.displayCols(); ++k) {
          ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i,k)
-            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+            % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
       }
 
    set_block(ss);
@@ -183,7 +183,7 @@ void SLHA_io::set_block(const std::string& name, const ComplexMatrix& matrix,
       for (int k = 1; k <= matrix.displayCols(); ++k) {
          ss << boost::format(mixing_matrix_formatter) % i % k
             % Re(matrix(i,k))
-            % ("Re(" + symbol + "(" + std::to_string(i) + "," + std::to_string(k) + "))");
+            % ("Re(" + symbol + "(" + ToString(i) + "," + ToString(k) + "))");
       }
 
    set_block(ss);
