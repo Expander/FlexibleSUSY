@@ -579,6 +579,7 @@ exists_in_path () {
 
 #_____________________________________________________________________
 check_algorithms() {
+    checking_msg "RGE solver algorithms"
     algs=`echo $ALGORITHMS | tr ',' ' '`
     ALGORITHMS=""
     for a in ${algs}; do
@@ -594,6 +595,12 @@ check_algorithms() {
                 exit 1 ;;
         esac
     done
+
+    # strip whitespace
+    ALGORITHMS="`echo ${ALGORITHMS} | sed -e 's/^ *//' -e 's/ *$//'`"
+
+    result "ok (${ALGORITHMS})"
+    logmsg "   Algorithms: ${ALGORITHMS}"
 }
 
 #_____________________________________________________________________
