@@ -243,6 +243,11 @@ void diagonalize_hermitian
     hermitian_eigen(m, w, z);
 }
 
+struct RephaseOp {
+    std::complex<double> operator() (const std::complex<double>& z) const
+    { return std::polar(1.0, std::arg(z)/2); }
+};
+
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
 // s in descending order
@@ -255,11 +260,15 @@ void diagonalize_symmetric
     svd(m, s, u);
     Eigen::Array<std::complex<double>, N, 1> diag =
 	(u.adjoint() * m * u.conjugate()).diagonal();
-    u *= diag.unaryExpr(
-    	[](std::complex<double> z) {
-    	    return std::polar(1.0, std::arg(z)/2);
-    	}).matrix().asDiagonal();
+    u *= diag.unaryExpr(RephaseOp()).matrix().asDiagonal();
 }
+
+struct FlipSignOp {
+    std::complex<double> operator() (const std::complex<double>& z) const {
+	return z.real() < 0 ? std::complex<double>(0.0,1.0) :
+			      std::complex<double>(1.0,0.0);
+    }
+};
 
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
@@ -274,11 +283,8 @@ void diagonalize_symmetric
     Eigen::Matrix<double, N, N> z;
     diagonalize_hermitian(m, s, z);
     // see http://forum.kde.org/viewtopic.php?f=74&t=62606
-    u = z * s.template cast<std::complex<double>>().unaryExpr(
-	[](std::complex<double> z) {
-    	    return z.real() < 0 ? std::complex<double>(0.0,1.0) :
-				  std::complex<double>(1.0,0.0);
-	}).matrix().asDiagonal();
+    u = z * s.template cast<std::complex<double> >().
+	unaryExpr(FlipSignOp()).matrix().asDiagonal();
     s = s.abs();
 }
 
@@ -312,6 +318,13 @@ void reorder_diagonalize_symmetric
     u = u.rowwise().reverse().eval();
 }
 
+template<int N>
+struct Compare {
+    Compare(Eigen::Array<double, N, 1>& s_) : s(s_) {}
+    bool operator() (int i, int j) { return s[i] < s[j]; }
+    Eigen::Array<double, N, 1>& s;
+};
+
 // m == u * s.matrix().asDiagonal() * u.transpose()
 // (s >= 0).all()
 // s in ascending order
@@ -326,7 +339,7 @@ void reorder_diagonalize_symmetric
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      [&s](int i, int j){ return s[i] < s[j]; });
+	      Compare<N>(s));
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     s.matrix().transpose() *= p;
 #else
@@ -378,6 +391,13 @@ void fs_diagonalize_symmetric
     u.transposeInPlace();
 }
 
+template<int N>
+struct CompareAbs {
+    CompareAbs(Eigen::Array<double, N, 1>& w_) : w(w_) {}
+    bool operator() (int i, int j) { return std::abs(w[i]) < std::abs(w[j]); }
+    Eigen::Array<double, N, 1>& w;
+};
+
 // m == z.adjoint() * w.matrix().asDiagonal() * z
 // (convention of SARAH)
 // abs(w[i]) in ascending order
@@ -391,7 +411,7 @@ void fs_diagonalize_hermitian
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      [&w](int i, int j){ return std::abs(w[i]) < std::abs(w[j]); });
+	      CompareAbs<N>(w));
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     w.matrix().transpose() *= p;
 #else
