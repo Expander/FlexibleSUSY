@@ -137,7 +137,7 @@ LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
 # available RG algorithms
-ALGORITHMS="all"
+ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
