@@ -38,7 +38,7 @@ void svd_eigen
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& v)
 {
-    Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N>>
+    Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N> >
 	svd(m, Eigen::ComputeFullU | Eigen::ComputeFullV);
     s = svd.singularValues();
     u = svd.matrixU();
@@ -51,7 +51,7 @@ void svd_eigen
  Eigen::Array<double, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u)
 {
-    Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N>> svd(m, Eigen::ComputeFullU);
+    Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N> > svd(m, Eigen::ComputeFullU);
     s = svd.singularValues();
     u = svd.matrixU();
 }
@@ -62,7 +62,7 @@ void hermitian_eigen
  Eigen::Array<double, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z)
 {
-    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar,N,N>> es(m);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar,N,N> > es(m);
     w = es.eigenvalues();
     z = es.eigenvectors();
 }
@@ -330,7 +330,7 @@ void reorder_diagonalize_symmetric
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     s.matrix().transpose() *= p;
 #else
-    Eigen::Map<Eigen::Matrix<double, N, 1>>(s.data()).transpose() *= p;
+    Eigen::Map<Eigen::Matrix<double, N, 1> >(s.data()).transpose() *= p;
 #endif
     u *= p;
 }
@@ -361,7 +361,7 @@ void fs_svd
  Eigen::Matrix<std::complex<double>, M, M>& u,
  Eigen::Matrix<std::complex<double>, N, N>& v)
 {
-    fs_svd(m.template cast<std::complex<double>>().eval(), s, u, v);
+    fs_svd(m.template cast<std::complex<double> >().eval(), s, u, v);
 }
 
 // m == u.transpose() * s.matrix().asDiagonal() * u
@@ -395,7 +395,7 @@ void fs_diagonalize_hermitian
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     w.matrix().transpose() *= p;
 #else
-    Eigen::Map<Eigen::Matrix<double, N, 1>>(w.data()).transpose() *= p;
+    Eigen::Map<Eigen::Matrix<double, N, 1> >(w.data()).transpose() *= p;
 #endif
     z = (z * p).adjoint().eval();
 }
