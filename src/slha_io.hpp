@@ -226,8 +226,8 @@ void SLHA_io::set_block(const std::string& name,
       for (int k = 1; k <= NCols; ++k) {
          ss << boost::format(mixing_matrix_formatter) % i % k
             % Re(matrix(i-1,k-1))
-            % ("Re(" + symbol + "(" + std::to_string(i) + ","
-               + std::to_string(k) + "))");
+            % ("Re(" + symbol + "(" + ToString(i) + ","
+               + ToString(k) + "))");
       }
 
    set_block(ss);
@@ -249,7 +249,7 @@ void SLHA_io::set_block(const std::string& name,
    for (int i = 1; i <= rows; ++i)
       for (int k = 1; k <= cols; ++k) {
          ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
-            % (symbol + "(" + std::to_string(i) + "," + std::to_string(k) + ")");
+            % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
       }
 
    set_block(ss);
