@@ -30,7 +30,11 @@ using namespace std;
 using namespace Eigen;
 using namespace flexiblesusy;
 
-template<class S, int N, decltype(reorder_svd<S, N, N>) *fxn>
+template<class S, int N,
+	 void fxn(const Eigen::Matrix<S, N, N>&,
+		  Eigen::Array<double, MIN_(N, N), 1>&,
+		  Eigen::Matrix<S, N, N>&,
+		  Eigen::Matrix<S, N, N>&)>
 void test_svd(bool check_ascending_order = false)
 {
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
@@ -133,7 +137,10 @@ BOOST_AUTO_TEST_CASE(test_diagonalize_symmetric_lapack)
 	<complex<double>, 6, reorder_diagonalize_symmetric>(true);
 }
 
-template<class S, int N, decltype(diagonalize_hermitian<S, N>) *fxn>
+template<class S, int N,
+	 void fxn(const Eigen::Matrix<S, N, N>&,
+		  Eigen::Array<double, N, 1>&,
+		  Eigen::Matrix<S, N, N>&)>
 void test_diagonalize_hermitian()
 {
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
