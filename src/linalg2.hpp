@@ -106,17 +106,17 @@ void svd_lapack								\
  Eigen::Array<double, MIN_(M, N), 1>& s,				\
  Eigen::Matrix<t, M, M>& u)						\
 {									\
-    call_lapack_svd(t, f, 'N', nullptr, __VA_ARGS__);			\
+    call_lapack_svd(t, f, 'N', 0, __VA_ARGS__);				\
 }
 
 #define call_lapack_svd(t, f, jobvt, vt, ...)				\
-    constexpr char JOBU  = 'A';						\
-    constexpr char JOBVT = (jobvt);					\
+    const     char JOBU  = 'A';						\
+    const     char JOBVT = (jobvt);					\
     Eigen::Matrix<t, M, N> A = m;					\
-    constexpr int LDA   = M;						\
-    constexpr int LDU   = M;						\
-    constexpr int LDVT  = N;						\
-    constexpr int LWORK = get_lwork(__VA_ARGS__,);			\
+    const     int LDA   = M;						\
+    const     int LDU   = M;						\
+    const     int LDVT  = N;						\
+    const     int LWORK = get_lwork(__VA_ARGS__,);			\
     Eigen::Array<t, LWORK, 1> WORK;					\
     decl_rwork(__VA_ARGS__);						\
     int INFO;								\
@@ -130,11 +130,11 @@ void hermitian_lapack							\
  Eigen::Array<double, N, 1>& w,						\
  Eigen::Matrix<s, N, N>& z)						\
 {									\
-    constexpr char JOBZ = 'V';						\
-    constexpr char UPLO = 'L';						\
+    const     char JOBZ = 'V';						\
+    const     char UPLO = 'L';						\
     Eigen::Matrix<s, N, N> A = m;					\
-    constexpr int LDA   = N;						\
-    constexpr int LWORK = get_lwork(__VA_ARGS__,);			\
+    const     int LDA   = N;						\
+    const     int LWORK = get_lwork(__VA_ARGS__,);			\
     Eigen::Array<s, LWORK, 1> WORK;					\
     decl_rwork(__VA_ARGS__);						\
     int INFO;								\
