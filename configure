@@ -1807,10 +1807,10 @@ if test "x${enable_compile}" = "xyes"; then
     check_eigen_incl
     check_fortran_libs
     check_gsl_config
+    check_lapack_libs
     if use_algorithm "lattice"; then
         check_boost_thread_incl
         check_boost_thread_libs
-        check_lapack_libs
     fi
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
