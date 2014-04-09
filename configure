@@ -531,6 +531,72 @@ check_symbol() {
 }
 
 #_____________________________________________________________________
+try_compile_cpp_program() {
+    # This function compiles a C++ testprogram with the header
+    # inclusion given in [$1] and a statement given in [$2].
+
+    if test $# -ne 2 ; then
+        echo "try_compile_cpp_program: Two arguments required!"
+        exit 1
+    fi
+
+    if test "x${CXX}" = "x"; then
+        echo "try_compile_cpp_program: CXX is not set!"
+        exit 1
+    fi
+
+    local _header="$1"
+    local _statement="$2"
+    local _src="${BASEDIR}/conftest.cpp"
+    local _exe="${BASEDIR}/conftest.x"
+    local _log="${BASEDIR}/conftest.log"
+    local _err="0"
+
+    logmsg ""
+    logmsg "==================================="
+    logmsg "Trying to compile test program with"
+    logmsg "   Header: ${_header}"
+    logmsg "   Statement: ${_statement}"
+
+    cat <<EOF > ${_src}
+${_header}
+int main() {
+   ${_statement};
+   return 0;
+}
+EOF
+
+    # compile the source
+    if ${CXX} -o ${_exe} ${CXXFLAGS} ${_src} >> ${_log} 2>&1;
+    then
+        logmsg "   Status: compilation successfull."
+        _err="0"
+    else
+        logmsg "   Status: compilation failed!"
+        logmsg ""
+        logmsg "The test program was:"
+        logmsg "---------------------"
+        cat ${_src} >> $logfile
+        logmsg "---------------------"
+        logmsg "Compiler: CXX = ${CXX}"
+        logmsg "Compiler flags: CXXFLAGS = ${CXXFLAGS}"
+        logmsg "Compilation command:"
+        echo "   ${CXX} -o ${_exe} ${CXXFLAGS} ${_src} >> ${_log} 2>&1" >> $logfile
+        logmsg "Compiler error message:"
+        cat ${_log} >> $logfile
+        _err="1"
+    fi
+
+    logmsg "==================================="
+    logmsg ""
+
+    # clean up
+    rm -f ${_exe} ${_src} ${_log}
+
+    return ${_err}
+}
+
+#_____________________________________________________________________
 use_algorithm() {
     # This function tests if a certain algorithm [$1] is used.
 
@@ -1527,6 +1593,22 @@ EOF
 }
 
 #_____________________________________________________________________
+check_random_number_generator() {
+    # check for random number generator
+    checking_msg "random number generator"
+    if try_compile_cpp_program "#include <random>" "std::minstd_rand generator; std::uniform_real_distribution<double> distribution(0., 1.);";
+    then
+        result "ok"
+        DEFINE_ENABLE_RANDOM="#define ENABLE_RANDOM 1"
+        logmsg "Enabling random number generator: ${DEFINE_ENABLE_RANDOM}"
+    else
+        result "not found"
+        DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
+        logmsg "Disabling random number generator: ${DEFINE_ENABLE_RANDOM}"
+    fi
+}
+
+#_____________________________________________________________________
 check_sarah() {
     checking_msg "SARAH installation"
     rm -f ${sarahconfig}
@@ -1610,21 +1692,6 @@ enable_defines() {
             message "    Please consider using .so as library extension, or similar, e.g."
             message "    --with-lib-ext=\".so\""
         fi
-    fi
-
-    # enable <random> header for g++ version >= 4.5
-    local _random_required_gpp_major="4"
-    local _random_required_gpp_minor="5"
-    if test \
-        \( "${GPP_MAJOR}" -lt "${_random_required_gpp_major}" \) -o \
-        \( \( "${GPP_MAJOR}" -eq "${_random_required_gpp_major}" \) -a \
-           \( "${GPP_MINOR}" -lt "${_random_required_gpp_minor}" \) \)
-    then
-        logmsg "Disabling <random> header"
-        DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
-    else
-        logmsg "Enabling <random> header"
-        DEFINE_ENABLE_RANDOM="#define ENABLE_RANDOM 1"
     fi
 
     if test "x$enable_verbose" = "xyes" ; then
@@ -1817,6 +1884,7 @@ if test "x${enable_compile}" = "xyes"; then
         check_looptools_libs
     fi
     check_makelib
+    check_random_number_generator
     check_thread_libs
 fi
 
