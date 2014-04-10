@@ -388,7 +388,7 @@ CreateHiggsToEWSBEqAssociation[] :=
            For[v = 1, v <= Length[vevs], v++,
                (* find CP even gauge-eigenstate Higgs for the vev *)
                phi = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
-                           {_, {vevs[[v]], _}, {__}, {p_,_}} :> p
+                           {_, {vevs[[v]], _}, {__}, {p_,_}, ___} :> p
                           ];
                If[Head[phi] =!= List || Length[phi] != 1,
                   Print["Error: could not find CP even Higgs field for vev ", vevs[[v]]];
