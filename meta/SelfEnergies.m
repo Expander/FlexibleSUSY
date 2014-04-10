@@ -462,11 +462,10 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
           ];
 
 FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
-    Module[{body = "", v, vev, field, idx, functionName},
+    Module[{body = "", v, field, idx, functionName},
            For[v = 1, v <= Length[vevsAndFields], v++,
-               vev = vevsAndFields[[v,1]];
-               field = vevsAndFields[[v,2]];
-               idx = vevsAndFields[[v,3]];
+               field = vevsAndFields[[v,1]];
+               idx = vevsAndFields[[v,2]];
                functionName = CreateTadpoleFunctionName[field];
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
                       "Re(model->" <> functionName <>

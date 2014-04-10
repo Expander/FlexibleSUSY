@@ -375,16 +375,16 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
-(* Returns a list of three-component list where the information is stored
-   which vev corresponds to which CP even mass eigenstate.
+(* Returns a list of two-component list where the information is stored
+   which Higgs corresponds to which EWSB eq.
 
    Example: MRSSM
-   It[] := vevs = {vd,vu,vT,vS};
-   It[] := CreateVEVsToFieldsAssociation[vevs]
-   Out[] = {{vd, hh, 1}, {vu, hh, 2}, {vT, hh, 4}, {vS, hh, 3}}
+   It[] := CreateHiggsToEWSBEqAssociation[]
+   Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
-CreateVEVsToFieldsAssociation[vevs_List] :=
-    Module[{association = {}, v, phi, higgs},
+CreateHiggsToEWSBEqAssociation[] :=
+    Module[{association = {}, v, phi, higgs, vevs},
+           vevs = #[[1]]& /@ SARAH`BetaVEV;
            For[v = 1, v <= Length[vevs], v++,
                (* find CP even gauge-eigenstate Higgs for the vev *)
                phi = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
@@ -405,7 +405,7 @@ CreateVEVsToFieldsAssociation[vevs_List] :=
                   Quit[1];
                  ];
                higgs = higgs[[1]];
-               AppendTo[association, {vevs[[v]], higgs[[1]], higgs[[2]]}];
+               AppendTo[association, {higgs[[1]], higgs[[2]]}];
               ];
            Return[association];
           ];
@@ -443,7 +443,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             copyDRbarMassesToPoleMasses = "",
-            vevsToFieldsAssociation,
+            higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             enablePoleMassThreads = True
            },
@@ -468,9 +468,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
-           vevsToFieldsAssociation      = CreateVEVsToFieldsAssociation[#[[1]]& /@ SARAH`BetaVEV];
+           higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[vevsToFieldsAssociation];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
