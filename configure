@@ -165,6 +165,18 @@ GPP_MAJOR="0"
 GPP_MINOR="0"
 GPP_PATCH="0"
 
+# required icpc version
+required_icpc_major="12"
+required_icpc_minor="1"
+required_icpc_patch="0"
+required_icpc_version="${required_icpc_major}.${required_icpc_minor}.${required_icpc_patch}"
+
+# icpc version
+ICPC_VERSION="unknown"
+ICPC_MAJOR="0"
+ICPC_MINOR="0"
+ICPC_PATCH="0"
+
 # required Mathematica version
 required_mathematica_version="7"
 
@@ -1184,6 +1196,60 @@ EOF
 }
 
 #_____________________________________________________________________
+check_icpc_version() {
+    if test $# -ne 1; then
+        message "check_icpc_version(): too few arguments"
+        exit 1
+    fi
+
+    local icpc="$1"
+
+    checking_msg "${icpc} compiler version >= ${required_icpc_version}"
+
+    local output
+    output=$($icpc -V 2>&1) || {
+	result "unknown"
+        message "Warning: could not determine ${icpc} version because"
+        message "   execution of ${icpc} failed."
+	return
+    }
+    set -- $(
+	echo "$output" |
+	sed 's/^.*Version[[:space:]]*\([[:digit:].]*\).*$/\1/p;d' |
+	tr . ' ')
+    ICPC_MAJOR="${1:-0}"
+    ICPC_MINOR="${2:-0}"
+    ICPC_PATCH="${3:-0}"
+    ICPC_VERSION="${ICPC_MAJOR}.${ICPC_MINOR}.${ICPC_PATCH}"
+
+    local ok
+    if [ $ICPC_MAJOR -gt $required_icpc_major ]; then
+	ok=true
+    elif [ $ICPC_MAJOR -lt $required_icpc_major ]; then
+	ok=false
+    elif [ $ICPC_MINOR -gt $required_icpc_minor ]; then
+	ok=true
+    elif [ $ICPC_MINOR -lt $required_icpc_minor ]; then
+	ok=false
+    elif [ $ICPC_PATCH -ge $required_icpc_patch ]; then
+	ok=true
+    else
+	ok=false
+    fi
+
+    if $ok; then
+	result "ok (version ${ICPC_VERSION})"
+        logmsg "   Required ${icpc} version: ${required_icpc_version}"
+        logmsg "   ${icpc} version found: ${ICPC_VERSION}"
+    else
+        result "not ok (version ${ICPC_VERSION})"
+        message "Error: the installed ${icpc} version is too old."
+        message "   Please install version ${required_icpc_version} or higher."
+	exit 1
+    fi
+}
+
+#_____________________________________________________________________
 is_clang_cpp_compiler() {
     if test $# -ne 1; then
         message "is_clang_cpp_compiler(): too few arguments"
@@ -1861,6 +1927,8 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_dep_gen_type
     if test "x$cxx_compiler_type" = xgnu; then
         check_gpp_version "$CXX"
+    elif test "x$cxx_compiler_type" = xintel; then
+        check_icpc_version "$CXX"
     fi
     check_cxxflags
     check_cxxflags_dep_gen
