@@ -411,7 +411,7 @@ CreateVEVsToFieldsAssociation[vevs_List] :=
           ];
 
 
-WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
+WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
@@ -447,6 +447,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             twoLoopHiggsHeaders = "",
             enablePoleMassThreads = True
            },
+           vevs = #[[1]]& /@ SARAH`BetaVEV;
            If[Length[vevs] != Length[ewsbEquations],
               Print["Error: number of vevs != number of EWSB equations"];
               Print["   vevs = ", vevs];
@@ -936,7 +937,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
-            ewsbEquations, massMatrices, phases, vevs,
+            ewsbEquations, massMatrices, phases,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters,
@@ -1110,7 +1111,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
                          SARAH`TraceAbbr, numberOfSusyParameters];
 
-           vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[] /.
                            allIndexReplacementRules /.
@@ -1118,14 +1118,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[Head[ewsbEquations] =!= List,
               Print["Error: Could not find EWSB equations for eigenstates ",
                     FSEigenstates];
-              Quit[1];
-             ];
-           If[Length[vevs] =!= Length[ewsbEquations],
-              Print["Error: There are ", Length[ewsbEquations],
-                    " EWSB equations but ", Length[vevs], " VEVs"];
-              ewsbEquations = {};
-              vevs = {};
-              FlexibleSUSY`EWSBOutputParameters = {};
               Quit[1];
              ];
 
@@ -1329,7 +1321,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
-           WriteModelClass[massMatrices, vevs, ewsbEquations,
+           WriteModelClass[massMatrices, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
                            nPointFunctions, vertexRules, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
