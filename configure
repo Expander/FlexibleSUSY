@@ -1308,13 +1308,19 @@ check_cxx() {
 
 #_____________________________________________________________________
 check_cxxflags() {
+    local replace_cxx11_by_cxx0x=false
     case "$CXXFLAGS" in
 	*-std=c++11*)
 	    if test "x${cxx_compiler_type}" = "xgnu" -a $GPP_MINOR -lt 7; then
 		message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
-		CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
+		replace_cxx11_by_cxx0x=true
+	    elif test "$cxx_compiler_type" = intel -a $ICPC_MAJOR -lt 13; then
+		message "Replacing \`-std=c++11' by \`-std=c++0x' since icpc is older than 13.0"
+		replace_cxx11_by_cxx0x=true
 	    fi
     esac
+    $replace_cxx11_by_cxx0x &&
+    CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
 
     if test "x$enable_compiler_warnings" = "xyes" ; then
         if test "x${cxx_compiler_type}" = "xgnu"; then
