@@ -435,6 +435,15 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
 
+Unprotect[Complex];
+
+Format[Complex[r_,i_],CForm] :=
+    Format[CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+           "(" <> ToString[CForm[r]] <> "," <> ToString[CForm[i]] <> ")",
+           OutputForm];
+
+Protect[Complex];
+
 Format[CConversion`FSKroneckerDelta[a_,b_],CForm] :=
     Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
