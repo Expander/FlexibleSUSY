@@ -60,8 +60,8 @@ void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
    m.solve_ewsb();
 
    if (loop_level == 1) {
-      TEST_CLOSE(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), 0.0, precision);
-      TEST_CLOSE(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), 0.0, precision);
+      TEST_CLOSE(m.get_ewsb_eq_hh_1() - m.tadpole_hh(0).real(), 0.0, precision);
+      TEST_CLOSE(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), 0.0, precision);
    }
 }
 
