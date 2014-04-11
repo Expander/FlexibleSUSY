@@ -914,70 +914,34 @@ check_boost() {
 check_boost_version() {
     checking_msg "boost version"
 
-    local _check_boost_version_progr_cpp="${BASEDIR}/check_boost_version.cpp"
-    local _check_boost_version_progr_exe="${BASEDIR}/check_boost_version.x"
-
-    # clean up
-    rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
-    rm -f ${boostconfig}
-
-    cat <<EOF > ${_check_boost_version_progr_cpp}
-#include <fstream>
+    try_compile_run_cpp_program "#include <iostream>
 #include <boost/version.hpp>
 int main() {
    int boost_major = BOOST_VERSION / 100000;
    int boost_minor = BOOST_VERSION / 100 % 1000;
    int boost_patch = BOOST_VERSION % 100;
-   int error = 0;
-
-   if (boost_major < ${required_boost_major})
-      error = 1;
-   else if (boost_minor < ${required_boost_minor})
-      error = 2;
-   else if (boost_patch < ${required_boost_patch})
-      error = 3;
-
-   std::ofstream ostr("${boostconfig}");
-   if (ostr.good()) {
-      ostr << boost_major << '.' << boost_minor << '.'
-           << boost_patch;
-   }
-   ostr.close();
-
-   return error;
-}
-EOF
-    # compile the version check program
-    if $CXX -o ${_check_boost_version_progr_exe} ${BOOSTFLAGS} ${_check_boost_version_progr_cpp} >> ${logfile} 2>&1;
-    then
-        # run the version check program
-        ${_check_boost_version_progr_exe}
-        local _error="$?"
-        local boost_version=""
-        if test -r "${boostconfig}" ; then
-            boost_version=`cat ${boostconfig}`
-        fi
-        if test "x${_error}" = "x0" ; then
-            result "ok (version ${boost_version})"
-            logmsg "   Required boost version: ${required_boost_version}"
-            logmsg "   Boost version found: ${boost_version}"
-        else
-            result "not ok (version ${boost_version})"
-            message "Error: the installed boost version is too old."
-            message "   Please install version ${required_boost_version} or higher."
-            message "   You can use --with-boost-incdir= and --with-boost-libdir="
-            message "   to use a boost installation from a non-default location."
-            rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
-            exit 1
-        fi
-    else
+   std::cout << boost_major << '.' << boost_minor << '.' << boost_patch << '\n';
+   return 0;
+}" "$CXX" "${BOOSTFLAGS}" && [ $cpp_exit = 0 ] || {
         result "unknown"
         message "Warning: could not determine boost version because"
-        message "   compilation of the boost test program failed."
-    fi
+        message "   compilation or execution of the boost test program failed."
+	return 1
+    }
 
-    # clean up
-    rm -f ${_check_boost_version_progr_cpp} ${_check_boost_version_progr_exe}
+    local boost_version="$cpp_output"
+
+    version_at_least "$boost_version" "$required_boost_version" || {
+        result "not ok (version ${boost_version})"
+        message "Error: the installed boost version is too old."
+        message "   Please install version ${required_boost_version} or higher."
+        message "   You can use --with-boost-incdir= and --with-boost-libdir="
+        message "   to use a boost installation from a non-default location."
+        exit 1
+    }
+    result "ok (version ${boost_version})"
+    logmsg "   Required boost version: ${required_boost_version}"
+    logmsg "   Boost version found: ${boost_version}"
 }
 
 #_____________________________________________________________________
@@ -1133,12 +1097,7 @@ is_gnu_cpp_compiler() {
 
     local _compiler="$1"
 
-    local _check_gnu_compiler_cpp="${BASEDIR}/check_gnu_compiler.cpp"
-    local _check_gnu_compiler_exe="${BASEDIR}/check_gnu_compiler.x"
-    rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
-
-    cat <<EOF > ${_check_gnu_compiler_cpp}
-int main() {
+    try_compile_run_cpp_program "int main() {
 #if defined(__llvm__) || defined(__clang__) || defined(__INTEL_COMPILER)
    return 1;
 #else
@@ -1148,27 +1107,13 @@ int main() {
       return 1;
    #endif
 #endif
-}
-EOF
-    local _result="1"
-
-    if $_compiler -o ${_check_gnu_compiler_exe} ${_check_gnu_compiler_cpp} >> ${logfile} 2>&1;
-    then
-        # run the version check program
-        if ${_check_gnu_compiler_exe};
-        then
-            _result="0"
-        else
-            _result="1"
-        fi
-    else
+}" "$_compiler" " " || {
         logmsg "Warning: could not determine compiler type of ${_compiler} because"
         logmsg "   compilation of the test program failed."
-        _result="1"
-    fi
+	return 1
+    }
 
-    rm -f ${_check_gnu_compiler_cpp} ${_check_gnu_compiler_exe}
-    return "${_result}"
+    return "$cpp_exit"
 }
 
 #_____________________________________________________________________
@@ -1178,79 +1123,36 @@ check_gpp_version() {
         exit 1
     fi
 
-    local _check_gpp_version_progr_cpp="${BASEDIR}/check_gpp_version.cpp"
-    local _check_gpp_version_progr_exe="${BASEDIR}/check_gpp_version.x"
     local gpp="$1"
 
     checking_msg "${gpp} compiler version >= ${required_gpp_version}"
 
-    # clean up
-    rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
-    rm -f ${gppconfig}
-
-    cat <<EOF > ${_check_gpp_version_progr_cpp}
-#include <fstream>
+    try_compile_run_cpp_program "#include <iostream>
 int main() {
    int gpp_major = __GNUC__;
    int gpp_minor = __GNUC_MINOR__;
    int gpp_patch = __GNUC_PATCHLEVEL__;
-   int error = 0;
-
-   if (gpp_major < ${required_gpp_major}) {
-      error = 1;
-   } else if (gpp_major == ${required_gpp_major} &&
-              gpp_minor < ${required_gpp_minor}) {
-      error = 2;
-   } else if (gpp_major == ${required_gpp_major} &&
-              gpp_minor == ${required_gpp_minor} &&
-              gpp_patch < ${required_gpp_patch}) {
-      error = 3;
-   }
-
-   std::ofstream ostr("${gppconfig}");
-   if (ostr.good()) {
-      ostr << gpp_major << '.' << gpp_minor << '.'
-           << gpp_patch;
-   }
-   ostr.close();
-
-   return error;
-}
-EOF
-    # compile the version check program
-    if $gpp -o ${_check_gpp_version_progr_exe} ${_check_gpp_version_progr_cpp} >> ${logfile} 2>&1;
-    then
-        # run the version check program
-        ${_check_gpp_version_progr_exe}
-        local _error="$?"
-        if test -r "${gppconfig}" ; then
-            GPP_VERSION=`cat ${gppconfig}`
-        fi
-        if test "x${_error}" = "x0" ; then
-            result "ok (version ${GPP_VERSION})"
-            logmsg "   Required ${gpp} version: ${required_gpp_version}"
-            logmsg "   ${gpp} version found: ${GPP_VERSION}"
-        else
-            result "not ok (version ${GPP_VERSION})"
-            message "Error: the installed ${gpp} version is too old."
-            message "   Please install version ${required_gpp_version} or higher."
-            rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
-            rm -f ${gppconfig}
-            exit 1
-        fi
-	set -- $(echo "$GPP_VERSION" | tr . ' ')
-	GPP_MAJOR="$1"
-	GPP_MINOR="$2"
-	GPP_PATCH="$3"
-    else
+   std::cout << gpp_major << '.' << gpp_minor << '.' << gpp_patch << '\n';
+   return 0;
+}" "$gpp" " " && [ $cpp_exit = 0 ] || {
         result "unknown"
-        message "Warning: could not determine ${gpp} version because"
-        message "   compilation of the ${gpp} test program failed."
-    fi
+        message "Warning: could not determine $gpp version because"
+        message "   compilation or execution of the $gpp test program failed."
+    }
 
-    # clean up
-    rm -f ${_check_gpp_version_progr_cpp} ${_check_gpp_version_progr_exe}
-    rm -f ${gppconfig}
+    GPP_VERSION="$cpp_output"
+
+    version_at_least "$GPP_VERSION" "${required_gpp_version}" || {
+        result "not ok (version ${GPP_VERSION})"
+        message "Error: the installed ${gpp} version is too old."
+        message "   Please install version ${required_gpp_version} or higher."
+        exit 1
+    }
+    result "ok (version ${GPP_VERSION})"
+    logmsg "   Required ${gpp} version: ${required_gpp_version}"
+    logmsg "   ${gpp} version found: ${GPP_VERSION}"
+
+    split_version "$GPP_VERSION" GPP_MAJOR GPP_MINOR GPP_PATCH
 }
 
 #_____________________________________________________________________
@@ -1262,38 +1164,19 @@ is_intel_cpp_compiler() {
 
     local _compiler="$1"
 
-    local _check_intel_compiler_cpp="${BASEDIR}/check_intel_compiler.cpp"
-    local _check_intel_compiler_exe="${BASEDIR}/check_intel_compiler.x"
-    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
-
-    cat <<EOF > ${_check_intel_compiler_cpp}
-int main() {
+    try_compile_run_cpp_program "int main() {
 #ifdef __INTEL_COMPILER
    return 0;
 #else
    return 1;
 #endif
-}
-EOF
-    local _result="1"
-
-    if $_compiler -o ${_check_intel_compiler_exe} ${_check_intel_compiler_cpp} >> ${logfile} 2>&1;
-    then
-        # run the version check program
-        if ${_check_intel_compiler_exe};
-        then
-            _result="0"
-        else
-            _result="1"
-        fi
-    else
+}" "$_compiler" " " || {
         logmsg "Warning: could not determine compiler type of ${_compiler} because"
         logmsg "   compilation of the test program failed."
-        _result="1"
-    fi
+	return 1
+    }
 
-    rm -f ${_check_intel_compiler_cpp} ${_check_intel_compiler_exe}
-    return "${_result}"
+    return "$cpp_exit"
 }
 
 #_____________________________________________________________________
@@ -1359,38 +1242,19 @@ is_clang_cpp_compiler() {
 
     local _compiler="$1"
 
-    local _check_clang_compiler_cpp="${BASEDIR}/check_clang_compiler.cpp"
-    local _check_clang_compiler_exe="${BASEDIR}/check_clang_compiler.x"
-    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
-
-    cat <<EOF > ${_check_clang_compiler_cpp}
-int main() {
+    try_compile_run_cpp_program "int main() {
 #if defined(__llvm__) || defined(__clang__)
    return 0;
 #else
    return 1;
 #endif
-}
-EOF
-    local _result="1"
-
-    if $_compiler -o ${_check_clang_compiler_exe} ${_check_clang_compiler_cpp} >> ${logfile} 2>&1;
-    then
-        # run the version check program
-        if ${_check_clang_compiler_exe};
-        then
-            _result="0"
-        else
-            _result="1"
-        fi
-    else
+}" "$_compiler" " " || {
         logmsg "Warning: could not determine compiler type of ${_compiler} because"
         logmsg "   compilation of the test program failed."
-        _result="1"
-    fi
+	return 1
+    }
 
-    rm -f ${_check_clang_compiler_cpp} ${_check_clang_compiler_exe}
-    return "${_result}"
+    return "$cpp_exit"
 }
 
 #_____________________________________________________________________
