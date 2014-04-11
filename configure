@@ -193,6 +193,25 @@ SARAH_PATCH="0"
 # Mathematica version
 MATH_VERSION="unknown"
 
+# string to eval when script terminates, normally or not
+actions_at_exit=""
+
+#_____________________________________________________________________
+at_exit() {
+    local action
+    for action in "$@"; do
+	printf "%s\n" "$actions_at_exit" | grep -F -e "$action" > /dev/null ||
+	actions_at_exit="$actions_at_exit
+$action"
+    done
+}
+
+#_____________________________________________________________________
+do_actions_at_exit() {
+    logmsg "Executing clean-up actions:$actions_at_exit"
+    eval "$actions_at_exit"
+}
+
 #_____________________________________________________________________
 write_configure_parameters() {
     # This function writes all parameters [$*] to config.status
@@ -1843,6 +1862,8 @@ the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.  See http://www.gnu.org/licenses/
 EOF
 }
+
+trap do_actions_at_exit 0 INT QUIT TERM
 
 rm -f $logfile
 write_configure_parameters "$*"
