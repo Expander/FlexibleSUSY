@@ -1616,7 +1616,8 @@ check_makelib() {
     # check if $makelib_cmd can create shared libraries
     if test "x$enable_static_libs" = "xno" ; then
         if test "x$makelib_cmd" = "xar" ; then
-            message "\n   Error: $makelib_cmd cannot be used to create shared libraries!"
+            message ""
+            message "   Error: $makelib_cmd cannot be used to create shared libraries!"
             message "   Please use --with-make-lib-cmd=\"gcc -shared -o\" or something similar."
             exit 1
         fi
