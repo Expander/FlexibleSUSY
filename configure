@@ -562,6 +562,52 @@ check_symbol() {
 }
 
 #_____________________________________________________________________
+split_version() {
+    local version="$1"
+    local major_var="$2"
+    local minor_var="$3"
+    local patch_var="$4"
+
+    set -- $(printf "%s" "$version" |
+	     sed 's/^\([[:digit:].]*\).*$/\1/' | tr . ' ')
+    eval "$major_var=\"${1:-0}\""
+    eval "$minor_var=\"${2:-0}\""
+    eval "$patch_var=\"${3:-0}\""
+}
+
+#_____________________________________________________________________
+major_minor_patch_at_least() {
+    local     major=$1
+    local     minor=$2
+    local     patch=$3
+    local min_major=$4
+    local min_minor=$5
+    local min_patch=$6
+
+    if   [ $major -gt $min_major ]; then return 0
+    elif [ $major -lt $min_major ]; then return 1
+    elif [ $minor -gt $min_minor ]; then return 0
+    elif [ $minor -lt $min_minor ]; then return 1
+    elif [ $patch -ge $min_patch ]; then return 0
+    else				 return 1
+    fi
+}
+
+#_____________________________________________________________________
+version_at_least() {
+    local version="$1"
+    local min_version="$2"
+
+    local major minor patch
+    split_version "$version" major minor patch
+
+    local m_major m_minor m_patch
+    split_version "$min_version" m_major m_minor m_patch
+
+    major_minor_patch_at_least $major $minor $patch $m_major $m_minor $m_patch
+}
+
+#_____________________________________________________________________
 try_compile_cpp_program() {
     # This function compiles a C++ testprogram with the header
     # inclusion given in [$1] and a statement given in [$2].
