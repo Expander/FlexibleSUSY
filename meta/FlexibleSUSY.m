@@ -383,25 +383,37 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
    Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, higgs, vevs},
-           vevs = #[[1]]& /@ SARAH`BetaVEV;
-           For[v = 1, v <= Length[vevs], v++,
+    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs},
+           vevs = SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs];
+           numberOfVEVs = Length[vevs];
+           numberOfHiggses = SARAH`getGen[SARAH`HiggsBoson, FlexibleSUSY`FSEigenstates];
+           (* d V/d phi_i *)
+           For[v = 1, v <= numberOfVEVs, v++,
                (* find CP even gauge-eigenstate Higgs for the vev *)
-               phi = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
-                           {_, {vevs[[v]], _}, {__}, {p_,_}, ___} :> p
-                          ];
-               If[Head[phi] =!= List || Length[phi] != 1,
-                  Print["Error: could not find CP even Higgs field for vev ", vevs[[v]]];
-                  Quit[1];
-                 ];
-               phi = phi[[1]];
-               (* find position of phi in the CP even mass eigenstate vector *)
+               phi = vevs[[v,4,1]];
+               (* find position of phi in the Higgs mass eigenstate vector *)
                higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
                              {ps__ /; MemberQ[ps, phi], {h_,_}} :> {h, Position[ps, phi][[1,1]]}
                             ];
                If[Head[higgs] =!= List || Length[higgs] != 1,
                   Print["Error: could not find CP even Higgs field ", phi,
-                        " in MatterSector definitions "];
+                        " in MatterSector definitions"];
+                  Quit[1];
+                 ];
+               higgs = higgs[[1]];
+               AppendTo[association, {higgs[[1]], higgs[[2]]}];
+              ];
+           (* d V/d sigma_i *)
+           For[v = 1, v <= numberOfHiggses - numberOfVEVs, v++,
+               (* find CP odd gauge-eigenstate Higgs for the vev *)
+               sigma = vevs[[v,3,1]];
+               (* find position of sigma in the Higgs mass eigenstate vector *)
+               higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
+                             {ps__ /; MemberQ[ps, sigma], {h_,_}} :> {h, Position[ps, sigma][[1,1]]}
+                            ];
+               If[Head[higgs] =!= List || Length[higgs] != 1,
+                  Print["Error: could not find CP odd Higgs field ", sigma,
+                        " in MatterSector definitions"];
                   Quit[1];
                  ];
                higgs = higgs[[1]];
