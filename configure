@@ -617,17 +617,8 @@ try_compile_cpp_program() {
         exit 1
     fi
 
-    if test "x${CXX}" = "x"; then
-        echo "try_compile_cpp_program: CXX is not set!"
-        exit 1
-    fi
-
     local _header="$1"
     local _statement="$2"
-    local _src="${BASEDIR}/conftest.cpp"
-    local _exe="${BASEDIR}/conftest.x"
-    local _log="${BASEDIR}/conftest.log"
-    local _err="0"
 
     logmsg ""
     logmsg "==================================="
@@ -635,42 +626,87 @@ try_compile_cpp_program() {
     logmsg "   Header: ${_header}"
     logmsg "   Statement: ${_statement}"
 
-    cat <<EOF > ${_src}
-${_header}
+    try_compile_run_cpp_program "${_header}
 int main() {
    ${_statement};
    return 0;
+}"
 }
-EOF
+
+#_____________________________________________________________________
+try_compile_run_cpp_program() {
+    # This function compiles a C++ source code given in [$1]
+    # using the compiler given in [$2] or $CXX if $2 is unset
+    # with compiler flags given in [$3] or $CXXFLAGS if $3 is unset.
+    # It subsequently executes the resulting executable whose
+    # output through stdout and stderr is stored in cpp_output
+    # and whose exit code is stored in cpp_exit.
+
+    if [ $# -lt 1 -o $# -gt 3 ]; then
+        echo "try_compile_run_cpp_program: 1, 2, or 3 arguments required!"
+        exit 1
+    fi
+
+    local cxx="$2"
+    if [ -z "$cxx" ]; then
+	if test "x${CXX}" = "x"; then
+            echo "try_compile_run_cpp_program: CXX is not set!"
+            exit 1
+	fi
+	cxx="$CXX"
+    fi
+    local cxxflags="$3"
+    [ -z "$cxxflags" ] && cxxflags="$CXXFLAGS"
+    local source_code="$1"
+    local _src="${BASEDIR}/conftest.cpp"
+    local _exe="${BASEDIR}/conftest.x"
+    local _log="${BASEDIR}/conftest.log"
+
+    at_exit "rm -f \"${_exe}\" \"${_src}\" \"${_log}\""
+
+    logmsg ""
+    logmsg "==================================="
+    logmsg "Trying to compile test program"
+
+    printf "%s\n" "$source_code" > ${_src}
 
     # compile the source
-    if ${CXX} -o ${_exe} ${CXXFLAGS} ${_src} >> ${_log} 2>&1;
-    then
-        logmsg "   Status: compilation successfull."
-        _err="0"
-    else
+    ${cxx} -o ${_exe} ${cxxflags} ${_src} > ${_log} 2>&1 || {
         logmsg "   Status: compilation failed!"
         logmsg ""
         logmsg "The test program was:"
         logmsg "---------------------"
-        cat ${_src} >> $logfile
+	printf "%s\n" "$source_code" >> $logfile
         logmsg "---------------------"
-        logmsg "Compiler: CXX = ${CXX}"
-        logmsg "Compiler flags: CXXFLAGS = ${CXXFLAGS}"
+        logmsg "Compiler: ${cxx}"
+        logmsg "Compiler flags: ${cxxflags}"
         logmsg "Compilation command:"
-        echo "   ${CXX} -o ${_exe} ${CXXFLAGS} ${_src} >> ${_log} 2>&1" >> $logfile
+        echo "   ${cxx} -o ${_exe} ${cxxflags} ${_src} > ${_log} 2>&1" >> $logfile
         logmsg "Compiler error message:"
         cat ${_log} >> $logfile
-        _err="1"
+	logmsg "==================================="
+	logmsg ""
+	return 1
+    }
+
+    logmsg "   Status: compilation successful."
+
+    # run the executable
+    logmsg "Running executable: $_exe"
+    cpp_output=$(${_exe} 2>&1)
+    cpp_exit="$?"
+    logmsg "The executable returned exit code: $cpp_exit"
+    if [ -z "$cpp_output" ]; then
+	logmsg "The executable produced no output."
+    else
+	logmsg "The executable produced output:"
+	printf "%s\n" "${cpp_output}" >> $logfile
     fi
 
     logmsg "==================================="
     logmsg ""
 
-    # clean up
-    rm -f ${_exe} ${_src} ${_log}
-
-    return ${_err}
+    return 0
 }
 
 #_____________________________________________________________________
