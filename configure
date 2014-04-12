@@ -168,34 +168,7 @@ std_cxx11_clang_version="3.0.0"
 std_cxx11_icpc_version="13.0.0"
 
 # required boost version
-required_boost_major="1"
-required_boost_minor="49"
-required_boost_patch="0"
-required_boost_version="${required_boost_major}.${required_boost_minor}.${required_boost_patch}"
-
-# required g++ version
-required_gpp_major="4"
-required_gpp_minor="4"
-required_gpp_patch="7"
-required_gpp_version="${required_gpp_major}.${required_gpp_minor}.${required_gpp_patch}"
-
-# g++ version
-GPP_VERSION="unknown"
-GPP_MAJOR="0"
-GPP_MINOR="0"
-GPP_PATCH="0"
-
-# required icpc version
-required_icpc_major="12"
-required_icpc_minor="1"
-required_icpc_patch="0"
-required_icpc_version="${required_icpc_major}.${required_icpc_minor}.${required_icpc_patch}"
-
-# icpc version
-ICPC_VERSION="unknown"
-ICPC_MAJOR="0"
-ICPC_MINOR="0"
-ICPC_PATCH="0"
+required_boost_version="1.49.0"
 
 # required Mathematica version
 required_mathematica_version="7"
