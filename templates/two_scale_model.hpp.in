@@ -122,7 +122,7 @@ private:
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
 #ifdef ENABLE_THREADS
-   static std::recursive_mutex mtx_fortran; /// locks fortran functions
+   static std::mutex mtx_fortran; /// locks fortran functions
 #endif
 
    int solve_ewsb_iteratively();

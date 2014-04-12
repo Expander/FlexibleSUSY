@@ -51,7 +51,7 @@ using namespace @ModelName@_info;
 #define LOCALINPUT(parameter) input.parameter
 
 #ifdef ENABLE_THREADS
-std::recursive_mutex CLASSNAME::mtx_fortran;
+std::mutex CLASSNAME::mtx_fortran;
 #endif
 
 #ifdef ENABLE_THREADS
