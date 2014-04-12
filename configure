@@ -143,9 +143,29 @@ available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
 
-# flags
+# C++ compiler type and version
 cxx_compiler_type="unknown"
+cxx_compiler_version="unknown"
+
+# required C++ compiler versions
+required_cxx_compiler_version="unknown"
+required_gpp_compiler_version="4.4.7"
+required_clang_compiler_version="3.1.0"
+required_icpc_compiler_version="12.1.0"
+
+# C++ dependency generator type and version
 cxx_dep_gen_type="unknown"
+cxx_dep_gen_version="unknown"
+
+# required C++ dependency generator versions
+# to be added
+
+# C++ compiler and dependency generator versions accepting `-std=c++11'
+std_cxx11_compiler_version="unknown"
+std_cxx11_dep_gen_version="unknown"
+std_cxx11_gpp_version="4.7.0"
+std_cxx11_clang_version="3.0.0"
+std_cxx11_icpc_version="13.0.0"
 
 # required boost version
 required_boost_major="1"
@@ -1034,21 +1054,25 @@ check_thread_libs() {
 check_cxx_compiler_type() {
     cxx_compiler_type="unknown"
 
-    checking_msg "${CXX} is GNU compiler"
+    checking_msg "type of C++ compiler ${CXX}"
     if is_gnu_cpp_compiler "${CXX}"; then
+        result "GNU"
         cxx_compiler_type="gnu"
-        result "yes"
-        logmsg "   ${CXX} is a GNU compiler"
+	required_cxx_compiler_version="$required_gpp_compiler_version"
+	std_cxx11_compiler_version="$std_cxx11_gpp_version"
+    elif is_clang_cpp_compiler "${CXX}"; then
+        result "Clang"
+        cxx_compiler_type="clang"
+	required_cxx_compiler_version="$required_clang_compiler_version"
+	std_cxx11_compiler_version="$std_cxx11_clang_version"
+    elif is_intel_cpp_compiler "${CXX}"; then
+        result "Intel"
+        cxx_compiler_type="intel"
+	required_cxx_compiler_version="$required_icpc_compiler_version"
+	std_cxx11_compiler_version="$std_cxx11_icpc_version"
     else
-        result "no"
-        checking_msg "${CXX} is Intel compiler"
-        if is_intel_cpp_compiler "${CXX}"; then
-            result "yes"
-            cxx_compiler_type="intel"
-        else
-            result "no"
-            cxx_compiler_type="unknown"
-        fi
+	result "unknown"
+        cxx_compiler_type="unknown"
     fi
 
     logmsg "C++ compiler type: ${cxx_compiler_type}"
@@ -1058,31 +1082,22 @@ check_cxx_compiler_type() {
 check_cxx_dep_gen_type() {
     cxx_dep_gen_type="unknown"
 
-    checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is GNU compiler"
+    checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
     if is_gnu_cpp_compiler "${CXX_DEP_GEN}"; then
+        result "GNU"
         cxx_dep_gen_type="gnu"
-        result "yes"
-        logmsg "   ${CXX_DEP_GEN} is a GNU compiler"
+	std_cxx11_dep_gen_version="$std_cxx11_gpp_version"
+    elif is_clang_cpp_compiler "${CXX_DEP_GEN}"; then
+        result "Clang"
+        cxx_dep_gen_type="clang"
+	std_cxx11_dep_gen_version="$std_cxx11_clang_version"
+    elif is_intel_cpp_compiler "${CXX_DEP_GEN}"; then
+	result "Intel"
+        cxx_dep_gen_type="intel"
+	std_cxx11_dep_gen_version="$std_cxx11_icpc_version"
     else
-        result "no"
-
-        checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Clang compiler"
-        if is_clang_cpp_compiler "${CXX_DEP_GEN}"; then
-            cxx_dep_gen_type="clang"
-            result "yes"
-            logmsg "   ${CXX_DEP_GEN} is a Clang compiler"
-        else
-            result "no"
-
-            checking_msg "C++ file dependency generator ${CXX_DEP_GEN} is Intel compiler"
-            if is_intel_cpp_compiler "${CXX_DEP_GEN}"; then
-                result "yes"
-                cxx_dep_gen_type="intel"
-            else
-                result "no"
-                cxx_dep_gen_type="unknown"
-            fi
-        fi
+        result "unknown"
+        cxx_dep_gen_type="unknown"
     fi
 
     logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
