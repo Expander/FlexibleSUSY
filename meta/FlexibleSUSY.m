@@ -155,6 +155,14 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := SM[MZ];
+              ,
+              If[FlexibleSUSY`LowScale =!= SM[MZ],
+                 Print["Warning: The low-scale was set differently from MZ!"];
+                 Print["   LowScale = ", FlexibleSUSY`LowScale];
+                 Print["   This is currently not supported."];
+                 Print["   I'm setting LowScale = SM[MZ]."];
+                 FlexibleSUSY`LowScale = SM[MZ];
+                ];
              ];
            If[!ValueQ[FlexibleSUSY`LowScaleFirstGuess],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
