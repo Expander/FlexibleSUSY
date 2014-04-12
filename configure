@@ -1079,6 +1079,31 @@ check_cxx_compiler_type() {
 }
 
 #_____________________________________________________________________
+check_cxx_compiler_version() {
+    case "$cxx_compiler_type" in
+    gnu)   get_gpp_version   "$CXX" cxx_compiler_version || return 1 ;;
+    clang) get_clang_version "$CXX" cxx_compiler_version || return 1 ;;
+    intel) get_icpc_version  "$CXX" cxx_compiler_version || return 1 ;;
+    *)     message "Warning: could not check C++ compiler version because"
+           message "   its type is unknown."
+	   return 1 ;;
+    esac
+
+    checking_msg "$CXX compiler version >= $required_cxx_compiler_version"
+
+    version_at_least \
+	"$cxx_compiler_version" "$required_cxx_compiler_version" || {
+        result "not ok (version $cxx_compiler_version)"
+        message "Error: the installed $CXX version is too old."
+        message "   Please install version $required_cxx_compiler_version or higher."
+        exit 1
+    }
+    result "ok (version $cxx_compiler_version)"
+    logmsg "   Required $CXX version: $required_cxx_compiler_version"
+    logmsg "   $CXX version found: $cxx_compiler_version"
+}
+
+#_____________________________________________________________________
 check_cxx_dep_gen_type() {
     cxx_dep_gen_type="unknown"
 
@@ -1101,6 +1126,24 @@ check_cxx_dep_gen_type() {
     fi
 
     logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
+}
+
+#_____________________________________________________________________
+check_cxx_dep_gen_version() {
+    checking_msg "$CXX_DEP_GEN dependency generator version"
+
+    case "$cxx_dep_gen_type" in
+    gnu)   get_gpp_version   "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
+    clang) get_clang_version "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
+    intel) get_icpc_version  "$CXX_DEP_GEN" cxx_dep_gen_version || return 1 ;;
+    *)     result "unknown"
+	   message "Warning: could not check C++ dependency generator version because"
+           message "   its type is unknown."
+	   return 1 ;;
+    esac
+
+    result "$cxx_dep_gen_version"
+    logmsg "   $CXX_DEP_GEN dependency generator version found: $cxx_dep_gen_version"
 }
 
 #_____________________________________________________________________
@@ -1132,15 +1175,14 @@ is_gnu_cpp_compiler() {
 }
 
 #_____________________________________________________________________
-check_gpp_version() {
-    if test $# -ne 1; then
-        message "check_gpp_version(): too few arguments"
+get_gpp_version() {
+    if test $# -ne 2; then
+        message "get_gpp_version(): too few arguments"
         exit 1
     fi
 
     local gpp="$1"
-
-    checking_msg "${gpp} compiler version >= ${required_gpp_version}"
+    local ret_var="$2"
 
     try_compile_run_cpp_program "#include <iostream>
 int main() {
@@ -1157,17 +1199,9 @@ int main() {
 
     GPP_VERSION="$cpp_output"
 
-    version_at_least "$GPP_VERSION" "${required_gpp_version}" || {
-        result "not ok (version ${GPP_VERSION})"
-        message "Error: the installed ${gpp} version is too old."
-        message "   Please install version ${required_gpp_version} or higher."
-        exit 1
-    }
-    result "ok (version ${GPP_VERSION})"
-    logmsg "   Required ${gpp} version: ${required_gpp_version}"
-    logmsg "   ${gpp} version found: ${GPP_VERSION}"
-
     split_version "$GPP_VERSION" GPP_MAJOR GPP_MINOR GPP_PATCH
+
+    eval "$ret_var=\"$GPP_VERSION\""
 }
 
 #_____________________________________________________________________
@@ -1195,15 +1229,40 @@ is_intel_cpp_compiler() {
 }
 
 #_____________________________________________________________________
-check_icpc_version() {
-    if test $# -ne 1; then
-        message "check_icpc_version(): too few arguments"
+get_clang_version() {
+    if test $# -ne 2; then
+        message "get_clang_version(): too few arguments"
+        exit 1
+    fi
+
+    local compiler="$1"
+    local ret_var="$2"
+
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine $compiler version because"
+        message "   execution of $compiler failed."
+	return 1
+    }
+    local major=$(printf "%s" "$output" |
+	sed 's/^.*__clang_major__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
+    local minor=$(printf "%s" "$output" |
+	sed 's/^.*__clang_minor__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
+    local patch=$(printf "%s" "$output" |
+	sed 's/^.*__clang_patchlevel__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
+
+    eval "$ret_var=\"$major.$minor.$patch\""
+}
+
+#_____________________________________________________________________
+get_icpc_version() {
+    if test $# -ne 2; then
+        message "get_icpc_version(): too few arguments"
         exit 1
     fi
 
     local icpc="$1"
-
-    checking_msg "${icpc} compiler version >= ${required_icpc_version}"
+    local ret_var="$2"
 
     local output
     output=$($icpc -V 2>&1) || {
@@ -1221,31 +1280,7 @@ check_icpc_version() {
     ICPC_PATCH="${3:-0}"
     ICPC_VERSION="${ICPC_MAJOR}.${ICPC_MINOR}.${ICPC_PATCH}"
 
-    local ok
-    if [ $ICPC_MAJOR -gt $required_icpc_major ]; then
-	ok=true
-    elif [ $ICPC_MAJOR -lt $required_icpc_major ]; then
-	ok=false
-    elif [ $ICPC_MINOR -gt $required_icpc_minor ]; then
-	ok=true
-    elif [ $ICPC_MINOR -lt $required_icpc_minor ]; then
-	ok=false
-    elif [ $ICPC_PATCH -ge $required_icpc_patch ]; then
-	ok=true
-    else
-	ok=false
-    fi
-
-    if $ok; then
-	result "ok (version ${ICPC_VERSION})"
-        logmsg "   Required ${icpc} version: ${required_icpc_version}"
-        logmsg "   ${icpc} version found: ${ICPC_VERSION}"
-    else
-        result "not ok (version ${ICPC_VERSION})"
-        message "Error: the installed ${icpc} version is too old."
-        message "   Please install version ${required_icpc_version} or higher."
-	exit 1
-    fi
+    eval "$ret_var=\"$ICPC_VERSION\""
 }
 
 #_____________________________________________________________________
@@ -1288,19 +1323,15 @@ check_cxx() {
 
 #_____________________________________________________________________
 check_cxxflags() {
-    local replace_cxx11_by_cxx0x=false
     case "$CXXFLAGS" in
-	*-std=c++11*)
-	    if test "x${cxx_compiler_type}" = "xgnu" -a $GPP_MINOR -lt 7; then
-		message "Replacing \`-std=c++11' by \`-std=c++0x' since g++ is older than 4.7"
-		replace_cxx11_by_cxx0x=true
-	    elif test "$cxx_compiler_type" = intel -a $ICPC_MAJOR -lt 13; then
-		message "Replacing \`-std=c++11' by \`-std=c++0x' since icpc is older than 13.0"
-		replace_cxx11_by_cxx0x=true
-	    fi
+    *-std=c++11*)
+	version_at_least "$cxx_compiler_version" \
+			 "$std_cxx11_compiler_version" || {
+	    message "Replacing \`-std=c++11' by \`-std=c++0x' since $CXX is older than $std_cxx11_compiler_version"
+	    CXXFLAGS=$(
+		printf "%s" "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
+	}
     esac
-    $replace_cxx11_by_cxx0x &&
-    CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-std=c++11/-std=c++0x/')
 
     if test "x$enable_compiler_warnings" = "xyes" ; then
         if test "x${cxx_compiler_type}" = "xgnu"; then
@@ -1341,16 +1372,11 @@ check_cxx_dep_gen() {
 
 #_____________________________________________________________________
 check_cxxflags_dep_gen() {
-    if test "x$cxx_dep_gen_type" = "xgnu"; then
-	if test "$GPP_MINOR" -ge 7; then
-            CXXFLAGS_DEP_GEN="-std=c++11"
-	else
-            CXXFLAGS_DEP_GEN="-std=c++0x"
-	fi
-    elif test "x$cxx_dep_gen_type" = "xclang"; then
+    if version_at_least "$cxx_dep_gen_version" \
+			"$std_cxx11_dep_gen_version"; then
         CXXFLAGS_DEP_GEN="-std=c++11"
     else
-        CXXFLAGS_DEP_GEN=""
+        CXXFLAGS_DEP_GEN="-std=c++0x"
     fi
 }
 
@@ -1912,14 +1938,11 @@ if test "x${enable_compile}" = "xyes"; then
     check_multiarch
     check_cxx
     check_cxx_compiler_type
+    check_cxx_compiler_version
+    check_cxxflags
     check_cxx_dep_gen
     check_cxx_dep_gen_type
-    if test "x$cxx_compiler_type" = xgnu; then
-        check_gpp_version "$CXX"
-    elif test "x$cxx_compiler_type" = xintel; then
-        check_icpc_version "$CXX"
-    fi
-    check_cxxflags
+    check_cxx_dep_gen_version
     check_cxxflags_dep_gen
     check_fc
     check_fflags
