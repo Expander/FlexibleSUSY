@@ -1153,25 +1153,22 @@ is_gnu_cpp_compiler() {
         exit 1
     fi
 
-    local _compiler="$1"
+    local compiler="$1"
 
-    try_compile_run_cpp_program "int main() {
-#if defined(__llvm__) || defined(__clang__) || defined(__INTEL_COMPILER)
-   return 1;
-#else
-   #ifdef __GNUC__
-      return 0;
-   #else
-      return 1;
-   #endif
-#endif
-}" "$_compiler" " " || {
-        logmsg "Warning: could not determine compiler type of ${_compiler} because"
-        logmsg "   compilation of the test program failed."
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine compiler type of $compiler because"
+        message "   execution of $compiler failed."
 	return 1
     }
 
-    return "$cpp_exit"
+    printf "%s" "$output" |
+    grep '#define[[:space:]]*\(__llvm__\|__clang__\|__INTEL_COMPILER\)' > \
+	/dev/null && return 1
+    printf "%s" "$output" |
+    grep '#define[[:space:]]*__GNUC__' > /dev/null || return 1
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1181,27 +1178,23 @@ get_gpp_version() {
         exit 1
     fi
 
-    local gpp="$1"
+    local compiler="$1"
     local ret_var="$2"
 
-    try_compile_run_cpp_program "#include <iostream>
-int main() {
-   int gpp_major = __GNUC__;
-   int gpp_minor = __GNUC_MINOR__;
-   int gpp_patch = __GNUC_PATCHLEVEL__;
-   std::cout << gpp_major << '.' << gpp_minor << '.' << gpp_patch << '\n';
-   return 0;
-}" "$gpp" " " && [ $cpp_exit = 0 ] || {
-        result "unknown"
-        message "Warning: could not determine $gpp version because"
-        message "   compilation or execution of the $gpp test program failed."
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine $compiler version because"
+        message "   execution of $compiler failed."
+	return 1
     }
+    local major=$(printf "%s" "$output" |
+	sed 's/^.*__GNUC__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
+    local minor=$(printf "%s" "$output" |
+	sed 's/^.*__GNUC_MINOR__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
+    local patch=$(printf "%s" "$output" |
+	sed 's/^.*__GNUC_PATCHLEVEL__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
 
-    GPP_VERSION="$cpp_output"
-
-    split_version "$GPP_VERSION" GPP_MAJOR GPP_MINOR GPP_PATCH
-
-    eval "$ret_var=\"$GPP_VERSION\""
+    eval "$ret_var=\"$major.$minor.$patch\""
 }
 
 #_____________________________________________________________________
@@ -1211,21 +1204,61 @@ is_intel_cpp_compiler() {
         exit 1
     fi
 
-    local _compiler="$1"
+    local compiler="$1"
 
-    try_compile_run_cpp_program "int main() {
-#ifdef __INTEL_COMPILER
-   return 0;
-#else
-   return 1;
-#endif
-}" "$_compiler" " " || {
-        logmsg "Warning: could not determine compiler type of ${_compiler} because"
-        logmsg "   compilation of the test program failed."
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine compiler type of $compiler because"
+        message "   execution of $compiler failed."
 	return 1
     }
 
-    return "$cpp_exit"
+    printf "%s" "$output" |
+    grep '#define[[:space:]]*__INTEL_COMPILER' > /dev/null || return 1
+    return 0
+}
+
+#_____________________________________________________________________
+get_icpc_version() {
+    if test $# -ne 2; then
+        message "get_icpc_version(): too few arguments"
+        exit 1
+    fi
+
+    local compiler="$1"
+    local ret_var="$2"
+
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine $compiler version because"
+        message "   execution of $compiler failed."
+	return 1
+    }
+    local version=$(printf "%s" "$output" |
+	sed 's/^.*__INTEL_COMPILER[[:space:]]*\([[:digit:]]*\)\([[:digit:]]\)\([[:digit:]]\).*$/\1.\2.\3/p;d')
+
+    eval "$ret_var=\"$version\""
+}
+
+#_____________________________________________________________________
+is_clang_cpp_compiler() {
+    if test $# -ne 1; then
+        message "is_clang_cpp_compiler(): too few arguments"
+        exit 1
+    fi
+
+    local compiler="$1"
+
+    local output
+    output=$($compiler -dM -E -x c++ /dev/null) || {
+        message "Warning: could not determine compiler type of $compiler because"
+        message "   execution of $compiler failed."
+	return 1
+    }
+
+    printf "%s" "$output" |
+    grep '#define[[:space:]]*\(__llvm__\|__clang__\)' > /dev/null || return 1
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1252,59 +1285,6 @@ get_clang_version() {
 	sed 's/^.*__clang_patchlevel__[[:space:]]*\([[:digit:]]*\).*$/\1/p;d')
 
     eval "$ret_var=\"$major.$minor.$patch\""
-}
-
-#_____________________________________________________________________
-get_icpc_version() {
-    if test $# -ne 2; then
-        message "get_icpc_version(): too few arguments"
-        exit 1
-    fi
-
-    local icpc="$1"
-    local ret_var="$2"
-
-    local output
-    output=$($icpc -V 2>&1) || {
-	result "unknown"
-        message "Warning: could not determine ${icpc} version because"
-        message "   execution of ${icpc} failed."
-	return
-    }
-    set -- $(
-	echo "$output" |
-	sed 's/^.*Version[[:space:]]*\([[:digit:].]*\).*$/\1/p;d' |
-	tr . ' ')
-    ICPC_MAJOR="${1:-0}"
-    ICPC_MINOR="${2:-0}"
-    ICPC_PATCH="${3:-0}"
-    ICPC_VERSION="${ICPC_MAJOR}.${ICPC_MINOR}.${ICPC_PATCH}"
-
-    eval "$ret_var=\"$ICPC_VERSION\""
-}
-
-#_____________________________________________________________________
-is_clang_cpp_compiler() {
-    if test $# -ne 1; then
-        message "is_clang_cpp_compiler(): too few arguments"
-        exit 1
-    fi
-
-    local _compiler="$1"
-
-    try_compile_run_cpp_program "int main() {
-#if defined(__llvm__) || defined(__clang__)
-   return 0;
-#else
-   return 1;
-#endif
-}" "$_compiler" " " || {
-        logmsg "Warning: could not determine compiler type of ${_compiler} because"
-        logmsg "   compilation of the test program failed."
-	return 1
-    }
-
-    return "$cpp_exit"
 }
 
 #_____________________________________________________________________
