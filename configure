@@ -912,7 +912,7 @@ check_boost() {
 
 #_____________________________________________________________________
 check_boost_version() {
-    checking_msg "boost version"
+    checking_msg "boost version >= $required_boost_version"
 
     try_compile_run_cpp_program "#include <iostream>
 #include <boost/version.hpp>
