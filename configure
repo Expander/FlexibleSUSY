@@ -1025,28 +1025,22 @@ check_thread_libs() {
 
 #_____________________________________________________________________
 check_cxx_compiler_type() {
-    cxx_compiler_type="unknown"
-
     checking_msg "type of C++ compiler ${CXX}"
-    if is_gnu_cpp_compiler "${CXX}"; then
-        result "GNU"
-        cxx_compiler_type="gnu"
-	required_cxx_compiler_version="$required_gpp_compiler_version"
-	std_cxx11_compiler_version="$std_cxx11_gpp_version"
-    elif is_clang_cpp_compiler "${CXX}"; then
-        result "Clang"
-        cxx_compiler_type="clang"
-	required_cxx_compiler_version="$required_clang_compiler_version"
-	std_cxx11_compiler_version="$std_cxx11_clang_version"
-    elif is_intel_cpp_compiler "${CXX}"; then
-        result "Intel"
-        cxx_compiler_type="intel"
-	required_cxx_compiler_version="$required_icpc_compiler_version"
-	std_cxx11_compiler_version="$std_cxx11_icpc_version"
-    else
-	result "unknown"
-        cxx_compiler_type="unknown"
-    fi
+
+    get_cxx_compiler_type "$CXX" cxx_compiler_type || return 1
+
+    case "$cxx_compiler_type" in
+    gnu)   result "GNU"
+	   required_cxx_compiler_version="$required_gpp_compiler_version"
+	   std_cxx11_compiler_version="$std_cxx11_gpp_version" ;;
+    clang) result "Clang"
+	   required_cxx_compiler_version="$required_clang_compiler_version"
+	   std_cxx11_compiler_version="$std_cxx11_clang_version" ;;
+    intel) result "Intel"
+	   required_cxx_compiler_version="$required_icpc_compiler_version"
+	   std_cxx11_compiler_version="$std_cxx11_icpc_version" ;;
+    *)     result "unknown" ;;
+    esac
 
     logmsg "C++ compiler type: ${cxx_compiler_type}"
 }
@@ -1078,25 +1072,19 @@ check_cxx_compiler_version() {
 
 #_____________________________________________________________________
 check_cxx_dep_gen_type() {
-    cxx_dep_gen_type="unknown"
-
     checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
-    if is_gnu_cpp_compiler "${CXX_DEP_GEN}"; then
-        result "GNU"
-        cxx_dep_gen_type="gnu"
-	std_cxx11_dep_gen_version="$std_cxx11_gpp_version"
-    elif is_clang_cpp_compiler "${CXX_DEP_GEN}"; then
-        result "Clang"
-        cxx_dep_gen_type="clang"
-	std_cxx11_dep_gen_version="$std_cxx11_clang_version"
-    elif is_intel_cpp_compiler "${CXX_DEP_GEN}"; then
-	result "Intel"
-        cxx_dep_gen_type="intel"
-	std_cxx11_dep_gen_version="$std_cxx11_icpc_version"
-    else
-        result "unknown"
-        cxx_dep_gen_type="unknown"
-    fi
+
+    get_cxx_compiler_type "$CXX_DEP_GEN" cxx_dep_gen_type || return 1
+
+    case "$cxx_dep_gen_type" in
+    gnu)   result "GNU"
+	   std_cxx11_dep_gen_version="$std_cxx11_gpp_version" ;;
+    clang) result "Clang"
+	   std_cxx11_dep_gen_version="$std_cxx11_clang_version" ;;
+    intel) result "Intel"
+	   std_cxx11_dep_gen_version="$std_cxx11_icpc_version" ;;
+    *)     result "unknown"
+    esac
 
     logmsg "C++ dependency generator type: ${cxx_dep_gen_type}"
 }
@@ -1120,13 +1108,14 @@ check_cxx_dep_gen_version() {
 }
 
 #_____________________________________________________________________
-is_gnu_cpp_compiler() {
-    if test $# -ne 1; then
-        message "is_gnu_cpp_compiler(): too few arguments"
+get_cxx_compiler_type() {
+    if test $# -ne 2; then
+        message "get_cxx_compiler_type(): too few arguments"
         exit 1
     fi
 
     local compiler="$1"
+    local ret_var="$2"
 
     local output
     output=$($compiler -dM -E -x c++ /dev/null) || {
@@ -1135,13 +1124,21 @@ is_gnu_cpp_compiler() {
 	return 1
     }
 
-    printf "%s" "$output" |
-    grep '#define[[:space:]]*\(__llvm__\|__clang__\|__INTEL_COMPILER\)' > \
-	/dev/null && return 1
-    printf "%s" "$output" |
-    grep '#define[[:space:]]*__GNUC__' > /dev/null || return 1
+    local compiler_type
+    if   printf "%s" "$output" |
+         grep '#define[[:space:]]*\(__llvm__\|__clang__\)' > /dev/null; then
+	compiler_type=clang
+    elif printf "%s" "$output" |
+	 grep '#define[[:space:]]*__INTEL_COMPILER' > /dev/null; then
+	compiler_type=intel
+    elif printf "%s" "$output" |
+	 grep '#define[[:space:]]*__GNUC__' > /dev/null; then
+	compiler_type=gnu
+    else
+	compiler_type=unknown
+    fi
 
-    return 0
+    eval "$ret_var=\"$compiler_type\""
 }
 
 #_____________________________________________________________________
@@ -1171,27 +1168,6 @@ get_gpp_version() {
 }
 
 #_____________________________________________________________________
-is_intel_cpp_compiler() {
-    if test $# -ne 1; then
-        message "is_intel_cpp_compiler(): too few arguments"
-        exit 1
-    fi
-
-    local compiler="$1"
-
-    local output
-    output=$($compiler -dM -E -x c++ /dev/null) || {
-        message "Warning: could not determine compiler type of $compiler because"
-        message "   execution of $compiler failed."
-	return 1
-    }
-
-    printf "%s" "$output" |
-    grep '#define[[:space:]]*__INTEL_COMPILER' > /dev/null || return 1
-    return 0
-}
-
-#_____________________________________________________________________
 get_icpc_version() {
     if test $# -ne 2; then
         message "get_icpc_version(): too few arguments"
@@ -1211,27 +1187,6 @@ get_icpc_version() {
 	sed 's/^.*__INTEL_COMPILER[[:space:]]*\([[:digit:]]*\)\([[:digit:]]\)\([[:digit:]]\).*$/\1.\2.\3/p;d')
 
     eval "$ret_var=\"$version\""
-}
-
-#_____________________________________________________________________
-is_clang_cpp_compiler() {
-    if test $# -ne 1; then
-        message "is_clang_cpp_compiler(): too few arguments"
-        exit 1
-    fi
-
-    local compiler="$1"
-
-    local output
-    output=$($compiler -dM -E -x c++ /dev/null) || {
-        message "Warning: could not determine compiler type of $compiler because"
-        message "   execution of $compiler failed."
-	return 1
-    }
-
-    printf "%s" "$output" |
-    grep '#define[[:space:]]*\(__llvm__\|__clang__\)' > /dev/null || return 1
-    return 0
 }
 
 #_____________________________________________________________________
