@@ -465,7 +465,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             copyDRbarMassesToPoleMasses = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
-            enablePoleMassThreads = True
+            enablePoleMassThreads = True,
+            mutexDefinition = ""
            },
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
@@ -495,6 +496,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
+              mutexDefinition = "static std::mutex mtx_fortran;\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -589,6 +591,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
+                            "@mutexDefinition@"              -> mutexDefinition,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

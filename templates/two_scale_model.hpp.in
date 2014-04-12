@@ -27,9 +27,14 @@
 #include "@ModelName@_info.hpp"
 #include "two_scale_model.hpp"
 #include "problems.hpp"
+#include "config.h"
 
 #include <iosfwd>
 #include <string>
+
+#ifdef ENABLE_THREADS
+#include <mutex>
+#endif
 
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
@@ -137,7 +142,9 @@ private:
 @physicalMassesDef@
 @mixingMatricesDef@
 @phasesDefinition@
-
+#ifdef ENABLE_THREADS
+@mutexDefinition@
+#endif
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Two_scale>&);
