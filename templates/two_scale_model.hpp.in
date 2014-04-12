@@ -121,6 +121,9 @@ private:
    @ModelName@_physical physical;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
+#ifdef ENABLE_THREADS
+   static std::recursive_mutex mtx_fortran; /// locks fortran functions
+#endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
@@ -142,9 +145,6 @@ private:
 @physicalMassesDef@
 @mixingMatricesDef@
 @phasesDefinition@
-#ifdef ENABLE_THREADS
-@mutexDefinition@
-#endif
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Two_scale>&);
