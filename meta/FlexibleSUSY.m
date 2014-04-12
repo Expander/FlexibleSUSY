@@ -521,9 +521,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
            runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
            enablePoleMassThreads = False;
-           callAllLoopMassFunctions     = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
+           callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
-           callAllLoopMassFunctionsInThreads = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
+           callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];

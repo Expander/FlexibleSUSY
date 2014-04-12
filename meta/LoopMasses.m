@@ -5,7 +5,7 @@ BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
 
 CreateOneLoopPoleMassFunctions::usage="";
 CreateOneLoopPoleMassPrototypes::usage="";
-CallAllOneLoopPoleMassFunctions::usage="";
+CallAllPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
 
@@ -566,7 +566,7 @@ CallThreadedLoopMassFunction[particle_Symbol] :=
 JoinLoopMassFunctionThread[particle_Symbol] :=
     "thread_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ".join();\n";
 
-CallAllOneLoopPoleMassFunctions[states_, enablePoleMassThreads_:False] :=
+CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
