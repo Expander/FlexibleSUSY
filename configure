@@ -229,6 +229,13 @@ logmsg() {
 }
 
 #_____________________________________________________________________
+log_package_information() {
+    logmsg "Package: ${PROGRAM_NAME}"
+    logmsg "Version: ${FLEXIBLESUSY_VERSION}"
+    logmsg "Date:    ${DATE}"
+}
+
+#_____________________________________________________________________
 guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
@@ -746,6 +753,7 @@ check_models() {
 check_platform() {
     # checks which platform we have
 
+    logmsg ""
     logmsg "# Platform information"
     logmsg ""
     logmsg "hostname = `(hostname || uname -n) 2>/dev/null | sed 1q`"
@@ -1921,6 +1929,7 @@ if test $# -gt 0 ; then
     done
 fi
 
+log_package_information
 guess_machine_word_size
 check_platform
 check_algorithms
