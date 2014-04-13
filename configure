@@ -1768,8 +1768,8 @@ the Free Software Foundation, either version 3 of the License, or
 EOF
 }
 
-trap "do_actions_at_exit" 0
-trap "do_actions_at_exit; trap - 0; exit 1" INT QUIT TERM
+trap do_actions_at_exit 0
+trap "exit 1" INT QUIT TERM
 
 rm -f $logfile
 write_configure_parameters "$*"
