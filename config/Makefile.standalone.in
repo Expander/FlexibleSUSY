@@ -8,10 +8,12 @@ LIBEXT          := @LIBEXT@
 MODEL           := MSSM
 
 MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
+CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 LEGACYDIR       := $(ABSBASEDIR)/legacy
 
 INCMODEL        := -I$(MODELDIR)
+INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
 INCLEGACY       := -I$(LEGACYDIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(LIBEXT)
@@ -20,7 +22,8 @@ LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ -I. $(INCFLEXI) $(INCLEGACY) $(INCMODEL)
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
+                   $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := @CXX_DEP_GEN@
 CXXFLAGS_DEP_GEN:= @CXXFLAGS_DEP_GEN@
