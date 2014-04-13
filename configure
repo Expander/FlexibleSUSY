@@ -619,6 +619,8 @@ try_compile_cpp_program() {
     logmsg "   Header: ${_header}"
     logmsg "   Statement: ${_statement}"
 
+    local _suppress_separator=true
+
     try_compile_run_cpp_program "${_header}
 int main() {
    ${_statement};
@@ -658,6 +660,7 @@ try_compile_run_cpp_program() {
     at_exit "rm -f \"${_exe}\" \"${_src}\" \"${_log}\""
 
     logmsg ""
+    [ "$_suppress_separator" = true ] ||
     logmsg "==================================="
     logmsg "Trying to compile test program"
 
@@ -678,7 +681,6 @@ try_compile_run_cpp_program() {
         logmsg "Compiler error message:"
         cat ${_log} >> $logfile
 	logmsg "==================================="
-	logmsg ""
 	return 1
     }
 
@@ -697,7 +699,6 @@ try_compile_run_cpp_program() {
     fi
 
     logmsg "==================================="
-    logmsg ""
 
     return 0
 }
