@@ -1921,9 +1921,9 @@ if test $# -gt 0 ; then
     done
 fi
 
-check_algorithms
 guess_machine_word_size
 check_platform
+check_algorithms
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
