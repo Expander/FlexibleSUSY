@@ -96,7 +96,8 @@ ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh
 TEST_SRC += \
-		$(DIR)/test_MSSM_slha_input.cpp
+		$(DIR)/test_MSSM_slha_input.cpp \
+		$(DIR)/test_MSSM_info.cpp
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
@@ -254,6 +255,8 @@ $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_MSSM_info.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
