@@ -76,6 +76,21 @@ void print_build_info(std::ostream& ostr)
       "Fortran compiler (FC):           " FC "\n"
       "Fortran compiler flags (FFLAGS): " FFLAGS "\n"
       "Fortran libraries (FLIBS):       " FLIBS "\n"
+      "\n"
+      "Multi-threading:                 "
+#ifdef ENABLE_THREADS
+      "enabled"
+#else
+      "disabled"
+#endif
+      "\n"
+      "Use LoopTools:                   "
+#ifdef ENABLE_LOOPTOOLS
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
       ;
 }
 
