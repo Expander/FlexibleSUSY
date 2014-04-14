@@ -119,7 +119,8 @@ TEST_META := \
 		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/test_TextFormatting.m \
-		$(DIR)/test_ThresholdCorrections.m
+		$(DIR)/test_ThresholdCorrections.m \
+		$(DIR)/test_Vertices.m
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
