@@ -3,18 +3,23 @@
 #define BOOST_TEST_MODULE test_MSSM_info
 
 #include <boost/test/unit_test.hpp>
+#include <cstdlib>
 
 #include "MSSM_two_scale_model.hpp"
 #include "MSSM_info.hpp"
 
 using namespace flexiblesusy;
 
+double get_random() {
+   return 1.0 * rand() / RAND_MAX;
+}
+
 #define TEST_SCALAR(p)                                                  \
    {                                                                    \
       MSSM<Two_scale> mssm;                                             \
       BOOST_CHECK_EQUAL(mssm.get_##p(), 0.0);                           \
       Eigen::ArrayXd parameters(mssm.get_number_of_parameters());       \
-      const double value = 0.1;                                         \
+      const double value = get_random();                                \
       parameters(MSSM_info::p) = value;                                 \
       mssm.set(parameters);                                             \
       BOOST_CHECK_EQUAL(mssm.get_##p(), value);                         \
@@ -28,9 +33,9 @@ using namespace flexiblesusy;
             BOOST_CHECK_EQUAL(mssm.get_##p(i,k), 0.0);                  \
       Eigen::ArrayXd parameters(mssm.get_number_of_parameters());       \
       Eigen::Matrix<double,3,3> p;                                      \
-      p << 0.1, 0.2, 0.3,                                               \
-         0.4, 0.5, 0.6,                                                 \
-         0.7, 0.8, 0.9;                                                 \
+      p << get_random(), get_random(), get_random(),                    \
+         get_random(), get_random(), get_random(),                      \
+         get_random(), get_random(), get_random();                      \
       parameters(MSSM_info::p##00) = p(0,0);                            \
       parameters(MSSM_info::p##01) = p(0,1);                            \
       parameters(MSSM_info::p##02) = p(0,2);                            \
@@ -55,6 +60,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_parameter_enum )
    // If this test works, then the user can fill a parameter vector
    // using the enum entries and then set all model parameters at once
    // via the set() function.
+
+   srand(1);
 
    {
       MSSM<Two_scale> mssm;
