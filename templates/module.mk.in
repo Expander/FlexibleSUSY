@@ -103,7 +103,11 @@ SARAH_MODEL_FILES_@CLASSNAME@ := \
 
 all-$(MODNAME): $(LIB@CLASSNAME@)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(LIB@CLASSNAME@_DEP)
+		-rm -f $(EXE@CLASSNAME@_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIB@CLASSNAME@_OBJ)
 		-rm -f $(EXE@CLASSNAME@_OBJ)
 
@@ -112,10 +116,10 @@ clean-$(MODNAME)-src:
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIB@CLASSNAME@_DEP)
 		-rm -f $(LIB@CLASSNAME@)
-		-rm -f $(EXE@CLASSNAME@_DEP)
 		-rm -f $(RUN_@CLASSNAME@_EXE)
 		-rm -f $(SCAN_@CLASSNAME@_EXE)
 

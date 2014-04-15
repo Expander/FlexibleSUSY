@@ -19,11 +19,15 @@ LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 all-$(MODNAME): $(LIBLEGACY)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBLEGACY_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIBLEGACY_OBJ)
 
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBLEGACY_DEP)
 		-rm -f $(LIBLEGACY)
 
 clean::         clean-$(MODNAME)

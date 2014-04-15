@@ -54,11 +54,15 @@ LIBFLEXI     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 all-$(MODNAME): $(LIBFLEXI)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBFLEXI_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIBFLEXI_OBJ)
 
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBFLEXI_DEP)
 		-rm -f $(LIBFLEXI)
 
 clean::         clean-$(MODNAME)
