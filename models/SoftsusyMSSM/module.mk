@@ -41,15 +41,19 @@ RUN_SoftsusyMSSM_EXE := \
 
 all-$(MODNAME): $(LIBSoftsusyMSSM)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBSoftsusyMSSM_DEP)
+		-rm -f $(EXESoftsusyMSSM_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIBSoftsusyMSSM_OBJ)
 		-rm -f $(EXESoftsusyMSSM_OBJ)
 
-distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBSoftsusyMSSM_DEP)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSoftsusyMSSM)
-		-rm -f $(EXESoftsusyMSSM_DEP)
 		-rm -f $(RUN_SoftsusyMSSM_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 
 clean::         clean-$(MODNAME)
 

@@ -158,10 +158,10 @@ clean-$(MODNAME)-log:
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
                   clean-$(MODNAME)-log
-
-distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(LIBTEST)
 		-rm -f $(TEST_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@

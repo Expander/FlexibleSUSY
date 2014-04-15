@@ -41,14 +41,18 @@ LIBFMSSMN      := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 all-$(MODNAME): $(LIBFMSSMN)
 
-clean-$(MODNAME):
-		rm -rf $(LIBFMSSMN_OBJ)
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBFMSSMN_DEP)
+
+clean-$(MODNAME)-obj:
+		-rm -f $(LIBFMSSMN_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIBFMSSMN)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBFMSSMN_DEP)
-		rm -rf $(LIBFMSSMN)
-		rm -rf $(LIBFMSSMN_GENERATED_SRC)
-		rm -rf $(LIBFMSSMN_INC)
+		-rm -f $(LIBFMSSMN_GENERATED_SRC)
+		-rm -f $(LIBFMSSMN_INC)
 
 clean::         clean-$(MODNAME)
 

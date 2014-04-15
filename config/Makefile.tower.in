@@ -83,10 +83,10 @@ clean-obj:
 		-rm -f $(TOWER_OBJ)
 
 clean: clean-dep clean-obj
+		-rm -f $(TOWER_EXE)
 
 distclean: clean
 		-rm -f Makefile
-		-rm -f $(TOWER_EXE)
 
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 

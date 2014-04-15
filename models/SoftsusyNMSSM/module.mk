@@ -49,15 +49,19 @@ RUN_SOFTPOINT_EXE := \
 
 all-$(MODNAME): $(LIBSoftsusyNMSSM)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBSoftsusyNMSSM_DEP)
+		-rm -f $(EXESoftsusyNMSSM_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIBSoftsusyNMSSM_OBJ)
 		-rm -f $(EXESoftsusyNMSSM_OBJ)
 
-distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBSoftsusyNMSSM_DEP)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBSoftsusyNMSSM)
-		-rm -f $(EXESoftsusyNMSSM_DEP)
 		-rm -f $(RUN_SOFTPOINT_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 
 clean::         clean-$(MODNAME)
 

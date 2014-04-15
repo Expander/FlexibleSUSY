@@ -75,10 +75,10 @@ clean-obj:
 		-rm -f $(STANDALONE_OBJ)
 
 clean: clean-dep clean-obj
+		-rm -f $(STANDALONE_EXE)
 
 distclean: clean
 		-rm -f Makefile
-		-rm -f $(STANDALONE_EXE)
 
 $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 

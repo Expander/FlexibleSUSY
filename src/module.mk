@@ -61,9 +61,9 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBFLEXI_OBJ)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIBFLEXI)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBFLEXI)
 
 clean::         clean-$(MODNAME)
 

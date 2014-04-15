@@ -26,9 +26,9 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBLEGACY_OBJ)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIBLEGACY)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBLEGACY)
 
 clean::         clean-$(MODNAME)
 

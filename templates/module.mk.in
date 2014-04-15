@@ -117,11 +117,11 @@ clean-$(MODNAME)-src:
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
-
-distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(LIB@CLASSNAME@)
 		-rm -f $(RUN_@CLASSNAME@_EXE)
 		-rm -f $(SCAN_@CLASSNAME@_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 
 clean::         clean-$(MODNAME)
 

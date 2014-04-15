@@ -40,14 +40,18 @@ LIBFMSSM      := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 all-$(MODNAME): $(LIBFMSSM)
 
-clean-$(MODNAME):
-		rm -rf $(LIBFMSSM_OBJ)
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBFMSSM_DEP)
+
+clean-$(MODNAME)-obj:
+		-rm -f $(LIBFMSSM_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIBFMSSM)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBFMSSM_DEP)
-		rm -rf $(LIBFMSSM)
-		rm -rf $(LIBFMSSM_GENERATED_SRC)
-		rm -rf $(LIBFMSSM_INC)
+		-rm -f $(LIBFMSSM_GENERATED_SRC)
+		-rm -f $(LIBFMSSM_INC)
 
 clean::         clean-$(MODNAME)
 
