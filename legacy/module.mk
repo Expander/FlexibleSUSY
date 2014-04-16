@@ -32,9 +32,9 @@ all-$(MODNAME): $(LIBLEGACY)
 ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(LIBLEGACY_INSTALL_DIR)
-		install -m 0 $(LIBLEGACY_SRC) $(LIBLEGACY_INSTALL_DIR)
-		install -m 0 $(LIBLEGACY_HDR) $(LIBLEGACY_INSTALL_DIR)
-		install -m 0 $(LIBLEGACY_MK) $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_SRC) $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_HDR) $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_MK) $(LIBLEGACY_INSTALL_DIR)
 endif
 
 clean-$(MODNAME)-dep:
