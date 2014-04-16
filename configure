@@ -770,6 +770,25 @@ is_empty_dir() {
 }
 
 #_____________________________________________________________________
+check_install() {
+    if test -z "${INSTALL_DIR}"; then
+        return 0
+    fi
+
+    checking_msg "availability of install"
+
+    if exists_in_path "install"; then
+        result "ok"
+    else
+        result "no ok"
+        message "Error: The installation program \`install' needs to be installed."
+        message "   \`install' is part of the GNU coreutils and can be downloaded from"
+        message "   https://www.gnu.org/software/coreutils/"
+        exit 1
+    fi
+}
+
+#_____________________________________________________________________
 check_install_dir() {
     if test -z "${INSTALL_DIR}"; then
         return 0
@@ -1895,6 +1914,7 @@ log_package_information
 guess_machine_word_size
 check_platform
 check_algorithms
+check_install
 check_install_dir
 
 if test "x${enable_compile}" = "xyes"; then
