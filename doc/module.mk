@@ -1,6 +1,15 @@
 DIR          := doc
 MODNAME      := doc
 
+DOC_MK       := \
+		$(DIR)/module.mk
+
+DOC_TMPL     := \
+		$(DIR)/mainpage.dox.in \
+		$(DIR)/version.tex.in
+
+DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+
 HTML_OUTPUT_DIR := $(DIR)/html
 PDF_OUTPUT_DIR  := $(DIR)
 INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
@@ -34,6 +43,12 @@ doc-pdf: $(MANUAL_PDF) $(PAPER_PDF)
 doc-html: $(INDEX_PADE)
 
 all-$(MODNAME): doc-html doc-pdf
+
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(DOC_TMPL) $(DOC_INSTALL_DIR)
+endif
 
 clean-$(MODNAME):
 		-rm -f $(LATEX_TMP)
