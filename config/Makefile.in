@@ -72,7 +72,7 @@ all:     alllib allexec
 endif
 
 install-src::
-	mkdir -p $(INSTALL_DIR)
+	install -d $(INSTALL_DIR)
 
 ifeq ($(ENABLE_META),yes)
 install-src:: allsrc
