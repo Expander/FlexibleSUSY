@@ -2,6 +2,7 @@
 PKGNAME            := @PKGNAME@
 VERSION            := @FLEXIBLESUSY_VERSION@
 ABSBASEDIR         := @ABSBASEDIR@
+INSTALL_DIR        := @INSTALL_DIR@
 
 # Makefile modules
 MODELS             := @MODELS@
@@ -130,6 +131,7 @@ showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
 	@echo "VERSION            = $(VERSION)"
 	@echo "ABSBASEDIR         = $(ABSBASEDIR)"
+	@echo "INSTALL_DIR        = $(INSTALL_DIR)"
 	@echo ""
 	@echo "MATH               = $(MATH)"
 	@echo "MODELS             = $(MODELS)"

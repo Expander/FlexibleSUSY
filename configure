@@ -134,6 +134,7 @@ EIGENFLAGS=""
 FC="gfortran"
 FOR_DEP_GEN="${FC}"
 GSLLIBS=""
+INSTALL_DIR=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
@@ -756,6 +757,45 @@ exists_in_path () {
 	alias\ *) return 1 ;; # alias
 	*) return 1 ;; # built-in or function
     esac
+}
+
+#_____________________________________________________________________
+is_empty_dir() {
+    if test $# -ne 1 ; then
+        echo "is_empty_dir: Exactly one argument required"
+        return 1
+    fi
+
+    find $1 -maxdepth 0 -empty | read v
+}
+
+#_____________________________________________________________________
+check_install_dir() {
+    if test -z "${INSTALL_DIR}"; then
+        return 0
+    fi
+
+    checking_msg "source code installation directory"
+
+    # take absolute path (even for non-existing directory)
+    INSTALL_DIR="`readlink -f ${INSTALL_DIR}`"
+
+    # check if $INSTALL_DIR exists
+    if test -d "${INSTALL_DIR}"; then
+        # check if $INSTALL_DIR is empty
+        if is_empty_dir "${INSTALL_DIR}"; then
+            result "ok"
+        else
+            result "ok"
+            message "Warning: Source code installation directory is non-empty."
+            message "   Existing files might be overwritten!"
+        fi
+    else
+        result "ok"
+        logmsg "Source code installation directory does not exist."
+    fi
+
+    logmsg "Source code installation directory: ${INSTALL_DIR}"
 }
 
 #_____________________________________________________________________
@@ -1749,6 +1789,7 @@ Package directories, compilation settings and model selection
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
   --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
+  --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
@@ -1837,6 +1878,7 @@ if test $# -gt 0 ; then
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
+            --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
@@ -1856,6 +1898,7 @@ log_package_information
 guess_machine_word_size
 check_platform
 check_algorithms
+check_install_dir
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
@@ -1907,6 +1950,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
