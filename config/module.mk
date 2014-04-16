@@ -29,8 +29,8 @@ all-$(MODNAME):
 ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(CONFIG_INSTALL_DIR)
-		install $(CONFIG_TMPL) $(CONFIG_INSTALL_DIR)
-		install $(CONFIG_MK) $(CONFIG_INSTALL_DIR)
+		install -m 0 $(CONFIG_TMPL) $(CONFIG_INSTALL_DIR)
+		install -m 0 $(CONFIG_MK) $(CONFIG_INSTALL_DIR)
 endif
 
 clean-$(MODNAME):
