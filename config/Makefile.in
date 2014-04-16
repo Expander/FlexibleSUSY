@@ -72,7 +72,8 @@ all:     alllib allexec
 endif
 
 ifeq ($(INSTALL_DIR),)
-$(error Installation directory is not set!  Please run `./configure --with-install-dir=/path/to/install/dir' to set it.)
+install-src::
+	$(error Installation directory is not set!  Please run `./configure --with-install-dir=/path/to/install/dir' to set it.)
 else
 install-src::
 	install -d $(INSTALL_DIR)
