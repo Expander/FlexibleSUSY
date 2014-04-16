@@ -126,11 +126,13 @@ LIBFLEXI_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
 all-$(MODNAME): $(LIBFLEXI)
 
+ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(LIBFLEXI_INSTALL_DIR)
 		install $(LIBFLEXI_SRC) $(LIBFLEXI_INSTALL_DIR)
 		install $(LIBFLEXI_HDR) $(LIBFLEXI_INSTALL_DIR)
 		install $(LIBFLEXI_MK) $(LIBFLEXI_INSTALL_DIR)
+endif
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBFLEXI_DEP)

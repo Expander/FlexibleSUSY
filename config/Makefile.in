@@ -71,11 +71,15 @@ ifeq ($(ENABLE_COMPILE),yes)
 all:     alllib allexec
 endif
 
+ifeq ($(INSTALL_DIR),)
+$(error Installation directory is not set!  Please run `./configure --with-install-dir=/path/to/install/dir' to set it.)
+else
 install-src::
 	install -d $(INSTALL_DIR)
 
 ifeq ($(ENABLE_META),yes)
 install-src:: allsrc
+endif
 endif
 
 include config/abspathx.mk
