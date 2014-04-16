@@ -2,8 +2,15 @@ DIR          := @DIR@
 MODNAME      := @CLASSNAME@
 SARAH_MODEL  := @MODEL@
 
+@CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+
+@CLASSNAME@_MK     := \
+		$(DIR)/module.mk
+
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
+
+LIB@CLASSNAME@_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
@@ -22,6 +29,27 @@ LIB@CLASSNAME@_SRC += \
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
+LIB@CLASSNAME@_HDR += \
+		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
+		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_info.hpp \
+		$(DIR)/@CLASSNAME@_initial_guesser.hpp \
+		$(DIR)/@CLASSNAME@_input_parameters.hpp \
+		$(DIR)/@CLASSNAME@_low_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_model.hpp \
+		$(DIR)/@CLASSNAME@_physical.hpp \
+		$(DIR)/@CLASSNAME@_slha_io.hpp \
+		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
+		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_utilities.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_convergence_tester.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_initial_guesser.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_model.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp
 
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
@@ -65,6 +93,25 @@ LIB@CLASSNAME@_SRC += \
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
+LIB@CLASSNAME@_HDR += \
+		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
+		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_info.hpp \
+		$(DIR)/@CLASSNAME@_initial_guesser.hpp \
+		$(DIR)/@CLASSNAME@_input_parameters.hpp \
+		$(DIR)/@CLASSNAME@_low_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_model.hpp \
+		$(DIR)/@CLASSNAME@_physical.hpp \
+		$(DIR)/@CLASSNAME@_slha_io.hpp \
+		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
+		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_utilities.hpp \
+		$(DIR)/@CLASSNAME@_lattice_convergence_tester.hpp \
+		$(DIR)/@CLASSNAME@_lattice_high_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_lattice_initial_guesser.hpp \
+		$(DIR)/@CLASSNAME@_lattice_low_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_lattice_model.hpp \
+		$(DIR)/@CLASSNAME@_lattice_susy_scale_constraint.hpp
 endif
 
 # remove duplicates in case all algorithms are used
@@ -102,6 +149,15 @@ SARAH_MODEL_FILES_@CLASSNAME@ := \
 		distclean-$(MODNAME) run-metacode-$(MODNAME)
 
 all-$(MODNAME): $(LIB@CLASSNAME@)
+
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(@CLASSNAME@_INSTALL_DIR)
+		install $(LIB@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
+		install $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
+		install $(@CLASSNAME@_MK) $(@CLASSNAME@_INSTALL_DIR)
+endif
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIB@CLASSNAME@_DEP)
