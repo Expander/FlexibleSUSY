@@ -777,9 +777,6 @@ check_install_dir() {
 
     checking_msg "source code installation directory"
 
-    # take absolute path (even for non-existing directory)
-    INSTALL_DIR="`readlink -f ${INSTALL_DIR}`"
-
     # check if $INSTALL_DIR exists
     if test -d "${INSTALL_DIR}"; then
         # check if $INSTALL_DIR is empty
