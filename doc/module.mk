@@ -48,6 +48,7 @@ ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(DOC_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(DOC_TMPL) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(DOC_MK) $(DOC_INSTALL_DIR)
 endif
 
 clean-$(MODNAME):
