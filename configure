@@ -2001,6 +2001,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
 
+# BEGIN: NOT EXPORTED ##########################################
+
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
@@ -2066,6 +2068,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $TOWER_MAKEFILE_TMPL | tee $TOWER_MAKEFILES > /dev/null
+
+# END:   NOT EXPORTED ##########################################
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
