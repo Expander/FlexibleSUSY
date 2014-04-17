@@ -174,8 +174,10 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME)-src:
 		-rm -f $(LIB@CLASSNAME@_SRC)
+		-rm -f $(LIB@CLASSNAME@_HDR)
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
+		-rm -f $(@CLASSNAME@_TWO_SCALE_MK)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIB@CLASSNAME@)
