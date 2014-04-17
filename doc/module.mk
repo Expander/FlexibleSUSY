@@ -10,6 +10,9 @@ DOC_TMPL     := \
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
+DOC_VERSION_TEX := \
+		$(DIR)/version.tex
+
 HTML_OUTPUT_DIR := $(DIR)/html
 PDF_OUTPUT_DIR  := $(DIR)
 INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
@@ -18,7 +21,7 @@ DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
 MANUAL_SRC      := \
 		$(DIR)/flexiblesusy.tex \
-		$(DIR)/version.tex \
+		$(DOC_VERSION_TEX) \
 		$(DIR)/chapters/overview.tex \
 		$(DIR)/chapters/quick_start.tex \
 		$(DIR)/chapters/usage.tex \
@@ -58,6 +61,7 @@ distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -rf $(HTML_OUTPUT_DIR)
 		-rm -f $(DOXYGEN_MAINPAGE)
 		-rm -f $(MANUAL_PDF) $(PAPER_PDF)
+		-rm -f $(DOC_VERSION_TEX)
 
 clean::         clean-$(MODNAME)
 
