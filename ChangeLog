@@ -46,6 +46,9 @@ FlexibleSUSY-0.5.4 [not released yet]
 
  * lower required g++ version to 4.4.7
 
+ * Enable source code export without the meta code via `make
+   install-src'.
+
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
  * Bugfix (commit 44903c): correcting malformed print out in
