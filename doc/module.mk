@@ -19,13 +19,24 @@ INDEX_PADE      := $(HTML_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
 DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 MANUAL_PDF      := $(PDF_OUTPUT_DIR)/flexiblesusy.pdf
-MANUAL_SRC      := \
-		$(DIR)/flexiblesusy.tex \
-		$(DOC_VERSION_TEX) \
+MANUAL_BIB      := \
+		$(DIR)/bibliography.bib
+MANUAL_STY      := \
+		$(DIR)/tikz-uml.sty \
+		$(DIR)/xstring.sty \
+		$(DIR)/xstring.tex
+MANUAL_SRC_MAIN := \
+		$(DIR)/flexiblesusy.tex
+MANUAL_SRC_CHAP := \
 		$(DIR)/chapters/overview.tex \
 		$(DIR)/chapters/quick_start.tex \
 		$(DIR)/chapters/usage.tex \
 		$(DIR)/chapters/output.tex
+MANUAL_SRC      := \
+		$(MANUAL_SRC_MAIN) \
+		$(MANUAL_SRC_CHAP) \
+		$(DOC_VERSION_TEX)
+
 PAPER_PDF       := $(PDF_OUTPUT_DIR)/paper.pdf
 PAPER_SRC       := $(DIR)/paper.tex
 
@@ -52,6 +63,13 @@ install-src::
 		install -d $(DOC_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(DOC_TMPL) $(DOC_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(DOC_MK) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(DOXYFILE) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(PAPER_SRC) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(MANUAL_SRC_MAIN) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(MANUAL_BIB) $(DOC_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(MANUAL_STY) $(DOC_INSTALL_DIR)
+		install -d $(DOC_INSTALL_DIR)/chapters
+		install -m u=rw,g=r,o=r $(MANUAL_SRC_CHAP) $(DOC_INSTALL_DIR)/chapters
 endif
 
 clean-$(MODNAME):
