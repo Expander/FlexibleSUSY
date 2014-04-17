@@ -88,18 +88,27 @@ options="                    \
    enable_compiler_warnings  \
    enable_debug              \
    enable_looptools          \
-   enable_meta               \
    enable_silent             \
    enable_static_libs        \
    enable_threads            \
    enable_verbose            \
 "
+
+# BEGIN: NOT EXPORTED ##########################################
+options="${options}          \
+   enable_meta               \
+"
+# END:   NOT EXPORTED ##########################################
+
 enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
+enable_meta="no"
+# BEGIN: NOT EXPORTED ##########################################
 enable_meta="yes"
+# END:   NOT EXPORTED ##########################################
 enable_silent="no"
 enable_static_libs="yes"
 enable_threads="yes"
@@ -134,6 +143,7 @@ EIGENFLAGS=""
 FC="gfortran"
 FOR_DEP_GEN="${FC}"
 GSLLIBS=""
+INSTALL_DIR=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
@@ -756,6 +766,61 @@ exists_in_path () {
 	alias\ *) return 1 ;; # alias
 	*) return 1 ;; # built-in or function
     esac
+}
+
+#_____________________________________________________________________
+is_empty_dir() {
+    if test $# -ne 1 ; then
+        echo "is_empty_dir: Exactly one argument required"
+        return 1
+    fi
+
+    find $1 -maxdepth 0 -empty | read v
+}
+
+#_____________________________________________________________________
+check_install() {
+    if test -z "${INSTALL_DIR}"; then
+        return 0
+    fi
+
+    checking_msg "availability of install"
+
+    if exists_in_path "install"; then
+        result "ok"
+    else
+        result "no ok"
+        message "Error: The installation program \`install' needs to be installed."
+        message "   \`install' is part of the GNU coreutils and can be downloaded from"
+        message "   https://www.gnu.org/software/coreutils/"
+        exit 1
+    fi
+}
+
+#_____________________________________________________________________
+check_install_dir() {
+    if test -z "${INSTALL_DIR}"; then
+        return 0
+    fi
+
+    checking_msg "source code installation directory"
+
+    # check if $INSTALL_DIR exists
+    if test -d "${INSTALL_DIR}"; then
+        # check if $INSTALL_DIR is empty
+        if is_empty_dir "${INSTALL_DIR}"; then
+            result "ok"
+        else
+            result "ok"
+            message "Warning: Source code installation directory is non-empty."
+            message "   Existing files might be overwritten!"
+        fi
+    else
+        result "ok"
+        logmsg "Source code installation directory does not exist."
+    fi
+
+    logmsg "Source code installation directory: ${INSTALL_DIR}"
 }
 
 #_____________________________________________________________________
@@ -1728,7 +1793,13 @@ enable/disable options, prefix with either --enable- or --disable-
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
+EOF
+# BEGIN: NOT EXPORTED ##########################################
+cat <<EOF
   meta              Create model classes (default: $enable_meta)
+EOF
+# END:   NOT EXPORTED ##########################################
+cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
   static-libs       Create static libraries (default: $enable_static_libs)
   threads           Enable multi-threading (default: $enable_threads)
@@ -1749,12 +1820,19 @@ Package directories, compilation settings and model selection
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
   --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
+  --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+EOF
+# BEGIN: NOT EXPORTED ##########################################
+cat <<EOF
   --with-math-cmd=          Mathematic kernel (default: $MATH)
+EOF
+# END:   NOT EXPORTED ##########################################
+cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
@@ -1837,6 +1915,7 @@ if test $# -gt 0 ; then
             --with-fflags=*)         FFLAGS=$optarg ;;
             --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
+            --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
@@ -1856,6 +1935,8 @@ log_package_information
 guess_machine_word_size
 check_platform
 check_algorithms
+check_install
+check_install_dir
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
@@ -1907,6 +1988,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
@@ -1939,6 +2021,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $MAKEFILE_TMPL > $MAKEFILE
+
+# BEGIN: NOT EXPORTED ##########################################
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
@@ -2005,6 +2089,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
     -e "s|@LIBEXT@|$LIBEXT|"           \
     < $TOWER_MAKEFILE_TMPL | tee $TOWER_MAKEFILES > /dev/null
+
+# END:   NOT EXPORTED ##########################################
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \

@@ -2,11 +2,18 @@
 PKGNAME            := @PKGNAME@
 VERSION            := @FLEXIBLESUSY_VERSION@
 ABSBASEDIR         := @ABSBASEDIR@
+INSTALL_DIR        := @INSTALL_DIR@
 
 # Makefile modules
 MODELS             := @MODELS@
-MODULES            := config src legacy slhaea meta templates \
-                      $(MODELS) test examples doc
+MODULES            := config src legacy slhaea doc
+# BEGIN: NOT EXPORTED ##########################################
+MODULES            += meta templates
+# END:   NOT EXPORTED ##########################################
+MODULES            += $(MODELS)
+# BEGIN: NOT EXPORTED ##########################################
+MODULES            += test examples
+# END:   NOT EXPORTED ##########################################
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
@@ -59,6 +66,10 @@ FSCONFIG := @FSCONFIG@
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
 
+# script which installs a file without export markers
+INSTALL_STRIPPED := \
+		$(ABSBASEDIR)/config/install_stripped.sh
+
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep depend distclean showbuild tag release
 
@@ -70,11 +81,25 @@ ifeq ($(ENABLE_COMPILE),yes)
 all:     alllib allexec
 endif
 
+ifeq ($(INSTALL_DIR),)
+install-src::
+	$(error Installation directory is not set!  To set in please run: ./configure --with-install-dir=/path/to/install/dir)
+else
+install-src::
+	install -d $(INSTALL_DIR)
+	$(INSTALL_STRIPPED) $(ABSBASEDIR)/configure $(INSTALL_DIR)/configure -m u=rwx,g=r,o=r
+
+ifeq ($(ENABLE_META),yes)
+install-src:: allsrc
+endif
+endif
+
 include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),install-src)
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
@@ -85,6 +110,7 @@ ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -130,6 +156,7 @@ showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
 	@echo "VERSION            = $(VERSION)"
 	@echo "ABSBASEDIR         = $(ABSBASEDIR)"
+	@echo "INSTALL_DIR        = $(INSTALL_DIR)"
 	@echo ""
 	@echo "MATH               = $(MATH)"
 	@echo "MODELS             = $(MODELS)"
