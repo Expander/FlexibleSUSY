@@ -24,6 +24,9 @@ REQUIRED_SARAH_VERSION_FILE := \
 FLEXIBLESUSY_VERSION_FILE := \
 		$(DIR)/version
 
+REMOVE_EXPORT_MARKERS := \
+		$(DIR)/remove_export_markers.sh
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME):
@@ -33,7 +36,9 @@ install-src::
 		install -d $(CONFIG_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(CONFIG_TMPL) $(CONFIG_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(CONFIG_MK) $(CONFIG_INSTALL_DIR)
-		$(INSTALL_STRIPPED) $(MAKEFILE_IN) $(INSTALL_DIR)/$(MAKEFILE_IN) -m u=rw,g=r,o=r
+		$(INSTALL_STRIPPED) $(MAKEFILE_IN) $(CONFIG_INSTALL_DIR) -m u=rw,g=r,o=r
+		$(INSTALL_STRIPPED) $(REMOVE_EXPORT_MARKERS) $(CONFIG_INSTALL_DIR) -m u=rwx,g=r,o=r
+		$(INSTALL_STRIPPED) $(INSTALL_STRIPPED) $(CONFIG_INSTALL_DIR) -m u=rwx,g=r,o=r
 endif
 
 clean-$(MODNAME):
