@@ -183,8 +183,8 @@ SARAH_MAJOR="0"
 SARAH_MINOR="0"
 SARAH_PATCH="0"
 
-# Mathematica version
-MATH_VERSION="unknown"
+# Mathematica version (0 = unknown)
+MATH_VERSION="0"
 
 # string to eval when script terminates, normally or not
 actions_at_exit=""
