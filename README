@@ -111,6 +111,32 @@ available in the model directory models/<model>/ .  Otherwise the
 compilation will fail.
 
 
+Exporting the generated source code
+===================================
+
+The generated C++ source code can be exported to a separate directory,
+without the Mathematica meta code.  This exported directory will be a
+complete standalone package, with it's own build system.  To export
+the code, one has to set the target directory during configuration via
+the --with-install-dir= option.  For example
+
+   $ ./configure --with-models=<models> \
+     --with-install-dir=/path/to/export/directory
+
+By running
+
+   $ make install-src
+
+the generated C++ source code for all <models> is copied to
+/path/to/export/directory , together with the non-model specific
+source code from config/ , doc/ , legacy/ , slhaea/ and src/ .
+Afterwards, the standalone package can be build via
+
+   $ cd /path/to/export/directory
+   $ ./configure
+   $ make
+
+
 Dynamic libraries
 =================
 
