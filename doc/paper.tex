@@ -435,11 +435,11 @@ are \code{\\[Mu]} and \code{B[\\[Mu]]}.
 Furthermore, the user has to specify the form of three model
 constraints: low-scale, susy-scale and high-scale constraints.  In \fs
 they are named as \code{LowScale}, \code{SUSYScale} and
-\code{HighScale}.  For each constraint there is a scale definition
-(named after the constraint), an initial guess for the scale
-(concatenation of the constraint name and \code{FirstGuess}) and a
-list of settings to be applied at the constraint (concatenation of the
-constraint name and \code{Input}).
+\code{HighScale}.  For each constraint there is (i) a scale definition
+(named after the constraint), (ii) an initial guess for the scale
+(concatenation of the constraint name and \code{FirstGuess}) and (iii)
+a list of parameter settings to be applied at the scale (concatenation
+of the constraint name and \code{Input}).
 %
 \begin{itemize}
 \item \emph{High-scale constraint:} The high-scale constraint is
@@ -468,6 +468,86 @@ high-scale definition takes the simple form \code{g1 == g2}.  Another
 consequence is that in the calculation of the VEVs $v_u$ and $v_d$
 from $M_Z$ and $\tan\beta$ at the low-scale the GUT-normalization has
 to be taken into account, see above.
+
+The list of parameter settings can contain as elements any of the
+following:
+%
+\begin{itemize}
+\item Two-component lists of the form \code{\{parameter, value\}},
+  which indicates that the \code{parameter} is set to \code{value} at
+  the defined scale.  If the \code{value} should be read from the SLHA
+  input file, it must be written as \code{LHInput[value]}.  Example:
+  %
+  \begin{lstlisting}
+SUSYScaleInput = {
+   {mHd2, m0^2},
+   {mHu2, LHInput[mHu2]}
+};
+  \end{lstlisting}
+  %
+  In this example the parameter \code{mHd2} is set to the value of
+  \code{m0^2}, and \code{mHu2} is set to the value given in the SLHA
+  input file in block \code{MSOFTIN}, entry 22.  The SLHA block names
+  and keys for the MSSM and NMSSM are defined in SARAH's
+  \code{parameters.m} file, see the SARAH manual or
+  \cite{Staub:2010jh}.
+
+\item The function \code{FSMinimize[parameters, function]} can be
+  given, where \code{parameters} is a list of model parameters and
+  \code{function} is a function of these parameters.
+  \code{FSMinimize[parameters, function]} will numericall vary the
+  \code{parameters} until the \code{function} is minimized.  Example:
+  %
+  \begin{lstlisting}
+FSMinimize[{vd,vu},
+           (SM[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2 +
+           (SM[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
+  \end{lstlisting}
+  %
+  Here, the parameters \code{vu} and \code{vd} are varied until the
+  function
+  %
+  \begin{align}
+    \chi^2(v_d,v_u) =
+    \frac{(\texttt{SM[MZ]}-m_Z^\pole)^2}{\sigma_{m_Z}^2} +
+    \frac{(\texttt{SM[MH]}-m_{h_1}^\pole)^2}{\sigma_{m_h}^2}
+  \end{align}
+  %
+  is minimal.  The constants \code{SM[MZ]}, \code{SM[MH]},
+  $\sigma_{m_Z}$ and $\sigma_{m_h}$ are defined in
+  \code{src/ew_input.hpp} to be
+  %
+  \begin{align}
+    \texttt{SM[MZ]} &= 91.1876, &
+    \texttt{SM[MH]} &= 125.9, \\
+    \sigma_{m_Z} &= 0.0021, &
+    \sigma_{m_h} &= 0.4 .
+  \end{align}
+
+\item The function \code{FSFindRoot[parameters, functions]} can be
+  given, where \code{parameters} is a list of model parameters and
+  \code{functions} is a list of functions of these parameters.
+  \code{FSFindRoot[parameters, functions]} will numericall vary the
+  \code{parameters} until the \code{functions} are zero.  Example:
+  %
+  \begin{lstlisting}
+FSFindRoot[{vd,vu},
+           {SM[MZ] - Pole[M[VZ]], SM[MH] - Pole[M[hh[1]]]}]
+  \end{lstlisting}
+  %
+  Here, the parameters \code{vu} and \code{vd} are varied until the
+  vector-like function
+  %
+  \begin{align}
+    f(v_d,v_u) =
+    \begin{pmatrix}
+      \texttt{SM[MZ]} - m_Z^\pole \\
+      \texttt{SM[MH]} - m_{h_1}^\pole
+    \end{pmatrix}
+  \end{align}
+  %
+  is zero.
+\end{itemize}
 
 Finally the user can set an initial guess for the model parameters at
 the low- and high-scale using the variables
