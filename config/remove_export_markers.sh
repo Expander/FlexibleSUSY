@@ -4,7 +4,7 @@
 # The markers are removed as well.
 
 begin_marker="# *BEGIN: *NOT EXPORTED *#*"
-end_marker="# END: *NOT EXPORTED *#*"
+end_marker="# *END: *NOT EXPORTED *#*"
 
 if test $# -lt 1; then
     # read from stdin
