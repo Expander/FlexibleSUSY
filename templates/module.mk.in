@@ -199,41 +199,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
-$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
-$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
-$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
-$(DIR)/scan_@CLASSNAME@.cpp \
-$(DIR)/@CLASSNAME@_slha_io.hpp \
-$(DIR)/@CLASSNAME@_slha_io.cpp \
-$(DIR)/@CLASSNAME@_physical.hpp \
-$(DIR)/@CLASSNAME@_physical.cpp \
-$(DIR)/@CLASSNAME@_model.hpp \
-$(DIR)/@CLASSNAME@_lattice_model.hpp \
-$(DIR)/@CLASSNAME@_lattice_model.cpp \
-$(DIR)/@CLASSNAME@_two_scale_model.hpp \
-$(DIR)/@CLASSNAME@_two_scale_model.cpp \
-$(DIR)/run_@CLASSNAME@.cpp \
-$(DIR)/@CLASSNAME@_high_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_susy_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_low_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_lattice_high_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_two_scale_high_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_lattice_susy_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_lattice_low_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp \
-$(DIR)/@CLASSNAME@_convergence_tester.hpp \
-$(DIR)/@CLASSNAME@_lattice_convergence_tester.cpp \
-$(DIR)/@CLASSNAME@_two_scale_convergence_tester.cpp \
-$(DIR)/@CLASSNAME@_initial_guesser.cpp \
-$(DIR)/@CLASSNAME@_lattice_initial_guesser.cpp \
-$(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp \
-$(DIR)/@CLASSNAME@_info.hpp \
-$(DIR)/@CLASSNAME@_info.cpp \
-$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
-$(DIR)/@CLASSNAME@_utilities.hpp \
-$(DIR)/@CLASSNAME@_utilities.cpp \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) \
 : run-metacode-$(MODNAME)
 		@true
 
