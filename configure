@@ -88,18 +88,27 @@ options="                    \
    enable_compiler_warnings  \
    enable_debug              \
    enable_looptools          \
-   enable_meta               \
    enable_silent             \
    enable_static_libs        \
    enable_threads            \
    enable_verbose            \
 "
+
+# BEGIN: NOT EXPORTED ##########################################
+options="${options}          \
+   enable_meta               \
+"
+# END:   NOT EXPORTED ##########################################
+
 enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
 enable_looptools="no"
+enable_meta="no"
+# BEGIN: NOT EXPORTED ##########################################
 enable_meta="yes"
+# END:   NOT EXPORTED ##########################################
 enable_silent="no"
 enable_static_libs="yes"
 enable_threads="yes"
@@ -1784,7 +1793,13 @@ enable/disable options, prefix with either --enable- or --disable-
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
+EOF
+# BEGIN: NOT EXPORTED ##########################################
+cat <<EOF
   meta              Create model classes (default: $enable_meta)
+EOF
+# END:   NOT EXPORTED ##########################################
+cat <<EOF
   silent            Suppress all command line output (default: $enable_silent)
   static-libs       Create static libraries (default: $enable_static_libs)
   threads           Enable multi-threading (default: $enable_threads)
@@ -1811,7 +1826,13 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+EOF
+# BEGIN: NOT EXPORTED ##########################################
+cat <<EOF
   --with-math-cmd=          Mathematic kernel (default: $MATH)
+EOF
+# END:   NOT EXPORTED ##########################################
+cat <<EOF
   --with-models=            Comma separated list of models to be build
                             (default: $MODELS)
                             possible values: all <model1>,<model2>,...
