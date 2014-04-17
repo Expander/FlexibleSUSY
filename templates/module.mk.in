@@ -7,6 +7,10 @@ SARAH_MODEL  := @MODEL@
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
 
+@CLASSNAME@_TWO_SCALE_MK := \
+		$(DIR)/two_scale_susy.mk \
+		$(DIR)/two_scale_soft.mk
+
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
 
@@ -157,6 +161,7 @@ install-src::
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(@CLASSNAME@_MK) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(@CLASSNAME@_TWO_SCALE_MK) $(@CLASSNAME@_INSTALL_DIR)
 endif
 
 clean-$(MODNAME)-dep:
