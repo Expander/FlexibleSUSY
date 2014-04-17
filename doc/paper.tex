@@ -396,13 +396,19 @@ LowScale = SM[MZ];
 LowScaleFirstGuess = SM[MZ];
 
 LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]}
+   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
 };
 
 InitialGuessAtHighScale = {
@@ -490,7 +496,12 @@ SUSYScaleInput = {
   input file in block \code{MSOFTIN}, entry 22.  The SLHA block names
   and keys for the MSSM and NMSSM are defined in SARAH's
   \code{parameters.m} file, see the SARAH manual or
-  \cite{Staub:2010jh}.
+  \cite{Staub:2010jh}.  The Standard Model Yukawa couplings \code{Yu},
+  \code{Yd}, \code{Ye} can be calculated automatically from the known
+  Standard Model quark and lepton masses, see
+  Section~\ref{sec:calculation-of-yukawa-couplings}.  To enable the
+  automatic calculation, \code{value} must be set to \code{Automatic},
+  see the example above.
 
 \item The function \code{FSMinimize[parameters, function]} can be
   given, where \code{parameters} is a list of model parameters and
@@ -552,9 +563,9 @@ FSFindRoot[{vd,vu},
 Finally the user can set an initial guess for the model parameters at
 the low- and high-scale using the variables
 \code{InitialGuessAtLowScale} and \code{InitialGuessAtHighScale},
-respectively.  Note, that the gauge and Yukawa couplings will be
-guessed automatically at the low-scale from the known Standard Model
-parameters.
+respectively.  Note, that the gauge couplings will be guessed
+automatically at the low-scale from the known Standard Model
+parameters, see Section~\ref{sec:calculation-of-gauge-couplings}.
 
 \fs allows to add leading two-loop contributions to the CP-even Higgs
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
