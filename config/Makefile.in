@@ -6,8 +6,14 @@ INSTALL_DIR        := @INSTALL_DIR@
 
 # Makefile modules
 MODELS             := @MODELS@
-MODULES            := config src legacy slhaea meta templates \
-                      $(MODELS) test examples doc
+MODULES            := config src legacy slhaea doc
+# BEGIN: NOT EXPORTED ##########################################
+MODULES            += meta templates
+# END:   NOT EXPORTED ##########################################
+MODULES            += $(MODELS)
+# BEGIN: NOT EXPORTED ##########################################
+MODULES            += test examples
+# END:   NOT EXPORTED ##########################################
 
 # Variables for Mathematica meta code
 MATH               := @MATH@
@@ -60,6 +66,10 @@ FSCONFIG := @FSCONFIG@
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
 
+# script which installs a file without export markers
+INSTALL_STRIPPED := \
+		$(ABSBASEDIR)/config/install_stripped.sh
+
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep depend distclean showbuild tag release
 
@@ -77,6 +87,7 @@ install-src::
 else
 install-src::
 	install -d $(INSTALL_DIR)
+	$(INSTALL_STRIPPED) $(ABSBASEDIR)/configure $(INSTALL_DIR)/configure -m u=rwx,g=r,o=r
 
 ifeq ($(ENABLE_META),yes)
 install-src:: allsrc

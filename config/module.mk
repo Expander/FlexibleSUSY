@@ -11,10 +11,12 @@ CONFIG_TMPL  := \
 		$(DIR)/abspathx.mk \
 		$(DIR)/config.h.in \
 		$(DIR)/flexiblesusy-config.in \
-		$(DIR)/list_sarah_model_files.sh.in \
-		$(DIR)/Makefile.in
+		$(DIR)/list_sarah_model_files.sh.in
 
 CONFIG_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+
+MAKEFILE_IN  := \
+		$(DIR)/Makefile.in
 
 REQUIRED_SARAH_VERSION_FILE := \
 		$(DIR)/required_sarah_version.m
@@ -31,6 +33,7 @@ install-src::
 		install -d $(CONFIG_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(CONFIG_TMPL) $(CONFIG_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(CONFIG_MK) $(CONFIG_INSTALL_DIR)
+		$(INSTALL_STRIPPED) $(MAKEFILE_IN) $(INSTALL_DIR)/$(MAKEFILE_IN) -m u=rw,g=r,o=r
 endif
 
 clean-$(MODNAME):
