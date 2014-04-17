@@ -73,7 +73,7 @@ endif
 
 ifeq ($(INSTALL_DIR),)
 install-src::
-	$(error Installation directory is not set!  Please run `./configure --with-install-dir=/path/to/install/dir' to set it.)
+	$(error Installation directory is not set!  To set in please run: ./configure --with-install-dir=/path/to/install/dir)
 else
 install-src::
 	install -d $(INSTALL_DIR)
