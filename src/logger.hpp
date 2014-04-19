@@ -34,10 +34,12 @@
  * ERROR(message)
  * FATAL(message)        aborts program execution
  *
- * All output can be disabled if SILENT is defined.
+ * All output can be disabled if ENABLE_SILENT is defined.
  * To define a preprocessor symbol, use either
  *
+ *    #define ENABLE_COLOR_PRINTOUT
  *    #define ENABLE_DEBUG
+ *    #define ENABLE_SILENT
  *    #define ENABLE_VERBOSE
  *
  * or compile via
