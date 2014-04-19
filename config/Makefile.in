@@ -201,3 +201,4 @@ release:
 	git archive --worktree-attributes --format=tar \
 	--prefix=$(PKGNAME)-$(VERSION)/ \
 	v$(VERSION) | gzip > $(PKGNAME)-$(VERSION).tar.gz
+	md5sum $(PKGNAME)-$(VERSION).tar.gz > $(PKGNAME)-$(VERSION).tar.gz.md5
