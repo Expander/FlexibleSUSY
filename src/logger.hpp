@@ -22,6 +22,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cassert>
+#include "config.h"
 
 /**
  * The following message logger macros are available:
