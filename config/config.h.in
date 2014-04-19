@@ -28,6 +28,18 @@
 
 /* Switches */
 
+/* Enable colored printout */
+@DEFINE_ENABLE_COLOR_PRINTOUT@
+
+/* Enable debug mode */
+@DEFINE_ENABLE_DEBUG@
+
+/* Enable silent mode */
+@DEFINE_ENABLE_SILENT@
+
+/* Enable verbose mode */
+@DEFINE_ENABLE_VERBOSE@
+
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@
 

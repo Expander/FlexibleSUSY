@@ -115,9 +115,13 @@ enable_threads="yes"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
+DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
+DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
-DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
+DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
+DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
+DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
 
 boost_lib_dir=""
 boost_inc_dir=""
@@ -1718,11 +1722,15 @@ EOF
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
         message "Enabling colored output -DCOLOR_PRINTOUT"
+        DEFINE_ENABLE_COLOR_PRINTOUT="#define ENABLE_COLOR_PRINTOUT 1"
         CPPFLAGS="$CPPFLAGS -DCOLOR_PRINTOUT"
+    else
+        DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR"
     fi
 
     if test "x$enable_debug" = "xyes" ; then
         message "Enabling debug mode -DDEBUG"
+        DEFINE_ENABLE_DEBUG="#define ENABLE_DEBUG 1"
         CPPFLAGS="$CPPFLAGS -DDEBUG"
         CXXFLAGS="$CXXFLAGS -g"
         FFLAGS="$FFLAGS -g"
@@ -1730,6 +1738,7 @@ enable_defines() {
 
     if test "x$enable_debug" = "xno" ; then
         message "Disabling debug mode and removing assertions -UDEBUG -DNDEBUG"
+        DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
         CPPFLAGS="$CPPFLAGS -UDEBUG -DNDEBUG"
     fi
 
@@ -1745,7 +1754,10 @@ enable_defines() {
 
     if test "x$enable_silent" = "xyes" ; then
         message "Enabling silent mode -DSILENT"
+        DEFINE_ENABLE_SILENT="#define ENABLE_SILENT 1"
         CPPFLAGS="$CPPFLAGS -DSILENT"
+    else
+        DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
     fi
 
     if test "x$enable_static_libs" = "xno" ; then
@@ -1762,6 +1774,7 @@ enable_defines() {
             message "Warning: ignoring --enable-verbose because silent mode is enabled!"
         else
             message "Enabling verbose mode -DVERBOSE"
+            DEFINE_ENABLE_VERBOSE="#define ENABLE_VERBOSE 1"
             CPPFLAGS="$CPPFLAGS -DVERBOSE"
         fi
     fi
@@ -2127,9 +2140,13 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@OPERATING_SYSTEM@|$operating_system|"     \
     -e "s|@KERNEL_VERSION@|$kernel_version|"         \
     -e "s|@DATE@|$DATE|"                             \
-    -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"   \
-    -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|" \
+    -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
+    -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
+    -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
+    -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
+    -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
+    -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
