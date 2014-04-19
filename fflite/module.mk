@@ -6,9 +6,9 @@ LIBFFLITE_SRC := \
 		$(DIR)/ffcb0.F \
 		$(DIR)/ffcb1.F \
 		$(DIR)/ffcb2p.F \
+		$(DIR)/ffcc0.F \
 		$(DIR)/ffcli2.F \
 		$(DIR)/ffinit.F \
-		$(DIR)/ffthre.F \
 		$(DIR)/ffxa0.F \
 		$(DIR)/ffxb0.F \
 		$(DIR)/ffxb1.F \
