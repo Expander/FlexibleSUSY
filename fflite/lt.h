@@ -1,7 +1,7 @@
 * lt.h
 * internal common blocks for the LoopTools routines
 * this file is part of LoopTools
-* last modified 3 Mar 11 th
+* last modified 30 Jan 14 th
 
 
 #include "ff.h"
@@ -13,19 +13,19 @@
 * 4. (not used)
 
 	integer ncaches
-	parameter (ncaches = 8)
+	parameter (ncaches = 10)
 
 	integer*8 cacheptr(4,KIND,ncaches)
 	integer*8 savedptr(2,ncaches)
 	RealType maxdev
-	integer warndigits, errdigits
+	integer epsi, warndigits, errdigits
 	integer serial, versionkey
 	integer debugkey, debugfrom, debugto
 
 	common /ltvars/
      &    cacheptr, savedptr,
      &    maxdev,
-     &    warndigits, errdigits,
+     &    epsi, warndigits, errdigits,
      &    serial, versionkey,
      &    debugkey, debugfrom, debugto
 

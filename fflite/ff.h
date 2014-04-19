@@ -82,7 +82,7 @@
 *	fidl4i:	ier of dl4i (is not included in F0)
 *
 	RealType xloss,precx,precc,xalogm,xclogm,xalog2,xclog2,
-     &		reqprc,pi,pi6,pi12,xlg2,bf(20),
+     &		reqprc,pi,pi6,pi12,xlg2,sqrt2,bf(20),
      &		xninv(30),xn2inv(30),xinfac(30),
      &		fpij2(3,3),fpij3(6,6),fpij4(10,10),fpij5(15,15),
      &		fpij6(21,21),fdel2,fdel3,fdel4s,fdel4,fdl3i(5),
@@ -146,7 +146,8 @@
      &		pi6 = 1.644934066848226436472415166646D0,
      &		pi12 = .822467033424113218236207583323D0,
      &		xlg2 = .6931471805599453094172321214581D0,
-     &          acc = 1D-12,
+     &          sqrt2 = 1.4142135623730950488016887242096981D0,
+     &          acc = 1D-13,
      &          eps = 1D-22,
      &          cIeps = (0D0,1D-50) )
 *
