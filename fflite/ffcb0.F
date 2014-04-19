@@ -10,7 +10,9 @@
 *	calculates the the two-point function (cf 't Hooft and Veltman)	*
 *	we include an overall factor 1/(i*pi^2)	relative to FormF	*
 *									*
-*	Input:	cp	(complex) k2, in B&D metric			*
+*	Input:	d0	(real)	  infinity arising from renormalization	*
+*		xmu	(real)	  renormalization mass			*
+*		cp	(complex) k2, in B&D metric			*
 *		cma	(complex) mass2, re>0, im<0.			*
 *		cmb	(complex) mass2, re>0, im<0.			*
 *									*

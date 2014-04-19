@@ -9,7 +9,9 @@
 *	Calculates the the two-point function (cf 't Hooft and Veltman)	*
 *	we include an overall factor 1/(i*pi^2)	relative to FormF	*
 *									*
-*	Input:	xp	(real)	  k2, in B&D metric			*
+*	Input:	d0	(real)	  infinity arising from renormalization	*
+*		xmu	(real)	  renormalization mass			*
+*		xp	(real)	  k2, in B&D metric			*
 *		xma	(real)	  mass2					*
 *		xmb	(real)	  mass2					*
 *									*

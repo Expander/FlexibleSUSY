@@ -7,7 +7,12 @@
 #include "externals.h"
 #include "types.h"
 
-* Input:	cm	(complex) mass2, re > 0, im < 0.
+* Input:	d0	(real) infinity, result of the
+*			renormalization procedure, the final
+*			answer should not depend on it.
+*		xmm	(real) arbitrary mass2, the final answer
+*			should not depend on this either.
+*		cm	(complex) mass2, re > 0, im < 0.
 * Output:	ca0	(complex) A0, the one-point function,
 *		ier	0 (OK)
 
