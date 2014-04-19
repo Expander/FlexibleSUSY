@@ -1,6 +1,7 @@
 
 #include "diagonalization.hpp"
 #include "wrappers.hpp"
+#include "config.h"
 
 namespace flexiblesusy {
 
@@ -20,7 +21,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
                  DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       ostringstream ii;
@@ -69,7 +70,7 @@ ComplexMatrix phase_rotation(const DoubleVector& v)
 void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       ostringstream ii;
@@ -118,7 +119,7 @@ void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if ((u.displayRows() != w.displayEnd()) ||
        (u.displayCols() != w.displayEnd()) ||
        (w.displayStart() != 1)) {
@@ -149,7 +150,7 @@ void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
 void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
                  DoubleMatrix& v, DoubleVector& eigenvalues)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    const int c = m.displayCols();
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c ||
@@ -190,7 +191,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
 void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u,
                  ComplexMatrix& v, DoubleVector& eigenvalues)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    const int c = m.displayCols();
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c || c > 10) {

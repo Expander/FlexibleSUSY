@@ -148,7 +148,7 @@ public:
    void test(const SoftsusyMSSM_parameter_point& pp, const QedQcd& oneset) {
       // run softsusy
       softsusy::TOLERANCE = 1.0e-4;
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
       softSusy.lowOrg(sugraBcs, pp.mxGuess, pp.get_soft_pars(), pp.signMu, pp.tanBeta, oneset, true);

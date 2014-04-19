@@ -459,7 +459,7 @@ RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
               result = result <>
                        "\
 if (" <> scaleName <> " < " <> value <> ") {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
 " <> IndentText["WARNING(\"" <> scaleName <> " < " <> value <> "\");"] <> "
 #endif
 " <> IndentText[scaleName <> " = " <> value] <> ";
@@ -471,7 +471,7 @@ if (" <> scaleName <> " < " <> value <> ") {
               result = result <>
                        "\
 if (" <> scaleName <> " > " <> value <> ") {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
 " <> IndentText["WARNING(\"" <> scaleName <> " > " <> value <> "\");"] <> "
 #endif
 " <> IndentText[scaleName <> " = " <> value] <> ";

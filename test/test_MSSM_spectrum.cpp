@@ -222,7 +222,7 @@ public:
       softsusy::numRewsbLoops = 1;
       softsusy::numHiggsMassLoops = 1;
       softsusy::TOLERANCE = 1.0e-4;
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
       DoubleVector pars(3);

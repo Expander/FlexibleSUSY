@@ -65,7 +65,7 @@ public:
       softsusy::TOLERANCE = 1.0e-4;
       softsusy::Z3 = true;
       softsusy::GUTlambda = true;
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
       DoubleVector pars(3);

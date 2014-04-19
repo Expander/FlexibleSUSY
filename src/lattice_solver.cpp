@@ -119,7 +119,7 @@ void RGFlow<Lattice>::add_model
 	    throw SetupError(msg.str());
 	}
     }
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
     {
 	stringstream uss, rss, css;
 	for (auto c: us	     ) uss << ' ' << c;
@@ -287,7 +287,7 @@ void RGFlow<Lattice>::increase_density()
 	}
 	vector<vector<size_t>> site_maps = refine_lattice();
 	stringstream heights;
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
 	for (auto& e: efts) heights << ' ' << e.height;
 	VERBOSE_MSG("\n\nentering Newton loop with heights:" <<
 		    heights.str());
@@ -439,7 +439,7 @@ void RGFlow<Lattice>::resample(const vector<vector<size_t>>& site_maps)
 	new_offsets[T] = offset;
 	offset += efts[T].w->width * new_heights[T];
     }
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
     for (size_t T = 0; T < efts.size(); T++) {
 	stringstream maps;
 	maps << "EFT " << T << ":";

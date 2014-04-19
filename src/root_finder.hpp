@@ -162,7 +162,7 @@ int Root_finder<dimension>::find_root(const double start[dimension])
 
    gsl_multiroot_fsolver_set(solver, &f, root);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
    print_state(solver, iter);
 #endif
 
@@ -170,7 +170,7 @@ int Root_finder<dimension>::find_root(const double start[dimension])
       iter++;
       status = gsl_multiroot_fsolver_iterate(solver);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       print_state(solver, iter);
 #endif
 
@@ -180,7 +180,7 @@ int Root_finder<dimension>::find_root(const double start[dimension])
       status = gsl_multiroot_test_residual(solver->f, precision);
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
    printf("\tRoot_finder status = %s\n", gsl_strerror(status));
 #endif
 
