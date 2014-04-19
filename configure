@@ -1721,25 +1721,33 @@ EOF
 #_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
-        message "Enabling colored output -DCOLOR_PRINTOUT"
         DEFINE_ENABLE_COLOR_PRINTOUT="#define ENABLE_COLOR_PRINTOUT 1"
-        CPPFLAGS="$CPPFLAGS -DCOLOR_PRINTOUT"
+        message "Enabling colored output"
+        logmsg "   ${DEFINE_ENABLE_COLOR_PRINTOUT}"
     else
         DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR"
+        logmsg "Disabling colored output"
+        logmsg "   ${DEFINE_ENABLE_COLOR_PRINTOUT}"
     fi
 
     if test "x$enable_debug" = "xyes" ; then
-        message "Enabling debug mode -DDEBUG"
         DEFINE_ENABLE_DEBUG="#define ENABLE_DEBUG 1"
-        CPPFLAGS="$CPPFLAGS -DDEBUG"
         CXXFLAGS="$CXXFLAGS -g"
         FFLAGS="$FFLAGS -g"
-    fi
-
-    if test "x$enable_debug" = "xno" ; then
-        message "Disabling debug mode and removing assertions -UDEBUG -DNDEBUG"
+        message "Enabling debug mode"
+        logmsg "   ${DEFINE_ENABLE_DEBUG}"
+        logmsg "   CXXFLAGS = ${CXXFLAGS}"
+        logmsg "   FFLAGS   = ${FFLAGS}"
+    elif test "x$enable_debug" = "x" ; then
         DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
-        CPPFLAGS="$CPPFLAGS -UDEBUG -DNDEBUG"
+        logmsg "Disabling debug mode"
+        logmsg "   ${DEFINE_ENABLE_DEBUG}"
+    elif test "x$enable_debug" = "xno" ; then
+        DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
+        CPPFLAGS="$CPPFLAGS -DNDEBUG"
+        message "Disabling debug mode and assertions"
+        logmsg "   ${DEFINE_ENABLE_DEBUG}"
+        logmsg "   CPPFLAGS = ${CPPFLAGS}"
     fi
 
     if test "x$enable_looptools" = "xyes" ; then
@@ -1753,11 +1761,14 @@ enable_defines() {
     fi
 
     if test "x$enable_silent" = "xyes" ; then
-        message "Enabling silent mode -DSILENT"
         DEFINE_ENABLE_SILENT="#define ENABLE_SILENT 1"
-        CPPFLAGS="$CPPFLAGS -DSILENT"
+        CPPFLAGS="$CPPFLAGS"
+        message "Enabling silent mode"
+        logmsg "   ${DEFINE_ENABLE_SILENT}"
     else
         DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
+        logmsg "Disabling silent mode"
+        logmsg "   ${DEFINE_ENABLE_SILENT}"
     fi
 
     if test "x$enable_static_libs" = "xno" ; then
@@ -1772,10 +1783,13 @@ enable_defines() {
     if test "x$enable_verbose" = "xyes" ; then
         if test "x$enable_silent" = "xyes" ; then
             message "Warning: ignoring --enable-verbose because silent mode is enabled!"
+            DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
+            logmsg "Disabling verbose mode"
+            logmsg "   ${DEFINE_ENABLE_VERBOSE}"
         else
-            message "Enabling verbose mode -DVERBOSE"
             DEFINE_ENABLE_VERBOSE="#define ENABLE_VERBOSE 1"
-            CPPFLAGS="$CPPFLAGS -DVERBOSE"
+            message "Enabling verbose mode"
+            logmsg "   ${DEFINE_ENABLE_VERBOSE}"
         fi
     fi
 
