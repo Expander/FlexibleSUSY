@@ -195,7 +195,7 @@ showbuild:
 	@echo "$(MODULES)"
 
 tag:
-	git tag v$(VERSION) -m "version $(VERSION)"
+	git tag v$(VERSION)
 
 release:
 	git archive --worktree-attributes --format=tar \
