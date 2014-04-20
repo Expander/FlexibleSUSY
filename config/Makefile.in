@@ -1,6 +1,12 @@
 # Package information
 PKGNAME            := @PKGNAME@
-VERSION            := @FLEXIBLESUSY_VERSION@
+FLEXIBLESUSY_VERSION := @FLEXIBLESUSY_VERSION@
+FLEXIBLESUSY_MAJOR := @FLEXIBLESUSY_MAJOR@
+FLEXIBLESUSY_MINOR := @FLEXIBLESUSY_MINOR@
+FLEXIBLESUSY_PATCH := @FLEXIBLESUSY_PATCH@
+FLEXIBLESUSY_EXTRA := @FLEXIBLESUSY_EXTRA@
+FLEXIBLESUSY_PKG   := $(PKGNAME)-$(FLEXIBLESUSY_VERSION)
+FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
 ABSBASEDIR         := @ABSBASEDIR@
 INSTALL_DIR        := @INSTALL_DIR@
 
@@ -154,7 +160,7 @@ distclean::
 
 showbuild:
 	@echo "PKGNAME            = $(PKGNAME)"
-	@echo "VERSION            = $(VERSION)"
+	@echo "VERSION            = $(FLEXIBLESUSY_VERSION)"
 	@echo "ABSBASEDIR         = $(ABSBASEDIR)"
 	@echo "INSTALL_DIR        = $(INSTALL_DIR)"
 	@echo ""
@@ -195,10 +201,10 @@ showbuild:
 	@echo "$(MODULES)"
 
 tag:
-	git tag v$(VERSION)
+	git tag $(FLEXIBLESUSY_TAG)
 
 release:
 	git archive --worktree-attributes --format=tar \
-	--prefix=$(PKGNAME)-$(VERSION)/ \
-	v$(VERSION) | gzip > $(PKGNAME)-$(VERSION).tar.gz
-	md5sum $(PKGNAME)-$(VERSION).tar.gz > $(PKGNAME)-$(VERSION).tar.gz.md5
+		--prefix=$(FLEXIBLESUSY_PKG)/ \
+		$(FLEXIBLESUSY_TAG) | gzip > $(FLEXIBLESUSY_PKG).tar.gz
+	md5sum $(FLEXIBLESUSY_PKG).tar.gz > $(FLEXIBLESUSY_PKG).tar.gz.md5
