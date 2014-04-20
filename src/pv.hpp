@@ -21,6 +21,7 @@
 
 #include <complex>
 #include "cextensions.hpp"
+#include "config.h"
 
 namespace flexiblesusy {
 

@@ -119,6 +119,7 @@ enable_verbose="no"
 # corresponding preprocessor define statements
 DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
+DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
@@ -1758,9 +1759,13 @@ enable_defines() {
     fi
 
     if test "x$enable_fflite" = "xyes" ; then
-        message "Enabling usage of FF -DENABLE_FFLITE"
-        CPPFLAGS="$CPPFLAGS -DENABLE_FFLITE"
+        DEFINE_ENABLE_FFLITE="#define ENABLE_FFLITE 1"
+        message "Enabling usage of fflite"
+    else
+        DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
+        logmsg "Disabling usage of fflite"
     fi
+    logmsg "   ${DEFINE_ENABLE_FFLITE}"
 
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
@@ -2172,6 +2177,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DATE@|$DATE|"                             \
     -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
+    -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
