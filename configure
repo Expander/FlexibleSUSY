@@ -856,6 +856,11 @@ check_algorithms() {
 
 #_____________________________________________________________________
 check_models() {
+    if test -z "${MODELS}"; then
+        logmsg "No models specified"
+        return 0
+    fi
+
     checking_msg "models"
     models=`echo $MODELS | tr ',' ' '`
     MODELS=""
