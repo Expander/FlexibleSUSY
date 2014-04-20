@@ -830,6 +830,11 @@ check_install_dir() {
 
 #_____________________________________________________________________
 check_algorithms() {
+    if test -z "${ALGORITHMS}"; then
+        logmsg "No RGE solver algorithms specified"
+        return 0
+    fi
+
     checking_msg "RGE solver algorithms"
     algs=`echo $ALGORITHMS | tr ',' ' '`
     ALGORITHMS=""
