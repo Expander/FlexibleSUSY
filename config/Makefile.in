@@ -53,6 +53,15 @@ LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
 THREADLIBS         := @THREADLIBS@
 
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+LOOPFUNCFLAGS	   := $(LOOPTOOLSFLAGS)
+LOOPFUNCLIBS	   := $(LOOPTOOLSLIBS)
+endif
+ifeq ($(ENABLE_FFLITE),yes)
+LOOPFUNCFLAGS	   :=
+LOOPFUNCLIBS	    = $(LIBFFLITE)
+endif
+
 # the modules add their dependency files to this variable
 ALLDEP   :=
 # the modules add soucre files to be created to this variable
@@ -189,8 +198,8 @@ showbuild:
 	@echo "GSLLIBS            = $(GSLLIBS)"
 	@echo "GSLFLAGS           = $(GSLFLAGS)"
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
-	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
-	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
+	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
+	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"

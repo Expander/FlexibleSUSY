@@ -213,8 +213,8 @@ $(DIR)/test_linalg2.x: $(DIR)/test_linalg2.o
 $(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS)
 
-$(DIR)/test_pv.x: $(DIR)/test_pv.o
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(LIBFLEXI) $(LOOPTOOLSLIBS) $(LIBFFLITE) $(FLIBS)
+$(DIR)/test_pv.x: $(DIR)/test_pv.o $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
 $(DIR)/test_rk.x: $(DIR)/test_rk.o $(LIBLEGACY) $(LIBFLEXI)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
@@ -249,72 +249,67 @@ $(DIR)/test_two_scale_sm.x: $(DIR)/test_two_scale_sm.o $(LIBSM) $(LIBFLEXI) $(LI
 $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $^ $(BOOSTTESTLIBS)
 
-ifeq ($(ENABLE_LOOPTOOLS),yes)
-$(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
-else
-$(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
-endif
+$(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
-$(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST)
+$(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_info.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_info.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_higgs_iteration.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_higgs_iteration.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/test_MSSM_slha_output.in.spc
 		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
 
-$(DIR)/test_MSSM_slha_input.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_slha_input.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_initial_guesser.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_low_scale_constraint.x: $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_self_energies.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_self_energies.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_NMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_SMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LOOPTOOLSLIBS) $(LIBFFLITE) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
