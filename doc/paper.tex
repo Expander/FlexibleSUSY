@@ -156,7 +156,7 @@ matter-anti-matter asymmetry of the universe and have been considered
 as the low energy effective models originating from string
 theory.
 
-Detailed phenonenological studies have been carried out for scenarios
+Detailed phenomenological studies have been carried out for scenarios
 within the minimal supersymmetric standard model (MSSM).  Such work
 has been greatly aided by public spectrum generators for
 MSSM\cite{Allanach:2001kg,Porod:2003um,Djouadi:2002ze,Baer:1993ae},
@@ -168,8 +168,8 @@ are also two public spectrum generators
 supersymmetric standard model (NMSSM) \cite{NMSSM} .
 
 None of the fundamental motivations of supersymmetry require
-minimality, and specific altternatives to (or extensions of) the MSSM
-are motiovated by, for example,the $\mu-problem$ of the
+minimality, and specific alternatives to (or extensions of) the MSSM
+are motivated by, for example,the $\mu-problem$ of the
 MSSM\cite{Kim:1983dt}, explaining the family structure (see e.g,
 \cite{King:2014nza}) or for successful baryogensis or leptogenesis
 (see e.g,\cite{King:2008qb}). However constructing specialised tools
@@ -201,8 +201,8 @@ the fundamental questions which motivated BSM physics unanswered.
  level contributions to the Higgs mass.
 
 These motivate both exploring non-minimal SUSY models which ameliorate
-the naturaless problems introduced, by, for example, raising the tree
-level Higgs mass, and models developed with a fresh persp[ective,
+the naturalness problems introduced, by, for example, raising the tree
+level Higgs mass, and models developed with a fresh perspective,
   based on other considerations.  In both cases exploration of such
   models can be aided if it is possible to quickly create a fast
   spectrum generator.
@@ -212,13 +212,31 @@ which with the help of \sarah
 \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
 creates a fast, modular C++ spectrum generator for a user specified
 SUSY model.  The generated code structure is designed to be as
-flexible as possible to accomodate different types of extensions and
-due to it's modular nature it is easy to modify, add new featuires to
-or combine with other programs.
+flexible as possible to accommodate different types of extensions and
+due to it's modular nature it is easy to modify, add new features to
+or combine with other programs.  The generated code has been
+extensively tested against well known spectrum generators and as well
+providing a solution for new SUSY models the generated MSSM and NMSSM
+codes offer a modern and fast alternative to the existing public
+spectrum generators.
+
+In section \ref{Sec:Program} we describe the program in more detail
+and explain our design goals.  In section \ref{Sec:download}
+information on how to download and compile the code may be found along
+with details on how to get started quickly.  In section
+\ref{Sec:modfile} we describe how the user can create a new
+FlexibleSUSY model file. A detailed description of the structure and
+features of the generated code is then given in section
+\ref{Sec:SpecGenStruct}.  In section \ref{Sec:Flexible} we describe
+the various ways the code can be modified both at the meta code level
+by writing model files and at the C++ code level by modifying the code
+or adding new modules. Finally in section \ref{Sec:comparison} we
+describe detailed comparisons between our generated code and existing
+public spectrum generators as well as against the SPheno-like fortran
+code which can be created using SARAH.
 
 
-
-\subsection{The Program}
+\section{The Program}
 \label{Sec:Program}
 \fs is a MATHEMATICA package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
@@ -323,6 +341,7 @@ application takes place and the \code{get_scale()} function specifies
 the scale at which the constraint is to be applied.
 
 \section{Download and compilation}
+\label{Sec:download}
 Flexible SUSY can be downloaded from \url{http://flexiblesusy.hepforge.org}.  
 To use FlexibleSUSY please make sure you have the following installed.  
 \begin{itemize}
@@ -363,7 +382,7 @@ $ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM -
   \end{lstlisting}%% $
 
 \section{Setting up a FlexibleSUSY model}
-
+\label{Sec:modfile}
 A \fs model is configured via a (Mathematica) model file, which in
 case of the MSSM looks like this
 %
@@ -617,7 +636,7 @@ constraints are kept.  All model parameters that are not specified in
 input blocks in the SLHA input file and will be set at the susy-scale.
 
 \section{Stucture of the spectrum generator}
-
+\label{Sec:SpecGenStruct}
 \subsection{Model parameters and RGEs}
 Even in the simplest supersymmetric model the RGEs form a very large
 set of coupled non-linear differential equations.  In a general
@@ -1342,12 +1361,15 @@ E$_6$SSM\cite{King:2005jy}.
 Corrections to other masses or further corrections to the Higgs states
 can be added very easily by...
 
-\section{Implementing new models}
-\section{Adapting the code at the C++ level}
-\section{Using individual modules in your own code}
+%%\section{Implementing new models}
+\section{Flexible Spectra}
+\label{Sec:Flexible}
+\subsection{Meta code}
+\subsection{Adapting C++ code}
+\subsection{Combing with  modules of your own code}
 
 \section{Run-time comparison with other spectrum generators}
-
+\label{Sec:comaprison}
 We compare the run-time of the four different spectrum generators
 FlexibleSUSY (version 0.5.4), Softsusy (version 3.4.0), SPheno
 (3.2.4), SPhenoMSSM (generated with SARAH 4.1.0 and linked against
