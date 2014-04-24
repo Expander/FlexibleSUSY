@@ -195,24 +195,26 @@ indirect limits that appears in constrained models from the
 significantly higher limits on first and second generation squarks.
 
 These motivate both exploring non-minimal SUSY models which ameliorate
-the naturalness problems introduced, by, for example, raising the tree
-level Higgs mass, and models developed with a fresh perspective,
-  based on other considerations.  In both cases exploration of such
-  models can be aided if it is possible to quickly create a fast
-  spectrum generator.
+the naturalness problems by, for example, raising the tree level Higgs
+mass, and models developed with a fresh perspective, based on other
+considerations.  In both cases exploration of such models can be aided
+if it is possible to quickly create a fast spectrum generator.
+Currently there is only option for this, a SPheno-like FORTRAN code
+which can be generated from
+\sarah\cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}.
 
-\fs is designed for precisely this task. \fs is a MATHEMATICA package
-which with the help of \sarah
-\cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
-creates a fast, modular C++ spectrum generator for a user specified
-SUSY model.  The generated code structure is designed to be as
-flexible as possible to accommodate different types of extensions and
-due to it's modular nature it is easy to modify, add new features to
-or combine with other programs.  The generated code has been
-extensively tested against well known spectrum generators and as well
-providing a solution for new SUSY models the generated MSSM and NMSSM
-codes offer a modern and fast alternative to the existing public
-spectrum generators.
+\fs provides a much needed alternative to this with a structure which
+has been freshly designed to accommodate as general range of models as
+possible and to be easily adaptable to changing goals and new
+ideas. \fs is a MATHEMATICA package which uses \sarah to create a
+fast, modular C++ spectrum generator for a user specified SUSY model.
+The generated code structure is designed to be as flexible as possible
+to accommodate different types of extensions and due to it's modular
+nature it is easy to modify, add new features and combine with other
+programs.  The generated code has been extensively tested against well
+known spectrum generators and as well providing a solution for new
+SUSY models the generated MSSM and NMSSM codes offer a modern and fast
+alternative to the existing public spectrum generators.
 
 In section \ref{Sec:Program} we describe the program in more detail
 and explain our design goals.  In section \ref{Sec:download}
@@ -2011,7 +2013,6 @@ Comparisons against existing spectrum generators and SARAH generated spheno code
   arXiv:1311.7659 [hep-ph].
   %%CITATION = ARXIV:1311.7659;%%
   %1 citations counted in INSPIRE as of 24 Apr 2014
-  %\cite{Staub:2010ty}
 \bibitem{NMSSM} P. Fayet, Nucl. Phys. B \textbf{90} (1975) 104; Phys. Lett.
 B \textbf{64} (1976) 159; Phys. Lett. B \textbf{69} (1977) 489 and Phys. Lett. B
 \textbf{84} (1979) 416; H.P. Nilles, M. Srednicki and D. Wyler, Phys. Lett. B
@@ -2081,6 +2082,7 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   %%CITATION = ARXIV:1202.1488;%%
   %592 citations counted in INSPIRE as of 24 Apr 2014
 %\cite{Chatrchyan:2014lfa}
+ %\cite{Staub:2010ty}
 \bibitem{Staub:2010ty} 
   F.~Staub, W.~Porod and B.~Herrmann,
   %``The Electroweak sector of the NMSSM at the one-loop level,''
