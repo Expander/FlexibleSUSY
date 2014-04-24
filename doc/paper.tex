@@ -130,7 +130,7 @@ Higgs
          Higgs potential.  \\ {\em Restrictions:} The couplings must
          remain perturbative at all scales between the highest and
          lowest boundary condition.  \fs~ assumes that all couplings
-         of the model are real (i.e.\ $CP-$conserving)?  Due to the
+         of the model are real (i.e.\ $CP-$conserving). Due to the
          modular nature of the generated code adaption and extension
          to overcome restrictions in scope is quite straight forward.
 
@@ -233,38 +233,45 @@ public spectrum generators as well as against the SPheno-like fortran
 code which can be created using SARAH.
 
 
-\section{The Program}
+\section{Overview of the Program}
 \label{Sec:Program}
 \fs is a MATHEMATICA package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
-non-supersymmetric models {\color{red} can we?}.  \fs makes use of the
-existing \sarah package \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta} to obtain one-loop self energies, one-loop
-tadpoles corrections and two-loop renormalisation group
-equations(RGEs) in any model.  \fs then converts these algerbraic
-expressions from \sarah into C++ code using the C++11 standard. \fs
-uses some parts of SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen
-library \cite{eigen}, as well as the gnu scientific library and the
-boost library to create numerical routines which then use these
-routines to solve the RGEs and EWSB conditions which will be used in
-the spectrum generator. The main solver routine of \fs then calls
-these routines to find simultaneous solutions for the EWSB, low energy
-data, and other, user supplied, boundary conditions (e.g. the usual
-mSUGRA universality conditions) and calculates the mass spectrum.
+non-supersymmetric models.  The user specifies the model by giving the superfield content, superpotential, gauge symmetries and mass mixings in the  
+\sarah model files, examples of which can be found in the \code{Models}
+directory of \sarah and the \code{sarah} directory of FlexibleSUSY.  The user
+then also specifies the boundary conditions on the model parameters in a separate \code{FlexibleSUSY.m} file, examples of which can be found in the \code{model_files} directory. A detailed guide on how to write the FlexibleSUSY.m model is given in section \ref{Sec:modfile}. 
+
+  \fs makes use of the existing \sarah package
+  \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
+  to obtain tree level expressions for the mass matrices and
+  electroweak symmetry breaking conditions, one-loop self energies,
+  one-loop tadpoles corrections and two-loop renormalisation group
+  equations(RGEs) for the model specified in the model
+  files. Additional corrections which have been calculated elsewhere,
+  such as two-loop corrections to the Higgs masses\footnote{By default FlexibleSUSY has two loop corrections to the Higgs masses for the MSSM\cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}  and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro Slavich. These are the same corrections which are implemented in many of the public spectrum generators.} may be added in
+  file specified by the user.
+
+ \fs then
+converts these algerbraic expressions from \sarah into C++ code using
+the C++11 standard. \fs uses some parts of
+SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen library
+\cite{eigen}, as well as the gnu scientific library and the boost
+library to create numerical routines which solve the RGEs and EWSB
+conditions.  The main solver routine of \fs then calls these routines
+to find simultaneous solutions for the EWSB, low energy data, and
+other, user supplied, boundary conditions (e.g. the usual mSUGRA
+universality conditions) and calculates the mass spectrum.
 
  The modular structure of the generated code allows for any individual
  components to be replaced with an alternative if available.  Indeed
  \fs has been intentionally designed to grow as alternative solvers
  and calculators are added and a subsequent release with an
- alternative lattice solver is already planned.{\color{red} Or Indeed
-   flexible SUSY is distributed with two different main solvers, the
-   two-scale solver based on the approach of \cite{} and designed for
-   speed and the a lattice solver designed to solve tricky cases where
-   the fixed point iteration of the two-scale approach fails to
-   converge.}  In addition if one already has an existing code for
- some other purpose and simply wishes to improve upon this by adding,
- e.g, new RGEs or self energies the modular fraework makes this fairly
- straightward{\color{red} Is this true?  because it should be...}
-
+ alternative lattice solver is already planned.  In addition if one
+ already has an existing code for some other purpose and simply wishes
+ to improve upon this by adding, e.g, new RGEs or self energies the
+ modular framework makes this straightforward by adding or
+ interfacing with the appropriate routine.
 
 \subsection{Design goals}
 
