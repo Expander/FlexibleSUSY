@@ -81,25 +81,26 @@ Adelaide SA 5005 Australia}
 TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    
   \begin{abstract}
-   We introduce \fs, a MATHEMATICA package which generates a C++
-   spectrum generator for any SUSY model, created with modularity and
-   speed in mind.  \fs makes use of the existing \sarah package
-   to obtain self energies, tadpole corrections and renormalisation
-   group equations in any model.  \fs then generates C++ code for
-   calculating spectra with a structure that is designed to be
-   flexible. The user specifies the model supplying the
+   We introduce \fs, a MATHEMATICA package which generates a fast,
+   precise C++ spectrum generator for any SUSY model specified by the
+   user.  The generated code is designed with both speed and
+   modularity in mind, making it easy to adapt and extend with new
+   features. The user specifies the model supplying the
    superpotential, gauge structure and particle content in a \sarah
-   model file. The user should also specify the boundary conditions in
-   a separate \fs model file.  Flexible SUSY
-   then translates these into C++ code along with numerical routines
-   for solving the renormalisation group equations, one loop
-   electroweak symmetry breaking conditions and a solver routine for
-   simultaneously solving for the spectrum.  The modular structure of
-   the generated code allows for any individual component to be
-   replaced with an alternative if available.  Indeed \fs has been
-   intentionally designed to grow as alternative solvers and
-   calculators are added.
+   model file and provides specific the boundary conditions in a
+   separate \fs model file. \fs makes use of the existing \sarah
+   package to obtain self energies, tadpole corrections,
+   renormalisation group equations(RGEs) and tree level mass and
+   electroweak symmetry breaking conditions for the specified model. These are
+   translated into C++ code and combined  with numerical
+   routines for solving the RGEs, EWSB conditions and simultaneously
+   solving for the spectrum conssistent with user specified boundary
+   conditions.  The modular structure of the generated code allows for
+   individual components to be replaced with an alternative if
+   available. \fs has been carefully designed to grow as
+   alternative solvers and calculators are added.
   \end{abstract}
+
 \begin{keyword}
 sparticle, 
 supersymmetry, 
