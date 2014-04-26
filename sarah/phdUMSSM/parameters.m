@@ -17,9 +17,6 @@ ParameterDefinitions = {
 {T[Yd],     { Description -> "Trilinear-Down-Coupling"}}, 
 {T[Yu],     { Description -> "Trilinear-Up-Coupling"}}, 
 
-{\[Mu],     { Description -> "Mu-parameter"}}, 
-{B[\[Mu]],  { Description -> "Bmu-parameter"}},        
-
 {mq2,       { Description -> "Softbreaking left Squark Mass"}},
 {me2,       { Description -> "Softbreaking right Slepton Mass"}},
 {ml2,       { Description -> "Softbreaking left Slepton Mass"}},
