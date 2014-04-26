@@ -8,6 +8,7 @@ MINPAR = { {1, m0},
          };
 
 EXTPAR = { {61, LambdaInput},
+           {65, vSInput},
            {200, Qq},
            {201, Ql},
            {202, QHd},
@@ -24,6 +25,7 @@ DefaultParameterPoint = {
     {TanBeta, 10},
     {Azero, -500},
     {LambdaInput, 0.1},
+    {vSInput, 1000},
     (* E6SSM inspired U(1)' charges *)
     {Qq ,  1 / Sqrt[40]},
     {Ql ,  2 / Sqrt[40]},
@@ -35,13 +37,15 @@ DefaultParameterPoint = {
     {Qs ,  5 / Sqrt[40]}
 };
 
-EWSBOutputParameters = { \[Kappa], vS, ms2 };
+EWSBOutputParameters = { mHd2, mHu2, ms2 };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
-SUSYScaleInput = {};
+SUSYScaleInput = {
+    {vS, vSInput}
+};
 
 HighScale = g1 == g2;
 
@@ -59,10 +63,7 @@ HighScaleInput={
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
-   {mHu2, m0^2},
-   {mHd2, m0^2},
    {\[Lambda], LambdaInput},
-   {T[\[Kappa]], Azero \[Kappa]},
    {T[\[Lambda]], Azero LambdaInput},
    {MassB, m12},
    {MassWB,m12},
@@ -86,8 +87,7 @@ InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
    {\[Lambda], LambdaInput},
-   {\[Kappa], 0.1},
-   {vS, 1000},
+   {vS, vSInput},
    {ms2, SM[MZ]^2},
    {Yu, Automatic},
    {Yd, Automatic},

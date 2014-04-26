@@ -43,7 +43,7 @@ NoU1Mixing=True;
 (* Superpotential *)
 (*------------------------------------------------------*)
 
-SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s + \[Kappa]/3 s.s.s;
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Lambda] Hu.Hd.s;
 
 
 
