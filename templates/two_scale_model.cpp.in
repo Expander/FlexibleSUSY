@@ -131,6 +131,11 @@ double CLASSNAME::get_ewsb_iteration_precision() const
    return ewsb_iteration_precision;
 }
 
+double CLASSNAME::get_ewsb_loop_order() const
+{
+   return ewsb_loop_order;
+}
+
 const @ModelName@_physical& CLASSNAME::get_physical() const
 {
    return physical;

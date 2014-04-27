@@ -1036,6 +1036,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    ensure_tree_level_ewsb(s);
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
+   m.set_pole_mass_loop_order(1);
    m.calculate_DRbar_parameters();
    m.calculate_pole_masses();
 

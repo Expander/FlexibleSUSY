@@ -61,6 +61,7 @@ public:
    void set_number_of_mass_iterations(std::size_t);
    void set_pole_mass_loop_order(unsigned);
    double get_ewsb_iteration_precision() const;
+   double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
