@@ -42,8 +42,8 @@ int main()
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
-   spectrum_generator.set_pole_mass_loop_order(1);
-   spectrum_generator.set_ewsb_loop_order(1);
+   spectrum_generator.set_pole_mass_loop_order(2);
+   spectrum_generator.set_ewsb_loop_order(2);
 
    const std::vector<double> range_TanBeta(float_range(0., 100., 10));
    const std::vector<double> range_Azero(float_range(0., 500., 10));
