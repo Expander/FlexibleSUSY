@@ -19,6 +19,7 @@ MODULES            += meta templates
 MODULES            += $(MODELS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += test examples
+MODULES            += higgs-study
 # END:   NOT EXPORTED ##########################################
 
 # Variables for Mathematica meta code
