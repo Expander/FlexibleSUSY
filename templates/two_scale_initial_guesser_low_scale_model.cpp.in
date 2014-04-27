@@ -67,7 +67,6 @@ namespace flexiblesusy {
 
 void @ModelName@_initial_guesser<Two_scale>::guess()
 {
-   model->clear();
    guess_susy_parameters();
    guess_soft_parameters();
 }
