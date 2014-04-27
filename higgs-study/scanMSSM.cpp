@@ -45,35 +45,50 @@ int main()
    spectrum_generator.set_pole_mass_loop_order(1);
    spectrum_generator.set_ewsb_loop_order(1);
 
-   const std::vector<double> range(float_range(0., 100., 10));
+   const std::vector<double> range_TanBeta(float_range(0., 100., 10));
+   const std::vector<double> range_Azero(float_range(0., 500., 10));
+
+   input.m0 = 500.;
+   input.m12 = 500.;
+   input.SignMu = 1;
+
+   cout << "# MSSM with "
+        << "m0 = " << input.m0
+        << ", m12 = " << input.m12
+        << ", SignMu = " << input.SignMu
+        << '\n';
 
    cout << "# "
-        << std::setw(12) << std::left << "m0" << ' '
+        << std::setw(12) << std::left << "TanBeta" << ' '
+        << std::setw(12) << std::left << "a0" << ' '
         << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
         << std::setw(12) << std::left << "error"
         << '\n';
 
-   for (std::vector<double>::const_iterator it = range.begin(),
-           end = range.end(); it != end; ++it) {
-      input.m0 = *it;
+   for (auto tanBeta : range_TanBeta) {
+      for (auto a0 : range_Azero) {
+         input.TanBeta = tanBeta;
+         input.Azero   = a0;
 
-      spectrum_generator.run(oneset, input);
+         spectrum_generator.run(oneset, input);
 
-      const MSSM<algorithm_type>& model = spectrum_generator.get_model();
-      const MSSM_physical& pole_masses = model.get_physical();
-      const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
-         = spectrum_generator.get_problems();
-      const double higgs = pole_masses.Mhh(0);
-      const bool error = problems.have_serious_problem();
+         const MSSM<algorithm_type>& model = spectrum_generator.get_model();
+         const MSSM_physical& pole_masses = model.get_physical();
+         const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
+            = spectrum_generator.get_problems();
+         const double higgs = pole_masses.Mhh(0);
+         const bool error = problems.have_serious_problem();
 
-      cout << "  "
-           << std::setw(12) << std::left << input.m0 << ' '
-           << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << error;
-      if (error) {
-         cout << "\t# " << problems;
+         cout << "  "
+              << std::setw(12) << std::left << input.TanBeta << ' '
+              << std::setw(12) << std::left << input.Azero << ' '
+              << std::setw(12) << std::left << higgs << ' '
+              << std::setw(12) << std::left << error;
+         if (error) {
+            cout << "\t# " << problems;
+         }
+         cout << '\n';
       }
-      cout << '\n';
    }
 
    return 0;
