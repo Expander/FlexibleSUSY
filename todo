@@ -13,8 +13,8 @@ free pars: m0, M12, TanBeta, Azero, LambdaInput
 EWSB:      \[Kappa], vS, ms2
 
 Model:     phdUMSSM
-free pars: m0, M12, TanBeta, Azero, LambdaInput
-EWSB:      mHd2, vS, ms2
+free pars: m0, M12, TanBeta, Azero, LambdaInput, vSInput
+EWSB:      mHd2, mHu2, ms2
 Todo:      make vS EWSB output?
 
 Model:     phdE6SSM
