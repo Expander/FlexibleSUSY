@@ -1,0 +1,12 @@
+#!/bin/sh
+
+args="$*"
+
+./createmodel --name=MSSM -f
+./createmodel --name=NMSSM -f
+./createmodel --name=phdUMSSM -f
+./createmodel --name=phdE6SSM -f
+
+./configure --with-models=MSSM,NMSSM,phdUMSSM,phdE6SSM $args
+
+make -j2
