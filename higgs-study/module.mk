@@ -1,7 +1,10 @@
 DIR          := higgs-study
 MODNAME      := higgs
 
+SCAN_MSSM_SRC :=
+ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 SCAN_MSSM_SRC := $(DIR)/scanMSSM.cpp
+endif
 SCAN_MSSM_DEP := $(SCAN_MSSM_SRC:.cpp=.d)
 SCAN_MSSM_OBJ := $(SCAN_MSSM_SRC:.cpp=.o)
 SCAN_MSSM_EXE := $(SCAN_MSSM_SRC:.cpp=.x)
