@@ -6,6 +6,7 @@
 #include <cfloat>
 
 #include "TH1.h"
+#include "TProfile2D.h"
 #include "TMath.h"
 #include "TCanvas.h"
 #include "TLegend.h"
@@ -36,7 +37,7 @@ void SetZminZmax(TProfile2D* hist)
    hist->SetMaximum(static_cast<Double_t>(max));
 }
 
-void plotMSSM(const TString& file_name = "higgs-study/scanMSSM.dat")
+void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
 {
    std::ifstream ifs(file_name.Data());
    std::string line;
@@ -87,6 +88,7 @@ void plotMSSM(const TString& file_name = "higgs-study/scanMSSM.dat")
    canvas->cd(1);
    h->Draw("colz");
 
-   TString tex_file(file_name.ReplaceAll(".dat",".tex"));
+   TString tex_file(file_name);
+   tex_file.ReplaceAll(".dat",".tex");
    canvas->Print(tex_file);
 }
