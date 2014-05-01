@@ -1,7 +1,9 @@
 #!/bin/sh
 
 scan_MSSM() {
+    echo -n "scanning MSSM ... "
     ./higgs-study/scanMSSM.x > higgs-study/data/scanMSSM.dat
+    echo "done"
 }
 
 scan_NMSSM() {
@@ -11,7 +13,10 @@ scan_NMSSM() {
     fi
 
     lambda="$1"
+
+    echo -n "scanning NMSSM (lambda=${lambda}) ... "
     ./higgs-study/scanNMSSM.x --lambda=${lambda} > higgs-study/data/scanNMSSM_lamda-${lambda}.dat
+    echo "done"
 }
 
 scan_MSSM
