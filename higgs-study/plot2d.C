@@ -15,8 +15,8 @@
 
 #include "plot.h"
 
-void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat",
-              const TString& title = "CMSSM $m_{h}$ / GeV")
+void plot2d(const TString& file_name = "higgs-study/data/scanMSSM.dat",
+            const TString& title = "CMSSM $m_{h}$ / GeV")
 {
    std::ifstream ifs(file_name.Data());
    std::string line;
