@@ -143,3 +143,5 @@ scan_phdE6SSM 0.4 10000 1.0
 scan_phdE6SSM 0.6 10000 1.0
 scan_phdE6SSM 0.8 10000 1.0
 scan_phdE6SSM 1.0 10000 1.0
+
+wait
