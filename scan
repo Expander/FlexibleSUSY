@@ -19,11 +19,92 @@ scan_NMSSM() {
     echo "done"
 }
 
+scan_phdUMSSM() {
+    if test $# -ne 2 ; then
+        echo "scan_phdUMSSM: Too few arguments"
+        return 1
+    fi
+
+    lambda="$1"
+    vs="$2"
+
+    echo -n "scanning phdUMSSM (lambda=${lambda}, vs=${vs}) ... "
+    ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
+    echo "done"
+}
+
+scan_phdE6SSM() {
+    if test $# -ne 3 ; then
+        echo "scan_phdE6SSM: Too few arguments"
+        return 1
+    fi
+
+    lambda="$1"
+    vs="$2"
+    kappa="$3"
+
+    echo -n "scanning phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa}) ... "
+    ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
+    echo "done"
+}
+
 scan_MSSM
 
+# lambda
 scan_NMSSM 0.1
 scan_NMSSM 0.2
 scan_NMSSM 0.4
 scan_NMSSM 0.6
 scan_NMSSM 0.8
 scan_NMSSM 1.0
+
+# lambda vs
+scan_phdUMSSM 0.1 10000
+scan_phdUMSSM 0.2 10000
+scan_phdUMSSM 0.4 10000
+scan_phdUMSSM 0.6 10000
+scan_phdUMSSM 0.8 10000
+scan_phdUMSSM 1.0 10000
+
+# lambda vs kappa
+scan_phdE6SSM 0.1 10000 0.1
+scan_phdE6SSM 0.2 10000 0.1
+scan_phdE6SSM 0.4 10000 0.1
+scan_phdE6SSM 0.6 10000 0.1
+scan_phdE6SSM 0.8 10000 0.1
+scan_phdE6SSM 1.0 10000 0.1
+
+scan_phdE6SSM 0.1 10000 0.2
+scan_phdE6SSM 0.2 10000 0.2
+scan_phdE6SSM 0.4 10000 0.2
+scan_phdE6SSM 0.6 10000 0.2
+scan_phdE6SSM 0.8 10000 0.2
+scan_phdE6SSM 1.0 10000 0.2
+
+scan_phdE6SSM 0.1 10000 0.4
+scan_phdE6SSM 0.2 10000 0.4
+scan_phdE6SSM 0.4 10000 0.4
+scan_phdE6SSM 0.6 10000 0.4
+scan_phdE6SSM 0.8 10000 0.4
+scan_phdE6SSM 1.0 10000 0.4
+
+scan_phdE6SSM 0.1 10000 0.6
+scan_phdE6SSM 0.2 10000 0.6
+scan_phdE6SSM 0.4 10000 0.6
+scan_phdE6SSM 0.6 10000 0.6
+scan_phdE6SSM 0.8 10000 0.6
+scan_phdE6SSM 1.0 10000 0.6
+
+scan_phdE6SSM 0.1 10000 0.8
+scan_phdE6SSM 0.2 10000 0.8
+scan_phdE6SSM 0.4 10000 0.8
+scan_phdE6SSM 0.6 10000 0.8
+scan_phdE6SSM 0.8 10000 0.8
+scan_phdE6SSM 1.0 10000 0.8
+
+scan_phdE6SSM 0.1 10000 1.0
+scan_phdE6SSM 0.2 10000 1.0
+scan_phdE6SSM 0.4 10000 1.0
+scan_phdE6SSM 0.6 10000 1.0
+scan_phdE6SSM 0.8 10000 1.0
+scan_phdE6SSM 1.0 10000 1.0
