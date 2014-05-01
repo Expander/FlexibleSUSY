@@ -28,11 +28,13 @@
 
 #include <iostream>
 
-int main()
+int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
    using namespace softsusy;
    typedef Two_scale algorithm_type;
+
+   Options options(argc, argv);
 
    NMSSM_input_parameters input;
    QedQcd oneset;
@@ -51,7 +53,7 @@ int main()
    input.m12 = 5000.;
    input.TanBeta = 10.;
    input.Azero = 5000.;
-   input.LambdaInput = 0.1;
+   input.LambdaInput = options.lambda;
    input.SignvS = 1;
 
    cout << "# @ModelName@ with "

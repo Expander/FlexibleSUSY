@@ -28,11 +28,13 @@
 
 #include <iostream>
 
-int main()
+int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
    using namespace softsusy;
    typedef Two_scale algorithm_type;
+
+   Options options(argc, argv);
 
    @ModelName@_input_parameters input;
    QedQcd oneset;
