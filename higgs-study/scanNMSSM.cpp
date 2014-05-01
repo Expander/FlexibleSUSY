@@ -16,10 +16,10 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Sun 27 Apr 2014 19:19:50
+// File generated at Thu 1 May 2014 12:16:53
 
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_spectrum_generator.hpp"
+#include "NMSSM_input_parameters.hpp"
+#include "NMSSM_spectrum_generator.hpp"
 
 #include "error.hpp"
 #include "scan.hpp"
@@ -34,11 +34,11 @@ int main()
    using namespace softsusy;
    typedef Two_scale algorithm_type;
 
-   MSSM_input_parameters input;
+   NMSSM_input_parameters input;
    QedQcd oneset;
    oneset.toMz();
 
-   MSSM_spectrum_generator<algorithm_type> spectrum_generator;
+   NMSSM_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
@@ -51,12 +51,14 @@ int main()
    input.m12 = 5000.;
    input.TanBeta = 10.;
    input.Azero = 5000.;
-   input.SignMu = 1;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
 
-   cout << "# MSSM with "
+   cout << "# @ModelName@ with "
         << "Azero = " << input.Azero
         << ", m12 = " << input.m12
-        << ", SignMu = " << input.SignMu
+        << ", LambdaInput = " << input.LambdaInput
+        << ", SignvS = " << input.SignvS
         << '\n';
 
    cout << "# "
@@ -73,9 +75,9 @@ int main()
 
          spectrum_generator.run(oneset, input);
 
-         const MSSM<algorithm_type>& model = spectrum_generator.get_model();
-         const MSSM_physical& pole_masses = model.get_physical();
-         const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
+         const NMSSM<algorithm_type>& model = spectrum_generator.get_model();
+         const NMSSM_physical& pole_masses = model.get_physical();
+         const Problems<NMSSM_info::NUMBER_OF_PARTICLES>& problems
             = spectrum_generator.get_problems();
          const double higgs = pole_masses.Mhh(0);
          const bool error = problems.have_serious_problem();
