@@ -11,6 +11,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TString.h"
+#include "TStyle.h"
 
 void SetZminZmax(TProfile2D* hist)
 {
@@ -47,9 +48,9 @@ void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
       return;
    }
 
-   const int nbinsx = 10, nbinsy = 10;
-   const double xlow = 0., xhigh = 60.;
-   const double ylow = 0., yhigh = 1000.;
+   const int nbinsx = 30, nbinsy = 30;
+   const double xlow = 0., xhigh = 50.;
+   const double ylow = 0., yhigh = 10.;
 
    TProfile2D* h = new TProfile2D("h", file_name, nbinsx, xlow, xhigh, nbinsy, ylow, yhigh);
    h->SetStats(0);
@@ -75,13 +76,15 @@ void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
          if (error)
             continue;
 
+         m0 /= 1000.; // convet to TeV
+
          h->Fill(tanb, m0, mh, 1.0);
       }
    }
 
    h->SetTitle("CMSSM $m_{h}$ / GeV");
    h->GetXaxis()->SetTitle("$\tan\beta$");
-   h->GetYaxis()->SetTitle("$m_0$ / GeV");
+   h->GetYaxis()->SetTitle("$m_0$ / TeV");
    SetZminZmax(h);
 
    TCanvas* canvas = new TCanvas("canvas", "CMSSM Higgs mass", 800, 600);
