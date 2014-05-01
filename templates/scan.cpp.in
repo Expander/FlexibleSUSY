@@ -46,8 +46,10 @@ int main(int argc, const char* argv[])
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
 
-   const std::vector<double> range_TanBeta(float_range(TANB_START, TANB_STOP, TANB_NPOINTS));
-   const std::vector<double> range_m0(float_range(M0_START, M0_STOP, M0_NPOINTS));
+   const std::vector<double> range_TanBeta(
+      float_range(options.tanb_start, options.tanb_stop, options.tanb_npoints));
+   const std::vector<double> range_m0(
+      float_range(options.m0_start, options.m0_stop, options.m0_npoints));
 
    input.m0 = 5000.;
    input.m12 = 5000.;

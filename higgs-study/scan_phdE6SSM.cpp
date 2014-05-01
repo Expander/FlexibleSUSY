@@ -46,17 +46,38 @@ int main(int argc, const char* argv[])
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
 
-   const std::vector<double> range_TanBeta(float_range(TANB_START, TANB_STOP, TANB_NPOINTS));
-   const std::vector<double> range_m0(float_range(M0_START, M0_STOP, M0_NPOINTS));
+   const std::vector<double> range_TanBeta(
+      float_range(options.tanb_start, options.tanb_stop, options.tanb_npoints));
+   const std::vector<double> range_m0(
+      float_range(options.m0_start, options.m0_stop, options.m0_npoints));
 
    input.m0 = 5000.;
    input.m12 = 5000.;
    input.TanBeta = 10.;
    input.Azero = 5000.;
+   input.LambdaInput = options.lambda;
+   input.vSInput = options.vs;
+   input.KappaInput = options.kappa;
+   input.muPrimeInput = 10000.;
+   input.BmuPrimeInput = 10000.;
 
    cout << "# phdE6SSM with "
         << "Azero = " << input.Azero
         << ", m12 = " << input.m12
+        << ", LambdaInput = " << input.LambdaInput
+        << ", vSInput = " << input.vSInput
+        << ", KappaInput = " << input.KappaInput
+        << ", muPrimeInput = " << input.muPrimeInput
+        << ", BmuPrimeInput = " << input.BmuPrimeInput
+        << '\n';
+
+   cout << "# scan range: "
+        << "TanBeta = " << options.tanb_start
+        << " ... " << options.tanb_stop
+        << " with " << options.tanb_npoints << " points"
+        << ", m0 = " << options.m0_start
+        << " ... " << options.m0_stop << " GeV"
+        << " with " << options.m0_npoints << " points"
         << '\n';
 
    cout << "# "
