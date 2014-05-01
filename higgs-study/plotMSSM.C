@@ -25,10 +25,6 @@ void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
       return;
    }
 
-   const int nbinsx = 30, nbinsy = 30;
-   const double xlow = 0., xhigh = 50.;
-   const double ylow = 0., yhigh = 10.;
-
    TProfile2D* h = new TProfile2D("h", file_name, nbinsx, xlow, xhigh, nbinsy, ylow, yhigh);
    h->SetStats(0);
 

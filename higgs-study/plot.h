@@ -23,3 +23,7 @@ void SetZminZmax(TProfile2D* hist)
    hist->SetMinimum(static_cast<Double_t>(min));
    hist->SetMaximum(static_cast<Double_t>(max));
 }
+
+const int nbinsx = 30, nbinsy = 30;
+const double xlow = 0., xhigh = 50.;
+const double ylow = 0., yhigh = 10.;
