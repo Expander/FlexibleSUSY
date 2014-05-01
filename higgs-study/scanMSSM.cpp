@@ -43,30 +43,32 @@ int main()
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
 
-   const std::vector<double> range_TanBeta(float_range(0., 100., 10));
-   const std::vector<double> range_Azero(float_range(0., 500., 10));
+   const std::vector<double> range_TanBeta(float_range(0., 60., 100));
+   const std::vector<double> range_m0(float_range(0., 10000., 100));
 
-   input.m0 = 500.;
-   input.m12 = 500.;
+   input.m0 = 5000.;
+   input.m12 = 5000.;
+   input.TanBeta = 10.;
+   input.Azero = 5000.;
    input.SignMu = 1;
 
    cout << "# MSSM with "
-        << "m0 = " << input.m0
+        << "Azero = " << input.Azero
         << ", m12 = " << input.m12
         << ", SignMu = " << input.SignMu
         << '\n';
 
    cout << "# "
         << std::setw(12) << std::left << "TanBeta" << ' '
-        << std::setw(12) << std::left << "a0" << ' '
+        << std::setw(12) << std::left << "m0" << ' '
         << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
         << std::setw(12) << std::left << "error"
         << '\n';
 
    for (auto tanBeta : range_TanBeta) {
-      for (auto a0 : range_Azero) {
+      for (auto m0 : range_m0) {
          input.TanBeta = tanBeta;
-         input.Azero   = a0;
+         input.m0      = m0;
 
          spectrum_generator.run(oneset, input);
 
@@ -79,7 +81,7 @@ int main()
 
          cout << "  "
               << std::setw(12) << std::left << input.TanBeta << ' '
-              << std::setw(12) << std::left << input.Azero << ' '
+              << std::setw(12) << std::left << input.m0 << ' '
               << std::setw(12) << std::left << higgs << ' '
               << std::setw(12) << std::left << error;
          if (error) {
