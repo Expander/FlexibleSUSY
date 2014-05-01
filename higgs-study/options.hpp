@@ -22,6 +22,7 @@ struct Options {
    static bool starts_with(const std::string&, const std::string&);
 
    double lambda;
+   double vs;
 };
 
 void Options::parse(int argc, const char* argv[])
@@ -32,6 +33,8 @@ void Options::parse(int argc, const char* argv[])
       const std::string option(argv[i]);
       if (starts_with(option,"--lambda=")) {
          lambda = atof(option.substr(9).c_str());
+      } else if (starts_with(option,"--vs=")) {
+         vs = atof(option.substr(5).c_str());
       } else {
          ERROR("Unrecognized command line option: " << option);
          exit(EXIT_FAILURE);
@@ -42,6 +45,7 @@ void Options::parse(int argc, const char* argv[])
 void Options::reset()
 {
    lambda = 0.1;
+   vs = 10000.;
 }
 
 bool Options::starts_with(const std::string& str,
