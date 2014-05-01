@@ -131,6 +131,11 @@ double CLASSNAME::get_ewsb_iteration_precision() const
    return ewsb_iteration_precision;
 }
 
+double CLASSNAME::get_ewsb_loop_order() const
+{
+   return ewsb_loop_order;
+}
+
 const @ModelName@_physical& CLASSNAME::get_physical() const
 {
    return physical;
@@ -387,13 +392,22 @@ void CLASSNAME::calculate_spectrum()
       calculate_pole_masses();
    else
       copy_DRbar_masses_to_pole_masses();
+
+   if (problems.have_serious_problem()) {
+      clear_DRbar_parameters();
+      physical.clear();
+   }
+}
+
+void CLASSNAME::clear_DRbar_parameters()
+{
+@clearOutputParameters@
 }
 
 void CLASSNAME::clear()
 {
    @ModelName@_soft_parameters::clear();
-
-@clearOutputParameters@
+   clear_DRbar_parameters();
    physical.clear();
    problems.clear();
 }

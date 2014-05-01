@@ -92,6 +92,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
 
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
+   m.set_pole_mass_loop_order(1);
    m.calculate_DRbar_parameters();
    m.calculate_pole_masses();
 
