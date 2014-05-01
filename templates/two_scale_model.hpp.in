@@ -53,6 +53,7 @@ public:
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
    virtual void clear();
+   void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void set_ewsb_iteration_precision(double);
