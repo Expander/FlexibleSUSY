@@ -15,7 +15,8 @@
 
 #include "plot.h"
 
-void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
+void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat",
+              const TString& title = "CMSSM $m_{h}$ / GeV")
 {
    std::ifstream ifs(file_name.Data());
    std::string line;
@@ -55,12 +56,12 @@ void plotMSSM(const TString& file_name = "higgs-study/data/scanMSSM.dat")
       }
    }
 
-   h->SetTitle("CMSSM $m_{h}$ / GeV");
+   h->SetTitle(title);
    h->GetXaxis()->SetTitle("$\tan\beta$");
    h->GetYaxis()->SetTitle("$m_0$ / TeV");
    SetZminZmax(h);
 
-   TCanvas* canvas = new TCanvas("canvas", "CMSSM Higgs mass", 800, 600);
+   TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
    canvas->cd(1);
    h->Draw("colz");
 
