@@ -15,7 +15,7 @@ scan_NMSSM() {
     lambda="$1"
 
     echo -n "scanning NMSSM (lambda=${lambda}) ... "
-    ./higgs-study/scanNMSSM.x --lambda=${lambda} > higgs-study/data/scanNMSSM_lamda-${lambda}.dat
+    ./higgs-study/scanNMSSM.x --lambda=${lambda} > higgs-study/data/scanNMSSM_lambda-${lambda}.dat
     echo "done"
 }
 
