@@ -26,6 +26,10 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
       return;
    }
 
+   const int nbinsx = 30, nbinsy = 30;
+   const double xlow = 0., xhigh = 50.;
+   const double ylow = 0., yhigh = 10.; // in TeV
+
    TProfile2D* h = new TProfile2D("h", file_name, nbinsx, xlow, xhigh, nbinsy, ylow, yhigh);
    h->SetStats(0);
 
@@ -50,7 +54,7 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
          if (error)
             continue;
 
-         m0 /= 1000.; // convet to TeV
+         m0 /= 1000.; // convert to TeV
 
          h->Fill(tanb, m0, mh, 1.0);
       }
