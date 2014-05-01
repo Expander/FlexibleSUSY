@@ -24,6 +24,7 @@
 #include "error.hpp"
 #include "scan.hpp"
 #include "lowe.h"
+#include "options.hpp"
 
 #include <iostream>
 
@@ -43,35 +44,50 @@ int main()
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
 
-   const std::vector<double> range(float_range(0., 100., 10));
+   const std::vector<double> range_TanBeta(float_range(TANB_START, TANB_STOP, TANB_NPOINTS));
+   const std::vector<double> range_m0(float_range(M0_START, M0_STOP, M0_NPOINTS));
+
+   input.m0 = 5000.;
+   input.m12 = 5000.;
+   input.TanBeta = 10.;
+   input.Azero = 5000.;
+
+   cout << "# @ModelName@ with "
+        << "Azero = " << input.Azero
+        << ", m12 = " << input.m12
+        << '\n';
 
    cout << "# "
-        << std::setw(12) << std::left << "@InputParameter_1@" << ' '
-        << std::setw(12) << std::left << "M@HiggsBoson@(1)/GeV" << ' '
+        << std::setw(12) << std::left << "TanBeta" << ' '
+        << std::setw(12) << std::left << "m0" << ' '
+        << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
         << std::setw(12) << std::left << "error"
         << '\n';
 
-   for (std::vector<double>::const_iterator it = range.begin(),
-           end = range.end(); it != end; ++it) {
-      input.@InputParameter_1@ = *it;
+   for (auto tanBeta : range_TanBeta) {
+      for (auto m0 : range_m0) {
+         input.TanBeta = tanBeta;
+         input.m0      = m0;
 
-      spectrum_generator.run(oneset, input);
+         spectrum_generator.run(oneset, input);
 
-      const @ModelName@<algorithm_type>& model = spectrum_generator.get_model();
-      const @ModelName@_physical& pole_masses = model.get_physical();
-      const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-         = spectrum_generator.get_problems();
-      const double higgs = pole_masses.M@HiggsBoson@(0);
-      const bool error = problems.have_serious_problem();
+         const @ModelName@<algorithm_type>& model = spectrum_generator.get_model();
+         const @ModelName@_physical& pole_masses = model.get_physical();
+         const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+            = spectrum_generator.get_problems();
+         const double higgs = pole_masses.M@HiggsBoson@(0);
+         const bool error = problems.have_serious_problem();
 
-      cout << "  "
-           << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
-           << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << error;
-      if (error) {
-         cout << "\t# " << problems;
+         cout << "  "
+              << std::setw(12) << std::left << input.TanBeta << ' '
+              << std::setw(12) << std::left << input.m0 << ' '
+              << std::setw(12) << std::left << higgs << ' '
+              << std::setw(12) << std::left << error;
+         if (error) {
+            cout << "\t# " << problems;
+         }
+         cout << '\n';
       }
-      cout << '\n';
    }
 
    return 0;
