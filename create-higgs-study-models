@@ -7,6 +7,8 @@ args="$*"
 ./createmodel --name=phdUMSSM -f
 ./createmodel --name=phdE6SSM -f
 
+rm -f Makefile
+
 ./configure --with-models=MSSM,NMSSM,phdUMSSM,phdE6SSM $args
 
 make -j2
