@@ -2,11 +2,14 @@
 
 tanb_npoints=10
 m0_npoints=10
+subprocess=""
+make_nice=""
+niceness="5"
 
 scan_MSSM() {
-    echo -n "scanning MSSM ... "
-    ./higgs-study/scan_MSSM.x --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_MSSM.dat
-    echo "done"
+    echo "scanning MSSM ... "
+    ${make_nice} ./higgs-study/scan_MSSM.x --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_MSSM.dat
+    echo "done MSSM"
 }
 
 scan_NMSSM() {
@@ -17,9 +20,9 @@ scan_NMSSM() {
 
     lambda="$1"
 
-    echo -n "scanning NMSSM (lambda=${lambda}) ... "
-    ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_NMSSM_lambda-${lambda}.dat
-    echo "done"
+    echo "scanning NMSSM (lambda=${lambda}) ... "
+    ${make_nice} ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_NMSSM_lambda-${lambda}.dat
+    echo "done NMSSM (lambda=${lambda})"
 }
 
 scan_phdUMSSM() {
@@ -31,9 +34,9 @@ scan_phdUMSSM() {
     lambda="$1"
     vs="$2"
 
-    echo -n "scanning phdUMSSM (lambda=${lambda}, vs=${vs}) ... "
-    ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
-    echo "done"
+    echo "scanning phdUMSSM (lambda=${lambda}, vs=${vs}) ... "
+    ${make_nice} ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
+    echo "done phdUMSSM (lambda=${lambda}, vs=${vs})"
 }
 
 scan_phdE6SSM() {
@@ -46,9 +49,9 @@ scan_phdE6SSM() {
     vs="$2"
     kappa="$3"
 
-    echo -n "scanning phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa}) ... "
-    ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
-    echo "done"
+    echo "scanning phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa}) ... "
+    ${make_nice} ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
+    echo "done phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa})"
 }
 
 help() {
@@ -60,6 +63,7 @@ Options:
 
   --tanb-npoints=   number of tan(beta) points
   --m0-npoints=     number of m0 points
+  --parallelize     start sub-process for each function
 EOF
 }
 
@@ -73,6 +77,10 @@ if test $# -gt 0 ; then
         case $1 in
             --tanb-npoints=*)        tanb_npoints=$optarg ;;
             --m0-npoints=*)          m0_npoints=$optarg ;;
+            --parallelize)
+                subprocess="&"
+                make_nice="nice -n ${niceness}"
+                ;;
             --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
@@ -83,65 +91,65 @@ fi
 echo "# number of tan(beta) points: ${tanb_npoints}"
 echo "# number of m0 points:        ${m0_npoints}"
 
-scan_MSSM
+eval scan_MSSM ${subprocess}
 
 # lambda
-scan_NMSSM 0.1
-scan_NMSSM 0.2
-scan_NMSSM 0.4
-scan_NMSSM 0.6
-scan_NMSSM 0.8
-scan_NMSSM 1.0
+eval scan_NMSSM 0.1 ${subprocess}
+eval scan_NMSSM 0.2 ${subprocess}
+eval scan_NMSSM 0.4 ${subprocess}
+eval scan_NMSSM 0.6 ${subprocess}
+eval scan_NMSSM 0.8 ${subprocess}
+eval scan_NMSSM 1.0 ${subprocess}
 
 # lambda vs
-scan_phdUMSSM 0.1 10000
-scan_phdUMSSM 0.2 10000
-scan_phdUMSSM 0.4 10000
-scan_phdUMSSM 0.6 10000
-scan_phdUMSSM 0.8 10000
-scan_phdUMSSM 1.0 10000
+eval scan_phdUMSSM 0.1 10000 ${subprocess}
+eval scan_phdUMSSM 0.2 10000 ${subprocess}
+eval scan_phdUMSSM 0.4 10000 ${subprocess}
+eval scan_phdUMSSM 0.6 10000 ${subprocess}
+eval scan_phdUMSSM 0.8 10000 ${subprocess}
+eval scan_phdUMSSM 1.0 10000 ${subprocess}
 
 # lambda vs kappa
-scan_phdE6SSM 0.1 10000 0.1
-scan_phdE6SSM 0.2 10000 0.1
-scan_phdE6SSM 0.4 10000 0.1
-scan_phdE6SSM 0.6 10000 0.1
-scan_phdE6SSM 0.8 10000 0.1
-scan_phdE6SSM 1.0 10000 0.1
+eval scan_phdE6SSM 0.1 10000 0.1 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 0.1 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 0.1 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 0.1 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 0.1 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 0.1 ${subprocess}
 
-scan_phdE6SSM 0.1 10000 0.2
-scan_phdE6SSM 0.2 10000 0.2
-scan_phdE6SSM 0.4 10000 0.2
-scan_phdE6SSM 0.6 10000 0.2
-scan_phdE6SSM 0.8 10000 0.2
-scan_phdE6SSM 1.0 10000 0.2
+eval scan_phdE6SSM 0.1 10000 0.2 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 0.2 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 0.2 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 0.2 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 0.2 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 0.2 ${subprocess}
 
-scan_phdE6SSM 0.1 10000 0.4
-scan_phdE6SSM 0.2 10000 0.4
-scan_phdE6SSM 0.4 10000 0.4
-scan_phdE6SSM 0.6 10000 0.4
-scan_phdE6SSM 0.8 10000 0.4
-scan_phdE6SSM 1.0 10000 0.4
+eval scan_phdE6SSM 0.1 10000 0.4 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 0.4 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 0.4 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 0.4 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 0.4 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 0.4 ${subprocess}
 
-scan_phdE6SSM 0.1 10000 0.6
-scan_phdE6SSM 0.2 10000 0.6
-scan_phdE6SSM 0.4 10000 0.6
-scan_phdE6SSM 0.6 10000 0.6
-scan_phdE6SSM 0.8 10000 0.6
-scan_phdE6SSM 1.0 10000 0.6
+eval scan_phdE6SSM 0.1 10000 0.6 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 0.6 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 0.6 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 0.6 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 0.6 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 0.6 ${subprocess}
 
-scan_phdE6SSM 0.1 10000 0.8
-scan_phdE6SSM 0.2 10000 0.8
-scan_phdE6SSM 0.4 10000 0.8
-scan_phdE6SSM 0.6 10000 0.8
-scan_phdE6SSM 0.8 10000 0.8
-scan_phdE6SSM 1.0 10000 0.8
+eval scan_phdE6SSM 0.1 10000 0.8 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 0.8 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 0.8 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 0.8 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 0.8 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 0.8 ${subprocess}
 
-scan_phdE6SSM 0.1 10000 1.0
-scan_phdE6SSM 0.2 10000 1.0
-scan_phdE6SSM 0.4 10000 1.0
-scan_phdE6SSM 0.6 10000 1.0
-scan_phdE6SSM 0.8 10000 1.0
-scan_phdE6SSM 1.0 10000 1.0
+eval scan_phdE6SSM 0.1 10000 1.0 ${subprocess}
+eval scan_phdE6SSM 0.2 10000 1.0 ${subprocess}
+eval scan_phdE6SSM 0.4 10000 1.0 ${subprocess}
+eval scan_phdE6SSM 0.6 10000 1.0 ${subprocess}
+eval scan_phdE6SSM 0.8 10000 1.0 ${subprocess}
+eval scan_phdE6SSM 1.0 10000 1.0 ${subprocess}
 
 wait
