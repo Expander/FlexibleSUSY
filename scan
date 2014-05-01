@@ -1,0 +1,22 @@
+#!/bin/sh
+
+scan_MSSM() {
+    ./higgs-study/scanMSSM.x > higgs-study/data/scanMSSM.dat
+}
+
+scan_NMSSM() {
+    if test $# -ne 1 ; then
+        echo "scan_NMSSM: Too few arguments"
+        return 1
+    fi
+
+    lambda="$1"
+    ./higgs-study/scanNMSSM.x --lambda=${lambda} > higgs-study/data/scanNMSSM_lamda-${lambda}.dat
+}
+
+scan_MSSM
+
+scan_NMSSM(0.1)
+scan_NMSSM(0.2)
+scan_NMSSM(0.5)
+scan_NMSSM(1.0)
