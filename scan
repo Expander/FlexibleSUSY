@@ -21,7 +21,9 @@ scan_NMSSM() {
 
 scan_MSSM
 
-scan_NMSSM(0.1)
-scan_NMSSM(0.2)
-scan_NMSSM(0.5)
-scan_NMSSM(1.0)
+scan_NMSSM 0.1
+scan_NMSSM 0.2
+scan_NMSSM 0.4
+scan_NMSSM 0.6
+scan_NMSSM 0.8
+scan_NMSSM 1.0
