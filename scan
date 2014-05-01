@@ -1,8 +1,11 @@
 #!/bin/sh
 
+tanb_npoints=10
+m0_npoints=10
+
 scan_MSSM() {
     echo -n "scanning MSSM ... "
-    ./higgs-study/scan_MSSM.x > higgs-study/data/scan_MSSM.dat
+    ./higgs-study/scan_MSSM.x --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_MSSM.dat
     echo "done"
 }
 
@@ -15,7 +18,7 @@ scan_NMSSM() {
     lambda="$1"
 
     echo -n "scanning NMSSM (lambda=${lambda}) ... "
-    ./higgs-study/scan_NMSSM.x --lambda=${lambda} > higgs-study/data/scan_NMSSM_lambda-${lambda}.dat
+    ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_NMSSM_lambda-${lambda}.dat
     echo "done"
 }
 
@@ -29,7 +32,7 @@ scan_phdUMSSM() {
     vs="$2"
 
     echo -n "scanning phdUMSSM (lambda=${lambda}, vs=${vs}) ... "
-    ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
+    ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
     echo "done"
 }
 
@@ -44,9 +47,41 @@ scan_phdE6SSM() {
     kappa="$3"
 
     echo -n "scanning phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa}) ... "
-    ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
+    ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
     echo "done"
 }
+
+help() {
+cat <<EOF
+Usage: ./`basename $0` [options]
+Options:
+
+  --help,-h         Print this help message
+
+  --tanb-npoints=   number of tan(beta) points
+  --m0-npoints=     number of m0 points
+EOF
+}
+
+if test $# -gt 0 ; then
+    while test ! "x$1" = "x" ; do
+        case "$1" in
+            -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+            *) optarg= ;;
+        esac
+
+        case $1 in
+            --tanb-npoints=*)        tanb_npoints=$optarg ;;
+            --m0-npoints=*)          m0_npoints=$optarg ;;
+            --help|-h)               help; exit 0 ;;
+            *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
+        esac
+        shift
+    done
+fi
+
+echo "# number of tan(beta) points: ${tanb_npoints}"
+echo "# number of m0 points:        ${m0_npoints}"
 
 scan_MSSM
 
