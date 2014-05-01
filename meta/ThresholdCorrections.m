@@ -190,6 +190,11 @@ InvertRelation[sym_, expr_, other_] :=
 InvertMassRelation[fermion_, yukawa_] :=
     Module[{massMatrix, polynom, prefactor, matrixExpression, dim},
            massMatrix = SARAH`MassMatrix[fermion];
+           If[massMatrix === Null,
+              Print["Error: could not find mass matrix for ",
+                    fermion];
+              Quit[1];
+             ];
            dim = Length[massMatrix];
            If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
               Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];
