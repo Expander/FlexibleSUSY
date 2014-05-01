@@ -60,11 +60,11 @@ void Options::reset()
 
    tanb_start   = 0.;
    tanb_stop    = 50.;
-   tanb_npoints = 100;
+   tanb_npoints = 10;
 
    m0_start     = 0.;
    m0_stop      = 10000.;
-   m0_npoints   = 100;
+   m0_npoints   = 10;
 }
 
 bool Options::starts_with(const std::string& str,
