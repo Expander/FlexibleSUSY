@@ -189,13 +189,13 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            result = Join[result, RemoveSMParticles /@ heavySE];
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_]|SARAH`BottomQuark[_]|SARAH`Electron[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE)];
            (* Create Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`VectorP}]& /@ heavySE)];
@@ -504,11 +504,15 @@ AssertFieldDimension[field_, dim_, model_] :=
 GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
+            mTop, mBot, mTau,
             vev2Str, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[SARAH`HiggsBoson, 2, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
@@ -577,12 +581,16 @@ if (!std::isnan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
 
 GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
     Module[{body,
+            mTop, mBot, mTau,
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, svevStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[SARAH`HiggsBoson, 3, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
@@ -691,11 +699,15 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                                 model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
+            mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[particle, 2, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
@@ -799,11 +811,15 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
                                 model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
+            mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[particle, 2, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
@@ -886,12 +902,16 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                                 model_String /; model === "NMSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
+            mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
             lambdaStr},
            AssertFieldDimension[particle, 3, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
@@ -1017,12 +1037,16 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
                                 model_String /; model === "NMSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
+            mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
             lambdaStr},
            AssertFieldDimension[particle, 3, model];
-           mtStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`TopQuark][2]];
-           mbStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`BottomQuark][2]];
-           mtauStr = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Electron][2]];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           mtauStr = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vev2Str = CConversion`RValueToCFormString[SARAH`VEVSM1^2 + SARAH`VEVSM2^2];
            vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
