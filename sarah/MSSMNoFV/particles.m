@@ -185,7 +185,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "s",
               OutputName -> "s" }},
 
-    {Fb,    { Description->"Bottom Quark",
+    {Fb,    { Description->"Down-Quarks",
               PDG -> {5},
               Mass -> 4.20,
               FeynArtsNr -> 43,
@@ -211,7 +211,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "c",
               OutputName -> "c" }},
 
-    {Ft,    { Description->"Top Quark",
+    {Ft,    { Description->"Up-Quarks",
               PDG -> {6},
               Width -> 1.59,
               Mass -> 171.2,
@@ -236,7 +236,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "m",
               OutputName -> "m" }},
 
-    {Ftau,    { Description->"Tau",
+    {Ftau,    { Description->"Leptons",
                 PDG -> {15},
                 Mass -> 1.776,
                 FeynArtsNr -> 23,
