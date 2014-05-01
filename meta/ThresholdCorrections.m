@@ -1,5 +1,5 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
@@ -113,6 +113,8 @@ ExtractSymbols[sym_[_,_]] := {sym};
 
 ToMatrixExpression[{}] := Null;
 
+ToMatrixExpression[expr_ /; Head[expr] =!= List] := expr;
+
 ToMatrixExpression[list_List] :=
     Module[{dim, symbol, matrix, i, k, diag, expression = Null,
             expandedList, permutations},
@@ -163,6 +165,9 @@ InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
 InvertRelation[sym_, expr_, sym_] :=
     {sym, expr};
 
+InvertRelation[sym_[i1_,i2_], expr_, sym_] :=
+    {sym[i1,i2], expr};
+
 (* remove matrices from the left *)
 InvertRelation[SARAH`MatMul[SARAH`Adj[U_],X___,sym_,V___], expr_, sym_] :=
     InvertRelation[SARAH`MatMul[X,sym,V], SARAH`MatMul[U,expr], sym];
@@ -189,11 +194,12 @@ InvertRelation[sym_, expr_, other_] :=
 
 InvertMassRelation[fermion_, yukawa_] :=
     Module[{massMatrix, polynom, prefactor, matrixExpression, dim},
-           massMatrix = SARAH`MassMatrix[fermion];
-           If[massMatrix === Null,
-              Print["Error: could not find mass matrix for ",
-                    fermion];
-              Quit[1];
+           If[TreeMasses`IsUnmixed[fermion],
+              massMatrix = TreeMasses`GetMassOfUnmixedParticle[fermion];
+              massMatrix = TreeMasses`ReplaceDependencies[massMatrix];
+              massMatrix = Vertices`StripGroupStructure[massMatrix, {SARAH`ct1, SARAH`ct2}];
+              ,
+              massMatrix = SARAH`MassMatrix[fermion];
              ];
            dim = Length[massMatrix];
            If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
