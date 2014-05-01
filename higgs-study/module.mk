@@ -3,7 +3,7 @@ MODNAME      := higgs
 
 SCAN_MSSM_SRC :=
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
-SCAN_MSSM_SRC := $(DIR)/scanMSSM.cpp
+SCAN_MSSM_SRC := $(DIR)/scan_MSSM.cpp
 endif
 SCAN_MSSM_DEP := $(SCAN_MSSM_SRC:.cpp=.d)
 SCAN_MSSM_OBJ := $(SCAN_MSSM_SRC:.cpp=.o)
@@ -11,19 +11,39 @@ SCAN_MSSM_EXE := $(SCAN_MSSM_SRC:.cpp=.x)
 
 SCAN_NMSSM_SRC :=
 ifeq ($(shell $(FSCONFIG) --with-NMSSM),yes)
-SCAN_NMSSM_SRC := $(DIR)/scanNMSSM.cpp
+SCAN_NMSSM_SRC := $(DIR)/scan_NMSSM.cpp
 endif
 SCAN_NMSSM_DEP := $(SCAN_NMSSM_SRC:.cpp=.d)
 SCAN_NMSSM_OBJ := $(SCAN_NMSSM_SRC:.cpp=.o)
 SCAN_NMSSM_EXE := $(SCAN_NMSSM_SRC:.cpp=.x)
 
+SCAN_phdUMSSM_SRC :=
+ifeq ($(shell $(FSCONFIG) --with-phdUMSSM),yes)
+SCAN_phdUMSSM_SRC := $(DIR)/scan_phdUMSSM.cpp
+endif
+SCAN_phdUMSSM_DEP := $(SCAN_phdUMSSM_SRC:.cpp=.d)
+SCAN_phdUMSSM_OBJ := $(SCAN_phdUMSSM_SRC:.cpp=.o)
+SCAN_phdUMSSM_EXE := $(SCAN_phdUMSSM_SRC:.cpp=.x)
+
+SCAN_phdE6SSM_SRC :=
+ifeq ($(shell $(FSCONFIG) --with-phdE6SSM),yes)
+SCAN_phdE6SSM_SRC := $(DIR)/scan_phdE6SSM.cpp
+endif
+SCAN_phdE6SSM_DEP := $(SCAN_phdE6SSM_SRC:.cpp=.d)
+SCAN_phdE6SSM_OBJ := $(SCAN_phdE6SSM_SRC:.cpp=.o)
+SCAN_phdE6SSM_EXE := $(SCAN_phdE6SSM_SRC:.cpp=.x)
+
 ALLHIGGS_SRC := \
 		$(SCAN_MSSM_SRC) \
-		$(SCAN_NMSSM_SRC)
+		$(SCAN_NMSSM_SRC) \
+		$(SCAN_phdE6SSM_SRC) \
+		$(SCAN_phdUMSSM_SRC)
 
 ALLHIGGS_EXE := \
 		$(SCAN_MSSM_EXE) \
-		$(SCAN_NMSSM_EXE)
+		$(SCAN_NMSSM_EXE) \
+		$(SCAN_phdE6SSM_EXE) \
+		$(SCAN_phdUMSSM_EXE)
 
 ALLHIGGS_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(ALLHIGGS_SRC))) \
@@ -68,6 +88,12 @@ $(SCAN_MSSM_EXE): $(SCAN_MSSM_OBJ) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(SCAN_NMSSM_EXE): $(SCAN_NMSSM_OBJ) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+$(SCAN_phdE6SSM_EXE): $(SCAN_phdE6SSM_OBJ) $(LIBphdE6SSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+$(SCAN_phdUMSSM_EXE): $(SCAN_phdUMSSM_OBJ) $(LIBphdUMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 ALLDEP += $(ALLHIGGS_DEP)
