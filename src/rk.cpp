@@ -49,7 +49,7 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
 
     if (fabs(hnext) <= hmin) {
       nstp = MAXSTP; // bail out
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       ERROR("Step size too small in rk.cpp:integrateOdes\n"
             "********** x = " << x << " *********");
       for (int i = 0; i < nvar; i++)
@@ -61,7 +61,7 @@ void integrateOdes(ArrayXd& ystart, double from, double to, double eps,
     h = hnext;
   }
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
   ERROR("Bailed out of rk.cpp:too many steps in integrateOdes\n"
         "********** x = " << x << " *********");
   for (int i = 0; i < nvar; i++)
@@ -88,7 +88,7 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     errmax = (yerr / yscal).abs().maxCoeff();
     errmax  /= eps;
     if (!std::isfinite(errmax)) {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
        ERROR("odeStepper: non-perturbative running at x = " << *x
              << " (" << std::exp(*x) << " GeV)");
 #endif
@@ -99,7 +99,7 @@ void odeStepper(ArrayXd& y, const ArrayXd& dydx, double *x, double htry,
     h = (h >= 0.0 ? max(htemp ,0.1 * h) : min(htemp, 0.1 * h));
     xnew = (*x) + h;
     if (xnew == *x) {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
        ERROR("At x = " << *x << " (" << std::exp(*x) << " GeV) "
              "stepsize underflow in odeStepper");
 #endif

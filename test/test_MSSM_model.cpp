@@ -132,8 +132,8 @@ void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    const double alpha = s.displayDrBarPars().thetaH;
 
    // check that tadpole eqs. are fulfilled
-   TEST_CLOSE(m.get_ewsb_eq_vd(), 0.0, 1.0e-8);
-   TEST_CLOSE(m.get_ewsb_eq_vu(), 0.0, 1.0e-9);
+   TEST_CLOSE(m.get_ewsb_eq_hh_1(), 0.0, 1.0e-8);
+   TEST_CLOSE(m.get_ewsb_eq_hh_2(), 0.0, 1.0e-9);
 
    // neutral CP even Higgs
    DoubleVector hh(ToDoubleVector(m.get_Mhh()));
@@ -1036,6 +1036,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    ensure_tree_level_ewsb(s);
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
+   m.set_pole_mass_loop_order(1);
    m.calculate_DRbar_parameters();
    m.calculate_pole_masses();
 
@@ -1170,8 +1171,8 @@ void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    // tree-level
    model.solve_ewsb_tree_level();
-   TEST_CLOSE(model.get_ewsb_eq_vd(), 0.0, precision);
-   TEST_CLOSE(model.get_ewsb_eq_vu(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_hh_1(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_hh_2(), 0.0, precision);
 
    softSusy.rewsbTreeLevel(signMu);
    TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 5.0);
@@ -1202,8 +1203,8 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    // one-loop
    model.solve_ewsb_one_loop();
-   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(0).real(), 0.0, precision);
-   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(1).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, precision);
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
@@ -1240,9 +1241,9 @@ void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    double two_loop_tadpole[2];
    model.tadpole_hh_2loop(two_loop_tadpole);
 
-   TEST_CLOSE(model.get_ewsb_eq_vd() - model.tadpole_hh(0).real()
+   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real()
               - two_loop_tadpole[0], 0.0, precision);
-   TEST_CLOSE(model.get_ewsb_eq_vu() - model.tadpole_hh(1).real()
+   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real()
               - two_loop_tadpole[1], 0.0, precision);
 
    softsusy::numRewsbLoops = 2;

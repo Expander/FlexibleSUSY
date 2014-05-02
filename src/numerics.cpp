@@ -1329,7 +1329,6 @@ bool newt(DoubleVector & x,
   sum += x.dot(x);
   stpmax = STPMX * maximum(sqrt(sum), (double) n);
   for (its=1; its<=MAXITS; its++) {
-    //    cout << its << endl; ///< DEBUG
     fjac = fdjac(n, x, fvec, vecfunc);
     for (i=1;i<=n;i++) {
       for (sum=0.0, j=1; j<=n; j++) sum += fjac(j, i) * fvec(j);

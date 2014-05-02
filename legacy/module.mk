@@ -1,6 +1,14 @@
 DIR          := legacy
 MODNAME      := legacy
 
+LIBLEGACY_HDR := \
+		$(DIR)/conversion.hpp \
+		$(DIR)/diagonalization.hpp \
+		$(DIR)/rk_legacy.hpp
+
+LIBLEGACY_MK  := \
+		$(DIR)/module.mk
+
 LIBLEGACY_SRC := \
 		$(DIR)/conversion.cpp \
 		$(DIR)/diagonalization.cpp \
@@ -15,16 +23,30 @@ LIBLEGACY_DEP := \
 
 LIBLEGACY     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
+LIBLEGACY_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBLEGACY)
 
-clean-$(MODNAME):
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_SRC) $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_HDR) $(LIBLEGACY_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBLEGACY_MK) $(LIBLEGACY_INSTALL_DIR)
+endif
+
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBLEGACY_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(LIBLEGACY_OBJ)
 
-distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBLEGACY_DEP)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIBLEGACY)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 
 clean::         clean-$(MODNAME)
 

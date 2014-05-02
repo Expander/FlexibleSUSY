@@ -1,11 +1,21 @@
+FlexibleSUSY
+============
+
 FlexibleSUSY provides Mathematica and C++ code to create spectrum
-generators for non-minimal supersymmetric models.
+generators for non-minimal supersymmetric models.  It is designed for
+generating fast and modular C++ code, allowing for easy modification,
+extension and reuse.
+
+Homepage:                https://flexiblesusy.hepforge.org
+Mailing list:            flexiblesusy@projects.hepforge.org
+Source code repository:  https://github.com/FlexibleSUSY
+Bug reports:             https://github.com/FlexibleSUSY/FlexibleSUSY/issues
 
 
 Requirements
 ============
 
- * C++ compiler (g++ >= 4.4.7 or clang++ >= 3.1 or icpc >= 14.0)
+ * C++ compiler (g++ >= 4.4.7 or clang++ >= 3.1 or icpc >= 12.1)
  * Fortran compiler (gfortran, ifort)
  * Mathematica (version 7.0 or higher)
  * SARAH (version 4.0.4 or higher)    http://sarah.hepforge.org
@@ -109,6 +119,32 @@ It will not check for Mathematica and SARAH.
 Warning: Please make sure all C++ source files of your model are
 available in the model directory models/<model>/ .  Otherwise the
 compilation will fail.
+
+
+Exporting the generated source code
+===================================
+
+The generated C++ source code can be exported to a separate directory,
+without the Mathematica meta code.  This exported directory will be a
+complete standalone package, with it's own build system.  To export
+the code, one has to set the target directory during configuration via
+the --with-install-dir= option.  For example
+
+   $ ./configure --with-models=<models> \
+     --with-install-dir=/path/to/export/directory
+
+By running
+
+   $ make install-src
+
+the generated C++ source code for all <models> is copied to
+/path/to/export/directory , together with the non-model specific
+source code from config/ , doc/ , legacy/ , slhaea/ and src/ .
+Afterwards, the standalone package can be build via
+
+   $ cd /path/to/export/directory
+   $ ./configure
+   $ make
 
 
 Dynamic libraries

@@ -461,12 +461,11 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            Return[{prototypes, defs}];
           ];
 
-FillArrayWithOneLoopTadpoles[vevsAndFields_List, arrayName_String:"tadpole"] :=
-    Module[{body = "", v, vev, field, idx, functionName},
-           For[v = 1, v <= Length[vevsAndFields], v++,
-               vev = vevsAndFields[[v,1]];
-               field = vevsAndFields[[v,2]];
-               idx = vevsAndFields[[v,3]];
+FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String:"tadpole"] :=
+    Module[{body = "", v, field, idx, functionName},
+           For[v = 1, v <= Length[higgsAndIdx], v++,
+               field = higgsAndIdx[[v,1]];
+               idx = higgsAndIdx[[v,2]];
                functionName = CreateTadpoleFunctionName[field];
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
                       "Re(model->" <> functionName <>
@@ -558,6 +557,8 @@ double rmtausq = Sqr(" <> mtauStr <> ");
 double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
 double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
 
+LOCK_MUTEX();
+
 ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
            &amu, &tanb, &vev2, &gs, &s1s, &s2s);
 ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
@@ -567,6 +568,8 @@ ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
            &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
 tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
           &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+
+UNLOCK_MUTEX();
 
 if (!std::isnan(s1s * s1t * s1b * s1tau * s2s * s2t * s2b * s2tau)) {
    result[0] = (- s1s - s1t - s1b - s1tau) * " <> CConversion`ToValidCSymbolString[SARAH`VEVSM1] <> ";
@@ -641,6 +644,8 @@ double rmtausq = Sqr(" <> mtauStr <> ");
 double s1s = 0., s2s = 0., s1t = 0., s2t = 0.;
 double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
 
+LOCK_MUTEX();
+
 ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
            &amu, &tanb, &vev2, &gs, &s1s, &s2s);
 ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
@@ -650,6 +655,8 @@ ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
            &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
 tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
           &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+
+UNLOCK_MUTEX();
 
 // rescale T1 to get TS
 const double sss = s1s * vev * cosb / " <> svevStr <> ";
@@ -760,7 +767,10 @@ double s11s = 0., s22s = 0., s12s = 0.;
 double s11b = 0., s12b = 0., s22b = 0.;
 double s11tau = 0., s12tau = 0., s22tau = 0.;
 double s11w = 0., s22w = 0., s12w = 0.;
+double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
 int scheme = 0; // chooses DR-bar scheme from slavich et al
+
+LOCK_MUTEX();
 
 // two-loop Higgs corrections: alpha_s alpha_t, alpha_s alpha_b and
 // alpha_b^2, alpha_t*2, alpha_b alpha_t
@@ -775,16 +785,9 @@ tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
             &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
             &s22tau, &s12tau);
 
-result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
-result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
-result[2] = - s22s - s22w - s22b - s22tau; // 2,2 element
-
 // calculate dMA, which is the two loop correction to take the DRbar
 // psuedoscalar mass ( = -2m3sq/sin(2beta)) to the pole mass (as in
 // Eq. (8) of hep-ph/0305127)
-
-double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
-
 dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
         &tanb, &vev2, &gs, &p2s);
 dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
@@ -794,11 +797,17 @@ ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
 tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
           &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
 
+UNLOCK_MUTEX();
+
 const double dMA = p2s + p2w + p2b + p2tau;
 
 // dMA contains two loop tadpoles, which we'll subtract
 double tadpole[2];
 " <> CreateTwoLoopTadpoleFunctionName[SARAH`HiggsBoson] <> "(tadpole);
+
+result[0] = - s11s - s11w - s11b - s11tau; // 1,1 element
+result[1] = - s12s - s12w - s12b - s12tau; // 1,2 element
+result[2] = - s22s - s22w - s22b - s22tau; // 2,2 element
 
 result[0] += - dMA * Sqr(sinb) + tadpole[0] / " <> vdStr <> ";
 result[1] += + dMA * sinb * cosb;
@@ -872,6 +881,8 @@ double fmasq = Abs(mAsq);
 
 double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
 
+LOCK_MUTEX();
+
 dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
         &tanb, &vev2, &gs, &p2s);
 dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
@@ -880,6 +891,8 @@ ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
         &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
 tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
           &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+UNLOCK_MUTEX();
 
 const double dMA = p2s + p2w + p2b + p2tau;
 
@@ -972,8 +985,14 @@ double svevS = " <> vsStr <> " / root2;
 int loop = 2;
 int scheme = 0; // selects DR-bar scheme
 
+double s11w = 0., s12w = 0., s22w = 0.;
+double s11tau = 0., s12tau = 0., s22tau = 0.;
+double p2w = 0., p2tau = 0.;
+
 double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+LOCK_MUTEX();
 
 // get alpha_s alpha_t pieces
 effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
@@ -982,6 +1001,21 @@ effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
 // get alpha_s alpha_b pieces
 effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
         &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Corrections as in MSSM, not corrected for NMSSM,
+// should be OK for MSSM states when S state is close to decoupled
+ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq,
+          &msb2sq, &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb,
+          &vev2, &s11w, &s12w, &s22w);
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+            &s22tau, &s12tau);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+UNLOCK_MUTEX();
 
 // Make appropriate substitutions for elements following 0907.4682
 // bottom of page 9
@@ -993,24 +1027,6 @@ for (int i = 0; i < 3; i++) {
       DMS[i][j] += DMSB[i][j];
    }
 }
-
-// Corrections as in MSSM, not corrected for NMSSM,
-// should be OK for MSSM states when S state is close to decoupled
-
-double s11w = 0., s12w = 0., s22w = 0.;
-double s11tau = 0., s12tau = 0., s22tau = 0.;
-double p2w = 0., p2tau = 0.;
-
-ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq,
-          &msb2sq, &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb,
-          &vev2, &s11w, &s12w, &s22w);
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
-            &s22tau, &s12tau);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
 
 const double dMA = p2w + p2tau;
 
@@ -1108,8 +1124,12 @@ double vevS =  vev / root2;
 double svevS = " <> vsStr <> " / root2;
 int loop = 2;
 
+double p2w = 0., p2tau = 0.;
+
 double DMS[3][3] = {{ 0. }}, DMP[3][3] = {{ 0. }};
 double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
+
+LOCK_MUTEX();
 
 // get alpha_s alpha_t pieces
 effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
@@ -1118,6 +1138,15 @@ effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
 // get alpha_s alpha_b pieces
 effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
         &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+
+// Corrections as in MSSM, not corrected for NMSSM,
+// should be OK for MSSM states when S state is close to decoupled
+ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+UNLOCK_MUTEX();
 
 // Make appropriate substitutions for elements following 0907.4682
 // bottom of page 9
@@ -1129,16 +1158,6 @@ for (int i = 0; i < 3; i++) {
       DMP[i][j] += DMPB[i][j];
    }
 }
-
-// Corrections as in MSSM, not corrected for NMSSM,
-// should be OK for MSSM states when S state is close to decoupled
-
-double p2w = 0., p2tau = 0.;
-
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
 
 const double dMA = p2w + p2tau;
 

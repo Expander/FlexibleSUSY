@@ -96,7 +96,8 @@ ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh
 TEST_SRC += \
-		$(DIR)/test_MSSM_slha_input.cpp
+		$(DIR)/test_MSSM_slha_input.cpp \
+		$(DIR)/test_MSSM_info.cpp
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
@@ -118,7 +119,8 @@ TEST_META := \
 		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_SelfEnergies.m \
 		$(DIR)/test_TextFormatting.m \
-		$(DIR)/test_ThresholdCorrections.m
+		$(DIR)/test_ThresholdCorrections.m \
+		$(DIR)/test_Vertices.m
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
@@ -143,19 +145,23 @@ TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
 
 all-$(MODNAME): $(LIBTEST) $(TEST_EXE)
 
+clean-$(MODNAME)-dep:
+		-rm -f $(TEST_DEP)
+		-rm -f $(LIBTEST_DEP)
+
+clean-$(MODNAME)-obj:
+		-rm -f $(TEST_OBJ)
+		-rm -f $(LIBTEST_OBJ)
+
 clean-$(MODNAME)-log:
 		-rm -f $(TEST_LOG)
 
-clean-$(MODNAME):
-		-rm -f $(LIBTEST_OBJ)
-		-rm -f $(TEST_OBJ)
-		-rm -f $(TEST_LOG)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
+                  clean-$(MODNAME)-log
+		-rm -f $(LIBTEST)
+		-rm -f $(TEST_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(LIBTEST_DEP)
-		-rm -f $(LIBTEST)
-		-rm -f $(TEST_DEP)
-		-rm -f $(TEST_EXE)
 
 $(DIR)/%.x.log: $(DIR)/%.x
 		@rm -f $@
@@ -254,6 +260,8 @@ $(DIR)/test_loopfunctions.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 $(DIR)/test_sfermions.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_model.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_MSSM_info.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY)
 

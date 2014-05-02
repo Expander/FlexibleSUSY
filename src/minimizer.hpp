@@ -191,12 +191,12 @@ int Minimizer<dimension>::minimize(const double start[dimension])
       const double size = gsl_multimin_fminimizer_size(minimizer);
       status = gsl_multimin_test_size(size, precision);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       print_state(minimizer, iter);
 #endif
    } while (status == GSL_CONTINUE && iter < max_iterations);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
    printf("\tMinimization status = %s\n", gsl_strerror(status));
 #endif
 

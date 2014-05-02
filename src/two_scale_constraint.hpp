@@ -40,7 +40,7 @@ public:
 template <class TargetModel>
 TargetModel* cast_model(Two_scale_model* abstract_model)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    TargetModel* tmp = dynamic_cast<TargetModel*>(abstract_model);
    if (!tmp) {
       FATAL("model pointer " << abstract_model << " is not of type "

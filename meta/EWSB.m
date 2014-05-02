@@ -1,5 +1,5 @@
 
-BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`"}];
+BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
 
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
 phases / signs."
@@ -41,24 +41,37 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
-CreateEWSBEqPrototype[vev_Symbol] :=
-    Module[{result = ""},
-           result = "double get_ewsb_eq_" <> ToValidCSymbolString[vev] <>
-                    "() const;\n";
+CreateEWSBEqPrototype[higgs_] :=
+    Module[{result = "", i},
+           For[i = 1, i <= TreeMasses`GetDimension[higgs], i++,
+               result = result <> "double get_ewsb_eq_" <>
+                        ToValidCSymbolString[higgs] <>
+                        "_" <> ToString[i] <> "() const;\n";
+              ];
            Return[result];
           ];
 
-CreateEWSBEqFunction[vev_Symbol, equation_] :=
-    Module[{result = "", body = "", variableName = ""},
-           variableName = "ewsb_eq_" <> ToValidCSymbolString[vev];
-           result = "double CLASSNAME::get_" <> variableName <>
-                    "() const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[equation, "LOCALINPUT"] <>
-                  "\n" <> "double " <> variableName <> " = " <>
-                  RValueToCFormString[equation] <> ";\n";
-           body = body <> "\nreturn " <> variableName <> ";\n";
-           body = IndentText[WrapLines[body]];
-           Return[result <> body <> "}\n\n"];
+CreateEWSBEqFunction[higgs_, equation_List] :=
+    Module[{result = "", body = "", dim, i, eq},
+           dim = TreeMasses`GetDimension[higgs];
+           If[dim =!= Length[equation],
+              Print["Error: number of Higgs bosons != number of EWSB eqs."];
+              Quit[1];
+             ];
+           For[i = 1, i <= dim, i++,
+               result = result <>
+                        "double CLASSNAME::get_ewsb_eq_" <>
+                        ToValidCSymbolString[higgs] <>
+                        "_" <> ToString[i] <> "() const\n{\n";
+               eq   = equation[[i]];
+               body = Parameters`CreateLocalConstRefsForInputParameters[eq, "LOCALINPUT"] <>
+                      "\n" <> "double result = " <>
+                      RValueToCFormString[eq] <> ";\n";
+               body = body <> "\nreturn result;\n";
+               body = IndentText[WrapLines[body]];
+               result = result <> body <> "}\n\n"
+              ];
+           Return[result];
           ];
 
 FindFreePhase[parameter_, freePhases_] :=
@@ -82,11 +95,12 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
            Return[result];
           ];
 
-FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List, freePhases_List,
+FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
                      gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
-    Module[{i, result = "", vev, par},
-           If[Length[vevs] =!= Length[parametersFixedByEWSB],
-              Print["Error: number of EWSB equations (",Length[vevs],
+    Module[{i, result = "", par, dim},
+           dim = TreeMasses`GetDimension[higgs];
+           If[dim =!= Length[parametersFixedByEWSB],
+              Print["Error: number of Higgs bosons (",dim,
                     ") is not equal to the number of fixed parameters (",
                     Length[parametersFixedByEWSB],")"];
               Return[""];
@@ -96,11 +110,11 @@ FillArrayWithEWSBEqs[vevs_List, parametersFixedByEWSB_List, freePhases_List,
                result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
               ];
            result = result <> "\n";
-           For[i = 1, i <= Length[vevs], i++,
-               vev = vevs[[i]];
+           For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "model->get_ewsb_eq_" <>
-                        ToValidCSymbolString[vev] <> "();\n";
+                        ToValidCSymbolString[higgs] <> "_" <>
+                        ToString[i] <> "();\n";
               ];
            Return[result];
           ];

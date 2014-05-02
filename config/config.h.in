@@ -7,6 +7,7 @@
 #define FLEXIBLESUSY_MAJOR @FLEXIBLESUSY_MAJOR@
 #define FLEXIBLESUSY_MINOR @FLEXIBLESUSY_MINOR@
 #define FLEXIBLESUSY_PATCH @FLEXIBLESUSY_PATCH@
+#define FLEXIBLESUSY_EXTRA "@FLEXIBLESUSY_EXTRA@"
 
 #define SARAH_VERSION         "@SARAH_VERSION@"
 #define SARAH_MAJOR           @SARAH_MAJOR@
@@ -27,6 +28,18 @@
 #define FLIBS                 "@FLIBS@"
 
 /* Switches */
+
+/* Enable colored printout */
+@DEFINE_ENABLE_COLOR_PRINTOUT@
+
+/* Enable debug mode */
+@DEFINE_ENABLE_DEBUG@
+
+/* Enable silent mode */
+@DEFINE_ENABLE_SILENT@
+
+/* Enable verbose mode */
+@DEFINE_ENABLE_VERBOSE@
 
 /* Enable LoopTools */
 @DEFINE_ENABLE_LOOPTOOLS@

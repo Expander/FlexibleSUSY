@@ -155,6 +155,14 @@ CheckModelFileSettings[] :=
               Print["Warning: FlexibleSUSY`LowScale should be",
                     " set in the model file!"];
               FlexibleSUSY`LowScale := SM[MZ];
+              ,
+              If[FlexibleSUSY`LowScale =!= SM[MZ],
+                 Print["Error: The low-scale was set differently from MZ!"];
+                 Print["   LowScale = ", FlexibleSUSY`LowScale];
+                 Print["   This is currently not supported."];
+                 Print["   Please set: LowScale = ", SM[MZ], ";"];
+                 Quit[1];
+                ];
              ];
            If[!ValueQ[FlexibleSUSY`LowScaleFirstGuess],
               Print["Warning: FlexibleSUSY`LowScaleFirstGuess should be",
@@ -375,43 +383,55 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
-(* Returns a list of three-component list where the information is stored
-   which vev corresponds to which CP even mass eigenstate.
+(* Returns a list of two-component list where the information is stored
+   which Higgs corresponds to which EWSB eq.
 
    Example: MRSSM
-   It[] := vevs = {vd,vu,vT,vS};
-   It[] := CreateVEVsToFieldsAssociation[vevs]
-   Out[] = {{vd, hh, 1}, {vu, hh, 2}, {vT, hh, 4}, {vS, hh, 3}}
+   It[] := CreateHiggsToEWSBEqAssociation[]
+   Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
-CreateVEVsToFieldsAssociation[vevs_List] :=
-    Module[{association = {}, v, phi, higgs},
-           For[v = 1, v <= Length[vevs], v++,
+CreateHiggsToEWSBEqAssociation[] :=
+    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs},
+           vevs = SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs];
+           numberOfVEVs = Length[vevs];
+           numberOfHiggses = SARAH`getGen[SARAH`HiggsBoson, FlexibleSUSY`FSEigenstates];
+           (* d V/d phi_i *)
+           For[v = 1, v <= numberOfVEVs, v++,
                (* find CP even gauge-eigenstate Higgs for the vev *)
-               phi = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
-                           {_, {vevs[[v]], _}, {__}, {p_,_}} :> p
-                          ];
-               If[Head[phi] =!= List || Length[phi] != 1,
-                  Print["Error: could not find CP even Higgs field for vev ", vevs[[v]]];
-                  Quit[1];
-                 ];
-               phi = phi[[1]];
-               (* find position of phi in the CP even mass eigenstate vector *)
+               phi = vevs[[v,4,1]];
+               (* find position of phi in the Higgs mass eigenstate vector *)
                higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
                              {ps__ /; MemberQ[ps, phi], {h_,_}} :> {h, Position[ps, phi][[1,1]]}
                             ];
                If[Head[higgs] =!= List || Length[higgs] != 1,
                   Print["Error: could not find CP even Higgs field ", phi,
-                        " in MatterSector definitions "];
+                        " in MatterSector definitions"];
                   Quit[1];
                  ];
                higgs = higgs[[1]];
-               AppendTo[association, {vevs[[v]], higgs[[1]], higgs[[2]]}];
+               AppendTo[association, {higgs[[1]], higgs[[2]]}];
+              ];
+           (* d V/d sigma_i *)
+           For[v = 1, v <= numberOfHiggses - numberOfVEVs, v++,
+               (* find CP odd gauge-eigenstate Higgs for the vev *)
+               sigma = vevs[[v,3,1]];
+               (* find position of sigma in the Higgs mass eigenstate vector *)
+               higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
+                             {ps__ /; MemberQ[ps, sigma], {h_,_}} :> {h, Position[ps, sigma][[1,1]]}
+                            ];
+               If[Head[higgs] =!= List || Length[higgs] != 1,
+                  Print["Error: could not find CP odd Higgs field ", sigma,
+                        " in MatterSector definitions"];
+                  Quit[1];
+                 ];
+               higgs = higgs[[1]];
+               AppendTo[association, {higgs[[1]], higgs[[2]]}];
               ];
            Return[association];
           ];
 
 
-WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
+WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
@@ -443,16 +463,10 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             copyDRbarMassesToPoleMasses = "",
-            vevsToFieldsAssociation,
+            higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             enablePoleMassThreads = True
            },
-           If[Length[vevs] != Length[ewsbEquations],
-              Print["Error: number of vevs != number of EWSB equations"];
-              Print["   vevs = ", vevs];
-              Print["   EWSB equations = ", ewsbEquations];
-              Quit[1];
-             ];
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
@@ -467,18 +481,16 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
-           For[k = 1, k <= Length[ewsbEquations], k++,
-               tadpoleEqPrototypes = tadpoleEqPrototypes <> EWSB`CreateEWSBEqPrototype[vevs[[k]]];
-               tadpoleEqFunctions  = tadpoleEqFunctions  <> EWSB`CreateEWSBEqFunction[vevs[[k]], ewsbEquations[[k]]];
-              ];
+           tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
+           tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquations];
            If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
-           vevsToFieldsAssociation      = CreateVEVsToFieldsAssociation[vevs];
+           higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[vevsToFieldsAssociation];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
@@ -494,7 +506,7 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[vevs, parametersFixedByEWSB, freePhases];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, parametersFixedByEWSB, freePhases];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
@@ -509,9 +521,9 @@ WriteModelClass[massMatrices_List, vevs_List, ewsbEquations_List,
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
            runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
            enablePoleMassThreads = False;
-           callAllLoopMassFunctions     = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
+           callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
-           callAllLoopMassFunctionsInThreads = LoopMasses`CallAllOneLoopPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
+           callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
@@ -936,7 +948,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
-            ewsbEquations, massMatrices, phases, vevs,
+            ewsbEquations, massMatrices, phases,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters,
@@ -1037,6 +1049,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
+           Constraint`SanityCheck[Join[FlexibleSUSY`InitialGuessAtLowScale,
+                                       FlexibleSUSY`InitialGuessAtHighScale],
+                                  "initial guess"
+                                 ];
            fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
@@ -1110,7 +1126,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
                          SARAH`TraceAbbr, numberOfSusyParameters];
 
-           vevs = #[[1]]& /@ SARAH`BetaVEV;
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[] /.
                            allIndexReplacementRules /.
@@ -1118,14 +1133,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[Head[ewsbEquations] =!= List,
               Print["Error: Could not find EWSB equations for eigenstates ",
                     FSEigenstates];
-              Quit[1];
-             ];
-           If[Length[vevs] =!= Length[ewsbEquations],
-              Print["Error: There are ", Length[ewsbEquations],
-                    " EWSB equations but ", Length[vevs], " VEVs"];
-              ewsbEquations = {};
-              vevs = {};
-              FlexibleSUSY`EWSBOutputParameters = {};
               Quit[1];
              ];
 
@@ -1329,7 +1336,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
-           WriteModelClass[massMatrices, vevs, ewsbEquations,
+           WriteModelClass[massMatrices, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
                            nPointFunctions, vertexRules, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],

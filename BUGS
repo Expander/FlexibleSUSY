@@ -1,0 +1,43 @@
+If you think you may have found a bug in FlexibleSUSY, which is not
+listed below, please file a bug report at
+
+   https://github.com/FlexibleSUSY/FlexibleSUSY/issues
+
+
+Known problems
+==============
+
+Expressing the Weinberg angle in terms of the gauge couplings
+-------------------------------------------------------------
+
+Currently FlexibleSUSY needs to express the Weinberg angle ThetaW in
+terms of running DR-bar parameters, as gauge couplings etc.  The
+reason is that SARAH expresses some mass matrices and vertices in
+terms of ThetaW.  Since these mass matrices need to be sometimes
+calculated in the DR-bar scheme, ThetaW needs to be known in the
+DR-bar scheme as well.  And this is can be done by expressing ThetaW
+in terms of the fundamental DR-bar parameters.
+
+However, it can happen that Mathematica and FlexibleSUSY are not able
+to express ThetaW in terms of the fundamental DR-bar parameters.  This
+happens for examples in models with extra U(1) gauge groups, where Z
+and Z' mix.  In this case the following error occurs:
+
+   ExpressWeinbergAngleInTermsOfGaugeCouplings::noSolution: 
+   Error: could not express the Weinberg angle ThetaW
+     in terms of the gauge couplings. ...
+
+In this case FlexibleSUSY will use the Standard Model definition of
+ThetaW
+
+   ThetaW = ArcTan[g1/g2] ,
+
+plus a GUT normalization of g1, if defined.  However, this definition
+might not be correct in each model.
+
+In future versions of FlexibleSUSY, ThetaW will be eliminated
+completely from all expressions and replaced by the value given in
+SARAH`DependenceSPheno in the SARAH`ParameterDefinitionsMain list.  By
+default this value is (see SARAH/Modesl/parameters.m)
+
+   DependenceSPheno -> ArcCos[Abs[ZZ[1,1]]]

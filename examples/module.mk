@@ -60,12 +60,16 @@ STANDALONE_DIR := \
 
 all-$(MODNAME): $(EXAMPLES_EXE)
 
-clean-$(MODNAME):
+clean-$(MODNAME)-dep:
+		-rm -f $(EXAMPLES_DEP)
+
+clean-$(MODNAME)-obj:
 		-rm -f $(EXAMPLES_OBJ)
 
-distclean-$(MODNAME): clean-$(MODNAME)
-		-rm -f $(EXAMPLES_DEP)
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(EXAMPLES_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
 		-@for d in $(STANDALONE_DIR); do \
 			(cd $$d && make distclean); \
 		 done

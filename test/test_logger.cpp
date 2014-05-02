@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( test_ifelse_statement )
    else
       INFO("false branch");
 
-   // the following should compile even if VERBOSE is not defined
+   // the following should compile even if ENABLE_VERBOSE is not defined
    if (condition)
       VERBOSE_MSG("true branch");
 }

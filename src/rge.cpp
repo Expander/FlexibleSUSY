@@ -45,7 +45,6 @@ int RGE::run(double x1, double x2, double eps) {
 // variables y of an RGE, will calculate the derivitives dydx.
 DoubleVector allDerivs(double x, const DoubleVector & y)
 {
-  //  cout << " x=" << exp(x) << " y=" << y; // DEBUG
   tempRge->setMu(exp(x));
   tempRge->set(y);
   return tempRge->beta();

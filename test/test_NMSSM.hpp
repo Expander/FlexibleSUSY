@@ -127,15 +127,15 @@ void ensure_n_loop_ewsb(NMSSM<Two_scale>& m, int loop_level)
    m.solve_ewsb();
 
    if (loop_level == 1) {
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - m.tadpole_hh(0).real(), precision);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - m.tadpole_hh(1).real(), precision);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - m.tadpole_hh(2).real(), precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - m.tadpole_hh(0).real(), precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - m.tadpole_hh(2).real(), precision);
    } else if (loop_level == 2) {
       double two_loop_tadpole[3];
       m.tadpole_hh_2loop(two_loop_tadpole);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(m.tadpole_hh(0)) - two_loop_tadpole[0], precision);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], precision);
-      BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(m.tadpole_hh(2)) - two_loop_tadpole[2], precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(m.tadpole_hh(0)) - two_loop_tadpole[0], precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1)) - two_loop_tadpole[1], precision);
+      BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh(2)) - two_loop_tadpole[2], precision);
    }
 }
 

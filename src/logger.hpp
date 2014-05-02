@@ -22,6 +22,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cassert>
+#include "config.h"
 
 /**
  * The following message logger macros are available:
@@ -33,11 +34,13 @@
  * ERROR(message)
  * FATAL(message)        aborts program execution
  *
- * All output can be disabled if SILENT is defined.
+ * All output can be disabled if ENABLE_SILENT is defined.
  * To define a preprocessor symbol, use either
  *
- *    #define DEBUG
- *    #define VERBOSE
+ *    #define ENABLE_COLOR_PRINTOUT
+ *    #define ENABLE_DEBUG
+ *    #define ENABLE_SILENT
+ *    #define ENABLE_VERBOSE
  *
  * or compile via
  *
@@ -50,13 +53,13 @@
 
 enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
    #define VERBOSE_MSG(message) LOG(kVerbose, message)
 #else
    #define VERBOSE_MSG(message)
 #endif
 
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    #define DEBUG_MSG(message) LOG(kDebug,   message)
 #else
    #define DEBUG_MSG(message)
@@ -66,7 +69,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
 #define WARNING(message) LOG(kWarning, message)
 #define ERROR(message)   LOG(kError,   message)
 
-#ifdef SILENT
+#ifdef ENABLE_SILENT
    #define FATAL(message)                             \
       do {                                            \
          exit(EXIT_FAILURE);                          \
@@ -82,7 +85,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       } while (0)
 #endif
 
-#ifdef SILENT
+#ifdef ENABLE_SILENT
    #define PRINT_PREFIX(level)
 #else
    #define PRINT_PREFIX(level)                                        \
@@ -97,7 +100,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       } while (0)
 #endif
 
-#ifdef SILENT
+#ifdef ENABLE_SILENT
    #define PRINT_FILE_LINE(level)
 #else
    #define PRINT_FILE_LINE(level)                                     \
@@ -112,7 +115,7 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       } while (0)
 #endif
 
-#ifdef SILENT
+#ifdef ENABLE_SILENT
    #define PRINT_COLOR_CODE(level)
 #else
    #define PRINT_COLOR_CODE(level)                               \
@@ -130,10 +133,10 @@ enum ELogLevel { kVerbose, kDebug, kInfo, kWarning, kError, kFatal };
       } while (0)
 #endif
 
-#ifdef SILENT
+#ifdef ENABLE_SILENT
    #define LOG(level, message)
 #else
-   #ifdef COLOR_PRINTOUT
+   #ifdef ENABLE_COLOR_PRINTOUT
       #define LOG(level, message)                                \
       do {                                                       \
          PRINT_COLOR_CODE(level);                                \

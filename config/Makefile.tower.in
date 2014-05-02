@@ -10,12 +10,14 @@ MODEL2          := MSSMRHN
 
 MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
 MODEL2DIR       := $(ABSBASEDIR)/models/$(MODEL2)
+CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 LEGACYDIR       := $(ABSBASEDIR)/legacy
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
 
 INCMODEL1       := -I$(MODEL1DIR)
 INCMODEL2       := -I$(MODEL2DIR)
+INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
 INCLEGACY       := -I$(LEGACYDIR)
 INCSLHAEA       := -I$(SLHAEADIR)
@@ -26,7 +28,8 @@ LIBLEGACY       := $(LEGACYDIR)/liblegacy$(LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ -I. $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
+                   $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := @CXX_DEP_GEN@
 CXXFLAGS_DEP_GEN:= @CXXFLAGS_DEP_GEN@
@@ -80,10 +83,10 @@ clean-obj:
 		-rm -f $(TOWER_OBJ)
 
 clean: clean-dep clean-obj
+		-rm -f $(TOWER_EXE)
 
 distclean: clean
 		-rm -f Makefile
-		-rm -f $(TOWER_EXE)
 
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 

@@ -40,9 +40,9 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
    const int error = m.solve_ewsb_tree_level();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), precision);
 
    softsusy::Z3 = false;
    s.rewsbTreeLevel(input.SignMu);
@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_ewsb_tree_level_via_soft_higgs_masses )
    const int error = m.solve_ewsb_tree_level_via_soft_higgs_masses();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 2.0e-09);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 3.0e-09);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 2.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), 2.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), 3.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), 2.0e-09);
 }
 
 BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
@@ -184,9 +184,9 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
 
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(tadpole_hh_1), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(tadpole_hh_2), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(tadpole_hh_3), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(tadpole_hh_3), precision);
 
    softsusy::numRewsbLoops = 1;
    s.rewsb(signMu, mt);

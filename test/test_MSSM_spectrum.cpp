@@ -222,7 +222,7 @@ public:
       softsusy::numRewsbLoops = 1;
       softsusy::numHiggsMassLoops = 1;
       softsusy::TOLERANCE = 1.0e-4;
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
       DoubleVector pars(3);
@@ -293,6 +293,9 @@ public:
                                                       *high_constraint);
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
+      mssm.clear();
+      mssm.set_ewsb_loop_order(1);
+      mssm.set_pole_mass_loop_order(1);
       mssm.set_input(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 

@@ -40,9 +40,11 @@ PrintTestSummary[] :=
     Block[{},
           Print["Test summary"];
           Print["============"];
-          Print["Number of passed tests: ", numberOfPassedTests];
-          Print["Number of failed tests: ", numberOfFailedTests];
-          Print["Total number of tests: ", numberOfPassedTests + numberOfFailedTests];
+          If[numberOfFailedTests == 0,
+             Print["All tests passed (", numberOfPassedTests, ")."];
+             ,
+             Print["*** ", numberOfFailedTests, " tests failed!"];
+            ];
          ];
 
 RunCPPProgram[{preface_String, expr_String}, fileName_String:"tmp.cpp"] :=

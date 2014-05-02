@@ -1,0 +1,45 @@
+FlexibleSUSY release procedure
+==============================
+
+When releasing FlexibleSUSY, please follow these steps:
+
+ 0. Checkout the development branch
+
+      git co development
+      git pull organization development
+
+ 1. Create a commit where the the version number (in configure) is
+    updated.  This commit should have the commit message
+
+      version <version>
+
+    where <version> is of the form x.y.z with x = major, y = minor, z
+    = patch level.  FLEXIBLESUSY_EXTRA should be set empty.
+
+ 2. Merge into master
+
+      git co master
+      git merge development
+
+ 3. Run configure with all features disabled to create the Makefile
+
+      ./configure --disable-meta --disable-compile \
+          --with-models= --with-algorithms=
+
+    and create a non-annotated tag via
+
+      make tag
+
+    A tarball and a corresponding .md5 file will be created.
+
+ 4. Push everything:
+
+      git push organization master
+      git push organization development
+
+      git push organization v<version>
+
+    and copy the tarball and the .md5 file to Hepforge
+
+      scp FlexibleSUSY-<version>.tar.gz* \
+         USERNAME@login.hepforge.org:/hepforge/home/flexiblesusy/downloads/

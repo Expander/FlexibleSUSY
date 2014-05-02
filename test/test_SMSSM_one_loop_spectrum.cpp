@@ -35,9 +35,9 @@ void ensure_tree_level_ewsb(SMSSM<Two_scale>& m, NmssmSoftsusy& s,
    const int error = m.solve_ewsb_tree_level();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), precision);
 
    softsusy::Z3 = false;
    s.rewsbTreeLevel(1);
@@ -102,6 +102,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
 
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
+   m.set_pole_mass_loop_order(1);
    m.calculate_DRbar_parameters();
    m.calculate_pole_masses();
 

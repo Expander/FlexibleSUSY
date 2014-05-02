@@ -27,9 +27,14 @@
 #include "@ModelName@_info.hpp"
 #include "two_scale_model.hpp"
 #include "problems.hpp"
+#include "config.h"
 
 #include <iosfwd>
 #include <string>
+
+#ifdef ENABLE_THREADS
+#include <mutex>
+#endif
 
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>
@@ -48,6 +53,7 @@ public:
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
    virtual void clear();
+   void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void set_ewsb_iteration_precision(double);
@@ -56,6 +62,7 @@ public:
    void set_number_of_mass_iterations(std::size_t);
    void set_pole_mass_loop_order(unsigned);
    double get_ewsb_iteration_precision() const;
+   double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
@@ -116,6 +123,9 @@ private:
    @ModelName@_physical physical;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
+#ifdef ENABLE_THREADS
+   static std::mutex mtx_fortran; /// locks fortran functions
+#endif
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
@@ -137,7 +147,6 @@ private:
 @physicalMassesDef@
 @mixingMatricesDef@
 @phasesDefinition@
-
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@<Two_scale>&);

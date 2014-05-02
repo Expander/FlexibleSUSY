@@ -75,7 +75,7 @@ double diagonalize_sfermions_2x2(const Mass_data& pars,
    Eigen::Matrix<double, 2, 2> Zf;
    diagonalize_hermitian(mass_matrix, msf, Zf);
 
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
    if (msf.minCoeff() < 0.)
       WARNING("stop tachyon");
 #endif

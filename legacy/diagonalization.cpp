@@ -1,6 +1,24 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 #include "diagonalization.hpp"
 #include "wrappers.hpp"
+#include "config.h"
 
 namespace flexiblesusy {
 
@@ -20,7 +38,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
                  DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       ostringstream ii;
@@ -69,7 +87,7 @@ ComplexMatrix phase_rotation(const DoubleVector& v)
 void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u, DoubleVector& eigenvalues)
 {
    const int c = m.displayCols();
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        u.displayCols() != c || u.displayRows() !=c || c > 10) {
       ostringstream ii;
@@ -118,7 +136,7 @@ void Diagonalize2by2(const DoubleMatrix& m, ComplexMatrix& u,
 
 void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    if ((u.displayRows() != w.displayEnd()) ||
        (u.displayCols() != w.displayEnd()) ||
        (w.displayStart() != 1)) {
@@ -149,7 +167,7 @@ void AssociateOrderAbs(DoubleMatrix& u, DoubleMatrix& v, DoubleVector& w)
 void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
                  DoubleMatrix& v, DoubleVector& eigenvalues)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    const int c = m.displayCols();
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c ||
@@ -190,7 +208,7 @@ void Diagonalize(const DoubleMatrix& m, DoubleMatrix& u,
 void Diagonalize(const DoubleMatrix& m, ComplexMatrix& u,
                  ComplexMatrix& v, DoubleVector& eigenvalues)
 {
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
    const int c = m.displayCols();
    if (m.displayRows() != c || eigenvalues.displayEnd() != c ||
        v.displayCols() != c || v.displayRows() !=c || c > 10) {

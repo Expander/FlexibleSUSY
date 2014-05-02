@@ -40,9 +40,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level )
    const int error = m.solve_ewsb_tree_level();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), precision);
 
    softsusy::Z3 = true;
    s.rewsbTreeLevel(1);
@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_ewsb_tree_level_via_soft_higgs_masses )
    const int error = m.solve_ewsb_tree_level_via_soft_higgs_masses();
 
    BOOST_CHECK_EQUAL(error, 0);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd(), 5.0e-09);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu(), 1.0e-09);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS(), 1.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), 5.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), 1.0e-09);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), 1.0e-09);
 }
 
 BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_tadpoles )
@@ -140,9 +140,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
 
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(tadpole_hh_1), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(tadpole_hh_2), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(tadpole_hh_3), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(tadpole_hh_3), precision);
 
    softsusy::numRewsbLoops = 1;
    s.rewsb(signMu, mt);
@@ -249,9 +249,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
 
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vd() - Re(tadpole_hh_1) - two_loop_tadpole[0], precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vu() - Re(tadpole_hh_2) - two_loop_tadpole[1], precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_vS() - Re(tadpole_hh_3) - two_loop_tadpole[2], precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(tadpole_hh_1) - two_loop_tadpole[0], precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(tadpole_hh_2) - two_loop_tadpole[1], precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(tadpole_hh_3) - two_loop_tadpole[2], precision);
 
    softsusy::numRewsbLoops = 2;
    s.rewsb(signMu, mt);

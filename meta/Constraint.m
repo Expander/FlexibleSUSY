@@ -11,6 +11,8 @@ parameters which are fixed by the given constraint";
 
 CheckConstraint::usage="Checks a given constraint for syntax errors.";
 
+SanityCheck::usage="Checks general features of the constraints.";
+
 SetBetaFunctions::usage=""
 
 RestrictScale::usage="";
@@ -301,6 +303,22 @@ CheckSetting[patt_, constraintName_String] :=
 CheckConstraint[settings_List, constraintName_String] :=
     CheckSetting[#,constraintName]& /@ settings;
 
+SanityCheck[settings_List, constraintName_String:""] :=
+    Module[{setParameters, y,
+            yukawas = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}},
+           setParameters = #[[1]]& /@ settings;
+           (* check for unset Yukawa couplings *)
+           For[y = 1, y <= Length[yukawas], y++,
+               If[ValueQ[yukawas[[y]]] &&
+                  FreeQ[setParameters, yukawas[[y]]],
+                  Print["Warning: Yukawa coupling ", yukawas[[y]],
+                        " not set",
+                        If[constraintName != "", " in the " <> constraintName, ""],
+                        "."];
+                 ];
+              ];
+          ];
+
 CalculateScale[Null, _] := "";
 
 CalculateScale[False, _] :=
@@ -441,7 +459,7 @@ RestrictScale[{minimumScale_, maximumScale_}, scaleName_String:"scale"] :=
               result = result <>
                        "\
 if (" <> scaleName <> " < " <> value <> ") {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
 " <> IndentText["WARNING(\"" <> scaleName <> " < " <> value <> "\");"] <> "
 #endif
 " <> IndentText[scaleName <> " = " <> value] <> ";
@@ -453,7 +471,7 @@ if (" <> scaleName <> " < " <> value <> ") {
               result = result <>
                        "\
 if (" <> scaleName <> " > " <> value <> ") {
-#ifdef VERBOSE
+#ifdef ENABLE_VERBOSE
 " <> IndentText["WARNING(\"" <> scaleName <> " > " <> value <> "\");"] <> "
 #endif
 " <> IndentText[scaleName <> " = " <> value] <> ";
