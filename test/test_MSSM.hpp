@@ -125,6 +125,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, const MSSM_input_parameters
 
    m.set_scale(scale);
    m.set_loops(1);
+   m.set_thresholds(3);
    m.set_g1(g1);
    m.set_g2(g2);
    m.set_g3(g3);
@@ -151,6 +152,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, const MSSM_input_parameters
 
    s.setMu(scale);
    s.setLoops(1);
+   s.setThresholds(3);
    s.setGaugeCoupling(1, g1);
    s.setGaugeCoupling(2, g2);
    s.setGaugeCoupling(3, g3);

@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 
    BOOST_CHECK_EQUAL(snmssm.displayLoops()     , m.get_loops());
    BOOST_CHECK_EQUAL(snmssm.displayMu()        , m.get_scale());
-   BOOST_CHECK_EQUAL(snmssm.displayThresholds(), m.get_thresholds());
+   // BOOST_CHECK_EQUAL(snmssm.displayThresholds(), m.get_thresholds());
 
    BOOST_CHECK_CLOSE_FRACTION(snmssm.displayGaugeCoupling(1), m.get_g1(), 2.3e-6);
    BOOST_CHECK_CLOSE_FRACTION(snmssm.displayGaugeCoupling(2), m.get_g2(), 1.0e-5);
