@@ -89,6 +89,11 @@ TEST_SRC += \
 		$(DIR)/test_MSSM_NMSSM_linking.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-MSSM --with-MSSMNoFV),yes yes)
+TEST_SRC += \
+		$(DIR)/test_MSSMNoFV_beta_functions.cpp
+endif
+
 TEST_SH := \
 		$(DIR)/test_space_dir.sh
 
@@ -307,6 +312,8 @@ $(DIR)/test_SMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(L
 $(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_MSSMNoFV_beta_functions.x: $(LIBMSSM) $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
