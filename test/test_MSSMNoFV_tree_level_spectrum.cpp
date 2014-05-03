@@ -28,7 +28,7 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
    COMPARE_MASS(MVWm);
    COMPARE_MASS(MVG);
 
-   // up-type quarks
+   // up-type squarks
    const Eigen::Array<double,2,1> MSu(a.get_MSu());
    const Eigen::Array<double,2,1> MSc(a.get_MSc());
    const Eigen::Array<double,2,1> MSt(a.get_MSt());
@@ -44,7 +44,7 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
 
    TEST_EQUALITY(MSu_full, MSu_mixed);
 
-   // down-type quarks
+   // down-type squarks
    const Eigen::Array<double,2,1> MSd(a.get_MSd());
    const Eigen::Array<double,2,1> MSs(a.get_MSs());
    const Eigen::Array<double,2,1> MSb(a.get_MSb());
@@ -60,7 +60,7 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
 
    TEST_EQUALITY(MSd_full, MSd_mixed);
 
-   // up-type leptons
+   // up-type sleptons
    const double MSveL(a.get_MSveL());
    const double MSvmL(a.get_MSvmL());
    const double MSvtL(a.get_MSvtL());
@@ -73,7 +73,7 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
 
    TEST_EQUALITY(MSv_full, MSv_mixed);
 
-   // down-type leptons
+   // down-type sleptons
    const Eigen::Array<double,2,1> MSe(a.get_MSe());
    const Eigen::Array<double,2,1> MSm(a.get_MSm());
    const Eigen::Array<double,2,1> MStau(a.get_MStau());
@@ -88,6 +88,58 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
    std::sort(MSe_mixed.data(), MSe_mixed.data() + MSe_mixed.size());
 
    TEST_EQUALITY(MSe_full, MSe_mixed);
+
+   // up-type quarks
+   const double MFu(a.get_MFu());
+   const double MFc(a.get_MFc());
+   const double MFt(a.get_MFt());
+   const Eigen::Array<double,3,1> MFu_full(b.get_MFu());
+   Eigen::Array<double,3,1> MFu_mixed;
+   MFu_mixed(0) = MFu;
+   MFu_mixed(1) = MFc;
+   MFu_mixed(2) = MFt;
+   std::sort(MFu_mixed.data(), MFu_mixed.data() + MFu_mixed.size());
+
+   TEST_EQUALITY(MFu_full, MFu_mixed);
+
+   // down-type quarks
+   const double MFd(a.get_MFd());
+   const double MFs(a.get_MFs());
+   const double MFb(a.get_MFb());
+   const Eigen::Array<double,3,1> MFd_full(b.get_MFd());
+   Eigen::Array<double,3,1> MFd_mixed;
+   MFd_mixed(0) = MFd;
+   MFd_mixed(1) = MFs;
+   MFd_mixed(2) = MFb;
+   std::sort(MFd_mixed.data(), MFd_mixed.data() + MFd_mixed.size());
+
+   TEST_EQUALITY(MFd_full, MFd_mixed);
+
+   // up-type leptons
+   const double MFve(a.get_MFve());
+   const double MFvm(a.get_MFvm());
+   const double MFvt(a.get_MFvt());
+   const Eigen::Array<double,3,1> MFv_full(b.get_MFv());
+   Eigen::Array<double,3,1> MFv_mixed;
+   MFv_mixed(0) = MFve;
+   MFv_mixed(1) = MFvm;
+   MFv_mixed(2) = MFvt;
+   std::sort(MFv_mixed.data(), MFv_mixed.data() + MFv_mixed.size());
+
+   TEST_EQUALITY(MFv_full, MFv_mixed);
+
+   // down-type leptons
+   const double MFe(a.get_MFe());
+   const double MFm(a.get_MFm());
+   const double MFtau(a.get_MFtau());
+   const Eigen::Array<double,3,1> MFe_full(b.get_MFe());
+   Eigen::Array<double,3,1> MFe_mixed;
+   MFe_mixed(0) = MFe;
+   MFe_mixed(1) = MFm;
+   MFe_mixed(2) = MFtau;
+   std::sort(MFe_mixed.data(), MFe_mixed.data() + MFe_mixed.size());
+
+   TEST_EQUALITY(MFe_full, MFe_mixed);
 }
 
 BOOST_AUTO_TEST_CASE( test_MSSMNoFV_tree_level_spectrum )
