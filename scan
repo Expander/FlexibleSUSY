@@ -5,10 +5,11 @@ m0_npoints=10
 subprocess=""
 make_nice=""
 niceness="5"
+output_dir="higgs-study/data"
 
 scan_MSSM() {
     echo "scanning MSSM ... "
-    ${make_nice} ./higgs-study/scan_MSSM.x --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_MSSM.dat
+    ${make_nice} ./higgs-study/scan_MSSM.x --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > ${output_dir}/scan_MSSM.dat
     echo "done MSSM"
 }
 
@@ -21,7 +22,7 @@ scan_NMSSM() {
     lambda="$1"
 
     echo "scanning NMSSM (lambda=${lambda}) ... "
-    ${make_nice} ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_NMSSM_lambda-${lambda}.dat
+    ${make_nice} ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > ${output_dir}/scan_NMSSM_lambda-${lambda}.dat
     echo "done NMSSM (lambda=${lambda})"
 }
 
@@ -35,7 +36,7 @@ scan_phdUMSSM() {
     vs="$2"
 
     echo "scanning phdUMSSM (lambda=${lambda}, vs=${vs}) ... "
-    ${make_nice} ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
+    ${make_nice} ./higgs-study/scan_phdUMSSM.x --lambda=${lambda} --vs=${vs} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > ${output_dir}/scan_phdUMSSM_lambda-${lambda}_vs-${vs}.dat
     echo "done phdUMSSM (lambda=${lambda}, vs=${vs})"
 }
 
@@ -50,7 +51,7 @@ scan_phdE6SSM() {
     kappa="$3"
 
     echo "scanning phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa}) ... "
-    ${make_nice} ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > higgs-study/data/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
+    ${make_nice} ./higgs-study/scan_phdE6SSM.x --lambda=${lambda} --vs=${vs} --kappa=${kappa} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} > ${output_dir}/scan_phdE6SSM_lambda-${lambda}_vs-${vs}_kappa-${kappa}.dat
     echo "done phdE6SSM (lambda=${lambda}, vs=${vs}, kappa=${kappa})"
 }
 
@@ -61,9 +62,11 @@ Options:
 
   --help,-h         Print this help message
 
-  --tanb-npoints=   number of tan(beta) points
-  --m0-npoints=     number of m0 points
-  --parallelize     start sub-process for each function
+  --tanb-npoints=   number of tan(beta) points (default: ${tanb_npoints})
+  --m0-npoints=     number of m0 points (default: ${m0_npoints})
+  --niceness=       nice factor (default: ${niceness})
+  --output-dir=     output directory (default: ${output_dir})
+  --parallelize     start sub-process for each function (default: disabled)
 EOF
 }
 
@@ -77,10 +80,9 @@ if test $# -gt 0 ; then
         case $1 in
             --tanb-npoints=*)        tanb_npoints=$optarg ;;
             --m0-npoints=*)          m0_npoints=$optarg ;;
-            --parallelize)
-                subprocess="&"
-                make_nice="nice -n ${niceness}"
-                ;;
+            --niceness=*)            niceness=$optarg ;;
+            --output-dir=*)          output_dir=$optarg ;;
+            --parallelize)           subprocess="&" ;;
             --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
@@ -88,8 +90,16 @@ if test $# -gt 0 ; then
     done
 fi
 
+echo "# output directory:           ${output_dir}"
 echo "# number of tan(beta) points: ${tanb_npoints}"
 echo "# number of m0 points:        ${m0_npoints}"
+if test "x$subprocess" = "x&"; then
+    make_nice="nice -n ${niceness}"
+    echo "# parallelization:            yes"
+    echo "# niceness:                   ${niceness}"
+else
+    echo "# parallelization:            no"
+fi
 
 eval scan_MSSM ${subprocess}
 
