@@ -93,6 +93,17 @@ endif
 TEST_SH := \
 		$(DIR)/test_space_dir.sh
 
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+TEST_SH +=	$(DIR)/test_pv_crosschecks.sh
+
+TEST_PV_EXE := \
+		$(DIR)/test_pv_fflite.x \
+		$(DIR)/test_pv_looptools.x \
+		$(DIR)/test_pv_softsusy.x
+
+$(DIR)/test_pv_crosschecks.sh.log: $(TEST_PV_EXE)
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh
@@ -139,6 +150,14 @@ TEST_SH_LOG   := $(TEST_SH:.sh=.sh.log)
 TEST_META_LOG := $(TEST_META:.m=.m.log)
 
 TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
+
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+TEST_EXE += $(TEST_PV_EXE)
+
+$(DIR)/test_pv_fflite.x    : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_FFLITE
+$(DIR)/test_pv_looptools.x : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_LOOPTOOLS
+$(DIR)/test_pv_softsusy.x  : CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS) -DTEST_PV_SOFTSUSY
+endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
 		clean-$(MODNAME)-log \
@@ -251,6 +270,17 @@ $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIB
 
 $(DIR)/test_MSSM_NMSSM_linking.x: $(DIR)/test_MSSM_NMSSM_linking.o $(LIBMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+$(DIR)/test_pv_fflite.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(LIBFFLITE)
+		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_pv_looptools.x: $(DIR)/test_pv_crosschecks.cpp $(LIBFLEXI)
+		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(LOOPTOOLSLIBS) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-out %pv.o,$(LIBFLEXI_OBJ)) $(LIBLEGACY)
+		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+endif
 
 $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 

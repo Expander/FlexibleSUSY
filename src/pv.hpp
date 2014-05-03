@@ -23,6 +23,18 @@
 #include "cextensions.hpp"
 #include "config.h"
 
+// override macros defined in config.h when building test suite
+#ifdef TEST_PV_FFLITE
+#  undef  ENABLE_LOOPTOOLS
+#  define ENABLE_FFLITE 1
+#elif defined(TEST_PV_LOOPTOOLS)
+#  undef  ENABLE_FFLITE
+#  define ENABLE_LOOPTOOLS 1
+#elif defined(TEST_PV_SOFTSUSY)
+#  undef  ENABLE_FFLITE
+#  undef  ENABLE_LOOPTOOLS
+#endif
+
 namespace flexiblesusy {
 
 namespace passarino_veltman {
