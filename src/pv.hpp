@@ -42,10 +42,6 @@ std::complex<double> A0 (double m2, double scl2) PVATTR;
 std::complex<double> B0 (double p2, double m2a, double m2b, double scl2)PVATTR;
 std::complex<double> B1 (double p2, double m2a, double m2b, double scl2)PVATTR;
 std::complex<double> B00(double p2, double m2a, double m2b, double scl2)PVATTR;
-std::complex<double> B22(double p2, double m2a, double m2b, double scl2)PVATTR;
-std::complex<double> H0 (double p2, double m2a, double m2b, double scl2)PVATTR;
-std::complex<double> F0 (double p2, double m2a, double m2b, double scl2)PVATTR;
-std::complex<double> G0 (double p2, double m2a, double m2b, double scl2)PVATTR;
 
 std::complex<double> A0 (std::complex<double> m2, double scl2) PVATTR;
 std::complex<double> B0 (std::complex<double> p2, std::complex<double> m2a,
@@ -54,14 +50,39 @@ std::complex<double> B1 (std::complex<double> p2, std::complex<double> m2a,
 			 std::complex<double> m2b, double scl2) PVATTR;
 std::complex<double> B00(std::complex<double> p2, std::complex<double> m2a,
 			 std::complex<double> m2b, double scl2) PVATTR;
-std::complex<double> B22(std::complex<double> p2, std::complex<double> m2a,
-			 std::complex<double> m2b, double scl2) PVATTR;
-std::complex<double> H0 (std::complex<double> p2, std::complex<double> m2a,
-			 std::complex<double> m2b, double scl2) PVATTR;
-std::complex<double> F0 (std::complex<double> p2, std::complex<double> m2a,
-			 std::complex<double> m2b, double scl2) PVATTR;
-std::complex<double> G0 (std::complex<double> p2, std::complex<double> m2a,
-			 std::complex<double> m2b, double scl2) PVATTR;
+
+template<class T> std::complex<double> B22(T, T, T, double) PVATTR;
+template<class T> std::complex<double> F0 (T, T, T, double) PVATTR;
+template<class T> std::complex<double> G0 (T, T, T, double) PVATTR;
+template<class T> std::complex<double> H0 (T, T, T, double) PVATTR;
+
+// CHECK: are the following correct complexifications of B22, H0, F0, G0?
+
+template<class T>
+std::complex<double> B22(T p2, T m2a, T m2b, double scl2)
+{
+    return B00(p2, m2a, m2b, scl2) - A0(m2a, scl2)/4.0 - A0(m2b, scl2)/4.0;
+}
+
+template<class T>
+std::complex<double> F0(T p2, T m2a, T m2b, double scl2)
+{
+    return A0(m2a, scl2) - 2.0*A0(m2b, scl2)
+	   - (2.0*p2 + 2.0*m2a - m2b) * B0(p2, m2a, m2b, scl2);
+}
+
+template<class T>
+std::complex<double> G0(T p2, T m2a, T m2b, double scl2)
+{
+    return (p2 - m2a - m2b) * B0(p2, m2a, m2b, scl2)
+	   - A0(m2a, scl2) - A0(m2b, scl2);
+}
+
+template<class T>
+std::complex<double> H0(T p2, T m2a, T m2b, double scl2)
+{
+    return 4.0*B00(p2, m2a, m2b, scl2) + G0(p2, m2a, m2b, scl2);
+}
 
 #endif
 

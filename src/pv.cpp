@@ -210,34 +210,6 @@ complex<double> B00
 
 #endif // defined(ENABLE_FFLITE)
 
-#if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
-
-// CHECK: are the following correct complexifications of B22, H0, F0, G0?
-
-complex<double> B22(double p2, double m2a, double m2b, double scl2)
-{
-    return B00(p2, m2a, m2b, scl2) - A0(m2a, scl2)/4.0 - A0(m2b, scl2)/4.0;
-}
-
-complex<double> H0(double p2, double m2a, double m2b, double scl2)
-{
-    return 4.0*B00(p2, m2a, m2b, scl2) + G0(p2, m2a, m2b, scl2);
-}
-
-complex<double> F0(double p2, double m2a, double m2b, double scl2)
-{
-    return A0(m2a, scl2) - 2.0*A0(m2b, scl2)
-	   - (2*p2 + 2*m2a - m2b) * B0(p2, m2a, m2b, scl2);
-}
-
-complex<double> G0(double p2, double m2a, double m2b, double scl2)
-{
-    return (p2 - m2a - m2b) * B0(p2, m2a, m2b, scl2)
-	   - A0(m2a, scl2) - A0(m2b, scl2);
-}
-
-#endif // defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
-
 double ReA0(double m2, double scl2)
 {
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
