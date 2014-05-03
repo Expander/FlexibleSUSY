@@ -3,12 +3,15 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cassert>
+#include "logger.hpp"
 
 struct Options {
    Options() { reset(); }
    Options(int argc, const char* argv[]) { reset(); parse(argc, argv); }
    ~Options() {}
 
+   void help(const std::string&);
    void parse(int, const char*[]);
    void reset();
    static bool starts_with(const std::string&, const std::string&);
@@ -23,16 +26,36 @@ struct Options {
    unsigned m0_npoints;
 };
 
+void Options::help(const std::string& program)
+{
+   std::cout << "Usage: " << program << " [options]\n"
+      "Options:\n"
+      "  --lambda=          superpotential parameter in the UMSSM and E6SSM\n"
+      "  --kappa=           superpotential parameter in the E6SSM\n"
+      "  --vs=              singlet VEV\n"
+      "  --tanb_start=      tan(beta) start value (included)\n"
+      "  --tanb_stop=       tan(beta) stop value (excluded)\n"
+      "  --tanb_npoints=    tan(beta) number of points\n"
+      "  --m0_start=        m0 start value (included)\n"
+      "  --m0_stop=         m0 stop value (excluded)\n"
+      "  --m0_npoints=      m0 number of points\n"
+      "  --help,-h          print this help message and exit\n"
+      ;
+}
+
 void Options::parse(int argc, const char* argv[])
 {
+   assert(argc > 0);
+   std::string program(argv[0]);
+
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
       if (starts_with(option,"--lambda=")) {
          lambda = atof(option.substr(9).c_str());
-      } else if (starts_with(option,"--vs=")) {
-         vs = atof(option.substr(5).c_str());
       } else if (starts_with(option,"--kappa=")) {
          kappa = atof(option.substr(8).c_str());
+      } else if (starts_with(option,"--vs=")) {
+         vs = atof(option.substr(5).c_str());
       } else if (starts_with(option,"--tanb-start=")) {
          tanb_start = atof(option.substr(13).c_str());
       } else if (starts_with(option,"--tanb-stop=")) {
@@ -45,8 +68,12 @@ void Options::parse(int argc, const char* argv[])
          m0_stop = atof(option.substr(10).c_str());
       } else if (starts_with(option,"--m0-npoints=")) {
          m0_npoints = atof(option.substr(13).c_str());
+      } else if (option == "--help" || option == "-h") {
+         help(program);
+         exit(EXIT_SUCCESS);
       } else {
          ERROR("Unrecognized command line option: " << option);
+         help(program);
          exit(EXIT_FAILURE);
       }
    }
