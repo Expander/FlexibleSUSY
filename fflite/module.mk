@@ -2,6 +2,7 @@ DIR          := fflite
 MODNAME      := libfflite
 
 LIBFFLITE_SRC := \
+		$(DIR)/BcoeffAD.F \
 		$(DIR)/ffca0.F \
 		$(DIR)/ffcb0.F \
 		$(DIR)/ffcb1.F \

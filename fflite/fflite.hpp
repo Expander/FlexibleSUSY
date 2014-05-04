@@ -74,4 +74,17 @@ extern "C" void ljffdot2_
 (double *piDpj, const double& xp, const double& xma, const double& xmb,
  const double& dmap, const double& dmbp, const double& dmamb, const int& ier);
 
+
+extern "C" void sub_fpv_
+(std::complex<double>& res,
+ const int& n, const std::complex<double>& x, const std::complex<double>& y);
+
+extern "C" void sub_yfpv_
+(std::complex<double>& res,
+ const int& n, const std::complex<double>& x, const std::complex<double>& y);
+
+extern "C" void sub_fth_
+(std::complex<double>& res,
+ const int& n, const std::complex<double>& x, const std::complex<double>& y);
+
 #endif
