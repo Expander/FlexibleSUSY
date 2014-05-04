@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
-   BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
+   // BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00076);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0015);

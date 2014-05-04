@@ -373,13 +373,22 @@ void CLASSNAME::calculate_spectrum()
       calculate_pole_masses();
    else
       copy_DRbar_masses_to_pole_masses();
+
+   if (problems.have_serious_problem()) {
+      clear_DRbar_parameters();
+      physical.clear();
+   }
+}
+
+void CLASSNAME::clear_DRbar_parameters()
+{
+@clearOutputParameters@
 }
 
 void CLASSNAME::clear()
 {
    @ModelName@_soft_parameters::clear();
-
-@clearOutputParameters@
+   clear_DRbar_parameters();
    physical.clear();
    problems.clear();
 }
