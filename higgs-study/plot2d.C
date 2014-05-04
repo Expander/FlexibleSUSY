@@ -16,7 +16,7 @@
 #include "plot.h"
 
 void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
-            const TString& title = "CMSSM $m_{h}$ / GeV")
+            const TString& title = "CMSSM $m_{h}^{\text{pole}}$ / GeV")
 {
    std::ifstream ifs(file_name.Data());
    std::string line;
@@ -26,7 +26,7 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
       return;
    }
 
-   const int nbinsx = 30, nbinsy = 30;
+   const int nbinsx = 50, nbinsy = 50;
    const double xlow = 0., xhigh = 50.;
    const double ylow = 0., yhigh = 10.; // in TeV
 
@@ -63,13 +63,15 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    h->SetTitle(title);
    h->GetXaxis()->SetTitle("$\tan\beta$");
    h->GetYaxis()->SetTitle("$m_0$ / TeV");
-   SetZminZmax(h);
+   h->SetMinimum(95.);
+   h->SetMaximum(135.);
+   // SetZminZmax(h);
 
    TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
    canvas->cd(1);
    h->Draw("colz");
 
    TString tex_file(file_name);
-   tex_file.ReplaceAll(".dat",".tex");
+   tex_file.ReplaceAll(".dat",".pdf");
    canvas->Print(tex_file);
 }
