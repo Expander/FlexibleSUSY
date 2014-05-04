@@ -1770,6 +1770,10 @@ enable_defines() {
     if test "x$enable_looptools" = "xyes" ; then
         DEFINE_ENABLE_LOOPTOOLS="#define ENABLE_LOOPTOOLS 1"
         message "Enabling usage of LoopTools"
+	message "Warning: LoopTools is thread-unsafe since it accepts the renormalization scale"
+	message "   via a global variable.  This might lead to a race condition if different"
+	message "   RGE solvers run in multiple threads.  For such an application, consider the"
+	message "   alternative \`--enable-fflite'."
         logmsg "   ${DEFINE_ENABLE_LOOPTOOLS}"
     else
         DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
