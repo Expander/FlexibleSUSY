@@ -70,8 +70,8 @@ distclean::     distclean-$(MODNAME)
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY)
-		$(CXX) -o $@ $(call abspathx,$^) $(FLIBS)
+$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP)
 ALLLIB += $(LIBSoftsusyNMSSM)
