@@ -26,10 +26,7 @@
 #include "root_finder.hpp"
 #include "gsl_utils.hpp"
 #include "config.h"
-
-#ifdef ENABLE_LOOPTOOLS
-#include <clooptools.h>
-#endif
+#include "pv.hpp"
 
 @twoLoopHiggsHeaders@
 
@@ -308,58 +305,42 @@ void CLASSNAME::print(std::ostream& ostr) const
 
 double CLASSNAME::A0(double m) const
 {
-   return a0(m, get_scale());
+   return passarino_veltman::ReA0(m*m, Sqr(get_scale()));
 }
 
 double CLASSNAME::B0(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B0(p*p, m1*m1, m2*m2));
-#else
-   return b0(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B1(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B1(p*p, m1*m1, m2*m2));
-#else
-   return -b1(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB1(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B00(double p, double m1, double m2) const
 {
-#ifdef ENABLE_LOOPTOOLS
-   setmudim(Sqr(get_scale()));
-   return Re(::B00(p*p, m1*m1, m2*m2));
-#else
-   return b22(p, m1, m2, get_scale());
-#endif
+   return passarino_veltman::ReB00(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::B22(double p, double m1, double m2) const
 {
-   return B00(p, m1, m2) - 0.25 * A0(m1) - 0.25 * A0(m2);
+   return passarino_veltman::ReB22(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::H0(double p, double m1, double m2) const
 {
-   return 4.0 * B00(p, m1, m2) + G0(p, m1, m2);
+   return passarino_veltman::ReH0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::F0(double p, double m1, double m2) const
 {
-   return A0(m1) - 2.0 * A0(m2) - (2.0 * Sqr(p) + 2.0 * Sqr(m1) - Sqr(m2)) *
-      B0(p, m1, m2);
+   return passarino_veltman::ReF0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 double CLASSNAME::G0(double p, double m1, double m2) const
 {
-   return (Sqr(p) - Sqr(m1) - Sqr(m2)) * B0(p, m1, m2) - A0(m1) - A0(m2);
+   return passarino_veltman::ReG0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
 void CLASSNAME::calculate_DRbar_parameters()
