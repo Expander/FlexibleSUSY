@@ -12,11 +12,26 @@
 #include "TLegend.h"
 #include "TString.h"
 #include "TStyle.h"
+#include "TSystem.h"
+#include "TColor.h"
 
 #include "plot.h"
 
+void set_plot_style()
+{
+    static const Int_t NRGBs = 5;
+    static const Int_t NCont = 30;
+
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+}
+
 void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
-            const TString& title = "CMSSM $m_{h}^{\text{pole}}$ / GeV")
+            const TString& title = "m_{h}^{\\text{pole}}\\text{ / GeV}")
 {
    std::ifstream ifs(file_name.Data());
    std::string line;
@@ -61,17 +76,25 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    }
 
    h->SetTitle(title);
-   h->GetXaxis()->SetTitle("$\tan\beta$");
+   h->GetXaxis()->SetTitle("\\tan\\beta");
    h->GetYaxis()->SetTitle("$m_0$ / TeV");
    h->SetMinimum(95.);
    h->SetMaximum(135.);
    // SetZminZmax(h);
 
-   TCanvas* canvas = new TCanvas("canvas", title, 800, 600);
+   TCanvas* canvas = new TCanvas("canvas", title, 400, 300);
    canvas->cd(1);
+   // gStyle->SetPaperSize(10.,10.); // in cm
+   set_plot_style();
    h->Draw("colz");
 
    TString tex_file(file_name);
-   tex_file.ReplaceAll(".dat",".pdf");
+   tex_file.ReplaceAll(".dat",".tex");
+   TString pdf_file(file_name);
+   pdf_file.ReplaceAll(".dat",".pdf");
    canvas->Print(tex_file);
+
+   gSystem->Exec(TString("mv ") + tex_file + " img.tex");
+   gSystem->Exec(TString("pdflatex ") + " img_container.tex");
+   gSystem->Exec(TString("mv img_container.pdf ") + pdf_file);
 }
