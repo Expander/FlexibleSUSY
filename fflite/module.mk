@@ -1,5 +1,18 @@
 DIR          := fflite
-MODNAME      := libfflite
+MODNAME      := fflite
+
+LIBFFLITE_HDR := \
+		$(DIR)/defs.h \
+		$(DIR)/externals.h \
+		$(DIR)/ff.h \
+		$(DIR)/fferr.h \
+		$(DIR)/fflite.hpp \
+		$(DIR)/ffwarn.h \
+		$(DIR)/lt.h \
+		$(DIR)/types.h
+
+LIBFFLITE_MK := \
+		$(DIR)/module.mk
 
 LIBFFLITE_SRC := \
 		$(DIR)/BcoeffAD.F \
@@ -25,18 +38,32 @@ LIBFFLITE_OBJ := \
 LIBFFLITE_DEP := \
 		$(LIBFFLITE_OBJ:.o=.d)
 
-LIBFFLITE     := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBFFLITE     := $(DIR)/lib$(MODNAME)$(LIBEXT)
+
+LIBFFLITE_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBFFLITE)
 
-clean-$(MODNAME):
-		rm -rf $(LIBFFLITE_OBJ)
+ifneq ($(INSTALL_DIR),)
+install-src::
+		install -d $(LIBFFLITE_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBFFLITE_SRC) $(LIBFFLITE_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBFFLITE_HDR) $(LIBFFLITE_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIBFFLITE_MK) $(LIBFFLITE_INSTALL_DIR)
+endif
+
+clean-$(MODNAME)-dep:
+		-rm -f $(LIBFFLITE_DEP)
+
+clean-$(MODNAME)-obj:
+		-rm -f $(LIBFFLITE_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIBFFLITE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBFFLITE_DEP)
-		rm -rf $(LIBFFLITE)
 
 clean::         clean-$(MODNAME)
 
@@ -45,5 +72,7 @@ distclean::     distclean-$(MODNAME)
 $(LIBFFLITE): $(LIBFFLITE_OBJ)
 		$(MAKELIB) $@ $^
 
+ifeq ($(ENABLE_FFLITE),yes)
 ALLDEP += $(LIBFFLITE_DEP)
 ALLLIB += $(LIBFFLITE)
+endif

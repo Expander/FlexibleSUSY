@@ -20,16 +20,7 @@ ENABLE_THREADS     := @ENABLE_THREADS@
 
 # Makefile modules
 MODELS             := @MODELS@
-MODULES            := config src legacy slhaea doc
-ifeq ($(ENABLE_FFLITE),yes)
-MODULES	           += fflite
-else
-ifneq (,$(findstring test,$(MAKECMDGOALS)))
-ifeq ($(ENABLE_LOOPTOOLS),yes)
-MODULES	           += fflite
-endif
-endif
-endif
+MODULES            := config src fflite legacy slhaea doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################

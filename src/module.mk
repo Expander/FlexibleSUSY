@@ -30,6 +30,7 @@ LIBFLEXI_SRC := \
 LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
+		$(DIR)/cextensions.hpp \
 		$(DIR)/command_line_options.hpp \
 		$(DIR)/compound_constraint.hpp \
 		$(DIR)/constraint.hpp \
@@ -57,6 +58,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics.hpp \
 		$(DIR)/problems.hpp \
+		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
