@@ -139,14 +139,14 @@ complex<double> random_m2_phase<complex<double>, complex<double> >()
 
 template<class T, class U> T random_m2(double order)
 {
-    double o = 4.0 * rand() / RAND_MAX - 1.5;
+    double o = 4.0 * rand() / RAND_MAX - 2.0;
     return pow(10, order + o) * random_m2_phase<T, U>();
 }
 
 template<>
 complex<double> random_m2<complex<double>, complex<double> >(double order)
 {
-    double o = 4.0 * rand() / RAND_MAX - 1.5;
+    double o = 4.0 * rand() / RAND_MAX - 2.0;
     complex<double> m2 = pow(10, order + o) *
 	random_m2_phase<complex<double>, complex<double> >();
     if (m2.real() < 0 && m2.imag() == 0)
@@ -175,7 +175,7 @@ complex<double> random_p2_phase<complex<double>, complex<double> >()
 
 template<class T, class U> T random_p2(double order)
 {
-    double o = 4.0 * rand() / RAND_MAX - 1.5;
+    double o = 4.0 * rand() / RAND_MAX - 2.0;
     return pow(10, order + o) * random_p2_phase<T, U>();
 }
 
