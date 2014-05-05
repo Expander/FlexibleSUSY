@@ -306,8 +306,8 @@ $(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEX
 
 $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(EXAMPLES_EXE) $(DIR)/test_MSSM_slha_output.in.spc
-		$(CXX) -o $@ $< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(BOOSTTESTLIBS) $(GSLLIBS)
+$(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(EXAMPLES_EXE) $(DIR)/test_MSSM_slha_output.in.spc
+		$(CXX) -o $@ $(call abspathx,$< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_MSSM_slha_input.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
