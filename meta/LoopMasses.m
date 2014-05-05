@@ -784,9 +784,9 @@ particle_type = " <> info <> "::NUMBER_OF_PARTICLES;
            For[m = 1, m <= Length[masses], m++,
                mass = masses[[m]];
                body = body <> "\
-tmp_mass = " <>
-CConversion`RValueToCFormString[Abs[GetLightestMassEigenstate[mass]]] <>
-";
+tmp_mass = Abs(PHYSICAL(" <>
+CConversion`RValueToCFormString[GetLightestMassEigenstate[mass]] <>
+"));
 if (tmp_mass < lsp_mass) {
 " <> IndentText["\
 lsp_mass = tmp_mass;
