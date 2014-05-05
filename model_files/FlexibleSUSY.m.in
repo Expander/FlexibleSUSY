@@ -70,3 +70,5 @@ InitialGuessAtLowScale = {
 InitialGuessAtHighScale = {};
 
 UseHiggs2LoopMSSM = False;
+
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };

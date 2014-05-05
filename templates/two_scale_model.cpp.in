@@ -405,6 +405,8 @@ void CLASSNAME::run_to(double scale, double eps)
    @ModelName@_soft_parameters::run_to(scale, eps);
 }
 
+@lspFunctions@
+
 @massCalculationFunctions@
 
 @tadpoleEqFunctions@
