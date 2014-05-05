@@ -527,7 +527,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
-           {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
+           If[Head[PotentialLSPParticles] === List &&
+              PotentialLSPParticles =!= {},
+              {lspGetters, lspFunctions} = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
+             ];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
