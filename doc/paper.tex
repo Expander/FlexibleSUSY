@@ -415,6 +415,10 @@ HighScale = g1 == g2;
 
 HighScaleFirstGuess = 2.0 10^16;
 
+HighScaleMinimum = 1.0 10^10; (* optional *)
+
+HighScaleMaximum = 1.0 10^18; (* optional *)
+
 HighScaleInput = {
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
@@ -491,7 +495,13 @@ they are named as \code{LowScale}, \code{SUSYScale} and
 (named after the constraint), (ii) an initial guess for the scale
 (concatenation of the constraint name and \code{FirstGuess}) and (iii)
 a list of parameter settings to be applied at the scale (concatenation
-of the constraint name and \code{Input}).
+of the constraint name and \code{Input}).  Optional a minimum and a
+maximum value for the scale can be given (concatenation of the
+constraint name and \code{Minimum} or \code{Maximum}, respectively).
+This avoids underflows or overflows of the scale value during the
+iteration.  This is especially useful in models where the iteration is
+very unstable and the value of the scale is very sensitive to the
+model parameters.
 %
 \begin{itemize}
 \item \emph{High-scale constraint:} The high-scale constraint is
