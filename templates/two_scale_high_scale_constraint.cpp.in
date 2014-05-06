@@ -147,7 +147,10 @@ void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
    if (errno == ERANGE) {
 #ifdef ENABLE_VERBOSE
       ERROR("@ModelName@_high_scale_constraint<Two_scale>: Overflow error"
-            " during calculation of high scale: " << strerror(errno));
+            " during calculation of high scale: " << strerror(errno) << '\n'
+            << "   current scale = " << currentScale << '\n'
+            << "   new scale = " << scale << '\n'
+            << "   resetting scale to " << get_initial_scale_guess());
 #endif
       scale = get_initial_scale_guess();
       errno = 0;
