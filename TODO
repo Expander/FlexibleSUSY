@@ -1,0 +1,124 @@
+List of features for future FlexibleSUSY releases
+=================================================
+
+Decays
+------
+
+
+ThetaW
+------
+
+Solve the ThetaW problem for models with multiple U(1) gauge groups.
+Jae-hyeon's solution was:
+
+ 1. Use mass matrices for Photon, Z, W+ etc.  Do not make use of the
+   already calculated analytic mass eigenvalues in
+   UnrotatedParticles.m.
+
+ 2. Avoid replacing ZZ[1,1] -> Cos[ThetaW] etc. in SARAH.  This can be
+   achieved by locally overwriting the SARAH`subAlways variable.  Here
+   is Jae-hyeon's e-mail:
+
+   <snip>
+   From: Jae-hyeon Park <jae.park@uv.es>
+   Subject: Alternative to back substitution
+   To: Alexander Voigt <Alexander.Voigt@physik.tu-dresden.de>
+   Date: Fri, 14 Feb 2014 11:05:03 +0100 (7 weeks, 2 days, 11 hours ago)
+   
+   Hi Alex,
+
+   I am testing a workaround which prevents SARAH from parametrizing ZZ in
+   terms of ThetaW.  I tried something like the following:
+   
+   someNPointFunctions =
+     Cases[FlexibleSUSY`Private`nPointFunctions, 
+      FSSelfEnergy[Fe[_, _][1], ___]];
+   
+   Select[
+    Vertices`VertexRules[someNPointFunctions, 
+     FlexibleSUSY`Private`Lat$massMatrices],
+    ! FreeQ[#, VZ] &]
+   
+   => {Cp[bar[UFe[{gO2_}]], VZ, Fe[{gI2_}]][
+      PR] -> -Sqrt[(3/5)] g1 Sin[ThetaW[]] ThetaStep[gI2, 3] ZER[gI2, 
+       gO2], Cp[bar[UFe[{gO1_}]], VZ, Fe[{gI2_}]][
+      PL] -> -I (1/
+         2 I g2 conj[ZEL[gI2, gO1]] Cos[ThetaW[]] ThetaStep[gI2, 3] - 
+        1/2 I Sqrt[3/5]
+          g1 conj[ZEL[gI2, gO1]] Sin[ThetaW[]] ThetaStep[gI2, 3])}
+   
+   Select[
+    Block[{SARAH`subAlways = 
+       DeleteCases[SARAH`subAlways, HoldPattern[ZZ[_, _] :> _]]},
+     Vertices`VertexRules[someNPointFunctions, 
+      FlexibleSUSY`Private`Lat$massMatrices]
+     ],
+    ! FreeQ[#, VZ] &]
+   
+   => {Cp[bar[UFe[{gO2_}]], VZ, Fe[{gI2_}]][PR] -> 
+     Sqrt[3/5] g1 ThetaStep[gI2, 3] ZER[gI2, gO2] ZZ[1, 2], 
+    Cp[bar[UFe[{gO1_}]], VZ, Fe[{gI2_}]][
+      PL] -> -I (1/2 I Sqrt[3/5]
+          g1 conj[ZEL[gI2, gO1]] ThetaStep[gI2, 3] ZZ[1, 2] + 
+        1/2 I g2 conj[ZEL[gI2, gO1]] ThetaStep[gI2, 3] ZZ[2, 2])}
+   
+   In the last result, the ZZ matrix elements remain.  IMO, this method is
+   simpler and probably faster.  What do you think?
+   </snip>
+
+
+Parameter output names
+----------------------
+
+Currently we're creating the parametr output names from their
+Mathematica symbols.  For example in the MSSM we convert
+
+   \[Mu]    -->   "Mu"
+   B[\[Mu]] -->   "BMu"
+
+However, in SARAH the user can chose the output name in the model file
+via
+
+   {{  Description -> "Mu-parameter",
+       LaTeX -> "\\mu",
+       ...
+       OutputName-> Mu }},
+
+   {{  Description -> "Bmu-parameter",
+       LaTeX -> "B_{\\mu}",
+       ...
+       OutputName-> Bmu }},
+
+We should use the user-defined output name, i.e.
+
+   \[Mu]    -->   "Mu"
+   B[\[Mu]] -->   "Bmu"
+
+
+Use SLHA convetion for complex fermion mixing matrices
+------------------------------------------------------
+
+The fermion mixing matrices are in general complex.  If a fermion
+masse eigenstate is negative, we multiply the corresponding column by
+i.  When we write the SLHA output, we currently write out the positive
+fermion masses and the real part of the mixing matrices.  This is ok
+and should be kept!
+
+However, the SLHA standard demands to treat the mixing matrices as
+real, but allow for negative fermion masses.
+
+To fix this we need to do a conversion when writing the SLHA output
+file (but only there).
+
+
+Create a function which calculates the LSP
+------------------------------------------
+
+The model class could have a function which returns the LSP mass and
+particle type.  An implementation exists in the `feature-lsp' branch.
+
+Jae-hyeon proposed a much more general approach: FS could provide a
+function which returns a list of (mass ordered) particles and their
+properies (R-parity, Hypercharge, ...).  From this list a user can
+easily find the LSP (which would be the first particle in the list
+with R-charge -1).

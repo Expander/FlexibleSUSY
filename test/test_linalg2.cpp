@@ -24,24 +24,73 @@
 #define BOOST_TEST_MODULE test_linalg2
 
 #include <boost/test/unit_test.hpp>
+#include <boost/test/test_case_template.hpp>
 #include <boost/test/floating_point_comparison.hpp>
+#include <boost/mpl/list.hpp>
+#include <boost/mpl/int.hpp>
+#include <boost/mpl/range_c.hpp>
+#include <boost/mpl/fold.hpp>
+#include <boost/mpl/push_front.hpp>
+#include <boost/mpl/placeholders.hpp>
 
 using namespace std;
 using namespace Eigen;
 using namespace flexiblesusy;
 
-template<class S, int N,
-	 void fxn(const Eigen::Matrix<S, N, N>&,
-		  Eigen::Array<double, MIN_(N, N), 1>&,
-		  Eigen::Matrix<S, N, N>&,
-		  Eigen::Matrix<S, N, N>&)>
-void test_svd(bool check_ascending_order = false)
+template<class S_, int N_,
+	 void fxn_(const Matrix<S_, N_, N_>&,
+		   Array<double, N_, 1>&,
+		   Matrix<S_, N_, N_>&,
+		   Matrix<S_, N_, N_>&),
+	 bool check_ascending_order_ = false>
+struct Test_svd {
+    typedef S_ S;
+    enum { N = N_ };
+    enum { check_ascending_order = check_ascending_order_ };
+    void fxn(const Matrix<S_, N_, N_>& m,
+	     Array<double, N_, 1>& s,
+	     Matrix<S_, N_, N_>& u,
+	     Matrix<S_, N_, N_>& vh)
+    { fxn_(m, s, u, vh); }
+};
+
+typedef boost::mpl::list<
+    // use Eigen::JacobiSVD
+    Test_svd<complex<double>, 2, svd>,
+    Test_svd<complex<double>, 3, svd>,
+    Test_svd<double	    , 2, svd>,
+    Test_svd<double	    , 3, svd>,
+
+    Test_svd<complex<double>, 2, reorder_svd, true>,
+    Test_svd<complex<double>, 3, reorder_svd, true>,
+    Test_svd<double	    , 2, reorder_svd, true>,
+    Test_svd<double	    , 3, reorder_svd, true>,
+
+    // use ZGESVD of LAPACK
+    Test_svd<complex<double>, 4, svd>,
+    Test_svd<complex<double>, 6, svd>,
+
+    Test_svd<complex<double>, 4, reorder_svd, true>,
+    Test_svd<complex<double>, 6, reorder_svd, true>,
+
+    // use DGESVD of LAPACK
+    Test_svd<double	    , 4, svd>,
+    Test_svd<double	    , 6, svd>,
+
+    Test_svd<double	    , 4, reorder_svd, true>,
+    Test_svd<double	    , 6, reorder_svd, true>
+> svd_tests;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_svd, T, svd_tests)
 {
+    typedef typename T::S S;
+    const size_t N = T::N;
+
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     Array<double, N, 1> s;
     Matrix<S, N, N> u, vh;
 
-    fxn(m, s, u, vh);		// following LAPACK convention
+    T().fxn(m, s, u, vh);	// following LAPACK convention
     Matrix<S, N, N> diag = u.adjoint() * m * vh.adjoint();
 
     BOOST_CHECK((s >= 0).all());
@@ -49,53 +98,61 @@ void test_svd(bool check_ascending_order = false)
 	for (size_t j = 0; j < N; j++)
 	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
 
-    if (check_ascending_order)
+    if (T::check_ascending_order)
 	for (size_t i = 0; i < N-1; i++)
 	    BOOST_CHECK(s[i] <= s[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_svd_eigen)
+template<class S_, int N_,
+	 void fxn_(const Matrix<S_, N_, N_>&,
+		   Array<double, N_, 1>&, Matrix<complex<double>, N_, N_>&),
+	 bool check_ascending_order_ = false>
+struct Test_diagonalize_symmetric {
+    typedef S_ S;
+    enum { N = N_ };
+    enum { check_ascending_order = check_ascending_order_ };
+    void fxn(const Matrix<S_, N_, N_>& m,
+	     Array<double, N_, 1>& s, Matrix<complex<double>, N_, N_>& u)
+    { fxn_(m, s, u); }
+};
+
+typedef boost::mpl::list<
+    // use Eigen::JacobiSVD
+    Test_diagonalize_symmetric<complex<double>, 2, diagonalize_symmetric>,
+    Test_diagonalize_symmetric<complex<double>, 3, diagonalize_symmetric>,
+
+    Test_diagonalize_symmetric
+	<complex<double>, 2, reorder_diagonalize_symmetric, true>,
+    Test_diagonalize_symmetric
+	<complex<double>, 3, reorder_diagonalize_symmetric, true>,
+
+    // use Eigen::SelfAdjointEigenSolver
+    Test_diagonalize_symmetric<double, 6, diagonalize_symmetric>,
+
+    Test_diagonalize_symmetric<double, 6, reorder_diagonalize_symmetric, true>,
+
+    // use ZGESVD of LAPACK
+    Test_diagonalize_symmetric<complex<double>, 4, diagonalize_symmetric>,
+    Test_diagonalize_symmetric<complex<double>, 6, diagonalize_symmetric>,
+
+    Test_diagonalize_symmetric
+	<complex<double>, 4, reorder_diagonalize_symmetric, true>,
+    Test_diagonalize_symmetric
+	<complex<double>, 6, reorder_diagonalize_symmetric, true>
+> diagonalize_symmetric_tests;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_diagonalize_symmetric, T, diagonalize_symmetric_tests)
 {
-    // uses Eigen::JacobiSVD
-    test_svd<complex<double>, 2, svd>();
-    test_svd<complex<double>, 3, svd>();
-    test_svd<double	    , 2, svd>();
-    test_svd<double	    , 3, svd>();
+    typedef typename T::S S;
+    const size_t N = T::N;
 
-    test_svd<complex<double>, 2, reorder_svd>(true);
-    test_svd<complex<double>, 3, reorder_svd>(true);
-    test_svd<double	    , 2, reorder_svd>(true);
-    test_svd<double	    , 3, reorder_svd>(true);
-}
-
-BOOST_AUTO_TEST_CASE(test_svd_lapack)
-{
-    // uses ZGESVD of LAPACK
-    test_svd<complex<double>, 4, svd>();
-    test_svd<complex<double>, 6, svd>();
-
-    test_svd<complex<double>, 4, reorder_svd>(true);
-    test_svd<complex<double>, 6, reorder_svd>(true);
-
-    // uses DGESVD of LAPACK
-    test_svd<double	    , 4, svd>();
-    test_svd<double	    , 6, svd>();
-
-    test_svd<double	    , 4, reorder_svd>(true);
-    test_svd<double	    , 6, reorder_svd>(true);
-}
-
-template<class S, int N,
-	 void fxn(const Matrix<S, N, N>&,
-		  Array<double, N, 1>&, Matrix<complex<double>, N, N>&)>
-void test_diagonalize_symmetric(bool check_ascending_order = false)
-{
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.transpose())/2).eval();
     Array<double, N, 1> s;
     Matrix<complex<double>, N, N> u;
 
-    fxn(m, s, u);
+    T().fxn(m, s, u);
     Matrix<complex<double>, N, N> diag = u.adjoint() * m * u.conjugate();
 
     BOOST_CHECK((s >= 0).all());
@@ -103,52 +160,47 @@ void test_diagonalize_symmetric(bool check_ascending_order = false)
 	for (size_t j = 0; j < N; j++)
 	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
 
-    if (check_ascending_order)
+    if (T::check_ascending_order)
 	for (size_t i = 0; i < N-1; i++)
 	    BOOST_CHECK(s[i] <= s[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_diagonalize_symmetric_eigen)
+template<class S_, int N_,
+	 void fxn_(const Matrix<S_, N_, N_>&,
+		   Array<double, N_, 1>&,
+		   Matrix<S_, N_, N_>&)>
+struct Test_diagonalize_hermitian {
+    typedef S_ S;
+    enum { N = N_ };
+    void fxn(const Matrix<S_, N_, N_>& m,
+	     Array<double, N_, 1>& w,
+	     Matrix<S_, N_, N_>& z)
+    { fxn_(m, w, z); }
+};
+
+typedef boost::mpl::list<
+    // use Eigen::SelfAdjointEigenSolver
+    Test_diagonalize_hermitian<complex<double>, 6, hermitian_eigen>,
+    Test_diagonalize_hermitian<double	      , 6, hermitian_eigen>,
+
+    // use ZHEEV of LAPACK
+    Test_diagonalize_hermitian<complex<double>, 6, hermitian_lapack>,
+    // use DSYEV of LAPACK
+    Test_diagonalize_hermitian<double	      , 6, hermitian_lapack>
+> diagonalize_hermitian_tests;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_diagonalize_hermitian, T, diagonalize_hermitian_tests)
 {
-    // uses Eigen::JacobiSVD
-    test_diagonalize_symmetric<complex<double>, 2, diagonalize_symmetric>();
-    test_diagonalize_symmetric<complex<double>, 3, diagonalize_symmetric>();
+    typedef typename T::S S;
+    const size_t N = T::N;
 
-    test_diagonalize_symmetric
-	<complex<double>, 2, reorder_diagonalize_symmetric>(true);
-    test_diagonalize_symmetric
-	<complex<double>, 3, reorder_diagonalize_symmetric>(true);
-
-    // uses Eigen::SelfAdjointEigenSolver
-    test_diagonalize_symmetric<double, 6, diagonalize_symmetric>();
-
-    test_diagonalize_symmetric<double, 6, reorder_diagonalize_symmetric>(true);
-}
-
-BOOST_AUTO_TEST_CASE(test_diagonalize_symmetric_lapack)
-{
-    // uses ZGESVD of LAPACK
-    test_diagonalize_symmetric<complex<double>, 4, diagonalize_symmetric>();
-    test_diagonalize_symmetric<complex<double>, 6, diagonalize_symmetric>();
-
-    test_diagonalize_symmetric
-	<complex<double>, 4, reorder_diagonalize_symmetric>(true);
-    test_diagonalize_symmetric
-	<complex<double>, 6, reorder_diagonalize_symmetric>(true);
-}
-
-template<class S, int N,
-	 void fxn(const Eigen::Matrix<S, N, N>&,
-		  Eigen::Array<double, N, 1>&,
-		  Eigen::Matrix<S, N, N>&)>
-void test_diagonalize_hermitian()
-{
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.adjoint())/2).eval();
     Array<double, N, 1> w;
     Matrix<S, N, N> z;
 
-    fxn(m, w, z);		// following LAPACK convention
+    T().fxn(m, w, z);		// following LAPACK convention
     Matrix<S, N, N> diag = z.adjoint() * m * z;
 
     for (size_t i = 0; i < N; i++)
@@ -159,24 +211,28 @@ void test_diagonalize_hermitian()
 	BOOST_CHECK(w[i] <= w[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_diagonalize_hermitian_eigen)
-{
-    // uses Eigen::SelfAdjointEigenSolver
-    test_diagonalize_hermitian<complex<double>, 6, hermitian_eigen>();
-    test_diagonalize_hermitian<double	      , 6, hermitian_eigen>();
-}
+template<class S_, int N_>
+struct Test_fs {
+    typedef S_ S;
+    enum { N = N_ };
+};
 
-BOOST_AUTO_TEST_CASE(test_diagonalize_hermitian_lapack)
-{
-    // uses ZHEEV of LAPACK
-    test_diagonalize_hermitian<complex<double>, 6, hermitian_lapack>();
-    // uses DSYEV of LAPACK
-    test_diagonalize_hermitian<double	      , 6, hermitian_lapack>();
-}
+typedef boost::mpl::list<
+    Test_fs<complex<double>, 2>,
+    Test_fs<complex<double>, 3>,
+    Test_fs<complex<double>, 4>,
+    Test_fs<complex<double>, 6>,
+    Test_fs<double	   , 2>,
+    Test_fs<double	   , 3>,
+    Test_fs<double	   , 4>,
+    Test_fs<double	   , 6>
+> fs_svd_tests;
 
-template<class S, int N>
-void check_fs_svd()
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 {
+    typedef typename T::S S;
+    const size_t N = T::N;
+
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     Array<double, N, 1> s;
     Matrix<S, N, N> u, v;
@@ -193,26 +249,22 @@ void check_fs_svd()
 	BOOST_CHECK(s[i] <= s[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_fs_svd)
-{
-    check_fs_svd<complex<double>, 2>();
-    check_fs_svd<complex<double>, 3>();
-    check_fs_svd<complex<double>, 4>();
-    check_fs_svd<complex<double>, 6>();
-    check_fs_svd<double	   	, 2>();
-    check_fs_svd<double	   	, 3>();
-    check_fs_svd<double	   	, 4>();
-    check_fs_svd<double	   	, 6>();
-}
+typedef boost::mpl::list<
+    boost::mpl::int_<2>,
+    boost::mpl::int_<3>,
+    boost::mpl::int_<4>,
+    boost::mpl::int_<6>
+> casting_fs_svd_tests;
 
-template<int N>
-void check_casting_fs_svd()
+BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
 {
+    const size_t N = T::value;
+
     Matrix<double, N, N> m = Matrix<double, N, N>::Random();
     Array<double, N, 1> s;
     Matrix<complex<double>, N, N> u, v;
 
-    fs_svd(m, s, u, v);	// following SARAH convention
+    fs_svd(m, s, u, v);		// following SARAH convention
     Matrix<complex<double>, N, N> diag = u.conjugate() * m * v.adjoint();
 
     BOOST_CHECK((s >= 0).all());
@@ -224,17 +276,25 @@ void check_casting_fs_svd()
 	BOOST_CHECK(s[i] <= s[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_casting_fs_svd)
-{
-    check_casting_fs_svd<2>();
-    check_casting_fs_svd<3>();
-    check_casting_fs_svd<4>();
-    check_casting_fs_svd<6>();
-}
+typedef boost::mpl::list<
+    // use Eigen::JacobiSVD
+    Test_fs<complex<double>, 2>,
+    Test_fs<complex<double>, 3>,
 
-template<class S, int N>
-void check_fs_diagonalize_symmetric()
+    // use ZGESVD of LAPACK
+    Test_fs<complex<double>, 4>,
+    Test_fs<complex<double>, 6>,
+
+    // use Eigen::SelfAdjointEigenSolver
+    Test_fs<double	   , 6>
+> fs_diagonalize_symmetric_tests;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_fs_diagonalize_symmetric, T, fs_diagonalize_symmetric_tests)
 {
+    typedef typename T::S S;
+    const size_t N = T::N;
+
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.transpose())/2).eval();
     Array<double, N, 1> s;
@@ -252,23 +312,22 @@ void check_fs_diagonalize_symmetric()
 	BOOST_CHECK(s[i] <= s[i+1]);
 }
 
-BOOST_AUTO_TEST_CASE(test_fs_diagonalize_symmetric)
+using namespace boost::mpl::placeholders;
+
+typedef boost::mpl::fold<
+    boost::mpl::range_c<int, 0, 50>,
+    boost::mpl::list<>,
+    boost::mpl::push_front<
+	boost::mpl::push_front<_1, Test_fs<complex<double>, 6> >,
+	Test_fs<double, 6> >
+>::type fs_diagonalize_hermitian_tests;
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_fs_diagonalize_hermitian, T, fs_diagonalize_hermitian_tests)
 {
-    // uses Eigen::JacobiSVD
-    check_fs_diagonalize_symmetric<complex<double>, 2>();
-    check_fs_diagonalize_symmetric<complex<double>, 3>();
+    typedef typename T::S S;
+    const size_t N = T::N;
 
-    // uses ZGESVD of LAPACK
-    check_fs_diagonalize_symmetric<complex<double>, 4>();
-    check_fs_diagonalize_symmetric<complex<double>, 6>();
-
-    // uses Eigen::SelfAdjointEigenSolver
-    check_fs_diagonalize_symmetric<double	  , 6>();
-}
-
-template<class S, int N>
-void check_fs_diagonalize_hermitian()
-{
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.adjoint())/2).eval();
     Array<double, N, 1> w;
@@ -283,12 +342,4 @@ void check_fs_diagonalize_hermitian()
 
     for (size_t i = 0; i < N-1; i++)
 	BOOST_CHECK(abs(w[i]) <= abs(w[i+1]));
-}
-
-BOOST_AUTO_TEST_CASE(test_fs_diagonalize_hermitian)
-{
-    for (size_t n = 50; n; n--) {
-	check_fs_diagonalize_hermitian<complex<double>, 6>();
-	check_fs_diagonalize_hermitian<double	      , 6>();
-    }
 }

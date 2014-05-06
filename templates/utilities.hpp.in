@@ -75,6 +75,9 @@ private:
    unsigned width;
 
    void write_spectrum(const TSpectrum&, std::ofstream&) const;
+   static std::valarray<double> to_valarray(double);
+   template <class Scalar, int M, int N>
+   static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
 
@@ -88,6 +91,12 @@ void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<T>& model)
    if (model.do_calculate_sm_pole_masses()) {
 @fillSpectrumVectorWithSMParticles@
    }
+}
+
+template <class Scalar, int M, int N>
+std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
+{
+   return std::valarray<double>(v.data(), v.size());
 }
 
 } // namespace flexiblesusy

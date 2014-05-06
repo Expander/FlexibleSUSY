@@ -95,4 +95,9 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
    }
 }
 
+std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(double v)
+{
+   return std::valarray<double>(&v, 1);
+}
+
 } // namespace flexiblesusy

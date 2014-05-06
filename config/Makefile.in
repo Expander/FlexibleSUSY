@@ -10,9 +10,17 @@ FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
 ABSBASEDIR         := @ABSBASEDIR@
 INSTALL_DIR        := @INSTALL_DIR@
 
+# Switches
+ENABLE_COMPILE     := @ENABLE_COMPILE@
+ENABLE_FFLITE      := @ENABLE_FFLITE@
+ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
+ENABLE_META        := @ENABLE_META@
+ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
+ENABLE_THREADS     := @ENABLE_THREADS@
+
 # Makefile modules
 MODELS             := @MODELS@
-MODULES            := config src legacy slhaea doc
+MODULES            := config src fflite legacy slhaea doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
@@ -49,12 +57,14 @@ LOOPTOOLSFLAGS     := @LOOPTOOLSFLAGS@
 LOOPTOOLSLIBS      := @LOOPTOOLSLIBS@
 THREADLIBS         := @THREADLIBS@
 
-# Switches
-ENABLE_COMPILE     := @ENABLE_COMPILE@
-ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
-ENABLE_META        := @ENABLE_META@
-ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
-ENABLE_THREADS     := @ENABLE_THREADS@
+ifeq ($(ENABLE_LOOPTOOLS),yes)
+LOOPFUNCFLAGS	   := $(LOOPTOOLSFLAGS)
+LOOPFUNCLIBS	   := $(LOOPTOOLSLIBS)
+endif
+ifeq ($(ENABLE_FFLITE),yes)
+LOOPFUNCFLAGS	   :=
+LOOPFUNCLIBS	    = $(LIBFFLITE)
+endif
 
 # the modules add their dependency files to this variable
 ALLDEP   :=
@@ -150,6 +160,11 @@ depend:  $(ALLDEP)
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
 
+%.d: %.F
+# the sed script ensures that the target contains the full path
+	$(FC) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	sed 's|.*\.o:|$*.o:|' > $@
+
 clean-executables:
 	-rm -f $(ALLEXE)
 
@@ -187,11 +202,12 @@ showbuild:
 	@echo "GSLLIBS            = $(GSLLIBS)"
 	@echo "GSLFLAGS           = $(GSLFLAGS)"
 	@echo "LAPACKLIBS         = $(LAPACKLIBS)"
-	@echo "LOOPTOOLSFLAGS     = $(LOOPTOOLSFLAGS)"
-	@echo "LOOPTOOLSLIBS      = $(LOOPTOOLSLIBS)"
+	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
+	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
+	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"

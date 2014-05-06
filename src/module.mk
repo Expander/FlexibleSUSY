@@ -19,6 +19,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
@@ -29,6 +30,7 @@ LIBFLEXI_SRC := \
 LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
+		$(DIR)/cextensions.hpp \
 		$(DIR)/command_line_options.hpp \
 		$(DIR)/compound_constraint.hpp \
 		$(DIR)/constraint.hpp \
@@ -56,6 +58,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics.hpp \
 		$(DIR)/problems.hpp \
+		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
@@ -153,6 +156,10 @@ $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(EIGENFLAGS)
 
 ifneq ($(findstring lattice,$(ALGORITHMS)),)
 $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(GSLFLAGS) $(BOOSTFLAGS)
+endif
+
+ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
+$(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 ifeq ($(ENABLE_STATIC_LIBS),yes)

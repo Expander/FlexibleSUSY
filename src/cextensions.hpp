@@ -16,36 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
+#ifndef cextensions_hpp
+#define cextensions_hpp
 
-#ifndef @ModelName@_LATTICE_H
-#define @ModelName@_LATTICE_H
-
-#include <iosfwd>
-
-#include "cextensions.hpp"
-#include "lattice_model.hpp"
-#include "@ModelName@_model.hpp"
-#include "@ModelName@_input_parameters.hpp"
-
-#include <iosfwd>
-
-namespace flexiblesusy {
-
-class Lattice;
-
-template<>
-class @ModelName@<Lattice> {
-public:
-   @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   virtual ~@ModelName@();
-
-   // interface functions
-   virtual void calculate_spectrum();
-   virtual void run_to(double);
-   virtual void print(std::ostream&) const;
-};
-
-} // namespace flexiblesusy
+#ifdef __GNUC__
+#  define ATTR(x) __attribute__ ((x))
+#else
+#  define ATTR(x)
+#endif
 
 #endif
