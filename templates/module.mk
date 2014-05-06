@@ -31,6 +31,8 @@ TEMPLATES    := \
 		$(DIR)/lattice_model.cpp.in \
 		$(DIR)/lattice_susy_scale_constraint.hpp.in \
 		$(DIR)/lattice_susy_scale_constraint.cpp.in \
+		$(DIR)/plot_rgflow.gnuplot.in \
+		$(DIR)/plot_spectrum.gnuplot.in \
 		$(DIR)/spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \

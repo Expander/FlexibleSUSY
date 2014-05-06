@@ -42,8 +42,10 @@ int main(int argc, const char* argv[])
    if (options.must_exit())
       return options.status();
 
+   const std::string rgflow_file(options.get_rgflow_file());
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
+   const std::string spectrum_file(options.get_spectrum_file());
    @ModelName@_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
@@ -99,9 +101,11 @@ int main(int argc, const char* argv[])
       slha_io.write_to_file(slha_output_file);
    }
 
-   // model.print(std::cout);
-   // spectrum_generator.write_spectrum("@ModelName@_spectrum.dat");
-   // spectrum_generator.write_running_couplings("@ModelName@_rge_running.dat");
+   if (!spectrum_file.empty())
+      spectrum_generator.write_spectrum(spectrum_file);
+
+   if (!rgflow_file.empty())
+      spectrum_generator.write_running_couplings(rgflow_file);
 
    const int exit_code = spectrum_generator.get_exit_code();
 

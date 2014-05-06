@@ -1237,8 +1237,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating plot scripts ..."];
            WritePlotScripts[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_spectrum.gnuplot"}]},
-                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rge_running.gnuplot.in"}],
-                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rge_running.gnuplot"}]}}
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "plot_rgflow.gnuplot.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
                            ];
 
            PrintHeadline["Creating constraints"];

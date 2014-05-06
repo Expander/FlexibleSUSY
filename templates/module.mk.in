@@ -12,7 +12,7 @@ SARAH_MODEL  := @MODEL@
 		$(DIR)/two_scale_soft.mk
 
 @CLASSNAME@_GNUPLOT := \
-		$(DIR)/@CLASSNAME@_plot_rge_running.gnuplot \
+		$(DIR)/@CLASSNAME@_plot_rgflow.gnuplot \
 		$(DIR)/@CLASSNAME@_plot_spectrum.gnuplot
 
 LIB@CLASSNAME@_SRC :=
