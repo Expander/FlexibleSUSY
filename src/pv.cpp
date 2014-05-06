@@ -332,7 +332,7 @@ complex<double> B(double p2, double m2a, double m2b, double scl2)
 	if (ft == b00) return B_bb00_;
     }
     // zero momentum
-    else if( abs(dm) > acc*(m1 + m2) ) {
+    else if ( abs(dm) > acc*(m1 + m2) ) {
 	x2 = m1/dm*(1.0 - cIeps);
 	y2 = -m2/dm*(1.0 - cIeps);
 	if ( abs(y2) > .5 ) {
@@ -342,7 +342,7 @@ complex<double> B(double p2, double m2a, double m2b, double scl2)
 	    B_bb1_ = 1/2.0*(mu + fpv(2, x2, y2));
 	    if (ft == b1) return B_bb1_;
 	    a0 = 0;
-	    if( m2 != 0 ) a0 = m2*(1 - log(m2/mudim) + delta);
+	    if ( m2 != 0 ) a0 = m2*(1 - log(m2/mudim) + delta);
 	    B_bb00_ = (2.0*(m1*B_bb0_ + a0) + m1 + m2)/8.0;
 	    if (ft == b00) return B_bb00_;
 	}
@@ -354,7 +354,7 @@ complex<double> B(double p2, double m2a, double m2b, double scl2)
 	    B_bb1_ = 1/2.0*(mu + (1.0 + x2)*f1 + 1/2.0);
 	    if (ft == b1) return B_bb1_;
 	    a0 = 0;
-	    if( m1 != 0 ) a0 = m1*(1 - log(m1/mudim) + delta);
+	    if ( m1 != 0 ) a0 = m1*(1 - log(m1/mudim) + delta);
 	    B_bb00_ = (2.0*(m2*B_bb0_ + a0) + m1 + m2)/8.0;
 	    if (ft == b00) return B_bb00_;
 	}

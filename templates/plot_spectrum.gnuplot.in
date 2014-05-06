@@ -4,4 +4,6 @@ set title "@ModelName@ particle spectrum"
 set ylabel "mass / GeV"
 unset key
 
-plot "@ModelName@_spectrum.dat" using 1:2:(0.4):(0):xtic(3) with boxxyerrorbars linecolor rgb "black"
+if (!exists("filename")) filename='@ModelName@_spectrum.dat'
+
+plot filename using 1:2:(0.4):(0):xtic(3) with boxxyerrorbars linecolor rgb "black"

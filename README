@@ -205,3 +205,24 @@ to build with the following compiler error message (or similar):
                     from models/MSSM/MSSM_two_scale_model.hpp:25,
                     from models/MSSM/MSSM_two_scale_model.cpp:21:
    src/mycomplex.h:17:7: error: ‘class Complex’ has a previous declaration as ‘class Complex’
+
+
+Plotting spectrum and RG running
+================================
+
+The pole mass spectrum and the RG flow can be written to data files
+for easy plotting.  In the MSSM for example these data files can be
+generated via
+
+   $ ./models/MSSM/run_MSSM.x \
+     --rgflow-output-file=MSSM_rgflow.dat \
+     --spectrum-output-file=MSSM_spectrum.dat
+
+The generated files "MSSM_rgflow.dat" and "MSSM_spectrum.dat" can be
+plotted with the gnuplot scripts in the model directory:
+
+   $ gnuplot -persist -e "filename='MSSM_spectrum.dat'" \
+       models/MSSM/MSSM_plot_spectrum.gnuplot
+
+   $ gnuplot -persist -e "filename='MSSM_rgflow.dat'" \
+       models/MSSM/MSSM_plot_rgflow.gnuplot

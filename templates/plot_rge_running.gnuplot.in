@@ -1,7 +1,0 @@
-set terminal x11
-
-set title "@ModelName@ renormalization group running"
-set xlabel "renormalization scale / GeV"
-set logscale x
-
-plot for [i=2:@numberOfModelParameters@+1] '@ModelName@_rge_running.dat' using 1:(column(i)) title columnhead(i)
