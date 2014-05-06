@@ -28,6 +28,7 @@
 
 #include <Eigen/Dense>
 #include "logger.hpp"
+#include "error.hpp"
 
 namespace flexiblesusy {
 
@@ -238,8 +239,9 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
    // run from q1 to q2
    for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
       const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
-      const unsigned error = model.run_to(scale);
-      if (error) {
+      try {
+         model.run_to(scale);
+      } catch (const Error&) {
          ERROR("Coupling_monitor::run: run to scale "
                << scale << " failed");
          break;
