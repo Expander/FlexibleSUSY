@@ -74,3 +74,13 @@ InitialGuessAtHighScale = {
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
+
+TopQuark    = Ft;
+BottomQuark = Fb;
+Neutrino    = Fvt;
+Electron    = Ftau;
+
+SMParticles = {
+    VectorP, VectorZ, VectorG, VectorW,
+    Fu, Fd, Fc, Fs, Ft, Fb, Fe, Fm, Ftau, Fve, Fvm, Fvt
+};
