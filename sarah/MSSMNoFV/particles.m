@@ -29,7 +29,7 @@ ParticleDefinitions[GaugeES] = {
       {Fu2,  { Description -> "Dirac Right Up-Quark"}},
       {Fe1,  { Description -> "Dirac Left Electron"}},
       {Fe2,  { Description -> "Dirac Right Electron"}},
-      {Fv,   { Description -> "All three Neutrinos" }},
+      {Fv,   { Description -> "Neutrinos" }},
 
       {SbL, {LaTeX ->"\\tilde{b}_L"}},
       {SbR, {LaTeX ->"\\tilde{b}_R"}},
@@ -185,7 +185,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "s",
               OutputName -> "s" }},
 
-    {Fb,    { Description->"Down-Quarks",
+    {Fb,    { Description->"Bottom Quark",
               PDG -> {5},
               Mass -> 4.20,
               FeynArtsNr -> 43,
@@ -211,7 +211,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "c",
               OutputName -> "c" }},
 
-    {Ft,    { Description->"Up-Quarks",
+    {Ft,    { Description->"Top Quark",
               PDG -> {6},
               Width -> 1.59,
               Mass -> 171.2,
@@ -236,7 +236,7 @@ ParticleDefinitions[EWSB] = {
               LaTeX -> "m",
               OutputName -> "m" }},
 
-    {Ftau,    { Description->"Leptons",
+    {Ftau,    { Description->"Tau",
                 PDG -> {15},
                 Mass -> 1.776,
                 FeynArtsNr -> 23,
@@ -262,7 +262,7 @@ ParticleDefinitions[EWSB] = {
                LaTeX -> "\\nu_{\\mu}",
                OutputName -> "vm" }},
 
-    {Fvt,    { Description->"Neutrinos",
+    {Fvt,    { Description->"Tau Neutrino",
                PDG -> {16},
                Width -> 0,
                Mass -> 0.,
