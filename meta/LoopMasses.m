@@ -772,6 +772,8 @@ GetLightestMassEigenstate[mass_] :=
        FlexibleSUSY`M[mass],
        FlexibleSUSY`M[mass][GetDimensionStartSkippingGoldstones[mass] - 1]];
 
+CreateLSPFunctions[{}] := {"", ""};
+
 CreateLSPFunctions[masses_List] :=
     Module[{prototype, function, mass, info, particleType, m},
            info = FlexibleSUSY`FSModelName <> "_info";
@@ -804,6 +806,8 @@ CConversion`ToValidCSymbolString[mass /. FlexibleSUSY`M -> Identity] <>
                       "& particle_type)\n{\n" <> IndentText[body] <> "}\n";
            Return[{prototype, function}];
           ];
+
+CreateLSPFunctions[_] := {"", ""};
 
 End[];
 
