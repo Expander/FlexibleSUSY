@@ -38,7 +38,7 @@ public:
    unsigned get_loops() const { return loops; }
    unsigned get_thresholds() const { return thresholds; }
 
-   virtual const Eigen::ArrayXd display() const = 0;
+   virtual const Eigen::ArrayXd get() const = 0;
    virtual void set(const Eigen::ArrayXd&) = 0;
    virtual Eigen::ArrayXd beta() const = 0;
 

@@ -39,7 +39,7 @@ namespace flexiblesusy {
 class @ModelName@_parameter_getter {
 public:
    Eigen::ArrayXd get_parameters(const @ModelName@<Two_scale>& model) {
-      return model.display();
+      return model.get();
    }
    std::vector<std::string> get_parameter_names(const @ModelName@<Two_scale>&) const {
       using namespace @ModelName@_info;

@@ -49,7 +49,7 @@ void Beta_function::run(double x1, double x2, double eps)
    if (std::fabs(x2) < tol)
       throw NonPerturbativeRunningError(x2);
 
-   Eigen::ArrayXd y(display());
+   Eigen::ArrayXd y(get());
    runge_kutta::Derivs derivs = boost::bind(&Beta_function::derivatives,
                                             this, _1, _2);
 

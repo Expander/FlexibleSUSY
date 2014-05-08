@@ -39,7 +39,7 @@ public:
    @ModelName@_soft_parameters(const @ModelName@_susy_parameters& @cCtorParameterList@);
    virtual ~@ModelName@_soft_parameters() {}
    virtual Eigen::ArrayXd beta() const;
-   virtual const Eigen::ArrayXd display() const;
+   virtual const Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
 
