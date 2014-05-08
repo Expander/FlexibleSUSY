@@ -470,6 +470,8 @@ UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 
 OnlyLowEnergyFlexibleSUSY = False; (* default *)
+
+PotentialLSPParticles = { Chi, Cha, Glu, Sv, Su, Sd, Se };
 \end{lstlisting}
 %
 The variable \code{FSModelName} contains the name of the \fs model.
@@ -648,6 +650,15 @@ constraint will be ignored and only the low-scale and susy-scale
 constraints are kept.  All model parameters that are not specified in
 \code{MINPAR} or \code{EXTPAR} will be read from the corresponding
 input blocks in the SLHA input file and will be set at the susy-scale.
+
+\fs can create the helper function \code{get_lsp()}, which finds the
+lightest supersymmetric particle (LSP).  To let this function be
+created by \fs, the model file variable \code{PotentialLSPParticles}
+must be set to a list of SUSY particles which are potential LSPs.  In
+the model file example above, the particles \code{Chi}, \code{Cha},
+\code{Glu}, \code{Sv}, \code{Su}, \code{Sd}, \code{Se} (neutralino,
+chargino, gluino, sneutrino, up-type squark, down-type squark,
+selectron) are considered to be LSPs.
 
 \section{Stucture of the spectrum generator}
 \label{Sec:SpecGenStruct}

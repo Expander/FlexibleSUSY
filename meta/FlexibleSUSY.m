@@ -53,6 +53,7 @@ MWDRbar;
 EDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
+PotentialLSPParticles = {};
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
@@ -465,6 +466,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             copyDRbarMassesToPoleMasses = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
+            lspGetters = "", lspFunctions = "",
             enablePoleMassThreads = True
            },
            For[k = 1, k <= Length[massMatrices], k++,
@@ -525,6 +527,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
@@ -542,7 +545,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
            WriteOut`ReplaceInFiles[files,
-                          { "@massGetters@"          -> IndentText[massGetters],
+                          { "@lspGetters@"           -> IndentText[lspGetters],
+                            "@lspFunctions@"         -> lspFunctions,
+                            "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,

@@ -13,6 +13,8 @@ GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for
 ghosts.";
 
+CreateLSPFunctions::usage="";
+
 Begin["`Private`"];
 
 GetLoopCorrectedParticles[states_] :=
@@ -761,6 +763,51 @@ CreateRunningDRbarMassFunctions[] :=
            (result = result <> CreateRunningDRbarMassFunction[#])& /@ particles;
            Return[result];
           ];
+
+GetLightestMassEigenstate[FlexibleSUSY`M[mass_]] :=
+    GetLightestMassEigenstate[mass];
+
+GetLightestMassEigenstate[mass_] :=
+    If[GetDimension[mass] == 1,
+       FlexibleSUSY`M[mass],
+       FlexibleSUSY`M[mass][GetDimensionStartSkippingGoldstones[mass] - 1]];
+
+CreateLSPFunctions[{}] := {"", ""};
+
+CreateLSPFunctions[masses_List] :=
+    Module[{prototype, function, mass, info, particleType, m},
+           info = FlexibleSUSY`FSModelName <> "_info";
+           particleType = info <> "::Particles";
+           body = "double lsp_mass = std::numeric_limits<double>::max();
+double tmp_mass;
+particle_type = " <> info <> "::NUMBER_OF_PARTICLES;
+
+";
+           For[m = 1, m <= Length[masses], m++,
+               mass = masses[[m]];
+               body = body <> "\
+tmp_mass = Abs(PHYSICAL(" <>
+CConversion`RValueToCFormString[GetLightestMassEigenstate[mass]] <>
+"));
+if (tmp_mass < lsp_mass) {
+" <> IndentText["\
+lsp_mass = tmp_mass;
+particle_type = " <> info <> "::" <>
+CConversion`ToValidCSymbolString[mass /. FlexibleSUSY`M -> Identity] <>
+";"] <>
+"
+}
+
+";
+              ];
+           body = body <> "return lsp_mass;\n";
+           prototype = "double get_lsp(" <> particleType <> "&);\n";
+           function = "double CLASSNAME::get_lsp(" <> particleType <>
+                      "& particle_type)\n{\n" <> IndentText[body] <> "}\n";
+           Return[{prototype, function}];
+          ];
+
+CreateLSPFunctions[_] := {"", ""};
 
 End[];
 

@@ -1146,6 +1146,28 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    TEST_CLOSE_REL(s.displayPhys().mA0(1), Ah(2), 5.0e-4);
 }
 
+void test_lsp(MSSM<Two_scale> m, MssmSoftsusy s)
+{
+   ensure_tree_level_ewsb(m);
+   ensure_tree_level_ewsb(s);
+
+   softsusy::numHiggsMassLoops = 1;
+   s.physical(1);
+
+   m.set_pole_mass_loop_order(1);
+   m.calculate_DRbar_parameters();
+   m.calculate_pole_masses();
+
+   double softsusy_lsp;
+   int posi, posj;
+   s.lsp(softsusy_lsp, posi, posj);
+
+   MSSM_info::Particles particle_type;
+   const double flexi_lsp = m.get_lsp(particle_type);
+
+   TEST_CLOSE_REL(softsusy_lsp, flexi_lsp, 1.0e-10);
+}
+
 void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 {
    softSusy.calcDrBarPars();
@@ -1484,6 +1506,10 @@ void compare_models(int loopLevel)
 
       std::cout << "comparing one-loop CP-odd higgs self-energy ... ";
       compare_self_energy_CP_odd_higgs(m, softSusy, loopLevel);
+      std::cout << "done\n";
+
+      std::cout << "test LSP ... ";
+      test_lsp(m, softSusy);
       std::cout << "done\n";
    }
 
