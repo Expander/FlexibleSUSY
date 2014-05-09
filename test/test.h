@@ -146,6 +146,20 @@ void check_equality(const Eigen::Matrix<double,3,3>& a,
    }
 }
 
+template <int NRows, int NCols>
+void check_equality(const Eigen::Array<double,NRows,NCols>& a,
+                    const Eigen::Array<double,NRows,NCols>& b,
+                    const std::string& testMsg, double max_dev)
+{
+   for (int i = 0; i < NRows; ++i) {
+      for (int l = 0; l < NCols; ++l) {
+         std::ostringstream element;
+         element << testMsg << " [element " << i << "," << l << "]";
+         check_equality(a(i,l), b(i,l), element.str(), max_dev);
+      }
+   }
+}
+
 void check_equality(const ComplexMatrix& a, const ComplexMatrix& b,
                     const std::string& testMsg, double max_dev)
 {

@@ -39,6 +39,7 @@ GetParticleList::usage;
 IsUnrotated::usage;
 ToRotatedField::usage;
 ReplaceUnrotatedFields::usage;
+StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 
 Begin["`Private`"]
 
