@@ -39,6 +39,8 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\pole}{\text{pole}}
 \newcommand{\Lagr}{\mathcal{L}}
 \newcommand{\unity}{\mathbf{1}}
+\newcommand{\figref}[1]{\figurename~\ref{#1}}
+\newcommand{\secref}[1]{Sec.~\ref{#1}}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\re}{Re}
 \DeclareMathOperator{\im}{Im}
@@ -315,7 +317,7 @@ FlexibleSUSY uses object orientation with C++ to modularize the source
 code to make it easy for the user to modify and extend the spectrum
 generator.  An important application here are the constraints: The RG
 solvers provide a constraint interface,
-\figurename~\ref{fig:schematic-two-scale-constraint-interface},
+\figref{fig:schematic-two-scale-constraint-interface},
 %
 \begin{figure}
   \centering
@@ -652,7 +654,7 @@ constraints are kept.  All model parameters that are not specified in
 input blocks in the SLHA input file and will be set at the susy-scale.
 
 \fs can create the helper function \code{get_lsp()}, which finds the
-lightest supersymmetric particle (LSP).  To let this function be
+lightest supersymmetric particle (LSP).  To have this function be
 created by \fs, the model file variable \code{PotentialLSPParticles}
 must be set to a list of SUSY particles which are potential LSPs.  In
 the model file example above, the particles \code{Chi}, \code{Cha},
@@ -663,14 +665,61 @@ selectron) are considered to be LSPs.
 \section{Stucture of the spectrum generator}
 \label{Sec:SpecGenStruct}
 \subsection{Model parameters and RGEs}
-Even in the simplest supersymmetric model the RGEs form a very large
-set of coupled non-linear differential equations.  In a general
-(softly broken) supersymmetric theory the soft-breaking parameters
-depend on themselves and the susy parameters.  However, the susy
-parameters are independent of the soft-breaking parameters
-\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}.
-This makes it possible to split the model parameters into the
-following two subsets:
+
+The parameters of the susy model together with their RGEs are stored
+in the model class hierarchy, see the UML diagram in
+\figref{fig:parameter-classes}.
+%
+\begin{figure}
+  \centering
+  \tikzumlset{fill class=white}
+  \begin{tikzpicture}
+    \umlclass[x=0, y=8, type=abstract]{Beta\_function}{
+    }{
+      + \umlvirt{get()}\\
+      + \umlvirt{set()}\\
+      + \umlvirt{beta()}\\
+      + run\_to()
+    }
+    \umlclass[x=0, y=4]{<model>\_susy\_parameters}{
+      -- susy parameters
+    }{
+      + get()\\
+      + set()\\
+      + beta()\\
+      + run\_to()
+    }
+    \umlclass[x=0, y=0]{<model>\_soft\_parameters}{
+      -- soft-breaking parameters
+    }{
+      + get()\\
+      + set()\\
+      + beta()\\
+      + run\_to()
+    }
+    \umlinherit{<model>\_susy\_parameters}{Beta\_function}
+    \umlinherit{<model>\_soft\_parameters}{<model>\_susy\_parameters}
+  \end{tikzpicture}
+  \caption{Model parameter class hierarchy.}
+  \label{fig:parameter-classes}
+\end{figure}
+
+The top of the hierarchy is formed by the \code{Beta_function}
+interface class, which defines the basic RGE running interface.  It
+provides the user function \code{run_to()}, which integrates the RGEs
+up to a given scale using an adaptive Runge-Kutta algorithm.  Thereby
+it uses the pure virtual functions \code{get()}, \code{set()} and
+\code{beta()}, that need to be implemented by the derived class.  The
+\code{get()} and \code{set()} functions return and set the model
+parameters in form of a long vector, respectively.  The \code{beta()}
+method returns the $\beta$-function for each model parameter in form
+of a long vector as well.
+
+All susy model parameters and their $\beta$-functions are contained in
+the derived classes.  The structure of the $\beta$-functions of a
+general susy model
+\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}
+allows to split the parameters into two classes:
 %
 \begin{enumerate}
 \item \emph{susy parameters:} gauge couplings, superpotential
@@ -681,44 +730,39 @@ following two subsets:
   scalar squared masses.
 \end{enumerate}
 %
-The susy parameters together with their two-loop renormalisation group
-equations are stored in the class \code{<model>_susy_parameters}.  The
-soft-breaking model parameters together with their two-loop
-renormalisation group equations are stored in the class
-\code{<model>_soft_parameters}.  The dependence of the soft-breaking
-parameters on the susy parameters is implemented via inheritance, see
-\figurename~\ref{fig:parameter-classes}, where
-\code{<model>_soft_parameters} inherits from
-\code{<model>_susy_parameters}.  In this way, the class
-\code{<model>_soft_parameters} can implement the soft-breaking beta
-functions in terms of the susy and soft-breaking parameters, while the
-class \code{<model>_susy_parameters} is independent of the
-soft-breaking parameters.
+The $\beta$-functions of the susy parameters do only depend on the
+susy parameters themselfs.  They do not depend on soft-breaking
+parameters.  However, the $\beta$-functions of the soft-breaking
+parameters depend on all model parameters in general.
+
+This property is reflected in the C++ code as well: The class
+\code{<model>_susy_parameters} direcly inherits from
+\code{Beta_functions} and implements the $\beta$-functions of the susy
+parameters.  The class of soft-breaking parameters
+\code{<model>_soft_parameters} in turn inherits from
+\code{<model>_susy_parameters} and implements the $\beta$-functions of
+the soft-breaking parameters in terms of all model parameters.
+This hierarchy allows to
 %
-\begin{figure}
-  \centering
-  \tikzumlset{fill class=white}
-  \begin{tikzpicture}
-    \umlclass[x=0, y=3]{model\_susy\_parameters}{
-      - susy parameters
-    }{
-      + beta()
-    }
-    \umlclass[x=0, y=0]{model\_soft\_parameters}{
-      - soft-breaking parameters
-    }{
-      + beta()
-    }
-    \umlinherit{model\_soft\_parameters}{model\_susy\_parameters}
-  \end{tikzpicture}
-  \caption{Model parameter class structure.}
-  \label{fig:parameter-classes}
-\end{figure}
+\begin{enumerate}
+\item use the RGE running of all model parameters via the common
+  \code{Beta_function} interface and to
+\item run the susy parameters independently of the soft-breaking
+  parameters.
+\end{enumerate}
 
 \subsection{Boundary conditions}
-In \fs the RGE boundary conditions are classes which implement
+
+The parameters of a susy model have to meet certain boundary
+conditions.  For example, the running gauge and Yukawa couplings
+should match the ones of the Standard Model at the scale $M_Z$.
+Usually also high-scale boundary conditions on the soft-breaking
+parameters are applied, as for example in mSUGRA scenarios.
+
+In \fs the boundary conditions, imposed on the model parameters, are
+(at the C++ level) classes which implement the common
 \code{Constraint<Two\_scale>} interface, see
-\figurename~\ref{fig:schematic-two-scale-constraint-interface}.
+\figref{fig:schematic-two-scale-constraint-interface}.
 %
 \begin{lstlisting}[language=C++]
 template<>
@@ -727,50 +771,52 @@ public:
    virtual ~Constraint() {}
    virtual void apply() = 0;
    virtual double get_scale() const = 0;
-   virtual void set_model(Two_scale_model*) = 0;
 };
 \end{lstlisting}
 %
-The three pure virtual functions \code{apply()}, \code{get\_scale()}
-and \code{set\_model()} need to be implemented
-%
-\begin{itemize}
-\item \code{apply()}: implements the constraint by fixing model
-  parameters
-\item \code{get\_scale()}: returns the scale at which the constraint
-  is to be applied.
-\item \code{set\_model()}: connects the constraint to a model class,
-  in order to access the model parameters
-\end{itemize}
-%
-Per default, \fs creates three default boundary conditions for each
-model:
-%
-\begin{itemize}
-\item \emph{GUT constraint:} Here the \code{apply()} function
-  calculates the value of the unification scale $M_X$ (from the
-  condition given in \code{HighScale}) and sets the model parameters
-  given in \code{HighScaleInput}.  The \code{get\_scale()} returns the
-  value of $M_X$.
-\item \emph{SUSY constraint:} Here the \code{apply()} function
-  calculates the value of the susy scale $M_S$ and sets the model
-  parameters given in \code{SUSYScaleInput}.  Afterwards the EWSB
-  conditions are solved for the parameters given in
-  \code{EWSBOutputParameters} at the one-loop level, i.e., the the
-  parameters in \code{EWSBOutputParameters} are determined such that
-  the one-loop effective potential is minimized.  The
-  \code{get\_scale()} returns the value of $M_S$.
-\item \emph{Low-scale constraint:} This constraint calculates the
-  gauge and Yukawa couplings of the susy model from the known Standard
-  Model gauge couplings and fermion masses (at $M_Z$), using threshold
-  corrections.  Furthermore the parameters given in
-  \code{LowScaleInput} are set.  The \code{get\_scale()} returns the
-  value of $M_Z$.
-\end{itemize}
+The \code{get_scale()} function is supposed to return the
+renormalisation scale at which the constraint is to be imposed.  The
+\code{apply()} method imposes the constraint by setting model
+parameters to values as chosen by the user.
 
-{\color{red}Different types, how we match to low energy data.
-  reference EWSB or merge that section here.  mention two loop qcd
-  parts from softsusy.}
+By default, \fs creates three default boundary conditions for each
+susy model:
+%
+\begin{itemize}
+\item The \emph{high-scale constraint} is indended to set boundary
+  conditions on the model parameters at some very high scale, e.g.\
+  the GUT scale $M_X$.  The high-scale is defined by the value given
+  in the variable \code{HighScale}.  In the model file in
+  \secref{Sec:modfile} it is defined to be the unification scale $M_X$
+  where $g_1(M_X) = g_2(M_X)$.  The model parameters which, are set in
+  the $apply()$ function at the high-scale, are extracted from the
+  \code{HighScaleInput} variable.
+
+\item The \emph{SUSY-scale constraint} is indended to set boundary
+  conditions at the mass scale $M_S$ of the new susy particles.  The
+  value of $M_S$ is defined by the model file variable
+  \code{SUSYScale}.  In the example model file in \secref{Sec:modfile}
+  it is defined to be $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where
+  $m_{\tilde{u}_1}$ is the mass of the lightest, and $m_{\tilde{u}_6}$
+  is the mass of the heaviest up-type squark.  The generated
+  \code{apply()} function sets the model parameters, defined in
+  \code{SUSYScaleInput}.  Finally, the \code{apply()} solves the EWSB
+  equations at the loop level, by adjusting the parameters given in
+  \code{EWSBOutputParameters} such that the effective Higgs potential
+  is minimized.  See \secref{sec:ewsb} for a more detailed description
+  of the EWSB in \fs.
+
+\item The \emph{low-scale constraint} is indended to match the susy
+  model to the Standard Model at the scale $M_Z$.  It does so by
+  calculating the gauge and Yukawa couplings of the susy model from
+  the known Standard Model fermion and gauge boson masses, as well as
+  $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$ and
+  $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$.  See
+  \secref{sec:calculation-of-gauge-couplings} and
+  \ref{sec:calculation-of-yukawa-couplings} for more details.  In
+  addition to the gauge and Yukawa couplings, the model parameter
+  constraints given in \code{LowScaleInput} are imposed here.
+\end{itemize}
 
 \subsubsection{Calculation of the gauge couplings $g_i(M_Z)$}
 \label{sec:calculation-of-gauge-couplings}
@@ -963,6 +1009,8 @@ used and it was assumed that the VEV is already given in the \DRbar
 scheme.
 
 \subsubsection{Electroweak symmetry breaking}
+\label{sec:ewsb}
+
 In \fs the one-loop electroweak symmetry breaking conditions are
 formulated as
 %
