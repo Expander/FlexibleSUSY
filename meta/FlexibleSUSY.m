@@ -3,7 +3,7 @@ BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`",
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 FS`Authors = {"P. Athron", "J. Park", "D. Stöckinger", "A. Voigt"};
-FS`Years   = {2013};
+FS`Years   = {2013, 2014};
 
 Print["*****************************************************"];
 Print["FlexibleSUSY ", FS`Version];
