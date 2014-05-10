@@ -42,7 +42,7 @@ LowScaleMinimum;
 LowScaleMaximum;
 InitialGuessAtLowScale;
 InitialGuessAtHighScale;
-OnlyLowEnergyFlexibleSUSY;
+OnlyLowEnergyFlexibleSUSY = False;
 TreeLevelEWSBSolution;
 Pole;
 FSMinimize;
@@ -139,13 +139,17 @@ CheckModelFileSettings[] :=
              ];
            (* HighScale *)
            If[!ValueQ[FlexibleSUSY`HighScale],
-              Print["Warning: FlexibleSUSY`HighScale should be",
-                    " set in the model file!"];
+              If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 Print["Warning: FlexibleSUSY`HighScale should be",
+                       " set in the model file!"];
+                ];
               FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
              ];
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
-              Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
-                    " set in the model file!"];
+              If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
+                       " set in the model file!"];
+                ];
               FlexibleSUSY`HighScaleFirstGuess = 2.0 10^16;
              ];
            If[Head[FlexibleSUSY`HighScaleInput] =!= List,
