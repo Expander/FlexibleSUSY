@@ -821,79 +821,100 @@ susy model:
 \subsubsection{Calculation of the gauge couplings $g_i(M_Z)$}
 \label{sec:calculation-of-gauge-couplings}
 
-The low-scale constraint calculates the gauge couplings $g_i(M_Z)$.
-It does so by first calculating $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$
-and $g_{3,\text{susy}}^{\text{\DRbar}}(M_Z)$ via
+The low-scale constraint automatically calculates the \DRbar\ gauge
+couplings $g_{i,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the susy model
+at the scale $M_Z$.  It starts from the known electromagnetic and
+strong \MSbar\ couplings in the Standard Model including only $5$
+quark flavours
+$\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z) = 1/127.944$
+and $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z) = 0.1185$
+\cite{Beringer:1900zz}.  These are converted to the electromagnetic
+and strong \DRbar\ couplings in the susy model
+$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$g_{3,\text{susy}}^{\text{\DRbar}}(M_Z)$ as
 %
 \begin{align}
   \alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z) &=
   \frac{\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
     \Delta\alpha_{\text{e.m.},\text{SM}}(M_Z) -
     \Delta\alpha_{\text{e.m.},\text{susy}}(M_Z)} ,\\
+    e_{\text{susy}}^{\text{\DRbar}}(M_Z) &=
+    \sqrt{4\pi\alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z)}, \\
+  \alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
+    \Delta\alpha_{\text{s},\text{SM}}(M_Z)
+    - \Delta\alpha_{\text{s},\text{susy}}(M_Z)} ,\\
+  g_{3,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \sqrt{4\pi\alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z)} .
+\end{align}
+%
+The $\Delta\alpha_i(\mu)$ are threshold corrections and read
+%
+\begin{align}
   \Delta\alpha_{\text{e.m.},\text{SM}}(\mu) &=
   \frac{\alpha_\text{e.m.}}{2\pi} \left[\frac{1}{3}
     - \frac{16}{9} \log{\frac{m_t}{\mu}} \right],\\
   \Delta\alpha_{\text{e.m.},\text{susy}}(\mu) &=
   \frac{\alpha_\text{e.m.}}{2\pi} \left[ -\sum_{\text{susy particle }
       i}
-    C_i \log{\frac{m_i}{\mu}} \right],\\
-    e_{\text{susy}}^{\text{\DRbar}}(M_Z) &=
-    \sqrt{4\pi\alpha_{\text{e.m.},\text{susy}}^{\text{\DRbar}}(M_Z)}
-\end{align}
-%
-\begin{align}
-  \alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z) &=
-  \frac{\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)}{1 -
-    \Delta\alpha_{\text{s},\text{SM}}(M_Z)
-    - \Delta\alpha_{\text{s},\text{susy}}(M_Z)} ,\\
+    F_i T_i \log{\frac{m_i}{\mu}} \right],\\
   \Delta\alpha_{\text{s},\text{SM}}(\mu) &=
   \frac{\alpha_\text{s}}{2\pi} \left[
     -\frac{2}{3} \log{\frac{m_t}{\mu}} \right],\\
   \Delta\alpha_{\text{s},\text{susy}}(\mu) &=
   \frac{\alpha_\text{s}}{2\pi}\left[ \frac{1}{2}-\sum_{\text{susy
-        particle } i} C_i \log{\frac{m_i}{\mu}} \right] ,\\
-  g_{3,\text{susy}}^{\text{\DRbar}}(M_Z) &=
-  \sqrt{4\pi\alpha_{\text{s},\text{susy}}^{\text{\DRbar}}(M_Z)} ,
+        particle } i} F_i T_i \log{\frac{m_i}{\mu}} \right] .
 \end{align}
 %
-where
+The constants $T_i$ are the dynkin indices of the representation of
+particle $i$ with respect to the gauge group, and $F_i$ are particle
+type-specific constants \cite{Hall:1980kf}
 %
 \begin{align}
-  \alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z) &= 1/127.944,\\
-  \alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z) &= 0.1185,
+  F_i =
+  \begin{cases}
+    2/3 & \text{if particle $i$ is a Majorana fermion},\\
+    4/3 & \text{if particle $i$ is a Dirac fermion},\\
+    1/6 & \text{if particle $i$ is a real scalar},\\
+    1/3 & \text{if particle $i$ is a complex scalar}.
+  \end{cases}
 \end{align}
 %
-are the \MSbar electromagnetic and strong cougling constants in the
-Standard Model including only $5$ quark flavours
-\cite{Beringer:1900zz}.  Afterwards, SARAH's tree-level expressions
-for the Weinberg angle and the $U(1)_Y$ and $SU(2)_L$ gauge couplings
-$g_Y$ and $g_2$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
-$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
-$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ are used to calculate
-$g_{1,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
-$g_{2,\text{susy}}^{\text{\DRbar}}(M_Z)$.  In the MSSM, for example,
-one has
+Afterwards, SARAH's tree-level expression for the Weinberg angle
+$\theta_W$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
+$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ is used to calculate
+$\theta_W$ in the susy model in the \DRbar\ scheme.  In the MSSM, for
+example, one has
 %
 \begin{align}
-  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &=
-  \arcsin\sqrt{1 - \left(\frac{M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)}{M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)}\right)^2} ,\\
-  g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
-  \sqrt{\frac{5}{3}} \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\cos\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,\\
-  g_{2,\text{susy}}^{\text{\DRbar}}(M_Z) &=
-  \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\sin\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,
+  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1 -
+    \left(\frac{M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)}{M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)}\right)^2}
+  .
 \end{align}
 %
-where
+The running \DRbar\ $W$ and $Z$ boson masses are calculated in each
+iteration from the corrsponding pole masses as
 %
 \begin{align}
   \left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
-  \left(M_W^{\text{pole}}\right)^2 + \re \Pi_{WW}^T(p^2 = (M_W^{\text{pole}})^2) ,\\
+  \left(M_W^{\text{pole}}\right)^2 + \re \Pi_{WW}^T(p^2 = (M_W^{\text{pole}})^2, \mu=M_Z) ,\\
   \left(M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
-  \left(M_Z^{\text{pole}}\right)^2 + \re \Pi_{ZZ}^T(p^2 = (M_Z^{\text{pole}})^2)
+  \left(M_Z^{\text{pole}}\right)^2 + \re \Pi_{ZZ}^T(p^2 = (M_Z^{\text{pole}})^2, \mu=M_Z) ,
 \end{align}
 %
-and $M_W^{\text{pole}} = 80.404\unit{GeV}$, $M_Z^{\text{pole}} =
-91.1876\unit{GeV}$ \cite{Beringer:1900zz}.
+where $M_W^{\text{pole}} = 80.404\unit{GeV}$ and $M_Z^{\text{pole}} =
+91.1876\unit{GeV}$ \cite{Beringer:1900zz}.  Having
+$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ allows to calculate the
+(GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the susy
+model.  In the MSSM one has for instance
+%
+\begin{align}
+  g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \sqrt{\frac{5}{3}} \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\cos\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} ,\\
+  g_{2,\text{susy}}^{\text{\DRbar}}(M_Z) &=
+  \frac{e_{\text{susy}}^{\text{\DRbar}}(M_Z)}{\sin\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)} .
+\end{align}
 
 \subsubsection{Calculation of the Yukawa couplings $y_f(M_Z)$}
 \label{sec:calculation-of-yukawa-couplings}
@@ -2438,6 +2459,14 @@ Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
   [hep-ph/0305127].
   %%CITATION = HEP-PH/0305127;%%
   %99 citations counted in INSPIRE as of 04 Apr 2014
+
+%\cite{Hall:1980kf}
+\bibitem{Hall:1980kf}
+  L.~J.~Hall,
+  %``Grand Unification of Effective Gauge Theories,''
+  Nucl.\ Phys.\ B {\bf 178} (1981) 75.
+  %%CITATION = NUPHA,B178,75;%%
+  %265 citations counted in INSPIRE as of 10 May 2014
 
 \end{thebibliography}
 \end{document}
