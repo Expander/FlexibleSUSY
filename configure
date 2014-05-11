@@ -1106,6 +1106,25 @@ check_boost_thread_incl() {
 }
 
 #_____________________________________________________________________
+check_std_threads() {
+    # check for C++ std::thread and std::mutex
+    if test "x${enable_threads}" = "xyes" ; then
+        checking_msg "std::thread"
+        if try_compile_cpp_program "#include <thread>" "std::mutex mtx; std::thread thr;";
+        then
+            result "ok"
+        else
+            result "not available"
+            message "Error: C++ std::thread and std::mutex is not available."
+            message "   Either reconfigure with \`--disable-threads' or use a"
+            message "   C++ compiler which supports C++ std::thread and std::mutex."
+            enable_threads="no"
+            exit 1
+        fi
+    fi
+}
+
+#_____________________________________________________________________
 check_thread_libs() {
     check_library "libpthread" "" "$default_lib_paths"
     if [ -z "$found_lib" ]; then
@@ -2029,6 +2048,7 @@ if test "x${enable_compile}" = "xyes"; then
     fi
     check_makelib
     check_random_number_generator
+    check_std_threads
     check_thread_libs
 fi
 
