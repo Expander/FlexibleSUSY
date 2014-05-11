@@ -1110,7 +1110,8 @@ check_std_threads() {
     # check for C++ std::thread and std::mutex
     if test "x${enable_threads}" = "xyes" ; then
         checking_msg "std::thread"
-        if try_compile_cpp_program "#include <thread>" "std::mutex mtx; std::thread thr;";
+        if try_compile_cpp_program "#include <thread>
+#include <mutex>" "std::mutex mtx; std::thread thr;";
         then
             result "ok"
         else
