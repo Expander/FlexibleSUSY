@@ -586,15 +586,12 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
               (callSM   = callSM   <> CallThreadedPoleMassFunction[#])& /@ smParticles;
               (joinSmThreads   = joinSmThreads   <> JoinLoopMassFunctionThread[#])& /@ smParticles;
               (joinSusyThreads = joinSusyThreads <> JoinLoopMassFunctionThread[#])& /@ susyParticles;
-              result = "thread_exception = 0;\n\n" <> callSusy <> "\n" <>
+              result = callSusy <> "\n" <>
                        "if (calculate_sm_pole_masses) {\n" <>
                        IndentText[callSM] <>
                        IndentText[joinSmThreads] <>
                        "}\n\n" <>
-                       joinSusyThreads <> "\n" <>
-                       "if (thread_exception != 0)\n" <>
-                       IndentText["std::rethrow_exception(thread_exception);"] <>
-                       "\n";
+                       joinSusyThreads <> "\n";
              ];
            Return[result];
           ];
