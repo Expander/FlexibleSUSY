@@ -32,6 +32,24 @@ void set_plot_style()
     gStyle->SetNumberContours(NCont);
 }
 
+bool has_empty_neighbor(const TProfile2D* h, Double_t x, Double_t y)
+{
+   Int_t bin = h->FindFixBin(x, y);
+   Int_t binx, biny, binz;
+   h->GetBinXYZ(bin, binx, biny, binz);
+
+   if (h->GetBinContent(binx + 1, biny) == 0.)
+      return true;
+   if (h->GetBinContent(binx - 1, biny) == 0.)
+      return true;
+   if (h->GetBinContent(binx, biny + 1) == 0.)
+      return true;
+   if (h->GetBinContent(binx, biny - 1) == 0.)
+      return true;
+
+   return false;
+}
+
 void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
             const TString& title = "m_{h}^{\\text{pole}}\\text{ / GeV}")
 {
@@ -127,6 +145,16 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
       // Get first graph from list on curves on this level
       curv = (TGraph*)contLevel->First();
       for(int j = 0; j < contLevel->GetSize(); j++){
+         Double_t x0, y0;
+         curv->GetPoint(1, x0, y0);
+         // check if neighbor bins in h are empty
+         bool empty_neighbor = has_empty_neighbor(h, x0, y0);
+
+         if (empty_neighbor) {
+            curv = (TGraph*)contLevel->After(curv); // Get Next graph
+            continue;
+         }
+
          gc = (TGraph*)curv->Clone();
          gc->Draw("C same");
 
