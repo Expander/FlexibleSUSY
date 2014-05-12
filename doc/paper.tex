@@ -237,7 +237,7 @@ the various ways the code can be modified both at the meta code level
 by writing model files and at the C++ code level by modifying the code
 or adding new modules. Finally in section \ref{Sec:comparison} we
 describe detailed comparisons between our generated code and existing
-public spectrum generators as well as against the SPheno-like fortran
+public spectrum generators as well as against the SPheno-like FORTRAN
 code which can be created using SARAH.
 
 
@@ -245,94 +245,112 @@ code which can be created using SARAH.
 \label{Sec:Program}
 \fs is a MATHEMATICA package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
-non-supersymmetric models.  The user specifies the model by giving the superfield content, superpotential, gauge symmetries and mass mixings in the  
-\sarah model files, examples of which can be found in the \code{Models}
-directory of \sarah and the \code{sarah} directory of FlexibleSUSY.  The user
-then also specifies the boundary conditions on the model parameters in a separate \code{FlexibleSUSY.m} file, examples of which can be found in the \code{model_files} directory. A detailed guide on how to write the FlexibleSUSY.m model is given in section \ref{Sec:modfile}. 
+non-supersymmetric models.  The user specifies the model by giving the
+superfield content, superpotential, gauge symmetries and mass mixings
+in the \sarah model files, examples of which can be found in the
+\code{Models} directory of \sarah and the \code{sarah} directory of
+FlexibleSUSY.  The user then also specifies the boundary conditions on
+the model parameters in a separate \code{FlexibleSUSY.m} file,
+examples of which can be found in the \code{model_files} directory. A
+detailed guide on how to write the FlexibleSUSY.m model is given in
+section \ref{Sec:modfile}.
 
-  \fs makes use of the existing \sarah package
-  \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
-  to obtain tree level expressions for the mass matrices and
-  electroweak symmetry breaking conditions, one-loop self energies,
-  one-loop tadpoles corrections and two-loop renormalisation group
-  equations(RGEs) for the model specified in the model
-  files. Additional corrections which have been calculated elsewhere,
-  such as two-loop corrections to the Higgs masses\footnote{By default FlexibleSUSY has two loop corrections to the Higgs masses for the MSSM\cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}  and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro Slavich. These are the same corrections which are implemented in many of the public spectrum generators.} may be added in
-  file specified by the user.
+\fs makes use of the existing \sarah package
+\cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
+to obtain tree level expressions for the mass matrices and electroweak
+symmetry breaking conditions, one-loop self energies, one-loop
+tadpoles corrections and two-loop renormalisation group
+equations(RGEs) for the model specified in the model files. Additional
+corrections which have been calculated elsewhere, such as two-loop
+corrections to the Higgs masses\footnote{By default FlexibleSUSY has
+  two-loop corrections to the Higgs masses for the
+  MSSM\cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
+  and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro
+  Slavich. These are the same corrections which are implemented in
+  many of the public spectrum generators.} may be added in file
+specified by the user.
 
- \fs then
-converts these algerbraic expressions from \sarah into C++ code using
-the C++11 standard. \fs uses some parts of
+\fs then converts these algerbraic expressions from \sarah into C++
+code using the C++11 standard. \fs uses some parts of
 SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen library
 \cite{eigen}, as well as the gnu scientific library and the boost
 library to create numerical routines which solve the RGEs and EWSB
 conditions.  The main solver routine of \fs then calls these routines
 to find simultaneous solutions for the EWSB, low energy data, and
-other, user supplied, boundary conditions (e.g. the usual mSUGRA
+other, user supplied, boundary conditions (e.g.\ the usual mSUGRA
 universality conditions) and calculates the mass spectrum.
 
- The modular structure of the generated code allows for any individual
- components to be replaced with an alternative if available.  Indeed
- \fs has been intentionally designed to grow as alternative solvers
- and calculators are added and a subsequent release with an
- alternative lattice solver is already planned.  In addition if one
- already has an existing code for some other purpose and simply wishes
- to improve upon this by adding, e.g, new RGEs or self energies the
- modular framework makes this straightforward by adding or
- interfacing with the appropriate routine.
+The modular structure of the generated code allows for any individual
+components to be replaced with an alternative if available.  Indeed
+\fs has been intentionally designed to grow as alternative solvers and
+calculators are added and a subsequent release with an alternative
+lattice solver is already planned.  In addition if one already has an
+existing code for some other purpose and simply wishes to improve upon
+this by adding, e.g., new RGEs or self energies the modular framework
+makes this straightforward by adding or interfacing with the
+appropriate routine.
 
 \subsection{Design goals}
 
 FlexibleSUSY is designed with the following points in mind:
 
 \paragraph{Speed}
+
 Exploring the parameter space of supersymmetric models with a high
-number of free parameters is quite time consuming.  Therefore
-FlexibleSUSY aims to produce spectrum generators with a short run-time.
-
-The two most time consuming parts of a spectrum generator are the
-calculation of the beta functions and the pole masses for mixed
-particles.
-
-The reason is the following: The RG solving algorithms usually need
-$O(10)$ iterations to calculate a particle spectrum with $0.1\%$
-precision.  During each iteration the Runge--Kutta algorithm needs to
-calculate all beta functions $O(50)$ times.  Most two-loop beta
-functions involve $O(50)$ matrix multiplications and additions.  All
-together one arrives at $O(2.5\cdot 10^4)$ matrix multiplications.  To
-optimize these matrix multiplications FlexibleSUSY uses the fast
-linear algebra package \href{Eigen}{http://eigen.tuxfamily.org}, which
-exploits C++ expression templates to make the matrix multiplications
-easy to write and optimize.
-
-The second most time consuming part is the precise calculation of the
-pole masses for mixed particles.  For each particle $\psi_i$ the full
-self-energy matrix $\Sigma^\psi_{ij}(p=m^\text{tree}_{\psi_i})$ has to
-be evaluated.  Each self-energy matrix entry again involves the
-evaluation of $O(50)$ Feynman diagrams, which involves the calculation
-of vertices and loop functions.  All in all, one arrives at $O(500)$
-Feynman diagram or $O(3\cdot 10^4)$ loop function evaluations.  To
-speed up the calculation of the pole masses FlexibleSUSY makes use of
-multi-threading, where each pole mass is calculated in a separate
-thread.  By this technique one can gain a speed-up of $20$--$30\%$.
+number of free parameters is quite time consuming.  Therefore \fs aims
+to produce spectrum generators with a short run-time.  The two most
+time consuming parts of a SUSY spectrum generator are usually the
+calculation of the two-loop $\beta$-functions and the pole masses of
+mixed particles:
+%
+\begin{itemize}
+\item \emph{Calculation of the $\beta$-functions:} The RG solving
+  algorithms usually need $O(10)$ iterations between the high and the
+  low scale to find a set of parameters consistent will all boundary
+  conditions with a $0.01\%$ precision goal.  During each iteration
+  the Runge-Kutta algorithm needs to calculate all $\beta$-functions
+  $O(50)$ times.  Most two-loop $\beta$-functions involve $O(50)$
+  matrix multiplications and additions.  All together one arrives at
+  $O(10^4)$ matrix operations.  To optimize these, \fs uses the fast
+  linear algebra package \href{Eigen}{http://eigen.tuxfamily.org}.
+  Eigen uses C++ expression templates to remove temporary objects and
+  enable lazy evaluation of the expressions.  It supports explicite
+  vectorization, and provides fixed-size matrices to avoid dynamic
+  memory allocation.  All of these features in combination result in
+  very fast code for the calculation of the $\beta$-functions in \fs.
+%
+\item \emph{Calculation of the pole masses:} The second most time
+  consuming part is the precise calculation of the pole masses for
+  mixed particles.  For each particle $\psi_k$ in a multiplet the full
+  self-energy matrix $\Sigma^\psi_{ij}(p=m^\text{tree}_{\psi_k})$ has
+  to be evaluated.  Each self-energy matrix entry again involves the
+  calculation of $O(50)$ Feynman diagrams, each involving the
+  calculation of vertices and a loop-function.  All in all, one
+  arrives at $O(500)$ Feynman diagrams and $O(10^4)$ loop function
+  evaluations.  To speed up the calculation of the pole masses \fs
+  makes use of multi-threading, where each pole mass is calculated in
+  a separate thread.  This allows the operating system to distribute
+  these calculations among different CPU cores.  With this technique
+  one can gain a speed-up of $20$--$30\%$.
+\end{itemize}
 
 \paragraph{Modularity}
 The large variety of supersymmetric models makes it likely that the
-user needs to modify the generated spectrum generator source code.
-FlexibleSUSY uses object orientation with C++ to modularize the source
-code to make it easy for the user to modify and extend the spectrum
-generator.  An important application here are the constraints: The RG
-solvers provide a constraint interface,
-\figref{fig:schematic-two-scale-constraint-interface},
+user wants to modify the generated spectrum generator source code.
+\fs uses C++ object orientation features to modularize the source code
+in order to make it easy for the user to modify, reuse and extend the
+spectrum generator.  An important application of this concept are the
+boundary conditions: The RG solver provides a common \code{Constraint}
+interface, see \figref{fig:schematic-two-scale-constraint-interface}.
 %
 \begin{figure}
   \centering
   \tikzumlset{fill class=white}
   \begin{tikzpicture}
-    \umlclass[x=0, y=0]{RGFlow$<$Two\_scale$>$}{}{
+    \umlclass[x=0, y=0]{RGFlow<Two\_scale>}{}{
       + solve()
     }
-    \umlclass[x=6, y=0, type=abstract]{Constraint$<$Two\_scale$>$}{}{
+    \umlclass[x=6, y=0, type=abstract]{Constraint<Two\_scale>}{}{
       + \umlvirt{apply()}\\
       + \umlvirt{get\_scale() : double}
     }
@@ -340,34 +358,41 @@ solvers provide a constraint interface,
       + apply()\\
       + get\_scale() : double
     }
-    \umldep{RGFlow$<$Two\_scale$>$}{Constraint$<$Two\_scale$>$}
-    \umlinherit{MyConstraint}{Constraint$<$Two\_scale$>$}
+    \umldep{RGFlow<Two\_scale>}{Constraint<Two\_scale>}
+    \umlinherit{MyConstraint}{Constraint<Two\_scale>}
   \end{tikzpicture}
   \caption{Schematic two-scale constraint interface}
   \label{fig:schematic-two-scale-constraint-interface}
 \end{figure}
 %
-which can be implemented to create the custom constraint
-\code{MyConstraint}.  In the \code{apply()} function the constraint
-application takes place and the \code{get_scale()} function specifies
-the scale at which the constraint is to be applied.
+To create a custom constraint \code{MyConstraint}, the user implements
+the interface by inheriting from \code{Constraint} and writing the
+\code{apply()} and \code{get_scale()} methods (see
+\secref{sec:boundary-conditions} for more details).  The so created
+constraint class can then be passed to the RG solver to impose the
+user-defined boundary condition at the chosen scale.
 
 \section{Download and compilation}
 \label{Sec:download}
-Flexible SUSY can be downloaded from \url{http://flexiblesusy.hepforge.org}.  
-To use FlexibleSUSY please make sure you have the following installed.  
+
+\subsection{Requirements}
+
+\fs can be downloaded from \url{http://flexiblesusy.hepforge.org}.  To
+create a custom spectrum generator the following requirements are
+necessary:
+%
 \begin{itemize}
-\item Mathematica, version 7 or higher
+\item MATHEMATICA, version 7 or higher
 \item SARAH, version 4.0.4 or higher \url{http://sarah.hepforge.org}
 \item C++11 compatible compiler (g++ 4.4.7 or higher, clang++ 3.1 or
-  higher)
-\item Fortran compiler (gfortran, ifort etc.)
-\item Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
+  higher, icpc 12.1 or higher)
+\item FORTRAN compiler (gfortran, ifort etc.)
+\item Eigen library, version 3.1 or higher
+  \url{http://eigen.tuxfamily.org}
 \item Boost library, version 1.36.0 or higher
   \url{http://www.boost.org}
 \item GNU scientific library \url{http://www.gnu.org/software/gsl/}
-\item lapack (needed for the Lattice algorithm only)
-  \url{http://www.netlib.org/lapack/}
+\item lapack \url{http://www.netlib.org/lapack/}
 \end{itemize}
 %
 Optional:
@@ -378,25 +403,39 @@ Optional:
 \end{itemize}
 
 \subsection{Quick Start}
-Create a MSSM spectrum generator
-  \begin{lstlisting}[language=bash]
+
+To create a MSSM spectrum generator the following three commands:
+%
+\begin{lstlisting}[language=bash]
 $ ./createmodel --models=MSSM
 $ ./configure --with-models=MSSM
 $ make
-  \end{lstlisting}
-Run the spectrum generator using the default parameter point
-  \begin{lstlisting}[language=bash]
+\end{lstlisting}%% $
+%
+The first command creates the model directory \code{models/MSSM/}
+together with a MSSM model file.  The \code{configure} scrip checks
+the system requirements and creates the \code{Makefile}.  See
+\code{./configure --help} for more options.  Executing \code{make}
+will start MATHEMATICA to generate the spectrum generator and compile
+it.  The resulting executable can be run like this:
+\begin{lstlisting}[language=bash]
 $ ./models/MSSM/run_MSSM.x
-  \end{lstlisting}
-Run the spectrum generator using a SLHA input file
-  \begin{lstlisting}[language=bash]
-$ ./models/MSSM/run_MSSM.x --slha-input-file=templates/MSSM/LesHouches.in.MSSM --slha-output-file=LesHouches.out.MSSM
-  \end{lstlisting}%% $
+\end{lstlisting}%% $
+%
+An SLHA input file can be given via the \code{--slha-input-file=}
+option, for example:
+%
+\begin{lstlisting}[language=bash]
+$ ./models/MSSM/run_MSSM.x \
+    --slha-input-file=templates/MSSM/LesHouches.in.MSSM
+\end{lstlisting}%% $
 
 \section{Setting up a FlexibleSUSY model}
 \label{Sec:modfile}
-A \fs model is configured via a (Mathematica) model file, which in
-case of the MSSM looks like this
+A \fs model is configured via a (MATHEMATICA) model file
+\code{FlexibleSUSY.m} in the model directory \code{models/<model>/}.
+Many example model files can be found in \code{model_files/}.  The
+default model file for the CMSSM looks like this:
 %
 \begin{lstlisting}[language=Mathematica]
 FSModelName = "MSSM";
@@ -490,16 +529,17 @@ MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
 The list elements are two-component lists where the first entry is the
 SLHA index in the MINPAR or EXTPAR blocks.  The second entry is the
 name of the parameter.  The input parameters can be set to default
-values in the \code{DefaultParameterPoint} list, see above.
+values in the \code{DefaultParameterPoint} list.
 
 Using the the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
 symmetry breaking conditions.  When doing EWSB, \fs will adjust these
 parameters until the EWSB conditons are fulfilled.  In the CMSSM these
-are \code{\\[Mu]} and \code{B[\\[Mu]]}.
+are the superpotential parameter \code{\\[Mu]} and its corresponding
+soft-breaking parameter \code{B[\\[Mu]]}.
 
 Furthermore, the user has to specify the form of three model
-constraints: low-scale, susy-scale and high-scale constraints.  In \fs
+constraints: low-scale, SUSY-scale and high-scale constraints.  In \fs
 they are named as \code{LowScale}, \code{SUSYScale} and
 \code{HighScale}.  For each constraint there is (i) a scale definition
 (named after the constraint), (ii) an initial guess for the scale
@@ -508,38 +548,43 @@ a list of parameter settings to be applied at the scale (concatenation
 of the constraint name and \code{Input}).  Optional a minimum and a
 maximum value for the scale can be given (concatenation of the
 constraint name and \code{Minimum} or \code{Maximum}, respectively).
-This avoids underflows or overflows of the scale value during the
-iteration.  This is especially useful in models where the iteration is
-very unstable and the value of the scale is very sensitive to the
-model parameters.
+The latter can avoid underflows or overflows of the scale value during
+the iteration.  This is especially useful in models where the
+iteration is very unstable and the value of the scale is very
+sensitive to the model parameters.  The meaning of the three
+constraints is the following:
 %
 \begin{itemize}
 \item \emph{High-scale constraint:} The high-scale constraint is
-  usuall the GUT-scale constraint, applied at the scale where the
+  usually the GUT-scale constraint, applied at the scale where the
   gauge couplings $g_1$ and $g_2$ unify.  The high-scale can be
   defined by an equation of the form \code{g1 == g2} or by fixed scale
   value.
-\item \emph{Susy-scale constraint:} The susy-scale constraint is the
-  constraint where \fs will impose the EWSB conditions and calculate
-  the spectrum.  It is usually defined by
-  $\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.
+%
+\item \emph{SUSY-scale constraint:} The SUSY-scale constraint is the
+  constraint where \fs imposes the EWSB conditions and calculate the
+  pole mass spectrum.  Its scale $M_S$ is usually defined as
+  $\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.  In the example above it
+  has the value $M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}}$, where
+  $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the \DRbar\ masses of
+  the lightest and heaviest up-type squark, respectively.
+%
 \item \emph{Low-scale constraint:} The low-scale constraint is the
   constraint where the gauge couplings $g_1$, $g_2$, $g_3$ and the
-  Yukawa couplings $y_f$ will be calculated from given Standard Model
+  Yukawa couplings $y_f$ are calculated from given Standard Model
   input $\alpha_{\text{e.m.}}(M_Z)$, $\alpha_{s}(M_Z)$, $m_f^\pole$,
   $M_Z^\pole$, $M_W^\pole$, see
   Sec.~\ref{sec:calculation-of-gauge-couplings}--\ref{sec:calculation-of-yukawa-couplings}.
-  This should be done at the $Z$ mass scale $M_Z$.  Note that the
-  gauge and Yukawa couplings are calculated automatically and
-  therefore do not need to be specified in the \code{LowScaleInput}
-  variable.
+  This should be done at the $Z$ mass scale $M_Z$.  The gauge
+  couplings are calculated automatically and therefore do not need to
+  be specified in the \code{LowScaleInput} variable.
 \end{itemize}
 %
-Note, that \fs GUT-normalizes all gauge couplings.  Thus, the
-high-scale definition takes the simple form \code{g1 == g2}.  Another
-consequence is that in the calculation of the VEVs $v_u$ and $v_d$
-from $M_Z$ and $\tan\beta$ at the low-scale the GUT-normalization has
-to be taken into account, see above.
+\fs GUT-normalizes all gauge couplings.  Thus, the high-scale
+definition takes the simple form \code{g1 == g2}.  Another consequence
+is that in the calculation of the VEVs $v_u$ and $v_d$ from $M_Z$ and
+$\tan\beta$ at the low-scale the GUT-normalization has to be taken
+into account, see the example above.
 
 The list of parameter settings can contain as elements any of the
 following:
@@ -654,16 +699,16 @@ order $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
 
 To create a low-energy model one has to set
 \code{OnlyLowEnergyFlexibleSUSY = True}.  In this case the high-scale
-constraint will be ignored and only the low-scale and susy-scale
+constraint will be ignored and only the low-scale and SUSY-scale
 constraints are kept.  All model parameters that are not specified in
 \code{MINPAR} or \code{EXTPAR} will be read from the corresponding
-input blocks in the SLHA input file and will be set at the susy-scale.
+input blocks in the SLHA input file and will be set at the SUSY-scale.
 
 \fs can create the helper function \code{get_lsp()}, which finds the
 lightest supersymmetric particle (LSP).  To have this function be
-created by \fs, the model file variable \code{PotentialLSPParticles}
-must be set to a list of SUSY particles which are potential LSPs.  In
-the model file example above, the particles \code{Chi}, \code{Cha},
+created the model file variable \code{PotentialLSPParticles} must be
+set to a list of SUSY particles which are potential LSPs.  In the
+model file example above, the particles \code{Chi}, \code{Cha},
 \code{Glu}, \code{Sv}, \code{Su}, \code{Sd}, \code{Se} (neutralino,
 chargino, gluino, sneutrino, up-type squark, down-type squark,
 selectron) are considered to be LSPs.
@@ -672,7 +717,7 @@ selectron) are considered to be LSPs.
 \label{Sec:SpecGenStruct}
 \subsection{Model parameters and RGEs}
 
-The parameters of the susy model together with their RGEs are stored
+The parameters of the SUSY model together with their RGEs are stored
 in the model class hierarchy, see the UML diagram in
 \figref{fig:parameter-classes}.
 %
@@ -721,14 +766,14 @@ parameters in form of a long vector, respectively.  The \code{beta()}
 method returns the $\beta$-function for each model parameter in form
 of a long vector as well.
 
-All susy model parameters and their $\beta$-functions are contained in
+All SUSY model parameters and their $\beta$-functions are contained in
 the derived classes.  The structure of the $\beta$-functions of a
-general susy model
+general SUSY model
 \cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}
 allows to split the parameters into two classes:
 %
 \begin{enumerate}
-\item \emph{susy parameters:} gauge couplings, superpotential
+\item \emph{SUSY parameters:} gauge couplings, superpotential
   parameters and VEVs and
 \item \emph{soft-breaking parameters} \cite{Girardello:1981wz}: soft
   linear scalar terms, soft bilinear scalar interactions, soft
@@ -736,30 +781,27 @@ allows to split the parameters into two classes:
   scalar squared masses.
 \end{enumerate}
 %
-The $\beta$-functions of the susy parameters do only depend on the
-susy parameters themselfs.  They do not depend on soft-breaking
+The $\beta$-functions of the SUSY parameters do only depend on the
+SUSY parameters themselfs.  They do not depend on soft-breaking
 parameters.  However, the $\beta$-functions of the soft-breaking
 parameters depend on all model parameters in general.
 
 This property is reflected in the C++ code as well: The class
 \code{<model>_susy_parameters} direcly inherits from
-\code{Beta_functions} and implements the $\beta$-functions of the susy
+\code{Beta_functions} and implements the $\beta$-functions of the SUSY
 parameters.  The class of soft-breaking parameters
 \code{<model>_soft_parameters} in turn inherits from
 \code{<model>_susy_parameters} and implements the $\beta$-functions of
-the soft-breaking parameters in terms of all model parameters.
-This hierarchy allows to
-%
-\begin{enumerate}
-\item use the RGE running of all model parameters via the common
-  \code{Beta_function} interface and to
-\item run the susy parameters independently of the soft-breaking
-  parameters.
-\end{enumerate}
+the soft-breaking parameters in terms of all model parameters.  The so
+constructed class hierarchy allows to (i) use the RGE running of all
+model parameters via the common \code{Beta_function} interface and to
+(ii) run the SUSY parameters independently of the soft-breaking
+parameters.
 
 \subsection{Boundary conditions}
+\label{sec:boundary-conditions}
 
-The parameters of a susy model have to meet certain boundary
+The parameters of a SUSY model have to meet certain boundary
 conditions.  For example, the running gauge and Yukawa couplings
 should match the ones of the Standard Model at the scale $M_Z$.
 Usually also high-scale boundary conditions on the soft-breaking
@@ -786,7 +828,7 @@ renormalisation scale at which the constraint is to be imposed.  The
 parameters to values as chosen by the user.
 
 By default, \fs creates three default boundary conditions for each
-susy model:
+SUSY model:
 %
 \begin{itemize}
 \item The \emph{high-scale constraint} is indended to set boundary
@@ -799,7 +841,7 @@ susy model:
   \code{HighScaleInput} variable.
 
 \item The \emph{SUSY-scale constraint} is indended to set boundary
-  conditions at the mass scale $M_S$ of the new susy particles.  The
+  conditions at the mass scale $M_S$ of the new SUSY particles.  The
   value of $M_S$ is defined by the model file variable
   \code{SUSYScale}.  In the example model file in \secref{Sec:modfile}
   it is defined to be $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where
@@ -812,9 +854,9 @@ susy model:
   is minimized.  See \secref{sec:ewsb} for a more detailed description
   of the EWSB in \fs.
 
-\item The \emph{low-scale constraint} is indended to match the susy
+\item The \emph{low-scale constraint} is indended to match the SUSY
   model to the Standard Model at the scale $M_Z$.  It does so by
-  calculating the gauge and Yukawa couplings of the susy model from
+  calculating the gauge and Yukawa couplings of the SUSY model from
   the known Standard Model fermion and gauge boson masses, as well as
   $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$ and
   $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$.  See
@@ -828,14 +870,14 @@ susy model:
 \label{sec:calculation-of-gauge-couplings}
 
 The low-scale constraint automatically calculates the \DRbar\ gauge
-couplings $g_{i,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the susy model
+couplings $g_{i,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model
 at the scale $M_Z$.  It starts from the known electromagnetic and
 strong \MSbar\ couplings in the Standard Model including only $5$
 quark flavours
 $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z) = 1/127.944$
 and $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z) = 0.1185$
 \cite{Beringer:1900zz}.  These are converted to the electromagnetic
-and strong \DRbar\ couplings in the susy model
+and strong \DRbar\ couplings in the SUSY model
 $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ and
 $g_{3,\text{susy}}^{\text{\DRbar}}(M_Z)$ as
 %
@@ -889,7 +931,7 @@ type-specific constants \cite{Hall:1980kf}
 Afterwards, SARAH's tree-level expression for the Weinberg angle
 $\theta_W$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
 $M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ is used to calculate
-$\theta_W$ in the susy model in the \DRbar\ scheme.  In the MSSM, for
+$\theta_W$ in the SUSY model in the \DRbar\ scheme.  In the MSSM, for
 example, one has
 %
 \begin{align}
@@ -912,7 +954,7 @@ where $M_W^{\text{pole}} = 80.404\unit{GeV}$ and $M_Z^{\text{pole}} =
 91.1876\unit{GeV}$ \cite{Beringer:1900zz}.  Having
 $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ and
 $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ allows to calculate the
-(GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the susy
+(GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the SUSY
 model.  In the MSSM one has for instance
 %
 \begin{align}
@@ -926,7 +968,7 @@ model.  In the MSSM one has for instance
 \label{sec:calculation-of-yukawa-couplings}
 
 At the low-scale the \DRbar\ Yukawa coupling matrices
-$y_f^{\text{\DRbar}}(M_Z)$ ($f=u,d,e$) in the susy model are
+$y_f^{\text{\DRbar}}(M_Z)$ ($f=u,d,e$) in the SUSY model are
 calculated automatically if the user has set $y_f$ to the value
 \code{Automatic} in the \fs model file.  This is done for example in
 the MSSM model file in \secref{Sec:modfile}.  In this case \fs
@@ -1203,14 +1245,14 @@ follows, see \figref{fig:two-scale-algorithm}:
 parameters at the low-scale.
 %
 \begin{enumerate}
-\item At the $M_Z$ scale the susy model gauge couplings $g_{1,2,3}$
+\item At the $M_Z$ scale the SUSY model gauge couplings $g_{1,2,3}$
   are set to the known Standard Model values (ignoring threshold
   corrections).
 \item Then, the user-defined low-scale boundary conditions (defined in
   \code{LowScaleInput}) are imposed.
-\item The Yukawa couplings $y_{u,d,e}$ of the susy model are set to
+\item The Yukawa couplings $y_{u,d,e}$ of the SUSY model are set to
   the known Standard Model Yukawa couplings.
-\item The susy parameters are run to the user-supplied first guess of
+\item The SUSY parameters are run to the user-supplied first guess of
   the high-scale (\code{HighScaleFirstGuess}).
 \item The high-scale boundary condition is imposed (defined in
   \code{HighScaleInput}).
@@ -1233,7 +1275,7 @@ actual iteration starts
   \item The \DRbar\ mass spectrum is calculated.
   \item The low-scale is recalculated.
   \item The \DRbar\ gauge and Yukawa couplings $g_{1,2,3}(M_Z)$,
-    $y_{u,d,e}(M_Z)$ of the susy model are calculated using threshold
+    $y_{u,d,e}(M_Z)$ of the SUSY model are calculated using threshold
     corrections.
   \item The user-defined low-scale constraint is imposed
     (\code{LowScaleInput})
@@ -1243,11 +1285,11 @@ actual iteration starts
   \item Recalculate the high-scale
   \item Apply the high-scale constraint (\code{HighScaleInput})
   \end{enumerate}
-\item Run model parameters to the susy-scale (\code{SUSYScale})
+\item Run model parameters to the SUSY-scale (\code{SUSYScale})
   \begin{enumerate}
   \item Calculate the \DRbar\ mass spectrum
-  \item Recalculate the susy-scale
-  \item Apply the susy-scale constraint (\code{SUSYScaleInput})
+  \item Recalculate the SUSY-scale
+  \item Apply the SUSY-scale constraint (\code{SUSYScaleInput})
   \item Solve the EWSB eqs.\ at the loop level
   \end{enumerate}
 \item If not converged yet, goto \ref{rge-step-one}
@@ -1256,7 +1298,7 @@ actual iteration starts
 If the fixed-point iteration has converged, all \DRbar\ model
 parameters are known at all scales between \code{LowScale} and
 \code{HighScale}.  In this case all model parameters are run to the
-susy-scale and the pole-mass spectrum is calculated.  If the user has
+SUSY-scale and the pole-mass spectrum is calculated.  If the user has
 chosen a specific output scale for the running \DRbar\ model
 parameters by setting entry $12$ in block \code{MODSEL} in the SLHA
 input file, all model parameters are run to the defined output scale.
@@ -1274,7 +1316,7 @@ input file, all model parameters are run to the defined output scale.
     \node[block,below of=MZ] (MX) {Apply high-scale boundary conditions
       (\code{HighScaleInput})};
     \path[arrow] (MZ) -- node {run to \code{HighScale}} (MX);
-    \node[block,below of=MX] (MS) {Apply susy-scale boundary conditions
+    \node[block,below of=MX] (MS) {Apply SUSY-scale boundary conditions
       (\code{SUSYScaleInput}) and solve EWSB};
     \path[arrow] (MX) -- node {run to \code{SUSYScale}} (MS);
     %\path[arrow] (MS.east) -| node {run to \code{LowScale}} (MZ.east);
