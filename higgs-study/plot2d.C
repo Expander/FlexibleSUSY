@@ -14,6 +14,8 @@
 #include "TStyle.h"
 #include "TSystem.h"
 #include "TColor.h"
+#include "TROOT.h"
+#include "TGraph.h"
 
 #include "plot.h"
 
@@ -78,15 +80,61 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    h->SetTitle(title);
    h->GetXaxis()->SetTitle("\\tan\\beta");
    h->GetYaxis()->SetTitle("$m_0$ / TeV");
-   h->SetMinimum(95.);
-   h->SetMaximum(135.);
-   // SetZminZmax(h);
 
    TCanvas* canvas = new TCanvas("canvas", title, 400, 300);
    canvas->cd(1);
    // gStyle->SetPaperSize(10.,10.); // in cm
+
+   // define contours
+   Double_t contours[1];
+   contours[0] = 125.9;
+   h->SetContour(1, contours);
+   // Draw contours as filled regions, and Save points
+   h->Draw("CONT Z LIST");
+   canvas->Update(); // Needed to force the plotting and retrieve the contours in TGraphs
+
+   // Get Contours
+   TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+   TList* contLevel = NULL;
+   TGraph* curv     = NULL;
+   TGraph* gc       = NULL;
+   Int_t TotalConts = 0, nGraphs = 0;
+   if (conts == NULL){
+      printf("*** No Contours Were Extracted!\n");
+      TotalConts = 0;
+      return;
+   } else {
+      TotalConts = conts->GetSize();
+   }
+   printf("TotalConts = %d\n", TotalConts);
+   for(int i = 0; i < TotalConts; i++){
+      contLevel = (TList*)conts->At(i);
+      printf("Contour %d has %d Graphs\n", i, contLevel->GetSize());
+      nGraphs += contLevel->GetSize();
+   }
+
+   // draw the histogram
+   h->SetContour(20); // set back to default
+   h->SetMinimum(95.);
+   h->SetMaximum(135.);
+   // SetZminZmax(h);
    set_plot_style();
    h->Draw("colz");
+
+   // draw contours
+   for(int i = 0; i < TotalConts; i++){
+      contLevel = (TList*)conts->At(i);
+      // Get first graph from list on curves on this level
+      curv = (TGraph*)contLevel->First();
+      for(int j = 0; j < contLevel->GetSize(); j++){
+         gc = (TGraph*)curv->Clone();
+         gc->Draw("C same");
+
+         curv = (TGraph*)contLevel->After(curv); // Get Next graph
+      }
+   }
+   canvas->Update();
+   printf("\n\n\tExtracted %d Contours and %d Graphs \n", TotalConts, nGraphs );
 
    TString tex_file(file_name);
    tex_file.ReplaceAll(".dat",".tex");
