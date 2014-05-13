@@ -1230,33 +1230,42 @@ eigenvalues are positive.
 
 \subsection{Two-scale fixed point iteration}
 
-The $\beta$-functions for the model parameters together with the
-boundary conditions for a boundary value problem.  The default
-two-scale RG solver tries to find the full set of model parameters
-consistent with all constraints at all scales.  It does so by running
-iteratively between the scales of all boundary conditions, imposing
-the constraints and checking for convergence after each iteration.
-This approach is decribed in \cite{Barger:1993gh} for the MSSM and is
-widely implemented in SUSY spectrum generators.
+The RGEs for the model parameters together with the boundary
+conditions form a boundary value problem.  The default two-scale RG
+solver tries to find a set of model parameters consistent with all
+constraints at all scales.  It does so by running iteratively between
+the scales of all boundary conditions, imposing the constraints and
+checking for convergence after each iteration.  This approach is
+decribed in \cite{Barger:1993gh} for the MSSM and is widely
+implemented in SUSY spectrum generators.
 
 The in more detail the two-scale algorithm used in \fs works as
-follows, see \figref{fig:two-scale-algorithm}:
+follows, see also \figref{fig:two-scale-algorithm}:
 %
 \subparagraph{Initial guess:} The RG solver starts to guess all model
 parameters at the low-scale.
 %
 \begin{enumerate}
-\item At the $M_Z$ scale the SUSY model gauge couplings $g_{1,2,3}$
-  are set to the known Standard Model values (ignoring threshold
-  corrections).
-\item Then, the user-defined low-scale boundary conditions (defined in
-  \code{LowScaleInput}) are imposed.
-\item The Yukawa couplings $y_{u,d,e}$ of the SUSY model are set to
-  the known Standard Model Yukawa couplings.
+\item At the $M_Z$ scale the gauge couplings $g_{1,2,3}$ are set to
+  the known Standard Model values (ignoring threshold corrections).
+\item The user-defined initial guess at the low-scale (defined in
+  \code{InitialGuessAtLowScale}) is imposed.  In the example given in
+  \secref{Sec:modfile} the Higgs VEVs are set to
+  \begin{align}
+    v_d &= v \cos\beta, & v_u &= v \sin\beta ,
+  \end{align}
+  where $v=246.22\unit{GeV}$.  Afterwards, the Yukawa couplings
+  $y_{u,d,e}$ of the SUSY model are set to the known Standard Model
+  Yukawa couplings (ignoring SUSY particle corrections).
 \item The SUSY parameters are run to the user-supplied first guess of
   the high-scale (\code{HighScaleFirstGuess}).
 \item The high-scale boundary condition is imposed (defined in
-  \code{HighScaleInput}).
+  \code{HighScaleInput}).  Afterwards, the user-defined initial guess
+  for the remaining model parameters (defined in
+  \code{InitialGuessAtHighScale}) is imposed.  In the example given in
+  \secref{Sec:modfile} the superpotential parameter $\mu$ is set to
+  the value $1.0$ and its corresponding soft-breaking parameter $B\mu$
+  is set to zero.
 \item All model parameters are run to the first guess of the low-scale
   (\code{LowScaleFirstGuess})
 \item The EWSB eqs.\ are solved at the tree-level.
@@ -1271,29 +1280,67 @@ actual iteration starts
 %
 \begin{enumerate}
 \item \label{rge-step-one} All model parameters are run to the
-  low-scale (\code{LowScale})
+  low-scale (\code{LowScale}).
   \begin{enumerate}
   \item The \DRbar\ mass spectrum is calculated.
-  \item The low-scale is recalculated.
-  \item The \DRbar\ gauge and Yukawa couplings $g_{1,2,3}(M_Z)$,
-    $y_{u,d,e}(M_Z)$ of the SUSY model are calculated using threshold
-    corrections.
+  \item The low-scale is recalculated.  In the above example this step
+    is trivial, because the low-scale is fixed to be $M_Z$.
+  \item The \DRbar\ gauge couplings $g_{1,2,3}(M_Z)$ of the SUSY model
+    are calculated using threshold corrections as described in
+    \secref{sec:calculation-of-gauge-couplings}.
   \item The user-defined low-scale constraint is imposed
-    (\code{LowScaleInput})
+    (\code{LowScaleInput}).  In the example above, the Yukawa
+    couplings are calculated automatically as described in
+    \secref{sec:calculation-of-yukawa-couplings} and the Higgs VEVs
+    are set to
+    \begin{align}
+      v_d(M_Z) &= \frac{2 M_Z(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \cos\beta(M_Z)}, \\
+      v_u(M_Z) &= \frac{2 M_Z(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \sin\beta(M_Z)}.
+    \end{align}
+    Since the Hypercharge gauge coupling $g_1$ is GUT normalized, the
+    normalization factor $\sqrt{3/5}$ has to be included in the above
+    relations.
   \end{enumerate}
-\item Run all model parameters to the high-scale (\code{HighScale})
+\item Run all model parameters to the high-scale (\code{HighScale}).
   \begin{enumerate}
-  \item Recalculate the high-scale
-  \item Apply the high-scale constraint (\code{HighScaleInput})
+  \item Recalculate the high-scale as
+    \begin{align}
+      M_X' = M_X \exp\left(\frac{g_2(M_X)-g_1(M_X)}{\beta_{g_1} -
+          \beta_{g_2}}\right),
+    \end{align}
+    where $\beta_{g_i}$ is the two-loop $\beta$-function of the gauge
+    coupling $g_i$.  The value $M_X'$ is used as new high-scale in the
+    next iteration.
+  \item Impose the high-scale constraint (\code{HighScaleInput}).  In
+    the MSSM example the following soft-breaking parameters are fixed
+    to the universal values $m_0$, $M_{1/2}$ and $A_0$:
+    \begin{align}
+      A^f(M_X) &= A_0 y_f(M_X) & &(f=u,d,e),\\
+      m_{H_i}^2(M_X) &= m_0^2 & &(i=1,2),\\
+      m_{f}^2(M_X) &= m_0^2\mathbf{1} & &(f=q,l,d,u,e),\\
+      M_{i}(M_X) &= M_{1/2} & &(i=1,2,3).
+    \end{align}\label{eq:fs-cmssm-high-scale-bc}%
   \end{enumerate}
-\item Run model parameters to the SUSY-scale (\code{SUSYScale})
+\item Run model parameters to the SUSY-scale (\code{SUSYScale}).
   \begin{enumerate}
-  \item Calculate the \DRbar\ mass spectrum
-  \item Recalculate the SUSY-scale
-  \item Apply the SUSY-scale constraint (\code{SUSYScaleInput})
-  \item Solve the EWSB eqs.\ at the loop level
+  \item Calculate the \DRbar\ mass spectrum.
+  \item Recalculate the SUSY-scale $M_S$ as
+    \begin{align}
+      M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}},
+    \end{align}
+    where $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the lightest and
+    heaviest up-type squarks, respectively.
+  \item Impose the SUSY-scale constraint (\code{SUSYScaleInput}).  In
+    the example above, this step is trivial since
+    \code{SUSYScaleInput} is set to be empty.
+  \item Solve the EWSB equations iteratively at the loop level.  In
+    the MSSM example from above leading two-loop corrections have been
+    enabled by setting \code{UseHiggs2LoopMSSM = True;}.  This will
+    add two-loop tadpole contributions to the effective Higgs
+    potential during the EWSB iteration.
   \end{enumerate}
-\item If not converged yet, goto \ref{rge-step-one}
+\item If not converged yet, goto \ref{rge-step-one}.  Otherwise,
+  finish the iteration.
 \end{enumerate}
 %
 If the fixed-point iteration has converged, all \DRbar\ model
@@ -1306,7 +1353,7 @@ input file, all model parameters are run to the defined output scale.
 %
 \begin{figure}[tbh]
   \centering
-  \begin{tikzpicture}[node distance = 2cm, auto]
+  \begin{tikzpicture}[node distance = 2.2cm, auto]
     \tikzstyle{block} = [rectangle, draw, text width=16em, text centered, minimum height=3em]
     \tikzstyle{arrow} = [draw, -latex, thick]
     \node[block] (guess) {Guess $g_i(M_Z)$, $y_f(M_Z)$ and soft
@@ -1323,7 +1370,7 @@ input file, all model parameters are run to the defined output scale.
     %\path[arrow] (MS.east) -| node {run to \code{LowScale}} (MZ.east);
     \path[-latex, thick] (MS.east) edge[bend right=90] node[right] {run to \code{LowScale}} (MZ.east);
     \node[block,below of=MS] (spec) {Calculate pole masses};
-    \path[arrow,dashed] (MS) -- node[text width=16em] {on convergence\\ run to \code{SUSYScale}} (spec);
+    \path[arrow,dashed] (MS) -- node[text width=16em] {if converged run to \code{SUSYScale}} (spec);
   \end{tikzpicture}
   \caption{Iterative two-scale algorithm to calculate the spectrum.}
   \label{fig:two-scale-algorithm}
