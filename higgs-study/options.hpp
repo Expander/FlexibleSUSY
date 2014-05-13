@@ -22,7 +22,9 @@ struct Options {
 
    double tanb_start, tanb_stop;
    double m0_start, m0_stop;
+   double tc_start, tc_stop;
    unsigned tanb_npoints;
+   unsigned tc_npoints;
    unsigned m0_npoints;
 };
 
@@ -92,6 +94,10 @@ void Options::reset()
    m0_start     = 0.;
    m0_stop      = 10000.;
    m0_npoints   = 10;
+
+   tc_start   = 0.;
+   tc_stop    = 1.;
+   tc_npoints = 50;
 }
 
 bool Options::starts_with(const std::string& str,
