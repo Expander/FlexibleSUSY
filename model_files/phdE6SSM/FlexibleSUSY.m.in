@@ -13,7 +13,8 @@ EXTPAR = { {61, LambdaInput},
            {62, KappaInput},
            {63, muPrimeInput},
            {64, BmuPrimeInput},
-           {65, vSInput}
+           {65, vSInput},
+           {100, tc}
          };
 
 DefaultParameterPoint = {
@@ -25,7 +26,8 @@ DefaultParameterPoint = {
     {KappaInput, 0.1},
     {muPrimeInput, 400},
     {BmuPrimeInput, 40000},
-    {vSInput, 1000}
+    {vSInput, 1000},
+    {tc, 0}
 };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };
@@ -40,7 +42,7 @@ SUSYScaleInput = {
    {vS, vSInput}
 };
 
-HighScale = g1 == g2;
+HighScale = g1 == g2 + tc;
 
 HighScaleFirstGuess = 1.0 10^16;
 

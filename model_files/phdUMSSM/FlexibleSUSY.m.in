@@ -9,6 +9,7 @@ MINPAR = { {1, m0},
 
 EXTPAR = { {61, LambdaInput},
            {65, vSInput},
+           {100, tc},
            {200, Qq},
            {201, Ql},
            {202, QHd},
@@ -26,6 +27,7 @@ DefaultParameterPoint = {
     {Azero, -500},
     {LambdaInput, 0.1},
     {vSInput, 1000},
+    {tc, 0},
     (* E6SSM inspired U(1)' charges *)
     {Qq ,  1 / Sqrt[40]},
     {Ql ,  2 / Sqrt[40]},
@@ -47,7 +49,7 @@ SUSYScaleInput = {
     {vS, vSInput}
 };
 
-HighScale = g1 == g2;
+HighScale = g1 == g2 + tc;
 
 HighScaleFirstGuess = 1.0 10^16;
 

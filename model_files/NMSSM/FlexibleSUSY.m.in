@@ -9,14 +9,17 @@ MINPAR = { {1, m0},
            {5, Azero}
          };
 
-EXTPAR = { {61, LambdaInput} };
+EXTPAR = { {61, LambdaInput},
+           {100, tc}
+};
 
 DefaultParameterPoint = {
     {m0, 200},
     {m12, 200},
     {TanBeta, 10},
     {Azero, -500},
-    {LambdaInput, 0.1}
+    {LambdaInput, 0.1},
+    {tc, 0}
 };
 
 EWSBOutputParameters = { \[Kappa], vS, ms2 };
@@ -27,7 +30,7 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {};
 
-HighScale = g1 == g2;
+HighScale = g1 == g2 + tc;
 
 HighScaleFirstGuess = 1.0 10^16;
 
