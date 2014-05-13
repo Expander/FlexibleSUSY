@@ -46,6 +46,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\unity}{\mathbf{1}}
 \newcommand{\figref}[1]{\figurename~\ref{#1}}
 \newcommand{\secref}[1]{Sec.~\ref{#1}}
+\newcommand{\tabref}[1]{\tablename~\ref{#1}}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\re}{Re}
@@ -1437,68 +1438,85 @@ E$_6$SSM\cite{King:2005jy}.
 
 \section{Run-time comparison with other spectrum generators}
 \label{Sec:comparison}
-We compare the run-time of five different CMSSM spectrum generators:
+
+One of \fs's design goals is a short run-time.  In this section we
+demonstrate that this goal was achieved by comparing the run-time of
+two different sets of CMSSM spectrum generators:
 %
 \begin{itemize}
-\item FlexibleSUSY-FV (version 1.0.0), which is based on SARAH's MSSM
-  model file that allows flavour violation,
-\item FlexibleSUSY-NoFV (version 1.0.0), without flavour violation
-\item Softsusy (version 3.4.0), without flavour violation
-\item SPheno (3.2.4), without flavour violation
-\item SPhenoMSSM (generated with SARAH 4.1.0 and linked against SPheno
-  3.2.4), which uses SARAH's MSSM model file that includes flavour
-  violation.
+\item \emph{Without flavour violation:} Disallowing flavour violation
+  simplifies the calculation of the pole masses, because
+  flavour-off-diagonal sfermion self-energy matrix elements don't need
+  to be calculated.  Here we compare \fs's non-flavour violating CMSSM
+  spectrum generator FlexibleSUSY-NoFV (version 1.0.0) against SPheno
+  (version 3.2.4) and Softsusy (version 3.4.0).
+%
+\item \emph{With flavour violation:} Allowing for flavour violation in
+  general increases the run-time of spectrum generators, because the
+  full $6\times 6$ sfermion self-energy matrices have to be
+  calculated.  Here we compare FlexibleSUSY-FV (version 1.0.0) and
+  SPhenoMSSM (generated with SARAH 4.1.0 and linked against SPheno
+  3.2.4).  Both spectrum generators are based on SARAH's MSSM model
+  file, which allows for flavour violation.
 \end{itemize}
 %
 FlexibleSUSY and Softsusy are compiled with g++ 4.8.0 and Intel ifort
 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel ifort
-13.1.3 20130607\footnote{We are using Intel's ifort compiler, instead
-  of gfortran, because it decreases the run-time of SPheno and
-  SPhenoMSSM by approximately a factor $1.5$.}.  We're generating
-$2\cdot 10^{4}$ random CMSSM parameter points with $m_0\in [50,1000]$
-$m_{1/2}\in [50,1000]$, $\tan\beta\in [1,100]$, $\sign\mu\in
-\{-1,+1\}$ and $A_0\in [-1000,1000]$.  For each point an SLHA input
+13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
+  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
+  compared to gfortran.}
+
+For the run-time comparison we're generating $2\cdot 10^{4}$ random
+CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
+[50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
+and $A_0\in [-1000,1000]\unit{GeV}$.  For each point an SLHA input
 file is created by appending the values of $m_0$, $m_{1/2}$,
 $\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
 SLHA template file given in \ref{sec:speed-test-slha-template-file}.
 The resulting SLHA input file is passed to each spectrum generator and
 the (wall-clock) time is measured until the program has finished.  The
 average run-times for three different CPU types can be found in
-\tablename~\ref{tab:run-time-comparison}.  The first column shows the
-run-time on a Intel Core2 Duo (P8600) where only one core was enabled.
-The second column shows the run-time on a Intel Core2 Duo (P8600)
+\tabref{tab:run-time-comparison}.  The first column shows the run-time
+on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
+enabled.  The second column shows the run-time on the same processor
 where both cores were enabled.  In the third column a Intel Xeon
-(L5640) was used, which has $6$ CPU cores.
+(L5640, $2.27\unit{GHz}$) was used, which has $6$ CPU cores.
 %
 \begin{table}[tbh]
   \centering
   \begin{tabular}{llll}
     \toprule
-                          & Intel Core2 Duo (P8600)    & Intel Core2 Duo (P8600)     & Intel Xeon (L5640)\\
-                          & (1 core, $2.40\unit{GHz}$) & (2 cores, $2.40\unit{GHz}$) & (6 cores, $2.27\unit{GHz}$)\\
+                            & Intel Core2 Duo    & Intel Core2 Duo   & Intel Xeon\\
+                            & (P8600, 1 core)    & (P8600, 2 cores)  & (L5640, 6 cores)\\
     \midrule
     FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
     SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
     Softsusy 3.4.0          & $0.175\unit{s}$    & $0.171\unit{s}$   & $0.147\unit{s}$\\
     \midrule
     FlexibleSUSY-FV 1.0.0   & $0.150\unit{s}$    & $0.113\unit{s}$   & $0.074\unit{s}$\\
-    SPhenoMSSM 4.1.0${}^*$  & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
+    SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
     \bottomrule
   \end{tabular}
   \caption{Average run-time of CMSSM spectrum generators for
-    for random parameter points.  The upper }
+    for random parameter points.  The first three rows show
+    spectrum generators which disallow flavour violation.  Rows
+    $4$--$5$ contain flavour violatig spectrum generators, based
+    on SARAH's MSSM model file.}
   \label{tab:run-time-comparison}
 \end{table}
 
-Under both the non-flavor violating spectrum generators
-FlexibleSUSY-NoFV, Softsusy and SPheno (first three rows) as well as
-the flavor violating ones FlexibleSUSY-NoFV and SPhenoMSSM (4th and
-5th row) we find that \fs is significantly fastest.  We also find that
-increasing the number of CPU cores reduces the run-time of \fs.  The
-reason is that \fs calculates each pole mass in a separate thread, and
-therefore benefits from multi-core CPUs.  Under the hand-written CMSSM
-spectrum generators SPheno and Softsusy we find that SPheno is fastest
-on average.
+Under both the non-flavour violating spectrum generators (first three
+rows) as well as the flavour violating ones (4th and 5th row) we find
+that \fs is significantly fastest.  Compared to SPheno,
+FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
+Softsusy around a factor $2$--$2.5$.  Under the flavour violating
+spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
+factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
+long calculation duration of the two-loop $\beta$-functions.  Here \fs
+benefits a lot from Eigen's well-optimizable matrix expressions.  We
+also find that increasing the number of CPU cores reduces the run-time
+of \fs.  The reason is that \fs calculates each pole mass in a
+separate thread, and therefore benefits from multi-core CPUs.
 
 \appendix
 \section{Examples}
