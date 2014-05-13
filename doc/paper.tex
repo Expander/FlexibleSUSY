@@ -1875,10 +1875,26 @@ DEFINITION[EWSB][MatterSector]=
 \end{enumerate}  
  
 \end{enumerate}   
-\section{Tests}
-Comparisons against existing spectrum generators to test for deviations, e.g. the tests against MSSM and NMSSM (and E6SSM?).
 
-Comparisons against existing spectrum generators and SARAH generated spheno code for speed.
+\section{Numeric tests}
+
+For checking the correctness of \fs's generated spectrum generators
+extensive unit tests against Softsusy's MSSM, and NMSSM
+implementations (both $Z_3$-invariant and $Z_3$-violating variants)
+were done: We checked mass matrices, EWSB equations, one- and two-loop
+$\beta$-functions, one- and two-loop self-energies and one- and
+two-loop tadpoles and found all to agree within double machine
+precision.  We also compared the overall pole mass spectrum after the
+full fixed-point iteration has finished, and found the spectra to
+agree at the sub-permille level.  Analytic tests of the $R$-symmetric
+low-energy model, MRSSM, were done by Philip Diessner and several bugs
+in \fs and SARAH were identified and fixed.
+
+TODO: Adding tests against the CE$_6$SSM?
+
+We also compared the run-time of \fs against SPheno, Softsusy and the
+SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
+can be found in \secref{Sec:comparison}.
 
 \section{Speed test SLHA input file}
 \label{sec:speed-test-slha-template-file}
