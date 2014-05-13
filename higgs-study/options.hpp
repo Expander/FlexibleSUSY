@@ -38,6 +38,9 @@ void Options::help(const std::string& program)
       "  --tanb_start=      tan(beta) start value (included)\n"
       "  --tanb_stop=       tan(beta) stop value (excluded)\n"
       "  --tanb_npoints=    tan(beta) number of points\n"
+      "  --tc_start=        thresh. corr. start value (included)\n"
+      "  --tc_stop=         thresh. corr. stop value (excluded)\n"
+      "  --tc_npoints=      thresh. corr. number of points\n"
       "  --m0_start=        m0 start value (included)\n"
       "  --m0_stop=         m0 stop value (excluded)\n"
       "  --m0_npoints=      m0 number of points\n"
@@ -58,18 +61,28 @@ void Options::parse(int argc, const char* argv[])
          kappa = atof(option.substr(8).c_str());
       } else if (starts_with(option,"--vs=")) {
          vs = atof(option.substr(5).c_str());
+
       } else if (starts_with(option,"--tanb-start=")) {
          tanb_start = atof(option.substr(13).c_str());
       } else if (starts_with(option,"--tanb-stop=")) {
          tanb_stop = atof(option.substr(12).c_str());
       } else if (starts_with(option,"--tanb-npoints=")) {
          tanb_npoints = atof(option.substr(15).c_str());
+
+      } else if (starts_with(option,"--tc-start=")) {
+         tc_start = atof(option.substr(11).c_str());
+      } else if (starts_with(option,"--tc-stop=")) {
+         tc_stop = atof(option.substr(10).c_str());
+      } else if (starts_with(option,"--tc-npoints=")) {
+         tc_npoints = atof(option.substr(13).c_str());
+
       } else if (starts_with(option,"--m0-start=")) {
          m0_start = atof(option.substr(11).c_str());
       } else if (starts_with(option,"--m0-stop=")) {
          m0_stop = atof(option.substr(10).c_str());
       } else if (starts_with(option,"--m0-npoints=")) {
          m0_npoints = atof(option.substr(13).c_str());
+
       } else if (option == "--help" || option == "-h") {
          help(program);
          exit(EXIT_SUCCESS);
@@ -96,8 +109,8 @@ void Options::reset()
    m0_npoints   = 10;
 
    tc_start   = 0.;
-   tc_stop    = 1.;
-   tc_npoints = 50;
+   tc_stop    = 0.05;
+   tc_npoints = 10;
 }
 
 bool Options::starts_with(const std::string& str,
