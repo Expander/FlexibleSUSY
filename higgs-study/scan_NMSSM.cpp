@@ -54,7 +54,7 @@ int main(int argc, const char* argv[])
    input.m0 = 5000.;
    input.m12 = 5000.;
    input.TanBeta = 10.;
-   input.Azero = -5000.;
+   input.Azero = options.a0;
    input.LambdaInput = options.lambda;
    input.SignvS = 1;
 
