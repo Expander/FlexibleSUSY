@@ -16,6 +16,7 @@ struct Options {
    void reset();
    static bool starts_with(const std::string&, const std::string&);
 
+   double a0;
    double lambda;
    double kappa;
    double vs;
@@ -32,6 +33,7 @@ void Options::help(const std::string& program)
 {
    std::cout << "Usage: " << program << " [options]\n"
       "Options:\n"
+      "  --a0=              triliear universal parameter\n"
       "  --lambda=          superpotential parameter in the UMSSM and E6SSM\n"
       "  --kappa=           superpotential parameter in the E6SSM\n"
       "  --vs=              singlet VEV\n"
@@ -55,7 +57,9 @@ void Options::parse(int argc, const char* argv[])
 
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
-      if (starts_with(option,"--lambda=")) {
+      if (starts_with(option,"--a0=")) {
+         a0 = atof(option.substr(5).c_str());
+      } else if (starts_with(option,"--lambda=")) {
          lambda = atof(option.substr(9).c_str());
       } else if (starts_with(option,"--kappa=")) {
          kappa = atof(option.substr(8).c_str());
@@ -96,6 +100,7 @@ void Options::parse(int argc, const char* argv[])
 
 void Options::reset()
 {
+   a0 = 5000;
    lambda = 0.1;
    kappa = 0.1;
    vs = 10000.;
