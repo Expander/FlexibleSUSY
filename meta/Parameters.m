@@ -68,6 +68,8 @@ given description string.";
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
 
+ClearPhases::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -680,6 +682,13 @@ GetParameterFromDescription[description_String] :=
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
+
+ClearPhase[phase_] :=
+    CConversion`ToValidCSymbolString[phase] <> " = " <>
+    CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(1.,0.);\n";
+
+ClearPhases[phases_List] :=
+    StringJoin[ClearPhase /@ phases];
 
 End[];
 
