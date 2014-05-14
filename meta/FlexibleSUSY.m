@@ -463,6 +463,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             masses, mixingMatrices, oneLoopTadpoles,
             dependenceNumPrototypes, dependenceNumFunctions,
             clearOutputParameters = "", solveEwsbTreeLevel = "",
+            clearPhases = "",
             saveEwsbOutputParameters, restoreEwsbOutputParameters,
             softScalarMasses, softHiggsMasses,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
@@ -486,6 +487,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
+           clearPhases = Parameters`ClearPhases[phases];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
            tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquations];
@@ -560,6 +562,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
+                            "@clearPhases@"            -> IndentText[clearPhases],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],

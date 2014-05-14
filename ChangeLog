@@ -20,6 +20,8 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Bugfix (commit 3fd2699): Correcting the determination of the number
    of EWSB eqs. in case of CP violating models.
 
+ * Bugfix (commit ): Reset fermion phases when clear() is called.
+
  * Set minimum required SARAH version to 4.0.4, because it implements
    the full two-loop VEV beta functions from arXiv:1310.7629 .
 
