@@ -70,6 +70,7 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 
 void @ModelName@_susy_parameters::clear()
 {
+   reset();
 @clearParameters@
 }
 
