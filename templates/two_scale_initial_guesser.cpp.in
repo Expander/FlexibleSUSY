@@ -56,6 +56,7 @@ namespace flexiblesusy {
    , me_guess(0.)
    , mm_guess(0.)
    , mtau_guess(0.)
+   , running_precision(1.0e-3)
    , low_constraint(low_constraint_)
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
@@ -147,7 +148,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
    const double low_scale_guess = low_constraint.get_initial_scale_guess();
    const double high_scale_guess = high_constraint.get_initial_scale_guess();
 
-   model->run_to(high_scale_guess);
+   model->run_to(high_scale_guess, running_precision);
 
    // apply high-scale constraint
    high_constraint.set_model(model);
@@ -156,7 +157,7 @@ void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
    // apply user-defined initial guess at the high scale
 @initialGuessAtHighScale@
 
-   model->run_to(low_scale_guess);
+   model->run_to(low_scale_guess, running_precision);
 
    // apply EWSB constraint
    model->solve_ewsb_tree_level();
