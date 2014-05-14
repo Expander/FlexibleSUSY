@@ -22,9 +22,9 @@ scan_NMSSM() {
     lambda="$1"
     azero="$2"
 
-    echo "scanning NMSSM (lambda=${lambda}) ... "
+    echo "scanning NMSSM (lambda=${lambda}, a0=${azero}) ... "
     ${make_nice} ./higgs-study/scan_NMSSM.x --lambda=${lambda} --tanb-npoints=${tanb_npoints} --m0-npoints=${m0_npoints} --a0=${azero} > ${output_dir}/scan_NMSSM_lambda-${lambda}-a0-${azero}.dat
-    echo "done NMSSM (lambda=${lambda})"
+    echo "done NMSSM (lambda=${lambda}, a0=${azero})"
 }
 
 scan_phdUMSSM() {
