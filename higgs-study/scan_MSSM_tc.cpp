@@ -41,7 +41,7 @@ int main(int argc, const char* argv[])
    oneset.toMz();
 
    MSSM_spectrum_generator<algorithm_type> spectrum_generator;
-   spectrum_generator.set_precision_goal(1.0e-4);
+   spectrum_generator.set_precision_goal(1.0e-3);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
