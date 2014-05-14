@@ -46,7 +46,7 @@ namespace flexiblesusy {
  * class MSSM_parameter_getter {
  * public:
  *    Eigen::ArrayXd get_parameters(const MSSM& model) {
- *       return model.display();
+ *       return model.get();
  *    }
  *    std::vector<std::string> get_parameter_names(const MSSM& model) const {
  *       return model.get_parameter_names();

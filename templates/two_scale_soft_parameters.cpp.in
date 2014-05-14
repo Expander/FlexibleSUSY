@@ -47,7 +47,7 @@ namespace flexiblesusy {
 
 Eigen::ArrayXd @ModelName@_soft_parameters::beta() const
 {
-   return calc_beta().display();
+   return calc_beta().get();
 }
 
 @ModelName@_soft_parameters @ModelName@_soft_parameters::calc_beta() const
@@ -69,9 +69,9 @@ void @ModelName@_soft_parameters::clear()
 @clearParameters@
 }
 
-const Eigen::ArrayXd @ModelName@_soft_parameters::display() const
+const Eigen::ArrayXd @ModelName@_soft_parameters::get() const
 {
-   Eigen::ArrayXd pars(@ModelName@_susy_parameters::display());
+   Eigen::ArrayXd pars(@ModelName@_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);
 
 @display@

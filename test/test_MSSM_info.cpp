@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_parameter_enum )
 {
    // This test checks that the order of the enum entries
    // MSSM_info::Parameters matches the order of the parameters in the
-   // model class (as used in the set() and display() functions).
+   // model class (as used in the set() and get() functions).
    //
    // If this test works, then the user can fill a parameter vector
    // using the enum entries and then set all model parameters at once

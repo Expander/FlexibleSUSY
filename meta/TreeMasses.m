@@ -115,6 +115,8 @@ and removes Delta with the given indices";
 CreateThirdGenerationHelpers::usage="";
 CallThirdGenerationHelperFunctionName::usage="";
 
+GetThirdGenerationMass::usage;
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -1076,6 +1078,16 @@ CreateThirdGenerationHelpers[] :=
                         CreateThirdGenerationHelperPrototype[SARAH`Neutrino] <>
                         CreateThirdGenerationHelperPrototype[SARAH`Electron];
            {prototypes, functions}
+          ];
+
+GetThirdGenerationMass[fermion_] :=
+    Module[{dim, mass},
+           dim = GetDimension[fermion];
+           If[dim == 1,
+              mass = FlexibleSUSY`M[fermion];,
+              mass = FlexibleSUSY`M[fermion][dim - 1];
+             ];
+           Return[mass];
           ];
 
 End[];

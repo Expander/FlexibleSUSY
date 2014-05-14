@@ -3,7 +3,7 @@ BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`",
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 FS`Authors = {"P. Athron", "J. Park", "D. Stöckinger", "A. Voigt"};
-FS`Years   = {2013};
+FS`Years   = {2013, 2014};
 
 Print["*****************************************************"];
 Print["FlexibleSUSY ", FS`Version];
@@ -23,27 +23,27 @@ FSModelName;
 FSLesHouchesList;
 FSUnfixedParameters;
 InputParameters;
-DefaultParameterPoint;
-EWSBOutputParameters;
+DefaultParameterPoint = {};
+EWSBOutputParameters = {};
 SUSYScale;
 SUSYScaleFirstGuess;
-SUSYScaleInput;
+SUSYScaleInput = {};
 SUSYScaleMinimum;
 SUSYScaleMaximum;
 HighScale;
 HighScaleFirstGuess;
-HighScaleInput;
+HighScaleInput = {};
 HighScaleMinimum;
 HighScaleMaximum;
 LowScale;
 LowScaleFirstGuess;
-LowScaleInput;
+LowScaleInput = {};
 LowScaleMinimum;
 LowScaleMaximum;
-InitialGuessAtLowScale;
-InitialGuessAtHighScale;
-OnlyLowEnergyFlexibleSUSY;
-TreeLevelEWSBSolution;
+InitialGuessAtLowScale = {};
+InitialGuessAtHighScale = {};
+OnlyLowEnergyFlexibleSUSY = False;
+TreeLevelEWSBSolution = {};
 Pole;
 FSMinimize;
 FSFindRoot;
@@ -53,6 +53,7 @@ MWDRbar;
 EDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
+PotentialLSPParticles = {};
 
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
@@ -138,13 +139,17 @@ CheckModelFileSettings[] :=
              ];
            (* HighScale *)
            If[!ValueQ[FlexibleSUSY`HighScale],
-              Print["Warning: FlexibleSUSY`HighScale should be",
-                    " set in the model file!"];
+              If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 Print["Warning: FlexibleSUSY`HighScale should be",
+                       " set in the model file!"];
+                ];
               FlexibleSUSY`HighScale := SARAH`hyperchargeCoupling == SARAH`leftCoupling;
              ];
            If[!ValueQ[FlexibleSUSY`HighScaleFirstGuess],
-              Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
-                    " set in the model file!"];
+              If[!FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
+                 Print["Warning: FlexibleSUSY`HighScaleFirstGuess should be",
+                       " set in the model file!"];
+                ];
               FlexibleSUSY`HighScaleFirstGuess = 2.0 10^16;
              ];
            If[Head[FlexibleSUSY`HighScaleInput] =!= List,
@@ -465,6 +470,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             copyDRbarMassesToPoleMasses = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
+            lspGetters = "", lspFunctions = "",
             enablePoleMassThreads = True
            },
            For[k = 1, k <= Length[massMatrices], k++,
@@ -525,6 +531,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            enablePoleMassThreads = True;
            callAllLoopMassFunctionsInThreads = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            masses                       = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
+           {lspGetters, lspFunctions}   = LoopMasses`CreateLSPFunctions[FlexibleSUSY`PotentialLSPParticles];
            printMasses                  = WriteOut`PrintParameters[masses, "ostr"];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
@@ -542,7 +549,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
            WriteOut`ReplaceInFiles[files,
-                          { "@massGetters@"          -> IndentText[massGetters],
+                          { "@lspGetters@"           -> IndentText[lspGetters],
+                            "@lspFunctions@"         -> lspFunctions,
+                            "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,

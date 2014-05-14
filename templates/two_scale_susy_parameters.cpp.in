@@ -54,7 +54,7 @@ namespace flexiblesusy {
 
 Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
-   return calc_beta().display();
+   return calc_beta().get();
 }
 
 @ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
@@ -70,12 +70,13 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 
 void @ModelName@_susy_parameters::clear()
 {
+   reset();
 @clearParameters@
 }
 
 @anomDimFunctions@
 
-const Eigen::ArrayXd @ModelName@_susy_parameters::display() const
+const Eigen::ArrayXd @ModelName@_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 

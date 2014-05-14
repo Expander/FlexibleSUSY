@@ -1,5 +1,5 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
@@ -59,9 +59,10 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
           ];
 
 CalculateDeltaAlphaEm[] :=
-    Module[{result, deltaSusy, deltaSM, prefactor},
+    Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
+           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaEm / (2 Pi);
-           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][2]/Global`currentScale]];
+           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateDRbarElectromagneticCoupling[];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
@@ -73,9 +74,10 @@ CalculateDeltaAlphaEm[] :=
           ];
 
 CalculateDeltaAlphaS[] :=
-    Module[{result, deltaSusy, deltaSM, prefactor},
+    Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
+           topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaS / (2 Pi);
-           deltaSM = - 2/3 Global`FiniteLog[Abs[FlexibleSUSY`M[SARAH`TopQuark][2]/Global`currentScale]];
+           deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateDRbarColorCoupling[];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_s_SM = " <>
@@ -112,6 +114,8 @@ ExtractSymbols[expr_Times] := Flatten[ExtractSymbols /@ (List @@ expr)];
 ExtractSymbols[sym_[_,_]] := {sym};
 
 ToMatrixExpression[{}] := Null;
+
+ToMatrixExpression[expr_ /; Head[expr] =!= List] := expr;
 
 ToMatrixExpression[list_List] :=
     Module[{dim, symbol, matrix, i, k, diag, expression = Null,
@@ -163,6 +167,9 @@ InvertRelation[FlexibleSUSY`Diag[sym_], expr_, sym_] :=
 InvertRelation[sym_, expr_, sym_] :=
     {sym, expr};
 
+InvertRelation[sym_[i1_,i2_], expr_, sym_] :=
+    {sym[i1,i2], expr};
+
 (* remove matrices from the left *)
 InvertRelation[SARAH`MatMul[SARAH`Adj[U_],X___,sym_,V___], expr_, sym_] :=
     InvertRelation[SARAH`MatMul[X,sym,V], SARAH`MatMul[U,expr], sym];
@@ -189,7 +196,13 @@ InvertRelation[sym_, expr_, other_] :=
 
 InvertMassRelation[fermion_, yukawa_] :=
     Module[{massMatrix, polynom, prefactor, matrixExpression, dim},
-           massMatrix = SARAH`MassMatrix[fermion];
+           If[TreeMasses`IsUnmixed[fermion],
+              massMatrix = TreeMasses`GetMassOfUnmixedParticle[fermion];
+              massMatrix = TreeMasses`ReplaceDependencies[massMatrix];
+              massMatrix = Vertices`StripGroupStructure[massMatrix, {SARAH`ct1, SARAH`ct2}];
+              ,
+              massMatrix = SARAH`MassMatrix[fermion];
+             ];
            dim = Length[massMatrix];
            If[massMatrix === Table[0, {i,1,dim}, {k,1,dim}],
               Return[{yukawa,FlexibleSUSY`ZEROMATRIX[dim,dim]}];

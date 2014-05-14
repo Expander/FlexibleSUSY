@@ -39,7 +39,7 @@ public:
       set_number_of_parameters(10);
    }
    virtual ~Eigen_model() {}
-   virtual const Eigen::ArrayXd display() const { return pars; }
+   virtual const Eigen::ArrayXd get() const { return pars; }
    virtual void set(const Eigen::ArrayXd& s) { pars = s; }
    virtual Eigen::ArrayXd beta() const {
       Eigen::ArrayXd beta(pars.size());
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_running )
    rge.set(pars);
    eig.set(ToEigenArray(pars));
 
-   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.get()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
    BOOST_CHECK_EQUAL(rge.howMany(), eig.get_number_of_parameters());
 
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_running )
    }
 
    BOOST_CHECK_EQUAL(status_rge, status_beta);
-   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.get()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
 }
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_custom_precision )
    rge.set(pars);
    eig.set(ToEigenArray(pars));
 
-   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.get()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
    BOOST_CHECK_EQUAL(rge.howMany(), eig.get_number_of_parameters());
 
@@ -101,6 +101,6 @@ BOOST_AUTO_TEST_CASE( test_custom_precision )
    rge.runto(1.0e10, custom_precision);
    eig.run_to(1.0e10, custom_precision);
 
-   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.display()));
+   BOOST_CHECK_EQUAL(rge.display(), ToDoubleVector(eig.get()));
    BOOST_CHECK_EQUAL(rge.displayMu(), eig.get_scale());
 }

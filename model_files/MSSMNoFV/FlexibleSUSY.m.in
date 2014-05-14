@@ -1,13 +1,15 @@
 
 FSModelName = "@CLASSNAME@";
 
-(* input parameters *)
+(* CMSSM input parameters *)
 
-MINPAR = { {1, m0},
-           {2, m12},
-           {3, TanBeta},
-           {4, Sign[\[Mu]]},
-           {5, Azero} };
+MINPAR = {
+    {1, m0},
+    {2, m12},
+    {3, TanBeta},
+    {4, Sign[\[Mu]]},
+    {5, Azero}
+};
 
 DefaultParameterPoint = {
     {m0, 125},
@@ -19,7 +21,7 @@ DefaultParameterPoint = {
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
-SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScale = Sqrt[M[St[1]]*M[St[2]]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
@@ -29,7 +31,7 @@ HighScale = g1 == g2;
 
 HighScaleFirstGuess = 2.0 10^16;
 
-HighScaleInput={
+HighScaleInput = {
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
    {T[Yu], Azero*Yu},
@@ -60,15 +62,30 @@ LowScaleInput = {
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
-   {\[Mu]   , SM[MZ]},
-   {B[\[Mu]], SM[MZ]^2},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
 };
 
-InitialGuessAtHighScale = {};
+InitialGuessAtHighScale = {
+   {\[Mu]   , 1.0},
+   {B[\[Mu]], 0.0}
+};
 
-UseHiggs2LoopMSSM = False;
+UseHiggs2LoopMSSM = True;
+EffectiveMu = \[Mu];
 
-PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+TopQuark    = Ft;
+BottomQuark = Fb;
+Neutrino    = Fvt;
+Electron    = Ftau;
+
+SMParticles = {
+    VectorP, VectorZ, VectorG, VectorW,
+    Fu, Fd, Fc, Fs, Ft, Fb, Fe, Fm, Ftau, Fve, Fvm, Fvt
+};
+
+SA`Casimir[Ss, SARAH`color] = 4/3;
+SA`Casimir[Sc, SARAH`color] = 4/3;
+SA`Casimir[Sb, SARAH`color] = 4/3;
+SA`Casimir[St, SARAH`color] = 4/3;
