@@ -423,8 +423,52 @@ it.  The resulting executable can be run like this:
 $ ./models/MSSM/run_MSSM.x
 \end{lstlisting}%% $
 %
-An SLHA input file can be given via the \code{--slha-input-file=}
-option, for example:
+When executed, the spectrum generator tries to find a set of \DRbar\
+model parameters consistent with all CMSSM boundary conditions for the
+default parameter point.  Afterwards, the pole mass spectrum and
+mixing matrices are calculated and written to the command line in SLHA
+format \cite{Skands:2003cj,Allanach:2008qq}.  For the default
+parameter point the calculated pole mass spectrum reads
+%
+\begin{lstlisting}
+Block MASS
+   1000021     1.15236980E+03   # Glu
+   1000024     3.85774164E+02   # Cha_1
+   1000037     6.50457634E+02   # Cha_2
+        25     1.14751169E+02   # hh_1
+        35     7.06790308E+02   # hh_2
+        37     7.11386171E+02   # Hpm_2
+        36     7.06520770E+02   # Ah_2
+   1000012     3.51856408E+02   # Sv_1
+   1000014     3.53042587E+02   # Sv_2
+   1000016     3.53046535E+02   # Sv_3
+   1000022     2.03889708E+02   # Chi_1
+   1000023     3.85760548E+02   # Chi_2
+   1000025     6.36542302E+02   # Chi_3
+   1000035     6.50131337E+02   # Chi_4
+   1000001     9.66656167E+02   # Sd_1
+   1000003     1.00983192E+03   # Sd_2
+   1000005     1.01651888E+03   # Sd_3
+   2000001     1.01653020E+03   # Sd_4
+   2000003     1.06089549E+03   # Sd_5
+   2000005     1.06090253E+03   # Sd_6
+   1000011     2.22570345E+02   # Se_1
+   1000013     2.29864547E+02   # Se_2
+   1000015     2.29888857E+02   # Se_3
+   2000011     3.61946702E+02   # Se_4
+   2000013     3.61950896E+02   # Se_5
+   2000015     3.63136044E+02   # Se_6
+   1000002     8.09787908E+02   # Su_1
+   1000004     1.01454208E+03   # Su_2
+   1000006     1.01981123E+03   # Su_3
+   2000002     1.02015283E+03   # Su_4
+   2000004     1.05807774E+03   # Su_5
+   2000006     1.05808183E+03   # Su_6
+\end{lstlisting}
+%
+To calculate the mass spectrum for a user-defined parameter point, the
+CMSSM input parameters can be given in form of a SLHA input file via
+the \code{--slha-input-file=} option, for example:
 %
 \begin{lstlisting}[language=bash]
 $ ./models/MSSM/run_MSSM.x \
