@@ -38,6 +38,7 @@ public:
       calculate_sm_masses,  ///< calculate Standard Model pole masses
       pole_mass_loop_order, ///< loop-order for calculation of pole masses
       ewsb_loop_order,      ///< loop-order for solving the EWSB eqs.
+      beta_loop_order,      ///< loop-order of beta-functions
       NUMBER_OF_OPTIONS     ///< number of possible options
    };
 

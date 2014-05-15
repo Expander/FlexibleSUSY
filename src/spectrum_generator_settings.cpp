@@ -56,6 +56,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | calculate_sm_masses  | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
  * | ewsb_loop_order      | 0, 1, 2                      | 2 (= 2-loop)    |
+ * | beta_loop_order      | 0, 1, 2                      | 2 (= 2-loop)    |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -65,6 +66,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_sm_masses]  = 0.; // 0 = false
    values[pole_mass_loop_order] = 2.;
    values[ewsb_loop_order]      = 2.;
+   values[beta_loop_order]      = 2.;
 }
 
 } // namespace flexiblesusy
