@@ -20,6 +20,7 @@ Block FlexibleSUSY
     4   2                    # pole mass loop order
     5   2                    # EWSB loop order
     6   2                    # beta-functions loop order
+    7   1                    # threshold corrections (0 = disabled, 1 = enabled)
 Block SPhenoInput         # SPheno specific input
     1 -1          # error level
     2  1          # SPA conventions

@@ -52,6 +52,7 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
+   , threshold_corrections(1)
 {
 @scaleGuess@
    scale = initial_scale_guess;
@@ -142,8 +143,13 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
 
-   const double delta_alpha_em = calculate_delta_alpha_em(alpha_em);
-   const double delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
+   double delta_alpha_em = 0.;
+   double delta_alpha_s  = 0.;
+
+   if (model->get_thresholds()) {
+      delta_alpha_em = calculate_delta_alpha_em(alpha_em);
+      delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
+   }
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
    const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
@@ -184,7 +190,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
    topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
+   topDRbar(2,2)      = oneset.displayMass(mTop);
+
+   if (model->get_thresholds())
+      topDRbar(2,2) = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
 
 @setDRbarUpQuarkYukawaCouplings@
 }
@@ -194,7 +203,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
    bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = model->calculate_M@BottomQuark@_DRbar(oneset.displayMass(mBottom), 2);
+   bottomDRbar(2,2)   = oneset.displayMass(mBottom);
+
+   if (model->get_thresholds())
+      bottomDRbar(2,2) = model->calculate_M@BottomQuark@_DRbar(oneset.displayMass(mBottom), 2);
 
 @setDRbarDownQuarkYukawaCouplings@
 }
@@ -204,7 +216,10 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    electronDRbar(0,0) = oneset.displayMass(mElectron);
    electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
+   electronDRbar(2,2) = oneset.displayMass(mTau);
+
+   if (model->get_thresholds())
+      electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarElectronYukawaCouplings@
 }
