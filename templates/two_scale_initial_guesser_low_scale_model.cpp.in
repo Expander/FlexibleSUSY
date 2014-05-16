@@ -97,7 +97,6 @@ void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
    model->set_@leftCoupling@(sqrt(4.0 * M_PI * alpha_sm(2)));
    model->set_@strongCoupling@(sqrt(4.0 * M_PI * alpha_sm(3)));
    model->set_scale(mtpole);
-   model->set_loops(2);
 
    // apply user-defined initial guess at the low scale
 @initialGuessAtLowScale@
