@@ -58,6 +58,10 @@ FlexibleSUSY-0.5.4 [not released yet]
 
  * Create helper function to find the LSP.
 
+ * Allow to select beta-function loop order in the SLHA input file.
+
+ * Allow disable/enable threshold corrections in the SLHA input file.
+
 FlexibleSUSY-0.5.3 [January, 21 2014]
 
  * Bugfix (commit 44903c): correcting malformed print out in
