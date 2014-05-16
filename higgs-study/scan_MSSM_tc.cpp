@@ -18,8 +18,8 @@
 
 // File generated at Sun 27 Apr 2014 19:19:50
 
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_spectrum_generator.hpp"
+#include "MSSMNoFV_input_parameters.hpp"
+#include "MSSMNoFV_spectrum_generator.hpp"
 
 #include "error.hpp"
 #include "scan.hpp"
@@ -36,15 +36,19 @@ int main(int argc, const char* argv[])
 
    Options options(argc, argv);
 
-   MSSM_input_parameters input;
+   MSSMNoFV_input_parameters input;
    QedQcd oneset;
    oneset.toMz();
 
-   MSSM_spectrum_generator<algorithm_type> spectrum_generator;
+   MSSMNoFV_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-3);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
+
+   const unsigned loop_order = 2;
+   spectrum_generator.set_pole_mass_loop_order(loop_order);
+   spectrum_generator.set_ewsb_loop_order(loop_order);
 
    const std::vector<double> range_TanBeta(
       float_range(options.tanb_start, options.tanb_stop, options.tanb_npoints));
@@ -57,7 +61,7 @@ int main(int argc, const char* argv[])
    input.Azero = 5000.;
    input.SignMu = 1;
 
-   cout << "# MSSM with "
+   cout << "# MSSMNoFV with "
         << "Azero = " << input.Azero
         << ", m0 = " << input.m0
         << ", m12 = " << input.m12
@@ -84,9 +88,9 @@ int main(int argc, const char* argv[])
 
          spectrum_generator.run(oneset, input);
 
-         const MSSM<algorithm_type>& model = spectrum_generator.get_model();
-         const MSSM_physical& pole_masses = model.get_physical();
-         const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
+         const MSSMNoFV<algorithm_type>& model = spectrum_generator.get_model();
+         const MSSMNoFV_physical& pole_masses = model.get_physical();
+         const Problems<MSSMNoFV_info::NUMBER_OF_PARTICLES>& problems
             = spectrum_generator.get_problems();
          const double higgs = pole_masses.Mhh(0);
          const bool error = problems.have_serious_problem();
