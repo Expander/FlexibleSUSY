@@ -46,6 +46,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
    NMSSM<Two_scale> m;
+   m.set_thresholds(1);
    NmssmSoftsusy s;
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons

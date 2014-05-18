@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
    softsusy::TOLERANCE = 1.0e-3;
    NMSSM<Two_scale> m;
+   m.set_loops(2);
    SoftsusyNMSSM<Two_scale> snmssm;
 
    // create NMSSM initial guesser

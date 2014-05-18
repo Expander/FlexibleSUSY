@@ -144,6 +144,8 @@ public:
       Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.clear();
+      mssm.set_loops(2);
+      mssm.set_thresholds(1);
       mssm.set_ewsb_loop_order(1);
       mssm.set_pole_mass_loop_order(1);
       mssm.set_input(pp);
