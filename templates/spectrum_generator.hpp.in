@@ -161,6 +161,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       low_scale  = low_scale_constraint.get_scale();
 
       model.run_to(susy_scale);
+      model.solve_ewsb();
       model.calculate_spectrum();
 
       // run to output scale (if scale > 0)
