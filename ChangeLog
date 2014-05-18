@@ -25,6 +25,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Bugfix (commit faa0fb6): adding boost include directory to CPPFLAGS
    in the src module.
 
+ * Bugfix (commit ac8e38e): impose EWSB before calculating the
+   spectrum.
+
  * Set minimum required SARAH version to 4.0.4, because it implements
    the full two-loop VEV beta functions from arXiv:1310.7629 .
 
