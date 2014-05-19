@@ -5,6 +5,9 @@ if (!exists("filename")) filename='higgs-study/data/tc/scan_MSSM_tc.dat'
 outputfilename=system("echo '".filename."' | sed 's/\\./_/g' ")
 outputtexfilename=outputfilename.".tex"
 
+outputMXfilename=system("echo '".filename."' | sed 's/\\./_MX_/g' ")
+outputMXtexfilename=outputMXfilename.".tex"
+
 set output outputtexfilename
 
 set title ""
@@ -24,12 +27,30 @@ set key box bottom right width 1
 
 plot "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 5$' , \
      "<awk '{ if ($1 == 10 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 10$', \
-     "<awk '{ if ($1 == 15 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 15$', \
      "<awk '{ if ($1 == 20 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 20$', \
-     "<awk '{ if ($1 == 25 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 25$', \
-     "<awk '{ if ($1 == 30 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 30$'
+     "<awk '{ if ($1 == 30 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 30$', \
+     "<awk '{ if ($1 == 40 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 40$'
+
+     # "<awk '{ if ($1 == 25 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 25$', \
+     # "<awk '{ if ($1 == 15 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 15$', \
 
 set output
 
 system "epstopdf ".outputfilename."-inc.eps"
 system "pdflatex ".outputtexfilename
+
+### plot MX
+
+set output outputMXtexfilename
+unset key
+set ylabel '$M_X$ / GeV'
+set logscale y 10
+set mytics 10
+set format y '$10^{%L}$'
+
+plot "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:5 title '' pointtype 5
+
+set output
+
+system "epstopdf ".outputMXfilename."-inc.eps"
+system "pdflatex ".outputMXtexfilename
