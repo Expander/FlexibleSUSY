@@ -1,23 +1,23 @@
 set terminal epslatex standalone size 15cm,10cm header "\\usepackage{amsmath}"
 
-outputfilename=system("echo '".filename."' | sed 's/\\./_/g' ")
+outputfilename=system("echo 'tc_gcu' | sed 's/\\./_/g' ")
 outputtexfilename=outputfilename.".tex"
 
 set output outputtexfilename
 
 set title ""
-set key box bottom right
+set key box top left width -2 height 0.5 spacing 1.5
 set xlabel "renormalization scale / GeV"
 set logscale x
 set format x '$10^{%L}$'
 set format y '$%3.2f$'
 set mxtics 10
 
-# plot for [i=2:111+1] filename using 1:(column(i)) title columnhead(i)
-
 plot [:] \
-     filename using 1:(column(g1column)) title columnhead(g1column) pointtype 4, \
-     filename using 1:(column(g2column)) title columnhead(g2column) pointtype 5
+     filename1 using 1:(column(file1g1column)) title '$g_1^\text{MSSM}$' with lines linewidth 3 linetype 1, \
+     filename1 using 1:(column(file1g2column)) title '$g_2^\text{MSSM}$' with lines linewidth 3 linetype 2, \
+     filename2 using 1:(column(file2g1column)) title '$g_1^\text{E$_6$SSM}$' with lines linewidth 3 linetype 5, \
+     filename2 using 1:(column(file2g2column)) title '$g_2^\text{E$_6$SSM}$' with lines linewidth 3 linetype 4
 
 set output
 
