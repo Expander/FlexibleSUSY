@@ -78,7 +78,8 @@ int main(int argc, const char* argv[])
         << std::setw(12) << std::left << "TanBeta" << ' '
         << std::setw(12) << std::left << "tc" << ' '
         << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
-        << std::setw(12) << std::left << "error"
+        << std::setw(12) << std::left << "error" << ' '
+        << std::setw(12) << std::left << "MX/GeV" << ' '
         << '\n';
 
    for (auto tanBeta : range_TanBeta) {
@@ -99,7 +100,9 @@ int main(int argc, const char* argv[])
               << std::setw(12) << std::left << input.TanBeta << ' '
               << std::setw(12) << std::left << input.tc << ' '
               << std::setw(12) << std::left << higgs << ' '
-              << std::setw(12) << std::left << error;
+              << std::setw(12) << std::left << error << ' '
+              << std::setw(12) << std::left << spectrum_generator.get_high_scale()
+            ;
          if (error) {
             cout << "\t# " << problems;
          }
