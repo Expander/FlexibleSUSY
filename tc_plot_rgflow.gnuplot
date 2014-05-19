@@ -10,7 +10,7 @@ set key box top left width -2 height 0.5 spacing 1.5
 set xlabel "renormalization scale / GeV"
 set logscale x
 set format x '$10^{%L}$'
-set format y '$%3.2f$'
+set format y '$%2.1f$'
 set mxtics 10
 
 plot [:] \
