@@ -15,9 +15,9 @@ set mxtics 10
 
 # plot for [i=2:111+1] filename using 1:(column(i)) title columnhead(i)
 
-plot [1.e15:1.e17] \
-     filename using 1:(column(30)) title columnhead(30) pointtype 4, \
-     filename using 1:(column(31)) title columnhead(31) pointtype 5
+plot [:] \
+     filename using 1:(column(g1column)) title columnhead(g1column) pointtype 4, \
+     filename using 1:(column(g2column)) title columnhead(g2column) pointtype 5
 
 set output
 
