@@ -41,6 +41,14 @@ SCAN_phdE6SSM_DEP := $(SCAN_phdE6SSM_SRC:.cpp=.d)
 SCAN_phdE6SSM_OBJ := $(SCAN_phdE6SSM_SRC:.cpp=.o)
 SCAN_phdE6SSM_EXE := $(SCAN_phdE6SSM_SRC:.cpp=.x)
 
+SCAN_phdE6SSM_TC_SRC :=
+ifeq ($(shell $(FSCONFIG) --with-phdE6SSM),yes)
+SCAN_phdE6SSM_TC_SRC := $(DIR)/scan_E6SSM_tc.cpp
+endif
+SCAN_phdE6SSM_TC_DEP := $(SCAN_phdE6SSM_TC_SRC:.cpp=.d)
+SCAN_phdE6SSM_TC_OBJ := $(SCAN_phdE6SSM_TC_SRC:.cpp=.o)
+SCAN_phdE6SSM_TC_EXE := $(SCAN_phdE6SSM_TC_SRC:.cpp=.x)
+
 SCAN_NMSSMNoUni_SRC :=
 ifeq ($(shell $(FSCONFIG) --with-NMSSMNoUni --with-NMSSM),yes yes)
 SCAN_NMSSMNoUni_SRC := $(DIR)/scan_NMSSM_Alambda.cpp
@@ -54,6 +62,7 @@ ALLHIGGS_SRC := \
 		$(SCAN_MSSM_TC_SRC) \
 		$(SCAN_NMSSM_SRC) \
 		$(SCAN_phdE6SSM_SRC) \
+		$(SCAN_phdE6SSM_TC_SRC) \
 		$(SCAN_phdUMSSM_SRC) \
 		$(SCAN_NMSSMNoUni_SRC)
 
@@ -62,6 +71,7 @@ ALLHIGGS_EXE := \
 		$(SCAN_MSSM_TC_EXE) \
 		$(SCAN_NMSSM_EXE) \
 		$(SCAN_phdE6SSM_EXE) \
+		$(SCAN_phdE6SSM_TC_EXE) \
 		$(SCAN_phdUMSSM_EXE) \
 		$(SCAN_NMSSMNoUni_EXE)
 
@@ -114,6 +124,9 @@ $(SCAN_NMSSM_EXE): $(SCAN_NMSSM_OBJ) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(SCAN_phdE6SSM_EXE): $(SCAN_phdE6SSM_OBJ) $(LIBphdE6SSM) $(LIBFLEXI) $(LIBLEGACY)
+		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
+
+$(SCAN_phdE6SSM_TC_EXE): $(SCAN_phdE6SSM_TC_OBJ) $(LIBphdE6SSM) $(LIBFLEXI) $(LIBLEGACY)
 		$(CXX) -o $@ $(call abspathx,$^) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS) $(LOOPTOOLSLIBS)
 
 $(SCAN_phdUMSSM_EXE): $(SCAN_phdUMSSM_OBJ) $(LIBphdUMSSM) $(LIBFLEXI) $(LIBLEGACY)
