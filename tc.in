@@ -1,0 +1,20 @@
+Block MODSEL                 # Select model
+    1    1                   # mSUGRA
+    3    0                   # MSSM
+#   12    1000                # DRbar parameter output scale (GeV)
+Block FlexibleSUSY
+    0   1.000000000e-03      # precision goal
+    1   0                    # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   0                    # calculate SM pole masses
+    4   2                    # pole mass loop order
+    5   2                    # EWSB loop order
+Block MINPAR                 # Input parameters
+    1   5000.                # m0
+    2   5000.                # m12
+    3   10.                  # TanBeta
+    4   1                    # SignMu
+    5   5000.                # Azero
+Block EXTPAR
+    0   0                    # unification scale (0 = automatic)
+  100   0                    # tc
