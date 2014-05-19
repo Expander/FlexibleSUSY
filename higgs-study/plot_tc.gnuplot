@@ -15,8 +15,10 @@ set xlabel '$t_c$'
 set xtics format "$%g$"
 # set xlabel '$\tan\beta$'
 set ylabel '$m_h^{\text{pole}}$ / GeV'
+set mytics 2
+# set ytics 1
 
-set key box bottom right width 0.5 height 0.5
+set key box top left width 0.5 height 0.5
 
 # plot "<awk '{ if ($2 == 0    && $4 == 0) print $0 }' ".filename using 1:3 title '$t_c = 0$'   , \
 #      "<awk '{ if ($2 == 0.01 && $4 == 0) print $0 }' ".filename using 1:3 title '$t_c = 0.01$', \
@@ -25,7 +27,8 @@ set key box bottom right width 0.5 height 0.5
 #      "<awk '{ if ($2 == 0.04 && $4 == 0) print $0 }' ".filename using 1:3 title '$t_c = 0.04$', \
 #      "<awk '{ if ($2 == 0.05 && $4 == 0) print $0 }' ".filename using 1:3 title '$t_c = 0.05$'
 
-plot "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 5\phantom{0}$' , \
+plot [:] [121:133] \
+     "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 5\phantom{0}$' , \
      "<awk '{ if ($1 == 10 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 10$', \
      "<awk '{ if ($1 == 20 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 20$', \
      "<awk '{ if ($1 == 30 && $4 == 0) print $0 }' ".filename using 2:3 title '$\tan\beta = 30$', \
@@ -48,7 +51,8 @@ set logscale y 10
 set mytics 10
 set format y '$10^{%L}$'
 
-plot "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:5 title '' pointtype 5
+plot [:] [1.e10:1.e19] \
+     "<awk '{ if ($1 == 5  && $4 == 0) print $0 }' ".filename using 2:5 title '' pointtype 5
 
 set output
 
