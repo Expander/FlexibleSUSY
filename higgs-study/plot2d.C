@@ -42,10 +42,10 @@ bool has_empty_neighbor(const TProfile2D* h, Double_t x, Double_t y)
       return true;
    if (h->GetBinContent(binx - 1, biny) == 0.)
       return true;
-   if (h->GetBinContent(binx, biny + 1) == 0.)
-      return true;
-   if (h->GetBinContent(binx, biny - 1) == 0.)
-      return true;
+   // if (h->GetBinContent(binx, biny + 1) == 0.)
+   //    return true;
+   // if (h->GetBinContent(binx, biny - 1) == 0.)
+   //    return true;
 
    return false;
 }
