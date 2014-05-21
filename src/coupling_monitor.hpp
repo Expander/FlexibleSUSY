@@ -79,7 +79,7 @@ public:
    /// get maximum scale
    TTouple get_max_scale() const;
    /// delete all saved couplings
-   void reset();
+   void clear();
    /// write couplings to file
    void write_to_file(const std::string&) const;
 
@@ -134,7 +134,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
  * Delete all internal couplings.
  */
 template <class Model, class DataGetter>
-void Coupling_monitor<Model,DataGetter>::reset()
+void Coupling_monitor<Model,DataGetter>::clear()
 {
    couplings.clear();
 }
