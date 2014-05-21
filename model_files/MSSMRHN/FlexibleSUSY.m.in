@@ -2,7 +2,6 @@
 FSModelName = "@CLASSNAME@";
 
 (* CMSSMRHN input parameters *)
-(* TODO: add Yv at MX *)
 
 MINPAR = { {1, m0},
            {2, m12},
