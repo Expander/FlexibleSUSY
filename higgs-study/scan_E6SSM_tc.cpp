@@ -90,6 +90,8 @@ int main(int argc, const char* argv[])
         << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
         << std::setw(12) << std::left << "error" << ' '
         << std::setw(12) << std::left << "MX/GeV" << ' '
+        << std::setw(12) << std::left << "MSu(1)/GeV" << ' '
+        << std::setw(12) << std::left << "MSu(6)/GeV" << ' '
         << '\n';
 
    for (auto tanBeta : range_TanBeta) {
@@ -104,6 +106,8 @@ int main(int argc, const char* argv[])
          const Problems<phdE6SSM_info::NUMBER_OF_PARTICLES>& problems
             = spectrum_generator.get_problems();
          const double higgs = pole_masses.Mhh(0);
+         const double sup1 = pole_masses.MSu(0);
+         const double sup6 = pole_masses.MSu(5);
          const bool error = problems.have_serious_problem();
 
          cout << "  "
@@ -111,7 +115,9 @@ int main(int argc, const char* argv[])
               << std::setw(12) << std::left << input.tc << ' '
               << std::setw(12) << std::left << higgs << ' '
               << std::setw(12) << std::left << error << ' '
-              << std::setw(12) << std::left << spectrum_generator.get_high_scale()
+              << std::setw(12) << std::left << spectrum_generator.get_high_scale() << ' '
+              << std::setw(12) << std::left << sup1 << ' '
+              << std::setw(12) << std::left << sup6 << ' '
             ;
          if (error) {
             cout << "\t# " << problems;
