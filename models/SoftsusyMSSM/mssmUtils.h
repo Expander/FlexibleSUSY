@@ -5,9 +5,9 @@
 #include <iosfwd>
 #include <string>
 
-class DoubleVector;
-
 namespace softsusy {
+
+class DoubleVector;
 
 struct sBrevity;
 class MssmSusy;

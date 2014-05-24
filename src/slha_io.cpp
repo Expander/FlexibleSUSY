@@ -152,7 +152,7 @@ void SLHA_io::set_block(const std::string& name, double value,
    set_block(ss);
 }
 
-void SLHA_io::set_block(const std::string& name, const DoubleMatrix& matrix,
+void SLHA_io::set_block(const std::string& name, const softsusy::DoubleMatrix& matrix,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
@@ -170,7 +170,7 @@ void SLHA_io::set_block(const std::string& name, const DoubleMatrix& matrix,
    set_block(ss);
 }
 
-void SLHA_io::set_block(const std::string& name, const ComplexMatrix& matrix,
+void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& matrix,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
