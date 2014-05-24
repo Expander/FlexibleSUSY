@@ -12,5 +12,8 @@ model_files/rootMSSM            export-ignore
 model_files/SM                  export-ignore
 model_files/YukawaCMSSM         export-ignore
 
+models/sm                       export-ignore
+models/smcw                     export-ignore
+
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
