@@ -134,7 +134,7 @@ struct drBarPars: public sPhysical {
   /// BPMZ convention mixing matrices for neutralinos and charginos
   ComplexMatrix nBpmz, uBpmz, vBpmz; 
   /// positive definite masses for neutralinos and charginos
-  DoubleVector mnBpmz, mchBpmz; 
+  softsusy::DoubleVector mnBpmz, mchBpmz; 
 
   inline drBarPars(); ///< Initialises with zero values
   inline drBarPars(const drBarPars &); ///< Initialises with another object
@@ -212,8 +212,10 @@ inline sProblem::sProblem(const sProblem & s)
 double sTfn(double sTins, double sTouts);
 
 /// LCT: Calculates fractional difference in Drbar masses between a and b
-class drBarPars;
-class DoubleVector;
-void sumTol(const softsusy::drBarPars & a, const softsusy::drBarPars & b, DoubleVector & sT);
+namespace softsusy {
+   class drBarPars;
+   class DoubleVector;
+}
+void sumTol(const softsusy::drBarPars & a, const softsusy::drBarPars & b, softsusy::DoubleVector & sT);
 
 #endif

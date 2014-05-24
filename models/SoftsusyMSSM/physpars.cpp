@@ -198,7 +198,7 @@ double sTfn(double sTins, double sTouts) {
 }
 
 /// LCT: Difference between two drBarPars objects
-void sumTol(const softsusy::drBarPars & a, const softsusy::drBarPars & b, DoubleVector & sT) {
+void sumTol(const softsusy::drBarPars & a, const softsusy::drBarPars & b, softsusy::DoubleVector & sT) {
   int k = 1;
   
   sT(k) = sTfn(a.mGluino, b.mGluino); k++;

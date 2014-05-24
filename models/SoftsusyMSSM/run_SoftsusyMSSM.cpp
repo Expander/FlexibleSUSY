@@ -25,6 +25,8 @@
 #include "utils.h"
 #include "numerics.h"
 
+using namespace softsusy;
+
 int main() {
   /// Sets up exception handling
   signal(SIGFPE, FPE_ExceptionHandler); 

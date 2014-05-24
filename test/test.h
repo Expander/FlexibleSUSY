@@ -15,7 +15,7 @@ int get_errors() {
    return gErrors;
 }
 
-bool is_equal(const DoubleMatrix& a, const DoubleMatrix& b, double max_dev)
+bool is_equal(const softsusy::DoubleMatrix& a, const softsusy::DoubleMatrix& b, double max_dev)
 {
    if (a.displayRows() != b.displayRows()) {
       std::cout << "matrices have different number of rows\n";
@@ -78,7 +78,7 @@ void check_equality(int a, int b, const std::string& testMsg, double)
    }
 }
 
-void check_equality(const DoubleVector& a, const DoubleVector& b,
+void check_equality(const softsusy::DoubleVector& a, const softsusy::DoubleVector& b,
                     const std::string& testMsg, double max_dev)
 {
    if (a.displayStart() != b.displayStart()) {
@@ -108,7 +108,7 @@ void check_equality(const DoubleVector& a, const DoubleVector& b,
    }
 }
 
-void check_equality(const DoubleMatrix& a, const DoubleMatrix& b,
+void check_equality(const softsusy::DoubleMatrix& a, const softsusy::DoubleMatrix& b,
                     const std::string& testMsg, double max_dev)
 {
    for (int i = 1; i <= a.displayRows(); ++i) {
@@ -120,7 +120,7 @@ void check_equality(const DoubleMatrix& a, const DoubleMatrix& b,
    }
 }
 
-void check_equality(const DoubleMatrix& b,
+void check_equality(const softsusy::DoubleMatrix& b,
                     const Eigen::Matrix<double,3,3>& a,
                     const std::string& testMsg, double max_dev)
 {
@@ -160,7 +160,7 @@ void check_equality(const Eigen::Array<double,NRows,NCols>& a,
    }
 }
 
-void check_equality(const ComplexMatrix& a, const ComplexMatrix& b,
+void check_equality(const softsusy::ComplexMatrix& a, const softsusy::ComplexMatrix& b,
                     const std::string& testMsg, double max_dev)
 {
    for (int i = 1; i <= a.displayRows(); ++i) {
@@ -172,7 +172,7 @@ void check_equality(const ComplexMatrix& a, const ComplexMatrix& b,
    }
 }
 
-void check_equality(const DoubleMatrix& a, const ComplexMatrix& b,
+void check_equality(const softsusy::DoubleMatrix& a, const softsusy::ComplexMatrix& b,
                     const std::string& testMsg, double max_dev)
 {
    for (int i = 1; i <= a.displayRows(); ++i) {
@@ -184,7 +184,7 @@ void check_equality(const DoubleMatrix& a, const ComplexMatrix& b,
    }
 }
 
-void check_equality(const ComplexMatrix& a, const DoubleMatrix& b,
+void check_equality(const softsusy::ComplexMatrix& a, const softsusy::DoubleMatrix& b,
                     const std::string& testMsg, double max_dev)
 {
    check_equality(b, a, testMsg, max_dev);

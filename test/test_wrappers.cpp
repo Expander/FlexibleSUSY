@@ -26,6 +26,7 @@
 #include "diagonalization.hpp"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_Delta )
 {

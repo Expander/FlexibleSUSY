@@ -31,11 +31,10 @@
 
 namespace softsusy {
    class QedQcd;
-
-
-class DoubleMatrix;
-class ComplexMatrix;
+   class DoubleMatrix;
+   class ComplexMatrix;
 }
+
 namespace flexiblesusy {
 
    namespace {
