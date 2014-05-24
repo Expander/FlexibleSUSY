@@ -117,14 +117,27 @@ if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
     exit ${exit_model_dir_exists}
 fi
 
+if [ -n "$sub_model" ]; then
+    echo "creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
+else
+    echo "creating model $name (SARAH model: $sarah_model)"
+fi
+
 # check if we provide a FlexibleSUSY model file for the given model
 # name
 model_file_dir="model_files"
 if [ -n "$model_file" ]; then
+    printf "  searching for ${model_file} model file ... "
     if test -d "$model_file_dir/$model_file"; then
         model_file_dir="$model_file_dir/$model_file"
+        printf "found in ${model_file_dir}/\n"
     else
-        echo "Error: there is no default model file for the $model_file"
+        printf "not found in ${model_file_dir}/${model_file}\n"
+        echo "Error: There is no default model file for the ${model_file}!"
+        echo "  You can create one via"
+        echo ""
+        echo "  \$ mkdir ${model_file_dir}/${model_file}"
+        echo "  \$ cp ${model_file_dir}/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
         exit ${exit_no_default_model}
     fi
 else
@@ -133,12 +146,7 @@ else
     if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
         model_file_dir="$model_file_dir/$name"
     fi
-fi
-
-if [ -n "$sub_model" ]; then
-    echo "creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
-else
-    echo "creating model $name (SARAH model: $sarah_model)"
+    printf "  using default model file ${model_file_dir}/FlexibleSUSY.m.in\n"
 fi
 
 if test ! -d "$targetdir" ; then
