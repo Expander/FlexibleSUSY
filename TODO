@@ -111,14 +111,17 @@ To fix this we need to do a conversion when writing the SLHA output
 file (but only there).
 
 
-Create a function which calculates the LSP
-------------------------------------------
+Create a function which provides particle information
+-----------------------------------------------------
 
-The model class could have a function which returns the LSP mass and
-particle type.  An implementation exists in the `feature-lsp' branch.
+Jae-hyeon proposed the following: FS could provide a function which
+returns a list of (mass ordered) particles and their properies
+(R-parity, Hypercharge, ...).  From this list a user can easily
+extract for example the LSP (which would be the first particle in the
+list with R-charge -1) or the weakly interacting particles etc.
 
-Jae-hyeon proposed a much more general approach: FS could provide a
-function which returns a list of (mass ordered) particles and their
-properies (R-parity, Hypercharge, ...).  From this list a user can
-easily find the LSP (which would be the first particle in the list
-with R-charge -1).
+
+Allow for complex parameters
+----------------------------
+
+This will allow to use CP-violating models as the MSSMCPV for example.
