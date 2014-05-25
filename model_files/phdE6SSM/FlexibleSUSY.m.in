@@ -109,3 +109,5 @@ InitialGuessAtHighScale = {};
 
 UseHiggs2LoopNMSSM = True;
 EffectiveMu = \[Lambda]3 vS / Sqrt[2];
+
+PotentialLSPParticles = { Chi, Cha, Glu, ChiInert, ChaInert, FSInert, FX, ChiPrime, ChaPrime, Sv, Su, Sd, Se, SX, SH0Inert, SHpInert, SS0Inert, SH0Prime, SHpPrime };
