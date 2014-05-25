@@ -591,7 +591,7 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
                        IndentText[callSM] <>
                        IndentText[joinSmThreads] <>
                        "}\n\n" <>
-                       joinSusyThreads <> "\n";
+                       joinSusyThreads;
              ];
            Return[result];
           ];
