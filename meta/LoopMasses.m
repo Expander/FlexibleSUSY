@@ -843,9 +843,9 @@ CConversion`ToValidCSymbolString[mass /. FlexibleSUSY`M -> Identity] <>
 ";
               ];
            body = body <> "return lsp_mass;\n";
-           prototype = "double get_lsp(" <> particleType <> "&);\n";
+           prototype = "double get_lsp(" <> particleType <> "&) const;\n";
            function = "double CLASSNAME::get_lsp(" <> particleType <>
-                      "& particle_type)\n{\n" <> IndentText[body] <> "}\n";
+                      "& particle_type) const\n{\n" <> IndentText[body] <> "}\n";
            Return[{prototype, function}];
           ];
 
