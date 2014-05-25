@@ -59,7 +59,7 @@ Do1DimScalar[particleName_String, massName_String, selfEnergyFunction_String,
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "if (mass_sqr < 0.)\n" <>
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-    "PHYSICAL(" <> massName <> ") = ZeroSqrt(mass_sqr);\n";
+    "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 Do1DimFermion[massName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
@@ -77,7 +77,7 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
     "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
     "if (mass_sqr < 0.)\n" <>
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-    "PHYSICAL(" <> massName <> ") = ZeroSqrt(mass_sqr);\n";
+    "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 
 (* ********** fast diagonalization routines ********** *)
@@ -129,7 +129,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "\n" <>
                        "if (" <> massName <> ".minCoeff() < 0.)\n" <>
                        IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                       "PHYSICAL(" <> massName <> ") = ZeroSqrt(PHYSICAL(" <>
+                       "PHYSICAL(" <> massName <> ") = AbsSqrt(PHYSICAL(" <>
                        massName <> "));\n";
               ,
               result = Do1DimScalar[particleName, massName, selfEnergyFunction, massName,
@@ -266,7 +266,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             "fs_svd(M_1loop, eigen_values, " <> Utemp <> ", " <> Vtemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n" <>
+                            "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
                             "if (es == 0) {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
@@ -278,7 +278,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             "fs_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                            "PHYSICAL(" <> massName <> "(es)) = ZeroSqrt(eigen_values(es));\n";
+                            "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n";
               If[mixingMatrix =!= Null,
                  diagSnippet = diagSnippet <>
                                "if (es == 0)\n" <>
@@ -797,7 +797,7 @@ CreateRunningDRbarMassFunction[particle_] :=
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
               "if (mass_sqr < 0.)\n" <>
               IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-              "return ZeroSqrt(mass_sqr);\n";
+              "return AbsSqrt(mass_sqr);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
