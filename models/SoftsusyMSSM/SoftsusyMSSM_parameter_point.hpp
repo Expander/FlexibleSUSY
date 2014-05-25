@@ -33,8 +33,8 @@ struct SoftsusyMSSM_parameter_point {
       , signMu(1)
       , tanBeta(10.0)
    {}
-   DoubleVector get_soft_pars() const {
-      DoubleVector highScaleSoftPars(3);
+   softsusy::DoubleVector get_soft_pars() const {
+      softsusy::DoubleVector highScaleSoftPars(3);
       highScaleSoftPars(1) = m0;
       highScaleSoftPars(2) = m12;
       highScaleSoftPars(3) = a0;

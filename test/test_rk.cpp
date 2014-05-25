@@ -10,6 +10,7 @@
 #include <Eigen/Dense>
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 typedef DoubleVector (*Derivative_t)(double, const DoubleVector&);
 

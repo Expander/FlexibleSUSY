@@ -38,15 +38,15 @@ struct SoftsusyNMSSM_parameter_point {
       , xiF(0.)
       , muPrime(0.)
    {}
-   DoubleVector get_soft_pars() const {
-      DoubleVector highScaleSoftPars(3);
+   softsusy::DoubleVector get_soft_pars() const {
+      softsusy::DoubleVector highScaleSoftPars(3);
       highScaleSoftPars(1) = m0;
       highScaleSoftPars(2) = m12;
       highScaleSoftPars(3) = a0;
       return highScaleSoftPars;
    }
-   DoubleVector get_nmpars() const {
-      DoubleVector nmpars(5);
+   softsusy::DoubleVector get_nmpars() const {
+      softsusy::DoubleVector nmpars(5);
       nmpars(1) = lambda;
       nmpars(2) = kappa;
       nmpars(3) = svev;

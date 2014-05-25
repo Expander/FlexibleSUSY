@@ -1,4 +1,19 @@
-.gitignore     export-ignore
-.gitattributes export-ignore
-doc/release    export-ignore
-TODO           export-ignore
+.gitignore                      export-ignore
+.gitattributes                  export-ignore
+doc/release                     export-ignore
+TODO                            export-ignore
+
+model_files/InertMSSM           export-ignore
+model_files/LHInputMSSM         export-ignore
+model_files/MSSMCPV             export-ignore
+model_files/minMSSM             export-ignore
+model_files/NoYukawaMSSM        export-ignore
+model_files/rootMSSM            export-ignore
+model_files/SM                  export-ignore
+model_files/YukawaCMSSM         export-ignore
+
+models/sm                       export-ignore
+models/smcw                     export-ignore
+
+sarah/InertMSSM                 export-ignore
+sarah/NoYukawaMSSM              export-ignore

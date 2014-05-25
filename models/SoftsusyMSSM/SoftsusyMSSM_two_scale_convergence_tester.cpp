@@ -38,7 +38,7 @@ double SoftsusyMSSM_convergence_tester::sumTol(const SoftsusyMSSM<Two_scale>& in
 {
   softsusy::drBarPars inforLoops(in.displayDrBarPars()),
     outforLoops(out.displayDrBarPars());
-  DoubleVector sT(32);
+  softsusy::DoubleVector sT(32);
 
   ::sumTol(inforLoops, outforLoops, sT);
 

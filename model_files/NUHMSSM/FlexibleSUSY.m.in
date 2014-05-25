@@ -1,21 +1,28 @@
 
 FSModelName = "@CLASSNAME@";
 
-(* CMSSMRHN input parameters *)
+(* input parameters *)
 
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
            {4, Sign[\[Mu]]},
            {5, Azero}
-         };
+    };
+
+EXTPAR = {
+	   {1, mHd2In},
+	   {2, mHu2In}
+    };
 
 DefaultParameterPoint = {
     {m0, 125},
     {m12, 500},
     {TanBeta, 10},
     {Sign[\[Mu]], 1},
-    {Azero, 0}
+    {Azero, 0},
+    {mHd2In, 100^2},
+    {mHu2In, -50^2}
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
@@ -34,21 +41,16 @@ HighScaleInput={
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
    {T[Yu], Azero*Yu},
+   {mHd2, mHd2In},
+   {mHu2, mHu2In},
    {mq2, UNITMATRIX[3] m0^2},
    {ml2, UNITMATRIX[3] m0^2},
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
-   {mv2, UNITMATRIX[3] m0^2},
-   {mHu2, m0^2},
-   {mHd2, m0^2},
    {MassB, m12},
    {MassWB,m12},
-   {MassG,m12},
-   {Mv, LHInput[Mv]},
-   {B[Mv], LHInput[B[Mv]]},
-   {Yv, LHInput[Yv]},
-   {T[Yv], Azero*Yv}
+   {MassG,m12}
 };
 
 LowScale = SM[MZ];
@@ -75,3 +77,8 @@ InitialGuessAtHighScale = {
    {\[Mu]   , 1.0},
    {B[\[Mu]], 0.0}
 };
+
+UseHiggs2LoopMSSM = True;
+EffectiveMu = \[Mu];
+
+PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
