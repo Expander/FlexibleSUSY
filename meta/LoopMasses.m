@@ -795,8 +795,9 @@ CreateRunningDRbarMassFunction[particle_] :=
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
-              "if (mass_sqr < 0.)\n" <>
-              IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+              "if (mass_sqr < 0.) {\n" <>
+              IndentText["problems.flag_tachyon(" <> particleName <> ");\n" <>
+                         "return m_pole;"] <> "\n}\n\n" <>
               "return AbsSqrt(mass_sqr);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
