@@ -28,6 +28,20 @@
 
 #include <iostream>
 
+template <class T>
+unsigned is_charged_lsp(const T& model)
+{
+   using namespace flexiblesusy;
+   phdUMSSM_info::Particles particle_type;
+   const double lsp_mass = model.get_lsp(particle_type);
+
+   if (particle_type == phdUMSSM_info::Chi ||
+       particle_type == phdUMSSM_info::Sv)
+      return 0;
+
+   return particle_type;
+}
+
 int main(int argc, const char* argv[])
 {
    using namespace flexiblesusy;
@@ -78,7 +92,8 @@ int main(int argc, const char* argv[])
         << std::setw(12) << std::left << "TanBeta" << ' '
         << std::setw(12) << std::left << "m0" << ' '
         << std::setw(12) << std::left << "Mhh(1)/GeV" << ' '
-        << std::setw(12) << std::left << "error"
+        << std::setw(12) << std::left << "error" << ' '
+        << std::setw(12) << std::left << "charged_LSP"
         << '\n';
 
    for (auto tanBeta : range_TanBeta) {
@@ -94,12 +109,14 @@ int main(int argc, const char* argv[])
             = spectrum_generator.get_problems();
          const double higgs = pole_masses.Mhh(0);
          const bool error = problems.have_serious_problem();
+         const unsigned charged_LSP = is_charged_lsp(model);
 
          cout << "  "
               << std::setw(12) << std::left << input.TanBeta << ' '
               << std::setw(12) << std::left << input.m0 << ' '
               << std::setw(12) << std::left << higgs << ' '
-              << std::setw(12) << std::left << error;
+              << std::setw(12) << std::left << error << ' '
+              << std::setw(12) << std::left << charged_LSP;
          if (error) {
             cout << "\t# " << problems;
          }
