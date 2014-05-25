@@ -108,13 +108,15 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
 
-   std::vector<Constraint<T>*> upward_constraints;
-   upward_constraints.push_back(&low_scale_constraint);
-   upward_constraints.push_back(&susy_scale_constraint);
+   std::vector<Constraint<T>*> upward_constraints {
+      &low_scale_constraint,
+      &susy_scale_constraint
+   };
 
-   std::vector<Constraint<T>*> downward_constraints;
-   downward_constraints.push_back(&susy_scale_constraint);
-   downward_constraints.push_back(&low_scale_constraint);
+   std::vector<Constraint<T>*> downward_constraints {
+      &susy_scale_constraint,
+      &low_scale_constraint
+   };
 
    model.set_input(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
