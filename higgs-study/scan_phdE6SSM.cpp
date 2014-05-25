@@ -36,7 +36,13 @@ unsigned is_charged_lsp(const T& model)
    const double lsp_mass = model.get_lsp(particle_type);
 
    if (particle_type == phdE6SSM_info::Chi ||
-       particle_type == phdE6SSM_info::Sv)
+       particle_type == phdE6SSM_info::Sv ||
+       particle_type == phdE6SSM_info::ChiInert ||
+       particle_type == phdE6SSM_info::SH0Inert ||
+       particle_type == phdE6SSM_info::FSInert ||
+       particle_type == phdE6SSM_info::SS0Inert ||
+       particle_type == phdE6SSM_info::ChiPrime ||
+       particle_type == phdE6SSM_info::SH0Prime)
       return 0;
 
    return particle_type;
