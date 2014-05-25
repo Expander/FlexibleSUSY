@@ -606,7 +606,7 @@ CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
 
 CreateRunningDRbarMassPrototype[particle_] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-    "_DRbar(double) const;\n";
+    "_DRbar(double);\n";
 
 CreateRunningDRbarMassPrototypes[] :=
     Module[{result = "", particles},
@@ -783,17 +783,20 @@ CreateRunningDRbarMassFunction[particle_ /; IsFermion[particle]] :=
           ];
 
 CreateRunningDRbarMassFunction[particle_] :=
-    Module[{result, body, selfEnergyFunction, name},
+    Module[{result, body, selfEnergyFunction, name, particleName},
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           particleName = ToValidCSymbolString[particle];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double) const \n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double)\n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole)\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
+              "if (mass_sqr < 0.)\n" <>
+              IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
               "return ZeroSqrt(mass_sqr);\n";
              ];
            Return[result <> IndentText[body] <> "}\n\n"];
