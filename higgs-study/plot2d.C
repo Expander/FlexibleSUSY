@@ -64,9 +64,13 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    const int nbinsx = 50, nbinsy = 50;
    const double xlow = 0., xhigh = 50.;
    const double ylow = 0., yhigh = 10.; // in TeV
+   const double zlow = 95., zhigh = 135.; // in GeV
 
    TProfile2D* h = new TProfile2D("h", file_name, nbinsx, xlow, xhigh, nbinsy, ylow, yhigh);
    h->SetStats(0);
+
+   TH2D* hlsp = new TH2D("hlsp", file_name, nbinsx, xlow, xhigh, nbinsy, ylow, yhigh);
+   hlsp->SetStats(0);
 
    while (getline(ifs,line)) {
       std::istringstream input(line);
@@ -77,8 +81,9 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
          std::istringstream kk(line);
          double tanb, m0, mh, error;
          bool stream_ok = true;
+         Int_t charged_lsp;
 
-         kk >> tanb >> m0 >> mh >> error;
+         kk >> tanb >> m0 >> mh >> error >> charged_lsp;
 
          stream_ok = kk.good();
          if (!stream_ok) {
@@ -92,6 +97,12 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
          m0 /= 1000.; // convert to TeV
 
          h->Fill(tanb, m0, mh, 1.0);
+
+         const Int_t bin = hlsp->FindBin(tanb, m0);
+         const Char_t bin_content = hlsp->GetBinContent(bin);
+         const Int_t new_bin_content =
+            (error == 0 && (bin_content || charged_lsp) && zlow+1. < mh && mh < zhigh ? 2 : 0);
+         hlsp->SetBinContent(bin, new_bin_content);
       }
    }
 
@@ -99,30 +110,39 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    h->GetXaxis()->SetTitle("\\tan\\beta");
    h->GetYaxis()->SetTitle("$m_0$ / TeV");
 
+   hlsp->SetTitle(title);
+   hlsp->GetXaxis()->SetTitle("\\tan\\beta");
+   hlsp->GetYaxis()->SetTitle("$m_0$ / TeV");
+
    TCanvas* canvas = new TCanvas("canvas", title, 400, 300);
    canvas->cd(1);
    // gStyle->SetPaperSize(10.,10.); // in cm
 
-   // define contours
+   // ====================== define contours ==================
    Double_t contours[1];
    contours[0] = 125.9;
    h->SetContour(1, contours);
-   // Draw contours as filled regions, and Save points
    h->Draw("CONT Z LIST");
    canvas->Update(); // Needed to force the plotting and retrieve the contours in TGraphs
 
    // Get Contours
-   TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+   TObjArray *tmp_conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+   TObjArray *conts = NULL;
    TList* contLevel = NULL;
-   TGraph* curv     = NULL;
-   TGraph* gc       = NULL;
    Int_t TotalConts = 0, nGraphs = 0;
-   if (conts == NULL){
+   if (tmp_conts == NULL){
       printf("*** No Contours Were Extracted!\n");
       TotalConts = 0;
       return;
    } else {
-      TotalConts = conts->GetSize();
+      printf("cloning ...");
+      conts = (TObjArray*)tmp_conts->Clone();
+      printf("done\n");
+      if (conts == NULL) {
+         printf("cloning failed!\n");
+         return;
+      }
+      TotalConts = tmp_conts->GetSize();
    }
    printf("TotalConts = %d\n", TotalConts);
    for(int i = 0; i < TotalConts; i++){
@@ -131,10 +151,37 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
       nGraphs += contLevel->GetSize();
    }
 
+   // ====================== define LSP contours ==================
+   Double_t lsp_contours[1];
+   lsp_contours[0] = 1.;
+   hlsp->SetContour(1, lsp_contours);
+   hlsp->Draw("CONT Z LIST");
+   canvas->Update(); // Needed to force the plotting and retrieve the contours in TGraphs
+
+   // Get LSP Contours
+   TObjArray *tmp_lsp_conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+   TObjArray *lsp_conts = NULL;
+   TList* lsp_contLevel = NULL;
+   Int_t lsp_TotalConts = 0, lsp_nGraphs = 0;
+   if (tmp_lsp_conts == NULL){
+      printf("*** No LSP Contours Were Extracted!\n");
+      lsp_TotalConts = 0;
+      return;
+   } else {
+      lsp_conts = (TObjArray*)tmp_lsp_conts->Clone();
+      lsp_TotalConts = tmp_lsp_conts->GetSize();
+   }
+   printf("LSP TotalConts = %d\n", lsp_TotalConts);
+   for(int i = 0; i < lsp_TotalConts; i++){
+      lsp_contLevel = (TList*)lsp_conts->At(i);
+      printf("Contour %d has %d Graphs\n", i, lsp_contLevel->GetSize());
+      lsp_nGraphs += lsp_contLevel->GetSize();
+   }
+
    // draw the histogram
    h->SetContour(20); // set back to default
-   h->SetMinimum(95.);
-   h->SetMaximum(135.);
+   h->SetMinimum(zlow);
+   h->SetMaximum(zhigh);
    // SetZminZmax(h);
    set_plot_style();
    h->Draw("colz");
@@ -143,7 +190,7 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    for(int i = 0; i < TotalConts; i++){
       contLevel = (TList*)conts->At(i);
       // Get first graph from list on curves on this level
-      curv = (TGraph*)contLevel->First();
+      TGraph* curv = (TGraph*)contLevel->First();
       for(int j = 0; j < contLevel->GetSize(); j++){
          Double_t x0, y0;
          curv->GetPoint(1, x0, y0);
@@ -155,7 +202,8 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
             continue;
          }
 
-         gc = (TGraph*)curv->Clone();
+         TGraph* gc = (TGraph*)curv->Clone();
+         gc->SetLineWidth(4);
          gc->Draw("C same");
 
          curv = (TGraph*)contLevel->After(curv); // Get Next graph
@@ -164,6 +212,24 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    canvas->Update();
    printf("\n\n\tExtracted %d Contours and %d Graphs \n", TotalConts, nGraphs );
 
+   // draw LSP contours
+   for(int i = 0; i < lsp_TotalConts; i++){
+      lsp_contLevel = (TList*)lsp_conts->At(i);
+      TGraph* lsp_curv = (TGraph*)lsp_contLevel->First();
+      for(int j = 0; j < lsp_contLevel->GetSize(); j++){
+         TGraph* lsp_gc = (TGraph*)lsp_curv->Clone();
+         lsp_gc->SetFillStyle(7);
+         lsp_gc->SetFillColor(4);
+         lsp_gc->SetLineColor(4);
+         // lsp_gc->SetLineWidth(4);
+         lsp_gc->Draw("F same");
+         lsp_gc->Draw("L same");
+         lsp_curv = (TGraph*)lsp_contLevel->After(lsp_curv); // Get Next graph
+      }
+   }
+   canvas->Update();
+   printf("\n\n\tExtracted %d LSP Contours and %d Graphs \n", lsp_TotalConts, lsp_nGraphs );
+
    TString tex_file(file_name);
    tex_file.ReplaceAll(".dat",".tex");
    TString pdf_file(file_name);
@@ -171,6 +237,6 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    canvas->Print(tex_file);
 
    gSystem->Exec(TString("mv ") + tex_file + " img.tex");
-   gSystem->Exec(TString("pdflatex ") + " img_container.tex");
+   gSystem->Exec(TString("pdflatex ") + " img_container.tex > /dev/null");
    gSystem->Exec(TString("mv img_container.pdf ") + pdf_file);
 }
