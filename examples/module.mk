@@ -14,7 +14,8 @@ EXAMPLES_EXE := \
 
 STANDALONE_DIR := \
 		$(DIR)/standalone-model \
-		$(DIR)/standalone-rge
+		$(DIR)/standalone-rge \
+		$(DIR)/tower
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
