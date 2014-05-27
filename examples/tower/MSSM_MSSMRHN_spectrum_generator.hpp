@@ -42,6 +42,7 @@
 #include "numerics.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
+#include "two_scale_composite_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
@@ -151,11 +152,15 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
 
    model_2.set_input(input_2);
 
-   // convergence of upper model is ignored here but in principle
-   // should be checked as well
-   MSSM_convergence_tester<T> convergence_tester(&model_1, precision_goal);
-   if (max_iterations > 0)
-      convergence_tester.set_max_iterations(max_iterations);
+   MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
+   MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
+   if (max_iterations > 0) {
+      convergence_tester_1.set_max_iterations(max_iterations);
+      convergence_tester_2.set_max_iterations(max_iterations);
+   }
+   Composite_convergence_tester convergence_tester;
+   convergence_tester.add_convergence_tester(&convergence_tester_1);
+   convergence_tester.add_convergence_tester(&convergence_tester_2);
 
    MSSM_MSSMRHN_initial_guesser<T> initial_guesser
        (&model_1, &model_2, input_2, oneset,
