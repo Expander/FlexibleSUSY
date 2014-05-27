@@ -38,6 +38,7 @@ public:
    virtual ~Composite_convergence_tester();
 
    virtual bool accuracy_goal_reached();
+   virtual unsigned int max_iterations() const;
    void add_convergence_tester(Convergence_tester<Two_scale>*);
 
 private:
