@@ -17,20 +17,6 @@ TEMPLATES    := \
 		$(DIR)/slha_io.hpp.in \
 		$(DIR)/slha_io.cpp.in \
 		$(DIR)/susy_scale_constraint.hpp.in \
-		$(DIR)/lattice_convergence_tester.hpp.in \
-		$(DIR)/lattice_convergence_tester.cpp.in \
-		$(DIR)/lattice_high_scale_constraint.hpp.in \
-		$(DIR)/lattice_high_scale_constraint.cpp.in \
-		$(DIR)/lattice_initial_guesser.hpp.in \
-		$(DIR)/lattice_initial_guesser.cpp.in \
-		$(DIR)/lattice_initial_guesser_low_scale_model.hpp.in \
-		$(DIR)/lattice_initial_guesser_low_scale_model.cpp.in \
-		$(DIR)/lattice_low_scale_constraint.hpp.in \
-		$(DIR)/lattice_low_scale_constraint.cpp.in \
-		$(DIR)/lattice_model.hpp.in \
-		$(DIR)/lattice_model.cpp.in \
-		$(DIR)/lattice_susy_scale_constraint.hpp.in \
-		$(DIR)/lattice_susy_scale_constraint.cpp.in \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
 		$(DIR)/spectrum_generator.hpp.in \

@@ -49,7 +49,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
 		$(DIR)/matching.hpp \
-		$(DIR)/mathdefs.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mycomplex.h \
@@ -66,7 +65,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
-		$(DIR)/small_matrices.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/wrappers.hpp \
@@ -91,27 +89,6 @@ LIBFLEXI_HDR += \
 		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_running_precision.hpp \
 		$(DIR)/two_scale_solver.hpp
-endif
-
-ifneq ($(findstring lattice,$(ALGORITHMS)),)
-LIBFLEXI_SRC += \
-		$(DIR)/lattice_model.cpp \
-		$(DIR)/lattice_constraint.cpp \
-		$(DIR)/lattice_numerical_constraint.cpp \
-		$(DIR)/lattice_solver.cpp \
-		$(DIR)/SM.cpp \
-		$(DIR)/fortran_utils.f
-
-LIBFLEXI_HDR += \
-		$(DIR)/lattice_compound_constraint.hpp \
-		$(DIR)/lattice_constraint.hpp \
-		$(DIR)/lattice_convergence_tester.hpp \
-		$(DIR)/lattice_foreign_constraint.hpp \
-		$(DIR)/lattice_initial_guesser.hpp \
-		$(DIR)/lattice_model.hpp \
-		$(DIR)/lattice_numerical_constraint.hpp \
-		$(DIR)/lattice_solver.hpp \
-		$(DIR)/SM.hpp
 endif
 
 LIBFLEXI_OBJ := \

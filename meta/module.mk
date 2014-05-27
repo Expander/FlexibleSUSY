@@ -8,7 +8,6 @@ META_SRC     := \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/FlexibleSUSY.m \
-		$(DIR)/Format.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopMasses.m \
 		$(DIR)/Parameters.m \
@@ -23,9 +22,7 @@ META_SRC     := \
 		$(DIR)/TwoLoop.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
-		$(DIR)/WeinbergAngle.m \
-		$(DIR)/writeRGE.m \
-		$(DIR)/writeNRGE.m
+		$(DIR)/WeinbergAngle.m
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
