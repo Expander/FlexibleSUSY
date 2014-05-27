@@ -158,7 +158,7 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
       convergence_tester_1.set_max_iterations(max_iterations);
       convergence_tester_2.set_max_iterations(max_iterations);
    }
-   Composite_convergence_tester convergence_tester;
+   Composite_convergence_tester<T> convergence_tester;
    convergence_tester.add_convergence_tester(&convergence_tester_1);
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 
