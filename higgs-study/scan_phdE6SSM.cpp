@@ -39,7 +39,8 @@ unsigned is_charged_lsp(const T& model)
        particle_type == phdE6SSM_info::Sv ||
        particle_type == phdE6SSM_info::ChiInert ||
        particle_type == phdE6SSM_info::SH0Inert ||
-       particle_type == phdE6SSM_info::FSInert ||
+       // always massless
+       // particle_type == phdE6SSM_info::FSInert ||
        particle_type == phdE6SSM_info::SS0Inert ||
        particle_type == phdE6SSM_info::ChiPrime ||
        particle_type == phdE6SSM_info::SH0Prime)
