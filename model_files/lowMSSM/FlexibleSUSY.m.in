@@ -3,10 +3,6 @@ FSModelName = "@CLASSNAME@";
 
 MINPAR = { {3, TanBeta} };
 
-DefaultParameterPoint = {
-    {TanBeta, 10}
-};
-
 EWSBOutputParameters = { mHd2, mHu2 };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];

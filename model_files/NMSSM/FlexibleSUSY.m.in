@@ -11,14 +11,6 @@ MINPAR = { {1, m0},
 
 EXTPAR = { {61, LambdaInput} };
 
-DefaultParameterPoint = {
-    {m0, 200},
-    {m12, 200},
-    {TanBeta, 10},
-    {Azero, -500},
-    {LambdaInput, 0.1}
-};
-
 EWSBOutputParameters = { \[Kappa], vS, ms2 };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];

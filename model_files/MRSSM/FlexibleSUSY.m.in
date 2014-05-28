@@ -5,10 +5,6 @@ FSModelName = "@CLASSNAME@";
 
 MINPAR = { {3, TanBeta} };
 
-DefaultParameterPoint = {
-    {TanBeta, 10}
-};
-
 EWSBOutputParameters = { mHd2, mHu2, mS2, mT2 };
 
 SUSYScale = 1000;
