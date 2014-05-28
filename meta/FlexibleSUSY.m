@@ -23,7 +23,6 @@ FSModelName;
 FSLesHouchesList;
 FSUnfixedParameters;
 InputParameters;
-DefaultParameterPoint = {};
 EWSBOutputParameters = {};
 SUSYScale;
 SUSYScaleFirstGuess;
@@ -192,9 +191,6 @@ CheckModelFileSettings[] :=
               FlexibleSUSY`SUSYScaleInput = {};
              ];
 
-           If[Head[FlexibleSUSY`DefaultParameterPoint] =!= List,
-              FlexibleSUSY`DefaultParameterPoint = {};
-             ];
            If[Head[SARAH`MINPAR] =!= List,
               SARAH`MINPAR = {};
              ];
@@ -317,8 +313,9 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
 
 WriteInputParameterClass[inputParameters_List, freePhases_List,
                          lesHouchesInputParameters_List,
-                         defaultValues_List, files_List] :=
+                         files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
+          defaultValues = {#, 0}& /@ inputParameters;
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,lesHouchesInputParameters]];
           defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,lesHouchesInputParameters]];
           WriteOut`ReplaceInFiles[files,
@@ -1191,7 +1188,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
                                     {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
-                                    FlexibleSUSY`DefaultParameterPoint,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
                                    ];
