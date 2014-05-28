@@ -493,14 +493,6 @@ MINPAR = {
    {5, Azero}
 };
 
-DefaultParameterPoint = {
-   {m0, 125},
-   {m12, 500},
-   {TanBeta, 10},
-   {Sign[\[Mu]], 1},
-   {Azero, 0}
-};
-
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 HighScale = g1 == g2;
@@ -573,8 +565,7 @@ All non-Standard Model input variables must be specified in the lists
 MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
 The list elements are two-component lists where the first entry is the
 SLHA index in the MINPAR or EXTPAR blocks.  The second entry is the
-name of the parameter.  The input parameters can be set to default
-values in the \code{DefaultParameterPoint} list.
+name of the parameter.
 
 Using the the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
@@ -1790,16 +1781,6 @@ Once again this is simplified from the general case becasue there are default ve
 
   EXTPAR = { {61, LambdaInput} };
       \end{lstlisting}
-     \item Also add this parameter to the DefaultParameterPoint.
-      \begin{lstlisting}
-       DefaultParameterPoint = {
-    {m0, 200},
-    {m12, 200},
-    {TanBeta, 10},
-    {Azero, -500}
-    {LambdaInput, 0.1}
-    };
-  \end{lstlisting}
     \item Name the parameters you wish to be output by the EWSB conditions.  Note you should use the names given for them in parameters.m.    A common choice in the NMSSM is:
 \begin{lstlisting}
 EWSBOutputParameters = {vS, \[Kappa], ms2};
