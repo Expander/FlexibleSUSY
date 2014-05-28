@@ -334,6 +334,12 @@ private:
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 {
    MSSM_input_parameters pp;
+   pp.m0 = 125.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.SignMu = 1;
+   pp.Azero = 0.;
+
    const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
@@ -581,6 +587,12 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 {
    MSSM_input_parameters pp;
+   pp.m0 = 125.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.SignMu = 1;
+   pp.Azero = 0.;
+
    const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
@@ -718,7 +730,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_higgs_iteration )
 {
    MSSM_input_parameters pp;
    pp.m0 = 500.;
+   pp.m12 = 500.;
    pp.Azero = 1000.;
+   pp.SignMu = 1;
    pp.TanBeta = 30.;
 
    MSSM_tester mssm_tester;
