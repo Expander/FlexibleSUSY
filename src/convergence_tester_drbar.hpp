@@ -16,36 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-#include "@ModelName@_two_scale_convergence_tester.hpp"
-#include <cmath>
-#include <algorithm>
-#include "wrappers.hpp"
+#ifndef CONVERGENCE_TESTER_DRBAR_H
+#define CONVERGENCE_TESTER_DRBAR_H
 
 namespace flexiblesusy {
 
-#define OLD1(p) ol->get_##p()
-#define NEW1(p) ne->get_##p()
+template <class Model>
+class Convergence_tester_DRbar;
 
-#define OLD(p,i) ol->get_##p()(i)
-#define NEW(p,i) ne->get_##p()(i)
-
-@ModelName@_convergence_tester<Two_scale>::@ModelName@_convergence_tester(@ModelName@<Two_scale>* model, double accuracy_goal)
-   : Convergence_tester_DRbar<@ModelName@<Two_scale> >(model, accuracy_goal)
-{
 }
 
-@ModelName@_convergence_tester<Two_scale>::~@ModelName@_convergence_tester()
-{
-}
-
-double @ModelName@_convergence_tester<Two_scale>::max_rel_diff() const
-{
-   const @ModelName@<Two_scale>* ol = get_last_iteration_model();
-   const @ModelName@<Two_scale>* ne = get_model();
-
-@compareFunction@
-}
-
-} // namespace flexiblesusy
+#endif
