@@ -44,11 +44,11 @@ namespace flexiblesusy {
 
 @ModelName@_susy_scale_constraint<Two_scale>::@ModelName@_susy_scale_constraint()
    : Constraint<Two_scale>()
+   , scale(0.)
+   , initial_scale_guess(0.)
    , model(0)
    , inputPars()
 {
-@scaleGuess@
-   scale = initial_scale_guess;
 }
 
 @ModelName@_susy_scale_constraint<Two_scale>::@ModelName@_susy_scale_constraint(const @ModelName@_input_parameters& inputPars_)
@@ -56,8 +56,7 @@ namespace flexiblesusy {
    , model(0)
    , inputPars(inputPars_)
 {
-@scaleGuess@
-   scale = initial_scale_guess;
+   initialize();
 }
 
 @ModelName@_susy_scale_constraint<Two_scale>::~@ModelName@_susy_scale_constraint()
@@ -101,10 +100,17 @@ void @ModelName@_susy_scale_constraint<Two_scale>::set_input_parameters(const @M
    inputPars = inputPars_;
 }
 
-void @ModelName@_susy_scale_constraint<Two_scale>::reset()
+void @ModelName@_susy_scale_constraint<Two_scale>::clear()
 {
-   scale = initial_scale_guess;
+   scale = 0.;
+   initial_scale_guess = 0.;
    model = NULL;
+}
+
+void @ModelName@_susy_scale_constraint<Two_scale>::initialize()
+{
+@scaleGuess@
+   scale = initial_scale_guess;
 }
 
 void @ModelName@_susy_scale_constraint<Two_scale>::update_scale()

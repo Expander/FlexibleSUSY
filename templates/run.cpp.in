@@ -51,17 +51,22 @@ int main(int argc, const char* argv[])
    QedQcd oneset;
    @ModelName@_input_parameters input;
 
-   if (!slha_input_file.empty()) {
-      try {
-         slha_io.read_from_file(slha_input_file);
-         slha_io.fill(oneset);
-         slha_io.fill(input);
-         slha_io.fill(spectrum_generator_settings);
-      } catch (const Error& error) {
-         ERROR(error.what());
-         return EXIT_FAILURE;
-      }
+   if (slha_input_file.empty()) {
+      ERROR("No SLHA input file given!\n"
+            "   Please provid one via the option --slha-input-file=");
+      return EXIT_FAILURE;
    }
+
+   try {
+      slha_io.read_from_file(slha_input_file);
+      slha_io.fill(oneset);
+      slha_io.fill(input);
+      slha_io.fill(spectrum_generator_settings);
+   } catch (const Error& error) {
+      ERROR(error.what());
+      return EXIT_FAILURE;
+   }
+
    oneset.toMz(); // run SM fermion masses to MZ
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;

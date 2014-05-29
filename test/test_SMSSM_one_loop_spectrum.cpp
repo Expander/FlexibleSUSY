@@ -88,6 +88,12 @@ void ensure_one_loop_ewsb(SMSSM<Two_scale>& m, NmssmSoftsusy& s)
 BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
 {
    SMSSM_input_parameters input;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
    input.m0       = 540.;
    input.Azero    = -350.;
    input.MSInput  = 290.;
@@ -95,7 +101,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
    input.L1Input  = 300.;
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
-   setup_SMSSM(m, s, input);
+   setup_SMSSM_const(m, s, input);
 
    softsusy::Z3 = false;
    ensure_tree_level_ewsb(m, s, input);
@@ -232,6 +238,12 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_pole_masses )
 BOOST_AUTO_TEST_CASE( test_self_energies )
 {
    SMSSM_input_parameters input;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
    input.m0       = 540.;
    input.Azero    = -350.;
    input.MSInput  = 290.;
@@ -239,7 +251,7 @@ BOOST_AUTO_TEST_CASE( test_self_energies )
    input.L1Input  = 300.;
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
-   setup_SMSSM(m, s, input);
+   setup_SMSSM_const(m, s, input);
 
    softsusy::Z3 = false;
    softsusy::numHiggsMassLoops = 1;

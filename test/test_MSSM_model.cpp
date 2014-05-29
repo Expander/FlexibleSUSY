@@ -1374,6 +1374,13 @@ void compare_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
 
 void compare_models(int loopLevel)
 {
+   MSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -1411,7 +1418,7 @@ void compare_models(int loopLevel)
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM<Two_scale> m;
+   MSSM<Two_scale> m(input);
    m.set_scale(91);
    m.set_loops(loopLevel);
    m.set_g1(g1);

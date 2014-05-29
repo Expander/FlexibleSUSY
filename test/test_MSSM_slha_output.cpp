@@ -17,6 +17,8 @@ int run_cmd(const std::string& cmd)
       return -1;
    }
 
+   BOOST_MESSAGE("Runnign command \"" << cmd << "\" ...");
+
    const int status = system(cmd.c_str());
 
    BOOST_MESSAGE("Command \"" << cmd << "\" returned with exit code " << status);

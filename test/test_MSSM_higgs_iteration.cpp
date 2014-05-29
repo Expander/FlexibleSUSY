@@ -37,7 +37,12 @@ BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
 BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
 {
    MSSM_input_parameters input;
-   MSSM<Two_scale> model;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+   MSSM<Two_scale> model(input);
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;

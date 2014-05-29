@@ -41,10 +41,12 @@ public:
    virtual void apply();
    virtual double get_scale() const;
    virtual void set_model(Two_scale_model*);
+
+   void clear();
    double get_initial_scale_guess() const;
+   void initialize();
    void set_input_parameters(const @ModelName@_input_parameters&);
    void set_scale(double); ///< fix unification scale (0 = unfixed)
-   void reset(); ///< reset to initial state
 
 private:
    double scale;

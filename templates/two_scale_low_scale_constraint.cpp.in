@@ -45,6 +45,8 @@ namespace flexiblesusy {
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
+   , scale(0.)
+   , initial_scale_guess(0.)
    , model(0)
    , inputPars()
    , oneset()
@@ -54,8 +56,6 @@ namespace flexiblesusy {
    , new_@strongCoupling@(0.)
    , threshold_corrections(1)
 {
-@scaleGuess@
-   scale = initial_scale_guess;
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
@@ -67,8 +67,7 @@ namespace flexiblesusy {
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
 {
-@scaleGuess@
-   scale = initial_scale_guess;
+   initialize();
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::~@ModelName@_low_scale_constraint()
@@ -116,11 +115,23 @@ void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd
    oneset = oneset_;
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::reset()
+void @ModelName@_low_scale_constraint<Two_scale>::clear()
 {
-   scale = initial_scale_guess;
+   scale = 0.;
+   initial_scale_guess = 0.;
    model = NULL;
    oneset = QedQcd();
+   MZDRbar = 0.;
+   new_@hyperchargeCoupling@ = 0.;
+   new_@leftCoupling@ = 0.;
+   new_@strongCoupling@ = 0.;
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::initialize()
+{
+@scaleGuess@
+   scale = initial_scale_guess;
+
    MZDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;

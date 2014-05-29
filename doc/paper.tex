@@ -420,60 +420,54 @@ the system requirements and creates the \code{Makefile}.  See
 will start MATHEMATICA to generate the spectrum generator and compile
 it.  The resulting executable can be run like this:
 \begin{lstlisting}[language=bash]
-$ ./models/MSSM/run_MSSM.x
+$ ./models/MSSM/run_MSSM.x \
+    --slha-input-file=model_fies/MSSM/LesHouches.in.MSSM
 \end{lstlisting}%% $
 %
 When executed, the spectrum generator tries to find a set of \DRbar\
 model parameters consistent with all CMSSM boundary conditions for the
-default parameter point.  Afterwards, the pole mass spectrum and
-mixing matrices are calculated and written to the command line in SLHA
-format \cite{Skands:2003cj,Allanach:2008qq}.  For the default
-parameter point the calculated pole mass spectrum reads
+parameter point given in the SLHA input file
+\code{templates/MSSM/LesHouches.in.MSSM}.  Afterwards, the pole mass
+spectrum and mixing matrices are calculated and written to the command
+line in SLHA format \cite{Skands:2003cj,Allanach:2008qq}.  For the
+parameter point given in the above example the calculated pole mass
+spectrum reads
 %
 \begin{lstlisting}
 Block MASS
-   1000021     1.15236980E+03   # Glu
-   1000024     3.85774164E+02   # Cha_1
-   1000037     6.50457634E+02   # Cha_2
-        25     1.14751169E+02   # hh_1
-        35     7.06790308E+02   # hh_2
-        37     7.11386171E+02   # Hpm_2
-        36     7.06520770E+02   # Ah_2
-   1000012     3.51856408E+02   # Sv_1
-   1000014     3.53042587E+02   # Sv_2
-   1000016     3.53046535E+02   # Sv_3
-   1000022     2.03889708E+02   # Chi_1
-   1000023     3.85760548E+02   # Chi_2
-   1000025     6.36542302E+02   # Chi_3
-   1000035     6.50131337E+02   # Chi_4
-   1000001     9.66656167E+02   # Sd_1
-   1000003     1.00983192E+03   # Sd_2
-   1000005     1.01651888E+03   # Sd_3
-   2000001     1.01653020E+03   # Sd_4
-   2000003     1.06089549E+03   # Sd_5
-   2000005     1.06090253E+03   # Sd_6
-   1000011     2.22570345E+02   # Se_1
-   1000013     2.29864547E+02   # Se_2
-   1000015     2.29888857E+02   # Se_3
-   2000011     3.61946702E+02   # Se_4
-   2000013     3.61950896E+02   # Se_5
-   2000015     3.63136044E+02   # Se_6
-   1000002     8.09787908E+02   # Su_1
-   1000004     1.01454208E+03   # Su_2
-   1000006     1.01981123E+03   # Su_3
-   2000002     1.02015283E+03   # Su_4
-   2000004     1.05807774E+03   # Su_5
-   2000006     1.05808183E+03   # Su_6
+   1000021     1.15236966E+03   # Glu
+   1000024     3.85774334E+02   # Cha_1
+   1000037     6.50460073E+02   # Cha_2
+        25     1.14766149E+02   # hh_1
+        35     7.06792640E+02   # hh_2
+        37     7.11388516E+02   # Hpm_2
+        36     7.06523105E+02   # Ah_2
+   1000012     3.51856376E+02   # Sv_1
+   1000014     3.53042556E+02   # Sv_2
+   1000016     3.53046504E+02   # Sv_3
+   1000022     2.03889780E+02   # Chi_1
+   1000023     3.85760714E+02   # Chi_2
+   1000025     6.36544884E+02   # Chi_3
+   1000035     6.50133768E+02   # Chi_4
+   1000001     9.66656018E+02   # Sd_1
+   1000003     1.00983181E+03   # Sd_2
+   1000005     1.01651873E+03   # Sd_3
+   2000001     1.01653005E+03   # Sd_4
+   2000003     1.06089534E+03   # Sd_5
+   2000005     1.06090238E+03   # Sd_6
+   1000011     2.22570305E+02   # Se_1
+   1000013     2.29864536E+02   # Se_2
+   1000015     2.29888846E+02   # Se_3
+   2000011     3.61946671E+02   # Se_4
+   2000013     3.61950866E+02   # Se_5
+   2000015     3.63136031E+02   # Se_6
+   1000002     8.09787818E+02   # Su_1
+   1000004     1.01454197E+03   # Su_2
+   1000006     1.01981109E+03   # Su_3
+   2000002     1.02015269E+03   # Su_4
+   2000004     1.05807759E+03   # Su_5
+   2000006     1.05808168E+03   # Su_6
 \end{lstlisting}
-%
-To calculate the mass spectrum for a user-defined parameter point, the
-CMSSM input parameters can be given in form of a SLHA input file via
-the \code{--slha-input-file=} option, for example:
-%
-\begin{lstlisting}[language=bash]
-$ ./models/MSSM/run_MSSM.x \
-    --slha-input-file=templates/MSSM/LesHouches.in.MSSM
-\end{lstlisting}%% $
 
 \section{Setting up a FlexibleSUSY model}
 \label{Sec:modfile}
@@ -491,14 +485,6 @@ MINPAR = {
    {3, TanBeta},
    {4, Sign[\[Mu]]},
    {5, Azero}
-};
-
-DefaultParameterPoint = {
-   {m0, 125},
-   {m12, 500},
-   {TanBeta, 10},
-   {Sign[\[Mu]], 1},
-   {Azero, 0}
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
@@ -573,8 +559,7 @@ All non-Standard Model input variables must be specified in the lists
 MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
 The list elements are two-component lists where the first entry is the
 SLHA index in the MINPAR or EXTPAR blocks.  The second entry is the
-name of the parameter.  The input parameters can be set to default
-values in the \code{DefaultParameterPoint} list.
+name of the parameter.
 
 Using the the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
@@ -1790,16 +1775,6 @@ Once again this is simplified from the general case becasue there are default ve
 
   EXTPAR = { {61, LambdaInput} };
       \end{lstlisting}
-     \item Also add this parameter to the DefaultParameterPoint.
-      \begin{lstlisting}
-       DefaultParameterPoint = {
-    {m0, 200},
-    {m12, 200},
-    {TanBeta, 10},
-    {Azero, -500}
-    {LambdaInput, 0.1}
-    };
-  \end{lstlisting}
     \item Name the parameters you wish to be output by the EWSB conditions.  Note you should use the names given for them in parameters.m.    A common choice in the NMSSM is:
 \begin{lstlisting}
 EWSBOutputParameters = {vS, \[Kappa], ms2};
