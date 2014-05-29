@@ -129,6 +129,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, MSSM_input_parameters& inpu
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
+   m.set_input(input);
    m.set_scale(scale);
    m.set_loops(1);
    m.set_thresholds(3);
