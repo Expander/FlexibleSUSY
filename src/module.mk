@@ -37,6 +37,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/constraint.hpp \
 		$(DIR)/consts.hpp \
 		$(DIR)/convergence_tester.hpp \
+		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.h \
