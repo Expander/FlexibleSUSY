@@ -21,6 +21,7 @@
 
 #include "two_scale_convergence_tester.hpp"
 #include "logger.hpp"
+#include "wrappers.hpp"
 
 #include <cmath>
 #include <limits>
@@ -81,15 +82,19 @@ bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
       // that accuracy goal has not been reached
       precision_reached = false;
    } else {
-      if (scale_has_changed() && rel_scale_difference() > accuracy_goal) {
-         WARNING("scale has changed by " << scale_difference()
-                 << " GeV (" << rel_scale_difference()
-                 << "%), parameter comparison might fail");
+      const double scale_accuracy_goal = accuracy_goal / oneOver16PiSqr;
+      if (rel_scale_difference() < scale_accuracy_goal) {
+	 const double current_accuracy = max_rel_diff();
+	 precision_reached = current_accuracy < accuracy_goal;
+	 VERBOSE_MSG("Convergence_tester_skeleton: current accuracy = "
+		     << current_accuracy
+		     << ", accuracy goal = " << accuracy_goal);
+      } else {
+	 precision_reached = false;
+         VERBOSE_MSG("scale has changed by " << scale_difference()
+		     << " GeV (" << rel_scale_difference()
+		     << "), skipping parameter comparison");
       }
-      const double current_accuracy = max_rel_diff();
-      precision_reached = current_accuracy < accuracy_goal;
-      VERBOSE_MSG("Convergence_tester_skeleton: current accuracy = "
-                  << current_accuracy << ", accuracy goal = " << accuracy_goal);
    }
 
    // save old model parameters
