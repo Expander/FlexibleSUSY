@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TWO_SCALE_CONVERGENCE_TESTER_SKELETON_H
-#define TWO_SCALE_CONVERGENCE_TESTER_SKELETON_H
+#ifndef TWO_SCALE_CONVERGENCE_TESTER_DRBAR_H
+#define TWO_SCALE_CONVERGENCE_TESTER_DRBAR_H
 
 #include "two_scale_convergence_tester.hpp"
 #include "logger.hpp"
@@ -29,10 +29,10 @@
 namespace flexiblesusy {
 
 template <class T>
-class Convergence_tester_skeleton : public Convergence_tester<Two_scale> {
+class Convergence_tester_DRbar : public Convergence_tester<Two_scale> {
 public:
-   Convergence_tester_skeleton(T*, double);
-   virtual ~Convergence_tester_skeleton();
+   Convergence_tester_DRbar(T*, double);
+   virtual ~Convergence_tester_DRbar();
 
    virtual bool accuracy_goal_reached();
    virtual double get_accuracy_goal() const;
@@ -58,7 +58,8 @@ private:
 };
 
 template <class T>
-Convergence_tester_skeleton<T>::Convergence_tester_skeleton(T* model_, double accuracy_goal_)
+Convergence_tester_DRbar<T>::Convergence_tester_DRbar
+(T* model_, double accuracy_goal_)
    : Convergence_tester<Two_scale>()
    , model(model_)
    , last_iteration_model()
@@ -69,12 +70,12 @@ Convergence_tester_skeleton<T>::Convergence_tester_skeleton(T* model_, double ac
 }
 
 template <class T>
-Convergence_tester_skeleton<T>::~Convergence_tester_skeleton()
+Convergence_tester_DRbar<T>::~Convergence_tester_DRbar()
 {
 }
 
 template <class T>
-bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
+bool Convergence_tester_DRbar<T>::accuracy_goal_reached()
 {
    bool precision_reached;
    if (it_count == 0) {
@@ -86,7 +87,7 @@ bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
       if (rel_scale_difference() < scale_accuracy_goal) {
 	 const double current_accuracy = max_rel_diff();
 	 precision_reached = current_accuracy < accuracy_goal;
-	 VERBOSE_MSG("Convergence_tester_skeleton: current accuracy = "
+	 VERBOSE_MSG("Convergence_tester_DRbar: current accuracy = "
 		     << current_accuracy
 		     << ", accuracy goal = " << accuracy_goal);
       } else {
@@ -105,62 +106,62 @@ bool Convergence_tester_skeleton<T>::accuracy_goal_reached()
 }
 
 template <class T>
-double Convergence_tester_skeleton<T>::get_accuracy_goal() const
+double Convergence_tester_DRbar<T>::get_accuracy_goal() const
 {
    return accuracy_goal;
 }
 
 template <class T>
-bool Convergence_tester_skeleton<T>::is_equal(double a, double b) const
+bool Convergence_tester_DRbar<T>::is_equal(double a, double b) const
 {
    return std::fabs(a - b) < std::numeric_limits<double>::epsilon();
 }
 
 template <class T>
-bool Convergence_tester_skeleton<T>::is_zero(double a) const
+bool Convergence_tester_DRbar<T>::is_zero(double a) const
 {
    return std::fabs(a) < std::numeric_limits<double>::epsilon();
 }
 
 template <class T>
-const T* Convergence_tester_skeleton<T>::get_model() const
+const T* Convergence_tester_DRbar<T>::get_model() const
 {
    return model;
 }
 
 template <class T>
-const T* Convergence_tester_skeleton<T>::get_last_iteration_model() const
+const T* Convergence_tester_DRbar<T>::get_last_iteration_model() const
 {
    return &last_iteration_model;
 }
 
 template <class T>
-void Convergence_tester_skeleton<T>::set_max_iterations(unsigned max_it_)
+void Convergence_tester_DRbar<T>::set_max_iterations(unsigned max_it_)
 {
    if (max_it_ > 0)
       max_it = max_it_;
 }
 
 template <class T>
-unsigned int Convergence_tester_skeleton<T>::max_iterations() const
+unsigned int Convergence_tester_DRbar<T>::max_iterations() const
 {
    return max_it;
 }
 
 template <class T>
-bool Convergence_tester_skeleton<T>::scale_has_changed() const
+bool Convergence_tester_DRbar<T>::scale_has_changed() const
 {
    return !is_zero(scale_difference());
 }
 
 template <class T>
-double Convergence_tester_skeleton<T>::scale_difference() const
+double Convergence_tester_DRbar<T>::scale_difference() const
 {
    return model->get_scale() - last_iteration_model.get_scale();
 }
 
 template <class T>
-double Convergence_tester_skeleton<T>::rel_scale_difference() const
+double Convergence_tester_DRbar<T>::rel_scale_difference() const
 {
    const double diff = scale_difference();
    const double last_scale = last_iteration_model.get_scale();
