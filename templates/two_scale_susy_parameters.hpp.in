@@ -46,7 +46,7 @@ public:
    virtual void print(std::ostream&) const;
    virtual void set(const Eigen::ArrayXd&);
    const @ModelName@_input_parameters& get_input() const;
-   void set_input(const @ModelName@_input_parameters&);
+   void set_input_parameters(const @ModelName@_input_parameters&);
 
    @ModelName@_susy_parameters calc_beta() const;
    virtual void clear();

@@ -148,7 +148,7 @@ public:
       mssm.set_thresholds(1);
       mssm.set_ewsb_loop_order(1);
       mssm.set_pole_mass_loop_order(1);
-      mssm.set_input(pp);
+      mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
       std::vector<Constraint<Two_scale>*> upward_constraints;

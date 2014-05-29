@@ -135,7 +135,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    };
 
    model.clear();
-   model.set_input(input);
+   model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections);
