@@ -10,7 +10,7 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
-void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parameters& input)
+void setup_NMSSM_const(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parameters& input)
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -118,6 +118,18 @@ void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, const NMSSM_input_parame
    s.setTanb(tanBeta);
    s.setSvev(vS);
    s.setMw(s.displayMwRun());
+}
+
+void setup_NMSSM(NMSSM<Two_scale>& m, NmssmSoftsusy& s, NMSSM_input_parameters& input)
+{
+   input.m0 = 200.;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
+
+   setup_NMSSM_const(m, s, input);
 }
 
 void ensure_n_loop_ewsb(NMSSM<Two_scale>& m, int loop_level)

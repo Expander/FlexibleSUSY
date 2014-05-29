@@ -71,9 +71,14 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_tadpoles )
 {
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
-   NMSSM<Two_scale> m;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
+   NMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
 
    s.calcDrBarPars();
    m.calculate_DRbar_parameters();
@@ -105,10 +110,15 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
 {
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
-   NMSSM<Two_scale> m;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
+   NMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
 
    // initial guess
    m.set_Kappa(0.1);
@@ -164,9 +174,14 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_tadpoles )
 {
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
-   NMSSM<Two_scale> m;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
+   NMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
 
    s.calcDrBarPars();
    m.calculate_DRbar_parameters();
@@ -210,10 +225,15 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
 {
    NMSSM_input_parameters input;
    input.m0 = 300.; // avoids tree-level tachyons
-   NMSSM<Two_scale> m;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
+   NMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
 
    // initial guess
    m.set_Kappa(0.1);
