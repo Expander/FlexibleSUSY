@@ -103,10 +103,12 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
-   susy_scale_constraint.reset();
-   low_scale_constraint .reset();
+   susy_scale_constraint.clear();
+   low_scale_constraint .clear();
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
+   susy_scale_constraint.initialize();
+   low_scale_constraint .initialize();
 
    std::vector<Constraint<T>*> upward_constraints {
       &low_scale_constraint,
