@@ -22,7 +22,6 @@
 #include "two_scale_convergence_tester.hpp"
 #include "convergence_tester_drbar.hpp"
 #include "logger.hpp"
-#include "wrappers.hpp"
 
 #include <cmath>
 #include <limits>
@@ -85,7 +84,7 @@ bool Convergence_tester_DRbar<Model<Two_scale> >::accuracy_goal_reached()
       // that accuracy goal has not been reached
       precision_reached = false;
    } else {
-      const double scale_accuracy_goal = accuracy_goal / oneOver16PiSqr;
+      const double scale_accuracy_goal = accuracy_goal * 16*M_PI*M_PI;
       if (rel_scale_difference() < scale_accuracy_goal) {
 	 const double current_accuracy = max_rel_diff();
 	 precision_reached = current_accuracy < accuracy_goal;
