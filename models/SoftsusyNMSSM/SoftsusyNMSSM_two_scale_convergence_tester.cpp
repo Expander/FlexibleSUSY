@@ -21,7 +21,7 @@
 namespace flexiblesusy {
 
 SoftsusyNMSSM_convergence_tester::SoftsusyNMSSM_convergence_tester(SoftsusyNMSSM<Two_scale>* snmssm_, double accuracy_goal_)
-   : Convergence_tester_skeleton<SoftsusyNMSSM<Two_scale> >(snmssm_, accuracy_goal_)
+   : Convergence_tester_DRbar<SoftsusyNMSSM<Two_scale> >(snmssm_, accuracy_goal_)
 {
 }
 
