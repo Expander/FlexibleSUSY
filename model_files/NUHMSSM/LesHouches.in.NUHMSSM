@@ -36,5 +36,5 @@ Block MINPAR                 # Input parameters
     5   0                    # Azero
 Block EXTPAR
     0   0                    # unification scale (0 = automatic)
-    1   10000                # mHd2IN
-    2   -2500                # mHu2IN
+    1   10000                # mHd2In
+    2   -2500                # mHu2In
