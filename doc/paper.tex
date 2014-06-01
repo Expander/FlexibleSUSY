@@ -34,6 +34,7 @@ bookmarks=true, linktocpage]{hyperref}
 %macros
 \newcommand{\sarah}{SARAH\xspace}
 \newcommand{\fs}{FlexibleSUSY\xspace}
+\newcommand{\mathematica}{Mathematica\xspace}
 \newcommand{\ESSM}{E$_6$SSM\xspace}
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
@@ -93,7 +94,7 @@ Universitat de Val\`{e}ncia-CSIC,
 TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    
   \begin{abstract}
-   We introduce \fs, a MATHEMATICA package which generates a fast,
+   We introduce \fs, a \mathematica package which generates a fast,
    precise C++ spectrum generator for any SUSY model specified by the
    user.  The generated code is designed with both speed and
    modularity in mind, making it easy to adapt and extend with new
@@ -219,7 +220,7 @@ which can be generated from
 \fs provides a much needed alternative to this with a structure which
 has been freshly designed to accommodate as general range of models as
 possible and to be easily adaptable to changing goals and new
-ideas. \fs is a MATHEMATICA package which uses \sarah to create a
+ideas. \fs is a \mathematica package which uses \sarah to create a
 fast, modular C++ spectrum generator for a user specified SUSY model.
 The generated code structure is designed to be as flexible as possible
 to accommodate different types of extensions and due to it's modular
@@ -247,7 +248,7 @@ code which can be created using SARAH.
 
 \section{Overview of the Program}
 \label{Sec:Program}
-\fs is a MATHEMATICA package designed to create a fast and easily
+\fs is a \mathematica package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
 non-supersymmetric models.  The user specifies the model by giving the
 superfield content, superpotential, gauge symmetries and mass mixings
@@ -386,7 +387,7 @@ create a custom spectrum generator the following requirements are
 necessary:
 %
 \begin{itemize}
-\item MATHEMATICA, version 7 or higher
+\item \mathematica, version 7 or higher
 \item SARAH, version 4.0.4 or higher \url{http://sarah.hepforge.org}
 \item C++11 compatible compiler (g++ 4.4.7 or higher, clang++ 3.1 or
   higher, icpc 12.1 or higher)
@@ -420,7 +421,7 @@ The first command creates the model directory \code{models/MSSM/}
 together with a MSSM model file.  The \code{configure} scrip checks
 the system requirements and creates the \code{Makefile}.  See
 \code{./configure --help} for more options.  Executing \code{make}
-will start MATHEMATICA to generate the spectrum generator and compile
+will start \mathematica to generate the spectrum generator and compile
 it.  The resulting executable can be run like this:
 \begin{lstlisting}[language=bash]
 $ models/MSSM/run_MSSM.x --slha-input-file=model_fies/MSSM/LesHouches.in.MSSM
@@ -473,7 +474,7 @@ Block MASS
 
 \section{Setting up a FlexibleSUSY model}
 \label{Sec:modfile}
-A \fs model is configured via a (MATHEMATICA) model file
+A \fs model is configured via a (\mathematica) model file
 \code{FlexibleSUSY.m} in the model directory \code{models/<model>/}.
 Many example model files can be found in \code{model_files/}.  The
 default model file for the CMSSM looks like this:
