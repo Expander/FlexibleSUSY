@@ -181,7 +181,8 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 int CLASSNAME::solve_ewsb_iteratively()
 {
    const gsl_multiroot_fsolver_type* solvers[] =
-      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids};
+      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids,
+       gsl_multiroot_fsolver_dnewton};
 
    double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);

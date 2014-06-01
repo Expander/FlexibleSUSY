@@ -10,7 +10,7 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
-void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parameters& input)
+void setup_SMSSM_const(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parameters& input)
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -134,6 +134,23 @@ void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, const SMSSM_input_parame
    s.setXiS(LL1);
 
    s.setMw(s.displayMwRun());
+}
+
+void setup_SMSSM(SMSSM<Two_scale>& m, NmssmSoftsusy& s, SMSSM_input_parameters& input)
+{
+   input.m0 = 200.;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
+   input.L1Input = 0.;
+   input.MSInput = 0.;
+   input.BMSInput = 0.;
+
+   setup_SMSSM_const(m, s, input);
 }
 
 #endif

@@ -19,6 +19,8 @@
 
 MSSM<Two_scale> setup_MSSM()
 {
+   MSSM_input_parameters input;
+
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -49,7 +51,7 @@ MSSM<Two_scale> setup_MSSM()
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM<Two_scale> m;
+   MSSM<Two_scale> m(input);
    m.set_scale(91);
    m.set_loops(1);
    m.set_g1(g1);

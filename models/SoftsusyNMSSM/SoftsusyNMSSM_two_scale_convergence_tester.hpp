@@ -19,12 +19,12 @@
 #ifndef SoftsusyNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 #define SoftsusyNMSSM_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_convergence_tester_skeleton.hpp"
+#include "two_scale_convergence_tester_drbar.hpp"
 #include "SoftsusyNMSSM_two_scale.hpp"
 
 namespace flexiblesusy {
 
-class SoftsusyNMSSM_convergence_tester : public Convergence_tester_skeleton<SoftsusyNMSSM<Two_scale> > {
+class SoftsusyNMSSM_convergence_tester : public Convergence_tester_DRbar<SoftsusyNMSSM<Two_scale> > {
 public:
    SoftsusyNMSSM_convergence_tester(SoftsusyNMSSM<Two_scale>*, double);
    virtual ~SoftsusyNMSSM_convergence_tester();

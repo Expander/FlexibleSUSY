@@ -82,8 +82,14 @@ void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)
    s.rewsb(signMu, mtrun, pars);
 }
 
-void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, const MSSM_input_parameters& input)
+void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, MSSM_input_parameters& input)
 {
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -123,6 +129,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, const MSSM_input_parameters
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
+   m.set_input_parameters(input);
    m.set_scale(scale);
    m.set_loops(1);
    m.set_thresholds(3);

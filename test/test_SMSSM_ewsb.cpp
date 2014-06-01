@@ -21,7 +21,7 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
-   setup_SMSSM(m, s, input);
+   setup_SMSSM_const(m, s, input);
 
    // initial guess
    m.set_Kappa(0.1);
@@ -55,6 +55,16 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
 BOOST_AUTO_TEST_CASE( test_SMSSM_ewsb_tree_level )
 {
    SMSSM_input_parameters input;
+   input.m0 = 200.;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = 0.;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
+   input.L1Input = 0.;
+   input.MSInput = 0.;
+   input.BMSInput = 0.;
 
    input.SignMu = 1;
    test_tree_level_ewsb(input);
@@ -82,6 +92,12 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
 {
    // set-up non-tachyonic point
    SMSSM_input_parameters input;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
    input.m0       = 540.;
    input.Azero    = -350.;
    input.MSInput  = 290.;
@@ -89,7 +105,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    input.L1Input  = 300.;
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
-   setup_SMSSM(m, s, input);
+   setup_SMSSM_const(m, s, input);
 
    softsusy::Z3 = false;
    softsusy::numRewsbLoops = 1;
@@ -132,6 +148,12 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
 BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
 {
    SMSSM_input_parameters input;
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.LambdaInput = 0.1;
+   input.KappaInput = 0.1;
+   input.LambdaSInput = 100.;
    input.m0       = 540.;
    input.Azero    = -350.;
    input.MSInput  = 290.;
@@ -140,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    SMSSM<Two_scale> m(input);
    NmssmSoftsusy s;
    const double precision = 1.0e-5;
-   setup_SMSSM(m, s, input);
+   setup_SMSSM_const(m, s, input);
 
    softsusy::Z3 = false;
    softsusy::numRewsbLoops = 1;

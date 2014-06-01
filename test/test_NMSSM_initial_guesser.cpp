@@ -25,6 +25,11 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    // create NMSSM initial guesser
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
    QedQcd oneset;
 
    NMSSM_low_scale_constraint<Two_scale>  low_constraint(input, oneset);

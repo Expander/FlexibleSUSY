@@ -21,7 +21,7 @@
 namespace flexiblesusy {
 
 StandardModelCW_convergence_tester::StandardModelCW_convergence_tester(StandardModelCW<Two_scale>* smcw_, double accuracy_goal_)
-   : Convergence_tester_skeleton<StandardModelCW<Two_scale> >(smcw_, accuracy_goal_)
+   : Convergence_tester_DRbar<StandardModelCW<Two_scale> >(smcw_, accuracy_goal_)
 {
 }
 

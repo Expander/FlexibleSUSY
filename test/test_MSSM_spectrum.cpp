@@ -271,16 +271,16 @@ public:
    void set_low_scale_constraint(MSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(MSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(MSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
-   void setup_default_constaints() {
+   void setup_default_constaints(const MSSM_input_parameters& pp, const QedQcd& oneset) {
       if (!high_constraint)
-         high_constraint = new MSSM_high_scale_constraint<Two_scale>();
+         high_constraint = new MSSM_high_scale_constraint<Two_scale>(pp);
       if (!susy_constraint)
-         susy_constraint = new MSSM_susy_scale_constraint<Two_scale>();
+         susy_constraint = new MSSM_susy_scale_constraint<Two_scale>(pp);
       if (!low_constraint)
-         low_constraint = new MSSM_low_scale_constraint<Two_scale>();
+         low_constraint = new MSSM_low_scale_constraint<Two_scale>(pp, oneset);
    }
    void test(const MSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
-      setup_default_constaints();
+      setup_default_constaints(pp, oneset);
       high_constraint->set_input_parameters(pp);
       low_constraint->set_input_parameters(pp);
       low_constraint->set_sm_parameters(oneset);
@@ -298,7 +298,7 @@ public:
       mssm.set_thresholds(1);
       mssm.set_ewsb_loop_order(1);
       mssm.set_pole_mass_loop_order(1);
-      mssm.set_input(pp);
+      mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
@@ -334,6 +334,12 @@ private:
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 {
    MSSM_input_parameters pp;
+   pp.m0 = 125.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.SignMu = 1;
+   pp.Azero = 0.;
+
    const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
@@ -581,12 +587,19 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_with_Softsusy_gauge_couplings )
 {
    MSSM_input_parameters pp;
+   pp.m0 = 125.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.SignMu = 1;
+   pp.Azero = 0.;
+   softsusy::QedQcd oneset;
+
    const MSSM_high_scale_constraint<Two_scale> high_constraint(pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    MSSM_tester mssm_tester;
-   mssm_tester.set_low_scale_constraint(new MSSM_precise_gauge_couplings_low_scale_constraint());
-   mssm_tester.set_susy_scale_constraint(new MSSM_softsusy_ewsb_susy_scale_constraint());
+   mssm_tester.set_low_scale_constraint(new MSSM_precise_gauge_couplings_low_scale_constraint(pp, oneset));
+   mssm_tester.set_susy_scale_constraint(new MSSM_softsusy_ewsb_susy_scale_constraint(pp));
    BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    SoftSusy_tester softSusy_tester;
@@ -718,11 +731,14 @@ BOOST_AUTO_TEST_CASE( test_MSSM_spectrum_higgs_iteration )
 {
    MSSM_input_parameters pp;
    pp.m0 = 500.;
+   pp.m12 = 500.;
    pp.Azero = 1000.;
+   pp.SignMu = 1;
    pp.TanBeta = 30.;
+   softsusy::QedQcd oneset;
 
    MSSM_tester mssm_tester;
-   mssm_tester.set_low_scale_constraint(new MSSM_iterative_low_scale_constraint());
+   mssm_tester.set_low_scale_constraint(new MSSM_iterative_low_scale_constraint(pp, oneset));
    // BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    try {

@@ -3,7 +3,8 @@ set terminal x11
 set title "@ModelName@ particle spectrum"
 set ylabel "mass / GeV"
 unset key
+unset bars
 
 if (!exists("filename")) filename='@ModelName@_spectrum.dat'
 
-plot filename using 1:2:(0.4):(0):xtic(3) with boxxyerrorbars linecolor rgb "black"
+plot filename using 1:2:(0.4):xtic(3) with xerrorbars pointtype 0 linecolor rgb "black"

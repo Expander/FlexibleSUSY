@@ -29,12 +29,20 @@ Block SMINPUTS               # Standard Model inputs
    23   1.040000000e-01      # ms(2 GeV)
    24   1.270000000e+00      # mc(2 GeV)
 Block MINPAR                 # Input parameters
-    1   125.                 # m0
-    2   500.                 # m12
-    3   10.                  # TanBeta
-    4   1                    # SignMu
+    1   500                  # m0
+    2   500                  # m12
+    3   10                   # TanBeta
     5   0                    # Azero
 Block EXTPAR
     0   0                    # unification scale (0 = automatic)
-    1   10000                # mHd2In
-    2   -2500                # mHu2In
+   61   0.1                  # LambdaInput
+   63   500                  # ALambdaInput
+   65   1000                 # vSInput
+  200   0.158114             # Qq  =  1 / Sqrt[40]
+  201   0.316228             # Ql  =  2 / Sqrt[40]
+  202  -0.474342             # QHd = -3 / Sqrt[40]
+  203  -0.316228             # QHu = -2 / Sqrt[40]
+  204   0.316228             # Qd  =  2 / Sqrt[40]
+  205   0.158114             # Qu  =  1 / Sqrt[40]
+  206   0.158114             # Qe  =  1 / Sqrt[40]
+  207   0.790569             # Qs  =  5 / Sqrt[40]

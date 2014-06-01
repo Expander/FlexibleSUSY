@@ -16,27 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "SoftsusyNMSSM_two_scale_convergence_tester.hpp"
+#ifndef COMPOSITE_CONVERGENCE_TESTER_H
+#define COMPOSITE_CONVERGENCE_TESTER_H
 
 namespace flexiblesusy {
 
-SoftsusyNMSSM_convergence_tester::SoftsusyNMSSM_convergence_tester(SoftsusyNMSSM<Two_scale>* snmssm_, double accuracy_goal_)
-   : Convergence_tester_DRbar<SoftsusyNMSSM<Two_scale> >(snmssm_, accuracy_goal_)
-{
-}
-
-SoftsusyNMSSM_convergence_tester::~SoftsusyNMSSM_convergence_tester()
-{
-}
-
-double SoftsusyNMSSM_convergence_tester::max_rel_diff() const
-{
-   return sumTol(*get_model(), *get_last_iteration_model());
-}
-
-double SoftsusyNMSSM_convergence_tester::sumTol(const SoftsusyNMSSM<Two_scale>& in, const SoftsusyNMSSM<Two_scale>& out) const
-{
-   return softsusy::sumTol(in, out, 100);
-}
+template <class T>
+class Composite_convergence_tester;
 
 }
+
+#endif

@@ -64,7 +64,7 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
 {
    std::ostringstream spinfo;
    spinfo << "# FlexibleSUSY " FLEXIBLESUSY_VERSION " SLHA compliant output\n"
-             "# P. Athron, J. Park, D. Stöckinger, A. Voigt\n"
+             "# P. Athron, Jae-hyeon Park, D. Stöckinger, A. Voigt\n"
              "Block SPINFO\n"
           << FORMAT_SPINFO(1, PKGNAME)
           << FORMAT_SPINFO(2, FLEXIBLESUSY_VERSION);

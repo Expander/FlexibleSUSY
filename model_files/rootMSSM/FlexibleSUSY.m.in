@@ -9,13 +9,6 @@ MINPAR = { {1, m0},
            {5, Azero}
          };
 
-DefaultParameterPoint = {
-    {m0, 4000},
-    {m12, -158},
-    {Sign[\[Mu]], 1},
-    {Azero, -9000}
-};
-
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];

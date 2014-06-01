@@ -19,8 +19,13 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    NmssmSoftsusy s;
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
    QedQcd oneset;
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
    s.setData(oneset);
 
    m.calculate_DRbar_parameters();
@@ -50,10 +55,15 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    NmssmSoftsusy s;
    NMSSM_input_parameters input;
    input.m0 = 250.; // avoids tree-level tachyons
+   input.m12 = 200.;
+   input.TanBeta = 10.;
+   input.Azero = -500.;
+   input.LambdaInput = 0.1;
+   input.SignvS = 1;
    QedQcd oneset;
    oneset.setPoleMt(175.);       // non-default
    oneset.setMass(mBottom, 4.3); // non-default
-   setup_NMSSM(m, s, input);
+   setup_NMSSM_const(m, s, input);
    s.setData(oneset);
 
    m.calculate_DRbar_parameters();

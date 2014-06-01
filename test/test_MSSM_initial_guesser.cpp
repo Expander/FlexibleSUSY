@@ -16,15 +16,19 @@
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
+   MSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+   QedQcd oneset;
    softsusy::TOLERANCE = 1.0e-3;
-   MSSM<Two_scale> m;
+   MSSM<Two_scale> m(input);
    m.set_loops(2);
    SoftsusyMSSM<Two_scale> smssm;
 
    // create MSSM initial guesser
-   MSSM_input_parameters input;
-   QedQcd oneset;
-
    MSSM_low_scale_constraint<Two_scale>  low_constraint(input, oneset);
    MSSM_susy_scale_constraint<Two_scale> susy_constraint(input);
    MSSM_high_scale_constraint<Two_scale> high_constraint(input);

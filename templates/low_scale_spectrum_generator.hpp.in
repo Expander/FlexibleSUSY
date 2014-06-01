@@ -103,10 +103,12 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
-   susy_scale_constraint.reset();
-   low_scale_constraint .reset();
+   susy_scale_constraint.clear();
+   low_scale_constraint .clear();
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
+   susy_scale_constraint.initialize();
+   low_scale_constraint .initialize();
 
    std::vector<Constraint<T>*> upward_constraints {
       &low_scale_constraint,
@@ -118,7 +120,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       &low_scale_constraint
    };
 
-   model.set_input(input);
+   model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections);

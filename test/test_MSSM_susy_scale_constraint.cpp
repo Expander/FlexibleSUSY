@@ -16,8 +16,8 @@
 
 BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 {
-   MSSM<Two_scale> m; MssmSoftsusy s;
    MSSM_input_parameters input;
+   MSSM<Two_scale> m; MssmSoftsusy s;
    setup_MSSM(m, s, input);
 
    MSSM_susy_scale_constraint<Two_scale> constraint(input);

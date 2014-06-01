@@ -3,6 +3,16 @@
 doc/release                     export-ignore
 TODO                            export-ignore
 
+examples/lattice_fmssm.cpp                  export-ignore
+examples/lattice_fmssm_fmssmn.cpp           export-ignore
+examples/lattice_numerical_fmssm.cpp        export-ignore
+examples/lattice_numerical_fmssm_fmssmn.cpp export-ignore
+examples/switch_MSSM.cpp                    export-ignore
+
+meta/Format.m                   export-ignore
+meta/writeNRGE.m                export-ignore
+meta/writeRGE.m                 export-ignore
+
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/MSSMCPV             export-ignore
@@ -12,8 +22,44 @@ model_files/rootMSSM            export-ignore
 model_files/SM                  export-ignore
 model_files/YukawaCMSSM         export-ignore
 
+models/fmssm                    export-ignore
+models/fmssmn                   export-ignore
 models/sm                       export-ignore
 models/smcw                     export-ignore
 
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
+
+src/SM.cpp                           export-ignore
+src/SM.hpp                           export-ignore
+src/consts.hpp                       export-ignore
+src/fortran_utils.f                  export-ignore
+src/lattice_compound_constraint.hpp  export-ignore
+src/lattice_constraint.cpp           export-ignore
+src/lattice_constraint.hpp           export-ignore
+src/lattice_convergence_tester.hpp   export-ignore
+src/lattice_foreign_constraint.hpp   export-ignore
+src/lattice_initial_guesser.hpp      export-ignore
+src/lattice_model.cpp                export-ignore
+src/lattice_model.hpp                export-ignore
+src/lattice_numerical_constraint.cpp export-ignore
+src/lattice_numerical_constraint.hpp export-ignore
+src/lattice_solver.cpp               export-ignore
+src/lattice_solver.hpp               export-ignore
+src/mathdefs.hpp                     export-ignore
+src/small_matrices.hpp               export-ignore
+
+templates/lattice_convergence_tester.cpp.in              export-ignore
+templates/lattice_convergence_tester.hpp.in              export-ignore
+templates/lattice_high_scale_constraint.cpp.in           export-ignore
+templates/lattice_high_scale_constraint.hpp.in           export-ignore
+templates/lattice_initial_guesser.cpp.in                 export-ignore
+templates/lattice_initial_guesser.hpp.in                 export-ignore
+templates/lattice_initial_guesser_low_scale_model.cpp.in export-ignore
+templates/lattice_initial_guesser_low_scale_model.hpp.in export-ignore
+templates/lattice_low_scale_constraint.cpp.in            export-ignore
+templates/lattice_low_scale_constraint.hpp.in            export-ignore
+templates/lattice_model.cpp.in                           export-ignore
+templates/lattice_model.hpp.in                           export-ignore
+templates/lattice_susy_scale_constraint.cpp.in           export-ignore
+templates/lattice_susy_scale_constraint.hpp.in           export-ignore

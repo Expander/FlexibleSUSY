@@ -19,12 +19,12 @@
 #ifndef SMCW_TWO_SCALE_CONVERGENCE_TESTER_H
 #define SMCW_TWO_SCALE_CONVERGENCE_TESTER_H
 
-#include "two_scale_convergence_tester_skeleton.hpp"
+#include "two_scale_convergence_tester_drbar.hpp"
 #include "smcw_two_scale.hpp"
 
 namespace flexiblesusy {
 
-class StandardModelCW_convergence_tester : public Convergence_tester_skeleton<StandardModelCW<Two_scale> > {
+class StandardModelCW_convergence_tester : public Convergence_tester_DRbar<StandardModelCW<Two_scale> > {
 public:
    StandardModelCW_convergence_tester(StandardModelCW<Two_scale>*, double);
    virtual ~StandardModelCW_convergence_tester();
