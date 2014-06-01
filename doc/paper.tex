@@ -1317,6 +1317,7 @@ parameters at the low-scale.
   \secref{Sec:modfile} the superpotential parameter $\mu$ is set to
   the value $1.0$ and its corresponding soft-breaking parameter $B\mu$
   is set to zero. {\color{red} Is $B\mu$ set to zero, this would be weird and from looking I think it is $A_0$.}
+  \JHrem{The C++ code does set $B\mu$ to zero.  Moreover, it sets $\mu$ to +1 GeV irrespective of SignMu.  This should be no problem as long as the solution is found though.}
 \item All model parameters are run to the first guess of the low-scale
   (\code{LowScaleFirstGuess})
 \item The EWSB eqs.\ are solved at the tree-level.
