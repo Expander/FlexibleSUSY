@@ -48,6 +48,22 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\figref}[1]{\figurename~\ref{#1}}
 \newcommand{\secref}[1]{Sec.~\ref{#1}}
 \newcommand{\tabref}[1]{\tablename~\ref{#1}}
+\newcommand{\ptitle}[1]{\emph{#1}}
+\renewcommand{\ptitle}[1]{}
+\newcommand{\JHtxt}[1]{\textcolor[rgb]{1,.3,0}{\texttt{#1}}}
+\newcommand{\JHrem}[1]{\textcolor[rgb]{1,.3,0}{\textbf{{\textsl{\boldmath #1}}}}}
+\makeatletter
+\lstnewenvironment{numlstlisting}[1][]{%
+  \lstset{%
+    #1,
+    numbers=left,
+    firstnumber=auto,
+    numberstyle=\tiny\sffamily}%
+  \csname\@lst @SetFirstNumber\endcsname
+}{%
+  \csname \@lst @SaveFirstNumber\endcsname
+}
+\makeatother
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\re}{Re}
