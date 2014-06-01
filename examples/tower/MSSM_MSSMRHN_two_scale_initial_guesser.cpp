@@ -62,8 +62,6 @@ MSSM_MSSMRHN_initial_guesser<Two_scale>::~MSSM_MSSMRHN_initial_guesser()
 
 void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
 {
-   model_1->clear();
-   model_2->clear();
    guess_susy_parameters();
    guess_soft_parameters();
 }
