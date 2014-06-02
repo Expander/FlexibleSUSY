@@ -75,7 +75,7 @@ public:
    virtual ~NonPerturbativeRunningError() {}
    virtual std::string what() const {
       std::stringstream message;
-      message << "NonPerturbativeRunningError: non-perturbative running "
+      message << "NonPerturbativeRunningError: non-perturbative running"
          " to scale " << scale;
       return message.str();
    }
