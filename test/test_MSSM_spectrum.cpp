@@ -258,6 +258,7 @@ class MSSM_tester {
 public:
    MSSM_tester()
       : mx(0.0), msusy(0.0), mssm()
+      , ewsb_loop_order(1), pole_mass_loop_order(1)
       , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL) {}
    ~MSSM_tester() {
       delete high_constraint;
@@ -268,6 +269,8 @@ public:
    double get_msusy() const { return msusy; }
    MSSM_physical get_physical() const { return mssm.get_physical(); }
    MSSM<Two_scale> get_model() const { return mssm; }
+   void set_ewsb_loop_order(unsigned l) { ewsb_loop_order = l; }
+   void set_pole_mass_loop_order(unsigned l) { pole_mass_loop_order = l; }
    void set_low_scale_constraint(MSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(MSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(MSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -296,8 +299,8 @@ public:
       mssm.clear();
       mssm.set_loops(2);
       mssm.set_thresholds(1);
-      mssm.set_ewsb_loop_order(1);
-      mssm.set_pole_mass_loop_order(1);
+      mssm.set_ewsb_loop_order(ewsb_loop_order);
+      mssm.set_pole_mass_loop_order(pole_mass_loop_order);
       mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
@@ -317,6 +320,7 @@ public:
       solver.add_model(&mssm, upward_constraints, downward_constraints);
       solver.solve();
       mssm.run_to(susy_constraint->get_scale());
+      mssm.solve_ewsb();
       mssm.calculate_spectrum();
       mssm.run_to(Electroweak_constants::MZ);
 
@@ -329,6 +333,7 @@ private:
    MSSM_high_scale_constraint<Two_scale>* high_constraint;
    MSSM_susy_scale_constraint<Two_scale>* susy_constraint;
    MSSM_low_scale_constraint<Two_scale>*  low_constraint;
+   unsigned ewsb_loop_order, pole_mass_loop_order;
 };
 
 BOOST_AUTO_TEST_CASE( test_MSSM_spectrum )
