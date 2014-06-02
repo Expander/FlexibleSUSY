@@ -1884,7 +1884,7 @@ that implement the auto-generated
 components in \figref{fig:class structure for tower}.
 
 To prepare the main source file \code{run_tower.cpp},
-one can make a straightforward extension to
+one can extend % make a straightforward extension to
 \code{run_MSSM.cpp} or \code{run_MSSMRHN.cpp}
 produced in either model directory.
 The shipped example reads:
@@ -2152,7 +2152,7 @@ from the code structure.
 % \end{numlstlisting}
 The last missing piece is the initial guesser.
 One can extend the already available
-\code{MSSM_initial_guesser} class in a straightforward manner.
+\code{MSSM_initial_guesser} class. % in a straightforward manner.
 The essential task is done by the following member function:
 \begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
 void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
