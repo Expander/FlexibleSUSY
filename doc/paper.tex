@@ -570,6 +570,11 @@ EffectiveMu = \[Mu];
 OnlyLowEnergyFlexibleSUSY = False; (* default *)
 
 PotentialLSPParticles = { Chi, Cha, Glu, Sv, Su, Sd, Se };
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
 \end{lstlisting}
 %
 The variable \code{FSModelName} contains the name of the \fs model.
@@ -1468,10 +1473,11 @@ $\Sigma_f(p^2)$ as
 %
 Since the one-loop mass matrices depend on $p$, an iterative procedure
 must be used.  \fs provides three different methods with different
-precision and execution speed to determine the mass eigenvalues:
-
+precision and execution speed to determine the mass eigenvalues.
+These methods are set in the model file and work as follows:
+%
 \begin{itemize}
-\item \code{LowDiagonalizationPrecision}: This option provides the
+\item \code{LowPoleMassPrecision}: This option provides the
   lowest precision but is also the fastest one.  Here the one-loop
   mass matrix $m_{f,1L}^\text{low}$ is calculated exactly once as
 %
@@ -1484,7 +1490,7 @@ precision and execution speed to determine the mass eigenvalues:
   matrix $m_f$.  Afterwards $m_{f,1L}^\text{low}$ is diagonalized and
   the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
 
-\item \code{MediumDiagonalizationPrecision} (default): This option
+\item \code{MediumPoleMassPrecision} (default): This option
   provides calculation with medium precision with a medium execution
   time.  Here the one-loop mass matrix $m_{f,1L}^\text{medium}$ is
   calculated $n$ times as
@@ -1499,11 +1505,11 @@ precision and execution speed to determine the mass eigenvalues:
   $(m_{f,1L}^\text{medium})^{(k)}$ is diagonalized and the $k$th
   eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.
 
-\item \code{HighDiagonalizationPrecision}: This option provides
+\item \code{HighPoleMassPrecision}: This option provides
   diagonalization with highest precision, but has also the highest
   execution time.  Here the one-loop mass matrix
   $m_{f,1L}^\text{high}$ is diagonalized $n$ times, as in the case of
-  \code{MediumDiagonalizationPrecision}, resulting in $n$ pole masses
+  \code{MediumPoleMassPrecision}, resulting in $n$ pole masses
   $m_{f_k}^\pole$ ($k = 1,\ldots,n$).  Afterwards, the diagonalization
   is repeated, this time using the calculated pole masses
   $m_{f_k}^\pole$ for the momentum calculation $p^2 =

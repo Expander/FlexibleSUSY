@@ -54,6 +54,12 @@ UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
 
+(* precision of pole mass calculation *)
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {SARAH`HiggsBoson, SARAH`PseudoScalar, SARAH`ChargedHiggs};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
 FSEigenstates;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
@@ -901,8 +907,8 @@ PrepareUnrotatedParticles[eigenstates_] :=
            TreeMasses`SetUnrotatedParticles[nonMixedParticles];
           ];
 
-ReadDiagonalizationPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
-                              mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
+ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
+                       mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
     Module[{particles, particle, i, precisionList = {}},
            If[!MemberQ[{LowPrecision, MediumPrecision, HighPrecision}, defaultPrecision],
               Print["Error: ", defaultPrecision, " is not a valid",
@@ -946,10 +952,6 @@ Options[MakeFlexibleSUSY] :=
     {
         Eigenstates -> SARAH`EWSB,
         InputFile -> "FlexibleSUSY.m",
-        DefaultDiagonalizationPrecision -> MediumPrecision,
-        HighDiagonalizationPrecision -> {},
-        MediumDiagonalizationPrecision -> {},
-        LowDiagonalizationPrecision -> {},
         SolveEWSBTimeConstraint -> 120 (* in seconds *)
     };
 
@@ -1307,11 +1309,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            phases = ConvertSarahPhases[SARAH`ParticlePhases];
 
            (* determin diagonalization precision for each particle *)
-           diagonalizationPrecision = ReadDiagonalizationPrecisions[
-               OptionValue[DefaultDiagonalizationPrecision],
-               Flatten[{OptionValue[HighDiagonalizationPrecision]}],
-               Flatten[{OptionValue[MediumDiagonalizationPrecision]}],
-               Flatten[{OptionValue[LowDiagonalizationPrecision]}],
+           diagonalizationPrecision = ReadPoleMassPrecisions[
+               DefaultPoleMassPrecision,
+               Flatten[{HighPoleMassPrecision}],
+               Flatten[{MediumPoleMassPrecision}],
+               Flatten[{LowPoleMassPrecision}],
                FSEigenstates];
 
 	   vertexRuleFileName =

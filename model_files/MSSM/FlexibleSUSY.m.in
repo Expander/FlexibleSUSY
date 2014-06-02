@@ -66,3 +66,8 @@ UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};

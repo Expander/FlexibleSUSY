@@ -21,9 +21,5 @@ Print["Starting model: ", ToString[HoldForm[Start["@ModelName@"@SubModel@]]]];
 Start["@ModelName@"@SubModel@];
 
 MakeFlexibleSUSY[Eigenstates -> SARAH`EWSB,
-                 InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}],
-                 DefaultDiagonalizationPrecision -> MediumPrecision,
-                 HighDiagonalizationPrecision -> {hh, Ah, Hpm},
-                 MediumDiagonalizationPrecision -> {},
-                 LowDiagonalizationPrecision -> {}
+                 InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}]
                 ];
