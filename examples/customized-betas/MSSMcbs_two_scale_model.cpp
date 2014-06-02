@@ -43,8 +43,7 @@ MSSM_soft_parameters MSSMcbs<Two_scale>::calc_beta() const
    MSSM_soft_parameters betas(MSSM<Two_scale>::calc_beta());
    if (get_loops() <= 2) return betas;
 
-   // 3-loop g3 beta function from
-   // http://www.liv.ac.uk/~dij/betas/allgennb.log
+   // 3-loop g3 beta function from http://www.liv.ac.uk/~dij/betas/
 
    Eigen::Matrix<double,3,3> Yt = Yu.transpose();
    Eigen::Matrix<double,3,3> Yb = Yd.transpose();
