@@ -92,6 +92,7 @@ int main(int argc, const char* argv[])
         << std::setw(12) << std::left << "MX/GeV" << ' '
         << std::setw(12) << std::left << "MSu(1)/GeV" << ' '
         << std::setw(12) << std::left << "MSu(6)/GeV" << ' '
+        << std::setw(12) << std::left << "Glu/GeV" << ' '
         << '\n';
 
    for (auto tanBeta : range_TanBeta) {
@@ -118,6 +119,7 @@ int main(int argc, const char* argv[])
               << std::setw(12) << std::left << spectrum_generator.get_high_scale() << ' '
               << std::setw(12) << std::left << sup1 << ' '
               << std::setw(12) << std::left << sup6 << ' '
+              << std::setw(12) << std::left << pole_masses.MGlu << ' '
             ;
          if (error) {
             cout << "\t# " << problems;
