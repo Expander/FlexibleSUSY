@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_number_of_calls )
 
    const gsl_multiroot_fsolver_type* solvers[] =
       {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids,
-       gsl_multiroot_fsolver_dnewton};
+       gsl_multiroot_fsolver_broyden, gsl_multiroot_fsolver_dnewton};
 
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       Parabola::number_of_calls = 0;
