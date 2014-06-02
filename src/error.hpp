@@ -83,6 +83,25 @@ private:
    double scale;
 };
 
+/**
+ * @class OutOfMemoryError
+ * @brief Not enough memory
+ */
+class OutOfMemoryError : public Error {
+public:
+   explicit OutOfMemoryError(std::string msg_)
+      : msg(msg_)
+      {}
+   virtual ~OutOfMemoryError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "OutOfMemoryError: Not enought memory: " << msg;
+      return message.str();
+   }
+private:
+   std::string msg;
+};
+
 }
 
 #endif
