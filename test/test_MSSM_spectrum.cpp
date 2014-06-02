@@ -284,10 +284,17 @@ public:
    }
    void test(const MSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints(pp, oneset);
+
+      high_constraint->clear();
+      susy_constraint->clear();
+      low_constraint ->clear();
       high_constraint->set_input_parameters(pp);
-      low_constraint->set_input_parameters(pp);
-      low_constraint->set_sm_parameters(oneset);
+      low_constraint ->set_input_parameters(pp);
+      low_constraint ->set_sm_parameters(oneset);
       susy_constraint->set_input_parameters(pp);
+      high_constraint->initialize();
+      susy_constraint->initialize();
+      low_constraint ->initialize();
 
       MSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
       MSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
