@@ -1849,6 +1849,14 @@ one needs to write the matching object
 % in \figref{fig:class structure for tower}
 as well as gluing codes by hand to build such a program.
 Nevertheless, the clean object structure eases this job.
+One can author nearly all the components of a multi-model spectrum generator
+by making a straightforward extension
+to each corresponding single-model counterpart
+for one of the models forming the tower.
+For this, it should help to have working knowledge about the basic structure
+of a spectrum generator, set out in \secref{Sec:SpecGenStruct}.
+Obviously, this tip does not work for the matching class,
+which has no analogue in a single-model case.
 
 One could best see the overall code structure in the \code{Makefile}:
 \begin{numlstlisting}
