@@ -39,18 +39,18 @@ MSSM_MSSMRHN_initial_guesser<Two_scale>::MSSM_MSSMRHN_initial_guesser(
    MSSM<Two_scale>* model_1_, MSSMRHN<Two_scale>* model_2_,
    const MSSMRHN_input_parameters& input_pars_,
    const QedQcd& oneset_,
-   const MSSM_low_scale_constraint<Two_scale>& low_constraint_,
-   const MSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
-   const MSSMRHN_high_scale_constraint<Two_scale>& high_constraint_,
+   const MSSM_low_scale_constraint<Two_scale>& low_constraint_1_,
+   const MSSM_susy_scale_constraint<Two_scale>& susy_constraint_1_,
+   const MSSMRHN_high_scale_constraint<Two_scale>& high_constraint_2_,
    const MSSM_MSSMRHN_matching<Two_scale>& matching_
 )
    : Initial_guesser<Two_scale>()
    , model_1(model_1_), model_2(model_2_)
    , input_pars(input_pars_)
    , oneset(oneset_)
-   , low_constraint(low_constraint_)
-   , susy_constraint(susy_constraint_)
-   , high_constraint(high_constraint_)
+   , low_constraint_1(low_constraint_1_)
+   , susy_constraint_1(susy_constraint_1_)
+   , high_constraint_2(high_constraint_2_)
    , matching(matching_)
 {
    assert(model_1 && model_2 && "MSSM_MSSMRHN_initial_guesser: Error: pointers to models must not be zero");
@@ -62,8 +62,6 @@ MSSM_MSSMRHN_initial_guesser<Two_scale>::~MSSM_MSSMRHN_initial_guesser()
 
 void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
 {
-   model_1->clear();
-   model_2->clear();
    guess_susy_parameters();
    guess_soft_parameters();
 }
@@ -119,19 +117,20 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
 
 void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
 {
-   const double low_scale_guess = low_constraint.get_initial_scale_guess();
-   const double high_scale_guess = high_constraint.get_initial_scale_guess();
+   const double low_scale_guess_1 = low_constraint_1.get_initial_scale_guess();
+   const double high_scale_guess_2 =
+      high_constraint_2.get_initial_scale_guess();
    const double matching_scale_guess = matching.get_initial_scale_guess();
 
    model_1->run_to(matching_scale_guess);
    matching.set_models(model_1, model_2);
    matching.match_low_to_high_scale_model();
 
-   model_2->run_to(high_scale_guess);
+   model_2->run_to(high_scale_guess_2);
 
    // apply high-scale constraint
-   high_constraint.set_model(model_2);
-   high_constraint.apply();
+   high_constraint_2.set_model(model_2);
+   high_constraint_2.apply();
 
    // apply user-defined initial guess at the high scale
    model_2->set_Mu(1.);
@@ -140,7 +139,7 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
    model_2->run_to(matching_scale_guess);
    matching.match_high_to_low_scale_model();
 
-   model_1->run_to(low_scale_guess);
+   model_1->run_to(low_scale_guess_1);
 
    // apply EWSB constraint
    model_1->solve_ewsb_tree_level();

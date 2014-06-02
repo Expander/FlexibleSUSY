@@ -32,9 +32,10 @@ pdfkeywords={FlexibleSUSY,supersymmetry,spectrum,generator,MSSM,NMSSM,E6SSM},
 bookmarks=true, linktocpage]{hyperref}
 
 %macros
-\newcommand{\sarah}{SARAH\xspace}
-\newcommand{\fs}{FlexibleSUSY\xspace}
-\newcommand{\ESSM}{E$_6$SSM\xspace}
+\newcommand{\sarah}{SARAH\@\xspace}
+\newcommand{\fs}{FlexibleSUSY\@\xspace}
+\newcommand{\mathematica}{Mathematica\xspace}
+\newcommand{\ESSM}{E$_6$SSM\@\xspace}
 \newcommand{\code}[1]{\lstinline|#1|}  % inline source code
 \newcommand{\textoverline}[1]{$\overline{\mbox{#1}}$}
 \newcommand{\DRbar}{\textoverline{DR}\xspace}
@@ -47,6 +48,22 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\figref}[1]{\figurename~\ref{#1}}
 \newcommand{\secref}[1]{Sec.~\ref{#1}}
 \newcommand{\tabref}[1]{\tablename~\ref{#1}}
+\newcommand{\ptitle}[1]{\emph{#1}}
+\renewcommand{\ptitle}[1]{}
+\newcommand{\JHtxt}[1]{\textcolor[rgb]{1,.3,0}{\texttt{#1}}}
+\newcommand{\JHrem}[1]{\textcolor[rgb]{1,.3,0}{\textbf{{\textsl{\boldmath #1}}}}}
+\makeatletter
+\lstnewenvironment{numlstlisting}[1][]{%
+  \lstset{%
+    #1,
+    numbers=left,
+    firstnumber=auto,
+    numberstyle=\tiny\sffamily}%
+  \csname\@lst @SetFirstNumber\endcsname
+}{%
+  \csname \@lst @SaveFirstNumber\endcsname
+}
+\makeatother
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\re}{Re}
@@ -93,7 +110,7 @@ Universitat de Val\`{e}ncia-CSIC,
 TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    
   \begin{abstract}
-   We introduce \fs, a MATHEMATICA package which generates a fast,
+   We introduce \fs, a \mathematica package which generates a fast,
    precise C++ spectrum generator for any SUSY model specified by the
    user.  The generated code is designed with both speed and
    modularity in mind, making it easy to adapt and extend with new
@@ -219,7 +236,7 @@ which can be generated from
 \fs provides a much needed alternative to this with a structure which
 has been freshly designed to accommodate as general range of models as
 possible and to be easily adaptable to changing goals and new
-ideas. \fs is a MATHEMATICA package which uses \sarah to create a
+ideas. \fs is a \mathematica package which uses \sarah to create a
 fast, modular C++ spectrum generator for a user specified SUSY model.
 The generated code structure is designed to be as flexible as possible
 to accommodate different types of extensions and due to it's modular
@@ -247,7 +264,7 @@ code which can be created using SARAH.
 
 \section{Overview of the Program}
 \label{Sec:Program}
-\fs is a MATHEMATICA package designed to create a fast and easily
+\fs is a \mathematica package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
 non-supersymmetric models.  The user specifies the model by giving the
 superfield content, superpotential, gauge symmetries and mass mixings
@@ -295,6 +312,7 @@ makes this straightforward by adding or interfacing with the
 appropriate routine.
 
 \subsection{Design goals}
+\label{sec:design goals}
 
 FlexibleSUSY is designed with the following points in mind:
 
@@ -386,7 +404,7 @@ create a custom spectrum generator the following requirements are
 necessary:
 %
 \begin{itemize}
-\item MATHEMATICA, version 7 or higher
+\item \mathematica, version 7 or higher
 \item SARAH, version 4.0.4 or higher \url{http://sarah.hepforge.org}
 \item C++11 compatible compiler (g++ 4.4.7 or higher, clang++ 3.1 or
   higher, icpc 12.1 or higher)
@@ -420,7 +438,7 @@ The first command creates the model directory \code{models/MSSM/}
 together with a MSSM model file.  The \code{configure} scrip checks
 the system requirements and creates the \code{Makefile}.  See
 \code{./configure --help} for more options.  Executing \code{make}
-will start MATHEMATICA to generate the spectrum generator and compile
+will start \mathematica to generate the spectrum generator and compile
 it.  The resulting executable can be run like this:
 \begin{lstlisting}[language=bash]
 $ models/MSSM/run_MSSM.x --slha-input-file=model_fies/MSSM/LesHouches.in.MSSM
@@ -473,7 +491,7 @@ Block MASS
 
 \section{Setting up a FlexibleSUSY model}
 \label{Sec:modfile}
-A \fs model is configured via a (MATHEMATICA) model file
+A \fs model is configured via a (\mathematica) model file
 \code{FlexibleSUSY.m} in the model directory \code{models/<model>/}.
 Many example model files can be found in \code{model_files/}.  The
 default model file for the CMSSM looks like this:
@@ -1300,6 +1318,7 @@ parameters at the low-scale.
   \secref{Sec:modfile} the superpotential parameter $\mu$ is set to
   the value $1.0$ and its corresponding soft-breaking parameter $B\mu$
   is set to zero. {\color{red} Is $B\mu$ set to zero, this would be weird and from looking I think it is $A_0$.}
+  \JHrem{The C++ code does set $B\mu$ to zero.  Moreover, it sets $\mu$ to +1 GeV irrespective of SignMu.  This should be no problem as long as the solution is found though.}
 \item All model parameters are run to the first guess of the low-scale
   (\code{LowScaleFirstGuess})
 \item The EWSB eqs.\ are solved at the tree-level.
@@ -1511,11 +1530,722 @@ the leading log two loop corrections are estimated, by generalising
 those of the MSSM or NMSSM, as has been done, for example, in the
 E$_6$SSM\cite{King:2005jy}.
 
-\section{Flexible Spectra}
+\section{Flexible Applications}
 \label{Sec:Flexible}
-\subsection{Meta code}
+
+By definition, research is an endeavour to find something new.
+Therefore, it can often be the case that
+an auto-generated spectrum generator executable is not enough.
+\fs attempts to offer a clean interface through which
+one can exploit its facilities
+while undergoing a minimal amount of frustration,
+when he or she programs for a wide variety of studies.
+In what follows,
+this property shall be demonstrated by presenting a few use cases
+at differing levels of complexity.
+
+To avoid confusion,
+it should be mentioned that
+the code snippets presented below are not
+verbatim listings of the files included in the package.
+They have been tailored retaining the semantics
+for conciseness.
+
+\subsection{Adapting model files}
+
+There are simple but interesting goals
+that one can achieve only by working on
+\mathematica files.
+The outcome thus obtained from \fs
+might already include a fully-fledged program
+that is useful in physics analysis.
+In a more advanced project,
+one might utilize the produced libraries as building blocks
+that constitute the target application.
+For a general account of the \fs model files,
+refer to \secref{Sec:modfile}.
+
+\subsubsection{Changing boundary conditions}
+
+As already emphasized in \secref{sec:design goals}, the modular design of
+\fs makes it straightforward % to change a boundary condition.
+% Within the present C++ code structure,
+% this task reduces
+to replace a boundary condition object.
+The question then becomes how
+one could obtain an alternative boundary condition class,
+apart from writing one by hand.
+The meta code feature of \fs offers great assistance
+in this respect.
+An example shall be presented to illustrate how this works.
+
+In the literature,
+there is a popular alternative to the CMSSM boundary condition
+under which the Higgs soft masses are allowed to be different from
+the universal mass of the other scalars \cite{NUHM}.
+One might implement
+this non-universal Higgs-mass MSSM (NUHMSSM) scenario
+simply by modifying the model description given to \fs.
+A section of the \code{FlexibleSUSY.m.in} file is listed below:
+\begin{numlstlisting}
+EXTPAR = {{1, mHd2In}, {2, mHu2In}};
+
+HighScaleInput={
+  {mHd2, mHd2In}, {mHu2, mHu2In},
+  {T[Ye], Azero*Ye}, {T[Yd], Azero*Yd}, {T[Yu], Azero*Yu},
+  {mq2, UNITMATRIX[3] m0^2}, {ml2, UNITMATRIX[3] m0^2}, {md2, UNITMATRIX[3] m0^2},
+  {mu2, UNITMATRIX[3] m0^2}, {me2, UNITMATRIX[3] m0^2},
+  {MassB, m12}, {MassWB, m12}, {MassG, m12}
+};
+\end{numlstlisting}
+Since \code{mHd2} and \code{mHu2} are to be fixed at constants
+different from \code{m0^2},
+two additional input parameters,
+\code{mHd2In} and \code{mHu2In}, holding those constants,
+are introduced in the list \code{EXTPAR}.
+These input parameters are then declared to be the high-scale values of
+\code{mHd2} and \code{mHu2} in line 4.
+The rest of the boundary conditions is the same as in the CMSSM\@.
+In the SLHA input file,
+the parameter indices \code{1} and \code{2} of
+\code{mHd2In} and \code{mHu2In}, declared in \code{EXTPAR} above,
+must appear
+as the first field in each line in the \code{EXTPAR} block:
+\begin{numlstlisting}
+Block EXTPAR
+    1   10000                # mHd2In
+    2   -2500                # mHu2In
+\end{numlstlisting}
+Note that the two additional input parameters are chosen to have
+mass dimension 2, unlike \code{m0}.
+This makes it easy to
+try both signs of the high-scale value of either soft Higgs mass squared,
+as exemplified in line 3.
+If one were not interested in a negative boundary value of \code{mHu2}
+for instance,
+then a dimension-1 parameter %, \code{mHuIn},
+might instead be introduced whose square is equated with \code{mHu2}.
+
+The full implementation is available
+in \code{model_files/NUHMSSM/}.
+To try it out, do the following:
+\begin{numlstlisting}[language=bash]
+$ ./createmodel --name=NUHMSSM --sarah-model=MSSM
+$ ./configure --with-models=NUHMSSM
+$ make
+$ models/NUHMSSM/run_NUHMSSM.x --slha-input-file=model_files/NUHMSSM/LesHouches.in.NUHMSSM
+\end{numlstlisting}
+Notice the \code{--sarah-model=MSSM} flag in line 1.
+It tells the \code{createmodel} script to reuse
+the MSSM specification in \sarah
+to generate the C++ program.
+
+\subsubsection{Extending existing models}
+
+The preceding example was a modest alteration of a physics scenario
+in that an existing model has been reused.
+A more non-trivial modification might involve
+an extension of the particle content as well as the interactions.
+One of the simplest classes of models beyond the MSSM is
+those with additional gauge-single fields.
+In what follows, a supersymmetric type-I see-saw model
+\cite{see-saw}
+shall be considered in which
+three neutral (heavy) chiral superfields are introduced.
+
+% To create a new model, one should name it.
+In the package, this model is named \code{MSSMRHN}, standing for
+the MSSM plus right-handed neutrinos.
+% Since \fs needs the outcome of \sarah,
+One needs to prepare an input file to \sarah which might be placed in
+\code{<FlexibleSUSY-root>/sarah/MSSMRHN/} or
+\code{<SARAH-root>/Models/MSSMRHN/}.
+The input file \code{MSSMRHN.m} contains
+the declaration of the three-generation singlets \code{v}:
+\begin{numlstlisting}[name=MSSMRHN.m]
+SuperFields[[8]] = {v, 3, conj[vR], 0, 1, 1, RpM};
+\end{numlstlisting}
+as well as the neutrino Yukawa couplings and the Majorana mass terms
+of the singlets:
+\begin{numlstlisting}[name=MSSMRHN.m]
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd +
+                 Yv v.l.Hu + Mv/2 v.v;
+\end{numlstlisting}
+Further declarations inform \sarah
+of how to form Dirac spinors out of the new Weyl spinors
+and how the scalars and the fermions mix to comprise
+the mass eigenstates:
+\begin{numlstlisting}[name=MSSMRHN.m]
+DEFINITION[GaugeES][DiracSpinors] = {
+  Fu1 -> {FuL, 0}, Fu2 -> {0, FuR},
+  Fv1 -> {FvL, 0}, Fv2 -> {0, FvR},
+  ...
+};
+
+DEFINITION[EWSB][MatterSector] = {
+  {{SuL, SuR}, {Su, ZU}},
+  {{SvL, SvR}, {Sv, ZV}},
+  ...
+  {{fB, fW0, FHd0, FHu0}, {L0, ZN}},
+  {{FvL, conj[FvR]}, {FV, UV}},
+  {{{fWm, FHdm}, {fWp, FHup}}, {{Lm, UM}, {Lp, UP}}},
+  {{{FuL}, {conj[FuR]}}, {{FUL, ZUL}, {FUR, ZUR}}}
+};
+
+DEFINITION[EWSB][DiracSpinors] = {
+  Fu  -> {FUL, conj[FUR]},
+  Fv  -> {FV , conj[FV] },
+  Chi -> {L0 , conj[L0] },
+  Cha -> {Lm , conj[Lp] },
+  ...
+};
+\end{numlstlisting}
+With respect to the MSSM file, newly added lines are
+6, 12, 15, and 22.
+Notice that the (left- and right-handed) neutrino mixing
+in line 15 resembles the neutralino mixing in line 14.
+Due to the Majorana mass term in the superpotential,
+the six neutrino mass eigenstates are described in terms of
+Majorana spinors like the neutralinos.
+
+One should then add descriptions of the new states in the file
+\code{particles.m}:
+\begin{numlstlisting}
+ParticleDefinitions[GaugeES] = {
+  {Fv1, { Description -> "Dirac Left Neutrino" }},
+  {Fv2, { Description -> "Dirac Right Neutrino" }},
+  {SvR, { Description -> "Right Sneutrino", LaTeX ->"\\tilde{\\nu}_R"}},
+  ...
+};
+
+ParticleDefinitions[EWSB] = {
+  {Sv, { Description -> "Sneutrinos",
+         PDG -> {1000012, 1000014, 1000016, 2000012, 2000014, 2000016}}},
+  {Fv, { Description -> "Neutrinos",
+         PDG -> {12, 14, 16, 9900012, 9900014, 9900016}}},
+  ...
+};
+
+WeylFermionAndIndermediate = {
+  {v,   { Description -> "Right Neutrino Superfield" }},
+  {FV,  { Description -> "Neutrino-Masseigenstate"}},
+  {FvL, { Description -> "Left Neutrino"}},
+  {FvR, { Description -> "Right Neutrino"}},
+  ...
+};
+\end{numlstlisting}
+In line 12, one finds PDG codes beginning with \code{99}.
+Such numbers are available for a program author's private use
+\cite{Beringer:1900zz}.
+The new parameters in the superpotential
+and the soft supersymmetry breaking sector
+are to be described in \code{parameters.m}:
+\begin{numlstlisting}
+ParameterDefinitions = {
+  {UV,    { Description -> "Neutrino-Mixing-Matrix"}},
+  {Yv,    { Description -> "Neutrino-Yukawa-Coupling" }},
+  {T[Yv], { Description -> "Trilinear-Neutrino-Coupling"}},
+  {Mv,    { LaTeX -> "M_v", OutputName -> Mv, LesHouches -> Mv}},
+  {B[Mv], { LaTeX -> "B_v", OutputName -> BMv, LesHouches -> BMv}},
+  {mv2,   { Description -> "Softbreaking right Sneutrino Mass"}},
+  ...
+};
+\end{numlstlisting}
+For details on how to write model files for \sarah, consult its manual.
+
+Finally, it remains to put \code{FlexibleSUSY.m.in}
+in \code{model_files/MSSMRHN/}.
+The high-scale boundary conditions therein might read:
+\begin{numlstlisting}
+HighScaleInput = {
+  {Mv, LHInput[Mv]}, {B[Mv], LHInput[B[Mv]]},
+  {Yv, LHInput[Yv]}, {T[Yv], Azero*Yv},
+  {mv2, UNITMATRIX[3] m0^2},
+  ...
+};
+\end{numlstlisting}
+In this particular example,
+the new parameters shown in lines 2--3
+are constrained at the $M_X$ scale
+to the values given in the SLHA input file.
+In a data-driven approach,
+they might alternatively be fixed from a matching against
+a low-energy theory containing the dimension-5
+neutrino mass operator in conjunction with supplementary constraints.
+
+With the above set of input files,
+\fs can generate the C++ code and compile it
+to produce \code{libMSSMRHN}.
+These products shall be employed as the implementation of the theory that
+underlies the MSSM in the next subsection.
+
 \subsection{Adapting C++ code}
-\subsection{Combing with  modules of your own code}
+
+Consider a physics scenario which is best described
+by a tower of effective theories.
+Within the framework of \fs, the C++ object structure is
+a faithful reflection of
+this physicist's view on the given problem.
+This point might be illustrated
+using a well-known configuration in which
+the higher-energy theory is the MSSMRHN discussed above which
+gives rise to the MSSM as the lower-energy effective theory.
+The relevant objects are sketched
+in \figref{fig:class structure for tower}.
+\begin{figure}
+  \centering
+\begin{tikzpicture}
+  \draw (0,-.5) coordinate(bottom)
+        (0,-.4)
+     -- (0,0)  coordinate(MZ) node[left] {$M_Z$}
+     -- (0,.7) coordinate(MS) node[left] {$M_S$}
+     -- (0,2)  coordinate(Mv) node[left] {$M_\nu$}
+     -- (0,3)  coordinate(MX) node[left] {$M_X$}
+     -- (0,3.4)
+        (0,3.5) coordinate(top);
+
+  \path (MZ) ++(.3,0) coordinate(MZR) +(3,0) coordinate(MZRR)
+        (MS) ++(.3,0) coordinate(MSR) +(3,0) coordinate(MSRR)
+        (Mv) ++(.3,0) coordinate(MvR) +(3,0) coordinate(MvRR)
+        (MX) ++(.3,0) coordinate(MXR) +(3,0) coordinate(MXRR);
+
+  \draw (MZ) +(-.1,0) -- +(+.1,0); \draw[<-] (MZ) ++(-.8,0) -- ++(-.5,0)
+     node[left,draw] {\code{MSSM_low_scale_constraint}};
+  \draw (MS) +(-.1,0) -- +(+.1,0); \draw[<-] (MS) ++(-.8,0) -- ++(-.5,0)
+     node[left,draw] {\code{MSSM_susy_scale_constraint}};
+  \draw (Mv) +(-.1,0) -- +(+.1,0); \draw[<-] (Mv) ++(-.8,0) -- ++(-.5,0)
+     node[left,draw] {\code{MSSM_MSSMRHN_matching}};
+  \draw (MX) +(-.1,0) -- +(+.1,0); \draw[<-] (MX) ++(-.8,0) -- ++(-.5,0)
+     node[left,draw] {\code{MSSMRHN_high_scale_constraint}};
+
+  \draw (MvRR) +(0,-.03) rectangle (MZR) node[pos=.5] {\code{MSSM}};
+  \draw (MvRR) +(0, .03) rectangle (MXR) node[pos=.5] {\code{MSSMRHN}};
+
+  \path (bottom) +(3.8,0) coordinate(SE) (top) +(-6.8,0) coordinate(NW);
+  \draw  (NW) +(0,.5) rectangle (SE)
+         (NW) -- +(10.6,0);
+  \path (top) node[above] {\code{RGFlow}};
+\end{tikzpicture}
+  \caption{Schematic object structure in the C++ code for
+    the tower scenario.}
+  \label{fig:class structure for tower}
+\end{figure}
+The \code{MSSMRHN} object is in effect from the $M_X$ scale down to
+the $M_\nu$ scale at which the right-handed neutrinos are decoupled.
+Below this scale, the \code{MSSM} object takes over.
+On the left of the vertical axis,
+the boundary condition objects acting on either model are displayed,
+together with the matching object connecting the two theories.
+Note that each of the boundary condition and matching objects
+maintains and updates its own scale over iterations.
+An arrow in the figure depicts
+the association of a constraint with its scale.
+All these components are plugged into the \code{RGFlow} object
+which then solves the problem.
+
+Since the current implementation of \fs does not (yet)
+produce a spectrum generator spanning multiple models,
+one needs to write the matching object
+% in \figref{fig:class structure for tower}
+as well as gluing codes by hand to build such a program.
+Nevertheless, the clean object structure eases this job.
+
+One could best see the overall code structure in the \code{Makefile}:
+\begin{numlstlisting}
+CPPFLAGS  := -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) \
+             $(INCMSSM) $(INCMSSMRHN)
+
+TOWER_SRC := run_tower.cpp \
+	     MSSM_MSSMRHN_two_scale_matching.cpp \
+	     MSSM_MSSMRHN_two_scale_initial_guesser.cpp
+
+TOWER_OBJ := $(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC)))
+
+run_tower.x: $(TOWER_OBJ) $(LIBMSSM) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
+  $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
+\end{numlstlisting}
+This file is created in \code{examples/tower/}
+on the execution of the \code{configure} script.
+The include directives in line 2 tell the compiler
+where to find the headers for either \code{MSSM} or \code{MSSMRHN}.
+The \code{.cpp} files in lines 4--6 and the \code{.hpp} files
+that they include are to be written by hand.
+Obviously, the executable \code{run_tower.x}, in line 10, depends on both
+\code{$(LIBMSSM)} and \code{$(LIBMSSMRHN)}
+that implement the auto-generated
+components in \figref{fig:class structure for tower}.
+
+To prepare the main source file \code{run_tower.cpp},
+one can make a straightforward extension to
+\code{run_MSSM.cpp} or \code{run_MSSMRHN.cpp}
+produced in either model directory.
+The shipped example reads:
+\begin{numlstlisting}
+#include "MSSM_MSSMRHN_spectrum_generator.hpp"
+
+int main(int argc, char* argv[])
+{
+  // define objects;
+  QedQcd oneset;
+  MSSM_input_parameters    input_1;
+  MSSMRHN_input_parameters input_2;
+  // fill in input_1 and input_2;
+  oneset.toMz(); // run SM fermion masses to MZ
+  typedef Two_scale algorithm_type;
+  MSSM_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
+  // set up spectrum_generator;
+  spectrum_generator.run(oneset, input_1, input_2);
+  // extract outcome from models;
+}
+\end{numlstlisting}
+where a line in the form \code{// ...;} shall be understood
+to be a pseudo-code.
+Given two models,
+one declares two sets of input parameters,
+\code{input_1} and \code{input_2}, in lines 7--8.
+The suffixes \code{_1} and \code{_2} are not necessary but intended to remind
+the programmer of to which model the object is relevant.
+
+The \code{main} function then delegates
+the \code{MSSM_MSSMRHN_spectrum_generator} object
+to set up and drive the \code{RGFlow} object in
+\figref{fig:class structure for tower}.
+This task is started by the call in line 14 to
+the following member function defined in
+\code{MSSM_MSSMRHN_spectrum_generator.hpp}:
+\begin{numlstlisting}[name=SGrun]
+template<class T> void MSSM_MSSMRHN_spectrum_generator<T>::run
+(const QedQcd& oneset,
+ const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
+{
+  high_scale_constraint_2.clear(); // of type MSSMRHN_high_scale_constraint<T>
+  susy_scale_constraint_1.clear(); // of type MSSM_susy_scale_constraint<T>
+  low_scale_constraint_1 .clear(); // of type MSSM_low_scale_constraint<T>
+  matching.reset();                // of type MSSM_MSSMRHN_matching<T>
+  high_scale_constraint_2.set_input_parameters(input_2);
+  susy_scale_constraint_1.set_input_parameters(input_1);
+  low_scale_constraint_1 .set_input_parameters(input_1);
+  matching.set_upper_input_parameters(input_2);
+  high_scale_constraint_2.initialize();
+  susy_scale_constraint_1.initialize();
+  low_scale_constraint_1 .initialize();
+  if (!is_zero(input_scale_2)) high_scale_constraint_2.set_scale(input_scale_2);
+\end{numlstlisting}
+This piece of code is nearly a verbatim copy of
+the corresponding part of \code{MSSM_spectrum_generator.hpp}.
+The only differences are that the type of
+\code{high_scale_constraint_2} is
+\code{MSSMRHN_high_scale_constraint<T>} and that
+the \code{matching} object has been added.
+Recall that the template parameter \code{T} has been bound to
+\code{Two_scale} in the \code{main} function.
+One then constructs a list of
+the constraints on \code{MSSM}:
+\begin{numlstlisting}[name=SGrun]
+  std::vector<Constraint<T>*> upward_constraints_1;
+  upward_constraints_1.push_back(&low_scale_constraint_1);
+  std::vector<Constraint<T>*> downward_constraints_1;
+  downward_constraints_1.push_back(&susy_scale_constraint_1);
+  downward_constraints_1.push_back(&low_scale_constraint_1);
+\end{numlstlisting}
+and initializes the \code{MSSM} object:
+\begin{numlstlisting}[name=SGrun]
+  model_1.clear();                 // of type MSSM<T>
+  model_1.set_input_parameters(input_1);
+  model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
+\end{numlstlisting}
+Likewise for \code{MSSMRHN}:
+\begin{numlstlisting}[name=SGrun]
+  std::vector<Constraint<T>*> upward_constraints_2;
+  upward_constraints_2.push_back(&high_scale_constraint_2);
+  std::vector<Constraint<T>*> downward_constraints_2;
+  downward_constraints_2.push_back(&high_scale_constraint_2);
+  model_2.clear();                 // of type MSSMRHN<T>
+  model_2.set_input_parameters(input_2);
+\end{numlstlisting}
+Note that \code{model_2} does not have to calculate the pole masses of
+the SM particles since it is active only above $M_\nu$
+which is assumed to be much higher than the weak scale.
+To test the convergence of both models,
+one may construct a composite convergence tester
+out of auto-generated
+\code{MSSM_convergence_tester} and \code{MSSMRHN_convergence_tester}:
+\begin{numlstlisting}[name=SGrun]
+  MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
+  MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
+  if (max_iterations > 0) {
+    convergence_tester_1.set_max_iterations(max_iterations);
+    convergence_tester_2.set_max_iterations(max_iterations);
+  }
+  Composite_convergence_tester<T> convergence_tester;
+  convergence_tester.add_convergence_tester(&convergence_tester_1);
+  convergence_tester.add_convergence_tester(&convergence_tester_2);
+\end{numlstlisting}
+On construction,
+the initial guesser accepts the following parameters
+including the two model objects:
+\begin{numlstlisting}[name=SGrun]
+  MSSM_MSSMRHN_initial_guesser<T> initial_guesser
+    (&model_1, &model_2, input_2, oneset,
+     low_scale_constraint_1, susy_scale_constraint_1, high_scale_constraint_2,
+     matching);
+\end{numlstlisting}
+The code of the above class shall be presented later on.
+One then passes
+\code{convergence_tester} and \code{initial_guesser}
+to \code{solver}, the \code{RGFlow} object,
+along with the precision specification:
+\begin{numlstlisting}[name=SGrun]
+  Two_scale_increasing_precision precision(10.0, precision_goal);
+  solver.reset();                  // of type RGFlow<T>
+  solver.set_convergence_tester(&convergence_tester);
+  solver.set_running_precision(&precision);
+  solver.set_initial_guesser(&initial_guesser);
+\end{numlstlisting}
+Finally,
+one is ready to construct the tower of effective theories
+by adding to \code{solver}
+each model plus the associated list of constraints
+optionally accompanied by a matching object:
+\begin{numlstlisting}[name=SGrun]
+  solver.add_model(&model_1, &matching, upward_constraints_1, downward_constraints_1);
+  solver.add_model(&model_2, upward_constraints_2, downward_constraints_2);
+\end{numlstlisting}
+The order of addition is from the lowest scale to the highest.
+Notice in line 49
+that the matching object between \code{model_1} and
+\code{model_2} is given when one adds the former, i.e.\ the lower-energy model.
+It then remains to solve the boundary value problem:
+\begin{numlstlisting}[name=SGrun]
+  high_scale_2 = susy_scale_1 = low_scale_1 = 0; matching_scale = 0;
+  solver.solve();
+\end{numlstlisting}
+After the solution is found,
+one can obtain the resulting low-energy spectrum.
+Since \code{model_1} is in contact with the lowest energy,
+let it calculate the spectrum:
+\begin{numlstlisting}[name=SGrun]
+  susy_scale_1 = susy_scale_constraint_1.get_scale();
+  model_1.run_to(susy_scale_1);    // of type MSSM<T>
+  model_1.calculate_spectrum();
+  if (!is_zero(parameter_output_scale_1))
+    model_1.run_to(parameter_output_scale_1);
+}
+\end{numlstlisting}
+In lines 56--57,
+the scale is optionally brought to the value at which
+one wishes to get the \DRbar\ parameters.
+
+One needs to write the matching class for a particular pair of
+models from scratch.
+It shall be based on the abstract class \code{Matching<Two_scale>}
+that comes with \fs.
+In the present example, the class is declared in the header
+\code{MSSM_MSSMRHN_two_scale_matching.hpp}:
+\begin{numlstlisting}
+template<> class MSSM_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
+public:
+  MSSM_MSSMRHN_matching();
+  MSSM_MSSMRHN_matching(const MSSMRHN_input_parameters&);
+  void match_low_to_high_scale_model();
+  void match_high_to_low_scale_model();
+  double get_scale() const;
+  void set_models(Two_scale_model *lower, Two_scale_model *upper);
+  double get_initial_scale_guess() const;
+  void set_upper_input_parameters(const MSSMRHN_input_parameters&);
+  void set_scale(double);
+  void reset();
+private:
+  MSSM   <Two_scale> *lower;
+  MSSMRHN<Two_scale> *upper;
+  void make_initial_scale_guess();
+  void update_scale();
+  ...
+};
+\end{numlstlisting}
+As lines 4 and 10 indicate,
+this class takes an \code{MSSMRHN_input_parameters} object as input.
+The \code{MvInput} field thereof is referenced
+for the initial guess of the matching scale
+in line 25 of \code{MSSM_MSSMRHN_two_scale_matching.cpp}:
+\begin{numlstlisting}
+void MSSM_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+{
+  upper->set_Yd(lower->get_Yd());
+  // copy rest of couplings from lower to upper;
+  upper->set_scale(lower->get_scale());
+}
+
+void MSSM_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
+{
+  update_scale();
+  lower->set_Yd(upper->get_Yd());
+  // copy rest of couplings from upper to lower;
+  lower->set_scale(upper->get_scale());
+}
+
+void MSSM_MSSMRHN_matching<Two_scale>::set_upper_input_parameters
+(const MSSMRHN_input_parameters& inputPars_)
+{
+  inputPars = inputPars_;
+  make_initial_scale_guess();
+}
+
+void MSSM_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
+{
+  double RHN_scale = pow(abs(inputPars.MvInput.determinant()), 1.0/3);
+  scale = initial_scale_guess = RHN_scale;
+}
+
+void MSSM_MSSMRHN_matching<Two_scale>::update_scale()
+{
+  double RHN_scale = pow(abs(upper->get_Mv().determinant()), 1.0/3);
+  scale = RHN_scale;
+}
+\end{numlstlisting}
+Recall that \code{MvInput} is the high-scale boundary value of \code{Mv}.
+If one had opted for an alternative strategy to fix \code{Mv},
+then \code{MSSM_MSSMRHN_matching} might have required a different input.
+Subsequently, the matching scale is updated at each iteration
+to be the geometric mean of the running \code{Mv} eigenvalues
+in lines 31--32.
+The actual matching process takes place in the two functions
+\code{match_low_to_high_scale_model} and \code{match_high_to_low_scale_model}.
+For brevity,
+their examples shown above simply copy each coupling
+upwards or downwards, neglecting threshold corrections.
+The way to incorporate these corrections should be self-evident
+from the code structure.
+
+% \begin{numlstlisting}
+% template<>
+% class MSSM_MSSMRHN_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
+% public:
+%   MSSM_MSSMRHN_initial_guesser(MSSM<Two_scale>*, MSSMRHN<Two_scale>*,
+%                                const MSSMRHN_input_parameters&,
+%                                const QedQcd&,
+%                                const MSSM_low_scale_constraint<Two_scale>&,
+%                                const MSSM_susy_scale_constraint<Two_scale>&,
+%                                const MSSMRHN_high_scale_constraint<Two_scale>&,
+%                                const MSSM_MSSMRHN_matching<Two_scale>&);
+%   virtual ~MSSM_MSSMRHN_initial_guesser();
+%   virtual void guess();
+%
+% private:
+%   MSSM   <Two_scale>* model_1;
+%   MSSMRHN<Two_scale>* model_2;
+%   MSSMRHN_input_parameters input_pars;
+%   QedQcd oneset;
+%   MSSM_low_scale_constraint<Two_scale> low_constraint;
+%   MSSM_susy_scale_constraint<Two_scale> susy_constraint;
+%   MSSMRHN_high_scale_constraint<Two_scale> high_constraint;
+%   MSSM_MSSMRHN_matching<Two_scale> matching;
+% };
+% \end{numlstlisting}
+The last missing piece is the initial guesser.
+One can extend the already available
+\code{MSSM_initial_guesser} class in a straightforward manner.
+The essential task is done by the following member function:
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
+{
+  // guess SUSY couplings in model-1 at low energy;
+
+  const double low_scale_guess_1 = low_constraint_1.get_initial_scale_guess();
+  const double high_scale_guess_2 = high_constraint_2.get_initial_scale_guess();
+  const double matching_scale_guess = matching.get_initial_scale_guess();
+\end{numlstlisting}
+Compared to the MSSM case,
+the differences are that
+the type of \code{high_constraint_2}
+is \code{MSSMRHN_high_scale_constraint<Two_scale>} and that
+\code{matching_scale_guess} has been inserted.
+Due to this intermediate scale,
+the initial run-up is divided into two steps,
+with a matching procedure in-between:
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+  model_1->run_to(matching_scale_guess); // of type MSSM<Two_scale>
+  matching.set_models(model_1, model_2);
+  matching.match_low_to_high_scale_model();
+  model_2->run_to(high_scale_guess_2);   // of type MSSMRHN<Two_scale>
+\end{numlstlisting}
+The high-scale constraints are applied to \code{model_2},
+the higher-energy model,
+and the remaining undetermined parameters are guessed:
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+  high_constraint_2.set_model(model_2);
+  high_constraint_2.apply();
+  model_2->set_Mu(1.0); model_2->set_BMu(0.0);
+\end{numlstlisting}
+The initial two-step run-down again involves a matching process:
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+  model_2->run_to(matching_scale_guess);
+  matching.match_high_to_low_scale_model();
+  model_1->run_to(low_scale_guess_1);
+\end{numlstlisting}
+At the low scale where \code{MSSM} is valid,
+the code is the same as in \code{MSSM_initial_guesser}:
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+  model_1->solve_ewsb_tree_level();
+  model_1->calculate_DRbar_parameters();
+  model_1->set_thresholds(3); model_1->set_loops(2);
+}
+\end{numlstlisting}
+
+Finally,
+one prescribes the additional input parameters in the SLHA input file:
+\begin{numlstlisting}
+Block YvIN                   # neutrino Yukawas at MX
+1 1  0.1568611               # Yv(1,1)
+1 2  0.6400513               # Yv(1,2)
+1 3  0.7521494               # Yv(1,3)
+2 1  0.4663838               # Yv(2,1)
+...                          # remaining 5 entries
+Block MvIN                   # heavy neutrino masses at MX
+1 1  4.150000E+14            # Mv(1,1)
+...                          # remaining 8 entries
+Block BMvIN                  # right-handed sneutrino bilinear terms
+1 1  1.000000E+02            # BMv(1,1)
+...                          # remaining 8 entries
+\end{numlstlisting}
+The file in the package contains the values that approximately reproduce
+the observed neutrino masses and mixing angles
+\cite{Beringer:1900zz}
+through the see-saw mechanism.
+
+For further details, browse the directory \code{examples/tower/}.
+One can build and run the example therein by:
+\begin{numlstlisting}
+$ ./createmodel --name=MSSM
+$ ./createmodel --name=MSSMRHN
+$ ./configure --with-models=MSSM,MSSMRHN
+$ make
+$ cd examples/tower
+$ make
+$ ./run_tower.x --slha-input-file=LesHouches.in.tower
+\end{numlstlisting}
+In the output,
+a part of significant physical interest might be:
+\begin{numlstlisting}
+Block MSL2 Q=   8.97114431E+02
+  1  1     1.25652698E+05   # ml2(1,1)
+  1  2    -7.64196328E+01   # ml2(1,2)
+  1  3    -7.08429254E+01   # ml2(1,3)
+  2  1    -7.64196328E+01   # ml2(2,1)
+  2  2     1.25388732E+05   # ml2(2,2)
+  2  3    -3.15865242E+02   # ml2(2,3)
+  3  1    -7.08429254E+01   # ml2(3,1)
+  3  2    -3.15865242E+02   # ml2(3,2)
+  3  3     1.24556532E+05   # ml2(3,3)
+\end{numlstlisting}
+This result demonstrates the well-known effect on
+the off-diagonal slepton mass matrix elements
+from the non-trivial flavour structure of \code{Yv}
+\cite{Borzumati:1986qx}.
+This leads in turn to the slepton mixing
+matrices, \code{ZE} and \code{ZV},
+which contain intergenerational mixings apart from the
+generic left-right mixings.
 
 \section{Run-time comparison with other spectrum generators}
 \label{Sec:comparison}
@@ -2198,6 +2928,130 @@ Eigen library, version 3.1 \url{http://eigen.tuxfamily.org}
   [hep-ph/0305127].
   %%CITATION = HEP-PH/0305127;%%
   %99 citations counted in INSPIRE as of 04 Apr 2014
+
+\bibitem{NUHM}
+%\cite{Berezinsky:1995cj}
+%\bibitem{Berezinsky:1995cj}
+  V.~Berezinsky, A.~Bottino, J.~R.~Ellis, N.~Fornengo, G.~Mignola and S.~Scopel,
+  %``Neutralino dark matter in supersymmetric models with nonuniversal scalar mass terms,''
+  Astropart.\ Phys.\  {\bf 5} (1996) 1
+  [hep-ph/9508249];
+  %%CITATION = HEP-PH/9508249;%%
+  %176 citations counted in INSPIRE as of 27 May 2014
+%\cite{Nath:1997qm}
+%\bibitem{Nath:1997qm}
+  P.~Nath and R.~L.~Arnowitt,
+  %``Nonuniversal soft SUSY breaking and dark matter,''
+  Phys.\ Rev.\ D {\bf 56} (1997) 2820
+  [hep-ph/9701301];
+  %%CITATION = HEP-PH/9701301;%%
+  %196 citations counted in INSPIRE as of 27 May 2014
+%\cite{Bottino:2000jx}
+%\bibitem{Bottino:2000jx}
+  A.~Bottino, F.~Donato, N.~Fornengo and S.~Scopel,
+  %``Probing the supersymmetric parameter space by WIMP direct detection,''
+  Phys.\ Rev.\ D {\bf 63} (2001) 125003
+  [hep-ph/0010203];
+  %%CITATION = HEP-PH/0010203;%%
+  %167 citations counted in INSPIRE as of 27 May 2014
+%\cite{Bertin:2002sq}
+%\bibitem{Bertin:2002sq}
+  V.~Bertin, E.~Nezri and J.~Orloff,
+  %``Neutralino dark matter beyond CMSSM universality,''
+  JHEP {\bf 0302} (2003) 046
+  [hep-ph/0210034];
+  %%CITATION = HEP-PH/0210034;%%
+  %84 citations counted in INSPIRE as of 27 May 2014
+%
+%\cite{Drees:1996pk}
+%\bibitem{Drees:1996pk}
+  M.~Drees, M.~M.~Nojiri, D.~P.~Roy and Y.~Yamada,
+  %``Light Higgsino dark matter,''
+  Phys.\ Rev.\ D {\bf 56} (1997) 276
+   [Erratum-ibid.\ D {\bf 64} (2001) 039901]
+  [hep-ph/9701219];
+  %%CITATION = HEP-PH/9701219;%%
+  %142 citations counted in INSPIRE as of 27 May 2014
+%\cite{Drees:2000he}
+%\bibitem{Drees:2000he}
+  M.~Drees, Y.~G.~Kim, M.~M.~Nojiri, D.~Toya, K.~Hasuko and T.~Kobayashi,
+  %``Scrutinizing LSP dark matter at the CERN LHC,''
+  Phys.\ Rev.\ D {\bf 63} (2001) 035008
+  [hep-ph/0007202];
+  %%CITATION = HEP-PH/0007202;%%
+  %87 citations counted in INSPIRE as of 27 May 2014
+%
+%\cite{Ellis:1998jk}
+%\bibitem{Ellis:1998jk}
+  J.~R.~Ellis, T.~Falk, G.~Ganis, K.~A.~Olive and M.~Schmitt,
+  %``Charginos and neutralinos in the light of radiative corrections: Sealing the fate of Higgsino dark matter,''
+  Phys.\ Rev.\ D {\bf 58} (1998) 095002
+  [hep-ph/9801445];
+  %%CITATION = HEP-PH/9801445;%%
+  %121 citations counted in INSPIRE as of 27 May 2014
+%\cite{Ellis:2000we}
+%\bibitem{Ellis:2000we}
+  J.~R.~Ellis, T.~Falk, G.~Ganis and K.~A.~Olive,
+  %``Supersymmetric dark matter in the light of LEP and the Tevatron collider,''
+  Phys.\ Rev.\ D {\bf 62} (2000) 075010
+  [hep-ph/0004169];
+  %%CITATION = HEP-PH/0004169;%%
+  %138 citations counted in INSPIRE as of 27 May 2014
+%
+%\cite{Ellis:2002wv}
+%\bibitem{Ellis:2002wv}
+  J.~R.~Ellis, K.~A.~Olive and Y.~Santoso,
+  %``The MSSM parameter space with nonuniversal Higgs masses,''
+  Phys.\ Lett.\ B {\bf 539} (2002) 107
+  [hep-ph/0204192];
+  %%CITATION = HEP-PH/0204192;%%
+  %164 citations counted in INSPIRE as of 27 May 2014
+%\cite{Ellis:2002iu}
+%\bibitem{Ellis:2002iu}
+  J.~R.~Ellis, T.~Falk, K.~A.~Olive and Y.~Santoso,
+  %``Exploration of the MSSM with nonuniversal Higgs masses,''
+  Nucl.\ Phys.\ B {\bf 652} (2003) 259
+  [hep-ph/0210205].
+  %%CITATION = HEP-PH/0210205;%%
+  %204 citations counted in INSPIRE as of 27 May 2014
+
+\bibitem{see-saw}
+%\bibitem{Minkowski:1977sc}
+  P.~Minkowski, \ptitle{
+  $\mu \rightarrow e \gamma$ at a Rate of One Out of 1-Billion Muon Decays?,}
+  Phys.\ Lett.\ B {\bf 67} (1977) 421;
+  %%CITATION = PHLTA,B67,421;%%
+  %1696 citations counted in INSPIRE as of 12 Nov 2013
+%\bibitem{Yanagida:1979as}
+  T.~Yanagida, \ptitle{
+  Horizontal Symmetry And Masses Of Neutrinos,}
+  Proc.\ of the
+  Workshop on Unified Theories and the Baryon Number of the Universe,
+  edited by O.~Sawada and A.~Sugamoto, KEK, Japan (1979) 95;
+  %%CITATION = CONFP,C7902131,95;%%
+  %459 citations counted in INSPIRE as of 12 Nov 2013
+%\bibitem{GellMann:1980vs}
+  M.~Gell-Mann, P.~Ramond and R.~Slansky, \ptitle{
+  Complex Spinors and Unified Theories,}
+  Supergravity, edited by F.~Nieuwenhuizen and
+  D.~Friedman, North Holland, Amsterdam (1979) 315
+  [arXiv:1306.4669 [hep-th]];
+  %%CITATION = ARXIV:1306.4669;%%
+  %1456 citations counted in INSPIRE as of 12 Nov 2013
+%\cite{Mohapatra:1979ia}
+%\bibitem{Mohapatra:1979ia}
+  R.~N.~Mohapatra and G.~Senjanovic, \ptitle{
+  Neutrino Mass and Spontaneous Parity Nonconservation,}
+  Phys.\ Rev.\ Lett.\  {\bf 44} (1980) 912.
+  %%CITATION = PRLTA,44,912;%%
+  %3254 citations counted in INSPIRE as of 29 Nov 2013
+
+\bibitem{Borzumati:1986qx}
+  F.~Borzumati and A.~Masiero, \ptitle{
+Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
+  Phys.\ Rev.\ Lett.\  {\bf 57} (1986) 961.
+  %%CITATION = PRLTA,57,961;%%
+  %582 citations counted in INSPIRE as of 28 Oct 2013
 
 %\cite{Hall:1980kf}
 \bibitem{Hall:1980kf}

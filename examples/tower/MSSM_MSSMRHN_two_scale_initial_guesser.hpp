@@ -57,9 +57,9 @@ private:
    MSSMRHN<Two_scale>* model_2;
    MSSMRHN_input_parameters input_pars;
    QedQcd oneset;
-   MSSM_low_scale_constraint<Two_scale> low_constraint;
-   MSSM_susy_scale_constraint<Two_scale> susy_constraint;
-   MSSMRHN_high_scale_constraint<Two_scale> high_constraint;
+   MSSM_low_scale_constraint<Two_scale> low_constraint_1;
+   MSSM_susy_scale_constraint<Two_scale> susy_constraint_1;
+   MSSMRHN_high_scale_constraint<Two_scale> high_constraint_2;
    MSSM_MSSMRHN_matching<Two_scale> matching;
 
    void guess_susy_parameters();

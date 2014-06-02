@@ -144,6 +144,7 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
    downward_constraints_1.push_back(&susy_scale_constraint_1);
    downward_constraints_1.push_back(&low_scale_constraint_1);
 
+   model_1.clear();
    model_1.set_input_parameters(input_1);
    model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
 
@@ -153,6 +154,7 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
    std::vector<Constraint<T>*> downward_constraints_2;
    downward_constraints_2.push_back(&high_scale_constraint_2);
 
+   model_2.clear();
    model_2.set_input_parameters(input_2);
 
    MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
