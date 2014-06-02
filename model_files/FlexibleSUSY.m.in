@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* input parameters *)
 

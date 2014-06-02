@@ -60,7 +60,7 @@ HighPoleMassPrecision    = {SARAH`HiggsBoson, SARAH`PseudoScalar, SARAH`ChargedH
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 
-FSEigenstates;
+FSEigenstates = SARAH`EWSB;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
@@ -950,9 +950,7 @@ FindUnfixedParameters[fixed_List] :=
 
 Options[MakeFlexibleSUSY] :=
     {
-        Eigenstates -> SARAH`EWSB,
-        InputFile -> "FlexibleSUSY.m",
-        SolveEWSBTimeConstraint -> 120 (* in seconds *)
+        InputFile -> "FlexibleSUSY.m"
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
@@ -971,8 +969,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
            CheckSARAHVersion[];
-           FSEigenstates = OptionValue[Eigenstates];
-           FSSolveEWSBTimeConstraint = OptionValue[SolveEWSBTimeConstraint];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
            Print["FlexibleSUSY model file loaded"];
