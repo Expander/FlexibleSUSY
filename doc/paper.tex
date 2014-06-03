@@ -116,14 +116,14 @@ TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    modularity in mind, making it easy to adapt and extend with new
    features. The user specifies the model supplying the
    superpotential, gauge structure and particle content in a \sarah
-   model file and provides specific the boundary conditions in a
+   model file and provides the specific boundary conditions in a
    separate \fs model file. \fs makes use of the existing \sarah
    package to obtain self energies, tadpole corrections,
-   renormalisation group equations(RGEs) and tree level mass and
+   renormalisation group equations (RGEs) and tree level mass and
    electroweak symmetry breaking conditions for the specified model. These are
    translated into C++ code and combined  with numerical
    routines for solving the RGEs, EWSB conditions and simultaneously
-   solving for the spectrum conssistent with user specified boundary
+   solving for the spectrum consistent with user specified boundary
    conditions.  The modular structure of the generated code allows for
    individual components to be replaced with an alternative if
    available. \fs has been carefully designed to grow as
@@ -154,14 +154,14 @@ Higgs
          constraints which are specified at two or more different
          renormalisation scales, which are connected by
          renormalisation group equations forming a large set of
-         coupled differential equations. \\ {\em Solution method:}\/
+         coupled first-order differential equations. \\ {\em Solution method:}\/
          Nested iterative algorithm and numerical minimisation of the
          Higgs potential.  \\ {\em Restrictions:} The couplings must
          remain perturbative at all scales between the highest and
          lowest boundary condition.  \fs~ assumes that all couplings
          of the model are real (i.e.\ $CP-$conserving). Due to the
          modular nature of the generated code adaption and extension
-         to overcome restrictions in scope is quite straight forward.
+         to overcome restrictions in scope is quite straightforward.
 
 
 
@@ -169,11 +169,11 @@ Higgs
 
 \newpage
 \section{Introduction}
-Supersymmetry(SUSY) provides the only non-trivial way to extend the
+Supersymmetry (SUSY) provides the only non-trivial way to extend the
 space-time symmetries of the Poincar\'e
 group \cite{Coleman:1967ad,Haag:1974qh}, leading many to suspect that
 SUSY may be realised in nature in some form. In particular
-supersymmetric extensions of the standard model where SUSY is broken
+supersymmetric extensions of the standard model (SM) where SUSY is broken
 at the TeV scale have been proposed to solve the hierarchy
 problem \cite{Weinberg:1975gm, Weinberg:1979bn, Gildener:1976ai,
   Susskind:1978ms, 'tHooft:1980xb}, allow gauge coupling
@@ -215,9 +215,9 @@ First low energy signatures expected from such models, such as the
 classic jets plus missing transverse energy signature, have not been
 observed, substantially raising the lower limit on sparticle masses
 (see e.g.~\cite{Aad:2013wta,Chatrchyan:2014lfa}). No other signature
-of beyond the standard model(BSM) physics has been observed, leaving
+of beyond the standard model (BSM) physics has been observed, leaving
 the fundamental questions which motivated BSM physics
-unanswered. Secondly ATLAS and CMS discovered\cite{ATLAS:2012ae,
+unanswered. Secondly ATLAS and CMS discovered \cite{ATLAS:2012ae,
   Chatrchyan:2012tx} a light Higgs of $125$ GeV, within the mass range
 that could be accommodated in the MSSM but requiring stops which are
 significantly heavier than both the direct collider limits and
@@ -231,7 +231,7 @@ considerations.  In both cases exploration of such models can be aided
 if it is possible to quickly create a fast spectrum generator.
 Currently there is only option for this, a SPheno-like FORTRAN code
 which can be generated from
-\sarah\cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}.
+\sarah \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}.
 
 \fs provides a much needed alternative to this with a structure which
 has been freshly designed to accommodate as general range of models as
@@ -390,7 +390,7 @@ improve the precision of the CE$_6$SSM spectrum generator presended in
 \cite{Athron:2009bs,Athron:2012pw} by adding further one-loop
 self-energies and two-loop $\beta$-functions.
 
-\paragraph{Alternative boundary condition problem solvers}
+\paragraph{Alternative boundary value problem solvers}
 
 Furthermore, the standard algorithm which solves the user-defined
 boundary value problem via a fixed-point iteration is not guaranteed
@@ -1001,7 +1001,7 @@ SUSY model:
   in the variable \code{HighScale}.  In the model file in
   \secref{Sec:modfile} it is defined to be the unification scale $M_X$
   where $g_1(M_X) = g_2(M_X)$.  The model parameters which, are set in
-  the $apply()$ function at the high-scale, are extracted from the
+  the \code{apply()} function at the high-scale, are extracted from the
   \code{HighScaleInput} variable.
 
 \item The \emph{SUSY-scale constraint} is indended to set boundary
@@ -1243,7 +1243,7 @@ formulated as
 \end{align}
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
-VEVs corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
+VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
 tadpole diagram of $H_i$.
 
 The electroweak symmetry breaking conditions
@@ -1405,7 +1405,7 @@ checking for convergence after each iteration.  This approach is
 decribed in \cite{Barger:1993gh} for the MSSM and is widely
 implemented in SUSY spectrum generators.
 
-The in more detail the two-scale algorithm used in \fs works as
+In more detail the two-scale algorithm used in \fs works as
 follows, see also \figref{fig:two-scale-algorithm}:
 %
 \subparagraph{Initial guess:} The RG solver starts to guess all model
@@ -1545,7 +1545,7 @@ input file, all model parameters are run to the defined output scale.
 
 \subsection{Pole masses}
 After the solver routine has finished and convergence has been
-achieved, all $\overline{DR}$ parameters are consistent with the
+achieved, all $\overline{DR}$ parameters consistent with the
 one-loop EWSB conditions, low energy data and all user supplied
 boundary conditions are known at any scale between \code{LowScale} and
 \code{HighScale}.
@@ -2364,7 +2364,7 @@ Block MSL2 Q=   8.97114431E+02
 \end{numlstlisting}
 This result demonstrates the well-known effect on
 the off-diagonal slepton mass matrix elements
-from the non-trivial flavour structure of \code{Yv}
+from a non-trivial flavour structure of \code{Yv}
 \cite{Borzumati:1986qx}.
 This leads in turn to the slepton mixing
 matrices, \code{ZE} and \code{ZV},
