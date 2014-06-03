@@ -264,58 +264,71 @@ code which can be created using SARAH.
 
 \section{Overview of the Program}
 \label{Sec:Program}
+
+To study the properties of SUSY models programs are needed which
+numerically calculate the pole masses and couplings of the SUSY
+particles given a set of theory input parameters.  The output of these
+so-called spectrum generators can be transferred to programs which
+calculate further observables such as branching rations or the dark
+matter relic density.
+
+In order to create a spectrum generator the SUSY model must be defined
+by specifying the gauge group, the field content and mixings as well
+as the superpotential and the soft-breaking terms.  From this
+information the renormalization group equations, mass matrices,
+self-energies, tadpole diagrams and electroweak symmetry breaking
+conditions have to be derived.  These expressions must then be
+combined in a computer program to allow for a numeric calculation of
+the mass spectrum.  In addition most SUSY models require boundary
+conditions for the model parameters at a low and a high scale.  For
+example in the CMSSM mSUGRA boundary conditions for the soft-breaking
+parameters are imposed at the gauge coupling unification scale.
+Furthemore, at the $Z$ mass scale the CMSSM is matched to the Standard
+Model, which implies conditions for the gauge and Yukawa couplings.
+The so defined boundary value problem must be solved numerically until
+a set of model parameters has been found consistent with all
+user-supplied boundary conditions.
+
 \fs is a \mathematica package designed to create a fast and easily
 adaptable spectrum generator in C++ for any SUSY model and some
 non-supersymmetric models.  The user specifies the model by giving the
 superfield content, superpotential, gauge symmetries and mass mixings
-in the \sarah model files, examples of which can be found in the
-\code{Models} directory of \sarah and the \code{sarah} directory of
-FlexibleSUSY.  The user then also specifies the boundary conditions on
-the model parameters in a separate \code{FlexibleSUSY.m} file,
-examples of which can be found in the \code{model_files} directory. A
-detailed guide on how to write the FlexibleSUSY.m model is given in
-section \ref{Sec:modfile}.
-
-\fs makes use of the existing \sarah package
+in the \sarah model files.  Furthermore, the boundary conditions on
+the model parameters must be specified in a separate
+\code{FlexibleSUSY.m} file.
+%
+Based on this information \fs uses the existing \sarah package
 \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
 to obtain tree level expressions for the mass matrices and electroweak
 symmetry breaking conditions, one-loop self energies, one-loop
-tadpoles corrections and two-loop renormalisation group
-equations(RGEs) for the model specified in the model files. Additional
-corrections which have been calculated elsewhere, such as two-loop
-corrections to the Higgs masses\footnote{By default FlexibleSUSY has
-  two-loop corrections to the Higgs masses for the
-  MSSM\cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
+tadpoles corrections and two-loop renormalisation group equations
+(RGEs) for the model.  Additional corrections which have been
+calculated elsewhere, such as two-loop corrections to the Higgs
+masses\footnote{By default FlexibleSUSY has two-loop corrections to
+  the Higgs masses for the MSSM
+  \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
   and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro
   Slavich. These are the same corrections which are implemented in
   many of the public spectrum generators.} may be added in file
 specified by the user.
+%
+These algerbraic expressions are converted into C++ code and are put
+into classes with well-defined interfaces to allow for easy exchange,
+extension and reuse of the modules.  All of these classes are finally
+combined to a complete spectrum generator, which solves the
+user-defined boundary value problem.  For this task \fs uses some
+parts of SOFTSUSY \cite{Allanach:2001kg}, the very fast Eigen library
+\cite{eigen}, augmented by LAPACK, as well as the GNU scientific
+library and the BOOST library to create numerical routines which solve
+the RGEs and boundary conditions simultaneously.  If a solution has
+been found the pole mass spectrum is eventually calculated using full
+one-loop self-energies (and leading two-loop Higgs self-energy
+contributions for the MSSM and NMSSM).
 
-\fs then converts these algerbraic expressions from \sarah into C++
-code using the C++11 standard. \fs uses some parts of
-SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen library
-\cite{eigen} augmented by LAPACK,
-as well as the gnu scientific library and the boost
-library to create numerical routines which solve the RGEs and EWSB
-conditions.  The main solver routine of \fs then calls these routines
-to find simultaneous solutions for the EWSB, low energy data, and
-other, user supplied, boundary conditions (e.g.\ the usual mSUGRA
-universality conditions) and calculates the mass spectrum.
+\subsection*{Design goals}
 
-The modular structure of the generated code allows for any individual
-components to be replaced with an alternative if available.  Indeed
-\fs has been intentionally designed to grow as alternative solvers and
-calculators are added and a subsequent release with an alternative
-lattice solver is already planned.  In addition if one already has an
-existing code for some other purpose and simply wishes to improve upon
-this by adding, e.g., new RGEs or self energies the modular framework
-makes this straightforward by adding or interfacing with the
-appropriate routine.
-
-\subsection{Design goals}
-\label{sec:design goals}
-
-FlexibleSUSY is designed with the following points in mind:
+Since the calculation of the pole mass spectrum in a SUSY model is a
+non-trivial task, \fs is designed with the following points in mind:
 
 \paragraph{Speed}
 
@@ -358,42 +371,43 @@ mixed particles:
 \end{itemize}
 
 \paragraph{Modularity}
+
 The large variety of supersymmetric models makes it likely that the
-user wants to modify the generated spectrum generator source code.
-\fs uses C++ object orientation features to modularize the source code
-in order to make it easy for the user to modify, reuse and extend the
-spectrum generator.  An important application of this concept are the
-boundary conditions: The RG solver provides a common \code{Constraint}
-interface, see \figref{fig:schematic-two-scale-constraint-interface}.
-%
-\begin{figure}
-  \centering
-  \tikzumlset{fill class=white}
-  \begin{tikzpicture}
-    \umlclass[x=0, y=0]{RGFlow<Two\_scale>}{}{
-      + solve()
-    }
-    \umlclass[x=6, y=0, type=abstract]{Constraint<Two\_scale>}{}{
-      + \umlvirt{apply()}\\
-      + \umlvirt{get\_scale() : double}
-    }
-    \umlclass[x=6, y=-3]{MyConstraint}{}{
-      + apply()\\
-      + get\_scale() : double
-    }
-    \umldep{RGFlow<Two\_scale>}{Constraint<Two\_scale>}
-    \umlinherit{MyConstraint}{Constraint<Two\_scale>}
-  \end{tikzpicture}
-  \caption{Schematic two-scale constraint interface}
-  \label{fig:schematic-two-scale-constraint-interface}
-\end{figure}
-%
-To create a custom constraint \code{MyConstraint}, the user implements
-the interface by inheriting from \code{Constraint} and writing the
-\code{apply()} and \code{get_scale()} methods (see
-\secref{sec:boundary-conditions} for more details).  The so created
-constraint class can then be passed to the RG solver to impose the
-user-defined boundary condition at the chosen scale.
+user wants to modify the generated spectrum generator source code or
+reuses componets in his own program. \fs uses C++ object orientation
+features to modularize the source code in order to make it easy for
+the user to modify, reuse, replace or extend the individual
+components.  An important application of this concept are the boundary
+conditions: The boundary conditions solver class provides a plugin
+mechanism via a common \code{Constraint} interface, which allows a
+user to exchange or add boundary conditions at any scale.
+Alternatively, if one already has an existing code for some other
+purpose and simply wishes to improve upon this by adding, e.g., new
+RGEs or self-energies the modular framework makes this straightforward
+by adding or interfacing with the appropriate routine.  A possible
+application of reusing the \fs' generated classes would be to further
+improve the precision of the CE$_6$SSM spectrum generator presended in
+\cite{Athron:2009bs,Athron:2012pw} by adding further one-loop
+self-energies and two-loop $\beta$-functions.
+
+\paragraph{Alternative boundary condition problem solvers}
+
+Furthermore, the standard algorithm which solves the user-defined
+boundary value problem via a fixed-point iteration is not guaranteed
+to converge in all regions of the model parameter space.  Therefore,
+\fs has been intentionally designed to allow for alternative solvers
+to search for solutions in such critical parameter regions.  A
+subsequent release with an alternative lattice solver is already
+planned.
+
+\paragraph{Towers of effective theories}
+
+In \fs the standard fixed-point iteration solver has been generalized
+to handle towers of models (effective theories), which are matched at
+intermediate scales.  An example of such a tower construction will be
+given in section \ref{sec:adapting-cpp-code}, where a right-handed
+neutrino is integrated out at the see-saw scale, between the SUSY and
+the GUT scale.
 
 \section{Download and compilation}
 \label{Sec:download}
@@ -1789,6 +1803,7 @@ These products shall be employed as the implementation of the theory that
 underlies the MSSM in the next subsection.
 
 \subsection{Adapting C++ code}
+\label{sec:adapting-cpp-code}
 
 Consider a physics scenario which is best described
 by a tower of effective theories.
@@ -3086,6 +3101,24 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   [arXiv:1109.3551 [hep-ph]].
   %%CITATION = ARXIV:1109.3551;%%
   %16 citations counted in INSPIRE as of 03 Jun 2014
+
+%\cite{Athron:2009bs}
+\bibitem{Athron:2009bs}
+  P.~Athron, S.~F.~King, D.~J.~Miller, S.~Moretti and R.~Nevzorov,
+  %``The Constrained Exceptional Supersymmetric Standard Model,''
+  Phys.\ Rev.\ D {\bf 80} (2009) 035009
+  [arXiv:0904.2169 [hep-ph]].
+  %%CITATION = ARXIV:0904.2169;%%
+  %45 citations counted in INSPIRE as of 03 Jun 2014
+
+%\cite{Athron:2012pw}
+\bibitem{Athron:2012pw}
+  P.~Athron, D.~Stockinger and A.~Voigt,
+  %``Threshold Corrections in the Exceptional Supersymmetric Standard Model,''
+  Phys.\ Rev.\ D {\bf 86} (2012) 095012
+  [arXiv:1209.1470 [hep-ph]].
+  %%CITATION = ARXIV:1209.1470;%%
+  %5 citations counted in INSPIRE as of 03 Jun 2014
 
 \end{thebibliography}
 \end{document}
