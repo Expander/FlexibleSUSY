@@ -146,7 +146,7 @@ Higgs
            C++}\\ {\em Computer:}\/ Personal computer\\ {\em Operating
            system:}\/ Tested on Linux 3.x\\ {\em Word size:}\/ 64
          bits\\ {\em External routines:}\/ SARAH 4.0.4, Boost library,
-         Eigen, lapack\\ {\em
+         Eigen, LAPACK\\ {\em
            Typical running time:}\/ 0.1-0.3 seconds per parameter
          point.\\ {\em Nature of problem:}\/ Determining the mass
          spectrum and mixings for any supersymmetric model. The
@@ -294,7 +294,8 @@ specified by the user.
 \fs then converts these algerbraic expressions from \sarah into C++
 code using the C++11 standard. \fs uses some parts of
 SOFTSUSY\cite{Allanach:2001kg}, the very fast Eigen library
-\cite{eigen}, as well as the gnu scientific library and the boost
+\cite{eigen} augmented by LAPACK,
+as well as the gnu scientific library and the boost
 library to create numerical routines which solve the RGEs and EWSB
 conditions.  The main solver routine of \fs then calls these routines
 to find simultaneous solutions for the EWSB, low energy data, and
@@ -414,7 +415,9 @@ necessary:
 \item Boost library, version 1.36.0 or higher
   \url{http://www.boost.org}
 \item GNU scientific library \url{http://www.gnu.org/software/gsl/}
-\item lapack \url{http://www.netlib.org/lapack/}
+\item an implementation of LAPACK \url{http://www.netlib.org/lapack/}
+  such as ATLAS \url{http://math-atlas.sourceforge.net/} or
+  Intel Math Kernel Library \url{http://software.intel.com/intel-mkl}
 \end{itemize}
 %
 Optional:
@@ -1222,7 +1225,7 @@ The tree-level \DRbar masses are calculated by diagonalizing the mass
 matrices returned from \code{SARAH`MassMatrix[]}.  The numerical
 singular value decomposition is performed by the Eigen library routine
 \code{Eigen::JacobiSVD} for matrices with less than four rows and
-columns, and the Lapack routines \code{zgesvd}, \code{dgesvd} for
+columns, and the LAPACK routines \code{zgesvd}, \code{dgesvd} for
 larger matrices.  For the other types of diagonalization,
 \code{Eigen::SelfAdjointEigenSolver} from Eigen is used regardless of
 the matrix size.
