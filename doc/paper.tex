@@ -1080,7 +1080,7 @@ The $\Delta\alpha_i(\mu)$ are threshold corrections and read
 %
 The constants $T_i$ are the dynkin indices of the representation of
 particle $i$ with respect to the gauge group, and $F_i$ are particle
-type-specific constants \cite{Hall:1980kf}
+type specific constants \cite{Hall:1980kf}
 %
 \begin{align}
   F_i =
@@ -1099,9 +1099,18 @@ $\theta_W$ in the SUSY model in the \DRbar\ scheme.  In the MSSM, for
 example, one has
 %
 \begin{align}
-  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1 -
+  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1
+    -
     \left(\frac{M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)}{M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)}\right)^2}
-  .
+  ,
+\end{align}
+%
+while in models with Higgs triplets the relation looks like
+%
+\begin{align}
+  \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1 -
+    \frac{\left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 -
+      g_2^2v_T^2}{\left(M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2}}.
 \end{align}
 %
 The running \DRbar\ $W$ and $Z$ boson masses are calculated in each
@@ -1109,17 +1118,16 @@ iteration from the corrsponding pole masses as
 %
 \begin{align}
   \left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
-  \left(M_W^{\text{pole}}\right)^2 + \re \Pi_{WW}^T(p^2 = (M_W^{\text{pole}})^2, \mu=M_Z) ,\\
+  M_W^2 + \re \Pi_{WW}^T(p^2 = M_W^2, \mu=M_Z) ,\\
   \left(M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
-  \left(M_Z^{\text{pole}}\right)^2 + \re \Pi_{ZZ}^T(p^2 = (M_Z^{\text{pole}})^2, \mu=M_Z) ,
+  M_Z^2 + \re \Pi_{ZZ}^T(p^2 = M_Z^2, \mu=M_Z) ,
 \end{align}
 %
-where $M_W^{\text{pole}} = 80.404\unit{GeV}$ and $M_Z^{\text{pole}} =
-91.1876\unit{GeV}$ \cite{Beringer:1900zz}.  Having
-$e_{\text{susy}}^{\text{\DRbar}}(M_Z)$ and
-$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ allows to calculate the
-(GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the SUSY
-model.  In the MSSM one has for instance
+where $M_W = 80.404\unit{GeV}$ and $M_Z = 91.1876\unit{GeV}$
+\cite{Beringer:1900zz}.  Having $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$
+and $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ allows to calculate
+the (GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the
+SUSY model.  In the MSSM one has for instance
 %
 \begin{align}
   g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
