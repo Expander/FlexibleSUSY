@@ -37,6 +37,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Add tower example to illustrate how to glue multiple models to form
    a stack of effective field theories.
 
+ * Add customized-betas example to illustrate how to replace an
+   auto-generated C++ component by something of an alternative origin.
+
  * Implement leading two-loop MSSM and NMSSM tadpoles from Slavich
    (used in the EWSB conditions).
 
