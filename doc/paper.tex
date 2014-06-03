@@ -277,7 +277,7 @@ by specifying the gauge group, the field content and mixings as well
 as the superpotential and the soft-breaking terms.  From this
 information the renormalization group equations, mass matrices,
 self-energies, tadpole diagrams and electroweak symmetry breaking
-conditions have to be derived.  These expressions must then be
+(EWSB) conditions have to be derived.  These expressions must then be
 combined in a computer program to allow for a numeric calculation of
 the mass spectrum.  In addition most SUSY models require boundary
 conditions for the model parameters at a low and a high scale.  For
@@ -575,10 +575,23 @@ Block EXTPAR
 
 \section{Setting up a FlexibleSUSY model}
 \label{Sec:modfile}
-A \fs model is configured via a (\mathematica) model file
-\code{FlexibleSUSY.m} in the model directory \code{models/<model>/}.
-Many example model files can be found in \code{model_files/}.  The
-default model file for the CMSSM looks like this:
+
+In general a (non-constrained) softly broken SUSY model is defined by
+the gauge group, the field content and mixings as well as the
+superpotential and the soft-breaking Lagrangian.  In order to create a
+spectrum generator for such a SUSY model with \fs, the aforementioned
+model properties have to be defined in a SARAH model file.  The SARAH
+model file can be put into the \code{sarah/<model>/} directory.  See
+the SARAH manual \cite{Staub:2008uz,Staub:2013tta} for a detailed
+explanation of how to write such a model file.
+
+The model boundary conditions are defined in the \fs model file
+\code{FlexibleSUSY.m}, which has to be located in the model directory
+\code{models/<model>/}.  Note, that many example model files can
+already be found in \code{model_files/}.  In the following it is
+explained how the boundary conditions are defined on the basis of the
+CMSSM.  The application to other models is straightforward.  The CMSSM
+model file reads:
 %
 \begin{lstlisting}[language=Mathematica]
 FSModelName = "MSSM";
@@ -631,8 +644,10 @@ LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
-   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]
+           Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]
+           Sin[ArcTan[TanBeta]]}
 };
 
 InitialGuessAtLowScale = {
@@ -664,69 +679,81 @@ LowPoleMassPrecision     = {};
 The variable \code{FSModelName} contains the name of the \fs model.
 
 All non-Standard Model input variables must be specified in the lists
-\code{MINPAR} and \code{EXTPAR}.  Theses two variables refer to the
+\code{MINPAR} and \code{EXTPAR}.  These two variables refer to the
 MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
 The list elements are two-component lists where the first entry is the
-SLHA index in the MINPAR or EXTPAR blocks.  The second entry is the
-name of the parameter.
+SLHA index in the MINPAR or EXTPAR block, respectively.  The second
+entry is the name of the input parameter.  In the above example the
+input parameters are the universal soft-breaking parameters $m_0$,
+$M_{1/2}$, $A_0$ as well as $\tan\beta$ and $\sign\mu$.
 
 Using the the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
-symmetry breaking conditions.  When doing EWSB, \fs will adjust these
-parameters until the EWSB conditons are fulfilled.  In the CMSSM these
-are the superpotential parameter \code{\\[Mu]} and its corresponding
-soft-breaking parameter \code{B[\\[Mu]]}.
+symmetry breaking consistency conditions.  When imposing the EWSB, \fs
+will adjust these parameters until the EWSB conditons are fulfilled.
+In the CMSSM example above these are the superpotential parameter
+\code{\\[Mu]} and its corresponding soft-breaking parameter
+\code{B[\\[Mu]]}.  In the NMSSM the parameters $\kappa$, $|v_s|$ and
+$m_s^2$ are usually chosen for this purpose.
 
-Furthermore, the user has to specify the form of three model
-constraints: low-scale, SUSY-scale and high-scale constraints.  In \fs
-they are named as \code{LowScale}, \code{SUSYScale} and
-\code{HighScale}.  For each constraint there is (i) a scale definition
-(named after the constraint), (ii) an initial guess for the scale
-(concatenation of the constraint name and \code{FirstGuess}) and (iii)
-a list of parameter settings to be applied at the scale (concatenation
-of the constraint name and \code{Input}).  Optional a minimum and a
-maximum value for the scale can be given (concatenation of the
-constraint name and \code{Minimum} or \code{Maximum}, respectively).
-The latter can avoid underflows or overflows of the scale value during
-the iteration.  This is especially useful in models where the
-iteration is very unstable and the value of the scale is very
-sensitive to the model parameters.  The meaning of the three
-constraints is the following:
+Furthermore, the user has to specify three model constraints:
+low-scale, SUSY-scale and high-scale.  In \fs they are named as
+\code{LowScale}, \code{SUSYScale} and \code{HighScale}.  For each
+constraint there is (i) a scale definition (named after the
+constraint), (ii) an initial guess for the scale (concatenation of the
+constraint name and \code{FirstGuess}) and (iii) a list of parameter
+settings to be applied at the scale (concatenation of the constraint
+name and \code{Input}).  Optionally a minimum and a maximum value for
+the scale can be given (concatenation of the constraint name and
+\code{Minimum} or \code{Maximum}, respectively).  The latter can avoid
+underflows or overflows of the scale value during the iteration.  This
+is especially useful in models where the iteration is very unstable
+and the value of the scale is very sensitive to the model parameters.
+The meaning of the three constraints is the following:
 %
 \begin{itemize}
 \item \emph{High-scale constraint:} The high-scale constraint is
-  usually the GUT-scale constraint, applied at the scale where the
+  usually the GUT-scale constraint, imposed at the scale where the
   gauge couplings $g_1$ and $g_2$ unify.  The high-scale can be
-  defined by an equation of the form \code{g1 == g2} or by fixed scale
-  value.
+  defined by an equation of the form \code{g1 == g2} or by a fixed
+  numerical value.
 %
-\item \emph{SUSY-scale constraint:} The SUSY-scale constraint is the
-  constraint where \fs imposes the EWSB conditions and calculate the
-  pole mass spectrum.  Its scale $M_S$ is usually defined as
-  $\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.  In the example above it
-  has the value $M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}}$, where
+\item \emph{SUSY-scale constraint:} The SUSY-scale is the typical mass
+  scale of the SUSY particle spectrum.  At this scale \fs imposes the
+  EWSB conditions and calculates the pole mass spectrum.  The
+  SUSY-scale, $M_S$, is usually defined as $M_S =
+  \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.  However, in the example
+  above, where sfermion flavour violation is enabled, it has the value
+  $M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}}$, where
   $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the \DRbar\ masses of
   the lightest and heaviest up-type squark, respectively.
 %
 \item \emph{Low-scale constraint:} The low-scale constraint is the
-  constraint where the gauge couplings $g_1$, $g_2$, $g_3$ and the
-  Yukawa couplings $y_f$ are calculated from given Standard Model
-  input $\alpha_{\text{e.m.}}(M_Z)$, $\alpha_{s}(M_Z)$, $m_f^\pole$,
-  $M_Z^\pole$, $M_W^\pole$, see
-  Sec.~\ref{sec:calculation-of-gauge-couplings}--\ref{sec:calculation-of-yukawa-couplings}.
-  This should be done at the $Z$ mass scale $M_Z$.  The gauge
-  couplings are calculated automatically and therefore do not need to
-  be specified in the \code{LowScaleInput} variable.
+  constraint where the SUSY model is matched to the Standard Model.
+  This is done by calculating the gauge couplings $g_i$ ($i=1,2,3$)
+  and the Yukawa couplings $y_f$ ($f=u,d,e$) from the known Standard
+  Model quantities $\alpha_{\text{e.m.}}(M_Z^\pole)$,
+  $\alpha_{s}(M_Z^\pole)$, $m_f^\pole$, $M_Z^\pole$, $M_W^\pole$.  The
+  details of the calculation are explained in
+  sections~\ref{sec:calculation-of-gauge-couplings}--\ref{sec:calculation-of-yukawa-couplings}.
+  Currently this scale is fixed to be the $Z$ pole mass scale
+  $M_Z^\pole$.  The calculation of the gauge couplings is done
+  automatically and is not needed to be specified in the
+  \code{LowScaleInput} variable.  The calculation of the Yukawa
+  couplings is optional.  If the Yukawa couplings are set to the value
+  \code{Automatic}, they are determined automatically from the known
+  Standard Model fermion masses $m_f$ as explained in section
+  \ref{sec:calculation-of-yukawa-couplings}.
 \end{itemize}
 %
-\fs GUT-normalizes all gauge couplings.  Thus, the high-scale
-definition takes the simple form \code{g1 == g2}.  Another consequence
-is that in the calculation of the VEVs $v_u$ and $v_d$ from $M_Z$ and
-$\tan\beta$ at the low-scale the GUT-normalization has to be taken
-into account, see the example above.
+Note, that \fs GUT-normalizes all gauge couplings.  Thus, the
+high-scale definition takes the simple form \code{g1 == g2}.  Another
+consequence is that in the calculation of the VEVs $v_u$ and $v_d$
+from $M_Z$ and $\tan\beta$ at the low-scale the GUT-normalization has
+to be taken into account, see the example above.
 
-The list of parameter settings can contain as elements any of the
-following:
+The list of parameter settings for imposing a constraint can contain
+as elements any of the following:
 %
 \begin{itemize}
 \item Two-component lists of the form \code{\{parameter, value\}},
@@ -3186,6 +3213,14 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   [arXiv:1209.1470 [hep-ph]].
   %%CITATION = ARXIV:1209.1470;%%
   %5 citations counted in INSPIRE as of 03 Jun 2014
+
+%\cite{Staub:2008uz}
+\bibitem{Staub:2008uz}
+  F.~Staub,
+  %``Sarah,''
+  arXiv:0806.0538 [hep-ph].
+  %%CITATION = ARXIV:0806.0538;%%
+  %82 citations counted in INSPIRE as of 03 Jun 2014
 
 \end{thebibliography}
 \end{document}
