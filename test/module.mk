@@ -117,7 +117,8 @@ endif
 
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
-		$(DIR)/test_standalone.sh
+		$(DIR)/test_standalone.sh \
+		$(DIR)/test_run_examples.sh
 TEST_SRC += \
 		$(DIR)/test_MSSM_slha_input.cpp \
 		$(DIR)/test_MSSM_info.cpp
@@ -126,11 +127,6 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-MSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
-endif
-
-ifeq ($(shell $(FSCONFIG) --with-MSSM --with-MSSMRHN),yes yes)
-TEST_SH += \
-		$(DIR)/test_tower.sh
 endif
 
 TEST_META := \
