@@ -443,7 +443,18 @@ Optional:
 
 \subsection{Quick Start}
 
-To create a MSSM spectrum generator the following three commands:
+\fs can be downloaded as a gzipped tar file from the
+\url{http://flexiblesusy.hepforge.org/}.  To download and install
+version 1.0.0 run:
+%
+\begin{lstlisting}[language=bash]
+$ wget https://www.hepforge.org/archive/flexiblesusy/FlexibleSUSY-1.0.0.tar.gz
+$ tar -xf FlexibleSUSY-1.0.0.tar.gz
+$ cd FlexibleSUSY-1.0.0/
+\end{lstlisting}%% $
+%
+A CMSSM spectrum generator can be created with the following three
+commands:
 %
 \begin{lstlisting}[language=bash]
 $ ./createmodel --name=MSSM
@@ -452,7 +463,7 @@ $ make
 \end{lstlisting}%% $
 %
 The first command creates the model directory \code{models/MSSM/}
-together with a MSSM model file.  The \code{configure} scrip checks
+together with a CMSSM model file.  The \code{configure} script checks
 the system requirements and creates the \code{Makefile}.  See
 \code{./configure --help} for more options.  Executing \code{make}
 will start \mathematica to generate the spectrum generator and compile
@@ -464,7 +475,7 @@ $ models/MSSM/run_MSSM.x --slha-input-file=model_fies/MSSM/LesHouches.in.MSSM
 When executed, the spectrum generator tries to find a set of \DRbar\
 model parameters consistent with all CMSSM boundary conditions for the
 parameter point given in the SLHA input file
-\code{templates/MSSM/LesHouches.in.MSSM}.  Afterwards, the pole mass
+\code{model_files/MSSM/LesHouches.in.MSSM}.  Afterwards, the pole mass
 spectrum and mixing matrices are calculated and written to the command
 line in SLHA format \cite{Skands:2003cj,Allanach:2008qq}.  For the
 parameter point given in the above example the calculated pole mass
@@ -504,6 +515,61 @@ Block MASS
    2000002     1.02015269E+03   # Su_4
    2000004     1.05807759E+03   # Su_5
    2000006     1.05808168E+03   # Su_6
+\end{lstlisting}
+
+\subsection{Alternative models}
+
+\fs already comes with plenty of predefined models: the CMSSM (simply
+called \code{MSSM}), the $Z_3$-symmetric NMSSM (called \code{NMSSM}),
+$Z_3$-violating NMSSM (\code{SMSSM}), the USSM (\code{UMSSM}), the
+\ESSM (\code{E6SSM}), the right-handed neutrino extended MSSM
+(\code{MSSMRHN}) and the NUHM-MSSM (\code{NUHMSSM}).  See the content
+of \code{model_files/} for all predefined model files.  A spectrum
+generator for the $Z_3$-symmetric NMSSM for example can be generated
+like this:
+%
+\begin{lstlisting}[language=bash]
+$ ./createmodel --name=NMSSM
+$ ./configure --with-models=NMSSM
+$ make
+\end{lstlisting}%% $
+%
+This NMSSM variant unifies all soft-breaking trilinear scalar
+couplings at the GUT scale.  In order to relax this constraint and use
+a separate value for $A_\lambda$ at the GUT scale one can edit the
+model file \code{models/NMSSM/FlexibleSUSY.m} and change the lines
+%
+\begin{lstlisting}[language=Mathematica]
+EXTPAR = { {61, LambdaInput} };
+
+HighScaleInput = {
+   ...
+   {T[\[Lambda]], Azero LambdaInput},
+   ...
+};
+\end{lstlisting}
+%
+into
+%
+\begin{lstlisting}[language=Mathematica]
+EXTPAR = { {61, LambdaInput},
+           {63, ALambdaInput}
+         };
+
+HighScaleInput = {
+   ...
+   {T[\[Lambda]], ALambdaInput},
+   ...
+};
+\end{lstlisting}
+%
+The value of $A_\lambda$ at the GUT scale can be set in the SLHA input
+file in \code{EXTPAR} block entry $63$ via
+%
+\begin{lstlisting}
+Block EXTPAR
+   61   0.1                  # LambdaInput
+   63   -100                 # ALambdaInput
 \end{lstlisting}
 
 \section{Setting up a FlexibleSUSY model}
