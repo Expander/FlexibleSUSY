@@ -46,7 +46,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\Lagr}{\mathcal{L}}
 \newcommand{\unity}{\mathbf{1}}
 \newcommand{\figref}[1]{\figurename~\ref{#1}}
-\newcommand{\secref}[1]{Sec.~\ref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
 \newcommand{\tabref}[1]{\tablename~\ref{#1}}
 \newcommand{\ptitle}[1]{\emph{#1}}
 \renewcommand{\ptitle}[1]{}
@@ -246,24 +246,23 @@ known spectrum generators. As well as providing a solution for new
 SUSY models, the generated MSSM and NMSSM codes offer a modern and fast
 alternative to the existing public spectrum generators.
 
-In section \ref{Sec:Program} we describe the program in more detail
-and explain our design goals.  In section \ref{Sec:download}
-information on how to download and compile the code may be found along
-with details on how to get started quickly.  In section
-\ref{Sec:modfile} we describe how the user can create a new
-FlexibleSUSY model file. A detailed description of the structure and
-features of the generated code is then given in section
-\ref{Sec:SpecGenStruct}.  In section \ref{Sec:Flexible} we describe
-the various ways the code can be modified both at the meta code level
-by writing model files and at the C++ code level by modifying the code
-or adding new modules. Finally in section \ref{Sec:comparison} we
-describe detailed comparisons between our generated code and existing
-public spectrum generators as well as against the SPheno-like FORTRAN
-code which can be created using SARAH.
+In \secref{sec:Program} we describe the program in more detail and
+explain our design goals.  In \secref{sec:download} information on how
+to download and compile the code may be found along with details on
+how to get started quickly.  In \secref{sec:modfile} we describe how
+the user can create a new FlexibleSUSY model file. A detailed
+description of the structure and features of the generated code is
+then given in \secref{sec:SpecGenStruct}.  In \secref{sec:Flexible} we
+describe the various ways the code can be modified both at the meta
+code level by writing model files and at the C++ code level by
+modifying the code or adding new modules. Finally in
+\secref{sec:comparison} we describe detailed comparisons between our
+generated code and existing public spectrum generators as well as
+against the SPheno-like FORTRAN code which can be created using SARAH.
 
 
 \section{Overview of the Program}
-\label{Sec:Program}
+\label{sec:Program}
 
 To study the properties of SUSY models programs are needed which
 numerically calculate the pole masses and couplings of the SUSY
@@ -405,12 +404,12 @@ planned.
 In \fs the standard fixed-point iteration solver has been generalized
 to handle towers of models (effective theories), which are matched at
 intermediate scales.  An example of such a tower construction will be
-given in section \ref{sec:adapting-cpp-code}, where a right-handed
-neutrino is integrated out at the see-saw scale, between the SUSY and
-the GUT scale.
+given in \secref{sec:adapting-cpp-code}, where a right-handed neutrino
+is integrated out at the see-saw scale, between the SUSY and the GUT
+scale.
 
 \section{Download and compilation}
-\label{Sec:download}
+\label{sec:download}
 
 \subsection{Requirements}
 
@@ -575,7 +574,7 @@ Block EXTPAR
 \end{lstlisting}
 
 \section{Setting up a FlexibleSUSY model}
-\label{Sec:modfile}
+\label{sec:modfile}
 
 In general a (non-constrained) softly broken SUSY model is defined by
 the gauge group, the field content and mixings as well as the
@@ -741,13 +740,12 @@ The meaning of the three constraints is the following:
   quantities $\alpha_{\text{e.m.}}(M_Z^\pole)$,
   $\alpha_{s}(M_Z^\pole)$, $M_Z^\pole$, $M_W^\pole$.  The details of
   the calculation are explained in
-  section~\ref{sec:calculation-of-gauge-couplings}.  Currently this
-  scale is fixed to be the $Z$ pole mass scale $M_Z^\pole$.
-  Optionally the Yukawa couplings $y_f$ ($f=u,d,e$) can be calculated
-  automatically from the known Standard Model fermion masses $m_f$ by
-  setting their values to \code{Automatic}.  This automatic
-  calculation is explained in section
-  \ref{sec:calculation-of-yukawa-couplings}.
+  \secref{sec:calculation-of-gauge-couplings}.  Currently this scale
+  is fixed to be the $Z$ pole mass scale $M_Z^\pole$.  Optionally the
+  Yukawa couplings $y_f$ ($f=u,d,e$) can be calculated automatically
+  from the known Standard Model fermion masses $m_f$ by setting their
+  values to \code{Automatic}.  This automatic calculation is explained
+  in \secref{sec:calculation-of-yukawa-couplings}.
 \end{itemize}
 %
 The list of parameter settings for imposing a constraint can contain
@@ -774,7 +772,7 @@ SUSYScaleInput = {
   \cite{Staub:2010jh}.  The Standard Model Yukawa couplings \code{Yu},
   \code{Yd}, \code{Ye} can be calculated automatically from the known
   Standard Model quark and lepton masses, see
-  Section~\ref{sec:calculation-of-yukawa-couplings}.  To enable the
+  \secref{sec:calculation-of-yukawa-couplings}.  To enable the
   automatic calculation, \code{value} must be set to \code{Automatic},
   see the example above.
 
@@ -840,7 +838,7 @@ the low- and high-scale using the variables
 \code{InitialGuessAtLowScale} and \code{InitialGuessAtHighScale},
 respectively.  Note, that the gauge couplings will be guessed
 automatically at the low-scale from the known Standard Model
-parameters, see Section~\ref{sec:calculation-of-gauge-couplings}.
+parameters, see \secref{sec:calculation-of-gauge-couplings}.
 
 \fs allows to add leading two-loop contributions to the CP-even Higgs
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
@@ -878,22 +876,22 @@ chargino, gluino, sneutrino, up-type squark, down-type squark,
 selectron) are considered to be LSPs.
 
 \section{Structure of the spectrum generator}
-\label{Sec:SpecGenStruct}
+\label{sec:SpecGenStruct}
 
 In this section we explain the internals of \fs's automatically
 generated spectrum generator.
 %
-As mentioned in \secref{Sec:Program} one of \fs's design goals is to
+As mentioned in \secref{sec:Program} one of \fs's design goals is to
 create modular C++ code to allow for an easy exchange, extension and
 reuse of the generated modules.  For this reason
-\secref{Sec:ModelParametersAndRGEs} briefly describes the so-called
+\secref{sec:ModelParametersAndRGEs} briefly describes the so-called
 ``model class'' hierarchy, which contains the general model
 information, such as parameters, $\beta$-functions, \DRbar\ mass
 spectrum, EWSB, self-energies, and the pole mass spectrum.
 %
 \secref{sec:boundary-conditions} describes how boundary conditions on
 the model parameters are implemented in general at the C++ level.  The
-subsections \ref{sec:calculation-of-gauge-couplings}--\ref{sec:ewsb}
+Subsections \ref{sec:calculation-of-gauge-couplings}--\ref{sec:ewsb}
 explain how the parameters of the SUSY model are matched to the
 Standard Model at the low scale and how the EWSB is imposed.
 %
@@ -902,14 +900,14 @@ calculate the \DRbar\ mass spectrum.
 %
 In \secref{sec:TwoScaleFixedPointIteration} the algorithm which solves
 the user-defined boundary value problem is described on the basis of
-the CMSSM example given in \secref{Sec:modfile}.
+the CMSSM example given in \secref{sec:modfile}.
 %
-Finally, \secref{Sec:PoleMasses} briefly summarizes how the pole mass
+Finally, \secref{sec:PoleMasses} briefly summarizes how the pole mass
 spectrum is obtained from the \DRbar\ model parameters after a
 solution to the boundary value problem has been found.
 
 \subsection{Model parameters and RGEs}
-\label{Sec:ModelParametersAndRGEs}
+\label{sec:ModelParametersAndRGEs}
 
 The parameters of the SUSY model together with their RGEs are stored
 in the model class hierarchy, see the UML diagram in
@@ -1029,7 +1027,7 @@ SUSY model:
   conditions on the model parameters at some very high scale, e.g.\
   the GUT scale $M_X$.  The high-scale is defined by the value given
   in the variable \code{HighScale}.  In the model file in
-  \secref{Sec:modfile} it is defined to be the unification scale $M_X$
+  \secref{sec:modfile} it is defined to be the unification scale $M_X$
   where $g_1(M_X) = g_2(M_X)$.  The model parameters which, are set in
   the \code{apply()} function at the high-scale, are extracted from the
   \code{HighScaleInput} variable.
@@ -1037,7 +1035,7 @@ SUSY model:
 \item The \emph{SUSY-scale constraint} is indended to set boundary
   conditions at the mass scale $M_S$ of the new SUSY particles.  The
   value of $M_S$ is defined by the model file variable
-  \code{SUSYScale}.  In the example model file in \secref{Sec:modfile}
+  \code{SUSYScale}.  In the example model file in \secref{sec:modfile}
   it is defined to be $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where
   $m_{\tilde{u}_1}$ is the mass of the lightest, and $m_{\tilde{u}_6}$
   is the mass of the heaviest up-type squark.  The generated
@@ -1173,7 +1171,7 @@ At the low-scale the \DRbar\ Yukawa coupling matrices
 $y_f^{\text{\DRbar}}(M_Z)$ ($f=u,d,e$) in the SUSY model are
 calculated automatically if the user has set $y_f$ to the value
 \code{Automatic} in the \fs model file.  This is done for example in
-the MSSM model file in \secref{Sec:modfile}.  In this case \fs
+the MSSM model file in \secref{sec:modfile}.  In this case \fs
 expresses the Yukawa couplings in terms of the \DRbar\ fermion mass
 matrices $m_u$, $m_d$, $m_e$.  In the MSSM, for example, these
 relations read
@@ -1457,7 +1455,7 @@ parameters at the low-scale.
   the known Standard Model values (ignoring threshold corrections).
 \item The user-defined initial guess at the low-scale (defined in
   \code{InitialGuessAtLowScale}) is imposed.  In the example given in
-  \secref{Sec:modfile} the Higgs VEVs are set to
+  \secref{sec:modfile} the Higgs VEVs are set to
   \begin{align}
     v_d &= v \cos\beta, & v_u &= v \sin\beta ,
   \end{align}
@@ -1470,7 +1468,7 @@ parameters at the low-scale.
   \code{HighScaleInput}).  Afterwards, the user-defined initial guess
   for the remaining model parameters (defined in
   \code{InitialGuessAtHighScale}) is imposed.  In the example given in
-  \secref{Sec:modfile} the superpotential parameter $\mu$ is set to
+  \secref{sec:modfile} the superpotential parameter $\mu$ is set to
   the value $1.0$ and its corresponding soft-breaking parameter $B\mu$
   is set to zero. {\color{red} Is $B\mu$ set to zero, this would be weird and from looking I think it is $A_0$.}
   \JHrem{The C++ code does set $B\mu$ to zero.  Moreover, it sets $\mu$ to +1 GeV irrespective of SignMu.  This should be no problem as long as the solution is found though.}
@@ -1585,7 +1583,7 @@ input file, all model parameters are run to the defined output scale.
 \end{figure}
 
 \subsection{Pole masses}
-\label{Sec:PoleMasses}
+\label{sec:PoleMasses}
 After the solver routine has finished and convergence has been
 achieved, all $\overline{DR}$ parameters consistent with the
 one-loop EWSB conditions, low energy data and all user supplied
@@ -1688,7 +1686,7 @@ those of the MSSM or NMSSM, as has been done, for example, in the
 E$_6$SSM\cite{King:2005jy}.
 
 \section{Flexible Applications}
-\label{Sec:Flexible}
+\label{sec:Flexible}
 
 By definition, research is an endeavour to find something new.
 Therefore, it can often be the case that
@@ -1720,11 +1718,11 @@ In a more advanced project,
 one might utilize the produced libraries as building blocks
 that constitute the target application.
 For a general account of the \fs model files,
-refer to \secref{Sec:modfile}.
+refer to \secref{sec:modfile}.
 
 \subsubsection{Changing boundary conditions}
 
-As already emphasized in \secref{Sec:Program}, the modular design of
+As already emphasized in \secref{sec:Program}, the modular design of
 \fs makes it straightforward % to change a boundary condition.
 % Within the present C++ code structure,
 % this task reduces
@@ -2012,7 +2010,7 @@ by making a straightforward extension
 to each corresponding single-model counterpart
 for one of the models forming the tower.
 For this, it should help to have working knowledge about the basic structure
-of a spectrum generator, set out in \secref{Sec:SpecGenStruct}.
+of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
 Obviously, this tip does not work for the matching class,
 which has no analogue in a single-model case.
 
@@ -2389,7 +2387,7 @@ $ make
 $ cd examples/tower
 $ make
 $ ./run_tower.x --slha-input-file=LesHouches.in.tower
-\end{numlstlisting}
+\end{numlstlisting}%% $
 In the output,
 a part of significant physical interest might be:
 \begin{numlstlisting}
@@ -2414,7 +2412,7 @@ which contain intergenerational mixings apart from the
 generic left-right mixings.
 
 \section{Run-time comparison with other spectrum generators}
-\label{Sec:comparison}
+\label{sec:comparison}
 
 One of \fs's design goals is a short run-time.  In this section we
 demonstrate that this goal was achieved by comparing the run-time of
@@ -2449,10 +2447,11 @@ CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
 and $A_0\in [-1000,1000]\unit{GeV}$.  For each point an SLHA input
 file is created by appending the values of $m_0$, $m_{1/2}$,
 $\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
-SLHA template file given in \ref{sec:speed-test-slha-template-file}.
-The resulting SLHA input file is passed to each spectrum generator and
-the (wall-clock) time is measured until the program has finished.  The
-average run-times for three different CPU types can be found in
+SLHA template file given in
+\secref{sec:speed-test-slha-template-file}.  The resulting SLHA input
+file is passed to each spectrum generator and the (wall-clock) time is
+measured until the program has finished.  The average run-times for
+three different CPU types can be found in
 \tabref{tab:run-time-comparison}.  The first column shows the run-time
 on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
 enabled.  The second column shows the run-time on the same processor
@@ -2514,7 +2513,7 @@ TODO: Adding tests against the CE$_6$SSM?
 
 We also compared the run-time of \fs against SPheno, Softsusy and the
 SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
-can be found in \secref{Sec:comparison}.
+can be found in \secref{sec:comparison}.
 
 \section{Speed test SLHA input file}
 \label{sec:speed-test-slha-template-file}
