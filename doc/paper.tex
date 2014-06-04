@@ -41,7 +41,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\DRbar}{\textoverline{DR}\xspace}
 \newcommand{\MSbar}{\textoverline{MS}\xspace}
 \newcommand{\unit}[1]{\,\text{#1}}      % units
-\newcommand{\userinput}{\text{<input>}}
+\newcommand{\userinput}{\text{input}}
 \newcommand{\pole}{\text{pole}}
 \newcommand{\Lagr}{\mathcal{L}}
 \newcommand{\unity}{\mathbf{1}}
@@ -841,14 +841,14 @@ the low-scale from the known Standard Model parameters.
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
 Higgs bosons, one CP-odd Higgs boson, one neutral Goldstone boson)
 these corrections can be enabled by setting \code{UseHiggs2LoopMSSM =
-  True;} in the model file and by defining the effective $\mu$-term
+  True} in the model file and by defining the effective $\mu$-term
 \code{EffectiveMu = \\[Mu]}.  This will add the zero-momentum
 corrections of the order $O(y_t^4 + y_b^2 y_t^2 + y_b^4)$, $O(y_t^2
 g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$, $O(y_\tau^2 y_b^2)$ from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}.
 For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
 Higgs bosons, one neutral Goldstone boson) the two-loop contributions
-are enabled by setting \code{UseHiggs2LoopNMSSM = True;} and by
+are enabled by setting \code{UseHiggs2LoopNMSSM = True} and by
 defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda]
   vS / Sqrt[2]}, for example.  This will add the the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
@@ -959,7 +959,7 @@ in the model class hierarchy, which is shown in the UML diagram in
     \umlinherit{<model>\_soft\_parameters}{<model>\_susy\_parameters}
     \umlinherit{<model>}{<model>\_soft\_parameters}
   \end{tikzpicture}
-  \caption{Model parameter class hierarchy.}
+  \caption{Model class hierarchy.}
   \label{fig:parameter-classes}
 \end{figure}
 
@@ -968,7 +968,7 @@ interface class, which defines the basic RGE running interface.  It
 provides the interface function \code{run_to()}, which integrates the
 RGEs up to a given scale using an adaptive Runge-Kutta algorithm.
 This algorithm uses the pure virtual functions \code{get()},
-\code{set()} and \code{beta()}, which need to be implemented by the
+\code{set()} and \code{beta()}, which need to be implemented by a
 derived class.  The \code{get()} and \code{set()} functions return and
 set the model parameters in form of a vector, respectively.  The
 \code{beta()} method returns the $\beta$-function for each parameter
@@ -978,7 +978,7 @@ All SUSY model parameters and their $\beta$-functions are contained in
 the first and second derived classes.  The structure of the
 $\beta$-functions of a general SUSY model
 \cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}
-allows to split the parameters into two classes:
+allows to split these parameters into two classes:
 %
 \begin{enumerate}
 \item \emph{SUSY parameters:} gauge couplings, superpotential
@@ -989,7 +989,7 @@ allows to split the parameters into two classes:
   scalar squared masses.
 \end{enumerate}
 %
-The $\beta$-functions of the SUSY parameters in general only depend on
+The $\beta$-functions of the SUSY parameters in general depend only on
 the SUSY parameters and are independent of the soft-breaking
 parameters.  However, the $\beta$-functions of the soft-breaking
 parameters depend on all model parameters in general.
@@ -1009,10 +1009,9 @@ parameters.
 \fs creates these two classes from the model parameters defined in the
 SARAH model file.  The corresponding one- and two-loop
 $\beta$-functions are calculated algebraically using SARAH's
-\code{SARAH`CalcRGEs[]} routine and are converted to C++ form and
-written into the corresponding \code{beta()} functions.  These two
-classes now allow to use renormalization group running of all SUSY
-model parameters.
+\code{CalcRGEs[]} routine, converted to C++ form and written into the
+corresponding \code{beta()} functions.  These two classes then allow
+to use renormalization group running of all SUSY model parameters.
 
 At the bottom of the hierarchy stands the actual model class, which
 defines \code{calculate_spectrum()} and \code{solve_ewsb()} functions.
@@ -1033,9 +1032,9 @@ will be explained in the next section.
 
 As described in \secref{sec:modfile}, the user defines three boundary
 conditions in the \fs model file at the \mathematica level.  These
-boundary conditions are converted to C++ form and are put into classes
-with a common \code{Constraint<Two\_scale>} interface.  This interface
-has the form:
+boundary conditions are converted to C++ form and are put into
+classes, which implement the common \code{Constraint<Two\_scale>}
+interface.  This interface has the form:
 %
 \begin{lstlisting}[language=C++]
 template<>
@@ -1160,7 +1159,7 @@ Afterwards, SARAH's expression for the Weinberg angle $\theta_W$ in
 terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
 $M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ is used to calculate
 $\theta_W$ in the SUSY model in the \DRbar\ scheme.  In the MSSM, for
-example, one has
+example, it yields
 %
 \begin{align}
   \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1
@@ -1306,10 +1305,10 @@ defined in the \DRbar scheme.
 \subsubsection{Electroweak symmetry breaking}
 \label{sec:ewsb}
 
-\fs assumes that each SUSY model contains Higgs bosons, which allow
-for a spontaneous breaking of the electroweak symmetry.  The
-corresponding EWSB consistency conditions are formulated in \fs at the
-one-loop level as
+\fs assumes that each SUSY model contains Higgs bosons, which trigger
+a spontaneous breaking of the electroweak symmetry.  The corresponding
+EWSB consistency conditions are formulated in \fs at the one-loop
+level as
 %
 \begin{align}
   0 = \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
@@ -1329,7 +1328,7 @@ slower.
 
 In the CMSSM example from \secref{sec:modfile} the
 Eqs.~\eqref{eq:one-loop-ewsb-eq} are expressed in the form of the
-following function:
+following C++ function:
 %
 \begin{lstlisting}[language=C++]
 int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params,
@@ -1362,21 +1361,21 @@ int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params,
 %
 The function parameter \code{x} is the vector of EWSB output
 parameters (defined in \code{EWSBOutputParameters}) and \code{f} is a
-vector which contains the one-loop EWSB eqs.\
+vector which contains the one-loop EWSB Eqs.\
 \eqref{eq:one-loop-ewsb-eq}.  This \code{tadpole_equations()} function
 is passed to the root finder, which searches for values of the model
-parameters $\mu$ and $B\mu$ until \eqref{eq:one-loop-ewsb-eq} is
-fulfilled.
+parameters $\mu$ and $B\mu$ until the Eqs.\
+\eqref{eq:one-loop-ewsb-eq} are fulfilled.
 
 If higher accuracy is required additional routines with higher order
-corrections can be added by setting \code{UseHiggs2LoopMSSM = True;}
+corrections can be added by setting \code{UseHiggs2LoopMSSM = True}
 in the model file.  For example in the MSSM by default \fs adds two
 two-loop Higgs FORTRAN routines supplied by P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
 to add two loop corrections of $\oatas$, $\oabas$, $\oatq$,
 $\oabatau$, $\oabq$, $\oatauq$ and $\oatab$.  In the NMSSM
 contributions of the order $\oatas$, $\oabas$ \cite{Degrassi:2009yq}
-can be added by setting \code{UseHiggs2LoopNMSSM = True;} in the model
+can be added by setting \code{UseHiggs2LoopNMSSM = True} in the model
 file.
 
 \subsection{Tree-level spectrum}
@@ -1457,10 +1456,10 @@ a boundary value problem.  \fs provides a default two-scale boundary
 value problem solver, which tries to find a set of model parameters
 consistent with all constraints at all scales.  It does so by running
 iteratively between the scales of all boundary conditions, imposing
-the constraints (by calling the \code{apply()} function) and checking
-for convergence after each iteration.  This approach is described in
-\cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY
-spectrum generators.
+the constraints (by calling the corresponding \code{apply()} function)
+and checking for convergence after each iteration.  This approach is
+described in \cite{Barger:1993gh} for the MSSM and is widely
+implemented in SUSY spectrum generators.
 
 In more detail the two-scale algorithm used in \fs works as
 follows, see also \figref{fig:two-scale-algorithm}:
@@ -1479,7 +1478,7 @@ parameters at the low-scale.
   \end{align}
   where $v=246.22\unit{GeV}$.  Afterwards, the Yukawa couplings
   $y_{u,d,e}$ of the SUSY model are set to the known Standard Model
-  Yukawa couplings (ignoring SUSY particle corrections).
+  Yukawa couplings (ignoring SUSY radiative corrections).
 \item The SUSY parameters are run to the user-supplied first guess of
   the high-scale (\code{HighScaleFirstGuess}).
 \item The high-scale boundary condition is imposed (defined in
@@ -1491,7 +1490,7 @@ parameters at the low-scale.
   is set to zero. {\color{red} Is $B\mu$ set to zero, this would be weird and from looking I think it is $A_0$.}
   \JHrem{The C++ code does set $B\mu$ to zero.  Moreover, it sets $\mu$ to +1 GeV irrespective of SignMu.  This should be no problem as long as the solution is found though.}
 \item All model parameters are run to the first guess of the low-scale
-  (\code{LowScaleFirstGuess})
+  (\code{LowScaleFirstGuess}).
 \item The EWSB eqs.\ are solved at the tree-level.
 \item The \DRbar\ mass spectrum is calculated.
 \end{enumerate}
@@ -1536,7 +1535,7 @@ actual iteration starts
     coupling $g_i$.  The value $M_X'$ is used as new high-scale in the
     next iteration.
   \item Impose the high-scale constraint (\code{HighScaleInput}).  In
-    the MSSM example the following soft-breaking parameters are fixed
+    the CMSSM example the following soft-breaking parameters are fixed
     to the universal values $m_0$, $M_{1/2}$ and $A_0$:
     \begin{align}
       A^f(M_X) &= A_0 & &(f=u,d,e),\\
@@ -1559,7 +1558,7 @@ actual iteration starts
     \code{SUSYScaleInput} is set to be empty.
   \item Solve the EWSB equations iteratively at the loop level.  In
     the MSSM example from above leading two-loop corrections have been
-    enabled by setting \code{UseHiggs2LoopMSSM = True;}.  This will
+    enabled by setting \code{UseHiggs2LoopMSSM = True}.  This will
     add two-loop tadpole contributions to the effective Higgs
     potential during the EWSB iteration.
   \end{enumerate}
@@ -1570,7 +1569,7 @@ actual iteration starts
 If the fixed-point iteration has converged, all \DRbar\ model
 parameters are known at all scales between \code{LowScale} and
 \code{HighScale}.  In this case all model parameters are run to the
-SUSY-scale and the pole-mass spectrum is calculated, see
+SUSY-scale and the pole-mass spectrum is calculated as described in
 \secref{sec:PoleMasses}.  If the user has chosen a specific output
 scale for the running \DRbar\ model parameters by setting entry $12$
 in block \code{MODSEL} in the SLHA input file, all model parameters
@@ -1625,14 +1624,14 @@ $\Sigma_f(p^2)$ as
 \begin{align}
   &\text{scalars } \phi: &
   m_{\phi,1L}(p^2) &= m_{\phi} - \Sigma_\phi(p^2), \\
-  &\text{majorana fermions } \chi: &
+  &\text{Majorana fermions } \chi: &
   m_{\chi,1L}(p^2) &= m_{\chi} - \frac{1}{2}\Big[
     \Sigma_\chi^S(p^2) + \Sigma_\chi^{S,T}(p^2)
     + \Big( \Sigma_\chi^{L,T}(p^2) + \Sigma_\chi^R(p^2) \Big) m_{\chi} \notag \\
     &&&\phantom{= m_{\chi} - \frac{1}{2}\Big[}
     + m_{\chi} \Big( \Sigma_\chi^L(p^2) + \Sigma_\chi^{R,T}(p^2) \Big)
   \Big], \\
-  &\text{dirac fermions } \psi: &
+  &\text{Dirac fermions } \psi: &
   m_{\psi,1L}(p^2) &= m_{\psi}
   - \Sigma_\psi^S(p^2)
   - \Sigma_\psi^R(p^2) m_{\psi}
@@ -1641,11 +1640,11 @@ $\Sigma_f(p^2)$ as
 %
 Eq.~\eqref{eq:pole-mass-def} can be solved by diagonalizing the
 one-loop mass matrix $m_{f,1L}(p^2)$.  However, since $m_{f,1L}(p^2)$
-depends on the momentum $p$, an iterative procedure must be used.
+depends on the momentum $p$, an iteration over $p$ must be performed.
 Since this iteration can be very time consuming for large field
 multiplets, \fs provides two approximative procedures with a faster
 run-time.  The used procedure can be set in the model file for each
-field.  They work as follows:
+field.  These approximations work as follows:
 %
 \begin{itemize}
 \item \code{LowPoleMassPrecision}: This option provides the
@@ -1696,8 +1695,8 @@ field.  They work as follows:
 \end{itemize}
 %
 If higher accuracy is required, two-loop corrections to the
-self-energies can be added by setting \code{UseHiggs2LoopMSSM = True;}
-in the MSSM or \code{UseHiggs2LoopNMSSM = True;} in the NMSSM in the
+self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
+in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
 model file.  This enables two-loop Higgs FORTRAN routines supplied by
 P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
