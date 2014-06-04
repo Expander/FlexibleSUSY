@@ -921,8 +921,9 @@ boundary value problem has been found.
 \subsection{Model parameters and RGEs}
 \label{sec:ModelParametersAndRGEs}
 
-The parameters of the SUSY model together with their RGEs are stored
-in the model class hierarchy, see the UML diagram in
+The parameters of the SUSY model together with their RGEs, mass
+matrices, self-energies and EWSB equations are stored at the C++ level
+in the model class hierarchy, which is shown in the UML diagram in
 \figref{fig:parameter-classes}.
 %
 \begin{figure}
@@ -952,8 +953,13 @@ in the model class hierarchy, see the UML diagram in
       + beta()\\
       + run\_to()
     }
+    \umlclass[x=0, y=-3.5]{<model>}{}{
+      + calculate\_spectrum()\\
+      + solve\_ewsb()
+    }
     \umlinherit{<model>\_susy\_parameters}{Beta\_function}
     \umlinherit{<model>\_soft\_parameters}{<model>\_susy\_parameters}
+    \umlinherit{<model>}{<model>\_soft\_parameters}
   \end{tikzpicture}
   \caption{Model parameter class hierarchy.}
   \label{fig:parameter-classes}
@@ -961,18 +967,18 @@ in the model class hierarchy, see the UML diagram in
 
 The top of the hierarchy is formed by the \code{Beta_function}
 interface class, which defines the basic RGE running interface.  It
-provides the user function \code{run_to()}, which integrates the RGEs
-up to a given scale using an adaptive Runge-Kutta algorithm.  Thereby
-it uses the pure virtual functions \code{get()}, \code{set()} and
-\code{beta()}, that need to be implemented by the derived class.  The
-\code{get()} and \code{set()} functions return and set the model
-parameters in form of a long vector, respectively.  The \code{beta()}
-method returns the $\beta$-function for each model parameter in form
-of a long vector as well.
+provides the interface function \code{run_to()}, which integrates the
+RGEs up to a given scale using an adaptive Runge-Kutta algorithm.
+This algorithm uses the pure virtual functions \code{get()},
+\code{set()} and \code{beta()}, which need to be implemented by the
+derived class.  The \code{get()} and \code{set()} functions return and
+set the model parameters in form of a vector, respectively.  The
+\code{beta()} method returns the $\beta$-function for each parameter
+in form of a vector as well.
 
 All SUSY model parameters and their $\beta$-functions are contained in
-the derived classes.  The structure of the $\beta$-functions of a
-general SUSY model
+the first and second derived classes.  The structure of the
+$\beta$-functions of a general SUSY model
 \cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Sperling:2013eva,Sperling:2013xqa}
 allows to split the parameters into two classes:
 %
@@ -985,12 +991,12 @@ allows to split the parameters into two classes:
   scalar squared masses.
 \end{enumerate}
 %
-The $\beta$-functions of the SUSY parameters only depend on the
-SUSY parameters and are independent of the soft-breaking
+The $\beta$-functions of the SUSY parameters in general only depend on
+the SUSY parameters and are independent of the soft-breaking
 parameters.  However, the $\beta$-functions of the soft-breaking
 parameters depend on all model parameters in general.
-
-This property is reflected in the C++ code as well: The class
+%
+This property is reflected in the C++ code: The class
 \code{<model>_susy_parameters} direcly inherits from
 \code{Beta_functions} and implements the $\beta$-functions of the SUSY
 parameters.  The class of soft-breaking parameters
@@ -1002,18 +1008,36 @@ model parameters via the common \code{Beta_function} interface and to
 (ii) run the SUSY parameters independently of the soft-breaking
 parameters.
 
+\fs creates these two classes from the model parameters defined in the
+SARAH model file.  The corresponding one- and two-loop
+$\beta$-functions are calculated algebraically using SARAH's
+\code{SARAH`CalcRGEs[]} routine and are converted to C++ form and
+written into the corresponding \code{beta()} functions.  These two
+classes now allow to use renormalisation group running of all SUSY
+model parameters.
+
+At the bottom of the hierarchy stands the actual model class, which
+defines \code{calculate_spectrum()} and \code{solve_ewsb()} functions.
+The former uses the mass matrices and self-energies obtained from
+SARAH to calculate the pole mass spectrum.  It will be explained in
+detail in \secref{sec:PoleMasses}.  The \code{solve_ewsb()} function
+numerically solves the electroweak symmetry breaking equations and
+will be explained in the next section.
+
 \subsection{Boundary conditions}
 \label{sec:boundary-conditions}
 
-The parameters of a SUSY model have to meet certain boundary
-conditions.  For example, the running gauge and Yukawa couplings
-should match the ones of the Standard Model at the scale $M_Z$.
-Usually also high-scale boundary conditions on the soft-breaking
-parameters are applied, as for example in mSUGRA scenarios.
+% The parameters of a SUSY model have to meet certain boundary
+% conditions.  For example, the running gauge and Yukawa couplings
+% should match the ones of the Standard Model at the scale $M_Z$.
+% Usually also high-scale boundary conditions on the soft-breaking
+% parameters are applied, as for example in mSUGRA scenarios.
 
-In \fs the boundary conditions, imposed on the model parameters, are
-(at the C++ level) classes which implement the common
-\code{Constraint<Two\_scale>} interface:
+As described in \secref{sec:modfile}, the user defines three boundary
+conditions in the \fs model file at the \mathematica level.  These
+boundary conditions are converted to C++ form and are put into classes
+with a common \code{Constraint<Two\_scale>} interface.  This interface
+has the form:
 %
 \begin{lstlisting}[language=C++]
 template<>
@@ -1028,43 +1052,44 @@ public:
 The \code{get_scale()} function is supposed to return the
 renormalisation scale at which the constraint is to be imposed.  The
 \code{apply()} method imposes the constraint by setting model
-parameters to values as chosen by the user.
-
-By default, \fs creates three default boundary conditions for each
-SUSY model:
+parameters to values as chosen by the user.  The three boundary
+condition classes are generated as follows:
 %
 \begin{itemize}
 \item The \emph{high-scale constraint} is indended to set boundary
   conditions on the model parameters at some very high scale, e.g.\
   the GUT scale $M_X$.  The high-scale is defined by the value given
-  in the variable \code{HighScale}.  In the model file in
-  \secref{sec:modfile} it is defined to be the unification scale $M_X$
-  where $g_1(M_X) = g_2(M_X)$.  The model parameters which, are set in
-  the \code{apply()} function at the high-scale, are extracted from the
+  in the variable \code{HighScale}.  In the CMSSM example model file
+  in \secref{sec:modfile} it is defined to be the unification scale
+  $M_X$ where $g_1(M_X) = g_2(M_X)$.  The \code{apply()} function is
+  implemented by setting model parameters to the values defined in the
   \code{HighScaleInput} variable.
 
 \item The \emph{SUSY-scale constraint} is indended to set boundary
-  conditions at the mass scale $M_S$ of the new SUSY particles.  The
-  value of $M_S$ is defined by the model file variable
-  \code{SUSYScale}.  In the example model file in \secref{sec:modfile}
-  it is defined to be $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where
-  $m_{\tilde{u}_1}$ is the mass of the lightest, and $m_{\tilde{u}_6}$
-  is the mass of the heaviest up-type squark.  The generated
-  \code{apply()} function sets the model parameters, defined in
-  \code{SUSYScaleInput}.  Finally, the \code{apply()} solves the EWSB
-  equations at the loop level, by adjusting the parameters given in
+  conditions at the mass scale $M_S$ of the SUSY particles.  The value
+  of $M_S$ is defined by the model file variable \code{SUSYScale}.  In
+  the example model file in \secref{sec:modfile} it is defined to be
+  $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where $m_{\tilde{u}_1}$ is
+  the mass of the lightest, and $m_{\tilde{u}_6}$ is the mass of the
+  heaviest up-type squark.  The \code{apply()} function for this
+  constraint sets the model parameters to the values defined in
+  \code{SUSYScaleInput}.  Afterwards, \code{apply()} solves the EWSB
+  equations at the loop level by adjusting the parameters given in
   \code{EWSBOutputParameters} such that the effective Higgs potential
   is minimized.  See \secref{sec:ewsb} for a more detailed description
   of the EWSB in \fs.
 
 \item The \emph{low-scale constraint} is indended to match the SUSY
   model to the Standard Model at the scale $M_Z$.  It does so by
-  calculating the gauge and Yukawa couplings of the SUSY model from
-  the known Standard Model fermion and gauge boson masses, as well as
-  $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$ and
-  $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$.  See
-  \secref{sec:calculation-of-gauge-couplings} and
-  \ref{sec:calculation-of-yukawa-couplings} for more details.  In
+  calculating the gauge couplings of the SUSY model from the known
+  Standard Model quantities
+  $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$
+  $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$, $M_Z$ and
+  $M_W$.  This calculation is explained in
+  \secref{sec:calculation-of-gauge-couplings}.  Optionally, the Yukawa
+  couplings of the SUSY model can be calculated automatically from the
+  Standard Model fermion masses.  See
+  \secref{sec:calculation-of-yukawa-couplings} for more details.  In
   addition to the gauge and Yukawa couplings, the model parameter
   constraints given in \code{LowScaleInput} are imposed here.
 \end{itemize}
@@ -1114,12 +1139,14 @@ The $\Delta\alpha_i(\mu)$ are threshold corrections and read
     -\frac{2}{3} \log{\frac{m_t}{\mu}} \right],\\
   \Delta\alpha_{\text{s},\text{susy}}(\mu) &=
   \frac{\alpha_\text{s}}{2\pi}\left[ \frac{1}{2}-\sum_{\text{susy
-        particle } i} F_i T_i \log{\frac{m_i}{\mu}} \right] .
+        particle } i} F_i T_i \log{\frac{m_i}{\mu}} \right] ,
 \end{align}
 %
-The constants $T_i$ are the dynkin indices of the representation of
-particle $i$ with respect to the gauge group, and $F_i$ are particle
-type specific constants \cite{Hall:1980kf}
+where the sums on the right-hand sides run over all electrically and
+color charged fields absent from the Standard Model.  The constants
+$T_i$ are the dynkin indices of the representation of particle~$i$
+with respect to the gauge group, and $F_i$ are particle-type specific
+constants \cite{Hall:1980kf}
 %
 \begin{align}
   F_i =
@@ -1131,8 +1158,8 @@ type specific constants \cite{Hall:1980kf}
   \end{cases}
 \end{align}
 %
-Afterwards, SARAH's tree-level expression for the Weinberg angle
-$\theta_W$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
+Afterwards, SARAH's expression for the Weinberg angle $\theta_W$ in
+terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
 $M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ is used to calculate
 $\theta_W$ in the SUSY model in the \DRbar\ scheme.  In the MSSM, for
 example, one has
@@ -1166,7 +1193,7 @@ where $M_W = 80.404\unit{GeV}$ and $M_Z = 91.1876\unit{GeV}$
 \cite{Beringer:1900zz}.  Having $e_{\text{susy}}^{\text{\DRbar}}(M_Z)$
 and $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ allows to calculate
 the (GUT-normalized) $U(1)_Y$ and $SU(2)_L$ gauge couplings in the
-SUSY model.  In the MSSM one has for instance
+SUSY model.  In the MSSM they read for instance
 %
 \begin{align}
   g_{1,\text{susy}}^{\text{\DRbar}}(M_Z) &=
@@ -1182,10 +1209,9 @@ At the low-scale the \DRbar\ Yukawa coupling matrices
 $y_f^{\text{\DRbar}}(M_Z)$ ($f=u,d,e$) in the SUSY model are
 calculated automatically if the user has set $y_f$ to the value
 \code{Automatic} in the \fs model file.  This is done for example in
-the MSSM model file in \secref{sec:modfile}.  In this case \fs
-expresses the Yukawa couplings in terms of the \DRbar\ fermion mass
-matrices $m_u$, $m_d$, $m_e$.  In the MSSM, for example, these
-relations read
+the CMSSM model file in \secref{sec:modfile}.  In this case \fs
+expresses the Yukawa couplings in terms of the fermion mass matrices
+$m_u$, $m_d$, $m_e$.  In the MSSM, for example, these relations read
 %
 \begin{align}
   y_u^{\text{\DRbar}}(M_Z) &= \frac{\sqrt{2} m_{u}^T}{v_u} , &
@@ -1201,9 +1227,9 @@ The fermion mass matrices are composed as
   m_e = \diag(m_{e}^{\userinput}, m_{\mu}^{\userinput}, m_{\tau,\text{susy}}^{\text{\DRbar}}(M_Z)),
 \end{align}
 %
-where $m_{u,c,d,s,e,\mu}^{\userinput}$ are read from the
-\code{SMINPUTS} block of the SLHA input file \cite{Skands:2003cj}.
-The CKM mixing matrix is currently assumed to be diagonal.  The 3rd
+where the values for $m_{u,c,d,s,e,\mu}^{\userinput}$ are read from
+the \code{SMINPUTS} block of the SLHA input file \cite{Skands:2003cj}.
+The CKM mixing matrix is currently assumed to be diagonal.  The third
 generation quark masses are calculated in the \DRbar scheme from the
 SLHA user input quantities $m_t^\text{pole}$,
 $m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$ and
@@ -1228,14 +1254,14 @@ $\Delta m_t^{(1),\text{qcd}}$ and $\Delta m_t^{(2),\text{qcd}}$ are
 taken from \cite{Bednyakov:2002sf} and read
 %
 \begin{align}
-  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2 \left(5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right)}{12 \pi^2},\\
+  \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2}{12 \pi^2} \left[5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right],\\
   \begin{split}
     \Delta m_t^{(2),\text{qcd}} &= \left(\Delta
       m_t^{(1),\text{qcd}}\right)^2 \\
-    &\phantom{=\;} - \frac{g_3^4 \left[396
-        \log^2\left(\frac{m_t^2}{\mu^2}\right)-1476
-        \log\left(\frac{m_t^2}{\mu^2}\right)-48 \zeta(3)+2011+16 \pi
-        ^2 (1+\log 4)\right]}{4608 \pi^4}.
+    &\phantom{=\;} - \frac{g_3^4}{4608 \pi^4} \Bigg[396
+    \log^2\left(\frac{m_t^2}{\mu^2}\right)-1476
+    \log\left(\frac{m_t^2}{\mu^2}\right)
+    -48 \zeta(3)+2011+16 \pi ^2 (1+\log 4)\Bigg].
   \end{split}
 \end{align}
 %
@@ -1282,8 +1308,10 @@ defined in the \DRbar scheme.
 \subsubsection{Electroweak symmetry breaking}
 \label{sec:ewsb}
 
-In \fs the one-loop electroweak symmetry breaking conditions are
-formulated as
+\fs assumes that each SUSY model contains Higgs bosons, which allow
+for a spontaneous breaking of the electroweak symmetry.  The
+corresponding EWSB consistency conditions are formulated in \fs at the
+one-loop level as
 %
 \begin{align}
   0 = \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
@@ -1292,29 +1320,24 @@ formulated as
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
 VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
-tadpole diagram of $H_i$.
+tadpole diagram of $H_i$.  The electroweak symmetry breaking
+conditions \eqref{eq:one-loop-ewsb-eq} are solved simultaneously using
+the iterative multi-dimensional root finder algorithm
+\code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific Libraray
+(GSL).  If no root can be found, the
+\code{gsl_multiroot_fsolver_hybrids} algorithm is tried as
+alternative, which uses a variable step size but might be a little
+slower.
 
-The electroweak symmetry breaking conditions
-\eqref{eq:one-loop-ewsb-eq} are then solved simultaneously using the
-iterative multi-dimensional root finder algorithm
-\code{gsl_multiroot_fsolver_hybrid} from the Gnu Scientific Libraray
-(GSL).  If no root was found, the \code{gsl_multiroot_fsolver_hybrids}
-algorithm is tried as alternative, which uses a variable step size but
-might be a little slower.
-
-For example in the MSSM \fs expresses \eqref{eq:one-loop-ewsb-eq} as
-the function
+In the CMSSM example from \secref{sec:modfile} the
+Eqs.~\eqref{eq:one-loop-ewsb-eq} are expressed in the form of the
+following function:
 %
 \begin{lstlisting}[language=C++]
 int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params,
                                        gsl_vector* f)
 {
    ...
-
-   const CLASSNAME::Ewsb_parameters* ewsb_parameters
-      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
-   MSSM* model = ewsb_parameters->model;
-   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
 
    double tadpole[number_of_ewsb_equations];
 
@@ -1339,29 +1362,13 @@ int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params,
 }
 \end{lstlisting}
 %
-Here \code{x} is the vector of EWSB output parameters (defined via
-\code{EWSBOutputParameters}) and \code{f} is a vector which contains
-the one-loop EWSB eqs.\ \eqref{eq:one-loop-ewsb-eq}.  This
-\code{tadpole_equations()} function is called inside of
-\code{MSSM<Two_scale>::solve_ewsb_iteratively_with} then as
-%
-\begin{lstlisting}[language=C++]
-// initial guess
-double x_init[number_of_ewsb_equations];
-ewsb_initial_guess(x_init);
-
-// setup root finder
-int ewsb_loop_order = 1;
-Ewsb_parameters params = {this, ewsb_loop_order};
-Root_finder<number_of_ewsb_equations> root_finder(
-                           MSSM<Two_scale>::tadpole_equations,
-                           &params,
-                           number_of_ewsb_iterations,
-                           ewsb_iteration_precision);
-root_finder.set_solver_type(gsl_multiroot_fsolver_hybrid);
-
-root_finder.find_root(x_init);
-\end{lstlisting}
+The function parameter \code{x} is the vector of EWSB output
+parameters (defined in \code{EWSBOutputParameters}) and \code{f} is a
+vector which contains the one-loop EWSB eqs.\
+\eqref{eq:one-loop-ewsb-eq}.  This \code{tadpole_equations()} function
+is passed to the root finder, which searches for values of the model
+parameters $\mu$ and $B\mu$ until \eqref{eq:one-loop-ewsb-eq} is
+fulfilled.
 
 If higher accuracy is required additional routines with higher order
 corrections can be added by setting \code{UseHiggs2LoopMSSM = True;}
