@@ -229,7 +229,7 @@ the naturalness problems by, for example, raising the tree level Higgs
 mass, and models developed with a fresh perspective, based on other
 considerations.  In both cases exploration of such models can be aided
 if it is possible to quickly create a fast spectrum generator.
-Currently there is only option for this, a SPheno-like FORTRAN code
+Currently there is only one option for this, a SPheno-like FORTRAN code
 which can be generated from
 \sarah \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}.
 
@@ -292,24 +292,20 @@ user-supplied boundary conditions.
 adaptable spectrum generator in C++ for any SUSY model and some
 non-supersymmetric models.  The user specifies the model by giving the
 superfield content, superpotential, gauge symmetries and mass mixings
-in the \sarah model files.  Furthermore, the boundary conditions on
-the model parameters must be specified in a separate
-\code{FlexibleSUSY.m} file.
-%
-Based on this information \fs uses the existing \sarah package
-\cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
-to obtain tree level expressions for the mass matrices and electroweak
-symmetry breaking conditions, one-loop self energies, one-loop
-tadpoles corrections and two-loop renormalization group equations
-(RGEs) for the model.  Additional corrections which have been
-calculated elsewhere, such as two-loop corrections to the Higgs
-masses\footnote{By default FlexibleSUSY has two-loop corrections to
-  the Higgs masses for the MSSM
+in form of \sarah model files.  The boundary conditions on the model
+parameters must be specified in a separate \code{FlexibleSUSY.m} file.
+Based on this information \fs uses \sarah to obtain tree-level
+expressions for the mass matrices and electroweak symmetry breaking
+conditions, one-loop self energies, one-loop tadpoles corrections and
+two-loop renormalisation group equations (RGEs) for the model.
+Additional corrections which have been calculated elsewhere, such as
+two-loop corrections to the Higgs masses\footnote{By default
+  FlexibleSUSY has two-loop corrections to the Higgs masses for the
+  MSSM
   \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
   and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro
   Slavich. These are the same corrections which are implemented in
-  many of the public spectrum generators.} may be added in file
-specified by the user.
+  many of the public spectrum generators.} may be added by the user.
 %
 These algebraic expressions are converted into C++ code and are put
 into classes with well-defined interfaces to allow for easy exchange,
@@ -377,15 +373,15 @@ reuses components in his own program. \fs uses C++ object orientation
 features to modularize the source code in order to make it easy for
 the user to modify, reuse, replace or extend the individual
 components.  An important application of this concept are the boundary
-conditions: The boundary conditions solver class provides a plugin
-mechanism via a common \code{Constraint} interface, which allows a
-user to exchange or add boundary conditions at any scale.
-Alternatively, if one already has an existing code for some other
-purpose and simply wishes to improve upon this by adding, e.g., new
-RGEs or self-energies the modular framework makes this straightforward
-by adding or interfacing with the appropriate routine.  A possible
-application of reusing the \fs' generated classes would be to further
-improve the precision of the CE$_6$SSM spectrum generator presented in
+conditions: The boundary conditions solver provides a plugin mechanism
+via a common \code{Constraint} interface, which allows a user to
+exchange or add boundary conditions at any scale.  Alternatively, if
+one already has an existing code for some other purpose and simply
+wishes to improve upon this by adding, e.g., new RGEs or self-energies
+the modular framework makes this straightforward by adding or
+interfacing with the appropriate routine.  A possible application of
+reusing the \fs's generated classes would be to further improve the
+precision of the CE$_6$SSM spectrum generator presented in
 \cite{Athron:2009bs,Athron:2012pw} by adding further one-loop
 self-energies and two-loop $\beta$-functions.
 
@@ -442,7 +438,7 @@ Optional:
 
 \subsection{Quick Start}
 
-\fs can be downloaded as a gzipped tar file from the
+\fs can be downloaded as a gzipped tar file from
 \url{http://flexiblesusy.hepforge.org/}.  To download and install
 version 1.0.0 run:
 %
@@ -518,16 +514,18 @@ Block MASS
    2000006     1.05808168E+03   # Su_6
 \end{lstlisting}
 
-\subsection{Alternative models}
+\subsection{Spectrum generators for alternative models}
 
 \fs already comes with plenty of predefined models: the CMSSM (simply
-called \code{MSSM}), the $Z_3$-symmetric NMSSM (called \code{NMSSM}),
-$Z_3$-violating NMSSM (\code{SMSSM}), the USSM (\code{UMSSM}), the
-\ESSM (\code{E6SSM}), the right-handed neutrino extended MSSM
-(\code{MSSMRHN}) and the NUHM-MSSM (\code{NUHMSSM}).  See the content
-of \code{model_files/} for all predefined model files.  A spectrum
-generator for the $Z_3$-symmetric NMSSM for example can be generated
-like this:
+called \code{MSSM}), the $Z_3$-symmetric NMSSM (called \code{NMSSM})
+\cite{Ellwanger:2009dp}, $Z_3$-violating NMSSM (\code{SMSSM})
+\cite{Ellwanger:2009dp}, the USSM (\code{UMSSM})
+\cite{Fayet:1977yc,Cvetic:1997ky,Erler:2002pr}, the NUHM-\ESSM
+(\code{E6SSM}) \cite{King:2005jy,Athron:2007en}, the right-handed
+neutrino extended MSSM (\code{MSSMRHN}) and the NUHM-MSSM
+(\code{NUHMSSM}).  See the content of \code{model_files/} for all
+predefined model files.  A spectrum generator for the $Z_3$-symmetric
+NMSSM for example can be generated like this:
 %
 \begin{lstlisting}[language=bash]
 $ ./createmodel --name=NMSSM
@@ -554,8 +552,7 @@ into
 %
 \begin{lstlisting}[language=Mathematica]
 EXTPAR = { {61, LambdaInput},
-           {63, ALambdaInput}
-         };
+           {63, ALambdaInput} };
 
 HighScaleInput = {
    ...
@@ -564,8 +561,8 @@ HighScaleInput = {
 };
 \end{lstlisting}
 %
-The value of $A_\lambda$ at the GUT scale can be set in the SLHA input
-file in \code{EXTPAR} block entry $63$ via
+The value of $A_\lambda$ at the GUT scale can then be set in the SLHA
+input file in the \code{EXTPAR} block entry $63$ via
 %
 \begin{lstlisting}
 Block EXTPAR
@@ -576,22 +573,24 @@ Block EXTPAR
 \section{Setting up a FlexibleSUSY model}
 \label{sec:modfile}
 
-In general a (non-constrained) softly broken SUSY model is defined by
-the gauge group, the field content and mixings as well as the
+A general (non-constrained) softly broken SUSY model is defined by the
+gauge group, the field content and mixings as well as the
 superpotential and the soft-breaking Lagrangian.  In order to create a
 spectrum generator for such a SUSY model with \fs, the aforementioned
 model properties have to be defined in a SARAH model file.  The SARAH
 model file can be put into the \code{sarah/<model>/} directory.  See
 the SARAH manual \cite{Staub:2008uz,Staub:2013tta} for a detailed
-explanation of how to write such a model file.
+explanation of how to write such a model file.  Note, that SARAH
+already comes with a lot of predefined models, which can be used with
+\fs immediately.
 
 The model boundary conditions are defined in the \fs model file
 \code{FlexibleSUSY.m}, which has to be located in the model directory
 \code{models/<model>/}.  Note, that many example model files can
 already be found in \code{model_files/}.  In the following it is
-explained how the boundary conditions are defined on the basis of the
-CMSSM.  The application to other models is straightforward.  The CMSSM
-model file reads:
+explained how the boundary conditions can be defined on the basis of
+the CMSSM.  The application to other models is straightforward.  The
+CMSSM model file reads:
 %
 \begin{lstlisting}[language=Mathematica]
 FSModelName = "MSSM";
@@ -682,7 +681,7 @@ All non-Standard Model input variables must be specified in the lists
 \code{MINPAR} and \code{EXTPAR}.  These two variables refer to the
 MINPAR and EXTPAR blocks in a SLHA input file \cite{Skands:2003cj}.
 The list elements are two-component lists where the first entry is the
-SLHA index in the MINPAR or EXTPAR block, respectively.  The second
+SLHA index in the MINPAR or EXTPAR block, respectively, and the second
 entry is the name of the input parameter.  In the above example the
 input parameters are the universal soft-breaking parameters $m_0$,
 $M_{1/2}$, $A_0$ as well as $\tan\beta$ and $\sign\mu$.
@@ -692,9 +691,9 @@ specify the model parameters that are output of the electroweak
 symmetry breaking consistency conditions.  When imposing the EWSB, \fs
 will adjust these parameters until the EWSB conditions are fulfilled.
 In the CMSSM example above these are the superpotential parameter
-\code{\\[Mu]} and its corresponding soft-breaking parameter
-\code{B[\\[Mu]]}.  In the NMSSM the parameters $\kappa$, $|v_s|$ and
-$m_s^2$ are usually chosen for this purpose.
+$\mu$ and its corresponding soft-breaking parameter $B\mu$.  In the
+NMSSM the parameters $\kappa$, $|v_s|$ and $m_s^2$ are usually chosen
+for this purpose.
 
 Furthermore, the user has to specify three model constraints:
 low-scale, SUSY-scale and high-scale.  In \fs they are named as
@@ -705,7 +704,7 @@ constraint name and \code{FirstGuess}) and (iii) a list of parameter
 settings to be applied at the scale (concatenation of the constraint
 name and \code{Input}).  Optionally a minimum and a maximum value for
 the scale can be given (concatenation of the constraint name and
-\code{Minimum} or \code{Maximum}, respectively).  The latter can avoid
+\code{Minimum} or \code{Maximum}, respectively).  The latter avoids
 underflows or overflows of the scale value during the iteration.  This
 is especially useful in models where the iteration is very unstable
 and the value of the scale is very sensitive to the model parameters.
@@ -737,19 +736,19 @@ The meaning of the three constraints is the following:
   constraint where the SUSY model is matched to the Standard Model.
   This is done by automatically calculating the gauge couplings $g_i$
   ($i=1,2,3$) of the SUSY model from the known Standard Model
-  quantities $\alpha_{\text{e.m.}}(M_Z^\pole)$,
-  $\alpha_{s}(M_Z^\pole)$, $M_Z^\pole$, $M_W^\pole$.  The details of
-  the calculation are explained in
+  quantities $\alpha_{\text{e.m.}}(M_Z)$, $\alpha_{s}(M_Z)$, $M_Z$,
+  $M_W$.  The details of this calculation are explained in
   \secref{sec:calculation-of-gauge-couplings}.  Currently this scale
-  is fixed to be the $Z$ pole mass scale $M_Z^\pole$.  Optionally the
-  Yukawa couplings $y_f$ ($f=u,d,e$) can be calculated automatically
-  from the known Standard Model fermion masses $m_f$ by setting their
-  values to \code{Automatic}.  This automatic calculation is explained
-  in \secref{sec:calculation-of-yukawa-couplings}.
+  is fixed to be the $Z$ pole mass scale $M_Z$.  Optionally the Yukawa
+  couplings $y_f$ ($f=u,d,e$) can be calculated automatically from the
+  known Standard Model fermion masses $m_f$ by setting their values to
+  \code{Automatic}.  This automatic calculation is explained in
+  \secref{sec:calculation-of-yukawa-couplings}.
 \end{itemize}
 %
-The list of parameter settings for imposing a constraint can contain
-as elements any of the following:
+The variables \code{LowScaleInput}, \code{SUSYScaleInput}
+\code{HighScaleInput}, which list the parameter settings for imposing
+the constraints can contain as elements any of the following:
 %
 \begin{itemize}
 \item Two-component lists of the form \code{\{parameter, value\}},
@@ -766,15 +765,14 @@ SUSYScaleInput = {
   %
   In this example the parameter \code{mHd2} is set to the value of
   \code{m0^2}, and \code{mHu2} is set to the value given in the SLHA
-  input file in block \code{MSOFTIN}, entry 22.  The SLHA block names
-  and keys for the MSSM and NMSSM are defined in SARAH's
-  \code{parameters.m} file, see the SARAH manual or
-  \cite{Staub:2010jh}.  The Standard Model Yukawa couplings \code{Yu},
-  \code{Yd}, \code{Ye} can be calculated automatically from the known
+  input file in block \code{MSOFTIN}, entry 22 at the SUSY scale.  The
+  SLHA block names and keys for the MSSM and NMSSM are defined in
+  SARAH's \code{parameters.m} file, see the SARAH manual or
+  \cite{Staub:2010jh}.  For the Standard Model Yukawa couplings
+  \code{Yu}, \code{Yd}, \code{Ye} the value \code{Automatic} is
+  allowed, which triggers their automatic determination from the known
   Standard Model quark and lepton masses, see
-  \secref{sec:calculation-of-yukawa-couplings}.  To enable the
-  automatic calculation, \code{value} must be set to \code{Automatic},
-  see the example above.
+  \secref{sec:calculation-of-yukawa-couplings}.
 
 \item The function \code{FSMinimize[parameters, function]} can be
   given, where \code{parameters} is a list of model parameters and
@@ -832,13 +830,12 @@ FSFindRoot[{vd,vu},
   %
   is zero.
 \end{itemize}
-
-Finally the user can set an initial guess for the model parameters at
+%
+Finally, the user can set an initial guess for the model parameters at
 the low- and high-scale using the variables
 \code{InitialGuessAtLowScale} and \code{InitialGuessAtHighScale},
-respectively.  Note, that the gauge couplings will be guessed
-automatically at the low-scale from the known Standard Model
-parameters, see \secref{sec:calculation-of-gauge-couplings}.
+respectively.  The gauge couplings will be guessed automatically at
+the low-scale from the known Standard Model parameters.
 
 \fs allows to add leading two-loop contributions to the CP-even Higgs
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
@@ -852,19 +849,20 @@ g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$, $O(y_\tau^2 y_b^2)$ from
 For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
 Higgs bosons, one neutral Goldstone boson) the two-loop contributions
 are enabled by setting \code{UseHiggs2LoopNMSSM = True;} and by
-defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda] vS
-  / Sqrt[2]}, for example.  This will add the the zero-momentum
+defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda]
+  vS / Sqrt[2]}, for example.  This will add the the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
-\cite{Degrassi:2009yq}, plus leading MSSM-like contributions of the
-order $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
+\cite{Degrassi:2009yq}, plus MSSM-like contributions of the order
+$O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
 \cite{Brignole:2001jy,Dedes:2003km}.
 
-To create a low-energy model one has to set
+One can create a pure low-energy model by setting
 \code{OnlyLowEnergyFlexibleSUSY = True}.  In this case the high-scale
-constraint will be ignored and only the low-scale and SUSY-scale
-constraints are kept.  All model parameters that are not specified in
-\code{MINPAR} or \code{EXTPAR} will be read from the corresponding
-input blocks in the SLHA input file and will be set at the SUSY-scale.
+constraint is ignored and only the low-scale and SUSY-scale
+constraints are used.  All model parameters which are not specified in
+\code{MINPAR} or \code{EXTPAR} will then be read from the
+corresponding input blocks in the SLHA input file and will be set at
+the SUSY-scale.
 
 \fs can create the helper function \code{get_lsp()}, which finds the
 lightest supersymmetric particle (LSP).  To have this function be
@@ -902,9 +900,9 @@ spectrum, EWSB, self-energies, and the pole mass spectrum.
 \secref{sec:boundary-conditions} describes how boundary conditions on
 the model parameters are implemented in general at the C++ level.  The
 Subsections \ref{sec:calculation-of-gauge-couplings}--\ref{sec:ewsb}
-then show two concrete boundary conditions, which are always imposed:
-The matching of the model parameters to the Standard Model and the
-electroweak symmetry breaking.
+then show the two concrete boundary conditions, which are always
+imposed: The matching of the model parameters to the Standard Model
+and the electroweak symmetry breaking.
 %
 In \secref{sec:TreeLevelSpectrum} we describe the conventions used to
 calculate the \DRbar\ mass spectrum given a set of \DRbar\ model
@@ -3291,6 +3289,42 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   arXiv:0806.0538 [hep-ph].
   %%CITATION = ARXIV:0806.0538;%%
   %82 citations counted in INSPIRE as of 03 Jun 2014
+
+%\cite{Fayet:1977yc}
+\bibitem{Fayet:1977yc}
+  P.~Fayet,
+  %``Spontaneously Broken Supersymmetric Theories of Weak, Electromagnetic and Strong Interactions,''
+  Phys.\ Lett.\ B {\bf 69} (1977) 489.
+  %%CITATION = PHLTA,B69,489;%%
+  %817 citations counted in INSPIRE as of 04 Jun 2014
+
+%\cite{Cvetic:1997ky}
+\bibitem{Cvetic:1997ky}
+  M.~Cvetic, D.~A.~Demir, J.~R.~Espinosa, L.~L.~Everett and P.~Langacker,
+  %``Electroweak breaking and the mu problem in supergravity models with an additional U(1),''
+  Phys.\ Rev.\ D {\bf 56} (1997) 2861
+   [Erratum-ibid.\ D {\bf 58} (1998) 119905]
+  [hep-ph/9703317].
+  %%CITATION = HEP-PH/9703317;%%
+  %237 citations counted in INSPIRE as of 04 Jun 2014
+
+%\cite{Erler:2002pr}
+\bibitem{Erler:2002pr}
+  J.~Erler, P.~Langacker and T.~-j.~Li,
+  %``The $Z$ - $Z^\prime$ mass hierarchy in a supersymmetric model with a secluded U(1) -prime breaking sector,''
+  Phys.\ Rev.\ D {\bf 66} (2002) 015002
+  [hep-ph/0205001].
+  %%CITATION = HEP-PH/0205001;%%
+  %84 citations counted in INSPIRE as of 04 Jun 2014
+
+%\cite{Athron:2007en}
+\bibitem{Athron:2007en}
+  P.~Athron, S.~F.~King, D.~J.~Miller, S.~Moretti and R.~Nevzorov,
+  %``Electroweak symmetry breaking in the E(6)SSM,''
+  J.\ Phys.\ Conf.\ Ser.\  {\bf 110} (2008) 072001
+  [arXiv:0708.3248 [hep-ph]].
+  %%CITATION = ARXIV:0708.3248;%%
+  %2 citations counted in INSPIRE as of 04 Jun 2014
 
 \end{thebibliography}
 \end{document}
