@@ -65,6 +65,13 @@ FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
 
+(* EWSB solvers *)
+GSLHybrid;   (* hybrid method *)
+GSLHybridS;  (* hybrid method with dynamic step size *)
+GSLBroyden;  (* Broyden method *)
+GSLNewton;   (* Newton method *)
+FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
+
 Begin["`Private`"];
 
 allParameters = {};
@@ -475,6 +482,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
+            gslEWSBRootFinders = "",
             enablePoleMassThreads = True
            },
            For[k = 1, k <= Length[massMatrices], k++,
@@ -553,6 +561,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
+           gslEWSBRootFinders           = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
                             "@lspFunctions@"         -> lspFunctions,
@@ -604,6 +613,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
+                            "@gslEWSBRootFinders@"           -> IndentText[IndentText[WrapLines[gslEWSBRootFinders]]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
