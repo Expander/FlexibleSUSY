@@ -1453,14 +1453,16 @@ eigenvalues are positive.
 \subsection{Two-scale fixed point iteration}
 \label{sec:TwoScaleFixedPointIteration}
 
-The RGEs for the model parameters together with the boundary
-conditions form a boundary value problem.  The default two-scale RG
-solver tries to find a set of model parameters consistent with all
-constraints at all scales.  It does so by running iteratively between
-the scales of all boundary conditions, imposing the constraints and
-checking for convergence after each iteration.  This approach is
-decribed in \cite{Barger:1993gh} for the MSSM and is widely
-implemented in SUSY spectrum generators.
+As explained at the beginning of \secref{sec:SpecGenStruct}, the RGEs
+plus the user-defined boundary conditions on the model parameters form
+a boundary value problem.  \fs provides a default two-scale boundary
+value problem solver, which tries to find a set of model parameters
+consistent with all constraints at all scales.  It does so by running
+iteratively between the scales of all boundary conditions, imposing
+the constraints (by calling the \code{apply()} function) and checking
+for convergence after each iteration.  This approach is decribed in
+\cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY
+spectrum generators.
 
 In more detail the two-scale algorithm used in \fs works as
 follows, see also \figref{fig:two-scale-algorithm}:
@@ -1518,8 +1520,8 @@ actual iteration starts
     \secref{sec:calculation-of-yukawa-couplings} and the Higgs VEVs
     are set to
     \begin{align}
-      v_d(M_Z) &= \frac{2 M_Z(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \cos\beta(M_Z)}, \\
-      v_u(M_Z) &= \frac{2 M_Z(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \sin\beta(M_Z)}.
+      v_d(M_Z) &= \frac{2 M_Z^\text{\DRbar}(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \cos\beta(M_Z)}, \\
+      v_u(M_Z) &= \frac{2 M_Z^\text{\DRbar}(M_Z)}{\sqrt{0.6 g_1^2(M_Z) + g_2^2(M_Z)} \sin\beta(M_Z)}.
     \end{align}
     Since the Hypercharge gauge coupling $g_1$ is GUT normalized, the
     normalization factor $\sqrt{3/5}$ has to be included in the above
@@ -1539,7 +1541,7 @@ actual iteration starts
     the MSSM example the following soft-breaking parameters are fixed
     to the universal values $m_0$, $M_{1/2}$ and $A_0$:
     \begin{align}
-      A^f(M_X) &= A_0 y_f(M_X) & &(f=u,d,e),\\
+      A^f(M_X) &= A_0 & &(f=u,d,e),\\
       m_{H_i}^2(M_X) &= m_0^2 & &(i=1,2),\\
       m_{f}^2(M_X) &= m_0^2\mathbf{1} & &(f=q,l,d,u,e),\\
       M_{i}(M_X) &= M_{1/2} & &(i=1,2,3).
@@ -1570,10 +1572,11 @@ actual iteration starts
 If the fixed-point iteration has converged, all \DRbar\ model
 parameters are known at all scales between \code{LowScale} and
 \code{HighScale}.  In this case all model parameters are run to the
-SUSY-scale and the pole-mass spectrum is calculated.  If the user has
-chosen a specific output scale for the running \DRbar\ model
-parameters by setting entry $12$ in block \code{MODSEL} in the SLHA
-input file, all model parameters are run to the defined output scale.
+SUSY-scale and the pole-mass spectrum is calculated, see
+\secref{sec:PoleMasses}.  If the user has chosen a specific output
+scale for the running \DRbar\ model parameters by setting entry $12$
+in block \code{MODSEL} in the SLHA input file, all model parameters
+are finally run to the defined output scale.
 %
 \begin{figure}[tbh]
   \centering
@@ -1603,27 +1606,27 @@ input file, all model parameters are run to the defined output scale.
 \subsection{Pole masses}
 \label{sec:PoleMasses}
 After the solver routine has finished and convergence has been
-achieved, all $\overline{DR}$ parameters consistent with the
-one-loop EWSB conditions, low energy data and all user supplied
-boundary conditions are known at any scale between \code{LowScale} and
-\code{HighScale}.
+achieved, all \DRbar\ parameters consistent with the EWSB conditions,
+low energy data and all user-supplied boundary conditions and are
+known at any scale between \code{LowScale} and \code{HighScale}.
 
-The physical (pole) mass spectrum can now be calculated.  \fs uses the
-full one-loop self-energies and tree-level mass matrices to calculate
-the pole masses at the one-loop level, which means finding the values
-$p$ that solve the equation
+The (physical) pole mass spectrum can now be calculated.  \fs uses the
+full one-loop self-energies and tree-level mass matrices obtained from
+SARAH to calculate the pole masses, which means finding the values $p$
+that solve the equation
 %
 \begin{align}
-  0 = \det\left[p^2\unity - m^2_{f,1L}(p^2)\right],
+  0 = \det\left[p^2\unity - m_{f,1L}(p^2)\right].
+  \label{eq:pole-mass-def}
 \end{align}
 %
-where the one-loop mass matrices $m_{f,1L}(p^2)$ are given in terms of
-the tree-level mass matrices $m_f$ and the self-energies
+Here the one-loop mass matrix $m_{f,1L}(p^2)$ for field $f$ is given
+in terms of the tree-level mass matrix $m_f$ and the self-energy
 $\Sigma_f(p^2)$ as
 %
 \begin{align}
   &\text{scalars } \phi: &
-  m^2_{\phi,1L}(p^2) &= m^2_{\phi} - \Sigma_\phi(p^2), \\
+  m_{\phi,1L}(p^2) &= m_{\phi} - \Sigma_\phi(p^2), \\
   &\text{majorana fermions } \chi: &
   m_{\chi,1L}(p^2) &= m_{\chi} - \frac{1}{2}\Big[
     \Sigma_\chi^S(p^2) + \Sigma_\chi^{S,T}(p^2)
@@ -1638,10 +1641,13 @@ $\Sigma_f(p^2)$ as
   - m_{\psi} \Sigma_\psi^L(p^2) .
 \end{align}
 %
-Since the one-loop mass matrices depend on $p$, an iterative procedure
-must be used.  \fs provides three different methods with different
-precision and execution speed to determine the mass eigenvalues.
-These methods are set in the model file and work as follows:
+Eq.~\eqref{eq:pole-mass-def} can be solved by diagonalizing the
+one-loop mass matrix $m_{f,1L}(p^2)$.  However, since $m_{f,1L}(p^2)$
+depends on the momentum $p$, an iterative procedure must be used.
+Since this iteration can be very time consuming for large field
+multiplets, \fs provides two approximative procedures with a faster
+run-time.  The used procedure can be set in the model file for each
+field.  They work as follows:
 %
 \begin{itemize}
 \item \code{LowPoleMassPrecision}: This option provides the
@@ -1654,8 +1660,12 @@ These methods are set in the model file and work as follows:
   \end{align}
 %
   where $m_{f_i}$ is the $i$th mass eigenvalue of the tree-level mass
-  matrix $m_f$.  Afterwards $m_{f,1L}^\text{low}$ is diagonalized and
+  matrix $m_f$.  Afterwards, $m_{f,1L}^\text{low}$ is diagonalized and
   the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
+  This method neglects which are formally of two-loop order.  This
+  method is imprecise if the self-energy corrections to the mass
+  matrix are large or the tree-level mass spectrum of the multiplet is
+  very split.
 
 \item \code{MediumPoleMassPrecision} (default): This option
   provides calculation with medium precision with a medium execution
@@ -1670,38 +1680,41 @@ These methods are set in the model file and work as follows:
   where $m_{f_k}$ is the $k$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, each mass matrix
   $(m_{f,1L}^\text{medium})^{(k)}$ is diagonalized and the $k$th
-  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.
+  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.  This method
+  is imprecise if the self-energy corrections to the mass matrix are
+  large.
 
-\item \code{HighPoleMassPrecision}: This option provides
-  diagonalization with highest precision, but has also the highest
-  execution time.  Here the one-loop mass matrix
-  $m_{f,1L}^\text{high}$ is diagonalized $n$ times, as in the case of
-  \code{MediumPoleMassPrecision}, resulting in $n$ pole masses
-  $m_{f_k}^\pole$ ($k = 1,\ldots,n$).  Afterwards, the diagonalization
-  is repeated, this time using the calculated pole masses
-  $m_{f_k}^\pole$ for the momentum calculation $p^2 =
-  (m_{f_k}^\pole)^2$.  The iteration stops until convergence is
+\item \code{HighPoleMassPrecision}: This option solves
+  Eq.~\eqref{eq:pole-mass-def} exactly by iterating over the momentum
+  $p$.  It therefore provides the determination of the pole masses
+  with highest precision, but has also the highest execution time.
+  Here the one-loop mass matrix $m_{f,1L}^\text{high}$ is diagonalized
+  $n$ times, as in the case of \code{MediumPoleMassPrecision},
+  resulting in $n$ pole masses $m_{f_k}^\pole$ ($k = 1,\ldots,n$).
+  Afterwards, the diagonalization is repeated, this time using the
+  calculated pole masses $m_{f_k}^\pole$ for the momentum calculation
+  $p^2 = (m_{f_k}^\pole)^2$.  The iteration stops if convergence is
   reached.
 \end{itemize}
-
-If higher accuracy is required additional routines with higher order
-corrections can be added by setting \code{UseHiggs2LoopMSSM = True;}
-in the model file. For example in the MSSM by default \fs adds
-two-loop Higgs FORTRAN routines supplied by P.~Slavich from
+%
+If higher accuracy is required, two-loop corrections to the
+self-energies can be added by setting \code{UseHiggs2LoopMSSM = True;}
+in the MSSM or \code{UseHiggs2LoopNMSSM = True;} in the NMSSM in the
+model file.  This enables two-loop Higgs FORTRAN routines supplied by
+P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
-to add two-loop corrections of $\oatas$, $\oabas$, $\oatq$,
-$\oabatau$, $\oabq$, $\oatauq$ and $\oatab$.
-
-Something similar is done for the NMSSM, but in this case the NMSSM
-$\oatas$, $\oabas$ pieces come from \cite{Degrassi:2009yq}, while for
-$\oatq$, $\oabatau$, $\oabq$, $\oatauq$ and $\oatab$ the MSSM pieces
-are used though it should be understood that these are not complete in
-the NMSSM. For other models since the Higgs mass is a very important
-measurement and the two loop corrections can be larger than the
+which add two-loop corrections of $\oatas$, $\oabas$, $\oatq$,
+$\oabatau$, $\oabq$, $\oatauq$ and $\oatab$.  Something similar is
+done for the NMSSM, but in this case the NMSSM $\oatas$, $\oabas$
+pieces come from \cite{Degrassi:2009yq}, while for $\oatq$,
+$\oabatau$, $\oabq$, $\oatauq$ and $\oatab$ the MSSM pieces are used
+though it should be understood that these are not complete in the
+NMSSM. For other models since the Higgs mass is a very important
+measurement and the two-loop corrections can be larger than the
 current experimental error \cite{Degrassi:2009yq} we recommend that
-the leading log two loop corrections are estimated, by generalising
+the leading log two-loop corrections are estimated, by generalising
 those of the MSSM or NMSSM, as has been done, for example, in the
-E$_6$SSM\cite{King:2005jy}.
+E$_6$SSM \cite{King:2005jy}.
 
 \section{Flexible Applications}
 \label{sec:Flexible}
