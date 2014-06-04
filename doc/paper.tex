@@ -1383,14 +1383,14 @@ file.
 
 \subsection{Tree-level spectrum}
 \label{sec:TreeLevelSpectrum}
-The tree-level \DRbar masses are calculated by diagonalizing the mass
-matrices returned from \code{SARAH`MassMatrix[]}.  The numerical
-singular value decomposition is performed by the Eigen library routine
-\code{Eigen::JacobiSVD} for matrices with less than four rows and
-columns, and the LAPACK routines \code{zgesvd}, \code{dgesvd} for
-larger matrices.  For the other types of diagonalization,
-\code{Eigen::SelfAdjointEigenSolver} from Eigen is used regardless of
-the matrix size.
+The tree-level \DRbar masses are calculated from the \DRbar\ model
+parameters by diagonalizing the mass matrices returned from
+\code{SARAH`MassMatrix[]}.  The numerical singular value decomposition
+is performed by the Eigen library routine \code{Eigen::JacobiSVD} for
+matrices with less than four rows and columns, and the LAPACK routines
+\code{zgesvd}, \code{dgesvd} for larger matrices.  For the other types
+of diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
+used regardless of the matrix size.
 
 \fs uses the following conventions for the diagonalization: A mass
 matrix $M^2$ for real scalar fiels $\phi_i$ is diagonalized with an
