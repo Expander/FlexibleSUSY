@@ -119,7 +119,7 @@ TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    model file and provides the specific boundary conditions in a
    separate \fs model file. \fs makes use of the existing \sarah
    package to obtain self energies, tadpole corrections,
-   renormalisation group equations (RGEs) and tree level mass and
+   renormalization group equations (RGEs) and tree level mass and
    electroweak symmetry breaking conditions for the specified model. These are
    translated into C++ code and combined  with numerical
    routines for solving the RGEs, EWSB conditions and simultaneously
@@ -152,8 +152,8 @@ Higgs
          spectrum and mixings for any supersymmetric model. The
          generated code must find simultaneous solutions to
          constraints which are specified at two or more different
-         renormalisation scales, which are connected by
-         renormalisation group equations forming a large set of
+         renormalization scales, which are connected by
+         renormalization group equations forming a large set of
          coupled first-order differential equations. \\ {\em Solution method:}\/
          Nested iterative algorithm and numerical minimisation of the
          Higgs potential.  \\ {\em Restrictions:} The couplings must
@@ -172,7 +172,7 @@ Higgs
 Supersymmetry (SUSY) provides the only non-trivial way to extend the
 space-time symmetries of the Poincar\'e
 group \cite{Coleman:1967ad,Haag:1974qh}, leading many to suspect that
-SUSY may be realised in nature in some form. In particular
+SUSY may be realized in nature in some form. In particular
 supersymmetric extensions of the standard model (SM) where SUSY is broken
 at the TeV scale have been proposed to solve the hierarchy
 problem \cite{Weinberg:1975gm, Weinberg:1979bn, Gildener:1976ai,
@@ -201,12 +201,12 @@ None of the fundamental motivations of supersymmetry require
 minimality, and specific alternatives to (or extensions of) the MSSM
 are, for example, motivated by the $\mu$-problem of the
 MSSM \cite{Kim:1983dt}; explaining the family structure (see e.g,
-\cite{King:2014nza}) or for successful baryogensis or leptogenesis
-(see e.g,\cite{King:2008qb}). However constructing specialised tools
+\cite{King:2014nza}) or for successful baryogenesis or leptogenesis
+(see e.g,\cite{King:2008qb}). However constructing specialized tools
 to study all relevant models would require an enormous amount of work.
 So general tools which can automate this process and produce fast and
 reliable programs can greatly enhance our ability to understand and
-test non-minimal realisations of supersymmetry.
+test non-minimal realizations of supersymmetry.
 
 Recent experimental developments have also increased the relevancy of
 such a tool. From the recent $7$ TeV and $8$ TeV runs at the Large
@@ -282,7 +282,7 @@ the mass spectrum.  In addition most SUSY models require boundary
 conditions for the model parameters at a low and a high scale.  For
 example in the CMSSM mSUGRA boundary conditions for the soft-breaking
 parameters are imposed at the gauge coupling unification scale.
-Furthemore, at the $Z$ mass scale the CMSSM is matched to the Standard
+Furthermore, at the $Z$ mass scale the CMSSM is matched to the Standard
 Model, which implies conditions for the gauge and Yukawa couplings.
 The so defined boundary value problem must be solved numerically until
 a set of model parameters has been found consistent with all
@@ -300,7 +300,7 @@ Based on this information \fs uses the existing \sarah package
 \cite{Staub:2010ty,Staub:2009bi,Staub:2010jh,Staub:2012pb,Staub:2013tta}
 to obtain tree level expressions for the mass matrices and electroweak
 symmetry breaking conditions, one-loop self energies, one-loop
-tadpoles corrections and two-loop renormalisation group equations
+tadpoles corrections and two-loop renormalization group equations
 (RGEs) for the model.  Additional corrections which have been
 calculated elsewhere, such as two-loop corrections to the Higgs
 masses\footnote{By default FlexibleSUSY has two-loop corrections to
@@ -311,12 +311,12 @@ masses\footnote{By default FlexibleSUSY has two-loop corrections to
   many of the public spectrum generators.} may be added in file
 specified by the user.
 %
-These algerbraic expressions are converted into C++ code and are put
+These algebraic expressions are converted into C++ code and are put
 into classes with well-defined interfaces to allow for easy exchange,
 extension and reuse of the modules.  All of these classes are finally
 combined to a complete spectrum generator, which solves the
 user-defined boundary value problem.  For this task \fs uses some
-parts of SOFTSUSY \cite{Allanach:2001kg}, the very fast Eigen library
+parts of Softsusy \cite{Allanach:2001kg}, the very fast Eigen library
 \cite{eigen}, augmented by LAPACK, as well as the GNU scientific
 library and the BOOST library to create numerical routines which solve
 the RGEs and boundary conditions simultaneously.  If a solution has
@@ -349,7 +349,7 @@ mixed particles:
   $O(10^4)$ matrix operations.  To optimize these, \fs uses the fast
   linear algebra package \href{Eigen}{http://eigen.tuxfamily.org}.
   Eigen uses C++ expression templates to remove temporary objects and
-  enable lazy evaluation of the expressions.  It supports explicite
+  enable lazy evaluation of the expressions.  It supports explicit
   vectorization, and provides fixed-size matrices to avoid dynamic
   memory allocation.  All of these features in combination result in
   very fast code for the calculation of the $\beta$-functions in \fs.
@@ -373,7 +373,7 @@ mixed particles:
 
 The large variety of supersymmetric models makes it likely that the
 user wants to modify the generated spectrum generator source code or
-reuses componets in his own program. \fs uses C++ object orientation
+reuses components in his own program. \fs uses C++ object orientation
 features to modularize the source code in order to make it easy for
 the user to modify, reuse, replace or extend the individual
 components.  An important application of this concept are the boundary
@@ -385,7 +385,7 @@ purpose and simply wishes to improve upon this by adding, e.g., new
 RGEs or self-energies the modular framework makes this straightforward
 by adding or interfacing with the appropriate routine.  A possible
 application of reusing the \fs' generated classes would be to further
-improve the precision of the CE$_6$SSM spectrum generator presended in
+improve the precision of the CE$_6$SSM spectrum generator presented in
 \cite{Athron:2009bs,Athron:2012pw} by adding further one-loop
 self-energies and two-loop $\beta$-functions.
 
@@ -690,7 +690,7 @@ $M_{1/2}$, $A_0$ as well as $\tan\beta$ and $\sign\mu$.
 Using the the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
 symmetry breaking consistency conditions.  When imposing the EWSB, \fs
-will adjust these parameters until the EWSB conditons are fulfilled.
+will adjust these parameters until the EWSB conditions are fulfilled.
 In the CMSSM example above these are the superpotential parameter
 \code{\\[Mu]} and its corresponding soft-breaking parameter
 \code{B[\\[Mu]]}.  In the NMSSM the parameters $\kappa$, $|v_s|$ and
@@ -779,7 +779,7 @@ SUSYScaleInput = {
 \item The function \code{FSMinimize[parameters, function]} can be
   given, where \code{parameters} is a list of model parameters and
   \code{function} is a function of these parameters.
-  \code{FSMinimize[parameters, function]} will numericall vary the
+  \code{FSMinimize[parameters, function]} will numerical vary the
   \code{parameters} until the \code{function} is minimized.  Example:
   %
   \begin{lstlisting}
@@ -811,7 +811,7 @@ FSMinimize[{vd,vu},
 \item The function \code{FSFindRoot[parameters, functions]} can be
   given, where \code{parameters} is a list of model parameters and
   \code{functions} is a list of functions of these parameters.
-  \code{FSFindRoot[parameters, functions]} will numericall vary the
+  \code{FSFindRoot[parameters, functions]} will numerical vary the
   \code{parameters} until the \code{functions} are zero.  Example:
   %
   \begin{lstlisting}
@@ -844,7 +844,7 @@ parameters, see \secref{sec:calculation-of-gauge-couplings}.
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
 Higgs bosons, one CP-odd Higgs boson, one neutral Goldstone boson)
 these corrections can be enabled by setting \code{UseHiggs2LoopMSSM =
-  True;} in the model file and by defining the effectiv $\mu$-term
+  True;} in the model file and by defining the effective $\mu$-term
 \code{EffectiveMu = \\[Mu]}.  This will add the zero-momentum
 corrections of the order $O(y_t^4 + y_b^2 y_t^2 + y_b^4)$, $O(y_t^2
 g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$, $O(y_\tau^2 y_b^2)$ from
@@ -852,7 +852,7 @@ g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$, $O(y_\tau^2 y_b^2)$ from
 For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
 Higgs bosons, one neutral Goldstone boson) the two-loop contributions
 are enabled by setting \code{UseHiggs2LoopNMSSM = True;} and by
-defining the effectiv $\mu$-term like \code{EffectiveMu = \\[Lambda] vS
+defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda] vS
   / Sqrt[2]}, for example.  This will add the the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
 \cite{Degrassi:2009yq}, plus leading MSSM-like contributions of the
@@ -885,7 +885,7 @@ As mentioned in \secref{sec:Program}, \fs uses SARAH-generated
 expressions for the $\beta$-functions, mass matrices, self-energies
 and EWSB conditions plus the user-defined parameter boundary
 conditions to create a spectrum generator in C++.  This program takes
-the Standard Model and user-defined input paramters and numerically
+the Standard Model and user-defined input parameters and numerically
 solves the boundary value problem, which is defined by the RG
 equations and the boundary conditions.  If a solution is found the
 pole mass spectrum is calculated.
@@ -997,7 +997,7 @@ parameters.  However, the $\beta$-functions of the soft-breaking
 parameters depend on all model parameters in general.
 %
 This property is reflected in the C++ code: The class
-\code{<model>_susy_parameters} direcly inherits from
+\code{<model>_susy_parameters} directly inherits from
 \code{Beta_functions} and implements the $\beta$-functions of the SUSY
 parameters.  The class of soft-breaking parameters
 \code{<model>_soft_parameters} in turn inherits from
@@ -1013,7 +1013,7 @@ SARAH model file.  The corresponding one- and two-loop
 $\beta$-functions are calculated algebraically using SARAH's
 \code{SARAH`CalcRGEs[]} routine and are converted to C++ form and
 written into the corresponding \code{beta()} functions.  These two
-classes now allow to use renormalisation group running of all SUSY
+classes now allow to use renormalization group running of all SUSY
 model parameters.
 
 At the bottom of the hierarchy stands the actual model class, which
@@ -1050,13 +1050,13 @@ public:
 \end{lstlisting}
 %
 The \code{get_scale()} function is supposed to return the
-renormalisation scale at which the constraint is to be imposed.  The
+renormalization scale at which the constraint is to be imposed.  The
 \code{apply()} method imposes the constraint by setting model
 parameters to values as chosen by the user.  The three boundary
 condition classes are generated as follows:
 %
 \begin{itemize}
-\item The \emph{high-scale constraint} is indended to set boundary
+\item The \emph{high-scale constraint} is intended to set boundary
   conditions on the model parameters at some very high scale, e.g.\
   the GUT scale $M_X$.  The high-scale is defined by the value given
   in the variable \code{HighScale}.  In the CMSSM example model file
@@ -1065,7 +1065,7 @@ condition classes are generated as follows:
   implemented by setting model parameters to the values defined in the
   \code{HighScaleInput} variable.
 
-\item The \emph{SUSY-scale constraint} is indended to set boundary
+\item The \emph{SUSY-scale constraint} is intended to set boundary
   conditions at the mass scale $M_S$ of the SUSY particles.  The value
   of $M_S$ is defined by the model file variable \code{SUSYScale}.  In
   the example model file in \secref{sec:modfile} it is defined to be
@@ -1079,7 +1079,7 @@ condition classes are generated as follows:
   is minimized.  See \secref{sec:ewsb} for a more detailed description
   of the EWSB in \fs.
 
-\item The \emph{low-scale constraint} is indended to match the SUSY
+\item The \emph{low-scale constraint} is intended to match the SUSY
   model to the Standard Model at the scale $M_Z$.  It does so by
   calculating the gauge couplings of the SUSY model from the known
   Standard Model quantities
@@ -1180,7 +1180,7 @@ while in models with Higgs triplets the relation looks like
 \end{align}
 %
 The running \DRbar\ $W$ and $Z$ boson masses are calculated in each
-iteration from the corrsponding pole masses as
+iteration from the corresponding pole masses as
 %
 \begin{align}
   \left(M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)\right)^2 &=
@@ -1323,7 +1323,7 @@ VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
 tadpole diagram of $H_i$.  The electroweak symmetry breaking
 conditions \eqref{eq:one-loop-ewsb-eq} are solved simultaneously using
 the iterative multi-dimensional root finder algorithm
-\code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific Libraray
+\code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific Library
 (GSL).  If no root can be found, the
 \code{gsl_multiroot_fsolver_hybrids} algorithm is tried as
 alternative, which uses a variable step size but might be a little
@@ -1393,7 +1393,7 @@ of diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
 used regardless of the matrix size.
 
 \fs uses the following conventions for the diagonalization: A mass
-matrix $M^2$ for real scalar fiels $\phi_i$ is diagonalized with an
+matrix $M^2$ for real scalar fields $\phi_i$ is diagonalized with an
 orthogonal matrix $O$ as
 %
 \begin{align}
@@ -1447,7 +1447,7 @@ we use
   \qquad U^\dagger U = \unity = V^\dagger V ,
 \end{align}
 %
-where we're again chosing the phases of $U$ and $V$ such that all mass
+where we're again choosing the phases of $U$ and $V$ such that all mass
 eigenvalues are positive.
 
 \subsection{Two-scale fixed point iteration}
@@ -1460,7 +1460,7 @@ value problem solver, which tries to find a set of model parameters
 consistent with all constraints at all scales.  It does so by running
 iteratively between the scales of all boundary conditions, imposing
 the constraints (by calling the \code{apply()} function) and checking
-for convergence after each iteration.  This approach is decribed in
+for convergence after each iteration.  This approach is described in
 \cite{Barger:1993gh} for the MSSM and is widely implemented in SUSY
 spectrum generators.
 
@@ -1712,14 +1712,14 @@ though it should be understood that these are not complete in the
 NMSSM. For other models since the Higgs mass is a very important
 measurement and the two-loop corrections can be larger than the
 current experimental error \cite{Degrassi:2009yq} we recommend that
-the leading log two-loop corrections are estimated, by generalising
+the leading log two-loop corrections are estimated, by generalizing
 those of the MSSM or NMSSM, as has been done, for example, in the
 E$_6$SSM \cite{King:2005jy}.
 
 \section{Flexible Applications}
 \label{sec:Flexible}
 
-By definition, research is an endeavour to find something new.
+By definition, research is an endeavor to find something new.
 Therefore, it can often be the case that
 a spectrum generator right out of the box is not enough.
 \fs attempts to offer a clean interface through which
@@ -2507,7 +2507,7 @@ where both cores were enabled.  In the third column a Intel Xeon
   \caption{Average run-time of CMSSM spectrum generators for
     for random parameter points.  The first three rows show
     spectrum generators which disallow flavour violation.  Rows
-    $4$--$5$ contain flavour violatig spectrum generators, based
+    $4$--$5$ contain flavour violating spectrum generators, based
     on SARAH's MSSM model file.}
   \label{tab:run-time-comparison}
 \end{table}
