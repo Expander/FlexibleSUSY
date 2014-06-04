@@ -880,31 +880,43 @@ selectron) are considered to be LSPs.
 
 In this section we explain the internals of \fs's automatically
 generated spectrum generator.
-%
-As mentioned in \secref{sec:Program} one of \fs's design goals is to
-create modular C++ code to allow for an easy exchange, extension and
-reuse of the generated modules.  For this reason
-\secref{sec:ModelParametersAndRGEs} briefly describes the so-called
-``model class'' hierarchy, which contains the general model
-information, such as parameters, $\beta$-functions, \DRbar\ mass
+
+As mentioned in \secref{sec:Program}, \fs uses SARAH-generated
+expressions for the $\beta$-functions, mass matrices, self-energies
+and EWSB conditions plus the user-defined parameter boundary
+conditions to create a spectrum generator in C++.  This program takes
+the Standard Model and user-defined input paramters and numerically
+solves the boundary value problem, which is defined by the RG
+equations and the boundary conditions.  If a solution is found the
+pole mass spectrum is calculated.
+
+In the following it is explained how this procedure is realized in
+\fs.  As mentioned in \secref{sec:Program} one of \fs's design goals
+is to create modular C++ code to allow for an easy exchange, extension
+and reuse of the generated modules.  For this reason
+\secref{sec:ModelParametersAndRGEs} first of all briefly describes the
+so-called C++ ``model class'' hierarchy, which contains the general
+model information, such as parameters, $\beta$-functions, \DRbar\ mass
 spectrum, EWSB, self-energies, and the pole mass spectrum.
 %
 \secref{sec:boundary-conditions} describes how boundary conditions on
 the model parameters are implemented in general at the C++ level.  The
 Subsections \ref{sec:calculation-of-gauge-couplings}--\ref{sec:ewsb}
-explain how the parameters of the SUSY model are matched to the
-Standard Model at the low scale and how the EWSB is imposed.
+then show two concrete boundary conditions, which are always imposed:
+The matching of the model parameters to the Standard Model and the
+electroweak symmetry breaking.
 %
 In \secref{sec:TreeLevelSpectrum} we describe the conventions used to
-calculate the \DRbar\ mass spectrum.
+calculate the \DRbar\ mass spectrum given a set of \DRbar\ model
+parameters.
 %
-In \secref{sec:TwoScaleFixedPointIteration} the algorithm which solves
-the user-defined boundary value problem is described on the basis of
-the CMSSM example given in \secref{sec:modfile}.
+Afterwards, in \secref{sec:TwoScaleFixedPointIteration} the algorithm,
+which solves the user-defined boundary value problem is described on
+the basis of the CMSSM example given in \secref{sec:modfile}.
 %
-Finally, \secref{sec:PoleMasses} briefly summarizes how the pole mass
-spectrum is obtained from the \DRbar\ model parameters after a
-solution to the boundary value problem has been found.
+Finally, \secref{sec:PoleMasses} explains how the pole mass spectrum
+is obtained from the \DRbar\ model parameters after a solution to the
+boundary value problem has been found.
 
 \subsection{Model parameters and RGEs}
 \label{sec:ModelParametersAndRGEs}
