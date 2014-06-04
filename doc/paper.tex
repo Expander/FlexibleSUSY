@@ -2439,8 +2439,10 @@ matrices, \code{ZE} and \code{ZV},
 which contain intergenerational mixings apart from the
 generic left-right mixings.
 
-\section{Run-time comparison with other spectrum generators}
+\section{Tests and comparisons with other spectrum generators}
 \label{sec:comparison}
+
+\subsection{Run-time comparison}
 
 One of \fs's design goals is a short run-time.  In this section we
 demonstrate that this goal was achieved by comparing the run-time of
@@ -2522,8 +2524,7 @@ also find that increasing the number of CPU cores reduces the run-time
 of \fs.  The reason is that \fs calculates each pole mass in a
 separate thread, and therefore benefits from multi-core CPUs.
 
-\appendix
-\section{Numeric tests}
+\subsection{Numeric tests}
 
 For checking the correctness of \fs's generated spectrum generators
 extensive unit tests against Softsusy's MSSM and NMSSM
@@ -2542,6 +2543,8 @@ TODO: Adding tests against the CE$_6$SSM?
 We also compared the run-time of \fs against SPheno, Softsusy and the
 SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
 can be found in \secref{sec:comparison}.
+
+\appendix
 
 \section{Speed test SLHA input file}
 \label{sec:speed-test-slha-template-file}
