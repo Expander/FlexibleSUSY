@@ -15,6 +15,7 @@ void move_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
    const unsigned pos = closest_index(mass, v);
 
    v.row(idx).swap(v.row(pos));
+   z.row(idx).swap(z.row(pos));
 }
 
 BOOST_AUTO_TEST_CASE( test_reordering )
@@ -36,10 +37,20 @@ BOOST_AUTO_TEST_CASE( test_reordering )
       for (int k = 0; k < 3; k++)
          Z(i,k) = 10*i + k;
 
+   // mass matrix
+   const Eigen::Matrix<double, 3, 3> M(Z.transpose() * higgs.matrix().asDiagonal() * Z);
+
    move_to(0, mvz , higgs, Z);
    move_to(1, mvzp, higgs, Z);
 
    BOOST_CHECK_EQUAL(higgs(0), mvz_pole);
    BOOST_CHECK_EQUAL(higgs(1), mvzp_pole);
    BOOST_CHECK_EQUAL(higgs(2), mh_pole);
+
+   // ensure that mass matrix is preserved
+   const Eigen::Matrix<double, 3, 3> M_new(Z.transpose() * higgs.matrix().asDiagonal() * Z);
+
+   for (int i = 0; i < 3; i++)
+      for (int k = 0; k < 3; k++)
+         BOOST_CHECK_EQUAL(M(i,k), M_new(i,k));
 }
