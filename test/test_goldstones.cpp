@@ -8,16 +8,6 @@
 
 using namespace flexiblesusy;
 
-template <typename DerivedArray, typename DerivedMatrix>
-void move_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
-             Eigen::MatrixBase<DerivedMatrix>& z)
-{
-   const unsigned pos = closest_index(mass, v);
-
-   v.row(idx).swap(v.row(pos));
-   z.row(idx).swap(z.row(pos));
-}
-
 BOOST_AUTO_TEST_CASE( test_reordering )
 {
    const double mvz  = 90.;

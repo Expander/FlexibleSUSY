@@ -201,6 +201,16 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+template <typename DerivedArray, typename DerivedMatrix>
+void move_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
+             Eigen::MatrixBase<DerivedMatrix>& z)
+{
+   const unsigned pos = closest_index(mass, v);
+
+   v.row(idx).swap(v.row(pos));
+   z.row(idx).swap(z.row(pos));
+}
+
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
 {
