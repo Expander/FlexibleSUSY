@@ -599,8 +599,6 @@ CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}] :=
 
 CreateReorderingFunctionCalls[___] := "";
 
-ReorderGoldstoneBosons[particle_ /; IsGolstone[particle], _] := "";
-
 ReorderGoldstoneBosons[particle_, mixingMatrix_] :=
     Module[{goldstoneList},
            goldstoneList = Cases[SARAH`GoldstoneGhost,
