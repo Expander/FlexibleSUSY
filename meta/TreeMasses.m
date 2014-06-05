@@ -117,6 +117,8 @@ CallThirdGenerationHelperFunctionName::usage="";
 
 GetThirdGenerationMass::usage;
 
+ReorderGoldstoneBosons::usage="";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -591,19 +593,22 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
-CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}] :=
+WrapMacro[sym_String, ""] := sym;
+WrapMacro[sym_String, macro_String] := macro <> "(" <> sym <> ")";
+
+CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}, macro_String:""] :=
     "move_goldstone_to(" <> ToString[idx-1] <> ", " <>
-    CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]] <> ", " <>
-    CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]] <> ", " <>
-    CConversion`ToValidCSymbolString[mixingMatrix] <> ");\n";
+    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]], macro] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]], macro] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[mixingMatrix], macro] <> ");\n";
 
 CreateReorderingFunctionCalls[___] := "";
 
-ReorderGoldstoneBosons[particle_, mixingMatrix_] :=
+ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String:""] :=
     Module[{goldstoneList},
            goldstoneList = Cases[SARAH`GoldstoneGhost,
                                  {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
-           StringJoin[CreateReorderingFunctionCalls /@ goldstoneList]
+           StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList]
           ];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
