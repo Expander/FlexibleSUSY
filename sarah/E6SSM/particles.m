@@ -448,6 +448,8 @@ ParticleDefinitions[EWSB] = {
   		     RParity -> -1}},
       {L0Prime,    { Description -> "Neutralino Prime-Weyl-Spinor",
   		     RParity -> -1}},
+      {LS0Inert,   { Description -> "Inert singlino Weyl-Spinor",
+                     RParity -> -1}},
 
       {phid,       { Description -> "Scalar Down",
 		     LaTeX -> "\\phi_{1}"}},
