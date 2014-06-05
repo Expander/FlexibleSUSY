@@ -608,6 +608,7 @@ ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String:""] :=
     Module[{goldstoneList},
            goldstoneList = Cases[SARAH`GoldstoneGhost,
                                  {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
+           If[goldstoneList =!= {}, "\n", ""] <>
            StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList]
           ];
 
