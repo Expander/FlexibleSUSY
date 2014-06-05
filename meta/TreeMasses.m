@@ -99,7 +99,7 @@ IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
 IsGhost::usage="";
-IsGolstone::usage="";
+IsGoldstone::usage="";
 IsAuxiliary::usage="";
 IsVEV::usage="";
 IsMajoranaFermion::usage="";
@@ -161,7 +161,7 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
-IsGolstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
 
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
 
