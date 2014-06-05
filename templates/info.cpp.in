@@ -40,12 +40,12 @@ void print(std::ostream& ostr)
       << "Model name:            " << model_name << '\n'
       << "Is a low-energy model: "
       << (is_low_energy_model ? "true" : "false") << '\n'
-      << "Number of particles:   " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of multiplets:  " << NUMBER_OF_PARTICLES << '\n'
       << "Number of parameters:  " << NUMBER_OF_PARAMETERS << '\n'
       ;
 
    ostr << "\n"
-      "Particles:             ";
+      "Multiplets:            ";
    for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
       ostr << particle_names[i]
            << '[' << particle_multiplicities[i] << ']';
