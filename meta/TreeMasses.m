@@ -591,6 +591,23 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}] :=
+    "move_to(" <> ToString[idx-1] <> ", " <>
+    CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]] <> ", " <>
+    CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]] <> ", " <>
+    CConversion`ToValidCSymbolString[mixingMatrix] <> ");\n";
+
+CreateReorderingFunctionCalls[___] := "";
+
+ReorderGoldstoneBosons[particle_ /; IsGolstone[particle], _] := "";
+
+ReorderGoldstoneBosons[particle_, mixingMatrix_] :=
+    Module[{goldstoneList},
+           goldstoneList = Cases[SARAH`GoldstoneGhost,
+                                 {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
+           StringJoin[CreateReorderingFunctionCalls /@ goldstoneList]
+          ];
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
            dim = Length[matrix];
@@ -626,8 +643,9 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
-           (* Set the goldstone boson masses equal to the
-              corresponding vector boson masses *)
+           (* reorder goldstone boson masses *)
+           body = body <> ReorderGoldstoneBosons[GetHead[eigenVector],
+                                                 mixingMatrixSymbol];
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
