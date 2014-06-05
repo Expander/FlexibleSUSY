@@ -202,8 +202,8 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
 }
 
 template <typename DerivedArray, typename DerivedMatrix>
-void move_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
-             Eigen::MatrixBase<DerivedMatrix>& z)
+void move_goldstone_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
+                       Eigen::MatrixBase<DerivedMatrix>& z)
 {
    const unsigned pos = closest_index(mass, v);
 

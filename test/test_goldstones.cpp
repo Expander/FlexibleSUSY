@@ -30,8 +30,8 @@ BOOST_AUTO_TEST_CASE( test_reordering )
    // mass matrix
    const Eigen::Matrix<double, 3, 3> M(Z.transpose() * higgs.matrix().asDiagonal() * Z);
 
-   move_to(0, mvz , higgs, Z);
-   move_to(1, mvzp, higgs, Z);
+   move_goldstone_to(0, mvz , higgs, Z);
+   move_goldstone_to(1, mvzp, higgs, Z);
 
    BOOST_CHECK_EQUAL(higgs(0), mvz_pole);
    BOOST_CHECK_EQUAL(higgs(1), mvzp_pole);

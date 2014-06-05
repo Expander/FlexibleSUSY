@@ -592,7 +592,7 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}] :=
-    "move_to(" <> ToString[idx-1] <> ", " <>
+    "move_goldstone_to(" <> ToString[idx-1] <> ", " <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]] <> ", " <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]] <> ", " <>
     CConversion`ToValidCSymbolString[mixingMatrix] <> ");\n";
