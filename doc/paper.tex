@@ -400,8 +400,8 @@ planned.
 In \fs the standard fixed-point iteration solver has been generalized
 to handle towers of models (effective theories), which are matched at
 intermediate scales.  An example of such a tower construction will be
-given in \secref{sec:adapting-cpp-code}, where a right-handed neutrino
-is integrated out at the see-saw scale, between the SUSY and the GUT
+given in \secref{sec:tower construction}, where right-handed neutrinos
+are integrated out at the see-saw scale, between the SUSY and the GUT
 scale.
 
 \section{Download and compilation}
@@ -1749,6 +1749,7 @@ For a general account of the \fs model files,
 refer to \secref{sec:modfile}.
 
 \subsubsection{Changing boundary conditions}
+\label{sec:changing boundary conditions}
 
 As already emphasized in \secref{sec:Program}, the modular design of
 \fs makes it straightforward % to change a boundary condition.
@@ -1964,6 +1965,9 @@ underlies the MSSM in the next subsection.
 
 \subsection{Adapting C++ code}
 \label{sec:adapting-cpp-code}
+
+\subsubsection{Stacking models in a tower of effective theories}
+\label{sec:tower construction}
 
 Consider a physics scenario which is best described
 by a tower of effective theories.
@@ -2438,6 +2442,191 @@ This leads in turn to the slepton mixing
 matrices, \code{ZE} and \code{ZV},
 which contain intergenerational mixings apart from the
 generic left-right mixings.
+
+\subsubsection{Integrating custom-built C++ components}
+
+In \secref{sec:changing boundary conditions},
+it was explained how one can let \fs generate
+an alternative C++ boundary condition class
+by authoring a model file.
+Nonetheless, the way to employ this class at the C++ level
+might still remain obscure to the reader
+since \fs automatically took care of it.
+Here, an example shall be exhibited
+with the emphasis on the modular C++ code structure
+that helps programming.
+Concretely,
+the auto-generated low-energy boundary condition on the MSSM
+shall be modified so that
+$\alpha_{\text{s},\text{susy}}^{\text{\DRbar}}$
+is determined from
+$\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}$
+by means of a two-loop matching.
+This shall be accompanied by an improvement
+of the $g_3$ $\beta$-function to the three-loop accuracy.
+
+The first step is to alter
+the model class which evaluates the $\beta$-functions.
+Thanks to the \code{beta()} method being virtual,
+one can override it conveniently by deriving a class from \code{MSSM}.
+The declaration might look like:
+% MSSMcbs_two_scale_model.hpp
+\begin{numlstlisting}
+#include "MSSM_two_scale_model.hpp"
+
+template<>
+class MSSMcbs<Two_scale> : public MSSM<Two_scale> {
+public:
+  explicit MSSMcbs(const MSSM_input_parameters& input_ = MSSM_input_parameters());
+  virtual ~MSSMcbs();
+  virtual Eigen::ArrayXd beta() const;
+  MSSM_soft_parameters calc_beta() const;
+};
+\end{numlstlisting}
+where the name \code{MSSMcbs} is an abbreviation of
+the MSSM with custom-built $\beta$'s.
+Note that the objects for \code{MSSM} are reused where possible:
+\code{MSSM_input_parameters} in line 6 as well as
+\code{MSSM_soft_parameters} in line 9.
+This saves the programmer from excessive duplication of codes.
+The member function definitions read:
+\begin{numlstlisting}
+Eigen::ArrayXd MSSMcbs<Two_scale>::beta() const
+{
+  return calc_beta().get();
+}
+
+MSSM_soft_parameters MSSMcbs<Two_scale>::calc_beta() const
+{
+  MSSM_soft_parameters betas(MSSM<Two_scale>::calc_beta());
+  if (get_loops() <= 2) return betas;
+  double bg33 = /* formula in terms of g1, g2, g3, Yu, Yd, Ye */;
+  betas.set_g3(betas.get_g3() + Power(oneOver16PiSqr,3) * g3 * bg33);
+  return betas;
+}
+\end{numlstlisting}
+The full C++ expression of \code{bg33},
+used in \code{MSSMcbs_two_scale_model.cpp},
+has been adapted from the code by Jack and Jones \cite{3-loop MSSM betas}.
+This already completes the amendment of the $g_3$ $\beta$-function.
+
+The next step is to write a substitute for
+the low-energy boundary condition class.
+It must be declared as a descendent of \code{Constraint<Two_scale>}:
+% MSSMcbs_two_scale_low_scale_constraint.hpp
+\begin{numlstlisting}
+#include "two_scale_constraint.hpp"
+
+template<>
+class MSSMcbs_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+public:
+  MSSMcbs_low_scale_constraint(const MSSM_input_parameters&, const QedQcd&);
+  virtual ~MSSMcbs_low_scale_constraint();
+  void set_threshold_corrections(unsigned);
+  ...
+private:
+  MSSMcbs<Two_scale>* model;
+  QedQcd oneset;
+  double new_g3;
+  unsigned threshold_corrections;
+  void calculate_DRbar_gauge_couplings();
+  double calculate_alS5DRbar_over_alS5MSbar(double) const;
+  double calculate_zeta_g_QCD_2(double) const;
+  double calculate_zeta_g_SUSY_2(double) const;
+  ...
+};
+\end{numlstlisting}
+In line 11,
+the type of \code{model} has been adapted to the new model.
+In fact, this class should work even if \code{model} remained
+a pointer to \code{MSSM<Two_scale>} because of inheritance.
+The main additions to \code{MSSM_low_scale_constraint}
+in \code{models/MSSM/} are the member functions in lines 16--18,
+which evaluate the two-loop matching coefficients
+from Ref.~\cite{Harlander:2005wm}.
+The following member function then performs
+the two-step decoupling as reported in this reference:
+% MSSMcbs_two_scale_low_scale_constraint.cpp
+\begin{numlstlisting}
+void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
+{
+  ...
+  double alpha_s = oneset.displayAlpha(ALPHAS);
+  double alS5DRbar_over_alS5MSbar = 1;
+  double zeta_g_QCD_2 = 1;
+  double zeta_g_SUSY_2 = 1;
+  if (model->get_thresholds()) {
+    alS5DRbar_over_als5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
+    alpha_s *= alS5DRbar_over_alS5MSbar;  // alS5MSbar -> alS5DRbar
+    zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
+    alpha_s /= zeta_g_QCD_2;		  // alS5DRbar -> alS6DRbar
+    zeta_g_SUSY_2 = calculate_zeta_g_SUSY_2(alpha_s);
+    alpha_s /= zeta_g_SUSY_2;		  // alS6DRbar -> alS6DRbarMSSM
+    ...
+  }
+  new_g3 = Sqrt(4*Pi * alpha_s);
+  ...
+}
+\end{numlstlisting}
+Finally,
+one can integrate the new boundary condition class
+\code{MSSMcbs_low_scale_constraint} together with
+the new model \code{MSSMcbs}
+into the spectrum generator in a straightforward manner.
+They should supersede
+\code{MSSM_low_scale_constraint} and \code{MSSM}, respectively.
+The replacement should be carried out in
+those objects that depend on these classes,
+i.e.\ the initial guesser:
+\begin{numlstlisting}
+template<>
+class MSSMcbs_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
+public:
+  MSSMcbs_initial_guesser(MSSMcbs<Two_scale>*,
+                          const MSSM_input_parameters&,
+                          const QedQcd&,
+                          const MSSMcbs_low_scale_constraint<Two_scale>&,
+                          const MSSM_susy_scale_constraint<Two_scale>&,
+                          const MSSM_high_scale_constraint<Two_scale>&);
+  ...
+private:
+  MSSMcbs<Two_scale>* model;
+  MSSM_input_parameters input_pars;
+  QedQcd oneset;
+  MSSMcbs_low_scale_constraint<Two_scale> low_constraint;
+  MSSM_susy_scale_constraint<Two_scale> susy_constraint;
+  MSSM_high_scale_constraint<Two_scale> high_constraint;
+  ...
+};
+\end{numlstlisting}
+as well as the spectrum generator object:
+% MSSMcbs_spectrum_generator.hpp
+\begin{numlstlisting}
+template <class T>
+void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
+					const MSSM_input_parameters& input)
+{
+  ...
+  MSSMcbs_initial_guesser<T> initial_guesser
+    (&model, input, oneset,
+     low_scale_constraint, susy_scale_constraint, high_scale_constraint);
+  ...
+}
+\end{numlstlisting}
+The procedure described above is essentially all that is needed
+to employ new spectrum generator components,
+which may be composed from scratch or through
+a linkage to external routines.
+In doing so,
+notice that there was an evident limit on the scope of
+modules which one had to deal with.
+For instance, it was clear from the outset
+that one does not have to go through the code of the central
+fixed-point iteration engine, \code{RGFlow}.
+This manifests the power of the clean separation among objects
+each with its well-defined distinct role.
+One can find a working realization of this example
+in \code{examples/customized-betas/}.
 
 \section{Tests and comparisons with other spectrum generators}
 \label{sec:comparison}
@@ -3262,6 +3451,19 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   Phys.\ Rev.\ Lett.\  {\bf 57} (1986) 961.
   %%CITATION = PRLTA,57,961;%%
   %582 citations counted in INSPIRE as of 28 Oct 2013
+
+\bibitem{3-loop MSSM betas}
+  I.~Jack and D.~R.~T.~Jones, \ptitle{
+    3-loop MSSM beta functions,}
+  \url{http://www.liv.ac.uk/~dij/betas}.
+
+\bibitem{Harlander:2005wm}
+  R.~Harlander, L.~Mihaila and M.~Steinhauser,
+  %``Two-loop matching coefficients for the strong coupling in the MSSM,''
+  Phys.\ Rev.\ D {\bf 72} (2005) 095009
+  [hep-ph/0509048].
+  %%CITATION = HEP-PH/0509048;%%
+  %27 citations counted in INSPIRE as of 05 Jun 2014
 
 %\cite{Hall:1980kf}
 \bibitem{Hall:1980kf}
