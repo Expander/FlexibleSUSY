@@ -22,9 +22,9 @@
 #include "MSSMcbs_two_scale_model.hpp"
 #include "MSSM_two_scale_high_scale_constraint.hpp"
 #include "MSSM_two_scale_susy_scale_constraint.hpp"
-#include "MSSM_two_scale_low_scale_constraint.hpp"
+#include "MSSMcbs_two_scale_low_scale_constraint.hpp"
 #include "MSSM_two_scale_convergence_tester.hpp"
-#include "MSSM_two_scale_initial_guesser.hpp"
+#include "MSSMcbs_two_scale_initial_guesser.hpp"
 #include "MSSM_utilities.hpp"
 
 #include "coupling_monitor.hpp"
@@ -82,7 +82,7 @@ private:
    MSSMcbs<T> model;
    MSSM_high_scale_constraint<T> high_scale_constraint;
    MSSM_susy_scale_constraint<T> susy_scale_constraint;
-   MSSM_low_scale_constraint<T>  low_scale_constraint;
+   MSSMcbs_low_scale_constraint<T> low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double input_scale; ///< high-scale parameter input scale
    double parameter_output_scale; ///< output scale for running parameters
@@ -142,7 +142,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   MSSM_initial_guesser<T> initial_guesser(&model, input, oneset,
+   MSSMcbs_initial_guesser<T> initial_guesser(&model, input, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);

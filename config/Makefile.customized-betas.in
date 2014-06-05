@@ -63,7 +63,9 @@ endif
 
 CUSTOMBETAS_SRC := \
 		custombetas.cpp \
-		MSSMcbs_two_scale_model.cpp
+		MSSMcbs_two_scale_model.cpp \
+		MSSMcbs_two_scale_low_scale_constraint.cpp \
+		MSSMcbs_two_scale_initial_guesser.cpp
 
 CUSTOMBETAS_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(CUSTOMBETAS_SRC))) \
