@@ -1966,6 +1966,16 @@ underlies the MSSM in the next subsection.
 \subsection{Adapting C++ code}
 \label{sec:adapting-cpp-code}
 
+There are problems which one cannot solve only by
+editing \mathematica model files.
+To unlock the full potential of \fs,
+it is an advantage not to avoid programming at the C++ level.
+For this, it should help to have working knowledge about the basic structure
+of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
+In what follows,
+it shall be demonstrated that
+the clean object structure serves as firm guidance on the job.
+
 \subsubsection{Stacking models in a tower of effective theories}
 \label{sec:tower construction}
 
@@ -2036,13 +2046,10 @@ produce a spectrum generator spanning multiple models,
 one needs to write the matching object
 % in \figref{fig:class structure for tower}
 as well as gluing codes by hand to build such a program.
-Nevertheless, the clean object structure eases this job.
 One can author nearly all the components of a multi-model spectrum generator
 by making a straightforward extension
 to each corresponding single-model counterpart
 for one of the models forming the tower.
-For this, it should help to have working knowledge about the basic structure
-of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
 Obviously, this tip does not work for the matching class,
 which has no analogue in a single-model case.
 
@@ -2447,7 +2454,7 @@ generic left-right mixings.
 
 In \secref{sec:changing boundary conditions},
 it was explained how one can let \fs generate
-an alternative C++ boundary condition class
+an alternative boundary condition class
 by authoring a model file.
 Nonetheless, the way to employ this class at the C++ level
 might still remain obscure to the reader
@@ -2556,7 +2563,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
   double zeta_g_QCD_2 = 1;
   double zeta_g_SUSY_2 = 1;
   if (model->get_thresholds()) {
-    alS5DRbar_over_als5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
+    alS5DRbar_over_alS5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
     alpha_s *= alS5DRbar_over_alS5MSbar;  // alS5MSbar -> alS5DRbar
     zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
     alpha_s /= zeta_g_QCD_2;		  // alS5DRbar -> alS6DRbar
@@ -2613,6 +2620,9 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
   ...
 }
 \end{numlstlisting}
+One can find a working realization of this example
+in \code{examples/customized-betas/}.
+
 The procedure described above is essentially all that is needed
 to employ new spectrum generator components,
 which may be composed from scratch or through
@@ -2625,8 +2635,13 @@ that one does not have to go through the code of the central
 fixed-point iteration engine, \code{RGFlow}.
 This manifests the power of the clean separation among objects
 each with its well-defined distinct role.
-One can find a working realization of this example
-in \code{examples/customized-betas/}.
+This is just like the fact that one does not need to access the internals
+of the \code{std::sort} function in the C++ Standard Library.
+It might be entertaining to complete the analogy by
+mapping the model objects in \code{RGFlow}
+to the elements that \code{std::sort} sorts
+and the boundary condition objects
+to the comparator function.
 
 \section{Tests and comparisons with other spectrum generators}
 \label{sec:comparison}
