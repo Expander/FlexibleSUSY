@@ -2069,7 +2069,17 @@ for one of the models forming the tower.
 Obviously, this tip does not work for the matching class,
 which has no analogue in a single-model case.
 
-One could best see the overall code structure in the \code{Makefile}:
+As the target spectrum generator depends on two models,
+one should first build these prerequisites by:
+\begin{numlstlisting}
+$ ./createmodel --name=MSSM
+$ ./createmodel --name=MSSMRHN
+$ ./configure --with-models=MSSM,MSSMRHN
+$ make
+\end{numlstlisting}
+As a by-product, line 3
+also creates a \code{Makefile} in \code{examples/tower/}.
+One could best see the overall code structure of the application in this file:
 \begin{numlstlisting}
 CPPFLAGS  := -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) \
              $(INCMSSM) $(INCMSSMRHN)
@@ -2435,10 +2445,6 @@ through the see-saw mechanism.
 For further details, browse the directory \code{examples/tower/}.
 One can build and run the example therein by:
 \begin{numlstlisting}
-$ ./createmodel --name=MSSM
-$ ./createmodel --name=MSSMRHN
-$ ./configure --with-models=MSSM,MSSMRHN
-$ make
 $ cd examples/tower
 $ make
 $ ./run_tower.x --slha-input-file=LesHouches.in.tower
