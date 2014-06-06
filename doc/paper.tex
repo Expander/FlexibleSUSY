@@ -110,24 +110,27 @@ Universitat de Val\`{e}ncia-CSIC,
 TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
    
   \begin{abstract}
-   We introduce \fs, a \mathematica package which generates a fast,
-   precise C++ spectrum generator for any SUSY model specified by the
-   user.  The generated code is designed with both speed and
-   modularity in mind, making it easy to adapt and extend with new
-   features. The user specifies the model supplying the
-   superpotential, gauge structure and particle content in a \sarah
-   model file and provides the specific boundary conditions in a
-   separate \fs model file. \fs makes use of the existing \sarah
-   package to obtain self energies, tadpole corrections,
-   renormalization group equations (RGEs) and tree level mass and
-   electroweak symmetry breaking conditions for the specified model. These are
-   translated into C++ code and combined  with numerical
-   routines for solving the RGEs, EWSB conditions and simultaneously
-   solving for the spectrum consistent with user specified boundary
-   conditions.  The modular structure of the generated code allows for
-   individual components to be replaced with an alternative if
-   available. \fs has been carefully designed to grow as
-   alternative solvers and calculators are added.
+    We introduce \fs, a \mathematica package, which generates a fast,
+    precise C++ spectrum generator for any SUSY model specified by the
+    user.  The generated code is designed with both speed and
+    modularity in mind, making it easy to adapt and extend with new
+    features. The model is specified by supplying the superpotential,
+    gauge structure and particle content in a \sarah model file;
+    specific boundary conditions e.g.\ at the GUT, weak or
+    intermediate scales are defined in a separate \fs model file.
+    From these model files, \fs generates C++ code for self-energies,
+    tadpole corrections, renormalization group equations (RGEs) and
+    electroweak symmetry breaking (EWSB) conditions and combines them
+    with numerical routines for solving the RGEs and EWSB conditions
+    simultaneously.  The resulting spectrum generator is then able to
+    solve for the spectrum of the model, including loop-corrected pole
+    masses, consistent with user specified boundary conditions.  The
+    modular structure of the generated code allows for individual
+    components to be replaced with an alternative if available. \fs
+    has been carefully designed to grow as alternative solvers and
+    calculators are added.  Predefined models include the MSSM, NMSSM,
+    \ESSM, USSM, $R$-symmetric models and models with right-handed
+    neutrinos.
   \end{abstract}
 
 \begin{keyword}
