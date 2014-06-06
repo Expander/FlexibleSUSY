@@ -88,6 +88,17 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
+template <typename Derived>
+unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
+{
+   unsigned pos;
+   typename Derived::PlainObject tmp;
+   tmp.setConstant(mass);
+
+   (v - tmp).abs().minCoeff(&pos);
+
+   return pos;
+}
 
 inline double Conj(double a)
 {
@@ -188,6 +199,25 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
                   const Eigen::ArrayBase<Derived>& b)
 {
    return MaxRelDiff(a.matrix(), b.matrix());
+}
+
+/**
+ * The element of v, which is closest to mass, is moved to the
+ * position idx.
+ *
+ * @param idx new index of the mass eigenvalue
+ * @param mass mass to compare against
+ * @param v vector of masses
+ * @param z corresponding mixing matrix
+ */
+template <typename DerivedArray, typename DerivedMatrix>
+void move_goldstone_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
+                       Eigen::MatrixBase<DerivedMatrix>& z)
+{
+   const unsigned pos = closest_index(mass, v);
+
+   v.row(idx).swap(v.row(pos));
+   z.row(idx).swap(z.row(pos));
 }
 
 template <typename Base, typename Exponent>
