@@ -338,13 +338,18 @@ boundary conditions as well as input and output parameters can be
 controlled (see \secref{sec:quick-start-alternative-models} and
 \secref{sec:adapting-model-files} for examples).  (ii) In particular
 \fs uses C++ object orientation features to modularize the source code
-in order to make it easy for the user to modify, reuse, replace or
+so that it is sharply divided into manifestly separate building blocks.
+This modular architecture makes it easy
+for the user to modify, reuse, replace or
 extend the individual components (see \secref{sec:adapting-cpp-code}
 for examples).  An important application of this concept are the
 boundary conditions, for which the C++ level offers a wider range of
 possibilities.  The boundary conditions solver provides a plugin
 mechanism via a common \code{Constraint} interface, which allows a
-user to exchange or add boundary conditions at any scale.  An
+user to exchange or add boundary conditions at any scale.
+To realized this, all (derived) constraint objects are intentionally
+kept outside the solver.  Despite being independent of one another,
+they can fit together with the aid of class inheritance.  An
 elaborate example of a tower of effective field theories and multiple
 matching scales is presented in \secref{sec:tower construction}.
 Alternatively, the modular structure makes it straightforward to take
