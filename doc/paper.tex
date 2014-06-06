@@ -2093,8 +2093,6 @@ TOWER_OBJ := $(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC)))
 run_tower.x: $(TOWER_OBJ) $(LIBMSSM) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
   $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
 \end{numlstlisting}
-This file is created in \code{examples/tower/}
-on the execution of the \code{configure} script.
 The include directives in line 2 tell the compiler
 where to find the headers for either \code{MSSM} or \code{MSSMRHN}.
 The \code{.cpp} files in lines 4--6 and the \code{.hpp} files
@@ -2656,7 +2654,7 @@ modules which one had to deal with.
 For instance, it was clear from the outset
 that one does not have to go through the code of the central
 fixed-point iteration engine, \code{RGFlow}.
-This manifests the power of the clean separation among objects
+This manifests the power of the clear separation among objects
 each with its well-defined distinct role.
 This is just like the fact that one does not need to access the internals
 of the \code{std::sort} function in the C++ Standard Library.
