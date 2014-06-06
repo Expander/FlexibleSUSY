@@ -260,7 +260,7 @@ generated code and existing public spectrum generators as well as
 against the SPheno-like FORTRAN code which can be created using SARAH.
 
 
-\section{Overview of the Program}
+\section{Overview of the program and design goals}
 \label{sec:Program}
 
 To study the properties of SUSY models programs are needed which
@@ -324,6 +324,32 @@ contributions for the MSSM and NMSSM).
 Since the calculation of the pole mass spectrum in a SUSY model is a
 non-trivial task, \fs is designed with the following points in mind:
 
+\paragraph{Modularity}
+
+The large variety of supersymmetric models and potential
+investigations makes it likely that the user wants to modify the
+generated spectrum generator source code or reuse components in
+further programs.  \fs offers two levels to influence the code: (i) On
+the \mathematica model file level the model itself or GUT/weak scale
+boundary conditions as well as input and output parameters can be
+controlled (see \secref{sec:quick-start-alternative-models} and
+\secref{sec:adapting-model-files} for examples).  (ii) In particular
+\fs uses C++ object orientation features to modularize the source code
+in order to make it easy for the user to modify, reuse, replace or
+extend the individual components (see \secref{sec:adapting-cpp-code}
+for examples).  An important application of this concept are the
+boundary conditions, for which the C++ level offers a wider range of
+possibilities.  The boundary conditions solver provides a plugin
+mechanism via a common \code{Constraint} interface, which allows a
+user to exchange or add boundary conditions at any scale.  An
+elaborate example of a tower of effective field theories and multiple
+matching scales is presented in \secref{sec:tower construction}.
+Alternatively, the modular structure makes it straightforward to take
+\fs generated code for e.g.\ RGEs or self-energies and reuse it in an
+existing code for some other purpose.  Conversely, it is also easy to
+include code from elsewhere into the spectrum generator.  For an
+example see \secref{sec:integrating-custom-built}.
+
 \paragraph{Speed}
 
 Exploring the parameter space of supersymmetric models with a high
@@ -364,26 +390,6 @@ mixed particles:
   one can gain a speed-up of $20$--$30\%$.
 \end{itemize}
 
-\paragraph{Modularity}
-
-The large variety of supersymmetric models makes it likely that the
-user wants to modify the generated spectrum generator source code or
-reuses components in his own program. \fs uses C++ object orientation
-features to modularize the source code in order to make it easy for
-the user to modify, reuse, replace or extend the individual
-components.  An important application of this concept are the boundary
-conditions: The boundary conditions solver provides a plugin mechanism
-via a common \code{Constraint} interface, which allows a user to
-exchange or add boundary conditions at any scale.  Alternatively, if
-one already has an existing code for some other purpose and simply
-wishes to improve upon this by adding, e.g., new RGEs or self-energies
-the modular framework makes this straightforward by adding or
-interfacing with the appropriate routine.  A possible application of
-reusing the \fs's generated classes would be to further improve the
-precision of the CE$_6$SSM spectrum generator presented in
-\cite{Athron:2009bs,Athron:2012pw} by adding further one-loop
-self-energies and two-loop $\beta$-functions.
-
 \paragraph{Alternative boundary value problem solvers}
 
 Furthermore, the standard algorithm which solves the user-defined
@@ -391,8 +397,7 @@ boundary value problem via a fixed-point iteration is not guaranteed
 to converge in all regions of the model parameter space.  Therefore,
 \fs has been intentionally designed to allow for alternative solvers
 to search for solutions in such critical parameter regions.  A
-subsequent release with an alternative lattice solver is already
-planned.
+subsequent release with an alternative solver is already planned.
 
 \paragraph{Towers of effective theories}
 
@@ -403,7 +408,7 @@ given in \secref{sec:tower construction}, where right-handed neutrinos
 are integrated out at the see-saw scale, between the SUSY and the GUT
 scale.
 
-\section{Download and compilation}
+\section{Quick start}
 \label{sec:download}
 
 \subsection{Requirements}
@@ -435,7 +440,8 @@ Optional:
   \url{http://www.feynarts.de/looptools/}
 \end{itemize}
 
-\subsection{Quick Start}
+\subsection{Download and generating a first spectrum generator}
+\label{sec:quick-start-cmssm}
 
 \fs can be downloaded as a gzipped tar file from
 \url{http://flexiblesusy.hepforge.org/}.  To download and install
@@ -514,6 +520,7 @@ Block MASS
 \end{lstlisting}
 
 \subsection{Spectrum generators for alternative models}
+\label{sec:quick-start-alternative-models}
 
 \fs already comes with plenty of predefined models: the CMSSM (simply
 called \code{MSSM}), the $Z_3$-symmetric NMSSM (called \code{NMSSM})
@@ -521,10 +528,13 @@ called \code{MSSM}), the $Z_3$-symmetric NMSSM (called \code{NMSSM})
 \cite{Ellwanger:2009dp}, the USSM (\code{UMSSM})
 \cite{Fayet:1977yc,Cvetic:1997ky,Erler:2002pr}, the NUHM-\ESSM
 (\code{E6SSM}) \cite{King:2005jy,Athron:2007en}, the right-handed
-neutrino extended MSSM (\code{MSSMRHN}) and the NUHM-MSSM
-(\code{NUHMSSM}).  See the content of \code{model_files/} for all
-predefined model files.  A spectrum generator for the $Z_3$-symmetric
-NMSSM for example can be generated like this:
+neutrino extended MSSM (\code{MSSMRHN}), the NUHM-MSSM
+(\code{NUHMSSM}) and the $R$-symmetric MSSM (\code{MRSSM})
+\cite{Kribs:2007ac}.  See the content of \code{model_files/} for all
+predefined model files.  For all these models spectrum generators can
+be generated easily like for the CMSSM in
+\secref{sec:quick-start-cmssm}.  The spectrum generator for the
+$Z_3$-symmetric NMSSM for example can be generated like this:
 %
 \begin{lstlisting}[language=bash]
 $ ./createmodel --name=NMSSM
@@ -532,10 +542,15 @@ $ ./configure --with-models=NMSSM
 $ make
 \end{lstlisting}%% $
 %
-This NMSSM variant unifies all soft-breaking trilinear scalar
-couplings at the GUT scale.  In order to relax this constraint and use
-a separate value for $A_\lambda$ at the GUT scale one can edit the
-model file \code{models/NMSSM/FlexibleSUSY.m} and change the lines
+One of the design goals is modularity and the possibility to easily
+construct custom spectrum generators.  The details of the
+customization can be found in Sections
+\ref{sec:modfile}--\ref{sec:Flexible}.  As a simple example consider
+the NMSSM.  The NMSSM variant above unifies all soft-breaking
+trilinear scalar couplings at the GUT scale.  In order to relax this
+constraint and use a separate value for $A_\lambda$ at the GUT scale
+one can edit the model file \code{models/NMSSM/FlexibleSUSY.m} and
+change the lines
 %
 \begin{lstlisting}[language=Mathematica]
 EXTPAR = { {61, LambdaInput} };
@@ -1734,6 +1749,7 @@ They have been tailored retaining the semantics
 for conciseness.
 
 \subsection{Adapting model files}
+\label{sec:adapting-model-files}
 
 There are simple but interesting goals
 that one can achieve only by working on
@@ -2450,6 +2466,7 @@ which contain intergenerational mixings apart from the
 generic left-right mixings.
 
 \subsubsection{Integrating custom-built C++ components}
+\label{sec:integrating-custom-built}
 
 In \secref{sec:changing boundary conditions},
 it was explained how one can let \fs generate
@@ -3557,6 +3574,15 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   [arXiv:0708.3248 [hep-ph]].
   %%CITATION = ARXIV:0708.3248;%%
   %2 citations counted in INSPIRE as of 04 Jun 2014
+
+%\cite{Kribs:2007ac}
+\bibitem{Kribs:2007ac}
+  G.~D.~Kribs, E.~Poppitz and N.~Weiner,
+  %``Flavor in supersymmetry with an extended R-symmetry,''
+  Phys.\ Rev.\ D {\bf 78} (2008) 055010
+  [arXiv:0712.2039 [hep-ph]].
+  %%CITATION = ARXIV:0712.2039;%%
+  %130 citations counted in INSPIRE as of 06 Jun 2014
 
 \end{thebibliography}
 \end{document}
