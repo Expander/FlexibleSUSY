@@ -2140,7 +2140,7 @@ to set up and drive the \code{RGFlow} object in
 This task is started by the call in line 14 to
 the following member function defined in
 \code{MSSM_MSSMRHN_spectrum_generator.hpp}:
-\begin{numlstlisting}[name=SGrun]
+\begin{numlstlisting}[name=SGrun,language=C++]
 template<class T> void MSSM_MSSMRHN_spectrum_generator<T>::run
 (const QedQcd& oneset,
  const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
@@ -2176,13 +2176,13 @@ the constraints on \code{MSSM}:
   downward_constraints_1.push_back(&low_scale_constraint_1);
 \end{numlstlisting}
 and initializes the \code{MSSM} object:
-\begin{numlstlisting}[name=SGrun]
+\begin{numlstlisting}[name=SGrun,language=C++]
   model_1.clear();                 // of type MSSM<T>
   model_1.set_input_parameters(input_1);
   model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
 \end{numlstlisting}
 Likewise for \code{MSSMRHN}:
-\begin{numlstlisting}[name=SGrun]
+\begin{numlstlisting}[name=SGrun,language=C++]
   std::vector<Constraint<T>*> upward_constraints_2;
   upward_constraints_2.push_back(&high_scale_constraint_2);
   std::vector<Constraint<T>*> downward_constraints_2;
@@ -2222,7 +2222,7 @@ One then passes
 \code{convergence_tester} and \code{initial_guesser}
 to \code{solver}, the \code{RGFlow} object,
 along with the precision specification:
-\begin{numlstlisting}[name=SGrun]
+\begin{numlstlisting}[name=SGrun,language=C++]
   Two_scale_increasing_precision precision(10.0, precision_goal);
   solver.reset();                  // of type RGFlow<T>
   solver.set_convergence_tester(&convergence_tester);
@@ -2251,7 +2251,7 @@ After the solution is found,
 one can obtain the resulting low-energy spectrum.
 Since \code{model_1} is in contact with the lowest energy,
 let it calculate the spectrum:
-\begin{numlstlisting}[name=SGrun]
+\begin{numlstlisting}[name=SGrun,language=C++]
   susy_scale_1 = susy_scale_constraint_1.get_scale();
   model_1.run_to(susy_scale_1);    // of type MSSM<T>
   model_1.calculate_spectrum();
@@ -2390,7 +2390,7 @@ is \code{MSSMRHN_high_scale_constraint<Two_scale>} and that
 Due to this intermediate scale,
 the initial run-up is divided into two steps,
 with a matching procedure in-between:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
   model_1->run_to(matching_scale_guess); // of type MSSM<Two_scale>
   matching.set_models(model_1, model_2);
   matching.match_low_to_high_scale_model();
@@ -2575,7 +2575,7 @@ from Ref.~\cite{Harlander:2005wm}.
 The following member function then performs
 the two-step decoupling as reported in this reference:
 % MSSMcbs_two_scale_low_scale_constraint.cpp
-\begin{numlstlisting}
+\begin{numlstlisting}[language=C++]
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
   ...
