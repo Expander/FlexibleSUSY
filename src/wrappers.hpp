@@ -252,6 +252,18 @@ inline int Sign(double x)
    return (x >= 0.0 ? 1 : -1);
 }
 
+namespace {
+   struct CompareAbs_d {
+      bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
+   };
+}
+
+template<int N>
+void Sort(Eigen::Array<double, N, 1>& v)
+{
+   std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);

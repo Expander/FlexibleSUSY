@@ -420,12 +420,6 @@ void fs_diagonalize_hermitian
     z = (z * p).adjoint().eval();
 }
 
-template<int N>
-void sort(Eigen::Array<double, N, 1>& v)
-{
-   std::sort(v.data(), v.data() + v.size(), CompareAbs<N>(v));
-}
-
 } // namespace flexiblesusy
 
 #endif // linalg2_hpp
