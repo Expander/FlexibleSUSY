@@ -1747,9 +1747,12 @@ a spectrum generator right out of the box is not enough.
 one can exploit its facilities
 while undergoing a minimal amount of frustration,
 when he or she programs for a wide variety of studies.
-In what follows,
-this property shall be demonstrated by presenting a few use cases
-at differing levels of complexity.
+We provide two basic levels for the user to create a custom spectrum
+generator: (i) The \mathematica level, where he or she writes or
+adapts a model file and (ii) the C++ level, where the generated
+classes can be extended, recombined or replaced by self-made modules.
+In what follows, adaptions on these two levels shall be demonstrated
+by presenting a few use cases at differing degrees of complexity.
 
 To avoid confusion,
 it should be mentioned that
@@ -1909,7 +1912,7 @@ DEFINITION[EWSB][DiracSpinors] = {
   ...
 };
 \end{numlstlisting}
-With respect to the MSSM file, newly added lines are
+With respect to the MSSM file, the newly added lines are
 6, 12, 15, and 22.
 Notice that the (left- and right-handed) neutrino mixing
 in line 15 resembles the neutralino mixing in line 14.
@@ -1960,7 +1963,8 @@ ParameterDefinitions = {
   ...
 };
 \end{numlstlisting}
-For details on how to write model files for \sarah, consult its manual.
+For further details on how to write model files for \sarah, we refer
+to its manual \cite{Staub:2008uz,Staub:2013tta}.
 
 Finally, it remains to put \code{FlexibleSUSY.m.in}
 in \code{model_files/MSSMRHN/}.
@@ -1999,21 +2003,21 @@ For this, it should help to have working knowledge about the basic structure
 of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
 In what follows,
 it shall be demonstrated that
-the clean object structure serves as firm guidance on the job.
+the clean class structure serves as firm guidance on the job.
 
 \subsubsection{Stacking models in a tower of effective theories}
 \label{sec:tower construction}
 
 Consider a physics scenario which is best described
 by a tower of effective theories.
-Within the framework of \fs, the C++ object structure is
+Within the framework of \fs, the C++ class structure is
 a faithful reflection of
 this physicist's view on the given problem.
-This point might be illustrated
+Here we illustrate this point
 using a well-known configuration in which
 the higher-energy theory is the MSSMRHN discussed above which
 gives rise to the MSSM as the lower-energy effective theory.
-The relevant objects are sketched
+The relevant classes are sketched
 in \figref{fig:class structure for tower}.
 \begin{figure}
   \centering
@@ -2049,7 +2053,7 @@ in \figref{fig:class structure for tower}.
          (NW) -- +(10.6,0);
   \path (top) node[above] {\code{RGFlow}};
 \end{tikzpicture}
-  \caption{Schematic object structure in the C++ code for
+  \caption{Schematic class structure in the C++ code for
     the tower scenario.}
   \label{fig:class structure for tower}
 \end{figure}
@@ -2066,17 +2070,17 @@ the association of a constraint with its scale.
 All these components are plugged into the \code{RGFlow} object
 which then solves the problem.
 
-Since the current implementation of \fs does not (yet)
+Since the current implementation of \fs does not (yet) automatically
 produce a spectrum generator spanning multiple models,
-one needs to write the matching object
+one needs to write the matching class
 % in \figref{fig:class structure for tower}
 as well as gluing codes by hand to build such a program.
 One can author nearly all the components of a multi-model spectrum generator
 by making a straightforward extension
 to each corresponding single-model counterpart
 for one of the models forming the tower.
-Obviously, this tip does not work for the matching class,
-which has no analogue in a single-model case.
+The matching class, however, needs to be set-up by hand, because it
+has no analogue in a single-model case.
 
 As the target spectrum generator depends on two models,
 one should first build these prerequisites by:
@@ -2088,7 +2092,7 @@ $ make
 \end{numlstlisting}
 As a by-product, line 3
 also creates a \code{Makefile} in \code{examples/tower/}.
-One could best see the overall code structure of the application in this file:
+One can best see the overall code structure of the application in this file:
 \begin{numlstlisting}
 CPPFLAGS  := -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) \
              $(INCMSSM) $(INCMSSMRHN)
@@ -2139,16 +2143,14 @@ to be a pseudo-code.
 Given two models,
 one declares two sets of input parameters,
 \code{input_1} and \code{input_2}, in lines 7--8.
-The suffixes \code{_1} and \code{_2} are not necessary but intended to remind
-the programmer of to which model the object is relevant.
 
-The \code{main} function then delegates
-the \code{MSSM_MSSMRHN_spectrum_generator} object
-to set up and drive the \code{RGFlow} object in
-\figref{fig:class structure for tower}.
-This task is started by the call in line 14 to
-the following member function defined in
-\code{MSSM_MSSMRHN_spectrum_generator.hpp}:
+The crucial point is the definition of the
+\code{MSSM_MSSMRHN_spectrum_generator} object in line 12, which
+creates and drives the \code{RGFlow} object in \figref{fig:class
+  structure for tower}.  This task is started by calling the
+\code{run()} member function in line 14.  It is defined in
+\code{MSSM_MSSMRHN_spectrum_generator.hpp} and reads:
+%
 \begin{numlstlisting}[name=SGrun,language=C++]
 template<class T> void MSSM_MSSMRHN_spectrum_generator<T>::run
 (const QedQcd& oneset,
