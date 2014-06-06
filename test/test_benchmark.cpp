@@ -33,7 +33,7 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
    stopwatch.start();
    status = run_cmd("./models/MSSM/run_MSSM.x --slha-input-file=" +
                     slha_file + " --slha-output-file="
-                    "test/test_benchmark.out.spc > /dev/null");
+                    "test/test_benchmark.out.spc > /dev/null 2>&1");
    stopwatch.stop();
    fs_time = stopwatch.get_time_in_seconds();
 
