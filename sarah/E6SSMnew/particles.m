@@ -251,7 +251,7 @@ ParticleDefinitions[GaugeES] = {
                ElectricCharge -> -1 ,
                LaTeX -> {"h^{-,Inert}","h^{+,Inert}"},
                OutputName -> "HCI"}}, 
-     {SS0I,   { Description -> "Inert-Singlet",
+     {SSI0,   { Description -> "Inert-Singlet",
                     PDG -> {89,90},
                     FeynArtsNr -> 105,
                     ElectricCharge -> 0,
@@ -368,6 +368,8 @@ ParticleDefinitions[GaugeES] = {
        {LmI,    { Description -> "Negative Chargino Inert-Weyl-Spinor"}},
        {LpI,    { Description -> "Positive Chargino Inert-Weyl-Spinor"}},
        {L0p,    { Description -> "Neutralino Prime-Weyl-Spinor"}},
+       {LS0I,    { Description -> "Neutralino inert-singlino-Weyl-Spinor"}},
+       
        {fG,    { Description ->"Gluino Weyl-Spinor"}},
        {fWB,   { Description ->"Wino Weyl-Spinor"}},
        {fW0,   { Description ->"Neutral Wino" }},

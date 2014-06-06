@@ -1,7 +1,7 @@
 Off[General::spell]
 
-Model`Name = "E6MSSMnew";
-Model`NameLaTeX ="E6MSSMnew";
+Model`Name = "E6SSMnew";
+Model`NameLaTeX ="E6SSMnew";
 Model`Authors = "G.Hellwig, P.Diessner, P.Athron, A.Voigt";
 Model`Date = "2014-03-10";
 
@@ -153,7 +153,8 @@ DEFINITION[EWSB][MatterSector]=
      {{SH1Im,conj[SH2Ip]},{SHIp,UHIp}},
      {{{FH1Im},{FH2Ip}},{{LmI,ZMI},{LpI,ZPI}}},
      {{FH1I0,FH2I0},{L0I,ZNI}},
-     {{SsIR},{SS0I,ZSSI}},
+     {{SsIR},{SSI0,ZSSI}},
+     {{FsIR},{LS0I,ZFSI}},
      {{SHpd0,conj[SHpu0]},{SHp0,UHp0}},
      {{SHpdm,conj[SHpup]},{SHpp,UHpp}},
      {{FHpd0,FHpu0},{L0p,ZNp}}
@@ -165,11 +166,10 @@ DEFINITION[EWSB][MatterSector]=
 }; 
        
 DEFINITION[EWSB][Phases]= 
-{    {fG, PhaseGlu}
+   {    {fG, PhaseGlu},
+        {ChaP, PhaseFHpup}
 }; 
 
-	
-	
 DEFINITION[EWSB][DiracSpinors]={
  Fd -> {FDL, conj[FDR]},
  Fe -> {FEL, conj[FER]},
@@ -187,5 +187,5 @@ DEFINITION[EWSB][DiracSpinors]={
  ChaP -> {FHpdm, conj[FHpup]}, 
  (*FDX -> {FDxL, conj[FDxbarR]}*)
  FDX -> {FDXL, conj[FDXR]},
- FSI -> {FsIR, conj[FsIR]}
+ FSI -> {LS0I, conj[LS0I]}
 };	
