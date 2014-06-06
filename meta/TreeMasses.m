@@ -108,6 +108,7 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
+ContainsGoldstone::usage="";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -164,6 +165,10 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+
+ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
+
+ContainsGoldstone[sym_[__]] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
 
