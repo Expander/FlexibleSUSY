@@ -125,3 +125,16 @@ Allow for complex parameters
 ----------------------------
 
 This will allow to use CP-violating models as the MSSMCPV for example.
+
+
+Allow to not run VEVs up to the GUT scale
+-----------------------------------------
+
+In the E6SSM for example the VEV running from MZ to MX can become
+non-perturbative.  A user interface for disabling the running of some
+parameters between some scales might be useful here.  Maybe like this:
+
+  DisableRGRunning = {
+      {vu, LowScale, HighScale},
+      {vd, LowScale, HighScale}
+  };
