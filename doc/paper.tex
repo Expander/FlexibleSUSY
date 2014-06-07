@@ -1866,7 +1866,7 @@ an extension of the particle content as well as the interactions.
 One of the simplest classes of models beyond the MSSM is
 those with additional gauge-singlet fields.
 In what follows, a supersymmetric type-I see-saw model
-\cite{see-saw}
+\cite{see-saw} 
 shall be considered in which
 three neutral (heavy) chiral superfields are introduced.
 
@@ -2398,14 +2398,8 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
   const double high_scale_guess_2 = high_constraint_2.get_initial_scale_guess();
   const double matching_scale_guess = matching.get_initial_scale_guess();
 \end{numlstlisting}
-Compared to the MSSM case,
-the differences are that
-the type of \code{high_constraint_2}
-is \code{MSSMRHN_high_scale_constraint<Two_scale>} and that
-\code{matching_scale_guess} has been inserted.
-Due to this intermediate scale,
-the initial run-up is divided into two steps,
-with a matching procedure in-between:
+Compared to the MSSM case, the differences are that the type of
+\code{high_constraint_2} is \linebreak {\code{MSSMRHN_high_scale_constraint<Two_scale>} and that \code{matching_scale_guess} has been inserted.  Due to this intermediate scale, the initial run-up is divided into two steps, with a matching procedure in-between:
 \begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
   model_1->run_to(matching_scale_guess); // of type MSSM<Two_scale>
   matching.set_models(model_1, model_2);
