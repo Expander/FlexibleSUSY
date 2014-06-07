@@ -84,10 +84,7 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
-            tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric, selfEnergyMatrixType,
-            momentum = "", massNameSorted = "", eigenArrayType = "",
-            declareSortedDRbarMassEigenvalues = ""
-           },
+            tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric, selfEnergyMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -97,31 +94,15 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
-           If[ContainsGoldstone[particle],
-              (* DR-bar mass multiplets with Goldstones were re-ordered.
-                 So, we need to ensure that we use sorted masses as momenta. *)
-                 massNameSorted = massName <> "_sorted";
-                 momentum = massNameSorted;
-                 eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
-                 declareSortedDRbarMassEigenvalues = eigenArrayType <> " " <>
-                 massNameSorted <> "(" <> massName <> ");\n" <>
-                 "Sort(" <> massNameSorted <> ");\n";
-                 ,
-                 (* DR-bar mass multiplets without Goldstones are assumed to
-                    be mass ordered. *)
-              momentum = massName;
-              declareSortedDRbarMassEigenvalues = "";
-             ];
            If[dim > 1,
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
-              result = declareSortedDRbarMassEigenvalues <>
-                       tadpoleMatrix <>
+              result = tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> momentum <> "(i1) * " <> 
-                                             momentum <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
+                                             massName <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
                                              selfEnergyFunction <> "(p,i1,i2));\n"] <>
                                   "}\n"
@@ -264,34 +245,17 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
             selfEnergyMatrixType, eigenArrayType,
-            massNameSorted = "",
-            declareSortedDRbarMassEigenvalues = "",
             addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
             numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            selfEnergyMatrixType = mixingMatrixType;
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
-           If[inputMomentum == "",
-              If[ContainsGoldstone[particle],
-                 (* DR-bar mass multiplets with Goldstones were re-ordered.
-                    So, we need to ensure that we use sorted masses as momenta. *)
-                 massNameSorted = massName <> "_sorted";
-                 momentum = massNameSorted;
-                 declareSortedDRbarMassEigenvalues = eigenArrayType <> " " <>
-                     massNameSorted <> "(" <> massName <> ");\n" <>
-                     "Sort(" <> massNameSorted <> ");\n";
-                 ,
-                 (* DR-bar mass multiplets without Goldstones are assumed to
-                    be mass ordered. *)
-                 momentum = massName;
-                 declareSortedDRbarMassEigenvalues = "";
-                ];
-             ];
            (* create diagonalisation code snippet *)
            If[Head[mixingMatrix] === List,
               U = ToValidCSymbolString[mixingMatrix[[1]]];
@@ -355,8 +319,7 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
                 ];
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
               massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
-              result = declareSortedDRbarMassEigenvalues <>
-                       tadpoleMatrix <>
+              result = tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        calcTwoLoopHiggsContributions <> "\n" <>
@@ -531,8 +494,7 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                     "double diff = 0.0;\n" <>
                     "decltype(" <> massName <> ") " <>
                     inputMomenta  <> "(" <> massName <> "), " <>
-                    outputMomenta <> "(" <> massName <> ");\n" <>
-                    If[ContainsGoldstone[particle], "Sort(" <> inputMomenta <> ");\n", ""] <> "\n" <>
+                    outputMomenta <> "(" <> massName <> ");\n\n" <>
                     "do {\n" <>
                     IndentText[body] <>
                     "} while (diff > precision\n" <>
