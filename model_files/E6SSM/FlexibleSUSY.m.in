@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* CE6SSM input parameters *)
 
@@ -37,7 +38,7 @@ HighScaleMinimum = 1.0 10^4;
 
 HighScaleMaximum = 5.0 10^17;
 
-HighScaleInput={
+HighScaleInput = {
    {g1p, g1},
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
