@@ -975,8 +975,13 @@ in the model class hierarchy, which is shown in the UML diagram in
       + beta()\\
       + run\_to()
     }
-    \umlclass[x=0, y=-3.5]{<model>}{}{
+    \umlclass[x=0, y=-4.2]{<model>}{
+      -- \DRbar\ masses and mixing matrices
+    }{
+      + calculate\_DRbar\_parameters()\\
+      + calculate\_pole\_masses()\\
       + calculate\_spectrum()\\
+      + get\_physical()\\
       + solve\_ewsb()
     }
     \umlinherit{<model>\_susy\_parameters}{Beta\_function}
@@ -1038,21 +1043,21 @@ corresponding \code{beta()} functions.  These two classes then allow
 to use renormalization group running of all SUSY model parameters.
 
 At the bottom of the hierarchy stands the actual model class, which
-defines \code{calculate_spectrum()} and \code{solve_ewsb()} functions.
-The former uses the mass matrices and self-energies obtained from
-SARAH to calculate the pole mass spectrum.  It will be explained in
-detail in \secref{sec:PoleMasses}.  The \code{solve_ewsb()} function
-numerically solves the electroweak symmetry breaking equations and
-will be explained in the next section.
+uses the \DRbar\ parameters from the parent classes to calculate
+\DRbar\ and pole mass spectra.  These two calculations are performed
+in the \code{calculate_DRbar_parameters()} and
+\code{calculate_pole_masses()} functions, which make use of the mass
+matrices and self-energies obtained from SARAH.  The calculation of
+the pole mass spectrum will be explained in detail in
+\secref{sec:PoleMasses}.  The resulting masses can be obtained by
+calling \code{get_physical()}.  The \code{calculate_spectrum()}
+function combines these two spectrum computations into one call.  In
+addition, the model class provides a \code{solve_ewsb()} method, which
+solves the electroweak symmetry breaking equations numerically at the
+loop level.  This function is explained in the next section.
 
 \subsection{Boundary conditions}
 \label{sec:boundary-conditions}
-
-% The parameters of a SUSY model have to meet certain boundary
-% conditions.  For example, the running gauge and Yukawa couplings
-% should match the ones of the Standard Model at the scale $M_Z$.
-% Usually also high-scale boundary conditions on the soft-breaking
-% parameters are applied, as for example in mSUGRA scenarios.
 
 As described in \secref{sec:modfile}, the user defines three boundary
 conditions in the \fs model file at the \mathematica level.  These
