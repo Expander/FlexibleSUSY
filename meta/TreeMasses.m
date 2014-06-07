@@ -619,7 +619,6 @@ ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String] :=
 ReorderGoldstoneBosons[particles_List, macro_String] :=
     Module[{result = ""},
            (result = result <> ReorderGoldstoneBosons[#,macro])& /@ particles;
-           Print["reordering for particles ", particles, " = ", result];
            Return[result];
           ];
 
