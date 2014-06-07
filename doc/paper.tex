@@ -2772,7 +2772,15 @@ agree at the sub-permille level.  Analytic tests of the $R$-symmetric
 low-energy model, MRSSM, were done by Philip Diessner and several bugs
 in \fs and SARAH were identified and fixed.
 
-TODO: Adding tests against the CE$_6$SSM?  \cite{Athron:2009bs,Athron:2012pw}
+\fs generated NUH \ESSM has also been compared against a handwritten
+spectrum generator for a constrained version of the \ESSM
+\cite{Athron:2009bs,Athron:2012pw}.  The RGEs could be compared
+directly in unit tests and were found to match.  The handwritten code
+doesn't include full one loop self energies or tadpoles so tests on
+these were not carried.  Although the generators assume different
+constraints they could be compared by using the output of the
+CE$_6$SSM as input to \fs and the spectra were found to be in
+reasonable agreement, given the different levels of precision.
 
 We also compared the run-time of \fs against SPheno, Softsusy and the
 SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
