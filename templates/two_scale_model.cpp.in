@@ -372,6 +372,16 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 @copyDRbarMassesToPoleMasses@
 }
 
+void CLASSNAME::reorder_DRbar_masses()
+{
+@reorderDRbarMasses@
+}
+
+void CLASSNAME::reorder_pole_masses()
+{
+@reorderPoleMasses@
+}
+
 void CLASSNAME::calculate_spectrum()
 {
    calculate_DRbar_parameters();
@@ -379,6 +389,11 @@ void CLASSNAME::calculate_spectrum()
       calculate_pole_masses();
    else
       copy_DRbar_masses_to_pole_masses();
+
+   // move goldstone bosons to the front
+   reorder_DRbar_masses();
+   if (pole_mass_loop_order > 0)
+      reorder_pole_masses();
 
    if (problems.have_serious_problem()) {
       clear_DRbar_parameters();

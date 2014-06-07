@@ -528,8 +528,6 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
                      IndentText["return;"] <> "\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
-           body = body <> TreeMasses`ReorderGoldstoneBosons[particle,
-                              TreeMasses`FindMixingMatrixSymbolFor[particle], "PHYSICAL"];
            result = "void CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
                     "()\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];

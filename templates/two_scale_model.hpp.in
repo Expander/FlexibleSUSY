@@ -56,6 +56,8 @@ public:
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
+   void reorder_DRbar_masses();
+   void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_number_of_ewsb_iterations(std::size_t);

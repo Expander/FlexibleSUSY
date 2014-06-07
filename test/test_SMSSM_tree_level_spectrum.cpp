@@ -22,6 +22,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_tree_level_masses )
    setup_SMSSM(m, s, input);
 
    m.calculate_DRbar_parameters();
+   m.reorder_DRbar_masses();
    s.calcDrBarPars();
 
    // neutral CP even Higgs

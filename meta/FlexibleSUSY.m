@@ -479,6 +479,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
             copyDRbarMassesToPoleMasses = "",
+            reorderDRbarMasses = "", reorderPoleMasses = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
@@ -562,6 +563,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
            gslEWSBRootFinders           = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
+           reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
+           reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
                             "@lspFunctions@"         -> lspFunctions,
@@ -576,6 +579,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@clearPhases@"            -> IndentText[clearPhases],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
+                            "@reorderDRbarMasses@"     -> IndentText[reorderDRbarMasses],
+                            "@reorderPoleMasses@"      -> IndentText[reorderPoleMasses],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],

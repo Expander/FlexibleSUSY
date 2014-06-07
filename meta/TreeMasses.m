@@ -609,13 +609,28 @@ CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}, mac
 
 CreateReorderingFunctionCalls[___] := "";
 
-ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String:""] :=
+ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String] :=
     Module[{goldstoneList},
            goldstoneList = Cases[SARAH`GoldstoneGhost,
                                  {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
-           If[goldstoneList =!= {}, "\n", ""] <>
            StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList]
           ];
+
+ReorderGoldstoneBosons[particles_List, macro_String] :=
+    Module[{result = ""},
+           (result = result <> ReorderGoldstoneBosons[#,macro])& /@ particles;
+           Print["reordering for particles ", particles, " = ", result];
+           Return[result];
+          ];
+
+ReorderGoldstoneBosons[particle_Symbol, macro_String] :=
+    ReorderGoldstoneBosons[particle, FindMixingMatrixSymbolFor[particle], macro];
+
+ReorderGoldstoneBosons[particle_[___], macro_String] :=
+    ReorderGoldstoneBosons[particle, macro];
+
+ReorderGoldstoneBosons[macro_String] :=
+    ReorderGoldstoneBosons[GetParticles[], macro];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
@@ -652,9 +667,6 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
-           (* reorder goldstone boson masses *)
-           body = body <> ReorderGoldstoneBosons[GetHead[eigenVector],
-                                                 mixingMatrixSymbol];
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
