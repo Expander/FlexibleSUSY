@@ -49,7 +49,7 @@ LATEX_TMP       := \
 		$(patsubst %.pdf, %.spl, $(MANUAL_PDF) $(PAPER_PDF))
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		$(INDEX_PADE) doc doc-html doc-pdf
+		$(INDEX_PADE) doc doc-html doc-pdf release-paper
 
 doc: all-$(MODNAME)
 
