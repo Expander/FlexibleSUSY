@@ -348,7 +348,7 @@ boundary conditions, for which the C++ level offers a wider range of
 possibilities.  The boundary conditions solver provides a plugin
 mechanism via a common \code{Constraint} interface, which allows a
 user to exchange or add boundary conditions at any scale.
-To realized this, all (derived) constraint objects are intentionally
+To realize this, all (derived) constraint objects are intentionally
 kept outside the solver.  Despite being independent of one another,
 they can fit together with the aid of class inheritance.  An
 elaborate example of a tower of effective field theories and multiple
@@ -1791,9 +1791,9 @@ a spectrum generator right out of the box is not enough.
 \fs attempts to offer a clean interface through which
 one can exploit its facilities
 while undergoing a minimal amount of frustration,
-when he or she programs for a wide variety of studies.
+when one programs for a wide variety of studies.
 We provide two basic levels for the user to create a custom spectrum
-generator: (i) The \mathematica level, where he or she writes or
+generator: (i) The \mathematica level, where one writes or
 adapts a model file and (ii) the C++ level, where the generated
 classes can be extended, recombined or replaced by self-made modules.
 In what follows, adaptions on these two levels shall be demonstrated
@@ -2115,17 +2115,13 @@ the association of a constraint with its scale.
 All these components are plugged into the \code{RGFlow} object
 which then solves the problem.
 
-Since the current implementation of \fs does not (yet) automatically
-produce a spectrum generator spanning multiple models,
-one needs to write the matching class
-% in \figref{fig:class structure for tower}
-as well as gluing codes by hand to build such a program.
-One can author nearly all the components of a multi-model spectrum generator
+The matching class as well as gluing codes have to be written by hand
+to build such a program.\footnote{It is planned that a future release
+  of \fs will be capable of creating this code automatically.}  All
+remaining components of a multi-model spectrum generator can be authored
 by making a straightforward extension
 to each corresponding single-model counterpart
 for one of the models forming the tower.
-The matching class, however, needs to be set-up by hand, because it
-has no analogue in a single-model case.
 
 As the target spectrum generator depends on two models,
 one should first build these prerequisites by:
@@ -2867,8 +2863,11 @@ like to thank Lewis Tunstall for helping with early tests against
 Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
 introducing couplings with a single family index; Philip Diessner for
 testing and identifying bugs in the MRSSM model file; Ulrik Günther
-for compilation tests on Mac OS X\@ and Dylan Harries for spotting
+for compilation tests on Mac OS X and Dylan Harries for spotting
 a bug in the configuration script.
+%
+This work has been supported by the German Research Foundation DFG
+through Grant No.~STO876/2-1.
 
 \appendix
 
