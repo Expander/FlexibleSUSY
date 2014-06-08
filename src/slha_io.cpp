@@ -258,11 +258,11 @@ void SLHA_io::process_extpar_tuple(Extpar& extpar, int key, double value)
 void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
 {
    switch (key) {
-   case 1:
-   case 3:
-   case 4:
-   case 5:
-   case 6:
+   case 1: // SUSY breaking model (defined in FlexibleSUSY model file)
+   case 3: // SUSY model (defined in SARAH model file)
+   case 4: // R-parity violation (defined in SARAH model file)
+   case 5: // CP-parity violation (defined in SARAH model file)
+   case 6: // Flavour violation (defined in SARAH model file)
    case 11:
    case 21:
       WARNING("Key " << key << " in Block MODSEL currently not supported");
