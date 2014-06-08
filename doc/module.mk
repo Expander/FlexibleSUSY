@@ -39,6 +39,7 @@ MANUAL_SRC      := \
 
 PAPER_PDF       := $(PDF_OUTPUT_DIR)/paper.pdf
 PAPER_SRC       := $(DIR)/paper.tex
+PAPER_STY       := $(DIR)/tikz-uml.sty
 
 LATEX_TMP       := \
 		$(patsubst %.pdf, %.aux, $(MANUAL_PDF) $(PAPER_PDF)) \
@@ -99,6 +100,6 @@ $(MANUAL_PDF): $(MANUAL_SRC)
 		bibtex $(shell echo $< | rev | cut -d. -f2 | rev)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 
-$(PAPER_PDF): $(PAPER_SRC)
+$(PAPER_PDF): $(PAPER_SRC) $(PAPER_STY)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
