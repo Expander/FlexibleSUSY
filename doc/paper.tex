@@ -1647,6 +1647,23 @@ during the RG running some couplings might become non-perturbative.
 In this case the iteration stops setting the \code{no_perturbative}
 flag.
 
+It is important to note that in the case of such problem points it is
+non-trivial to judge whether this is because there is no physical
+solution for the given parameter space point or whether a solution
+exists but the fixed point iteration is unable to find the solution.
+While \fs makes it as easy as possible to fin spectra, when studying
+new models a physical understanding of the model is still essential
+and this can help the user determine why the such problems arise.
+
+Nonetheless \fs provides help for such cases in several ways. One may
+adjust initial guesses specified in the FlexibleSUSY modle file, such
+as changing the choice of HighScaleFirstGuess or altering
+HighScaleMinimum and HighScaleMaximum which can be used to push the
+iteration back towards where the solution should be if it gets off
+track.
+
+The modular design of FlexibleSUSY allows solver for the boudary
+
 \subsection{Pole masses}
 \label{sec:PoleMasses}
 After the solver routine has finished and convergence has been
