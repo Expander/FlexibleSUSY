@@ -1660,32 +1660,8 @@ adjust initial guesses specified in the FlexibleSUSY model file, such
 as changing the choice of \code{HighScaleFirstGuess} or altering
 \code{HighScaleMinimum} and \code{HighScaleMaximum} which can be used
 to push the iteration back towards where the solution should be if it
-gets off track.
-
-For experienced users the clear code structure also allows the
-possibility of direct adaption of the code.  For example in the case
-of the E6SSM we observed that for some points the presence of new
-Yukawas had a big impact on the RGEs for the VEVs.  When the user
-chooses to set these Yukawas at the GUT scale, then on the initial run
-up to the GUT scale they will be set to zero.  As a result the VEV
-RGEs on the run up are quite different to the VEV RGEs on the run down
-so that the VEVs used at the SUSY scale are far from the correct
-values and this can create an instability leading eventually to
-non-perturbative in the couplings.  This can be fixed by adapting the
-algorithm so that the VEVs are stored at the SUSY scale.  However a
-simpler, if less clean, fix is to directly modify the generated code
-by adding three lines to the file
-\code{<model>_two_scale_susy_parameters.cpp} just before the beta
-functions are returned in method
-\code{<model>_susy_parameters::calc_beta()}.
-
-\code{ 
-if(get_scale()  > 3.0e3) beta_vd =0;
-if(get_scale()  > 3.0e3) beta_vu =0;
-if(get_scale()  > 3.0e3) beta_vs =0;
-return E6SSMnew_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
-beta_Yd, beta_Ye, beta_Kappa, beta_Lambda12, beta_Lambdax, beta_Yu, beta_MuPr, beta_g1, beta_g2, beta_g3, beta_g1p, beta_vd, beta_vu, beta_vs);
-}
+gets off track.For experienced users the clear code structure also allows the
+possibility of direct adaption of the code. 
 
 Finally instead of tinkering with the two-scale solver one may wish to
 replace it entirely. The modular design of FlexibleSUSY allows for the
