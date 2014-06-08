@@ -1628,6 +1628,25 @@ are finally run to the defined output scale.
   \label{fig:two-scale-algorithm}
 \end{figure}
 
+During the fixed-point iteration several problems can appear.  First
+of all, the iteration is not guaranteed to converge.  If the desired
+accuracy goal is not achieved with the given maximum number of
+iterations, \fs will set the \code{no_convergence} flag in the
+\code{Problems} class.  This class monitors the problem status of the
+spectrum generator during the iteration and can be obtained from the
+model class via the \code{get_problems()} function.  Besides
+non-convergence, solving the EWSB conditions
+\eqref{eq:one-loop-ewsb-eq} numerically with the desired accuracy
+might fail.  In this case the \code{no_ewsb} flag is set.
+Furthermore, in intermediate iteration steps tachyonic states might
+appear, which are ignored but nevertheless monitored in the
+\code{Problems} class.  If tachyons still exist after the iteration
+has converged the mass spectrum is marked as invalid by setting entry
+$4$ in the \code{SPINFO} block in the SLHA output file.  Finally,
+during the RG running some couplings might become non-perturbative.
+In this case the iteration stops setting the \code{no_perturbative}
+flag.
+
 \subsection{Pole masses}
 \label{sec:PoleMasses}
 After the solver routine has finished and convergence has been
