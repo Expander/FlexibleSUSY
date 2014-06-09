@@ -2,12 +2,11 @@ ParameterDefinitions = {
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},
-{g1p,        { Description -> "Ncharge-Coupling",
+{gN,        { Description -> "Ncharge-Coupling",
                  Dependence -> None,
-	         LaTeX -> "g_1'",
-		 GUTnormalization -> 1/Sqrt[40],
+                 LaTeX -> "g_N",
 		 LesHouches -> {gauge,4},
-	         OutputName -> g1p}},
+	         OutputName -> gN}},
 {g1gN,        {Description -> "Mixed Gauge Coupling 1"}},
 {gNg1,        {Description -> "Mixed Gauge Coupling 2"}},
 {AlphaS,       { Description -> "Alpha Strong"}},
@@ -338,8 +337,8 @@ ParameterDefinitions = {
 		 OutputName -> UHAP}},
 {ThetaWp,  { Description -> "Theta'",
 	     LesHouches -> {ESIXRUN,20},
-	     DependenceNum -> 1/2 ArcTan[Sqrt[g1^2+g2^2] g1p (-3 vd^2 + 2 vu^2)
-	       /(g1p^2 (9 vd^2 + 4 vu^2 + 25 vs^2 )-(g1^2+g2^2) (vd^2 + vu^2)/4)]
+	     DependenceNum -> 1/2 ArcTan[Sqrt[g1^2+g2^2] gN (-3 vd^2 + 2 vu^2)
+	       /(gN^2 (9 vd^2 + 4 vu^2 + 25 vs^2 )-(g1^2+g2^2) (vd^2 + vu^2)/4)]
                 }},
 {ZZ, {Description ->   "Photon-Z-Z' Mixing Matrix"}},
 {ZW, {Description -> "W Mixing Matrix" }},

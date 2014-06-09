@@ -20,28 +20,28 @@ RpP = {1,1,-1};
 Gauge[[1]]={B,   U[1], hypercharge, g1,False,RpM};
 Gauge[[2]]={WB, SU[2], left,        g2,True, RpM};
 Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
-Gauge[[4]]={Bp,  U[1], Ncharge,    g1p,False,RpM};
+Gauge[[4]]={Bp,  U[1], Ncharge,    gN,False,RpM};
 
 (* Chiral Superfields *)
 
-SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, 1, RpM};  
-SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, 2, RpM};
-SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, -3, RpP};
-SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, -2, RpP};
+SuperFields[[1]] = {q, 3, {uL,  dL},     1/6, 2, 3, 1/Sqrt[40], RpM};  
+SuperFields[[2]] = {l, 3, {vL,  eL},    -1/2, 2, 1, 2/Sqrt[40], RpM};
+SuperFields[[3]] = {Hd,1, {Hd0, Hdm},   -1/2, 2, 1, -3/Sqrt[40], RpP};
+SuperFields[[4]] = {Hu,1, {Hup, Hu0},    1/2, 2, 1, -2/Sqrt[40], RpP};
 
-SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, 2, RpM};
-SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, 1, RpM};
-SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, 1, RpM};
-SuperFields[[8]] = {s, 1, sR,     0, 1,  1, 5, RpP};
+SuperFields[[5]] = {d, 3, conj[dR],    1/3, 1, -3, 2/Sqrt[40], RpM};
+SuperFields[[6]] = {u, 3, conj[uR],   -2/3, 1, -3, 1/Sqrt[40], RpM};
+SuperFields[[7]] = {e, 3, conj[eR],      1, 1,  1, 1/Sqrt[40], RpM};
+SuperFields[[8]] = {s, 1, sR,     0, 1,  1, 5/Sqrt[40], RpP};
 
-SuperFields[[9]] = {H1I, 2, {H1I0, H1Im},  -1/2, 2, 1, -3, RpP};
-SuperFields[[10]] = {H2I, 2, {H2Ip, H2I0},   1/2, 2, 1, -2, RpP};
-SuperFields[[11]] = {sI, 2, sIR,    0, 1,  1, 5, RpP};
-SuperFields[[12]] = {Dx, 3, DxL,  -1/3, 1, 3, -2, RpP};
-SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  1/3, 1, -3, -3, RpP};
+SuperFields[[9]] = {H1I, 2, {H1I0, H1Im},  -1/2, 2, 1, -3/Sqrt[40], RpP};
+SuperFields[[10]] = {H2I, 2, {H2Ip, H2I0},   1/2, 2, 1, -2/Sqrt[40], RpP};
+SuperFields[[11]] = {sI, 2, sIR,    0, 1,  1, 5/Sqrt[40], RpP};
+SuperFields[[12]] = {Dx, 3, DxL,  -1/3, 1, 3, -2/Sqrt[40], RpP};
+SuperFields[[13]] = {Dxbar, 3, conj[DxbarR],  1/3, 1, -3, -3/Sqrt[40], RpP};
 
-SuperFields[[14]] = {Hp, 1, {Hpd0, Hpdm},  -1/2, 2,  1, 2, RpP};
-SuperFields[[15]] = {Hpbar, 1, {Hpup, Hpu0}, 1/2, 2,  1, -2, RpP};
+SuperFields[[14]] = {Hp, 1, {Hpd0, Hpdm},  -1/2, 2,  1, 2/Sqrt[40], RpP};
+SuperFields[[15]] = {Hpbar, 1, {Hpup, Hpu0}, 1/2, 2,  1, -2/Sqrt[40], RpP};
 NoU1Mixing=True;
 AddMixedSofts = False;
 
