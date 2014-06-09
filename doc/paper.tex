@@ -1509,11 +1509,29 @@ consistent with all constraints at all scales.  It does so by running
 iteratively between the scales of all boundary conditions, imposing
 the constraints (by calling the corresponding \code{apply()} function)
 and checking for convergence after each iteration.  This approach is
-described in \cite{Barger:1993gh} for the MSSM and is widely
+described in \cite{Barger:1993gh} originally for the MSSM and is widely
 implemented in SUSY spectrum generators.
+Despite sharing the same algorithm with others,
+the boundary value problem solver class from \fs, named \code{RGFlow},
+has two notable properties.
+First, it extends the aforementioned procedure to towers of models.
+If the problem involves more than one model,
+\code{RGFlow} matches one model to the next after
+running the model parameters to the matching scale.
+Second, \code{RGFlow} is an abstract implementation of
+the algorithm, unaware of physics, in that
+it is free of hard-wired model-dependent code related to
+RGEs, boundary or matching conditions, or initial guesses.
+All these pieces of physics information are
+carried by separate objects which one then
+links to \code{RGFlow} to set up a boundary value problem.
+This modular design makes it easy
+to replace any of the above components,
+as shall be demonstrated in \secref{sec:integrating-custom-built}.
 
-In more detail the two-scale algorithm used in \fs works as
-follows, see also \figref{fig:two-scale-algorithm}:
+In more detail the two-scale algorithm used in \fs,
+as applied to a problem with a single MSSM-like model,
+works as follows, see also \figref{fig:two-scale-algorithm}:
 %
 \subparagraph{Initial guess:} The RG solver starts to guess all model
 parameters at the low-scale.
