@@ -104,6 +104,6 @@ $(PAPER_PDF): $(PAPER_SRC) $(PAPER_STY)
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
 
-release-paper: $(PAPER_SRC) $(PAPER_STY)
+release-paper: $(PAPER_SRC)
 		git archive --worktree-attributes --prefix=$(PKGNAME)-paper/ \
 			--output=$(PKGNAME)-paper.tar.gz HEAD:doc $(notdir $^)
