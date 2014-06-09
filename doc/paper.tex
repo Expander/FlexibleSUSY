@@ -270,7 +270,7 @@ To study the properties of SUSY models programs are needed which
 numerically calculate the pole masses and couplings of the SUSY
 particles given a set of theory input parameters.  The output of these
 so-called spectrum generators can be transferred to programs which
-calculate further observables such as branching rations or the dark
+calculate further observables such as branching ratios or the dark
 matter relic density.
 
 In order to create a spectrum generator the SUSY model must be defined
@@ -708,7 +708,7 @@ entry is the name of the input parameter.  In the above example the
 input parameters are the universal soft-breaking parameters $m_0$,
 $M_{1/2}$, $A_0$ as well as $\tan\beta$ and $\sign\mu$.
 
-Using the the variable \code{EWSBOutputParameters} the user can
+Using the variable \code{EWSBOutputParameters} the user can
 specify the model parameters that are output of the electroweak
 symmetry breaking consistency conditions.  When imposing the EWSB, \fs
 will adjust these parameters until the EWSB conditions are fulfilled.
@@ -799,7 +799,7 @@ SUSYScaleInput = {
 \item The function \code{FSMinimize[parameters, function]} can be
   given, where \code{parameters} is a list of model parameters and
   \code{function} is a function of these parameters.
-  \code{FSMinimize[parameters, function]} will numerical vary the
+  \code{FSMinimize[parameters, function]} will numerically vary the
   \code{parameters} until the \code{function} is minimized.  Example:
   %
   \begin{lstlisting}
@@ -872,7 +872,7 @@ For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
 Higgs bosons, one neutral Goldstone boson) the two-loop contributions
 are enabled by setting \code{UseHiggs2LoopNMSSM = True} and by
 defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda]
-  vS / Sqrt[2]}, for example.  This will add the the zero-momentum
+  vS / Sqrt[2]}, for example.  This will add the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
 \cite{Degrassi:2009yq}, plus MSSM-like contributions of the order
 $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
@@ -1108,7 +1108,7 @@ condition classes are generated as follows:
   model to the Standard Model at the scale $M_Z$.  It does so by
   calculating the gauge couplings of the SUSY model from the known
   Standard Model quantities
-  $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$
+  $\alpha_{\text{e.m.},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$,
   $\alpha_{\text{s},\text{SM}}^{(5),\text{\MSbar}}(M_Z)$, $M_Z$ and
   $M_W$.  This calculation is explained in
   \secref{sec:calculation-of-gauge-couplings}.  Optionally, the Yukawa
@@ -1673,7 +1673,7 @@ speed) is already planned for a later release.
 \label{sec:PoleMasses}
 After the solver routine has finished and convergence has been
 achieved, all \DRbar\ parameters consistent with the EWSB conditions,
-low energy data and all user-supplied boundary conditions and are
+low energy data and all user-supplied boundary conditions are
 known at any scale between \code{LowScale} and \code{HighScale}.
 
 The (physical) pole mass spectrum can now be calculated.  \fs uses the
@@ -2774,7 +2774,7 @@ where both cores were enabled.  In the third column a Intel Xeon
     SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
     \bottomrule
   \end{tabular}
-  \caption{Average run-time of CMSSM spectrum generators for
+  \caption{Average run-time of CMSSM spectrum generators
     for random parameter points.  The first three rows show
     spectrum generators which disallow flavour violation.  Rows
     $4$--$5$ contain flavour violating spectrum generators, based
