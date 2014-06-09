@@ -37,8 +37,8 @@ MANUAL_SRC      := \
 		$(MANUAL_SRC_CHAP) \
 		$(DOC_VERSION_TEX)
 
-PAPER_PDF       := $(PDF_OUTPUT_DIR)/paper.pdf
-PAPER_SRC       := $(DIR)/paper.tex
+PAPER_PDF       := $(PDF_OUTPUT_DIR)/flexiblesusy-paper.pdf
+PAPER_SRC       := $(DIR)/flexiblesusy-paper.tex
 PAPER_STY       := $(DIR)/tikz-uml.sty
 
 LATEX_TMP       := \
