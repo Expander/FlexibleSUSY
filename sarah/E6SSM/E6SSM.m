@@ -1,7 +1,7 @@
 Off[General::spell]
 
-Model`Name = "E6SSM_altchatges";
-Model`NameLaTeX ="E6SSM_altcharges";
+Model`Name = "E6SSM";
+Model`NameLaTeX ="E6SSM";
 Model`Authors = "G.Hellwig, P.Diessner, P.Athron, A.Voigt";
 Model`Date = "2014-03-10";
 
