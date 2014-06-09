@@ -486,8 +486,8 @@ When executed, the spectrum generator tries to find a set of \DRbar\
 model parameters consistent with all CMSSM boundary conditions for the
 parameter point given in the SLHA input file
 \code{model_files/MSSM/LesHouches.in.MSSM}.  Afterwards, the pole mass
-spectrum and mixing matrices are calculated and written to the command
-line in SLHA format \cite{Skands:2003cj,Allanach:2008qq}.  For the
+spectrum and mixing matrices are calculated and written to the standard
+output in SLHA format \cite{Skands:2003cj,Allanach:2008qq}.  For the
 parameter point given in the above example the calculated pole mass
 spectrum reads
 %
@@ -840,7 +840,7 @@ FSFindRoot[{vd,vu},
   \end{lstlisting}
   %
   Here, the parameters \code{vu} and \code{vd} are varied until the
-  vector-like function
+  vector-valued function
   %
   \begin{align}
     f(v_d,v_u) =
@@ -894,7 +894,7 @@ set to a list of SUSY particles which are potential LSPs.  In the
 model file example above, the particles \code{Chi}, \code{Cha},
 \code{Glu}, \code{Sv}, \code{Su}, \code{Sd}, \code{Se} (neutralino,
 chargino, gluino, sneutrino, up-type squark, down-type squark,
-selectron) are considered to be LSPs.
+selectron) are considered to be LSP candidates.
 
 \section{Structure of the spectrum generator}
 \label{sec:SpecGenStruct}
@@ -1711,7 +1711,7 @@ Eq.~\eqref{eq:pole-mass-def} can be solved by diagonalizing the
 one-loop mass matrix $m_{f,1L}(p^2)$.  However, since $m_{f,1L}(p^2)$
 depends on the momentum $p$, an iteration over $p$ must be performed.
 Since this iteration can be very time consuming for large field
-multiplets, \fs provides two approximative procedures with a faster
+multiplets, \fs provides two approximative procedures with a shorter
 run-time.  The used procedure can be set in the model file for each
 field.  These approximations work as follows:
 %
@@ -1728,7 +1728,7 @@ field.  These approximations work as follows:
   where $m_{f_i}$ is the $i$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, $m_{f,1L}^\text{low}$ is diagonalized and
   the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
-  This method neglects which are formally of two-loop order.  This
+  This method neglects what are formally of two-loop order.  This
   method is imprecise if the self-energy corrections to the mass
   matrix are large or the tree-level mass spectrum of the multiplet is
   very split.
