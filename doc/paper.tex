@@ -958,7 +958,7 @@ boundary value problem has been found.
 \subsection{Model parameters and RGEs}
 \label{sec:ModelParametersAndRGEs}
 
-The parameters of the SUSY model together with their RGEs, mass
+The parameters of the model together with their RGEs, mass
 matrices, self-energies and EWSB equations are stored at the C++ level
 in the model class hierarchy, which is shown in the UML diagram in
 \figref{fig:parameter-classes}.
@@ -1018,9 +1018,9 @@ set the model parameters in form of a vector, respectively.  The
 \code{beta()} method returns the $\beta$-function for each parameter
 in form of a vector as well.
 
-All SUSY model parameters and their $\beta$-functions are contained in
+All model parameters and their $\beta$-functions are contained in
 the first and second derived classes.  The structure of the
-$\beta$-functions of a general SUSY model
+$\beta$-functions of a general supersymmetric model
 \cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Yam94,Sperling:2013eva,Sperling:2013xqa}
 allows to split these parameters into two classes:
 %
@@ -1055,7 +1055,7 @@ SARAH model file.  The corresponding one- and two-loop
 $\beta$-functions are calculated algebraically using SARAH's
 \code{CalcRGEs[]} routine, converted to C++ form and written into the
 corresponding \code{beta()} functions.  These two classes then allow
-to use renormalization group running of all SUSY model parameters.
+to use renormalization group running of all model parameters.
 
 At the bottom of the hierarchy stands the actual model class, which
 uses the \DRbar\ parameters from the parent classes to calculate
