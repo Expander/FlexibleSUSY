@@ -4,11 +4,15 @@ BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`",
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 FS`Authors = {"P. Athron", "Jae-hyeon Park", "D. Stöckinger", "A. Voigt"};
 FS`Years   = {2013, 2014};
+FS`References = Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"references"}]];
 
 Print["*****************************************************************"];
 Print["FlexibleSUSY ", FS`Version];
 Print["by " <> WriteOut`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       WriteOut`StringJoinWithSeparator[FS`Years, ", "]];
+Print[""];
+Print["References:"];
+Print["  " <> #]& /@ FS`References;
 Print["*****************************************************************"];
 Print[""];
 
