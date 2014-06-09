@@ -296,14 +296,14 @@ adaptable spectrum generator in C++ for any SUSY model.
 The user specifies the model by giving the
 superfield content, superpotential, gauge symmetries and mass mixings
 in form of \sarah model files.  The boundary conditions on the model
-parameters must be specified in a separate \code{FlexibleSUSY.m} file.
+parameters must be specified in a separate \code{FlexibleSUSY.m.in} file.
 Based on this information \fs uses \sarah to obtain tree-level
 expressions for the mass matrices and electroweak symmetry breaking
 conditions, one-loop self energies, one-loop tadpoles corrections and
 two-loop renormalisation group equations (RGEs) for the model.
 Additional corrections which have been calculated elsewhere, such as
 two-loop corrections to the Higgs masses\footnote{By default
-  FlexibleSUSY has two-loop corrections to the Higgs masses for the
+  \fs has two-loop corrections to the Higgs masses for the
   MSSM
   \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
   and NMSSM \cite{Degrassi:2009yq} in FORTRAN files supplied by Pietro
@@ -604,19 +604,30 @@ model properties have to be defined in a SARAH model file.  The SARAH
 model file can be put into the \code{sarah/<model>/} directory.  See
 the SARAH manual \cite{Staub:2008uz,Staub:2013tta} for a detailed
 explanation of how to write such a model file.  Note that SARAH
-already comes with a lot of predefined models, which can be used with
+already is distributed with a lot of predefined models, which can be used with
 \fs immediately.
 
 The model boundary conditions are defined in the \fs model file
 \code{FlexibleSUSY.m}, which has to be located in the model directory
-\code{models/<model>/}.  Note that many example model files can
-already be found in \code{model_files/}.  In the following it is
-explained how the boundary conditions can be defined on the basis of
-the CMSSM.  The application to other models is straightforward.  The
-CMSSM model file reads:
+\code{models/<model>/}. To add this the user should create a
+\code{FlexibleSUSY.m} in the directory \code{model_files/<model>/}.
+When the \code{./createmodel} command is used Flexible SUSY will create the
+FlexibleSUSY.m file from the FlexibleSUSY.m.in file found in the
+directory in \code{model_files} with the name specified by the
+\code{--model-file=<model-file-name>} option. If no such option is
+given then it will use the directory matching the option
+\code{--name=<model>}.  In either case the the FlexibleSUSY.m file
+which is created is then automatically placed in the directory
+\code{models/<model>/} by \fs. Note that many example model
+files can already be found in \code{model_files/<model>/}.
+
+In the following it is explained how the
+boundary conditions can be defined on the basis of the CMSSM.  The
+application to other models is straightforward.  The CMSSM model file
+reads:
 %
 \begin{lstlisting}[language=Mathematica]
-FSModelName = "MSSM";
+FSModelName = "@CLASSNAME@";
 
 MINPAR = {
    {1, m0},
@@ -698,7 +709,11 @@ MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 \end{lstlisting}
 %
-The variable \code{FSModelName} contains the name of the \fs model.
+The first line \code{FSModelName = "@CLASSNAME@";} will be replaced
+with \code{FSModelName = "<model>";} in the generated FlexibleSUSY.m
+file where \code{<model>} is given by the option \code{--name=<model>} for
+command \code{./createmodel}.  So the variable \code{FSModelName} then
+contains the name of the \fs model.
 
 All non-Standard Model input variables must be specified in the lists
 \code{MINPAR} and \code{EXTPAR}.  These two variables refer to the
