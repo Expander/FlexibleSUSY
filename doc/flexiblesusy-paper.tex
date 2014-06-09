@@ -8,6 +8,7 @@
 \usepackage[usenames]{xcolor}
 \usepackage{tikz,tikz-uml}
 \usepackage{listings}
+\usepackage[absolute]{textpos}
 \bibstyle{elsarticle-num}
 % source code highlighting
 \lstset{breaklines=true,
@@ -140,6 +141,13 @@ renormalization group equations
 \PACS 14.80.Ly
 \end{keyword}
 \end{frontmatter}
+
+% report numbers
+\begin{textblock*}{7em}(\textwidth,1cm)
+\noindent\footnotesize
+FTUV--14--3904 \\
+IFIC--14--40
+\end{textblock*}
 
 \section{Program Summary}
 \noindent{\em Program title:} \fs\\ {\em Program obtainable from:}
@@ -2913,6 +2921,8 @@ for testing and identifying several bugs in \fs and in SARAH,
 in work on the MRSSM; Ulrik Günther for compilation tests on Mac OS X
 and Dylan Harries for spotting a bug in the configuration script.
 %
+J.P. acknowledges support from the MEC and FEDER (EC) Grants
+FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
 This work has been supported by the German Research Foundation DFG
 through Grant No.~STO876/2-1.
 
