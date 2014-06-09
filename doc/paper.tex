@@ -253,7 +253,7 @@ In \secref{sec:Program} we describe the program in more detail and
 explain our design goals.  In \secref{sec:download} information on how
 to download and compile the code may be found along with details on
 how to get started quickly.  In \secref{sec:modfile} we describe how
-the user can create a new FlexibleSUSY model file. A detailed
+the user can create a new \fs model file. A detailed
 description of the structure and features of the generated code is
 then given in \secref{sec:SpecGenStruct}.  In \secref{sec:Flexible} we
 describe the various ways the code can be modified both at the meta
@@ -1672,7 +1672,7 @@ new models a physical understanding of the model is still essential
 and this can help the user determine why the such problems arise.
 
 Nonetheless \fs provides help for such cases in several ways. One may
-adjust initial guesses specified in the FlexibleSUSY model file, such
+adjust initial guesses specified in the \fs model file, such
 as changing the choice of \code{HighScaleFirstGuess} or altering
 \code{HighScaleMinimum} and \code{HighScaleMaximum} which can be used
 to push the iteration back towards where the solution should be if it
@@ -1680,7 +1680,7 @@ gets off track. For experienced users the clear code structure also allows the
 possibility of direct adaption of the code. 
 
 Finally instead of tinkering with the two-scale solver one may wish to
-replace it entirely. The modular design of FlexibleSUSY allows for the
+replace it entirely. The modular design of \fs allows for the
 solver for the boundary value problem to be replaced. An alternative
 solver with potentially better convergence properties (at the expense of slower
 speed) is already planned for a later release.
@@ -2754,7 +2754,7 @@ two different sets of CMSSM spectrum generators:
   file, which allows for flavour violation.
 \end{itemize}
 %
-FlexibleSUSY and Softsusy are compiled with g++ 4.8.0 and Intel ifort
+\fs and Softsusy are compiled with g++ 4.8.0 and Intel ifort
 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel ifort
 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
   run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
