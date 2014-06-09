@@ -190,7 +190,7 @@ theory.
 
 Detailed phenomenological studies have been carried out for scenarios
 within the minimal supersymmetric standard model (MSSM).  Such work
-has been greatly aided by public spectrum generators for MSSM
+has been greatly aided by public spectrum generators for the MSSM
 \cite{Allanach:2001kg,Porod:2003um,Djouadi:2002ze,Baer:1993ae,Chowdhury:2011zr},
 allowing fast and reliable exploration of the sparticle spectrum,
 mixings and couplings, which can be obtained from particular choices
@@ -233,7 +233,7 @@ which ameliorate the naturalness problems, as can happen in the \ESSM
 \cite{King:2005jy,King:2005my,King:2007uj,Athron:2010zz} and USSM
 \cite{Fayet:1977yc,Suematsu:1994qm,Cvetic:1995rj,deCarlos:1997yv,Cvetic:1997ky,Demir:1998dk,Langacker:1998tc,Erler:2002pr,Choi:2006fz,Ham:2007wc,Langacker:2008yv,Ham:2008xf,Kalinowski:2008iq}
 by raising the tree level Higgs mass. At the same time they can also
-motivates models that are developed with a fresh perspective, based on
+motivate models that are developed with a fresh perspective, based on
 other considerations.  In both cases exploration of such models can be
 aided if it is possible to quickly create a fast spectrum generator.
 Currently there is only one option for this, a SPheno-like FORTRAN
@@ -538,7 +538,7 @@ Block MASS
 \fs already comes with plenty of predefined models: the CMSSM (simply
 called \code{MSSM}), the NMSSM \cite{NMSSM} in it's $Z_3$-symmetric form (called \code{NMSSM}), $Z_3$-violating NMSSM (\code{SMSSM}), the USSM (\code{UMSSM})
 \cite{Fayet:1977yc,Suematsu:1994qm,Cvetic:1995rj,deCarlos:1997yv,Cvetic:1997ky,Demir:1998dk,Langacker:1998tc,Erler:2002pr,Choi:2006fz,Ham:2007wc,Langacker:2008yv,Ham:2008xf,Kalinowski:2008iq},
-the NUHM-\ESSM (\code{E6SSM}) \cite{Athron:2007en}, the
+the NUHM \ESSM (\code{E6SSM}) \cite{Athron:2007en}, the
 right-handed neutrino extended MSSM (\code{MSSMRHN}), the NUHM-MSSM
 (\code{NUHMSSM}) and the $R$-symmetric MSSM (\code{MRSSM})
 \cite{Kribs:2007ac}.  See the content of \code{model_files/} for all
@@ -2832,13 +2832,13 @@ precision.  We also compared the overall pole mass spectrum after the
 full fixed-point iteration has finished, and found the spectra to
 agree at the sub-permille level.  
 
-\fs generated NUH \ESSM has also been compared against a handwritten
+\fs generated NUHM \ESSM has also been compared against a handwritten
 spectrum generator for a constrained version of the \ESSM
 \cite{Athron:2009ue, Athron:2009bs, Athron:2011wu, Athron:2012sq,
   Athron:2012pw, Athron:2013ipa}.  The RGEs could be compared directly
 in unit tests and were found to match.  The handwritten code doesn't
-include full one loop self energies or tadpoles so tests on these were
-not carried.  Although the generators assume different constraints
+include full one-loop self-energies or tadpoles so tests on these were
+not carried out.  Although the generators assume different constraints
 they could be compared by using the output of the CE$_6$SSM generator
 as an input to \fs and the spectra were found to be in reasonable
 agreement, given the different levels of precision.
