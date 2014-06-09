@@ -607,17 +607,18 @@ already is distributed with a lot of predefined models, which can be used with
 
 The model boundary conditions are defined in the \fs model file
 \code{FlexibleSUSY.m}, which has to be located in the model directory
-\code{models/<model>/}. To add this the user should create a
-\code{FlexibleSUSY.m.in} in the directory \code{model_files/<model>/}.
-When the \code{./createmodel} command is used \fs will create the
-\code{FlexibleSUSY.m} file from the \code{FlexibleSUSY.m.in} file found in the
-directory in \code{model_files} with the name specified by the
-\code{--model-file=<model-file-name>} option. If no such option is
-given then it will use the directory matching the option
-\code{--name=<model>}.  In either case the the \code{FlexibleSUSY.m} file
-which is created is then automatically placed in the directory
-\code{models/<model>/} by \fs. Note that many example model
-files can already be found in \code{model_files/}.
+\code{models/<model>/}.  To add this the user should create a
+\code{FlexibleSUSY.m.in} file in the directory
+\code{model_files/<model>/}.  When the \code{./createmodel} script is
+executed, the \code{FlexibleSUSY.m} file is created from the
+\code{model_files/<model-file-name>/FlexibleSUSY.m.in} file, where the
+directory \code{<model-file-name>} is the specified by the
+\code{--model-file=<model-file-name>} option.  If no such option is
+given the directory matching the \code{--name=<model>} option is used.
+In either case the \code{FlexibleSUSY.m} file which is created is then
+automatically placed in the directory \code{models/<model>/}.  Note
+that many predefined example model files can already be found in
+\code{model_files/}.
 
 In the following it is explained how the
 boundary conditions can be defined on the basis of the CMSSM.  The
@@ -708,10 +709,11 @@ LowPoleMassPrecision     = {};
 \end{lstlisting}
 %
 The first line \code{FSModelName = "@CLASSNAME@";} will be replaced
-with \code{FSModelName = "<model>";} in the generated \code{FlexibleSUSY.m}
-file where \code{<model>} is given by the option \code{--name=<model>} for
-command \code{./createmodel}.  So the variable \code{FSModelName} then
-contains the name of the \fs model.
+with \code{FSModelName = "<model>";} in the generated
+\code{FlexibleSUSY.m} file, where \code{<model>} is specified by the
+\code{--name=<model>} option for the \code{./createmodel} script.  So
+the variable \code{FSModelName} then contains the name of the \fs
+model.
 
 All non-Standard Model input variables must be specified in the lists
 \code{MINPAR} and \code{EXTPAR}.  These two variables refer to the
