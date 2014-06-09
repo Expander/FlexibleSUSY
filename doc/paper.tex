@@ -2586,7 +2586,8 @@ This already completes the amendment of the $g_3$ $\beta$-function.
 
 The next step is to write a substitute for
 the low-energy boundary condition class.
-It must be declared as a descendent of \code{Constraint<Two_scale>}:
+It must be declared as a descendent of \code{Constraint<Two_scale>}
+whose function is described in \secref{sec:boundary-conditions}:
 % MSSMcbs_two_scale_low_scale_constraint.hpp
 \begin{numlstlisting}
 #include "two_scale_constraint.hpp"
@@ -2714,6 +2715,7 @@ to the comparator function.
 \label{sec:comparison}
 
 \subsection{Run-time comparison}
+\label{sec:run-time comparison}
 
 One of \fs's design goals is a short run-time.  In this section we
 demonstrate that this goal was achieved by comparing the run-time of
@@ -2749,7 +2751,7 @@ and $A_0\in [-1000,1000]\unit{GeV}$.  For each point an SLHA input
 file is created by appending the values of $m_0$, $m_{1/2}$,
 $\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
 SLHA template file given in
-\secref{sec:speed-test-slha-template-file}.  The resulting SLHA input
+\ref{sec:speed-test-slha-template-file}.  The resulting SLHA input
 file is passed to each spectrum generator and the (wall-clock) time is
 measured until the program has finished.  The average run-times for
 three different CPU types can be found in
@@ -2821,7 +2823,7 @@ reasonable agreement, given the different levels of precision.
 
 We also compared the run-time of \fs against SPheno, Softsusy and the
 SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
-can be found in \secref{sec:comparison}.
+can be found in \secref{sec:run-time comparison}.
 
 \section{Conclusions}
 
