@@ -2822,17 +2822,15 @@ separate thread, and therefore benefits from multi-core CPUs.
 
 \subsection{Numeric tests}
 
-For checking the correctness of \fs's generated spectrum generators
-extensive unit tests against Softsusy's MSSM and NMSSM
+To check the correctness of \fs's generated spectrum generators
+extensive unit testing against Softsusy's MSSM and NMSSM
 implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-were done: We checked mass matrices, EWSB equations, one- and two-loop
+was carried out. We checked mass matrices, EWSB equations, one- and two-loop
 $\beta$-functions, one- and two-loop self-energies and one- and
 two-loop tadpoles and found all to agree within double machine
 precision.  We also compared the overall pole mass spectrum after the
 full fixed-point iteration has finished, and found the spectra to
-agree at the sub-permille level.  Analytic tests of the $R$-symmetric
-low-energy model, MRSSM, were done by Philip Diessner and several bugs
-in SARAH were identified and fixed.
+agree at the sub-permille level.  
 
 \fs generated NUH \ESSM has also been compared against a handwritten
 spectrum generator for a constrained version of the \ESSM
@@ -2844,6 +2842,11 @@ not carried.  Although the generators assume different constraints
 they could be compared by using the output of the CE$_6$SSM generator
 as an input to \fs and the spectra were found to be in reasonable
 agreement, given the different levels of precision.
+
+In addition \fs has already undergone some user testing. This includes
+analytic tests of the $R$-symmetric low-energy model (MRSSM) and
+alternative E6 inspired SUSY scenarios.  The users who have helped us
+with this are thanked in the acknowledgements.
 
 We also compared the run-time of \fs against SPheno, Softsusy and the
 SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
@@ -2887,10 +2890,10 @@ fixing. P.A.~would like to thank Roman Nevzorov for useful discussions
 about challenges in non-minimal SUSY models. The authors would also
 like to thank Lewis Tunstall for helping with early tests against
 Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
-introducing couplings with a single family index; Philip Diessner for
-testing and identifying bugs in the MRSSM model file; Ulrik Günther
-for compilation tests on Mac OS X and Dylan Harries for spotting
-a bug in the configuration script.
+when introducing couplings with a single family index; Philip Diessner
+for testing and identifying several bugs in FlexibleSUSY and in SARAH,
+in work on the MRSSM; Ulrik Günther for compilation tests on Mac OS X
+and Dylan Harries for spotting a bug in the configuration script.
 %
 This work has been supported by the German Research Foundation DFG
 through Grant No.~STO876/2-1.
