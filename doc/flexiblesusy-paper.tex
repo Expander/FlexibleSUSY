@@ -2807,15 +2807,16 @@ three different CPU types can be found in
 \tabref{tab:run-time-comparison}.  The first column shows the run-time
 on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
 enabled.  The second column shows the run-time on the same processor
-where both cores were enabled.  In the third column a Intel Xeon
-(L5640, $2.27\unit{GHz}$) was used, which has $6$ CPU cores.
+where both cores were enabled.  In the third column an Intel Xeon
+(L5640, $2.27\unit{GHz}$) was used, which has two CPUs with $6$ cores
+each.
 %
 \begin{table}[tbh]
   \centering
   \begin{tabular}{llll}
     \toprule
                             & Intel Core2 Duo    & Intel Core2 Duo   & Intel Xeon\\
-                            & (P8600, 1 core)    & (P8600, 2 cores)  & (L5640, 6 cores)\\
+                            & (P8600, $1$ core)  & (P8600, $2$ cores)& (L5640, $2\times 6$ cores)\\
     \midrule
     FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
     SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
