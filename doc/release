@@ -8,8 +8,8 @@ When releasing FlexibleSUSY, please follow these steps:
       git co development
       git pull organization development
 
- 1. Create a commit where the the version number (in configure) is
-    updated.  This commit should have the commit message
+ 1. Create a commit where the the version number (in configure and
+    ChangeLog) is updated.  This commit should have the commit message
 
       version <version>
 
