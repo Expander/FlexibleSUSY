@@ -1,4 +1,4 @@
-FlexibleSUSY-0.5.4 [not released yet]
+FlexibleSUSY-1.0.0 [June, 10 2014]
 
  * Bugfix (commit 399a1c8): renaming SoftsusyMSSM and SoftsusyNMSSM
    model classes and files to make `make all-test' work on HFS (fixes
