@@ -87,7 +87,8 @@ Example
    $ ./createmodel --name=NMSSM
    $ ./configure --with-models=NMSSM
    $ make
-   $ ./models/NMSSM/run_NMSSM.x
+   $ ./models/NMSSM/run_NMSSM.x \
+     --slha-input-file=model_files/NMSSM/LesHouches.in.NMSSM
 
 
 Creating only the source code files -- no compilation
