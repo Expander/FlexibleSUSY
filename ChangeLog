@@ -1,4 +1,4 @@
-FlexibleSUSY-1.0.1 [not released yet]
+FlexibleSUSY-1.0.1 [June, 11 2014]
 
  * Bugfix (commit 4dc897e): consts.hpp is not distributed but appears
    in the list of installed headers
