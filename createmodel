@@ -62,10 +62,10 @@ Examples:
     ./createmodel --name=E6SSM
 
   Create a new FlexibleSUSY model named MyMSSM, using the FlexibleSUSY
-  model file model_files/YukawaCMSSM/FlexibleSUSY.m.in and using the
-  MSSM as underlying SARAH model (SARAH\`Start["MSSM"]).
+  model file model_files/NUHMSSM/FlexibleSUSY.m.in and using the MSSM
+  as underlying SARAH model (SARAH\`Start["MSSM"]).
 
-    ./createmodel --name=MyMSSM --model-file=YukawaCMSSM --sarah-model=MSSM
+    ./createmodel --name=MyMSSM --model-file=NUHMSSM --sarah-model=MSSM
 EOF
 }
 
