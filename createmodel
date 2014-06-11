@@ -155,10 +155,26 @@ if test ! -d "$targetdir" ; then
     echo "done"
 fi
 
+SLHA_input_files_src=$(
+    find $model_file_dir -type f -iname LesHouches.in\* -print)
+
+SLHA_input_files_in_mk=""
+
+for slha_in in $SLHA_input_files_src; do
+    dir_slha_in=$(
+	echo "$slha_in" | sed 's,^.*/,		\$(DIR)/,')
+    if [ -z "$SLHA_input_files_in_mk" ]; then
+	SLHA_input_files_in_mk="$dir_slha_in"
+    else
+	SLHA_input_files_in_mk="$SLHA_input_files_in_mk \\\\\n$dir_slha_in"
+    fi
+done
+
 printf "  creating Makefile module %s/module.mk ... " "$targetdir"
-sed -e "s|@DIR@|$targetdir|g"         \
-    -e "s|@MODEL@|$sarah_model|g"     \
-    -e "s|@CLASSNAME@|$name|g"        \
+sed -e "s|@DIR@|$targetdir|g"			  \
+    -e "s|@MODEL@|$sarah_model|g"		  \
+    -e "s|@CLASSNAME@|$name|g"			  \
+    -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 echo "done"
 
@@ -180,3 +196,10 @@ sed -e "s|@DIR@|$targetdir|g"               \
     -e "s|@CLASSNAME@|$name|g"              \
     < $model_file_dir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
 echo "done"
+
+for slha_in in $SLHA_input_files_src; do
+    printf "  creating SLHA input file %s/%s ... " "$targetdir" \
+	$(basename "$slha_in")
+    cp $slha_in $targetdir
+    echo "done"
+done
