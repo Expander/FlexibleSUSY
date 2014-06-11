@@ -229,3 +229,8 @@ plotted with the gnuplot scripts in the model directory:
 
    $ gnuplot -persist -e "filename='MSSM_rgflow.dat'" \
        models/MSSM/MSSM_plot_rgflow.gnuplot
+
+The latter is just for illustration and currently plots all DR-bar
+parameters regardless of dimension, so the resulting plot is not
+particularly informative.  However he user may then adapt this script
+to plot any chosen subset of the parameters.
