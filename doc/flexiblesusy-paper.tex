@@ -492,8 +492,9 @@ will start \mathematica to generate the spectrum generator and compile
 it.  The resulting executable can be run like this:
 %
 \begin{lstlisting}[language=bash]
-$ models/MSSM/run_MSSM.x --slha-input-file=model_files/MSSM/LesHouches.in.MSSM
-\end{lstlisting}%% $
+$ cd models/MSSM 
+$ ./run_MSSM.x --slha-input-file=LesHouches.in.MSSM
+\end{lstlisting}
 %
 When executed, the spectrum generator tries to find a set of \DRbar\
 model parameters consistent with all CMSSM boundary conditions for the
@@ -1939,7 +1940,7 @@ To try it out, do the following:
 $ ./createmodel --name=NUHMSSM --sarah-model=MSSM
 $ ./configure --with-models=NUHMSSM
 $ make
-$ models/NUHMSSM/run_NUHMSSM.x --slha-input-file=model_files/NUHMSSM/LesHouches.in.NUHMSSM
+$ models/NUHMSSM/run_NUHMSSM.x --slha-input-file=models/NUHMSSM/LesHouches.in.NUHMSSM
 \end{numlstlisting}
 Notice the \code{--sarah-model=MSSM} flag in line 1.
 It tells the \code{createmodel} script to reuse
