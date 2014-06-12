@@ -1,3 +1,8 @@
+FlexibleSUSY-1.0.2 [not released yet]
+
+ * Install specimen SLHA input files in the model directory when one
+   runs the createmodel script
+
 FlexibleSUSY-1.0.1 [June, 11 2014]
 
  * Bugfix (commit 4dc897e): consts.hpp is not distributed but appears
