@@ -485,7 +485,8 @@ $ make
 \end{lstlisting}%% $
 %
 The first command creates the model directory \code{models/MSSM/}
-together with a CMSSM model file.  The \code{configure} script checks
+together with a CMSSM model file accompanied by
+a specimen SLHA input file.  The \code{configure} script checks
 the system requirements and creates the \code{Makefile}.  See
 \code{./configure --help} for more options.  Executing \code{make}
 will start \mathematica to generate the spectrum generator and compile
@@ -499,7 +500,7 @@ $ ./run_MSSM.x --slha-input-file=LesHouches.in.MSSM
 When executed, the spectrum generator tries to find a set of \DRbar\
 model parameters consistent with all CMSSM boundary conditions for the
 parameter point given in the SLHA input file
-\code{model_files/MSSM/LesHouches.in.MSSM}.  Afterwards, the pole mass
+\code{LesHouches.in.MSSM}.  Afterwards, the pole mass
 spectrum and mixing matrices are calculated and written to the standard
 output in SLHA format \cite{Skands:2003cj,Allanach:2008qq}.  For the
 parameter point given in the above example the calculated pole mass
@@ -1946,6 +1947,12 @@ Notice the \code{--sarah-model=MSSM} flag in line 1.
 It tells the \code{createmodel} script to reuse
 the MSSM specification in \sarah
 to generate the C++ program.
+Another remark is in order regarding the naming convention
+of specimen SLHA input files.  The \code{createmodel} script assumes
+that their names are in the form \code{LesHouches.in*} (case-insensitive).
+If the script finds such files in \code{model_files/<model>/},
+it installs them into the model directory.  The argument to
+\code{--slha-input-file=} in line 4 has been thus created.
 
 \subsubsection{Extending existing models}
 
