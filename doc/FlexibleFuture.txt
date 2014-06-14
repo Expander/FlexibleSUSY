@@ -13,7 +13,7 @@ Planned major extensions:
  * Complex parameters - extending to complex parameters
  
  * semi-anaylic solver - method for solving boundary value problem used 
-                         by E6SSMSpecGen
+                         by CE6SSMSpecGen
 
 And Fixes:
 
