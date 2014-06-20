@@ -24,6 +24,7 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
 #include "slha_io.hpp"
+#include "numerics.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -79,7 +80,11 @@ private:
 template <class T>
 void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
 {
+   double scale = 0.;
+
 @readLesHouchesOutputParameters@
+
+   model.set_scale(scale);
 }
 
 template <class T>

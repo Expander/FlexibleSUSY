@@ -326,9 +326,12 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
                "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
-               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
-               paramStr <> ");\n" <>
-               "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>
+               "const double tmp_scale = slha_io.read_block(\"" <>
+               blockNameStr <> "\", " <> paramStr <> ");\n" <>
+               "model.set_" <> paramStr <> "(" <> paramStr <> ");\n" <>
+               "if (!is_zero(tmp_scale))\n" <>
+               IndentText["scale = tmp_scale;"] <> "\n"
+               ] <> "\n" <>
            "}\n"
           ];
 
