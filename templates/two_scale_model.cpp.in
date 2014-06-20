@@ -392,8 +392,7 @@ void CLASSNAME::calculate_spectrum()
    reorder_DRbar_masses();
    if (pole_mass_loop_order == 0)
       copy_DRbar_masses_to_pole_masses();
-
-   if (pole_mass_loop_order > 0)
+   else
       reorder_pole_masses();
 
    if (problems.have_serious_problem()) {
