@@ -25,6 +25,7 @@
 #include <sstream>
 #include <Eigen/Core>
 
+
 namespace flexiblesusy {
 
 static const double Pi = M_PI;
@@ -210,14 +211,24 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
  * @param v vector of masses
  * @param z corresponding mixing matrix
  */
+
 template <typename DerivedArray, typename DerivedMatrix>
-void move_goldstone_to(unsigned idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
+void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
                        Eigen::MatrixBase<DerivedMatrix>& z)
 {
-   const unsigned pos = closest_index(mass, v);
+   int pos = closest_index(mass, v);
+   if(pos == idx) return;
+   int sign = (idx-pos > 0) ? 1 : ((idx-pos < 0) ? -1 : 0);
+   int steps = abs(idx - pos);
+   //now we shuffle the states
+   for(int i=1; i <= steps; i++){
+      int temp = pos + 1 * sign;
+      v.row(temp).swap(v.row(pos));
+      z.row(temp).swap(z.row(pos));
+      pos = temp;
 
-   v.row(idx).swap(v.row(pos));
-   z.row(idx).swap(z.row(pos));
+   }
+   
 }
 
 template <typename Base, typename Exponent>
