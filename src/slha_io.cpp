@@ -41,6 +41,11 @@ void SLHA_io::clear()
    modsel.clear();
 }
 
+bool SLHA_io::block_exists(const std::string& block_name) const
+{
+   return data.find(block_name) != data.cend();
+}
+
 /**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name
@@ -82,15 +87,30 @@ void SLHA_io::fill(QedQcd& oneset) const
    read_block("SMINPUTS", sminputs_processor);
 }
 
-void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
+/**
+ * Applies processor to each (key, value) pair of a SLHA block.
+ * Non-data lines are ignored.
+ *
+ * @param block_name block name
+ * @param processor tuple processor to be applied
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   if (data.find(block_name) == data.cend())
-      return;
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
 
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line())
+      if (!line->is_data_line()) {
+         // read scale from block definition
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
          continue;
+      }
 
       if (line->size() >= 2) {
          const int key = convert_to<int>((*line)[0]);
@@ -98,13 +118,15 @@ void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& p
          processor(key, value);
       }
    }
+
+   return scale;
 }
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    const SLHAea::Coll::const_iterator block = data.find(block_name);
 
-   if (block == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
       return 0.;
    }
@@ -121,6 +143,32 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
    const double entry = convert_to<double>(line->at(1));
 
    return entry;
+}
+
+/**
+ * Reads scale definition from SLHA block.
+ *
+ * @param block_name block name
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_scale(const std::string& block_name) const
+{
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line()) {
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
+         break;
+      }
+   }
+
+   return scale;
 }
 
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)

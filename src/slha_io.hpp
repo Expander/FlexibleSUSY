@@ -134,16 +134,18 @@ public:
    void clear();
 
    // reading functions
+   bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
    const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
-   void read_block(const std::string&, const Tuple_processor&) const;
+   double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
-   void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;
    void read_extpar();
    void read_modsel();
+   double read_scale(const std::string&) const;
 
    // writing functions
    void set_data(const SLHAea::Coll& data_) { data = data_; }
@@ -184,20 +186,33 @@ Scalar SLHA_io::convert_to(const std::string& str)
    return value;
 }
 
+/**
+ * Fills a matrix from a SLHA block
+ *
+ * @param block_name block name
+ * @param matrix matrix to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
 template <class Derived>
-void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (data.find(block_name) == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
-      return;
+      return 0.;
    }
 
    const int cols = matrix.cols(), rows = matrix.rows();
+   double scale = 0.;
 
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line())
+      if (!line->is_data_line()) {
+         // read scale from block definition
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
          continue;
+      }
 
       if (line->size() >= 3) {
          const int i = convert_to<int>((*line)[0]) - 1;
@@ -208,6 +223,8 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
          }
       }
    }
+
+   return scale;
 }
 
 template<class Scalar, int NRows, int NCols>

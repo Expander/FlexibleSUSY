@@ -13,6 +13,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
 {
    MSSM<Two_scale> model;
 
+   const double scale = 91.0;
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    Yd(2,2) = 2.9     * root2 / (vev * cosBeta);
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
 
-   model.set_scale(91);
+   model.set_scale(scale);
    model.set_loops(2);
    model.set_g1(g1);
    model.set_g2(g2);
@@ -74,6 +75,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    std::string slha_file("test/test_MSSM_slha_input.out.spc");
    slha_io.write_to_file(slha_file);
 
+   // clear everything
    model.clear();
    slha_io.clear();
 
@@ -89,8 +91,11 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
       }
    }
 
+   // read from SLHA file
    slha_io.read_from_file(slha_file);
    slha_io.fill(model);
+
+   BOOST_CHECK_EQUAL(model.get_scale(), scale);
 
    BOOST_CHECK_CLOSE_FRACTION(model.get_g1(), g1, 1.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(model.get_g2(), g2, 1.0e-8);
