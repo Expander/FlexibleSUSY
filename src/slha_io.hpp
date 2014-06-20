@@ -134,6 +134,7 @@ public:
    void clear();
 
    // reading functions
+   bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
    const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
@@ -195,7 +196,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
 template <class Derived>
 double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (data.find(block_name) == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
       return 0.;
    }

@@ -41,6 +41,11 @@ void SLHA_io::clear()
    modsel.clear();
 }
 
+bool SLHA_io::block_exists(const std::string& block_name) const
+{
+   return data.find(block_name) != data.cend();
+}
+
 /**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name
@@ -93,7 +98,7 @@ void SLHA_io::fill(QedQcd& oneset) const
  */
 double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   if (data.find(block_name) == data.cend())
+   if (!block_exists(block_name))
       return 0.;
 
    double scale = 0.;
@@ -121,7 +126,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    const SLHAea::Coll::const_iterator block = data.find(block_name);
 
-   if (block == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
       return 0.;
    }
