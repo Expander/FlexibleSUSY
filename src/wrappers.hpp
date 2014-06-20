@@ -202,6 +202,16 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+inline int Sign(double x)
+{
+   return (x >= 0.0 ? 1 : -1);
+}
+
+inline int Sign(int x)
+{
+   return (x >= 0 ? 1 : -1);
+}
+
 /**
  * The element of v, which is closest to mass, is moved to the
  * position idx.
@@ -217,18 +227,20 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
                        Eigen::MatrixBase<DerivedMatrix>& z)
 {
    int pos = closest_index(mass, v);
-   if(pos == idx) return;
-   int sign = (idx-pos > 0) ? 1 : ((idx-pos < 0) ? -1 : 0);
-   int steps = abs(idx - pos);
-   //now we shuffle the states
-   for(int i=1; i <= steps; i++){
-      int temp = pos + 1 * sign;
-      v.row(temp).swap(v.row(pos));
-      z.row(temp).swap(z.row(pos));
-      pos = temp;
+   if (pos == idx)
+      return;
 
+   const int sign = Sign(idx - pos);
+   int steps = std::abs(idx - pos);
+
+   // now we shuffle the states
+   while (steps--) {
+      const int new_pos = pos + sign;
+      v.row(new_pos).swap(v.row(pos));
+      z.row(new_pos).swap(z.row(pos));
+      pos = new_pos;
    }
-   
+
 }
 
 template <typename Base, typename Exponent>
@@ -256,11 +268,6 @@ inline double Im(double x)
 inline double Im(const std::complex<double>& x)
 {
    return std::imag(x);
-}
-
-inline int Sign(double x)
-{
-   return (x >= 0.0 ? 1 : -1);
 }
 
 namespace {

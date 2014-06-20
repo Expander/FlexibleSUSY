@@ -44,3 +44,18 @@ BOOST_AUTO_TEST_CASE( test_reordering )
       for (int k = 0; k < 3; k++)
          BOOST_CHECK_EQUAL(M(i,k), M_new(i,k));
 }
+
+BOOST_AUTO_TEST_CASE( test_preserve_order )
+{
+   Eigen::Matrix<double, 3, 3> Z;
+   Eigen::Array<double, 3, 1> higgs;
+   higgs(0) = 10.;
+   higgs(1) = 80.;
+   higgs(2) = 91.;
+
+   move_goldstone_to(0, 91., higgs, Z);
+
+   BOOST_CHECK_EQUAL(higgs(0), 91.);
+   BOOST_CHECK_EQUAL(higgs(1), 10.);
+   BOOST_CHECK_EQUAL(higgs(2), 80.);
+}
