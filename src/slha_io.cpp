@@ -145,6 +145,32 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
    return entry;
 }
 
+/**
+ * Reads scale definition from SLHA block.
+ *
+ * @param block_name block name
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_scale(const std::string& block_name) const
+{
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line()) {
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
+         break;
+      }
+   }
+
+   return scale;
+}
+
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)
 {
    SLHAea::Block block;

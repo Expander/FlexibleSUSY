@@ -145,6 +145,7 @@ public:
    double read_entry(const std::string&, int) const;
    void read_extpar();
    void read_modsel();
+   double read_scale(const std::string&) const;
 
    // writing functions
    void set_data(const SLHAea::Coll& data_) { data = data_; }
