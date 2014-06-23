@@ -1,6 +1,7 @@
 .gitignore                      export-ignore
 .gitattributes                  export-ignore
 doc/release                     export-ignore
+doc/FlexibleFuture.txt          export-ignore
 TODO                            export-ignore
 
 examples/lattice_fmssm.cpp                  export-ignore
