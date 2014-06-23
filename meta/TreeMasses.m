@@ -988,7 +988,7 @@ CreateThirdGenerationHelperPrototype[fermion_] :=
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double&, double&, double&) const;\n";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopSquark] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1015,7 +1015,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomSquark] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1042,7 +1042,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Selectron] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1069,7 +1069,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Neutrino] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Sneutrino] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1107,14 +1107,14 @@ CreateThirdGenerationHelperFunction[fermion_] :=
 
 CreateThirdGenerationHelpers[] :=
     Module[{prototypes, functions},
-           functions = CreateThirdGenerationHelperFunction[SARAH`TopQuark] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`BottomQuark] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`Neutrino] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`Electron];
-           prototypes = CreateThirdGenerationHelperPrototype[SARAH`TopQuark] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`BottomQuark] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`Neutrino] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`Electron];
+           functions = CreateThirdGenerationHelperFunction[SARAH`TopSquark] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`BottomSquark] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`Sneutrino] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`Selectron];
+           prototypes = CreateThirdGenerationHelperPrototype[SARAH`TopSquark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`BottomSquark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`Sneutrino] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`Selectron];
            {prototypes, functions}
           ];
 
