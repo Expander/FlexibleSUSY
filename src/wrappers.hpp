@@ -23,8 +23,9 @@
 #include <cmath>
 #include <functional>
 #include <sstream>
+#include <string>
 #include <Eigen/Core>
-
+#include <boost/lexical_cast.hpp>
 
 namespace flexiblesusy {
 
@@ -313,9 +314,7 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 template <typename T>
 std::string ToString(T a)
 {
-   std::ostringstream ostr;
-   ostr << a;
-   return ostr.str();
+   return boost::lexical_cast<std::string>(a);
 }
 
 inline double ZeroSqrt(double x)
