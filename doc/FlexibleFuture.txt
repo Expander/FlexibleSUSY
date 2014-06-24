@@ -32,6 +32,10 @@ And Fixes / minor extensions:
   ~Prototype GetSpec class can be found in:
   https://github.com/pathron/higgs-decays-NE6SSM 
   (see NE6SSM-SpecGen/models/NE6SSM/GetScale.hpp)
+
+* Add explicit getters for goldstones and physical Higgs states 
+  with goldstones removed.  Latter may cause confusion with get_MAh
+  though. 
   
 * Any more?
 
