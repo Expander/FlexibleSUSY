@@ -15,7 +15,7 @@ Planned major extensions:
  * semi-anaylic solver - method for solving boundary value problem used 
                          by CE6SSMSpecGen
 
-And Fixes:
+And Fixes / minor extensions:
 
 * Weinberg angle issues: fix using the approach suggested by Jae-hyeon.
 
@@ -25,7 +25,17 @@ And Fixes:
 * E6SSM model issues in Hp coupling didcussed with Florian Staub, 
   may need fix from FlexibleSUSY
 
+* Provide abstract interface class with getters and setters for spectrum?
+  There is a prototype of this being created for gambit 
+
+* Provide methods which pass the spectum as a model object and/or slhaea object
+  Prototype GetSpec class can be found in:
+  https://github.com/pathron/higgs-decays-NE6SSM 
+  (see NE6SSM-SpecGen/models/NE6SSM/GetScale.hpp)
+  
 * Any more?
+
+  
 
 Planned Collaborations:
 
