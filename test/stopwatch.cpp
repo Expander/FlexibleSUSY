@@ -40,10 +40,10 @@ void Stopwatch::stop()
 
 double Stopwatch::get_time_in_seconds()
 {
-   typedef std::chrono::duration<int,std::milli> milliseconds_t;
-   milliseconds_t duration(std::chrono::duration_cast<milliseconds_t>(
+   typedef std::chrono::duration<int,std::micro> microseconds_t;
+   microseconds_t duration(std::chrono::duration_cast<microseconds_t>(
                               stop_point - start_point));
-   return duration.count() * 0.001;
+   return duration.count() * 0.000001;
 }
 
 } // namespace flexiblesusy
