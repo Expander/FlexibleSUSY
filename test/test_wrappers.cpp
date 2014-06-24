@@ -25,6 +25,7 @@
 #include "wrappers.hpp"
 #include "diagonalization.hpp"
 #include "stopwatch.hpp"
+#include <boost/lexical_cast.hpp>
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -158,6 +159,12 @@ std::string ToString_sprintf(T a)
    return std::string(buf);
 }
 
+template <typename T>
+std::string ToString_lexical_cast(T a)
+{
+   return boost::lexical_cast<std::string>(a);
+}
+
 #define MEASURE(type,number,iterations)                            \
    do {                                                            \
       Stopwatch stopwatch;                                         \
@@ -176,7 +183,8 @@ BOOST_AUTO_TEST_CASE(test_ToString)
    const int number = 123456;
    const int number_of_iterations = 1000000;
 
-   MEASURE(sstream  , number, number_of_iterations);
-   MEASURE(to_string, number, number_of_iterations);
-   MEASURE(sprintf  , number, number_of_iterations);
+   MEASURE(sstream     , number, number_of_iterations);
+   MEASURE(to_string   , number, number_of_iterations);
+   MEASURE(sprintf     , number, number_of_iterations);
+   MEASURE(lexical_cast, number, number_of_iterations);
 }
