@@ -28,7 +28,7 @@ And Fixes / minor extensions:
 * Provide abstract interface class with getters and setters for spectrum?
   There is a prototype of this being created for gambit 
 
-* Provide methods which pass the spectum as a model object and/or slhaea object
+* Provide methods which pass the spectum as a model object and/or slhaea object?
   Prototype GetSpec class can be found in:
   https://github.com/pathron/higgs-decays-NE6SSM 
   (see NE6SSM-SpecGen/models/NE6SSM/GetScale.hpp)
