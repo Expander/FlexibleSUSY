@@ -10,15 +10,17 @@ WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
+GetDRbarBlockNames::usage="";
+GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
 
-StringJoinWithSeparator[strings_List, separator_String] :=
+StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
     Module[{result = "", i},
-           For[i = 1, i <= Length[strings], i++,
+           For[i = 1, i <= Length[list], i++,
                If[i > 1, result = result <> separator;];
-               result = result <> ToString[strings[[i]]];
+               result = result <> transformer[list[[i]]];
               ];
            Return[result];
           ];
@@ -326,12 +328,9 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
                "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
-               "const double tmp_scale = slha_io.read_block(\"" <>
-               blockNameStr <> "\", " <> paramStr <> ");\n" <>
-               "model.set_" <> paramStr <> "(" <> paramStr <> ");\n" <>
-               "if (!is_zero(tmp_scale))\n" <>
-               IndentText["scale = tmp_scale;"] <> "\n"
-               ] <> "\n" <>
+               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
+               paramStr <> ");\n" <>
+               "model.set_" <> paramStr <> "(" <> paramStr <> ");"] <> "\n" <>
            "}\n"
           ];
 
@@ -341,6 +340,21 @@ ReadLesHouchesOutputParameters[] :=
            (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
            Return[result];
           ];
+
+GetDRbarBlocks[] :=
+    Module[{modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           DeleteDuplicates[Cases[modelParameters, {_, blockName_Symbol} | {_, {blockName_Symbol, _?NumberQ}} :> blockName]]
+          ];
+
+GetDRbarBlockNames[] :=
+    Module[{blocks, transformer},
+           blocks = GetDRbarBlocks[];
+           transformer = ("\"" <> ToString[#] <> "\"")&;
+           "{ " <> StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
+          ];
+
+GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
 
 End[];
 

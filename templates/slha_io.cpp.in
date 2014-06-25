@@ -22,6 +22,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
+#include "numerics.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "config.h"
@@ -34,6 +35,9 @@
 using namespace softsusy;
 
 namespace flexiblesusy {
+
+char const * const @ModelName@_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
+   @drBarBlockNames@;
 
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
@@ -146,6 +150,19 @@ void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& s
    } else {
       WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }
+}
+
+double @ModelName@_slha_io::read_scale() const
+{
+   double scale = 0.;
+
+   for (unsigned i = 0; i < NUMBER_OF_DRBAR_BLOCKS; i++) {
+      const double block_scale = slha_io.read_scale(drbar_blocks[i]);
+      if (!is_zero(block_scale))
+         scale = block_scale;
+   }
+
+   return scale;
 }
 
 } // namespace flexiblesusy

@@ -24,7 +24,6 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
 #include "slha_io.hpp"
-#include "numerics.hpp"
 
 #include <Eigen/Core>
 #include <string>
@@ -68,10 +67,13 @@ public:
 
 private:
    SLHA_io slha_io; ///< SLHA io class
+   static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
+   static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
    template <class T> void set_mass(const @ModelName@<T>&);
    template <class T> void set_mixing_matrices(const @ModelName@<T>&);
    template <class T> void set_model_parameters(const @ModelName@<T>&);
+   double read_scale() const;
 };
 
 /**
@@ -80,11 +82,9 @@ private:
 template <class T>
 void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
 {
-   double scale = 0.;
-
 @readLesHouchesOutputParameters@
 
-   model.set_scale(scale);
+   model.set_scale(read_scale());
 }
 
 template <class T>
