@@ -10,6 +10,7 @@ WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
+ReadLesHouchesPhysicalParameters::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
@@ -334,10 +335,30 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
+ReadSLHAPhyicalMixingMatrixBlock[{parameter_, blockName_Symbol}] :=
+    Module[{paramStr, blockNameStr},
+           paramStr = CConversion`ToValidCSymbolString[parameter];
+           blockNameStr = ToString[blockName];
+           "{\n" <> IndentText[
+               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
+               paramStr <> ");\n" <>
+               "model.get_physical()." <> paramStr <> " = " <> paramStr <> ";"] <> "\n" <>
+           "}\n"
+          ];
+
 ReadLesHouchesOutputParameters[] :=
     Module[{result = "", modelParameters},
            modelParameters = GetSLHAModelParameters[];
            (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
+           Return[result];
+          ];
+
+ReadLesHouchesPhysicalParameters[] :=
+    Module[{result = "", physicalParameters},
+           physicalParameters = GetSLHAMixinMatrices[];
+           Print["physicalParameters = ", physicalParameters];
+           (result = result <> ReadSLHAPhyicalMixingMatrixBlock[#])& /@ physicalParameters;
            Return[result];
           ];
 

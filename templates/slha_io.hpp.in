@@ -74,17 +74,38 @@ private:
    template <class T> void set_mixing_matrices(const @ModelName@<T>&);
    template <class T> void set_model_parameters(const @ModelName@<T>&);
    double read_scale() const;
+   template <class T> void fill_drbar_parameters(@ModelName@<T>&) const;
+   template <class T> void fill_physical(@ModelName@<T>&) const;
 };
 
 /**
- * Reads all model parameters from a SLHA output file.
+ * Reads DR-bar parameters, pole masses and mixing matrices from a
+ * SLHA output file.
  */
 template <class T>
 void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
 {
+   fill_drbar_parameters(model);
+}
+
+/**
+ * Reads DR-bar parameters from a SLHA output file.
+ */
+template <class T>
+void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@<T>& model) const
+{
 @readLesHouchesOutputParameters@
 
    model.set_scale(read_scale());
+}
+
+/**
+ * Reads pole masses and mixing matrices from a SLHA output file.
+ */
+template <class T>
+void @ModelName@_slha_io::fill_physical(@ModelName@<T>& model) const
+{
+@readLesHouchesPhyicalParameters@
 }
 
 template <class T>
