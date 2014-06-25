@@ -335,7 +335,7 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
-ReadSLHAPhyicalMixingMatrixBlock[{parameter_, blockName_Symbol}] :=
+ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
@@ -343,8 +343,45 @@ ReadSLHAPhyicalMixingMatrixBlock[{parameter_, blockName_Symbol}] :=
                "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
                "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
                paramStr <> ");\n" <>
-               "model.get_physical()." <> paramStr <> " = " <> paramStr <> ";"] <> "\n" <>
+               "PHYSICAL(" <> paramStr <> ") = " <> paramStr <> ";"] <> "\n" <>
            "}\n"
+          ];
+
+ReadSLHAPhysicalMass[particle_] :=
+    Module[{result = "", mass, massStr, dim, pdgList, pdg, pdgStr, i},
+           mass = FlexibleSUSY`M[particle];
+           massStr = CConversion`ToValidCSymbolString[mass];
+           dim = TreeMasses`GetDimension[particle];
+           pdgList = SARAH`getPDGList[particle];
+           If[Head[pdgList] =!= List || Length[pdgList] < dim,
+              Return[""];
+             ];
+           If[dim == 1,
+              pdg = Abs[pdgList[[1]]];
+              pdgStr = ToString[pdg];
+              If[pdg != 0,
+                 result = "PHYSICAL(" <> massStr <>
+                          ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
+                ];
+              ,
+              For[i = 1, i <= dim, i++,
+                  pdg = Abs[pdgList[[i]]];
+                  pdgStr = ToString[pdg];
+                  If[pdg != 0,
+                     result = result <>
+                              "PHYSICAL(" <> massStr <> ")(" <> ToString[i-1] <>
+                              ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
+                    ];
+                 ];
+             ];
+           Return[result];
+          ];
+
+ReadSLHAPhysicalMassBlock[] :=
+    Module[{result = "", particles},
+           particles = TreeMasses`GetParticles[];
+           (result = result <> ReadSLHAPhysicalMass[#])& /@ particles;
+           Return[result];
           ];
 
 ReadLesHouchesOutputParameters[] :=
@@ -357,8 +394,8 @@ ReadLesHouchesOutputParameters[] :=
 ReadLesHouchesPhysicalParameters[] :=
     Module[{result = "", physicalParameters},
            physicalParameters = GetSLHAMixinMatrices[];
-           Print["physicalParameters = ", physicalParameters];
-           (result = result <> ReadSLHAPhyicalMixingMatrixBlock[#])& /@ physicalParameters;
+           (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#])& /@ physicalParameters;
+           result = result <> "\n" <> ReadSLHAPhysicalMassBlock[];
            Return[result];
           ];
 

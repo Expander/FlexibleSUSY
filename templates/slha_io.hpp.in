@@ -33,6 +33,8 @@
 #define MODELPARAMETER(p) model.get_##p()
 #define DEFINE_PARAMETER(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
+#define DEFINE_POLE_MASS(p)                                            \
+   typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 
 namespace flexiblesusy {
 
@@ -86,6 +88,7 @@ template <class T>
 void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
 {
    fill_drbar_parameters(model);
+   fill_physical(model);
 }
 
 /**
