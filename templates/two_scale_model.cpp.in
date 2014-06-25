@@ -138,6 +138,16 @@ const @ModelName@_physical& CLASSNAME::get_physical() const
    return physical;
 }
 
+@ModelName@_physical& CLASSNAME::get_physical()
+{
+   return physical;
+}
+
+void CLASSNAME::set_physical(const @ModelName@_physical& physical_)
+{
+   physical = physical_;
+}
+
 const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems() const
 {
    return problems;
