@@ -22,7 +22,7 @@ And Fixes / minor extensions:
 * create modified two scale algorithm where variables fixed at the low scale 
   have vlaues saved at the SUSY scale on the run up, to improve stability.
 
-* E6SSM model issues in Hp coupling didcussed with Florian Staub, 
+* E6SSM model issues in Hp coupling discussed with Florian Staub, 
   may need fix from FlexibleSUSY
 
 * Provide abstract interface class with getters and setters for spectrum?
@@ -66,7 +66,7 @@ Planned applications:
 * EZSSM dark matter direct detection study, uses FlexibleSUSY generated RGES 
   created from in develoipment version.
   Status: hopefully finished this summer.
-  Collaborators:  P.Athron, A.T.Thomas, S.UnderWood, M.White	
+  Collaborators:  P.Athron, A.T.Thomas, S.Underwood, M.White	
   
 * Z' fine tuning. Now uses some RGEs FlexibleSUSY for U(1) extended models.  
   Project well under way. Talk at SUSY 2014.  Paper soon after. 
