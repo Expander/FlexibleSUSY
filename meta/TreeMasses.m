@@ -603,7 +603,7 @@ WrapMacro[sym_String, macro_String] := macro <> "(" <> sym <> ")";
 
 CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}, macro_String:""] :=
     "move_goldstone_to(" <> ToString[idx-1] <> ", " <>
-    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]], macro] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]], ""] <> ", " <>
     WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]], macro] <> ", " <>
     WrapMacro[CConversion`ToValidCSymbolString[mixingMatrix], macro] <> ");\n";
 
