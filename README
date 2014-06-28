@@ -30,6 +30,23 @@ Optional:
  * Looptools (version 2.8 or higher)  http://www.feynarts.de/looptools/
 
 
+Installation of SARAH
+=====================
+
+FlexibleSUSY requires SARAH to be installed and to be loadable with
+the Needs["SARAH`"] command from inside Mathematica.  We recommend the
+following setup:
+
+   $ cd ~/.Mathematica/Applications/
+   $ wget https://www.hepforge.org/archive/sarah/SARAH-4.2.3.tar.gz
+   $ tar -xf SARAH-4.2.3.tar.gz
+   $ ln -s $PWD/SARAH-4.2.3/ SARAH
+
+   $ cd ~/.Mathematica/Kernel/
+   $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \
+        >> init.m
+
+
 How to create a model
 =====================
 
