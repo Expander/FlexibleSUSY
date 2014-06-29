@@ -99,6 +99,18 @@ sarah_tarball="SARAH-${sarah_version}.tar.gz"
 sarah_dir="SARAH-${sarah_version}"
 sarah_download_url="https://www.hepforge.org/archive/sarah/${sarah_tarball}"
 
+printf "Checking for SARAH installation ... "
+math -run "If[Needs[\"SARAH\`\"] === \$Failed, Quit[0]]; Quit[1]" > /dev/null 2>&1
+sarah_is_installed="$?"
+
+if test "${sarah_is_installed}" = "1" ; then
+    printf "installed\n"
+    echo "Error: SARAH is already installed!"
+    exit 1
+else
+    printf "not installed\n"
+fi
+
 # download SARAH
 echo "Downloading ${sarah_tarball} to ${install_path} ..."
 if exists_in_path "wget"; then
