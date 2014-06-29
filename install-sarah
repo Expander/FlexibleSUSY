@@ -1,0 +1,161 @@
+#!/bin/sh
+
+# SARAH installation script
+# Author: Alexander Voigt
+
+# directory of this script
+BASEDIR=$(dirname $0)
+
+# absolute path to this script
+ABSBASEDIR=$(cd $BASEDIR; pwd)
+
+# default SARAH version
+sarah_version="4.2.3"
+
+mathematica_dir="${HOME}/.Mathematica"
+mathematica_kernel_dir="${mathematica_dir}/Kernel"
+mathematica_applications_dir="${mathematica_dir}/Applications"
+mathematica_init="${mathematica_kernel_dir}/init.m"
+
+install_path="${mathematica_applications_dir}"
+sarah_link="${install_path}/SARAH"
+
+# installation flags
+overwrite="no"
+
+#_____________________________________________________________________
+exists_in_path () {
+    # This function will try to locate an executable [$1] in $PATH.
+    #
+    # The result of the search is stored in cmd, which should be
+    # immediately copied, since the variables value will be
+    # overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -ne 1 ; then
+        echo "exists_in_path: Exactly one argument required"
+        return 1
+    fi
+
+    cmd=$(command -v -- "$1")
+    case "$cmd" in
+	/*) return 0 ;;
+	alias\ *) return 1 ;; # alias
+	*) return 1 ;; # built-in or function
+    esac
+}
+
+#_____________________________________________________________________
+help() {
+cat <<EOF
+This script downloads and installs SARAH.
+At first the SARAH tarball is downloaded from the URL
+
+  https://www.hepforge.org/archive/sarah/
+
+and is stored in
+
+  ${install_path}/
+
+Afterwards, the tarball will be extracted and a static link with the
+name \`SARAH' will be created, which points to the SARAH directory.
+The path to this link will then be appended to the \$Path variable
+inside
+
+  ${mathematica_init}
+
+This will allow to load SARAH with the Needs["SARAH\`"] command.
+
+Usage: ./`basename $0` [options]
+
+Options:
+  --version=         SARAH version (default: ${sarah_version}).
+                     Example: --version=4.2.3
+
+  --force,-f         Overwrite an already existing SARAH link.
+
+  --help,-h          Print this help message.
+EOF
+}
+
+# parse command line arguments
+if test $# -gt 0 ; then
+    while test ! "x$1" = "x" ; do
+        case "$1" in
+            -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+            *)    optarg= ;;
+        esac
+        case $1 in
+            --force|-f)              overwrite="yes" ;;
+            --help|-h)               help; exit ${exit_ok} ;;
+            --version=*)             sarah_version="$optarg" ;;
+            *)  echo "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
+        esac
+        shift
+    done
+fi
+
+sarah_tarball="SARAH-${sarah_version}.tar.gz"
+sarah_dir="SARAH-${sarah_version}"
+sarah_download_url="https://www.hepforge.org/archive/sarah/${sarah_tarball}"
+
+# download SARAH
+echo "Downloading ${sarah_tarball} to ${install_path} ..."
+if exists_in_path "wget"; then
+    if test -d ${install_path} ; then
+        wget ${sarah_download_url} --directory-prefix=${install_path}
+        if test "x$?" != "x0" ; then
+            echo "Error: Downloading ${sarah_tarball} failed!"
+            exit 1
+        fi
+    else
+        echo "Error: download destination directory does not exist:"
+        echo "   ${install_path}"
+        exit 1
+    fi
+else
+    echo "Error: wget not found!"
+    echo "   Please install wget."
+    exit 1
+fi
+
+# extract SARAH
+echo "Extracting ${sarah_tarball} ..."
+if exists_in_path "tar"; then
+    tar -xf ${install_path}/${sarah_tarball} --directory ${install_path}
+    if test "x$?" != "x0" ; then
+        echo "Error: extracting tarball ${install_path}/${sarah_tarball} failed!"
+        exit 1
+    fi
+else
+    echo "Error: tar not found!"
+    echo "   Please install tar to extract the SARAH package."
+    exit 1
+fi
+
+# create SARAH link
+echo "Creating link ${sarah_link} -> ${install_path}/${sarah_dir} ..."
+if exists_in_path "ln"; then
+    if test "${overwrite}" = "yes" -o \( ! -e ${sarah_link} \) ; then
+        rm -rf ${sarah_link}
+        ln -s ${install_path}/${sarah_dir} ${sarah_link}
+    else
+        echo "Error: file ${sarah_link} already exists!"
+        echo "   Use the --force option to overwrite it."
+        exit 1
+    fi
+else
+    echo "Error: tar not found!"
+    echo "   Please install tar to extract the SARAH package."
+    exit 1
+fi
+
+# append path to SARAH link to Mathematica's init.m
+echo "Appending link path ${sarah_link} to \$Path in ${mathematica_init} ..."
+if [ -d "${mathematica_kernel_dir}" ] ; then
+    echo "AppendTo[\$Path, \"${sarah_link}\"];" >> ${mathematica_init}
+else
+    echo "Error: Mathematica kernel directory not found:"
+    echo "   ${mathematica_kernel_dir}"
+    exit 1
+fi
