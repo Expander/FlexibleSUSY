@@ -46,6 +46,13 @@ following setup:
    $ echo "AppendTo[\$Path, \"$HOME/.Mathematica/Applications/SARAH/\"];" \
         >> init.m
 
+All the above steps can be executed at once with the `install-sarah`
+script.  Example:
+
+   $ ./install-sarah
+
+See `./install-sarah --help' for more options.
+
 
 How to create a model
 =====================
