@@ -16,13 +16,22 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+/**
+ * @file betafunction.hpp
+ * @brief contains class Beta_function 
+ * abstract base class for the beta functions of
+ * the parameter classes of the generated models.
+ */
 #ifndef BETAFUNCTION_H
 #define BETAFUNCTION_H
 
 #include "rk.hpp"
 
 namespace flexiblesusy {
-
+/**
+ * @class Beta_function
+ * @brief beta functions or renormalisation group equations
+ */
 class Beta_function {
 public:
    Beta_function();

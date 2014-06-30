@@ -16,6 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+/**
+ * @file betafunction.cpp
+ * @brief contains methods for class Beta_function
+ */
+
 #include "betafunction.hpp"
 #include "logger.hpp"
 #include "error.hpp"
@@ -43,13 +48,22 @@ void Beta_function::reset()
    tolerance = 1.e-4;
    min_tolerance = 1.0e-11;
 }
-
+ 
+/** 
+ * method to run parameter objects 
+ * of the generated models from current scale
+ * to the scale x2 passed as in an argument
+ */  
 void Beta_function::run_to(double x2, double eps)
 {
    const double tol = get_tolerance(eps);
    run(scale, x2, tol);
 }
-
+/** 
+ * method to run parameter objects of the generated 
+ * models from scale x1, passed as first argument, 
+ * to scale x2 passed as second argument.
+ */  
 void Beta_function::run(double x1, double x2, double eps)
 {
    const double tol = get_tolerance(eps);
@@ -68,13 +82,31 @@ void Beta_function::run(double x1, double x2, double eps)
    set_scale(x2);
 }
 
+/** 
+ * Takes renormalisation scale as first argument and  
+ * parameters of RGE  passed in as an Eigen::ArrayXd 
+ * object of dynamic size in the secopnd argument. 
+ * Returns the beta functions as an Eigen::ArrayXd
+ * object.
+ */  
 Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
 {
    set_scale(exp(x));
    set(y);
    return beta();
 }
-
+   
+/**
+ * Calls Runge Kutta routine from rk.cpp passing start and end
+ * scales, as first and second argument respectively. 
+ * Parameters are passed as third argument and the derivatives
+ * method as the fourth argument. 
+ * The precison is passed as the last argument
+ * or if not passed it is set to default value tolerance
+ * which is a private data member of the class set to 1e-4 
+ * in the constructor. 
+ */ 
+      
 void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
                             runge_kutta::Derivs derivs, double eps)
 {
@@ -93,6 +125,12 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    set_scale(x2);
 }
 
+   /**
+    * returns precsion after which will either be 
+    * value input as argument, default value tolerance 
+    * if negative number is passed, or min_tolerance 
+    * if passed argument is too small
+    */
 double Beta_function::get_tolerance(double eps)
 {
    double tol;
