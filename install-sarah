@@ -100,6 +100,14 @@ sarah_dir="SARAH-${sarah_version}"
 sarah_download_area="https://www.hepforge.org/downloads/sarah"
 sarah_download_url="https://www.hepforge.org/archive/sarah/${sarah_tarball}"
 
+# check SARAH version string
+if echo "${sarah_version}" | grep -v '[0-9]\+.[0-9]\+.[0-9]\+' > /dev/null 2>&1 ; then
+    echo "Error: incorrect SARAH version pattern"
+    echo "   The SARAH version must be of the form x.y.z , where"
+    echo "   x, y and z are integer numbers."
+    exit 1
+fi
+
 printf "Checking for SARAH installation ... "
 math -run "If[Needs[\"SARAH\`\"] === \$Failed, Quit[0]]; Quit[1]" > /dev/null 2>&1
 sarah_is_installed="$?"
