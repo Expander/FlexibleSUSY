@@ -25,6 +25,11 @@
 #include <string>
 #include <sstream>
 
+/**
+ * @file two_scale_solver.hpp
+ * @brief contains the definition of the RGFlow<Two_scale> class
+ */
+
 namespace flexiblesusy {
 
 template <class T> class Constraint;
@@ -34,6 +39,16 @@ template <class T> class Initial_guesser;
 class Two_scale;
 class Two_scale_model;
 class Two_scale_running_precision;
+
+/**
+ * @class RGFlow<Two_scale>
+ * @brief Boundary condition solver (two-scale algorithm)
+ *
+ * This boundary condition solver uses the two-scale algorithm to
+ * solve the boundary value problem: It uses RG running to iteratively
+ * run the model tower to the boundary condtions scales and imposes
+ * the constraints.
+ */
 
 template<>
 class RGFlow<Two_scale> {
@@ -71,7 +86,7 @@ public:
    void set_running_precision(Two_scale_running_precision*);
    /// set initial guesser
    void set_initial_guesser(Initial_guesser<Two_scale>*);
-   /// solve all models
+   /// solves the boundary value problem
    void solve();
 
 private:
