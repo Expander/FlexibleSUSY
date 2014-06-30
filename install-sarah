@@ -97,6 +97,7 @@ fi
 
 sarah_tarball="SARAH-${sarah_version}.tar.gz"
 sarah_dir="SARAH-${sarah_version}"
+sarah_download_area="https://www.hepforge.org/downloads/sarah"
 sarah_download_url="https://www.hepforge.org/archive/sarah/${sarah_tarball}"
 
 printf "Checking for SARAH installation ... "
@@ -118,6 +119,8 @@ if exists_in_path "wget"; then
         wget ${sarah_download_url} --directory-prefix=${install_path}
         if test "x$?" != "x0" ; then
             echo "Error: Downloading ${sarah_tarball} failed!"
+            echo "   Please check the available SARAH versions under"
+            echo "   ${sarah_download_area}"
             exit 1
         fi
     else
