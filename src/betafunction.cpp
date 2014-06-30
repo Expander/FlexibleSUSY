@@ -101,10 +101,9 @@ Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
  * scales, as first and second argument respectively. 
  * Parameters are passed as third argument and the derivatives
  * method as the fourth argument. 
- * The precison is passed as the last argument
- * or if not passed it is set to default value tolerance
- * which is a private data member of the class set to 1e-4 
- * in the constructor. 
+ * The precison is passed as the last argument or if not 
+ * passed it is set to default value tolerance which is a 
+ * private data member of the class set to 1e-4 in the constructor. 
  */ 
       
 void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
