@@ -32,10 +32,16 @@
 #include <limits>
 #include <cassert>
 
+/**
+ * @file two_scale_solver.cpp
+ * @brief contains the implementation of the RGFlow<Two_scale> class members
+ */
+
 namespace flexiblesusy {
 
 /**
  * Create empty two scale solver.
+ * The RG running precision is set to the default value 0.001.
  */
 RGFlow<Two_scale>::RGFlow()
    : models()
@@ -54,6 +60,15 @@ RGFlow<Two_scale>::~RGFlow()
       delete models[m];
 }
 
+/**
+ * @brief Solves the boundary value problem.
+ *
+ * At first the initial_guess() is called.  Afterwards, the function
+ * iteratively runs the tower up and down and imposes the boundary
+ * conditions.  The iteration stops if either the maximum number of
+ * iterations is reached or the precision goal is achieved (defined by
+ * the convergence_tester).
+ */
 void RGFlow<Two_scale>::solve()
 {
    check_setup();
@@ -82,6 +97,9 @@ void RGFlow<Two_scale>::solve()
    VERBOSE_MSG("convergence reached after " << iteration << " iterations");
 }
 
+/**
+ * Sanity checks the models and boundary condtitions.
+ */
 void RGFlow<Two_scale>::check_setup() const
 {
    for (size_t m = 0; m < models.size(); ++m) {
@@ -115,12 +133,22 @@ void RGFlow<Two_scale>::check_setup() const
    }
 }
 
+/**
+ * Does the initial guess by calling the guess() method of the initial
+ * guesser (if given).
+ */
 void RGFlow<Two_scale>::initial_guess()
 {
    if (initial_guesser)
       initial_guesser->guess();
 }
 
+/**
+ * Run the model tower to the highest scale.  Thereby all upwards
+ * constraints are imposed (by calling the apply() functions) and the
+ * matching conditions are applied (by calling
+ * match_low_to_high_scale_model() functions).
+ */
 void RGFlow<Two_scale>::run_up()
 {
    VERBOSE_MSG("> running tower up (iteration " << iteration << ") ...");
@@ -154,6 +182,12 @@ void RGFlow<Two_scale>::run_up()
    VERBOSE_MSG("> running up finished");
 }
 
+/**
+ * Run the model tower to the lowest scale.  Thereby all downwards
+ * constraints are imposed (by calling the apply() functions) and the
+ * matching conditions are applied (by calling
+ * match_high_to_low_scale_model() functions).
+ */
 void RGFlow<Two_scale>::run_down()
 {
    assert(models.size() > 0 && "model size must not be zero");
@@ -195,6 +229,10 @@ void RGFlow<Two_scale>::run_down()
    VERBOSE_MSG("< running down finished");
 }
 
+/**
+ * Impose the constraint at the lowest energy scale (by calling the
+ * apply() function).
+ */
 void RGFlow<Two_scale>::apply_lowest_constraint()
 {
    if (models.empty())
@@ -320,6 +358,10 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
    models.push_back(tmp_model);
 }
 
+/**
+ * Returns the value returned by the accuracy_goal_reached() method of
+ * the convergence tester.
+ */
 bool RGFlow<Two_scale>::accuracy_goal_reached() const
 {
    return convergence_tester->accuracy_goal_reached();
@@ -350,16 +392,31 @@ void RGFlow<Two_scale>::set_running_precision(Two_scale_running_precision* rp)
    running_precision_calculator = rp;
 }
 
+/**
+ * Returns the number of performed iterations
+ * @return number of performed iterations
+ */
 unsigned int RGFlow<Two_scale>::number_of_iterations_done() const
 {
    return iteration;
 }
 
+/**
+ * Returns the maximum number of iterations set in the convergence
+ * tester.
+ */
 unsigned int RGFlow<Two_scale>::get_max_iterations() const
 {
    return convergence_tester->max_iterations();
 }
 
+/**
+ * @brief resets the solver to the initial condition
+ *
+ * The pointers to the models, matching conditions, convergence
+ * tester, initial guesser, and running precision calculator are set
+ * to zero.  The runnin precision is set to the default value 0.001.
+ */
 void RGFlow<Two_scale>::reset()
 {
    for (size_t m = 0; m < models.size(); ++m)
@@ -374,6 +431,11 @@ void RGFlow<Two_scale>::reset()
    model_at_this_scale = NULL;
 }
 
+/**
+ * Run the model tower to the given scale.
+ *
+ * @param scale scale to run to
+ */
 void RGFlow<Two_scale>::run_to(double scale)
 {
    // find model which is defined at `scale'
@@ -437,6 +499,9 @@ void RGFlow<Two_scale>::run_to(double scale)
    }
 }
 
+/**
+ * Returns the pointer to the model at the current scale.
+ */
 Two_scale_model* RGFlow<Two_scale>::get_model() const
 {
    return model_at_this_scale;
