@@ -15,7 +15,12 @@
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
-
+/**
+ * @file @ModelName@_two_scale_model.hpp
+ * @brief contains class for model with routines needed to solve boundary 
+ *        value problem using the two_scale solver by solvingt EWSB 
+ *        and determine the pole masses and mixings
+ */
 // File generated at @DateAndTime@
 
 #ifndef @ModelName@_TWO_SCALE_H
@@ -43,7 +48,10 @@
 namespace flexiblesusy {
 
 class Two_scale;
-
+/**
+ * @class @ModelName@<Two_scale>
+ * @brief model class with routines for determing masses and mixinga and EWSB
+ */
 template<>
 class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_soft_parameters {
 public:
