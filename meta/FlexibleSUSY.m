@@ -622,7 +622,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
-                            "@gslEWSBRootFinders@"           -> IndentText[IndentText[WrapLines[gslEWSBRootFinders]]],
+                            "@gslEWSBRootFinders@"           -> IndentText[IndentText[gslEWSBRootFinders]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
