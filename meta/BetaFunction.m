@@ -94,7 +94,7 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
  * Create one-loop and two-loop beta function assignments and local definitions.
  *)
 CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_List] :=
-     Module[{beta, betaName, name, betaStr, dataType, unitMatrix,
+     Module[{beta, betaName, name, betaStr, dataType,
              type = ErrorType, localDecl, traceRules, expr, loopFactor},
             Switch[loopOrder,
                    1, loopFactor = CConversion`oneOver16PiSqr;,
@@ -108,12 +108,11 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
               ];
             expr       = expr[[loopOrder]];
             dataType   = CConversion`CreateCType[type];
-            unitMatrix = CreateUnitMatrix[type];
             (* convert beta function expressions to C form *)
             name       = ToValidCSymbolString[GetName[betaFunction]];
             betaName   = "beta_" <> name;
             beta       = (loopFactor * expr) /.
-                            { Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix,
+                            { Kronecker[Susyno`LieGroups`i1,SARAH`i2] :> CreateUnitMatrix[type],
                               a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
             {localDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[{expr}];
