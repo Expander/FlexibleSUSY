@@ -129,11 +129,11 @@ private:
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
    unsigned pole_mass_loop_order;
-   bool calculate_sm_pole_masses;
-   double precision;
+   bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
+   double precision;              ///< RG running precision
    double ewsb_iteration_precision;
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
-   @ModelName@_physical physical;
+   @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
 #ifdef ENABLE_THREADS
@@ -148,6 +148,7 @@ private:
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
+   // Passarino-Veltman loop functions
    double A0(double) const;
    double B0(double, double, double) const;
    double B1(double, double, double) const;
@@ -157,8 +158,11 @@ private:
    double F0(double, double, double) const;
    double G0(double, double, double) const;
 
+   // DR-bar masses
 @physicalMassesDef@
+   // DR-bar mixing matrices
 @mixingMatricesDef@
+   // phases
 @phasesDefinition@
 };
 
