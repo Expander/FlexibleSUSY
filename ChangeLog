@@ -1,5 +1,8 @@
 FlexibleSUSY-1.0.2 [not released yet]
 
+ * Bugfix(commit 689141da): Enable non-quadratic superpotential
+   coupling matrices.
+
  * Install specimen SLHA input files in the model directory when one
    runs the createmodel script
 
