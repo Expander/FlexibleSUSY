@@ -15,6 +15,8 @@ Planned major extensions:
  * semi-anaylic solver - method for solving boundary value problem used 
                          by CE6SSMSpecGen
 
+ * Leading two loop mh calculator.    			 
+
 And Fixes / minor extensions:
 
 * Weinberg angle issues: fix using the approach suggested by Jae-hyeon.
@@ -37,6 +39,8 @@ And Fixes / minor extensions:
   with goldstones removed.  Latter may cause confusion with get_MAh
   though. 
   
+* Automatic one-loop muon decay calculation.  Use to get MW as prediction.
+
 * Any more?
 
   
@@ -52,6 +56,8 @@ Planned Collaborations:
   maybe?
 
 * Possibly Alex will work with Master Code collaboration?
+
+* Link with Fittino.
 
 Planned applications:
 
