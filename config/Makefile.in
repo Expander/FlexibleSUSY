@@ -86,6 +86,9 @@ SARAH_DEP_GEN := @SARAH_DEP_GEN@
 INSTALL_STRIPPED := \
 		$(ABSBASEDIR)/config/install_stripped.sh
 
+# README file
+README_FILE := $(ABSBASEDIR)/README
+
 .PHONY:  all allsrc allexec alllib alltest clean-executables \
 	 clean clean-dep depend distclean showbuild tag release
 
@@ -104,6 +107,7 @@ else
 install-src::
 	install -d $(INSTALL_DIR)
 	$(INSTALL_STRIPPED) $(ABSBASEDIR)/configure $(INSTALL_DIR)/configure -m u=rwx,g=r,o=r
+	$(INSTALL_STRIPPED) $(README_FILE) $(INSTALL_DIR)/README -m u=rw,g=r,o=r
 
 ifeq ($(ENABLE_META),yes)
 install-src:: allsrc
