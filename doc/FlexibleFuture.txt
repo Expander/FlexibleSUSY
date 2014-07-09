@@ -24,6 +24,11 @@ And Fixes / minor extensions:
 * create modified two scale algorithm where variables fixed at the low scale 
   have vlaues saved at the SUSY scale on the run up, to improve stability.
 
+* a modification to two scale algorithm where negative scalar squared
+  masses that can appear at an intermediate stage are used untouched
+  in self-energies/tadpoles.  For this, one may use complex-valued
+  loop functions from fflite that accept negative squared masses.
+
 * E6SSM model issues in Hp coupling discussed with Florian Staub, 
   may need fix from FlexibleSUSY
 

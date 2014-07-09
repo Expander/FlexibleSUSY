@@ -4,7 +4,7 @@ FlexibleSUSY-1.0.2 [not released yet]
    coupling matrices.
 
  * Install specimen SLHA input files in the model directory when one
-   runs the createmodel script
+   runs the createmodel script.
 
  * Work around fields in Cp[] carrying an invalid index that cause
    Part::partw when passed to SARAH`Vertex[].
