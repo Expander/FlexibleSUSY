@@ -2243,11 +2243,19 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
+    -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \
+    -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"       \
+    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"                 \
+    -e "s|@THREADLIBS@|$THREADLIBS|"                 \
     -e "s|@CXX@|$CXX|"                               \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"                 \
     -e "s|@FC@|$FC|"                                 \
     -e "s|@FFLAGS@|$FFLAGS|"                         \
     -e "s|@FLIBS@|$FLIBS|"                           \
+    -e "s|@GSLLIBS@|$GSLLIBS|"                       \
+    -e "s|@GSLFLAGS@|$GSLFLAGS|"                     \
+    -e "s|@LAPACKLIBS@|$LAPACKLIBS|"                 \
     -e "s|@MATH_VERSION@|$MATH_VERSION|"             \
     -e "s|@SARAH_VERSION@|$SARAH_VERSION|"           \
     -e "s|@SARAH_MAJOR@|$SARAH_MAJOR|"               \

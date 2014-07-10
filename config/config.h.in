@@ -21,11 +21,19 @@
 #define KERNEL_VERSION        "@KERNEL_VERSION@"
 
 /* Build variables */
+#define BOOSTFLAGS            "@BOOSTFLAGS@"
+#define BOOSTTESTLIBS         "@BOOSTTESTLIBS@"
+#define BOOSTTHREADLIBS       "@BOOSTTHREADLIBS@"
 #define CXX                   "@CXX@"
 #define CXXFLAGS              "@CXXFLAGS@"
+#define EIGENFLAGS            "@EIGENFLAGS@"
 #define FC                    "@FC@"
 #define FFLAGS                "@FFLAGS@"
 #define FLIBS                 "@FLIBS@"
+#define GSLFLAGS              "@GSLFLAGS@"
+#define GSLLIBS               "@GSLLIBS@"
+#define LAPACKLIBS            "@LAPACKLIBS@"
+#define THREADLIBS            "@THREADLIBS@"
 
 /* Switches */
 
