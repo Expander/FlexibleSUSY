@@ -22,6 +22,14 @@
 
 namespace flexiblesusy {
 
+/**
+ * Returns true if GSL vector contains a Nan, false otherwise.
+ *
+ * @param x GSL vector
+ * @param length length of the vector
+ *
+ * @return true if vector contains a Nan, false otherwise.
+ */
 bool contains_nan(const gsl_vector* x, std::size_t length)
 {
    for (std::size_t i = 0; i < length; ++i)
