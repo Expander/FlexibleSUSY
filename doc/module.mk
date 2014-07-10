@@ -88,7 +88,7 @@ distclean::     distclean-$(MODNAME)
 
 $(INDEX_PADE):
 		( cat $(DOXYFILE) ; \
-		  echo "INPUT = $(MODULES)" ; \
+		  echo "INPUT = $(MODULES) $(README_FILE)" ; \
 		  echo "OUTPUT_DIRECTORY = $(HTML_OUTPUT_DIR)" ; \
 		  echo "EXCLUDE = $(ALLDEP) $(META_SRC) $(TEMPLATES) \
 		        $(TEST_SRC) $(TEST_META)"; \

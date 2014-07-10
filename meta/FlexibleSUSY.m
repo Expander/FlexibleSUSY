@@ -1006,7 +1006,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* get RGEs *)
            FSPrepareRGEs[];
            FSCheckLoopCorrections[FSEigenstates];
-           nPointFunctions = EnforceCpColorStructures @
+           nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
            (* adapt SARAH`Conj to our needs *)
