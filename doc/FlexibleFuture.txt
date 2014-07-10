@@ -41,6 +41,11 @@ And Fixes / minor extensions:
   
 * Automatic one-loop muon decay calculation.  Use to get MW as prediction.
 
+* make getters and setters safer? (currently incorrect acces returns
+                                  eigen error at run time)
+
+* provide better scanning routines?
+
 * Any more?
 
   
