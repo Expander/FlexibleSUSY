@@ -1036,13 +1036,15 @@ int main() {
 
 #_____________________________________________________________________
 check_boost_test_libs() {
-    check_library "libboost_unit_test_framework" "$boost_lib_dir" \
-	"$default_lib_paths"
+    check_library \
+	"libboost_unit_test_framework libboost_unit_test_framework-mt" \
+	"$boost_lib_dir" "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Warning: libboost_unit_test_framework must be installed"
+        message "Warning: libboost_unit_test_framework(-mt) must be installed"
         message "  to compile and run the tests, see http://www.boost.org"
     else
-        local BOOSTTESTLIBS_=-lboost_unit_test_framework
+        local BOOSTTESTLIBS_=-l$(
+	    echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
         if [ -z "$boost_lib_dir" ]; then
             # assume that the linker will look in the default paths
             BOOSTTESTLIBS="$BOOSTTESTLIBS_"
