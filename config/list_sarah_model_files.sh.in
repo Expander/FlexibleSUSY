@@ -19,6 +19,15 @@ if test $# -ne 1; then
     exit 1
 fi
 
+OPERATING_SYSTEM="@OPERATING_SYSTEM@"
+
+convert_dos_paths() {
+    case "$OPERATING_SYSTEM" in
+    CYGWIN_NT*) xargs -d \  cygpath ;;
+    *)          cat ;;
+    esac
+}
+
 # directory of this script
 BASEDIR=$(dirname $0)
 
@@ -26,7 +35,7 @@ FLEXIBLESUSY_SARAH_DIR="${BASEDIR}/../sarah"
 
 model="$1"
 
-cat <<EOF | @MATH@ 2> /dev/stdout 1> /dev/null
+cat <<EOF | ("@MATH@" 2> /dev/stdout 1> /dev/null) | convert_dos_paths
 FindModelFiles[dir_String, modelName_String, submodeldir_] :=
     Module[{files, modelFile, modelDir},
            If[submodeldir =!= False,

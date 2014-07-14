@@ -204,7 +204,7 @@ $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$(MATH) -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
+		@"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
 		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
