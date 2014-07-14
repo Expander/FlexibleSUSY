@@ -39,11 +39,11 @@ cat <<EOF | ("@MATH@" 2> /dev/stdout 1> /dev/null) | convert_dos_paths
 FindModelFiles[dir_String, modelName_String, submodeldir_] :=
     Module[{files, modelFile, modelDir},
            If[submodeldir =!= False,
-              modelDir  = ToFileName[ToFileName[{dir, modelName}], submodeldir];
-              modelFile = ToFileName[{modelDir}, modelName <> "-" <> submodeldir <> ".m"];
+              modelDir  = FileNameJoin[{dir, modelName, submodeldir}];
+              modelFile = FileNameJoin[{modelDir, modelName <> "-" <> submodeldir <> ".m"}];
               ,
-              modelDir  = ToFileName[{dir, modelName}];
-              modelFile = ToFileName[{modelDir}, modelName <> ".m"];
+              modelDir  = FileNameJoin[{dir, modelName}];
+              modelFile = FileNameJoin[{modelDir, modelName <> ".m"}];
              ];
            files = Join[{modelFile},
                         FileNameJoin[{modelDir, #}]& /@ {"parameters.m", "particles.m"}
