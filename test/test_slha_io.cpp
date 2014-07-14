@@ -7,6 +7,7 @@
 #include "slha_io.hpp"
 #include "stopwatch.hpp"
 #include <Eigen/Core>
+#include <boost/lexical_cast.hpp>
 
 using namespace flexiblesusy;
 
@@ -103,7 +104,7 @@ SLHA_io create_block(int number_of_entries)
    std::string str = "Block TestBlock\n";
 
    for (int i = 0; i < number_of_entries; i++) {
-      const std::string num(std::to_string(i));
+      const std::string num(boost::lexical_cast<std::string>(i));
       str += "   " + num + "  " + num + "\n";
    }
 
