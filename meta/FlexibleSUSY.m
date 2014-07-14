@@ -328,11 +328,14 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                               makefileModuleTemplates];
          ];
 
+DefaultValueOf[FlexibleSUSY`Sign[_]] := 1;
+DefaultValueOf[_] := 0;
+
 WriteInputParameterClass[inputParameters_List, freePhases_List,
                          lesHouchesInputParameters_List,
                          files_List] :=
    Module[{defineInputParameters, defaultInputParametersInit},
-          defaultValues = {#, 0}& /@ inputParameters;
+          defaultValues = {#, DefaultValueOf[#]}& /@ inputParameters;
           defineInputParameters = Constraint`DefineInputParameters[Join[inputParameters,freePhases,lesHouchesInputParameters]];
           defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,freePhases,lesHouchesInputParameters]];
           WriteOut`ReplaceInFiles[files,
