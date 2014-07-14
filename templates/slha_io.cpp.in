@@ -82,6 +82,18 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    slha_io.set_block(spinfo, SLHA_io::front);
 }
 
+void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
+                                   bool calculate_sm_pole_masses)
+{
+@writeSLHAMassBlock@
+}
+
+void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@_physical& physical,
+                                              bool calculate_sm_pole_masses)
+{
+@writeSLHAMixingMatricesBlocks@
+}
+
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
 {
    slha_io.write_to_file(file_name);
@@ -173,6 +185,10 @@ double @ModelName@_slha_io::read_scale() const
    }
 
    return scale;
+}
+
+void @ModelName@_slha_io::convert_to_slha_convention(@ModelName@_physical& physical)
+{
 }
 
 } // namespace flexiblesusy

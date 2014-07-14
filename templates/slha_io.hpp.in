@@ -23,6 +23,7 @@
 
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_info.hpp"
+#include "@ModelName@_physical.hpp"
 #include "slha_io.hpp"
 
 #include <Eigen/Core>
@@ -30,6 +31,7 @@
 #include <utility>
 
 #define PHYSICAL(p) model.get_physical().p
+#define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
 #define DEFINE_PARAMETER(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
@@ -72,8 +74,9 @@ private:
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
-   template <class T> void set_mass(const @ModelName@<T>&);
-   template <class T> void set_mixing_matrices(const @ModelName@<T>&);
+   static void convert_to_slha_convention(@ModelName@_physical&);
+   void set_mass(const @ModelName@_physical&, bool);
+   void set_mixing_matrices(const @ModelName@_physical&, bool);
    template <class T> void set_model_parameters(const @ModelName@<T>&);
    double read_scale() const;
    template <class T> void fill_drbar_parameters(@ModelName@<T>&) const;
@@ -112,18 +115,6 @@ void @ModelName@_slha_io::fill_physical(@ModelName@<T>& model) const
 }
 
 template <class T>
-void @ModelName@_slha_io::set_mass(const @ModelName@<T>& model)
-{
-@writeSLHAMassBlock@
-}
-
-template <class T>
-void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@<T>& model)
-{
-@writeSLHAMixingMatricesBlocks@
-}
-
-template <class T>
 void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
 {
 @writeSLHAModelParametersBlocks@
@@ -132,9 +123,12 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
 template <class T>
 void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
 {
+   @ModelName@_physical physical(model.get_physical());
+   convert_to_slha_convention(physical);
+
    set_model_parameters(model);
-   set_mass(model);
-   set_mixing_matrices(model);
+   set_mass(physical, model.do_calculate_sm_pole_masses());
+   set_mixing_matrices(physical, model.do_calculate_sm_pole_masses());
 }
 
 } // namespace flexiblesusy
