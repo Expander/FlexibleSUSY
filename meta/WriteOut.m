@@ -427,7 +427,7 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
                   eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
                   mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
                   result = result <>
-                           "SLHA_io::convert_symmetric(LOCALPHYSICAL(" <>
+                           "SLHA_io::convert_symmetric_fermion_mixings_to_slha(LOCALPHYSICAL(" <>
                            eigenstateNameStr <> "), LOCALPHYSICAL(" <>
                            mixingMatrixSymStr <> "));\n";
                  ];

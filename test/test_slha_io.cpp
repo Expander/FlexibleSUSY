@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_convention )
                 Z.row(0).imag().cwiseAbs().maxCoeff() == 0.));
 
    // convert to SLHA convention
-   SLHA_io::convert_symmetric(eigenvalues, Z);
+   SLHA_io::convert_symmetric_fermion_mixings_to_slha(eigenvalues, Z);
 
    BOOST_CHECK(eigenvalues(0) < 0. || eigenvalues(1) < 0.);
    BOOST_CHECK_EQUAL(Z.imag().cwiseAbs().maxCoeff(), 0.);
