@@ -10,13 +10,19 @@ FLEXIBLESUSY_TAG   := v$(FLEXIBLESUSY_VERSION)
 ABSBASEDIR         := @ABSBASEDIR@
 INSTALL_DIR        := @INSTALL_DIR@
 
-# Switches
+# Makefile switches
 ENABLE_COMPILE     := @ENABLE_COMPILE@
 ENABLE_FFLITE      := @ENABLE_FFLITE@
 ENABLE_LOOPTOOLS   := @ENABLE_LOOPTOOLS@
 ENABLE_META        := @ENABLE_META@
 ENABLE_STATIC_LIBS := @ENABLE_STATIC_LIBS@
 ENABLE_THREADS     := @ENABLE_THREADS@
+
+# C/C++ preprocessor defines
+ENABLE_COLOR_PRINTOUT := @ENABLE_COLOR_PRINTOUT@
+ENABLE_DEBUG          := @ENABLE_DEBUG@
+ENABLE_SILENT         := @ENABLE_SILENT@
+ENABLE_VERBOSE        := @ENABLE_VERBOSE@
 
 # Makefile modules
 MODELS             := @MODELS@
@@ -217,12 +223,16 @@ showbuild:
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
+	@echo "ENABLE_COLOR_PRINTOUT = $(ENABLE_COLOR_PRINTOUT)"
 	@echo "ENABLE_COMPILE     = $(ENABLE_COMPILE)"
+	@echo "ENABLE_DEBUG       = $(ENABLE_DEBUG)"
 	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
+	@echo "ENABLE_SILENT      = $(ENABLE_SILENT)"
 	@echo "ENABLE_STATIC_LIBS = $(ENABLE_STATIC_LIBS)"
 	@echo "ENABLE_THREADS     = $(ENABLE_THREADS)"
+	@echo "ENABLE_VERBOSE     = $(ENABLE_VERBOSE)"
 	@echo ""
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"

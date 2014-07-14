@@ -2130,6 +2130,10 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
     -e "s|@ENABLE_META@|$enable_meta|" \
     -e "s|@ENABLE_THREADS@|$enable_threads|"  \
+    -e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
+    -e "s|@ENABLE_DEBUG@|$enable_debug|"      \
+    -e "s|@ENABLE_SILENT@|$enable_silent|"    \
+    -e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
     -e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
     -e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
     -e "s|@MODELS@|$MODELS|"           \
