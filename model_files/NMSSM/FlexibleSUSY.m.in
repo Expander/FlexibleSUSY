@@ -7,6 +7,7 @@ FSEigenstates = SARAH`EWSB;
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
+           {4, Sign[vS]},
            {5, Azero}
          };
 
