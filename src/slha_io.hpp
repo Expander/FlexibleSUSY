@@ -28,6 +28,7 @@
 #include "logger.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
+#include "numerics.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -161,6 +162,14 @@ public:
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
 
+   template<int N>
+   static void convert_symmetric(Eigen::Array<double, N, 1>&,
+                                 Eigen::Matrix<double, N, N>&);
+
+   template<int N>
+   static void convert_symmetric(Eigen::Array<double, N, 1>&,
+                                 Eigen::Matrix<std::complex<double>, N, N>&);
+
 private:
    SLHAea::Coll data;          ///< SHLA data
    Extpar extpar;              ///< data from block EXTPAR
@@ -269,6 +278,35 @@ void SLHA_io::set_block(const std::string& name,
       }
 
    set_block(ss);
+}
+
+template<int N>
+void SLHA_io::convert_symmetric(Eigen::Array<double, N, 1>& m,
+                                Eigen::Matrix<double, N, N>& z)
+{
+}
+
+/**
+ * Converts the given vector of masses and the corresponding (complex)
+ * mixing matrix to SLHA convention: Matrix rows with non-zero
+ * imaginary parts are multiplied by i and the corresponding mass
+ * eigenvalue is multiplied by -1.  As a result the mixing matrix will
+ * be real and the mass eigenvalues might be negative.
+ *
+ * @param m vector of masses
+ * @param z mixing matrix
+ */
+template<int N>
+void SLHA_io::convert_symmetric(Eigen::Array<double, N, 1>& m,
+                                Eigen::Matrix<std::complex<double>, N, N>& z)
+{
+   for (int i = 0; i < N; i++) {
+      // check if i'th row contains non-zero imaginary parts
+      if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+         z.row(i) *= std::complex<double>(0.0,1.0);
+         m(i) *= -1;
+      }
+   }
 }
 
 } // namespace flexiblesusy

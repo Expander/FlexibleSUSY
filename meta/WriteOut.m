@@ -11,6 +11,7 @@ WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
+ConvertMixingsToSLHAConvention::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
@@ -412,6 +413,27 @@ GetDRbarBlockNames[] :=
           ];
 
 GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
+
+ConvertMixingsToSLHAConvention[massMatrices_List] :=
+    Module[{result = "", i,
+            eigenstateName, massMatrix, mixingMatrixSym,
+            eigenstateNameStr, mixingMatrixSymStr},
+           For[i = 1, i <= Length[massMatrices], i++,
+               eigenstateName = TreeMasses`GetMassEigenstate[massMatrices[[i]]];
+               massMatrix = TreeMasses`GetMassMatrix[massMatrices[[i]]];
+               mixingMatrixSym = TreeMasses`GetMixingMatrixSymbol[massMatrices[[i]]];
+               If[TreeMasses`IsFermion[eigenstateName] &&
+                  TreeMasses`IsSymmetric[massMatrix],
+                  eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
+                  mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
+                  result = result <>
+                           "SLHA_io::convert_symmetric(LOCALPHYSICAL(" <>
+                           eigenstateNameStr <> "), LOCALPHYSICAL(" <>
+                           mixingMatrixSymStr <> "));\n";
+                 ];
+              ];
+           Return[result];
+          ];
 
 End[];
 

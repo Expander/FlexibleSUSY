@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "slha_io.hpp"
+#include "linalg2.hpp"
 #include "stopwatch.hpp"
 #include <Eigen/Core>
 
@@ -174,4 +175,49 @@ BOOST_AUTO_TEST_CASE( test_processor_vs_loop )
    BOOST_MESSAGE("time using the for loop: " << loop_time << " s");
 
    BOOST_CHECK_LT(1000. * processor_time, loop_time);
+}
+
+BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_convention )
+{
+   Eigen::Matrix<double, 2, 2> mass_matrix;
+   Eigen::Matrix<std::complex<double>, 2, 2> Z;
+   Eigen::Array<double, 2, 1> eigenvalues;
+
+   mass_matrix(0,0) = 0;
+   mass_matrix(0,1) = 1;
+   mass_matrix(1,0) = 1;
+   mass_matrix(1,1) = 0;
+
+   // diagonalize with SARAH convention
+   fs_diagonalize_symmetric(mass_matrix, eigenvalues, Z);
+
+   BOOST_CHECK_GT(eigenvalues(0), 0.);
+   BOOST_CHECK_GT(eigenvalues(1), 0.);
+
+   BOOST_CHECK_GT(Z.imag().cwiseAbs().maxCoeff(), 0.);
+
+   BOOST_CHECK((Z.row(0).imag().cwiseAbs().maxCoeff() > 0. &&
+                Z.row(1).imag().cwiseAbs().maxCoeff() == 0.) ||
+               (Z.row(1).imag().cwiseAbs().maxCoeff() > 0. &&
+                Z.row(0).imag().cwiseAbs().maxCoeff() == 0.));
+
+   // convert to SLHA convention
+   SLHA_io::convert_symmetric(eigenvalues, Z);
+
+   BOOST_CHECK(eigenvalues(0) < 0. || eigenvalues(1) < 0.);
+   BOOST_CHECK_EQUAL(Z.imag().cwiseAbs().maxCoeff(), 0.);
+
+   // reconstruct mass matrix
+   Eigen::Matrix<std::complex<double>, 2, 2> reconstructed_mass_matrix;
+   reconstructed_mass_matrix = Z.transpose() * eigenvalues.matrix().asDiagonal() * Z;
+
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(0,0)), mass_matrix(0,0), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(0,1)), mass_matrix(0,1), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(1,0)), mass_matrix(1,0), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(1,1)), mass_matrix(1,1), 1.0e-15);
+
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(0,0)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(0,1)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,0)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,1)), 0.);
 }

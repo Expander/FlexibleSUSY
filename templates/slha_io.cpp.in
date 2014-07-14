@@ -189,6 +189,7 @@ double @ModelName@_slha_io::read_scale() const
 
 void @ModelName@_slha_io::convert_to_slha_convention(@ModelName@_physical& physical)
 {
+@convertMixingsToSLHAConvention@
 }
 
 } // namespace flexiblesusy
