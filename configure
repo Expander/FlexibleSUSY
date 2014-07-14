@@ -1036,13 +1036,15 @@ int main() {
 
 #_____________________________________________________________________
 check_boost_test_libs() {
-    check_library "libboost_unit_test_framework" "$boost_lib_dir" \
-	"$default_lib_paths"
+    check_library \
+	"libboost_unit_test_framework libboost_unit_test_framework-mt" \
+	"$boost_lib_dir" "$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Warning: libboost_unit_test_framework must be installed"
+        message "Warning: libboost_unit_test_framework(-mt) must be installed"
         message "  to compile and run the tests, see http://www.boost.org"
     else
-        local BOOSTTESTLIBS_=-lboost_unit_test_framework
+        local BOOSTTESTLIBS_=-l$(
+	    echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
         if [ -z "$boost_lib_dir" ]; then
             # assume that the linker will look in the default paths
             BOOSTTESTLIBS="$BOOSTTESTLIBS_"
@@ -1378,6 +1380,16 @@ check_cxxflags() {
                 fi ;;
         esac
     fi
+
+    case "$operating_system" in
+    CYGWIN_NT*)
+	! printf "%s" "${CXXFLAGS}" |
+	grep -e '-U[[:space:]]*__STRICT_ANSI__' > /dev/null 2>&1 && {
+            message "Appending -U__STRICT_ANSI__ to CXXFLAGS to enable math macros"
+	    message "   possibly disabled on Cygwin."
+            CXXFLAGS="${CXXFLAGS} -U__STRICT_ANSI__"
+	} ;;
+    esac
 }
 
 #_____________________________________________________________________
@@ -1658,6 +1670,7 @@ check_math_cmd() {
         case "$operating_system" in
             Linux)  message "   It is usually installed in /usr/local/Wolfram/Mathematica/" ;;
             Darwin) message "   It is usually installed in /Applications/Mathematica.app/"  ;;
+            CYGWIN_NT*) message "   It is usually installed in /cygdrive/c/Program Files/Wolfram Research/Mathematica/" ;;
         esac
         exit 1
     else
@@ -1679,7 +1692,7 @@ Quit[error];
 EOF
 
     checking_msg "Mathematica version >= ${required_mathematica_version}"
-    if $MATH -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
+    if "$MATH" -run "Get[\"${_math_version_check_progr}\"]" > /dev/null 2>&1;
     then
         if test -r "${mathconfig}" ; then
             MATH_VERSION=`cat ${mathconfig}`
@@ -1716,7 +1729,7 @@ check_random_number_generator() {
 check_sarah() {
     checking_msg "SARAH installation"
     rm -f ${sarahconfig}
-    $MATH <<EOF > /dev/null
+    "$MATH" <<EOF > /dev/null
 Needs["SARAH\`"];
 If[!ValueQ[SA\`Version], Quit[1]];
 Export["${sarahconfig}", SA\`Version, "String"];
@@ -1754,6 +1767,19 @@ EOF
         message "Error: SARAH is not installed correctly."
         message "   Please make sure Needs[\"SARAH\`\"] works correctly."
         exit 1
+    fi
+}
+
+#_____________________________________________________________________
+check_cygpath() {
+    checking_msg "cygpath.exe"
+    exists_in_path "cygpath.exe"
+    if [ -z "$cmd" ]; then
+        message "Error: cygpath.exe must be installed to locate the SARAH model files."
+        message "   Please recheck the Cygwin installation since it is a part of the"
+	message "   core cygwin package."
+    else
+	result "found $cmd"
     fi
 }
 
@@ -2062,6 +2088,9 @@ if test "x${enable_meta}" = "xyes"; then
     check_math_cmd
     check_mathematica_version
     check_sarah
+    case "$operating_system" in
+	CYGWIN_NT*) check_cygpath ;;
+    esac
 fi
 
 check_models
@@ -2291,6 +2320,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     < $DOC_MAINPAGE_TMPL > $DOC_MAINPAGE
 
 sed -e "s|@MATH@|$MATH|" \
+    -e "s|@OPERATING_SYSTEM@|$operating_system|" \
     < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
 
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version

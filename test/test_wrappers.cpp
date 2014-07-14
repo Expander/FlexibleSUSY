@@ -27,6 +27,14 @@
 #include "stopwatch.hpp"
 #include <boost/lexical_cast.hpp>
 
+#ifdef __CYGWIN__
+// std::to_string is missing on Cygwin
+// see http://stackoverflow.com/questions/22571838/gcc-4-8-1-stdto-string-error
+#   undef  ENABLE_STD_TO_STRING
+#else
+#   define ENABLE_STD_TO_STRING 1
+#endif
+
 using namespace flexiblesusy;
 using namespace softsusy;
 
@@ -144,11 +152,13 @@ std::string ToString_sstream(T a)
    return ostr.str();
 }
 
+#ifdef ENABLE_STD_TO_STRING
 template <typename T>
 std::string ToString_to_string(T a)
 {
    return std::to_string(a);
 }
+#endif
 
 template <typename T>
 std::string ToString_sprintf(T a)
@@ -184,7 +194,9 @@ BOOST_AUTO_TEST_CASE(test_ToString)
    const int number_of_iterations = 1000000;
 
    MEASURE(sstream     , number, number_of_iterations);
+#ifdef ENABLE_STD_TO_STRING
    MEASURE(to_string   , number, number_of_iterations);
+#endif
    MEASURE(sprintf     , number, number_of_iterations);
    MEASURE(lexical_cast, number, number_of_iterations);
 }

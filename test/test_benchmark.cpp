@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <boost/lexical_cast.hpp>
 
 #include "test.h"
 #include "slhaea.h"
@@ -64,7 +65,7 @@ SLHAea::Coll create_point(double tanBeta)
       "Block MINPAR\n"
       "   1   1.250000000e+02   # m0\n"
       "   2   5.000000000e+02   # m12\n"
-      "   3   " + std::to_string(tanBeta) + "   # TanBeta\n"
+      "   3   " + boost::lexical_cast<std::string>(tanBeta) + "   # TanBeta\n"
       "   4   1.000000000e+00   # sign(Mu)\n"
       "   5   0.000000000e+00   # A0\n");
 

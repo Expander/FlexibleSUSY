@@ -60,7 +60,7 @@ RunCPPProgram[{preface_String, expr_String}, fileName_String:"tmp.cpp"] :=
               Print["Error: could not compile the following: ", code];
               Return[{"", code}];
              ];
-           Run["./a.out > a.out.log"];
+           Run[FileNameJoin[{".","a.out"}], " > a.out.log"];
            If[errorCode != 0, Return[{"", code}]];
            If[MemberQ[FileNames[], "a.out.log"],
               output = Import["a.out.log"];,
