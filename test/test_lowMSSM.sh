@@ -44,6 +44,8 @@ fi
 echo -n "running CMSSM point ... "
 $mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
 echo "done"
+echo "CMSSM SLHA input file:  $mssm_input"
+echo "CMSSM SLHA output file: $mssm_output"
 
 if test ! -r "$mssm_output"; then
     echo "Error: generated MSSM spectrum not found: $mssm_output"
@@ -70,6 +72,8 @@ $sed_cmd \
 echo -n "running lowMSSM point ... "
 $lowmssm_exe --slha-input-file=$lowmssm_input --slha-output-file=$lowmssm_output
 echo "done"
+echo "lowMSSM SLHA input file:  $lowmssm_input"
+echo "lowMSSM SLHA output file: $lowmssm_output"
 
 # remove comments from lowMSSM output spectrum
 cp $lowmssm_output $lowmssm_output~
