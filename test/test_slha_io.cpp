@@ -284,7 +284,6 @@ void convert_symmetric_fermion_mixings_to_slha_rediagonalization(
 
 BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_conversion_speed )
 {
-   const int number = 123456;
    const int number_of_iterations = 10000000;
 
    MEASURE(forloop          , number_of_iterations);
