@@ -237,8 +237,9 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    set_block(ss);
 }
 
-void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
+void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
 {
+   softsusy::QedQcd qedqcd(qedqcd_);
    std::ostringstream ss;
 
    const double alphaEmInv = 1./qedqcd.displayAlpha(ALPHA);
@@ -256,10 +257,18 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
    ss << FORMAT_ELEMENT(12, 0                            , "mnu1(pole)");
    ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
    ss << FORMAT_ELEMENT(14, 0                            , "mnu2(pole)");
+
+   // recalculate mc(mc)^MS-bar
+   double mc = qedqcd.displayMass(mCharm);
+   qedqcd.runto(mc);
+   mc = qedqcd.displayMass(mCharm);
+
+   // recalculate mu(2 GeV)^MS-bar, md(2 GeV)^MS-bar, ms^MS-bar(2 GeV)
+   qedqcd.runto(2.0);
    ss << FORMAT_ELEMENT(21, qedqcd.displayMass(mDown)    , "md");
    ss << FORMAT_ELEMENT(22, qedqcd.displayMass(mUp)      , "mu");
    ss << FORMAT_ELEMENT(23, qedqcd.displayMass(mStrange) , "ms");
-   ss << FORMAT_ELEMENT(24, qedqcd.displayMass(mCharm)   , "mc");
+   ss << FORMAT_ELEMENT(24, mc                           , "mc");
 
    set_block(ss);
 }
