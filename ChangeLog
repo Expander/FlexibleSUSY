@@ -6,6 +6,9 @@ FlexibleSUSY-1.0.2 [not released yet]
  * Bugfix (commit d0e9cdb): Correctly set low-energy data (read from
    the SLHA input file) in the low-energy constraint.
 
+ * Bugfix (commit 6414e46): Convert fermion masses and mixing matrices
+   to SLHA convention in the SLHA output.
+
  * Install specimen SLHA input files in the model directory when one
    runs the createmodel script.
 
