@@ -11,7 +11,7 @@ mssm_input="$BASEDIR/../model_files/MSSM/LesHouches.in.MSSM"
 mssm_output="$BASEDIR/MSSM.out.spc"
 lowmssm_input="$BASEDIR/lowMSSM.in.spc"
 lowmssm_output="$BASEDIR/lowMSSM.out.spc"
-rel_error="3.9e-4"
+rel_error="1.7e-2"
 
 sed_cmd=`command -v sed`
 awk_cmd=`command -v awk`
