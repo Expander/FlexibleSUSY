@@ -106,8 +106,8 @@ DEFINITION[EWSB][MatterSector] = {
     {{SSRInert},{SS0Inert,ZSSInert}},
     {{SHPrime0,conj[SHBarPrime0]},{SH0Prime,UH0Prime}},
     {{SHPrimem,conj[SHBarPrimep]},{SHpPrime,UHpPrime}},
-    {{FHPrime0,FHBarPrime0},{L0Prime,ZNPrime}}
-    (* singlet particles should not mix *)
+    {{FHPrime0,FHBarPrime0},{L0Prime,ZNPrime}},
+    {{FSRInert},{LS0I,ZFSI}}
 };
 
 DEFINITION[EWSB][Phases] = {
@@ -161,7 +161,7 @@ DEFINITION[EWSB][DiracSpinors] = {
     FX -> {FXL, conj[FXR]},
     ChiInert -> {L0Inert, conj[L0Inert]},
     ChaInert -> {LmInert, conj[LpInert]},
-    FSInert -> {FSRInert, conj[FSRInert]},
+    FSInert -> {LS0I, conj[LS0I]},
     ChiPrime -> {L0Prime, conj[L0Prime]},
     ChaPrime -> {FHPrimem, conj[FHBarPrimep]}
 };
