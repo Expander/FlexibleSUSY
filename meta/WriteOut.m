@@ -1,5 +1,6 @@
 
-BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
+BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
+                           "Parameters`", "TreeMasses`", "LatticeUtils`"}];
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
@@ -416,14 +417,12 @@ GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
 
 ConvertMixingsToSLHAConvention[massMatrices_List] :=
     Module[{result = "", i,
-            eigenstateName, massMatrix, mixingMatrixSym,
+            eigenstateName, mixingMatrixSym,
             eigenstateNameStr, mixingMatrixSymStr},
            For[i = 1, i <= Length[massMatrices], i++,
                eigenstateName = TreeMasses`GetMassEigenstate[massMatrices[[i]]];
-               massMatrix = TreeMasses`GetMassMatrix[massMatrices[[i]]];
                mixingMatrixSym = TreeMasses`GetMixingMatrixSymbol[massMatrices[[i]]];
-               If[TreeMasses`IsFermion[eigenstateName] &&
-                  TreeMasses`IsSymmetric[massMatrix],
+               If[LatticeUtils`MajoranaMassMatrixQ[massMatrices[[i]]],
                   eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
                   mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
                   result = result <>
