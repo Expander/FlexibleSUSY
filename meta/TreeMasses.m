@@ -77,6 +77,8 @@ UnrotatedParticles.m)";
 GetMassEigenstate::usage="get mass eigenstates symbol from mass
 matrix";
 
+GetMassMatrix::usage="get mass matrix from FSMassMatrix object";
+
 GetMixingMatrixSymbol::usage="get mixing matrix symbol from mass
 matrix";
 
@@ -109,6 +111,8 @@ IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
 ContainsGoldstone::usage="";
+
+IsSymmetric::usage="Checks matrix for being symmetric";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";

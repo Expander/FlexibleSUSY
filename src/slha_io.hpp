@@ -25,9 +25,11 @@
 #include <boost/format.hpp>
 #include <boost/function.hpp>
 #include "slhaea.h"
+#include "config.h"
 #include "logger.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
+#include "numerics.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -161,6 +163,14 @@ public:
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
 
+   template<int N>
+   static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
+                                                         Eigen::Matrix<double, N, N>&);
+
+   template<int N>
+   static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
+                                                         Eigen::Matrix<std::complex<double>, N, N>&);
+
 private:
    SLHAea::Coll data;          ///< SHLA data
    Extpar extpar;              ///< data from block EXTPAR
@@ -269,6 +279,46 @@ void SLHA_io::set_block(const std::string& name,
       }
 
    set_block(ss);
+}
+
+template<int N>
+void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>& m,
+                                                        Eigen::Matrix<double, N, N>& z)
+{
+}
+
+/**
+ * Converts the given vector of masses and the corresponding (complex)
+ * mixing matrix to SLHA convention: Matrix rows with non-zero
+ * imaginary parts are multiplied by i and the corresponding mass
+ * eigenvalue is multiplied by -1.  As a result the mixing matrix will
+ * be real and the mass eigenvalues might be positive or negative.  It
+ * is assumed that these mixings result from diagonalizing a symmetric
+ * fermion mass matrix in the convention of Haber and Kane,
+ * Phys. Rept. 117 (1985) 75-263.  This conversion makes sense only if
+ * the original symmetric mass matrix is real-valued.
+ *
+ * @param m vector of masses
+ * @param z mixing matrix
+ */
+template<int N>
+void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>& m,
+                                                        Eigen::Matrix<std::complex<double>, N, N>& z)
+{
+   for (int i = 0; i < N; i++) {
+      // check if i'th row contains non-zero imaginary parts
+      if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+         z.row(i) *= std::complex<double>(0.0,1.0);
+         m(i) *= -1;
+#ifdef ENABLE_DEBUG
+         if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+            WARNING("Row " << i << " of the following fermion mixing matrix"
+                    " contains entries which have non-zero real and imaginary"
+                    " parts:\nZ = " << z);
+         }
+#endif
+      }
+   }
 }
 
 } // namespace flexiblesusy
