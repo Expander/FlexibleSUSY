@@ -17,6 +17,8 @@ FlexibleSUSY-1.0.2 [not released yet]
 
  * Support Cygwin on MS Windows
 
+ * New model file for the TMSSM (triplet Higgs model)
+
 FlexibleSUSY-1.0.1 [June, 11 2014]
 
  * Bugfix (commit 4dc897e): consts.hpp is not distributed but appears
