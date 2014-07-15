@@ -295,7 +295,8 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 
  * be real and the mass eigenvalues might be positive or negative.  It
  * is assumed that these mixings result from diagonalizing a symmetric
  * fermion mass matrix in the convention of Haber and Kane,
- * Phys. Rept. 117 (1985) 75-263.
+ * Phys. Rept. 117 (1985) 75-263.  This conversion makes sense only if
+ * the original symmetric mass matrix is real-valued.
  *
  * @param m vector of masses
  * @param z mixing matrix
