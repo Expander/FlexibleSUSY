@@ -265,13 +265,13 @@ void convert_symmetric_fermion_mixings_to_slha_rediagonalization(
    do {                                                            \
       Stopwatch stopwatch;                                         \
       double time = 0.;                                            \
-      Eigen::Matrix<double, 2, 2> mass_matrix;                     \
-      Eigen::Matrix<std::complex<double>, 2, 2> z;                 \
-      Eigen::Array<double, 2, 1> m;                                \
-      mass_matrix(0,0) = 0;                                        \
-      mass_matrix(0,1) = 1;                                        \
-      mass_matrix(1,0) = 1;                                        \
-      mass_matrix(1,1) = 0;                                        \
+      Eigen::Matrix<double, 4, 4> mass_matrix;                     \
+      Eigen::Matrix<std::complex<double>, 4, 4> z;                 \
+      Eigen::Array<double, 4, 1> m;                                \
+      mass_matrix << 0, 1, 0, 1,                                   \
+                     1, 0, 0, 0,                                   \
+                     0, 0, 1, 0,                                   \
+                     1, 0, 0, 0;                                   \
       fs_diagonalize_symmetric(mass_matrix, m, z);                 \
       for (int i = 0; i < iterations; i++) {                       \
          stopwatch.start();                                        \
