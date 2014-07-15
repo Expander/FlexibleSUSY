@@ -1,4 +1,4 @@
-FlexibleSUSY-1.0.2 [not released yet]
+FlexibleSUSY-1.0.2 [July, 15 2014]
 
  * Bugfix (commit 689141da): Enable non-quadratic superpotential
    coupling matrices.
