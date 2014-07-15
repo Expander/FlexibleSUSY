@@ -221,3 +221,72 @@ BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_convention )
    BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,0)), 0.);
    BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,1)), 0.);
 }
+
+template<int N>
+void convert_symmetric_fermion_mixings_to_slha_forloop(
+   Eigen::Array<double, N, 1>& m,
+   Eigen::Matrix<std::complex<double>, N, N>& z)
+{
+   for (int i = 0; i < N; i++) {
+      // check if i'th row contains non-zero imaginary parts
+      if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+         z.row(i) *= std::complex<double>(0.0,1.0);
+         m(i) *= -1;
+#ifdef ENABLE_DEBUG
+         if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+            WARNING("Row " << i << " of the following fermion mixing matrix"
+                    " contains entries which have non-zero real and imaginary"
+                    " parts:\nZ = " << z);
+         }
+#endif
+      }
+   }
+}
+
+template<int N>
+void convert_symmetric_fermion_mixings_to_slha_rediagonalization(
+   Eigen::Array<double, N, 1>& m,
+   Eigen::Matrix<std::complex<double>, N, N>& z)
+{
+   Eigen::Matrix<std::complex<double>, N, N> y =
+      z.transpose() * m.matrix().asDiagonal() * z;
+#ifdef ENABLE_DEBUG
+   if (!is_zero(y.imag().cwiseAbs().maxCoeff())) {
+      WARNING("The following symmetric fermion mass matrix contains entries"
+          " with non-zero imaginary parts:\nY = " << y);
+   }
+#endif
+   Eigen::Matrix<double, N, N> real_z;
+   fs_diagonalize_hermitian(y.real().eval(), m, real_z);
+   z = real_z.template cast<std::complex<double> >();
+}
+
+#define MEASURE(type,iterations)                                   \
+   do {                                                            \
+      Stopwatch stopwatch;                                         \
+      double time = 0.;                                            \
+      Eigen::Matrix<double, 2, 2> mass_matrix;                     \
+      Eigen::Matrix<std::complex<double>, 2, 2> z;                 \
+      Eigen::Array<double, 2, 1> m;                                \
+      mass_matrix(0,0) = 0;                                        \
+      mass_matrix(0,1) = 1;                                        \
+      mass_matrix(1,0) = 1;                                        \
+      mass_matrix(1,1) = 0;                                        \
+      fs_diagonalize_symmetric(mass_matrix, m, z);                 \
+      for (int i = 0; i < iterations; i++) {                       \
+         stopwatch.start();                                        \
+         convert_symmetric_fermion_mixings_to_slha_##type(m,z);    \
+         stopwatch.stop();                                         \
+         time += stopwatch.get_time_in_seconds();                  \
+      }                                                            \
+      BOOST_MESSAGE("conversion via " #type ": " << time << " s"); \
+   } while (0)
+
+BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_conversion_speed )
+{
+   const int number = 123456;
+   const int number_of_iterations = 10000000;
+
+   MEASURE(forloop          , number_of_iterations);
+   MEASURE(rediagonalization, number_of_iterations);
+}
