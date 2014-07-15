@@ -29,6 +29,7 @@ SingleCase::usage;
 Done::usage;
 DoneLn::usage;
 MajoranaQ::usage;
+MajoranaMassMatrixQ::usage;
 
 Begin["`Private`"]
 
