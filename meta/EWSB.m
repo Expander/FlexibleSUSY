@@ -1,5 +1,5 @@
 
-BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
+BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`"}];
 
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
 phases / signs."
@@ -22,6 +22,9 @@ to C form";
 SolveTreeLevelEwsbVia::usage="Solves tree-level EWSB equations for the
 given list of parameters.  Retuns an empty string if no unique
 solution can be found";
+
+CreateEWSBRootFinders::usage="Creates comma separated list of GSL root
+finders";
 
 Begin["`Private`"];
 
@@ -410,6 +413,27 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
               ];
            Return[result];
           ];
+
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
+    "gsl_multiroot_fsolver_hybrid";
+
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybridS] :=
+    "gsl_multiroot_fsolver_hybrids";
+
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLBroyden] :=
+    "gsl_multiroot_fsolver_broyden";
+
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLNewton] :=
+    "gsl_multiroot_fsolver_dnewton";
+
+CreateEWSBRootFinders[{}] :=
+    Block[{},
+          Print["Error: List of EWSB root finders must not be empty!"];
+          Quit[1];
+         ];
+
+CreateEWSBRootFinders[rootFinders_List] :=
+    WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ", "];
 
 End[];
 

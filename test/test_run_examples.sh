@@ -5,9 +5,18 @@ BASEDIR=$(dirname $0)
 
 examples_dir=$(readlink -f "${BASEDIR}/../examples")
 
-tower_dirs="tower"
+FSCONFIG="$BASEDIR/../flexiblesusy-config"
 
-for dir in ${tower_dirs}
+program_dirs=""
+
+[ $("$FSCONFIG" --with-MSSM) = yes ] &&
+    program_dirs="$program_dirs customized-betas"
+[ $("$FSCONFIG" --with-MSSM) = yes -a $("$FSCONFIG" --with-MSSMRHN) = yes ] &&
+    program_dirs="$program_dirs tower"
+
+exit_code=0
+
+for dir in ${program_dirs}
 do
     echo "> cleaning: rm -rf ${BASEDIR}/${dir}"
     rm -rf ${BASEDIR}/${dir}

@@ -24,6 +24,16 @@
 #include <boost/test/unit_test.hpp>
 #include "wrappers.hpp"
 #include "diagonalization.hpp"
+#include "stopwatch.hpp"
+#include <boost/lexical_cast.hpp>
+
+#ifdef __CYGWIN__
+// std::to_string is missing on Cygwin
+// see http://stackoverflow.com/questions/22571838/gcc-4-8-1-stdto-string-error
+#   undef  ENABLE_STD_TO_STRING
+#else
+#   define ENABLE_STD_TO_STRING 1
+#endif
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -132,4 +142,61 @@ BOOST_AUTO_TEST_CASE(test_Diag)
          else
             BOOST_CHECK_EQUAL(diag(i,k), 0.);
       }
+}
+
+template <typename T>
+std::string ToString_sstream(T a)
+{
+   std::ostringstream ostr;
+   ostr << a;
+   return ostr.str();
+}
+
+#ifdef ENABLE_STD_TO_STRING
+template <typename T>
+std::string ToString_to_string(T a)
+{
+   return std::to_string(a);
+}
+#endif
+
+template <typename T>
+std::string ToString_sprintf(T a)
+{
+   static const unsigned buf_length = 20;
+   char buf[buf_length];
+   snprintf(buf, buf_length, "%i");
+   return std::string(buf);
+}
+
+template <typename T>
+std::string ToString_lexical_cast(T a)
+{
+   return boost::lexical_cast<std::string>(a);
+}
+
+#define MEASURE(type,number,iterations)                            \
+   do {                                                            \
+      Stopwatch stopwatch;                                         \
+      double time = 0.;                                            \
+      for (int i = 0; i < iterations; i++) {                       \
+         stopwatch.start();                                        \
+         ToString_##type(number);                                  \
+         stopwatch.stop();                                         \
+         time += stopwatch.get_time_in_seconds();                  \
+      }                                                            \
+      BOOST_MESSAGE("ToString via " #type ": " << time << " s");   \
+   } while (0)
+
+BOOST_AUTO_TEST_CASE(test_ToString)
+{
+   const int number = 123456;
+   const int number_of_iterations = 1000000;
+
+   MEASURE(sstream     , number, number_of_iterations);
+#ifdef ENABLE_STD_TO_STRING
+   MEASURE(to_string   , number, number_of_iterations);
+#endif
+   MEASURE(sprintf     , number, number_of_iterations);
+   MEASURE(lexical_cast, number, number_of_iterations);
 }

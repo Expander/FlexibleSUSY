@@ -36,6 +36,10 @@ extern const double Isospin[NUMBER_OF_MSSM_SPARTICLES];
 extern const double Hypercharge_left[NUMBER_OF_MSSM_SPARTICLES];
 extern const double Hypercharge_right[NUMBER_OF_MSSM_SPARTICLES];
 
+
+/**
+ * data needed to fill 2 x 2 sfermion mass matrix 
+ */ 
 struct Mass_data {
    double ml2;    ///< soft mass of left-handed sfermion
    double mr2;    ///< soft mass of right-handed sfermion

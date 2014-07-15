@@ -53,7 +53,7 @@ int main(int argc, const char* argv[])
 
    if (slha_input_file.empty()) {
       ERROR("No SLHA input file given!\n"
-            "   Please provid one via the option --slha-input-file=");
+            "   Please provide one via the option --slha-input-file=");
       return EXIT_FAILURE;
    }
 

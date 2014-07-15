@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( test_stop )
    Eigen::Array<double,2,1> mstop;
    double theta_stop;
 
-   m.calculate_MFu_3rd_generation(mstop(0), mstop(1), theta_stop);
+   m.calculate_MSu_3rd_generation(mstop(0), mstop(1), theta_stop);
 
    BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( test_sbottom )
    Eigen::Array<double,2,1> msbottom;
    double theta_sbottom;
 
-   m.calculate_MFd_3rd_generation(msbottom(0), msbottom(1), theta_sbottom);
+   m.calculate_MSd_3rd_generation(msbottom(0), msbottom(1), theta_sbottom);
 
    BOOST_CHECK_CLOSE_FRACTION(msbottom(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msbottom(1), mf(2), 1.0e-9);
@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE( test_stau )
    Eigen::Array<double,2,1> mstau;
    double theta_stau;
 
-   m.calculate_MFe_3rd_generation(mstau(0), mstau(1), theta_stau);
+   m.calculate_MSe_3rd_generation(mstau(0), mstau(1), theta_stau);
 
    BOOST_CHECK_CLOSE_FRACTION(mstau(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstau(1), mf(2), 1.0e-9);
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE( test_snu )
    Eigen::Array<double,2,1> msnu;
    double theta_snu;
 
-   m.calculate_MFv_3rd_generation(msnu(0), msnu(1), theta_snu);
+   m.calculate_MSv_3rd_generation(msnu(0), msnu(1), theta_snu);
 
    BOOST_CHECK_CLOSE_FRACTION(msnu(0), 0., 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(msnu(1), mf, 1.0e-9);
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE( test_stop_different_sign )
    Eigen::Array<double,2,1> mstop;
    double theta_stop;
 
-   m.calculate_MFu_3rd_generation(mstop(0), mstop(1), theta_stop);
+   m.calculate_MSu_3rd_generation(mstop(0), mstop(1), theta_stop);
 
    BOOST_CHECK_CLOSE_FRACTION(mstop(0), mf(1), 1.0e-9);
    BOOST_CHECK_CLOSE_FRACTION(mstop(1), mf(2), 1.0e-9);

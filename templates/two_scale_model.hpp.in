@@ -15,7 +15,12 @@
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
-
+/**
+ * @file @ModelName@_two_scale_model.hpp
+ * @brief contains class for model with routines needed to solve boundary 
+ *        value problem using the two_scale solver by solvingt EWSB 
+ *        and determine the pole masses and mixings
+ */
 // File generated at @DateAndTime@
 
 #ifndef @ModelName@_TWO_SCALE_H
@@ -43,7 +48,10 @@
 namespace flexiblesusy {
 
 class Two_scale;
-
+/**
+ * @class @ModelName@<Two_scale>
+ * @brief model class with routines for determing masses and mixinga and EWSB
+ */
 template<>
 class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_soft_parameters {
 public:
@@ -56,14 +64,18 @@ public:
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
+   void reorder_DRbar_masses();
+   void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
    void set_ewsb_loop_order(unsigned);
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
    void set_pole_mass_loop_order(unsigned);
+   void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
+   @ModelName@_physical& get_physical();
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
    int solve_ewsb_tree_level();
@@ -117,11 +129,11 @@ private:
    std::size_t number_of_mass_iterations;
    unsigned ewsb_loop_order;
    unsigned pole_mass_loop_order;
-   bool calculate_sm_pole_masses;
-   double precision;
+   bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
+   double precision;              ///< RG running precision
    double ewsb_iteration_precision;
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
-   @ModelName@_physical physical;
+   @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    std::exception_ptr thread_exception;
 #ifdef ENABLE_THREADS
@@ -136,6 +148,7 @@ private:
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
+   // Passarino-Veltman loop functions
    double A0(double) const;
    double B0(double, double, double) const;
    double B1(double, double, double) const;
@@ -145,8 +158,11 @@ private:
    double F0(double, double, double) const;
    double G0(double, double, double) const;
 
+   // DR-bar masses
 @physicalMassesDef@
+   // DR-bar mixing matrices
 @mixingMatricesDef@
+   // phases
 @phasesDefinition@
 };
 

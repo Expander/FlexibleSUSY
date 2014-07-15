@@ -77,6 +77,8 @@ UnrotatedParticles.m)";
 GetMassEigenstate::usage="get mass eigenstates symbol from mass
 matrix";
 
+GetMassMatrix::usage="get mass matrix from FSMassMatrix object";
+
 GetMixingMatrixSymbol::usage="get mixing matrix symbol from mass
 matrix";
 
@@ -99,7 +101,7 @@ IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
 IsGhost::usage="";
-IsGolstone::usage="";
+IsGoldstone::usage="";
 IsAuxiliary::usage="";
 IsVEV::usage="";
 IsMajoranaFermion::usage="";
@@ -108,6 +110,9 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
+ContainsGoldstone::usage="";
+
+IsSymmetric::usage="Checks matrix for being symmetric";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -116,6 +121,8 @@ CreateThirdGenerationHelpers::usage="";
 CallThirdGenerationHelperFunctionName::usage="";
 
 GetThirdGenerationMass::usage;
+
+ReorderGoldstoneBosons::usage="";
 
 Begin["`Private`"];
 
@@ -161,7 +168,11 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
-IsGolstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+
+ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
+
+ContainsGoldstone[sym_[__]] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
 
@@ -591,6 +602,39 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            Return[result];
           ];
 
+WrapMacro[sym_String, ""] := sym;
+WrapMacro[sym_String, macro_String] := macro <> "(" <> sym <> ")";
+
+CreateReorderingFunctionCalls[{idx_Integer, vector_, higgs_, mixingMatrix_}, macro_String:""] :=
+    "move_goldstone_to(" <> ToString[idx-1] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[vector]], ""] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[higgs]], macro] <> ", " <>
+    WrapMacro[CConversion`ToValidCSymbolString[mixingMatrix], macro] <> ");\n";
+
+CreateReorderingFunctionCalls[___] := "";
+
+ReorderGoldstoneBosons[particle_, mixingMatrix_, macro_String] :=
+    Module[{goldstoneList},
+           goldstoneList = Cases[SARAH`GoldstoneGhost,
+                                 {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
+           StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList]
+          ];
+
+ReorderGoldstoneBosons[particles_List, macro_String] :=
+    Module[{result = ""},
+           (result = result <> ReorderGoldstoneBosons[#,macro])& /@ particles;
+           Return[result];
+          ];
+
+ReorderGoldstoneBosons[particle_Symbol, macro_String] :=
+    ReorderGoldstoneBosons[particle, FindMixingMatrixSymbolFor[particle], macro];
+
+ReorderGoldstoneBosons[particle_[___], macro_String] :=
+    ReorderGoldstoneBosons[particle, macro];
+
+ReorderGoldstoneBosons[macro_String] :=
+    ReorderGoldstoneBosons[GetParticles[], macro];
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
            dim = Length[matrix];
@@ -626,8 +670,6 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
                      IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
               body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
-           (* Set the goldstone boson masses equal to the
-              corresponding vector boson masses *)
            Return[result <> IndentText[body] <> "}\n"];
           ];
 
@@ -950,7 +992,7 @@ CreateThirdGenerationHelperPrototype[fermion_] :=
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double&, double&, double&) const;\n";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopSquark] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -977,7 +1019,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopQuark] :=
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomSquark] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1004,7 +1046,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomQuark] :
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Selectron] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1031,7 +1073,7 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Electron] :=
 }
 ";
 
-CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Neutrino] :=
+CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Sneutrino] :=
     "void CLASSNAME::calculate_" <>
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
@@ -1069,14 +1111,14 @@ CreateThirdGenerationHelperFunction[fermion_] :=
 
 CreateThirdGenerationHelpers[] :=
     Module[{prototypes, functions},
-           functions = CreateThirdGenerationHelperFunction[SARAH`TopQuark] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`BottomQuark] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`Neutrino] <> "\n" <>
-                       CreateThirdGenerationHelperFunction[SARAH`Electron];
-           prototypes = CreateThirdGenerationHelperPrototype[SARAH`TopQuark] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`BottomQuark] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`Neutrino] <>
-                        CreateThirdGenerationHelperPrototype[SARAH`Electron];
+           functions = CreateThirdGenerationHelperFunction[SARAH`TopSquark] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`BottomSquark] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`Sneutrino] <> "\n" <>
+                       CreateThirdGenerationHelperFunction[SARAH`Selectron];
+           prototypes = CreateThirdGenerationHelperPrototype[SARAH`TopSquark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`BottomSquark] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`Sneutrino] <>
+                        CreateThirdGenerationHelperPrototype[SARAH`Selectron];
            {prototypes, functions}
           ];
 

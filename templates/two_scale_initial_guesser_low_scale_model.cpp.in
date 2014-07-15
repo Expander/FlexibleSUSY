@@ -66,12 +66,27 @@ namespace flexiblesusy {
 {
 }
 
+/**
+ * Guesses the DR-bar model parameters by calling
+ * guess_susy_parameters() and guess_soft_parameters() .
+ */
 void @ModelName@_initial_guesser<Two_scale>::guess()
 {
    guess_susy_parameters();
    guess_soft_parameters();
 }
 
+/**
+ * Guesses the SUSY parameters (gauge, Yukawa couplings) at
+ * \f$m_\text{top}^\text{pole}\f$ from the Standard Model gauge
+ * couplings and fermion masses.  Threshold corrections are ignored.
+ * The user-defined initial guess at the low-scale
+ * (InitialGuessAtLowScale) is applied here:
+ *
+ * \code{.cpp}
+@initialGuessAtLowScale@
+ * \endcode
+ */
 void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 {
    QedQcd leAtMt(oneset);
@@ -109,6 +124,11 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
    calculate_@ElectronYukawa@_DRbar();
 }
 
+/**
+ * Calculates the Yukawa couplings @UpYukawa@ of the up-type quarks
+ * from the Standard Model up-type quark masses (ignoring threshold
+ * corrections).
+ */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
@@ -119,6 +139,11 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
 @setDRbarUpQuarkYukawaCouplings@
 }
 
+/**
+ * Calculates the Yukawa couplings @DownYukawa@ of the down-type
+ * quarks from the Standard Model down-type quark masses (ignoring
+ * threshold corrections).
+ */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
@@ -129,6 +154,11 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
 @setDRbarDownQuarkYukawaCouplings@
 }
 
+/**
+ * Calculates the Yukawa couplings @ElectronYukawa@ of the leptons
+ * from the Standard Model down-type lepton masses (ignoring threshold
+ * corrections).
+ */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
@@ -139,6 +169,13 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 @setDRbarElectronYukawaCouplings@
 }
 
+/**
+ * Guesses the soft-breaking parameters.  At first it runs to the
+ * guess of the SUSY-scale (SUSYScaleFirstGuess) and imposes the
+ * SUSY-scale constraint (SUSYScaleInput).  Afterwards, it runs to the
+ * low-scale guess (LowScaleFirstGuess) and solves the EWSB conditions
+ * at the tree-level.  Finally the DR-bar mass spectrum is calculated.
+ */
 void @ModelName@_initial_guesser<Two_scale>::guess_soft_parameters()
 {
    const double low_scale_guess = low_constraint.get_initial_scale_guess();

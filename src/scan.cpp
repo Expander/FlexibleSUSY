@@ -19,8 +19,23 @@
 #include "scan.hpp"
 #include <cmath>
 
+/**
+ * @file scan.cpp
+ * @brief contains helper functions and classes for parameter scans
+ */
+
 namespace flexiblesusy {
 
+/**
+ * Returns vector with number_of_steps floating point values between
+ * start and stop.  The endpoint is excluded.
+ *
+ * @param start smallest value
+ * @param stop largest value (excluded)
+ * @param number_of_steps number of values
+ *
+ * @return vector of floating point values
+ */
 std::vector<double> float_range(double start, double stop,
                                 unsigned long number_of_steps)
 {
@@ -35,6 +50,18 @@ std::vector<double> float_range(double start, double stop,
    return result;
 }
 
+/**
+ * Returns vector with number_of_steps floating point values between
+ * start and stop.  The values are logarithmically distributed,
+ * i.e. the difference of the logarithm of two consecutive points is
+ * constant.  The endpoint is excluded.
+ *
+ * @param start smallest value
+ * @param stop largest value (excluded)
+ * @param number_of_steps number of values
+ *
+ * @return vector of floating point values
+ */
 std::vector<double> float_range_log(double start, double stop,
                                     unsigned long number_of_steps)
 {

@@ -1,11 +1,13 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* CNMSSM input parameters *)
 
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
+           {4, Sign[vS]},
            {5, Azero}
          };
 
@@ -83,3 +85,8 @@ UseHiggs2LoopNMSSM = True;
 EffectiveMu = \[Lambda] vS / Sqrt[2];
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};

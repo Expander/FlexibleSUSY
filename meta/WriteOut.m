@@ -1,5 +1,6 @@
 
-BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`"}];
+BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
+                           "Parameters`", "TreeMasses`", "LatticeUtils`"}];
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
@@ -10,15 +11,19 @@ WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
+ReadLesHouchesPhysicalParameters::usage="";
+ConvertMixingsToSLHAConvention::usage="";
+GetDRbarBlockNames::usage="";
+GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 
 Begin["`Private`"];
 
-StringJoinWithSeparator[strings_List, separator_String] :=
+StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
     Module[{result = "", i},
-           For[i = 1, i <= Length[strings], i++,
+           For[i = 1, i <= Length[list], i++,
                If[i > 1, result = result <> separator;];
-               result = result <> ToString[strings[[i]]];
+               result = result <> transformer[list[[i]]];
               ];
            Return[result];
           ];
@@ -97,7 +102,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
                  eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName];
                  massNameStr = CConversion`RValueToCFormString[FlexibleSUSY`M[eigenstateName]];
                  result = "<< FORMAT_MASS(" <> ToString[pdg] <>
-                          ", " <> massNameStr <> ", \"" <> eigenstateNameStr <> "\")\n";
+                          ", LOCALPHYSICAL(" <> massNameStr <> "), \"" <> eigenstateNameStr <> "\")\n";
                 ];
               ,
               For[i = 1, i <= dim, i++,
@@ -106,7 +111,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
                      eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "_" <> ToString[i];
                      massNameStr = CConversion`RValueToCFormString[FlexibleSUSY`M[eigenstateName[i-1]]];
                      result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
-                              ", " <> massNameStr <> ", \"" <> eigenstateNameStr <> "\")\n";
+                              ", LOCALPHYSICAL(" <> massNameStr <> "), \"" <> eigenstateNameStr <> "\")\n";
                     ];
                  ];
              ];
@@ -123,12 +128,11 @@ WriteSLHAMassBlock[massMatrices_List] :=
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
            susyMassesStr = "mass << \"Block MASS\\n\"\n" <>
                            TextFormatting`IndentText[susyMassesStr] <> ";\n\n";
-           smMassesStr = "if (model.do_calculate_sm_pole_masses()) {\n" <>
+           smMassesStr = "if (calculate_sm_pole_masses) {\n" <>
                          TextFormatting`IndentText["mass\n" <>
                              TextFormatting`IndentText[smMassesStr] <> ";"] <>
                          "\n}\n\n";
-           result = Parameters`CreateLocalConstRefsForPhysicalParameters[allMasses] <> "\n" <>
-                    "std::ostringstream mass;\n\n" <>
+           result = "std::ostringstream mass;\n\n" <>
                     susyMassesStr <> smMassesStr <>
                     "slha_io.set_block(mass);\n";
            Return[result];
@@ -205,10 +209,10 @@ WriteSLHAMixingMatricesBlocks[] :=
            smMix = Flatten[TreeMasses`FindMixingMatrixSymbolFor /@ SARAH`SMParticles];
            smMix = Select[mixingMatrices, MemberQ[smMix,#[[1]]]&];
            susyMix = Complement[mixingMatrices, smMix];
-           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"PHYSICAL"])& /@ smMix;
-           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"PHYSICAL"])& /@ susyMix;
+           (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ smMix;
+           (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ susyMix;
            result = susyMixStr <> "\n" <>
-                    "if (model.do_calculate_sm_pole_masses()) {\n" <>
+                    "if (calculate_sm_pole_masses) {\n" <>
                     TextFormatting`IndentText[smMixStr] <> "}\n";
            Return[result];
           ];
@@ -332,10 +336,101 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
+ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}] :=
+    Module[{paramStr, blockNameStr},
+           paramStr = CConversion`ToValidCSymbolString[parameter];
+           blockNameStr = ToString[blockName];
+           "{\n" <> IndentText[
+               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
+               paramStr <> ");\n" <>
+               "PHYSICAL(" <> paramStr <> ") = " <> paramStr <> ";"] <> "\n" <>
+           "}\n"
+          ];
+
+ReadSLHAPhysicalMass[particle_] :=
+    Module[{result = "", mass, massStr, dim, pdgList, pdg, pdgStr, i},
+           mass = FlexibleSUSY`M[particle];
+           massStr = CConversion`ToValidCSymbolString[mass];
+           dim = TreeMasses`GetDimension[particle];
+           pdgList = SARAH`getPDGList[particle];
+           If[Head[pdgList] =!= List || Length[pdgList] < dim,
+              Return[""];
+             ];
+           If[dim == 1,
+              pdg = Abs[pdgList[[1]]];
+              pdgStr = ToString[pdg];
+              If[pdg != 0,
+                 result = "PHYSICAL(" <> massStr <>
+                          ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
+                ];
+              ,
+              For[i = 1, i <= dim, i++,
+                  pdg = Abs[pdgList[[i]]];
+                  pdgStr = ToString[pdg];
+                  If[pdg != 0,
+                     result = result <>
+                              "PHYSICAL(" <> massStr <> ")(" <> ToString[i-1] <>
+                              ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
+                    ];
+                 ];
+             ];
+           Return[result];
+          ];
+
+ReadSLHAPhysicalMassBlock[] :=
+    Module[{result = "", particles},
+           particles = TreeMasses`GetParticles[];
+           (result = result <> ReadSLHAPhysicalMass[#])& /@ particles;
+           Return[result];
+          ];
+
 ReadLesHouchesOutputParameters[] :=
     Module[{result = "", modelParameters},
            modelParameters = GetSLHAModelParameters[];
            (result = result <> ReadSLHAOutputBlock[#])& /@ modelParameters;
+           Return[result];
+          ];
+
+ReadLesHouchesPhysicalParameters[] :=
+    Module[{result = "", physicalParameters},
+           physicalParameters = GetSLHAMixinMatrices[];
+           (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#])& /@ physicalParameters;
+           result = result <> "\n" <> ReadSLHAPhysicalMassBlock[];
+           Return[result];
+          ];
+
+GetDRbarBlocks[] :=
+    Module[{modelParameters},
+           modelParameters = GetSLHAModelParameters[];
+           DeleteDuplicates[Cases[modelParameters, {_, blockName_Symbol} | {_, {blockName_Symbol, _?NumberQ}} :> blockName]]
+          ];
+
+GetDRbarBlockNames[] :=
+    Module[{blocks, transformer},
+           blocks = GetDRbarBlocks[];
+           transformer = ("\"" <> ToString[#] <> "\"")&;
+           "{ " <> StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
+          ];
+
+GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
+
+ConvertMixingsToSLHAConvention[massMatrices_List] :=
+    Module[{result = "", i,
+            eigenstateName, mixingMatrixSym,
+            eigenstateNameStr, mixingMatrixSymStr},
+           For[i = 1, i <= Length[massMatrices], i++,
+               eigenstateName = TreeMasses`GetMassEigenstate[massMatrices[[i]]];
+               mixingMatrixSym = TreeMasses`GetMixingMatrixSymbol[massMatrices[[i]]];
+               If[LatticeUtils`MajoranaMassMatrixQ[massMatrices[[i]]],
+                  eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
+                  mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
+                  result = result <>
+                           "SLHA_io::convert_symmetric_fermion_mixings_to_slha(LOCALPHYSICAL(" <>
+                           eigenstateNameStr <> "), LOCALPHYSICAL(" <>
+                           mixingMatrixSymStr <> "));\n";
+                 ];
+              ];
            Return[result];
           ];
 

@@ -12,7 +12,9 @@ using namespace flexiblesusy;
 BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
 {
    MSSM<Two_scale> model;
+   model.do_calculate_sm_pole_masses(true);
 
+   const double scale = 91.0;
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -42,7 +44,16 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    Yd(2,2) = 2.9     * root2 / (vev * cosBeta);
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
 
-   model.set_scale(91);
+   Eigen::Array<double,2,1> Mhh;
+   Mhh(0) = 125.9;
+   Mhh(1) = 700.0;
+   Eigen::Matrix<double,2,2> ZH;
+   ZH(0,0) = 1.1;
+   ZH(0,1) = 1.2;
+   ZH(1,0) = 1.3;
+   ZH(1,1) = 1.4;
+
+   model.set_scale(scale);
    model.set_loops(2);
    model.set_g1(g1);
    model.set_g2(g2);
@@ -68,12 +79,16 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    model.set_vu(vu);
    model.set_vd(vd);
 
+   model.get_physical().Mhh = Mhh;
+   model.get_physical().ZH  = ZH;
+
    MSSM_slha_io slha_io;
    slha_io.set_spectrum(model);
 
    std::string slha_file("test/test_MSSM_slha_input.out.spc");
    slha_io.write_to_file(slha_file);
 
+   // clear everything
    model.clear();
    slha_io.clear();
 
@@ -88,9 +103,18 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
          BOOST_CHECK_EQUAL(model.get_Ye(i,k), 0.);
       }
    }
+   BOOST_CHECK_EQUAL(model.get_physical().Mhh(0), 0.);
+   BOOST_CHECK_EQUAL(model.get_physical().Mhh(1), 0.);
+   BOOST_CHECK_EQUAL(model.get_physical().ZH(0,0), 0.);
+   BOOST_CHECK_EQUAL(model.get_physical().ZH(0,1), 0.);
+   BOOST_CHECK_EQUAL(model.get_physical().ZH(1,0), 0.);
+   BOOST_CHECK_EQUAL(model.get_physical().ZH(1,1), 0.);
 
+   // read from SLHA file
    slha_io.read_from_file(slha_file);
    slha_io.fill(model);
+
+   BOOST_CHECK_EQUAL(model.get_scale(), scale);
 
    BOOST_CHECK_CLOSE_FRACTION(model.get_g1(), g1, 1.0e-8);
    BOOST_CHECK_CLOSE_FRACTION(model.get_g2(), g2, 1.0e-8);
@@ -103,4 +127,11 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
          BOOST_CHECK_CLOSE_FRACTION(model.get_Ye(i,k), Ye(i,k), 1.0e-8);
       }
    }
+
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().Mhh(0), Mhh(0), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().Mhh(1), Mhh(1), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().ZH(0,0), ZH(0,0), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().ZH(0,1), ZH(0,1), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().ZH(1,0), ZH(1,0), 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(model.get_physical().ZH(1,1), ZH(1,1), 1.0e-8);
 }

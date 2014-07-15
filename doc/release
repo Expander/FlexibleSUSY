@@ -8,8 +8,8 @@ When releasing FlexibleSUSY, please follow these steps:
       git co development
       git pull organization development
 
- 1. Create a commit where the the version number (in configure) is
-    updated.  This commit should have the commit message
+ 1. Create a commit where the the version number (in configure and
+    ChangeLog) is updated.  This commit should have the commit message
 
       version <version>
 
@@ -26,13 +26,15 @@ When releasing FlexibleSUSY, please follow these steps:
       ./configure --disable-meta --disable-compile \
           --with-models= --with-algorithms=
 
-    and create a non-annotated tag via
+ 4. Create a non-annotated tag via
 
       make tag
 
-    A tarball and a corresponding .md5 file will be created.
+ 5. Create the tarball and a corresponding .md5 file via
 
- 4. Push everything:
+      make release
+
+ 6. Push everything:
 
       git push organization master
       git push organization development

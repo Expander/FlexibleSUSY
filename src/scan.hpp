@@ -26,6 +26,11 @@
 
 #include <random>
 
+/**
+ * @file scan.hpp
+ * @brief contains helper functions and classes for parameter scans
+ */
+
 namespace flexiblesusy {
 
 /**
@@ -50,7 +55,7 @@ public:
       return distribution(generator);
    }
 private:
-   static Generator generator;
+   static Generator generator; ///< random number generator
    static std::uniform_real_distribution<double> distribution;
 };
 
@@ -67,9 +72,11 @@ std::uniform_real_distribution<double> Uniform<Generator>::distribution
 
 namespace flexiblesusy {
 
+/// returns range of floating point values between start and stop
 std::vector<double> float_range(double start, double stop,
                                 unsigned long number_of_steps);
 
+/// returns range of floating point values between start and stop with logarithmic spacing
 std::vector<double> float_range_log(double start, double stop,
                                     unsigned long number_of_steps);
 

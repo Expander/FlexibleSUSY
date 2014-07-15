@@ -32,7 +32,7 @@ doc/*.spl
 doc/*.bbl
 doc/*.blg
 doc/flexiblesusy.pdf
-doc/paper.pdf
+doc/flexiblesusy-paper.pdf
 doc/version.tex
 doc/mainpage.dox
 doc/html/

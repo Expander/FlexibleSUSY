@@ -45,6 +45,7 @@ the Standard Model definition `3` instead.";
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
     Module[{eqs, reducedEq, solution, smValue},
+           Print["Expressing Weinberg angle in terms of model parameters ..."];
            (* SM value of the Weinberg angle *)
            smValue = Simplify[
                ArcTan[SARAH`hyperchargeCoupling / SARAH`leftCoupling] /.

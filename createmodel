@@ -62,10 +62,10 @@ Examples:
     ./createmodel --name=E6SSM
 
   Create a new FlexibleSUSY model named MyMSSM, using the FlexibleSUSY
-  model file model_files/YukawaCMSSM/FlexibleSUSY.m.in and using the
-  MSSM as underlying SARAH model (SARAH\`Start["MSSM"]).
+  model file model_files/NUHMSSM/FlexibleSUSY.m.in and using the MSSM
+  as underlying SARAH model (SARAH\`Start["MSSM"]).
 
-    ./createmodel --name=MyMSSM --model-file=YukawaCMSSM --sarah-model=MSSM
+    ./createmodel --name=MyMSSM --model-file=NUHMSSM --sarah-model=MSSM
 EOF
 }
 
@@ -155,10 +155,18 @@ if test ! -d "$targetdir" ; then
     echo "done"
 fi
 
+set -- $(find $model_file_dir -type f -iname LesHouches.in\* -printf " %f")
+SLHA_input_files="$*"
+
+SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
+    sed 's/ / \\\\\\n/g;
+	 s,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
+
 printf "  creating Makefile module %s/module.mk ... " "$targetdir"
-sed -e "s|@DIR@|$targetdir|g"         \
-    -e "s|@MODEL@|$sarah_model|g"     \
-    -e "s|@CLASSNAME@|$name|g"        \
+sed -e "s|@DIR@|$targetdir|g"			  \
+    -e "s|@MODEL@|$sarah_model|g"		  \
+    -e "s|@CLASSNAME@|$name|g"			  \
+    -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 echo "done"
 
@@ -180,3 +188,9 @@ sed -e "s|@DIR@|$targetdir|g"               \
     -e "s|@CLASSNAME@|$name|g"              \
     < $model_file_dir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
 echo "done"
+
+for slha_in in $SLHA_input_files; do
+    printf "  creating SLHA input file %s/%s ... " "$targetdir" "$slha_in"
+    cp $model_file_dir/$slha_in $targetdir
+    echo "done"
+done

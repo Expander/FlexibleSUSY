@@ -25,9 +25,11 @@
 #include <boost/format.hpp>
 #include <boost/function.hpp>
 #include "slhaea.h"
+#include "config.h"
 #include "logger.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
+#include "numerics.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -134,16 +136,18 @@ public:
    void clear();
 
    // reading functions
+   bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
    const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
    void read_from_file(const std::string&);
-   void read_block(const std::string&, const Tuple_processor&) const;
+   double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
-   void read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_entry(const std::string&, int) const;
    void read_extpar();
    void read_modsel();
+   double read_scale(const std::string&) const;
 
    // writing functions
    void set_data(const SLHAea::Coll& data_) { data = data_; }
@@ -158,6 +162,14 @@ public:
    void set_sminputs(const softsusy::QedQcd&);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
+
+   template<int N>
+   static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
+                                                         Eigen::Matrix<double, N, N>&);
+
+   template<int N>
+   static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
+                                                         Eigen::Matrix<std::complex<double>, N, N>&);
 
 private:
    SLHAea::Coll data;          ///< SHLA data
@@ -184,20 +196,33 @@ Scalar SLHA_io::convert_to(const std::string& str)
    return value;
 }
 
+/**
+ * Fills a matrix from a SLHA block
+ *
+ * @param block_name block name
+ * @param matrix matrix to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
 template <class Derived>
-void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (data.find(block_name) == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
-      return;
+      return 0.;
    }
 
    const int cols = matrix.cols(), rows = matrix.rows();
+   double scale = 0.;
 
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line())
+      if (!line->is_data_line()) {
+         // read scale from block definition
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
          continue;
+      }
 
       if (line->size() >= 3) {
          const int i = convert_to<int>((*line)[0]) - 1;
@@ -208,6 +233,8 @@ void SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derive
          }
       }
    }
+
+   return scale;
 }
 
 template<class Scalar, int NRows, int NCols>
@@ -252,6 +279,46 @@ void SLHA_io::set_block(const std::string& name,
       }
 
    set_block(ss);
+}
+
+template<int N>
+void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>& m,
+                                                        Eigen::Matrix<double, N, N>& z)
+{
+}
+
+/**
+ * Converts the given vector of masses and the corresponding (complex)
+ * mixing matrix to SLHA convention: Matrix rows with non-zero
+ * imaginary parts are multiplied by i and the corresponding mass
+ * eigenvalue is multiplied by -1.  As a result the mixing matrix will
+ * be real and the mass eigenvalues might be positive or negative.  It
+ * is assumed that these mixings result from diagonalizing a symmetric
+ * fermion mass matrix in the convention of Haber and Kane,
+ * Phys. Rept. 117 (1985) 75-263.  This conversion makes sense only if
+ * the original symmetric mass matrix is real-valued.
+ *
+ * @param m vector of masses
+ * @param z mixing matrix
+ */
+template<int N>
+void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>& m,
+                                                        Eigen::Matrix<std::complex<double>, N, N>& z)
+{
+   for (int i = 0; i < N; i++) {
+      // check if i'th row contains non-zero imaginary parts
+      if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+         z.row(i) *= std::complex<double>(0.0,1.0);
+         m(i) *= -1;
+#ifdef ENABLE_DEBUG
+         if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
+            WARNING("Row " << i << " of the following fermion mixing matrix"
+                    " contains entries which have non-zero real and imaginary"
+                    " parts:\nZ = " << z);
+         }
+#endif
+      }
+   }
 }
 
 } // namespace flexiblesusy

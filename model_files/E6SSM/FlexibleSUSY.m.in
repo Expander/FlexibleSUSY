@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* CE6SSM input parameters *)
 
@@ -24,9 +25,9 @@ SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
-   {B[muPrime], BmuPrimeInput},
-   {muPrime, muPrimeInput},
-   {vS, vSInput}
+   {B[\[Mu]Pr], BmuPrimeInput},
+   {\[Mu]Pr, muPrimeInput},
+   {vs, vSInput}
 };
 
 HighScale = g1 == g2;
@@ -37,7 +38,7 @@ HighScaleMinimum = 1.0 10^4;
 
 HighScaleMaximum = 5.0 10^17;
 
-HighScaleInput={
+HighScaleInput = {
    {gN, g1},
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
@@ -47,30 +48,30 @@ HighScaleInput={
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
-   {mX2, UNITMATRIX[3] m0^2},
-   {mXBar2, UNITMATRIX[3] m0^2},
-   {mHdInert2, UNITMATRIX[2] m0^2},
-   {mHuInert2, UNITMATRIX[2] m0^2},
-   {msInert2, UNITMATRIX[2] m0^2},
-   {mHPrime2, m0^2},
-   {mHBarPrime2, m0^2},
+   {mDx2, UNITMATRIX[3] m0^2},
+   {mDxbar2, UNITMATRIX[3] m0^2},
+   {mH1I2, UNITMATRIX[2] m0^2},
+   {mH2I2, UNITMATRIX[2] m0^2},
+   {msI2, UNITMATRIX[2] m0^2},
+   {mHp2, m0^2},
+   {mHpbar2, m0^2},
    {\[Kappa], UNITMATRIX[3] KappaInput},
-   {\[Lambda], UNITMATRIX[2] Lambda12Input},
-   {\[Lambda]3, LambdaInput},
+   {\[Lambda]12, UNITMATRIX[2] Lambda12Input},
+   {\[Lambda], LambdaInput},
    {T[\[Kappa]], UNITMATRIX[3] Azero KappaInput},
-   {T[\[Lambda]], UNITMATRIX[2] Azero Lambda12Input},
-   {T[\[Lambda]3], Azero LambdaInput},
+   {T[\[Lambda]12], UNITMATRIX[2] Azero Lambda12Input},
+   {T[\[Lambda]], Azero LambdaInput},
    {MassB, m12},
    {MassWB,m12},
    {MassG,m12},
-   {MassU,m12}
+   {MassBp,m12}
 };
 
 LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
 
-LowScaleInput = {
+LowScaleInput={
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
@@ -81,20 +82,27 @@ LowScaleInput = {
 InitialGuessAtLowScale = {
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
-   {vS, vSInput},
+   {vs, vSInput},
    {mHd2, SM[MZ]^2},
    {mHu2, SM[MZ]^2},
    {ms2, SM[MZ]^2},
-   {B[muPrime], SM[MZ]^2},
-   {muPrime, SM[MZ]},
+   {B[\[Mu]Pr], SM[MZ]^2},
+   {\[Mu]Pr, SM[MZ]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
 };
 
+
 InitialGuessAtHighScale = {};
 
 UseHiggs2LoopNMSSM = True;
-EffectiveMu = \[Lambda]3 vS / Sqrt[2];
+EffectiveMu = \[Lambda] vs / Sqrt[2];
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};

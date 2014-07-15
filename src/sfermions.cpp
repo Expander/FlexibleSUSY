@@ -16,6 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+/**
+ * @file sfermions.cpp
+ * @brief finding mass eigenstates and mixing of sfermions in absence of 
+ *        family mixing, where we have a 2 by 2 mass matrix.
+ */
+
 #include "sfermions.hpp"
 #include "linalg2.hpp"
 #include "wrappers.hpp"
@@ -38,6 +44,11 @@ const double Hypercharge_right[NUMBER_OF_MSSM_SPARTICLES] = {
    -4./3., 2./3., 0., 2.
 };
 
+/**
+ * Obtains 2 x 2 mass matrix using input parameters in first argument 
+ * and diagonalises it.  Fills the second argument with the eigenvalues
+ * and returns the mixing angle.
+ */ 
 double diagonalize_sfermions_2x2(const Mass_data& pars,
                                  Eigen::Array<double,2,1>& msf)
 {
@@ -55,7 +66,7 @@ double diagonalize_sfermions_2x2(const Mass_data& pars,
    const double Yr     = pars.Yr;
    const double vev2   = 0.25 * (Sqr(vd) - Sqr(vu));
    Eigen::Matrix<double,2,2> mass_matrix;
-
+   /// fill sfermion phi in mass matix in basis (phi_L phi_R)
    if (Sign(T3) > 0) {
       mass_matrix(0,0) = ml2 + 0.5 * AbsSqr(yf) * Sqr(vu)
          + (T3 * Sqr(g2) - 0.5 * Yl * Sqr(gY)) * vev2;

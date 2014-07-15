@@ -76,6 +76,13 @@ void print_build_info(std::ostream& ostr)
       "Fortran compiler (FC):           " FC "\n"
       "Fortran compiler flags (FFLAGS): " FFLAGS "\n"
       "Fortran libraries (FLIBS):       " FLIBS "\n"
+      "Boost flags (BOOSTFLAGS):        " BOOSTFLAGS "\n"
+      "Boost libraries:                 " BOOSTTESTLIBS " " BOOSTTHREADLIBS "\n"
+      "Eigen flags (EIGENFLAGS):        " EIGENFLAGS "\n"
+      "GSL flags (GSLFLAGS):            " GSLFLAGS "\n"
+      "GSL libraries (GSLLIBS):         " GSLLIBS "\n"
+      "Lapack libraries (LAPACKLIBS):   " LAPACKLIBS "\n"
+      "Thread libraries (THREADLIBS):   " THREADLIBS "\n"
       "\n"
       "Multi-threading:                 "
 #ifdef ENABLE_THREADS
@@ -90,6 +97,7 @@ void print_build_info(std::ostream& ostr)
 #else
       "no"
 #endif
+      "\n"
       "Use fflite:                      "
 #ifdef ENABLE_FFLITE
       "yes"

@@ -22,6 +22,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_tree_level_masses )
    setup_SMSSM(m, s, input);
 
    m.calculate_DRbar_parameters();
+   m.reorder_DRbar_masses();
    s.calcDrBarPars();
 
    // neutral CP even Higgs
@@ -35,8 +36,8 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_tree_level_masses )
    const DoubleVector Ah(ToDoubleVector(m.get_MAh()));
    const double mz = s.displayMzRun();
    DoubleVector mA0(3);
-   mA0(1) = std::min(s.displayDrBarPars().mA0(1), mz);
-   mA0(2) = std::max(s.displayDrBarPars().mA0(1), mz);
+   mA0(1) = mz;
+   mA0(2) = s.displayDrBarPars().mA0(1);
    mA0(3) = s.displayDrBarPars().mA0(2);
    BOOST_CHECK_CLOSE(Ah(1), mA0(1), 1.0e-12);
    BOOST_CHECK_CLOSE(Ah(2), mA0(2), 1.0e-12);

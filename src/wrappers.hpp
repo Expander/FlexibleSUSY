@@ -23,7 +23,9 @@
 #include <cmath>
 #include <functional>
 #include <sstream>
+#include <string>
 #include <Eigen/Core>
+#include <boost/lexical_cast.hpp>
 
 namespace flexiblesusy {
 
@@ -88,6 +90,17 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
+template <typename Derived>
+unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
+{
+   unsigned pos;
+   typename Derived::PlainObject tmp;
+   tmp.setConstant(mass);
+
+   (v - tmp).abs().minCoeff(&pos);
+
+   return pos;
+}
 
 inline double Conj(double a)
 {
@@ -190,6 +203,47 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+inline int Sign(double x)
+{
+   return (x >= 0.0 ? 1 : -1);
+}
+
+inline int Sign(int x)
+{
+   return (x >= 0 ? 1 : -1);
+}
+
+/**
+ * The element of v, which is closest to mass, is moved to the
+ * position idx.
+ *
+ * @param idx new index of the mass eigenvalue
+ * @param mass mass to compare against
+ * @param v vector of masses
+ * @param z corresponding mixing matrix
+ */
+
+template <typename DerivedArray, typename DerivedMatrix>
+void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
+                       Eigen::MatrixBase<DerivedMatrix>& z)
+{
+   int pos = closest_index(mass, v);
+   if (pos == idx)
+      return;
+
+   const int sign = Sign(idx - pos);
+   int steps = std::abs(idx - pos);
+
+   // now we shuffle the states
+   while (steps--) {
+      const int new_pos = pos + sign;
+      v.row(new_pos).swap(v.row(pos));
+      z.row(new_pos).swap(z.row(pos));
+      pos = new_pos;
+   }
+
+}
+
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
 {
@@ -217,9 +271,16 @@ inline double Im(const std::complex<double>& x)
    return std::imag(x);
 }
 
-inline int Sign(double x)
+namespace {
+   struct CompareAbs_d {
+      bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
+   };
+}
+
+template<int N>
+void Sort(Eigen::Array<double, N, 1>& v)
 {
-   return (x >= 0.0 ? 1 : -1);
+   std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
 }
 
 inline double Sqrt(double a)
@@ -253,9 +314,7 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 template <typename T>
 std::string ToString(T a)
 {
-   std::ostringstream ostr;
-   ostr << a;
-   return ostr.str();
+   return boost::lexical_cast<std::string>(a);
 }
 
 inline double ZeroSqrt(double x)

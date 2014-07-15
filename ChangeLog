@@ -1,4 +1,30 @@
-FlexibleSUSY-0.5.4 [not released yet]
+FlexibleSUSY-1.0.2 [July, 15 2014]
+
+ * Bugfix (commit 689141da): Enable non-quadratic superpotential
+   coupling matrices.
+
+ * Bugfix (commit d0e9cdb): Correctly set low-energy data (read from
+   the SLHA input file) in the low-energy constraint.
+
+ * Bugfix (commit 6414e46): Convert fermion masses and mixing matrices
+   to SLHA convention in the SLHA output.
+
+ * Install specimen SLHA input files in the model directory when one
+   runs the createmodel script.
+
+ * Work around fields in Cp[] carrying an invalid index that cause
+   Part::partw when passed to SARAH`Vertex[].
+
+ * Support Cygwin on MS Windows
+
+ * New model file for the TMSSM (triplet Higgs model)
+
+FlexibleSUSY-1.0.1 [June, 11 2014]
+
+ * Bugfix (commit 4dc897e): consts.hpp is not distributed but appears
+   in the list of installed headers
+
+FlexibleSUSY-1.0.0 [June, 10 2014]
 
  * Bugfix (commit 399a1c8): renaming SoftsusyMSSM and SoftsusyNMSSM
    model classes and files to make `make all-test' work on HFS (fixes
@@ -37,6 +63,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Add tower example to illustrate how to glue multiple models to form
    a stack of effective field theories.
 
+ * Add customized-betas example to illustrate how to replace an
+   auto-generated C++ component by something of an alternative origin.
+
  * Implement leading two-loop MSSM and NMSSM tadpoles from Slavich
    (used in the EWSB conditions).
 
@@ -64,6 +93,9 @@ FlexibleSUSY-0.5.4 [not released yet]
  * Allow to select beta-function loop order in the SLHA input file.
 
  * Allow disable/enable threshold corrections in the SLHA input file.
+
+ * Rename pole mass calculation precision option and set them in the
+   model file.
 
 FlexibleSUSY-0.5.3 [January, 21 2014]
 

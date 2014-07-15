@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* CSMSSM input parameters *)
 
@@ -134,3 +135,8 @@ UseHiggs2LoopNMSSM = True;
 EffectiveMu = \[Mu] + \[Lambda] vS / Sqrt[2];
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};

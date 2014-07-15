@@ -15,7 +15,11 @@
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
-
+/**
+ * @file @ModelName@_two_scale_model.cpp
+ * @brief contains methods to solve EWSB and calculate pole masses and 
+ *        mixings from DRbar parameters.
+ */
 // File generated at @DateAndTime@
 
 #include "@ModelName@_two_scale_model.hpp"
@@ -138,6 +142,16 @@ const @ModelName@_physical& CLASSNAME::get_physical() const
    return physical;
 }
 
+@ModelName@_physical& CLASSNAME::get_physical()
+{
+   return physical;
+}
+
+void CLASSNAME::set_physical(const @ModelName@_physical& physical_)
+{
+   physical = physical_;
+}
+
 const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems() const
 {
    return problems;
@@ -148,6 +162,16 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
    return problems;
 }
 
+/**
+ * Method which calculates the tadpoles at loop order specified in the
+ * pointer to the CLASSNAME::Ewsb_parameters struct.
+ *
+ * @param x GSL vector of EWSB output parameters
+ * @param params pointer to CLASSNAME::Ewsb_parameters struct
+ * @param f GSL vector with tadpoles
+ *
+ * @return GSL_EDOM if x contains Nans, GSL_SUCCESS otherwise.
+ */
 int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
    if (contains_nan(x, number_of_ewsb_equations)) {
@@ -178,11 +202,17 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    return GSL_SUCCESS;
 }
 
+/**
+ * method which solves the EWSB conditions iteratively, trying GSL
+ * root finding methods
+ * @gslEWSBRootFinders@
+ * in that order until a solution is found.
+ */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   const gsl_multiroot_fsolver_type* solvers[] =
-      {gsl_multiroot_fsolver_hybrid, gsl_multiroot_fsolver_hybrids,
-       gsl_multiroot_fsolver_broyden};
+   const gsl_multiroot_fsolver_type* solvers[] = {
+@gslEWSBRootFinders@
+   };
 
    double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);
@@ -234,6 +264,7 @@ int CLASSNAME::solve_ewsb_iteratively(unsigned loop_order)
    ewsb_loop_order = old_loop_order;
    return status;
 }
+
 
 int CLASSNAME::solve_ewsb_tree_level()
 {
@@ -303,6 +334,9 @@ void CLASSNAME::print(std::ostream& ostr) const
 @printMixingMatrices@
    physical.print(ostr);
 }
+/**
+ * wrapper routines for passarino Veltman functions
+ */
 
 double CLASSNAME::A0(double m) const
 {
@@ -344,6 +378,9 @@ double CLASSNAME::G0(double p, double m1, double m2) const
    return passarino_veltman::ReG0(p*p, m1*m1, m2*m2, Sqr(get_scale()));
 }
 
+/**
+ * routine which finds the DRbar mass eigenstates and mixings.
+ */
 void CLASSNAME::calculate_DRbar_parameters()
 {
 @saveSoftHiggsMasses@
@@ -353,6 +390,9 @@ void CLASSNAME::calculate_DRbar_parameters()
 @restoreSoftHiggsMasses@
 }
 
+/**
+ * routine which finds the pole mass eigenstates and mixings.
+ */
 void CLASSNAME::calculate_pole_masses()
 {
 #ifdef ENABLE_THREADS
@@ -372,13 +412,43 @@ void CLASSNAME::copy_DRbar_masses_to_pole_masses()
 @copyDRbarMassesToPoleMasses@
 }
 
+/**
+ * reorders DRbar masses so that golstones are placed at the index
+ * specified in the model files definition of the associuated
+ * gauge boson (see Z-boson definition in default particles.m file
+ * in the Models directory of your SARAH distribution for example)
+ */
+void CLASSNAME::reorder_DRbar_masses()
+{
+@reorderDRbarMasses@
+}
+
+/**
+ * reorders pole masses so that golstones are placed at the index
+ * specified in the model files definition of the associuated
+ * gauge boson (see Z-boson definition in default particles.m file
+ * in the Models directory of your SARAH distribution for example)
+ */
+void CLASSNAME::reorder_pole_masses()
+{
+@reorderPoleMasses@
+}
+/**
+ * calculates spectrum for model once the DRbar parameters at
+ * at low energies are known
+ */
 void CLASSNAME::calculate_spectrum()
 {
    calculate_DRbar_parameters();
    if (pole_mass_loop_order > 0)
       calculate_pole_masses();
-   else
+
+   // move goldstone bosons to the front
+   reorder_DRbar_masses();
+   if (pole_mass_loop_order == 0)
       copy_DRbar_masses_to_pole_masses();
+   else
+      reorder_pole_masses();
 
    if (problems.have_serious_problem()) {
       clear_DRbar_parameters();
@@ -411,7 +481,9 @@ void CLASSNAME::run_to(double scale, double eps)
       eps = precision;
    @ModelName@_soft_parameters::run_to(scale, eps);
 }
-
+/**
+ * finds the lsp and returns it's mass
+ */
 @lspFunctions@
 
 @massCalculationFunctions@

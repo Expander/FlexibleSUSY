@@ -82,7 +82,7 @@ StripIndices[expr_, _CConversion`VectorType] :=
  * @param gij list of SARAH-like formated anomalous dimensions
  *)
 ConvertSarahAnomDim[gij_List] :=
-    Module[{lst = {}, adim, i, name, type, expr, nameWithIndices, unitMatrix},
+    Module[{lst = {}, adim, i, name, type, expr, nameWithIndices},
            For[i = 1, i <= Length[gij], i++,
                adim = gij[[i]];
                (* adim[[1]] == {name1,name2}, adim[[2]] == 1-loop anom. dim *)
@@ -94,8 +94,7 @@ ConvertSarahAnomDim[gij_List] :=
                (* protect tensor products *)
                expr = Simplify /@ ((CConversion`ProtectTensorProducts[#, nameWithIndices])& /@ expr);
                (* strip indices *)
-               unitMatrix = CreateUnitMatrix[type];
-               expr = StripIndices[expr /. Kronecker[Susyno`LieGroups`i1,SARAH`i2] -> unitMatrix, type];
+               expr = StripIndices[expr /. Kronecker[Susyno`LieGroups`i1,SARAH`i2] :> CreateUnitMatrix[type], type];
                AppendTo[lst, AnomalousDimension[name, type, expr]];
               ];
            Return[lst];
@@ -117,11 +116,10 @@ CreateAnomDimPrototypes[anomDim_List] :=
           ];
 
 CreateAnomDimFunction[anomDim_AnomalousDimension] :=
-    Module[{def, body, type, name, unitMatrix,
+    Module[{def, body, type, name,
             exprOneLoop, exprTwoLoop, inputParsDecl},
            type = GetType[anomDim];
            name = ToValidCSymbolString[GetName[anomDim]];
-           unitMatrix = CreateUnitMatrix[type];
            (* one-loop *)
            exprOneLoop = CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim];
            body = "\nanomDim = " <> RValueToCFormString[exprOneLoop] <> ";\n";

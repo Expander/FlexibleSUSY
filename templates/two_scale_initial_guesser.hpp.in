@@ -37,6 +37,11 @@ class @ModelName@;
 
 class Two_scale;
 
+/**
+ * @class @ModelName@_initial_guesser<Two_scale>
+ * @brief initial guesser for the @ModelName@
+ */
+
 template<>
 class @ModelName@_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
@@ -47,24 +52,24 @@ public:
                                const @ModelName@_susy_scale_constraint<Two_scale>&,
                                const @ModelName@_high_scale_constraint<Two_scale>&);
    virtual ~@ModelName@_initial_guesser();
-   virtual void guess();
+   virtual void guess(); ///< initial guess
 
    void set_running_precision(double p) { running_precision = p; }
 
 private:
-   @ModelName@<Two_scale>* model;
+   @ModelName@<Two_scale>* model; ///< pointer to model class
    @ModelName@_input_parameters input_pars;
-   QedQcd oneset;
-   double mu_guess;
-   double mc_guess;
-   double mt_guess;
-   double md_guess;
-   double ms_guess;
-   double mb_guess;
-   double me_guess;
-   double mm_guess;
-   double mtau_guess;
-   double running_precision;
+   QedQcd oneset;   ///< Standard Model low-energy data
+   double mu_guess; ///< guessed DR-bar mass of up-quark
+   double mc_guess; ///< guessed DR-bar mass of charm-quark
+   double mt_guess; ///< guessed DR-bar mass of top-quark
+   double md_guess; ///< guessed DR-bar mass of down-quark
+   double ms_guess; ///< guessed DR-bar mass of strange-quark
+   double mb_guess; ///< guessed DR-bar mass of bottom-quark
+   double me_guess; ///< guessed DR-bar mass of electron
+   double mm_guess; ///< guessed DR-bar mass of muon
+   double mtau_guess; ///< guessed DR-bar mass of tau
+   double running_precision; ///< Runge-Kutta RG running precision
    @ModelName@_low_scale_constraint<Two_scale> low_constraint;
    @ModelName@_susy_scale_constraint<Two_scale> susy_constraint;
    @ModelName@_high_scale_constraint<Two_scale> high_constraint;

@@ -1,6 +1,4 @@
 Block MODSEL                 # Select model
-    1    1                   # mSUGRA
-    3    1                   # NMSSM
 #   12    1000                # DRbar parameter output scale (GeV)
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
@@ -24,10 +22,10 @@ Block SMINPUTS               # Standard Model inputs
    12   0.000000000e+00      # mnu1(pole)
    13   1.056583570e-01      # mmuon(pole)
    14   0.000000000e+00      # mnu2(pole)
-   21   4.750000000e-03      # md(2 GeV)
-   22   2.400000000e-03      # mu(2 GeV)
-   23   1.040000000e-01      # ms(2 GeV)
-   24   1.270000000e+00      # mc(2 GeV)
+   21   4.750000000e-03      # md(2 GeV) MS-bar
+   22   2.400000000e-03      # mu(2 GeV) MS-bar
+   23   1.040000000e-01      # ms(2 GeV) MS-bar
+   24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR                 # Input parameters
     1   200                  # m0
     2   200                  # m12

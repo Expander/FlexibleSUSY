@@ -22,6 +22,7 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
+#include "numerics.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "config.h"
@@ -34,6 +35,9 @@
 using namespace softsusy;
 
 namespace flexiblesusy {
+
+char const * const @ModelName@_slha_io::drbar_blocks[NUMBER_OF_DRBAR_BLOCKS] =
+   @drBarBlockNames@;
 
 @ModelName@_slha_io::@ModelName@_slha_io()
    : slha_io()
@@ -76,6 +80,18 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    }
 
    slha_io.set_block(spinfo, SLHA_io::front);
+}
+
+void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
+                                   bool calculate_sm_pole_masses)
+{
+@writeSLHAMassBlock@
+}
+
+void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@_physical& physical,
+                                              bool calculate_sm_pole_masses)
+{
+@writeSLHAMixingMatricesBlocks@
 }
 
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
@@ -146,6 +162,34 @@ void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& s
    } else {
       WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }
+}
+
+/**
+ * Reads the renormalization scales from all DR-bar parameter blocks.
+ * If blocks with different scales are found the last scale is
+ * returned and a warning is printed.
+ *
+ * @return common renormalization scale
+ */
+double @ModelName@_slha_io::read_scale() const
+{
+   double scale = 0.;
+
+   for (unsigned i = 0; i < NUMBER_OF_DRBAR_BLOCKS; i++) {
+      const double block_scale = slha_io.read_scale(drbar_blocks[i]);
+      if (!is_zero(block_scale)) {
+         if (!is_zero(scale) && !is_equal(scale, block_scale))
+            WARNING("DR-bar parameters defined at different scales");
+         scale = block_scale;
+      }
+   }
+
+   return scale;
+}
+
+void @ModelName@_slha_io::convert_to_slha_convention(@ModelName@_physical& physical)
+{
+@convertMixingsToSLHAConvention@
 }
 
 } // namespace flexiblesusy

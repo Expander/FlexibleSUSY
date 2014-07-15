@@ -41,6 +41,11 @@ void SLHA_io::clear()
    modsel.clear();
 }
 
+bool SLHA_io::block_exists(const std::string& block_name) const
+{
+   return data.find(block_name) != data.cend();
+}
+
 /**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name
@@ -82,15 +87,30 @@ void SLHA_io::fill(QedQcd& oneset) const
    read_block("SMINPUTS", sminputs_processor);
 }
 
-void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
+/**
+ * Applies processor to each (key, value) pair of a SLHA block.
+ * Non-data lines are ignored.
+ *
+ * @param block_name block name
+ * @param processor tuple processor to be applied
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   if (data.find(block_name) == data.cend())
-      return;
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
 
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line())
+      if (!line->is_data_line()) {
+         // read scale from block definition
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
          continue;
+      }
 
       if (line->size() >= 2) {
          const int key = convert_to<int>((*line)[0]);
@@ -98,13 +118,15 @@ void SLHA_io::read_block(const std::string& block_name, const Tuple_processor& p
          processor(key, value);
       }
    }
+
+   return scale;
 }
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    const SLHAea::Coll::const_iterator block = data.find(block_name);
 
-   if (block == data.cend()) {
+   if (!block_exists(block_name)) {
       WARNING("block " << block_name << " not found");
       return 0.;
    }
@@ -121,6 +143,32 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
    const double entry = convert_to<double>(line->at(1));
 
    return entry;
+}
+
+/**
+ * Reads scale definition from SLHA block.
+ *
+ * @param block_name block name
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_scale(const std::string& block_name) const
+{
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line()) {
+         if (line->size() > 3 && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
+         break;
+      }
+   }
+
+   return scale;
 }
 
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)
@@ -189,8 +237,9 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    set_block(ss);
 }
 
-void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
+void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
 {
+   softsusy::QedQcd qedqcd(qedqcd_);
    std::ostringstream ss;
 
    const double alphaEmInv = 1./qedqcd.displayAlpha(ALPHA);
@@ -208,10 +257,18 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
    ss << FORMAT_ELEMENT(12, 0                            , "mnu1(pole)");
    ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
    ss << FORMAT_ELEMENT(14, 0                            , "mnu2(pole)");
+
+   // recalculate mc(mc)^MS-bar
+   double mc = qedqcd.displayMass(mCharm);
+   qedqcd.runto(mc);
+   mc = qedqcd.displayMass(mCharm);
+
+   // recalculate mu(2 GeV)^MS-bar, md(2 GeV)^MS-bar, ms^MS-bar(2 GeV)
+   qedqcd.runto(2.0);
    ss << FORMAT_ELEMENT(21, qedqcd.displayMass(mDown)    , "md");
    ss << FORMAT_ELEMENT(22, qedqcd.displayMass(mUp)      , "mu");
    ss << FORMAT_ELEMENT(23, qedqcd.displayMass(mStrange) , "ms");
-   ss << FORMAT_ELEMENT(24, qedqcd.displayMass(mCharm)   , "mc");
+   ss << FORMAT_ELEMENT(24, mc                           , "mc");
 
    set_block(ss);
 }
@@ -258,11 +315,11 @@ void SLHA_io::process_extpar_tuple(Extpar& extpar, int key, double value)
 void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
 {
    switch (key) {
-   case 1:
-   case 3:
-   case 4:
-   case 5:
-   case 6:
+   case 1: // SUSY breaking model (defined in FlexibleSUSY model file)
+   case 3: // SUSY model (defined in SARAH model file)
+   case 4: // R-parity violation (defined in SARAH model file)
+   case 5: // CP-parity violation (defined in SARAH model file)
+   case 6: // Flavour violation (defined in SARAH model file)
    case 11:
    case 21:
       WARNING("Key " << key << " in Block MODSEL currently not supported");
