@@ -133,7 +133,6 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    if (tmp_conts == NULL){
       printf("*** No Contours Were Extracted!\n");
       TotalConts = 0;
-      return;
    } else {
       printf("cloning ...");
       conts = (TObjArray*)tmp_conts->Clone();
@@ -166,7 +165,6 @@ void plot2d(const TString& file_name = "higgs-study/data/scan_MSSM.dat",
    if (tmp_lsp_conts == NULL){
       printf("*** No LSP Contours Were Extracted!\n");
       lsp_TotalConts = 0;
-      return;
    } else {
       lsp_conts = (TObjArray*)tmp_lsp_conts->Clone();
       lsp_TotalConts = tmp_lsp_conts->GetSize();
