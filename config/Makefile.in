@@ -143,7 +143,9 @@ ifeq ($(ENABLE_COMPILE),yes)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
+ifeq ($(findstring pack-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif

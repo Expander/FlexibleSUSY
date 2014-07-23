@@ -18,6 +18,9 @@ SARAH_MODEL  := @MODEL@
 		$(DIR)/@CLASSNAME@_plot_rgflow.gnuplot \
 		$(DIR)/@CLASSNAME@_plot_spectrum.gnuplot
 
+@CLASSNAME@_TARBALL := \
+		$(PKGNAME)-$(FLEXIBLESUSY_VERSION)-$(MODNAME).tar.gz
+
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
 
@@ -70,6 +73,7 @@ ifneq ($(MAKECMDGOALS),doc)
 -include $(DIR)/two_scale_soft.mk
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
+ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
@@ -77,6 +81,7 @@ $(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 $(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
+endif
 endif
 endif
 endif
@@ -123,7 +128,8 @@ SARAH_MODEL_FILES_@CLASSNAME@ := \
 endif
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
-		distclean-$(MODNAME) run-metacode-$(MODNAME)
+		distclean-$(MODNAME) run-metacode-$(MODNAME) \
+		pack-$(MODNAME)-src
 
 all-$(MODNAME): $(LIB@CLASSNAME@)
 
@@ -171,6 +177,13 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+pack-$(MODNAME)-src:
+		tar -czf $(@CLASSNAME@_TARBALL) \
+		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) \
+		$(EXE@CLASSNAME@_SRC) \
+		$(@CLASSNAME@_MK) $(@CLASSNAME@_TWO_SCALE_MK) \
+		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_GNUPLOT)
 
 $(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) \
 : run-metacode-$(MODNAME)
