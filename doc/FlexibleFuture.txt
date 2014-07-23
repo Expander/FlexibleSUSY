@@ -17,6 +17,8 @@ Planned major extensions:
 
  * Leading two loop mh calculator.    			 
 
+ * MicrOMEGAS interface
+
 And Fixes / minor extensions:
 
 * Weinberg angle issues: fix using the approach suggested by Jae-hyeon.
