@@ -36,6 +36,11 @@ InitialGuessAtLowScale = {
    {Ye, Automatic}
 };
 
+(* disable Higgs two-loop corrections *)
+UseHiggs2LoopMSSM = False;
+UseHiggs2LoopNMSSM = False;
+EffectiveMu = 0;
+
 OnlyLowEnergyFlexibleSUSY = True;
 
 PotentialLSPParticles = { Chi, Su, Sd, Se, Cha1, Cha2 };
