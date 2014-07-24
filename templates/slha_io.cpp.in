@@ -67,9 +67,7 @@ void @ModelName@_slha_io::set_sminputs(const softsusy::QedQcd& qedqcd)
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
    std::ostringstream spinfo;
-   spinfo << "# FlexibleSUSY " FLEXIBLESUSY_VERSION " SLHA compliant output\n"
-             "# P. Athron, Jae-hyeon Park, D. Stöckinger, A. Voigt\n"
-             "Block SPINFO\n"
+   spinfo << "Block SPINFO\n"
           << FORMAT_SPINFO(1, PKGNAME)
           << FORMAT_SPINFO(2, FLEXIBLESUSY_VERSION);
 
