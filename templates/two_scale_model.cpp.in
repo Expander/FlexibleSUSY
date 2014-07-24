@@ -15,12 +15,17 @@
 // along with FlexibleSUSY.  If not, see
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
+
+// File generated at @DateAndTime@
+
 /**
  * @file @ModelName@_two_scale_model.cpp
- * @brief contains methods to solve EWSB and calculate pole masses and 
- *        mixings from DRbar parameters.
+ * @brief implementation of the @ModelName@ model class
+ *
+ * Contains the definition of the @ModelName@ model class methods
+ * which solve EWSB and calculate pole masses and mixings from DRbar
+ * parameters.
  */
-// File generated at @DateAndTime@
 
 #include "@ModelName@_two_scale_model.hpp"
 #include "wrappers.hpp"
