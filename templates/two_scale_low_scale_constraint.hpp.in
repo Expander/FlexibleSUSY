@@ -49,7 +49,7 @@ public:
    void initialize();
    void set_input_parameters(const @ModelName@_input_parameters&);
    void set_sm_parameters(const QedQcd&);
-   void set_threshold_corrections(unsigned); ///< diable/enable threshold corrections
+   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale;
@@ -59,7 +59,7 @@ private:
    QedQcd oneset;
    double MZDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
-   unsigned threshold_corrections; ///< diable/enable threshold corrections
+   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

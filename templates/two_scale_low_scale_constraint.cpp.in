@@ -54,7 +54,7 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
-   , threshold_corrections(1)
+   , threshold_corrections_loop_order(1)
 {
 }
 
