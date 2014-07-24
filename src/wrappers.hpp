@@ -58,21 +58,16 @@ inline double AbsSqrt(double x)
    return std::sqrt(std::fabs(x));
 }
 
-inline double AbsSqrt_d(double x)
-{
-   return AbsSqrt(x);
-}
-
 template <typename Derived>
 Derived AbsSqrt(const Eigen::MatrixBase<Derived>& m)
 {
-   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+   return m.cwiseAbs().cwiseSqrt();
 }
 
 template <typename Derived>
 Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
 {
-   return m.unaryExpr(std::ptr_fun(AbsSqrt_d));
+   return m.cwiseAbs().cwiseSqrt();
 }
 
 inline double ArcTan(double a)

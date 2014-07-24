@@ -22,6 +22,13 @@
 
 namespace flexiblesusy {
 
+namespace {
+   double AbsSqrt_d(double x)
+   {
+      return AbsSqrt(x);
+   }
+}
+
 softsusy::DoubleVector AbsSqrt(const softsusy::DoubleVector& x)
 {
    return x.apply(AbsSqrt_d);
