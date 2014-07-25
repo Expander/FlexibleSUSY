@@ -51,7 +51,7 @@ public:
       , precision_goal(1.0e-4)
       , max_iterations(0)
       , beta_loop_order(2)
-      , threshold_corrections(1)
+      , threshold_corrections_loop_order(1)
       , calculate_sm_masses(false) {}
    ~MSSMcbs_spectrum_generator() {}
 
@@ -71,7 +71,7 @@ public:
    void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_threshold_corrections(unsigned t) { threshold_corrections = t; }
+   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
 
    void run(const QedQcd& oneset, const MSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "MSSM_rge_running.dat") const;
@@ -89,7 +89,7 @@ private:
    double precision_goal; ///< precision goal
    unsigned max_iterations; ///< maximum number of iterations
    unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections; ///< disable/enable threshold corrections
+   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
@@ -136,7 +136,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
    model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections);
+   model.set_thresholds(threshold_corrections_loop_order);
 
    MSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
