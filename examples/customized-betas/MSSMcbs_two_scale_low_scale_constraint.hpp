@@ -47,7 +47,7 @@ public:
    void initialize();
    void set_input_parameters(const MSSM_input_parameters&);
    void set_sm_parameters(const QedQcd&);
-   void set_threshold_corrections(unsigned); ///< diable/enable threshold corrections
+   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale;
@@ -57,7 +57,7 @@ private:
    QedQcd oneset;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
-   unsigned threshold_corrections; ///< diable/enable threshold corrections
+   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

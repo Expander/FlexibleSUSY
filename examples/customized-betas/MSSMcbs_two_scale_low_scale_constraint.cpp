@@ -52,7 +52,7 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
    , new_g1(0.)
    , new_g2(0.)
    , new_g3(0.)
-   , threshold_corrections(1)
+   , threshold_corrections_loop_order(2)
 {
 }
 
@@ -172,20 +172,22 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 
    if (model->get_thresholds()) {
       delta_alpha_em = calculate_delta_alpha_em(alpha_em);
-#if 0
-      // one-loop level test against MSSM_low_scale_constraint
-      alS5DRbar_over_alS5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
-      zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
-      zeta_g_SUSY_2 = calculate_zeta_g_SUSY_2(alpha_s);
-      alpha_s /= (1 - (alS5DRbar_over_alS5MSbar-1)
-		    - (1/zeta_g_QCD_2-1) - (1/zeta_g_SUSY_2-1));
-#endif
-      alS5DRbar_over_alS5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
-      alpha_s *= alS5DRbar_over_alS5MSbar;  // alS5MSbar -> alS5DRbar
-      zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
-      alpha_s /= zeta_g_QCD_2;		    // alS5DRbar -> alS6DRbar
-      zeta_g_SUSY_2 = calculate_zeta_g_SUSY_2(alpha_s);
-      alpha_s /= zeta_g_SUSY_2;		    // alS6DRbar -> alS6DRbarMSSM
+      if (model->get_thresholds() == 1) {
+	 // one-loop level test against MSSM_low_scale_constraint
+	 alS5DRbar_over_alS5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
+	 zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
+	 zeta_g_SUSY_2 = calculate_zeta_g_SUSY_2(alpha_s);
+	 alpha_s /= (1 - (alS5DRbar_over_alS5MSbar-1)
+		       - (1/zeta_g_QCD_2-1) - (1/zeta_g_SUSY_2-1));
+      }
+      else {
+      	 alS5DRbar_over_alS5MSbar = calculate_alS5DRbar_over_alS5MSbar(alpha_s);
+      	 alpha_s *= alS5DRbar_over_alS5MSbar; // alS5MSbar -> alS5DRbar
+      	 zeta_g_QCD_2 = calculate_zeta_g_QCD_2(alpha_s);
+      	 alpha_s /= zeta_g_QCD_2;	      // alS5DRbar -> alS6DRbar
+      	 zeta_g_SUSY_2 = calculate_zeta_g_SUSY_2(alpha_s);
+      	 alpha_s /= zeta_g_SUSY_2;	      // alS6DRbar -> alS6DRbarMSSM
+      }
    }
 
    const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
@@ -255,7 +257,8 @@ double MSSMcbs_low_scale_constraint<Two_scale>::calculate_alS5DRbar_over_alS5MSb
    const int nf = 5;
 
    return 1 + alS5MSbar/Pi * CA/12
-            + Sqr(alS5MSbar/Pi) * (11.0/72 * Sqr(CA) - 1.0/8 * CF * T * nf)
+	    + (model->get_thresholds() < 2 ? 0 :
+	       Sqr(alS5MSbar/Pi) * (11.0/72 * Sqr(CA) - 1.0/8 * CF * T * nf))
       ;
 }
 
@@ -274,7 +277,7 @@ double MSSMcbs_low_scale_constraint<Two_scale>::calculate_zeta_g_QCD_2(double al
    double b2 = - a2 + 2 * Sqr(a1);
 
    return 1 / (1 + b1 * alS5DRbar/Pi
-	         + b2 * Sqr(alS5DRbar/Pi)
+	         + (model->get_thresholds() < 2 ? 0 : b2 * Sqr(alS5DRbar/Pi))
 	      );
 }
 
@@ -306,9 +309,10 @@ double MSSMcbs_low_scale_constraint<Two_scale>::calculate_zeta_g_SUSY_2(double a
    double LM = FiniteLog(Sqr(currentScale/M));
    return 1 /
       (1 + delta_alpha_s
-         + Sqr(alS6DRbar/Pi) * (
-           85.0/32 - 5.0/48 * ns
-         + LM * (3 - ns/12.0) + Sqr(LM) * Sqr(1.0/2 + ns/12.0))
+         + (model->get_thresholds() < 2 ? 0 :
+	    Sqr(alS6DRbar/Pi) * (
+	    85.0/32 - 5.0/48 * ns
+	    + LM * (3 - ns/12.0) + Sqr(LM) * Sqr(1.0/2 + ns/12.0)))
       );
 }
 
