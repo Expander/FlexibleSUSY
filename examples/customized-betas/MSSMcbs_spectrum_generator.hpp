@@ -114,6 +114,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    high_scale_constraint.set_input_parameters(input);
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
+   low_scale_constraint .set_sm_parameters(oneset);
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
