@@ -137,11 +137,11 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
    @ModelName@_physical physical(model.get_physical());
    convert_to_slha_convention(physical);
 
-   const bool calculate_sm_pole_masses = model.do_calculate_sm_pole_masses();
+   const bool write_sm_masses = model.do_calculate_sm_pole_masses();
 
    set_model_parameters(model);
-   set_mass(physical, calculate_sm_pole_masses);
-   set_mixing_matrices(physical, calculate_sm_pole_masses);
+   set_mass(physical, write_sm_masses);
+   set_mixing_matrices(physical, write_sm_masses);
 }
 
 } // namespace flexiblesusy

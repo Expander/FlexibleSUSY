@@ -128,7 +128,7 @@ WriteSLHAMassBlock[massMatrices_List] :=
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
            susyMassesStr = "mass << \"Block MASS\\n\"\n" <>
                            TextFormatting`IndentText[susyMassesStr] <> ";\n\n";
-           smMassesStr = "if (calculate_sm_pole_masses) {\n" <>
+           smMassesStr = "if (write_sm_masses) {\n" <>
                          TextFormatting`IndentText["mass\n" <>
                              TextFormatting`IndentText[smMassesStr] <> ";"] <>
                          "\n}\n\n";
@@ -212,7 +212,7 @@ WriteSLHAMixingMatricesBlocks[] :=
            (smMixStr = smMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ smMix;
            (susyMixStr = susyMixStr <> WriteSLHAMatrix[#,"LOCALPHYSICAL"])& /@ susyMix;
            result = susyMixStr <> "\n" <>
-                    "if (calculate_sm_pole_masses) {\n" <>
+                    "if (write_sm_mixing_matrics) {\n" <>
                     TextFormatting`IndentText[smMixStr] <> "}\n";
            Return[result];
           ];

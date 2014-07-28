@@ -106,11 +106,11 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
  *
  * @param physical struct of physical parameters
  *
- * @param calculate_sm_pole_masses flag to indicate if Standard Model
+ * @param write_sm_masses flag to indicate if Standard Model
  *    particle masses should be written as well
  */
 void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
-                                   bool calculate_sm_pole_masses)
+                                   bool write_sm_masses)
 {
 @writeSLHAMassBlock@
 }
@@ -120,11 +120,11 @@ void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
  *
  * @param physical struct of physical parameters
  *
- * @param calculate_sm_pole_masses flag to indicate if Standard Model
+ * @param write_sm_mixing_matrics flag to indicate if Standard Model
  *    particle mixing matrices should be written as well
  */
 void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@_physical& physical,
-                                              bool calculate_sm_pole_masses)
+                                              bool write_sm_mixing_matrics)
 {
 @writeSLHAMixingMatricesBlocks@
 }
