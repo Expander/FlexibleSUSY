@@ -49,21 +49,42 @@ void @ModelName@_slha_io::clear()
    slha_io.clear();
 }
 
+/**
+ * Stores the EXTPAR input parameters in the SLHA object.
+ *
+ * @param input struct of input parameters
+ */
 void @ModelName@_slha_io::set_extpar(const @ModelName@_input_parameters& input)
 {
 @writeSLHAExtparBlock@
 }
 
+/**
+ * Stores the MINPAR input parameters in the SLHA object.
+ *
+ * @param input struct of input parameters
+ */
 void @ModelName@_slha_io::set_minpar(const @ModelName@_input_parameters& input)
 {
 @writeSLHAMinparBlock@
 }
 
+/**
+ * Stores the SMINPUTS input parameters in the SLHA object.
+ *
+ * @param qedqcd class of Standard Model parameters
+ */
 void @ModelName@_slha_io::set_sminputs(const softsusy::QedQcd& qedqcd)
 {
    slha_io.set_sminputs(qedqcd);
 }
 
+/**
+ * Stores the spectrum generator information in the SPINFO block in
+ * the SLHA object.
+ *
+ * @param problems struct with parameter point problems
+ */
 void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems)
 {
    std::ostringstream spinfo;
@@ -80,33 +101,65 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
    slha_io.set_block(spinfo, SLHA_io::front);
 }
 
+/**
+ * Stores the particle masses in the SLHA object.
+ *
+ * @param physical struct of physical parameters
+ *
+ * @param calculate_sm_pole_masses flag to indicate if Standard Model
+ *    particle masses should be written as well
+ */
 void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
                                    bool calculate_sm_pole_masses)
 {
 @writeSLHAMassBlock@
 }
 
+/**
+ * Stores the mixing matrices in the SLHA object.
+ *
+ * @param physical struct of physical parameters
+ *
+ * @param calculate_sm_pole_masses flag to indicate if Standard Model
+ *    particle mixing matrices should be written as well
+ */
 void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@_physical& physical,
                                               bool calculate_sm_pole_masses)
 {
 @writeSLHAMixingMatricesBlocks@
 }
 
+/**
+ * Write SLHA object to file.
+ *
+ * @param file_name file name
+ */
 void @ModelName@_slha_io::write_to_file(const std::string& file_name)
 {
    slha_io.write_to_file(file_name);
 }
 
+/**
+ * Read (DR-bar) model parameter input scale from EXTPAR entry 0
+ */
 double @ModelName@_slha_io::get_input_scale() const
 {
    return slha_io.get_extpar().input_scale;
 }
 
+/**
+ * Read (DR-bar) model parameter output scale from MODSEL entry 12
+ */
 double @ModelName@_slha_io::get_parameter_output_scale() const
 {
    return slha_io.get_modsel().parameter_output_scale;
 }
 
+/**
+ * Read SLHA object from file
+ *
+ * @param file_name file name
+ */
 void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 {
    slha_io.read_from_file(file_name);
@@ -114,6 +167,12 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
    slha_io.read_extpar();
 }
 
+/**
+ * Fill struct of model input parameters from SLHA object (MINPAR and
+ * EXTPAR blocks)
+ *
+ * @param input struct of model input parameters
+ */
 void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 {
    SLHA_io::Tuple_processor minpar_processor
@@ -127,6 +186,12 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 @readLesHouchesInputParameters@
 }
 
+/**
+ * Fill struct of spectrum generator settings from SLHA object
+ * (FlexibleSUSY block)
+ *
+ * @param settings struct of spectrum generator settings
+ */
 void @ModelName@_slha_io::fill(Spectrum_generator_settings& settings) const
 {
    SLHA_io::Tuple_processor flexiblesusy_processor
@@ -185,6 +250,13 @@ double @ModelName@_slha_io::read_scale() const
    return scale;
 }
 
+/**
+ * Convert masses and mixing matrices to SLHA convention: Fermion
+ * mixing matrices are always real and fermion masses are allowed to
+ * be negative.
+ *
+ * @param physical struct of physical parameters to convert
+ */
 void @ModelName@_slha_io::convert_to_slha_convention(@ModelName@_physical& physical)
 {
 @convertMixingsToSLHAConvention@
