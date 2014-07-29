@@ -52,6 +52,13 @@ Command_line_options::~Command_line_options()
 {
 }
 
+/**
+ * Parse string of program options and store the given option values
+ * in the member variables of this class.
+ *
+ * @param argc number of program arguments
+ * @param argv program arguments
+ */
 void Command_line_options::parse(int argc, const char* argv[])
 {
    assert(argc > 0);
@@ -138,6 +145,14 @@ void Command_line_options::reset()
    spectrum_file.clear();
 }
 
+/**
+ * Returns true if the string str starts with prefix, false otherwise.
+ *
+ * @param str string to search in
+ * @param prefix string to search for
+ *
+ * @return true if the string str starts with prefix, false otherwise
+ */
 bool Command_line_options::starts_with(const std::string& str,
                                        const std::string& prefix)
 {
