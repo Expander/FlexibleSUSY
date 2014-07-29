@@ -52,7 +52,7 @@ Usage: ./`basename $0` [options]
 
 Options:
   --version=         SARAH version (default: ${sarah_version}).
-                     Example: --version=4.2.3
+                     Example: --version=${sarah_version}
 
   --force,-f         Overwrite an already existing SARAH link.
 
