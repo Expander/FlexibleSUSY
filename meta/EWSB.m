@@ -410,6 +410,9 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
                IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
                "else\n" <>
                IndentText["error = 1;"] <> "\n";
+               If[i < Length[solution],
+                  result = result <> "\n";
+                 ];
               ];
            Return[result];
           ];
