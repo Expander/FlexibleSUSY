@@ -54,6 +54,7 @@ public:
    void print_build_info(std::ostream&) const;
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;
+   void reset();
 
    const std::string& get_slha_input_file() const { return slha_input_file; }
    const std::string& get_slha_output_file() const { return slha_output_file; }

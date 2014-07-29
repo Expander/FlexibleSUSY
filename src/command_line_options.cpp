@@ -55,10 +55,8 @@ Command_line_options::~Command_line_options()
 void Command_line_options::parse(int argc, const char* argv[])
 {
    assert(argc > 0);
+   reset();
    program = argv[0];
-   do_exit = false;
-   do_print_model_info = false;
-   exit_status = EXIT_SUCCESS;
 
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
@@ -123,6 +121,21 @@ void Command_line_options::print_usage(std::ostream& ostr) const
            "  --help,-h                         print this help message\n"
            "  --version,-v                      print program version"
         << std::endl;
+}
+
+/**
+ * Resets all command line options to their initial values.
+ */
+void Command_line_options::reset()
+{
+   do_exit = false;
+   do_print_model_info = false;
+   exit_status = EXIT_SUCCESS;
+   program.clear();
+   rgflow_file.clear();
+   slha_input_file.clear();
+   slha_output_file.clear();
+   spectrum_file.clear();
 }
 
 bool Command_line_options::starts_with(const std::string& str,
