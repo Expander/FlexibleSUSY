@@ -10,7 +10,7 @@ BASEDIR=$(dirname $0)
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
 # default SARAH version
-sarah_version="4.2.3"
+sarah_version="4.3.1"
 
 mathematica_dir="${HOME}/.Mathematica"
 mathematica_kernel_dir="${mathematica_dir}/Kernel"
