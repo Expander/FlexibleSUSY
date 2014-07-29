@@ -18,19 +18,25 @@
 
 /**
  * @file betafunction.hpp
- * @brief contains class Beta_function - 
- *        abstract base class for the beta functions of
- *        the parameter classes of the generated models.
+ * @brief contains class Beta_function
  */
+
 #ifndef BETAFUNCTION_H
 #define BETAFUNCTION_H
 
 #include "rk.hpp"
 
 namespace flexiblesusy {
+
 /**
  * @class Beta_function
- * @brief beta functions or renormalisation group equations
+ * @brief beta function interface
+ *
+ * Beta_function is the abstract base class for the beta functions of
+ * the parameter classes of the generated models.  It defines the
+ * basic RG running interface.  The run() and run_to() functions use
+ * the Runge-Kutta algorithm to integrate the RGEs up to a given
+ * scale.
  */
 class Beta_function {
 public:
@@ -57,10 +63,10 @@ public:
    virtual void run_to(double, double eps = -1.0);
 
 private:
-   unsigned num_pars;    ///< Number of parameters
-   unsigned loops;       ///< To what order does the RG evolution run
-   unsigned thresholds;  ///< thresholds
-   double scale;         ///< Renormalisation scale
+   unsigned num_pars;    ///< number of parameters
+   unsigned loops;       ///< to what loop order does the RG evolution run
+   unsigned thresholds;  ///< threshold correction loop order
+   double scale;         ///< current renormalization scale
    double tolerance;     ///< running tolerance
    double min_tolerance; ///< minimum tolerance allowed
 
@@ -70,6 +76,6 @@ private:
    double get_tolerance(double eps);
 };
 
-}
+} // namespace flexiblesusy
 
 #endif

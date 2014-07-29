@@ -18,7 +18,7 @@
 
 /**
  * @file betafunction.cpp
- * @brief contains methods for class Beta_function
+ * @brief contains implemenation of class Beta_function
  */
 
 #include "betafunction.hpp"
@@ -48,22 +48,28 @@ void Beta_function::reset()
    tolerance = 1.e-4;
    min_tolerance = 1.0e-11;
 }
- 
-/** 
- * method to run parameter objects 
- * of the generated models from current scale
- * to the scale x2 passed as in an argument
- */  
+
+/**
+ * Runs parameter objects of the generated models from current scale
+ * to the scale x2 passed as in an argument.
+ *
+ * @param x2 renormalization scale to run parameters to
+ * @param eps RG running precision
+ */
 void Beta_function::run_to(double x2, double eps)
 {
    const double tol = get_tolerance(eps);
    run(scale, x2, tol);
 }
-/** 
- * method to run parameter objects of the generated 
- * models from scale x1, passed as first argument, 
- * to scale x2 passed as second argument.
- */  
+
+/**
+ * Runs parameter objects of the generated models from scale x1,
+ * passed as first argument, to scale x2 passed as second argument.
+ *
+ * @param x1 renormalization scale to start RG running from
+ * @param x2 renormalization scale to run parameters to
+ * @param eps RG running precision
+ */
 void Beta_function::run(double x1, double x2, double eps)
 {
    const double tol = get_tolerance(eps);
@@ -82,30 +88,38 @@ void Beta_function::run(double x1, double x2, double eps)
    set_scale(x2);
 }
 
-/** 
- * Takes renormalisation scale as first argument and  
- * parameters of RGE  passed in as an Eigen::ArrayXd 
- * object of dynamic size in the secopnd argument. 
- * Returns the beta functions as an Eigen::ArrayXd
- * object.
- */  
+/**
+ * Takes logarithm of renormalisation scale as first argument and
+ * parameters of RGE passed in as an Eigen::ArrayXd object of dynamic
+ * size in the second argument.  Returns the beta functions as an
+ * Eigen::ArrayXd object.
+ *
+ * @param x logarithm of renormalization scale to calculate beta functions at
+ * @param y array of model parameters
+ *
+ * @return array of beta functions
+ */
 Eigen::ArrayXd Beta_function::derivatives(double x, const Eigen::ArrayXd& y)
 {
    set_scale(exp(x));
    set(y);
    return beta();
 }
-   
+
 /**
- * Calls Runge Kutta routine from rk.cpp passing start and end
- * scales, as first and second argument respectively. 
- * Parameters are passed as third argument and the derivatives
- * method as the fourth argument. 
- * The precison is passed as the last argument or if not 
- * passed it is set to default value tolerance which is a 
- * private data member of the class set to 1e-4 in the constructor. 
- */ 
-      
+ * Calls Runge Kutta routine from rk.cpp passing start and end scales,
+ * as first and second argument respectively.  Parameters are passed
+ * as third argument and the derivatives method as the fourth
+ * argument.  The precison is passed as the last argument or if not
+ * passed it is set to default value tolerance which is a private data
+ * member of the class set to 1e-4 in the constructor.
+ *
+ * @param x1 renormalization scale to start RG running from
+ * @param x2 renormalization scale to run parameters to
+ * @param v array of model parameters
+ * @param derivs function which calculates the derivatives (beta functions)
+ * @param eps RG running precision
+ */
 void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
                             runge_kutta::Derivs derivs, double eps)
 {
@@ -124,12 +138,18 @@ void Beta_function::call_rk(double x1, double x2, Eigen::ArrayXd & v,
    set_scale(x2);
 }
 
-   /**
-    * returns precsion after which will either be 
-    * value input as argument, default value tolerance 
-    * if negative number is passed, or min_tolerance 
-    * if passed argument is too small
-    */
+/**
+ * Helper function, which returns the RG running precision, determined
+ * from the argument eps.  If eps is less than zero, the default
+ * running precision is returned.  Otherwise, if eps is positive and
+ * less than the minimum allowed running precision, the minimum
+ * allowed running precision is returned.  Otherwise, the value of eps
+ * is returned.
+ *
+ * @param eps value to determine the RG running precision from
+ *
+ * @return RG running precision
+ */
 double Beta_function::get_tolerance(double eps)
 {
    double tol;
@@ -143,4 +163,4 @@ double Beta_function::get_tolerance(double eps)
    return tol;
 }
 
-}
+} // namespace flexiblesusy
