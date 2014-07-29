@@ -109,6 +109,7 @@ private:
       unsigned ewsb_loop_order;
    };
 
+#ifdef ENABLE_THREADS
    struct Thread {
       typedef void(@ModelName@<Two_scale>::*Memfun_t)();
       @ModelName@<Two_scale>* model;
@@ -124,6 +125,7 @@ private:
          }
       }
    };
+#endif
 
    std::size_t number_of_ewsb_iterations;
    std::size_t number_of_mass_iterations;
@@ -135,8 +137,8 @@ private:
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
-   std::exception_ptr thread_exception;
 #ifdef ENABLE_THREADS
+   std::exception_ptr thread_exception;
    static std::mutex mtx_fortran; /// locks fortran functions
 #endif
 

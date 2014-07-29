@@ -80,7 +80,9 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
    , problems(@ModelName@_info::particle_names)
+#ifdef ENABLE_THREADS
    , thread_exception()
+#endif
 @physicalMassesInit@
 @mixingMatricesInit@
 @phasesInit@
