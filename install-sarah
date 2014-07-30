@@ -9,10 +9,20 @@ BASEDIR=$(dirname $0)
 # absolute path to this script
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
+# operating system
+operating_system="`(uname -s) 2>/dev/null || echo unknown`"
+
 # default SARAH version
 sarah_version="4.3.1"
 
-mathematica_dir="${HOME}/.Mathematica"
+# determine Mathematica user directory
+case "$operating_system" in
+    Darwin)     mathematica_dir="${HOME}/Library/Mathematica" ;;
+    CYGWIN_NT*) mathematica_dir="${USERPROFILE}/AppData/Roaming/Mathematica" ;;
+    # Linux, *BSD
+    *)          mathematica_dir="${HOME}/.Mathematica" ;;
+esac
+
 mathematica_kernel_dir="${mathematica_dir}/Kernel"
 mathematica_applications_dir="${mathematica_dir}/Applications"
 mathematica_init="${mathematica_kernel_dir}/init.m"
