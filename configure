@@ -1494,8 +1494,8 @@ check_fflags() {
 #_____________________________________________________________________
 check_fortran_libs() {
     case "$FC" in
-        gfortran)
-            gfortran_lib_search_paths=`gfortran -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
+        gfortran*)
+            gfortran_lib_search_paths=`${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
             check_library "libgfortran" "$gfortran_lib_search_paths" "$default_lib_paths"
             if test "x$found_lib" = "x" ; then
                 message "Error: libgfortran not found in $gfortran_lib_search_paths $default_lib_paths"
