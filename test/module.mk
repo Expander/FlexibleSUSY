@@ -157,7 +157,10 @@ TEST_SH_LOG   := $(TEST_SH:.sh=.sh.log)
 
 TEST_META_LOG := $(TEST_META:.m=.m.log)
 
-TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG) $(TEST_META_LOG)
+TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG)
+ifeq ($(ENABLE_META),yes)
+TEST_LOG      += $(TEST_META_LOG)
+endif
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_EXE += $(TEST_PV_EXE)
@@ -218,7 +221,11 @@ $(DIR)/%.sh.log: $(DIR)/%.sh
 
 execute-tests:  $(TEST_LOG)
 
+ifeq ($(ENABLE_META),yes)
 execute-meta-tests: $(TEST_META_LOG)
+else
+execute-meta-tests:
+endif
 
 execute-compiled-tests: $(TEST_EXE_LOG)
 
