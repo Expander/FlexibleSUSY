@@ -993,9 +993,8 @@ check_boost() {
         message "   see http://www.boost.org"
         exit 1
     else
-        # assume that the compiler will look in the default paths
-        if [ -n "$boost_inc_dir" ]; then
-            BOOSTFLAGS="-I$boost_inc_dir"
+        if contains_not "${BOOSTFLAGS}" "-I$found_dir"; then
+            BOOSTFLAGS="${BOOSTFLAGS} -I$found_dir"
         fi
     fi
 }
@@ -1105,9 +1104,8 @@ check_boost_thread_incl() {
         message "  You can disable the lattice method with the --with-algorithms= flag."
         exit 1
     else
-        # assume that the compiler will look in the default paths
-        if [ -n "$boost_inc_dir" ]; then
-            BOOSTFLAGS="-I$boost_inc_dir"
+        if contains_not "${BOOSTFLAGS}" "-I$found_dir"; then
+            BOOSTFLAGS="${BOOSTFLAGS} -I$found_dir"
         fi
     fi
 }
