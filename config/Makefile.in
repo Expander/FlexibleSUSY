@@ -51,6 +51,7 @@ FLIBS              := @FLIBS@
 FOR_DEP_GEN        := @FOR_DEP_GEN@
 MAKELIB            := @MAKELIB@
 LIBEXT             := @LIBEXT@
+BLASLIBS           := @BLASLIBS@
 BOOSTTESTLIBS      := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS    := @BOOSTTHREADLIBS@
 BOOSTFLAGS         := @BOOSTFLAGS@
@@ -214,6 +215,7 @@ showbuild:
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "MAKELIB            = $(MAKELIB)"
 	@echo "LIBEXT             = $(LIBEXT)"
+	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"

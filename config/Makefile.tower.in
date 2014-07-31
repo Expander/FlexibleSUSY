@@ -45,6 +45,7 @@ FC              := @FC@
 FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
 FOR_DEP_GEN     := @FOR_DEP_GEN@
+BLASLIBS        := @BLASLIBS@
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
 BOOSTFLAGS      := @BOOSTFLAGS@
@@ -108,7 +109,7 @@ $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -160,6 +161,7 @@ showbuild:
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "LIBEXT             = $(LIBEXT)"
+	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"

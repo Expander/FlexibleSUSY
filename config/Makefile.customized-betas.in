@@ -41,6 +41,7 @@ FC              := @FC@
 FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
 FOR_DEP_GEN     := @FOR_DEP_GEN@
+BLASLIBS        := @BLASLIBS@
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
 BOOSTFLAGS      := @BOOSTFLAGS@
@@ -105,7 +106,7 @@ $(CUSTOMBETAS_DEP) $(CUSTOMBETAS_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -154,6 +155,7 @@ showbuild:
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "LIBEXT             = $(LIBEXT)"
+	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"

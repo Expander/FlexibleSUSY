@@ -21,6 +21,7 @@
 #define KERNEL_VERSION        "@KERNEL_VERSION@"
 
 /* Build variables */
+#define BLASLIBS              "@BLASLIBS@"
 #define BOOSTFLAGS            "@BOOSTFLAGS@"
 #define BOOSTTESTLIBS         "@BOOSTTESTLIBS@"
 #define BOOSTTHREADLIBS       "@BOOSTTHREADLIBS@"

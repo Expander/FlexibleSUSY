@@ -245,7 +245,7 @@ $(DIR)/test_goldstones.x: $(DIR)/test_goldstones.o $(LIBFLEXI) $(LIBLEGACY) $(fi
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_linalg2.x: $(DIR)/test_linalg2.o
-		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(CXX) -o $@ $^ $(BOOSTTESTLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 $(DIR)/test_minimizer.x: $(DIR)/test_minimizer.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
@@ -373,7 +373,7 @@ $(LIBTEST): $(LIBTEST_OBJ)
 		$(MAKELIB) $@ $^
 else
 $(LIBTEST): $(LIBTEST_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(FLIBS)
+		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 endif
 
 ALLDEP += $(LIBTEST_DEP) $(TEST_DEP)

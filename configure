@@ -137,6 +137,7 @@ boost_inc_dir=""
 eigen_inc_dir=""
 BOOSTFLAGS=""
 gsl_config="gsl-config"
+blas_lib_dir=""
 lapack_lib_dir=""
 looptools_lib_dir=""
 looptools_inc_dir=""
@@ -157,6 +158,7 @@ FC="gfortran"
 FOR_DEP_GEN="${FC}"
 GSLLIBS=""
 INSTALL_DIR=""
+BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
@@ -1526,6 +1528,28 @@ check_fortran_dep_gen() {
 }
 
 #_____________________________________________________________________
+check_blas_libs_using_options() {
+    check_library "libblas" "$blas_lib_dir" \
+	"$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Error: libblas must be installed"
+        message "  to run the lattice algorithm, see http://www.netlib.org/blas"
+        message "  You can disable the lattice algorithm with the"
+        message "  --with-algorithms= flag"
+        exit 1
+    else
+        local BLASLIBS_=-lblas
+        if [ -z "$blas_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            BLASLIBS="$BLASLIBS_"
+        else
+            BLASLIBS="-L$blas_lib_dir $BLASLIBS_"
+        fi
+	check_symbol ztpsv_ "$found_lib" "$found_dir"
+    fi
+}
+
+#_____________________________________________________________________
 check_lapack_libs_using_options() {
     check_library "liblapack" "$lapack_lib_dir" \
 	"$default_lib_paths"
@@ -1618,6 +1642,15 @@ find_symbol_using_pkgconfig() {
 	return 1
     done
     return 0
+}
+
+#_____________________________________________________________________
+check_blas_libs() {
+    if find_symbol_using_pkgconfig blas ztpsv_; then
+	BLASLIBS="$linker_flags"
+    else
+	check_blas_libs_using_options
+    fi
 }
 
 #_____________________________________________________________________
@@ -1919,6 +1952,7 @@ Package directories, compilation settings and model selection
   --with-algorithms=        Comma separated list of RG solver algorithms
                             (default: $ALGORITHMS)
                             possible values: all $available_algorithms
+  --with-blas-libdir=       Path to search for BLAS library
   --with-boost-libdir=      Path to search for BOOST libraries
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
@@ -1930,7 +1964,7 @@ Package directories, compilation settings and model selection
   --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
-  --with-lapack-libdir=     Path to search for LAPACK and BLAS libraries
+  --with-lapack-libdir=     Path to search for LAPACK library
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
@@ -2014,6 +2048,7 @@ if test $# -gt 0 ; then
                 fi
                 ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
+            --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
@@ -2067,6 +2102,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_eigen_incl
     check_fortran_libs
     check_gsl_config
+    check_blas_libs
     check_lapack_libs
     if use_algorithm "lattice"; then
         check_boost_thread_incl
@@ -2104,6 +2140,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
     -e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
     -e "s|@ALGORITHMS@|$ALGORITHMS|"   \
+    -e "s|@BLASLIBS@|$BLASLIBS|"       \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
@@ -2150,6 +2187,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@BLASLIBS@|$BLASLIBS|"       \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
@@ -2185,6 +2223,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@BLASLIBS@|$BLASLIBS|"       \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
@@ -2220,6 +2259,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+    -e "s|@BLASLIBS@|$BLASLIBS|"       \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"     \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"     \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
@@ -2274,6 +2314,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
+    -e "s|@BLASLIBS@|$BLASLIBS|"                     \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \
     -e "s|@BOOSTTHREADLIBS@|$BOOSTTHREADLIBS|"       \
     -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"                 \
