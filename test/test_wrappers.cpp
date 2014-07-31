@@ -27,8 +27,8 @@
 #include "stopwatch.hpp"
 #include <boost/lexical_cast.hpp>
 
-#ifdef __CYGWIN__
-// std::to_string is missing on Cygwin
+#if defined(__CYGWIN__) || defined(__FreeBSD__)
+// std::to_string is missing on Cygwin and FreeBSD
 // see http://stackoverflow.com/questions/22571838/gcc-4-8-1-stdto-string-error
 #   undef  ENABLE_STD_TO_STRING
 #else
