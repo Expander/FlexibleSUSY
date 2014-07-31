@@ -214,8 +214,8 @@ if exists_in_path "ln"; then
         exit 1
     fi
 else
-    echo "Error: tar not found!"
-    echo "   Please install tar to extract the SARAH package."
+    echo "Error: ln not found!"
+    echo "   Please install ln to create a symbolic link."
     exit 1
 fi
 
