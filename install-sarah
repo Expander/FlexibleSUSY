@@ -29,6 +29,18 @@ mathematica_init="${mathematica_kernel_dir}/init.m"
 
 install_path="${mathematica_applications_dir}"
 sarah_link="${install_path}/SARAH"
+sarah_link_for_math="$sarah_link"
+
+case "$operating_system" in CYGWIN_NT*)
+    mathematica_kernel_dir=$(cygpath -u "$mathematica_kernel_dir")
+    mathematica_applications_dir=$(cygpath -u "$mathematica_applications_dir")
+    mathematica_init=$(cygpath -u "$mathematica_init")
+    install_path=$(cygpath -u "$install_path")
+    sarah_link=$(cygpath -u "$sarah_link")
+    sarah_link_for_math=$(cygpath -w "$sarah_link_for_math")
+esac
+
+escaped_sarah_link_for_math=$(echo "$sarah_link_for_math" | sed 's,\\,\\\\,g')
 
 # installation flags
 overwrite="no"
@@ -121,7 +133,7 @@ Example:
   SARAH@  SARAH-${sarah_version}/  SARAH-${sarah_version}.tar.gz
   $ cat ${mathematica_init}
   (** User Mathematica initialization file **)
-  AppendTo[\$Path, "${sarah_link}"];
+  AppendTo[\$Path, "${escaped_sarah_link_for_math}"];
   $ math
   $ Mathematica 7.0 for Linux x86 (64-bit)
   Copyright 1988-2008 Wolfram Research, Inc.
@@ -247,9 +259,9 @@ else
 fi
 
 # append path to SARAH link to Mathematica's init.m
-echo "Appending link path ${sarah_link} to \$Path in ${mathematica_init} ..."
+echo "Appending link path ${sarah_link_for_math} to \$Path in ${mathematica_init} ..."
 if [ -d "${mathematica_kernel_dir}" ] ; then
-    echo "AppendTo[\$Path, \"${sarah_link}\"];" >> ${mathematica_init}
+    echo "AppendTo[\$Path, \"${escaped_sarah_link_for_math}\"];" >> "${mathematica_init}"
 else
     echo "Error: Mathematica kernel directory not found:"
     echo "   ${mathematica_kernel_dir}"
