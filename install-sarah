@@ -34,6 +34,28 @@ sarah_link="${install_path}/SARAH"
 overwrite="no"
 
 #_____________________________________________________________________
+create_symlink() {
+    # This function tries to create a symlink [$2] pointing to target [$1]
+
+    case "$operating_system" in
+    CYGWIN_NT*)
+        exists_in_path "cygstart" || {
+            echo "Error: cygstart not found!"
+            echo "   Please install Cygwin package cygutils."
+            exit 1
+        }
+        # creates an NTFS symbolic link supported by Windows Vista or newer
+        # see http://stackoverflow.com/questions/18654162/enable-ntfs-symbolic-links-for-cygwin
+        # and http://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
+        cygstart --action=runas env CYGWIN=winsymlinks:nativestrict \
+            /usr/bin/ln -s "$@" ;;
+
+    # *nix
+    *)  ln -s "$@" ;;
+    esac
+}
+
+#_____________________________________________________________________
 exists_in_path () {
     # This function will try to locate an executable [$1] in $PATH.
     #
@@ -212,7 +234,7 @@ echo "Creating link ${sarah_link} -> ${install_path}/${sarah_dir} ..."
 if exists_in_path "ln"; then
     if test "${overwrite}" = "yes" -o \( ! -e ${sarah_link} \) ; then
         rm -rf ${sarah_link}
-        ln -s ${install_path}/${sarah_dir} ${sarah_link}
+        create_symlink ${install_path}/${sarah_dir} ${sarah_link}
     else
         echo "Error: file ${sarah_link} already exists!"
         echo "   Use the --force option to overwrite it."
