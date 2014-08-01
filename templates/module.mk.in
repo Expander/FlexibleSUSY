@@ -19,7 +19,7 @@ SARAH_MODEL  := @MODEL@
 		$(DIR)/@CLASSNAME@_plot_spectrum.gnuplot
 
 @CLASSNAME@_TARBALL := \
-		$(PKGNAME)-$(FLEXIBLESUSY_VERSION)-$(MODNAME).tar.gz
+		$(MODNAME).tar.gz
 
 LIB@CLASSNAME@_SRC :=
 EXE@CLASSNAME@_SRC :=
