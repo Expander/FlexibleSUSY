@@ -251,6 +251,9 @@ release:
 	md5sum $(FLEXIBLESUSY_PKG).tar.gz > $(FLEXIBLESUSY_PKG).tar.gz.md5
 
 release-head:
-	git archive --worktree-attributes --prefix=$(PKGNAME)/ \
-		--output=$(PKGNAME).tar.gz HEAD
-	md5sum $(PKGNAME).tar.gz > $(PKGNAME).tar.gz.md5
+	$(eval git_head_descr := $(shell git describe --tags))
+	git archive --worktree-attributes \
+		--prefix=$(PKGNAME)-$(git_head_descr)/ \
+		--output=$(PKGNAME)-$(git_head_descr).tar.gz HEAD
+	md5sum $(PKGNAME)-$(git_head_descr).tar.gz \
+		> $(PKGNAME)-$(git_head_descr).tar.gz.md5
