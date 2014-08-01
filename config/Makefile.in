@@ -255,8 +255,9 @@ release-tag:
 
 release-head:
 	$(eval GIT_HEAD_DESCR := $(shell git describe --tags HEAD))
+	$(eval FLEXIBLESUSY_HEAD_PKG := $(PKGNAME)-$(GIT_HEAD_DESCR))
 	git archive --worktree-attributes \
-		--prefix=$(PKGNAME)-$(GIT_HEAD_DESCR)/ \
-		--output=$(PKGNAME)-$(GIT_HEAD_DESCR).tar.gz HEAD
-	md5sum $(PKGNAME)-$(GIT_HEAD_DESCR).tar.gz \
-		> $(PKGNAME)-$(GIT_HEAD_DESCR).tar.gz.md5
+		--prefix=$(FLEXIBLESUSY_HEAD_PKG)/ \
+		--output=$(FLEXIBLESUSY_HEAD_PKG).tar.gz HEAD
+	md5sum $(FLEXIBLESUSY_HEAD_PKG).tar.gz \
+		> $(FLEXIBLESUSY_HEAD_PKG).tar.gz.md5
