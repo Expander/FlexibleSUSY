@@ -20,7 +20,7 @@ ABSBASEDIR=$(cd $BASEDIR; pwd)
 CONFIGDIR="${BASEDIR}/config"
 
 # current date
-DATE="`(date --rfc-2822) 2>/dev/null || echo unknown`"
+DATE="`date 2>/dev/null || echo unknown`"
 
 # platform information
 debmultiarch=""
