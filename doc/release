@@ -32,7 +32,7 @@ When releasing FlexibleSUSY, please follow these steps:
 
  5. Create the tarball and a corresponding .md5 file via
 
-      make release
+      make release-tag
 
  6. Push everything:
 
