@@ -31,7 +31,7 @@ SoftsusyNMSSM_convergence_tester::~SoftsusyNMSSM_convergence_tester()
 
 double SoftsusyNMSSM_convergence_tester::max_rel_diff() const
 {
-   return sumTol(*get_model(), *get_last_iteration_model());
+   return sumTol(get_model(), get_last_iteration_model());
 }
 
 double SoftsusyNMSSM_convergence_tester::sumTol(const SoftsusyNMSSM<Two_scale>& in, const SoftsusyNMSSM<Two_scale>& out) const
