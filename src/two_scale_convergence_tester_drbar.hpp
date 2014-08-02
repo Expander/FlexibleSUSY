@@ -41,8 +41,8 @@ public:
    void set_max_iterations(unsigned);           ///< set maximum number of iterations
 
 protected:
-   const Model<Two_scale>* get_model() const;                ///< get model
-   const Model<Two_scale>* get_last_iteration_model() const; ///< get model state during last iteration
+   const Model<Two_scale>& get_model() const;                ///< get model
+   const Model<Two_scale>& get_last_iteration_model() const; ///< get model state during last iteration
    virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
    virtual double rel_scale_difference() const; ///< relative scale difference
    virtual double scale_difference() const;     ///< absolute scale difference
@@ -66,6 +66,8 @@ Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
    , max_it(static_cast<int>(-log(accuracy_goal_) / log(10.0) * 10))
    , accuracy_goal(accuracy_goal_)
 {
+   assert(model && "Error: Convergence_tester_DRbar<Model<Two_scale>>: "
+          "model pointer must not be zero!");
 }
 
 template <template<class Method> class Model>
@@ -111,17 +113,17 @@ double Convergence_tester_DRbar<Model<Two_scale> >::get_accuracy_goal() const
 }
 
 template <template<class Method> class Model>
-const Model<Two_scale>*
+const Model<Two_scale>&
 Convergence_tester_DRbar<Model<Two_scale> >::get_model() const
 {
-   return model;
+   return *model;
 }
 
 template <template<class Method> class Model>
-const Model<Two_scale>*
+const Model<Two_scale>&
 Convergence_tester_DRbar<Model<Two_scale> >::get_last_iteration_model() const
 {
-   return &last_iteration_model;
+   return last_iteration_model;
 }
 
 template <template<class Method> class Model>
