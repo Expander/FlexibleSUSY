@@ -28,12 +28,12 @@ Convergence_tester<Two_scale>::~Convergence_tester()
 
 bool Convergence_tester<Two_scale>::is_equal(double a, double b) const
 {
-   return is_equal(a, b);
+   return flexiblesusy::is_equal(a, b);
 }
 
 bool Convergence_tester<Two_scale>::is_zero(double a) const
 {
-   return is_zero(a);
+   return flexiblesusy::is_zero(a);
 }
 
 } // namespace flexiblesusy
