@@ -821,7 +821,8 @@ GetLightestMassEigenstate[mass_] :=
 CreateLSPFunctions[{}] := {"", ""};
 
 CreateLSPFunctions[masses_List] :=
-    Module[{prototype, function, mass, info, particleType, m},
+    Module[{prototype, function, mass, info, particleType, m,
+            comment},
            info = FlexibleSUSY`FSModelName <> "_info";
            particleType = info <> "::Particles";
            body = "double lsp_mass = std::numeric_limits<double>::max();
@@ -848,7 +849,23 @@ CConversion`ToValidCSymbolString[mass /. FlexibleSUSY`M -> Identity] <>
               ];
            body = body <> "return lsp_mass;\n";
            prototype = "double get_lsp(" <> particleType <> "&) const;\n";
-           function = "double CLASSNAME::get_lsp(" <> particleType <>
+           comment = "\
+/**
+ * @brief finds the LSP and returns it's mass
+ *
+ * This function finds the lightest supersymmetric particle (LSP) and
+ * returns it's mass.  The corresponding particle type is retured in
+ * the reference parameter.  The list of potential LSPs is set in the
+ * model file varible PotentialLSPParticles.  For this model it is set
+ * to:
+ * " <> ToString[masses] <> "
+ *
+ * @param particle_type particle type
+ * @return mass of LSP
+ */
+";
+           function = comment <>
+                      "double CLASSNAME::get_lsp(" <> particleType <>
                       "& particle_type) const\n{\n" <> IndentText[body] <> "}\n";
            Return[{prototype, function}];
           ];

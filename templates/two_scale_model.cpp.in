@@ -488,9 +488,7 @@ void CLASSNAME::run_to(double scale, double eps)
       eps = precision;
    @ModelName@_soft_parameters::run_to(scale, eps);
 }
-/**
- * finds the lsp and returns it's mass
- */
+
 @lspFunctions@
 
 @massCalculationFunctions@
