@@ -13,3 +13,8 @@ BoundaryLowScaleInput = {
 };
 
 OnlyLowEnergyFlexibleSUSY = True;
+
+SARAH`ParameterDefinitions = Append[
+    Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],
+    {SARAH`\[Lambda], { Description -> "SM Higgs Selfcouplings" } }
+];
