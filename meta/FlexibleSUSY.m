@@ -565,13 +565,15 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            restoreEwsbOutputParameters  = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "one_loop_", ""];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
               softScalarMasses          = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];,
-              Print["Error: no soft breaking scalar masses found!"];
               softScalarMasses          = {};
              ];
            softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
-           solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];
+           If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];,
+              solveTreeLevelEWSBviaSoftHiggsMasses = "";
+             ];
            gslEWSBRootFinders           = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
