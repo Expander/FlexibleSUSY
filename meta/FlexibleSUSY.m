@@ -1172,7 +1172,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                          "two_scale_soft_beta_.cpp.in",
                          {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
                            FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_soft.mk"}]}},
-                         SARAH`TraceAbbr, numberOfSusyParameters];
+                         If[Head[SARAH`TraceAbbr] === List, SARAH`TraceAbbr, {}],
+                         numberOfSusyParameters];
 
            ewsbEquations = SARAH`TadpoleEquations[FSEigenstates] /.
                            Parameters`ApplyGUTNormalization[] /.
