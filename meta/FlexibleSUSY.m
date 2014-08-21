@@ -247,6 +247,7 @@ GeneralReplacementRules[] :=
       "@Electron@"    -> ToValidCSymbolString[SARAH`Electron],
       "@Neutrino@"    -> ToValidCSymbolString[SARAH`Neutrino],
       "@HiggsBoson@"  -> ToValidCSymbolString[SARAH`HiggsBoson],
+      "@HiggsBoson_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> ToValidCSymbolString[SARAH`HiggsBoson] <> If[TreeMasses`GetDimension[SARAH`HiggsBoson] > 1, "(" <> num <> ")", ""],
       "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
       "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
