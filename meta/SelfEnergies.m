@@ -467,9 +467,14 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String:"tadpole"] :=
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                functionName = CreateTadpoleFunctionName[field];
-               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                      "Re(model->" <> functionName <>
-                      "(" <> ToString[idx - 1] <> "));\n";
+               If[Length[higgsAndIdx] == 1,
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                         "Re(model->" <> functionName <> "());\n";
+                  ,
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                         "Re(model->" <> functionName <>
+                         "(" <> ToString[idx - 1] <> "));\n";
+                 ];
               ];
            Return[IndentText[body]];
           ];
