@@ -417,6 +417,9 @@ CreateHiggsToEWSBEqAssociation[] :=
            vevs = SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs];
            numberOfVEVs = Length[vevs];
            numberOfHiggses = SARAH`getGen[SARAH`HiggsBoson, FlexibleSUSY`FSEigenstates];
+           If[numberOfHiggses == 1,
+              Return[{{SARAH`HiggsBoson, 1}}];
+             ];
            (* d V/d phi_i *)
            For[v = 1, v <= numberOfVEVs, v++,
                (* find CP even gauge-eigenstate Higgs for the vev *)
