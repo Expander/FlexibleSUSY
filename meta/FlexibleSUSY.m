@@ -769,6 +769,9 @@ GetRGEFileNames[outputDir_String] :=
            If[SARAH`AddDiracGauginos === True,
               AppendTo[fileNames, "BetaDGi.m"];
              ];
+           If[SARAH`SupersymmetricModel === False,
+              AppendTo[fileNames, "BetaLijkl.m"];
+             ];
            FileNameJoin[{rgeDir, #}]& /@ fileNames
           ];
 
@@ -887,7 +890,7 @@ FSPrepareRGEs[] :=
                      SARAH`BetaLi, SARAH`BetaGauge, SARAH`BetaVEV,
                      SARAH`BetaQijkl, SARAH`BetaTijk, SARAH`BetaBij,
                      SARAH`BetaLSi, SARAH`Betam2ij, SARAH`BetaMi,
-                     SARAH`BetaDGi };
+                     SARAH`BetaDGi, SARAH`BetaLijkl };
            If[Head[#] === Symbol && !ValueQ[#], Set[#,{}]]& /@ betas;
            If[!ValueQ[SARAH`Gij] || Head[SARAH`Gij] =!= List,
               SARAH`Gij = {};
@@ -1033,7 +1036,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
            (* pick beta functions of supersymmetric parameters *)
-           susyBetaFunctions = { SARAH`BetaWijkl,
+           susyBetaFunctions = { SARAH`BetaLijkl,
+                                 SARAH`BetaWijkl,
                                  SARAH`BetaYijk ,
                                  SARAH`BetaMuij ,
                                  SARAH`BetaLi   ,
