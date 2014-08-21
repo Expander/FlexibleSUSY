@@ -477,6 +477,9 @@ Format[SARAH`Tp[x_Symbol],CForm]        := Format[ToString[CForm[x]] <> ".transp
 Format[SARAH`Tp[x_],CForm]              :=
     Format["(" <> ToString[CForm[x]] <> ").transpose()", OutputForm];
 
+Format[SARAH`Tp[x__],CForm]             :=
+    Format[SARAH`Tp[Times[x]],CForm];
+
 Format[SARAH`trace[HoldPattern[x_Symbol]],CForm] :=
     Format[ToString[CForm[HoldForm[x]]] <> ".trace()", OutputForm];
 
