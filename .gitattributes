@@ -20,7 +20,6 @@ model_files/MSSMCPV             export-ignore
 model_files/minMSSM             export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/rootMSSM            export-ignore
-model_files/SM                  export-ignore
 model_files/YukawaCMSSM         export-ignore
 
 models/fmssm                    export-ignore
