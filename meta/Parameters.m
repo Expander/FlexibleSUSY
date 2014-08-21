@@ -303,22 +303,22 @@ CreateSetAssignment[name_, startIndex_, parameterType_] :=
 
 CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType]] :=
     Module[{ass = ""},
-           ass = name <> " = v(" <> ToString[startIndex] <> ");\n";
+           ass = name <> " = pars(" <> ToString[startIndex] <> ");\n";
            Return[{ass, 1}];
           ];
 
 CreateSetAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
     Module[{ass = "", type},
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
-           ass = name <> " = " <> type <> "(v(" <> ToString[startIndex] <>
-                 ", v(" <> ToString[startIndex + 1] <> "));\n";
+           ass = name <> " = " <> type <> "(pars(" <> ToString[startIndex] <>
+                 ", pars(" <> ToString[startIndex + 1] <> "));\n";
            Return[{ass, 2}];
           ];
 
 CreateSetAssignment[name_, startIndex_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
     Module[{ass = "", i, count = 0},
            For[i = 0, i < rows, i++; count++,
-               ass = ass <> name <> "(" <> ToString[i] <> ") = v(" <>
+               ass = ass <> name <> "(" <> ToString[i] <> ") = pars(" <>
                      ToString[startIndex + count] <> ");\n";
               ];
            If[rows != count,
@@ -332,7 +332,7 @@ CreateSetAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realS
            For[i = 0, i < rows, i++,
                For[j = 0, j < cols, j++; count++,
                    ass = ass <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> ") = v(" <> ToString[startIndex + count] <> ");\n";
+                         <> ") = pars(" <> ToString[startIndex + count] <> ");\n";
                   ];
               ];
            If[rows * cols != count,

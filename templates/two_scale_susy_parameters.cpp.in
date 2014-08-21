@@ -91,7 +91,7 @@ void @ModelName@_susy_parameters::print(std::ostream& ostr) const
 @printParameters@
 }
 
-void @ModelName@_susy_parameters::set(const Eigen::ArrayXd& v)
+void @ModelName@_susy_parameters::set(const Eigen::ArrayXd& pars)
 {
 @set@
 }

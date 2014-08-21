@@ -86,9 +86,9 @@ void @ModelName@_soft_parameters::print(std::ostream& ostr) const
 @printParameters@
 }
 
-void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& v)
+void @ModelName@_soft_parameters::set(const Eigen::ArrayXd& pars)
 {
-   @ModelName@_susy_parameters::set(v);
+   @ModelName@_susy_parameters::set(pars);
 
 @set@
 }
