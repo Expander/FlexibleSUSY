@@ -1,41 +1,41 @@
 DIR          := models/sm
 MODNAME      := libsm
 
-LIBSM_SRC    :=
+LIBsm_SRC    :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
-LIBSM_SRC    += \
+LIBsm_SRC    += \
 		$(DIR)/sm_two_scale.cpp \
 		$(DIR)/sm_two_scale_convergence_tester.cpp \
 		$(DIR)/sm_two_scale_experimental_constraint.cpp
 endif
 
-LIBSM_OBJ    := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSM_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIBSM_SRC)))
+LIBsm_OBJ    := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBsm_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIBsm_SRC)))
 
-LIBSM_DEP    := \
-		$(LIBSM_OBJ:.o=.d)
+LIBsm_DEP    := \
+		$(LIBsm_OBJ:.o=.d)
 
-LIBSM        := $(DIR)/$(MODNAME)$(LIBEXT)
+LIBsm        := $(DIR)/$(MODNAME)$(LIBEXT)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
-all-$(MODNAME): $(LIBSM)
+all-$(MODNAME): $(LIBsm)
 
 clean-$(MODNAME):
-		rm -rf $(LIBSM_OBJ)
+		rm -rf $(LIBsm_OBJ)
 
 distclean-$(MODNAME): clean-$(MODNAME)
-		rm -rf $(LIBSM_DEP)
-		rm -rf $(LIBSM)
+		rm -rf $(LIBsm_DEP)
+		rm -rf $(LIBsm)
 
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBSM): $(LIBSM_OBJ)
+$(LIBsm): $(LIBsm_OBJ)
 		$(MAKELIB) $@ $^
 
-ALLDEP += $(LIBSM_DEP)
-ALLLIB += $(LIBSM)
+ALLDEP += $(LIBsm_DEP)
+ALLLIB += $(LIBsm)
