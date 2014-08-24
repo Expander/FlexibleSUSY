@@ -29,6 +29,8 @@
 
 namespace flexiblesusy {
 
+bool Beta_function::SM_rges = false;
+
 Beta_function::Beta_function()
    : num_pars(0)
    , loops(0)

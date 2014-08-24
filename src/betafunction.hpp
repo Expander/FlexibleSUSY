@@ -40,6 +40,8 @@ namespace flexiblesusy {
  */
 class Beta_function {
 public:
+   static bool SM_rges;
+
    Beta_function();
    virtual ~Beta_function() {}
 

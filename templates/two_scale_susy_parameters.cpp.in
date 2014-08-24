@@ -57,12 +57,92 @@ Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
    return calc_beta().get();
 }
 
+// SM RGEs =================================================================
+double @ModelName@_susy_parameters::calc_beta_g1_one_loop_SM(const SM_traces& sm_traces) const
+{
+   double beta_g1;
+   beta_g1 = 4.1*Power(g1,3)*oneOver16PiSqr;
+   return beta_g1;
+}
+double @ModelName@_susy_parameters::calc_beta_g1_two_loop_SM(const SM_traces& sm_traces) const
+{
+   const double traceYdAdjYd = sm_traces.traceYdAdjYd;
+   const double traceYeAdjYe = sm_traces.traceYeAdjYe;
+   const double traceYuAdjYu = sm_traces.traceYuAdjYu;
+
+   double beta_g1;
+
+   beta_g1 = 0.02*Power(g1,3)*twoLoop*(-25*traceYdAdjYd - 75*traceYeAdjYe
+      - 85*traceYuAdjYu + 199*Sqr(g1) + 135*Sqr(g2) + 440*Sqr(g3));
+
+   return beta_g1;
+}
+double @ModelName@_susy_parameters::calc_beta_g2_one_loop_SM(const SM_traces& sm_traces) const
+{
+   double beta_g2;
+
+   beta_g2 = -3.1666666666666665*Power(g2,3)*oneOver16PiSqr;
+
+   return beta_g2;
+}
+double @ModelName@_susy_parameters::calc_beta_g2_two_loop_SM(const SM_traces& sm_traces) const
+{
+   const double traceYdAdjYd = sm_traces.traceYdAdjYd;
+   const double traceYeAdjYe = sm_traces.traceYeAdjYe;
+   const double traceYuAdjYu = sm_traces.traceYuAdjYu;
+
+   double beta_g2;
+
+   beta_g2 = 0.03333333333333333*Power(g2,3)*twoLoop*(-45*traceYdAdjYd -
+      15*traceYeAdjYe - 45*traceYuAdjYu + 27*Sqr(g1) + 175*Sqr(g2) + 360*Sqr(g3
+      ));
+
+   return beta_g2;
+}
+double @ModelName@_susy_parameters::calc_beta_g3_one_loop_SM(const SM_traces& sm_traces) const
+{
+   double beta_g3;
+
+   beta_g3 = -7*Power(g3,3)*oneOver16PiSqr;
+
+   return beta_g3;
+}
+double @ModelName@_susy_parameters::calc_beta_g3_two_loop_SM(const SM_traces& sm_traces) const
+{
+   const double traceYdAdjYd = sm_traces.traceYdAdjYd;
+   const double traceYuAdjYu = sm_traces.traceYuAdjYu;
+
+   double beta_g3;
+
+   beta_g3 = -0.1*Power(g3,3)*twoLoop*(20*traceYdAdjYd + 20*traceYuAdjYu
+      - 11*Sqr(g1) - 45*Sqr(g2) + 260*Sqr(g3));
+
+   return beta_g3;
+}
+// Ende SM RGEs =============================================================
+
 @ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const
 {
    Susy_traces susy_traces;
    calc_susy_traces(susy_traces);
 
 @beta@
+
+   // overwrite with SM RGEs
+   if (Beta_function::SM_rges) {
+      SM_traces sm_traces;
+      calc_sm_traces(sm_traces);
+
+      beta_g1 = calc_beta_g1_one_loop_SM(sm_traces);
+      beta_g2 = calc_beta_g2_one_loop_SM(sm_traces);
+      beta_g3 = calc_beta_g3_one_loop_SM(sm_traces);
+
+      if (get_loops() > 1) {
+         beta_g1 += calc_beta_g1_two_loop_SM(sm_traces);
+         beta_g2 += calc_beta_g2_two_loop_SM(sm_traces);
+         beta_g3 += calc_beta_g3_two_loop_SM(sm_traces);
+      }
+   }
 
    return @ModelName@_susy_parameters(get_scale(), get_loops(), get_thresholds(), input,
                     @betaParameterList@);
@@ -104,6 +184,33 @@ const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() con
 void @ModelName@_susy_parameters::set_input_parameters(const @ModelName@_input_parameters& input_)
 {
    input = input_;
+}
+
+void @ModelName@_susy_parameters::calc_sm_traces(SM_traces& sm_traces) const
+{
+   sm_traces.traceYdAdjYd = (Yd*Yd.adjoint()).trace();
+   sm_traces.traceYeAdjYe = (Ye*Ye.adjoint()).trace();
+   sm_traces.traceYuAdjYu = (Yu*Yu.adjoint()).trace();
+   sm_traces.traceYdAdjYdYdAdjYd = (Yd*Yd.adjoint()*Yd*Yd.adjoint()).trace()
+      ;
+   sm_traces.traceYeAdjYeYeAdjYe = (Ye*Ye.adjoint()*Ye*Ye.adjoint()).trace()
+      ;
+   sm_traces.traceYuAdjYuYuAdjYu = (Yu*Yu.adjoint()*Yu*Yu.adjoint()).trace()
+      ;
+   sm_traces.traceYdAdjYuYuAdjYd = (Yd*Yu.adjoint()*Yu*Yd.adjoint()).trace()
+      ;
+   sm_traces.traceYdAdjYdYdAdjYdYdAdjYd = (Yd*Yd.adjoint()*Yd*Yd.adjoint()*
+      Yd*Yd.adjoint()).trace();
+   sm_traces.traceYdAdjYdYdAdjYuYuAdjYd = (Yd*Yd.adjoint()*Yd*Yu.adjoint()*
+      Yu*Yd.adjoint()).trace();
+   sm_traces.traceYdAdjYuYuAdjYdYdAdjYd = (Yd*Yu.adjoint()*Yu*Yd.adjoint()*
+      Yd*Yd.adjoint()).trace();
+   sm_traces.traceYdAdjYuYuAdjYuYuAdjYd = (Yd*Yu.adjoint()*Yu*Yu.adjoint()*
+      Yu*Yd.adjoint()).trace();
+   sm_traces.traceYeAdjYeYeAdjYeYeAdjYe = (Ye*Ye.adjoint()*Ye*Ye.adjoint()*
+      Ye*Ye.adjoint()).trace();
+   sm_traces.traceYuAdjYuYuAdjYuYuAdjYu = (Yu*Yu.adjoint()*Yu*Yu.adjoint()*
+      Yu*Yu.adjoint()).trace();
 }
 
 void @ModelName@_susy_parameters::calc_susy_traces(Susy_traces& susy_traces) const

@@ -68,6 +68,30 @@ private:
    void calc_susy_traces(Susy_traces&) const;
 
 @singleBetaFunctionsDecls@
+
+   struct SM_traces {
+      double traceYdAdjYd;
+      double traceYeAdjYe;
+      double traceYuAdjYu;
+      double traceYdAdjYdYdAdjYd;
+      double traceYeAdjYeYeAdjYe;
+      double traceYuAdjYuYuAdjYu;
+      double traceYdAdjYuYuAdjYd;
+      double traceYdAdjYdYdAdjYdYdAdjYd;
+      double traceYdAdjYdYdAdjYuYuAdjYd;
+      double traceYdAdjYuYuAdjYdYdAdjYd;
+      double traceYdAdjYuYuAdjYuYuAdjYd;
+      double traceYeAdjYeYeAdjYeYeAdjYe;
+      double traceYuAdjYuYuAdjYuYuAdjYu;
+   };
+
+   void calc_sm_traces(SM_traces&) const;
+   double calc_beta_g1_one_loop_SM(const SM_traces&) const;
+   double calc_beta_g2_one_loop_SM(const SM_traces&) const;
+   double calc_beta_g3_one_loop_SM(const SM_traces&) const;
+   double calc_beta_g1_two_loop_SM(const SM_traces&) const;
+   double calc_beta_g2_two_loop_SM(const SM_traces&) const;
+   double calc_beta_g3_two_loop_SM(const SM_traces&) const;
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@_susy_parameters&);
