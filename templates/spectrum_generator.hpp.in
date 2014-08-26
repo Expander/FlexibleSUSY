@@ -76,7 +76,7 @@ public:
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
 
    void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
-   void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
+   void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat", bool sm_rges = false) const;
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 private:
@@ -196,7 +196,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
+void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::string& filename, bool sm_rges) const
 {
    @ModelName@<T> tmp_model(model);
    tmp_model.run_to(low_scale);
@@ -204,6 +204,8 @@ void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::strin
    @ModelName@_parameter_getter parameter_getter;
    Coupling_monitor<@ModelName@<T>, @ModelName@_parameter_getter>
       coupling_monitor(tmp_model, parameter_getter);
+
+   Beta_function::SM_rges = sm_rges;
 
    coupling_monitor.run(low_scale, high_scale, 100, true);
    coupling_monitor.write_to_file(filename);

@@ -14,9 +14,9 @@ set xtics 1,1000,1e18
 set size 0.58,1.0
 set origin 0.0,0.0
 
-set label 1 "Standard Model" at 1e6,1
+set label 1 "Standardmodel" at 1e6,0.9
 
-plot [1:1e17] [0.4:1.3] \
+plot [1:1e17] [0.4:1.2] \
      filename.'.sm' using 1:30 title "$g_1$" with lines lw 3 lt 1, \
      filename.'.sm' using 1:31 title "$g_2$" with lines lw 3 lt 2, \
      filename.'.sm' using 1:32 title "$g_3$" with lines lw 3 lt 3
@@ -28,9 +28,9 @@ set size 0.5,1.0
 set origin 0.5,0.0
 
 unset label 1
-set label 2 "MSSM" at 1e11,1
+set label 2 "MSSM" at 1e11,0.9
 
-plot [1:1e17] [0.4:1.3] \
+plot [1:1e17] [0.4:1.2] \
      filename using 1:30 title "$g_1$" with lines lw 3 lt 1, \
      filename using 1:31 title "$g_2$" with lines lw 3 lt 2, \
      filename using 1:32 title "$g_3$" with lines lw 3 lt 3

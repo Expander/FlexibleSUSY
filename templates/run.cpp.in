@@ -115,8 +115,7 @@ int main(int argc, const char* argv[])
 
    if (!rgflow_file.empty()) {
       spectrum_generator.write_running_couplings(rgflow_file);
-      Beta_function::SM_rges = true;
-      spectrum_generator.write_running_couplings(rgflow_file + ".sm");
+      spectrum_generator.write_running_couplings(rgflow_file + ".sm", true);
    }
 
    const int exit_code = spectrum_generator.get_exit_code();
