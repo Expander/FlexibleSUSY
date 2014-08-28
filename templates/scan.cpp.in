@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
    cout << "# "
         << std::setw(12) << std::left << "@InputParameter_1@" << ' '
-        << std::setw(12) << std::left << "M@HiggsBoson_1@/GeV" << ' '
+        << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
         << std::setw(12) << std::left << "error"
         << '\n';
 
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
       const @ModelName@_physical& pole_masses = model.get_physical();
       const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
-      const double higgs = pole_masses.M@HiggsBoson_1@;
+      const double higgs = pole_masses.M@HiggsBoson_0@;
       const bool error = problems.have_serious_problem();
 
       cout << "  "
