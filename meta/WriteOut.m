@@ -17,6 +17,7 @@ GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 ParseCmdLineOptions::usage="";
+PrintCmdLineOptions::usage="";
 
 Begin["`Private`"];
 
@@ -461,6 +462,15 @@ ParseCmdLineOption[_] := "";
 
 ParseCmdLineOptions[inputParameters_List] :=
     StringJoin[ParseCmdLineOption /@ inputParameters];
+
+PrintCmdLineOption[parameter_Symbol] :=
+    "\"  --" <> ToValidCSymbolString[parameter] <> "=<value>\\n\"\n";
+
+PrintCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
+    "\"  --" <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "=<value>\\n\"\n";
+
+PrintCmdLineOptions[inputParameters_List] :=
+    StringJoin[PrintCmdLineOption /@ inputParameters];
 
 End[];
 

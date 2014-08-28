@@ -31,6 +31,16 @@
 
 namespace flexiblesusy {
 
+void print_usage()
+{
+   std::cout <<
+      "Usage: scan_@ModelName@.x [options]\n"
+      "Options:\n"
+@printCommandLineOptions@
+      "  --help,-h                         print this help message"
+             << std::endl;
+}
+
 bool set_input_parameter(const std::string& option, const std::string& str,
                          double* parameter)
 {
@@ -59,6 +69,11 @@ void set_command_line_parameters(int argc, char* argv[],
       bool found;
 
 @parseCmdLineOptions@
+      if (option == "--help" || option == "-h") {
+         print_usage();
+         exit(EXIT_SUCCESS);
+      }
+
       ERROR("Unrecognized command line option: " << option);
       exit(EXIT_FAILURE);
    }

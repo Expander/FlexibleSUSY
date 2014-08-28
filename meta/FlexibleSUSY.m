@@ -638,11 +638,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 
 WriteUserExample[inputParameters_List, freePhases_List,
                  lesHouchesInputParameters_List, files_List] :=
-    Module[{allIndexReplacementRules, parseCmdLineOptions},
+    Module[{allIndexReplacementRules, parseCmdLineOptions,
+            printCommandLineOptions},
            allParameters = Join[inputParameters,freePhases,lesHouchesInputParameters];
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[allParameters];
+           printCommandLineOptions = WriteOut`PrintCmdLineOptions[allParameters];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
+                            "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
