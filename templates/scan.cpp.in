@@ -21,19 +21,61 @@
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 
+#include "command_line_options.hpp"
 #include "error.hpp"
 #include "scan.hpp"
 #include "lowe.h"
+#include "logger.hpp"
 
 #include <iostream>
 
-int main()
+namespace flexiblesusy {
+
+bool set_input_parameter(const std::string& option, const std::string& str,
+                         double* parameter)
+{
+   if (Command_line_options::starts_with(option, str)) {
+      *parameter = atof(option.substr(str.length()).c_str());
+      return true;
+   }
+   return false;
+}
+
+bool set_input_parameter(const std::string& option, const std::string& str,
+                         int* parameter)
+{
+   if (Command_line_options::starts_with(option, str)) {
+      *parameter = atoi(option.substr(str.length()).c_str());
+      return true;
+   }
+   return false;
+}
+
+void set_command_line_parameters(int argc, char* argv[],
+                                 @ModelName@_input_parameters& input)
+{
+   for (int i = 1; i < argc; ++i) {
+      const std::string option(argv[i]);
+      bool found;
+
+@parseCmdLineOptions@
+      ERROR("Unrecognized command line option: " << option);
+      exit(EXIT_FAILURE);
+   }
+}
+
+} // namespace flexiblesusy
+
+
+int main(int argc, char* argv[])
 {
    using namespace flexiblesusy;
    using namespace softsusy;
    typedef Two_scale algorithm_type;
 
    @ModelName@_input_parameters input;
+   set_command_line_parameters(argc, argv, input);
+
    QedQcd oneset;
    oneset.toMz();
 

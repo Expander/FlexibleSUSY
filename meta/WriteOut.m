@@ -16,6 +16,7 @@ ConvertMixingsToSLHAConvention::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
+ParseCmdLineOptions::usage="";
 
 Begin["`Private`"];
 
@@ -433,6 +434,33 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
               ];
            Return[result];
           ];
+
+ParseCmdLineOption[parameter_Symbol] :=
+    Module[{parameterStr},
+           parameterStr = ToValidCSymbolString[parameter];
+           "\
+found = set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>");
+if (found)
+   continue;
+
+"
+          ];
+
+ParseCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
+    Module[{parameterStr},
+           parameterStr = ToValidCSymbolString[FlexibleSUSY`Sign[phase]];
+           "\
+found = set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>");
+if (found)
+   continue;
+
+"
+          ];
+
+ParseCmdLineOption[_] := "";
+
+ParseCmdLineOptions[inputParameters_List] :=
+    StringJoin[ParseCmdLineOption /@ inputParameters];
 
 End[];
 
