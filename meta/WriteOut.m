@@ -469,6 +469,8 @@ PrintCmdLineOption[parameter_Symbol] :=
 PrintCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
     "\"  --" <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "=<value>\\n\"\n";
 
+PrintCmdLineOption[_] := "";
+
 PrintCmdLineOptions[inputParameters_List] :=
     StringJoin[PrintCmdLineOption /@ inputParameters];
 
