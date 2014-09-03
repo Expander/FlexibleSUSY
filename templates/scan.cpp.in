@@ -66,7 +66,6 @@ void set_command_line_parameters(int argc, char* argv[],
 {
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
-      bool found;
 
 @parseCmdLineOptions@
       if (option == "--help" || option == "-h") {

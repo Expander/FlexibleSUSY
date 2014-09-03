@@ -440,8 +440,7 @@ ParseCmdLineOption[parameter_Symbol] :=
     Module[{parameterStr},
            parameterStr = ToValidCSymbolString[parameter];
            "\
-found = set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>");
-if (found)
+if(set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>"))
    continue;
 
 "
@@ -451,8 +450,7 @@ ParseCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
     Module[{parameterStr},
            parameterStr = ToValidCSymbolString[FlexibleSUSY`Sign[phase]];
            "\
-found = set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>");
-if (found)
+if(set_input_parameter(option, \"--" <> parameterStr <> "=\", &input." <> parameterStr <>"))
    continue;
 
 "
