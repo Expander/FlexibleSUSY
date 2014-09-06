@@ -14,7 +14,7 @@ set xtics 1,1000,1e18
 set size 0.58,1.0
 set origin 0.0,0.0
 
-set label 1 "Standardmodel" at 1e6,0.9
+set label 1 "Standardmodell" at 1e6,0.9
 
 plot [1:1e17] [0.4:1.2] \
      filename.'.sm' using 1:30 title "$g_1$" with lines lw 3 lt 1, \
