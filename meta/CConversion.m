@@ -457,6 +457,9 @@ Format[SARAH`B[x_],CForm] :=
 Format[SARAH`T[x_],CForm] :=
     Format[ToValidCSymbol[SARAH`T[x /. FlexibleSUSY`GreekSymbol -> Identity]], OutputForm];
 
+Format[SARAH`Q[x_],CForm] :=
+    Format[ToValidCSymbol[SARAH`Q[x /. FlexibleSUSY`GreekSymbol -> Identity]], OutputForm];
+
 Format[FlexibleSUSY`GreekSymbol[x_],CForm] :=
     Format[ToValidCSymbol[x], OutputForm];
 
