@@ -114,7 +114,8 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             beta       = (loopFactor * expr) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] :> CreateUnitMatrix[type],
                               a_[Susyno`LieGroups`i1] :> a,
-                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a };
+                              a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
+                              a_[SARAH`i2,Susyno`LieGroups`i1] :> SARAH`Tp[a] };
             {localDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[{expr}];
             localDecl  = Traces`CreateLocalCopiesOfTraces[{expr}, "TRACE_STRUCT"];
             beta = beta /. traceRules;
