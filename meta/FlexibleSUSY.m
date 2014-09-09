@@ -636,10 +636,17 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteUserExample[files_List] :=
-    Module[{},
+WriteUserExample[inputParameters_List, freePhases_List,
+                 lesHouchesInputParameters_List, files_List] :=
+    Module[{allIndexReplacementRules, parseCmdLineOptions,
+            printCommandLineOptions},
+           allParameters = Join[inputParameters,freePhases,lesHouchesInputParameters];
+           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[allParameters];
+           printCommandLineOptions = WriteOut`PrintCmdLineOptions[allParameters];
            WriteOut`ReplaceInFiles[files,
-                          { Sequence @@ GeneralReplacementRules[]
+                          { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
+                            "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
+                            Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
 
@@ -1385,7 +1392,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
-           WriteUserExample[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
+           WriteUserExample[FlexibleSUSY`InputParameters,
+                            Complement[freePhases, FlexibleSUSY`InputParameters],
+                            {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
+                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
