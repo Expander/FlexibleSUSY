@@ -130,6 +130,12 @@ private:
    void apply_lowest_constraint();      ///< apply lowest constraint
    double get_precision();             ///< returns running precision
    void update_running_precision();    ///< update the RG running precision
+
+   void monitor_run(Two_scale_model* model,
+                    double new_scale,
+                    int iteration,
+                    int model_number,
+                    int constraint_number, const std::string&) const;
 };
 
 }

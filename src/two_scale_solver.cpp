@@ -26,6 +26,17 @@
 #include "logger.hpp"
 #include "error.hpp"
 
+#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_high_scale_constraint.hpp"
+#include "MSSM_two_scale_susy_scale_constraint.hpp"
+#include "MSSM_two_scale_low_scale_constraint.hpp"
+#include "MSSM_two_scale_convergence_tester.hpp"
+#include "MSSM_two_scale_initial_guesser.hpp"
+#include "MSSM_utilities.hpp"
+
+#include "coupling_monitor.hpp"
+#include "numerics.hpp"
+
 #include <cmath>
 #include <algorithm>
 #include <iterator>
@@ -143,6 +154,34 @@ void RGFlow<Two_scale>::initial_guess()
       initial_guesser->guess();
 }
 
+void RGFlow<Two_scale>::monitor_run(Two_scale_model* model,
+                                    double new_scale,
+                                    int iteration,
+                                    int model_number,
+                                    int constraint_number,
+                                    const std::string& updown
+   ) const
+{
+   MSSM<Two_scale> tmp_model(*((MSSM<Two_scale>*)(model)));
+   const double old_scale = tmp_model.get_scale();
+   tmp_model.run_to(old_scale);
+
+   MSSM_parameter_getter parameter_getter;
+   Coupling_monitor<MSSM<Two_scale>, MSSM_parameter_getter>
+      coupling_monitor(tmp_model, parameter_getter);
+
+   Beta_function::SM_rges = false;
+
+   std::ostringstream filename;
+   filename << "MSSM_rgflow_" << updown << "_it" << iteration
+            << "_constraint" << constraint_number
+            << "_scale" << old_scale << "-" << new_scale
+      ;
+
+   coupling_monitor.run(old_scale, new_scale, 100, true);
+   coupling_monitor.write_to_file(filename.str());
+}
+
 /**
  * Run the model tower to the highest scale.  Thereby all upwards
  * constraints are imposed (by calling the apply() functions) and the
@@ -164,6 +203,7 @@ void RGFlow<Two_scale>::run_up()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("> \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("> \t\t\trunning model to scale " << scale);
+         monitor_run(model->model, scale, iteration, m, c, "up");
          model->model->run_to(scale);
          VERBOSE_MSG("> \t\t\tapplying constraint");
          constraint->apply();
@@ -206,6 +246,7 @@ void RGFlow<Two_scale>::run_down()
          const double scale = constraint->get_scale();
          VERBOSE_MSG("< \t\tselecting constraint " << c << " at scale " << scale);
          VERBOSE_MSG("< \t\t\trunning model to scale " << scale);
+         monitor_run(model->model, scale, iteration, m, c, "down");
          model->model->run_to(scale);
          // If m is the lowest energy model, do not apply the lowest
          // constraint, because it will be applied when we run up next
