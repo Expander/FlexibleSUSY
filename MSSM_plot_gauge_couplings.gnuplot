@@ -1,6 +1,7 @@
 set terminal epslatex standalone size 12cm,8cm header '\renewcommand*{\familydefault}{\sfdefault}\usepackage[cm]{sfmath}\usepackage{amsmath}'
 
 set xlabel "Energieskala / GeV"
+set ylabel "Kopplungsst\\\"{a}rke" offset 2
 set logscale x
 set output "MSSM_gauge_couplings.tex"
 set format x "$10^{%L}$"
@@ -24,14 +25,15 @@ plot [1:1e17] [0.4:1.2] \
 
 #set ytics ""
 unset key
+unset ylabel
 set format y ""
 set size 0.5,1.0
 set origin 0.5,0.0
 
 unset label 1
 set label 2 "MSSM" at 1e11,0.9
-set label 3 "$\\color{red}{M_X}$" at 5.e15,0.57 center
-set arrow 1 from 2.e16,0.6 to 2.e16,0.7 as 1 lt rgb "red" lw 2
+set label 3 "$\\color{red}{M_X}$" at 2e16,0.28 center
+set arrow 1 from 2.e16,0.32 to 2.e16,0.4 as 1 lt rgb "red" lw 2
 
 plot [1:1e17] [0.4:1.2] \
      filename using 1:30 title "$g_1$" with lines lw 3 lt 1, \
