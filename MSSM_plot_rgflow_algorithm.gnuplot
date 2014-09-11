@@ -28,7 +28,7 @@ set style line 5 lt 5 lw 2 pt 7 ps 0.5 lc rgb "magenta"
 ##########
 
 set output "MSSM_rgflow_0.tex"
-filename='MSSM_rgflow_up_it0_constraint1_scale91.1876-2e+16'
+filename='MSSM_rgflow_up_it0_constraint1'
 
 set arrow 2 from 91,-1.2 to 91,-1 as 1 lt rgb "red" lw 2
 set label 1 "$\\color{red}{M_Z}$"        at 91,-1.3 center
@@ -50,7 +50,7 @@ system 'pdflatex MSSM_rgflow_0.tex'
 ##########
 
 set output "MSSM_rgflow_1.tex"
-filename='MSSM_rgflow_up_it0_constraint1_scale91.1876-2e+16'
+filename='MSSM_rgflow_up_it0_constraint1'
 
 set arrow 1 from 1.e8,1     to 1.e10,1  as 1
 set arrow 2 from 2e+16,-1.2 to 2e+16,-1 as 1 lt rgb "red" lw 2
@@ -85,12 +85,12 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_2.tex"
-filename='MSSM_rgflow_down_it0_constraint1_scale2e+16-1007.78'
+filename='MSSM_rgflow_down_it0_constraint1'
 
 plot [1:1.0e18] [-1:1.25] \
-     'MSSM_rgflow_up_it0_constraint1_scale91.1876-2e+16' using 1:30 title "$g_i$"       w lines ls 1, \
-     'MSSM_rgflow_up_it0_constraint1_scale91.1876-2e+16' using 1:31 title ""            w lines ls 1, \
-     'MSSM_rgflow_up_it0_constraint1_scale91.1876-2e+16' using 1:32 title ""            w lines ls 1, \
+     'MSSM_rgflow_up_it0_constraint1' using 1:30 title "$g_i$"       w lines ls 1, \
+     'MSSM_rgflow_up_it0_constraint1' using 1:31 title ""            w lines ls 1, \
+     'MSSM_rgflow_up_it0_constraint1' using 1:32 title ""            w lines ls 1, \
      for [i=35:35]   '< tail -n 1 '.filename using 1:(column(i)/1000)          title "$T_i$" w points ls 2, \
      for [i=63:63]   '< tail -n 1 '.filename using 1:(negsqrt(column(i))/1000) title "$m_i$" w points ls 3, \
      for [i=110:110] '< tail -n 1 '.filename using 1:(column(i)/1000)          title "$M_i$" w points ls 4
@@ -117,7 +117,7 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_3.tex"
-filename='MSSM_rgflow_down_it0_constraint1_scale2e+16-1007.78'
+filename='MSSM_rgflow_down_it0_constraint1'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename using 1:30                        title "$g_i$"       w lines ls 1, \
@@ -175,7 +175,7 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_4.tex"
-filename2='MSSM_rgflow_down_it0_constraint2_scale1007.78-91.1876'
+filename2='MSSM_rgflow_down_it0_constraint2'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename  using 1:30                        title "$g_i$"       w lines ls 1, \
@@ -261,8 +261,8 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_5.tex"
-filename1='MSSM_rgflow_down_it1_constraint1_scale3.09397e+16-886.537'
-filename2='MSSM_rgflow_down_it1_constraint2_scale886.537-91.1876'
+filename1='MSSM_rgflow_down_it1_constraint1'
+filename2='MSSM_rgflow_down_it1_constraint2'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename1 using 1:30                        title "$g_i$"       w lines ls 1, \
@@ -347,8 +347,8 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_6.tex"
-filename1='MSSM_rgflow_down_it2_constraint1_scale2.06543e+16-897.195'
-filename2='MSSM_rgflow_down_it2_constraint2_scale897.195-91.1876'
+filename1='MSSM_rgflow_down_it2_constraint1'
+filename2='MSSM_rgflow_down_it2_constraint2'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename1 using 1:30                        title "$g_i$"       w lines ls 1, \
@@ -433,8 +433,8 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_7.tex"
-filename1='MSSM_rgflow_down_it7_constraint1_scale1.9422e+16-891.094'
-filename2='MSSM_rgflow_down_it7_constraint2_scale891.094-91.1876'
+filename1='MSSM_rgflow_down_it25_constraint1'
+filename2='MSSM_rgflow_down_it25_constraint2'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename1 using 1:30                        title "$g_i$"       w lines ls 1, \

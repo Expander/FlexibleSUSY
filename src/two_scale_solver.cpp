@@ -174,9 +174,7 @@ void RGFlow<Two_scale>::monitor_run(Two_scale_model* model,
 
    std::ostringstream filename;
    filename << "MSSM_rgflow_" << updown << "_it" << iteration
-            << "_constraint" << constraint_number
-            << "_scale" << old_scale << "-" << new_scale
-      ;
+            << "_constraint" << constraint_number;
 
    coupling_monitor.run(old_scale, new_scale, 100, true);
    coupling_monitor.write_to_file(filename.str());
