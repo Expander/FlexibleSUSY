@@ -433,8 +433,8 @@ set label 4 "\\scalebox{0.7}{$M_{1/2}$}" at 3.e16,0.5
 set label 5 "\\scalebox{0.7}{$A_0$}"     at 3.e16,0
 
 set output "MSSM_rgflow_7.tex"
-filename1='MSSM_rgflow_down_it25_constraint1'
-filename2='MSSM_rgflow_down_it25_constraint2'
+filename1='MSSM_rgflow_down_it7_constraint1'
+filename2='MSSM_rgflow_down_it7_constraint2'
 
 plot [1:1.0e18] [-1:1.25] \
                      filename1 using 1:30                        title "$g_i$"       w lines ls 1, \
