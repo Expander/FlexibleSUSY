@@ -10,7 +10,7 @@ ENABLE_THREADS   := @ENABLE_THREADS@
 
 LIBEXT          := @LIBEXT@
 
-MODEL1          := MSSM
+MODEL1          := MSSMD5O
 MODEL2          := MSSMRHN
 
 MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
@@ -68,8 +68,8 @@ endif
 
 TOWER_SRC := \
 		run_tower.cpp \
-		MSSM_MSSMRHN_two_scale_matching.cpp \
-		MSSM_MSSMRHN_two_scale_initial_guesser.cpp
+		MSSMD5O_MSSMRHN_two_scale_matching.cpp \
+		MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp
 
 TOWER_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC))) \

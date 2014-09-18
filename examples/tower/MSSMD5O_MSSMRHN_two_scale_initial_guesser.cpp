@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "MSSM_MSSMRHN_two_scale_initial_guesser.hpp"
-#include "MSSM_two_scale_model.hpp"
+#include "MSSMD5O_MSSMRHN_two_scale_initial_guesser.hpp"
+#include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
 #include "lowe.h"
 #include "error.hpp"
@@ -35,14 +35,14 @@ namespace flexiblesusy {
 #define SM(p) Electroweak_constants::p
 // #define MODEL model
 
-MSSM_MSSMRHN_initial_guesser<Two_scale>::MSSM_MSSMRHN_initial_guesser(
-   MSSM<Two_scale>* model_1_, MSSMRHN<Two_scale>* model_2_,
-   const MSSMRHN_input_parameters& input_pars_,
+MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::MSSMD5O_MSSMRHN_initial_guesser(
+   MSSMD5O<Two_scale>* model_1_, MSSMRHN<Two_scale>* model_2_,
+   const MSSMD5O_input_parameters& input_pars_,
    const QedQcd& oneset_,
-   const MSSM_low_scale_constraint<Two_scale>& low_constraint_1_,
-   const MSSM_susy_scale_constraint<Two_scale>& susy_constraint_1_,
+   const MSSMD5O_low_scale_constraint<Two_scale>& low_constraint_1_,
+   const MSSMD5O_susy_scale_constraint<Two_scale>& susy_constraint_1_,
    const MSSMRHN_high_scale_constraint<Two_scale>& high_constraint_2_,
-   const MSSM_MSSMRHN_matching<Two_scale>& matching_
+   const MSSMD5O_MSSMRHN_matching<Two_scale>& matching_
 )
    : Initial_guesser<Two_scale>()
    , model_1(model_1_), model_2(model_2_)
@@ -53,20 +53,20 @@ MSSM_MSSMRHN_initial_guesser<Two_scale>::MSSM_MSSMRHN_initial_guesser(
    , high_constraint_2(high_constraint_2_)
    , matching(matching_)
 {
-   assert(model_1 && model_2 && "MSSM_MSSMRHN_initial_guesser: Error: pointers to models must not be zero");
+   assert(model_1 && model_2 && "MSSMD5O_MSSMRHN_initial_guesser: Error: pointers to models must not be zero");
 }
 
-MSSM_MSSMRHN_initial_guesser<Two_scale>::~MSSM_MSSMRHN_initial_guesser()
+MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::~MSSMD5O_MSSMRHN_initial_guesser()
 {
 }
 
-void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
+void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess()
 {
    guess_susy_parameters();
    guess_soft_parameters();
 }
 
-void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
+void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
 {
    QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
@@ -113,9 +113,59 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
    model_1->set_Yu(new_Yu);
    model_1->set_Yd(new_Yd);
    model_1->set_Ye(new_Ye);
+
+   const auto mv1 = INPUTPARAMETER(mv1);
+   const auto mv2 = INPUTPARAMETER(mv2);
+   const auto mv3 = INPUTPARAMETER(mv3);
+   const auto ThetaV12 = INPUTPARAMETER(ThetaV12);
+   const auto ThetaV13 = INPUTPARAMETER(ThetaV13);
+   const auto ThetaV23 = INPUTPARAMETER(ThetaV23);
+
+   model_1->set_WOp(0, 0, (2*(mv1*Sqr(Cos(ThetaV12))*Sqr(Cos(ThetaV13)) + mv2*Sqr
+      (Cos(ThetaV13))*Sqr(Sin(ThetaV12)) + mv3*Sqr(Sin(ThetaV13))))/Sqr(vu));
+   model_1->set_WOp(0, 1, (2*(mv3*Cos(ThetaV13)*Sin(ThetaV13)*Sin(ThetaV23) + mv1
+      *Cos(ThetaV12)*Cos(ThetaV13)*(-(Cos(ThetaV23)*Sin(ThetaV12)) - Cos(ThetaV12)
+      *Sin(ThetaV13)*Sin(ThetaV23)) + mv2*Cos(ThetaV13)*Sin(ThetaV12)*(Cos(
+      ThetaV12)*Cos(ThetaV23) - Sin(ThetaV12)*Sin(ThetaV13)*Sin(ThetaV23))))/Sqr(
+      vu));
+   model_1->set_WOp(0, 2, (2*(mv3*Cos(ThetaV13)*Cos(ThetaV23)*Sin(ThetaV13) + mv2
+      *Cos(ThetaV13)*Sin(ThetaV12)*(-(Cos(ThetaV23)*Sin(ThetaV12)*Sin(ThetaV13)) -
+      Cos(ThetaV12)*Sin(ThetaV23)) + mv1*Cos(ThetaV12)*Cos(ThetaV13)*(-(Cos(
+      ThetaV12)*Cos(ThetaV23)*Sin(ThetaV13)) + Sin(ThetaV12)*Sin(ThetaV23))))/Sqr(
+      vu));
+   model_1->set_WOp(1, 0, (2*(mv3*Cos(ThetaV13)*Sin(ThetaV13)*Sin(ThetaV23) + mv1
+      *Cos(ThetaV12)*Cos(ThetaV13)*(-(Cos(ThetaV23)*Sin(ThetaV12)) - Cos(ThetaV12)
+      *Sin(ThetaV13)*Sin(ThetaV23)) + mv2*Cos(ThetaV13)*Sin(ThetaV12)*(Cos(
+      ThetaV12)*Cos(ThetaV23) - Sin(ThetaV12)*Sin(ThetaV13)*Sin(ThetaV23))))/Sqr(
+      vu));
+   model_1->set_WOp(1, 1, (2*(mv3*Sqr(Cos(ThetaV13))*Sqr(Sin(ThetaV23)) + mv1*Sqr
+      (-(Cos(ThetaV23)*Sin(ThetaV12)) - Cos(ThetaV12)*Sin(ThetaV13)*Sin(ThetaV23))
+      + mv2*Sqr(Cos(ThetaV12)*Cos(ThetaV23) - Sin(ThetaV12)*Sin(ThetaV13)*Sin(
+      ThetaV23))))/Sqr(vu));
+   model_1->set_WOp(1, 2, (2*(mv1*(-(Cos(ThetaV12)*Cos(ThetaV23)*Sin(ThetaV13)) +
+      Sin(ThetaV12)*Sin(ThetaV23))*(-(Cos(ThetaV23)*Sin(ThetaV12)) - Cos(ThetaV12
+      )*Sin(ThetaV13)*Sin(ThetaV23)) + mv2*(-(Cos(ThetaV23)*Sin(ThetaV12)*Sin(
+      ThetaV13)) - Cos(ThetaV12)*Sin(ThetaV23))*(Cos(ThetaV12)*Cos(ThetaV23) - Sin
+      (ThetaV12)*Sin(ThetaV13)*Sin(ThetaV23)) + mv3*Cos(ThetaV23)*Sin(ThetaV23)*
+      Sqr(Cos(ThetaV13))))/Sqr(vu));
+   model_1->set_WOp(2, 0, (2*(mv3*Cos(ThetaV13)*Cos(ThetaV23)*Sin(ThetaV13) + mv2
+      *Cos(ThetaV13)*Sin(ThetaV12)*(-(Cos(ThetaV23)*Sin(ThetaV12)*Sin(ThetaV13)) -
+      Cos(ThetaV12)*Sin(ThetaV23)) + mv1*Cos(ThetaV12)*Cos(ThetaV13)*(-(Cos(
+      ThetaV12)*Cos(ThetaV23)*Sin(ThetaV13)) + Sin(ThetaV12)*Sin(ThetaV23))))/Sqr(
+      vu));
+   model_1->set_WOp(2, 1, (2*(mv1*(-(Cos(ThetaV12)*Cos(ThetaV23)*Sin(ThetaV13)) +
+      Sin(ThetaV12)*Sin(ThetaV23))*(-(Cos(ThetaV23)*Sin(ThetaV12)) - Cos(ThetaV12
+      )*Sin(ThetaV13)*Sin(ThetaV23)) + mv2*(-(Cos(ThetaV23)*Sin(ThetaV12)*Sin(
+      ThetaV13)) - Cos(ThetaV12)*Sin(ThetaV23))*(Cos(ThetaV12)*Cos(ThetaV23) - Sin
+      (ThetaV12)*Sin(ThetaV13)*Sin(ThetaV23)) + mv3*Cos(ThetaV23)*Sin(ThetaV23)*
+      Sqr(Cos(ThetaV13))))/Sqr(vu));
+   model_1->set_WOp(2, 2, (2*(mv3*Sqr(Cos(ThetaV13))*Sqr(Cos(ThetaV23)) + mv2*Sqr
+      (-(Cos(ThetaV23)*Sin(ThetaV12)*Sin(ThetaV13)) - Cos(ThetaV12)*Sin(ThetaV23))
+      + mv1*Sqr(-(Cos(ThetaV12)*Cos(ThetaV23)*Sin(ThetaV13)) + Sin(ThetaV12)*Sin(
+      ThetaV23))))/Sqr(vu));
 }
 
-void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
+void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
 {
    const double low_scale_guess_1 = low_constraint_1.get_initial_scale_guess();
    const double high_scale_guess_2 =

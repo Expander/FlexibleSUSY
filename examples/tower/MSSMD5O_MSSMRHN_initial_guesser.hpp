@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_MSSMRHN_INITIAL_GUESSER_H
-#define MSSM_MSSMRHN_INITIAL_GUESSER_H
+#ifndef MSSMD5O_MSSMRHN_INITIAL_GUESSER_H
+#define MSSMD5O_MSSMRHN_INITIAL_GUESSER_H
 
 namespace flexiblesusy {
 
 template <class T>
-class MSSM_MSSMRHN_initial_guesser;
+class MSSMD5O_MSSMRHN_initial_guesser;
 
 } // namespace flexiblesusy
 

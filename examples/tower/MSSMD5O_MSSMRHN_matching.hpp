@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_MSSMRHN_MATCHING_H
-#define MSSM_MSSMRHN_MATCHING_H
+#ifndef MSSMD5O_MSSMRHN_MATCHING_H
+#define MSSMD5O_MSSMRHN_MATCHING_H
 
 namespace flexiblesusy {
 
 template <class T>
-class MSSM_MSSMRHN_matching;
+class MSSMD5O_MSSMRHN_matching;
 
 } // namespace flexiblesusy
 

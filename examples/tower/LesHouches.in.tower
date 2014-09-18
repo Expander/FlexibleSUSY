@@ -34,26 +34,20 @@ Block MINPAR                 # Input parameters
     5   0                    # Azero
 Block EXTPAR  # Input parameters
     0   0                    # unification scale (0 = automatic)
-Block YvIN                   # neutrino Yukawas at MX
-1 1  0.1568611               # Yv(1,1)
-1 2  0.6400513               # Yv(1,2)
-1 3  0.7521494               # Yv(1,3)
-2 1  0.4663838               # Yv(2,1)
-2 2  0.4936038               # Yv(2,2)
-2 3 -0.5173031               # Yv(2,3)
-3 1  0.6971391               # Yv(3,1)
-3 2 -0.4287217               # Yv(3,2)
-3 3  0.2194375               # Yv(3,3)
-Block MvIN                   # heavy neutrino masses at MX
-1 1  4.150000E+14            # Mv(1,1)
-1 2  0.000000E+00            # Mv(1,2)
-1 3  0.000000E+00            # Mv(1,3)
-2 1  0.000000E+00            # Mv(2,1)
-2 2  4.150000E+14            # Mv(2,2)
-2 3  0.000000E+00            # Mv(2,3)
-3 1  0.000000E+00            # Mv(3,1)
-3 2  0.000000E+00            # Mv(3,2)
-3 3  4.150000E+14            # Mv(3,3)
+			     # specimen normal spectrum
+    1	5.0E-11		     # mv1
+    2	5.07523E-11	     # mv2
+    3	6.96419E-11	     # mv3
+			     # specimen inverted spectrum
+#   1	6.90956E-11	     # mv1
+#   2	6.96419E-11	     # mv2
+#   3	5.0E-11		     # mv3
+    4	0.586168	     # ThetaV12
+    5	0.157512	     # ThetaV13
+    6	0.705053	     # ThetaV23
+    7	0.6		     # YvDiag1
+    8	0.8		     # YvDiag2
+    9	1.0		     # YvDiag3
 Block BMvIN                  # right-handed sneutrino bilinear terms
 1 1  1.000000E+02            # BMv(1,1)
 1 2  0.000000E+00            # BMv(1,2)

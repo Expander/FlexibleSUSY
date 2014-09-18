@@ -16,26 +16,23 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef MSSM_MSSMRHN_SPECTRUM_GENERATOR_H
-#define MSSM_MSSMRHN_SPECTRUM_GENERATOR_H
+#ifndef MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
+#define MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
-#include "MSSM_two_scale_low_scale_constraint.hpp"
-#include "MSSM_two_scale_convergence_tester.hpp"
-#include "MSSM_utilities.hpp"
+#include "MSSMD5O_two_scale_model.hpp"
+#include "MSSMD5O_two_scale_susy_scale_constraint.hpp"
+#include "MSSMD5O_two_scale_low_scale_constraint.hpp"
+#include "MSSMD5O_two_scale_convergence_tester.hpp"
+#include "MSSMD5O_utilities.hpp"
 
-#include "MSSM_MSSMRHN_two_scale_matching.hpp"
+#include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
 
 #include "MSSMRHN_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_high_scale_constraint.hpp"
-#include "MSSMRHN_two_scale_susy_scale_constraint.hpp"
-#include "MSSMRHN_two_scale_low_scale_constraint.hpp"
 #include "MSSMRHN_two_scale_convergence_tester.hpp"
 #include "MSSMRHN_utilities.hpp"
 
-#include "MSSM_MSSMRHN_two_scale_initial_guesser.hpp"
+#include "MSSMD5O_MSSMRHN_two_scale_initial_guesser.hpp"
 
 #include "coupling_monitor.hpp"
 #include "error.hpp"
@@ -47,9 +44,9 @@
 namespace flexiblesusy {
 
 template <class T>
-class MSSM_MSSMRHN_spectrum_generator {
+class MSSMD5O_MSSMRHN_spectrum_generator {
 public:
-   MSSM_MSSMRHN_spectrum_generator()
+   MSSMD5O_MSSMRHN_spectrum_generator()
       : solver()
       , model_1(), model_2()
       , high_scale_constraint_2()
@@ -63,15 +60,15 @@ public:
       , precision_goal(1.0e-4)
       , max_iterations(0)
       , calculate_sm_masses(false) {}
-   ~MSSM_MSSMRHN_spectrum_generator() {}
+   ~MSSMD5O_MSSMRHN_spectrum_generator() {}
 
    double get_high_scale_2() const { return high_scale_2; }
    double get_susy_scale_1() const { return susy_scale_1; }
    double get_low_scale_1()  const { return low_scale_1;  }
    double get_matching_scale() const { return matching_scale; }
-   const MSSM<T>& get_model_1() const { return model_1; }
+   const MSSMD5O<T>& get_model_1() const { return model_1; }
    const MSSMRHN<T>& get_model_2() const { return model_2; }
-   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
+   const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model_1.get_problems();
    }
    int get_exit_code() const { return get_problems().have_serious_problem(); };
@@ -83,18 +80,18 @@ public:
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
-   void run(const QedQcd& oneset, const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
-   void write_running_couplings_1(const std::string& filename = "MSSM_rge_running.dat") const;
-   void write_spectrum(const std::string& filename = "MSSM_spectrum.dat") const;
+   void run(const QedQcd& oneset, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
+   void write_running_couplings_1(const std::string& filename = "MSSMD5O_rge_running.dat") const;
+   void write_spectrum(const std::string& filename = "MSSMD5O_spectrum.dat") const;
 
 private:
    RGFlow<T> solver;
-   MSSM<T> model_1;
+   MSSMD5O<T> model_1;
    MSSMRHN<T> model_2;
    MSSMRHN_high_scale_constraint<T> high_scale_constraint_2;
-   MSSM_susy_scale_constraint<T> susy_scale_constraint_1;
-   MSSM_low_scale_constraint<T> low_scale_constraint_1;
-   MSSM_MSSMRHN_matching<T> matching;
+   MSSMD5O_susy_scale_constraint<T> susy_scale_constraint_1;
+   MSSMD5O_low_scale_constraint<T> low_scale_constraint_1;
+   MSSMD5O_MSSMRHN_matching<T> matching;
    double high_scale_2, susy_scale_1, low_scale_1;
    double matching_scale;
    double input_scale_2; ///< high-scale parameter input scale
@@ -116,9 +113,9 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void MSSM_MSSMRHN_spectrum_generator<T>::run
+void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
 (const QedQcd& oneset,
- const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
+ const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
 {
    high_scale_constraint_2.clear();
    susy_scale_constraint_1.clear();
@@ -127,7 +124,7 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
    high_scale_constraint_2.set_input_parameters(input_2);
    susy_scale_constraint_1.set_input_parameters(input_1);
    low_scale_constraint_1.set_input_parameters(input_1);
-   matching.set_upper_input_parameters(input_2);
+   matching.set_lower_input_parameters(input_1);
    high_scale_constraint_2.initialize();
    susy_scale_constraint_1.initialize();
    low_scale_constraint_1.initialize();
@@ -137,10 +134,8 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
 
    std::vector<Constraint<T>*> upward_constraints_1;
    upward_constraints_1.push_back(&low_scale_constraint_1);
-   // upward_constraints.push_back(&high_scale_constraint);
 
    std::vector<Constraint<T>*> downward_constraints_1;
-   // downward_constraints.push_back(&high_scale_constraint);
    downward_constraints_1.push_back(&susy_scale_constraint_1);
    downward_constraints_1.push_back(&low_scale_constraint_1);
 
@@ -157,7 +152,7 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
    model_2.clear();
    model_2.set_input_parameters(input_2);
 
-   MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
+   MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
    MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
    if (max_iterations > 0) {
       convergence_tester_1.set_max_iterations(max_iterations);
@@ -167,8 +162,8 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
    convergence_tester.add_convergence_tester(&convergence_tester_1);
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 
-   MSSM_MSSMRHN_initial_guesser<T> initial_guesser
-       (&model_1, &model_2, input_2, oneset,
+   MSSMD5O_MSSMRHN_initial_guesser<T> initial_guesser
+       (&model_1, &model_2, input_1, oneset,
 	low_scale_constraint_1,
 	susy_scale_constraint_1,
 	high_scale_constraint_2,
@@ -221,13 +216,13 @@ void MSSM_MSSMRHN_spectrum_generator<T>::run
  * @param filename name of output file
  */
 template <class T>
-void MSSM_MSSMRHN_spectrum_generator<T>::write_running_couplings_1(const std::string& filename) const
+void MSSMD5O_MSSMRHN_spectrum_generator<T>::write_running_couplings_1(const std::string& filename) const
 {
-   MSSM<T> tmp_model(model_1);
+   MSSMD5O<T> tmp_model(model_1);
    tmp_model.run_to(low_scale_1);
 
-   MSSM_parameter_getter parameter_getter;
-   Coupling_monitor<MSSM<T>, MSSM_parameter_getter>
+   MSSMD5O_parameter_getter parameter_getter;
+   Coupling_monitor<MSSMD5O<T>, MSSMD5O_parameter_getter>
       coupling_monitor(tmp_model, parameter_getter);
 
    coupling_monitor.run(low_scale_1, matching_scale, 100, true);
@@ -240,9 +235,9 @@ void MSSM_MSSMRHN_spectrum_generator<T>::write_running_couplings_1(const std::st
  * @param filename output file name
  */
 template <class T>
-void MSSM_MSSMRHN_spectrum_generator<T>::write_spectrum(const std::string& filename) const
+void MSSMD5O_MSSMRHN_spectrum_generator<T>::write_spectrum(const std::string& filename) const
 {
-   MSSM_spectrum_plotter plotter;
+   MSSMD5O_spectrum_plotter plotter;
    plotter.extract_spectrum<T>(model_1);
    plotter.write_to_file(filename);
 }

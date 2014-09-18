@@ -16,13 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_slha_io.hpp"
+#include "MSSMD5O_input_parameters.hpp"
+#include "MSSMD5O_slha_io.hpp"
 
 #include "MSSMRHN_input_parameters.hpp"
 #include "MSSMRHN_slha_io.hpp"
 
-#include "MSSM_MSSMRHN_spectrum_generator.hpp"
+#include "MSSMD5O_MSSMRHN_spectrum_generator.hpp"
 
 #include "error.hpp"
 #include "spectrum_generator_settings.hpp"
@@ -44,11 +44,11 @@ int main(int argc, const char* argv[])
 
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
-   MSSM_slha_io    slha_io_1;
+   MSSMD5O_slha_io slha_io_1;
    MSSMRHN_slha_io slha_io_2;
    Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
-   MSSM_input_parameters    input_1;
+   MSSMD5O_input_parameters input_1;
    MSSMRHN_input_parameters input_2;
 
    if (!slha_input_file.empty()) {
@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
    }
    oneset.toMz(); // run SM fermion masses to MZ
 
-   MSSM_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
+   MSSMD5O_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
       spectrum_generator_settings.get(Spectrum_generator_settings::precision));
    spectrum_generator.set_max_iterations(
@@ -84,9 +84,9 @@ int main(int argc, const char* argv[])
 
    spectrum_generator.run(oneset, input_1, input_2);
 
-   const MSSM<algorithm_type>& model_1
+   const MSSMD5O<algorithm_type>& model_1
       = spectrum_generator.get_model_1();
-   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
+   const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
    // output
