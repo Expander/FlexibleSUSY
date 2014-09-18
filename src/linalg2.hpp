@@ -168,9 +168,21 @@ def_hermitian_lapack(double, dsyev_, 3*N-1)
 
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
-// m == u * s.matrix().asDiagonal() * vh (following LAPACK convention)
-// (s >= 0).all()
-// s in descending order
+/**
+ * Singular value decomposition of M-by-N matrix m such that
+ *
+ *     m == u * s.matrix().asDiagonal() * vh    // LAPACK convention
+ *
+ * and `(s >= 0).all()`.  Elements of s are in descending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ * @param[out] u      M-by-M unitary matrix
+ * @param[out] vh     N-by-N unitary matrix
+ */
 template<class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
@@ -232,8 +244,19 @@ void svd
 
 // Eigen::SelfAdjointEigenSolver seems to be faster than ZHEEV of ATLAS
 
-// m == z * w.matrix().asDiagonal() * z.adjoint()
-// w in ascending order
+/**
+ * Diagonalizes N-by-N hermitian matrix m so that
+ *
+ *     m == z * w.matrix().asDiagonal() * z.adjoint()
+ *
+ * Elements of w are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m and z
+ * @tparam     N      number of rows and columns in m and z
+ * @param[in]  m      N-by-N matrix to be diagonalized
+ * @param[out] w      array of length N to contain eigenvalues
+ * @param[out] z      N-by-N unitary matrix
+ */
 template<class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
@@ -243,9 +266,18 @@ void diagonalize_hermitian
     hermitian_eigen(m, w, z);
 }
 
-// m == u * s.matrix().asDiagonal() * u.transpose()
-// (s >= 0).all()
-// s in descending order
+/**
+ * Diagonalizes N-by-N complex symmetric matrix m so that
+ *
+ *     m == u * s.matrix().asDiagonal() * u.transpose()
+ *
+ * and `(s >= 0).all()`.  Elements of s are in descending order.
+ *
+ * @tparam     N number of rows and columns in m and u
+ * @param[in]  m N-by-N complex symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ * @param[out] u N-by-N complex unitary matrix
+ */
 template<int N>
 void diagonalize_symmetric
 (const Eigen::Matrix<std::complex<double>, N, N>& m,
@@ -263,10 +295,20 @@ void diagonalize_symmetric
     u *= diag.unaryExpr(RephaseOp()).matrix().asDiagonal();
 }
 
-// m == u * s.matrix().asDiagonal() * u.transpose()
-// (s >= 0).all()
-// s unordered
-// use diagonalize_hermitian() unless sign of s[i] matters
+/**
+ * Diagonalizes N-by-N real symmetric matrix m so that
+ *
+ *     m == u * s.matrix().asDiagonal() * u.transpose()
+ *
+ * and `(s >= 0).all()`.  Order of elements of s is *unspecified*.
+ *
+ * @tparam     N number of rows and columns of m
+ * @param[in]  m N-by-N real symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ * @param[out] u N-by-N complex unitary matrix
+ *
+ * @note Use diagonalize_hermitian() unless sign of `s[i]` matters.
+ */
 template<int N>
 void diagonalize_symmetric
 (const Eigen::Matrix<double, N, N>& m,
@@ -288,9 +330,21 @@ void diagonalize_symmetric
     s = s.abs();
 }
 
-// m == u * s.matrix().asDiagonal() * vh (following LAPACK convention)
-// (s >= 0).all()
-// s in ascending order
+/**
+ * Singular value decomposition of M-by-N matrix m such that
+ *
+ *     m == u * s.matrix().asDiagonal() * vh    // LAPACK convention
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ * @param[out] u      M-by-M unitary matrix
+ * @param[out] vh     N-by-N unitary matrix
+ */
 template<class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
@@ -304,9 +358,18 @@ void reorder_svd
     vh = vh.colwise().reverse().eval();
 }
 
-// m == u * s.matrix().asDiagonal() * u.transpose()
-// (s >= 0).all()
-// s in ascending order
+/**
+ * Diagonalizes N-by-N complex symmetric matrix m so that
+ *
+ *     m == u * s.matrix().asDiagonal() * u.transpose()
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     N number of rows and columns in m and u
+ * @param[in]  m N-by-N complex symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ * @param[out] u N-by-N complex unitary matrix
+ */
 template<int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<std::complex<double>, N, N>& m,
@@ -318,10 +381,20 @@ void reorder_diagonalize_symmetric
     u = u.rowwise().reverse().eval();
 }
 
-// m == u * s.matrix().asDiagonal() * u.transpose()
-// (s >= 0).all()
-// s in ascending order
-// use diagonalize_hermitian() unless sign of s[i] matters
+/**
+ * Diagonalizes N-by-N real symmetric matrix m so that
+ *
+ *     m == u * s.matrix().asDiagonal() * u.transpose()
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     N number of rows and columns of m
+ * @param[in]  m N-by-N real symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ * @param[out] u N-by-N complex unitary matrix
+ *
+ * @note Use diagonalize_hermitian() unless sign of `s[i]` matters.
+ */
 template<int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<double, N, N>& m,
@@ -347,10 +420,22 @@ void reorder_diagonalize_symmetric
     u *= p;
 }
 
-// m == u.transpose() * s.matrix().asDiagonal() * v
-// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
-// (s >= 0).all()
-// s in ascending order
+/**
+ * Singular value decomposition of M-by-N matrix m such that
+ *
+ *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *     // convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ * @param[out] u      M-by-M unitary matrix
+ * @param[out] v      N-by-N unitary matrix
+ */
 template<class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
@@ -362,10 +447,25 @@ void fs_svd
     u.transposeInPlace();
 }
 
-// m == u.transpose() * s.matrix().asDiagonal() * v
-// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
-// (s >= 0).all()
-// s in ascending order
+/**
+ * Singular value decomposition of M-by-N *real* matrix m such that
+ *
+ *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *     // convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N *real* matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ * @param[out] u      M-by-M *complex* unitary matrix
+ * @param[out] v      N-by-N *complex* unitary matrix
+ *
+ * @note This is a convenience overload for the case where the type of
+ * u and v (complex) differs from that of m (real).  Mathematically,
+ * real u and v are enough to accommodate SVD of any real m.
+ */
 template<int M, int N>
 void fs_svd
 (const Eigen::Matrix<double, M, N>& m,
@@ -376,10 +476,20 @@ void fs_svd
     fs_svd(m.template cast<std::complex<double> >().eval(), s, u, v);
 }
 
-// m == u.transpose() * s.matrix().asDiagonal() * u
-// (convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263)
-// (s >= 0).all()
-// s in ascending order
+/**
+ * Diagonalizes N-by-N symmetric matrix m so that
+ *
+ *     m == u.transpose() * s.matrix().asDiagonal() * u
+ *     // convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263
+ *
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m
+ * @tparam     N      number of rows and columns in m and u
+ * @param[in]  m      N-by-N symmetric matrix to be decomposed
+ * @param[out] s      array of length N to contain singular values
+ * @param[out] u      N-by-N complex unitary matrix
+ */
 template<class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
@@ -390,9 +500,19 @@ void fs_diagonalize_symmetric
     u.transposeInPlace();
 }
 
-// m == z.adjoint() * w.matrix().asDiagonal() * z
-// (convention of SARAH)
-// abs(w[i]) in ascending order
+/**
+ * Diagonalizes N-by-N hermitian matrix m so that
+ *
+ *     m == z.adjoint() * w.matrix().asDiagonal() * z    // convention of SARAH
+ *
+ * w is arranged so that `abs(w[i])` are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m and z
+ * @tparam     N      number of rows and columns in m and z
+ * @param[in]  m      N-by-N matrix to be diagonalized
+ * @param[out] w      array of length N to contain eigenvalues
+ * @param[out] z      N-by-N unitary matrix
+ */
 template<class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
