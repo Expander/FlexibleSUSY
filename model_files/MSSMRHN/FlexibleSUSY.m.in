@@ -38,9 +38,7 @@ HighScaleInput={
    {MassB, m12},
    {MassWB,m12},
    {MassG,m12},
-   {Mv, LHInput[Mv]},
    {B[Mv], LHInput[B[Mv]]},
-   {Yv, LHInput[Yv]},
    {T[Yv], Azero*Yv}
 };
 
