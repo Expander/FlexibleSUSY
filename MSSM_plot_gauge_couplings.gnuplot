@@ -32,7 +32,7 @@ set origin 0.5,0.0
 
 unset label 1
 set label 2 "MSSM" at 1e11,0.9
-set label 3 "\\scalebox{1.2}{$\\color{red}{M_X}$}" at 2e16,0.28 center
+set label 3 "\\scalebox{1.4}{$\\color{red}{M_X}$}" at 2e16,0.28 center
 set arrow 1 from 2.e16,0.32 to 2.e16,0.4 as 1 lt rgb "red" lw 2
 
 plot [1:1e17] [0.4:1.2] \
