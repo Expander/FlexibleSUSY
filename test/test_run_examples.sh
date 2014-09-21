@@ -11,7 +11,7 @@ program_dirs=""
 
 [ $("$FSCONFIG" --with-MSSM) = yes ] &&
     program_dirs="$program_dirs customized-betas"
-[ $("$FSCONFIG" --with-MSSM) = yes -a $("$FSCONFIG" --with-MSSMRHN) = yes ] &&
+[ $("$FSCONFIG" --with-MSSMD5O) = yes -a $("$FSCONFIG" --with-MSSMRHN) = yes ] &&
     program_dirs="$program_dirs tower"
 
 exit_code=0
