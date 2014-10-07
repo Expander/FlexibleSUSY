@@ -159,4 +159,46 @@ bool Command_line_options::starts_with(const std::string& str,
    return !str.compare(0, prefix.size(), prefix);
 }
 
+/**
+ * Extracts the parameter value from a command line option string of
+ * the form --m0=125 .
+ *
+ * @param str full option string, including the parameter value (--m0=125)
+ * @param prefix option string, without the parameter value (--m0=)
+ * @param[out] parameter output parameter value (of type double)
+ *
+ * @return true, if str starts with prefix, false otherwise
+ */
+bool Command_line_options::get_parameter_value(const std::string& str,
+                                               const std::string& prefix,
+                                               double& parameter)
+{
+   if (starts_with(str, prefix)) {
+      parameter = atof(str.substr(prefix.length()).c_str());
+      return true;
+   }
+   return false;
+}
+
+/**
+ * Extracts the parameter value from a command line option string of
+ * the form --m0=125 .
+ *
+ * @param str full option string, including the parameter value (--m0=125)
+ * @param prefix option string, without the parameter value (--m0=)
+ * @param[out] parameter output parameter value (of type int)
+ *
+ * @return true, if str starts with prefix, false otherwise
+ */
+bool Command_line_options::get_parameter_value(const std::string& str,
+                                               const std::string& prefix,
+                                               int& parameter)
+{
+   if (starts_with(str, prefix)) {
+      parameter = atoi(str.substr(prefix.length()).c_str());
+      return true;
+   }
+   return false;
+}
+
 } // namespace flexiblesusy

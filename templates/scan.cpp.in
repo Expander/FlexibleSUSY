@@ -41,26 +41,6 @@ void print_usage()
              << std::endl;
 }
 
-bool set_input_parameter(const std::string& option, const std::string& str,
-                         double* parameter)
-{
-   if (Command_line_options::starts_with(option, str)) {
-      *parameter = atof(option.substr(str.length()).c_str());
-      return true;
-   }
-   return false;
-}
-
-bool set_input_parameter(const std::string& option, const std::string& str,
-                         int* parameter)
-{
-   if (Command_line_options::starts_with(option, str)) {
-      *parameter = atoi(option.substr(str.length()).c_str());
-      return true;
-   }
-   return false;
-}
-
 void set_command_line_parameters(int argc, char* argv[],
                                  @ModelName@_input_parameters& input)
 {

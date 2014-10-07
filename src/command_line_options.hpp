@@ -62,6 +62,8 @@ public:
    const std::string& get_rgflow_file() const { return rgflow_file; }
    const std::string& get_spectrum_file() const { return spectrum_file; }
 
+   static bool get_parameter_value(const std::string&, const std::string&, double&);
+   static bool get_parameter_value(const std::string&, const std::string&, int&);
    static bool starts_with(const std::string&, const std::string&);
 
 private:
