@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    softsusy::Z3 = false;
    softsusy::numRewsbLoops = 1;
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    s.setMh2Squared(m.get_mHu2());
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {

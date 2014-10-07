@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_tree_level_masses )
    NmssmSoftsusy s;
    setup_NMSSM_const(m, s, input);
 
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
    // neutral CP even Higgs

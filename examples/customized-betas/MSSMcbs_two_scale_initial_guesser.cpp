@@ -175,7 +175,7 @@ void MSSMcbs_initial_guesser<Two_scale>::guess_soft_parameters()
    model->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum
-   model->calculate_DRbar_parameters();
+   model->calculate_DRbar_masses();
 }
 
 } // namespace flexiblesusy

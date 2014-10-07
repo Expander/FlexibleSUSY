@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    s.setMh2Squared(m.get_mHu2());
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    // check tree-level
    DoubleVector hh_ss(s.displayDrBarPars().mh0);

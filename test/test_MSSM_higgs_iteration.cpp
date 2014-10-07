@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          model->set_vd(vd);
          model->set_vu(vu);
 
-         model->calculate_DRbar_parameters();
+         model->calculate_DRbar_masses();
          model->calculate_Mhh_pole();
          model->calculate_MVZ_pole();
 
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
    BOOST_MESSAGE("Predicted tan(beta) = " << model.get_vu() / model.get_vd());
 
    // check how close we got
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
    model.calculate_Mhh_pole();
    model.calculate_MVZ_pole();
 

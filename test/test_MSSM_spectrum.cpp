@@ -53,7 +53,7 @@ void MSSM_precise_gauge_couplings_low_scale_constraint::apply()
 
    // run MSSM_low_scale_constraint::apply(), without the gauge
    // couplings
-   model->calculate_DRbar_parameters();
+   model->calculate_DRbar_masses();
    update_scale();
    calculate_DRbar_gauge_couplings();
 
@@ -144,7 +144,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
           " model pointer must not be zero");
 
    // save old model parmeters
-   model->calculate_DRbar_parameters();
+   model->calculate_DRbar_masses();
    const MSSM<Two_scale> mssm(*model);
 
    MSSM_susy_scale_constraint<Two_scale>::apply();
@@ -690,7 +690,7 @@ void MSSM_iterative_low_scale_constraint::apply()
    assert(model && "Error: MSSM_low_scale_constraint:"
           " model pointer must not be zero");
 
-   model->calculate_DRbar_parameters();
+   model->calculate_DRbar_masses();
    update_scale();
    calculate_DRbar_gauge_couplings();
    calculate_DRbar_yukawa_couplings();
@@ -712,7 +712,7 @@ void MSSM_iterative_low_scale_constraint::apply()
          model->set_vd(vd);
          model->set_vu(vu);
 
-         model->calculate_DRbar_parameters();
+         model->calculate_DRbar_masses();
          model->calculate_Mhh_pole();
          model->calculate_MVZ_pole();
 

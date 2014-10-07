@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_tadpoles )
    setup_NMSSM_const(m, s, input);
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const double sinthDRbar = s.calcSinthdrbar();
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_one_loop_ewsb )
    s.setMh2Squared(m.get_mHu2());
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const int signMu = 1;
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_tadpoles )
    setup_NMSSM_const(m, s, input);
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const double sinthDRbar = s.calcSinthdrbar();
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_two_loop_ewsb )
    s.setMh2Squared(m.get_mHu2());
 
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const int signMu = 1;

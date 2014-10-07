@@ -126,7 +126,7 @@ void self_energy_example()
    MSSM<Two_scale> mssm;
 
    setup(mssm);
-   mssm.calculate_DRbar_parameters();
+   mssm.calculate_DRbar_masses();
    // INFO(mssm);
 
    double p = Electroweak_constants::MZ;

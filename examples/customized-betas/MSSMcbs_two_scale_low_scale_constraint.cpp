@@ -77,7 +77,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::apply()
    assert(model && "Error: MSSMcbs_low_scale_constraint:"
           " model pointer must not be zero");
 
-   model->calculate_DRbar_parameters();
+   model->calculate_DRbar_masses();
    update_scale();
    calculate_DRbar_gauge_couplings();
 

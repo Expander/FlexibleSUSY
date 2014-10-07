@@ -186,7 +186,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, MSSM_input_parameters& inpu
    s.setMw(s.displayMwRun());
 
    ensure_tree_level_ewsb(m);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    ensure_tree_level_ewsb(s);
    s.calcDrBarPars();

@@ -107,7 +107,7 @@ CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_Str
 
       MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
 " <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_parameters();
+      model->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
       return " <> CConversion`RValueToCFormString[function] <> ";
    }
@@ -136,7 +136,7 @@ CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_Strin
 
       MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
 " <> TextFormatting`IndentText[SetModelParametersFromGSLVector["model","x",parameters],6] <> "
-      model->calculate_DRbar_parameters();
+      model->calculate_DRbar_masses();
 " <> TextFormatting`IndentText[Parameters`CreateLocalConstRefs[function],6] <> "
 " <> TextFormatting`IndentText[SetGSLVectorFromExpressions["f",function],6] <> "
       return GSL_SUCCESS;

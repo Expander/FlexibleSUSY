@@ -195,7 +195,7 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
    model_1->solve_ewsb_tree_level();
 
    // calculate tree-level spectrum
-   model_1->calculate_DRbar_parameters();
+   model_1->calculate_DRbar_masses();
    model_1->set_thresholds(3);
    model_1->set_loops(2);
 }

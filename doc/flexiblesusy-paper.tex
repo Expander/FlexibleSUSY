@@ -1076,7 +1076,7 @@ to use renormalization group running of all model parameters.
 At the bottom of the hierarchy stands the actual model class, which
 uses the \DRbar\ parameters from the parent classes to calculate
 \DRbar\ and pole mass spectra.  These two calculations are performed
-in the \code{calculate_DRbar_parameters()} and
+in the \code{calculate_DRbar_masses()} and
 \code{calculate_pole_masses()} functions, which make use of the mass
 matrices and self-energies obtained from SARAH.  The calculation of
 the pole mass spectrum will be explained in detail in
@@ -1411,7 +1411,7 @@ int MSSM<Two_scale>::tadpole_equations(const gsl_vector* x, void* params,
 
    // subtract one-loop tadpoles
    if (ewsb_loop_order > 0) {
-      model->calculate_DRbar_parameters();
+      model->calculate_DRbar_masses();
       tadpole[0] -= Re(model->tadpole_hh(0));
       tadpole[1] -= Re(model->tadpole_hh(1));
    }
@@ -2531,7 +2531,7 @@ At the low scale where \code{MSSM} is valid,
 the code is the same as in \code{MSSM_initial_guesser}:
 \begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
   model_1->solve_ewsb_tree_level();
-  model_1->calculate_DRbar_parameters();
+  model_1->calculate_DRbar_masses();
   model_1->set_thresholds(3); model_1->set_loops(2);
 }
 \end{numlstlisting}

@@ -125,7 +125,7 @@ void test_beta_function_equality(const SoftParsMssm& a, const MSSM_soft_paramete
 void compare_tree_level_masses(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
    const double beta = atan(s.displayTanb());
@@ -894,7 +894,7 @@ void compare_top_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    s.setMu(MZ);
    s.calcDrBarPars();
    m.set_scale(MZ);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mtpole = s.displayDataSet().displayPoleMt();
    const double softsusy_mtop = s.calcRunningMt();
@@ -911,7 +911,7 @@ void compare_bot_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    s.setMu(MZ);
    s.calcDrBarPars();
    m.set_scale(MZ);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mb_ms_bar = s.displayDataSet().displayMass(mBottom);
    const double softsusy_mbot = s.calcRunningMb();
@@ -925,7 +925,7 @@ void compare_tau_self_energy(MssmSoftsusy s, MSSM<Two_scale> m)
    s.setMu(MZ);
    s.calcDrBarPars();
    m.set_scale(MZ);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mtaupole = s.displayDataSet().displayPoleMtau();
    const double softsusy_mtau = s.calcRunningMtau();
@@ -943,7 +943,7 @@ void compare_self_energies(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    TEST_EQUALITY(s.displayMu(), m.get_scale());
 
@@ -968,7 +968,7 @@ void compare_tadpoles(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const double sinthDRbar = s.calcSinthdrbar();
@@ -987,7 +987,7 @@ void compare_tadpoles_2loop(MssmSoftsusy s, MSSM<Two_scale> m)
 {
    ensure_tree_level_ewsb(m);
    s.calcDrBarPars();
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
 
    const double mt = s.displayDrBarPars().mt;
    const double sinthDRbar = s.calcSinthdrbar();
@@ -1037,7 +1037,7 @@ void compare_loop_masses(MssmSoftsusy s, MSSM<Two_scale> m)
    softsusy::numHiggsMassLoops = 1;
    s.physical(1);
    m.set_pole_mass_loop_order(1);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    m.calculate_pole_masses();
 
    TEST_EQUALITY(s.displayMu(), m.get_scale());
@@ -1155,7 +1155,7 @@ void test_lsp(MSSM<Two_scale> m, MssmSoftsusy s)
    s.physical(1);
 
    m.set_pole_mass_loop_order(1);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    m.calculate_pole_masses();
 
    double softsusy_lsp;
@@ -1171,7 +1171,7 @@ void test_lsp(MSSM<Two_scale> m, MssmSoftsusy s)
 void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 {
    softSusy.calcDrBarPars();
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
 
    const double BMu = model.get_BMu();
    const double Mu  = model.get_Mu();
@@ -1204,7 +1204,7 @@ void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 {
    softSusy.calcDrBarPars();
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
 
    const double BMu = model.get_BMu();
    const double Mu  = model.get_Mu();
@@ -1237,7 +1237,7 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 {
    softSusy.calcDrBarPars();
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
 
    const double BMu = model.get_BMu();
    const double Mu  = model.get_Mu();
@@ -1278,7 +1278,7 @@ void compare_self_energy_CP_even_higgs(MSSM<Two_scale> model,
                                     MssmSoftsusy softSusy, int loop_order)
 {
    softSusy.calcDrBarPars();
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
 
    // check tree-level
    DoubleVector hh_ss(softSusy.displayDrBarPars().mh0);
@@ -1326,7 +1326,7 @@ void compare_self_energy_CP_odd_higgs(MSSM<Two_scale> model,
                                    MssmSoftsusy softSusy, int loop_order)
 {
    softSusy.calcDrBarPars();
-   model.calculate_DRbar_parameters();
+   model.calculate_DRbar_masses();
 
    // check tree-level
    DoubleVector Ah_ss(softSusy.displayDrBarPars().mA0);

@@ -58,6 +58,7 @@ public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    virtual ~@ModelName@();
 
+   void calculate_DRbar_masses();
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
    virtual void clear();

@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    setup_NMSSM_const(m, s, input);
    s.setData(oneset);
 
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
    NMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    setup_NMSSM_const(m, s, input);
    s.setData(oneset);
 
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
    NMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);

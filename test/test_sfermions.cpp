@@ -110,7 +110,7 @@ void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
    set_mssm_parameters(m, softSusy);
 
    ensure_tree_level_ewsb(m);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    softSusy.calcDrBarPars();
 }
 
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( test_stop_different_sign )
    m.set_Mu(1200.0);
    s.setSusyMu(1200.0);
    ensure_tree_level_ewsb(m);
-   m.calculate_DRbar_parameters();
+   m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
    DoubleVector mf(2);

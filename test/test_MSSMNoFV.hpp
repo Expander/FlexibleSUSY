@@ -127,10 +127,10 @@ void setup_MSSM_models(T1& m1, T2& m2, const TInput& input)
    m2.set_vd(vd);
 
    ensure_tree_level_ewsb(m1);
-   m1.calculate_DRbar_parameters();
+   m1.calculate_DRbar_masses();
 
    ensure_tree_level_ewsb(m2);
-   m2.calculate_DRbar_parameters();
+   m2.calculate_DRbar_masses();
 }
 
 #endif

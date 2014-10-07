@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    QedQcd oneset;
    setup_MSSM_models(mssm, mssmnofv, input_mssmnofv);
 
-   mssm.calculate_DRbar_parameters();
-   mssmnofv.calculate_DRbar_parameters();
+   mssm.calculate_DRbar_masses();
+   mssmnofv.calculate_DRbar_masses();
 
    MSSM_low_scale_constraint<Two_scale> constraint_mssm(input_mssm, oneset);
    constraint_mssm.set_model(&mssm);
