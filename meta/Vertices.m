@@ -458,7 +458,10 @@ ResolveColorFactor[vertex_, fields_, cpPattern_, exprs_] := Module[{
     sumRange = ColorIndexRange[First @ internalColorIndices, fields];
     loopArgs = Prepend[{#, 1}& /@ externalColorIndices, {sumIdx, sumRange}];
     Sum @@
-    Prepend[loopArgs, vertex /. Alternatives@@internalColorIndices -> sumIdx]
+    Prepend[loopArgs,
+	    vertex /. Alternatives@@internalColorIndices -> sumIdx] //.
+      SARAH`sum[a_,b_,c_,x_] /; !FreeQ[x, (SARAH`fSU3|SARAH`Lam)[___,a,___]] :>
+      Sum[x, {a, b, c}]
 ];
 
 InternalColorIndices[fields_List] :=
