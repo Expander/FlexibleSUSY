@@ -1,3 +1,9 @@
+FlexibleSUSY-1.0.3 [not released yet]
+
+ * Bugfix (commit 5f78968): perform residual color contractions before
+   stripping group factors.  Thanks to Philip Diessner and Wojciech
+   Kotlarski.
+
 FlexibleSUSY-1.0.2 [July, 15 2014]
 
  * Bugfix (commit 689141da): Enable non-quadratic superpotential
