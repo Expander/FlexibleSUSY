@@ -94,23 +94,19 @@ vertexRulesSd  = VertexRules[selfEnergySd , massMatrices];
 vertexRulesSu  = VertexRules[selfEnergySu , massMatrices];
 
 TestEquality[Cp[SOc, conj[SOc], conj[SOc], SOc] /. vertexRulesSOc,
-    -128*g3^2];
+    -3*g3^2];
 
 TestEquality[Cp[SOc, conj[SOc], conj[Sd[{gI1}]], Sd[{gI2}]] /. vertexRulesSOc,
-    (-24*I)*g3^2*(sum[j1, 1, 3, conj[ZD[gI2, j1]]*ZD[gI1, j1]] -
-		  sum[j1, 1, 3, conj[ZD[gI2, 3 + j1]]*ZD[gI1, 3 + j1]])];
+    0];
 
 TestEquality[Cp[SOc, conj[SOc], conj[Su[{gI1}]], Su[{gI2}]] /. vertexRulesSOc,
-    (-24*I)*g3^2*(sum[j1, 1, 3, conj[ZU[gI2, j1]]*ZU[gI1, j1]] -
-		  sum[j1, 1, 3, conj[ZU[gI2, 3 + j1]]*ZU[gI1, 3 + j1]])];
+    0];
 
 TestEquality[Cp[USd[{gO1}], conj[USd[{gO2}]], conj[SOc], SOc] /. vertexRulesSd,
-    (-I)*(64*g3^2*sum[j1, 1, 3, Delta[gO1, 3 + j1]*
-          Delta[gO2, 3 + j1]] - 64*g3^2*Delta[gO1, gO2]*ThetaStep[gO1, 3])];
+    0];
 
 TestEquality[Cp[USu[{gO1}], conj[USu[{gO2}]], conj[SOc], SOc] /. vertexRulesSu,
-    (-I)*(64*g3^2*sum[j1, 1, 3, Delta[gO1, 3 + j1]*
-	  Delta[gO2, 3 + j1]] - 64*g3^2*Delta[gO1, gO2]*ThetaStep[gO1, 3])];
+    0];
 
 DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
 
