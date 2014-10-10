@@ -19,7 +19,7 @@
 #ifndef PROBLEMS_H
 #define PROBLEMS_H
 
-#include <ostream>
+#include <iostream>
 #include <cassert>
 
 namespace flexiblesusy {
