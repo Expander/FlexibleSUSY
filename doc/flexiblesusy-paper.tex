@@ -891,7 +891,7 @@ the low- and high-scale using the variables
 respectively.  The gauge couplings will be guessed automatically at
 the low-scale from the known Standard Model parameters.
 
-\fs allows to add leading two-loop contributions to the CP-even Higgs
+\fs allows the user to add leading two-loop contributions to the CP-even Higgs
 tadpoles and self-energies.  For MSSM-like models (with two CP-even
 Higgs bosons, one CP-odd Higgs boson, one neutral Goldstone boson)
 these corrections can be enabled by setting \code{UseHiggs2LoopMSSM =
@@ -906,9 +906,26 @@ are enabled by setting \code{UseHiggs2LoopNMSSM = True} and by
 defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda]
   vS / Sqrt[2]}, for example.  This will add the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
-\cite{Degrassi:2009yq}, plus MSSM-like contributions of the order
-$O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$
-\cite{Brignole:2001jy,Dedes:2003km}.
+\cite{Degrassi:2009yq}.  If one also wishes to include the MSSM contributions of the order $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ as well
+\cite{Brignole:2001jy,Dedes:2003km} then one can also set both\footnote{Please note that with both of thse options set true it is the NMSSM corrections for $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ which will be applied rather the the MSSM corrections for that order.} \code{UseHiggs2LoopMSSM = True} and \code{UseHiggs2LoopNMSSM = True}. 
+
+ In the case of the NMSSM the default option is to have both flags set
+ to true as we feel that it is valuable to have these MSSM corrections
+ for scenarios where there singlet mixing is very small and in
+ particular for cross checks against the MSSM when close to the MSSM
+ limit of the model.  However in cases where the singlet mixing is
+ large the result at $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ and
+ $O(y_\tau^4)$ will not be complete and including these corrections
+ could in principle even make the numerical result further away from
+ the correct two loop result at that order if there is a cancellation
+ with the missing contributions.  So while including such partial
+ two-loop corrections is does not change the formal accuracy the user
+ should choose whether or not to include these corrections based on
+ the physics they study.  Similarly in models that go beyond the NMSSM
+ the user must decide based the physics whether on not these
+ corrections will give the leading two-loop corrections in their
+ model.
+
 
 One can create a pure low-energy model by setting
 \code{OnlyLowEnergyFlexibleSUSY = True}.  In this case the high-scale
@@ -1819,19 +1836,22 @@ field.  These approximations work as follows:
 If higher accuracy is required, two-loop corrections to the
 self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
 in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
-model file.  This enables two-loop Higgs FORTRAN routines supplied by
-P.~Slavich from
+model file.  The former enables two-loop Higgs FORTRAN routines
+supplied by P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
 which add two-loop corrections of $\oatas$, $\oabas$, $\oatq$,
-$\oabq$, $\oatauq$ and $\oatab$.  Something similar is done for the
-NMSSM, but in this case the NMSSM $\oatas$, $\oabas$ pieces come from
-\cite{Degrassi:2009yq}, while for $\oatq$, $\oabq$, $\oatauq$ and
-$\oatab$ the MSSM pieces are used though it should be understood that
-these are not complete in the NMSSM.  Since the Higgs mass is a very
-important measurement and the two-loop corrections can be larger than
-the current experimental error \cite{Degrassi:2009yq} we recommend to
-set these switches to \code{True} in any MSSM-\footnote{In \fs a model
-  is MSSM-like if (i) its superpotential is approximately given by the
+$\oabq$, $\oatauq$ and $\oatab$.  The latter adds corrections
+calculated in the NMSSM at $\oatas$, $\oabas$ from
+\cite{Degrassi:2009yq}. If wants to include the $\oatq$, $\oabq$,
+$\oatauq$ and $\oatab$ the MSSM pieces are used though it NMSSM
+corrections at $\oatas$, $\oabas$ along with the MSSM corrections at
+$\oatq$, $\oabq$, $\oatauq$ and $\oatab$ then both flags
+\code{UseHiggs2LoopMSSM} and \code{UseHiggs2LoopNMSSM} should be set
+to \code{True}.  Since the Higgs mass is a very important measurement
+and the two-loop corrections can be larger than the current
+experimental error \cite{Degrassi:2009yq} we recommend to set these
+switches to \code{True} in any MSSM-\footnote{In \fs a model is
+  MSSM-like if (i) its superpotential is approximately given by the
   MSSM one, (ii) it implements $R$-parity conservation or something
   equivalent, and (iii) contains two CP-even and CP-odd Higgs bosons,
   where one CP-odd Higgs boson may be a Goldstone boson, all with an
@@ -1842,7 +1862,10 @@ NMSSM-like\footnote{In \fs a model is NMSSM-like if (i) its
   (iii) contains three CP-even and CP-odd Higgs bosons, where one or
   two CP-odd Higgs bosons may be Goldstone bosons, all with an
   NMSSM-like coupling to $t$, $b$ and $\tau$\@.  Examples for
-  NMSSM-like models are the USSM and the \ESSM.} model.  For models
+  NMSSM-like models are the USSM and the \ESSM.} model.  However in
+such models the user should still consider whether these corrections
+are really the leading corrections in the model or if there are other
+potentially large two-loop corrections.  For models
 with a more extended Higgs sector we recommend that the leading log
 two-loop corrections are estimated by generalizing those of the MSSM
 or NMSSM.
