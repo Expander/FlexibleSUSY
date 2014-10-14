@@ -1467,7 +1467,15 @@ is performed by the Eigen library routine \code{Eigen::JacobiSVD} for
 matrices with less than four rows and columns, and the LAPACK routines
 \code{zgesvd}, \code{dgesvd} for larger matrices.  For the other types
 of diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
-used regardless of the matrix size.
+used regardless of the matrix size.  Note, that \fs uses double
+precision floating point data types with $15$ significant digits to
+store the mass matrices and the mass eigenvalues.  In case a particle
+multiplet contains a very split mass hierarchy, where the mass
+difference between the smallest and the largest mass in the multiplet
+is of the order or greater than 10 orders of magnitude, double
+precision data types are no longer sufficient.  In this case we
+recommend to either split the multiplet into sub-multiplets with
+smaller mass hierarchies, or integrate out the heavy states.
 
 \fs uses the following conventions for the diagonalization: A mass
 matrix $M^2$ for real scalar fields $\phi_i$ is diagonalized with an
