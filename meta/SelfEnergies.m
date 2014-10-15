@@ -564,15 +564,26 @@ double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
 
 LOCK_MUTEX();
 
-ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
-           &amu, &tanb, &vev2, &gs, &s1s, &s2s);
-ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
-        &s2t);
-ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
-           &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
-tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
+              &amu, &tanb, &vev2, &gs, &s1s, &s2s);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
+           &s2t);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
+              &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+}
 
 UNLOCK_MUTEX();
 
@@ -651,15 +662,26 @@ double s1b = 0., s2b = 0., s1tau = 0., s2tau = 0.;
 
 LOCK_MUTEX();
 
-ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
-           &amu, &tanb, &vev2, &gs, &s1s, &s2s);
-ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
-        &s2t);
-ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
-           &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
-tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   ewsb2loop_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq,
+              &amu, &tanb, &vev2, &gs, &s1s, &s2s);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddstad_(&rmtsq, &rmbsq, &mAsq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s1t,
+           &s2t);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   ewsb2loop_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq,
+              &amu, &cotbeta, &vev2, &gs, &s2b, &s1b);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqtad_(&rmtausq, &mAsq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &s1tau, &s2tau);
+}
 
 UNLOCK_MUTEX();
 
@@ -777,33 +799,41 @@ int scheme = 0; // chooses DR-bar scheme from slavich et al
 
 LOCK_MUTEX();
 
-// two-loop Higgs corrections: alpha_s alpha_t, alpha_s alpha_b and
-// alpha_b^2, alpha_t*2, alpha_b alpha_t
-dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
-          &tanb, &vev2, &gs, &scheme, &s11s, &s22s, &s12s);
-dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
-          &cotbeta, &vev2, &gs, &scheme, &s22b, &s11b, &s12b);
-ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-          &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s11w,
-          &s12w, &s22w);
-tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
-            &s22tau, &s12tau);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   dszhiggs_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+             &tanb, &vev2, &gs, &scheme, &s11s, &s22s, &s12s);
+   dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+           &tanb, &vev2, &gs, &p2s);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   dszhiggs_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+             &cotbeta, &vev2, &gs, &scheme, &s22b, &s11b, &s12b);
+   dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+           &cotbeta, &vev2, &gs, &p2b);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+             &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &s11w,
+             &s12w, &s22w);
+   ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+               &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+               &s22tau, &s12tau);
+   tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+}
+
+UNLOCK_MUTEX();
 
 // calculate dMA, which is the two loop correction to take the DRbar
 // psuedoscalar mass ( = -2m3sq/sin(2beta)) to the pole mass (as in
 // Eq. (8) of hep-ph/0305127)
-dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
-        &tanb, &vev2, &gs, &p2s);
-dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
-        &cotbeta, &vev2, &gs, &p2b);
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
-
-UNLOCK_MUTEX();
-
 const double dMA = p2s + p2w + p2b + p2tau;
 
 // dMA contains two loop tadpoles, which we'll subtract
@@ -888,14 +918,25 @@ double p2s = 0., p2w = 0., p2b = 0., p2tau = 0.;
 
 LOCK_MUTEX();
 
-dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
-        &tanb, &vev2, &gs, &p2s);
-dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
-        &cotbeta, &vev2, &gs, &p2b);
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   dszodd_(&rmtsq, &mg, &mst1sq, &mst2sq, &sxt, &cxt, &scalesq, &amu,
+           &tanb, &vev2, &gs, &p2s);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   dszodd_(&rmbsq, &mg, &msb1sq, &msb2sq, &sxb, &cxb, &scalesq, &amu,
+           &cotbeta, &vev2, &gs, &p2b);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+}
 
 UNLOCK_MUTEX();
 
@@ -999,26 +1040,34 @@ double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
 
 LOCK_MUTEX();
 
-// get alpha_s alpha_t pieces
-effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
-        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+           &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+}
 
-// get alpha_s alpha_b pieces
-effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
-        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+           &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+}
 
 // Corrections as in MSSM, not corrected for NMSSM,
 // should be OK for MSSM states when S state is close to decoupled
-ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq,
-          &msb2sq, &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb,
-          &vev2, &s11w, &s12w, &s22w);
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-            &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
-            &s22tau, &s12tau);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddshiggs_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq,
+             &msb2sq, &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb,
+             &vev2, &s11w, &s12w, &s22w);
+   ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqhiggs_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+               &costau, &scalesq, &amu, &tanb, &vev2, &scheme, &s11tau,
+               &s22tau, &s12tau);
+   tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+}
 
 UNLOCK_MUTEX();
 
@@ -1136,20 +1185,28 @@ double DMSB[3][3] = {{ 0. }}, DMPB[3][3] = {{ 0. }};
 
 LOCK_MUTEX();
 
-// get alpha_s alpha_t pieces
-effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
-        &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+if (HIGGS_2LOOP_CORRECTION_AT_AS) {
+   effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
+           &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
+}
 
-// get alpha_s alpha_b pieces
-effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
-        &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
+           &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
+}
 
 // Corrections as in MSSM, not corrected for NMSSM,
 // should be OK for MSSM states when S state is close to decoupled
-ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
-        &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
-tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
-          &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   ddsodd_(&rmtsq, &rmbsq, &fmasq, &mst1sq, &mst2sq, &msb1sq, &msb2sq,
+           &sxt, &cxt, &sxb, &cxb, &scalesq, &amu, &tanb, &vev2, &p2w);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
+             &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
+}
 
 UNLOCK_MUTEX();
 

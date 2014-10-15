@@ -56,6 +56,11 @@ using namespace @ModelName@_info;
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 
+#define HIGGS_2LOOP_CORRECTION_AT_AS     higgs_2loop_corrections.at_as
+#define HIGGS_2LOOP_CORRECTION_AB_AS     higgs_2loop_corrections.ab_as
+#define HIGGS_2LOOP_CORRECTION_AT_AT     higgs_2loop_corrections.at_at
+#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU higgs_2loop_corrections.atau_atau
+
 #ifdef ENABLE_THREADS
 std::mutex CLASSNAME::mtx_fortran;
 #endif
