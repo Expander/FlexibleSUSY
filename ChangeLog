@@ -1,5 +1,7 @@
 FlexibleSUSY-1.0.3 [not released yet]
 
+ * Allow selection of Higgs 2-loop contributions in SLHA input file
+
  * Bugfix (commit 5f78968): perform residual color contractions before
    stripping group factors.  Thanks to Philip Diessner and Wojciech
    Kotlarski.
