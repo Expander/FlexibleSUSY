@@ -20,6 +20,7 @@
 #include "utils.h"
 #include "linalg.h"
 #include "rge.h"
+#include "ckm.hpp"
 
 namespace softsusy {
 const double MUP = 2.4e-3; ///< default running quark mass from PDG
@@ -60,6 +61,7 @@ private:
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
+  flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -75,6 +77,8 @@ public:
   void setMass(mass mno, double m) { mf(mno) = m; }; 
   /// sets QED or QCD structure constant
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
+  /// sets CKM parameters (in the MS-bar scheme at MZ)
+  void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   
@@ -94,6 +98,11 @@ public:
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return mbMb; }
+  /// Returns real CKM matrix
+  Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
+  /// Returns complex CKM matrix
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return ckm.get_complex_ckm(); }
+
   
   int flavours(double) const;  /// returns number of active flavours
   
