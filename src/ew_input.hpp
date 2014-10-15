@@ -66,6 +66,10 @@ namespace Electroweak_constants {
       const double g1 = sqrt(4.0 * M_PI * alpha1);
       const double g2 = sqrt(4.0 * M_PI * alpha2);
       const double g3 = sqrt(4.0 * M_PI * alpha3);
+      const double CKM_THETA12 = 0.229206; ///< From Vus/Vud in global CKM fit, PDG
+      const double CKM_THETA13 = 0.003960; ///< From Vub in global CKM fit, PDG
+      const double CKM_THETA23 = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
+      const double CKM_DELTA   = 0.;
    }
 }
 

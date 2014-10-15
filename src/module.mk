@@ -7,6 +7,7 @@ LIBFLEXI_MK  := \
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/build_info.cpp \
+		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
@@ -31,6 +32,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \
+		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
 		$(DIR)/composite_convergence_tester.hpp \
 		$(DIR)/compound_constraint.hpp \
