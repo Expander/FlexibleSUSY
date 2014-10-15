@@ -19,12 +19,12 @@
 #ifndef CKM_H
 #define CKM_H
 
-#include "ew_input.hpp"
-
 namespace flexiblesusy {
 
 struct CKM_parameters {
    CKM_parameters();
+
+   void set_angles(double, double, double, double);
 
    double lambda;
    double A;

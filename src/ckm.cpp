@@ -22,17 +22,25 @@
 
 namespace flexiblesusy {
 
+CKM_parameters::CKM_parameters()
+{
+   set_angles(Electroweak_constants::CKM_THETA12,
+              Electroweak_constants::CKM_THETA13,
+              Electroweak_constants::CKM_THETA23,
+              Electroweak_constants::CKM_DELTA);
+}
+
 /**
  * Initializes Wolfenstein parameters from V_CKM angles (see
  * hep-ph/0406184)
  */
-CKM_parameters::CKM_parameters()
+void CKM_parameters::set_angles(double theta_12, double theta_13,
+                                double theta_23, double delta)
 {
-   const double sin_12 = Sin(Electroweak_constants::CKM_THETA12);
-   const double sin_13 = Sin(Electroweak_constants::CKM_THETA13);
-   const double sin_23 = Sin(Electroweak_constants::CKM_THETA23);
-   const std::complex<double> delta(std::polar(1.0, -Electroweak_constants::CKM_DELTA));
-   const std::complex<double> V13(sin_13 * delta);
+   const double sin_12 = Sin(theta_12);
+   const double sin_13 = Sin(theta_13);
+   const double sin_23 = Sin(theta_23);
+   const std::complex<double> V13(sin_13 * std::polar(1.0, - delta));
 
    // Eq. (7)
    lambda  = sin_12;
