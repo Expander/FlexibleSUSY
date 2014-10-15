@@ -102,7 +102,6 @@ public:
   Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
   /// Returns complex CKM matrix
   Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return ckm.get_complex_ckm(); }
-
   
   int flavours(double) const;  /// returns number of active flavours
   
