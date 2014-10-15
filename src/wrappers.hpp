@@ -85,6 +85,11 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
+inline double Arg(const std::complex<double>& z)
+{
+   return std::arg(z);
+}
+
 template <typename Derived>
 unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
 {

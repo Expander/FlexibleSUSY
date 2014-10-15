@@ -19,6 +19,8 @@
 #ifndef CKM_H
 #define CKM_H
 
+#include <Eigen/Core>
+
 namespace flexiblesusy {
 
 struct CKM_parameters {
@@ -26,6 +28,9 @@ struct CKM_parameters {
 
    void set_from_wolfenstein(double, double, double, double);
    void get_wolfenstein(double&, double&, double&, double&);
+
+   Eigen::Matrix<double,3,3> get_real_ckm() const;
+   Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const;
 
    double theta_12, theta_13, theta_23, delta;
 };
