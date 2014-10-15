@@ -24,12 +24,10 @@ namespace flexiblesusy {
 struct CKM_parameters {
    CKM_parameters();
 
-   void set_angles(double, double, double, double);
+   void set_from_wolfenstein(double, double, double, double);
+   void get_wolfenstein(double&, double&, double&, double&);
 
-   double lambda;
-   double A;
-   double rho_bar;
-   double eta_bar;
+   double theta_12, theta_13, theta_23, delta;
 };
 
 } // namespace flexiblesusy
