@@ -80,6 +80,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
    , problems(@ModelName@_info::particle_names)
+   , higgs_2loop_corrections()
 #ifdef ENABLE_THREADS
    , thread_exception()
 #endif
