@@ -1,4 +1,5 @@
 Block MODSEL                 # Select model
+    6   0                    # flavour violation
 #   12    1000                # DRbar parameter output scale (GeV)
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
