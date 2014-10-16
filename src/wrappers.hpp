@@ -279,7 +279,7 @@ namespace {
 
 inline int Round(double a)
 {
-   return static_cast<int>(a + 0.5);
+   return static_cast<int>(a >= 0. ? a + 0.5 : a - 0.5);
 }
 
 template<int N>
