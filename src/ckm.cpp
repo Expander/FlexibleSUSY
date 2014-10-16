@@ -23,11 +23,16 @@
 namespace flexiblesusy {
 
 CKM_parameters::CKM_parameters()
-   : theta_12(Electroweak_constants::CKM_THETA12)
-   , theta_13(Electroweak_constants::CKM_THETA13)
-   , theta_23(Electroweak_constants::CKM_THETA23)
-   , delta(Electroweak_constants::CKM_DELTA)
 {
+   reset();
+}
+
+void CKM_parameters::reset()
+{
+   theta_12 = Electroweak_constants::CKM_THETA12;
+   theta_13 = Electroweak_constants::CKM_THETA13;
+   theta_23 = Electroweak_constants::CKM_THETA23;
+   delta    = Electroweak_constants::CKM_DELTA;
 }
 
 /**
