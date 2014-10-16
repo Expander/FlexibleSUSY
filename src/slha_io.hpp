@@ -111,9 +111,19 @@ public:
    typedef boost::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
+      bool quark_flavour_violated;   ///< key = 6
+      bool lepton_flavour_violated;  ///< key = 6
       double parameter_output_scale; ///< key = 12
-      Modsel() : parameter_output_scale(0.) {}
-      void clear() { parameter_output_scale = 0.; }
+      Modsel()
+         : quark_flavour_violated(false)
+         , lepton_flavour_violated(false)
+         , parameter_output_scale(0.)
+         {}
+      void clear() {
+         quark_flavour_violated = false;
+         lepton_flavour_violated = false;
+         parameter_output_scale = 0.;
+      }
    };
    struct Extpar {
       double input_scale; ///< key = 0

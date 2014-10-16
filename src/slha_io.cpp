@@ -85,11 +85,15 @@ void SLHA_io::fill(QedQcd& oneset) const
 
    SLHA_io::Tuple_processor sminputs_processor
       = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
-   SLHA_io::Tuple_processor vckmin_processor
-      = boost::bind(&SLHA_io::process_vckmin_tuple, boost::ref(ckm_wolfenstein), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
-   read_block("VCKMIN", vckmin_processor);
+
+   if (modsel.quark_flavour_violated) {
+      SLHA_io::Tuple_processor vckmin_processor
+         = boost::bind(&SLHA_io::process_vckmin_tuple, boost::ref(ckm_wolfenstein), _1, _2);
+
+      read_block("VCKMIN", vckmin_processor);
+   }
 
    // fill CKM parameters in oneset
    CKM_parameters ckm_parameters;
@@ -334,6 +338,30 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
    case 4: // R-parity violation (defined in SARAH model file)
    case 5: // CP-parity violation (defined in SARAH model file)
    case 6: // Flavour violation (defined in SARAH model file)
+   {
+      const int ivalue = Round(value);
+      switch (ivalue) {
+      case 0:
+         modsel.quark_flavour_violated = false;
+         modsel.lepton_flavour_violated = false;
+         break;
+      case 1:
+         modsel.quark_flavour_violated = true;
+         modsel.lepton_flavour_violated = false;
+         break;
+      case 2:
+         modsel.quark_flavour_violated = false;
+         modsel.lepton_flavour_violated = true;
+         break;
+      case 3:
+         modsel.quark_flavour_violated = true;
+         modsel.lepton_flavour_violated = true;
+         break;
+      default:
+         WARNING("Value " << key << " in MODSEL block entry 6 not allowed");
+         break;
+      }
+   }
    case 11:
    case 21:
       WARNING("Key " << key << " in Block MODSEL currently not supported");

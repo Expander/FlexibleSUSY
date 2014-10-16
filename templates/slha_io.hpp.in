@@ -143,7 +143,9 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
    set_model_parameters(model);
    set_mass(physical, write_sm_masses);
    set_mixing_matrices(physical, write_sm_masses);
-   set_ckm(model);
+
+   if (slha_io.get_modsel().quark_flavour_violated)
+      set_ckm(model);
 }
 
 template <class T>
