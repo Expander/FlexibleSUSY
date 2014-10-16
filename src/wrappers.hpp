@@ -277,6 +277,11 @@ namespace {
    };
 }
 
+inline int Round(double a)
+{
+   return static_cast<int>(a + 0.5);
+}
+
 template<int N>
 void Sort(Eigen::Array<double, N, 1>& v)
 {
