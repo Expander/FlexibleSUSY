@@ -337,34 +337,20 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
    case 3: // SUSY model (defined in SARAH model file)
    case 4: // R-parity violation (defined in SARAH model file)
    case 5: // CP-parity violation (defined in SARAH model file)
-   case 6: // Flavour violation (defined in SARAH model file)
-   {
-      const int ivalue = Round(value);
-      switch (ivalue) {
-      case 0:
-         modsel.quark_flavour_violated = false;
-         modsel.lepton_flavour_violated = false;
-         break;
-      case 1:
-         modsel.quark_flavour_violated = true;
-         modsel.lepton_flavour_violated = false;
-         break;
-      case 2:
-         modsel.quark_flavour_violated = false;
-         modsel.lepton_flavour_violated = true;
-         break;
-      case 3:
-         modsel.quark_flavour_violated = true;
-         modsel.lepton_flavour_violated = true;
-         break;
-      default:
-         WARNING("Value " << key << " in MODSEL block entry 6 not allowed");
-         break;
-      }
-   }
    case 11:
    case 21:
       WARNING("Key " << key << " in Block MODSEL currently not supported");
+      break;
+   case 6: // Flavour violation (defined in SARAH model file)
+   {
+      const int ivalue = Round(value);
+
+      if (ivalue < 0 || ivalue > 3)
+         WARNING("Value " << ivalue << " in MODSEL block entry 6 out of range");
+
+      modsel.quark_flavour_violated = ivalue & 0x1;
+      modsel.lepton_flavour_violated = ivalue & 0x2;
+   }
       break;
    case 12:
       modsel.parameter_output_scale = value;
