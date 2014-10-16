@@ -98,6 +98,8 @@ public:
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
   double displayMbMb() const { return mbMb; }
+  /// returns CKM parameters
+  flexiblesusy::CKM_parameters displayCKM() const { return ckm; }
   /// Returns real CKM matrix
   Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
   /// Returns complex CKM matrix
