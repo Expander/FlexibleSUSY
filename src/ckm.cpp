@@ -23,11 +23,22 @@
 namespace flexiblesusy {
 
 CKM_parameters::CKM_parameters()
+   : theta_12(0.)
+   , theta_13(0.)
+   , theta_23(0.)
+   , delta(0.)
 {
-   reset();
 }
 
-void CKM_parameters::reset()
+void CKM_parameters::reset_to_diagonal()
+{
+   theta_12 = 0.;
+   theta_13 = 0.;
+   theta_23 = 0.;
+   delta    = 0.;
+}
+
+void CKM_parameters::reset_to_observation()
 {
    theta_12 = Electroweak_constants::CKM_THETA12;
    theta_13 = Electroweak_constants::CKM_THETA13;
@@ -81,7 +92,6 @@ void CKM_parameters::get_wolfenstein(double& lambdaW, double& aCkm,
    const std::complex<double> eid(std::polar(1.0, delta));
    const std::complex<double> r(sin_13 * eid /
       (c * aCkm * Power(lambdaW,3) + sin_13 * eid * Sqr(sin_23)));
-
 
    rhobar = std::isfinite(Re(r)) ? Re(r) : 0.;
    etabar = std::isfinite(Im(r)) ? Im(r) : 0.;

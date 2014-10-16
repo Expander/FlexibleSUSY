@@ -26,7 +26,8 @@ namespace flexiblesusy {
 struct CKM_parameters {
    CKM_parameters();
 
-   void reset();
+   void reset_to_diagonal();
+   void reset_to_observation();
 
    void set_from_wolfenstein(double, double, double, double);
    void get_wolfenstein(double&, double&, double&, double&);
