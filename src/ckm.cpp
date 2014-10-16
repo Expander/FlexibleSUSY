@@ -53,8 +53,10 @@ void CKM_parameters::set_from_wolfenstein(double lambdaW, double aCkm,
       * Sqrt(1.0 - Sqr(aCkm) * lambdaW4) /
       Sqrt(1.0 - Sqr(lambdaW)) / (1.0 - Sqr(aCkm) * lambdaW4 * rpe);
 
-   theta_13 = ArcSin(Abs(V13conj));
-   delta = Arg(V13conj);
+   if (std::isfinite(Re(V13conj)) && std::isfinite(Im(V13conj))) {
+      theta_13 = ArcSin(Abs(V13conj));
+      delta = Arg(V13conj);
+   }
 }
 
 /**
