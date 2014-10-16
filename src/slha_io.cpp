@@ -81,10 +81,24 @@ void SLHA_io::read_modsel()
 
 void SLHA_io::fill(QedQcd& oneset) const
 {
+   CKM_wolfenstein ckm_wolfenstein;
+
    SLHA_io::Tuple_processor sminputs_processor
       = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
+   SLHA_io::Tuple_processor vckmin_processor
+      = boost::bind(&SLHA_io::process_vckmin_tuple, boost::ref(ckm_wolfenstein), _1, _2);
 
    read_block("SMINPUTS", sminputs_processor);
+   read_block("VCKMIN", vckmin_processor);
+
+   // fill CKM parameters in oneset
+   CKM_parameters ckm_parameters;
+   ckm_parameters.set_from_wolfenstein(
+      ckm_wolfenstein.lambdaW,
+      ckm_wolfenstein.aCkm,
+      ckm_wolfenstein.rhobar,
+      ckm_wolfenstein.etabar);
+   oneset.setCKM(ckm_parameters);
 }
 
 /**
@@ -393,6 +407,34 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       break;
    default:
       WARNING("Unrecognized key in SMINPUTS: " << key);
+      break;
+   }
+}
+
+/**
+ * fill CKM_wolfenstein from given key - value pair
+ *
+ * @param ckm_wolfenstein Wolfenstein parameters
+ * @param key SLHA key in SMINPUTS
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_vckmin_tuple(CKM_wolfenstein& ckm_wolfenstein, int key, double value)
+{
+   switch (key) {
+   case 1:
+      ckm_wolfenstein.lambdaW = value;
+      break;
+   case 2:
+      ckm_wolfenstein.aCkm = value;
+      break;
+   case 3:
+      ckm_wolfenstein.rhobar = value;
+      break;
+   case 4:
+      ckm_wolfenstein.etabar = value;
+      break;
+   default:
+      WARNING("Unrecognized key in VCKMIN: " << key);
       break;
    }
 }

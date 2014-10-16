@@ -120,6 +120,16 @@ public:
       Extpar() : input_scale(0.) {}
       void clear() { input_scale = 0.; }
    };
+   struct CKM_wolfenstein {
+      double lambdaW, aCkm, rhobar, etabar;
+      CKM_wolfenstein() : lambdaW(0.), aCkm(0.), rhobar(0.), etabar(0.) {}
+      void clear() {
+         lambdaW = 0.;
+         aCkm    = 0.;
+         rhobar  = 0.;
+         etabar  = 0.;
+      }
+   };
 
    class ReadError : public Error {
    public:
@@ -180,6 +190,7 @@ private:
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
+   static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
 };
 
 template <class Scalar>
