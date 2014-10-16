@@ -191,7 +191,7 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
     WriteSLHAMatrix[{mixingMatrix, lesHouchesName}, head, ""];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
-    Module[{str, lhs, wrapper},
+    Module[{str, lhs, wrapper, dim, diagMatrix},
            If[SARAH`getDimParameters[mixingMatrix] === {} ||
               SARAH`getDimParameters[mixingMatrix] === {1},
               Print["Warning: You are trying to create a SLHA matrix block for"];
@@ -201,8 +201,29 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
            str = CConversion`ToValidCSymbolString[mixingMatrix];
            lhs = ToString[lesHouchesName];
            wrapper = If[head == "", str, head <> "(" <> str <> ")"];
-           "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
-           "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
+           If[mixingMatrix === SARAH`UpYukawa ||
+              mixingMatrix === SARAH`DownYukawa ||
+              mixingMatrix === SARAH`ElectronYukawa
+              ,
+              (* In SLHA-2 the diagonalized Yukawa couplings must be
+                 output.  See SLHA-2 standard, Sec. 4.1.3, p.15 *)
+              dim = SARAH`getDimParameters[mixingMatrix][[1]];
+              diagMatrix = str <> "_diag";
+              "{\n" <> IndentText[
+                  "// diagonalize the " <> lhs <> " Yukawa coupling for SLHA-2 compatible output\n" <>
+                  CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <> " " <>
+                  diagMatrix <> ";\n" <>
+                  CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]] <> " " <>
+                  " u, v;\n" <>
+                  "fs_svd(" <> wrapper <> ", " <> diagMatrix <> ", u, v);\n" <>
+                  "slha_io.set_block(\"" <> lhs <> "\", " <>
+                  CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]] <>
+                  "(" <> diagMatrix <> ".matrix().asDiagonal()), \"" <> lhs <> "\", model.get_scale());"
+              ] <> "\n}\n"
+              ,
+              "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
+              "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
+             ]
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
