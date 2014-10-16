@@ -67,6 +67,8 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
+$(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP) $(LIBSoftsusyNMSSM_OBJ) $(EXESoftsusyNMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
+
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
