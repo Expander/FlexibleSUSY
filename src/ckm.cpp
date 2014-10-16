@@ -74,13 +74,17 @@ void CKM_parameters::get_wolfenstein(double& lambdaW, double& aCkm,
    lambdaW  = sin_12;
    aCkm     = sin_23 / Sqr(lambdaW);
 
+   if (!std::isfinite(aCkm))
+      aCkm = 0.;
+
    const double c = Sqrt((1.0 - Sqr(sin_23)) / (1.0 - Sqr(lambdaW)));
    const std::complex<double> eid(std::polar(1.0, delta));
    const std::complex<double> r(sin_13 * eid /
       (c * aCkm * Power(lambdaW,3) + sin_13 * eid * Sqr(sin_23)));
 
-   rhobar = Re(r);
-   etabar = Im(r);
+
+   rhobar = std::isfinite(Re(r)) ? Re(r) : 0.;
+   etabar = std::isfinite(Im(r)) ? Im(r) : 0.;
 }
 
 Eigen::Matrix<double,3,3> CKM_parameters::get_real_ckm() const
