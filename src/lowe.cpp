@@ -16,7 +16,7 @@ static QedQcd *tempLe;
 
 QedQcd::QedQcd()
   : a(2), mf(9), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM), 
-    mtauPole(MTAU) {
+    mtauPole(MTAU), ckm() {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(1) = MUP; mf(2) = MCHARM; 
@@ -37,6 +37,7 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mtauPole = m.mtauPole;
   a = m.a;
   mf = m.mf;
+  ckm = m.ckm;
   setLoops(m.displayLoops());
   setThresholds(m.displayThresholds());
   setMu(m.displayMu());
