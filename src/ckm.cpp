@@ -53,6 +53,11 @@ void CKM_parameters::reset_to_observation()
 void CKM_parameters::set_from_wolfenstein(double lambdaW, double aCkm,
                                           double rhobar, double etabar)
 {
+   assert(Abs(lambdaW) <= 1. && "Error: Wolfenstein lambda out of range!");
+   assert(Abs(aCkm)    <= 1. && "Error: Wolfenstein A parameter out of range!");
+   assert(Abs(rhobar)  <= 1. && "Error: Wolfenstein rho-bar parameter out of range!");
+   assert(Abs(etabar)  <= 1. && "Error: Wolfenstein eta-bar parameter out of range!");
+
    theta_12 = ArcSin(lambdaW);
    theta_23 = ArcSin(aCkm * Sqr(lambdaW));
 
