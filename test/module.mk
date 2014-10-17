@@ -57,6 +57,10 @@ TEST_SRC += \
 		$(DIR)/test_benchmark.cpp \
 		$(DIR)/test_MSSM_slha_output.cpp
 endif
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-MSSM),yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_MSSM_low_scale_constraint_flavour.cpp
+endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
@@ -316,7 +320,9 @@ $(DIR)/test_MSSM_higgs_iteration.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(
 
 $(DIR)/test_MSSM_high_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_MSSM_low_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_MSSM_low_scale_constraint_flavour.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_MSSM_susy_scale_constraint.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
