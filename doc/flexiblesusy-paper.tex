@@ -1875,36 +1875,40 @@ field.  These approximations work as follows:
 If higher accuracy is required, two-loop corrections to the
 self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
 in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
-model file.  The former enables two-loop Higgs FORTRAN routines
-supplied by P.~Slavich from
+model file.  The former provides routines that call the two-loop Higgs
+FORTRAN routines supplied by P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
-which add two-loop corrections of $\oatas$, $\oabas$, $\oatq$,
-$\oabq$, $\oatauq$ and $\oatab$.  The latter adds corrections
-calculated in the NMSSM at $\oatas$, $\oabas$ from
-\cite{Degrassi:2009yq}. If wants to include the $\oatq$, $\oabq$,
-$\oatauq$ and $\oatab$ the MSSM pieces are used though it NMSSM
-corrections at $\oatas$, $\oabas$ along with the MSSM corrections at
-$\oatq$, $\oabq$, $\oatauq$ and $\oatab$ then both flags
-\code{UseHiggs2LoopMSSM} and \code{UseHiggs2LoopNMSSM} should be set
-to \code{True}.  Since the Higgs mass is a very important measurement
-and the two-loop corrections can be larger than the current
-experimental error \cite{Degrassi:2009yq} we recommend to set these
-switches to \code{True} in any MSSM-\footnote{In \fs a model is
-  MSSM-like if (i) its superpotential is approximately given by the
-  MSSM one, (ii) it implements $R$-parity conservation or something
-  equivalent, and (iii) contains two CP-even and CP-odd Higgs bosons,
-  where one CP-odd Higgs boson may be a Goldstone boson, all with an
-  MSSM-like coupling to $t$, $b$ and $\tau$.} and
-NMSSM-like\footnote{In \fs a model is NMSSM-like if (i) its
-  superpotential is approximately given by the NMSSM one, (ii) it
+for calculating corrections of $\oatas$, $\oabas$, $\oatq$, $\oabq$,
+$\oatauq$ and $\oatab$.  The latter adds corrections calculated in the
+NMSSM at $\oatas$, $\oabas$ from \cite{Degrassi:2009yq} and partial
+corrections for the order $\oatq$, $\oabq$, $\oatauq$ and $\oatab$ from the
+MSSM.  These corrections can then be included in the
+calculation of the Higgs pole masses when running the spectrum
+generator by setting the appropriate SLHA flags.  
+
+{\color{red} To include all two loop corrections which have been
+  generated the user may simply set entry 4 of the FlexibleSUSY block
+  in the SLHA file to 2.  The user may also want to include only some of
+  the corrections generated, for example in the NMSSM the user may decide not to use the partial corrections at order $\oatq$, $\oabq$, $\oatauq$ and $\oatab$ which have been computed in the MSSM. In that case the entries 9,10,11 and 12 may be used to switch on and off corrections at specific orders, 1 meaning the correction is included and 2 means the correction is not.  Alex: can you check this part matches what you did and maybe fox details a little and also we should decide if it belongs here or if describe SLHA stuff later.}
+
+Since the Higgs mass is a very important measurement and
+the two-loop corrections can be larger than the current experimental
+error \cite{Degrassi:2009yq} we recommend to set these switches to
+\code{True} in any MSSM-\footnote{In \fs a model is MSSM-like if (i)
+  its superpotential is approximately given by the MSSM one, (ii) it
   implements $R$-parity conservation or something equivalent, and
-  (iii) contains three CP-even and CP-odd Higgs bosons, where one or
-  two CP-odd Higgs bosons may be Goldstone bosons, all with an
-  NMSSM-like coupling to $t$, $b$ and $\tau$\@.  Examples for
-  NMSSM-like models are the USSM and the \ESSM.} model.  However in
-such models the user should still consider whether these corrections
-are really the leading corrections in the model or if there are other
-potentially large two-loop corrections.  For models
+  (iii) contains two CP-even and CP-odd Higgs bosons, where one CP-odd
+  Higgs boson may be a Goldstone boson, all with an MSSM-like coupling
+  to $t$, $b$ and $\tau$.} and NMSSM-like\footnote{In \fs a model is
+  NMSSM-like if (i) its superpotential is approximately given by the
+  NMSSM one, (ii) it implements $R$-parity conservation or something
+  equivalent, and (iii) contains three CP-even and CP-odd Higgs
+  bosons, where one or two CP-odd Higgs bosons may be Goldstone
+  bosons, all with an NMSSM-like coupling to $t$, $b$ and $\tau$\@.
+  Examples for NMSSM-like models are the USSM and the \ESSM.} model.
+However in such models the user should still consider whether these
+corrections are really the leading corrections in the model or if
+there are other potentially large two-loop corrections.  For models
 with a more extended Higgs sector we recommend that the leading log
 two-loop corrections are estimated by generalizing those of the MSSM
 or NMSSM.
