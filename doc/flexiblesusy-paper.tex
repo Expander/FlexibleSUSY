@@ -1171,6 +1171,12 @@ condition classes are generated as follows:
 \subsubsection{Calculation of the gauge couplings $g_i(M_Z)$}
 \label{sec:calculation-of-gauge-couplings}
 
+The low-scale constraint matches the SUSY model to the Standard Model.
+Currently \fs allows only SUSY models with semisimple gauge groups,
+which contain the Standard Model gauge group $SU(3)\times SU(2)\times
+U(1)$ as factor.  This enables \fs to directly identify the strong,
+left-handed and hypercharge gauge couplings $g_i$ ($i=1,2,3$).
+
 The low-scale constraint automatically calculates the \DRbar\ gauge
 couplings $g_{i,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model
 at the scale $M_Z$.  It starts from the known electromagnetic and
@@ -1232,11 +1238,11 @@ constants \cite{Hall:1980kf}
   \end{cases}
 \end{align}
 %
-Afterwards, SARAH's expression for the Weinberg angle $\theta_W$ in
-terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$,
-$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ is used to calculate
-$\theta_W$ in the SUSY model in the \DRbar\ scheme.  In the MSSM, for
-example, it yields
+Afterwards, the user-defined expression for the Weinberg angle
+$\theta_W$ in terms of $M_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ and
+$M_{Z,\text{susy}}^{\text{\DRbar}}(M_Z)$ (defined by the user in the
+SARAH model file) is used to calculate $\theta_W$ in the SUSY model in
+the \DRbar\ scheme.  In the MSSM, for example, it yields
 %
 \begin{align}
   \theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z) &= \arcsin\sqrt{1
@@ -1254,7 +1260,20 @@ In a model with a Higgs triplet the relation looks like
 \end{align}
 %
 where $v_T$ is the vacuum expectation value of the scalar Higgs
-triplet field.
+triplet field.  In models with an additional $U(1)'$ gauge group, the
+additional $Z'$ gauge boson can mix with the $Z$ boson.  In such
+models the Weinberg angle can be defined by parametrizing the
+$Z$--$Z'$ mixing matrix as
+%
+\begin{align}
+  \begin{pmatrix}
+    \cos\theta_W & -\sin\theta_W \cos\theta_W' &  \sin\theta_W \sin\theta_W' \\
+    \sin\theta_W &  \cos\theta_W \cos\theta_W' & -\cos\theta_W \sin\theta_W' \\
+    0 & \sin\theta_W' & \cos\theta_W'
+  \end{pmatrix},
+\end{align}
+%
+where $\theta_W'$ is the $Z$--$Z'$ mixing angle.
 The running \DRbar\ $W$ and $Z$ boson masses are calculated in each
 iteration from the corresponding pole masses as
 %
@@ -1281,10 +1300,15 @@ SUSY model.  In the MSSM they read for instance
 \subsubsection{Calculation of the Yukawa couplings $y_f(M_Z)$}
 \label{sec:calculation-of-yukawa-couplings}
 
-At the low-scale the \DRbar\ Yukawa coupling matrices
-$y_f^{\text{\DRbar}}(M_Z)$ ($f=u,d,e$) in the SUSY model are
-calculated automatically if the user has set $y_f$ to the value
-\code{Automatic} in the \fs model file.  This is done for example in
+The considered SUSY model is required to contain the three generations
+of Standard Model quarks and leptons.  If these particles acquire
+their masses due to Yukawa interactions with Higgs doublets, then the
+$3\times 3$ Yukawa matrices $y_f$ ($f=u,d,e$) can be calculated
+automatically in the \DRbar\ scheme at the scale $M_Z$ from the known
+Standard Model fermion masses by setting $y_f$ to the value
+\code{Automatic} in the \fs model file.
+%
+This is done for example in
 the CMSSM model file in \secref{sec:modfile}.  In this case \fs
 expresses the Yukawa couplings in terms of the fermion mass matrices
 $m_u$, $m_d$, $m_e$.  In the MSSM, for example, these relations read
@@ -1467,7 +1491,15 @@ is performed by the Eigen library routine \code{Eigen::JacobiSVD} for
 matrices with less than four rows and columns, and the LAPACK routines
 \code{zgesvd}, \code{dgesvd} for larger matrices.  For the other types
 of diagonalization, \code{Eigen::SelfAdjointEigenSolver} from Eigen is
-used regardless of the matrix size.
+used regardless of the matrix size.  Note, that \fs uses double
+precision floating point data types with $15$ significant digits to
+store the mass matrices and the mass eigenvalues.  In case a particle
+multiplet contains a very split mass hierarchy, where the mass
+difference between the smallest and the largest mass in the multiplet
+is of the order or greater than 10 orders of magnitude, double
+precision data types are no longer sufficient.  In this case we
+recommend to either split the multiplet into sub-multiplets with
+smaller mass hierarchies, or integrate out the heavy states.
 
 \fs uses the following conventions for the diagonalization: A mass
 matrix $M^2$ for real scalar fields $\phi_i$ is diagonalized with an
