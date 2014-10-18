@@ -212,7 +212,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 
    // CKM rotation
    const Eigen::Matrix<double,3,3> CKM(oneset.displayCKM().get_real_ckm());
-   topDRbar = CKM.transpose() * topDRbar;
+   topDRbar = CKM.transpose() * topDRbar * CKM;
 
 @setDRbarUpQuarkYukawaCouplings@
 }
