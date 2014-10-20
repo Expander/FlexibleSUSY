@@ -171,9 +171,15 @@ def_hermitian_lapack(double, dsyev_, 3*N-1)
 /**
  * Singular value decomposition of M-by-N matrix m such that
  *
- *     m == u * s.matrix().asDiagonal() * vh    // LAPACK convention
+ *     sigma.setZero(); sigma.diagonal() = s;
+ *     m == u * sigma * vh    // LAPACK convention
  *
- * and `(s >= 0).all()`.  Elements of s are in descending order.
+ * and `(s >= 0).all()`.  Elements of s are in descending order.  The
+ * above decomposition can be put in the form
+ *
+ *     m == u * s.matrix().asDiagonal() * vh
+ *
+ * if `M == N`.
  *
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
@@ -333,9 +339,15 @@ void diagonalize_symmetric
 /**
  * Singular value decomposition of M-by-N matrix m such that
  *
- *     m == u * s.matrix().asDiagonal() * vh    // LAPACK convention
+ *     sigma.setZero(); sigma.diagonal() = s;
+ *     m == u * sigma * vh    // LAPACK convention
  *
- * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.  The
+ * above decomposition can be put in the form
+ *
+ *     m == u * s.matrix().asDiagonal() * vh
+ *
+ * if `M == N`.
  *
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
@@ -427,10 +439,16 @@ void reorder_diagonalize_symmetric
 /**
  * Singular value decomposition of M-by-N matrix m such that
  *
- *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *     sigma.setZero(); sigma.diagonal() = s;
+ *     m == u.transpose() * sigma * v
  *     // convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263
  *
- * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.  The
+ * above decomposition can be put in the form
+ *
+ *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *
+ * if `M == N`.
  *
  * @tparam     Scalar type of elements of m, u, and v
  * @tparam     M      number of rows in m
@@ -454,10 +472,16 @@ void fs_svd
 /**
  * Singular value decomposition of M-by-N *real* matrix m such that
  *
- *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *     sigma.setZero(); sigma.diagonal() = s;
+ *     m == u.transpose() * sigma * v
  *     // convention of Haber and Kane, Phys. Rept. 117 (1985) 75-263
  *
- * and `(s >= 0).all()`.  Elements of s are in ascending order.
+ * and `(s >= 0).all()`.  Elements of s are in ascending order.  The
+ * above decomposition can be put in the form
+ *
+ *     m == u.transpose() * s.matrix().asDiagonal() * v
+ *
+ * if `M == N`.
  *
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
