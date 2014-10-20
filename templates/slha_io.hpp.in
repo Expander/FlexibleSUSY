@@ -153,7 +153,7 @@ void @ModelName@_slha_io::set_ckm(const @ModelName@<T>& model)
 {
    const Eigen::Matrix<std::complex<double>,3,3> V_d(MODELPARAMETER(@LeftDownMixingMatrix@));
    const Eigen::Matrix<std::complex<double>,3,3> V_u(MODELPARAMETER(@LeftUpMixingMatrix@));
-   const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(V_u.adjoint()*V_d);
+   const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(V_u*V_d.adjoint());
 
    slha_io.set_block("VCKM"  , ckm_matrix.real(), "Re(CKM)", model.get_scale());
    slha_io.set_block("IMVCKM", ckm_matrix.imag(), "Im(CKM)", model.get_scale());
