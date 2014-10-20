@@ -38,6 +38,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    s.setTheta13(ckm_parameters.theta_13);
    s.setTheta23(ckm_parameters.theta_23);
    s.setDelta(ckm_parameters.delta);
+   softsusy::MIXING = 3; // up-type mixing with only one CKM factor
 
    {
       // compare CKM matrices
@@ -110,9 +111,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
          if (i == k)
             continue;
          BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.011);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(i,k), 0.00001);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(k,i), 0.0011);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(k,i), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(k,i), 0.00001);
       }
    }
 
