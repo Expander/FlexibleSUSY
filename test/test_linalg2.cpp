@@ -37,69 +37,76 @@ using namespace std;
 using namespace Eigen;
 using namespace flexiblesusy;
 
-template<class S_, int N_,
-	 void fxn_(const Matrix<S_, N_, N_>&,
-		   Array<double, N_, 1>&,
-		   Matrix<S_, N_, N_>&,
+template<class S_, int M_, int N_,
+	 void fxn_(const Matrix<S_, M_, N_>&,
+		   Array<double, MIN_(M_, N_), 1>&,
+		   Matrix<S_, M_, M_>&,
 		   Matrix<S_, N_, N_>&),
 	 bool check_ascending_order_ = false>
 struct Test_svd {
     typedef S_ S;
+    enum { M = M_ };
     enum { N = N_ };
     enum { check_ascending_order = check_ascending_order_ };
-    void fxn(const Matrix<S_, N_, N_>& m,
-	     Array<double, N_, 1>& s,
-	     Matrix<S_, N_, N_>& u,
+    void fxn(const Matrix<S_, M_, N_>& m,
+	     Array<double, MIN_(M_, N_), 1>& s,
+	     Matrix<S_, M_, M_>& u,
 	     Matrix<S_, N_, N_>& vh)
     { fxn_(m, s, u, vh); }
 };
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
-    Test_svd<complex<double>, 2, svd>,
-    Test_svd<complex<double>, 3, svd>,
-    Test_svd<double	    , 2, svd>,
-    Test_svd<double	    , 3, svd>,
+    Test_svd<complex<double>, 2, 2, svd>,
+    Test_svd<complex<double>, 3, 3, svd>,
+    Test_svd<double	    , 2, 2, svd>,
+    Test_svd<double	    , 3, 3, svd>,
 
-    Test_svd<complex<double>, 2, reorder_svd, true>,
-    Test_svd<complex<double>, 3, reorder_svd, true>,
-    Test_svd<double	    , 2, reorder_svd, true>,
-    Test_svd<double	    , 3, reorder_svd, true>,
+    Test_svd<complex<double>, 2, 2, reorder_svd, true>,
+    Test_svd<complex<double>, 3, 3, reorder_svd, true>,
+    Test_svd<double	    , 2, 2, reorder_svd, true>,
+    Test_svd<double	    , 3, 3, reorder_svd, true>,
 
     // use ZGESVD of LAPACK
-    Test_svd<complex<double>, 4, svd>,
-    Test_svd<complex<double>, 6, svd>,
+    Test_svd<complex<double>, 4, 4, svd>,
+    Test_svd<complex<double>, 6, 6, svd>,
 
-    Test_svd<complex<double>, 4, reorder_svd, true>,
-    Test_svd<complex<double>, 6, reorder_svd, true>,
+    Test_svd<complex<double>, 4, 4, reorder_svd, true>,
+    Test_svd<complex<double>, 6, 6, reorder_svd, true>,
+    Test_svd<complex<double>, 4, 6, reorder_svd, true>,
+    Test_svd<complex<double>, 6, 4, reorder_svd, true>,
 
     // use DGESVD of LAPACK
-    Test_svd<double	    , 4, svd>,
-    Test_svd<double	    , 6, svd>,
+    Test_svd<double	    , 4, 4, svd>,
+    Test_svd<double	    , 6, 6, svd>,
 
-    Test_svd<double	    , 4, reorder_svd, true>,
-    Test_svd<double	    , 6, reorder_svd, true>
+    Test_svd<double	    , 4, 4, reorder_svd, true>,
+    Test_svd<double	    , 6, 6, reorder_svd, true>,
+    Test_svd<double	    , 4, 6, reorder_svd, true>,
+    Test_svd<double	    , 6, 4, reorder_svd, true>
 > svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_svd, T, svd_tests)
 {
     typedef typename T::S S;
+    const size_t M = T::M;
     const size_t N = T::N;
 
-    Matrix<S, N, N> m = Matrix<S, N, N>::Random();
-    Array<double, N, 1> s;
-    Matrix<S, N, N> u, vh;
+    Matrix<S, M, N> m = Matrix<S, M, N>::Random();
+    Array<double, MIN_(M, N), 1> s;
+    Matrix<S, M, M> u;
+    Matrix<S, N, N> vh;
 
     T().fxn(m, s, u, vh);	// following LAPACK convention
-    Matrix<S, N, N> diag = u.adjoint() * m * vh.adjoint();
+    Matrix<S, M, N> sigma = u.adjoint() * m * vh.adjoint();
 
     BOOST_CHECK((s >= 0).all());
-    for (size_t i = 0; i < N; i++)
-	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-13);
 
     if (T::check_ascending_order)
-	for (size_t i = 0; i < N-1; i++)
+	for (size_t i = 0; i < s.size()-1; i++)
 	    BOOST_CHECK(s[i] <= s[i+1]);
 }
 
@@ -211,9 +218,10 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 	BOOST_CHECK(w[i] <= w[i+1]);
 }
 
-template<class S_, int N_>
+template<class S_, int M_, int N_ = M_>
 struct Test_fs {
     typedef S_ S;
+    enum { M = M_ };
     enum { N = N_ };
 };
 
@@ -222,57 +230,67 @@ typedef boost::mpl::list<
     Test_fs<complex<double>, 3>,
     Test_fs<complex<double>, 4>,
     Test_fs<complex<double>, 6>,
+    Test_fs<complex<double>, 4, 6>,
+    Test_fs<complex<double>, 6, 4>,
     Test_fs<double	   , 2>,
     Test_fs<double	   , 3>,
     Test_fs<double	   , 4>,
-    Test_fs<double	   , 6>
+    Test_fs<double	   , 6>,
+    Test_fs<double	   , 4, 6>,
+    Test_fs<double	   , 6, 4>
 > fs_svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 {
     typedef typename T::S S;
+    const size_t M = T::N;
     const size_t N = T::N;
 
-    Matrix<S, N, N> m = Matrix<S, N, N>::Random();
-    Array<double, N, 1> s;
-    Matrix<S, N, N> u, v;
+    Matrix<S, M, N> m = Matrix<S, N, N>::Random();
+    Array<double, MIN_(M, N), 1> s;
+    Matrix<S, M, M> u;
+    Matrix<S, N, N> v;
 
     fs_svd(m, s, u, v);		// following SARAH convention
-    Matrix<S, N, N> diag = u.conjugate() * m * v.adjoint();
+    Matrix<S, M, N> sigma = u.conjugate() * m * v.adjoint();
 
     BOOST_CHECK((s >= 0).all());
-    for (size_t i = 0; i < N; i++)
-	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
 
-    for (size_t i = 0; i < N-1; i++)
+    for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
 }
 
 typedef boost::mpl::list<
-    boost::mpl::int_<2>,
-    boost::mpl::int_<3>,
-    boost::mpl::int_<4>,
-    boost::mpl::int_<6>
+    Test_fs<double, 2>,
+    Test_fs<double, 3>,
+    Test_fs<double, 4>,
+    Test_fs<double, 6>,
+    Test_fs<double, 4, 6>,
+    Test_fs<double, 6, 4>
 > casting_fs_svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
 {
-    const size_t N = T::value;
+    const size_t M = T::M;
+    const size_t N = T::N;
 
-    Matrix<double, N, N> m = Matrix<double, N, N>::Random();
-    Array<double, N, 1> s;
-    Matrix<complex<double>, N, N> u, v;
+    Matrix<double, M, N> m = Matrix<double, M, N>::Random();
+    Array<double, MIN_(M, N), 1> s;
+    Matrix<complex<double>, M, M> u;
+    Matrix<complex<double>, N, N> v;
 
     fs_svd(m, s, u, v);		// following SARAH convention
-    Matrix<complex<double>, N, N> diag = u.conjugate() * m * v.adjoint();
+    Matrix<complex<double>, M, N> sigma = u.conjugate() * m * v.adjoint();
 
     BOOST_CHECK((s >= 0).all());
-    for (size_t i = 0; i < N; i++)
-	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-14);
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
 
-    for (size_t i = 0; i < N-1; i++)
+    for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
 }
 

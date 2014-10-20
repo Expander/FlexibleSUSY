@@ -354,8 +354,11 @@ void reorder_svd
 {
     svd(m, s, u, vh);
     s.reverseInPlace();
-    u  = u .rowwise().reverse().eval();
-    vh = vh.colwise().reverse().eval();
+    Eigen::PermutationMatrix<MIN_(M, N)> p;
+    p.setIdentity();
+    p.indices().reverseInPlace();
+    u              *= p;
+    vh.transpose() *= p;
 }
 
 /**
