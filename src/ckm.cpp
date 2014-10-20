@@ -113,8 +113,8 @@ Eigen::Matrix<double,3,3> CKM_parameters::get_real_ckm() const
    const double c23 = Cos(theta_23);
 
    // set phase factor e^(i delta) to +1 or -1 depending on the sign
-   // of s13
-   const int pf = Sign(s13);
+   // of its real part
+   const int pf = Sign(Re(eID));
 
    Eigen::Matrix<double,3,3> ckm_matrix;
    ckm_matrix(0, 0) = c12 * c13;
