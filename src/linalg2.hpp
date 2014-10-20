@@ -429,7 +429,7 @@ void reorder_diagonalize_symmetric
  *
  * and `(s >= 0).all()`.  Elements of s are in ascending order.
  *
- * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     Scalar type of elements of m, u, and v
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
  * @param[in]  m      M-by-N matrix to be decomposed
