@@ -35,6 +35,16 @@ struct CKM_parameters {
    Eigen::Matrix<double,3,3> get_real_ckm() const;
    Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const;
 
+   static void to_pdg_convention(Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&);
+   static void to_pdg_convention(Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&,
+                                 Eigen::Matrix<double,3,3>&);
+
    double theta_12, theta_13, theta_23, delta;
 };
 

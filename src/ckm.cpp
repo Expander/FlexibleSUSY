@@ -154,4 +154,60 @@ Eigen::Matrix<std::complex<double>,3,3> CKM_parameters::get_complex_ckm() const
    return ckm_matrix;
 }
 
+void CKM_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& Vu,
+                                       Eigen::Matrix<double,3,3>& Vd,
+                                       Eigen::Matrix<double,3,3>& Uu,
+                                       Eigen::Matrix<double,3,3>& Ud)
+{
+   Eigen::Matrix<double,3,3> ckm(Vu*Vd.adjoint());
+   to_pdg_convention(ckm, Vu, Vd, Uu, Ud);
+}
+
+void CKM_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& ckm,
+                                       Eigen::Matrix<double,3,3>& Vu,
+                                       Eigen::Matrix<double,3,3>& Vd,
+                                       Eigen::Matrix<double,3,3>& Uu,
+                                       Eigen::Matrix<double,3,3>& Ud)
+{
+   Eigen::Matrix<double,3,3> signs_U(Eigen::Matrix<double,3,3>::Zero()),
+      signs_D(Eigen::Matrix<double,3,3>::Zero());
+
+   // make diagonal elements positive
+   for (int i = 0; i < 3; i++) {
+      if (ckm(i, i) < 0.) {
+         signs_U(i, i) = -1.;
+         for (int j = 0; j < 3; j++)
+            ckm(i, j) = -ckm(i, j);
+      }
+      else
+         signs_U(i, i) = 1.;
+      signs_D(i, i) = 1.;
+   }
+
+   // make 12 element positive while keeping diagonal elements positive
+   if (ckm(0, 1) < 0.) {
+      signs_D(1, 1) = -1.;
+      signs_U(1, 1) *= -1;
+      for (int j = 0; j < 3; j++) {
+         ckm(1, j) *= -1;
+         ckm(j, 1) *= -1;
+      }
+   }
+
+   // make 23 element positive while keeping diagonal elements positive
+   if (ckm(1, 2) < 0.) {
+      signs_D(2, 2) = -1.;
+      signs_U(2, 2) *= -1;
+      for (int j = 0; j < 3; j++) {
+         ckm(2, j) *= -1;
+         ckm(j, 2) *= -1;
+      }
+   }
+
+   Vu = signs_U.transpose() * Vu;
+   Uu = signs_U.transpose() * Uu;
+   Vd = signs_D.transpose() * Vd;
+   Ud = signs_D.transpose() * Ud;
+}
+
 } // namespace flexiblesusy
