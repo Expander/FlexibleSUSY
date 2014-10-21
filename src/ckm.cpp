@@ -169,19 +169,16 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& ckm,
                                        Eigen::Matrix<double,3,3>& Uu,
                                        Eigen::Matrix<double,3,3>& Ud)
 {
-   Eigen::Matrix<double,3,3> signs_U(Eigen::Matrix<double,3,3>::Zero()),
-      signs_D(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<double,3,3> signs_U(Eigen::Matrix<double,3,3>::Identity()),
+      signs_D(Eigen::Matrix<double,3,3>::Identity());
 
    // make diagonal elements positive
    for (int i = 0; i < 3; i++) {
       if (ckm(i, i) < 0.) {
          signs_U(i, i) = -1.;
          for (int j = 0; j < 3; j++)
-            ckm(i, j) = -ckm(i, j);
+            ckm(i, j) *= -1;
       }
-      else
-         signs_U(i, i) = 1.;
-      signs_D(i, i) = 1.;
    }
 
    // make 12 element positive while keeping diagonal elements positive
@@ -204,10 +201,10 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& ckm,
       }
    }
 
-   Vu = signs_U.transpose() * Vu;
-   Uu = signs_U.transpose() * Uu;
-   Vd = signs_D.transpose() * Vd;
-   Ud = signs_D.transpose() * Ud;
+   Vu = signs_U * Vu;
+   Uu = signs_U * Uu;
+   Vd = signs_D * Vd;
+   Ud = signs_D * Ud;
 }
 
 } // namespace flexiblesusy
