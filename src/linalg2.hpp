@@ -19,6 +19,7 @@
 #ifndef linalg2_hpp
 #define linalg2_hpp
 
+#include <limits>
 #include <cmath>
 #include <complex>
 #include <algorithm>
@@ -295,6 +296,7 @@ void svd_errbd
     if (!s_errbd) return;
     const double EPSMCH = std::numeric_limits<double>::epsilon();
     *s_errbd = EPSMCH * s[0];
+
     Eigen::Array<double, MIN_(M, N), 1> RCOND;
     int INFO;
     if (u_errbd) {
@@ -388,6 +390,7 @@ void diagonalize_hermitian_errbd
     const double EPSMCH = std::numeric_limits<double>::epsilon();
     double mnorm = std::max(std::abs(w[0]), std::abs(w[N-1]));
     *w_errbd = EPSMCH * mnorm;
+
     if (!z_errbd) return;
     Eigen::Array<double, N, 1> RCONDZ;
     int INFO;
