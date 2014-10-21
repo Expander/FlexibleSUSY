@@ -243,10 +243,10 @@ typedef boost::mpl::list<
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 {
     typedef typename T::S S;
-    const size_t M = T::N;
+    const size_t M = T::M;
     const size_t N = T::N;
 
-    Matrix<S, M, N> m = Matrix<S, N, N>::Random();
+    Matrix<S, M, N> m = Matrix<S, M, N>::Random();
     Array<double, MIN_(M, N), 1> s;
     Matrix<S, M, M> u;
     Matrix<S, N, N> v;
