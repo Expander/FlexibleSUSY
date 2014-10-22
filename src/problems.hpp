@@ -35,6 +35,7 @@ public:
    ~Problems() {}
 
    void flag_bad_mass(unsigned);
+   void flag_bad_mass(unsigned, bool);
    void flag_tachyon(unsigned);
    void flag_thrown()          { thrown = true; }
    void flag_no_ewsb()         { failed_ewsb = true; }
@@ -91,6 +92,14 @@ void Problems<Number_of_particles>::flag_bad_mass(unsigned particle)
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    bad_masses[particle] = true;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::flag_bad_mass(unsigned particle, bool flag)
+{
+   assert(particle < Number_of_particles
+          && "Error: particle index out of bounds");
+   bad_masses[particle] = flag;
 }
 
 template <unsigned Number_of_particles>
@@ -209,7 +218,7 @@ void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
    ostr << "Warnings: ";
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (bad_masses[i])
-         ostr << "imprecise mass " << particle_names[i] << ", ";
+         ostr << "imprecise M" << particle_names[i] << ", ";
    }
 }
 
