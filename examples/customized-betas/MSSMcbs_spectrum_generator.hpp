@@ -62,7 +62,7 @@ public:
    const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model.get_problems();
    }
-   int get_exit_code() const { return get_problems().have_serious_problem(); };
+   int get_exit_code() const { return get_problems().have_problem(); };
    void set_input_scale(double m) { input_scale = m; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }

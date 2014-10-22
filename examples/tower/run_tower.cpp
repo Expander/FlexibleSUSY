@@ -94,7 +94,7 @@ int main(int argc, const char* argv[])
    slha_io_1.set_sminputs(oneset);
    slha_io_1.set_minpar(input_1);
    slha_io_1.set_extpar(input_1);
-   if (!problems.have_serious_problem())
+   if (!problems.have_problem())
       slha_io_1.set_spectrum(model_1);
 
    if (slha_output_file.empty()) {

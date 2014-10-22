@@ -466,7 +466,7 @@ void CLASSNAME::calculate_spectrum()
    else
       reorder_pole_masses();
 
-   if (problems.have_serious_problem()) {
+   if (problems.have_problem()) {
       clear_DRbar_parameters();
       physical.clear();
    }

@@ -71,7 +71,7 @@ public:
    const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model_1.get_problems();
    }
-   int get_exit_code() const { return get_problems().have_serious_problem(); };
+   int get_exit_code() const { return get_problems().have_problem(); };
    void set_input_scale_2(double m) { input_scale_2 = m; }
    void set_parameter_output_scale_1(double s) { parameter_output_scale_1 = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }

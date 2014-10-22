@@ -58,9 +58,10 @@ public:
    bool no_perturbative() const { return non_perturbative; }
 
    void clear();                      ///< clear all problems
-   bool have_problem() const;         ///< test for any problem
-   bool have_serious_problem() const; ///< problems which yield invalid spectrum
-   void print(std::ostream& = std::cout) const;
+   bool have_problem() const;         ///< problems which yield invalid spectrum
+   bool have_warning() const;         ///< warnings
+   void print_problems(std::ostream& = std::cout) const;
+   void print_warnings(std::ostream& = std::cout) const;
 
 private:
    bool bad_masses[Number_of_particles]; ///< imprecise mass eigenvalues
@@ -168,28 +169,23 @@ void Problems<Number_of_particles>::clear()
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_problem() const
 {
-   return have_serious_problem()
-      || have_bad_mass();
-}
-
-template <unsigned Number_of_particles>
-bool Problems<Number_of_particles>::have_serious_problem() const
-{
    return have_tachyon() || failed_ewsb || failed_convergence
       || non_perturbative || thrown;
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::print(std::ostream& ostr) const
+bool Problems<Number_of_particles>::have_warning() const
+{
+   return have_bad_mass();
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
 {
    if (!have_problem())
       return;
 
    ostr << "Problems: ";
-   for (unsigned i = 0; i < Number_of_particles; ++i) {
-      if (bad_masses[i])
-         ostr << "imprecise mass " << particle_names[i] << ", ";
-   }
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (tachyons[i])
          ostr << "tachyon " << particle_names[i] << ", ";
@@ -205,9 +201,23 @@ void Problems<Number_of_particles>::print(std::ostream& ostr) const
 }
 
 template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
+{
+   if (!have_warning())
+      return;
+
+   ostr << "Warnings: ";
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (bad_masses[i])
+         ostr << "imprecise mass " << particle_names[i] << ", ";
+   }
+}
+
+template <unsigned Number_of_particles>
 std::ostream& operator<<(std::ostream& ostr, const Problems<Number_of_particles>& problems)
 {
-   problems.print(ostr);
+   problems.print_problems(ostr);
+   problems.print_warnings(ostr);
    return ostr;
 }
 
