@@ -634,41 +634,50 @@ ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
-    Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
+    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k},
            dim = Length[matrix];
            dimStr = ToString[dim];
            particle = ToValidCSymbolString[GetHead[eigenVector]];
            matrixSymbol = "mass_matrix_" <> particle;
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           body = "const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
+           body = IndentText["const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n"];
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              body = body <> "fs_svd(" <>
-                     matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");\n";
+              body = body <> "
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText["double eigenvalue_error;
+fs_svd(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+#else
+" <> IndentText["fs_svd(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");"] <> "
+#endif
+";
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 body = body <> "fs_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n";
+                 body = body <> IndentText[
+                        "fs_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
+                        ev <> ", " <> U <> ");\n"];
                  ,
-                 body = body <> "fs_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n";
+                 body = body <> IndentText[
+                        "fs_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
+                        ev <> ", " <> U <> ");\n"];
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
-                     "if (" <> ev <> ".minCoeff() < 0.)\n" <>
-                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
-                     "else\n" <>
-                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+                     IndentText["if (" <> ev <> ".minCoeff() < 0.)\n" <>
+                                IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
+                                "else\n" <>
+                                IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n" <>
+                                ev <> " = AbsSqrt(" <> ev <> ");\n"];
              ];
-           Return[result <> IndentText[body] <> "}\n"];
+           Return[result <> body <> "}\n"];
           ];
 
 CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
