@@ -691,11 +691,11 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
-                     IndentText["if (" <> ev <> ".minCoeff() < 0.)\n" <>
-                                IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
-                                "else\n" <>
-                                IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n" <>
-                                ev <> " = AbsSqrt(" <> ev <> ");\n"];
+                     IndentText[
+                         "problems.flag_tachyon(" <>
+                         FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
+                         ev <> ".minCoeff() < 0.);\n\n" <>
+                         ev <> " = AbsSqrt(" <> ev <> ");\n"];
              ];
            Return[result <> body <> "}\n"];
           ];
@@ -740,15 +740,11 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               !IsMassless[massESSymbol],
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
-              If[dim == 1,
-                 body = body <> "\n" <> "if (" <> ev <> " < 0.)\n";,
-                 body = body <> "\n" <> "if (" <> ev <> ".minCoeff() < 0.)\n";
-                ];
-              body = body <>
-                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
-                     "else\n" <>
-                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+              body = body <> "\n" <>
+                     "problems.flag_tachyon(" <>
+                     FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
+                     ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.);\n\n" <>
+                     ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
            result = result <> body <> "}\n\n";
