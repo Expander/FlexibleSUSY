@@ -106,6 +106,13 @@ void print_build_info(std::ostream& ostr)
       "no"
 #endif
       "\n"
+      "Eigenvalue error check:          "
+#ifdef CHECK_EIGENVALUE_ERROR
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
       ;
 }
 

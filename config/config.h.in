@@ -41,6 +41,9 @@
 /* Enable colored printout */
 @DEFINE_ENABLE_COLOR_PRINTOUT@
 
+/* Enable eigenvalues error check */
+@DEFINE_ENABLE_EIGENVALUE_ERROR@
+
 /* Enable debug mode */
 @DEFINE_ENABLE_DEBUG@
 

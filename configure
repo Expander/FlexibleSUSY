@@ -93,6 +93,7 @@ options="                    \
    enable_compile            \
    enable_compiler_warnings  \
    enable_debug              \
+   enable_eigenvalue_error   \
    enable_fflite             \
    enable_looptools          \
    enable_silent             \
@@ -111,6 +112,7 @@ enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
+enable_eigenvalue_error="no"
 enable_fflite="no"
 enable_looptools="no"
 enable_meta="no"
@@ -125,6 +127,7 @@ enable_verbose="no"
 # corresponding preprocessor define statements
 DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
+DEFINE_ENABLE_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
@@ -1846,6 +1849,16 @@ enable_defines() {
         logmsg "   CPPFLAGS = ${CPPFLAGS}"
     fi
 
+    if test "x$enable_eigenvalue_error" = "xyes" ; then
+        DEFINE_ENABLE_EIGENVALUE_ERROR="#define CHECK_EIGENVALUE_ERROR 1"
+        message "Enabling eigenvalue error check"
+        logmsg "   ${DEFINE_ENABLE_EIGENVALUE_ERROR}"
+    else
+        DEFINE_ENABLE_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
+        logmsg "Disabling eigenvalue error check"
+        logmsg "   ${DEFINE_ENABLE_EIGENVALUE_ERROR}"
+    fi
+
     if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
 	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
 	exit 1
@@ -1956,6 +1969,7 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
+	-e "s|@ENABLE_EIGENVALUE_ERROR@|$enable_eigenvalue_error|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
@@ -1982,6 +1996,7 @@ enable/disable options, prefix with either --enable- or --disable-
   compile           Compile the source code (default: $enable_compile)
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
+  eigenvalue-error  Check mass eigenvalue precision
   fflite            Use fflite to compute the loop functions (default: $enable_fflite)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
@@ -2244,6 +2259,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DATE@|$DATE|"                             \
     -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
+    -e "s|@DEFINE_ENABLE_EIGENVALUE_ERROR@|$DEFINE_ENABLE_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
