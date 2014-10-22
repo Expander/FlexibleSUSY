@@ -634,7 +634,8 @@ ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
-    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k},
+    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k,
+            diagFunctionStr},
            dim = Length[matrix];
            dimStr = ToString[dim];
            particle = ToValidCSymbolString[GetHead[eigenVector]];
@@ -659,14 +660,20 @@ problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 body = body <> IndentText[
-                        "fs_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n"];
-                 ,
-                 body = body <> IndentText[
-                        "fs_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n"];
+                 diagFunctionStr = "fs_diagonalize_symmetric";,
+                 diagFunctionStr = "fs_diagonalize_hermitian";
                 ];
+              body = body <> "
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText[
+"double eigenvalue_error;
+" <> diagFunctionStr <> "(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+#else
+" <> IndentText[
+     diagFunctionStr <> "(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ");"] <> "
+#endif
+";
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
