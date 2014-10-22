@@ -34,19 +34,23 @@ public:
    Problems(const char**);
    ~Problems() {}
 
+   void flag_bad_mass(unsigned);
    void flag_tachyon(unsigned);
    void flag_thrown()          { thrown = true; }
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
 
+   void unflag_bad_mass(unsigned);
    void unflag_tachyon(unsigned);
    void unflag_thrown()          { thrown = false; }
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
 
+   bool is_bad_mass(unsigned) const;
    bool is_tachyon(unsigned) const;
+   bool have_bad_mass() const;
    bool have_tachyon() const;
    bool have_thrown() const     { return thrown; }
    bool no_ewsb() const         { return failed_ewsb; }
@@ -59,6 +63,7 @@ public:
    void print(std::ostream& = std::cout) const;
 
 private:
+   bool bad_masses[Number_of_particles]; ///< imprecise mass eigenvalues
    bool tachyons[Number_of_particles]; ///< tachyonic particles
    const char** particle_names;        ///< particle names
    bool thrown;                        ///< excepton thrown
@@ -69,13 +74,22 @@ private:
 
 template <unsigned Number_of_particles>
 Problems<Number_of_particles>::Problems(const char** particle_names_)
-   : tachyons() // intializes all elements to zero (= false)
+   : bad_masses() // intializes all elements to zero (= false)
+   , tachyons()   // intializes all elements to zero (= false)
    , particle_names(particle_names_)
    , thrown(false)
    , failed_ewsb(false)
    , failed_convergence(false)
    , non_perturbative(false)
 {
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::flag_bad_mass(unsigned particle)
+{
+   assert(particle < Number_of_particles
+          && "Error: particle index out of bounds");
+   bad_masses[particle] = true;
 }
 
 template <unsigned Number_of_particles>
@@ -87,6 +101,14 @@ void Problems<Number_of_particles>::flag_tachyon(unsigned particle)
 }
 
 template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_bad_mass(unsigned particle)
+{
+   assert(particle < Number_of_particles
+          && "Error: particle index out of bounds");
+   bad_masses[particle] = false;
+}
+
+template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::unflag_tachyon(unsigned particle)
 {
    assert(particle < Number_of_particles
@@ -95,11 +117,29 @@ void Problems<Number_of_particles>::unflag_tachyon(unsigned particle)
 }
 
 template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::is_bad_mass(unsigned particle) const
+{
+   assert(particle < Number_of_particles
+          && "Error: particle index out of bounds");
+   return bad_masses[particle];
+}
+
+template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::is_tachyon(unsigned particle) const
 {
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    return tachyons[particle];
+}
+
+template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::have_bad_mass() const
+{
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (bad_masses[i])
+         return true;
+   }
+   return false;
 }
 
 template <unsigned Number_of_particles>
@@ -116,6 +156,8 @@ template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::clear()
 {
    for (unsigned i = 0; i < Number_of_particles; ++i)
+      bad_masses[i] = false;
+   for (unsigned i = 0; i < Number_of_particles; ++i)
       tachyons[i] = false;
    failed_ewsb = false;
    failed_convergence = false;
@@ -126,14 +168,15 @@ void Problems<Number_of_particles>::clear()
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_problem() const
 {
-   return have_tachyon() || failed_ewsb || failed_convergence
-      || non_perturbative || thrown;
+   return have_serious_problem()
+      || have_bad_mass();
 }
 
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_serious_problem() const
 {
-   return have_problem();
+   return have_tachyon() || failed_ewsb || failed_convergence
+      || non_perturbative || thrown;
 }
 
 template <unsigned Number_of_particles>
@@ -143,6 +186,10 @@ void Problems<Number_of_particles>::print(std::ostream& ostr) const
       return;
 
    ostr << "Problems: ";
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (bad_masses[i])
+         ostr << "imprecise mass " << particle_names[i] << ", ";
+   }
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (tachyons[i])
          ostr << "tachyon " << particle_names[i] << ", ";
