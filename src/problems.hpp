@@ -34,9 +34,8 @@ public:
    Problems(const char**);
    ~Problems() {}
 
-   void flag_bad_mass(unsigned);
-   void flag_bad_mass(unsigned, bool);
-   void flag_tachyon(unsigned);
+   void flag_bad_mass(unsigned, bool flag = true);
+   void flag_tachyon(unsigned, bool flag = true);
    void flag_thrown()          { thrown = true; }
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
@@ -87,14 +86,6 @@ Problems<Number_of_particles>::Problems(const char** particle_names_)
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::flag_bad_mass(unsigned particle)
-{
-   assert(particle < Number_of_particles
-          && "Error: particle index out of bounds");
-   bad_masses[particle] = true;
-}
-
-template <unsigned Number_of_particles>
 void Problems<Number_of_particles>::flag_bad_mass(unsigned particle, bool flag)
 {
    assert(particle < Number_of_particles
@@ -103,11 +94,11 @@ void Problems<Number_of_particles>::flag_bad_mass(unsigned particle, bool flag)
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::flag_tachyon(unsigned particle)
+void Problems<Number_of_particles>::flag_tachyon(unsigned particle, bool flag)
 {
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
-   tachyons[particle] = true;
+   tachyons[particle] = flag;
 }
 
 template <unsigned Number_of_particles>
