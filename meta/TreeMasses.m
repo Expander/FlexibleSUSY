@@ -633,6 +633,38 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
+CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
+    "\
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText[
+"double eigenvalue_error;
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+#else
+" <> IndentText["\
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
+#endif
+"
+
+CallDiagonalizationFunction[particle_String, matrix_String, eigenvalue_String, U_String, function_String] :=
+    "\
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText[
+"double eigenvalue_error;
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+#else
+" <> IndentText["\
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
+#endif
+";
+
+CallDiagonalizeSymmetricFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+    CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_symmetric"];
+
+CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+    CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
     Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k,
             diagFunctionStr},
@@ -647,33 +679,14 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              body = body <> "
-#ifdef CHECK_EIGENVALUE_ERROR
-" <> IndentText["double eigenvalue_error;
-fs_svd(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
-#else
-" <> IndentText["fs_svd(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");"] <> "
-#endif
-";
+              body = body <> "\n" <> CallSVDFunction[particle, matrixSymbol, ev, U, V];
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 diagFunctionStr = "fs_diagonalize_symmetric";,
-                 diagFunctionStr = "fs_diagonalize_hermitian";
+                 body = body <> "\n" <> CallDiagonalizeSymmetricFunction[particle, matrixSymbol, ev, U];,
+                 body = body <> "\n" <> CallDiagonalizeHermitianFunction[particle, matrixSymbol, ev, U];
                 ];
-              body = body <> "
-#ifdef CHECK_EIGENVALUE_ERROR
-" <> IndentText[
-"double eigenvalue_error;
-" <> diagFunctionStr <> "(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
-#else
-" <> IndentText[
-     diagFunctionStr <> "(" <> matrixSymbol <> ", " <> ev <> ", " <> U <> ");"] <> "
-#endif
-";
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
