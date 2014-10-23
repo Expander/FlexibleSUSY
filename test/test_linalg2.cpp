@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <complex>
+#include <iostream>
 #include "linalg2.hpp"
 
 #define BOOST_TEST_DYN_LINK
