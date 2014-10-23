@@ -31,6 +31,7 @@
 
 #include "coupling_monitor.hpp"
 #include "error.hpp"
+#include "higgs_2loop_corrections.hpp"
 #include "numerics.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -74,6 +75,7 @@ public:
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
+   void set_higgs_2loop_corrections(const Higgs_2loop_corrections& c) { model.set_higgs_2loop_corrections(c); }
 
    void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;

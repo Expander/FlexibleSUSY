@@ -642,7 +642,7 @@ DecreaseIndexLiterals[expr_] :=
 
 DecreaseIndexLiterals[expr_, heads_List] :=
     Module[{indexedSymbols, rules, decrExpr, allHeads},
-           allHeads = Join[heads, {SARAH`Delta, SARAH`ThetaStep}];
+           allHeads = Join[heads /. FlexibleSUSY`M -> Identity, {SARAH`Delta, SARAH`ThetaStep}];
            indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
            rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
            decrExpr = expr /. rules;

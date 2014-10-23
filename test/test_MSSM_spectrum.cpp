@@ -151,7 +151,7 @@ void MSSM_softsusy_ewsb_susy_scale_constraint::apply()
 
    // Now do the one-loop EWSB using MssmSoftsusy::rewsb
    MssmSoftsusy softsusy;
-   softsusy.setAlternativeMs(true);
+   softsusy.setAlternativeMs(false);
    copy_parameters(mssm, softsusy);
    softsusy.calcDrBarPars();
    const double new_Msusy = softsusy.calcMs();
@@ -229,7 +229,7 @@ public:
       pars(1) = pp.m0;
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
-      softSusy.setAlternativeMs(true);
+      softSusy.setAlternativeMs(false);
       softSusy.lowOrg(sugraBcs, mxGuess, pars, pp.SignMu, pp.TanBeta,
                       oneset, gaugeUnification);
       mx = softSusy.displayMxBC();
