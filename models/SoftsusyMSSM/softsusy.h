@@ -1157,7 +1157,7 @@ Softsusy<SoftPars>::Softsusy()
     problem(), msusy(0.0), minV(6.66e66), 
     mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), altEwsb(false), 
     predMzSq(0.), t1OV1Ms(0.), t2OV2Ms(0.), t1OV1Ms1loop(0.), 
-    t2OV2Ms1loop(0.), alternativeMs(true), mxBC(mxDefault) { 
+    t2OV2Ms1loop(0.), alternativeMs(false), mxBC(mxDefault) { 
       setPars(110);
       setMu(0.0);
       setLoops(0);
@@ -1191,7 +1191,7 @@ Softsusy<SoftPars>::Softsusy(const Susy &s)
     physpars(), forLoops(), problem(), 
     msusy(0.0), minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), 
     setTbAtMX(false), altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(true),
+    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(false),
     mxBC(mxDefault) { 
   setPars(110);
   setMu(s.displayMu()); 
@@ -1207,7 +1207,7 @@ Softsusy<SoftPars>::Softsusy
   : SoftPars(s), AltEwsbMssm(), physpars(sp), forLoops(), problem(), msusy(0.0),
     minV(6.66e66), mw(0.0), dataSet(), fracDiff(1.), setTbAtMX(false), 
     altEwsb(false), predMzSq(0.), t1OV1Ms(0.), 
-    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(true),
+    t2OV2Ms(0.), t1OV1Ms1loop(0.), t2OV2Ms1loop(0.), alternativeMs(false),
     mxBC(mxDefault) {
   setHvev(hv);
   setPars(110);

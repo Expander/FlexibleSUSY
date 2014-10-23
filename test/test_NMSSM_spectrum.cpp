@@ -79,7 +79,7 @@ public:
       nmpars(4) = 0.;
       nmpars(5) = 0.;
 
-      softSusy.setAlternativeMs(true);
+      softSusy.setAlternativeMs(false);
       softSusy.lowOrg(NmssmMsugraBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
                       oneset, gaugeUnification);
       mx = softSusy.displayMxBC();

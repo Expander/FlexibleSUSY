@@ -11,7 +11,7 @@ MINPAR = { {1, m0},
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
-SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
