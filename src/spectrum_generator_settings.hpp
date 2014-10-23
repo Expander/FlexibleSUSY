@@ -19,6 +19,8 @@
 #ifndef SPECTRUM_GENERATOR_SETTINGS_H
 #define SPECTRUM_GENERATOR_SETTINGS_H
 
+#include "higgs_2loop_corrections.hpp"
+
 namespace flexiblesusy {
 
 /**
@@ -32,14 +34,18 @@ class Spectrum_generator_settings {
 public:
    /// Spectrum generator settings
    enum Settings : unsigned {
-      precision,             ///< overall precision goal
-      max_iterations,        ///< maximum number of iterations (0 = automatic)
-      algorithm,             ///< RG solver algorithm (0 = two-scale)
-      calculate_sm_masses,   ///< calculate Standard Model pole masses
-      pole_mass_loop_order,  ///< loop-order for calculation of pole masses
-      ewsb_loop_order,       ///< loop-order for solving the EWSB eqs.
-      beta_loop_order,       ///< loop-order of beta-functions
-      threshold_corrections_loop_order, ///< threshold corrections loop order
+      precision,             ///< [0] overall precision goal
+      max_iterations,        ///< [1] maximum number of iterations (0 = automatic)
+      algorithm,             ///< [2] RG solver algorithm (0 = two-scale)
+      calculate_sm_masses,   ///< [3] calculate Standard Model pole masses
+      pole_mass_loop_order,  ///< [4] loop-order for calculation of pole masses
+      ewsb_loop_order,       ///< [5] loop-order for solving the EWSB eqs.
+      beta_loop_order,       ///< [6] loop-order of beta-functions
+      threshold_corrections_loop_order, ///< [7]  threshold corrections loop order
+      higgs_2loop_correction_at_as,     ///< [8]  Higgs 2-loop correction O(alpha_t alpha_s)
+      higgs_2loop_correction_ab_as,     ///< [9]  Higgs 2-loop correction O(alpha_b alpha_s)
+      higgs_2loop_correction_at_at,     ///< [10] Higgs 2-loop correction O(alpha_t alpha_t + alpha_t alpha_b + alpha_b alpha_b)
+      higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
@@ -49,6 +55,8 @@ public:
    double get(Settings) const; ///< get value of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
    void reset();               ///< resets all settings to their defaults
+
+   Higgs_2loop_corrections get_higgs_2loop_corrections() const;
 
 private:
    double values[NUMBER_OF_OPTIONS]; ///< spectrum generator settings
