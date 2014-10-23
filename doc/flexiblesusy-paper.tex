@@ -912,7 +912,7 @@ corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
 $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ as well
 \cite{Brignole:2001jy,Dedes:2003km} which only represent a partial
 correction for that order in the NMSSM, but can be a good approximation
-when singlet mixing is very small.
+when singlet mixing is very small\footnote{These corrections may be disabled in the SLHA file, as described in section \secref{sec:PoleMasses}.}.
 
  The corrections can then be used in the calculation of the Higgs
  masses, when appropriate settings are selected in the SLHA file. Note
@@ -1888,8 +1888,8 @@ calculation of the Higgs pole masses when running the spectrum
 generator by setting the appropriate SLHA flags.  
 
   When two loop corrections have been enabled in the SLHA
-  file by setting entry 4 of the FlexibleSUSY block to 2 the user may
-  also select individual corrections. Entries 9,10,11 and 12,
+  file by setting entry $4$ of the FlexibleSUSY block to $2$ the user may
+  also select individual corrections. Entries $9$,$10$,$11$ and $12$,
   correspond to two loop corrections of order $\oatas$, $\oabas$,
   $\oatplusabsq$ and $\oatauq$ respectively and will be disabled when
   the corresponding entry is set to zero. In this way, for example, in
