@@ -116,9 +116,9 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "fs_svd(M_1loop, PHYSICAL(" <> massName <> "), " <>
-                          "PHYSICAL(" <> U <> "), " <>
-                          "PHYSICAL(" <> V <> "));\n";
+                          TreeMasses`CallSVDFunction[
+                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
@@ -141,9 +141,10 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
 DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
-            massMatrixStr, selfEnergyMatrixType},
+            massMatrixStr, selfEnergyMatrixType, particleName},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
+           particleName = ToValidCSymbolString[particleName];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
@@ -192,10 +193,9 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                  U = ToValidCSymbolString[mixingMatrix[[1]]];
                  V = ToValidCSymbolString[mixingMatrix[[2]]];
                  result = result <>
-                          "fs_svd(M_1loop, " <>
-                          "PHYSICAL(" <> massName <> "), " <>
-                          "PHYSICAL(" <> U <> "), " <>
-                          "PHYSICAL(" <> V <> "));\n";
+                          TreeMasses`CallSVDFunction[
+                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              "PHYSICAL(" <> U <> ")", "PHYSICAL(" <> V <> ")"];
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
@@ -263,7 +263,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               Utemp = "mix_" <> U;
               Vtemp = "mix_" <> V;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ", " <> Vtemp <> ";\n" <>
-                            "fs_svd(M_1loop, eigen_values, " <> Utemp <> ", " <> Vtemp <> ");\n\n" <>
+                            TreeMasses`CallSVDFunction[
+                                particleName, "M_1loop", "eigen_values",
+                                Utemp, Vtemp] <> "\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
@@ -354,9 +356,10 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
-            eigenArrayType, mixingMatrixType},
+            eigenArrayType, mixingMatrixType, particleName},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
+           particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
@@ -411,8 +414,9 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                           IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
                                      "decltype(" <> V <> ") mix_" <> V <> ";\n"];
                  result = result <>
-                          IndentText["fs_svd(M_1loop, eigen_values, " <>
-                                     "mix_" <> U <> ", " <> "mix_" <> V <> ");\n"];
+                          TreeMasses`CallSVDFunction[
+                              particleName, "M_1loop", "eigen_values",
+                              "mix_" <> U, "mix_" <> V];
                  result = result <>
                           IndentText["if (es == 0) {\n" <>
                                      IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n" <>

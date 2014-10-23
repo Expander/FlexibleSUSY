@@ -122,6 +122,11 @@ GetThirdGenerationMass::usage;
 
 ReorderGoldstoneBosons::usage="";
 
+(* exported for the use in LoopMasses.m *)
+CallSVDFunction::usage="";
+CallDiagonalizeSymmetricFunction::usage="";
+CallDiagonalizeHermitianFunction::usage="";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
