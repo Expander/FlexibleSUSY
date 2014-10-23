@@ -399,7 +399,7 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
           ];
 
 CalculateScaleFromExpr[expr_, scaleName_String] :=
-    scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]]] <> ";\n";
+    scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
 DefineParameter[parameter_Symbol] :=
     CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
