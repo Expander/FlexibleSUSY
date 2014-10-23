@@ -122,8 +122,9 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                       "fs_diagonalize_hermitian(M_1loop, PHYSICAL(" <> massName <> "), " <>
-                       "PHYSICAL(" <> U <> "));\n";
+                          TreeMasses`CallDiagonalizeHermitianFunction[
+                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              "PHYSICAL(" <> U <> ")"];
                 ];
               result = result <>
                        "\n" <>
@@ -199,9 +200,9 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                  ,
                  U = ToValidCSymbolString[mixingMatrix];
                  result = result <>
-                          "fs_diagonalize_symmetric(M_1loop, " <>
-                          "PHYSICAL(" <> massName <> "), " <>
-                          "PHYSICAL(" <> U <> "));\n";
+                          TreeMasses`CallDiagonalizeSymmetricFunction[
+                              particleName, "M_1loop", "PHYSICAL(" <> massName <> ")",
+                              "PHYSICAL(" <> U <> ")"];
                 ];
               ,
               (* for a dimension 1 fermion it plays not role if it's a
@@ -277,7 +278,9 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
               U = ToValidCSymbolString[mixingMatrix];
               Utemp = "mix_" <> U;
               diagSnippet = mixingMatrixType <> " " <> Utemp <> ";\n" <>
-                            "fs_diagonalize_hermitian(M_1loop, eigen_values, " <> Utemp <> ");\n\n" <>
+                            TreeMasses`CallDiagonalizeHermitianFunction[
+                                particleName, "M_1loop", "eigen_values",
+                                Utemp] <> "\n" <>
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n";
@@ -428,7 +431,9 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                  If[mixingMatrix =!= Null,
                     result = result <>
                              IndentText["decltype(" <> U <> ") mix_" <> U <> ";\n" <>
-                                        "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n" <>
+                                        TreeMasses`CallDiagonalizeSymmetricFunction[
+                                            particleName, "M_1loop", "eigen_values",
+                                            "mix_" <> U] <>
                                         "if (es == 0)\n" <>
                                         IndentText["PHYSICAL(" <> U <> ") = mix_" <> U <> ";\n"]
                                        ];
@@ -436,7 +441,9 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                     mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]];
                     result = result <>
                              IndentText[mixingMatrixType <> " mix_" <> U <> ";\n" <>
-                                        "fs_diagonalize_symmetric(M_1loop, eigen_values, mix_" <> U <> ");\n"];
+                                        TreeMasses`CallDiagonalizeSymmetricFunction[
+                                            particleName, "M_1loop", "eigen_values",
+                                            "mix_" <> U]];
                    ];
                 ];
               result = result <>
