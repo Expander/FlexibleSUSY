@@ -59,10 +59,6 @@ struct CompareSpectrum {
     const Eigen::Array3d& s;
 };
 
-struct ReciprocalOp {
-    double operator() (const double& x) const { return 1 / x; }
-};
-
 }
 
 void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
@@ -78,8 +74,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
 	      CompareSpectrum(vSpectrum));
     uh.transpose() *= p.inverse();
     Eigen::Matrix3d UPMNS = uh.adjoint().real();
-    Eigen::Vector3d YvDiagInv;
-    YvDiagInv = YvDiag.unaryExpr(ReciprocalOp());
+    Eigen::Vector3d YvDiagInv = 1 / YvDiag.array();
     Eigen::Matrix3d YvInv = UPMNS * YvDiagInv.asDiagonal();
 
     Mv = (YvInv.transpose() * WOp * YvInv).inverse();
