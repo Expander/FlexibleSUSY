@@ -644,7 +644,8 @@ CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_S
 " <> IndentText[
 "double eigenvalue_error;
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
 #else
 " <> IndentText["\
 fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
@@ -657,7 +658,8 @@ CallDiagonalizationFunction[particle_String, matrix_String, eigenvalue_String, U
 " <> IndentText[
 "double eigenvalue_error;
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);
-problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", eigenvalue_error > precision);"] <> "
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
 #else
 " <> IndentText["\
 " <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
