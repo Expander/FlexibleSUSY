@@ -679,7 +679,7 @@ HighScaleInput = {
    {MassG, m12}
 };
 
-SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
@@ -780,12 +780,16 @@ The meaning of the three constraints is the following:
 \item \emph{SUSY-scale constraint:} The SUSY-scale is the typical mass
   scale of the SUSY particle spectrum.  At this scale \fs imposes the
   EWSB conditions and calculates the pole mass spectrum.  The
-  SUSY-scale, $M_S$, is usually defined as $M_S =
-  \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.  However, in the example
-  above, where sfermion flavour violation is enabled, it has the value
-  $M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}}$, where
-  $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the \DRbar\ masses of
-  the lightest and heaviest up-type squark, respectively.
+  SUSY-scale, $M_S$, is defined as
+  \begin{align}
+    M_S = \sqrt{\prod_{i=1}^6 m_{\tilde{u}_i}^{|(Z_u)_{i3}|^2 + |(Z_u)_{i6}|^2}} ,
+    \label{eq:definition_of_MS}
+  \end{align}
+  where $m_{\tilde{u}_i}$ is the \DRbar\ mass of the $i$th up-type
+  squark and $Z_u$ is the up-type squark mixing matrix.  The
+  definition \eqref{eq:definition_of_MS} is equivalent to the usual
+  choice $M_S = \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$ without squark
+  flavour mixing.
 %
 \item \emph{Low-scale constraint:} The low-scale constraint is the
   constraint where the SUSY model is matched to the Standard Model.
@@ -1149,14 +1153,13 @@ condition classes are generated as follows:
 
 \item The \emph{SUSY-scale constraint} is intended to set boundary
   conditions at the mass scale $M_S$ of the SUSY particles.  The value
-  of $M_S$ is defined by the model file variable \code{SUSYScale}.  In
-  the example model file in \secref{sec:modfile} it is defined to be
-  $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where $m_{\tilde{u}_1}$ is
-  the mass of the lightest, and $m_{\tilde{u}_6}$ is the mass of the
-  heaviest up-type squark.  The \code{apply()} function for this
-  constraint sets the model parameters to the values defined in
-  \code{SUSYScaleInput}.  Afterwards, \code{apply()} solves the EWSB
-  equations at the loop level by adjusting the parameters given in
+  of $M_S$ is defined in the model file variable \code{SUSYScale}.  In
+  the example model file in \secref{sec:modfile} it is given by the
+  expression written in Eq.~\eqref{eq:definition_of_MS}.  The
+  \code{apply()} function for this constraint sets the model
+  parameters to the values defined in \code{SUSYScaleInput}.
+  Afterwards, \code{apply()} solves the EWSB equations at the loop
+  level by adjusting the parameters given in
   \code{EWSBOutputParameters} such that the effective Higgs potential
   is minimized.  See \secref{sec:ewsb} for a more detailed description
   of the EWSB in \fs.
@@ -1687,10 +1690,10 @@ actual iteration starts
   \item Calculate the \DRbar\ mass spectrum.
   \item Recalculate the SUSY-scale $M_S$ as
     \begin{align}
-      M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}},
+      M_S = \sqrt{\prod_{i=1}^6 m_{\tilde{u}_i}^{|(Z_u)_{i3}|^2 + |(Z_u)_{i6}|^2}} ,
     \end{align}
-    where $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the lightest and
-    heaviest up-type squarks, respectively.
+    where $m_{\tilde{u}_i}$ is the \DRbar\ mass of the $i$th up-type
+    squark.
   \item Impose the SUSY-scale constraint (\code{SUSYScaleInput}).  In
     the example above, this step is trivial since
     \code{SUSYScaleInput} is set to be empty.
