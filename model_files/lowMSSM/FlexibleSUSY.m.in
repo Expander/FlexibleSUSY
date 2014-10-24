@@ -35,3 +35,11 @@ OnlyLowEnergyFlexibleSUSY = True;
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
+
+ExtraSLHAOutputBlocks = {
+   {ALPHA, {{Null, ArcCos[Pole[ZH[1,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]}}}
+};
