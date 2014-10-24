@@ -13,7 +13,7 @@ MINPAR = {
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
-SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
+SUSYScale = Sqrt[M[St[1]] M[St[2]]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
@@ -66,6 +66,17 @@ InitialGuessAtHighScale = {
 
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
+
+ExtraSLHAOutputBlocks = {
+   {ALPHA, {{Null, ArcCos[Pole[ZH[1,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]},
+            {101, B[\[Mu]]},
+            {102, vd},
+            {103, vu} } }
+};
 
 TopQuark    = Ft;
 BottomQuark = Fb;
