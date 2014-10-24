@@ -9,6 +9,7 @@ WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
+WriteExtraSLHAOutputBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
@@ -233,36 +234,62 @@ SortBlocks[modelParameters_List] :=
            Return[collected];
           ];
 
+WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_] :=
+    Module[{replacements},
+           replacements = Join[
+               RuleDelayed[#     , macroSymbol[#]   ]& /@ symbols,
+               RuleDelayed[#[i__], macroSymbol[#][i]]& /@ symbols
+           ];
+           expr /. replacements
+          ];
+
+WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
+    Module[{parStr, parVal, pdgStr},
+           parStr = CConversion`ToValidCSymbolString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                      Parameters`GetOutputParameters[]],
+                                            Global`MODELPARAMETER]];
+           (* print unnormalized hypercharge gauge coupling *)
+           If[par === SARAH`hyperchargeCoupling,
+              parVal = "(" <> parVal <> " * " <>
+                           CConversion`RValueToCFormString[
+                               Parameters`GetGUTNormalization[par]] <> ")";
+              parStr = "gY";
+             ];
+           pdgStr = ToString[pdg];
+           (* result *)
+           "      << FORMAT_ELEMENT(" <> pdgStr <> ", " <>
+               parVal <> ", \"" <> parStr <> "\")" <> "\n"
+          ];
+
+WriteSLHABlockEntry[{par_, pdg_ /; pdg === Null}] :=
+    Module[{parStr, parVal},
+           parStr = CConversion`RValueToCFormString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                      Parameters`GetOutputParameters[]],
+                                            Global`MODELPARAMETER]];
+           (* result *)
+           "      << FORMAT_NUMBER(" <> parVal <> ", \"" <> parStr <> "\")\n"
+          ];
+
+WriteSLHABlockEntry[tuple_] :=
+    Block[{},
+          Print["WriteSLHABlock: Error: tuple ", tuple,
+                " is not a list of lenght 2."];
+          ""
+         ];
+
 WriteSLHABlock[{blockName_, tuples_List}] :=
-    Module[{result = "", blockNameStr, t, pdg, par, parStr, parVal, scale},
+    Module[{result = "", blockNameStr, scale},
            blockNameStr = ToString[blockName];
            scale = "model.get_scale()";
            result = "std::ostringstream block;\n" <>
-                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_NUMBER(" <>
+                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_SCALE(" <>
                     scale <> ") << '\\n'\n";
-           For[t = 1, t <= Length[tuples], t++,
-               If[Head[tuples[[t]]] =!= List || Length[tuples[[t]]] < 2,
-                  Print["WriteSLHABlock: Error: tuple ", tuples[[t]],
-                        " is not a list of lenght 2."];
-                  Print["  Tuples list: ", tuples];
-                  Continue[];
-                 ];
-               par = tuples[[t,1]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               parVal = "MODELPARAMETER(" <> parStr <> ")";
-               (* print unnormalized hypercharge gauge coupling *)
-               If[par === SARAH`hyperchargeCoupling,
-                  parVal = "(" <> parVal <> " * " <>
-                           CConversion`RValueToCFormString[
-                               Parameters`GetGUTNormalization[par]] <> ")";
-                  parStr = "gY";
-                 ];
-               pdg = ToString[tuples[[t,2]]];
-               result = result <> "      << FORMAT_ELEMENT(" <> pdg <> ", " <>
-                        parVal <> ", \"" <> parStr <> "\")" <>
-                        If[t == Length[tuples], ";", ""] <> "\n";
-              ];
-           result = result <> "slha_io.set_block(block);\n";
+           (result = result <> WriteSLHABlockEntry[#])& /@ tuples;
+           result = result <> ";\n" <> "slha_io.set_block(block);\n";
            result = "{\n" <> TextFormatting`IndentText[result] <> "}\n";
            Return[result];
           ];
@@ -278,6 +305,15 @@ WriteSLHAModelParametersBlocks[] :=
            modelParameters = GetSLHAModelParameters[];
            blocks = SortBlocks[modelParameters];
            (result = result <> WriteSLHABlock[#])& /@ blocks;
+           Return[result];
+          ];
+
+WriteExtraSLHAOutputBlock[outputBlocks_List] :=
+    Module[{result = "", reformed},
+           ReformeBlocks[{block_, tuples_List}] := {block, ReformeBlocks /@ tuples};
+           ReformeBlocks[{idx_, expr_}] := {expr, idx};
+           reformed = ReformeBlocks /@ outputBlocks;
+           (result = result <> WriteSLHABlock[#])& /@ reformed;
            Return[result];
           ];
 
