@@ -245,22 +245,22 @@ WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_] :=
 
 WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
     Module[{parStr, parVal, pdgStr},
-           parStr = CConversion`ToValidCSymbolString[par];
+           parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                       Parameters`GetOutputParameters[]],
                                             Global`MODELPARAMETER]];
            (* print unnormalized hypercharge gauge coupling *)
            If[par === SARAH`hyperchargeCoupling,
-              parVal = "(" <> parVal <> " * " <>
+              parVal = parVal <> " * " <>
                            CConversion`RValueToCFormString[
-                               Parameters`GetGUTNormalization[par]] <> ")";
+                               Parameters`GetGUTNormalization[par]];
               parStr = "gY";
              ];
            pdgStr = ToString[pdg];
            (* result *)
-           "      << FORMAT_ELEMENT(" <> pdgStr <> ", " <>
-               parVal <> ", \"" <> parStr <> "\")" <> "\n"
+           "      << FORMAT_ELEMENT(" <> pdgStr <> ", (" <> parVal <>
+           "), \"" <> parStr <> "\")" <> "\n"
           ];
 
 WriteSLHABlockEntry[{par_, pdg_ /; pdg === Null}] :=
@@ -271,7 +271,7 @@ WriteSLHABlockEntry[{par_, pdg_ /; pdg === Null}] :=
                                                       Parameters`GetOutputParameters[]],
                                             Global`MODELPARAMETER]];
            (* result *)
-           "      << FORMAT_NUMBER(" <> parVal <> ", \"" <> parStr <> "\")\n"
+           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> parStr <> "\")\n"
           ];
 
 WriteSLHABlockEntry[tuple_] :=
