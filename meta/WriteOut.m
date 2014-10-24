@@ -234,14 +234,24 @@ SortBlocks[modelParameters_List] :=
            Return[collected];
           ];
 
-WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_] :=
-    Module[{replacements},
+CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
+    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], Infinity];
+
+CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
+    Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
+
+WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_,
+                             protectedHeads_List:{FlexibleSUSY`Pole}] :=
+    Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
            replacements = Join[
                RuleDelayed[#     , macroSymbol[#]   ]& /@ symbols,
                RuleDelayed[#[i__], macroSymbol[#][i]]& /@ symbols,
                {RuleDelayed[FlexibleSUSY`M[p_[i__]], macroSymbol[FlexibleSUSY`M[p]][i]]}
            ];
-           expr /. replacements
+           protectionRules = CreateRulesForProtectedHead[expr, protectedHeads];
+           exprWithoutProtectedSymbols = expr /. protectionRules;
+           (* substitute back protected symbols *)
+           exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
           ];
 
 WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
