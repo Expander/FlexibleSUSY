@@ -238,7 +238,8 @@ WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_] :=
     Module[{replacements},
            replacements = Join[
                RuleDelayed[#     , macroSymbol[#]   ]& /@ symbols,
-               RuleDelayed[#[i__], macroSymbol[#][i]]& /@ symbols
+               RuleDelayed[#[i__], macroSymbol[#][i]]& /@ symbols,
+               {RuleDelayed[FlexibleSUSY`M[p_[i__]], macroSymbol[FlexibleSUSY`M[p]][i]]}
            ];
            expr /. replacements
           ];
