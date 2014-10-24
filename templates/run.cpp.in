@@ -88,6 +88,8 @@ int main(int argc, const char* argv[])
       spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order));
    spectrum_generator.set_threshold_corrections_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   spectrum_generator.set_higgs_2loop_corrections(
+      spectrum_generator_settings.get_higgs_2loop_corrections());
 
    spectrum_generator.run(oneset, input);
 
@@ -101,7 +103,7 @@ int main(int argc, const char* argv[])
    slha_io.set_sminputs(oneset);
    slha_io.set_minpar(input);
    slha_io.set_extpar(input);
-   if (!problems.have_serious_problem())
+   if (!problems.have_problem())
       slha_io.set_spectrum(model);
 
    if (slha_output_file.empty()) {

@@ -92,10 +92,16 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
           << FORMAT_SPINFO(1, PKGNAME)
           << FORMAT_SPINFO(2, FLEXIBLESUSY_VERSION);
 
-   if (problems.have_serious_problem()) {
-      std::ostringstream serious_problems;
-      problems.print(serious_problems);
-      spinfo << FORMAT_SPINFO(4, serious_problems.str());
+   if (problems.have_warning()) {
+      std::ostringstream warnings;
+      problems.print_warnings(warnings);
+      spinfo << FORMAT_SPINFO(3, warnings.str());
+   }
+
+   if (problems.have_problem()) {
+      std::ostringstream problems_str;
+      problems.print_problems(problems_str);
+      spinfo << FORMAT_SPINFO(4, problems_str.str());
    }
 
    slha_io.set_block(spinfo, SLHA_io::front);

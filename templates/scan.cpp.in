@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
       const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
       const double higgs = pole_masses.M@HiggsBoson_0@;
-      const bool error = problems.have_serious_problem();
+      const bool error = problems.have_problem();
 
       cout << "  "
            << std::setw(12) << std::left << input.@InputParameter_1@ << ' '

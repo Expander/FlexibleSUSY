@@ -494,7 +494,7 @@ int main_(int argc, const char* argv[])
 
    runner.run(oneset, input);
 
-   if (runner.get_problems().have_serious_problem()) {
+   if (runner.get_problems().have_problem()) {
       runner.get_problems().print();
    } else {
       // runner.write_running_couplings();

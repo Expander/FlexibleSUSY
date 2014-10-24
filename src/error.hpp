@@ -102,6 +102,21 @@ private:
    std::string msg;
 };
 
+/**
+ * @class FailedDiagonalizationError
+ * @brief Failed diagonalization of a matrix
+ */
+class FailedDiagonalizationError : public Error {
+public:
+   explicit FailedDiagonalizationError()
+      {}
+   virtual ~FailedDiagonalizationError() {}
+   virtual std::string what() const {
+      return std::string("FailedDiagonalizationError:"
+                         " Mass matrix diagonalization failed");
+   }
+};
+
 }
 
 #endif

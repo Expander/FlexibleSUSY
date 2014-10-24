@@ -122,6 +122,11 @@ GetThirdGenerationMass::usage;
 
 ReorderGoldstoneBosons::usage="";
 
+(* exported for the use in LoopMasses.m *)
+CallSVDFunction::usage="";
+CallDiagonalizeSymmetricFunction::usage="";
+CallDiagonalizeHermitianFunction::usage="";
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -633,42 +638,73 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
+CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
+    "\
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText[
+"double eigenvalue_error;
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
+#else
+" <> IndentText["\
+fs_svd(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", " <> V <> ");"] <> "
+#endif
+"
+
+CallDiagonalizationFunction[particle_String, matrix_String, eigenvalue_String, U_String, function_String] :=
+    "\
+#ifdef CHECK_EIGENVALUE_ERROR
+" <> IndentText[
+"double eigenvalue_error;
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ", eigenvalue_error);
+problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+    ", eigenvalue_error > precision * Abs(" <> eigenvalue <> "(0)));"] <> "
+#else
+" <> IndentText["\
+" <> function <> "(" <> matrix <> ", " <> eigenvalue <> ", " <> U <> ");"] <> "
+#endif
+";
+
+CallDiagonalizeSymmetricFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+    CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_symmetric"];
+
+CallDiagonalizeHermitianFunction[particle_String, matrix_String, eigenvector_String, U_String] :=
+    CallDiagonalizationFunction[particle, matrix, eigenvector, U, "fs_diagonalize_hermitian"];
+
 CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
-    Module[{dim, body = "", result, U = "", V = "", dimStr = "", ev, particle, k},
+    Module[{dim, body, result, U = "", V = "", dimStr = "", ev, particle, k,
+            diagFunctionStr},
            dim = Length[matrix];
            dimStr = ToString[dim];
            particle = ToValidCSymbolString[GetHead[eigenVector]];
            matrixSymbol = "mass_matrix_" <> particle;
            ev = ToValidCSymbolString[FlexibleSUSY`M[GetHead[eigenVector]]];
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
-           body = "const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n";
+           body = IndentText["const auto " <> matrixSymbol <> "(get_" <> matrixSymbol <> "());\n"];
            If[Head[mixingMatrixSymbol] === List && Length[mixingMatrixSymbol] == 2,
               (* use SVD *)
               U = ToValidCSymbolString[mixingMatrixSymbol[[1]]];
               V = ToValidCSymbolString[mixingMatrixSymbol[[2]]];
-              body = body <> "fs_svd(" <>
-                     matrixSymbol <> ", " <> ev <> ", " <> U <> ", " <> V <> ");\n";
+              body = body <> "\n" <> CallSVDFunction[particle, matrixSymbol, ev, U, V];
               ,
               (* use conventional diagonalization *)
               U = ToValidCSymbolString[mixingMatrixSymbol];
               If[IsSymmetric[matrix] && IsFermion[GetHead[eigenVector]],
-                 body = body <> "fs_diagonalize_symmetric(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n";
-                 ,
-                 body = body <> "fs_diagonalize_hermitian(" <> matrixSymbol <> ", " <>
-                        ev <> ", " <> U <> ");\n";
+                 body = body <> "\n" <> CallDiagonalizeSymmetricFunction[particle, matrixSymbol, ev, U];,
+                 body = body <> "\n" <> CallDiagonalizeHermitianFunction[particle, matrixSymbol, ev, U];
                 ];
              ];
            If[IsScalar[eigenVector] || IsVector[eigenVector],
               (* check for tachyons *)
               body = body <> "\n" <>
-                     "if (" <> ev <> ".minCoeff() < 0.)\n" <>
-                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
-                     "else\n" <>
-                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+                     IndentText[
+                         "problems.flag_tachyon(" <>
+                         FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
+                         ev <> ".minCoeff() < 0.);\n\n" <>
+                         ev <> " = AbsSqrt(" <> ev <> ");\n"];
              ];
-           Return[result <> IndentText[body] <> "}\n"];
+           Return[result <> body <> "}\n"];
           ];
 
 CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
@@ -711,15 +747,11 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               !IsMassless[massESSymbol],
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
-              If[dim == 1,
-                 body = body <> "\n" <> "if (" <> ev <> " < 0.)\n";,
-                 body = body <> "\n" <> "if (" <> ev <> ".minCoeff() < 0.)\n";
-                ];
-              body = body <>
-                     IndentText["problems.flag_tachyon(" <> particle <> ");"] <> "\n" <>
-                     "else\n" <>
-                     IndentText["problems.unflag_tachyon(" <> particle <> ");"] <> "\n\n";
-              body = body <> ev <> " = AbsSqrt(" <> ev <> ");\n";
+              body = body <> "\n" <>
+                     "problems.flag_tachyon(" <>
+                     FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
+                     ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.);\n\n" <>
+                     ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
            result = result <> body <> "}\n\n";

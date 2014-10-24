@@ -5,7 +5,7 @@ MINPAR = { {3, TanBeta} };
 
 EWSBOutputParameters = { mHd2, mHu2 };
 
-SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = 1000;
 

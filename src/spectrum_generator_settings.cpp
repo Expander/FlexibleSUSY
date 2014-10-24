@@ -58,6 +58,10 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
  * | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
  * | threshold_corrections_loop_order | 0, 1                         | 1 (= 1-loop)    |
+ * | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
+ * | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
+ * | higgs_2loop_correction_at_at     | 0, 1                         | 1 (= enabled)   |
+ * | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -69,6 +73,21 @@ void Spectrum_generator_settings::reset()
    values[ewsb_loop_order]       = 2.;
    values[beta_loop_order]       = 2.;
    values[threshold_corrections_loop_order] = 1.;
+   values[higgs_2loop_correction_at_as]     = 1.;
+   values[higgs_2loop_correction_ab_as]     = 1.;
+   values[higgs_2loop_correction_at_at]     = 1.;
+   values[higgs_2loop_correction_atau_atau] = 1.;
+}
+
+Higgs_2loop_corrections Spectrum_generator_settings::get_higgs_2loop_corrections() const
+{
+   Higgs_2loop_corrections higgs_2loop_corrections;
+   higgs_2loop_corrections.at_as     = get(higgs_2loop_correction_at_as);
+   higgs_2loop_corrections.ab_as     = get(higgs_2loop_correction_ab_as);
+   higgs_2loop_corrections.at_at     = get(higgs_2loop_correction_at_at);
+   higgs_2loop_corrections.atau_atau = get(higgs_2loop_correction_atau_atau);
+
+   return higgs_2loop_corrections;
 }
 
 } // namespace flexiblesusy

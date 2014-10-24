@@ -263,7 +263,7 @@ $(DIR)/test_sminput.x: $(DIR)/test_sminput.o $(LIBFLEXI) $(LIBLEGACY) $(filter-o
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
 $(DIR)/test_slha_io.x: $(DIR)/test_slha_io.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 $(DIR)/test_wrappers.x: $(DIR)/test_wrappers.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS) $(LIBTEST)
@@ -363,7 +363,7 @@ $(DIR)/test_MSSMNoFV_low_scale_constraint.x: $(LIBMSSM) $(LIBMSSMNoFV) $(LIBFLEX
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
