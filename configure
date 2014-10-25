@@ -1438,6 +1438,28 @@ check_eigen_incl() {
 }
 
 #_____________________________________________________________________
+check_eigen_version() {
+    checking_msg "eigen version"
+
+    try_compile_run_cpp_program "#include <iostream>
+#include <Eigen/Core>
+int main() {
+   std::cout << EIGEN_WORLD_VERSION << '.' << EIGEN_MAJOR_VERSION << '.' << EIGEN_MINOR_VERSION << '\n';
+   return 0;
+}" "$CXX" "${EIGENFLAGS}" && [ $cpp_exit = 0 ] || {
+        result "unknown"
+        message "Warning: could not determine eigen version because"
+        message "   compilation or execution of the eigen test program failed."
+	return 1
+    }
+
+    local eigen_version="$cpp_output"
+
+    result "ok (version ${eigen_version})"
+    logmsg "   Eigen version found: ${eigen_version}"
+}
+
+#_____________________________________________________________________
 check_gsl_config() {
     checking_msg "GSL configuration $gsl_config"
     exists_in_path "$gsl_config"
@@ -2167,6 +2189,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_boost_test_incl
     check_boost_test_libs
     check_eigen_incl
+    check_eigen_version
     check_fortran_libs
     check_gsl_config
     check_blas_libs
