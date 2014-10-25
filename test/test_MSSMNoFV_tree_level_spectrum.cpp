@@ -145,6 +145,12 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
 BOOST_AUTO_TEST_CASE( test_MSSMNoFV_tree_level_spectrum )
 {
    MSSMNoFV_input_parameters input;
+   input.TanBeta = 10.;
+   input.m0 = 125.;
+   input.m12 = 200.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
    MSSMNoFV<Two_scale> m1;
    MSSM<Two_scale> m2;
    setup_MSSM_models(m1, m2, input);

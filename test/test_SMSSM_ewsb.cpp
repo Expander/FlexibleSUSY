@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {
       INFO("FlexibleSUSY problem detected: ");
-      m.get_problems().print();
+      m.get_problems().print_problems();
       INFO("");
    }
    BOOST_REQUIRE(!m.get_problems().have_problem());
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {
       INFO("FlexibleSUSY problem detected: ");
-      m.get_problems().print();
+      m.get_problems().print_problems();
       INFO("");
    }
    BOOST_REQUIRE(!m.get_problems().have_problem());

@@ -24,7 +24,19 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    MSSM<Two_scale> mssm;
    MSSMNoFV<Two_scale> mssmnofv;
    MSSM_input_parameters input_mssm;
+   input_mssm.TanBeta = 10.;
+   input_mssm.m0 = 125.;
+   input_mssm.m12 = 200.;
+   input_mssm.SignMu = 1;
+   input_mssm.Azero = 0.;
+
    MSSMNoFV_input_parameters input_mssmnofv;
+   input_mssmnofv.TanBeta = 10.;
+   input_mssmnofv.m0 = 125.;
+   input_mssmnofv.m12 = 200.;
+   input_mssmnofv.SignMu = 1;
+   input_mssmnofv.Azero = 0.;
+
    QedQcd oneset;
    setup_MSSM_models(mssm, mssmnofv, input_mssmnofv);
 

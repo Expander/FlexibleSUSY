@@ -193,7 +193,7 @@ void SLHA_io::set_block(const std::string& name, double value,
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n'
       << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
 
@@ -206,7 +206,7 @@ void SLHA_io::set_block(const std::string& name, const softsusy::DoubleMatrix& m
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)
@@ -224,7 +224,7 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)

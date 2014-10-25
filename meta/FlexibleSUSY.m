@@ -57,6 +57,7 @@ EDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
+ExtraSLHAOutputBlocks = {};
 
 (* precision of pole mass calculation *)
 DefaultPoleMassPrecision = MediumPrecision;
@@ -216,6 +217,9 @@ CheckModelFileSettings[] :=
              ];
            If[Head[FlexibleSUSY`TreeLevelEWSBSolution] =!= List,
               FlexibleSUSY`TreeLevelEWSBSolution = {};
+             ];
+           If[Head[FlexibleSUSY`ExtraSLHAOutputBlocks] =!= List,
+              FlexibleSUSY`ExtraSLHAOutputBlocks = {};
              ];
           ];
 
@@ -666,7 +670,8 @@ WriteMakefileModule[rgeFile_List, files_List] :=
           ];
 
 WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
-                    lesHouchesInputParameters_List, files_List] :=
+                    lesHouchesInputParameters_List, extraSLHAOutputBlocks_List,
+                    files_List] :=
     Module[{k, particles, susyParticles, smParticles,
             fillSpectrumVectorWithSusyParticles = "",
             fillSpectrumVectorWithSMParticles = "",
@@ -678,6 +683,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
+            writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhyicalParameters,
             convertMixingsToSLHAConvention = "",
             numberOfDRbarBlocks, drBarBlockNames},
@@ -704,6 +710,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
            writeSLHAExtparBlock = WriteOut`WriteSLHAExtparBlock[extpar];
+           writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
@@ -727,6 +734,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
+                            "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@numberOfDRbarBlocks@"            -> ToString[numberOfDRbarBlocks],
                             "@drBarBlockNames@"                -> WrapLines[drBarBlockNames],
@@ -1008,6 +1016,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters,
+            extraSLHAOutputBlocks,
 	    vertexRules, vertexRuleFileName,
 	    Lat$massMatrices},
            (* check if SARAH`Start[] was called *)
@@ -1254,6 +1263,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Parameters`SetOutputParameters[allOutputParameters];
 
+           extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
+               FlexibleSUSY`ExtraSLHAOutputBlocks, Parameters`GetOutputParameters[]];
+
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];
            WriteConvergenceTesterClass[allParticles,
@@ -1269,7 +1281,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                                MINPAR, EXTPAR,
-                               lesHouchesInputParameters,
+                               lesHouchesInputParameters, extraSLHAOutputBlocks,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_info.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "info.cpp.in"}],
