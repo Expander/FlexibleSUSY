@@ -247,11 +247,13 @@ void svd_errbd
     int INFO;
     if (u_errbd) {
 	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
-	*u_errbd = *s_errbd / RCOND;
+	u_errbd->fill(*s_errbd);
+	*u_errbd /= RCOND;
     }
     if (v_errbd) {
 	ddisna_('R', M, N, s.data(), RCOND.data(), INFO);
-	*v_errbd = *s_errbd / RCOND;
+	v_errbd->fill(*s_errbd);
+	*v_errbd /= RCOND;
     }
 }
 
@@ -301,7 +303,8 @@ void svd_errbd
     int INFO;
     if (u_errbd) {
 	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
-	*u_errbd = *s_errbd / RCOND;
+	u_errbd->fill(*s_errbd);
+	*u_errbd /= RCOND;
     }
 }
 
@@ -395,7 +398,8 @@ void diagonalize_hermitian_errbd
     Eigen::Array<double, N, 1> RCONDZ;
     int INFO;
     ddisna_('E', N, N, w.data(), RCONDZ.data(), INFO);
-    *z_errbd = *w_errbd / RCONDZ;
+    z_errbd->fill(*w_errbd);
+    *z_errbd /= RCONDZ;
 }
 
 /**
