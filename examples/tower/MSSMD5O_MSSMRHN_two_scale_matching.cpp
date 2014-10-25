@@ -74,7 +74,8 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
 	      CompareSpectrum(vSpectrum));
     uh.transpose() *= p.inverse();
     Eigen::Matrix3d UPMNS = uh.adjoint().real();
-    Eigen::Vector3d YvDiagInv = 1 / YvDiag.array();
+    Eigen::Vector3d YvDiagInv(1, 1, 1);
+    YvDiagInv.array() /= YvDiag.array();
     Eigen::Matrix3d YvInv = UPMNS * YvDiagInv.asDiagonal();
 
     Mv = (YvInv.transpose() * WOp * YvInv).inverse();
