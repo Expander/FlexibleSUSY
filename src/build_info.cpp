@@ -59,6 +59,7 @@ void print_version_info(std::ostream& ostr)
 
    ostr <<
       "FlexibleSUSY version:            " FLEXIBLESUSY_VERSION "\n"
+      "FlexibleSUSY git commit:         " GIT_COMMIT "\n"
       "SARAH version:                   " SARAH_VERSION "\n"
       "Mathematica version:             " << MATHEMATICA_VERSION << "\n"
       "Boost version:                   " << boost_major << '.' << boost_minor
