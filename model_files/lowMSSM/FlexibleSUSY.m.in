@@ -37,12 +37,21 @@ UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 
 ExtraSLHAOutputBlocks = {
-   {ALPHA, {{Null, ArcCos[Pole[ZH[1,2]]]}}},
+   {ALPHA, {{ArcCos[Pole[ZH[1,2]]]}}},
    {HMIX , {{1, \[Mu]},
             {2, vu / vd},
             {3, Sqrt[vu^2 + vd^2]},
-            {4, M[Ah[2]]},
+            {4, M[Ah[2]]^2},
             {101, B[\[Mu]]},
             {102, vd},
-            {103, vu} } }
+            {103, vu} } },
+   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
+            {2, 2, T[Yu][2,2] / Yu[2,2]},
+            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
+   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
+            {2, 2, T[Yd][2,2] / Yd[2,2]},
+            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
+   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
+            {2, 2, T[Ye][2,2] / Ye[2,2]},
+            {3, 3, T[Ye][3,3] / Ye[3,3]} } }
 };

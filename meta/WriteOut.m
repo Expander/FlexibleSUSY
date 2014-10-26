@@ -254,6 +254,20 @@ WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_,
            exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
           ];
 
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
+    Module[{parStr, parVal, idx1Str, idx2Str},
+           parStr = CConversion`RValueToCFormString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                      Parameters`GetOutputParameters[]],
+                                            Global`MODELPARAMETER]];
+           idx1Str = ToString[idx1];
+           idx2Str = ToString[idx2];
+           (* result *)
+           "      << FORMAT_MIXING_MATRIX(" <> idx1Str <> ", " <> idx2Str <>
+           ", (" <> parVal <> "), \"" <> parStr <> "\")" <> "\n"
+          ];
+
 WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
     Module[{parStr, parVal, pdgStr},
            parStr = CConversion`RValueToCFormString[par];
@@ -274,7 +288,7 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
            "), \"" <> parStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_, pdg_ /; pdg === Null}] :=
+WriteSLHABlockEntry[{par_}] :=
     Module[{parStr, parVal},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
@@ -322,7 +336,9 @@ WriteSLHAModelParametersBlocks[] :=
 WriteExtraSLHAOutputBlock[outputBlocks_List] :=
     Module[{result = "", reformed},
            ReformeBlocks[{block_, tuples_List}] := {block, ReformeBlocks /@ tuples};
-           ReformeBlocks[{idx_, expr_}] := {expr, idx};
+           ReformeBlocks[{expr_}]               := {expr};
+           ReformeBlocks[{idx_, expr_}]         := {expr, idx};
+           ReformeBlocks[{idx1_, idx2_, expr_}] := {expr, idx1, idx2};
            reformed = ReformeBlocks /@ outputBlocks;
            (result = result <> WriteSLHABlock[#])& /@ reformed;
            Return[result];
