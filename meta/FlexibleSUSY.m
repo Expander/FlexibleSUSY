@@ -1264,7 +1264,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Parameters`SetOutputParameters[allOutputParameters];
 
            extraSLHAOutputBlocks = Parameters`DecreaseIndexLiterals[
-               FlexibleSUSY`ExtraSLHAOutputBlocks, Parameters`GetOutputParameters[]];
+               FlexibleSUSY`ExtraSLHAOutputBlocks,
+               Join[Parameters`GetOutputParameters[], Parameters`GetModelParameters[]]
+           ];
 
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];
