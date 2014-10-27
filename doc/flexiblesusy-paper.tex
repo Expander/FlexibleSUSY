@@ -1848,13 +1848,41 @@ one-loop mass matrix $m_{f,1L}(p^2)$.  However, since $m_{f,1L}(p^2)$
 depends on the momentum $p$, an iteration over $p$ must be performed.
 Since this iteration can be very time consuming for large field
 multiplets, \fs provides two approximative procedures with a shorter
-run-time.  The used procedure can be set in the model file for each
-field.  These approximations work as follows:
+run-time in addition to the iterative procedure.  In the \fs model
+file the two approximative procedures are called \code{LowPrecision}
+and \code{MediumPrecision}.  The iterative procedure is called
+\code{HighPrecision}.  The procedure to be used can be set in the
+model file for each field.  The default setting is
+%
+\begin{lstlisting}
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+\end{lstlisting}
+%
+In the variable \code{DefaultPoleMassPrecision} the default pole mass
+calculation precision to be used for all particles is selected.
+Possible values are \code{LowPrecision}, \code{MediumPrecision} and
+\code{HighPrecision}.  The values \code{LowPrecision} and
+\code{MediumPrecision} correspond to the two approximations described
+below and \code{HighPrecision} corresponds to the iterative
+determination of the pole masses.  In the variables
+\code{HighPoleMassPrecision}, \code{MediumPoleMassPrecision} and
+\code{LowPoleMassPrecision} the pole mass calculation precision can be
+changed for individual particles.  The settings in these variables
+overwrite the setting in \code{DefaultPoleMassPrecision} for these
+particles.  In the above example the pole masses of all particles are
+calculated with \code{MediumPrecision}, except for the Higgs boson
+pole masses, which are calculated with the iterative procedure
+(\code{HighPrecision}).
+
+The three different pole mass calculation procedures work as follows:
 %
 \begin{itemize}
-\item \code{LowPoleMassPrecision}: This option provides the
-  lowest precision but is also the fastest one.  Here the one-loop
-  mass matrix $m_{f,1L}^\text{low}$ is calculated exactly once as
+\item \code{LowPrecision}: This option provides the lowest precision
+  but is also the fastest one.  Here the one-loop mass matrix
+  $m_{f,1L}^\text{low}$ is calculated exactly once as
 %
   \begin{align}
     \forall i,j: (m_{f,1L}^\text{low})_{ij} = (m_{f,1L}(p^2 = m_{f_i}
@@ -1864,12 +1892,19 @@ field.  These approximations work as follows:
   where $m_{f_i}$ is the $i$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, $m_{f,1L}^\text{low}$ is diagonalized and
   the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
-  This method neglects what are formally of two-loop order.  This
-  method is imprecise if the self-energy corrections to the mass
-  matrix are large or the tree-level mass spectrum of the multiplet is
-  very split.
+  This method neglects terms of the form
+  %
+  \begin{align}
+    \left[(m_{f_k}^\pole)^2 - m_{f_i}m_{f_j}\right]
+    \left.\frac{\partial m_{f,1L}(p^2)}{\partial
+        p^2}\right|_{p^2=m_{f_i}m_{f_j}} ,
+  \end{align}
+  %
+  which are formally of two-loop order.  The method is imprecise if
+  the self-energy corrections to the mass matrix are large or the
+  tree-level mass spectrum of the multiplet is very split.
 
-\item \code{MediumPoleMassPrecision} (default): This option
+\item \code{MediumPrecision} (default): This option
   provides calculation with medium precision with a medium execution
   time.  Here the one-loop mass matrix $m_{f,1L}^\text{medium}$ is
   calculated $n$ times as
@@ -1882,16 +1917,25 @@ field.  These approximations work as follows:
   where $m_{f_k}$ is the $k$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, each mass matrix
   $(m_{f,1L}^\text{medium})^{(k)}$ is diagonalized and the $k$th
-  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.  This method
-  is imprecise if the self-energy corrections to the mass matrix are
-  large.
+  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.  Thereby for
+  the $k$th eigenvalue two-loop terms of the form
+  %
+  \begin{align}
+    \left[(m_{f_k}^\pole)^2 - m_{f_k}^2\right] \left.\frac{\partial
+        m_{f,1L}(p^2)}{\partial p^2}\right|_{p^2=m_{f_k}^2}
+  \end{align}
+  %
+  are neglected.  This method is imprecise if the self-energy
+  corrections to the mass matrix are large.  Note, that this method is
+  used in Softsusy to calculate the pole masses of the non-Higgs
+  fields.
 
-\item \code{HighPoleMassPrecision}: This option solves
+\item \code{HighPrecision}: This option solves
   Eq.~\eqref{eq:pole-mass-def} exactly by iterating over the momentum
   $p$.  It therefore provides the determination of the pole masses
   with highest precision, but has also the highest execution time.
   Here the one-loop mass matrix $m_{f,1L}^\text{high}$ is diagonalized
-  $n$ times, as in the case of \code{MediumPoleMassPrecision},
+  $n$ times, as in the case of \code{MediumPrecision},
   resulting in $n$ pole masses $m_{f_k}^\pole$ ($k = 1,\ldots,n$).
   Afterwards, the diagonalization is repeated, this time using the
   calculated pole masses $m_{f_k}^\pole$ for the momentum calculation
