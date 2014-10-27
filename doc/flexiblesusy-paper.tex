@@ -1943,6 +1943,25 @@ The three different pole mass calculation procedures work as follows:
   reached.
 \end{itemize}
 %
+A numerical comparison of the three different methods for a specific
+CMSSM parameter point can be found in
+\tabref{tab:pole-mass-precision-comparison}.  One finds that (i) the
+calculated lightest CP-even Higgs pole mass is sensitive to the chosen
+pole mass calculation method due to the large loop corrections.
+Especially, if two-loop contributions to the Higgs tadpoles and
+self-energies are added, the two approximations \code{LowPrecision}
+and \code{MediumPrecision} must not be used, because they neglect
+terms of two-loop order.  (ii) Since the gluino does not mix with
+other particles, there is no difference between \code{LowPrecision}
+and \code{MediumPrecision}.  Not neglecting the two-loop terms by
+using \code{HighPrecision} changes the gluino mass about $1\unit{\%}$.
+(iii) Since the up-type squarks form a $6$-plet, the calculation of
+their pole masses is dramatically increased from $2.57\unit{ms}$ to
+$60.9\unit{ms}$ between \code{LowPrecision} and \code{HighPrecision}.
+However, since the change in the lightest up-type squark mass between
+the three different methods is only of the order $\unit{0.4\%}$, one
+can consider calculating then with \code{MediumPrecision} only.
+%
 \begin{table}[tbh]
   \centering
   \begin{tabular}{llll}
@@ -1965,13 +1984,14 @@ The three different pole mass calculation procedures work as follows:
     & $8734\unit{GeV}$ ($60.9\unit{ms}$) \\
     \bottomrule
   \end{tabular}
-  \caption{Comparison of pole masses with different used calculation
-    precisions for the CMSSM with $m_0=8\unit{TeV}$, $M_{1/2}=A_0=5\unit{TeV}$,
+  \caption{Comparison of pole masses with different calculation
+    methods for the CMSSM with $m_0=8\unit{TeV}$, $M_{1/2}=A_0=5\unit{TeV}$,
     $\tan\beta=20$, $\sign\mu=+1$.  In brackets the time used to calculate
     the pole masses of the whole multiplet is given.}
   \label{tab:pole-mass-precision-comparison}
 \end{table}
 %
+
 If higher accuracy is required, two-loop corrections to the
 self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
 in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
