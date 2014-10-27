@@ -1943,6 +1943,35 @@ The three different pole mass calculation procedures work as follows:
   reached.
 \end{itemize}
 %
+\begin{table}[tbh]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+    & \code{LowPrecision}
+    & \code{MediumPrecision}
+    & \code{HighPrecision}\\
+    \midrule
+    $m_h$
+    & $1441\unit{GeV}$ ($0.96\unit{ms}$)
+    & $128\unit{GeV}$ ($2.532\unit{ms}$)
+    & $126\unit{GeV}$ ($9.787\unit{ms}$) \\
+    $m_{\tilde{g}}$
+    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
+    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
+    & $10251\unit{GeV}$ ($0.408\unit{ms}$) \\
+    $m_{\tilde{u}_1}$
+    & $8702\unit{GeV}$ ($2.5\unit{ms}$)
+    & $8714\unit{GeV}$ ($15.695\unit{ms}$)
+    & $8734\unit{GeV}$ ($60.874\unit{ms}$) \\
+    \bottomrule
+  \end{tabular}
+  \caption{Comparison of pole masses with different used calculation
+    precisions for the CMSSM with $m_0=8\unit{TeV}$, $M_{1/2}=A_0=5\unit{TeV}$,
+    $\tan\beta=20$, $\sign\mu=+1$.  In brackets the time used to calculate
+    the pole masses of the whole multiplet is given.}
+  \label{tab:pole-mass-precision-comparison}
+\end{table}
+%
 If higher accuracy is required, two-loop corrections to the
 self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
 in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
