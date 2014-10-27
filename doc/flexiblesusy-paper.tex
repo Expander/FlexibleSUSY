@@ -1456,11 +1456,56 @@ level as
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
 VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
-tadpole diagram of $H_i$.  The electroweak symmetry breaking
-conditions \eqref{eq:one-loop-ewsb-eq} are solved simultaneously using
-the iterative multi-dimensional root finder algorithm
-\code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific Library
-(GSL).  If no root can be found, the
+tadpole diagram of $H_i$.  Already at the tree-level ($t_i = 0$) Eqs.\
+\eqref{eq:one-loop-ewsb-eq} can have multiple solutions, depending on
+which paramters are chosen to be fixed by theses equations.  For
+example in the real MSSM Eqs.\ \eqref{eq:one-loop-ewsb-eq} can only
+determine $|\mu|$, while the sign of $\mu$ is not fixed.  Currently
+\fs handles only real model parameters and renormalizable theories,
+which restricts the number of possible multiple solutions of Eqs.\
+\eqref{eq:one-loop-ewsb-eq} to be less or equal to four times the
+number of equations.  In some cases, as for example in the real MSSM,
+% where $\mu$ is chosen to be fixed by the EWSB equations
+these different solutions might be related by one or more free global
+signs in the form
+%
+\begin{align}
+  \mu = \sign\mu \cdot \sqrt{\ldots} .
+\end{align}
+%
+\fs recognizes such cases and introduces these global signs as
+additional free parameters.  The case of the real MSSM, where only
+$|\mu|$ is fixed by the EWSB equations, is therefore handled
+automatically.  If, however, the different solutions are not related
+by global signs, then \fs writes all solutions to the file
+\code{models/<model>/<model>_tree_level_EWSB_solution.m}.  The user
+has then the option to pick a particular solution by setting it in the
+\code{TreeLevelEWSBSolution} variable in the model file.  This is for
+example done in the $Z_3$-violating NMSSM (\code{SMSSM}), where $\mu$
+is chosen to be fixed by the EWSB equations: There the tree-level
+solution for $\mu$ has the form
+%
+\begin{align}
+  \mu = -\frac{v_s \lambda}{\sqrt{2}} + \sign X \cdot \sqrt{\ldots}
+\end{align}
+%
+with a non-global $\sign X$.  In this model the user can parametrize
+the tree-level solution in terms of $\sign X$ in the
+\code{TreeLevelEWSBSolution} variable and add $\sign X$ by hand to the
+list of free input parameters, see
+\code{model_files/SMSSM/FlexibleSUSY.m.in} for an example.  If the
+user decides to not pick a particular solution by leaving the variable
+\code{TreeLevelEWSBSolution} empty, \fs tries to find a solution to
+the tree-level EWSB equations numerically via an iteration.  In this
+case, however, the user does not have the option to chose between the
+different solutions.
+
+%
+If a solution of the tree-level EWSB equations has been found, the
+one-loop equations \eqref{eq:one-loop-ewsb-eq} are solved
+simultaneously using the iterative multi-dimensional root finder
+algorithm \code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific
+Library (GSL).  If no root can be found, the
 \code{gsl_multiroot_fsolver_hybrids} algorithm is tried as
 alternative, which uses a variable step size but might be a little
 slower.
