@@ -47,7 +47,7 @@ namespace flexiblesusy {
       /// SLHA number formatter
       const boost::format number_formatter("         %16.8E   # %s\n");
       /// SLHA scale formatter
-      const boost::format scale_formatter("%16.8E");
+      const boost::format scale_formatter("%9.8E");
       /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
       const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
       /// SLHA line formatter for the SPINFO block entries
