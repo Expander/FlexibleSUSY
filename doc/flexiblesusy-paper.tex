@@ -345,14 +345,20 @@ been found the pole mass spectrum is eventually calculated using full
 one-loop self-energies (and leading two-loop Higgs self-energy
 contributions for the MSSM and NMSSM).
 
-The standard input and output of the generated code is given in SLHA
-format and an extension of this to incorporate new blocks for models
-which go beyond the MSSM and NMSSM. We use the well known SLHAea
-\cite{slhaea} to create these SLHA files and the extra blocks may be chosen
-by the user. Since the SLHA standard is intended precisely for the
-purpose, MSSM and NMSSM codes should be compliant with this, and we
-have tested that HDECAY\cite{hdecay} can understand the SLHA output of
-FlexibleSUSY.
+The standard input and output of the generated code is given in
+SLHA-style format where the user has control of the Block names by
+editing the SARAH files and may also add extra blocks in the
+FlexibleSUSY.m model file which is decribed in section 5. We use the
+well known SLHAea \cite{slhaea} to create these SLHA files and with a
+simple modifications these can be passed directly to another code
+which uses them as an alternative to writing out the SLHA file. Since the
+SLHA standard is intended precisely for the purpose, MSSM and NMSSM
+codes should be compliant with this.  We have tested that the versions
+of HDECAY\cite{hdecay} and SDECAY\cite{sdecay} inside SUSY-HIT
+\cite{susyhit} can understand the SLHA output of FlexibleSUSY and give
+matching output to that from SOFTSUSY.
+
+
 
 For models which go beyond this there is no fixed standard for all
 names.  Nonetheless extending the SLHA framework and allowing user
@@ -3729,7 +3735,24 @@ Phys.\ B {\bf 453} (1995) 17;  A.~Djouadi, J.~Kalinowski and M.~Spira, Comput.
 Phys. Commun. {\bf 108} (1998) 56; J.~M.~Butterworth, A.~Arbey, L.~Basso, S.~Belov, A.~Bharucha, F.~Braam, A.~Buckley and M.~Campanelli {\it et al.},
   %``The Tools and Monte Carlo working group Summary Report,''
   arXiv:1003.1643 [hep-ph].
+%\cite{Muhlleitner:2003vg}
+\bibitem{sdecay} 
+  M.~Muhlleitner, A.~Djouadi and Y.~Mambrini,
+  %``SDECAY: A Fortran code for the decays of the supersymmetric particles in the MSSM,''
+  Comput.\ Phys.\ Commun.\  {\bf 168}, 46 (2005)
+  [hep-ph/0311167].
+  %%CITATION = HEP-PH/0311167;%%
+  %235 citations counted in INSPIRE as of 29 Oct 2014
 
+
+%\cite{Djouadi:2006bz}
+\bibitem{susyhit} 
+  A.~Djouadi, M.~M.~Muhlleitner and M.~Spira,
+  %``Decays of supersymmetric particles: The Program SUSY-HIT (SUspect-SdecaY-Hdecay-InTerface),''
+  Acta Phys.\ Polon.\ B {\bf 38}, 635 (2007)
+  [hep-ph/0609292].
+  %%CITATION = HEP-PH/0609292;%%
+  %238 citations counted in INSPIRE as of 29 Oct 2014
 
 %\cite{Degrassi:2009yq}
 \bibitem{Degrassi:2009yq} 
