@@ -37,13 +37,13 @@ void svd_eigen
 (const Eigen::Matrix<Scalar, M, N>& m,
  Eigen::Array<double, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
- Eigen::Matrix<Scalar, N, N>& v)
+ Eigen::Matrix<Scalar, N, N>& vh)
 {
     Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N> >
 	svd(m, Eigen::ComputeFullU | Eigen::ComputeFullV);
     s = svd.singularValues();
     u = svd.matrixU();
-    v = svd.matrixV();
+    vh = svd.matrixV().adjoint();
 }
 
 template<class Scalar, int M, int N>
@@ -212,7 +212,6 @@ void svd
  Eigen::Matrix<Scalar, 3, 3>& vh)
 {
     svd_eigen(m, s, u, vh);
-    vh.adjointInPlace();
 }
 
 template<class Scalar>
@@ -223,7 +222,6 @@ void svd
  Eigen::Matrix<Scalar, 2, 2>& vh)
 {
     svd_eigen(m, s, u, vh);
-    vh.adjointInPlace();
 }
 
 template<class Scalar, int M, int N>
