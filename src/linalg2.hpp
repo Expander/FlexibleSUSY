@@ -36,36 +36,26 @@ template<class Scalar, int M, int N>
 void svd_eigen
 (const Eigen::Matrix<Scalar, M, N>& m,
  Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u,
- Eigen::Matrix<Scalar, N, N>& vh)
+ Eigen::Matrix<Scalar, M, M> *u,
+ Eigen::Matrix<Scalar, N, N> *vh)
 {
     Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N> >
-	svd(m, Eigen::ComputeFullU | Eigen::ComputeFullV);
+	svd(m, (u ? Eigen::ComputeFullU : 0) | (vh ? Eigen::ComputeFullV : 0));
     s = svd.singularValues();
-    u = svd.matrixU();
-    vh = svd.matrixV().adjoint();
-}
-
-template<class Scalar, int M, int N>
-void svd_eigen
-(const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u)
-{
-    Eigen::JacobiSVD<Eigen::Matrix<Scalar, M, N> > svd(m, Eigen::ComputeFullU);
-    s = svd.singularValues();
-    u = svd.matrixU();
+    if (u)  *u  = svd.matrixU();
+    if (vh) *vh = svd.matrixV().adjoint();
 }
 
 template<class Scalar, int N>
 void hermitian_eigen
 (const Eigen::Matrix<Scalar, N, N>& m,
  Eigen::Array<double, N, 1>& w,
- Eigen::Matrix<Scalar, N, N>& z)
+ Eigen::Matrix<Scalar, N, N> *z)
 {
-    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar,N,N> > es(m);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar,N,N> >
+	es(m, z ? Eigen::ComputeEigenvectors : Eigen::EigenvaluesOnly);
     w = es.eigenvalues();
-    z = es.eigenvectors();
+    if (z) *z = es.eigenvectors();
 }
 
 extern "C" void zgesvd_
@@ -99,43 +89,33 @@ template<int M, int N>							\
 void svd_lapack								\
 (const Eigen::Matrix<t, M, N>& m,					\
  Eigen::Array<double, MIN_(M, N), 1>& s,				\
- Eigen::Matrix<t, M, M>& u,						\
- Eigen::Matrix<t, N, N>& vh)						\
+ Eigen::Matrix<t, M, M> *u  = 0,					\
+ Eigen::Matrix<t, N, N> *vh = 0)					\
 {									\
-    call_lapack_svd(t, f, 'A', vh.data(), __VA_ARGS__);			\
-}									\
-									\
-template<int M, int N>							\
-void svd_lapack								\
-(const Eigen::Matrix<t, M, N>& m,					\
- Eigen::Array<double, MIN_(M, N), 1>& s,				\
- Eigen::Matrix<t, M, M>& u)						\
-{									\
-    call_lapack_svd(t, f, 'N', 0, __VA_ARGS__);				\
-}
-
-#define call_lapack_svd(t, f, jobvt, vt, ...)				\
-    const     char JOBU  = 'A';						\
-    const     char JOBVT = (jobvt);					\
+    const     char JOBU  = u  ? 'A' : 'N';				\
+    const     char JOBVT = vh ? 'A' : 'N';				\
     Eigen::Matrix<t, M, N> A = m;					\
     const     int LDA   = M;						\
+              t   *U    = u ? u->data() : 0;				\
     const     int LDU   = M;						\
+              t   *VT   = vh ? vh->data() : 0;				\
     const     int LDVT  = N;						\
     const     int LWORK = get_lwork(__VA_ARGS__,);			\
     Eigen::Array<t, LWORK, 1> WORK;					\
     decl_rwork(__VA_ARGS__);						\
     int INFO;								\
-    f(JOBU, JOBVT, M, N, A.data(), LDA, s.data(), u.data(), LDU,	\
-      (vt), LDVT, WORK.data(), LWORK, put_rwork(__VA_ARGS__) INFO);
+    f(JOBU, JOBVT, M, N, A.data(), LDA, s.data(), U, LDU, VT, LDVT,	\
+      WORK.data(), LWORK, put_rwork(__VA_ARGS__) INFO);			\
+}
 
 #define def_hermitian_lapack(s, f, ...)					\
 template<int N>								\
 void hermitian_lapack							\
 (const Eigen::Matrix<s, N, N>& m,					\
  Eigen::Array<double, N, 1>& w,						\
- Eigen::Matrix<s, N, N>& z)						\
+ Eigen::Matrix<s, N, N> *z = 0)						\
 {									\
-    const     char JOBZ = 'V';						\
+    const     char JOBZ = z ? 'V' : 'N';				\
     const     char UPLO = 'L';						\
     Eigen::Matrix<s, N, N> A = m;					\
     const     int LDA   = N;						\
@@ -145,7 +125,7 @@ void hermitian_lapack							\
     int INFO;								\
     f(JOBZ, UPLO, N, A.data(), LDA, w.data(), WORK.data(), LWORK,	\
       put_rwork(__VA_ARGS__) INFO);					\
-    z = A;								\
+    if (z) *z = A;							\
 }
 
 #define get_lwork(lwork, ...) (lwork)
@@ -172,6 +152,67 @@ def_hermitian_lapack(double, dsyev_, 3*N-1)
 
 
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
+
+template<class Scalar, int M, int N>
+void svd_internal
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<Scalar, M, M> *u,
+ Eigen::Matrix<Scalar, N, N> *vh)
+{
+    svd_lapack(m, s, u, vh);
+}
+
+template<class Scalar>
+void svd_internal
+(const Eigen::Matrix<Scalar, 3, 3>& m,
+ Eigen::Array<double, 3, 1>& s,
+ Eigen::Matrix<Scalar, 3, 3> *u,
+ Eigen::Matrix<Scalar, 3, 3> *vh)
+{
+    svd_eigen(m, s, u, vh);
+}
+
+template<class Scalar>
+void svd_internal
+(const Eigen::Matrix<Scalar, 2, 2>& m,
+ Eigen::Array<double, 2, 1>& s,
+ Eigen::Matrix<Scalar, 2, 2> *u,
+ Eigen::Matrix<Scalar, 2, 2> *vh)
+{
+    svd_eigen(m, s, u, vh);
+}
+
+template<class Scalar, int M, int N>
+void svd_errbd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Matrix<Scalar, M, M> *u  = 0,
+ Eigen::Matrix<Scalar, N, N> *vh = 0,
+ double *s_errbd = 0,
+ Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
+ Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
+{
+    svd_internal(m, s, u, vh);
+
+    // see http://www.netlib.org/lapack/lug/node96.html
+    if (!s_errbd) return;
+    const double EPSMCH = std::numeric_limits<double>::epsilon();
+    *s_errbd = EPSMCH * s[0];
+
+    Eigen::Array<double, MIN_(M, N), 1> RCOND;
+    int INFO;
+    if (u_errbd) {
+	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
+	u_errbd->fill(*s_errbd);
+	*u_errbd /= RCOND;
+    }
+    if (v_errbd) {
+	ddisna_('R', M, N, s.data(), RCOND.data(), INFO);
+	v_errbd->fill(*s_errbd);
+	*v_errbd /= RCOND;
+    }
+}
 
 /**
  * Singular value decomposition of M-by-N matrix m such that
@@ -201,115 +242,13 @@ void svd
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh)
 {
-    svd_lapack(m, s, u, vh);
-}
-
-template<class Scalar>
-void svd
-(const Eigen::Matrix<Scalar, 3, 3>& m,
- Eigen::Array<double, 3, 1>& s,
- Eigen::Matrix<Scalar, 3, 3>& u,
- Eigen::Matrix<Scalar, 3, 3>& vh)
-{
-    svd_eigen(m, s, u, vh);
-}
-
-template<class Scalar>
-void svd
-(const Eigen::Matrix<Scalar, 2, 2>& m,
- Eigen::Array<double, 2, 1>& s,
- Eigen::Matrix<Scalar, 2, 2>& u,
- Eigen::Matrix<Scalar, 2, 2>& vh)
-{
-    svd_eigen(m, s, u, vh);
-}
-
-template<class Scalar, int M, int N>
-void svd_errbd
-(const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u,
- Eigen::Matrix<Scalar, N, N>& vh,
- double *s_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
-{
-    svd(m, s, u, vh);
-
-    // see http://www.netlib.org/lapack/lug/node96.html
-    if (!s_errbd) return;
-    const double EPSMCH = std::numeric_limits<double>::epsilon();
-    *s_errbd = EPSMCH * s[0];
-
-    Eigen::Array<double, MIN_(M, N), 1> RCOND;
-    int INFO;
-    if (u_errbd) {
-	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
-	u_errbd->fill(*s_errbd);
-	*u_errbd /= RCOND;
-    }
-    if (v_errbd) {
-	ddisna_('R', M, N, s.data(), RCOND.data(), INFO);
-	v_errbd->fill(*s_errbd);
-	*v_errbd /= RCOND;
-    }
-}
-
-template<class Scalar, int M, int N>
-void svd
-(const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u)
-{
-    svd_lapack(m, s, u);
-}
-
-template<class Scalar>
-void svd
-(const Eigen::Matrix<Scalar, 3, 3>& m,
- Eigen::Array<double, 3, 1>& s,
- Eigen::Matrix<Scalar, 3, 3>& u)
-{
-    svd_eigen(m, s, u);
-}
-
-template<class Scalar>
-void svd
-(const Eigen::Matrix<Scalar, 2, 2>& m,
- Eigen::Array<double, 2, 1>& s,
- Eigen::Matrix<Scalar, 2, 2>& u)
-{
-    svd_eigen(m, s, u);
-}
-
-template<class Scalar, int M, int N>
-void svd_errbd
-(const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u,
- double *s_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0)
-{
-    svd(m, s, u);
-
-    // see http://www.netlib.org/lapack/lug/node96.html
-    if (!s_errbd) return;
-    const double EPSMCH = std::numeric_limits<double>::epsilon();
-    *s_errbd = EPSMCH * s[0];
-
-    Eigen::Array<double, MIN_(M, N), 1> RCOND;
-    int INFO;
-    if (u_errbd) {
-	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
-	u_errbd->fill(*s_errbd);
-	*u_errbd /= RCOND;
-    }
+    svd_errbd(m, s, &u, &vh);
 }
 
 /**
  * Same as svd(m, s, u, vh) except that an approximate error bound for
- * the singular values is returned.  The error bound is estimated
- * following the method presented at
+ * the singular values is returned as well.  The error bound is
+ * estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -324,13 +263,13 @@ void svd
  Eigen::Matrix<Scalar, N, N>& vh,
  double& s_errbd)
 {
-    svd_errbd(m, s, u, vh, &s_errbd);
+    svd_errbd(m, s, &u, &vh, &s_errbd);
 }
 
 /**
  * Same as svd(m, s, u, vh, s_errbd) except that approximate error
- * bounds for the singular vectors are returned.  The error bounds are
- * estimated following the method presented at
+ * bounds for the singular vectors are returned as well.  The error
+ * bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
@@ -349,10 +288,80 @@ void svd
  Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
  Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
 {
-    svd_errbd(m, s, u, vh, &s_errbd, &u_errbd, &v_errbd);
+    svd_errbd(m, s, &u, &vh, &s_errbd, &u_errbd, &v_errbd);
+}
+
+/**
+ * Returns singular values of M-by-N matrix m via s such that
+ * `(s >= 0).all()`.  Elements of s are in descending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ */
+template<class Scalar, int M, int N>
+void svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s)
+{
+    svd_errbd(m, s);
+}
+
+/**
+ * Same as svd(m, s) except that an approximate error bound for the
+ * singular values is returned as well.  The error bound is estimated
+ * following the method presented at
+ * http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of svd(m, s) for the other parameters.
+ */
+template<class Scalar, int M, int N>
+void svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ double& s_errbd)
+{
+    svd_errbd(m, s, 0, 0, &s_errbd);
 }
 
 // Eigen::SelfAdjointEigenSolver seems to be faster than ZHEEV of ATLAS
+
+template<class Scalar, int N>
+void diagonalize_hermitian_internal
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w,
+ Eigen::Matrix<Scalar, N, N> *z)
+{
+    hermitian_eigen(m, w, z);
+}
+
+template<class Scalar, int N>
+void diagonalize_hermitian_errbd
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w,
+ Eigen::Matrix<Scalar, N, N> *z = 0,
+ double *w_errbd = 0,
+ Eigen::Array<double, N, 1> *z_errbd = 0)
+{
+    diagonalize_hermitian_internal(m, w, z);
+
+    // see http://www.netlib.org/lapack/lug/node89.html
+    if (!w_errbd) return;
+    const double EPSMCH = std::numeric_limits<double>::epsilon();
+    double mnorm = std::max(std::abs(w[0]), std::abs(w[N-1]));
+    *w_errbd = EPSMCH * mnorm;
+
+    if (!z_errbd) return;
+    Eigen::Array<double, N, 1> RCONDZ;
+    int INFO;
+    ddisna_('E', N, N, w.data(), RCONDZ.data(), INFO);
+    z_errbd->fill(*w_errbd);
+    *z_errbd /= RCONDZ;
+}
 
 /**
  * Diagonalizes N-by-N hermitian matrix m so that
@@ -373,37 +382,13 @@ void diagonalize_hermitian
  Eigen::Array<double, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z)
 {
-    hermitian_eigen(m, w, z);
-}
-
-template<class Scalar, int N>
-void diagonalize_hermitian_errbd
-(const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
- Eigen::Matrix<Scalar, N, N>& z,
- double *w_errbd = 0,
- Eigen::Array<double, N, 1> *z_errbd = 0)
-{
-    diagonalize_hermitian(m, w, z);
-
-    // see http://www.netlib.org/lapack/lug/node89.html
-    if (!w_errbd) return;
-    const double EPSMCH = std::numeric_limits<double>::epsilon();
-    double mnorm = std::max(std::abs(w[0]), std::abs(w[N-1]));
-    *w_errbd = EPSMCH * mnorm;
-
-    if (!z_errbd) return;
-    Eigen::Array<double, N, 1> RCONDZ;
-    int INFO;
-    ddisna_('E', N, N, w.data(), RCONDZ.data(), INFO);
-    z_errbd->fill(*w_errbd);
-    *z_errbd /= RCONDZ;
+    diagonalize_hermitian_errbd(m, w, &z);
 }
 
 /**
  * Same as diagonalize_hermitian(m, w, z) except that an approximate
- * error bound for the eigenvalues is returned.  The error bound is
- * estimated following the method presented at
+ * error bound for the eigenvalues is returned as well.  The error
+ * bound is estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] w_errbd approximate error bound for the elements of w
@@ -418,13 +403,13 @@ void diagonalize_hermitian
  Eigen::Matrix<Scalar, N, N>& z,
  double& w_errbd)
 {
-    diagonalize_hermitian_errbd(m, w, z, &w_errbd);
+    diagonalize_hermitian_errbd(m, w, &z, &w_errbd);
 }
 
 /**
  * Same as diagonalize_hermitian(m, w, z, w_errbd) except that
- * approximate error bounds for the eigenvectors are returned.  The
- * error bounds are estimated following the method presented at
+ * approximate error bounds for the eigenvectors are returned as well.
+ * The error bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] z_errbd array of approximate error bounds for z
@@ -440,7 +425,44 @@ void diagonalize_hermitian
  double& w_errbd,
  Eigen::Array<double, N, 1>& z_errbd)
 {
-    diagonalize_hermitian_errbd(m, w, z, &w_errbd, &z_errbd);
+    diagonalize_hermitian_errbd(m, w, &z, &w_errbd, &z_errbd);
+}
+
+/**
+ * Returns eigenvalues of N-by-N hermitian matrix m via w.
+ * Elements of w are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m and z
+ * @tparam     N      number of rows and columns in m and z
+ * @param[in]  m      N-by-N matrix to be diagonalized
+ * @param[out] w      array of length N to contain eigenvalues
+ */
+template<class Scalar, int N>
+void diagonalize_hermitian
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w)
+{
+    diagonalize_hermitian_errbd(m, w);
+}
+
+/**
+ * Same as diagonalize_hermitian(m, w) except that an approximate
+ * error bound for the eigenvalues is returned as well.  The error
+ * bound is estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node89.html.
+ *
+ * @param[out] w_errbd approximate error bound for the elements of w
+ *
+ * See the documentation of diagonalize_hermitian(m, w) for the other
+ * parameters.
+ */
+template<class Scalar, int N>
+void diagonalize_hermitian
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w,
+ double& w_errbd)
+{
+    diagonalize_hermitian_errbd(m, w, 0, &w_errbd);
 }
 
 struct RephaseOp {
@@ -452,14 +474,16 @@ template<int N>
 void diagonalize_symmetric_errbd
 (const Eigen::Matrix<std::complex<double>, N, N>& m,
  Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
+ Eigen::Matrix<std::complex<double>, N, N> *u = 0,
  double *s_errbd = 0,
  Eigen::Array<double, N, 1> *u_errbd = 0)
 {
-    svd_errbd(m, s, u, s_errbd, u_errbd);
+    svd_errbd(m, s, u, (Eigen::Matrix<std::complex<double>, N, N> *)0,
+	      s_errbd, u_errbd);
+    if (!u) return;
     Eigen::Array<std::complex<double>, N, 1> diag =
-	(u.adjoint() * m * u.conjugate()).diagonal();
-    u *= diag.unaryExpr(RephaseOp()).matrix().asDiagonal();
+	(u->adjoint() * m * u->conjugate()).diagonal();
+    *u *= diag.unaryExpr(RephaseOp()).matrix().asDiagonal();
 }
 
 /**
@@ -480,13 +504,13 @@ void diagonalize_symmetric
  Eigen::Array<double, N, 1>& s,
  Eigen::Matrix<std::complex<double>, N, N>& u)
 {
-    diagonalize_symmetric_errbd(m, s, u);
+    diagonalize_symmetric_errbd(m, s, &u);
 }
 
 /**
  * Same as diagonalize_symmetric(m, s, u) except that an approximate
- * error bound for the singular values is returned.  The error bound
- * is estimated following the method presented at
+ * error bound for the singular values is returned as well.  The error
+ * bound is estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -501,14 +525,14 @@ void diagonalize_symmetric
  Eigen::Matrix<std::complex<double>, N, N>& u,
  double& s_errbd)
 {
-    diagonalize_symmetric_errbd(m, s, u, &s_errbd);
+    diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
 
 /**
  * Same as diagonalize_symmetric(m, s, u, s_errbd) except that
- * approximate error bounds for the singular vectors are returned.
- * The error bounds are estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node96.html.
+ * approximate error bounds for the singular vectors are returned as
+ * well.  The error bounds are estimated following the method
+ * presented at http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
  *
@@ -523,7 +547,43 @@ void diagonalize_symmetric
  double& s_errbd,
  Eigen::Array<double, N, 1>& u_errbd)
 {
-    diagonalize_symmetric_errbd(m, s, u, &s_errbd, &u_errbd);
+    diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
+}
+
+/**
+ * Returns singular values of N-by-N complex symmetric matrix m via s
+ * such that `(s >= 0).all()`.  Elements of s are in descending order.
+ *
+ * @tparam     N number of rows and columns in m and u
+ * @param[in]  m N-by-N complex symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ */
+template<int N>
+void diagonalize_symmetric
+(const Eigen::Matrix<std::complex<double>, N, N>& m,
+ Eigen::Array<double, N, 1>& s)
+{
+    diagonalize_symmetric_errbd(m, s);
+}
+
+/**
+ * Same as diagonalize_symmetric(m, s) except that an approximate
+ * error bound for the singular values is returned as well.  The error
+ * bound is estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of diagonalize_symmetric(m, s) for the other
+ * parameters.
+ */
+template<int N>
+void diagonalize_symmetric
+(const Eigen::Matrix<std::complex<double>, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ double& s_errbd)
+{
+    diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
 struct FlipSignOp {
@@ -537,15 +597,15 @@ template<int N>
 void diagonalize_symmetric_errbd
 (const Eigen::Matrix<double, N, N>& m,
  Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
+ Eigen::Matrix<std::complex<double>, N, N> *u = 0,
  double *s_errbd = 0,
  Eigen::Array<double, N, 1> *u_errbd = 0)
 {
     Eigen::Matrix<double, N, N> z;
-    diagonalize_hermitian_errbd(m, s, z, s_errbd, u_errbd);
+    diagonalize_hermitian_errbd(m, s, u ? &z : 0, s_errbd, u_errbd);
     // see http://forum.kde.org/viewtopic.php?f=74&t=62606
-    u = z * s.template cast<std::complex<double> >().
-	unaryExpr(FlipSignOp()).matrix().asDiagonal();
+    if (u) *u = z * s.template cast<std::complex<double> >().
+		unaryExpr(FlipSignOp()).matrix().asDiagonal();
     s = s.abs();
 }
 
@@ -569,13 +629,13 @@ void diagonalize_symmetric
  Eigen::Array<double, N, 1>& s,
  Eigen::Matrix<std::complex<double>, N, N>& u)
 {
-    diagonalize_symmetric_errbd(m, s, u);
+    diagonalize_symmetric_errbd(m, s, &u);
 }
 
 /**
  * Same as diagonalize_symmetric(m, s, u) except that an approximate
- * error bound for the singular values is returned.  The error bound
- * is estimated following the method presented at
+ * error bound for the singular values is returned as well.  The error
+ * bound is estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -590,14 +650,14 @@ void diagonalize_symmetric
  Eigen::Matrix<std::complex<double>, N, N>& u,
  double& s_errbd)
 {
-    diagonalize_symmetric_errbd(m, s, u, &s_errbd);
+    diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
 
 /**
  * Same as diagonalize_symmetric(m, s, u, s_errbd) except that
- * approximate error bounds for the singular vectors are returned.
- * The error bounds are estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node89.html.
+ * approximate error bounds for the singular vectors are returned as
+ * well.  The error bounds are estimated following the method
+ * presented at http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
  *
@@ -612,26 +672,67 @@ void diagonalize_symmetric
  double& s_errbd,
  Eigen::Array<double, N, 1>& u_errbd)
 {
-    diagonalize_symmetric_errbd(m, s, u, &s_errbd, &u_errbd);
+    diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
+}
+
+/**
+ * Returns singular values of N-by-N real symmetric matrix m via s
+ * such that `(s >= 0).all()`.  Order of elements of s is
+ * *unspecified*.
+ *
+ * @tparam     N number of rows and columns of m
+ * @param[in]  m N-by-N real symmetric matrix to be decomposed
+ * @param[out] s array of length N to contain singular values
+ *
+ * @note Use diagonalize_hermitian() unless sign of `s[i]` matters.
+ */
+template<int N>
+void diagonalize_symmetric
+(const Eigen::Matrix<double, N, N>& m,
+ Eigen::Array<double, N, 1>& s)
+{
+    diagonalize_symmetric_errbd(m, s);
+}
+
+/**
+ * Same as diagonalize_symmetric(m, s) except that an approximate
+ * error bound for the singular values is returned as well.  The error
+ * bound is estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node89.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of diagonalize_symmetric(m, s) for the other
+ * parameters.
+ */
+template<int N>
+void diagonalize_symmetric
+(const Eigen::Matrix<double, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ double& s_errbd)
+{
+    diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
 template<class Scalar, int M, int N>
 void reorder_svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
  Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u,
- Eigen::Matrix<Scalar, N, N>& vh,
+ Eigen::Matrix<Scalar, M, M> *u  = 0,
+ Eigen::Matrix<Scalar, N, N> *vh = 0,
  double *s_errbd = 0,
  Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
  Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
 {
     svd_errbd(m, s, u, vh, s_errbd, u_errbd, v_errbd);
     s.reverseInPlace();
-    Eigen::PermutationMatrix<MIN_(M, N)> p;
-    p.setIdentity();
-    p.indices().reverseInPlace();
-    u              *= p;
-    vh.transpose() *= p;
+    if (u || vh) {
+	Eigen::PermutationMatrix<MIN_(M, N)> p;
+	p.setIdentity();
+	p.indices().reverseInPlace();
+	if (u)  *u              *= p;
+	if (vh) vh->transpose() *= p;
+    }
     if (u_errbd) u_errbd->reverseInPlace();
     if (v_errbd) v_errbd->reverseInPlace();
 }
@@ -664,13 +765,13 @@ void reorder_svd
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh)
 {
-    reorder_svd_errbd(m, s, u, vh);
+    reorder_svd_errbd(m, s, &u, &vh);
 }
 
 /**
  * Same as reorder_svd(m, s, u, vh) except that an approximate error
- * bound for the singular values is returned.  The error bound is
- * estimated following the method presented at
+ * bound for the singular values is returned as well.  The error bound
+ * is estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -686,13 +787,13 @@ void reorder_svd
  Eigen::Matrix<Scalar, N, N>& vh,
  double& s_errbd)
 {
-    reorder_svd_errbd(m, s, u, vh, &s_errbd);
+    reorder_svd_errbd(m, s, &u, &vh, &s_errbd);
 }
 
 /**
  * Same as reorder_svd(m, s, u, vh, s_errbd) except that approximate
- * error bounds for the singular vectors are returned.  The error
- * bounds are estimated following the method presented at
+ * error bounds for the singular vectors are returned as well.  The
+ * error bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
@@ -711,20 +812,58 @@ void reorder_svd
  Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
  Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
 {
-    reorder_svd_errbd(m, s, u, vh, &s_errbd, &u_errbd, &v_errbd);
+    reorder_svd_errbd(m, s, &u, &vh, &s_errbd, &u_errbd, &v_errbd);
+}
+
+/**
+ * Returns singular values of M-by-N matrix m via s such that
+ * `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and vh
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ */
+template<class Scalar, int M, int N>
+void reorder_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s)
+{
+    reorder_svd_errbd(m, s);
+}
+
+/**
+ * Same as reorder_svd(m, s) except that an approximate error bound
+ * for the singular values is returned as well.  The error bound is
+ * estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of reorder_svd(m, s) for the other
+ * parameters.
+ */
+template<class Scalar, int M, int N>
+void reorder_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ double& s_errbd)
+{
+    reorder_svd_errbd(m, s, 0, 0, &s_errbd);
 }
 
 template<int N>
 void reorder_diagonalize_symmetric_errbd
 (const Eigen::Matrix<std::complex<double>, N, N>& m,
  Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
+ Eigen::Matrix<std::complex<double>, N, N> *u = 0,
  double *s_errbd = 0,
  Eigen::Array<double, N, 1> *u_errbd = 0)
 {
     diagonalize_symmetric_errbd(m, s, u, s_errbd, u_errbd);
     s.reverseInPlace();
-    u = u.rowwise().reverse().eval();
+    if (u) *u = u->rowwise().reverse().eval();
     if (u_errbd) u_errbd->reverseInPlace();
 }
 
@@ -739,7 +878,7 @@ template<int N>
 void reorder_diagonalize_symmetric_errbd
 (const Eigen::Matrix<double, N, N>& m,
  Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
+ Eigen::Matrix<std::complex<double>, N, N> *u = 0,
  double *s_errbd = 0,
  Eigen::Array<double, N, 1> *u_errbd = 0)
 {
@@ -757,7 +896,7 @@ void reorder_diagonalize_symmetric_errbd
 	Eigen::Map<Eigen::Matrix<double, N, 1> >(u_errbd->data()).transpose()
 	    *= p;
 #endif
-    u *= p;
+    if (u) *u *= p;
 }
 
 /**
@@ -779,14 +918,14 @@ void reorder_diagonalize_symmetric
  Eigen::Array<double, N, 1>& s,
  Eigen::Matrix<std::complex<double>, N, N>& u)
 {
-    reorder_diagonalize_symmetric_errbd(m, s, u);
+    reorder_diagonalize_symmetric_errbd(m, s, &u);
 }
 
 /**
  * Same as reorder_diagonalize_symmetric(m, s, u) except that an
- * approximate error bound for the singular values is returned.  The
- * error bound is estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node96.html.
+ * approximate error bound for the singular values is returned as
+ * well.  The error bound is estimated following the method presented
+ * at http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
  *
@@ -800,14 +939,14 @@ void reorder_diagonalize_symmetric
  Eigen::Matrix<std::complex<double>, N, N>& u,
  double& s_errbd)
 {
-    reorder_diagonalize_symmetric_errbd(m, s, u, &s_errbd);
+    reorder_diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
 
 /**
  * Same as reorder_diagonalize_symmetric(m, s, u, s_errbd) except that
- * approximate error bounds for the singular vectors are returned.
- * The error bounds are estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node96.html.
+ * approximate error bounds for the singular vectors are returned as
+ * well.  The error bounds are estimated following the method
+ * presented at http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
  *
@@ -822,21 +961,58 @@ void reorder_diagonalize_symmetric
  double& s_errbd,
  Eigen::Array<double, N, 1>& u_errbd)
 {
-    reorder_diagonalize_symmetric_errbd(m, s, u, &s_errbd, &u_errbd);
+    reorder_diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
+}
+
+/**
+ * Returns singular values of N-by-N symmetric matrix m via s such
+ * that `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m
+ * @tparam     N      number of rows and columns in m and u
+ * @param[in]  m      N-by-N symmetric matrix to be decomposed
+ * @param[out] s      array of length N to contain singular values
+ */
+template<class Scalar, int N>
+void reorder_diagonalize_symmetric
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& s)
+{
+    reorder_diagonalize_symmetric_errbd(m, s);
+}
+
+/**
+ * Same as reorder_diagonalize_symmetric(m, s) except that an
+ * approximate error bound for the singular values is returned as
+ * well.  The error bound is estimated following the method presented
+ * at http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of reorder_diagonalize_symmetric(m, s) for
+ * the other parameters.
+ */
+template<class Scalar, int N>
+void reorder_diagonalize_symmetric
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ double& s_errbd)
+{
+    reorder_diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
 template<class Scalar, int M, int N>
 void fs_svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
  Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<Scalar, M, M>& u,
- Eigen::Matrix<Scalar, N, N>& v,
+ Eigen::Matrix<Scalar, M, M> *u = 0,
+ Eigen::Matrix<Scalar, N, N> *v = 0,
  double *s_errbd = 0,
  Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
  Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
 {
     reorder_svd_errbd(m, s, u, v, s_errbd, u_errbd, v_errbd);
-    u.transposeInPlace();
+    if (u) u->transposeInPlace();
 }
 
 /**
@@ -868,13 +1044,13 @@ void fs_svd
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& v)
 {
-    fs_svd_errbd(m, s, u, v);
+    fs_svd_errbd(m, s, &u, &v);
 }
 
 /**
  * Same as fs_svd(m, s, u, v) except that an approximate error bound
- * for the singular values is returned.  The error bound is estimated
- * following the method presented at
+ * for the singular values is returned as well.  The error bound is
+ * estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -890,13 +1066,13 @@ void fs_svd
  Eigen::Matrix<Scalar, N, N>& v,
  double& s_errbd)
 {
-    fs_svd_errbd(m, s, u, v, &s_errbd);
+    fs_svd_errbd(m, s, &u, &v, &s_errbd);
 }
 
 /**
  * Same as fs_svd(m, s, u, v, s_errbd) except that approximate error
- * bounds for the singular vectors are returned.  The error bounds are
- * estimated following the method presented at
+ * bounds for the singular vectors are returned as well.  The error
+ * bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
@@ -915,7 +1091,44 @@ void fs_svd
  Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
  Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
 {
-    fs_svd_errbd(m, s, u, v, &s_errbd, &u_errbd, &v_errbd);
+    fs_svd_errbd(m, s, &u, &v, &s_errbd, &u_errbd, &v_errbd);
+}
+
+/**
+ * Returns singular values of M-by-N matrix m via s such that
+ * `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m, u, and v
+ * @tparam     M      number of rows in m
+ * @tparam     N      number of columns in m
+ * @param[in]  m      M-by-N matrix to be decomposed
+ * @param[out] s      array of length min(M,N) to contain singular values
+ */
+template<class Scalar, int M, int N>
+void fs_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s)
+{
+    fs_svd_errbd(m, s);
+}
+
+/**
+ * Same as fs_svd(m, s) except that an approximate error bound for the
+ * singular values is returned as well.  The error bound is estimated
+ * following the method presented at
+ * http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of fs_svd(m, s) for the other parameters.
+ */
+template<class Scalar, int M, int N>
+void fs_svd
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<double, MIN_(M, N), 1>& s,
+ double& s_errbd)
+{
+    fs_svd_errbd(m, s, 0, 0, &s_errbd);
 }
 
 /**
@@ -955,8 +1168,8 @@ void fs_svd
 
 /**
  * Same as fs_svd(m, s, u, v) except that an approximate error bound
- * for the singular values is returned.  The error bound is estimated
- * following the method presented at
+ * for the singular values is returned as well.  The error bound is
+ * estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
@@ -977,8 +1190,8 @@ void fs_svd
 
 /**
  * Same as fs_svd(m, s, u, v, s_errbd) except that approximate error
- * bounds for the singular vectors are returned.  The error bounds are
- * estimated following the method presented at
+ * bounds for the singular vectors are returned as well.  The error
+ * bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
@@ -1005,12 +1218,12 @@ template<class Scalar, int N>
 void fs_diagonalize_symmetric_errbd
 (const Eigen::Matrix<Scalar, N, N>& m,
  Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
+ Eigen::Matrix<std::complex<double>, N, N> *u = 0,
  double *s_errbd = 0,
  Eigen::Array<double, N, 1> *u_errbd = 0)
 {
     reorder_diagonalize_symmetric_errbd(m, s, u, s_errbd, u_errbd);
-    u.transposeInPlace();
+    if (u) u->transposeInPlace();
 }
 
 /**
@@ -1033,14 +1246,14 @@ void fs_diagonalize_symmetric
  Eigen::Array<double, N, 1>& s,
  Eigen::Matrix<std::complex<double>, N, N>& u)
 {
-    fs_diagonalize_symmetric_errbd(m, s, u);
+    fs_diagonalize_symmetric_errbd(m, s, &u);
 }
 
 /**
  * Same as fs_diagonalize_symmetric(m, s, u) except that an
- * approximate error bound for the singular values is returned.  The
- * error bound is estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node96.html.
+ * approximate error bound for the singular values is returned as
+ * well.  The error bound is estimated following the method presented
+ * at http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] s_errbd approximate error bound for the elements of s
  *
@@ -1054,14 +1267,14 @@ void fs_diagonalize_symmetric
  Eigen::Matrix<std::complex<double>, N, N>& u,
  double& s_errbd)
 {
-    fs_diagonalize_symmetric_errbd(m, s, u, &s_errbd);
+    fs_diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
 
 /**
  * Same as fs_diagonalize_symmetric(m, s, u, s_errbd) except that
- * approximate error bounds for the singular vectors are returned.
- * The error bounds are estimated following the method presented at
- * http://www.netlib.org/lapack/lug/node96.html.
+ * approximate error bounds for the singular vectors are returned as
+ * well.  The error bounds are estimated following the method
+ * presented at http://www.netlib.org/lapack/lug/node96.html.
  *
  * @param[out] u_errbd array of approximate error bounds for u
  *
@@ -1076,7 +1289,44 @@ void fs_diagonalize_symmetric
  double& s_errbd,
  Eigen::Array<double, N, 1>& u_errbd)
 {
-    fs_diagonalize_symmetric_errbd(m, s, u, &s_errbd, &u_errbd);
+    fs_diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
+}
+
+/**
+ * Returns singular values of N-by-N symmetric matrix m via s such
+ * that `(s >= 0).all()`.  Elements of s are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m
+ * @tparam     N      number of rows and columns in m and u
+ * @param[in]  m      N-by-N symmetric matrix to be decomposed
+ * @param[out] s      array of length N to contain singular values
+ */
+template<class Scalar, int N>
+void fs_diagonalize_symmetric
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& s)
+{
+    fs_diagonalize_symmetric_errbd(m, s);
+}
+
+/**
+ * Same as fs_diagonalize_symmetric(m, s) except that an approximate
+ * error bound for the singular values is returned as well.  The error
+ * bound is estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node96.html.
+ *
+ * @param[out] s_errbd approximate error bound for the elements of s
+ *
+ * See the documentation of fs_diagonalize_symmetric(m, s) for the
+ * other parameters.
+ */
+template<class Scalar, int N>
+void fs_diagonalize_symmetric
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& s,
+ double& s_errbd)
+{
+    fs_diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
 template<int N>
@@ -1090,7 +1340,7 @@ template<class Scalar, int N>
 void fs_diagonalize_hermitian_errbd
 (const Eigen::Matrix<Scalar, N, N>& m,
  Eigen::Array<double, N, 1>& w,
- Eigen::Matrix<Scalar, N, N>& z,
+ Eigen::Matrix<Scalar, N, N> *z = 0,
  double *w_errbd = 0,
  Eigen::Array<double, N, 1> *z_errbd = 0)
 {
@@ -1108,7 +1358,7 @@ void fs_diagonalize_hermitian_errbd
 	Eigen::Map<Eigen::Matrix<double, N, 1> >(z_errbd->data()).transpose()
 	    *= p;
 #endif
-    z = (z * p).adjoint().eval();
+    if (z) *z = (*z * p).adjoint().eval();
 }
 
 /**
@@ -1130,13 +1380,13 @@ void fs_diagonalize_hermitian
  Eigen::Array<double, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z)
 {
-    fs_diagonalize_hermitian_errbd(m, w, z);
+    fs_diagonalize_hermitian_errbd(m, w, &z);
 }
 
 /**
  * Same as fs_diagonalize_hermitian(m, w, z) except that an
- * approximate error bound for the eigenvalues is returned.  The error
- * bound is estimated following the method presented at
+ * approximate error bound for the eigenvalues is returned as well.
+ * The error bound is estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] w_errbd approximate error bound for the elements of w
@@ -1151,13 +1401,13 @@ void fs_diagonalize_hermitian
  Eigen::Matrix<Scalar, N, N>& z,
  double& w_errbd)
 {
-    fs_diagonalize_hermitian_errbd(m, w, z, &w_errbd);
+    fs_diagonalize_hermitian_errbd(m, w, &z, &w_errbd);
 }
 
 /**
  * Same as fs_diagonalize_hermitian(m, w, z, w_errbd) except that
- * approximate error bounds for the eigenvectors are returned.  The
- * error bounds are estimated following the method presented at
+ * approximate error bounds for the eigenvectors are returned as well.
+ * The error bounds are estimated following the method presented at
  * http://www.netlib.org/lapack/lug/node89.html.
  *
  * @param[out] z_errbd array of approximate error bounds for z
@@ -1173,7 +1423,44 @@ void fs_diagonalize_hermitian
  double& w_errbd,
  Eigen::Array<double, N, 1>& z_errbd)
 {
-    fs_diagonalize_hermitian_errbd(m, w, z, &w_errbd, &z_errbd);
+    fs_diagonalize_hermitian_errbd(m, w, &z, &w_errbd, &z_errbd);
+}
+
+/**
+ * Returns eigenvalues of N-by-N hermitian matrix m via w.
+ * w is arranged so that `abs(w[i])` are in ascending order.
+ *
+ * @tparam     Scalar type of elements of m and z
+ * @tparam     N      number of rows and columns in m and z
+ * @param[in]  m      N-by-N matrix to be diagonalized
+ * @param[out] w      array of length N to contain eigenvalues
+ */
+template<class Scalar, int N>
+void fs_diagonalize_hermitian
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w)
+{
+    fs_diagonalize_hermitian_errbd(m, w);
+}
+
+/**
+ * Same as fs_diagonalize_hermitian(m, w) except that an approximate
+ * error bound for the eigenvalues is returned as well.  The error
+ * bound is estimated following the method presented at
+ * http://www.netlib.org/lapack/lug/node89.html.
+ *
+ * @param[out] w_errbd approximate error bound for the elements of w
+ *
+ * See the documentation of fs_diagonalize_hermitian(m, w) for the
+ * other parameters.
+ */
+template<class Scalar, int N>
+void fs_diagonalize_hermitian
+(const Eigen::Matrix<Scalar, N, N>& m,
+ Eigen::Array<double, N, 1>& w,
+ double& w_errbd)
+{
+    fs_diagonalize_hermitian_errbd(m, w, 0, &w_errbd);
 }
 
 } // namespace flexiblesusy

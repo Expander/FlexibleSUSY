@@ -43,6 +43,8 @@ template<class S_, int M_, int N_,
 		   Array<double, MIN_(M_, N_), 1>&,
 		   Matrix<S_, M_, M_>&,
 		   Matrix<S_, N_, N_>&),
+	 void svs_(const Matrix<S_, M_, N_>&,
+		   Array<double, MIN_(M_, N_), 1>&),
 	 bool check_ascending_order_ = false>
 struct Test_svd {
     typedef S_ S;
@@ -54,37 +56,40 @@ struct Test_svd {
 	     Matrix<S_, M_, M_>& u,
 	     Matrix<S_, N_, N_>& vh)
     { fxn_(m, s, u, vh); }
+    void svs(const Matrix<S_, M_, N_>& m,
+	     Array<double, MIN_(M_, N_), 1>& s)
+    { svs_(m, s); }
 };
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
-    Test_svd<complex<double>, 2, 2, svd>,
-    Test_svd<complex<double>, 3, 3, svd>,
-    Test_svd<double	    , 2, 2, svd>,
-    Test_svd<double	    , 3, 3, svd>,
+    Test_svd<complex<double>, 2, 2, svd, svd>,
+    Test_svd<complex<double>, 3, 3, svd, svd>,
+    Test_svd<double	    , 2, 2, svd, svd>,
+    Test_svd<double	    , 3, 3, svd, svd>,
 
-    Test_svd<complex<double>, 2, 2, reorder_svd, true>,
-    Test_svd<complex<double>, 3, 3, reorder_svd, true>,
-    Test_svd<double	    , 2, 2, reorder_svd, true>,
-    Test_svd<double	    , 3, 3, reorder_svd, true>,
+    Test_svd<complex<double>, 2, 2, reorder_svd, reorder_svd, true>,
+    Test_svd<complex<double>, 3, 3, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 2, 2, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 3, 3, reorder_svd, reorder_svd, true>,
 
     // use ZGESVD of LAPACK
-    Test_svd<complex<double>, 4, 4, svd>,
-    Test_svd<complex<double>, 6, 6, svd>,
+    Test_svd<complex<double>, 4, 4, svd, svd>,
+    Test_svd<complex<double>, 6, 6, svd, svd>,
 
-    Test_svd<complex<double>, 4, 4, reorder_svd, true>,
-    Test_svd<complex<double>, 6, 6, reorder_svd, true>,
-    Test_svd<complex<double>, 4, 6, reorder_svd, true>,
-    Test_svd<complex<double>, 6, 4, reorder_svd, true>,
+    Test_svd<complex<double>, 4, 4, reorder_svd, reorder_svd, true>,
+    Test_svd<complex<double>, 6, 6, reorder_svd, reorder_svd, true>,
+    Test_svd<complex<double>, 4, 6, reorder_svd, reorder_svd, true>,
+    Test_svd<complex<double>, 6, 4, reorder_svd, reorder_svd, true>,
 
     // use DGESVD of LAPACK
-    Test_svd<double	    , 4, 4, svd>,
-    Test_svd<double	    , 6, 6, svd>,
+    Test_svd<double	    , 4, 4, svd, svd>,
+    Test_svd<double	    , 6, 6, svd, svd>,
 
-    Test_svd<double	    , 4, 4, reorder_svd, true>,
-    Test_svd<double	    , 6, 6, reorder_svd, true>,
-    Test_svd<double	    , 4, 6, reorder_svd, true>,
-    Test_svd<double	    , 6, 4, reorder_svd, true>
+    Test_svd<double	    , 4, 4, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 6, 6, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 4, 6, reorder_svd, reorder_svd, true>,
+    Test_svd<double	    , 6, 4, reorder_svd, reorder_svd, true>
 > svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_svd, T, svd_tests)
@@ -109,11 +114,19 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_svd, T, svd_tests)
     if (T::check_ascending_order)
 	for (size_t i = 0; i < s.size()-1; i++)
 	    BOOST_CHECK(s[i] <= s[i+1]);
+
+    T().svs(m, s);
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-13);
 }
 
 template<class S_, int N_,
 	 void fxn_(const Matrix<S_, N_, N_>&,
 		   Array<double, N_, 1>&, Matrix<complex<double>, N_, N_>&),
+	 void svs_(const Matrix<S_, N_, N_>&,
+		   Array<double, N_, 1>&),
 	 bool check_ascending_order_ = false>
 struct Test_diagonalize_symmetric {
     typedef S_ S;
@@ -122,31 +135,43 @@ struct Test_diagonalize_symmetric {
     void fxn(const Matrix<S_, N_, N_>& m,
 	     Array<double, N_, 1>& s, Matrix<complex<double>, N_, N_>& u)
     { fxn_(m, s, u); }
+    void svs(const Matrix<S_, N_, N_>& m,
+	     Array<double, N_, 1>& s)
+    { svs_(m, s); }
 };
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
-    Test_diagonalize_symmetric<complex<double>, 2, diagonalize_symmetric>,
-    Test_diagonalize_symmetric<complex<double>, 3, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
+	<complex<double>, 2, diagonalize_symmetric, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
+	<complex<double>, 3, diagonalize_symmetric, diagonalize_symmetric>,
 
     Test_diagonalize_symmetric
-	<complex<double>, 2, reorder_diagonalize_symmetric, true>,
+	<complex<double>, 2,
+	 reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
     Test_diagonalize_symmetric
-	<complex<double>, 3, reorder_diagonalize_symmetric, true>,
+	<complex<double>, 3,
+	 reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
 
     // use Eigen::SelfAdjointEigenSolver
-    Test_diagonalize_symmetric<double, 6, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
+	<double, 6, diagonalize_symmetric, diagonalize_symmetric>,
 
-    Test_diagonalize_symmetric<double, 6, reorder_diagonalize_symmetric, true>,
+    Test_diagonalize_symmetric
+	<double, 6,
+	 reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
 
     // use ZGESVD of LAPACK
-    Test_diagonalize_symmetric<complex<double>, 4, diagonalize_symmetric>,
-    Test_diagonalize_symmetric<complex<double>, 6, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
+	<complex<double>, 4, diagonalize_symmetric, diagonalize_symmetric>,
+    Test_diagonalize_symmetric
+	<complex<double>, 6, diagonalize_symmetric, diagonalize_symmetric>,
 
-    Test_diagonalize_symmetric
-	<complex<double>, 4, reorder_diagonalize_symmetric, true>,
-    Test_diagonalize_symmetric
-	<complex<double>, 6, reorder_diagonalize_symmetric, true>
+    Test_diagonalize_symmetric<complex<double>, 4,
+	reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>,
+    Test_diagonalize_symmetric<complex<double>, 6,
+	reorder_diagonalize_symmetric, reorder_diagonalize_symmetric, true>
 > diagonalize_symmetric_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
@@ -171,18 +196,24 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     if (T::check_ascending_order)
 	for (size_t i = 0; i < N-1; i++)
 	    BOOST_CHECK(s[i] <= s[i+1]);
+
+    T().svs(m, s);
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < N; i++)
+	for (size_t j = 0; j < N; j++)
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
 }
 
 template<class S_, int N_,
 	 void fxn_(const Matrix<S_, N_, N_>&,
 		   Array<double, N_, 1>&,
-		   Matrix<S_, N_, N_>&)>
+		   Matrix<S_, N_, N_> *)>
 struct Test_diagonalize_hermitian {
     typedef S_ S;
     enum { N = N_ };
     void fxn(const Matrix<S_, N_, N_>& m,
 	     Array<double, N_, 1>& w,
-	     Matrix<S_, N_, N_>& z)
+	     Matrix<S_, N_, N_> *z)
     { fxn_(m, w, z); }
 };
 
@@ -208,7 +239,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     Array<double, N, 1> w;
     Matrix<S, N, N> z;
 
-    T().fxn(m, w, z);		// following LAPACK convention
+    T().fxn(m, w, &z);		// following LAPACK convention
     Matrix<S, N, N> diag = z.adjoint() * m * z;
 
     for (size_t i = 0; i < N; i++)
@@ -262,6 +293,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 
     for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
+
+    fs_svd(m, s);
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
 }
 
 typedef boost::mpl::list<
@@ -293,6 +330,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
 
     for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
+
+    fs_svd(m, s);
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < sigma.rows(); i++)
+	for (size_t j = 0; j < sigma.cols(); j++)
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
 }
 
 typedef boost::mpl::list<
@@ -329,6 +372,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 
     for (size_t i = 0; i < N-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
+
+    fs_diagonalize_symmetric(m, s);
+    BOOST_CHECK((s >= 0).all());
+    for (size_t i = 0; i < N; i++)
+	for (size_t j = 0; j < N; j++)
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
 }
 
 using namespace boost::mpl::placeholders;
@@ -361,10 +410,15 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 
     for (size_t i = 0; i < N-1; i++)
 	BOOST_CHECK(abs(w[i]) <= abs(w[i+1]));
+
+    fs_diagonalize_hermitian(m, w);
+    for (size_t i = 0; i < N; i++)
+	for (size_t j = 0; j < N; j++)
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? w(i) : 0)), 1e-11);
 }
 
 template<int N>
-double angle (const Matrix<double, 1, N>& u, const Matrix<double, 1, N>& v)
+double angle(const Matrix<double, 1, N>& u, const Matrix<double, 1, N>& v)
 {
     // return std::acos(u.dot(v) / (u.norm() * v.norm()));
     Matrix<double, 1, N> diff = u - v;
