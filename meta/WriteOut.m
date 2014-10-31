@@ -235,7 +235,7 @@ SortBlocks[modelParameters_List] :=
           ];
 
 CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
-    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], Infinity];
+    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];
 
 CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
     Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
