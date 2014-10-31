@@ -240,7 +240,7 @@ CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
 CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
     Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
 
-WrapPrecprocessorMacroAround[expr_, symbols_, macroSymbol_,
+WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
                              protectedHeads_List:{FlexibleSUSY`Pole}] :=
     Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
            replacements = Join[
@@ -258,9 +258,9 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
     Module[{parStr, parVal, idx1Str, idx2Str},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
-               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                      Parameters`GetOutputParameters[]],
-                                            Global`MODELPARAMETER]];
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
            (* result *)
@@ -272,9 +272,9 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
     Module[{parStr, parVal, pdgStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
-               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                      Parameters`GetOutputParameters[]],
-                                            Global`MODELPARAMETER]];
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
            (* print unnormalized hypercharge gauge coupling *)
            If[par === SARAH`hyperchargeCoupling,
               parVal = parVal <> " * " <>
@@ -292,9 +292,9 @@ WriteSLHABlockEntry[{par_}] :=
     Module[{parStr, parVal},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
-               WrapPrecprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
-                                                      Parameters`GetOutputParameters[]],
-                                            Global`MODELPARAMETER]];
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
            (* result *)
            "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> parStr <> "\")\n"
           ];
