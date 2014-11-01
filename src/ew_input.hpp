@@ -70,6 +70,10 @@ namespace Electroweak_constants {
       const double CKM_THETA13 = 0.003960; ///< From Vub in global CKM fit, PDG
       const double CKM_THETA23 = 0.042223; ///< From Vcb/Vtb in global CKM fit, PDG
       const double CKM_DELTA   = 0.;
+      const double PMNS_THETA12 = 0.5 * asin(sqrt(0.846));
+      const double PMNS_THETA13 = 0.5 * asin(sqrt(0.093));
+      const double PMNS_THETA23 = 0.5 * asin(sqrt(0.999));
+      const double PMNS_DELTA   = 0.;
    }
 }
 

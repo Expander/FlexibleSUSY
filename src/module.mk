@@ -20,6 +20,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
@@ -59,6 +60,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics.hpp \
+		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \
