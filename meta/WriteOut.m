@@ -527,6 +527,18 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
                            mixingMatrixSymStr <> "));\n";
                  ];
               ];
+           (* convert CKM matrix to PDG convention *)
+           If[ValueQ[SARAH`DownMatrixL] &&
+              ValueQ[SARAH`UpMatrixL  ] &&
+              ValueQ[SARAH`DownMatrixR] &&
+              ValueQ[SARAH`UpMatrixR  ]
+              ,
+              result = result <> "CKM_parameters::to_pdg_convention(" <>
+              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`UpMatrixL  ] <> "), " <>
+              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`DownMatrixL] <> "), " <>
+              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`UpMatrixR  ] <> "), " <>
+              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`DownMatrixR] <> "));\n";
+             ];
            Return[result];
           ];
 
