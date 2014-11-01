@@ -207,4 +207,34 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& ckm,
    Ud = signs_D * Ud;
 }
 
+void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& Vu,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Vd,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Uu,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Ud)
+{
+   Eigen::Matrix<std::complex<double>,3,3> ckm(Vu*Vd.adjoint());
+   to_pdg_convention(ckm, Vu, Vd, Uu, Ud);
+}
+
+void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& ckm,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Vu,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Vd,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Uu,
+                                       Eigen::Matrix<std::complex<double>,3,3>& Ud)
+{
+   // currently we convert only real part of mixing matrices
+
+   Eigen::Matrix<double,3,3> Vu_real(Vu.real());
+   Eigen::Matrix<double,3,3> Vd_real(Vd.real());
+   Eigen::Matrix<double,3,3> Uu_real(Uu.real());
+   Eigen::Matrix<double,3,3> Ud_real(Ud.real());
+
+   to_pdg_convention(Vu_real, Vd_real, Uu_real, Ud_real);
+
+   Vu.real() = Vu_real;
+   Vd.real() = Vd_real;
+   Uu.real() = Uu_real;
+   Ud.real() = Ud_real;
+}
+
 } // namespace flexiblesusy
