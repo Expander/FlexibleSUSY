@@ -239,7 +239,7 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
                  yukawaStr = CConversion`ToValidCSymbolString[yukawa];
                  yukawaDiagStr = yukawaStr <> "_diag";
                  yukawaStrWrapper = If[head == "", yukawaStr, head <> "(" <> yukawaStr <> ")"];
-                 diagMatrix = "(u*" <> wrapper <> "*v.adjoint()).real()";
+                 diagMatrix = "(u.conjugate()*" <> wrapper <> "*v.adjoint()).real()";
                  "{\n" <> IndentText[
                      "// diagonalize the " <> yukawaStr <> " Yukawa coupling for SLHA-2 compatible output\n" <>
                      CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <> " " <>
