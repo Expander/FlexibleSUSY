@@ -129,6 +129,17 @@ void @ModelName@_slha_io::set_mixing_matrices(const @ModelName@_physical& physic
 @writeSLHAMixingMatricesBlocks@
 }
 
+void @ModelName@_slha_io::set_ckm(
+   const Eigen::Matrix<std::complex<double>,3,3>& V_d,
+   const Eigen::Matrix<std::complex<double>,3,3>& V_u,
+   double scale)
+{
+   const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(V_u*V_d.adjoint());
+
+   slha_io.set_block("VCKM"  , ckm_matrix.real(), "Re(CKM)", scale);
+   slha_io.set_block("IMVCKM", ckm_matrix.imag(), "Im(CKM)", scale);
+}
+
 /**
  * Write SLHA object to file.
  *

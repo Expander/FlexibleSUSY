@@ -78,7 +78,7 @@ private:
    void set_mass(const @ModelName@_physical&, bool);
    void set_mixing_matrices(const @ModelName@_physical&, bool);
    template <class T> void set_model_parameters(const @ModelName@<T>&);
-   template <class T> void set_ckm(const @ModelName@<T>&);
+   void set_ckm(const Eigen::Matrix<std::complex<double>,3,3>&, const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
    template <class T> void fill_drbar_parameters(@ModelName@<T>&) const;
    template <class T> void fill_physical(@ModelName@<T>&) const;
@@ -144,19 +144,11 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
    set_mass(physical, write_sm_masses);
    set_mixing_matrices(physical, write_sm_masses);
 
-   if (slha_io.get_modsel().quark_flavour_violated)
-      set_ckm(model);
-}
-
-template <class T>
-void @ModelName@_slha_io::set_ckm(const @ModelName@<T>& model)
-{
-   const Eigen::Matrix<std::complex<double>,3,3> V_d(MODELPARAMETER(@LeftDownMixingMatrix@));
-   const Eigen::Matrix<std::complex<double>,3,3> V_u(MODELPARAMETER(@LeftUpMixingMatrix@));
-   const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(V_u*V_d.adjoint());
-
-   slha_io.set_block("VCKM"  , ckm_matrix.real(), "Re(CKM)", model.get_scale());
-   slha_io.set_block("IMVCKM", ckm_matrix.imag(), "Im(CKM)", model.get_scale());
+   if (slha_io.get_modsel().quark_flavour_violated) {
+      set_ckm(MODELPARAMETER(@LeftDownMixingMatrix@),
+              MODELPARAMETER(@LeftUpMixingMatrix@),
+              model.get_scale());
+   }
 }
 
 } // namespace flexiblesusy
