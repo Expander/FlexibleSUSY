@@ -82,6 +82,7 @@ void SLHA_io::read_modsel()
 void SLHA_io::fill(QedQcd& oneset) const
 {
    CKM_wolfenstein ckm_wolfenstein;
+   PMNS_parameters pmns_parameters;
 
    SLHA_io::Tuple_processor sminputs_processor
       = boost::bind(&SLHA_io::process_sminputs_tuple, boost::ref(oneset), _1, _2);
@@ -95,6 +96,13 @@ void SLHA_io::fill(QedQcd& oneset) const
       read_block("VCKMIN", vckmin_processor);
    }
 
+   if (modsel.lepton_flavour_violated) {
+      SLHA_io::Tuple_processor upmnsin_processor
+         = boost::bind(&SLHA_io::process_upmnsin_tuple, boost::ref(pmns_parameters), _1, _2);
+
+      read_block("UPMNSIN", upmnsin_processor);
+   }
+
    // fill CKM parameters in oneset
    CKM_parameters ckm_parameters;
    ckm_parameters.set_from_wolfenstein(
@@ -103,6 +111,9 @@ void SLHA_io::fill(QedQcd& oneset) const
       ckm_wolfenstein.rhobar,
       ckm_wolfenstein.etabar);
    oneset.setCKM(ckm_parameters);
+
+   // fill PMNS parameters in oneset
+   oneset.setPMNS(pmns_parameters);
 }
 
 /**
@@ -449,6 +460,34 @@ void SLHA_io::process_vckmin_tuple(CKM_wolfenstein& ckm_wolfenstein, int key, do
       break;
    default:
       WARNING("Unrecognized key in VCKMIN: " << key);
+      break;
+   }
+}
+
+/**
+ * fill PMNS_parameters from given key - value pair
+ *
+ * @param pmns_parameters PMNS matrix parameters
+ * @param key SLHA key in SMINPUTS
+ * @param value value corresponding to key
+ */
+void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, double value)
+{
+   switch (key) {
+   case 1:
+      pmns_parameters.theta_12 = value;
+      break;
+   case 2:
+      pmns_parameters.theta_23 = value;
+      break;
+   case 3:
+      pmns_parameters.theta_13 = value;
+      break;
+   case 4:
+      pmns_parameters.delta = value;
+      break;
+   default:
+      WARNING("Unrecognized key in UPMNSIN: " << key);
       break;
    }
 }

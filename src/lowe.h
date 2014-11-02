@@ -21,6 +21,7 @@
 #include "linalg.h"
 #include "rge.h"
 #include "ckm.hpp"
+#include "pmns.hpp"
 
 namespace softsusy {
 const double MUP = 2.4e-3; ///< default running quark mass from PDG
@@ -62,6 +63,7 @@ private:
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
+  flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -79,6 +81,8 @@ public:
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
   /// sets CKM parameters (in the MS-bar scheme at MZ)
   void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
+  /// sets PMNS parameters (in the MS-bar scheme at MZ)
+  void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   

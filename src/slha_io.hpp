@@ -30,6 +30,7 @@
 #include "error.hpp"
 #include "wrappers.hpp"
 #include "numerics.hpp"
+#include "pmns.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -201,6 +202,7 @@ private:
    static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
+   static void process_upmnsin_tuple(PMNS_parameters&, int, double);
 };
 
 template <class Scalar>
