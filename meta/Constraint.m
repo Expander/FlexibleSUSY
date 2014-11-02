@@ -57,10 +57,22 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
 ApplyConstraint[{parameter_, value_}, modelName_String] :=
     Parameters`SetParameter[parameter, value, modelName];
 
-ApplyConstraint[{parameter_ /; MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
+ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
+                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
+                modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_, value_ /; value === Automatic}, modelName_String] :=
+ApplyConstraint[{parameter_ /; parameter === SARAH`DownYukawa,
+                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
+                modelName_String] :=
+    "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
+
+ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
+                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
+                modelName_String] :=
+    "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
+
+ApplyConstraint[{parameter_ /; !MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
     Block[{},
           Print["Error: cannot determine ", parameter, " automatically!"];
           Quit[1];

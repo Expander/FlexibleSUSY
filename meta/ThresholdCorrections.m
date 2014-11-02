@@ -220,28 +220,28 @@ InvertMassRelation[fermion_, yukawa_] :=
            InvertRelation[matrixExpression, fermion / prefactor, yukawa]
           ];
 
-SetDRbarYukawaCouplingTop[] :=
-    Module[{yTop, top},
-           {yTop, top} = InvertMassRelation[SARAH`TopQuark   , SARAH`UpYukawa];
-           top = top /. SARAH`TopQuark    -> Global`topDRbar;
-           Parameters`CreateLocalConstRefs[top] <>
-           Parameters`SetParameter[SARAH`UpYukawa, top, "MODEL"]
-          ];
+SetDRbarYukawaCouplingTop[settings_] :=
+    SetDRbarYukawaCouplingFermion[SARAH`TopQuark, SARAH`UpYukawa, Global`topDRbar, settings];
 
-SetDRbarYukawaCouplingBottom[] :=
-    Module[{yBot, bot},
-           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, SARAH`DownYukawa];
-           bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
-           Parameters`CreateLocalConstRefs[bot] <>
-           Parameters`SetParameter[SARAH`DownYukawa, bot, "MODEL"]
-          ];
+SetDRbarYukawaCouplingBottom[settings_] :=
+    SetDRbarYukawaCouplingFermion[SARAH`BottomQuark, SARAH`DownYukawa, Global`bottomDRbar, settings];
 
-SetDRbarYukawaCouplingElectron[] :=
-    Module[{yTau, tau},
-           {yTau, tau} = InvertMassRelation[SARAH`Electron   , SARAH`ElectronYukawa];
-           tau = tau /. SARAH`Electron    -> Global`electronDRbar;
-           Parameters`CreateLocalConstRefs[tau] <>
-           Parameters`SetParameter[SARAH`ElectronYukawa, tau, "MODEL"]
+SetDRbarYukawaCouplingElectron[settings_] :=
+    SetDRbarYukawaCouplingFermion[SARAH`Electron, SARAH`ElectronYukawa, Global`electronDRbar, settings];
+
+SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
+    Module[{y, f},
+           f = Cases[settings, {yukawa, s_} :> s];
+           If[f === {}, Return[""];];
+           f = f[[1]];
+           If[f === Automatic,
+              {y, f} = InvertMassRelation[fermion, yukawa];
+              f = f /. fermion -> mass;
+              ,
+              y = yukawa;
+             ];
+           Parameters`CreateLocalConstRefs[f] <>
+           Parameters`SetParameter[y, f, "MODEL"]
           ];
 
 CalculateGaugeCouplings[] :=

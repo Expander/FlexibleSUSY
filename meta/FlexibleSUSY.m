@@ -367,9 +367,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = {
-              ThresholdCorrections`SetDRbarYukawaCouplingTop[],
-              ThresholdCorrections`SetDRbarYukawaCouplingBottom[],
-              ThresholdCorrections`SetDRbarYukawaCouplingElectron[]
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[settings]
           };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
@@ -391,13 +391,15 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           ];
 
 WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
-   Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings},
+   Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings,
+           allSettings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
+          allSettings             = Join[lowScaleGuess, highScaleGuess];
           setDRbarYukawaCouplings = {
-              ThresholdCorrections`SetDRbarYukawaCouplingTop[],
-              ThresholdCorrections`SetDRbarYukawaCouplingBottom[],
-              ThresholdCorrections`SetDRbarYukawaCouplingElectron[]
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[allSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[allSettings],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[allSettings]
           };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
