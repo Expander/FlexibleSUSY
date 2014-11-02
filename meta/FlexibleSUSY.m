@@ -366,7 +366,11 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
-          setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
+          setDRbarYukawaCouplings = {
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[]
+          };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
           WriteOut`ReplaceInFiles[files,
@@ -390,7 +394,11 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
    Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
-          setDRbarYukawaCouplings = ThresholdCorrections`SetDRbarYukawaCouplings[];
+          setDRbarYukawaCouplings = {
+              ThresholdCorrections`SetDRbarYukawaCouplingTop[],
+              ThresholdCorrections`SetDRbarYukawaCouplingBottom[],
+              ThresholdCorrections`SetDRbarYukawaCouplingElectron[]
+          };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],

@@ -4,7 +4,9 @@ BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
-SetDRbarYukawaCouplings::usage="";
+SetDRbarYukawaCouplingTop::usage="";
+SetDRbarYukawaCouplingBottom::usage="";
+SetDRbarYukawaCouplingElectron::usage="";
 
 Begin["`Private`"];
 
@@ -218,22 +220,28 @@ InvertMassRelation[fermion_, yukawa_] :=
            InvertRelation[matrixExpression, fermion / prefactor, yukawa]
           ];
 
-SetDRbarYukawaCouplings[] :=
-    Module[{result, yTop, top, yBot, bot, yTau, tau},
+SetDRbarYukawaCouplingTop[] :=
+    Module[{yTop, top},
            {yTop, top} = InvertMassRelation[SARAH`TopQuark   , SARAH`UpYukawa];
-           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, SARAH`DownYukawa];
-           {yTau, tau} = InvertMassRelation[SARAH`Electron   , SARAH`ElectronYukawa];
            top = top /. SARAH`TopQuark    -> Global`topDRbar;
+           Parameters`CreateLocalConstRefs[top] <>
+           Parameters`SetParameter[SARAH`UpYukawa, top, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplingBottom[] :=
+    Module[{yBot, bot},
+           {yBot, bot} = InvertMassRelation[SARAH`BottomQuark, SARAH`DownYukawa];
            bot = bot /. SARAH`BottomQuark -> Global`bottomDRbar;
+           Parameters`CreateLocalConstRefs[bot] <>
+           Parameters`SetParameter[SARAH`DownYukawa, bot, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplingElectron[] :=
+    Module[{yTau, tau},
+           {yTau, tau} = InvertMassRelation[SARAH`Electron   , SARAH`ElectronYukawa];
            tau = tau /. SARAH`Electron    -> Global`electronDRbar;
-           result = {
-               Parameters`CreateLocalConstRefs[top] <>
-               Parameters`SetParameter[SARAH`UpYukawa, top, "MODEL"],
-               Parameters`CreateLocalConstRefs[bot] <>
-               Parameters`SetParameter[SARAH`DownYukawa, bot, "MODEL"],
-               Parameters`CreateLocalConstRefs[tau] <>
-               Parameters`SetParameter[SARAH`ElectronYukawa, tau, "MODEL"] };
-           Return[result];
+           Parameters`CreateLocalConstRefs[tau] <>
+           Parameters`SetParameter[SARAH`ElectronYukawa, tau, "MODEL"]
           ];
 
 CalculateGaugeCouplings[] :=
