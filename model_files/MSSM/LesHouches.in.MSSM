@@ -33,11 +33,10 @@ Block SMINPUTS               # Standard Model inputs
 #     3   2.210000000e-01      # rhobar(MZ) SM DR-bar
 #     4   3.400000000e-01      # etabar(MZ) SM DR-bar
 # Block UPMNSIN                # PMNS matrix input
-#     1   2.272000000e-01      # theta_12
-#     2   8.180000000e-01      # theta_23
-#     3   2.210000000e-01      # theta_13
-#     4   3.400000000e-01      # delta_13
-#     5   1
+#     1   5.837630000e-01      # theta_12
+#     2   7.6958400000-01      # theta_23
+#     3   1.5494800000-01      # theta_13
+#     4   0.000000000e+00      # delta_13
 Block MINPAR                 # Input parameters
     1   125.                 # m0
     2   500.                 # m12
