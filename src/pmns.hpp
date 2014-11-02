@@ -29,8 +29,8 @@ struct PMNS_parameters {
    void reset_to_diagonal();
    void reset_to_observation();
 
-   Eigen::Matrix<double,3,3> get_real_ckm() const;
-   Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const;
+   Eigen::Matrix<double,3,3> get_real_pmns() const;
+   Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const;
 
    double theta_12, theta_13, theta_23, delta;
 };

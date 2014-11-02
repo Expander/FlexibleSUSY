@@ -46,7 +46,7 @@ void PMNS_parameters::reset_to_observation()
    delta    = Electroweak_constants::PMNS_DELTA;
 }
 
-Eigen::Matrix<double,3,3> PMNS_parameters::get_real_ckm() const
+Eigen::Matrix<double,3,3> PMNS_parameters::get_real_pmns() const
 {
    const std::complex<double> eID(std::polar(1.0, delta));
    const double s12 = Sin(theta_12);
@@ -60,21 +60,21 @@ Eigen::Matrix<double,3,3> PMNS_parameters::get_real_ckm() const
    // of its real part
    const int pf = Sign(Re(eID));
 
-   Eigen::Matrix<double,3,3> ckm_matrix;
-   ckm_matrix(0, 0) = c12 * c13;
-   ckm_matrix(0, 1) = s12 * c13;
-   ckm_matrix(0, 2) = pf * s13;
-   ckm_matrix(1, 0) = -s12 * c23 - pf * c12 * s23 * s13;
-   ckm_matrix(1, 1) = c12 * c23 - pf * s12 * s23 * s13;
-   ckm_matrix(1, 2) = s23 * c13;
-   ckm_matrix(2, 0) = s12 * s23 - pf * c12 * c23 * s13;
-   ckm_matrix(2, 1) = -c12 * s23 - pf * s12 * c23 * s13;
-   ckm_matrix(2, 2) = c23 * c13;
+   Eigen::Matrix<double,3,3> pmns_matrix;
+   pmns_matrix(0, 0) = c12 * c13;
+   pmns_matrix(0, 1) = s12 * c13;
+   pmns_matrix(0, 2) = pf * s13;
+   pmns_matrix(1, 0) = -s12 * c23 - pf * c12 * s23 * s13;
+   pmns_matrix(1, 1) = c12 * c23 - pf * s12 * s23 * s13;
+   pmns_matrix(1, 2) = s23 * c13;
+   pmns_matrix(2, 0) = s12 * s23 - pf * c12 * c23 * s13;
+   pmns_matrix(2, 1) = -c12 * s23 - pf * s12 * c23 * s13;
+   pmns_matrix(2, 2) = c23 * c13;
 
-   return ckm_matrix;
+   return pmns_matrix;
 }
 
-Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_ckm() const
+Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_pmns() const
 {
    const std::complex<double> eID(std::polar(1.0, delta));
    const double s12 = Sin(theta_12);
@@ -84,18 +84,18 @@ Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_ckm() const
    const double c13 = Cos(theta_13);
    const double c23 = Cos(theta_23);
 
-   Eigen::Matrix<std::complex<double>,3,3> ckm_matrix;
-   ckm_matrix(0, 0) = c12 * c13;
-   ckm_matrix(0, 1) = s12 * c13;
-   ckm_matrix(0, 2) = s13 / eID;
-   ckm_matrix(1, 0) = -s12 * c23 - c12 * s23 * s13 * eID;
-   ckm_matrix(1, 1) = c12 * c23 - s12 * s23 * s13 * eID;
-   ckm_matrix(1, 2) = s23 * c13;
-   ckm_matrix(2, 0) = s12 * s23 - c12 * c23 * s13 * eID;
-   ckm_matrix(2, 1) = -c12 * s23 - s12 * c23 * s13 * eID;
-   ckm_matrix(2, 2) = c23 * c13;
+   Eigen::Matrix<std::complex<double>,3,3> pmns_matrix;
+   pmns_matrix(0, 0) = c12 * c13;
+   pmns_matrix(0, 1) = s12 * c13;
+   pmns_matrix(0, 2) = s13 / eID;
+   pmns_matrix(1, 0) = -s12 * c23 - c12 * s23 * s13 * eID;
+   pmns_matrix(1, 1) = c12 * c23 - s12 * s23 * s13 * eID;
+   pmns_matrix(1, 2) = s23 * c13;
+   pmns_matrix(2, 0) = s12 * s23 - c12 * c23 * s13 * eID;
+   pmns_matrix(2, 1) = -c12 * s23 - s12 * c23 * s13 * eID;
+   pmns_matrix(2, 2) = c23 * c13;
 
-   return ckm_matrix;
+   return pmns_matrix;
 }
 
 } // namespace flexiblesusy
