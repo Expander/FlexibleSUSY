@@ -3027,6 +3027,38 @@ to the comparator function.
 \section{Tests and comparisons with other spectrum generators}
 \label{sec:comparison}
 
+\subsection{Numeric tests}
+
+To check the correctness of \fs's generated spectrum generators
+extensive unit testing against Softsusy's MSSM and NMSSM
+implementations (both $Z_3$-invariant and $Z_3$-violating variants)
+was carried out. We checked mass matrices, EWSB equations, one- and two-loop
+$\beta$-functions, one- and two-loop self-energies and one- and
+two-loop tadpoles and found all to agree within double machine
+precision.  We also compared the overall pole mass spectrum after the
+full fixed-point iteration has finished, and found the spectra to
+agree at the sub-permille level.  
+
+\fs generated NUHM \ESSM has also been compared against a handwritten
+spectrum generator for a constrained version of the \ESSM
+\cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The RGEs could be
+compared directly in unit tests and were found to match.  The
+handwritten code doesn't include full one-loop self-energies or
+tadpoles so tests on these were not carried out.  Although the
+generators assume different constraints they could be compared by
+using the output of the CE$_6$SSM generator as an input to \fs and the
+spectra were found to be in reasonable agreement, given the different
+levels of precision.
+
+In addition \fs has already undergone some user testing. This includes
+analytic tests of the $R$-symmetric low-energy model (MRSSM) and
+alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
+with this are thanked in the acknowledgements.
+
+We also compared the run-time of \fs against SPheno, Softsusy and the
+SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
+can be found in \secref{sec:run-time comparison}.
+
 \subsection{Run-time comparison}
 \label{sec:run-time comparison}
 
@@ -3109,38 +3141,6 @@ benefits a lot from Eigen's well-optimizable matrix expressions.  We
 also find that increasing the number of CPU cores reduces the run-time
 of \fs.  The reason is that \fs calculates each pole mass in a
 separate thread, and therefore benefits from multi-core CPUs.
-
-\subsection{Numeric tests}
-
-To check the correctness of \fs's generated spectrum generators
-extensive unit testing against Softsusy's MSSM and NMSSM
-implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-was carried out. We checked mass matrices, EWSB equations, one- and two-loop
-$\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles and found all to agree within double machine
-precision.  We also compared the overall pole mass spectrum after the
-full fixed-point iteration has finished, and found the spectra to
-agree at the sub-permille level.  
-
-\fs generated NUHM \ESSM has also been compared against a handwritten
-spectrum generator for a constrained version of the \ESSM
-\cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The RGEs could be
-compared directly in unit tests and were found to match.  The
-handwritten code doesn't include full one-loop self-energies or
-tadpoles so tests on these were not carried out.  Although the
-generators assume different constraints they could be compared by
-using the output of the CE$_6$SSM generator as an input to \fs and the
-spectra were found to be in reasonable agreement, given the different
-levels of precision.
-
-In addition \fs has already undergone some user testing. This includes
-analytic tests of the $R$-symmetric low-energy model (MRSSM) and
-alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
-with this are thanked in the acknowledgements.
-
-We also compared the run-time of \fs against SPheno, Softsusy and the
-SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
-can be found in \secref{sec:run-time comparison}.
 
 \section{Conclusions}
 
