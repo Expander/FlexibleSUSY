@@ -3032,23 +3032,45 @@ to the comparator function.
 To check the correctness of \fs's generated spectrum generators
 extensive unit testing against Softsusy's MSSM and NMSSM
 implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-was carried out. We checked mass matrices, EWSB equations, one- and two-loop
+was carried out.  These unit tests systematically compare all
+tree-level mass matrices, EWSB equations, one- and two-loop
 $\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles and found all to agree within double machine
-precision.  We also compared the overall pole mass spectrum after the
-full fixed-point iteration has finished, and found the spectra to
-agree at the sub-permille level.  
+two-loop tadpoles numerically for certain MSSM and NMSSM parameter
+points.  All tested expressions were found to agree within double
+machine precision.\footnote{Due to the systematic and detailed tests
+  several bugs in Softsusy, SARAH and \fs could be identified and
+  corrected.}  Furthermore, the overall pole mass spectrum after the
+full fixed-point iteration has finished is compared, and was found to
+agree at the sub-permille level.  The origin of the sub-permille level
+difference between \fs and Softsusy is the different determination of
+the \DRbar\ weak mixing angle
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$: \fs calculates
+$\theta_W$ from $M_W^2$ and $M_Z^2$ as described in
+\secref{sec:calculation-of-gauge-couplings}, while Softsusy determines
+$\theta_W$ from the muon decay constant $G_\mu$, which is more
+precise.  Furthermore, in Softsusy $3.5.0$ some three-loop
+$\beta$-functions and two-loop threshold corrections for the gauge and
+Yukawa couplings can be enabled in the MSSM to increase the accuracy
+of the RG running and the \DRbar\ gauge and Yukawa couplings at $M_Z$
+\cite{}.  These corrections are not implemented in \fs so far.
 
-\fs generated NUHM \ESSM has also been compared against a handwritten
-spectrum generator for a constrained version of the \ESSM
-\cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The RGEs could be
-compared directly in unit tests and were found to match.  The
-handwritten code doesn't include full one-loop self-energies or
-tadpoles so tests on these were not carried out.  Although the
-generators assume different constraints they could be compared by
-using the output of the CE$_6$SSM generator as an input to \fs and the
-spectra were found to be in reasonable agreement, given the different
-levels of precision.
+The complete set of unit tests is shipped with \fs and can be found in
+the \code{test/} directory.  The tests can be run with the command
+\code{make execute-tests}.  All unit tests are carried out nightly in
+order to continuously check the correctness of the meta code and the
+generated spectrum generators.  The test results can be found at
+\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/FlexibleSUSY/test.html}
+
+The \fs generated NUHM \ESSM\ spectrum generator has also been
+compared against a handwritten one for a constrained version of the
+\ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
+$\beta$-functions were systematically compared in unit tests and were
+found to match at the ??? level.  The handwritten code doesn't include
+full one-loop self-energies or tadpoles, so tests on these were not
+carried out.  Although the generators assume different constraints
+they could be compared by using the output of the CE$_6$SSM generator
+as an input to \fs and the spectra were found to be in reasonable
+agreement, given the different levels of precision.
 
 In addition \fs has already undergone some user testing. This includes
 analytic tests of the $R$-symmetric low-energy model (MRSSM) and
