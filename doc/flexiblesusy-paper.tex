@@ -3089,20 +3089,21 @@ demonstrate that this goal was achieved by comparing the run-time of
 two different sets of CMSSM spectrum generators:
 %
 \begin{itemize}
-\item \emph{Without flavour violation:} Disallowing flavour violation
-  simplifies the calculation of the pole masses, because
-  flavour-off-diagonal sfermion self-energy matrix elements don't need
-  to be calculated.  Here we compare \fs's non-flavour violating CMSSM
-  spectrum generator FlexibleSUSY-NoFV (version 1.0.0) against SPheno
-  (version 3.2.4) and Softsusy (version 3.4.0).
+\item \emph{Without sfermion flavour violation:} Disallowing sfermion
+  flavour violation simplifies the calculation of the pole masses,
+  because flavour-off-diagonal sfermion self-energy matrix elements
+  don't need to be calculated.  Here we compare \fs's non-flavour
+  violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
+  against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
 %
-\item \emph{With flavour violation:} Allowing for flavour violation in
-  general increases the run-time of spectrum generators, because the
-  full $6\times 6$ sfermion self-energy matrices have to be
-  calculated.  Here we compare FlexibleSUSY-FV (version 1.0.0) and
-  SPhenoMSSM (generated with SARAH 4.1.0 and linked against SPheno
-  3.2.4).  Both spectrum generators are based on SARAH's MSSM model
-  file, which allows for flavour violation.
+\item \emph{With sfermion flavour violation:} Allowing for sfermion
+  flavour violation in general increases the run-time of spectrum
+  generators, because the full $6\times 6$ sfermion self-energy
+  matrices have to be calculated.  Here we compare FlexibleSUSY-FV
+  (version 1.0.0) and SPhenoMSSM (generated with SARAH 4.1.0 and
+  linked against SPheno 3.2.4).  Both spectrum generators are based on
+  SARAH's MSSM model file, which allows for sfermion flavour
+  violation.
 \end{itemize}
 %
 \fs and Softsusy are compiled with g++ 4.8.0 and Intel ifort
@@ -3145,8 +3146,8 @@ Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
   \end{tabular}
   \caption{Average run-time of CMSSM spectrum generators
     for random parameter points.  The first three rows show
-    spectrum generators which disallow flavour violation.  Rows
-    $4$--$5$ contain flavour violating spectrum generators, based
+    spectrum generators which disallow sfermion flavour violation.  Rows
+    $4$--$5$ contain sfermion flavour violating spectrum generators, based
     on SARAH's MSSM model file.}
   \label{tab:run-time-comparison}
 \end{table}
