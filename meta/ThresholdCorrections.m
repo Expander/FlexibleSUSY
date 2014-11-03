@@ -241,7 +241,7 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
               y = yukawa;
              ];
            Parameters`CreateLocalConstRefs[f] <>
-           Parameters`SetParameter[y, f, "MODEL"]
+           Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
 CalculateGaugeCouplings[] :=
