@@ -70,7 +70,8 @@ independent parameters of a real symmetric nxn matrix";
 
 ClearPhases::usage="";
 
-ExpandEquations::usage="";
+ExpandExpressions::usage="";
+AppendGenerationIndices::usage="";
 
 Begin["`Private`"];
 
@@ -692,6 +693,21 @@ ClearPhase[phase_] :=
 ClearPhases[phases_List] :=
     StringJoin[ClearPhase /@ phases];
 
+AppendGenerationIndices[expr_List] :=
+    AppendGenerationIndices /@ expr;
+
+AppendGenerationIndices[expr_Symbol] :=
+    Switch[SARAH`getDimParameters[expr],
+           {}                          , expr,
+           {1}                         , expr,
+           {idx_}                      , expr[SARAH`gt1],
+           {idx1_, idx2_}              , expr[SARAH`gt1, SARAH`gt2],
+           {idx1_, idx2_, idx3_}       , expr[SARAH`gt1, SARAH`gt2, SARAH`gt3],
+           {idx1_, idx2_, idx3_, idx4_}, expr[SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4]
+          ];
+
+AppendGenerationIndices[expr_] := expr;
+
 (*
  * Expands a list of expressions of the form
  *
@@ -706,7 +722,7 @@ ClearPhases[phases_List] :=
  * where the indices SARAH`gt1 and SARAH`gt2 are assumed to run from 1
  * to 3.
  *)
-ExpandEquations[eqs_List] :=
+ExpandExpressions[eqs_List] :=
     Module[{result = {}, i, expanded},
            For[i = 1, i <= Length[eqs], i++,
                expanded = {eqs[[i]]};

@@ -583,6 +583,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softScalarMasses          = {};
              ];
            softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
+           softHiggsMasses              = Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]];
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
@@ -1211,7 +1212,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           ewsbEquations = Parameters`ExpandEquations[ewsbEquations];
+           ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
 
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
