@@ -522,9 +522,10 @@ SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
           ];
 
 SaveParameterLocally[parameter_, prefix_String, caller_String] :=
-    Module[{ parStr },
-           parStr = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStr <> " = " <>
+    Module[{ parStr, parStrSym },
+           parStr = CConversion`RValueToCFormString[parameter];
+           parStrSym = CConversion`ToValidCSymbolString[parameter];
+           "const auto " <> prefix <> parStrSym <> " = " <>
            If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
           ];
 
@@ -537,11 +538,12 @@ RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
           ];
 
 RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
-    Module[{ parStr },
-           parStr = CConversion`ToValidCSymbolString[parameter];
+    Module[{ parStr, parStrSym },
+           parStr = CConversion`RValueToCFormString[parameter];
+           parStrSym = CConversion`ToValidCSymbolString[parameter];
            If[modelPtr != "",
-              SetParameter[parameter, prefix <> parStr, modelPtr],
-              CConversion`ToValidCSymbolString[parameter] <> " = " <> prefix <> parStr <> ";\n"]
+              SetParameter[parameter, prefix <> parStrSym, modelPtr],
+              parStr <> " = " <> prefix <> parStrSym <> ";\n"]
           ];
 
 RemoveProtectedHeads[expr_] :=
