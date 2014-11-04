@@ -465,6 +465,9 @@ CreateHiggsToEWSBEqAssociation[] :=
             vev, dimVev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           If[Length[vevs] == 1,
+              Return[{{SARAH`HiggsBoson, 1}}];
+             ];
            (* list of phi fields, ordered according to VEVs / EWSB eqs. *)
            phi = Transpose[vevs][[3]];
            phi = ExpandGaugeIndices[phi];
