@@ -1211,6 +1211,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
+           ewsbEquations = Parameters`ExpandEquations[ewsbEquations];
+
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
               treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,

@@ -70,6 +70,8 @@ independent parameters of a real symmetric nxn matrix";
 
 ClearPhases::usage="";
 
+ExpandEquations::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -689,6 +691,35 @@ ClearPhase[phase_] :=
 
 ClearPhases[phases_List] :=
     StringJoin[ClearPhase /@ phases];
+
+(*
+ * Expands a list of expressions of the form
+ *
+ *   { {1 + A[SARAH`gt1]},
+ *     {1 + B[SARAH`gt2]} }
+ *
+ * to
+ *
+ *   { {1 + A[1]}, {1 + A[2]}, {1 + A[3]},
+ *     {1 + B[1]}, {1 + B[2]}, {1 + B[3]} }
+ *
+ * where the indices SARAH`gt1 and SARAH`gt2 are assumed to run from 1
+ * to 3.
+ *)
+ExpandEquations[eqs_List] :=
+    Module[{result = {}, i, expanded},
+           For[i = 1, i <= Length[eqs], i++,
+               expanded = {eqs[[i]]};
+               If[!FreeQ[expanded, SARAH`gt1],
+                  expanded = Table[expanded, {SARAH`gt1, 1, 3}];
+                 ];
+               If[!FreeQ[expanded, SARAH`gt2],
+                  expanded = Table[expanded, {SARAH`gt2, 1, 3}];
+                 ];
+               result = Join[result, Flatten[expanded]];
+              ];
+           Return[result];
+          ];
 
 End[];
 
