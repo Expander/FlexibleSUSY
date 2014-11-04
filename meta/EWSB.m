@@ -58,7 +58,8 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
     Module[{result = "", body = "", dim, i, eq},
            dim = TreeMasses`GetDimension[higgs];
            If[dim =!= Length[equation],
-              Print["Error: number of Higgs bosons != number of EWSB eqs."];
+              Print["Error: number of Higgs bosons (", dim,
+                    ") != number of EWSB eqs. (",Length[equation],")"];
               Quit[1];
              ];
            For[i = 1, i <= dim, i++,
