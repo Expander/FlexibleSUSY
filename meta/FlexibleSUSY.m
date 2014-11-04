@@ -428,6 +428,31 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
                  } ];
           ];
 
+FindVEV[gauge_] :=
+    Module[{result, vev},
+           vev = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                       {_,{v_,_},{gauge,_},{p_,_},___} | {_,{v_,_},{s_,_},{gauge,_},___} :> v];
+           If[vev === {},
+              Print["Error: could not find VEV for gauge eigenstate ", gauge];
+              Quit[1];
+             ];
+           vev[[1]]
+          ];
+
+GetDimOfVEV[vev_] :=
+    Switch[SARAH`getDimParameters[vev],
+           {}                         , 1,
+           {0}                        , 1,
+           {1}                        , 1,
+           {idx_}                     , SARAH`getDimParameters[vev][[1]]
+          ];
+
+ExpandGaugeIndices[gauge_, number_] :=
+    Table[gauge[i], {i,1,number}];
+
+ExpandGaugeIndices[gauge_List] :=
+    Flatten[ExpandGaugeIndices[#,GetDimOfVEV[FindVEV[#]]]& /@ gauge];
+
 (* Returns a list of two-component list where the information is stored
    which Higgs corresponds to which EWSB eq.
 
@@ -436,48 +461,20 @@ WriteConvergenceTesterClass[particles_List, files_List] :=
    Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs},
-           vevs = SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs];
-           numberOfVEVs = Length[vevs];
-           numberOfHiggses = SARAH`getGen[SARAH`HiggsBoson, FlexibleSUSY`FSEigenstates];
-           If[numberOfHiggses == 1,
-              Return[{{SARAH`HiggsBoson, 1}}];
-             ];
-           (* d V/d phi_i *)
-           For[v = 1, v <= numberOfVEVs, v++,
-               (* find CP even gauge-eigenstate Higgs for the vev *)
-               phi = vevs[[v,4,1]];
-               (* find position of phi in the Higgs mass eigenstate vector *)
-               higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
-                             {ps__ /; MemberQ[ps, phi], {h_,_}} :> {h, Position[ps, phi][[1,1]]}
-                            ];
-               If[Head[higgs] =!= List || Length[higgs] != 1,
-                  Print["Error: could not find CP even Higgs field ", phi,
-                        " in MatterSector definitions"];
-                  Quit[1];
-                 ];
-               higgs = higgs[[1]];
-               AppendTo[association, {higgs[[1]], higgs[[2]]}];
-              ];
-           (* d V/d sigma_i *)
-           For[v = 1, v <= numberOfHiggses - numberOfVEVs, v++,
-               (* find CP odd gauge-eigenstate Higgs for the vev *)
-               sigma = vevs[[v,3,1]];
-               (* find position of sigma in the Higgs mass eigenstate vector *)
-               higgs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
-                             {ps__ /; MemberQ[ps, sigma], {h_,_}} :> {h, Position[ps, sigma][[1,1]]}
-                            ];
-               If[Head[higgs] =!= List || Length[higgs] != 1,
-                  Print["Error: could not find CP odd Higgs field ", sigma,
-                        " in MatterSector definitions"];
-                  Quit[1];
-                 ];
-               higgs = higgs[[1]];
-               AppendTo[association, {higgs[[1]], higgs[[2]]}];
-              ];
-           Return[association];
+    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
+            vev, dimVev},
+           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           (* list of phi fields, ordered according to VEVs / EWSB eqs. *)
+           phi = Transpose[vevs][[3]];
+           phi = ExpandGaugeIndices[phi];
+           (* list of phi fields, ordered according to Higgs mixing *)
+           higgsGaugeES = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
+                                {gauge_List, {SARAH`HiggsBoson, _}} :> gauge][[1]];
+           higgsGaugeES = ExpandGaugeIndices[higgsGaugeES];
+           (* find positions of phi in higgsGaugeES *)
+           {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ phi])
           ];
-
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
