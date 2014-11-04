@@ -3032,34 +3032,37 @@ to the comparator function.
 To check the correctness of \fs's generated spectrum generators
 extensive unit testing against Softsusy's MSSM and NMSSM
 implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-was carried out.  These unit tests systematically compare all
+has been carried out.  These unit tests systematically compare all
 tree-level mass matrices, EWSB equations, one- and two-loop
 $\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles numerically for certain MSSM and NMSSM parameter
+two-loop tadpoles numerically for various MSSM and NMSSM parameter
 points.  All tested expressions were found to agree within double
 machine precision.\footnote{Due to the systematic and detailed tests
   several bugs in Softsusy, SARAH and \fs could be identified and
   corrected.}  Furthermore, the overall pole mass spectrum after the
-full fixed-point iteration has finished is compared, and was found to
-agree at the sub-permille level.  The origin of the sub-permille level
-difference between \fs and Softsusy is the different determination of
-the \DRbar\ weak mixing angle
-$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$: \fs calculates
-$\theta_W$ from $M_W^2$ and $M_Z^2$ as described in
-\secref{sec:calculation-of-gauge-couplings}, while Softsusy determines
-$\theta_W$ from the muon decay constant $G_\mu$, which is more
-precise.  Furthermore, in Softsusy $3.5.0$ some three-loop
-$\beta$-functions and two-loop threshold corrections for the gauge and
-Yukawa couplings can be enabled in the MSSM to increase the accuracy
-of the RG running and the determination of the \DRbar\ gauge and
-Yukawa couplings at $M_Z$ \cite{Allanach:2014nba}.  These corrections
-are not implemented in \fs so far.
-
-The complete set of unit tests is shipped with \fs and can be found in
-the \code{test/} directory.  The tests can be run with the command
-\code{make execute-tests}.  All unit tests are carried out nightly in
-order to continuously check the correctness of the meta code and the
-generated spectrum generators.  The test results can be found at
+full fixed-point iteration has finished has been compared, and was
+found to agree at the sub-permille level.  The origin of the
+sub-permille level difference between \fs and Softsusy is the
+different determination of the weak mixing angle
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model in the
+\DRbar\ scheme: \fs calculates
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from $M_W$ and $M_Z$, as
+described in \secref{sec:calculation-of-gauge-couplings}, while
+Softsusy determines $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from
+the muon decay constant $G_\mu$.  The approach used in Softsusy
+results in more precise \DRbar\ gauge couplings at the $M_Z$ scale,
+because the muon decay constant is known with a higher accuracy than
+the $W$-boson mass.  Furthermore, in Softsusy $3.5.0$ some three-loop
+$\beta$-functions and two-loop threshold corrections can be enabled in
+the MSSM to increase the accuracy of the RG running and the
+determination of the \DRbar\ gauge and Yukawa couplings at $M_Z$
+\cite{Allanach:2014nba}.  These corrections are not implemented in \fs
+so far.  The complete set of unit tests is shipped with \fs and can be
+found in the \code{test/} directory.  The tests can be run with the
+command \code{make execute-tests}.  All unit tests are carried out
+nightly in order to continuously check the correctness of the meta
+code and the generated spectrum generators for the shipped models.
+The nightly test results can be found at
 \url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
 
 The \fs generated NUHM \ESSM\ spectrum generator has also been
@@ -3079,8 +3082,8 @@ alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
 with this are thanked in the acknowledgements.
 
 We also compared the run-time of \fs against SPheno, Softsusy and the
-SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
-can be found in \secref{sec:run-time comparison}.
+SARAH generated MSSM spectrum generator SPhenoMSSM.  The results of
+the comparison can be found in \secref{sec:run-time comparison}.
 
 \subsection{Run-time comparison}
 \label{sec:run-time comparison}
@@ -3107,23 +3110,22 @@ two different sets of CMSSM spectrum generators:
   violation.
 \end{itemize}
 %
-\fs and Softsusy are compiled with g++ 4.8.0 and Intel ifort
-13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel ifort
-13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
-  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
-  compared to gfortran.}
-
-For the run-time comparison we're generating $2\cdot 10^{4}$ random
-CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
+For the run-time comparison the CKM matrix is set to unity, all CP
+violating phases are set to zero and R-parity violation is disabled.
+\fs and Softsusy are compiled with g++ 4.8.0 and Intel ifort 13.1.3
+20130607.  SPheno and SPhenoMSSM are compiled with Intel ifort 13.1.3
+20130607.\footnote{Intel's ifort compiler decreases the run-time of
+  SPheno and SPhenoMSSM by approximately a factor $1.5$, compared to
+  gfortran.}  We're generating $2\cdot 10^{4}$ random CMSSM parameter
+points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
 [50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
 and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
 file is created by appending the values of $m_0$, $m_{1/2}$,
 $\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
-SLHA template file given in
-\ref{sec:speed-test-slha-template-file}.  The resulting SLHA input
-file is passed to each spectrum generator and the (wall-clock) time is
-measured until the program has finished.  The average run-times for
-three different CPU types can be found in
+SLHA template file given in \ref{sec:speed-test-slha-template-file}.
+The resulting SLHA input file is passed to each spectrum generator and
+the (wall-clock) time is measured until the program has finished.  The
+average run-times for three different CPU types can be found in
 \tabref{tab:run-time-comparison}.  The first column shows the run-time
 on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
 enabled.  The second column shows the run-time on the same processor
