@@ -142,7 +142,8 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
 
 CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_List] :=
 "struct " <> className <> " {
-   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f) {
+   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f)
+   {
       if (contains_nan(x, " <> dim <> "))
          return 1;
 
