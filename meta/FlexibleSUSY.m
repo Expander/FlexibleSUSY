@@ -1276,7 +1276,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 	   On[Assert];
 
            Lat$massMatrices = ConvertSarahMassMatrices[] /.
-                          Parameters`ApplyGUTNormalization[] /.
+                          Parameters`ApplyGUTNormalization[] //.
                           { SARAH`sum[j_, start_, end_, expr_] :> (Sum[expr, {j,start,end}]) };
            massMatrices = Lat$massMatrices /. allIndexReplacementRules;
 	   Lat$massMatrices = LatticeUtils`FixDiagonalization[Lat$massMatrices];
