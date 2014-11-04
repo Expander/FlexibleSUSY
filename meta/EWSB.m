@@ -383,7 +383,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            If[Length[equations] =!= Length[parameters],
               Print["Error: SolveTreeLevelEwsbVia: trying to solve ",
                     Length[equations], " equations for ", Length[parameters],
-                    " parameters ", parameters];
+                    " parameters ", InputForm[parameters]];
               Quit[1];
              ];
            simplifiedEqs = (# == 0)& /@ equations;

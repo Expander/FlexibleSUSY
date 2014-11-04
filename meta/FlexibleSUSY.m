@@ -70,6 +70,9 @@ FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
 
+(* list of soft breaking Higgs masses for solving EWSB eqs. *)
+FSSoftHiggsMasses = {};
+
 (* EWSB solvers *)
 GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
@@ -220,6 +223,11 @@ CheckModelFileSettings[] :=
              ];
            If[Head[FlexibleSUSY`ExtraSLHAOutputBlocks] =!= List,
               FlexibleSUSY`ExtraSLHAOutputBlocks = {};
+             ];
+           If[Head[FlexibleSUSY`EWSBOutputParameters] =!= List,
+              Print["Error: EWSBOutputParameters has to be set to a list",
+                    " of model parameters chosen to be output of the EWSB eqs."];
+              Quit[1];
              ];
           ];
 
@@ -582,8 +590,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softScalarMasses          = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];,
               softScalarMasses          = {};
              ];
-           softHiggsMasses              = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
-           softHiggsMasses              = Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]];
+           (* find soft Higgs masses that appear in tree-level EWSB eqs. *)
+           If[Head[FlexibleSUSY`FSSoftHiggsMasses] =!= List ||
+              FlexibleSUSY`FSSoftHiggsMasses === {},
+              softHiggsMasses = Select[softScalarMasses, (!FreeQ[ewsbEquations, #])&];
+              ,
+              softHiggsMasses = FlexibleSUSY`FSSoftHiggsMasses;
+             ];
+           softHiggsMasses              = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]]];
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
@@ -1213,12 +1227,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
+           FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
               treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
                                                       FlexibleSUSY`FSModelName <> "_tree_level_EWSB_solution.m"}];
-              Print["Solving EWSB equations ..."];
+              Print["Solving EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
               {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
                                                                           FlexibleSUSY`EWSBOutputParameters,
                                                                           treeLevelEwsbOutputFile];

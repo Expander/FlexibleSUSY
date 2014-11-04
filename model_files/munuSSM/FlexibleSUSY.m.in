@@ -23,6 +23,8 @@ EXTPAR = {
 
 EWSBOutputParameters = {mlHd2[1], mlHd2[2], mlHd2[3], mHd2, mHu2, mv2};
 
+FSSoftHiggsMasses = EWSBOutputParameters;
+
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
