@@ -89,7 +89,7 @@ InitialGuessAtHighScale = {};
 UseHiggs2LoopNMSSM = False;
 EffectiveMu =.;
 
-PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
+PotentialLSPParticles = { Chi, Su, Sd, Cha, Glu };
 
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
