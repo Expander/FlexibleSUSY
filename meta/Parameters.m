@@ -701,6 +701,7 @@ AppendGenerationIndices[expr_List] :=
 AppendGenerationIndices[expr_Symbol] :=
     Switch[SARAH`getDimParameters[expr],
            {}                          , expr,
+           {0}                         , expr,
            {1}                         , expr,
            {idx_}                      , expr[SARAH`gt1],
            {idx1_, idx2_}              , expr[SARAH`gt1, SARAH`gt2],
