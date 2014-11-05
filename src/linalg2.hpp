@@ -33,10 +33,10 @@ namespace flexiblesusy {
 #define MAX_(i, j) (((i) > (j)) ? (i) : (j))
 #define MIN_(i, j) (((i) < (j)) ? (i) : (j))
 
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd_eigen
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M> *u,
  Eigen::Matrix<Scalar, N, N> *vh)
 {
@@ -47,10 +47,10 @@ void svd_eigen
     if (vh) *vh = svd.matrixV().adjoint();
 }
 
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void hermitian_eigen
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N> *z)
 {
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar,N,N> >
@@ -254,6 +254,16 @@ void disna(const char& JOB, const Eigen::Array<Real, MIN_(M, N), 1>& D,
 }
 
 
+template<class Real, class Scalar, int M, int N>
+void svd_internal
+(const Eigen::Matrix<Scalar, M, N>& m,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Eigen::Matrix<Scalar, M, M> *u,
+ Eigen::Matrix<Scalar, N, N> *vh)
+{
+    svd_eigen(m, s, u, vh);
+}
+
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
 template<class Scalar, int M, int N>
@@ -286,24 +296,24 @@ void svd_internal
     svd_eigen(m, s, u, vh);
 }
 
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M> *u  = 0,
  Eigen::Matrix<Scalar, N, N> *vh = 0,
- double *s_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
+ Real *s_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *u_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *v_errbd = 0)
 {
     svd_internal(m, s, u, vh);
 
     // see http://www.netlib.org/lapack/lug/node96.html
     if (!s_errbd) return;
-    const double EPSMCH = std::numeric_limits<double>::epsilon();
+    const Real EPSMCH = std::numeric_limits<Real>::epsilon();
     *s_errbd = EPSMCH * s[0];
 
-    Eigen::Array<double, MIN_(M, N), 1> RCOND;
+    Eigen::Array<Real, MIN_(M, N), 1> RCOND;
     int INFO;
     if (u_errbd) {
 	disna<M, N>('L', s, RCOND, INFO);
@@ -330,6 +340,7 @@ void svd_errbd
  *
  * if `M == N`.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
@@ -338,10 +349,10 @@ void svd_errbd
  * @param[out] u      M-by-M unitary matrix
  * @param[out] vh     N-by-N unitary matrix
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh)
 {
@@ -358,13 +369,13 @@ void svd
  *
  * See the documentation of svd(m, s, u, vh) for the other parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh,
- double& s_errbd)
+ Real& s_errbd)
 {
     svd_errbd(m, s, &u, &vh, &s_errbd);
 }
@@ -381,15 +392,15 @@ void svd
  * See the documentation of svd(m, s, u, vh, s_errbd) for the other
  * parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh,
- double& s_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
+ Real& s_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& u_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& v_errbd)
 {
     svd_errbd(m, s, &u, &vh, &s_errbd, &u_errbd, &v_errbd);
 }
@@ -398,16 +409,17 @@ void svd
  * Returns singular values of M-by-N matrix m via s such that
  * `(s >= 0).all()`.  Elements of s are in descending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
  * @param[in]  m      M-by-N matrix to be decomposed
  * @param[out] s      array of length min(M,N) to contain singular values
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s)
+ Eigen::Array<Real, MIN_(M, N), 1>& s)
 {
     svd_errbd(m, s);
 }
@@ -422,44 +434,44 @@ void svd
  *
  * See the documentation of svd(m, s) for the other parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- double& s_errbd)
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Real& s_errbd)
 {
     svd_errbd(m, s, 0, 0, &s_errbd);
 }
 
 // Eigen::SelfAdjointEigenSolver seems to be faster than ZHEEV of ATLAS
 
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian_internal
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N> *z)
 {
     hermitian_eigen(m, w, z);
 }
 
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian_errbd
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N> *z = 0,
- double *w_errbd = 0,
- Eigen::Array<double, N, 1> *z_errbd = 0)
+ Real *w_errbd = 0,
+ Eigen::Array<Real, N, 1> *z_errbd = 0)
 {
     diagonalize_hermitian_internal(m, w, z);
 
     // see http://www.netlib.org/lapack/lug/node89.html
     if (!w_errbd) return;
-    const double EPSMCH = std::numeric_limits<double>::epsilon();
-    double mnorm = std::max(std::abs(w[0]), std::abs(w[N-1]));
+    const Real EPSMCH = std::numeric_limits<Real>::epsilon();
+    Real mnorm = std::max(std::abs(w[0]), std::abs(w[N-1]));
     *w_errbd = EPSMCH * mnorm;
 
     if (!z_errbd) return;
-    Eigen::Array<double, N, 1> RCONDZ;
+    Eigen::Array<Real, N, 1> RCONDZ;
     int INFO;
     disna<N, N>('E', w, RCONDZ, INFO);
     z_errbd->fill(*w_errbd);
@@ -473,16 +485,17 @@ void diagonalize_hermitian_errbd
  *
  * Elements of w are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m and z
  * @tparam     N      number of rows and columns in m and z
  * @param[in]  m      N-by-N matrix to be diagonalized
  * @param[out] w      array of length N to contain eigenvalues
  * @param[out] z      N-by-N unitary matrix
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z)
 {
     diagonalize_hermitian_errbd(m, w, &z);
@@ -499,12 +512,12 @@ void diagonalize_hermitian
  * See the documentation of diagonalize_hermitian(m, w, z) for the
  * other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z,
- double& w_errbd)
+ Real& w_errbd)
 {
     diagonalize_hermitian_errbd(m, w, &z, &w_errbd);
 }
@@ -520,13 +533,13 @@ void diagonalize_hermitian
  * See the documentation of diagonalize_hermitian(m, w, z, w_errbd)
  * for the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z,
- double& w_errbd,
- Eigen::Array<double, N, 1>& z_errbd)
+ Real& w_errbd,
+ Eigen::Array<Real, N, 1>& z_errbd)
 {
     diagonalize_hermitian_errbd(m, w, &z, &w_errbd, &z_errbd);
 }
@@ -535,15 +548,16 @@ void diagonalize_hermitian
  * Returns eigenvalues of N-by-N hermitian matrix m via w.
  * Elements of w are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m and z
  * @tparam     N      number of rows and columns in m and z
  * @param[in]  m      N-by-N matrix to be diagonalized
  * @param[out] w      array of length N to contain eigenvalues
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w)
+ Eigen::Array<Real, N, 1>& w)
 {
     diagonalize_hermitian_errbd(m, w);
 }
@@ -559,34 +573,35 @@ void diagonalize_hermitian
  * See the documentation of diagonalize_hermitian(m, w) for the other
  * parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
- double& w_errbd)
+ Eigen::Array<Real, N, 1>& w,
+ Real& w_errbd)
 {
     diagonalize_hermitian_errbd(m, w, 0, &w_errbd);
 }
 
+template<class Real>
 struct RephaseOp {
-    std::complex<double> operator() (const std::complex<double>& z) const
-	{ return std::polar(1.0, std::arg(z)/2); }
+    std::complex<Real> operator() (const std::complex<Real>& z) const
+	{ return std::polar(Real(1), std::arg(z)/2); }
 };
 
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric_errbd
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N> *u = 0,
- double *s_errbd = 0,
- Eigen::Array<double, N, 1> *u_errbd = 0)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N> *u = 0,
+ Real *s_errbd = 0,
+ Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
-    svd_errbd(m, s, u, (Eigen::Matrix<std::complex<double>, N, N> *)0,
+    svd_errbd(m, s, u, (Eigen::Matrix<std::complex<Real>, N, N> *)0,
 	      s_errbd, u_errbd);
     if (!u) return;
-    Eigen::Array<std::complex<double>, N, 1> diag =
+    Eigen::Array<std::complex<Real>, N, 1> diag =
 	(u->adjoint() * m * u->conjugate()).diagonal();
-    *u *= diag.unaryExpr(RephaseOp()).matrix().asDiagonal();
+    *u *= diag.unaryExpr(RephaseOp<Real>()).matrix().asDiagonal();
 }
 
 /**
@@ -596,16 +611,17 @@ void diagonalize_symmetric_errbd
  *
  * and `(s >= 0).all()`.  Elements of s are in descending order.
  *
- * @tparam     N number of rows and columns in m and u
- * @param[in]  m N-by-N complex symmetric matrix to be decomposed
- * @param[out] s array of length N to contain singular values
- * @param[out] u N-by-N complex unitary matrix
+ * @tparam     Real type of real and imaginary parts
+ * @tparam     N    number of rows and columns in m and u
+ * @param[in]  m    N-by-N complex symmetric matrix to be decomposed
+ * @param[out] s    array of length N to contain singular values
+ * @param[out] u    N-by-N complex unitary matrix
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u)
 {
     diagonalize_symmetric_errbd(m, s, &u);
 }
@@ -621,12 +637,12 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s, u) for the
  * other parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd)
 {
     diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
@@ -642,13 +658,13 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s, u, s_errbd)
  * for the other parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd,
- Eigen::Array<double, N, 1>& u_errbd)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd,
+ Eigen::Array<Real, N, 1>& u_errbd)
 {
     diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
 }
@@ -657,14 +673,15 @@ void diagonalize_symmetric
  * Returns singular values of N-by-N complex symmetric matrix m via s
  * such that `(s >= 0).all()`.  Elements of s are in descending order.
  *
- * @tparam     N number of rows and columns in m and u
- * @param[in]  m N-by-N complex symmetric matrix to be decomposed
- * @param[out] s array of length N to contain singular values
+ * @tparam     Real type of real and imaginary parts
+ * @tparam     N    number of rows and columns in m and u
+ * @param[in]  m    N-by-N complex symmetric matrix to be decomposed
+ * @param[out] s    array of length N to contain singular values
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s)
 {
     diagonalize_symmetric_errbd(m, s);
 }
@@ -680,35 +697,36 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s) for the other
  * parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- double& s_errbd)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Real& s_errbd)
 {
     diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
+template<class Real>
 struct FlipSignOp {
-    std::complex<double> operator() (const std::complex<double>& z) const {
-	return z.real() < 0 ? std::complex<double>(0.0,1.0) :
-	    std::complex<double>(1.0,0.0);
+    std::complex<Real> operator() (const std::complex<Real>& z) const {
+	return z.real() < 0 ? std::complex<Real>(0,1) :
+	    std::complex<Real>(1,0);
     }
 };
 
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric_errbd
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N> *u = 0,
- double *s_errbd = 0,
- Eigen::Array<double, N, 1> *u_errbd = 0)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N> *u = 0,
+ Real *s_errbd = 0,
+ Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
-    Eigen::Matrix<double, N, N> z;
+    Eigen::Matrix<Real, N, N> z;
     diagonalize_hermitian_errbd(m, s, u ? &z : 0, s_errbd, u_errbd);
     // see http://forum.kde.org/viewtopic.php?f=74&t=62606
-    if (u) *u = z * s.template cast<std::complex<double> >().
-		unaryExpr(FlipSignOp()).matrix().asDiagonal();
+    if (u) *u = z * s.template cast<std::complex<Real> >().
+		unaryExpr(FlipSignOp<Real>()).matrix().asDiagonal();
     s = s.abs();
 }
 
@@ -719,18 +737,19 @@ void diagonalize_symmetric_errbd
  *
  * and `(s >= 0).all()`.  Order of elements of s is *unspecified*.
  *
- * @tparam     N number of rows and columns of m
- * @param[in]  m N-by-N real symmetric matrix to be decomposed
- * @param[out] s array of length N to contain singular values
- * @param[out] u N-by-N complex unitary matrix
+ * @tparam     Real type of real and imaginary parts
+ * @tparam     N    number of rows and columns of m
+ * @param[in]  m    N-by-N real symmetric matrix to be decomposed
+ * @param[out] s    array of length N to contain singular values
+ * @param[out] u    N-by-N complex unitary matrix
  *
  * @note Use diagonalize_hermitian() unless sign of `s[i]` matters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u)
 {
     diagonalize_symmetric_errbd(m, s, &u);
 }
@@ -746,12 +765,12 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s, u) for the
  * other parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd)
 {
     diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
@@ -767,13 +786,13 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s, u, s_errbd)
  * for the other parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd,
- Eigen::Array<double, N, 1>& u_errbd)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd,
+ Eigen::Array<Real, N, 1>& u_errbd)
 {
     diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
 }
@@ -783,16 +802,17 @@ void diagonalize_symmetric
  * such that `(s >= 0).all()`.  Order of elements of s is
  * *unspecified*.
  *
- * @tparam     N number of rows and columns of m
- * @param[in]  m N-by-N real symmetric matrix to be decomposed
- * @param[out] s array of length N to contain singular values
+ * @tparam     Real type of elements of m and s
+ * @tparam     N    number of rows and columns of m
+ * @param[in]  m    N-by-N real symmetric matrix to be decomposed
+ * @param[out] s    array of length N to contain singular values
  *
  * @note Use diagonalize_hermitian() unless sign of `s[i]` matters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s)
 {
     diagonalize_symmetric_errbd(m, s);
 }
@@ -808,24 +828,24 @@ void diagonalize_symmetric
  * See the documentation of diagonalize_symmetric(m, s) for the other
  * parameters.
  */
-template<int N>
+template<class Real, int N>
 void diagonalize_symmetric
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- double& s_errbd)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Real& s_errbd)
 {
     diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M> *u  = 0,
  Eigen::Matrix<Scalar, N, N> *vh = 0,
- double *s_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
+ Real *s_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *u_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *v_errbd = 0)
 {
     svd_errbd(m, s, u, vh, s_errbd, u_errbd, v_errbd);
     s.reverseInPlace();
@@ -853,6 +873,7 @@ void reorder_svd_errbd
  *
  * if `M == N`.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
@@ -861,10 +882,10 @@ void reorder_svd_errbd
  * @param[out] u      M-by-M unitary matrix
  * @param[out] vh     N-by-N unitary matrix
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh)
 {
@@ -882,13 +903,13 @@ void reorder_svd
  * See the documentation of reorder_svd(m, s, u, vh) for the other
  * parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh,
- double& s_errbd)
+ Real& s_errbd)
 {
     reorder_svd_errbd(m, s, &u, &vh, &s_errbd);
 }
@@ -905,15 +926,15 @@ void reorder_svd
  * See the documentation of reorder_svd(m, s, u, vh, s_errbd) for the
  * other parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& vh,
- double& s_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
+ Real& s_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& u_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& v_errbd)
 {
     reorder_svd_errbd(m, s, &u, &vh, &s_errbd, &u_errbd, &v_errbd);
 }
@@ -922,16 +943,17 @@ void reorder_svd
  * Returns singular values of M-by-N matrix m via s such that
  * `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and vh
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
  * @param[in]  m      M-by-N matrix to be decomposed
  * @param[out] s      array of length min(M,N) to contain singular values
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s)
+ Eigen::Array<Real, MIN_(M, N), 1>& s)
 {
     reorder_svd_errbd(m, s);
 }
@@ -947,22 +969,22 @@ void reorder_svd
  * See the documentation of reorder_svd(m, s) for the other
  * parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void reorder_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- double& s_errbd)
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Real& s_errbd)
 {
     reorder_svd_errbd(m, s, 0, 0, &s_errbd);
 }
 
-template<int N>
+template<class Real, int N>
 void reorder_diagonalize_symmetric_errbd
-(const Eigen::Matrix<std::complex<double>, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N> *u = 0,
- double *s_errbd = 0,
- Eigen::Array<double, N, 1> *u_errbd = 0)
+(const Eigen::Matrix<std::complex<Real>, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N> *u = 0,
+ Real *s_errbd = 0,
+ Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
     diagonalize_symmetric_errbd(m, s, u, s_errbd, u_errbd);
     s.reverseInPlace();
@@ -970,33 +992,33 @@ void reorder_diagonalize_symmetric_errbd
     if (u_errbd) u_errbd->reverseInPlace();
 }
 
-template<int N>
+template<class Real, int N>
 struct Compare {
-    Compare(const Eigen::Array<double, N, 1>& s_) : s(s_) {}
+    Compare(const Eigen::Array<Real, N, 1>& s_) : s(s_) {}
     bool operator() (int i, int j) { return s[i] < s[j]; }
-    const Eigen::Array<double, N, 1>& s;
+    const Eigen::Array<Real, N, 1>& s;
 };
 
-template<int N>
+template<class Real, int N>
 void reorder_diagonalize_symmetric_errbd
-(const Eigen::Matrix<double, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N> *u = 0,
- double *s_errbd = 0,
- Eigen::Array<double, N, 1> *u_errbd = 0)
+(const Eigen::Matrix<Real, N, N>& m,
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N> *u = 0,
+ Real *s_errbd = 0,
+ Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
     diagonalize_symmetric_errbd(m, s, u, s_errbd, u_errbd);
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      Compare<N>(s));
+	      Compare<Real, N>(s));
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     s.matrix().transpose() *= p;
     if (u_errbd) u_errbd->matrix().transpose() *= p;
 #else
-    Eigen::Map<Eigen::Matrix<double, N, 1> >(s.data()).transpose() *= p;
+    Eigen::Map<Eigen::Matrix<Real, N, 1> >(s.data()).transpose() *= p;
     if (u_errbd)
-	Eigen::Map<Eigen::Matrix<double, N, 1> >(u_errbd->data()).transpose()
+	Eigen::Map<Eigen::Matrix<Real, N, 1> >(u_errbd->data()).transpose()
 	    *= p;
 #endif
     if (u) *u *= p;
@@ -1009,17 +1031,18 @@ void reorder_diagonalize_symmetric_errbd
  *
  * and `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m
  * @tparam     N      number of rows and columns in m and u
  * @param[in]  m      N-by-N symmetric matrix to be decomposed
  * @param[out] s      array of length N to contain singular values
  * @param[out] u      N-by-N complex unitary matrix
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u)
 {
     reorder_diagonalize_symmetric_errbd(m, s, &u);
 }
@@ -1035,12 +1058,12 @@ void reorder_diagonalize_symmetric
  * See the documentation of reorder_diagonalize_symmetric(m, s, u) for
  * the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd)
 {
     reorder_diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
@@ -1056,13 +1079,13 @@ void reorder_diagonalize_symmetric
  * See the documentation of reorder_diagonalize_symmetric(m, s, u,
  * s_errbd) for the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd,
- Eigen::Array<double, N, 1>& u_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd,
+ Eigen::Array<Real, N, 1>& u_errbd)
 {
     reorder_diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
 }
@@ -1071,15 +1094,16 @@ void reorder_diagonalize_symmetric
  * Returns singular values of N-by-N symmetric matrix m via s such
  * that `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m
  * @tparam     N      number of rows and columns in m and u
  * @param[in]  m      N-by-N symmetric matrix to be decomposed
  * @param[out] s      array of length N to contain singular values
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s)
+ Eigen::Array<Real, N, 1>& s)
 {
     reorder_diagonalize_symmetric_errbd(m, s);
 }
@@ -1095,24 +1119,24 @@ void reorder_diagonalize_symmetric
  * See the documentation of reorder_diagonalize_symmetric(m, s) for
  * the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void reorder_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- double& s_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Real& s_errbd)
 {
     reorder_diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd_errbd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M> *u = 0,
  Eigen::Matrix<Scalar, N, N> *v = 0,
- double *s_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *u_errbd = 0,
- Eigen::Array<double, MIN_(M, N), 1> *v_errbd = 0)
+ Real *s_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *u_errbd = 0,
+ Eigen::Array<Real, MIN_(M, N), 1> *v_errbd = 0)
 {
     reorder_svd_errbd(m, s, u, v, s_errbd, u_errbd, v_errbd);
     if (u) u->transposeInPlace();
@@ -1132,6 +1156,7 @@ void fs_svd_errbd
  *
  * if `M == N`.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and v
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
@@ -1140,10 +1165,10 @@ void fs_svd_errbd
  * @param[out] u      M-by-M unitary matrix
  * @param[out] v      N-by-N unitary matrix
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& v)
 {
@@ -1161,13 +1186,13 @@ void fs_svd
  * See the documentation of fs_svd(m, s, u, v) for the other
  * parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& v,
- double& s_errbd)
+ Real& s_errbd)
 {
     fs_svd_errbd(m, s, &u, &v, &s_errbd);
 }
@@ -1184,15 +1209,15 @@ void fs_svd
  * See the documentation of fs_svd(m, s, u, v, s_errbd) for the other
  * parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
  Eigen::Matrix<Scalar, M, M>& u,
  Eigen::Matrix<Scalar, N, N>& v,
- double& s_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
+ Real& s_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& u_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& v_errbd)
 {
     fs_svd_errbd(m, s, &u, &v, &s_errbd, &u_errbd, &v_errbd);
 }
@@ -1201,16 +1226,17 @@ void fs_svd
  * Returns singular values of M-by-N matrix m via s such that
  * `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m, u, and v
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
  * @param[in]  m      M-by-N matrix to be decomposed
  * @param[out] s      array of length min(M,N) to contain singular values
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s)
+ Eigen::Array<Real, MIN_(M, N), 1>& s)
 {
     fs_svd_errbd(m, s);
 }
@@ -1225,11 +1251,11 @@ void fs_svd
  *
  * See the documentation of fs_svd(m, s) for the other parameters.
  */
-template<class Scalar, int M, int N>
+template<class Real, class Scalar, int M, int N>
 void fs_svd
 (const Eigen::Matrix<Scalar, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- double& s_errbd)
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Real& s_errbd)
 {
     fs_svd_errbd(m, s, 0, 0, &s_errbd);
 }
@@ -1248,6 +1274,7 @@ void fs_svd
  *
  * if `M == N`.
  *
+ * @tparam     Real   type of real and imaginary parts
  * @tparam     M      number of rows in m
  * @tparam     N      number of columns in m
  * @param[in]  m      M-by-N *real* matrix to be decomposed
@@ -1259,14 +1286,14 @@ void fs_svd
  * u and v (complex) differs from that of m (real).  Mathematically,
  * real u and v are enough to accommodate SVD of any real m.
  */
-template<int M, int N>
+template<class Real, int M, int N>
 void fs_svd
-(const Eigen::Matrix<double, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<std::complex<double>, M, M>& u,
- Eigen::Matrix<std::complex<double>, N, N>& v)
+(const Eigen::Matrix<Real, M, N>& m,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<Real>, M, M>& u,
+ Eigen::Matrix<std::complex<Real>, N, N>& v)
 {
-    fs_svd(m.template cast<std::complex<double> >().eval(), s, u, v);
+    fs_svd(m.template cast<std::complex<Real> >().eval(), s, u, v);
 }
 
 /**
@@ -1280,15 +1307,15 @@ void fs_svd
  * See the documentation of fs_svd(m, s, u, v) for the other
  * parameters.
  */
-template<int M, int N>
+template<class Real, int M, int N>
 void fs_svd
-(const Eigen::Matrix<double, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<std::complex<double>, M, M>& u,
- Eigen::Matrix<std::complex<double>, N, N>& v,
- double& s_errbd)
+(const Eigen::Matrix<Real, M, N>& m,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<Real>, M, M>& u,
+ Eigen::Matrix<std::complex<Real>, N, N>& v,
+ Real& s_errbd)
 {
-    fs_svd(m.template cast<std::complex<double> >().eval(), s, u, v, s_errbd);
+    fs_svd(m.template cast<std::complex<Real> >().eval(), s, u, v, s_errbd);
 }
 
 /**
@@ -1303,27 +1330,27 @@ void fs_svd
  * See the documentation of fs_svd(m, s, u, v, s_errbd) for the other
  * parameters.
  */
-template<int M, int N>
+template<class Real, int M, int N>
 void fs_svd
-(const Eigen::Matrix<double, M, N>& m,
- Eigen::Array<double, MIN_(M, N), 1>& s,
- Eigen::Matrix<std::complex<double>, M, M>& u,
- Eigen::Matrix<std::complex<double>, N, N>& v,
- double& s_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& u_errbd,
- Eigen::Array<double, MIN_(M, N), 1>& v_errbd)
+(const Eigen::Matrix<Real, M, N>& m,
+ Eigen::Array<Real, MIN_(M, N), 1>& s,
+ Eigen::Matrix<std::complex<Real>, M, M>& u,
+ Eigen::Matrix<std::complex<Real>, N, N>& v,
+ Real& s_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& u_errbd,
+ Eigen::Array<Real, MIN_(M, N), 1>& v_errbd)
 {
-    fs_svd(m.template cast<std::complex<double> >().eval(), s, u, v,
+    fs_svd(m.template cast<std::complex<Real> >().eval(), s, u, v,
 	   s_errbd, u_errbd, v_errbd);
 }
 
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric_errbd
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N> *u = 0,
- double *s_errbd = 0,
- Eigen::Array<double, N, 1> *u_errbd = 0)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N> *u = 0,
+ Real *s_errbd = 0,
+ Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
     reorder_diagonalize_symmetric_errbd(m, s, u, s_errbd, u_errbd);
     if (u) u->transposeInPlace();
@@ -1337,17 +1364,18 @@ void fs_diagonalize_symmetric_errbd
  *
  * and `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m
  * @tparam     N      number of rows and columns in m and u
  * @param[in]  m      N-by-N symmetric matrix to be decomposed
  * @param[out] s      array of length N to contain singular values
  * @param[out] u      N-by-N complex unitary matrix
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u)
 {
     fs_diagonalize_symmetric_errbd(m, s, &u);
 }
@@ -1363,12 +1391,12 @@ void fs_diagonalize_symmetric
  * See the documentation of fs_diagonalize_symmetric(m, s, u) for the
  * other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd)
 {
     fs_diagonalize_symmetric_errbd(m, s, &u, &s_errbd);
 }
@@ -1384,13 +1412,13 @@ void fs_diagonalize_symmetric
  * See the documentation of fs_diagonalize_symmetric(m, s, u, s_errbd)
  * for the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- Eigen::Matrix<std::complex<double>, N, N>& u,
- double& s_errbd,
- Eigen::Array<double, N, 1>& u_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Eigen::Matrix<std::complex<Real>, N, N>& u,
+ Real& s_errbd,
+ Eigen::Array<Real, N, 1>& u_errbd)
 {
     fs_diagonalize_symmetric_errbd(m, s, &u, &s_errbd, &u_errbd);
 }
@@ -1399,15 +1427,16 @@ void fs_diagonalize_symmetric
  * Returns singular values of N-by-N symmetric matrix m via s such
  * that `(s >= 0).all()`.  Elements of s are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m
  * @tparam     N      number of rows and columns in m and u
  * @param[in]  m      N-by-N symmetric matrix to be decomposed
  * @param[out] s      array of length N to contain singular values
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s)
+ Eigen::Array<Real, N, 1>& s)
 {
     fs_diagonalize_symmetric_errbd(m, s);
 }
@@ -1423,42 +1452,42 @@ void fs_diagonalize_symmetric
  * See the documentation of fs_diagonalize_symmetric(m, s) for the
  * other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_symmetric
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& s,
- double& s_errbd)
+ Eigen::Array<Real, N, 1>& s,
+ Real& s_errbd)
 {
     fs_diagonalize_symmetric_errbd(m, s, 0, &s_errbd);
 }
 
-template<int N>
+template<class Real, int N>
 struct CompareAbs {
-    CompareAbs(const Eigen::Array<double, N, 1>& w_) : w(w_) {}
+    CompareAbs(const Eigen::Array<Real, N, 1>& w_) : w(w_) {}
     bool operator() (int i, int j) { return std::abs(w[i]) < std::abs(w[j]); }
-    const Eigen::Array<double, N, 1>& w;
+    const Eigen::Array<Real, N, 1>& w;
 };
 
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian_errbd
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N> *z = 0,
- double *w_errbd = 0,
- Eigen::Array<double, N, 1> *z_errbd = 0)
+ Real *w_errbd = 0,
+ Eigen::Array<Real, N, 1> *z_errbd = 0)
 {
     diagonalize_hermitian_errbd(m, w, z, w_errbd, z_errbd);
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      CompareAbs<N>(w));
+	      CompareAbs<Real, N>(w));
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     w.matrix().transpose() *= p;
     if (z_errbd) z_errbd->matrix().transpose() *= p;
 #else
-    Eigen::Map<Eigen::Matrix<double, N, 1> >(w.data()).transpose() *= p;
+    Eigen::Map<Eigen::Matrix<Real, N, 1> >(w.data()).transpose() *= p;
     if (z_errbd)
-	Eigen::Map<Eigen::Matrix<double, N, 1> >(z_errbd->data()).transpose()
+	Eigen::Map<Eigen::Matrix<Real, N, 1> >(z_errbd->data()).transpose()
 	    *= p;
 #endif
     if (z) *z = (*z * p).adjoint().eval();
@@ -1471,16 +1500,17 @@ void fs_diagonalize_hermitian_errbd
  *
  * w is arranged so that `abs(w[i])` are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m and z
  * @tparam     N      number of rows and columns in m and z
  * @param[in]  m      N-by-N matrix to be diagonalized
  * @param[out] w      array of length N to contain eigenvalues
  * @param[out] z      N-by-N unitary matrix
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z)
 {
     fs_diagonalize_hermitian_errbd(m, w, &z);
@@ -1497,12 +1527,12 @@ void fs_diagonalize_hermitian
  * See the documentation of fs_diagonalize_hermitian(m, w, z) for the
  * other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z,
- double& w_errbd)
+ Real& w_errbd)
 {
     fs_diagonalize_hermitian_errbd(m, w, &z, &w_errbd);
 }
@@ -1518,13 +1548,13 @@ void fs_diagonalize_hermitian
  * See the documentation of fs_diagonalize_hermitian(m, w, z, w_errbd)
  * for the other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
+ Eigen::Array<Real, N, 1>& w,
  Eigen::Matrix<Scalar, N, N>& z,
- double& w_errbd,
- Eigen::Array<double, N, 1>& z_errbd)
+ Real& w_errbd,
+ Eigen::Array<Real, N, 1>& z_errbd)
 {
     fs_diagonalize_hermitian_errbd(m, w, &z, &w_errbd, &z_errbd);
 }
@@ -1533,15 +1563,16 @@ void fs_diagonalize_hermitian
  * Returns eigenvalues of N-by-N hermitian matrix m via w.
  * w is arranged so that `abs(w[i])` are in ascending order.
  *
+ * @tparam     Real   type of real and imaginary parts of Scalar
  * @tparam     Scalar type of elements of m and z
  * @tparam     N      number of rows and columns in m and z
  * @param[in]  m      N-by-N matrix to be diagonalized
  * @param[out] w      array of length N to contain eigenvalues
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w)
+ Eigen::Array<Real, N, 1>& w)
 {
     fs_diagonalize_hermitian_errbd(m, w);
 }
@@ -1557,11 +1588,11 @@ void fs_diagonalize_hermitian
  * See the documentation of fs_diagonalize_hermitian(m, w) for the
  * other parameters.
  */
-template<class Scalar, int N>
+template<class Real, class Scalar, int N>
 void fs_diagonalize_hermitian
 (const Eigen::Matrix<Scalar, N, N>& m,
- Eigen::Array<double, N, 1>& w,
- double& w_errbd)
+ Eigen::Array<Real, N, 1>& w,
+ Real& w_errbd)
 {
     fs_diagonalize_hermitian_errbd(m, w, 0, &w_errbd);
 }
