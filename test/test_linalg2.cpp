@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#include <limits>
 #include <cmath>
 #include <complex>
 #include <iostream>
@@ -250,36 +251,48 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 	BOOST_CHECK(w[i] <= w[i+1]);
 }
 
-template<class S_, int M_, int N_ = M_>
+template<class R_, class S_, int M_, int N_ = M_>
 struct Test_fs {
+    typedef R_ R;
     typedef S_ S;
     enum { M = M_ };
     enum { N = N_ };
 };
 
 typedef boost::mpl::list<
-    Test_fs<complex<double>, 2>,
-    Test_fs<complex<double>, 3>,
-    Test_fs<complex<double>, 4>,
-    Test_fs<complex<double>, 6>,
-    Test_fs<complex<double>, 4, 6>,
-    Test_fs<complex<double>, 6, 4>,
-    Test_fs<double	   , 2>,
-    Test_fs<double	   , 3>,
-    Test_fs<double	   , 4>,
-    Test_fs<double	   , 6>,
-    Test_fs<double	   , 4, 6>,
-    Test_fs<double	   , 6, 4>
+    Test_fs<double, complex<double>, 2>,
+    Test_fs<double, complex<double>, 3>,
+    Test_fs<double, complex<double>, 4>,
+    Test_fs<double, complex<double>, 6>,
+    Test_fs<double, complex<double>, 4, 6>,
+    Test_fs<double, complex<double>, 6, 4>,
+    Test_fs<double, double	   , 2>,
+    Test_fs<double, double	   , 3>,
+    Test_fs<double, double	   , 4>,
+    Test_fs<double, double	   , 6>,
+    Test_fs<double, double	   , 4, 6>,
+    Test_fs<double, double	   , 6, 4>,
+
+    Test_fs<long double, complex<long double>, 3>,
+    Test_fs<long double, complex<long double>, 6>,
+    Test_fs<long double, complex<long double>, 4, 6>,
+    Test_fs<long double, complex<long double>, 6, 4>,
+    Test_fs<long double, long double	     , 3>,
+    Test_fs<long double, long double	     , 6>,
+    Test_fs<long double, long double	     , 4, 6>,
+    Test_fs<long double, long double	     , 6, 4>
 > fs_svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
 {
+    typedef typename T::R R;
     typedef typename T::S S;
     const size_t M = T::M;
     const size_t N = T::N;
+    const R eps = numeric_limits<R>::epsilon();
 
     Matrix<S, M, N> m = Matrix<S, M, N>::Random();
-    Array<double, MIN_(M, N), 1> s;
+    Array<R, MIN_(M, N), 1> s;
     Matrix<S, M, M> u;
     Matrix<S, N, N> v;
 
@@ -289,7 +302,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < sigma.rows(); i++)
 	for (size_t j = 0; j < sigma.cols(); j++)
-	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 50*eps);
 
     for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
@@ -298,35 +311,42 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_fs_svd, T, fs_svd_tests)
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < sigma.rows(); i++)
 	for (size_t j = 0; j < sigma.cols(); j++)
-	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 50*eps);
 }
 
 typedef boost::mpl::list<
-    Test_fs<double, 2>,
-    Test_fs<double, 3>,
-    Test_fs<double, 4>,
-    Test_fs<double, 6>,
-    Test_fs<double, 4, 6>,
-    Test_fs<double, 6, 4>
+    Test_fs<double, double, 2>,
+    Test_fs<double, double, 3>,
+    Test_fs<double, double, 4>,
+    Test_fs<double, double, 6>,
+    Test_fs<double, double, 4, 6>,
+    Test_fs<double, double, 6, 4>,
+
+    Test_fs<long double, long double, 3>,
+    Test_fs<long double, long double, 6>,
+    Test_fs<long double, long double, 4, 6>,
+    Test_fs<long double, long double, 6, 4>
 > casting_fs_svd_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
 {
+    typedef typename T::R R;
     const size_t M = T::M;
     const size_t N = T::N;
+    const R eps = numeric_limits<R>::epsilon();
 
-    Matrix<double, M, N> m = Matrix<double, M, N>::Random();
-    Array<double, MIN_(M, N), 1> s;
-    Matrix<complex<double>, M, M> u;
-    Matrix<complex<double>, N, N> v;
+    Matrix<R, M, N> m = Matrix<R, M, N>::Random();
+    Array<R, MIN_(M, N), 1> s;
+    Matrix<complex<R>, M, M> u;
+    Matrix<complex<R>, N, N> v;
 
     fs_svd(m, s, u, v);		// following SARAH convention
-    Matrix<complex<double>, M, N> sigma = u.conjugate() * m * v.adjoint();
+    Matrix<complex<R>, M, N> sigma = u.conjugate() * m * v.adjoint();
 
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < sigma.rows(); i++)
 	for (size_t j = 0; j < sigma.cols(); j++)
-	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 50*eps);
 
     for (size_t i = 0; i < s.size()-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
@@ -335,40 +355,49 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(test_casting_fs_svd, T, casting_fs_svd_tests)
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < sigma.rows(); i++)
 	for (size_t j = 0; j < sigma.cols(); j++)
-	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 1e-14);
+	    BOOST_CHECK_SMALL(abs(sigma(i,j) - (i==j ? s(i) : 0)), 50*eps);
 }
 
 typedef boost::mpl::list<
     // use Eigen::JacobiSVD
-    Test_fs<complex<double>, 2>,
-    Test_fs<complex<double>, 3>,
+    Test_fs<double, complex<double>, 2>,
+    Test_fs<double, complex<double>, 3>,
+
+    Test_fs<long double, complex<long double>, 2>,
+    Test_fs<long double, complex<long double>, 3>,
+    Test_fs<long double, complex<long double>, 4>,
+    Test_fs<long double, complex<long double>, 6>,
 
     // use ZGESVD of LAPACK
-    Test_fs<complex<double>, 4>,
-    Test_fs<complex<double>, 6>,
+    Test_fs<double, complex<double>, 4>,
+    Test_fs<double, complex<double>, 6>,
 
     // use Eigen::SelfAdjointEigenSolver
-    Test_fs<double	   , 6>
+    Test_fs<double, double, 6>,
+
+    Test_fs<long double, long double, 6>
 > fs_diagonalize_symmetric_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
 (test_fs_diagonalize_symmetric, T, fs_diagonalize_symmetric_tests)
 {
+    typedef typename T::R R;
     typedef typename T::S S;
     const size_t N = T::N;
+    const R eps = numeric_limits<R>::epsilon();
 
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.transpose())/2).eval();
-    Array<double, N, 1> s;
-    Matrix<complex<double>, N, N> u;
+    Array<R, N, 1> s;
+    Matrix<complex<R>, N, N> u;
 
     fs_diagonalize_symmetric(m, s, u);
-    Matrix<complex<double>, N, N> diag = u.conjugate() * m * u.adjoint();
+    Matrix<complex<R>, N, N> diag = u.conjugate() * m * u.adjoint();
 
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 5000*eps);
 
     for (size_t i = 0; i < N-1; i++)
 	BOOST_CHECK(s[i] <= s[i+1]);
@@ -377,28 +406,36 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     BOOST_CHECK((s >= 0).all());
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 1e-12);
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 5000*eps);
 }
 
 using namespace boost::mpl::placeholders;
 
 typedef boost::mpl::fold<
-    boost::mpl::range_c<int, 0, 50>,
+    boost::mpl::range_c<int, 0, 10>,
     boost::mpl::list<>,
     boost::mpl::push_front<
-	boost::mpl::push_front<_1, Test_fs<complex<double>, 6> >,
-	Test_fs<double, 6> >
+      boost::mpl::push_front<
+        boost::mpl::push_front<
+          boost::mpl::push_front<
+	      _1,
+	      Test_fs<double, complex<double>, 6> >,
+	    Test_fs<double, double, 6> >,
+	  Test_fs<long double, complex<long double>, 6> >,
+	Test_fs<long double, long double, 6> >
 >::type fs_diagonalize_hermitian_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
 (test_fs_diagonalize_hermitian, T, fs_diagonalize_hermitian_tests)
 {
+    typedef typename T::R R;
     typedef typename T::S S;
     const size_t N = T::N;
+    const R eps = numeric_limits<R>::epsilon();
 
     Matrix<S, N, N> m = Matrix<S, N, N>::Random();
     m = ((m + m.adjoint())/2).eval();
-    Array<double, N, 1> w;
+    Array<R, N, 1> w;
     Matrix<S, N, N> z;
 
     fs_diagonalize_hermitian(m, w, z); // following SARAH convention
@@ -406,7 +443,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
 
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? w(i) : 0)), 1e-11);
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? w(i) : 0)), 50000*eps);
 
     for (size_t i = 0; i < N-1; i++)
 	BOOST_CHECK(abs(w[i]) <= abs(w[i+1]));
@@ -414,7 +451,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     fs_diagonalize_hermitian(m, w);
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
-	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? w(i) : 0)), 1e-11);
+	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? w(i) : 0)), 50000*eps);
 }
 
 template<int N>
