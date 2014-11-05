@@ -80,6 +80,8 @@ GSLBroyden;  (* Broyden method *)
 GSLNewton;   (* Newton method *)
 FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
 
+ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
+
 Begin["`Private`"];
 
 allParameters = {};
@@ -989,7 +991,7 @@ PrepareUnrotatedParticles[eigenstates_] :=
 
 ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
                        mediumPrecisionList_List, lowPrecisionList_List, eigenstates_] :=
-    Module[{particles, particle, i, precisionList = {}},
+    Module[{particles, particle, i, precisionList = {}, higgs},
            If[!MemberQ[{LowPrecision, MediumPrecision, HighPrecision}, defaultPrecision],
               Print["Error: ", defaultPrecision, " is not a valid",
                     " diagonalization precision!"];
@@ -1005,6 +1007,8 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
                      True, AppendTo[precisionList, {particle, defaultPrecision}]
                     ];
               ];
+           higgs = Cases[precisionList, {SARAH`HiggsBoson | SARAH`PseudoScalar | SARAH`ChargedHiggs, LowPrecision}];
+           Message[ReadPoleMassPrecisions::ImpreciseHiggs, #[[1]], #[[2]]]& /@ higgs;
            Return[precisionList];
           ];
 
