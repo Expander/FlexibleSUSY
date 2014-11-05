@@ -20,6 +20,7 @@
 #define linalg2_hpp
 
 #include <limits>
+#include <cctype>
 #include <cmath>
 #include <complex>
 #include <algorithm>
@@ -78,10 +79,6 @@ extern "C" void zheev_
 extern "C" void dsyev_
 (const char& JOBZ, const char& UPLO, const int& N, double *A,
  const int& LDA, double *W, double *WORK, const int& LWORK,
- int& INFO);
-
-extern "C" void ddisna_
-(const char& JOB, const int& M, const int& N, const double *D, double *SEP,
  int& INFO);
 
 #define def_svd_lapack(t, f, ...)					\
@@ -151,6 +148,112 @@ def_hermitian_lapack(std::complex<double>, zheev_, 2*N-1, 3*N-2)
 def_hermitian_lapack(double, dsyev_, 3*N-1)
 
 
+/**
+ * Template version of DDISNA from LAPACK.
+ */
+template<int M, int N, class Real>
+void disna(const char& JOB, const Eigen::Array<Real, MIN_(M, N), 1>& D,
+	   Eigen::Array<Real, MIN_(M, N), 1>& SEP, int& INFO)
+{
+//  -- LAPACK computational routine (version 3.4.0) --
+//  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+//  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+//     November 2011
+//
+//  =====================================================================
+
+//     .. Parameters ..
+      const Real         ZERO = 0;
+//     .. Local Scalars ..
+      bool               DECR, EIGEN, INCR, LEFT, RIGHT, SINGUL;
+      int                I, K;
+      Real               ANORM, EPS, NEWGAP, OLDGAP, SAFMIN, THRESH;
+//
+//     Test the input arguments
+//
+      INFO = 0;
+      EIGEN = std::toupper(JOB) == 'E';
+      LEFT  = std::toupper(JOB) == 'L';
+      RIGHT = std::toupper(JOB) == 'R';
+      SINGUL = LEFT || RIGHT;
+      if (EIGEN)
+	 K = M;
+      else if (SINGUL)
+         K = MIN_(M, N);
+      if (!EIGEN && !SINGUL)
+         INFO = -1;
+      else if (M < 0)
+         INFO = -2;
+      else if (K < 0)
+         INFO = -3;
+      else {
+         INCR = true;
+         DECR = true;
+         for (I = 0; I < K - 1; I++) {
+            if (INCR)
+               INCR = INCR && D(I) <= D(I+1);
+            if (DECR)
+	       DECR = DECR && D(I) >= D(I+1);
+	 }
+         if (SINGUL && K > 0) {
+            if (INCR)
+               INCR = INCR && ZERO <= D(0);
+            if (DECR)
+               DECR = DECR && D(K-1) >= ZERO;
+         }
+         if (!(INCR || DECR))
+            INFO = -4;
+      }
+      if (INFO != 0) {
+         // CALL XERBLA( 'DDISNA', -INFO )
+         return;
+      }
+//
+//     Quick return if possible
+//
+      if (K == 0)
+         return;
+//
+//     Compute reciprocal condition numbers
+//
+      if (K == 1)
+         SEP(0) = std::numeric_limits<Real>::max();
+      else {
+         OLDGAP = std::fabs(D(1) - D(0));
+         SEP(0) = OLDGAP;
+         for (I = 1; I < K - 1; I++) {
+            NEWGAP = std::fabs(D(I+1) - D(I));
+            SEP(I) = std::min(OLDGAP, NEWGAP);
+            OLDGAP = NEWGAP;
+	 }
+         SEP(K-1) = OLDGAP;
+      }
+      if (SINGUL)
+         if ((LEFT && M > N) || (RIGHT && M < N)) {
+            if (INCR)
+               SEP( 0 ) = std::min(SEP( 0 ), D( 0 ));
+            if (DECR)
+               SEP(K-1) = std::min(SEP(K-1), D(K-1));
+         }
+//
+//     Ensure that reciprocal condition numbers are not less than
+//     threshold, in order to limit the size of the error bound
+//
+      // Note std::numeric_limits<double>::epsilon() == 2 * DLAMCH('E')
+      // since  the former is the smallest eps such that 1.0 + eps > 1.0
+      // while DLAMCH('E') is the smallest eps such that 1.0 - eps < 1.0
+      EPS = std::numeric_limits<Real>::epsilon();
+      SAFMIN = std::numeric_limits<Real>::min();
+      ANORM = std::max(std::fabs(D(0)), std::fabs(D(K-1)));
+      if (ANORM == ZERO)
+         THRESH = EPS;
+      else
+         THRESH = std::max(EPS*ANORM, SAFMIN);
+      for (I = 0; I < K; I++)
+	 SEP(I) = std::max(SEP(I), THRESH);
+}
+
+
 // ZGESVD of ATLAS seems to be faster than Eigen::JacobiSVD for M, N >= 4
 
 template<class Scalar, int M, int N>
@@ -203,12 +306,12 @@ void svd_errbd
     Eigen::Array<double, MIN_(M, N), 1> RCOND;
     int INFO;
     if (u_errbd) {
-	ddisna_('L', M, N, s.data(), RCOND.data(), INFO);
+	disna<M, N>('L', s, RCOND, INFO);
 	u_errbd->fill(*s_errbd);
 	*u_errbd /= RCOND;
     }
     if (v_errbd) {
-	ddisna_('R', M, N, s.data(), RCOND.data(), INFO);
+	disna<M, N>('R', s, RCOND, INFO);
 	v_errbd->fill(*s_errbd);
 	*v_errbd /= RCOND;
     }
@@ -358,7 +461,7 @@ void diagonalize_hermitian_errbd
     if (!z_errbd) return;
     Eigen::Array<double, N, 1> RCONDZ;
     int INFO;
-    ddisna_('E', N, N, w.data(), RCONDZ.data(), INFO);
+    disna<N, N>('E', w, RCONDZ, INFO);
     z_errbd->fill(*w_errbd);
     *z_errbd /= RCONDZ;
 }
