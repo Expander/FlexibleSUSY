@@ -366,7 +366,7 @@ control of the new block names should greatly simplify the process of
 linking the output to a users own calculator or any new public tools
 that are developed for that model.  
 
-\subsection*{Design goals}
+\subsection{Design goals}
 
 Since the calculation of the pole mass spectrum in a SUSY model is a
 non-trivial task, \fs is designed with the following points in mind:
@@ -460,6 +460,30 @@ intermediate scales.  An example of such a tower construction will be
 given in \secref{sec:tower construction}, where right-handed neutrinos
 are integrated out at the see-saw scale, between the SUSY and the GUT
 scale.
+
+\subsection{Current limitations and future extensions}
+Although we try to handle as many models as possible there are still
+some limitations to what can be done. In it's current form \fs assumes
+all couplings are are real, therefore it is limited to CP conserving
+versions of SUSY models.   Although it is implicit in the
+title we would like to stress that currently we cannot provide a
+spectrum generator for non-SUSY models.  This also means that like
+other spectrum generators it is difficult to reliably predict the mass
+spectrum in extreme cases such as Split-SUSY
+\cite{Wells:2003tf,ArkaniHamed:2004fb,Giudice:2004tc} where the mass
+scales of the SUSY model are drastically split leading to very large
+logarithms which are not resummed.  In such cases the tower of
+effective theories offers the best possibility for a solution.
+However for this to work first \fs must be extended to include
+non-SUSY models.  Finally the gauge group of the model should be
+semi-simple and contain the standard model gauge group as factor so
+that we can match to the SM at low energies.
+
+Future releases which extend \fs beyond each of these limitations are
+already planned.  
+
+
+
 
 \section{Quick start}
 \label{sec:download}
@@ -3024,6 +3048,7 @@ to the elements that \code{std::sort} sorts
 and the boundary condition objects
 to the comparator function.
 
+
 \section{Tests and comparisons with other spectrum generators}
 \label{sec:comparison}
 
@@ -3779,6 +3804,32 @@ Phys. Commun. {\bf 108} (1998) 56; J.~M.~Butterworth, A.~Arbey, L.~Basso, S.~Bel
   [hep-ph/0609292].
   %%CITATION = HEP-PH/0609292;%%
   %238 citations counted in INSPIRE as of 29 Oct 2014
+
+%\cite{Wells:2003tf}
+\bibitem{Wells:2003tf} 
+  J.~D.~Wells,
+  %``Implications of supersymmetry breaking with a little hierarchy between gauginos and scalars,''
+  hep-ph/0306127.
+  %%CITATION = HEP-PH/0306127;%%
+  %81 citations counted in INSPIRE as of 05 Nov 2014
+
+%\cite{ArkaniHamed:2004fb}
+\bibitem{ArkaniHamed:2004fb} 
+  N.~Arkani-Hamed and S.~Dimopoulos,
+  %``Supersymmetric unification without low energy supersymmetry and signatures for fine-tuning at the LHC,''
+  JHEP {\bf 0506}, 073 (2005)
+  [hep-th/0405159].
+  %%CITATION = HEP-TH/0405159;%%
+  %772 citations counted in INSPIRE as of 05 Nov 2014
+%\cite{Giudice:2004tc}
+\bibitem{Giudice:2004tc}
+  G.~F.~Giudice and A.~Romanino,
+  %``Split supersymmetry,''
+  Nucl.\ Phys.\ B {\bf 699} (2004) 65
+   [Erratum-ibid.\ B {\bf 706} (2005) 65]
+  [hep-ph/0406088].
+  %%CITATION = HEP-PH/0406088;%%
+  %576 citations counted in INSPIRE as of 05 Nov 2014
 
 %\cite{Degrassi:2009yq}
 \bibitem{Degrassi:2009yq} 
