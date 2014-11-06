@@ -2479,7 +2479,263 @@ In what follows,
 it shall be demonstrated that
 the clean class structure serves as firm guidance on the job.
 
-\subsubsection{Stacking models in a tower of effective theories}
+The procedure described above is essentially all that is needed
+to employ new spectrum generator components,
+which may be composed from scratch or through
+a linkage to external routines.
+In doing so,
+notice that there was an evident limit on the scope of
+modules which one had to deal with.
+For instance, it was clear from the outset
+that one does not have to go through the code of the central
+fixed-point iteration engine, \code{RGFlow}.
+This manifests the power of the clear separation among objects
+each with its well-defined distinct role.
+This is just like the fact that one does not need to access the internals
+of the \code{std::sort} function in the C++ Standard Library.
+It might be entertaining to complete the analogy by
+mapping the model objects in \code{RGFlow}
+to the elements that \code{std::sort} sorts
+and the boundary condition objects
+to the comparator function.
+
+
+\section{Tests and comparisons with other spectrum generators}
+\label{sec:comparison}
+
+\subsection{Numeric tests}
+
+To check the correctness of \fs's generated spectrum generators
+extensive unit testing against Softsusy's MSSM and NMSSM
+implementations (both $Z_3$-invariant and $Z_3$-violating variants)
+has been carried out.  These unit tests systematically compare all
+tree-level mass matrices, EWSB equations, one- and two-loop
+$\beta$-functions, one- and two-loop self-energies and one- and
+two-loop tadpoles numerically for the CMSSM and NMSSM parameter points
+given in \tabref{tab:unit-test-parameter-points}.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    SUSY Model & Tested parameter points\\
+    \midrule CMSSM & $m_0 = 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = 0$, $\sign\mu = \pm 1$
+    \\
+    $Z_3$-NMSSM & $m_0 = \{250,300\}\unit{GeV}$, $M_{1/2} =
+    200\unit{GeV}$, $\tan\beta = 10$, $A_0 = -500\unit{GeV}$,
+    $\sign\mu_\text{eff} = +1$, $\lambda = 0.1$
+    \\
+    $\Zv_3$-NMSSM & $m_0 = 540\unit{GeV}$, $M_{1/2} = 200\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = -350\unit{GeV}$, $\sign\mu_\text{eff} =
+    \pm 1$, $\lambda = \kappa = 0.1$, $s = 1\unit{TeV}$, $\mu' =
+    290\unit{GeV}$, $m_S^{\prime 2} = 400\unit{GeV}$, $\xi_F =
+    300\unit{GeV}$
+    \\
+    \bottomrule
+  \end{tabularx}
+  \caption{CMSSM and NMSSM parameter points used for the unit tests
+    against Softsusy.
+    We follow the notation of the NMSSM model parameters used in
+    \cite{Ellwanger:2009dp,Allanach:2013kza}.}
+  \label{tab:unit-test-parameter-points}
+\end{table}
+%
+All tested expressions were found to agree within double machine
+precision.\footnote{Due to the systematic and detailed tests several
+  bugs in Softsusy, SARAH and \fs could be identified and corrected.}
+Furthermore, the output of the iterative procedures which solve the
+one- and two-loop corrected tadpole equations
+\eqref{eq:one-loop-ewsb-eq} to find the minimum of the effective Higgs
+potential were compared numerically for these parameter points and
+found to agree within machine precision as well.  Finally, the overall
+pole mass spectrum and mixing after the full fixed-point iteration has
+finished has been compared, and was found to agree at the sub-permille
+level.  The origin of the sub-permille level difference between \fs
+and Softsusy is the different determination of the weak mixing angle
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model in the
+\DRbar\ scheme: \fs calculates
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from $M_W$ and $M_Z$, as
+described in \secref{sec:calculation-of-gauge-couplings}, while
+Softsusy determines $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from
+the muon decay constant $G_\mu$.  The approach used in Softsusy
+results in more precise \DRbar\ gauge couplings at the $M_Z$ scale,
+because the muon decay constant is known with a higher accuracy than
+the $W$-boson mass.  Furthermore, in Softsusy $3.5.0$ some three-loop
+$\beta$-functions and two-loop threshold corrections can be enabled in
+the MSSM to increase the accuracy of the RG running and the
+determination of the \DRbar\ gauge and Yukawa couplings at $M_Z$
+\cite{Allanach:2014nba}.  These corrections are not implemented in \fs
+so far.  The complete set of unit tests is shipped with \fs and can be
+found in the \code{test/} directory.  The tests can be run with the
+command \code{make execute-tests}.  All unit tests are carried out
+nightly in order to continuously check the correctness of the meta
+code and the generated spectrum generators for the shipped models.
+The nightly test results can be found at
+\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
+
+The \fs generated NUHM \ESSM\ spectrum generator has also been
+compared against a handwritten one for a constrained version of the
+\ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
+$\beta$-functions were systematically compared in unit tests and were
+found to match at the ??? level.  The handwritten code doesn't include
+full one-loop self-energies or tadpoles, so tests on these were not
+carried out.  Although the generators assume different constraints
+they could be compared by using the output of the CE$_6$SSM generator
+as an input to \fs and the spectra were found to be in reasonable
+agreement, given the different levels of precision.
+
+In addition \fs has already undergone some user testing. This includes
+analytic tests of the $R$-symmetric low-energy model (MRSSM) and
+alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
+with this are thanked in the acknowledgements.
+
+We also compared the run-time of \fs against SPheno, Softsusy and the
+SARAH generated MSSM spectrum generator SPhenoMSSM.  The results of
+the comparison can be found in \secref{sec:run-time comparison}.
+
+\subsection{Run-time comparison}
+\label{sec:run-time comparison}
+
+One of \fs's design goals is a short run-time.  In this section we
+demonstrate that this goal was achieved by comparing the run-time of
+two different sets of CMSSM spectrum generators:
+%
+\begin{itemize}
+\item \emph{Without sfermion flavour violation:} Disallowing sfermion
+  flavour violation simplifies the calculation of the pole masses,
+  because flavour-off-diagonal sfermion self-energy matrix elements
+  don't need to be calculated.  Here we compare \fs's non-flavour
+  violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
+  against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
+%
+\item \emph{With sfermion flavour violation:} Allowing for sfermion
+  flavour violation in general increases the run-time of spectrum
+  generators, because the full $6\times 6$ sfermion self-energy
+  matrices have to be calculated.  Here we compare FlexibleSUSY-FV
+  (version 1.0.0) and SPhenoMSSM (generated with SARAH 4.1.0 and
+  linked against SPheno 3.2.4).  Both spectrum generators are based on
+  SARAH's MSSM model file, which allows for sfermion flavour
+  violation.
+\end{itemize}
+%
+For the run-time comparison the CKM matrix is set to unity, all
+$CP$-violating phases are set to zero and $R$-parity violation is
+disabled.  \fs and Softsusy are compiled with g++ 4.8.0 and Intel
+ifort 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel
+ifort 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
+  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
+  compared to gfortran.}  We're generating $2\cdot 10^{4}$ random
+CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
+[50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
+and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
+file is created by appending the values of $m_0$, $m_{1/2}$,
+$\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
+SLHA template file given in \ref{sec:speed-test-slha-template-file}.
+The resulting SLHA input file is passed to each spectrum generator and
+the (wall-clock) time is measured until the program has finished.  The
+average run-times for three different CPU types can be found in
+\tabref{tab:run-time-comparison}.  The first column shows the run-time
+on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
+enabled.  The second column shows the run-time on the same processor
+where both cores were enabled.  In the third column a machine with two
+Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+                            & Intel Core2 Duo    & Intel Core2 Duo   & $2$ $\times$ Intel Xeon\\
+                            & (P8600, $1$ core)  & (P8600, $2$ cores)& (L5640, $6$ cores)\\
+    \midrule
+    FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
+    SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
+    Softsusy 3.4.0          & $0.175\unit{s}$    & $0.171\unit{s}$   & $0.147\unit{s}$\\
+    \midrule
+    FlexibleSUSY-FV 1.0.0   & $0.150\unit{s}$    & $0.113\unit{s}$   & $0.074\unit{s}$\\
+    SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
+    \bottomrule
+  \end{tabular}
+  \caption{Average run-time of CMSSM spectrum generators
+    for random parameter points.  The first three rows show three
+    spectrum generators with disabled sfermion flavour violation.  Rows
+    $4$--$5$ show two spectrum generators with enabled sfermion flavour violation, both based
+    on SARAH's MSSM model file.}
+  \label{tab:run-time-comparison}
+\end{table}
+
+Under both the non-flavour violating spectrum generators (first three
+rows) as well as the flavour violating ones (4th and 5th row) we find
+that \fs is significantly fastest.  Compared to SPheno,
+FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
+Softsusy around a factor $2$--$2.5$.  Under the flavour violating
+spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
+factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
+long calculation duration of the two-loop $\beta$-functions.  Here \fs
+benefits a lot from Eigen's well-optimizable matrix expressions.  We
+also find that increasing the number of CPU cores reduces the run-time
+of \fs.  The reason is that \fs calculates each pole mass in a
+separate thread, and therefore benefits from multi-core CPUs.
+
+\section{Conclusions}
+
+We have presented \fs, a Mathematica and C++ package, which generates fast and
+modular spectrum generators for any user specified SUSY model.  \fs is
+distributed with a large number of predefined models for the CMSSM,
+NMSSM, USSM, \ESSM, MRSSM etc., which can be generated immediately
+without any editing.  In particular the CMSSM and NMSSM spectrum
+generators constitute a fast and reliable alternative to the existing
+publicly available spectrum generators, Softsusy, SPheno and
+NMSPEC. 
+
+We have described how the generated source code can be influenced at
+two different levels: The \mathematica level where the user provides a
+model file, and the C++ level where the generated objects can be
+easily exchanged, extended, modified and reused.  This provides great
+flexibility for creating custom spectrum generators for both the most
+common and most extraordinary models.  We have demonstrated these
+features in detailed examples for the NUHMSSM, right handed neutrinos
+and on adding three-loop RGEs and two-loop matching for the strong
+gauge coupling.  
+
+The generated code has been extensively tested against Softsusy, and
+additional tests have been carried out for non-minimal models, the
+\ESSM and MRSSM.  Speed tests have also been performed against
+Softsusy, SPheno and SPheno-like MSSM code generated by SARAH,
+demonstrating that \fs runs faster than all three.
+
+As a result \fs enables fast exploitation of new SUSY models with high
+precision and reliability.
+
+\section*{Acknowledgments}
+
+A.V.\ would like to thank Florian Staub for countless explanations of
+SARAH's internals, discussions, and exceptionally fast bug
+fixing. P.A.~would like to thank Roman Nevzorov for useful discussions
+about challenges in non-minimal SUSY models and the GAMBIT
+collaboration for helpful suggestions, particularly regarding
+lowering our compiler prerequisites. The authors would also like to
+thank Lewis Tunstall for helping with early tests against
+Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
+when introducing couplings with a single family index; Gregor Hellwig
+for writing the first version of the E6SSM model file; Philip Diessner
+for further adaptions to the E6SSM model file and for supplying it to
+us and for for testing and identifying several bugs in \fs and in
+SARAH, in work on the MRSSM; Ulrik Günther for compilation tests on
+Mac OS X and Dylan Harries for spotting a bug in the configuration
+script.
+%
+J.P. acknowledges support from the MEC and FEDER (EC) Grants
+FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
+This work has been supported by the German Research Foundation DFG
+through Grant No.~STO876/2-1.
+
+\appendix
+
+\section{Examples of C++ code adaptation}
+\label{sec:examples of c++ code adaptation}
+
+\subsection{Stacking models in a tower of effective theories}
 \label{sec:tower construction}
 
 Consider a physics scenario which is best described
@@ -2945,7 +3201,7 @@ matrices, \code{ZE} and \code{ZV},
 which contain inter-generational mixings apart from the
 generic left-right mixings.
 
-\subsubsection{Integrating custom-built C++ components}
+\subsection{Integrating custom-built C++ components}
 \label{sec:integrating-custom-built}
 
 In \secref{sec:changing boundary conditions},
@@ -3120,258 +3376,6 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
 One can find a working realization of this example
 in \code{examples/customized-betas/}.
 
-The procedure described above is essentially all that is needed
-to employ new spectrum generator components,
-which may be composed from scratch or through
-a linkage to external routines.
-In doing so,
-notice that there was an evident limit on the scope of
-modules which one had to deal with.
-For instance, it was clear from the outset
-that one does not have to go through the code of the central
-fixed-point iteration engine, \code{RGFlow}.
-This manifests the power of the clear separation among objects
-each with its well-defined distinct role.
-This is just like the fact that one does not need to access the internals
-of the \code{std::sort} function in the C++ Standard Library.
-It might be entertaining to complete the analogy by
-mapping the model objects in \code{RGFlow}
-to the elements that \code{std::sort} sorts
-and the boundary condition objects
-to the comparator function.
-
-
-\section{Tests and comparisons with other spectrum generators}
-\label{sec:comparison}
-
-\subsection{Numeric tests}
-
-To check the correctness of \fs's generated spectrum generators
-extensive unit testing against Softsusy's MSSM and NMSSM
-implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-has been carried out.  These unit tests systematically compare all
-tree-level mass matrices, EWSB equations, one- and two-loop
-$\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles numerically for the CMSSM and NMSSM parameter points
-given in \tabref{tab:unit-test-parameter-points}.
-%
-\begin{table}[tbh]
-  \centering
-  \begin{tabularx}{\textwidth}{lX}
-    \toprule
-    SUSY Model & Tested parameter points\\
-    \midrule CMSSM & $m_0 = 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$,
-    $\tan\beta = 10$, $A_0 = 0$, $\sign\mu = \pm 1$
-    \\
-    $Z_3$-NMSSM & $m_0 = \{250,300\}\unit{GeV}$, $M_{1/2} =
-    200\unit{GeV}$, $\tan\beta = 10$, $A_0 = -500\unit{GeV}$,
-    $\sign\mu_\text{eff} = +1$, $\lambda = 0.1$
-    \\
-    $\Zv_3$-NMSSM & $m_0 = 540\unit{GeV}$, $M_{1/2} = 200\unit{GeV}$,
-    $\tan\beta = 10$, $A_0 = -350\unit{GeV}$, $\sign\mu_\text{eff} =
-    \pm 1$, $\lambda = \kappa = 0.1$, $s = 1\unit{TeV}$, $\mu' =
-    290\unit{GeV}$, $m_S^{\prime 2} = 400\unit{GeV}$, $\xi_F =
-    300\unit{GeV}$
-    \\
-    \bottomrule
-  \end{tabularx}
-  \caption{CMSSM and NMSSM parameter points used for the unit tests
-    against Softsusy.
-    We follow the notation of the NMSSM model parameters used in
-    \cite{Ellwanger:2009dp,Allanach:2013kza}.}
-  \label{tab:unit-test-parameter-points}
-\end{table}
-%
-All tested expressions were found to agree within double machine
-precision.\footnote{Due to the systematic and detailed tests several
-  bugs in Softsusy, SARAH and \fs could be identified and corrected.}
-Furthermore, the output of the iterative procedures which solve the
-one- and two-loop corrected tadpole equations
-\eqref{eq:one-loop-ewsb-eq} to find the minimum of the effective Higgs
-potential were compared numerically for these parameter points and
-found to agree within machine precision as well.  Finally, the overall
-pole mass spectrum and mixing after the full fixed-point iteration has
-finished has been compared, and was found to agree at the sub-permille
-level.  The origin of the sub-permille level difference between \fs
-and Softsusy is the different determination of the weak mixing angle
-$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model in the
-\DRbar\ scheme: \fs calculates
-$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from $M_W$ and $M_Z$, as
-described in \secref{sec:calculation-of-gauge-couplings}, while
-Softsusy determines $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from
-the muon decay constant $G_\mu$.  The approach used in Softsusy
-results in more precise \DRbar\ gauge couplings at the $M_Z$ scale,
-because the muon decay constant is known with a higher accuracy than
-the $W$-boson mass.  Furthermore, in Softsusy $3.5.0$ some three-loop
-$\beta$-functions and two-loop threshold corrections can be enabled in
-the MSSM to increase the accuracy of the RG running and the
-determination of the \DRbar\ gauge and Yukawa couplings at $M_Z$
-\cite{Allanach:2014nba}.  These corrections are not implemented in \fs
-so far.  The complete set of unit tests is shipped with \fs and can be
-found in the \code{test/} directory.  The tests can be run with the
-command \code{make execute-tests}.  All unit tests are carried out
-nightly in order to continuously check the correctness of the meta
-code and the generated spectrum generators for the shipped models.
-The nightly test results can be found at
-\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
-
-The \fs generated NUHM \ESSM\ spectrum generator has also been
-compared against a handwritten one for a constrained version of the
-\ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
-$\beta$-functions were systematically compared in unit tests and were
-found to match at the ??? level.  The handwritten code doesn't include
-full one-loop self-energies or tadpoles, so tests on these were not
-carried out.  Although the generators assume different constraints
-they could be compared by using the output of the CE$_6$SSM generator
-as an input to \fs and the spectra were found to be in reasonable
-agreement, given the different levels of precision.
-
-In addition \fs has already undergone some user testing. This includes
-analytic tests of the $R$-symmetric low-energy model (MRSSM) and
-alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
-with this are thanked in the acknowledgements.
-
-We also compared the run-time of \fs against SPheno, Softsusy and the
-SARAH generated MSSM spectrum generator SPhenoMSSM.  The results of
-the comparison can be found in \secref{sec:run-time comparison}.
-
-\subsection{Run-time comparison}
-\label{sec:run-time comparison}
-
-One of \fs's design goals is a short run-time.  In this section we
-demonstrate that this goal was achieved by comparing the run-time of
-two different sets of CMSSM spectrum generators:
-%
-\begin{itemize}
-\item \emph{Without sfermion flavour violation:} Disallowing sfermion
-  flavour violation simplifies the calculation of the pole masses,
-  because flavour-off-diagonal sfermion self-energy matrix elements
-  don't need to be calculated.  Here we compare \fs's non-flavour
-  violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
-  against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
-%
-\item \emph{With sfermion flavour violation:} Allowing for sfermion
-  flavour violation in general increases the run-time of spectrum
-  generators, because the full $6\times 6$ sfermion self-energy
-  matrices have to be calculated.  Here we compare FlexibleSUSY-FV
-  (version 1.0.0) and SPhenoMSSM (generated with SARAH 4.1.0 and
-  linked against SPheno 3.2.4).  Both spectrum generators are based on
-  SARAH's MSSM model file, which allows for sfermion flavour
-  violation.
-\end{itemize}
-%
-For the run-time comparison the CKM matrix is set to unity, all
-$CP$-violating phases are set to zero and $R$-parity violation is
-disabled.  \fs and Softsusy are compiled with g++ 4.8.0 and Intel
-ifort 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel
-ifort 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
-  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
-  compared to gfortran.}  We're generating $2\cdot 10^{4}$ random
-CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
-[50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
-and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
-file is created by appending the values of $m_0$, $m_{1/2}$,
-$\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
-SLHA template file given in \ref{sec:speed-test-slha-template-file}.
-The resulting SLHA input file is passed to each spectrum generator and
-the (wall-clock) time is measured until the program has finished.  The
-average run-times for three different CPU types can be found in
-\tabref{tab:run-time-comparison}.  The first column shows the run-time
-on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
-enabled.  The second column shows the run-time on the same processor
-where both cores were enabled.  In the third column a machine with two
-Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
-%
-\begin{table}[tbh]
-  \centering
-  \begin{tabular}{llll}
-    \toprule
-                            & Intel Core2 Duo    & Intel Core2 Duo   & $2$ $\times$ Intel Xeon\\
-                            & (P8600, $1$ core)  & (P8600, $2$ cores)& (L5640, $6$ cores)\\
-    \midrule
-    FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
-    SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
-    Softsusy 3.4.0          & $0.175\unit{s}$    & $0.171\unit{s}$   & $0.147\unit{s}$\\
-    \midrule
-    FlexibleSUSY-FV 1.0.0   & $0.150\unit{s}$    & $0.113\unit{s}$   & $0.074\unit{s}$\\
-    SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
-    \bottomrule
-  \end{tabular}
-  \caption{Average run-time of CMSSM spectrum generators
-    for random parameter points.  The first three rows show three
-    spectrum generators with disabled sfermion flavour violation.  Rows
-    $4$--$5$ show two spectrum generators with enabled sfermion flavour violation, both based
-    on SARAH's MSSM model file.}
-  \label{tab:run-time-comparison}
-\end{table}
-
-Under both the non-flavour violating spectrum generators (first three
-rows) as well as the flavour violating ones (4th and 5th row) we find
-that \fs is significantly fastest.  Compared to SPheno,
-FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
-Softsusy around a factor $2$--$2.5$.  Under the flavour violating
-spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
-factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
-long calculation duration of the two-loop $\beta$-functions.  Here \fs
-benefits a lot from Eigen's well-optimizable matrix expressions.  We
-also find that increasing the number of CPU cores reduces the run-time
-of \fs.  The reason is that \fs calculates each pole mass in a
-separate thread, and therefore benefits from multi-core CPUs.
-
-\section{Conclusions}
-
-We have presented \fs, a Mathematica and C++ package, which generates fast and
-modular spectrum generators for any user specified SUSY model.  \fs is
-distributed with a large number of predefined models for the CMSSM,
-NMSSM, USSM, \ESSM, MRSSM etc., which can be generated immediately
-without any editing.  In particular the CMSSM and NMSSM spectrum
-generators constitute a fast and reliable alternative to the existing
-publicly available spectrum generators, Softsusy, SPheno and
-NMSPEC. 
-
-We have described how the generated source code can be influenced at
-two different levels: The \mathematica level where the user provides a
-model file, and the C++ level where the generated objects can be
-easily exchanged, extended, modified and reused.  This provides great
-flexibility for creating custom spectrum generators for both the most
-common and most extraordinary models.  We have demonstrated these
-features in detailed examples for the NUHMSSM, right handed neutrinos
-and on adding three-loop RGEs and two-loop matching for the strong
-gauge coupling.  
-
-The generated code has been extensively tested against Softsusy, and
-additional tests have been carried out for non-minimal models, the
-\ESSM and MRSSM.  Speed tests have also been performed against
-Softsusy, SPheno and SPheno-like MSSM code generated by SARAH,
-demonstrating that \fs runs faster than all three.
-
-As a result \fs enables fast exploitation of new SUSY models with high
-precision and reliability.
-
-\section*{Acknowledgments}
-
-A.V.\ would like to thank Florian Staub for countless explanations of
-SARAH's internals, discussions, and exceptionally fast bug
-fixing. P.A.~would like to thank Roman Nevzorov for useful discussions
-about challenges in non-minimal SUSY models and the GAMBIT
-collaboration for helpful suggestions, particularly regarding
-lowering our compiler prerequisites. The authors would also like to
-thank Lewis Tunstall for helping with early tests against
-Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
-when introducing couplings with a single family index; Gregor Hellwig
-for writing the first version of the E6SSM model file; Philip Diessner
-for further adaptions to the E6SSM model file and for supplying it to
-us and for for testing and identifying several bugs in \fs and in
-SARAH, in work on the MRSSM; Ulrik Günther for compilation tests on
-Mac OS X and Dylan Harries for spotting a bug in the configuration
-script.
-%
-J.P. acknowledges support from the MEC and FEDER (EC) Grants
-FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
-This work has been supported by the German Research Foundation DFG
-through Grant No.~STO876/2-1.
-
-\appendix
 
 \section{Speed test SLHA input file}
 \label{sec:speed-test-slha-template-file}
