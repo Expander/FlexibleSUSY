@@ -1910,7 +1910,7 @@ $\Sigma_f(p^2)$ as
     + \Big( \Sigma_\chi^{L,T}(p^2) + \Sigma_\chi^R(p^2) \Big) m_{\chi} \notag \\
     &&&\phantom{= m_{\chi} - \frac{1}{2}\Big[}
     + m_{\chi} \Big( \Sigma_\chi^L(p^2) + \Sigma_\chi^{R,T}(p^2) \Big)
-  \Big], \\
+  \Big], \label{eq:majorana-loop-corrections} \\
   &\text{Dirac fermions } \psi: &
   m_{\psi,1L}(p^2) &= m_{\psi}
   - \Sigma_\psi^S(p^2)
@@ -1977,7 +1977,11 @@ The three different pole mass calculation procedures work as follows:
   %
   which are formally of two-loop order.  The method is imprecise if
   the self-energy corrections to the mass matrix are large or the
-  tree-level mass spectrum of the multiplet is very split.
+  tree-level mass spectrum of the multiplet is very split.  Note: We
+  strongly discourage the use of this method for the determination the
+  Higgs pole masses, as the result will very imprecise due to the
+  large loop corrections.  \fs will print a warning if this method is
+  used for any Higgs boson.
 
 \item \code{MediumPrecision} (default): This option
   provides calculation with medium precision with a medium execution
@@ -2020,22 +2024,44 @@ The three different pole mass calculation procedures work as follows:
 %
 A numerical comparison of the three different methods for a specific
 CMSSM parameter point can be found in
-\tabref{tab:pole-mass-precision-comparison}.  One finds that (i) the
-calculated lightest CP-even Higgs pole mass is sensitive to the chosen
-pole mass calculation method due to the large loop corrections.
-Especially, if two-loop contributions to the Higgs tadpoles and
-self-energies are added, the two approximations \code{LowPrecision}
-and \code{MediumPrecision} must not be used, because they neglect
-terms of two-loop order.  (ii) Since the gluino does not mix with
-other particles, there is no difference between \code{LowPrecision}
-and \code{MediumPrecision}.  Not neglecting the two-loop terms by
-using \code{HighPrecision} changes the gluino mass about $1\unit{\%}$.
-(iii) Since the up-type squarks form a $6$-plet, the calculation of
-their pole masses is dramatically increased from $2.57\unit{ms}$ to
-$60.9\unit{ms}$ between \code{LowPrecision} and \code{HighPrecision}.
-However, since the change in the lightest up-type squark mass between
-the three different methods is only of the order $\unit{0.4\%}$, one
-can consider calculating then with \code{MediumPrecision} only.
+\tabref{tab:pole-mass-precision-comparison}.  One finds that
+%
+(i) the calculated lightest CP-even Higgs pole mass, $m_h$, differs
+about $2\unit{GeV}$ between \code{MediumPrecision} and
+\code{HighPrecision}, due to large loop corrections.  Since the
+experimental Higgs mass uncertainty is currently around
+$0.4\unit{GeV}$ \cite{Beringer:1900zz}, we strongly recommend the use
+of \code{HighPrecision} to calculate the Higgs pole mass (this is the
+default).  Especially, if two-loop contributions to the Higgs tadpoles
+and self-energies are added \code{MediumPrecision} must not be used,
+because it neglects terms of two-loop order.  The Higgs boson mass for
+the \code{LowPrecision} method is not given in the table, as it will
+lead to an imprecise result and is therefore strongly discouraged to
+be used, see \secref{sec:PoleMasses}.
+%
+(ii) The gluino pole mass, $m_{\tilde{g}}$, is given in the second
+row.  Since the gluino does not mix with other particles, there is no
+difference between \code{LowPrecision} and \code{MediumPrecision}.
+Not neglecting the two-loop terms by using \code{HighPrecision}
+increases the gluino mass about $1\unit{\%}$ for this parameter point.
+%
+(iii) The pole mass of the lightest neutralino,
+$m_{\tilde{\chi}_1^0}$, is given in the third row.  Since the
+momentum-dependent loop-corrections to the lightest neutralino mass
+are small for this parameter point, it's pole mass varies only in the
+sub-GeV range between the three methods.  However, the run-time of the
+\code{LowPrecision} method is more than a factor $10$ smaller than of
+the \code{HighPrecision}, due to the complicated structure of the loop
+corrections in Eq.~\eqref{eq:majorana-loop-corrections}.
+%
+(iv) The pole masses of the lightest sfermions are given in rows
+$4$--$6$.  Since these particles are contained in $6$-plets, the
+run-time for the calculation of their pole masses is dramatically
+increased by around a factor $20$ between \code{LowPrecision} and
+\code{HighPrecision}.  However, since the change in the lightest
+sfermion masses between the three different methods is less than
+$\unit{0.4\%}$, one can consider calculating then with
+\code{MediumPrecision} only.
 %
 \begin{table}[tbh]
   \centering
@@ -2053,7 +2079,7 @@ can consider calculating then with \code{MediumPrecision} only.
     & $10167\unit{GeV}$ ($0.10\unit{ms}$)
     & $10167\unit{GeV}$ ($0.10\unit{ms}$)
     & $10251\unit{GeV}$ ($0.38\unit{ms}$) \\
-    $m_{\tilde{\chi}_1}$
+    $m_{\tilde{\chi}_1^0}$
     & $2295\unit{GeV}$ ($4.17\unit{ms}$)
     & $2295\unit{GeV}$ ($16.1\unit{ms}$)
     & $2295\unit{GeV}$ ($64.2\unit{ms}$) \\
