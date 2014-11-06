@@ -23,6 +23,7 @@ case "$operating_system" in
     *)          mathematica_dir="${HOME}/.Mathematica" ;;
 esac
 
+mathematica_kernel="math"
 mathematica_kernel_dir="${mathematica_dir}/Kernel"
 mathematica_applications_dir="${mathematica_dir}/Applications"
 mathematica_init="${mathematica_kernel_dir}/init.m"
@@ -95,10 +96,13 @@ cat <<EOF
 Usage: ./`basename $0` [options]
 
 Options:
+  --force,-f         Overwrite an already existing SARAH link.
+
   --version=         SARAH version (default: ${sarah_version}).
                      Example: --version=${sarah_version}
 
-  --force,-f         Overwrite an already existing SARAH link.
+  --with-math-cmd=   Mathematica kernel (default: ${mathematica_kernel})
+                     Example: --with-math-cmd=${mathematica_kernel}
 
   --help,-h          Print this help message.
 
@@ -167,6 +171,7 @@ if test $# -gt 0 ; then
         esac
         case $1 in
             --force|-f)              overwrite="yes" ;;
+            --with-math-cmd=*)       mathematica_kernel="$optarg" ;;
             --help|-h)               help; exit ${exit_ok} ;;
             --version=*)             sarah_version="$optarg" ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
@@ -188,9 +193,9 @@ if echo "${sarah_version}" | grep -v '[0-9]\+.[0-9]\+.[0-9]\+' > /dev/null 2>&1 
     exit 1
 fi
 
-exists_in_path "math" || {
-    echo "Error: math not found!"
-    echo "   Please install math and put its location in PATH."
+exists_in_path "${mathematica_kernel}" || {
+    echo "Error: ${mathematica_kernel} not found!"
+    echo "   Please install Mathematica and put its location into PATH."
     exit 1
 }
 printf "Checking for SARAH installation ... "
