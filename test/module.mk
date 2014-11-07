@@ -119,7 +119,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_standalone.sh \
-		$(DIR)/test_run_examples.sh
+		$(DIR)/test_run_examples.sh \
+		$(DIR)/test_MSSM_slha_doubled_blocks.sh
 TEST_SRC += \
 		$(DIR)/test_MSSM_slha_input.cpp \
 		$(DIR)/test_MSSM_info.cpp

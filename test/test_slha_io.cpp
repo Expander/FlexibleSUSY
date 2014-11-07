@@ -83,6 +83,66 @@ BOOST_AUTO_TEST_CASE( test_read_block_dense )
    BOOST_CHECK_EQUAL(matrix(1,1), 4.0);
 }
 
+BOOST_AUTO_TEST_CASE( test_read_entry_doubled )
+{
+   SLHAea::Coll coll;
+   SLHAea::Block block;
+
+   std::string str =\
+      "Block DOUBLE\n"
+      "   1  1\n";
+   block.str(str);
+   coll.push_back(block);
+
+   str =
+      "Block DOUBLE\n"
+      "   1  2\n";
+   block.str(str);
+   coll.push_back(block);
+
+   SLHA_io reader;
+   reader.set_data(coll);
+
+   double entry = reader.read_entry("DOUBLE", 1);
+
+   BOOST_CHECK_EQUAL(entry, 2.0);
+}
+
+BOOST_AUTO_TEST_CASE( test_read_block_doubled )
+{
+   SLHAea::Coll coll;
+   SLHAea::Block block;
+
+   std::string str =
+      "Block Matrix\n"
+      "   1  1  1.0      # element 1,1\n"
+      "   1  2  2.0      # element 1,2\n"
+      "   2  1  3.0      # element 2,1\n"
+      "   2  2  4.0      # element 2,2\n";
+   block.str(str);
+   coll.push_back(block);
+
+   str =
+      "Block Matrix\n"
+      "   1  1  5.0      # element 1,1\n"
+      "   1  2  6.0      # element 1,2\n"
+      "   2  1  7.0      # element 2,1\n"
+      "   2  2  8.0      # element 2,2\n";
+   block.str(str);
+   coll.push_back(block);
+
+   SLHA_io reader;
+   reader.set_data(coll);
+
+   Eigen::Matrix<double,2,2> matrix(Eigen::Matrix<double,2,2>::Zero());
+   reader.read_block("Matrix", matrix);
+
+   BOOST_CHECK_EQUAL(matrix(0,0), 5.0);
+   BOOST_CHECK_EQUAL(matrix(0,1), 6.0);
+   BOOST_CHECK_EQUAL(matrix(1,0), 7.0);
+   BOOST_CHECK_EQUAL(matrix(1,1), 8.0);
+}
+
 /**
  * Creates a SLHA_io object with one block named `TestBlock' with
  *  `number_of_entries' entries of the form
@@ -97,23 +157,20 @@ BOOST_AUTO_TEST_CASE( test_read_block_dense )
  *
  * @return a SLHA_io object with one block named `TestBlock'
  */
-SLHA_io create_block(int number_of_entries)
+SLHAea::Block create_block(int number_of_entries, int offset = 0)
 {
-   SLHAea::Coll coll;
    SLHAea::Block block;
-   SLHA_io reader;
    std::string str = "Block TestBlock\n";
 
    for (int i = 0; i < number_of_entries; i++) {
-      const std::string num(boost::lexical_cast<std::string>(i));
-      str += "   " + num + "  " + num + "\n";
+      const std::string key(boost::lexical_cast<std::string>(i));
+      const std::string num(boost::lexical_cast<std::string>(i + offset));
+      str += "   " + key + "  " + num + "\n";
    }
 
    block.str(str);
-   coll.push_back(block);
-   reader.set_data(coll);
 
-   return reader;
+   return block;
 }
 
 void process_tuple(double* array, int key, double value)
@@ -121,16 +178,42 @@ void process_tuple(double* array, int key, double value)
    array[key] = value;
 }
 
-void check_array(double* array, int number_of_entries)
+void check_array(double* array, int number_of_entries, int offset = 0)
 {
    for (int i = 0; i < number_of_entries; i++)
-      BOOST_CHECK_EQUAL(array[i], i);
+      BOOST_CHECK_EQUAL(array[i], i + offset);
 }
 
 void reset_array(double* array, int number_of_entries, double value = 0.)
 {
    for (int i = 0; i < number_of_entries; i++)
       array[i] = value;
+}
+
+BOOST_AUTO_TEST_CASE( test_processor_doubled )
+{
+   using namespace std::placeholders;
+   const int number_of_entries = 10;
+   SLHA_io reader;
+   SLHAea::Coll coll;
+
+   SLHAea::Block block = create_block(number_of_entries, 0);
+   coll.push_back(block);
+
+   block = create_block(number_of_entries, 10);
+   coll.push_back(block);
+
+   reader.set_data(coll);
+
+   double array[number_of_entries];
+   reset_array(array, number_of_entries, 0.);
+
+   SLHA_io::Tuple_processor processor
+      = std::bind(&process_tuple, array, _1, _2);
+
+   reader.read_block("TestBlock", processor);
+
+   check_array(array, number_of_entries, 10);
 }
 
 /**
@@ -145,7 +228,13 @@ BOOST_AUTO_TEST_CASE( test_processor_vs_loop )
    Stopwatch timer;
    double processor_time = 0., loop_time = 0.;
    const int number_of_entries = 10000;
-   SLHA_io reader = create_block(number_of_entries);
+   SLHA_io reader;
+   SLHAea::Coll coll;
+
+   SLHAea::Block block = create_block(number_of_entries);
+
+   coll.push_back(block);
+   reader.set_data(coll);
 
    double array[number_of_entries];
    reset_array(array, number_of_entries);
