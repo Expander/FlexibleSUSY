@@ -211,31 +211,34 @@ Scalar SLHA_io::convert_to(const std::string& str)
 template <class Derived>
 double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (!block_exists(block_name)) {
-      WARNING("block " << block_name << " not found");
-      return 0.;
-   }
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
    double scale = 0.;
 
-   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
-        end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line()) {
-         // read scale from block definition
-         if (line->size() > 3 && (*line)[2] == "Q=")
-            scale = convert_to<double>((*line)[3]);
-         continue;
-      }
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
 
-      if (line->size() >= 3) {
-         const int i = convert_to<int>((*line)[0]) - 1;
-         const int k = convert_to<int>((*line)[1]) - 1;
-         if (0 <= i && i < rows && 0 <= k && k < cols) {
-            const double value = convert_to<double>((*line)[2]);
-            matrix(i,k) = value;
+         if (line->size() >= 3) {
+            const int i = convert_to<int>((*line)[0]) - 1;
+            const int k = convert_to<int>((*line)[1]) - 1;
+            if (0 <= i && i < rows && 0 <= k && k < cols) {
+               const double value = convert_to<double>((*line)[2]);
+               matrix(i,k) = value;
+            }
          }
       }
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
    }
 
    return scale;

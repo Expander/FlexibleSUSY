@@ -98,25 +98,30 @@ void SLHA_io::fill(QedQcd& oneset) const
  */
 double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   if (!block_exists(block_name))
-      return 0.;
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
 
    double scale = 0.;
 
-   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
-        end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line()) {
-         // read scale from block definition
-         if (line->size() > 3 && (*line)[2] == "Q=")
-            scale = convert_to<double>((*line)[3]);
-         continue;
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
+
+         if (line->size() >= 2) {
+            const int key = convert_to<int>((*line)[0]);
+            const double value = convert_to<double>((*line)[1]);
+            processor(key, value);
+         }
       }
 
-      if (line->size() >= 2) {
-         const int key = convert_to<int>((*line)[0]);
-         const double value = convert_to<double>((*line)[1]);
-         processor(key, value);
-      }
+      ++block;
+      block = data.find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -124,23 +129,22 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
-   const SLHAea::Coll::const_iterator block = data.find(block_name);
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
 
-   if (!block_exists(block_name)) {
-      WARNING("block " << block_name << " not found");
-      return 0.;
-   }
-
+   double entry = 0.;
    const SLHAea::Block::key_type keys(1, ToString(key));
-   const SLHAea::Block::const_iterator line = block->find(keys);
+   SLHAea::Block::const_iterator line;
 
-   if (line == block->end() || !line->is_data_line() || line->size() < 2) {
-      WARNING("no valid entry for key " << key << " in block "
-              << block_name << " found");
-      return 0.;
+   while (block != data.cend()) {
+      line = block->find(keys);
+
+      if (line != block->end() && line->is_data_line() && line->size() > 1)
+         entry = convert_to<double>(line->at(1));
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
    }
-
-   const double entry = convert_to<double>(line->at(1));
 
    return entry;
 }
