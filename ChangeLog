@@ -11,6 +11,10 @@ FlexibleSUSY-1.0.3 [not released yet]
  * Bugfix (commit 7160095): Correcting check for tachyons in pole
    masses of scalar particles, calculated with LowPrecision
 
+ * Bugfix (commit a7a33d3): Implement reading of data from multiple
+   SLHA blocks with the same name.  Subsequent block entries will
+   overwrite former entries.
+
 FlexibleSUSY-1.0.2 [July, 15 2014]
 
  * Bugfix (commit 689141da): Enable non-quadratic superpotential
