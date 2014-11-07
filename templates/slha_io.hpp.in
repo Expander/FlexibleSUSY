@@ -30,7 +30,7 @@
 #include <string>
 #include <utility>
 
-#define Pole(p) model.get_physical().p
+#define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -135,6 +135,9 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
 template <class T>
 void @ModelName@_slha_io::set_extra(const @ModelName@<T>& model)
 {
+   @ModelName@_physical physical(model.get_physical());
+   convert_to_slha_convention(physical);
+
 @writeExtraSLHAOutputBlock@
 }
 
