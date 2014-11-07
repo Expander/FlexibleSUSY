@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE( test_read_block_doubled )
       "Block Matrix\n"
       "   1  1  5.0      # element 1,1\n"
       "   1  2  6.0      # element 1,2\n"
-      "   2  1  7.0      # element 2,1\n"
+      "#  2  1  7.0      # element 2,1\n"
       "   2  2  8.0      # element 2,2\n";
    block.str(str);
    coll.push_back(block);
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_read_block_doubled )
 
    BOOST_CHECK_EQUAL(matrix(0,0), 5.0);
    BOOST_CHECK_EQUAL(matrix(0,1), 6.0);
-   BOOST_CHECK_EQUAL(matrix(1,0), 7.0);
+   BOOST_CHECK_EQUAL(matrix(1,0), 3.0);
    BOOST_CHECK_EQUAL(matrix(1,1), 8.0);
 }
 
