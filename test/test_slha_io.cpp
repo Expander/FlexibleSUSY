@@ -144,18 +144,19 @@ BOOST_AUTO_TEST_CASE( test_read_block_doubled )
 }
 
 /**
- * Creates a SLHA_io object with one block named `TestBlock' with
+ * Creates a SLHAea block with name `TestBlock' with
  *  `number_of_entries' entries of the form
  *
  *  Block TestBlock
- *     0  0
- *     1  1
- *     2  2
- *     3  3
+ *     0  0 + offset
+ *     1  1 + offset
+ *     2  2 + offset
+ *     3  3 + offset
  *
  * @param number_of_entries number of block entries
+ * @param offset offset
  *
- * @return a SLHA_io object with one block named `TestBlock'
+ * @return SLHAea block with block name `TestBlock'
  */
 SLHAea::Block create_block(int number_of_entries, int offset = 0)
 {
