@@ -44,6 +44,6 @@ Block EXTPAR                 # Input parameters
    201  100                  # vL2Input
    202  100                  # vL3Input
 Block YVIN
-    1   1    0               # Yv(1)
-    2   2    0               # Yv(2)
-    3   3    0               # Yv(3)
+    1   1    2               # Yv(1)
+    2   1    4               # Yv(2)
+    3   1    6               # Yv(3)
