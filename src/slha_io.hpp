@@ -44,6 +44,8 @@ namespace flexiblesusy {
       const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
       /// SLHA line formatter for the mixing matrix entries (NMIX, UMIX, VMIX, ...)
       const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
+      /// SLHA line formatter for vector entries
+      const boost::format vector_formatter(" %5d   %16.8E   # %s\n");
       /// SLHA number formatter
       const boost::format number_formatter("         %16.8E   # %s\n");
       /// SLHA scale formatter
@@ -267,13 +269,19 @@ void SLHA_io::set_block(const std::string& name,
       ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n';
 
-   for (int i = 1; i <= NRows; ++i)
-      for (int k = 1; k <= NCols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k
-            % Re(matrix(i-1,k-1))
-            % ("Re(" + symbol + "(" + ToString(i) + ","
-               + ToString(k) + "))");
+   for (int i = 1; i <= NRows; ++i) {
+      if (NCols == 1) {
+         ss << boost::format(vector_formatter) % i % matrix(i-1,0)
+            % (symbol + "(" + ToString(i) + ")");
+      } else {
+         for (int k = 1; k <= NCols; ++k) {
+            ss << boost::format(mixing_matrix_formatter) % i % k
+               % Re(matrix(i-1,k-1))
+               % ("Re(" + symbol + "(" + ToString(i) + ","
+                  + ToString(k) + "))");
+         }
       }
+   }
 
    set_block(ss);
 }
@@ -291,11 +299,17 @@ void SLHA_io::set_block(const std::string& name,
 
    const int rows = matrix.rows();
    const int cols = matrix.cols();
-   for (int i = 1; i <= rows; ++i)
-      for (int k = 1; k <= cols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
-            % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
+   for (int i = 1; i <= rows; ++i) {
+      if (cols == 1) {
+         ss << boost::format(vector_formatter) % i % matrix(i-1,0)
+            % (symbol + "(" + ToString(i) + ")");
+      } else {
+         for (int k = 1; k <= cols; ++k) {
+            ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
+               % (symbol + "(" + ToString(i) + "," + ToString(k) + ")");
+         }
       }
+   }
 
    set_block(ss);
 }
