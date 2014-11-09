@@ -1199,6 +1199,8 @@ void test_ewsb_tree(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    softSusy.rewsbTreeLevel(signMu);
    TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 5.0);
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 0.1);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 0.0004);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 0.0002);
 }
 
 void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
@@ -1230,8 +1232,9 @@ void test_ewsb_1loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
-   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 0.0004);
-   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 0.1);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 }
 
 void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
@@ -1271,6 +1274,7 @@ void test_ewsb_2loop(MSSM<Two_scale> model, MssmSoftsusy softSusy)
    softsusy::numRewsbLoops = 2;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
    TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-9);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 }
 
