@@ -51,6 +51,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\tabref}[1]{\tablename~\ref{#1}}
 \newcommand{\ptitle}[1]{\emph{#1}}
 \renewcommand{\ptitle}[1]{}
+\newcommand{\Zv}{\mathbf{\backslash}\mkern-11.0mu{Z}}
 \makeatletter
 \lstnewenvironment{numlstlisting}[1][]{%
   \lstset{%
@@ -3151,15 +3152,48 @@ implementations (both $Z_3$-invariant and $Z_3$-violating variants)
 has been carried out.  These unit tests systematically compare all
 tree-level mass matrices, EWSB equations, one- and two-loop
 $\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles numerically for various MSSM and NMSSM parameter
-points.  All tested expressions were found to agree within double
-machine precision.\footnote{Due to the systematic and detailed tests
-  several bugs in Softsusy, SARAH and \fs could be identified and
-  corrected.}  Furthermore, the overall pole mass spectrum after the
-full fixed-point iteration has finished has been compared, and was
-found to agree at the sub-permille level.  The origin of the
-sub-permille level difference between \fs and Softsusy is the
-different determination of the weak mixing angle
+two-loop tadpoles numerically for the CMSSM and NMSSM parameter points
+given in \tabref{tab:unit-test-parameter-points}.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    SUSY Model & Tested parameter points\\
+    \midrule CMSSM & $m_0 = 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = 0$, $\sign\mu = \pm 1$
+    \\
+    $Z_3$-NMSSM & $m_0 = \{250,300\}\unit{GeV}$, $M_{1/2} =
+    200\unit{GeV}$, $\tan\beta = 10$, $A_0 = -500\unit{GeV}$,
+    $\sign\mu_\text{eff} = +1$, $\lambda = 0.1$
+    \\
+    $\Zv_3$-NMSSM & $m_0 = 540\unit{GeV}$, $M_{1/2} = 200\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = -350\unit{GeV}$, $\sign\mu_\text{eff} =
+    \pm 1$, $\lambda = \kappa = 0.1$, $s = 1\unit{TeV}$, $\mu' =
+    290\unit{GeV}$, $m_S^{\prime 2} = 400\unit{GeV}$, $\xi_F =
+    300\unit{GeV}$
+    \\
+    \bottomrule
+  \end{tabularx}
+  \caption{CMSSM and NMSSM parameter points used for the unit tests
+    against Softsusy.
+    We follow the notation of the NMSSM model parameters used in
+    \cite{Ellwanger:2009dp,Allanach:2013kza}.}
+  \label{tab:unit-test-parameter-points}
+\end{table}
+%
+All tested expressions were found to agree within double machine
+precision.\footnote{Due to the systematic and detailed tests several
+  bugs in Softsusy, SARAH and \fs could be identified and corrected.}
+Furthermore, the output of the iterative procedures which solve the
+one- and two-loop corrected tadpole equations
+\eqref{eq:one-loop-ewsb-eq} to find the minimum of the effective Higgs
+potential were compared numerically for these parameter points and
+found to agree within machine precision as well.  Finally, the overall
+pole mass spectrum and mixing after the full fixed-point iteration has
+finished has been compared, and was found to agree at the sub-permille
+level.  The origin of the sub-permille level difference between \fs
+and Softsusy is the different determination of the weak mixing angle
 $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model in the
 \DRbar\ scheme: \fs calculates
 $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from $M_W$ and $M_Z$, as
