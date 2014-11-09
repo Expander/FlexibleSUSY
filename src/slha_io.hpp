@@ -227,12 +227,24 @@ double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Deri
             continue;
          }
 
-         if (line->size() >= 3) {
-            const int i = convert_to<int>((*line)[0]) - 1;
-            const int k = convert_to<int>((*line)[1]) - 1;
-            if (0 <= i && i < rows && 0 <= k && k < cols) {
-               const double value = convert_to<double>((*line)[2]);
-               matrix(i,k) = value;
+         if (cols == 1) {
+            // vector
+            if (line->size() >= 2) {
+               const int i = convert_to<int>((*line)[0]) - 1;
+               if (0 <= i && i < rows) {
+                  const double value = convert_to<double>((*line)[1]);
+                  matrix(i,0) = value;
+               }
+            }
+         } else {
+            // martix
+            if (line->size() >= 3) {
+               const int i = convert_to<int>((*line)[0]) - 1;
+               const int k = convert_to<int>((*line)[1]) - 1;
+               if (0 <= i && i < rows && 0 <= k && k < cols) {
+                  const double value = convert_to<double>((*line)[2]);
+                  matrix(i,k) = value;
+               }
             }
          }
       }
