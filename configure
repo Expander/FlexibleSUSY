@@ -34,8 +34,6 @@ default_inc_paths="/usr/include /usr/local/include"
 logfile="$BASEDIR/config.log"
 statusfile="$BASEDIR/config.status"
 sarahconfig="$BASEDIR/config.sarah"
-boostconfig="$BASEDIR/config.boost"
-gppconfig="$BASEDIR/config.g++"
 mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
