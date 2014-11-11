@@ -2544,7 +2544,10 @@ To this end, \code{MSSMRHN} is stacked on top of \code{MSSMD5O}.
 The preparation of these two models has been covered in
 \secref{sec:extending existing models}.
 
-The spectrum generator shall accept
+Since each model class has its own $\beta$-functions,
+the spectrum generator contains two different sets of RGEs
+that are connected by a matching object.
+The program shall accept
 the low-energy neutrino masses and mixing angles
 which determine \code{WOp}, the coefficients
 of the $L H_u L H_u$ operator.
