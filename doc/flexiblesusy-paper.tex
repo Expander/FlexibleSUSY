@@ -2327,6 +2327,7 @@ it installs them into the model directory.  The argument to
 \code{--slha-input-file=} in line 4 has been thus created.
 
 \subsubsection{Extending existing models}
+\label{sec:extending existing models}
 
 The preceding example was a modest alteration of a physics scenario
 in that an existing model has been reused.
@@ -2334,13 +2335,17 @@ A more non-trivial modification might involve
 an extension of the particle content as well as the interactions.
 One of the simplest classes of models beyond the MSSM is
 those with additional gauge-singlet fields.
-In what follows, a supersymmetric type-I see-saw model
+In what follows, a supersymmetric type-I see-saw scenario
 \cite{see-saw} 
-shall be considered in which
-three neutral (heavy) chiral superfields are introduced.
+shall be considered.
+For this, two extensions of the MSSM are introduced:
+MSSMRHN with three extra neutral (heavy) chiral superfields,
+and MSSMD5O with the dimension-5 neutrino mass operator
+added to the superpotential.
+Both models are included in the package.
 
 % To create a new model, one should name it.
-In the package, this model is named \code{MSSMRHN}, standing for
+The name MSSMRHN of the first model stands for
 the MSSM plus right-handed neutrinos.
 % Since \fs needs the outcome of \sarah,
 One needs to prepare an input file to \sarah which might be placed in
@@ -2445,26 +2450,75 @@ in \code{model_files/MSSMRHN/}.
 The high-scale boundary conditions therein might read:
 \begin{numlstlisting}
 HighScaleInput = {
-  {Mv, LHInput[Mv]}, {B[Mv], LHInput[B[Mv]]},
-  {Yv, LHInput[Yv]}, {T[Yv], Azero*Yv},
   {mv2, UNITMATRIX[3] m0^2},
+  {T[Yv], Azero*Yv},
+  {B[Mv], LHInput[B[Mv]]},
   ...
 };
 \end{numlstlisting}
-In this particular example,
-the new parameters shown in lines 2--3
-are constrained at the $M_X$ scale
-to the values given in the SLHA input file.
-In a data-driven approach,
-they might alternatively be fixed from a matching against
-a low-energy theory containing the dimension-5
-neutrino mass operator in conjunction with supplementary constraints.
+
+The second model is called MSSMD5O, standing for
+the MSSM including the dimension-5 operator.
+Obviously, one can compose it by adding
+the additional term to the superpotential in \code{MSSMD5O.m}:
+\begin{numlstlisting}
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd \
+               + WOp/2 l.Hu.l.Hu;
+\end{numlstlisting}
+where line 2 contains the dimension-5 operator
+multiplied by its coeffficient matrix \code{WOp}.
+The declarations of the neutrino Dirac spinors and mixing are
+very similar to those in the MSSMRHN,
+except that \code{FvR} is absent.
+
+One can specify the low-scale constraints on \code{WOp}
+in \code{model_files/MSSMRHN/FlexibleSUSY.m.in}:
+\begin{numlstlisting}
+EXTPAR = {
+  {1, mv1}, {2, mv2}, {3, mv3},
+  {4, ThetaV12}, {5, ThetaV13}, {6, ThetaV23},
+  {7, YvDiag1}, {8, YvDiag2}, {9, YvDiag3}
+};
+
+UPMNS = Module[{
+    s12 = Sin @ ThetaV12, c12 = Cos @ ThetaV12,
+    s13 = Sin @ ThetaV13, c13 = Cos @ ThetaV13,
+    s23 = Sin @ ThetaV23, c23 = Cos @ ThetaV23
+  },
+  {{  c12 c13              ,  s12 c13              , s13     },
+   { -s12 c23 - c12 s23 s13,  c12 c23 - s12 s23 s13, s23 c13 },
+   {  s12 s23 - c12 c23 s13, -c12 s23 - s12 c23 s13, c23 c13 }}
+];
+
+mv = conj[UPMNS].DiagonalMatrix[{mv1, mv2, mv3}].Transpose[conj @ UPMNS];
+
+LowScaleInput = Join[
+  { (* MSSM low-scale constraints *) },
+  Flatten[Table[{WOp[i,j], mv[[i,j]] / (vu/Sqrt[2])^2}, {i,3}, {j,3}], 1]
+];
+
+InitialGuessAtLowScale = Join[
+  { (* MSSM initial guesses at low scale *) },
+  Flatten[Table[{WOp[i,j], mv[[i,j]] / (vu/Sqrt[2])^2}, {i,3}, {j,3}], 1]
+];
+\end{numlstlisting}
+The \code{EXTPAR} list contains the input parameters
+to be read from the corresponding SLHA block.
+The low-energy neutrino mass eigenvalues and mixing angles are
+declared in lines 2--3.
+They are followed by the neutrino Yukawa eigenvalues,
+which shall be used as part of the matching condition
+described in \ref{sec:tower construction}.
+The constraint on and the initial guess of \code{WOp}
+in lines 21 and 26 should be self-explanatory.
 
 With the above set of input files,
-\fs can generate the C++ code and compile it
-to produce \code{libMSSMRHN}.
-These products shall be employed as the implementation of the theory that
-underlies the MSSM in the next subsection.
+\fs can generate the C++ class libraries,
+\code{libMSSMRHN} and \code{libMSSMD5O}\@.
+These products shall be employed as the two effective theories
+in the implementation of the see-saw mechanism.
+To this end, one further needs to code at the C++ level,
+as explained in the next subsection and \ref{sec:tower construction}.
 
 \subsection{Adapting C++ code}
 \label{sec:adapting-cpp-code}
@@ -2475,18 +2529,63 @@ To unlock the full potential of \fs,
 it is an advantage not to avoid programming at the C++ level.
 For this, it should help to have working knowledge about the basic structure
 of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
-In what follows,
-it shall be demonstrated that
+In \ref{sec:examples of c++ code adaptation},
+two examples are presented for demonstrating that
 the clean class structure serves as firm guidance on the job.
 
-The procedure described above is essentially all that is needed
-to employ new spectrum generator components,
+The first project in \ref{sec:tower construction} is
+to build a spectrum generator that can handle
+a tower of multiple effective field theories.
+The aim is to take a first step towards
+a study of slepton-mediated lepton flavour violation
+due to radiative corrections in the type-I supersymmetric see-saw model
+\cite{Borzumati:1986qx}.
+To this end, \code{MSSMRHN} is stacked on top of \code{MSSMD5O}.
+The preparation of these two models has been covered in
+\secref{sec:extending existing models}.
+
+The spectrum generator shall accept
+the low-energy neutrino masses and mixing angles
+which determine \code{WOp}, the coefficients
+of the $L H_u L H_u$ operator.
+These $6 \times 6$ coefficients evolve to
+the right-handed neutrino mass scale at which
+they are matched to the neutrino Yukawa couplings \code{Yv} and
+the right-handed neutrino masses \code{Mv}.
+Since there are more degrees of freedom in the pair of
+\code{Yv} and \code{Mv} than in \code{WOp},
+one needs supplementary conditions in addition to the see-saw relation.
+In the presented matching code, it is assumed that all mixing in \code{WOp}
+stems from the left-handed rotation of \code{Yv} whose eigenvalues are
+fixed to those specified by the user.
+The non-trivial flavour structure of the neutrino Yukawa couplings then
+causes running slepton mass matrices to acquire flavour-violating elements.
+The output from the spectrum generator includes
+the slepton mass matrices as well as
+the resulting mass eigenvalues and mixing.
+One might pass this outcome on to another routine
+to calculate rates of lepton flavour violating processes.
+
+For brevity,
+threshold corrections are ignored
+in the specimen matching code connecting the two models
+as well as in the low-scale boundary condition on \code{WOp}
+from the neutrino oscillation data.
+Therefore, the result maintains only the accuracy of one-loop RGEs,
+even though two-loop $\beta$-functions are computed by each model class.
+For a full accuracy of two-loop RGEs, one can incorporate the omitted
+one-loop corrections into the constraint classes.
+The way to implement them should be self-evident from the code structure.
+
+The second project in \ref{sec:integrating-custom-built} shows
+% is essentially all that is needed
+how one can employ new spectrum generator components,
 which may be composed from scratch or through
 a linkage to external routines.
-In doing so,
-notice that there was an evident limit on the scope of
-modules which one had to deal with.
-For instance, it was clear from the outset
+In the procedure,
+it would be noticed that there is an evident limit on the scope of
+modules which one has to deal with.
+For instance, it is clear from the outset
 that one does not have to go through the code of the central
 fixed-point iteration engine, \code{RGFlow}.
 This manifests the power of the clear separation among objects
@@ -2735,6 +2834,10 @@ through Grant No.~STO876/2-1.
 \section{Examples of C++ code adaptation}
 \label{sec:examples of c++ code adaptation}
 
+In what follows, technical details of \fs programming at the C++ level are
+set out which supplement the outline given
+in \secref{sec:adapting-cpp-code}.
+
 \subsection{Stacking models in a tower of effective theories}
 \label{sec:tower construction}
 
@@ -2745,8 +2848,8 @@ a faithful reflection of
 this physicist's view on the given problem.
 Here we illustrate this point
 using a well-known configuration in which
-the higher-energy theory is the MSSMRHN discussed above which
-gives rise to the MSSM as the lower-energy effective theory.
+the higher-energy theory is the MSSMRHN which
+gives rise to the MSSMD5O as the lower-energy effective theory.
 The relevant classes are sketched
 in \figref{fig:class structure for tower}.
 \begin{figure}
@@ -2767,15 +2870,15 @@ in \figref{fig:class structure for tower}.
         (MX) ++(.3,0) coordinate(MXR) +(3,0) coordinate(MXRR);
 
   \draw (MZ) +(-.1,0) -- +(+.1,0); \draw[<-] (MZ) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_low_scale_constraint}};
+     node[left,draw] {\code{MSSMD5O_low_scale_constraint}};
   \draw (MS) +(-.1,0) -- +(+.1,0); \draw[<-] (MS) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_susy_scale_constraint}};
+     node[left,draw] {\code{MSSMD5O_susy_scale_constraint}};
   \draw (Mv) +(-.1,0) -- +(+.1,0); \draw[<-] (Mv) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_MSSMRHN_matching}};
+     node[left,draw] {\code{MSSMD5O_MSSMRHN_matching}};
   \draw (MX) +(-.1,0) -- +(+.1,0); \draw[<-] (MX) ++(-.8,0) -- ++(-.5,0)
      node[left,draw] {\code{MSSMRHN_high_scale_constraint}};
 
-  \draw (MvRR) +(0,-.03) rectangle (MZR) node[pos=.5] {\code{MSSM}};
+  \draw (MvRR) +(0,-.03) rectangle (MZR) node[pos=.5] {\code{MSSMD5O}};
   \draw (MvRR) +(0, .03) rectangle (MXR) node[pos=.5] {\code{MSSMRHN}};
 
   \path (bottom) +(3.8,0) coordinate(SE) (top) +(-6.8,0) coordinate(NW);
@@ -2789,7 +2892,7 @@ in \figref{fig:class structure for tower}.
 \end{figure}
 The \code{MSSMRHN} object is in effect from the $M_X$ scale down to
 the $M_\nu$ scale at which the right-handed neutrinos are decoupled.
-Below this scale, the \code{MSSM} object takes over.
+Below this scale, the \code{MSSMD5O} object takes over.
 On the left of the vertical axis,
 the boundary condition objects acting on either model are displayed,
 together with the matching object connecting the two theories.
@@ -2811,9 +2914,9 @@ for one of the models forming the tower.
 As the target spectrum generator depends on two models,
 one should first build these prerequisites by:
 \begin{numlstlisting}
-$ ./createmodel --name=MSSM
+$ ./createmodel --name=MSSMD5O
 $ ./createmodel --name=MSSMRHN
-$ ./configure --with-models=MSSM,MSSMRHN
+$ ./configure --with-models=MSSMD5O,MSSMRHN
 $ make
 \end{numlstlisting}
 As a by-product, line 3
@@ -2821,44 +2924,44 @@ also creates a \code{Makefile} in \code{examples/tower/}.
 One can best see the overall code structure of the application in this file:
 \begin{numlstlisting}
 CPPFLAGS  := -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) \
-             $(INCMSSM) $(INCMSSMRHN)
+             $(INCMSSMD5O) $(INCMSSMRHN)
 
 TOWER_SRC := run_tower.cpp \
-	     MSSM_MSSMRHN_two_scale_matching.cpp \
-	     MSSM_MSSMRHN_two_scale_initial_guesser.cpp
+	     MSSMD5O_MSSMRHN_two_scale_matching.cpp \
+	     MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp
 
 TOWER_OBJ := $(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC)))
 
-run_tower.x: $(TOWER_OBJ) $(LIBMSSM) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
-  $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
-\end{numlstlisting}
+run_tower.x: $(TOWER_OBJ) $(LIBMSSMD5O) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
+  $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+\end{numlstlisting}%% $
 The include directives in line 2 tell the compiler
-where to find the headers for either \code{MSSM} or \code{MSSMRHN}.
+where to find the headers for either \code{MSSMD5O} or \code{MSSMRHN}.
 The \code{.cpp} files in lines 4--6 and the \code{.hpp} files
 that they include are to be written by hand.
 Obviously, the executable \code{run_tower.x}, in line 10, depends on both
-\code{$(LIBMSSM)} and \code{$(LIBMSSMRHN)}
+\code{$(LIBMSSMD5O)} and \code{$(LIBMSSMRHN)}
 that implement the auto-generated
 components in \figref{fig:class structure for tower}.
 
 To prepare the main source file \code{run_tower.cpp},
 one can extend % make a straightforward extension to
-\code{run_MSSM.cpp} or \code{run_MSSMRHN.cpp}
+\code{run_MSSMD5O.cpp} or \code{run_MSSMRHN.cpp}
 produced in either model directory.
 The shipped example reads:
 \begin{numlstlisting}
-#include "MSSM_MSSMRHN_spectrum_generator.hpp"
+#include "MSSMD5O_MSSMRHN_spectrum_generator.hpp"
 
 int main(int argc, char* argv[])
 {
   // define objects;
   QedQcd oneset;
-  MSSM_input_parameters    input_1;
+  MSSMD5O_input_parameters input_1;
   MSSMRHN_input_parameters input_2;
   // fill in input_1 and input_2;
   oneset.toMz(); // run SM fermion masses to MZ
   typedef Two_scale algorithm_type;
-  MSSM_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
+  MSSMD5O_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
   // set up spectrum_generator;
   spectrum_generator.run(oneset, input_1, input_2);
   // extract outcome from models;
@@ -2871,32 +2974,32 @@ one declares two sets of input parameters,
 \code{input_1} and \code{input_2}, in lines 7--8.
 
 The crucial point is the definition of the
-\code{MSSM_MSSMRHN_spectrum_generator} object in line 12, which
+\code{MSSMD5O_MSSMRHN_spectrum_generator} object in line 12, which
 creates and drives the \code{RGFlow} object in \figref{fig:class
   structure for tower}.  This task is started by calling the
 \code{run()} member function in line 14.  It is defined in
-\code{MSSM_MSSMRHN_spectrum_generator.hpp} and reads:
+\code{MSSMD5O_MSSMRHN_spectrum_generator.hpp} and reads:
 %
 \begin{numlstlisting}[name=SGrun,language=C++]
-template<class T> void MSSM_MSSMRHN_spectrum_generator<T>::run
+template<class T> void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
 (const QedQcd& oneset,
- const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
+ const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
 {
   high_scale_constraint_2.clear(); // of type MSSMRHN_high_scale_constraint<T>
-  susy_scale_constraint_1.clear(); // of type MSSM_susy_scale_constraint<T>
-  low_scale_constraint_1 .clear(); // of type MSSM_low_scale_constraint<T>
-  matching.reset();                // of type MSSM_MSSMRHN_matching<T>
+  susy_scale_constraint_1.clear(); // of type MSSMD5O_susy_scale_constraint<T>
+  low_scale_constraint_1 .clear(); // of type MSSMD5O_low_scale_constraint<T>
+  matching.reset();                // of type MSSMD5O_MSSMRHN_matching<T>
   high_scale_constraint_2.set_input_parameters(input_2);
   susy_scale_constraint_1.set_input_parameters(input_1);
   low_scale_constraint_1 .set_input_parameters(input_1);
-  matching.set_upper_input_parameters(input_2);
+  matching.set_lower_input_parameters(input_1);
   high_scale_constraint_2.initialize();
   susy_scale_constraint_1.initialize();
   low_scale_constraint_1 .initialize();
   if (!is_zero(input_scale_2)) high_scale_constraint_2.set_scale(input_scale_2);
 \end{numlstlisting}
 This piece of code is nearly a verbatim copy of
-the corresponding part of \code{MSSM_spectrum_generator.hpp}.
+the corresponding part of \code{MSSMD5O_spectrum_generator.hpp}.
 The only differences are that the type of
 \code{high_scale_constraint_2} is
 \code{MSSMRHN_high_scale_constraint<T>} and that
@@ -2904,7 +3007,7 @@ the \code{matching} object has been added.
 Recall that the template parameter \code{T} has been bound to
 \code{Two_scale} in the \code{main} function.
 One then constructs a list of
-the constraints on \code{MSSM}:
+the constraints on \code{MSSMD5O}:
 \begin{numlstlisting}[name=SGrun]
   std::vector<Constraint<T>*> upward_constraints_1;
   upward_constraints_1.push_back(&low_scale_constraint_1);
@@ -2912,9 +3015,9 @@ the constraints on \code{MSSM}:
   downward_constraints_1.push_back(&susy_scale_constraint_1);
   downward_constraints_1.push_back(&low_scale_constraint_1);
 \end{numlstlisting}
-and initializes the \code{MSSM} object:
+and initializes the \code{MSSMD5O} object:
 \begin{numlstlisting}[name=SGrun,language=C++]
-  model_1.clear();                 // of type MSSM<T>
+  model_1.clear();                 // of type MSSMD5O<T>
   model_1.set_input_parameters(input_1);
   model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
 \end{numlstlisting}
@@ -2933,9 +3036,9 @@ which is assumed to be much higher than the weak scale.
 To test the convergence of both models,
 one may construct a composite convergence tester
 out of auto-generated
-\code{MSSM_convergence_tester} and \code{MSSMRHN_convergence_tester}:
+\code{MSSMD5O_convergence_tester} and \code{MSSMRHN_convergence_tester}:
 \begin{numlstlisting}[name=SGrun]
-  MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
+  MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
   MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
   if (max_iterations > 0) {
     convergence_tester_1.set_max_iterations(max_iterations);
@@ -2949,8 +3052,8 @@ On construction,
 the initial guesser accepts the following parameters
 including the two model objects:
 \begin{numlstlisting}[name=SGrun]
-  MSSM_MSSMRHN_initial_guesser<T> initial_guesser
-    (&model_1, &model_2, input_2, oneset,
+  MSSMD5O_MSSMRHN_initial_guesser<T> initial_guesser
+    (&model_1, &model_2, input_1, oneset,
      low_scale_constraint_1, susy_scale_constraint_1, high_scale_constraint_2,
      matching);
 \end{numlstlisting}
@@ -2990,7 +3093,7 @@ Since \code{model_1} is in contact with the lowest energy,
 let it calculate the spectrum:
 \begin{numlstlisting}[name=SGrun,language=C++]
   susy_scale_1 = susy_scale_constraint_1.get_scale();
-  model_1.run_to(susy_scale_1);    // of type MSSM<T>
+  model_1.run_to(susy_scale_1);    // of type MSSMD5O<T>
   model_1.calculate_spectrum();
   if (!is_zero(parameter_output_scale_1))
     model_1.run_to(parameter_output_scale_1);
@@ -3005,22 +3108,22 @@ models from scratch.
 It shall be based on the abstract class \code{Matching<Two_scale>}
 that comes with \fs.
 In the present example, the class is declared in the header
-\code{MSSM_MSSMRHN_two_scale_matching.hpp}:
+\code{MSSMD5O_MSSMRHN_two_scale_matching.hpp}:
 \begin{numlstlisting}
-template<> class MSSM_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
+template<> class MSSMD5O_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
 public:
-  MSSM_MSSMRHN_matching();
-  MSSM_MSSMRHN_matching(const MSSMRHN_input_parameters&);
+  MSSMD5O_MSSMRHN_matching();
+  MSSMD5O_MSSMRHN_matching(const MSSMD5O_input_parameters&);
   void match_low_to_high_scale_model();
   void match_high_to_low_scale_model();
   double get_scale() const;
   void set_models(Two_scale_model *lower, Two_scale_model *upper);
   double get_initial_scale_guess() const;
-  void set_upper_input_parameters(const MSSMRHN_input_parameters&);
+  void set_lower_input_parameters(const MSSMD5O_input_parameters&);
   void set_scale(double);
   void reset();
 private:
-  MSSM   <Two_scale> *lower;
+  MSSMD5O<Two_scale> *lower;
   MSSMRHN<Two_scale> *upper;
   void make_initial_scale_guess();
   void update_scale();
@@ -3028,58 +3131,103 @@ private:
 };
 \end{numlstlisting}
 As lines 4 and 10 indicate,
-this class takes an \code{MSSMRHN_input_parameters} object as input.
-The \code{MvInput} field thereof is referenced
-for the initial guess of the matching scale
-in line 25 of \code{MSSM_MSSMRHN_two_scale_matching.cpp}:
+this class takes an \code{MSSMD5O_input_parameters} object as input.
+The low-energy neutrino data therein is referenced by
+\code{make_initial_scale_guess}
+starting from line 23 of \code{MSSMD5O_MSSMRHN_two_scale_matching.cpp}:
 \begin{numlstlisting}
-void MSSM_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
+(const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
+ Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv)
 {
-  upper->set_Yd(lower->get_Yd());
-  // copy rest of couplings from lower to upper;
-  upper->set_scale(lower->get_scale());
+  Eigen::Matrix3cd uh;
+  Eigen::Array3d s;
+  fs_diagonalize_symmetric(WOp, s, uh);
+  Eigen::Matrix3d U = uh.adjoint().real();
+  Eigen::Vector3d YvDiagInv(1, 1, 1);
+  YvDiagInv.array() /= YvDiag.array();
+  Eigen::Matrix3d YvInv = U * YvDiagInv.asDiagonal();
+  Mv = (YvInv.transpose() * WOp * YvInv).inverse();
+  Yv = YvDiag.asDiagonal() * U.adjoint();
 }
 
-void MSSM_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
-{
-  update_scale();
-  lower->set_Yd(upper->get_Yd());
-  // copy rest of couplings from upper to lower;
-  lower->set_scale(upper->get_scale());
-}
-
-void MSSM_MSSMRHN_matching<Two_scale>::set_upper_input_parameters
-(const MSSMRHN_input_parameters& inputPars_)
+void MSSMD5O_MSSMRHN_matching<Two_scale>::set_lower_input_parameters
+(const MSSMD5O_input_parameters& inputPars_)
 {
   inputPars = inputPars_;
   make_initial_scale_guess();
 }
 
-void MSSM_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
+void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
 {
-  double RHN_scale = pow(abs(inputPars.MvInput.determinant()), 1.0/3);
+  Eigen::Matrix3d WOp;
+  // fill WOp with elements in terms of data from inputPars;
+  Eigen::Vector3d YvDiag;
+  YvDiag << inputPars.YvDiag1, inputPars.YvDiag2, inputPars.YvDiag3;
+  Eigen::Matrix3d Yv;
+  Eigen::Matrix3d Mv;
+  invert_seesaw_formula(WOp, YvDiag, Yv, Mv);
+  double RHN_scale = pow(abs(Mv.determinant()), 1.0/3);
   scale = initial_scale_guess = RHN_scale;
 }
+\end{numlstlisting}
+To guess the matching scale, this function estimates
+the right-handed neutrino mass matrix \code{Mv}
+from \code{WOp}, the dimension-5 operator coefficients,
+and \code{YvDiag}, the neutrino Yukawa eigenvalues,
+by calling \code{invert_seesaw_formula}.
+Since the mapping,
+$\mbox{\code{WOp}} \rightarrow (\mbox{\code{Yv}}, \mbox{\code{Mv}})$,
+is not unique, \code{invert_seesaw_formula}
+opts to impose the following additional constraints:
+the eigenvalues of \code{Yv} are fixed to the user input (line 10),
+and all mixing in \code{WOp} originates from the rotation of the SU(2)
+doublets (line 11).
 
-void MSSM_MSSMRHN_matching<Two_scale>::update_scale()
+The actual matching process takes place in the two functions
+\code{match_low_to_high_scale_model} and \code{match_high_to_low_scale_model}:
+\begin{numlstlisting}
+void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+{
+  Eigen::Vector3d YvDiag;
+  YvDiag << inputPars.YvDiag1, inputPars.YvDiag2, inputPars.YvDiag3;
+  Eigen::Matrix3d Yv;
+  Eigen::Matrix3d Mv;
+  invert_seesaw_formula(lower->get_WOp(), YvDiag, Yv, Mv);
+  upper->set_Yv(Yv);
+  upper->set_Mv(Mv);
+
+  upper->set_Yd(lower->get_Yd());
+  // copy rest of couplings from lower to upper;
+  upper->set_scale(lower->get_scale());
+}
+
+void MSSMD5O_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
+{
+  update_scale();
+
+  const auto& Yv = upper->get_Yv();
+  const auto& Mv = upper->get_Mv();
+  lower->set_WOp(Yv.transpose() * Mv.inverse() * Yv);
+
+  lower->set_Yd(upper->get_Yd());
+  // copy rest of couplings from upper to lower;
+  lower->set_scale(upper->get_scale());
+}
+
+void MSSMD5O_MSSMRHN_matching<Two_scale>::update_scale()
 {
   double RHN_scale = pow(abs(upper->get_Mv().determinant()), 1.0/3);
   scale = RHN_scale;
 }
 \end{numlstlisting}
-Recall that \code{MvInput} is the high-scale boundary value of \code{Mv}.
-If one had opted for an alternative strategy to fix \code{Mv},
-then \code{MSSM_MSSMRHN_matching} might have required a different input.
-Subsequently, the matching scale is updated at each iteration
+For the low-to-high matching, \code{invert_seesaw_formula} is called in line 7,
+this time with \code{WOp} at the matching scale.
+The high-to-low matching function contains the well-known
+see-saw formula in line 22.
+The matching scale is updated at each iteration
 to be the geometric mean of the running \code{Mv} eigenvalues
 in lines 31--32.
-The actual matching process takes place in the two functions
-\code{match_low_to_high_scale_model} and \code{match_high_to_low_scale_model}.
-For brevity,
-their examples shown above simply copy each coupling
-upwards or downwards, neglecting threshold corrections.
-The way to incorporate these corrections should be self-evident
-from the code structure.
 
 % \begin{numlstlisting}
 % template<>
@@ -3108,10 +3256,10 @@ from the code structure.
 % \end{numlstlisting}
 The last missing piece is the initial guesser.
 One can extend the already available
-\code{MSSM_initial_guesser} class. % in a straightforward manner.
+\code{MSSMD5O_initial_guesser} class. % in a straightforward manner.
 The essential task is done by the following member function:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
-void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
+void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess()
 {
   // guess SUSY couplings in model-1 at low energy;
 
@@ -3119,10 +3267,10 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
   const double high_scale_guess_2 = high_constraint_2.get_initial_scale_guess();
   const double matching_scale_guess = matching.get_initial_scale_guess();
 \end{numlstlisting}
-Compared to the MSSM case, the differences are that the type of
+Compared to the MSSMD5O case, the differences are that the type of
 \code{high_constraint_2} is \linebreak {\code{MSSMRHN_high_scale_constraint<Two_scale>} and that \code{matching_scale_guess} has been inserted.  Due to this intermediate scale, the initial run-up is divided into two steps, with a matching procedure in-between:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
-  model_1->run_to(matching_scale_guess); // of type MSSM<Two_scale>
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
+  model_1->run_to(matching_scale_guess); // of type MSSMD5O<Two_scale>
   matching.set_models(model_1, model_2);
   matching.match_low_to_high_scale_model();
   model_2->run_to(high_scale_guess_2);   // of type MSSMRHN<Two_scale>
@@ -3130,20 +3278,20 @@ Compared to the MSSM case, the differences are that the type of
 The high-scale constraints are applied to \code{model_2},
 the higher-energy model,
 and the remaining undetermined parameters are guessed:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   high_constraint_2.set_model(model_2);
   high_constraint_2.apply();
   model_2->set_Mu(1.0); model_2->set_BMu(0.0);
 \end{numlstlisting}
 The initial two-step run-down again involves a matching process:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   model_2->run_to(matching_scale_guess);
   matching.match_high_to_low_scale_model();
   model_1->run_to(low_scale_guess_1);
 \end{numlstlisting}
-At the low scale where \code{MSSM} is valid,
-the code is the same as in \code{MSSM_initial_guesser}:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+At the low scale where \code{MSSMD5O} is valid,
+the code is the same as in \code{MSSMD5O_initial_guesser}:
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   model_1->solve_ewsb_tree_level();
   model_1->calculate_DRbar_masses();
   model_1->set_thresholds(3); model_1->set_loops(2);
@@ -3153,23 +3301,24 @@ the code is the same as in \code{MSSM_initial_guesser}:
 Finally,
 one prescribes the additional input parameters in the SLHA input file:
 \begin{numlstlisting}
-Block YvIN                   # neutrino Yukawas at MX
-1 1  0.1568611               # Yv(1,1)
-1 2  0.6400513               # Yv(1,2)
-1 3  0.7521494               # Yv(1,3)
-2 1  0.4663838               # Yv(2,1)
-...                          # remaining 5 entries
-Block MvIN                   # heavy neutrino masses at MX
-1 1  4.150000E+14            # Mv(1,1)
-...                          # remaining 8 entries
+Block EXTPAR  # Input parameters
+    1	5.0E-11		     # mv1
+    2	5.07523E-11	     # mv2
+    3	6.96419E-11	     # mv3
+    4	0.586168	     # ThetaV12
+    5	0.157512	     # ThetaV13
+    6	0.705053	     # ThetaV23
+    7	0.6		     # YvDiag1
+    8	0.8		     # YvDiag2
+    9	1.0		     # YvDiag3
 Block BMvIN                  # right-handed sneutrino bilinear terms
 1 1  1.000000E+02            # BMv(1,1)
 ...                          # remaining 8 entries
 \end{numlstlisting}
-The file in the package contains the values that approximately reproduce
-the observed neutrino masses and mixing angles
-\cite{Beringer:1900zz}
-through the see-saw mechanism.
+The file in the package contains the values % that approximately reproduce
+consistent with
+the observed neutrino mass-squared differences and mixing angles
+\cite{Beringer:1900zz}.
 
 For further details, browse the directory \code{examples/tower/}.
 One can build and run the example therein by:
@@ -3179,18 +3328,18 @@ $ make
 $ ./run_tower.x --slha-input-file=LesHouches.in.tower
 \end{numlstlisting}%% $
 In the output,
-a part of significant physical interest might be:
+a part of the main interest is:
 \begin{numlstlisting}
-Block MSL2 Q=   8.97114431E+02
-  1  1     1.25652698E+05   # ml2(1,1)
-  1  2    -7.64196328E+01   # ml2(1,2)
-  1  3    -7.08429254E+01   # ml2(1,3)
-  2  1    -7.64196328E+01   # ml2(2,1)
-  2  2     1.25388732E+05   # ml2(2,2)
-  2  3    -3.15865242E+02   # ml2(2,3)
-  3  1    -7.08429254E+01   # ml2(3,1)
-  3  2    -3.15865242E+02   # ml2(3,2)
-  3  3     1.24556532E+05   # ml2(3,3)
+Block MSL2 Q= 8.82028104E+02
+  1  1     1.26231305E+05   # ml2(1,1)
+  1  2    -5.08365953E+02   # ml2(1,2)
+  1  3     4.67463327E+01   # ml2(1,3)
+  2  1    -5.08365953E+02   # ml2(2,1)
+  2  2     1.25328663E+05   # ml2(2,2)
+  2  3    -6.93488070E+02   # ml2(2,3)
+  3  1     4.67463327E+01   # ml2(3,1)
+  3  2    -6.93488070E+02   # ml2(3,2)
+  3  3     1.24229816E+05   # ml2(3,3)
 \end{numlstlisting}
 This result demonstrates the well-known effect on
 the off-diagonal slepton mass matrix elements
