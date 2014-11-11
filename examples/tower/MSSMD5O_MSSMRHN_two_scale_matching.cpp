@@ -63,23 +63,18 @@ struct CompareSpectrum {
 
 void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
 (const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
- const Eigen::Vector3d& vSpectrum, Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv)
+ Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv)
 {
     Eigen::Matrix3cd uh;
     Eigen::Array3d s;
     fs_diagonalize_symmetric(WOp, s, uh);
-    Eigen::PermutationMatrix<3> p;
-    p.setIdentity();
-    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      CompareSpectrum(vSpectrum));
-    uh.transpose() *= p.inverse();
-    Eigen::Matrix3d UPMNS = uh.adjoint().real();
+    Eigen::Matrix3d U = uh.adjoint().real();
     Eigen::Vector3d YvDiagInv(1, 1, 1);
     YvDiagInv.array() /= YvDiag.array();
-    Eigen::Matrix3d YvInv = UPMNS * YvDiagInv.asDiagonal();
+    Eigen::Matrix3d YvInv = U * YvDiagInv.asDiagonal();
 
     Mv = (YvInv.transpose() * WOp * YvInv).inverse();
-    Yv = YvDiag.asDiagonal() * UPMNS.adjoint();
+    Yv = YvDiag.asDiagonal() * U.adjoint();
 }
 
 void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
@@ -95,20 +90,14 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
     upper->set_vu(lower->get_vu());
 
     const auto& WOp = lower->get_WOp();
-
-    const auto mv1 = inputPars.mv1;
-    const auto mv2 = inputPars.mv2;
-    const auto mv3 = inputPars.mv3;
     const auto YvDiag1 = inputPars.YvDiag1;
     const auto YvDiag2 = inputPars.YvDiag2;
     const auto YvDiag3 = inputPars.YvDiag3;
     Eigen::Vector3d YvDiag;
     YvDiag << YvDiag1, YvDiag2, YvDiag3;
-    Eigen::Vector3d mv;
-    mv << mv1, mv2, mv3;
     Eigen::Matrix3d Yv;
     Eigen::Matrix3d Mv;
-    invert_seesaw_formula(lower->get_WOp(), YvDiag, mv, Yv, Mv);
+    invert_seesaw_formula(WOp, YvDiag, Yv, Mv);
 
     upper->set_Yv(Yv);
     upper->set_Mv(Mv);
@@ -250,11 +239,9 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
     const auto YvDiag3 = inputPars.YvDiag3;
     Eigen::Vector3d YvDiag;
     YvDiag << YvDiag1, YvDiag2, YvDiag3;
-    Eigen::Vector3d mv;
-    mv << mv1, mv2, mv3;
     Eigen::Matrix3d Yv;
     Eigen::Matrix3d Mv;
-    invert_seesaw_formula(WOp, YvDiag, mv, Yv, Mv);
+    invert_seesaw_formula(WOp, YvDiag, Yv, Mv);
 
     double RHN_scale = pow(abs(Mv.determinant()), 1.0/3);
     scale = initial_scale_guess = RHN_scale;
