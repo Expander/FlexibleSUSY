@@ -7,9 +7,15 @@ SARAH_MODEL  := @MODEL@
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
 
-@CLASSNAME@_TWO_SCALE_MK := \
-		$(DIR)/two_scale_susy.mk \
+@CLASSNAME@_TWO_SCALE_SUSY_MK := \
+		$(DIR)/two_scale_susy.mk
+
+@CLASSNAME@_TWO_SCALE_SOFT_MK := \
 		$(DIR)/two_scale_soft.mk
+
+@CLASSNAME@_TWO_SCALE_MK := \
+		$(@CLASSNAME@_TWO_SCALE_SUSY_MK) \
+		$(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 
 @CLASSNAME@_SLHA_INPUT := \
 @SLHA_INPUT@
@@ -69,8 +75,8 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(DIR)/two_scale_susy.mk
--include $(DIR)/two_scale_soft.mk
+-include $(@CLASSNAME@_TWO_SCALE_SUSY_MK)
+-include $(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
