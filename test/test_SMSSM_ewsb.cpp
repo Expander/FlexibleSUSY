@@ -39,7 +39,7 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
    m.set_ewsb_iteration_precision(precision);
    const int error = m.solve_ewsb_tree_level();
 
-   BOOST_CHECK_EQUAL(error, 0);
+   BOOST_REQUIRE(error == 0);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), precision);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), precision);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), precision);
