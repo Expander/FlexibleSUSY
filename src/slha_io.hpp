@@ -146,6 +146,7 @@ public:
    void fill(softsusy::QedQcd&) const;
    const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
+   const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
    double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
