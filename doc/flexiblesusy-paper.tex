@@ -1506,7 +1506,7 @@ Currently, \fs handles only real model parameters and renormalizable
 theories, which restricts the number of possible multiple solutions of
 Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less or equal to $4N$.  In
 some cases, as for example in the real MSSM, the different solutions
-are related by one or more global signs as in
+are related by one or more global signs for the parameters, as for example in
 Eq.~\eqref{eq:EWSB-solution-for-mu}.  \fs recognizes such cases and
 introduces these global signs as additional free parameters to allow
 the user to chose between the different solutions.  The case of the
@@ -1519,7 +1519,7 @@ then \fs writes all solutions to the file
 \code{models/<model>/<model>_tree_level_EWSB_solution.m}.  The user
 has then the option to pick a particular solution by setting it in the
 \code{TreeLevelEWSBSolution} variable in the model file.  This is for
-example the case in the $Z_3$-violating NMSSM (\code{SMSSM}), where
+example the case in the $Z_3$-violating NMSSM (\code{SMSSM}), which is shipped with \fs, where
 $\mu$ is chosen to be fixed by the EWSB equations: There the
 tree-level solution for $\mu$ has the form
 %
@@ -1527,7 +1527,7 @@ tree-level solution for $\mu$ has the form
   \mu = -\frac{v_s \lambda}{\sqrt{2}} + \sign X \cdot \sqrt{\ldots}
 \end{align}
 %
-with a non-global $\sign X$.  When \fs solves the tree-level EWSB
+with $\sign X$ as free parameter.  When \fs solves the tree-level EWSB
 equations for $\mu$, $B\mu$ and $\xi_S$ it finds the two solutions and
 writes them to \code{models/SMSSM/SMSSM_tree_level_EWSB_solution.m} in
 the form
