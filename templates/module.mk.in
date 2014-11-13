@@ -83,9 +83,9 @@ ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif
