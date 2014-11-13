@@ -85,6 +85,46 @@ PrintParameters[parameters_List, streamName_String] :=
            Return[result];
           ];
 
+(* Write constant MW from ew_input.hpp
+ *
+ * Note: This function can be removed as soon as we no longer
+ * use MW as an input at the low-scale, for example at the point
+ * when we calculate sin(theta_W) from the muon decay constant G_F.
+ *)
+WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix /; TreeMasses`GetMassEigenstate[massMatrix] === SARAH`VectorW] :=
+    Module[{result = "", eigenstateName, eigenstateNameStr,
+            pdgList, pdg, dim, i},
+           eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
+           dim = TreeMasses`GetDimension[eigenstateName];
+           pdgList = SARAH`getPDGList[eigenstateName];
+           If[Length[pdgList] != dim,
+              Print["Error: length of PDG number list != dimension of particle ", eigenstateName];
+              Print["       PDG number list = ", pdgList];
+              Print["       dimension of particle ", eigenstateName, " = ", dim];
+             ];
+           If[Length[pdgList] < dim,
+              Return[""];
+             ];
+           If[dim == 1,
+              pdg = Abs[pdgList[[1]]];
+              If[pdg != 0,
+                 eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName];
+                 result = "<< FORMAT_MASS(" <> ToString[pdg] <>
+                          ", EWCONSTANT(MW), \"" <> eigenstateNameStr <> "\")\n";
+                ];
+              ,
+              For[i = 1, i <= dim, i++,
+                  pdg = Abs[pdgList[[i]]];
+                  If[pdg != 0,
+                     eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "(" <> ToString[i] <> ")";
+                     result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
+                              ", EWCONSTANT(MW), \"" <> eigenstateNameStr <> "\")\n";
+                    ];
+                 ];
+             ];
+           Return[result];
+          ];
+
 WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result = "", eigenstateName, eigenstateNameStr, massNameStr,
             pdgList, pdg, dim, i},
@@ -126,6 +166,8 @@ WriteSLHAMassBlock[massMatrices_List] :=
             smMassesStr = "", susyMassesStr = ""},
            allMasses = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            smMasses = Select[massMatrices, (SARAH`SMQ[TreeMasses`GetMassEigenstate[#]])&];
+           (* filter out MW, because MW should always appear in the output *)
+           smMasses = Select[smMasses, (TreeMasses`GetMassEigenstate[#] =!= SARAH`VectorW)&];
            susyMasses = Complement[massMatrices, smMasses];
            (smMassesStr = smMassesStr <> WriteSLHAMass[#])& /@ smMasses;
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
