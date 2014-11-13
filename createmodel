@@ -155,7 +155,8 @@ if test ! -d "$targetdir" ; then
     echo "done"
 fi
 
-set -- $(find $model_file_dir -maxdepth 0 -type f -iname LesHouches.in\* -printf " %f") SLHA_input_files="$*"
+set -- $(find $model_file_dir -maxdepth 0 -type f -iname LesHouches.in\* -printf " %f")
+SLHA_input_files="$*"
 
 SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
     sed 's/ / \\\\\\n/g;
