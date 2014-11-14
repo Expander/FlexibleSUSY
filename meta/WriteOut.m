@@ -110,7 +110,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix /; TreeMasses`GetMassEigenstate
               If[pdg != 0,
                  eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName];
                  result = "<< FORMAT_MASS(" <> ToString[pdg] <>
-                          ", EWCONSTANT(MW), \"" <> eigenstateNameStr <> "\")\n";
+                          ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
                 ];
               ,
               For[i = 1, i <= dim, i++,
@@ -118,7 +118,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix /; TreeMasses`GetMassEigenstate
                   If[pdg != 0,
                      eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "(" <> ToString[i] <> ")";
                      result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
-                              ", EWCONSTANT(MW), \"" <> eigenstateNameStr <> "\")\n";
+                              ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
                     ];
                  ];
              ];
@@ -283,7 +283,7 @@ CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
     Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
 
 WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
-                             protectedHeads_List:{FlexibleSUSY`Pole}] :=
+                             protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
     Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
            replacements = Join[
                RuleDelayed[#     , macroSymbol[#]   ]& /@ symbols,

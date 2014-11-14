@@ -26,14 +26,11 @@
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "config.h"
-#include "ew_input.hpp"
 
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <boost/bind.hpp>
-
-#define EWCONSTANT(p) Electroweak_constants::p
 
 using namespace softsusy;
 

@@ -137,22 +137,7 @@ ExtraSLHAOutputBlocks = {
             {1000023, Pole[M[Chi[2]]] },
             {1000025, Pole[M[Chi[3]]] },
             {1000035, Pole[M[Chi[4]]] },
-            {     21, Pole[M[VG]]     },
-            {     22, Pole[M[VP]]     },
-            {     23, Pole[M[VZ]]     },
-            {      1, Pole[M[Fd]]     },
-            {      3, Pole[M[Fs]]     },
-            {      5, Pole[M[Fb]]     },
-            {      2, Pole[M[Fu]]     },
-            {      4, Pole[M[Fc]]     },
-            {      6, Pole[M[Ft]]     },
-            {     12, Pole[M[Fve]]    },
-            {     14, Pole[M[Fvm]]    },
-            {     16, Pole[M[Fvt]]    },
-            {     11, Pole[M[Fe]]     },
-            {     13, Pole[M[Fm]]     },
-            {     15, Pole[M[Ftau]]   },
-            {     24, Pole[M[VWm]]    } } }
+            {     24, SM[MW]          } } }
 };
 
 TopQuark    = Ft;
