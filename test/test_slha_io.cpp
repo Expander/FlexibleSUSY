@@ -143,6 +143,56 @@ BOOST_AUTO_TEST_CASE( test_read_block_doubled )
    BOOST_CHECK_EQUAL(matrix(1,1), 8.0);
 }
 
+BOOST_AUTO_TEST_CASE( test_read_scale )
+{
+   SLHAea::Coll coll;
+   SLHAea::Block block;
+
+   const std::string str = "Block Matrix Q= 1234.56\n"
+      "   1  1  1.0      # element 1,1\n"
+      "   1  2  2.0      # element 1,2\n"
+      "   2  1  3.0      # element 2,1\n"
+      "   2  2  4.0      # element 2,2\n";
+
+   block.str(str);
+   coll.push_back(block);
+
+   SLHA_io reader;
+   reader.set_data(coll);
+
+   Eigen::MatrixXd matrix(Eigen::MatrixXd::Zero(2,2));
+   const double scale = reader.read_scale("Matrix");
+
+   BOOST_CHECK_EQUAL(scale, 1234.56);
+}
+
+BOOST_AUTO_TEST_CASE( test_read_scale_from_block )
+{
+   SLHAea::Coll coll;
+   SLHAea::Block block;
+
+   const std::string str = "Block Matrix Q= 1234.56\n"
+      "   1  1  1.0      # element 1,1\n"
+      "   1  2  2.0      # element 1,2\n"
+      "   2  1  3.0      # element 2,1\n"
+      "   2  2  4.0      # element 2,2\n";
+
+   block.str(str);
+   coll.push_back(block);
+
+   SLHA_io reader;
+   reader.set_data(coll);
+
+   Eigen::MatrixXd matrix(Eigen::MatrixXd::Zero(2,2));
+   const double scale = reader.read_block("Matrix", matrix);
+
+   BOOST_CHECK_EQUAL(scale, 1234.56);
+   BOOST_CHECK_EQUAL(matrix(0,0), 1.0);
+   BOOST_CHECK_EQUAL(matrix(0,1), 2.0);
+   BOOST_CHECK_EQUAL(matrix(1,0), 3.0);
+   BOOST_CHECK_EQUAL(matrix(1,1), 4.0);
+}
+
 /**
  * Creates a SLHAea block with name `TestBlock' with
  *  `number_of_entries' entries of the form
@@ -158,10 +208,13 @@ BOOST_AUTO_TEST_CASE( test_read_block_doubled )
  *
  * @return SLHAea block with block name `TestBlock'
  */
-SLHAea::Block create_block(int number_of_entries, int offset = 0)
+SLHAea::Block create_block(int number_of_entries, int offset, double scale = 0.)
 {
    SLHAea::Block block;
-   std::string str = "Block TestBlock\n";
+   std::string str = "Block TestBlock";
+   if (scale != 0.)
+      str += " Q= " + boost::lexical_cast<std::string>(scale);
+   str += '\n';
 
    for (int i = 0; i < number_of_entries; i++) {
       const std::string key(boost::lexical_cast<std::string>(i));
@@ -198,10 +251,10 @@ BOOST_AUTO_TEST_CASE( test_processor_doubled )
    SLHA_io reader;
    SLHAea::Coll coll;
 
-   SLHAea::Block block = create_block(number_of_entries, 0);
+   SLHAea::Block block = create_block(number_of_entries, 0, 1234.56);
    coll.push_back(block);
 
-   block = create_block(number_of_entries, 10);
+   block = create_block(number_of_entries, 10, 2345.67);
    coll.push_back(block);
 
    reader.set_data(coll);
@@ -212,8 +265,9 @@ BOOST_AUTO_TEST_CASE( test_processor_doubled )
    SLHA_io::Tuple_processor processor
       = std::bind(&process_tuple, array, _1, _2);
 
-   reader.read_block("TestBlock", processor);
+   const double scale = reader.read_block("TestBlock", processor);
 
+   BOOST_CHECK_EQUAL(scale, 2345.67);
    check_array(array, number_of_entries, 10);
 }
 
@@ -232,7 +286,7 @@ BOOST_AUTO_TEST_CASE( test_processor_vs_loop )
    SLHA_io reader;
    SLHAea::Coll coll;
 
-   SLHAea::Block block = create_block(number_of_entries);
+   SLHAea::Block block = create_block(number_of_entries, 0);
 
    coll.push_back(block);
    reader.set_data(coll);

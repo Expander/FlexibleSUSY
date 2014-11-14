@@ -186,6 +186,7 @@ private:
    Modsel modsel;              ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
+   static std::string to_lower(const std::string&); ///< string to lower case
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
@@ -227,7 +228,8 @@ double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Deri
               end = block->cend(); line != end; ++line) {
          if (!line->is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 && (*line)[2] == "Q=")
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
                scale = convert_to<double>((*line)[3]);
             continue;
          }

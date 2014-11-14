@@ -23,6 +23,8 @@
 #include "ew_input.hpp"
 
 #include <fstream>
+#include <algorithm>
+#include <string>
 #include <boost/bind.hpp>
 
 namespace flexiblesusy {
@@ -44,6 +46,13 @@ void SLHA_io::clear()
 bool SLHA_io::block_exists(const std::string& block_name) const
 {
    return data.find(block_name) != data.cend();
+}
+
+std::string SLHA_io::to_lower(const std::string& str)
+{
+   std::string lower(str.size(), ' ');
+   std::transform(str.begin(), str.end(), lower.begin(), ::tolower);
+   return lower;
 }
 
 /**
@@ -108,7 +117,8 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
               end = block->cend(); line != end; ++line) {
          if (!line->is_data_line()) {
             // read scale from block definition
-            if (line->size() > 3 && (*line)[2] == "Q=")
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
                scale = convert_to<double>((*line)[3]);
             continue;
          }
@@ -166,7 +176,8 @@ double SLHA_io::read_scale(const std::string& block_name) const
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
       if (!line->is_data_line()) {
-         if (line->size() > 3 && (*line)[2] == "Q=")
+         if (line->size() > 3 &&
+             to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
             scale = convert_to<double>((*line)[3]);
          break;
       }
