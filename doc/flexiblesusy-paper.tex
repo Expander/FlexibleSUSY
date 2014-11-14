@@ -2613,8 +2613,28 @@ implementations (both $Z_3$-invariant and $Z_3$-violating variants)
 has been carried out.  These unit tests systematically compare all
 tree-level mass matrices, EWSB equations, one- and two-loop
 $\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles numerically for the CMSSM and NMSSM parameter points
-given in \tabref{tab:unit-test-parameter-points}.
+two-loop tadpoles numerically for the CMSSM, the semi-constrained
+$Z_3$-invariant NMSSM ($Z_3$-NMSSM)\footnote{With the semi-constrained
+  $Z_3$-invariant NMSSM ($Z_3$-NMSSM) we denote a constrained variant
+  of the NMSSM with universal gaugino masses $M_{1/2}$, universal
+  trilinear couplings $A_0$ and universal MSSM-like soft-breaking
+  squared scalar masses $m_0^2$ at the GUT scale.  The soft-breaking
+  singlet mass $m_S^2$, the trilinear singlet superpotential coupling
+  $\kappa$ and the singlet VEV $s$ are fixed by the EWSB conditions at
+  the SUSY scale.  The $Z_3$-NMSSM has the $6$ free parameters
+  $(m_0^2, M_{1/2}, A_0, \tan\beta, \sign\mu_\text{eff}, \lambda)$.}
+and the constrained $Z_3$-violating NMSSM
+($\Zv_3$-NMSSM)\footnote{With the constrained $Z_3$-violating NMSSM
+  ($\Zv_3$-NMSSM) we denote a constrained variant of the
+  $Z_3$-violating NMSSM with universal gaugino masses $M_{1/2}$,
+  universal trilinear couplings $A_0$ and universal MSSM-like
+  soft-breaking squared scalar masses $m_0^2$ at the GUT scale.  The
+  $\mu$-parameter, its soft-breaking equivalent $B\mu$ and the
+  soft-breaking singlet tadpole coupling $\xi_S$ are fixed by the EWSB
+  conditions at the SUSY scale.  The $\Zv_3$-NMSSM has the $11$ free
+  parameters $(m_0^2, M_{1/2}, A_0, \tan\beta, \sign\mu_\text{eff},
+  \lambda, \kappa, s, \mu', m_S^{\prime 2}, \xi_F)$.}  parameter
+points given in \tabref{tab:unit-test-parameter-points}.
 %
 \begin{table}[tbh]
   \centering
@@ -2636,8 +2656,10 @@ given in \tabref{tab:unit-test-parameter-points}.
     \\
     \bottomrule
   \end{tabularx}
-  \caption{CMSSM and NMSSM parameter points used for the unit tests
-    against Softsusy.
+  \caption{CMSSM, semi-constrained
+    $Z_3$-invariant NMSSM ($Z_3$-NMSSM) and constrained
+    $Z_3$-violating NMSSM ($\Zv_3$-NMSSM) parameter points
+    used for the unit tests against Softsusy.
     We follow the notation of the NMSSM model parameters used in
     \cite{Ellwanger:2009dp,Allanach:2013kza}.}
   \label{tab:unit-test-parameter-points}
