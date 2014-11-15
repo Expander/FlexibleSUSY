@@ -1,5 +1,5 @@
 
-FSModelName = "MSSMNoFVatMGUT";
+FSModelName = "@CLASSNAME@";
 
 (* CMSSM input parameters *)
 
@@ -8,7 +8,8 @@ MINPAR = {
     {4, Sign[\[Mu]]}
 };
 
-EXTPAR = { {1, M1},
+EXTPAR = { {0, Qin},
+           {1, M1},
            {2, M2},
            {3, M3},
            {11, AtIN},
@@ -47,7 +48,7 @@ SUSYScaleFirstGuess = SM[MZ];
 
 SUSYScaleInput = {};
 
-HighScale = g1 == g2;
+HighScale == Qin;
 
 HighScaleFirstGuess = 2.0 10^16;
 

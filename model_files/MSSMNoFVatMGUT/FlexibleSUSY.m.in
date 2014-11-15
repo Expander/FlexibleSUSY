@@ -1,5 +1,5 @@
 
-FSModelName = "MSSMNoFV";
+FSModelName = "@CLASSNAME@";
 
 (* CMSSM input parameters *)
 
@@ -8,8 +8,7 @@ MINPAR = {
     {4, Sign[\[Mu]]}
 };
 
-EXTPAR = { {0, Qin},
-           {1, M1},
+EXTPAR = { {1, M1},
            {2, M2},
            {3, M3},
            {11, AtIN},
@@ -37,7 +36,8 @@ EXTPAR = { {0, Qin},
            {46, mu33IN},
            {47, md11IN},
            {48, md22IN},
-           {49, md33IN} };
+           {49, md33IN} 
+};
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
@@ -47,7 +47,7 @@ SUSYScaleFirstGuess = SM[MZ];
 
 SUSYScaleInput = {};
 
-HighScale == Qin;
+HighScale = g1 == g2;
 
 HighScaleFirstGuess = 2.0 10^16;
 
