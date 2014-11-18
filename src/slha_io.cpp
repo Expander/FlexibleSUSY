@@ -137,6 +137,43 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
    return scale;
 }
 
+/**
+ * Fills an entry from a SLHA block
+ *
+ * @param block_name block name
+ * @param entry entry to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_block(const std::string& block_name, double& entry) const
+{
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   double scale = 0.;
+
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
+
+         if (line->size() >= 1)
+            entry = convert_to<double>((*line)[0]);
+      }
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
+   }
+
+   return scale;
+}
+
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    SLHAea::Coll::const_iterator block =

@@ -151,6 +151,7 @@ public:
    double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_block(const std::string&, double&) const;
    double read_entry(const std::string&, int) const;
    void read_extpar();
    void read_modsel();

@@ -53,3 +53,7 @@ Block VeiIN
     1   1000
     2   1000
     3   1000
+Block S1IN
+    2000
+Block S2IN
+    3000
