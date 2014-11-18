@@ -347,20 +347,22 @@ been found the pole mass spectrum is eventually calculated using full
 one-loop self-energies (and leading two-loop Higgs self-energy
 contributions for the MSSM and NMSSM).
 
-The standard input and output of the generated code is given in
-SLHA-style format where the user has control of the Block names by
-editing the SARAH files and may also add extra blocks in the
-FlexibleSUSY.m model file which is decribed in section 5. We use
-SLHAea \cite{slhaea} to create these SLHA files and with a simple
-modifications these can be passed directly to another code which uses
-them as an alternative to writing out the SLHA file. Since the SLHA
-standard is intended precisely for the purpose, MSSM and NMSSM codes
-should be compliant with this.  We have tested that the versions of
-HDECAY\cite{hdecay} and SDECAY\cite{sdecay} inside SUSY-HIT
-\cite{susyhit} can understand the SLHA output of FlexibleSUSY and give
-matching output to that from SOFTSUSY.
-
-
+The standard input and output of the generated spectrum generator is
+the SLHA format \cite{Skands:2003cj,Allanach:2008qq}, which is
+intended for the communication between MSSM and NMSSM spectrum
+generators and observable calculators.  The user has control over the
+SLHA block names by editing the SARAH model files and may also add
+extra blocks in the \code{FlexibleSUSY.m} model file, as described in
+\secref{sec:modfile}.
+%
+% We use SLHAea \cite{slhaea} to create these SLHA files and with
+% simple modifications these can be passed directly to another code
+% which uses them as an alternative to writing out the SLHA file.
+%
+We have tested that the HDECAY $3.4$ \cite{hdecay} and SDECAY $1.4$
+\cite{sdecay}, which are shipped with SUSY-HIT \cite{susyhit},
+understand the SLHA output of \fs and give matching output to that
+from Softsusy.
 
 For models which go beyond this there is no fixed standard for all
 names.  Nonetheless extending the SLHA framework and allowing user
