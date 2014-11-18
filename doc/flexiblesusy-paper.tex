@@ -779,6 +779,47 @@ DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
+
+(* optional *)
+ExtraSLHAOutputBlocks = {
+   {ALPHA, {{ArcCos[Pole[ZH[1,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]^2},
+            {101, B[\[Mu]]},
+            {102, vd},
+            {103, vu} } },
+   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
+            {2, 2, T[Yu][2,2] / Yu[2,2]},
+            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
+   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
+            {2, 2, T[Yd][2,2] / Yd[2,2]},
+            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
+   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
+            {2, 2, T[Ye][2,2] / Ye[2,2]},
+            {3, 3, T[Ye][3,3] / Ye[3,3]} } },
+   {MSOFT, {{1, MassB},
+            {2, MassWB},
+            {3, MassG},
+            {21, mHd2},
+            {22, mHu2},
+            {31, Sqrt[ml2[1,1]]},
+            {32, Sqrt[ml2[2,2]]},
+            {33, Sqrt[ml2[3,3]]},
+            {34, Sqrt[me2[1,1]]},
+            {35, Sqrt[me2[2,2]]},
+            {36, Sqrt[me2[3,3]]},
+            {41, Sqrt[mq2[1,1]]},
+            {42, Sqrt[mq2[2,2]]},
+            {43, Sqrt[mq2[3,3]]},
+            {44, Sqrt[mu2[1,1]]},
+            {45, Sqrt[mu2[2,2]]},
+            {46, Sqrt[mu2[3,3]]},
+            {47, Sqrt[md2[1,1]]},
+            {48, Sqrt[md2[2,2]]},
+            {49, Sqrt[md2[3,3]]} } }
+};
 \end{lstlisting}
 %
 The first line \code{FSModelName = "@CLASSNAME@";} will be replaced
@@ -1014,6 +1055,70 @@ model file example above, the particles \code{Chi}, \code{Cha},
 \code{Glu}, \code{Sv}, \code{Su}, \code{Sd}, \code{Se} (neutralino,
 chargino, gluino, sneutrino, up-type squark, down-type squark,
 selectron) are considered to be LSP candidates.
+
+Finally, with the variable \code{ExtraSLHAOutputBlocks} the user can
+define extra SLHA output blocks.  The values of the block entries will
+be calculated at the output scale, which is specified in entry $12$ in
+the SLHA input block \code{MODSEL}.  In the example model file above
+the following six extra SLHA compliant output blocks are defined:
+\code{ALPHA}, \code{HMIX}, \code{Au}, \code{Ad}, \code{Ae} and
+\code{MSOFT}.  The \code{ALPHA} output block contains the CP-even
+Higgs pole mass mixing angle as the only entry.  The \code{HMIX}
+output block contains the $\mu$-parameter, the ratio $\tan\beta =
+v_u/v_d$, the combination $v=\sqrt{v_u^2 + v_d^2}$, the squared mass
+of the CP-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
+the values of $v_u$ and $v_d$, all defined in the \DRbar\ scheme.  In
+an analogue way four more output blocks for the soft-breaking \DRbar\
+parameters are defined.  For a CMSSM example parameter point with $m_0
+= 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$, $\tan\beta = 10$,
+$\sign\mu = +1$ and $A_0 = 0$ the \fs-generated CMSSM spectrum
+generator writes the so defined blocks to the output in the form
+%
+\begin{lstlisting}
+Block ALPHA Q= 8.76740936E+02
+           1.06784138E-01   # ArcCos(Pole(ZH(0,1)))
+Block HMIX Q= 8.76740936E+02
+     1     6.31218384E+02   # Mu
+     2     9.67312621E+00   # vu/vd
+     3     2.44053433E+02   # Sqrt(Sqr(vd) + Sqr(vu))
+     4     5.36777230E+05   # Sqr(MAh(1))
+   101     5.49048159E+04   # BMu
+   102     2.50962986E+01   # vd
+   103     2.42759663E+02   # vu
+Block Au Q= 8.76740936E+02
+  1  1    -1.14477419E+03   # TYu(0,0)/Yu(0,0)
+  2  2    -1.14476911E+03   # TYu(1,1)/Yu(1,1)
+  3  3    -8.83902977E+02   # TYu(2,2)/Yu(2,2)
+Block Ad Q= 8.76740936E+02
+  1  1    -1.40026447E+03   # TYd(0,0)/Yd(0,0)
+  2  2    -1.40025976E+03   # TYd(1,1)/Yd(1,1)
+  3  3    -1.30885006E+03   # TYd(2,2)/Yd(2,2)
+Block Ae Q= 8.76740936E+02
+  1  1    -3.00005426E+02   # TYe(0,0)/Ye(0,0)
+  2  2    -3.00000006E+02   # TYe(1,1)/Ye(1,1)
+  3  3    -2.98364373E+02   # TYe(2,2)/Ye(2,2)
+Block MSOFT Q= 8.76740936E+02
+     1     2.09018579E+02   # MassB
+     2     3.88257873E+02   # MassWB
+     3     1.11544211E+03   # MassG
+    21     1.09683411E+05   # mHd2
+    22    -3.85898988E+05   # mHu2
+    31     3.54416224E+02   # Sqrt(ml2(0,0))
+    32     3.54412891E+02   # Sqrt(ml2(1,1))
+    33     3.53407333E+02   # Sqrt(ml2(2,2))
+    34     2.22035720E+02   # Sqrt(me2(0,0))
+    35     2.22024873E+02   # Sqrt(me2(1,1))
+    36     2.18731935E+02   # Sqrt(me2(2,2))
+    41     1.02053367E+03   # Sqrt(mq2(0,0))
+    42     1.02053107E+03   # Sqrt(mq2(1,1))
+    43     9.40760849E+02   # Sqrt(mq2(2,2))
+    44     9.82565930E+02   # Sqrt(mu2(0,0))
+    45     9.82563167E+02   # Sqrt(mu2(1,1))
+    46     8.09126982E+02   # Sqrt(mu2(2,2))
+    47     9.77979392E+02   # Sqrt(md2(0,0))
+    48     9.77976666E+02   # Sqrt(md2(1,1))
+    49     9.73121951E+02   # Sqrt(md2(2,2))
+\end{lstlisting}
 
 \section{Structure of the spectrum generator}
 \label{sec:SpecGenStruct}
