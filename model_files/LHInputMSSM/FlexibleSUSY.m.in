@@ -9,6 +9,11 @@ MINPAR = { {1, m0},
            {4, Sign[\[Mu]]},
            {5, Azero} };
 
+FSExtraInputParameters = {
+    {Aeij, AeijIN, {3,3}},
+    {Vei , VeiIN , {3}}
+};
+
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
@@ -24,7 +29,7 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput={
-   {T[Ye], Azero*Ye},
+   {T[Ye], Aeij*Ye},
    {T[Yd], Azero*Yd},
    {T[Yu], Azero*Yu},
    {mHu2, m0^2},
