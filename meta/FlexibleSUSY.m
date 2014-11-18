@@ -58,6 +58,7 @@ UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
+FSExtraInputParameters = {};
 
 (* precision of pole mass calculation *)
 DefaultPoleMassPrecision = MediumPrecision;
@@ -230,6 +231,15 @@ CheckModelFileSettings[] :=
               Print["Error: EWSBOutputParameters has to be set to a list",
                     " of model parameters chosen to be output of the EWSB eqs."];
               Quit[1];
+             ];
+           If[Head[FlexibleSUSY`FSExtraInputParameters] =!= List,
+              Print["Error: FSExtraInputParameters has to be set to a list!"];
+              Quit[1];
+              ,
+              If[!(And @@ (MatchQ[#,{_,_,_}]& /@ FlexibleSUSY`FSExtraInputParameters)),
+                 Print["Error: FSExtraInputParameters must be of the form",
+                       " {{A, AInput, {3,3}}, ... }"];
+                ];
              ];
           ];
 
@@ -1186,8 +1196,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
+           (* determine type of extra input parameters *)
+           FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
+
            Parameters`SetInputParameters[Join[Parameters`GetInputParameters[],
+                                              (#[[1]])& /@ FlexibleSUSY`FSExtraInputParameters,
                                               (#[[2]])& /@ lesHouchesInputParameters]];
+
+           FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
            (* replace LHInput[p] by pInput in the constraints *)
            FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
@@ -1275,10 +1291,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
-                                    {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
+                                    Join[{#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
+                                         {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters],
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]}}
                                    ];
+
+           lesHouchesInputParameters = Join[lesHouchesInputParameters, FlexibleSUSY`FSExtraInputParameters];
 
 	   On[Assert];
 
