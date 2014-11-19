@@ -354,11 +354,10 @@ generators and observable calculators.  The user has control over the
 SLHA block names by editing the SARAH model files and may also add
 extra blocks in the \code{FlexibleSUSY.m} model file, as described in
 \secref{sec:modfile}.
-%
-% We use SLHAea \cite{slhaea} to create these SLHA files and with
-% simple modifications these can be passed directly to another code
-% which uses them as an alternative to writing out the SLHA file.
-%
+Internally, \fs uses the SLHAea library \cite{slhaea} to read and
+write the SLHA files.  The internally stored SLHAea object can be
+passed to other programs at the C++ level for inter program
+communication.
 We have tested that the HDECAY $3.4$ \cite{hdecay} and SDECAY $1.4$
 \cite{sdecay}, which are shipped with SUSY-HIT \cite{susyhit},
 understand the SLHA output of \fs and give matching output to that
