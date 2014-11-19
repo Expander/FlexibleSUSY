@@ -2266,19 +2266,19 @@ $\unit{0.4\%}$, one can consider calculating then with
 \end{table}
 %
 
-If higher accuracy is required, two-loop corrections to the
-self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
-in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
-model file.  The former provides routines that call the two-loop Higgs
+For the Higgs states two-loop corrections to the self-energies can
+optionally be added by setting \code{UseHiggs2LoopMSSM = True} in the
+MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the model
+file.  The former provides routines that call the two-loop Higgs
 FORTRAN routines supplied by P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
 for calculating corrections of $\oatas$, $\oabas$, $\oatq$, $\oabq$,
 $\oatauq$ and $\oatab$.  The latter adds corrections calculated in the
 NMSSM at $\oatas$, $\oabas$ from \cite{Degrassi:2009yq} and partial
-corrections for the order $\oatq$, $\oabq$, $\oatauq$ and $\oatab$ from the
-MSSM.  These corrections can then be included in the
+corrections for the order $\oatq$, $\oabq$, $\oatauq$ and $\oatab$
+from the MSSM.  These corrections can then be included in the
 calculation of the Higgs pole masses when running the spectrum
-generator by setting the appropriate SLHA flags.  
+generator by setting the appropriate SLHA flags.
 
 When two-loop corrections have been enabled in the SLHA file by
 setting entry $4$ of the \code{FlexibleSUSY} block to $2$ the user may
