@@ -349,6 +349,7 @@ void CLASSNAME::print(std::ostream& ostr) const
 @printMixingMatrices@
    physical.print(ostr);
 }
+
 /**
  * wrapper routines for passarino Veltman functions
  */
