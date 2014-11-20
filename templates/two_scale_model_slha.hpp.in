@@ -46,8 +46,8 @@ public:
    virtual ~@ModelName@_slha();
 
    virtual void clear();
-   void convert_to_slha();
-   const @ModelName@_physical& get_physical_slha() const;
+   void convert_to_slha(); ///< converts pole masses to SLHA convention
+   const @ModelName@_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
 
    // interface functions
    virtual void calculate_spectrum();
