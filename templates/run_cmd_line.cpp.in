@@ -20,6 +20,7 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"
 #include "error.hpp"
@@ -89,24 +90,39 @@ int main(int argc, char* argv[])
    const @ModelName@_physical& pole_masses = model.get_physical();
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
-   const double higgs  = pole_masses.M@HiggsBoson_0@;
-   const double stop1  = pole_masses.M@TopSquark_0@;
-   const double gluino = pole_masses.M@Gluino@;
-   const bool error    = problems.have_problem();
 
-   cout << "Input parameters: " << input << '\n';
+   const bool error = problems.have_problem();
 
-   if (error) {
-      cout << problems << '\n';
-   } else {
-      cout << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
-           << std::setw(12) << std::left << "M@TopSquark_0@/GeV" << ' '
-           << std::setw(12) << std::left << "M@Gluino@/GeV" << '\n';
-
-      cout << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << stop1 << ' '
-           << std::setw(12) << std::left << gluino << '\n';
+   // SLHA output
+   @ModelName@_slha_io slha_io;
+   slha_io.set_spinfo(problems);
+   slha_io.set_sminputs(oneset);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!error) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
    }
+   slha_io.write_to_stream(std::cout);
 
-   return 0;
+   // // alternative output
+   // if (error) {
+   //    cout << problems << '\n';
+   // } else {
+   //    cout << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
+   //         << std::setw(12) << std::left << "M@TopSquark_0@/GeV" << ' '
+   //         << std::setw(12) << std::left << "M@Gluino@/GeV" << '\n';
+
+   //    const double higgs  = pole_masses.M@HiggsBoson_0@;
+   //    const double stop1  = pole_masses.M@TopSquark_0@;
+   //    const double gluino = pole_masses.M@Gluino@;
+
+   //    cout << std::setw(12) << std::left << higgs << ' '
+   //         << std::setw(12) << std::left << stop1 << ' '
+   //         << std::setw(12) << std::left << gluino << '\n';
+   // }
+
+   const int exit_code = spectrum_generator.get_exit_code();
+
+   return exit_code;
 }
