@@ -510,6 +510,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
             mixingMatrixGetters = "",
+            slhaPoleMassGetters = "", slhaPoleMixingMatrixGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
@@ -547,6 +548,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
+               slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
+               slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
                physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
@@ -637,6 +640,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@lspFunctions@"         -> lspFunctions,
                             "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
+                            "@slhaPoleMassGetters@"  -> IndentText[slhaPoleMassGetters],
+                            "@slhaPoleMixingMatrixGetters@" -> IndentText[slhaPoleMixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],

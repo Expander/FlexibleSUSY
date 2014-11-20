@@ -53,6 +53,9 @@ public:
    virtual void calculate_spectrum();
    virtual void print(std::ostream&) const;
 
+@slhaPoleMassGetters@
+@slhaPoleMixingMatrixGetters@
+
 private:
    @ModelName@_physical physical_slha; ///< contains the pole masses and mixings in slha convention
 };
