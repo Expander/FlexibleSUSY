@@ -522,6 +522,8 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
  *
  * etc.
  *)
+RValueToCFormString[expr_String] := expr;
+
 RValueToCFormString[expr_] :=
     Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
            symbols = Cases[{expr}, x_Symbol | x_Symbol[__] :> x, Infinity];
