@@ -49,7 +49,7 @@ void CLASSNAME::clear()
 void CLASSNAME::calculate_spectrum()
 {
    @ModelName@<Two_scale>::calculate_spectrum();
-   // convert_to_slha();
+   convert_to_slha();
 }
 
 void CLASSNAME::convert_to_slha()
