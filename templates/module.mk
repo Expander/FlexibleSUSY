@@ -10,6 +10,7 @@ TEMPLATES    := \
 		$(DIR)/input_parameters.hpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \
+		$(DIR)/model_slha.hpp.in \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
@@ -33,6 +34,8 @@ TEMPLATES    := \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
+		$(DIR)/two_scale_model_slha.hpp.in \
+		$(DIR)/two_scale_model_slha.cpp.in \
 		$(DIR)/two_scale_soft_beta_.cpp.in \
 		$(DIR)/two_scale_soft_parameters.hpp.in \
 		$(DIR)/two_scale_soft_parameters.cpp.in \
