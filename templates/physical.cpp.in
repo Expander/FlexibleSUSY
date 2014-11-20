@@ -50,7 +50,7 @@ void @ModelName@_physical::print(std::ostream& ostr) const
 
 std::ostream& operator<<(std::ostream& ostr, const @ModelName@_physical& phys_pars)
 {
-   phys_pars.print(std::cout);
+   phys_pars.print(ostr);
    return ostr;
 }
 
