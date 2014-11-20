@@ -18,23 +18,16 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_INPUT_PARAMETERS_H
-#define @ModelName@_INPUT_PARAMETERS_H
+#include "@ModelName@_input_parameters.hpp"
 
-#include <complex>
-#include <Eigen/Core>
+#define INPUT(p) input.p
 
 namespace flexiblesusy {
 
-struct @ModelName@_input_parameters {
-@defineInputParameters@
-   @ModelName@_input_parameters()
-      @defaultInputParametersInit@
-   {}
-};
-
-std::ostream& operator<<(std::ostream&, const @ModelName@_input_parameters&);
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_input_parameters& input)
+{
+@printInputParameters@
+   return ostr;
+}
 
 } // namespace flexiblesusy
-
-#endif

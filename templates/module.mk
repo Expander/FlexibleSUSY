@@ -8,12 +8,14 @@ TEMPLATES    := \
 		$(DIR)/info.hpp.in \
 		$(DIR)/info.cpp.in \
 		$(DIR)/input_parameters.hpp.in \
+		$(DIR)/input_parameters.cpp.in \
 		$(DIR)/low_scale_constraint.hpp.in \
 		$(DIR)/model.hpp.in \
 		$(DIR)/model_slha.hpp.in \
 		$(DIR)/physical.hpp.in \
 		$(DIR)/physical.cpp.in \
 		$(DIR)/run.cpp.in \
+		$(DIR)/run_cmd_line.cpp.in \
 		$(DIR)/scan.cpp.in \
 		$(DIR)/slha_io.hpp.in \
 		$(DIR)/slha_io.cpp.in \
