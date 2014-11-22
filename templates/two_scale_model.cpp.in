@@ -25,6 +25,9 @@
  * Contains the definition of the @ModelName@ model class methods
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
 #include "@ModelName@_two_scale_model.hpp"
