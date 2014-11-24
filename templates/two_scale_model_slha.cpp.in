@@ -36,6 +36,18 @@ CLASSNAME::@ModelName@_slha(const @ModelName@_input_parameters& input_)
 {
 }
 
+/**
+ * Copy constructor.  Copies from base class (two-scale model class in
+ * BPMZ convention) and converts parameters to SLHA.
+ *
+ * @param model_ model class in BPMZ convention
+ */
+CLASSNAME::@ModelName@_slha(const @ModelName@<Two_scale>& model_)
+   : MSSM<Two_scale>(model_)
+{
+   convert_to_slha();
+}
+
 CLASSNAME::~@ModelName@_slha()
 {
 }

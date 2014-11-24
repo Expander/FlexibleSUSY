@@ -43,6 +43,7 @@ template<>
 class @ModelName@_slha<Two_scale> : public @ModelName@<Two_scale> {
 public:
    explicit @ModelName@_slha(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   explicit @ModelName@_slha(const @ModelName@<Two_scale>&);
    virtual ~@ModelName@_slha();
 
    virtual void clear();
