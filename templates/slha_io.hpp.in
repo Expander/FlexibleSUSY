@@ -76,6 +76,9 @@ public:
 
    static void convert_to_slha_convention(@ModelName@_physical&);
 
+   template <class T>
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@<T>&, const QedQcd& qedqcd);
+
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
@@ -118,6 +121,27 @@ template <class T>
 void @ModelName@_slha_io::fill_physical(@ModelName@<T>& model) const
 {
 @readLesHouchesPhyicalParameters@
+}
+
+template <class T>
+void @ModelName@_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const @ModelName@<T>& model, const QedQcd& qedqcd)
+{
+   @ModelName@_slha_io slha_io;
+   const @ModelName@_input_parameters& input = model.get_input();
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+      = model.get_problems();
+   const bool error = problems.have_problem();
+
+   slha_io.set_spinfo(problems);
+   slha_io.set_sminputs(qedqcd);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!error) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
+   }
+
+   slhaea = slha_io.get_slha_io().get_data();
 }
 
 /**
