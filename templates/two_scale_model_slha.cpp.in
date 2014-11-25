@@ -75,6 +75,11 @@ const @ModelName@_physical& CLASSNAME::get_physical_slha() const
    return physical_slha;
 }
 
+@ModelName@_physical& CLASSNAME::get_physical_slha()
+{
+   return physical_slha;
+}
+
 void CLASSNAME::print(std::ostream& ostr) const
 {
    @ModelName@<Two_scale>::print(ostr);
