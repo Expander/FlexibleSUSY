@@ -93,8 +93,7 @@ int main(int argc, const char* argv[])
 
    spectrum_generator.run(oneset, input);
 
-   const @ModelName@<algorithm_type>& model
-      = spectrum_generator.get_model();
+   const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 

@@ -20,6 +20,7 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
 
 #include "command_line_options.hpp"
 #include "error.hpp"
@@ -93,8 +94,8 @@ int main(int argc, char* argv[])
 
       spectrum_generator.run(oneset, input);
 
-      const @ModelName@<algorithm_type>& model = spectrum_generator.get_model();
-      const @ModelName@_physical& pole_masses = model.get_physical();
+      const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
+      const @ModelName@_physical& pole_masses = model.get_physical_slha();
       const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
          = spectrum_generator.get_problems();
       const double higgs = pole_masses.M@HiggsBoson_0@;
