@@ -23,7 +23,6 @@
 #include "@ModelName@_two_scale_model_slha.hpp"
 
 #include "command_line_options.hpp"
-#include "error.hpp"
 #include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"

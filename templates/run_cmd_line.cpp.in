@@ -23,8 +23,6 @@
 #include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"
-#include "error.hpp"
-#include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"
 
@@ -35,7 +33,7 @@ namespace flexiblesusy {
 void print_usage()
 {
    std::cout <<
-      "Usage: run_cpp_interface_@ModelName@.x [options]\n"
+      "Usage: run_cmd_line_@ModelName@.x [options]\n"
       "Options:\n"
 @printCommandLineOptions@
       "  --help,-h                         print this help message"

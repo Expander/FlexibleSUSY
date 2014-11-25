@@ -22,7 +22,6 @@
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 
-#include "error.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
