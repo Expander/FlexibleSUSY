@@ -86,35 +86,14 @@ int main(int argc, char* argv[])
 
    spectrum_generator.run(oneset, input);
 
+   const int exit_code = spectrum_generator.get_exit_code();
    const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
-   const @ModelName@_physical& pole_masses = model.get_physical();
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-      = spectrum_generator.get_problems();
 
    // SLHA output
    SLHAea::Coll slhaea;
    @ModelName@_slha_io::fill_slhaea(slhaea, model, oneset);
 
    std::cout << slhaea;
-
-   // // alternative output
-   // if (problems.have_problem()) {
-   //    cout << problems << '\n';
-   // } else {
-   //    cout << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
-   //         << std::setw(12) << std::left << "M@TopSquark_0@/GeV" << ' '
-   //         << std::setw(12) << std::left << "M@Gluino@/GeV" << '\n';
-
-   //    const double higgs  = pole_masses.M@HiggsBoson_0@;
-   //    const double stop1  = pole_masses.M@TopSquark_0@;
-   //    const double gluino = pole_masses.M@Gluino@;
-
-   //    cout << std::setw(12) << std::left << higgs << ' '
-   //         << std::setw(12) << std::left << stop1 << ' '
-   //         << std::setw(12) << std::left << gluino << '\n';
-   // }
-
-   const int exit_code = spectrum_generator.get_exit_code();
 
    return exit_code;
 }
