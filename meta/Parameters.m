@@ -116,7 +116,7 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
@@ -599,7 +599,7 @@ CreateLocalConstRefs[expr_] :=
 CreateLocalConstRefsForPhysicalParameters[expr_] :=
     Module[{result = "", symbols, outputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
@@ -613,7 +613,7 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
 CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", symbols, modelPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
@@ -624,7 +624,7 @@ CreateLocalConstRefsForBetas[expr_] :=
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
     Module[{result = "", symbols, inputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = Cases[compactExpr, _Symbol, Infinity];
+           symbols = Cases[compactExpr, _Symbol, {0,Infinity}];
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
