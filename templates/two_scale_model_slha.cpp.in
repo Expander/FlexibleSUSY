@@ -43,7 +43,7 @@ CLASSNAME::@ModelName@_slha(const @ModelName@_input_parameters& input_)
  * @param model_ model class in BPMZ convention
  */
 CLASSNAME::@ModelName@_slha(const @ModelName@<Two_scale>& model_)
-   : MSSM<Two_scale>(model_)
+   : @ModelName@<Two_scale>(model_)
 {
    convert_to_slha();
 }
