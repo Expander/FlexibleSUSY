@@ -38,11 +38,13 @@ void print(std::ostream& ostr)
    ostr
       << "Model information\n"
       << "=================\n"
-      << "Model name:            " << model_name << '\n'
-      << "Is a low-energy model: "
-      << (is_low_energy_model ? "true" : "false") << '\n'
-      << "Number of multiplets:  " << NUMBER_OF_PARTICLES << '\n'
-      << "Number of parameters:  " << NUMBER_OF_PARAMETERS << '\n'
+      << "Model name:                " << model_name << '\n'
+      << "Is a low-energy model:     "
+      << (is_low_energy_model ? "yes" : "no") << '\n'
+      << "Is a supersymmetric model: "
+      << (is_supersymmetric_model ? "yes" : "no") << '\n'
+      << "Number of multiplets:      " << NUMBER_OF_PARTICLES << '\n'
+      << "Number of parameters:      " << NUMBER_OF_PARAMETERS << '\n'
       ;
 
    ostr << "\n"
