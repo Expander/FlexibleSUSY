@@ -1,15 +1,30 @@
 
 FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
 
 (* SM input parameters *)
 
-MINPAR={ {1, LambdaIN} };
+MINPAR = { {1, LambdaIN} };
 
 EWSBOutputParameters = { mu2 };
 
-BoundaryLowScaleInput = {
-    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+SUSYScale = v;
+
+SUSYScaleFirstGuess = 1000;
+
+SUSYScaleInput = {
     {\[Lambda], LambdaIN}
+};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]}
 };
 
 OnlyLowEnergyFlexibleSUSY = True;
