@@ -1,3 +1,9 @@
+FlexibleSUSY-1.0.4 [not released yet]
+
+ * Add new user example program run_cmd_line_<model>.x to run a
+   parameter point using command line parameters instead of an SLHA
+   input file.
+
 FlexibleSUSY-1.0.3 [November, 21 2014]
 
  * Allow selection of Higgs 2-loop contributions in SLHA input file
