@@ -31,6 +31,7 @@ namespace @ModelName@_info {
 @parameterNames@
    const char* model_name = "@ModelName@";
    const bool is_low_energy_model = @isLowEnergyModel@;
+   const bool is_supersymmetric_model = @isSupersymmetricModel@;
 
 void print(std::ostream& ostr)
 {

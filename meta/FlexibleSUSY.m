@@ -736,6 +736,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             particleNames = "", particleEnum = "", particleMultiplicity = "",
             parameterNames = "", parameterEnum = "", numberOfParameters = 0,
             isLowEnergyModel = "false",
+            isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
             writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
@@ -757,6 +758,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            parameterEnum      = BetaFunction`CreateParameterEnum[betaFun];
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            isLowEnergyModel = If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True, "true", "false"];
+           isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
            fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
@@ -781,6 +783,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@parameterEnum@"     -> IndentText[WrapLines[parameterEnum]],
                             "@parameterNames@"     -> IndentText[WrapLines[parameterNames]],
                             "@isLowEnergyModel@"   -> isLowEnergyModel,
+                            "@isSupersymmetricModel@" -> isSupersymmetricModel,
                             "@fillInputParametersFromMINPAR@" -> IndentText[fillInputParametersFromMINPAR],
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
