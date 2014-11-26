@@ -206,12 +206,12 @@ CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalar
     CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2];
 
 (* Creates a C++ inline getter *)
-CreateInlineGetter[parameter_String, type_String] :=
-    type <> " get_" <> parameter <>
-    "() const { return " <> parameter <> "; }\n";
+CreateInlineGetter[parameter_String, type_String, postFix_String:"", struct_String:""] :=
+    type <> " get_" <> parameter <> postFix <>
+    "() const { return " <> struct <> parameter <> "; }\n";
 
-CreateInlineGetter[parameter_, type_] :=
-    CreateInlineGetter[parameter, CreateGetterReturnType[type]];
+CreateInlineGetter[parameter_, type_, postFix_String:"", struct_String:""] :=
+    CreateInlineGetter[parameter, CreateGetterReturnType[type], postFix, struct];
 
 (* Creates C++ getter prototype *)
 CreateGetterPrototype[parameter_String, type_String] :=
@@ -522,6 +522,8 @@ Format[CConversion`TensorProd[HoldPattern[x_],HoldPattern[y_]],CForm] :=
  *
  * etc.
  *)
+RValueToCFormString[expr_String] := expr;
+
 RValueToCFormString[expr_] :=
     Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
            symbols = Cases[{expr}, x_Symbol | x_Symbol[__] :> x, Infinity];

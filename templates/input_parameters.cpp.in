@@ -18,39 +18,15 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_physical.hpp"
+#include "@ModelName@_input_parameters.hpp"
 
-#include <iostream>
+#define INPUT(p) input.p
 
 namespace flexiblesusy {
 
-@ModelName@_physical::@ModelName@_physical()
-   :
-@physicalMassesInitNoLeadingComma@
-@mixingMatricesInit@
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_input_parameters& input)
 {
-}
-
-void @ModelName@_physical::clear()
-{
-@clearOutputParameters@
-}
-
-void @ModelName@_physical::print(std::ostream& ostr) const
-{
-   ostr << "----------------------------------------\n"
-           "pole masses:\n"
-           "----------------------------------------\n";
-@printMasses@
-   ostr << "----------------------------------------\n"
-           "pole mass mixing matrices:\n"
-           "----------------------------------------\n";
-@printMixingMatrices@
-}
-
-std::ostream& operator<<(std::ostream& ostr, const @ModelName@_physical& phys_pars)
-{
-   phys_pars.print(ostr);
+@printInputParameters@
    return ostr;
 }
 

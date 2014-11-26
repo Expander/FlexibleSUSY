@@ -234,7 +234,7 @@ GetTypeFromDimension[sym_, {}] :=
        CConversion`ScalarType[CConversion`complexScalarCType]
       ];
 
-GetTypeFromDimension[sym_, {1}] :=
+GetTypeFromDimension[sym_, {0|1}] :=
     GetTypeFromDimension[sym, {}];
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
@@ -254,6 +254,9 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
 
 GetTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
+
+GetTypeFromDimension[{0}] :=
+    GetTypeFromDimension[{}];
 
 GetTypeFromDimension[{1}] :=
     GetTypeFromDimension[{}];

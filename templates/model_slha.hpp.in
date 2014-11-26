@@ -18,40 +18,14 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_physical.hpp"
-
-#include <iostream>
+#ifndef @ModelName@_SLHA_H
+#define @ModelName@_SLHA_H
 
 namespace flexiblesusy {
 
-@ModelName@_physical::@ModelName@_physical()
-   :
-@physicalMassesInitNoLeadingComma@
-@mixingMatricesInit@
-{
+template <class T>
+class @ModelName@_slha;
+
 }
 
-void @ModelName@_physical::clear()
-{
-@clearOutputParameters@
-}
-
-void @ModelName@_physical::print(std::ostream& ostr) const
-{
-   ostr << "----------------------------------------\n"
-           "pole masses:\n"
-           "----------------------------------------\n";
-@printMasses@
-   ostr << "----------------------------------------\n"
-           "pole mass mixing matrices:\n"
-           "----------------------------------------\n";
-@printMixingMatrices@
-}
-
-std::ostream& operator<<(std::ostream& ostr, const @ModelName@_physical& phys_pars)
-{
-   phys_pars.print(ostr);
-   return ostr;
-}
-
-} // namespace flexiblesusy
+#endif

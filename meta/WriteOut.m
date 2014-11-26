@@ -4,6 +4,7 @@ BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
+PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -64,6 +65,9 @@ TransposeIfVector[parameter_, CConversion`ArrayType[__]] :=
 TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
     SARAH`Tp[parameter];
 
+TransposeIfVector[p:FlexibleSUSY`Sign[parameter_], _] :=
+    CConversion`ToValidCSymbolString[p];
+
 TransposeIfVector[parameter_, _] := parameter;
 
 PrintParameter[Null, streamName_String] := "";
@@ -82,6 +86,23 @@ PrintParameter[parameter_, streamName_String] :=
 PrintParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintParameter[#,streamName])& /@ parameters;
+           Return[result];
+          ];
+
+PrintInputParameter[Null, _] := "";
+
+PrintInputParameter[parameter_, streamName_String] :=
+    Module[{parameterStr, expr, type},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           type = Parameters`GetType[parameter];
+           expr = TransposeIfVector[parameter, type];
+           Return[streamName <> " << \"" <> parameterStr <> " = \" << " <>
+                  "INPUT(" <> CConversion`RValueToCFormString[expr] <> ") << \", \";\n"];
+          ];
+
+PrintInputParameters[parameters_List, streamName_String] :=
+    Module[{result = ""},
+           (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
            Return[result];
           ];
 
