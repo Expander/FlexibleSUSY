@@ -1110,23 +1110,37 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
 
-           (* pick beta functions of supersymmetric parameters *)
-           susyBetaFunctions = { SARAH`BetaLijkl,
-                                 SARAH`BetaWijkl,
-                                 SARAH`BetaYijk ,
-                                 SARAH`BetaMuij ,
-                                 SARAH`BetaLi   ,
-                                 SARAH`BetaGauge,
-                                 SARAH`BetaVEV  };
+           If[SARAH`SupersymmetricModel,
+              (* pick beta functions of supersymmetric parameters *)
+              susyBetaFunctions = { SARAH`BetaLijkl,
+                                    SARAH`BetaWijkl,
+                                    SARAH`BetaYijk ,
+                                    SARAH`BetaMuij ,
+                                    SARAH`BetaLi   ,
+                                    SARAH`BetaGauge,
+                                    SARAH`BetaVEV  };
 
-           (* pick beta functions of non-supersymmetric parameters *)
-           susyBreakingBetaFunctions = { SARAH`BetaQijkl,
-                                         SARAH`BetaTijk ,
-                                         SARAH`BetaBij  ,
-                                         SARAH`BetaLSi  ,
-                                         SARAH`Betam2ij ,
-                                         SARAH`BetaMi   ,
-                                         SARAH`BetaDGi  };
+              (* pick beta functions of non-supersymmetric parameters *)
+              susyBreakingBetaFunctions = { SARAH`BetaQijkl,
+                                            SARAH`BetaTijk ,
+                                            SARAH`BetaBij  ,
+                                            SARAH`BetaLSi  ,
+                                            SARAH`Betam2ij ,
+                                            SARAH`BetaMi   ,
+                                            SARAH`BetaDGi  };
+              ,
+              (* pick beta functions of dimensionless parameters *)
+              susyBetaFunctions = { SARAH`BetaGauge,
+                                    SARAH`BetaLijkl, (* quartic scalar interactions *)
+                                    SARAH`BetaYijk };
+
+              (* pick beta functions of dimensionfull parameters *)
+              susyBreakingBetaFunctions = { SARAH`BetaTijk, (* cubic scalar interactions *)
+                                            SARAH`BetaMuij, (* bilinear fermion term *)
+                                            SARAH`BetaBij , (* bilinear scalar term *)
+                                            SARAH`BetaLi  , (* linear scalar term *)
+                                            SARAH`BetaVEV };
+             ];
 
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
