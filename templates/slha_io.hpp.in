@@ -80,6 +80,9 @@ public:
    template <class T>
    static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd& qedqcd);
 
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd& qedqcd);
+
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
@@ -143,6 +146,15 @@ void @ModelName@_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const @ModelName@_sl
    }
 
    slhaea = slha_io.get_slha_io().get_data();
+}
+
+template <class T>
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+{
+   SLHAea::Coll slhaea;
+   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd);
+
+   return slhaea;
 }
 
 /**

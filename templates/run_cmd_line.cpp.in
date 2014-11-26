@@ -88,8 +88,7 @@ int main(int argc, char* argv[])
    const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
 
    // SLHA output
-   SLHAea::Coll slhaea;
-   @ModelName@_slha_io::fill_slhaea(slhaea, model, oneset);
+   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, oneset));
 
    std::cout << slhaea;
 
