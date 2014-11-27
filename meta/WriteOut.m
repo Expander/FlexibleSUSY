@@ -91,14 +91,17 @@ PrintParameters[parameters_List, streamName_String] :=
 
 PrintInputParameter[Null, _] := "";
 
-PrintInputParameter[parameter_, streamName_String] :=
-    Module[{parameterStr, expr, type},
+PrintInputParameter[{parameter_, type_}, streamName_String] :=
+    Module[{parameterStr, expr},
            parameterStr = CConversion`ToValidCSymbolString[parameter];
            type = Parameters`GetType[parameter];
            expr = TransposeIfVector[parameter, type];
            Return[streamName <> " << \"" <> parameterStr <> " = \" << " <>
                   "INPUT(" <> CConversion`RValueToCFormString[expr] <> ") << \", \";\n"];
           ];
+
+PrintInputParameter[parameter_, streamName_String] :=
+    PrintInputParameter[{parameter, Parameters`GetType[parameter]}, streamName];
 
 PrintInputParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
