@@ -836,26 +836,21 @@ CreateMixingMatrixDefinition[massMatrix_TreeMasses`FSMassMatrix] :=
 
 ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, massESSymbol, mixingMatrixSymbol, matrixType,
-            dim, i, massESType},
+            dim, massESType},
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = GetDimension[massESSymbol];
-           massESType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
-           If[dim == 1,
-              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = 0.0;\n";
-              ,
-              result = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]] <> " = " <> massESType <> "::Zero();\n";
-             ];
+           massESType = Parameters`GetTypeFromDimension[{dim}];
+           result = CConversion`SetToDefault[ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]],
+                                             massESType];
            If[mixingMatrixSymbol =!= Null,
-              matrixType = CreateCType[GetMixingMatrixType[massMatrix]];
+              matrixType = GetMixingMatrixType[massMatrix];
               If[Head[mixingMatrixSymbol] === List,
-                 For[i = 1, i <= Length[mixingMatrixSymbol], i++,
-                     result = result <> ToValidCSymbolString[mixingMatrixSymbol[[i]]] <>
-                              " = " <> matrixType <> "::Zero();\n";
-                    ];
+                 (result = result <>
+                           CConversion`SetToDefault[ToValidCSymbolString[#], matrixType])& /@ mixingMatrixSymbol;
                  ,
-                 result = result <> ToValidCSymbolString[mixingMatrixSymbol] <>
-                          " = " <> matrixType <> "::Zero();\n";
+                 result = result <>
+                          CConversion`SetToDefault[ToValidCSymbolString[mixingMatrixSymbol], matrixType];
                 ];
              ];
            Return[result];
