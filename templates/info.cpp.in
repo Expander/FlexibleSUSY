@@ -48,7 +48,7 @@ void print(std::ostream& ostr)
       ;
 
    ostr << "\n"
-      "Multiplets:            ";
+      "Multiplets:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARTICLES; i++) {
       ostr << particle_names[i]
            << '[' << particle_multiplicities[i] << ']';
@@ -57,7 +57,7 @@ void print(std::ostream& ostr)
    }
 
    ostr << "\n\n"
-      "Parameters:            ";
+      "Parameters:                ";
    for (unsigned i = 0; i < NUMBER_OF_PARAMETERS; i++) {
       ostr << parameter_names[i];
       if (i + 1 < NUMBER_OF_PARAMETERS)
