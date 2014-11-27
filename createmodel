@@ -40,9 +40,8 @@ Options:
                      should be used.  If empty, it will be searched for
                      model_files/<model-name>/FlexibleSUSY.m.in , where
                      <model-name> is the name of the FlexibleSUSY model
-                     given by --name= .  If no such model file can be found,
-                     the MSSM model file is used.  All FlexibleSUSY
-                     model files are stored in model_files/ .
+                     given by --name= .  All FlexibleSUSY model files
+                     are stored in model_files/ .
                      Available models are: ${available_default_model_files}
 
   --sarah-model=     Name of the SARAH model, used in SARAH\`Start[].
@@ -133,11 +132,11 @@ if [ -n "$model_file" ]; then
         printf "found in ${model_file_dir}/\n"
     else
         printf "not found in ${model_file_dir}/${model_file}\n"
-        echo "Error: There is no default model file for the ${model_file}!"
+        echo "Error: There is no model file for the ${model_file}!"
         echo "  You can create one via"
         echo ""
         echo "  \$ mkdir ${model_file_dir}/${model_file}"
-        echo "  \$ cp ${model_file_dir}/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
+        echo "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
         exit ${exit_no_default_model}
     fi
 else
@@ -145,8 +144,19 @@ else
     # exists in model_files/$name/
     if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
         model_file_dir="$model_file_dir/$name"
+        printf "  using model file ${model_file_dir}/FlexibleSUSY.m.in\n"
+    else
+        echo "Error: No model file found in ${model_file_dir}/${name}/"
+        echo "  You can either create a model file via"
+        echo ""
+        echo "  \$ mkdir ${model_file_dir}/${name}"
+        echo "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${name}/"
+        echo ""
+        echo "  or you can specify the model file via"
+        echo ""
+        echo "  \$ ./`basename $0` [...] --model-file=MSSM"
+        exit ${exit_no_default_model}
     fi
-    printf "  using default model file ${model_file_dir}/FlexibleSUSY.m.in\n"
 fi
 
 if test ! -d "$targetdir" ; then
