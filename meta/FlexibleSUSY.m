@@ -403,8 +403,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[];
-          calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[];
+          calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
+          calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
