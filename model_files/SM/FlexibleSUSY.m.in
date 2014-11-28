@@ -27,6 +27,15 @@ LowScaleInput = {
    {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]}
 };
 
+InitialGuessAtLowScale = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {v, SM[vev]}
+};
+
+FSRenormalizationScheme = MSBar;
+
 OnlyLowEnergyFlexibleSUSY = True;
 
 SARAH`ParameterDefinitions = Append[
