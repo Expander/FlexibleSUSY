@@ -60,6 +60,11 @@ PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
 
+(* renormalization schemes *)
+DRbar;
+MSbar;
+FSRenormalizationScheme = DRbar;
+
 (* precision of pole mass calculation *)
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {SARAH`HiggsBoson, SARAH`PseudoScalar, SARAH`ChargedHiggs};
@@ -1065,6 +1070,17 @@ FindUnfixedParameters[fixed_List] :=
            Complement[allParameters, fixedParameters]
           ];
 
+SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown
+renormalization scheme `1`.";
+
+SelectRenormalizationScheme[renormalizationScheme_] :=
+    Switch[renormalizationScheme,
+           FlexibleSUSY`DRbar, 0,
+           FlexibleSUSY`MSbar, 1,
+           _, Message[SelectRenormalizationScheme::UnknownRenormalizationScheme, renormalizationScheme];
+              Quit[1];
+          ];
+
 Options[MakeFlexibleSUSY] :=
     {
         InputFile -> "FlexibleSUSY.m"
@@ -1108,7 +1124,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            RXi[_] = 1;
            SARAH`Xi = 1;
            SARAH`Xip = 1;
-           SARAH`rMS = 0;
+           SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
            FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
            Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
