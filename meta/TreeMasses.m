@@ -369,7 +369,7 @@ GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
           ];
 
 CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
-    Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr},
+    Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr, CreateElementGetter},
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
            dim = GetDimension[massESSymbol];
@@ -378,7 +378,11 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_S
               returnType = CConversion`ScalarType[CConversion`realScalarCType];,
               returnType = CConversion`ArrayType[CConversion`realScalarCType, dim];
              ];
-           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, struct]
+           (* don't create element getters for ScalarType *)
+           CreateElementGetter[name_String, CConversion`ScalarType[_], pf_String, st_String] := "";
+           CreateElementGetter[name_String, type_, pf_String, st_String] := CConversion`CreateInlineElementGetter[name, type, pf, st];
+           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, struct] <>
+           CreateElementGetter[massESSymbolStr, returnType, postFix, struct]
           ];
 
 CreateSLHAPoleMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
