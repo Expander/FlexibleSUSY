@@ -34,7 +34,7 @@ InitialGuessAtLowScale = {
    {v, SM[vev]}
 };
 
-FSRenormalizationScheme = MSBar;
+FSRenormalizationScheme = MSbar;
 
 OnlyLowEnergyFlexibleSUSY = True;
 
