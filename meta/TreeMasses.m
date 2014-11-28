@@ -473,7 +473,8 @@ CreateMixingMatrixGetter[mixingMatrixSymbol_List, returnType_, postFix_String:""
 CreateMixingMatrixGetter[Null, returnType_, postFix_String:"", struct_String:""] := "";
 
 CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:"", struct_String:""] :=
-    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct];
+    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct] <>
+    CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct];
 
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
     CreateMixingMatrixGetter[massMatrix, "_pole_slha", "physical_slha."];
