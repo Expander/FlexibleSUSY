@@ -842,15 +842,18 @@ SARAHModelFileModificationTimeInSeconds[] :=
 GetRGEFileNames[outputDir_String] :=
     Module[{rgeDir, fileNames},
            rgeDir = FileNameJoin[{outputDir, "RGEs"}];
-           fileNames = { "BetaYijk.m", "BetaGauge.m", "BetaWijkl.m",
-                         "BetaMuij.m", "BetaLi.m", "BetaQijkl.m",
-                         "BetaTijk.m", "BetaBij.m", "BetaLSi.m",
-                         "Betam2ij.m", "BetaMi.m", "BetaVEV.m" };
+           fileNames = { "BetaYijk.m", "BetaGauge.m", "BetaMuij.m",
+                         "BetaTijk.m", "BetaBij.m", "BetaVEV.m" };
            If[SARAH`AddDiracGauginos === True,
               AppendTo[fileNames, "BetaDGi.m"];
              ];
            If[SARAH`SupersymmetricModel === False,
               AppendTo[fileNames, "BetaLijkl.m"];
+             ];
+           If[SARAH`SupersymmetricModel === True,
+              fileNames = Join[fileNames,
+                               { "BetaWijkl.m", "BetaQijkl.m", "BetaLSi.m",
+                                 "BetaLi.m", "Betam2ij.m", "BetaMi.m" }];
              ];
            FileNameJoin[{rgeDir, #}]& /@ fileNames
           ];
@@ -1070,8 +1073,8 @@ FindUnfixedParameters[fixed_List] :=
            Complement[allParameters, fixedParameters]
           ];
 
-SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown
-renormalization scheme `1`.";
+SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
+ renormalization scheme `1`.";
 
 SelectRenormalizationScheme[renormalizationScheme_] :=
     Switch[renormalizationScheme,
