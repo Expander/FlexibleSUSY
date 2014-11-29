@@ -68,3 +68,48 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    BOOST_CHECK_LT(residual_2, 100*precision);
    BOOST_MESSAGE("fixed point iterator used " << Parabola::get_number_of_calls() << " calls");
 }
+
+class Perturbation {
+public:
+   static void reset() { number_of_calls = 0; }
+   static unsigned get_number_of_calls() { return number_of_calls; }
+
+   /**
+    * Update function which has the form of a constant plus a
+    * perturbation term.
+    */
+   static int func(const gsl_vector* x, void*, gsl_vector* f) {
+      const double y = gsl_vector_get(x, 0);
+      const double z = gsl_vector_get(x, 1);
+      const double f1 = 1 + (y - z*z)/(16.*Sqr(Pi));
+      const double f2 = 2 + (y*y - z)/(16.*Sqr(Pi));
+      gsl_vector_set(f, 0, f1);
+      gsl_vector_set(f, 1, f2);
+      number_of_calls++;
+      return GSL_SUCCESS;
+   }
+
+private:
+   static unsigned number_of_calls;
+};
+
+unsigned Perturbation::number_of_calls = 0;
+
+BOOST_AUTO_TEST_CASE( test_perturbation )
+{
+   const double precision = 1.0e-4;
+   const double start[2] = { 10, 10 };
+   Fixed_point_iterator<2> fpi(Perturbation::func, NULL, 1000, precision);
+   int status = GSL_SUCCESS;
+
+   Perturbation::reset();
+
+   status = fpi.find_fixed_point(start);
+
+   BOOST_REQUIRE(status == GSL_SUCCESS);
+   BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(0), 1.0, 0.02);
+   BOOST_CHECK_CLOSE_FRACTION(fpi.get_fixed_point(1), 2.0, 0.04);
+
+   BOOST_MESSAGE("fixed point iterator used " << Perturbation::get_number_of_calls() << " calls");
+   BOOST_CHECK(Perturbation::get_number_of_calls() < 6);
+}
