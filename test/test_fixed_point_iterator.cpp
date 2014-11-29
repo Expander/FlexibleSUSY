@@ -47,11 +47,10 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 {
    const double precision = 1.0e-4;
    const double start[2] = { 9, 9 };
-   Fixed_point_iterator<2,MaxRelDiff> fpi(Parabola::func, NULL, 1000, precision);
+   Fixed_point_iterator<2> fpi(Parabola::func, NULL, 1000, precision);
    int status = GSL_SUCCESS;
 
    Parabola::reset();
-   fpi.set_test_absolute_errors(false);
 
    status = fpi.find_fixed_point(start);
 
