@@ -33,6 +33,12 @@ namespace flexiblesusy {
  * arguments a GSL vector of length \a dimension, a pointer to the
  * parameters (of type \a void*) and a GSL vector where the next
  * point must be stored.
+ *
+ * @note The standard relative convergence criterion
+ * \f$\text{MaxRelDiff}(x_{n+1}, x_{n}) < \text{precision}\f$ is not
+ * very good: The iteration might converge slowly.  This means, that
+ * subsequent steps are very close to each other, but \f$x_n\f$ might
+ * not be close to the true fixed point.
  */
 template <std::size_t dimension, double (*Compare_relative)(double,double) = MaxRelDiff>
 class Fixed_point_iterator {
@@ -250,7 +256,7 @@ int Fixed_point_iterator<dimension,Compare_relative>::fixed_point_iterator_test_
 
 /**
  * Test whether the absolute value of the residual, defined by
- * |x_{n+1}-x_n| = \f$\sqrt{\sum_i (x_{n+1}(i) - x_n(i))^2}\f$,
+ * \f$|x_{n+1}-x_n| = \sqrt{\sum_i (x_{n+1}(i) - x_n(i))^2}\f$,
  * is less than the set precision.
  *
  * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
