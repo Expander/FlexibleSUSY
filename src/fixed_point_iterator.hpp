@@ -23,15 +23,18 @@ namespace flexiblesusy {
 /**
  * @class Fixed_point_iterator
  * @brief Does fixed point iteration
- * @author Dylan Harries
+ * @author Dylan Harries, Alexander Voigt
+ * @tparam dimension dimension of function
+ * @tparam Compare_relative function for relative comparison
+ *    of subsequent iteration steps
  *
  * The user has to provide the function (of which a fixed point
- * should be found) of the type Function_t. This function gets as
- * arguments a GSL vector of length 'dimension', a pointer to the
- * parameters (of type void*) and a GSL vector where the next
+ * should be found) of the type \a Function_t. This function gets as
+ * arguments a GSL vector of length \a dimension, a pointer to the
+ * parameters (of type \a void*) and a GSL vector where the next
  * point must be stored.
  */
-template <std::size_t dimension>
+template <std::size_t dimension, double (*Compare_relative)(double,double) = MaxRelDiff>
 class Fixed_point_iterator {
 public:
    typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
@@ -67,8 +70,8 @@ private:
 /**
  * Default constructor
  */
-template <std::size_t dimension>
-Fixed_point_iterator<dimension>::Fixed_point_iterator()
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+Fixed_point_iterator<dimension,Compare_relative>::Fixed_point_iterator()
    : max_iterations(100)
    , precision(1.0e-2)
    , test_on_absolute(false)
@@ -79,7 +82,8 @@ Fixed_point_iterator<dimension>::Fixed_point_iterator()
    fixed_point = gsl_vector_alloc(dimension);
 
    if (!xn || !fixed_point)
-      throw OutOfMemoryError("GSL vector allocation failed in Fixed_point_iterator()");
+      throw OutOfMemoryError("GSL vector allocation failed in"
+                             " Fixed_point_iterator()");
 }
 
 /**
@@ -91,11 +95,13 @@ Fixed_point_iterator<dimension>::Fixed_point_iterator()
  * @param precision_ precision goal
  * @param absolute_ use absolute convergence test
  */
-template <std::size_t dimension>
-Fixed_point_iterator<dimension>::Fixed_point_iterator(Function_t function_,
-                                                      void* parameters_,
-                                                      std::size_t max_iterations_,
-                                                      double precision_, bool absolute_)
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+Fixed_point_iterator<dimension,Compare_relative>::Fixed_point_iterator(
+   Function_t function_,
+   void* parameters_,
+   std::size_t max_iterations_,
+   double precision_, bool absolute_
+)
    : max_iterations(max_iterations_)
    , precision(precision_)
    , test_on_absolute(absolute_)
@@ -106,12 +112,15 @@ Fixed_point_iterator<dimension>::Fixed_point_iterator(Function_t function_,
    fixed_point = gsl_vector_alloc(dimension);
 
    if (!xn || !fixed_point)
-      throw OutOfMemoryError("GSL vector allocation failed in Fixed_point_iterator("
-                             "Function_t, void*, size_t, double, bool)");
+      throw OutOfMemoryError("GSL vector allocation failed in"
+                             " Fixed_point_iterator(Function_t, void*,"
+                             " size_t, double, bool)");
 }
 
-template <std::size_t dimension>
-Fixed_point_iterator<dimension>::Fixed_point_iterator(const Fixed_point_iterator& other)
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+Fixed_point_iterator<dimension,Compare_relative>::Fixed_point_iterator(
+   const Fixed_point_iterator& other
+)
    : max_iterations(other.max_iterations)
    , precision(other.precision)
    , test_on_absolute(other.test_on_absolute)
@@ -125,8 +134,8 @@ Fixed_point_iterator<dimension>::Fixed_point_iterator(const Fixed_point_iterator
    gsl_vector_memcpy(fixed_point, other.fixed_point);
 }
 
-template <std::size_t dimension>
-Fixed_point_iterator<dimension>::~Fixed_point_iterator()
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+Fixed_point_iterator<dimension,Compare_relative>::~Fixed_point_iterator()
 {
    gsl_vector_free(xn);
    gsl_vector_free(fixed_point);
@@ -139,11 +148,13 @@ Fixed_point_iterator<dimension>::~Fixed_point_iterator()
  *
  * @return GSL error code (GSL_SUCCESS if fixed point found)
  */
-template <std::size_t dimension>
-int Fixed_point_iterator<dimension>::find_fixed_point(const double start[dimension])
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+int Fixed_point_iterator<dimension,Compare_relative>::find_fixed_point(
+   const double start[dimension]
+)
 {
-   assert(function && "Fixed_point_iterator<dimension>::find_fixed_point: function pointer"
-          " must not be zero!");
+   assert(function && "Fixed_point_iterator<dimension,Compare_relative>"
+          "::find_fixed_point: function pointer must not be zero!");
 
    int status;
    std::size_t iter = 0;
@@ -191,8 +202,8 @@ int Fixed_point_iterator<dimension>::find_fixed_point(const double start[dimensi
  *
  * @return GSL error code
  */
-template <std::size_t dimension>
-int Fixed_point_iterator<dimension>::fixed_point_iterator_iterate()
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+int Fixed_point_iterator<dimension,Compare_relative>::fixed_point_iterator_iterate()
 {
    gsl_vector_memcpy(xn, fixed_point);
 
@@ -212,16 +223,14 @@ int Fixed_point_iterator<dimension>::fixed_point_iterator_iterate()
 }
 
 /**
- * Test whether the relative difference is less
- * than the set precision. The relative difference test used
- * here is identical to that defined in wrappers.hpp
- * (see MaxRelDiff defined there), applied to each element of
- * the vector.
+ * Test whether the relative difference is less than the set
+ * precision. The relative difference test used here is carried out by
+ * applying \a Compare_relative to each element of the vector.
  *
  * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
  */
-template <std::size_t dimension>
-int Fixed_point_iterator<dimension>::fixed_point_iterator_test_relative() const
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+int Fixed_point_iterator<dimension,Compare_relative>::fixed_point_iterator_test_relative() const
 {
    double rel_diff = 0.;
 
@@ -229,8 +238,8 @@ int Fixed_point_iterator<dimension>::fixed_point_iterator_test_relative() const
       GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);
 
    for (std::size_t i = 0; i < dimension; ++i) {
-      rel_diff = MaxRelDiff(gsl_vector_get(xn, i),
-                            gsl_vector_get(fixed_point, i));
+      rel_diff = Compare_relative(gsl_vector_get(xn, i),
+                                  gsl_vector_get(fixed_point, i));
 
       if (rel_diff > precision)
          return GSL_CONTINUE;
@@ -246,8 +255,8 @@ int Fixed_point_iterator<dimension>::fixed_point_iterator_test_relative() const
  *
  * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
  */
-template <std::size_t dimension>
-int Fixed_point_iterator<dimension>::fixed_point_iterator_test_absolute() const
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+int Fixed_point_iterator<dimension,Compare_relative>::fixed_point_iterator_test_absolute() const
 {
    double residual = 0;
 
@@ -269,8 +278,8 @@ int Fixed_point_iterator<dimension>::fixed_point_iterator_test_absolute() const
  *
  * @param iteration iteration number
  */
-template <std::size_t dimension>
-void Fixed_point_iterator<dimension>::print_state(std::size_t iteration) const
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+void Fixed_point_iterator<dimension,Compare_relative>::print_state(std::size_t iteration) const
 {
    std::cout << "\tIteration n = " << iteration << ": x_{n} =";
    for (std::size_t i = 0; i < dimension; ++i) {
@@ -283,8 +292,8 @@ void Fixed_point_iterator<dimension>::print_state(std::size_t iteration) const
    std::cout << '\n';
 }
 
-template <std::size_t dimension>
-double Fixed_point_iterator<dimension>::get_fixed_point(std::size_t i) const
+template <std::size_t dimension, double (*Compare_relative)(double,double)>
+double Fixed_point_iterator<dimension,Compare_relative>::get_fixed_point(std::size_t i) const
 {
    assert(i < dimension && "Fixed_point_iterator<>::get_fixed_point: index out"
           " of bounds");
