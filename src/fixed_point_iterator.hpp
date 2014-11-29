@@ -30,6 +30,8 @@
 
 namespace flexiblesusy {
 
+namespace fixed_point_iterator {
+
 class Convergence_tester_absolute {
 public:
    Convergence_tester_absolute(double precision_ = 1.0e-2)
@@ -104,6 +106,8 @@ private:
    double precision;                 ///< precision goal
 };
 
+} // namespace fixed_point_iterator
+
 /**
  * @class Fixed_point_iterator
  * @brief Does fixed point iteration
@@ -126,7 +130,7 @@ private:
  *
  * @todo implement check for no progress towards solution
  */
-template <std::size_t dimension, class Convergence_tester = Convergence_tester_relative>
+template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
 class Fixed_point_iterator {
 public:
    typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
