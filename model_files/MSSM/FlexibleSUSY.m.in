@@ -13,6 +13,12 @@ EXTPAR = { {0, Qin},
            {22, mHu2IN}
 };
 
+FSExtraInputParameters = {
+    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
+    {Adij, AdijIN, {3,3}}, (* 3x3 matrix *)
+    {Auij, AuijIN, {3,3}}  (* 3x3 matrix *)
+};
+
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
@@ -25,12 +31,12 @@ HighScale == Qin;
 
 HighScaleFirstGuess = 2.0 10^16;
 
-HighScaleInput={
-   {T[Ye], LHInput[T[Ye]]},
-   {T[Yd], LHInput[T[Yd]]},
-   {T[Yu], LHInput[T[Yu]]},
+HighScaleInput = {
+   {T[Ye], Aeij*Ye},
+   {T[Yd], Adij*Ye},
+   {T[Yu], Auij*Ye},
    {mHd2, mHd2IN},
-   {mHd2, mHu2IN},
+   {mHu2, mHu2IN},
    {mq2, LHInput[mq2]},
    {ml2, LHInput[ml2]},
    {md2, LHInput[md2]},
