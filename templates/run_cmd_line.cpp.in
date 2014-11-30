@@ -20,10 +20,9 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
-#include "@ModelName@_two_scale_model_slha.hpp"
+#include "@ModelName@_slha_io.hpp"
 
 #include "command_line_options.hpp"
-#include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"
 
@@ -34,7 +33,7 @@ namespace flexiblesusy {
 void print_usage()
 {
    std::cout <<
-      "Usage: scan_@ModelName@.x [options]\n"
+      "Usage: run_cmd_line_@ModelName@.x [options]\n"
       "Options:\n"
 @printCommandLineOptions@
       "  --help,-h                         print this help message"
@@ -78,37 +77,20 @@ int main(int argc, char* argv[])
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
    spectrum_generator.set_parameter_output_scale(0); // 0 == susy scale
+   spectrum_generator.set_pole_mass_loop_order(2);   // 2-loop
+   spectrum_generator.set_ewsb_loop_order(2);        // 2-loop
+   spectrum_generator.set_beta_loop_order(2);        // 2-loop
+   spectrum_generator.set_threshold_corrections_loop_order(1); // 1-loop
 
-   const std::vector<double> range(float_range(0., 100., 10));
+   spectrum_generator.run(oneset, input);
 
-   cout << "# "
-        << std::setw(12) << std::left << "@InputParameter_1@" << ' '
-        << std::setw(12) << std::left << "M@HiggsBoson_0@/GeV" << ' '
-        << std::setw(12) << std::left << "error"
-        << '\n';
+   const int exit_code = spectrum_generator.get_exit_code();
+   const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
 
-   for (std::vector<double>::const_iterator it = range.begin(),
-           end = range.end(); it != end; ++it) {
-      input.@InputParameter_1@ = *it;
+   // SLHA output
+   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, oneset));
 
-      spectrum_generator.run(oneset, input);
+   std::cout << slhaea;
 
-      const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
-      const @ModelName@_physical& pole_masses = model.get_physical_slha();
-      const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
-         = spectrum_generator.get_problems();
-      const double higgs = pole_masses.M@HiggsBoson_0@;
-      const bool error = problems.have_problem();
-
-      cout << "  "
-           << std::setw(12) << std::left << input.@InputParameter_1@ << ' '
-           << std::setw(12) << std::left << higgs << ' '
-           << std::setw(12) << std::left << error;
-      if (error) {
-         cout << "\t# " << problems;
-      }
-      cout << '\n';
-   }
-
-   return 0;
+   return exit_code;
 }

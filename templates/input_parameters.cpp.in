@@ -18,27 +18,16 @@
 
 // File generated at @DateAndTime@
 
-#ifndef @ModelName@_INFO_H
-#define @ModelName@_INFO_H
+#include "@ModelName@_input_parameters.hpp"
 
-#include <iosfwd>
+#define INPUT(p) input.p
 
 namespace flexiblesusy {
 
-namespace @ModelName@_info {
-@particleEnum@
-@parameterEnum@
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-   extern const char* model_name;
-   extern const bool is_low_energy_model;
-   extern const bool is_supersymmetric_model;
-
-   void print(std::ostream&);
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_input_parameters& input)
+{
+@printInputParameters@
+   return ostr;
 }
 
 } // namespace flexiblesusy
-
-#endif

@@ -4,14 +4,14 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "MSSM_two_scale_model.hpp"
+#include "MSSM_two_scale_model_slha.hpp"
 #include "MSSM_slha_io.hpp"
 
 using namespace flexiblesusy;
 
 BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
 {
-   MSSM<Two_scale> model;
+   MSSM_slha<Two_scale> model;
    model.do_calculate_sm_pole_masses(true);
 
    const double scale = 91.0;
@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   model.get_physical().Mhh = Mhh;
-   model.get_physical().ZH  = ZH;
+   model.get_physical_slha().Mhh = Mhh;
+   model.get_physical_slha().ZH  = ZH;
 
    MSSM_slha_io slha_io;
    slha_io.set_spectrum(model);

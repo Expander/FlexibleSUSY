@@ -25,6 +25,9 @@
  * Contains the definition of the @ModelName@ model class methods
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
 #include "@ModelName@_two_scale_model.hpp"
@@ -62,15 +65,12 @@ using namespace @ModelName@_info;
 #define HIGGS_2LOOP_CORRECTION_ATAU_ATAU higgs_2loop_corrections.atau_atau
 
 #ifdef ENABLE_THREADS
-std::mutex CLASSNAME::mtx_fortran;
-#endif
-
-#ifdef ENABLE_THREADS
-#define LOCK_MUTEX() mtx_fortran.lock()
-#define UNLOCK_MUTEX() mtx_fortran.unlock()
+   std::mutex CLASSNAME::mtx_fortran;
+   #define LOCK_MUTEX() mtx_fortran.lock()
+   #define UNLOCK_MUTEX() mtx_fortran.unlock()
 #else
-#define LOCK_MUTEX()
-#define UNLOCK_MUTEX()
+   #define LOCK_MUTEX()
+   #define UNLOCK_MUTEX()
 #endif
 
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
@@ -352,6 +352,7 @@ void CLASSNAME::print(std::ostream& ostr) const
 @printMixingMatrices@
    physical.print(ostr);
 }
+
 /**
  * wrapper routines for passarino Veltman functions
  */

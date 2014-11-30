@@ -122,6 +122,7 @@ TEST_SH += \
 		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_MSSM_slha_doubled_blocks.sh
 TEST_SRC += \
+		$(DIR)/test_MSSM_slha.cpp \
 		$(DIR)/test_MSSM_slha_input.cpp \
 		$(DIR)/test_MSSM_info.cpp
 endif
@@ -325,6 +326,8 @@ $(DIR)/test_MSSM_slha_output.x: $(DIR)/test_MSSM_slha_output.o $(LIBMSSM) $(LIBS
 		$(CXX) -o $@ $(call abspathx,$< $(LIBMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_MSSM_slha_input.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_MSSM_slha.x: $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_MSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

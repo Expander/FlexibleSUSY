@@ -33,6 +33,8 @@ struct @ModelName@_input_parameters {
    {}
 };
 
+std::ostream& operator<<(std::ostream&, const @ModelName@_input_parameters&);
+
 } // namespace flexiblesusy
 
 #endif

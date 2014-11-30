@@ -27,6 +27,7 @@ RestoreParameter::usage="Restore parameters from local variables";
 GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
+GetTypeFromDimension::usage="";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -115,7 +116,7 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
@@ -233,7 +234,7 @@ GetTypeFromDimension[sym_, {}] :=
        CConversion`ScalarType[CConversion`complexScalarCType]
       ];
 
-GetTypeFromDimension[sym_, {1}] :=
+GetTypeFromDimension[sym_, {0|1}] :=
     GetTypeFromDimension[sym, {}];
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
@@ -250,6 +251,21 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`realScalarCType, num1, num2],
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
+
+GetTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
+GetTypeFromDimension[{0}] :=
+    GetTypeFromDimension[{}];
+
+GetTypeFromDimension[{1}] :=
+    GetTypeFromDimension[{}];
+
+GetTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`realScalarCType, num];
+
+GetTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
@@ -583,7 +599,7 @@ CreateLocalConstRefs[expr_] :=
 CreateLocalConstRefsForPhysicalParameters[expr_] :=
     Module[{result = "", symbols, outputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
@@ -597,7 +613,7 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
 CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", symbols, modelPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
@@ -608,7 +624,7 @@ CreateLocalConstRefsForBetas[expr_] :=
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
     Module[{result = "", symbols, inputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = Cases[compactExpr, _Symbol, Infinity];
+           symbols = Cases[compactExpr, _Symbol, {0,Infinity}];
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;

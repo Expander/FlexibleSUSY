@@ -1,0 +1,57 @@
+
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+
+(* input parameters *)
+
+MINPAR = {
+    {1, LambdaInput1},
+    {2, LambdaInput2},
+    {3, LambdaInput3},
+    {4, LambdaInput4},
+    {5, LambdaInput5}
+};
+
+EWSBOutputParameters = { mH2, mS2 };
+
+SUSYScale = vS;
+
+SUSYScaleFirstGuess = 1000;
+
+SUSYScaleInput = {
+    {\[Lambda]1, LambdaInput1},
+    {\[Lambda]2, LambdaInput2},
+    {\[Lambda]3, LambdaInput3},
+    {\[Lambda]4, LambdaInput4},
+    {\[Lambda]5, LambdaInput5}
+};
+
+LowScale = SM[MZ];
+
+LowScaleFirstGuess = SM[MZ];
+
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
+   {vS, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]}
+};
+
+InitialGuessAtLowScale = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vH, SM[vev]},
+   {vS, SM[vev]}
+};
+
+OnlyLowEnergyFlexibleSUSY = True;
+
+FSRenormalizationScheme = MSbar;
+
+SMParticles = {
+    Electron, TopQuark, BottomQuark,
+    VectorP, VectorZ, VectorG, VectorW, Neutrino,
+    Hp, Ah (* goldstones *)
+};

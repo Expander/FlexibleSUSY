@@ -4,6 +4,7 @@ BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
+PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
@@ -64,6 +65,9 @@ TransposeIfVector[parameter_, CConversion`ArrayType[__]] :=
 TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
     SARAH`Tp[parameter];
 
+TransposeIfVector[p:FlexibleSUSY`Sign[parameter_], _] :=
+    CConversion`ToValidCSymbolString[p];
+
 TransposeIfVector[parameter_, _] := parameter;
 
 PrintParameter[Null, streamName_String] := "";
@@ -82,6 +86,25 @@ PrintParameter[parameter_, streamName_String] :=
 PrintParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintParameter[#,streamName])& /@ parameters;
+           Return[result];
+          ];
+
+PrintInputParameter[Null, _] := "";
+
+PrintInputParameter[{parameter_, type_}, streamName_String] :=
+    Module[{parameterStr, expr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           expr = TransposeIfVector[parameter, type];
+           Return[streamName <> " << \"" <> parameterStr <> " = \" << " <>
+                  "INPUT(" <> CConversion`RValueToCFormString[expr] <> ") << \", \";\n"];
+          ];
+
+PrintInputParameter[parameter_, streamName_String] :=
+    PrintInputParameter[{parameter, Parameters`GetType[parameter]}, streamName];
+
+PrintInputParameters[parameters_List, streamName_String] :=
+    Module[{result = ""},
+           (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
            Return[result];
           ];
 
@@ -228,6 +251,11 @@ GetSLHAMixinMatrices[] :=
 GetSLHAModelParameters[] :=
     DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
                        MemberQ[Parameters`GetModelParameters[],#[[1]]]&],
+                {_,None}];
+
+GetSLHAInputParameters[] :=
+    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+                       MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
@@ -386,9 +414,9 @@ WriteExtraSLHAOutputBlock[outputBlocks_List] :=
            Return[result];
           ];
 
-ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+ReadSLHAInputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
     Module[{result, blockNameStr, parmStr, pdgStr},
-           blockNameStr = ToString[blockName] <> "IN";
+           blockNameStr = ToString[blockName];
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
            result = "input." <> parmStr <>
@@ -397,22 +425,29 @@ ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
            Return[result];
           ];
 
-ReadSLHAInputBlock[{parameter_, blockName_Symbol}] :=
+ReadSLHAInputBlock[{parameter_, blockName_}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
-           blockNameStr = ToString[blockName] <> "IN";
+           blockNameStr = ToString[blockName];
            "slha_io.read_block(\"" <> blockNameStr <> "\", input." <>
            paramStr <> ");\n"
           ];
 
+CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
+    {ToString[blockName] <> "IN", pdg};
+
+CreateInputBlockName[blockName_] :=
+    ToString[blockName] <> "IN";
+
 ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
-    Module[{result = "", modelParameters, names, rules},
+    Module[{result = "", parameters, names, rules},
            names = (#[[1]])& /@ lesHouchesInputParameters;
-           rules = Rule[#[[1]], #[[2]]]& /@ lesHouchesInputParameters;
+           rules = Cases[lesHouchesInputParameters, {p_, block_, _} /; MemberQ[Parameters`GetModelParameters[],p] :> Rule[p,block]];
            (* get block names of all les Houches input parameters (names) *)
-           modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
-           modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
-           (result = result <> ReadSLHAInputBlock[#])& /@ modelParameters;
+           parameters = Select[Join[GetSLHAModelParameters[],GetSLHAInputParameters[]], MemberQ[names,#[[1]]]&];
+           parameters = {#[[1]] /. rules,
+                         If[MemberQ[Parameters`GetModelParameters[],#[[1]]], CreateInputBlockName[#[[2]]], #[[2]]]}& /@ parameters;
+           (result = result <> ReadSLHAInputBlock[#])& /@ parameters;
            Return[result];
           ];
 

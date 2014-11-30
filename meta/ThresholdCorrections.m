@@ -16,21 +16,20 @@ DRbarConversion[SARAH`SU[n_Integer]] := n/6;
 
 DRbarConversion[group_] := Null;
 
-CalculateDRbarHyperchargeCoupling[] :=
-    CalculateDRbarCoupling[SARAH`hypercharge];
+CalculateColorCoupling[scheme_] :=
+    CalculateCoupling[TreeMasses`FindColorGaugeGroup[], scheme];
 
-CalculateDRbarColorCoupling[] :=
-    CalculateDRbarCoupling[TreeMasses`FindColorGaugeGroup[]];
+CalculateElectromagneticCoupling[scheme_] :=
+    CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme];
 
-CalculateDRbarElectromagneticCoupling[] :=
-    CalculateDRbarCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}];
+CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
+ renormalization scheme `1`.";
 
-CalculateDRbarLeftCoupling[] :=
-    CalculateDRbarCoupling[SARAH`left];
-
-CalculateDRbarCoupling[{coupling_, name_, group_}] :=
+(* Calculate threshold correction for a gauge coupling from SM
+   (MS-bar) to a given renormalization scheme in the given model. *)
+CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
     Module[{susyParticles, prefactor, i, result = 0, particle, dynkin,
-            dim, dimStart, nc, casimir},
+            dim, dimStart, nc, casimir, conversion},
            susyParticles = TreeMasses`GetSusyParticles[];
            For[i = 1, i <= Length[susyParticles], i++,
                particle = susyParticles[[i]];
@@ -57,15 +56,20 @@ CalculateDRbarCoupling[{coupling_, name_, group_}] :=
                                 {i,dimStart,dim}];
                  ];
               ];
-           Return[result + DRbarConversion[group]];
+           conversion = Switch[scheme,
+                               FlexibleSUSY`DRbar, DRbarConversion[group],
+                               FlexibleSUSY`MSbar, 0,
+                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
+                              ];
+           Return[result + conversion];
           ];
 
-CalculateDeltaAlphaEm[] :=
+CalculateDeltaAlphaEm[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
            topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaEm / (2 Pi);
            deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
-           deltaSusy = CalculateDRbarElectromagneticCoupling[];
+           deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
@@ -75,12 +79,12 @@ CalculateDeltaAlphaEm[] :=
            Return[result];
           ];
 
-CalculateDeltaAlphaS[] :=
+CalculateDeltaAlphaS[renormalizationScheme_] :=
     Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
            topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
-           deltaSusy = CalculateDRbarColorCoupling[];
+           deltaSusy = CalculateColorCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_s_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
