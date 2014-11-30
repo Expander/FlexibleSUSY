@@ -35,6 +35,8 @@ Block MINPAR                 # Input parameters
     4   1                    # SignMu
 Block EXTPAR
     0   0                    # unification scale (0 = automatic)
+   21   15625                # mHd2
+   22   15625                # mHu2
 Block TeIN
   1  1    -8.72744876E-03   # TYe(1,1)
   1  2     0.00000000E+00   # TYe(1,2)
