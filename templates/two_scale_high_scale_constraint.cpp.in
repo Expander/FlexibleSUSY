@@ -70,7 +70,7 @@ namespace flexiblesusy {
 
 void @ModelName@_high_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: @ModelName@_high_scale_constraint:"
+   assert(model && "Error: @ModelName@_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
    if (std::fabs(model->get_@hyperchargeCoupling@()) > 3.0) {
@@ -135,12 +135,18 @@ void @ModelName@_high_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_high_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
 @scaleGuess@
    scale = initial_scale_guess;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    if (!is_zero(fixed_scale)) {
       scale = fixed_scale;
       return;

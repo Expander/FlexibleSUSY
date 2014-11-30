@@ -76,7 +76,7 @@ namespace flexiblesusy {
 
 void @ModelName@_low_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: @ModelName@_low_scale_constraint:"
+   assert(model && "Error: @ModelName@_low_scale_constraint::apply():"
           " model pointer must not be zero");
 
    model->calculate_DRbar_masses();
@@ -129,6 +129,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
 @scaleGuess@
    scale = initial_scale_guess;
 
@@ -140,6 +143,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
 @calculateScale@
 @restrictScale@
 }
