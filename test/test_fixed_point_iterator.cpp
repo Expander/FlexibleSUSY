@@ -5,14 +5,14 @@
 #include <boost/test/unit_test.hpp>
 
 #define ENABLE_VERBOSE 1
-#define ENABLE_DEBUG 1
+#undef ENABLE_DEBUG
 
 #include "fixed_point_iterator.hpp"
 #include "wrappers.hpp"
 
 using namespace flexiblesusy;
 
-class Parabola {
+class Parabola1 {
 public:
    static void reset() { number_of_calls = 0; }
    static unsigned get_number_of_calls() { return number_of_calls; }
@@ -41,16 +41,47 @@ private:
    static unsigned number_of_calls;
 };
 
-unsigned Parabola::number_of_calls = 0;
+unsigned Parabola1::number_of_calls = 0;
 
-BOOST_AUTO_TEST_CASE( test_parabola_2dim )
+class Parabola2 {
+public:
+   static void reset() { number_of_calls = 0; }
+   static unsigned get_number_of_calls() { return number_of_calls; }
+
+   /**
+    * Finding root of f(x,y) = ((x-5)^2, (y-1)^2) ,
+    *
+    * => Update steps in the problematic form
+    *
+    * (x,y) = ((y^2 + 25)/10, (z^2+1)/2)
+    *
+    * @param x touple (x,y)
+    *
+    * @return fixed point iteration update steps
+    */
+   static int func(const gsl_vector* x, void*, gsl_vector* f) {
+      const double y = gsl_vector_get(x, 0);
+      const double z = gsl_vector_get(x, 1);
+      gsl_vector_set(f, 0, (y*y + 25.) / 10.);
+      gsl_vector_set(f, 1, (z*z + 1.) / 2.);
+      number_of_calls++;
+      return GSL_SUCCESS;
+   }
+
+private:
+   static unsigned number_of_calls;
+};
+
+unsigned Parabola2::number_of_calls = 0;
+
+BOOST_AUTO_TEST_CASE( test_parabola1 )
 {
    const double precision = 1.0e-4;
    const double start[2] = { 9, 9 };
-   Fixed_point_iterator<2> fpi(Parabola::func, NULL, 1000, precision);
+   Fixed_point_iterator<2> fpi(Parabola1::func, NULL, 1000, precision);
    int status = GSL_SUCCESS;
 
-   Parabola::reset();
+   Parabola1::reset();
 
    status = fpi.find_fixed_point(start);
 
@@ -66,7 +97,25 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
    BOOST_REQUIRE(status == GSL_SUCCESS);
    BOOST_CHECK_LT(residual_1, 100*precision);
    BOOST_CHECK_LT(residual_2, 100*precision);
-   BOOST_MESSAGE("fixed point iterator used " << Parabola::get_number_of_calls() << " calls");
+   BOOST_MESSAGE("fixed point iterator used " << Parabola1::get_number_of_calls() << " calls");
+}
+
+BOOST_AUTO_TEST_CASE( test_parabola2 )
+{
+   const double precision = 1.0e-4;
+   const double start[2] = { 9, 9 };
+   Fixed_point_iterator<2> fpi(Parabola2::func, NULL, 1000, precision);
+   int status = GSL_SUCCESS;
+
+   Parabola2::reset();
+
+   status = fpi.find_fixed_point(start);
+
+   // The form of the update steps in Parabola2 is problematic,
+   // because they are quadratic in the variables and are therefore
+   // not small.
+
+   BOOST_REQUIRE(status != GSL_SUCCESS);
 }
 
 class Perturbation {
