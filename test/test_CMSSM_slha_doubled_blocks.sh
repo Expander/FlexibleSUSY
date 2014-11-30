@@ -5,9 +5,9 @@
 
 BASEDIR=$(dirname $0)
 
-mssm_exe="$BASEDIR/../models/MSSM/run_MSSM.x"
-mssm_input="$BASEDIR/test_MSSM_slha_doubled_blocks.spc.in"
-mssm_output="$BASEDIR/test_MSSM_slha_doubled_blocks.spc.out"
+mssm_exe="$BASEDIR/../models/CMSSM/run_CMSSM.x"
+mssm_input="$BASEDIR/test_CMSSM_slha_doubled_blocks.spc.in"
+mssm_output="$BASEDIR/test_CMSSM_slha_doubled_blocks.spc.out"
 
 diff_cmd=`command -v diff`
 
@@ -17,28 +17,28 @@ if [ -z "$diff_cmd" ]; then
 fi
 
 if test ! -x "$mssm_exe"; then
-    echo "Error: MSSM spectrum generator not found: $mssm_exe"
+    echo "Error: CMSSM spectrum generator not found: $mssm_exe"
     exit 1
 fi
 
-echo -n "running CMSSM point ... "
+echo -n "running CCMSSM point ... "
 $mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
 echo "done"
-echo "CMSSM SLHA input file:  $mssm_input"
-echo "CMSSM SLHA output file: $mssm_output"
+echo "CCMSSM SLHA input file:  $mssm_input"
+echo "CCMSSM SLHA output file: $mssm_output"
 
 # append redundant SMINPUTS block
-mssm_input_appended_sminputs="$BASEDIR/test_MSSM_slha_doubled_blocks_appenden_sminputs.spc.in"
-mssm_output_appended_sminputs="$BASEDIR/test_MSSM_slha_doubled_blocks_appenden_sminputs.spc.out"
+mssm_input_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_sminputs.spc.in"
+mssm_output_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_sminputs.spc.out"
 
 cp $mssm_input $mssm_input_appended_sminputs
 echo "Block SMINPUTS" >> $mssm_input_appended_sminputs
 
-echo -n "running CMSSM point with extra appended SMINPUTS block ... "
+echo -n "running CCMSSM point with extra appended SMINPUTS block ... "
 $mssm_exe --slha-input-file=$mssm_input_appended_sminputs --slha-output-file=$mssm_output_appended_sminputs
 echo "done"
-echo "CMSSM SLHA input file:  $mssm_input_appended_sminputs"
-echo "CMSSM SLHA output file: $mssm_output_appended_sminputs"
+echo "CCMSSM SLHA input file:  $mssm_input_appended_sminputs"
+echo "CCMSSM SLHA output file: $mssm_output_appended_sminputs"
 
 difference=`$diff_cmd $mssm_output $mssm_output_appended_sminputs`
 

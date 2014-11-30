@@ -4,15 +4,15 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "MSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model.hpp"
 #include "softsusy.h"
 #include "sfermions.hpp"
 #include "wrappers.hpp"
-#include "test_MSSM.hpp"
+#include "test_CMSSM.hpp"
 
 using namespace flexiblesusy;
 
-void set_mssm_parameters(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
+void set_mssm_parameters(CMSSM<Two_scale>& m, MssmSoftsusy& softSusy)
 {
    const int loopLevel = 1;
    const double ALPHASMZ = 0.1176;
@@ -105,7 +105,7 @@ void set_mssm_parameters(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
    softSusy.setTanb(tanBeta);
 }
 
-void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
+void setup_mssm_models(CMSSM<Two_scale>& m, MssmSoftsusy& softSusy)
 {
    set_mssm_parameters(m, softSusy);
 
@@ -116,7 +116,7 @@ void setup_mssm_models(MSSM<Two_scale>& m, MssmSoftsusy& softSusy)
 
 BOOST_AUTO_TEST_CASE( test_stop )
 {
-   MSSM<Two_scale> m;
+   CMSSM<Two_scale> m;
    MssmSoftsusy s;
    setup_mssm_models(m, s);
 
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_stop )
 
 BOOST_AUTO_TEST_CASE( test_sbottom )
 {
-   MSSM<Two_scale> m;
+   CMSSM<Two_scale> m;
    MssmSoftsusy s;
    setup_mssm_models(m, s);
 
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( test_sbottom )
 
 BOOST_AUTO_TEST_CASE( test_stau )
 {
-   MSSM<Two_scale> m;
+   CMSSM<Two_scale> m;
    MssmSoftsusy s;
    setup_mssm_models(m, s);
 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE( test_stau )
 
 BOOST_AUTO_TEST_CASE( test_snu )
 {
-   MSSM<Two_scale> m;
+   CMSSM<Two_scale> m;
    MssmSoftsusy s;
    setup_mssm_models(m, s);
 
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE( test_snu )
 
 BOOST_AUTO_TEST_CASE( test_stop_different_sign )
 {
-   MSSM<Two_scale> m;
+   CMSSM<Two_scale> m;
    MssmSoftsusy s;
    set_mssm_parameters(m, s);
    m.set_Mu(1200.0);

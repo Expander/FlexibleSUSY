@@ -1,12 +1,12 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_initial_guesser
+#define BOOST_TEST_MODULE test_CMSSM_initial_guesser
 
 #include <boost/test/unit_test.hpp>
-#include "test_MSSM.hpp"
+#include "test_CMSSM.hpp"
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_initial_guesser.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_initial_guesser.hpp"
 #include "SoftsusyMSSM_parameter_point.hpp"
 #include "SoftsusyMSSM_two_scale.hpp"
 #include "SoftsusyMSSM_two_scale_initial_guesser.hpp"
@@ -16,7 +16,7 @@
 
 BOOST_AUTO_TEST_CASE( test_initial_guess )
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
    input.TanBeta = 10.;
@@ -24,16 +24,16 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    input.Azero = 0.;
    QedQcd oneset;
    softsusy::TOLERANCE = 1.0e-3;
-   MSSM<Two_scale> m(input);
+   CMSSM<Two_scale> m(input);
    m.set_loops(2);
    SoftsusyMSSM<Two_scale> smssm;
 
-   // create MSSM initial guesser
-   MSSM_low_scale_constraint<Two_scale>  low_constraint(input, oneset);
-   MSSM_susy_scale_constraint<Two_scale> susy_constraint(input);
-   MSSM_high_scale_constraint<Two_scale> high_constraint(input);
+   // create CMSSM initial guesser
+   CMSSM_low_scale_constraint<Two_scale>  low_constraint(input, oneset);
+   CMSSM_susy_scale_constraint<Two_scale> susy_constraint(input);
+   CMSSM_high_scale_constraint<Two_scale> high_constraint(input);
 
-   MSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
+   CMSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
                                            susy_constraint, high_constraint);
 
    // create Mssm initial guesser

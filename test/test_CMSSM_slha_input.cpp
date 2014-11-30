@@ -1,17 +1,17 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_slha_input
+#define BOOST_TEST_MODULE test_CMSSM_slha_input
 
 #include <boost/test/unit_test.hpp>
 
-#include "MSSM_two_scale_model_slha.hpp"
-#include "MSSM_slha_io.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
+#include "CMSSM_slha_io.hpp"
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
+BOOST_AUTO_TEST_CASE( test_CMSSM_slha_reading )
 {
-   MSSM_slha<Two_scale> model;
+   CMSSM_slha<Two_scale> model;
    model.do_calculate_sm_pole_masses(true);
 
    const double scale = 91.0;
@@ -82,10 +82,10 @@ BOOST_AUTO_TEST_CASE( test_MSSM_slha_reading )
    model.get_physical_slha().Mhh = Mhh;
    model.get_physical_slha().ZH  = ZH;
 
-   MSSM_slha_io slha_io;
+   CMSSM_slha_io slha_io;
    slha_io.set_spectrum(model);
 
-   std::string slha_file("test/test_MSSM_slha_input.out.spc");
+   std::string slha_file("test/test_CMSSM_slha_input.out.spc");
    slha_io.write_to_file(slha_file);
 
    // clear everything

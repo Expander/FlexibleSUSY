@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_slha_output
+#define BOOST_TEST_MODULE test_CMSSM_slha_output
 
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
@@ -32,7 +32,7 @@ int run_point(const std::string& slha_file,
 {
    int status;
 
-   status = run_cmd("./models/MSSM/run_MSSM.x --slha-input-file=" +
+   status = run_cmd("./models/CMSSM/run_CMSSM.x --slha-input-file=" +
                     slha_file + " --slha-output-file=" + flexiblesusy_output_file);
 
    if (status) {
@@ -40,7 +40,7 @@ int run_point(const std::string& slha_file,
       return status;
    }
 
-   status = run_cmd("./models/SoftsusyNMSSM/run_softpoint.x leshouches < " +
+   status = run_cmd("./models/SoftsusyNCMSSM/run_softpoint.x leshouches < " +
                     slha_file + " > " + softsusy_output_file);
 
    if (status) {
@@ -168,8 +168,8 @@ void compare_slha_files(const std::string& file1, const std::string& file2)
 
 BOOST_AUTO_TEST_CASE( test_slha_output )
 {
-   const std::string input_file("test/test_MSSM_slha_output.in.spc");
-   const std::string output_file("test/test_MSSM_slha_output.out.spc");
+   const std::string input_file("test/test_CMSSM_slha_output.in.spc");
+   const std::string output_file("test/test_CMSSM_slha_output.out.spc");
 
    int status = run_point(input_file,
                           output_file + ".fs", output_file + ".ss");

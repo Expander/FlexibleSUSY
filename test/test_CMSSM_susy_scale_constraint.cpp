@@ -1,14 +1,14 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_susy_scale_constraint
+#define BOOST_TEST_MODULE test_CMSSM_susy_scale_constraint
 
 #include <boost/test/unit_test.hpp>
-#include "test_MSSM.hpp"
+#include "test_CMSSM.hpp"
 
 #define private public
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
@@ -16,11 +16,11 @@
 
 BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 {
-   MSSM_input_parameters input;
-   MSSM<Two_scale> m; MssmSoftsusy s;
-   setup_MSSM(m, s, input);
+   CMSSM_input_parameters input;
+   CMSSM<Two_scale> m; MssmSoftsusy s;
+   setup_CMSSM(m, s, input);
 
-   MSSM_susy_scale_constraint<Two_scale> constraint(input);
+   CMSSM_susy_scale_constraint<Two_scale> constraint(input);
    constraint.set_model(&m);
    constraint.apply();
 

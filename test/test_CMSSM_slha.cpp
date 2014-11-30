@@ -1,17 +1,17 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_slha
+#define BOOST_TEST_MODULE test_CMSSM_slha
 
 #include <boost/test/unit_test.hpp>
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_model_slha.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model_slha.hpp"
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_cctor )
+BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
    input.TanBeta = 10.;
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_cctor )
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM<Two_scale> model(input);
+   CMSSM<Two_scale> model(input);
    model.set_scale(91);
    model.set_loops(1);
    model.set_g1(g1);
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_cctor )
 
    // fill SLHA wrapper class
    // automatic conversion to SLHA happens here
-   MSSM_slha<Two_scale> slha_model(model);
+   CMSSM_slha<Two_scale> slha_model(model);
 
    // check that model wrapper is in SLHA convention
    BOOST_CHECK_GT(slha_model.get_physical_slha().MChi.maxCoeff(), 0.);
@@ -102,9 +102,9 @@ BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_cctor )
    BOOST_CHECK_EQUAL(slha_model.get_physical_slha().ZN.imag().maxCoeff(), 0.);
 }
 
-BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_calculate_spectrum )
+BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
    input.TanBeta = 10.;
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_two_scale_slha_calculate_spectrum )
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM_slha<Two_scale> model(input);
+   CMSSM_slha<Two_scale> model(input);
    model.set_scale(91);
    model.set_loops(1);
    model.set_g1(g1);

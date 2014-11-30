@@ -1,12 +1,12 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_info
+#define BOOST_TEST_MODULE test_CMSSM_info
 
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_info.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_info.hpp"
 
 using namespace flexiblesusy;
 
@@ -16,18 +16,18 @@ double get_random() {
 
 #define TEST_SCALAR(p)                                                  \
    {                                                                    \
-      MSSM<Two_scale> mssm;                                             \
+      CMSSM<Two_scale> mssm;                                             \
       BOOST_CHECK_EQUAL(mssm.get_##p(), 0.0);                           \
       Eigen::ArrayXd parameters(mssm.get_number_of_parameters());       \
       const double value = get_random();                                \
-      parameters(MSSM_info::p) = value;                                 \
+      parameters(CMSSM_info::p) = value;                                 \
       mssm.set(parameters);                                             \
       BOOST_CHECK_EQUAL(mssm.get_##p(), value);                         \
    }
 
 #define TEST_DOUBLE_MATRIX_3x3(p)                                       \
    {                                                                    \
-      MSSM<Two_scale> mssm;                                             \
+      CMSSM<Two_scale> mssm;                                             \
       for (int i = 0; i < 3; i++)                                       \
          for (int k = 0; k < 3; k++)                                    \
             BOOST_CHECK_EQUAL(mssm.get_##p(i,k), 0.0);                  \
@@ -36,25 +36,25 @@ double get_random() {
       p << get_random(), get_random(), get_random(),                    \
          get_random(), get_random(), get_random(),                      \
          get_random(), get_random(), get_random();                      \
-      parameters(MSSM_info::p##00) = p(0,0);                            \
-      parameters(MSSM_info::p##01) = p(0,1);                            \
-      parameters(MSSM_info::p##02) = p(0,2);                            \
-      parameters(MSSM_info::p##10) = p(1,0);                            \
-      parameters(MSSM_info::p##11) = p(1,1);                            \
-      parameters(MSSM_info::p##12) = p(1,2);                            \
-      parameters(MSSM_info::p##20) = p(2,0);                            \
-      parameters(MSSM_info::p##21) = p(2,1);                            \
-      parameters(MSSM_info::p##22) = p(2,2);                            \
+      parameters(CMSSM_info::p##00) = p(0,0);                            \
+      parameters(CMSSM_info::p##01) = p(0,1);                            \
+      parameters(CMSSM_info::p##02) = p(0,2);                            \
+      parameters(CMSSM_info::p##10) = p(1,0);                            \
+      parameters(CMSSM_info::p##11) = p(1,1);                            \
+      parameters(CMSSM_info::p##12) = p(1,2);                            \
+      parameters(CMSSM_info::p##20) = p(2,0);                            \
+      parameters(CMSSM_info::p##21) = p(2,1);                            \
+      parameters(CMSSM_info::p##22) = p(2,2);                            \
       mssm.set(parameters);                                             \
       for (int i = 0; i < 3; i++)                                       \
          for (int k = 0; k < 3; k++)                                    \
             BOOST_CHECK_EQUAL(mssm.get_##p(i,k), p(i,k));               \
    }                                                                    \
 
-BOOST_AUTO_TEST_CASE( test_MSSM_parameter_enum )
+BOOST_AUTO_TEST_CASE( test_CMSSM_parameter_enum )
 {
    // This test checks that the order of the enum entries
-   // MSSM_info::Parameters matches the order of the parameters in the
+   // CMSSM_info::Parameters matches the order of the parameters in the
    // model class (as used in the set() and get() functions).
    //
    // If this test works, then the user can fill a parameter vector
@@ -64,8 +64,8 @@ BOOST_AUTO_TEST_CASE( test_MSSM_parameter_enum )
    srand(1);
 
    {
-      MSSM<Two_scale> mssm;
-      BOOST_CHECK_EQUAL(MSSM_info::NUMBER_OF_PARAMETERS,
+      CMSSM<Two_scale> mssm;
+      BOOST_CHECK_EQUAL(CMSSM_info::NUMBER_OF_PARAMETERS,
                         mssm.get_number_of_parameters());
    }
 

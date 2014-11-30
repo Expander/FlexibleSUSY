@@ -1,22 +1,22 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_low_scale_constraint
+#define BOOST_TEST_MODULE test_CMSSM_low_scale_constraint
 
 #include <boost/test/unit_test.hpp>
-#include "test_MSSM.hpp"
+#include "test_CMSSM.hpp"
 #include <functional>
 #include <Eigen/Dense>
 
 #define private public
 
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_low_scale_constraint.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_low_scale_constraint.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
-DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model,
-                                       MSSM_low_scale_constraint<Two_scale> constraint,
+DoubleVector calculate_gauge_couplings(CMSSM<Two_scale> model,
+                                       CMSSM_low_scale_constraint<Two_scale> constraint,
                                        double scale)
 {
    model.set_scale(scale);
@@ -33,12 +33,12 @@ DoubleVector calculate_gauge_couplings(MSSM<Two_scale> model,
 
 BOOST_AUTO_TEST_CASE( test_threshold_corrections )
 {
-   MSSM<Two_scale> m; MssmSoftsusy s;
-   MSSM_input_parameters input;
+   CMSSM<Two_scale> m; MssmSoftsusy s;
+   CMSSM_input_parameters input;
    QedQcd oneset;
-   setup_MSSM(m, s, input);
+   setup_CMSSM(m, s, input);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -59,25 +59,25 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    beta_SM(1) = 41./6. * gut_normalization;
    beta_SM(2) = -19./6.;
    beta_SM(3) = -7. - 2./3;
-   DoubleVector beta_MSSM(3);
-   beta_MSSM(1) = 11. * gut_normalization;
-   beta_MSSM(2) = 1.;
-   beta_MSSM(3) = -3.;
+   DoubleVector beta_CMSSM(3);
+   beta_CMSSM(1) = 11. * gut_normalization;
+   beta_CMSSM(2) = 1.;
+   beta_CMSSM(3) = -3.;
 
-   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(1), beta_MSSM(1) - beta_SM(1), 0.04);
-   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(2), beta_MSSM(2) - beta_SM(2), 0.05);
-   BOOST_CHECK_CLOSE_FRACTION(beta_numeric(3), beta_MSSM(3) - beta_SM(3), 0.075);
+   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(1), beta_CMSSM(1) - beta_SM(1), 0.04);
+   // BOOST_CHECK_CLOSE_FRACTION(beta_numeric(2), beta_CMSSM(2) - beta_SM(2), 0.05);
+   BOOST_CHECK_CLOSE_FRACTION(beta_numeric(3), beta_CMSSM(3) - beta_SM(3), 0.075);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
-   MSSM<Two_scale> m; MssmSoftsusy s;
-   MSSM_input_parameters input;
+   CMSSM<Two_scale> m; MssmSoftsusy s;
+   CMSSM_input_parameters input;
    QedQcd oneset;
-   setup_MSSM(m, s, input);
+   setup_CMSSM(m, s, input);
    s.setData(oneset);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
@@ -96,15 +96,15 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    QedQcd oneset;
    oneset.setPoleMt(175.);       // non-default
    oneset.setMass(mBottom, 4.3); // non-default
-   MSSM<Two_scale> m; MssmSoftsusy s;
+   CMSSM<Two_scale> m; MssmSoftsusy s;
    s.setData(oneset);
-   setup_MSSM(m, s, input);
+   setup_CMSSM(m, s, input);
 
-   MSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
    constraint.set_model(&m);
 
    const double TanBeta = input.TanBeta;
