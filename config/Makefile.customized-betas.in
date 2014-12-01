@@ -10,7 +10,7 @@ ENABLE_THREADS   := @ENABLE_THREADS@
 
 LIBEXT          := @LIBEXT@
 
-MODEL           := MSSM
+MODEL           := CMSSM
 
 MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
 CONFIGDIR       := $(ABSBASEDIR)/config
