@@ -113,10 +113,37 @@ exists_in_path () {
     esac
 }
 
+# contains(string, substring)
+#
+# Returns 0 if the specified string contains the specified substring,
+# otherwise returns 1.
+contains() {
+    string="$1"
+    substring="$2"
+    if test "${string#*$substring}" != "$string"
+    then
+        return 0    # $substring is in $string
+    else
+        return 1    # $substring is not in $string
+    fi
+}
+
+check_model_name() {
+    if test $# -ne 1 ; then
+        echo "check_model_name: Exactly one argument required"
+        exit 1
+    fi
+
+    local _model="$1"
+
+    [ $(echo "${_model}" | grep -E "^[a-zA-Z][0-9a-zA-Z_]*$") ] || \
+        { printf "Error: invalid model name: ${_model}\n" && exit 1; }
+}
+
 check_sarah_model() {
     if test $# -ne 1 ; then
         echo "check_sarah_model: Exactly one argument required"
-        return 1
+        exit 1
     fi
 
     local _sarah_model="$1"
@@ -245,6 +272,7 @@ if [ -z "$sarah_model" ]; then
     sarah_model="$name"
 fi
 
+check_model_name "${name}"
 check_sarah_model "${sarah_model}/${sub_model}"
 
 # create target directory name
