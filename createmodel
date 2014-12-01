@@ -5,6 +5,26 @@
 
 # directory of this script
 BASEDIR=$(dirname $0)
+
+# absolute path to this script
+ABSBASEDIR=$(cd $BASEDIR; pwd)
+
+# operating system
+operating_system="`(uname -s) 2>/dev/null || echo unknown`"
+
+# determine Mathematica user directory
+case "$operating_system" in
+    Darwin)     mathematica_dir="${HOME}/Library/Mathematica" ;;
+    CYGWIN_NT*) mathematica_dir="${USERPROFILE}/AppData/Roaming/Mathematica" ;;
+    # Linux, *BSD
+    *)          mathematica_dir="${HOME}/.Mathematica" ;;
+esac
+
+mathematica_applications_dir="${mathematica_dir}/Applications"
+sarah_default_dir="${mathematica_applications_dir}/SARAH"
+flexiblesusy_sarah_dir="${BASEDIR}/sarah"
+mathematica_kernel="math"
+
 overwrite="no"
 model_file=""
 name=""
@@ -50,6 +70,9 @@ Options:
                      Syntax: <sarah-model>[/<sub-model>]
                      Example: --sarah-model=MSSM/CKM
 
+  --with-math-cmd=   Mathematica kernel (default: ${mathematica_kernel})
+                     Example: --with-math-cmd=${mathematica_kernel}
+
   --force,-f         Overwrite existing model files.
 
   --help,-h          Print this help message.
@@ -66,6 +89,121 @@ Examples:
 
     ./createmodel --name=MyMSSM --model-file=NUHMSSM --sarah-model=MSSM
 EOF
+}
+
+#_____________________________________________________________________
+exists_in_path () {
+    # This function will try to locate an executable [$1] in $PATH.
+    #
+    # The result of the search is stored in cmd, which should be
+    # immediately copied, since the variables value will be
+    # overwritten at next invocation of this function.
+
+    # Assert that we got enough arguments
+    if test $# -ne 1 ; then
+        echo "exists_in_path: Exactly one argument required"
+        return 1
+    fi
+
+    cmd=$(command -v -- "$1")
+    case "$cmd" in
+	/*) return 0 ;;
+	alias\ *) return 1 ;; # alias
+	*) return 1 ;; # built-in or function
+    esac
+}
+
+check_sarah_model() {
+    if test $# -ne 1 ; then
+        echo "check_sarah_model: Exactly one argument required"
+        return 1
+    fi
+
+    local _sarah_model="$1"
+    local found="no"
+
+    printf "Checking SARAH model ${_sarah_model} ... "
+
+    if ! exists_in_path "$mathematica_kernel"; then
+        printf "error\n"
+        echo "Error: could not find Mathematica kernel \"${mathematica_kernel}\""
+        echo "    Please specify the Mathematica kernel via --with-math-cmd="
+        exit 1
+    fi
+
+    # checking SARAH installation
+    "$mathematica_kernel" <<EOF > /dev/null
+Needs["SARAH\`"];
+If[!ValueQ[SA\`Version], Quit[1]];
+Quit[0];
+EOF
+    local _sarah_is_available="$?"
+    if test ! "x${_sarah_is_available}" = "x0" ; then
+        printf "error\n"
+        echo "Error: SARAH could not be loaded via Needs[\"SARAH\`\"] ."
+        echo "    Please install SARAH such that it can be loaded via Needs[\"SARAH\`\"] ."
+        echo "    You can use ./install-sarah to install SARAH."
+        exit 1
+    fi
+
+    # trying to load model file
+    "${mathematica_kernel}" <<EOF > /dev/null
+FindModelFiles[dir_String, modelName_String, submodeldir_] :=
+    Module[{files, modelFile, modelDir},
+           If[submodeldir =!= False,
+              modelDir  = FileNameJoin[{dir, modelName, submodeldir}];
+              modelFile = FileNameJoin[{modelDir, modelName <> "-" <> submodeldir <> ".m"}];
+              ,
+              modelDir  = FileNameJoin[{dir, modelName}];
+              modelFile = FileNameJoin[{modelDir, modelName <> ".m"}];
+             ];
+           files = Join[{modelFile},
+                        FileNameJoin[{modelDir, #}]& /@ {"parameters.m", "particles.m"}
+                       ];
+           Select[files, FileExistsQ]
+          ];
+
+sarahLoaded = Needs["SARAH\`"];
+
+If[sarahLoaded === \$Failed || !ValueQ[\$sarahModelDir],
+   Quit[1];
+  ];
+
+If[!StringFreeQ["${_sarah_model}","/"],
+   splitted = StringSplit["${_sarah_model}","/"];
+   modelName = splitted[[1]];
+   submodeldir = splitted[[2]];
+   ,
+   modelName = "${_sarah_model}";
+   submodeldir = False;
+];
+
+(* search in SARAH/Models/ directory *)
+files = FindModelFiles[\$sarahModelDir, modelName, submodeldir];
+
+(* search in FlexibleSUSY/sarah/ directory *)
+If[files === {},
+   files = FindModelFiles["${flexiblesusy_sarah_dir}", modelName, submodeldir];
+  ];
+
+If[files === {},
+   Quit[1],
+   Quit[0]
+  ];
+EOF
+    local _model_is_available="$?"
+    if test "x${_model_is_available}" = "x0" ; then
+        found="ok"
+    fi
+
+    if test "${found}" = "ok" ; then
+        printf "ok\n"
+        return 0
+    else
+        printf "not found\n"
+        echo "Error: SARAH model ${_sarah_model} not found"
+        exit 1
+    fi
 }
 
 if test $# -lt 1 ; then
@@ -87,6 +225,7 @@ if test $# -gt 0 ; then
             --model-file=*)          model_file="$optarg" ;;
             --name=*)                name="$optarg" ;;
             --sarah-model=*)         sarah_model="$optarg" ;;
+            --with-math-cmd=*)       mathematica_kernel="$optarg" ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
         esac
         shift
@@ -106,6 +245,8 @@ if [ -z "$sarah_model" ]; then
     sarah_model="$name"
 fi
 
+check_sarah_model "${sarah_model}/${sub_model}"
+
 # create target directory name
 targetdir="models/${name}"
 
@@ -117,9 +258,9 @@ if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
 fi
 
 if [ -n "$sub_model" ]; then
-    echo "creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
+    echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
 else
-    echo "creating model $name (SARAH model: $sarah_model)"
+    echo "Creating model $name (SARAH model: $sarah_model)"
 fi
 
 # check if we provide a FlexibleSUSY model file for the given model
@@ -144,9 +285,9 @@ else
     # exists in model_files/$name/
     if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
         model_file_dir="$model_file_dir/$name"
-        printf "  using model file ${model_file_dir}/FlexibleSUSY.m.in\n"
+        printf "  Using model file ${model_file_dir}/FlexibleSUSY.m.in\n"
     else
-        echo "Error: No model file found in ${model_file_dir}/${name}/"
+        echo "Error: No FlexibleSUSY model file found in ${model_file_dir}/${name}/"
         echo "  You can either create a model file via"
         echo ""
         echo "  \$ mkdir ${model_file_dir}/${name}"
@@ -160,7 +301,7 @@ else
 fi
 
 if test ! -d "$targetdir" ; then
-    printf "  creating model directory %s ... " "$targetdir"
+    printf "  Creating model directory %s ... " "$targetdir"
     mkdir $targetdir
     echo "done"
 fi
@@ -172,7 +313,7 @@ SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
     sed 's/ / \\\\\\n/g;
 	 s,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
 
-printf "  creating Makefile module %s/module.mk ... " "$targetdir"
+printf "  Creating Makefile module %s/module.mk ... " "$targetdir"
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
@@ -180,7 +321,7 @@ sed -e "s|@DIR@|$targetdir|g"			  \
     < templates/module.mk.in > $targetdir/module.mk
 echo "done"
 
-printf "  creating start script %s/start.m ... " "$targetdir"
+printf "  Creating start script %s/start.m ... " "$targetdir"
 sub_model_replacement=""
 if [ -n "$sub_model" ]; then
     sub_model_replacement=", \"$sub_model\""
@@ -192,7 +333,7 @@ sed -e "s|@DIR@|$targetdir|g"                     \
     < templates/start.m.in > $targetdir/start.m
 echo "done"
 
-printf "  creating FlexibleSUSY model file %s/FlexibleSUSY.m ... " "$targetdir"
+printf "  Creating FlexibleSUSY model file %s/FlexibleSUSY.m ... " "$targetdir"
 sed -e "s|@DIR@|$targetdir|g"               \
     -e "s|@ModelName@|$sarah_model|g"       \
     -e "s|@CLASSNAME@|$name|g"              \
@@ -200,7 +341,7 @@ sed -e "s|@DIR@|$targetdir|g"               \
 echo "done"
 
 for slha_in in $SLHA_input_files; do
-    printf "  creating SLHA input file %s/%s ... " "$targetdir" "$slha_in"
+    printf "  Creating SLHA input file %s/%s ... " "$targetdir" "$slha_in"
     cp $model_file_dir/$slha_in $targetdir
     echo "done"
 done
