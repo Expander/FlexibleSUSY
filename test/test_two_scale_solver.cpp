@@ -46,8 +46,8 @@ public:
       return 100.0;
    }
    virtual void set_models(Two_scale_model* mLow_, Two_scale_model* mHigh_) {
-      mLow = cast_model<Static_model>(mLow_);
-      mHigh = cast_model<Static_model>(mHigh_);
+      mLow = cast_model<Static_model*>(mLow_);
+      mHigh = cast_model<Static_model*>(mHigh_);
    }
 private:
    Static_model *mLow, *mHigh;

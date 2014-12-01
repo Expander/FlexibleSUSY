@@ -69,7 +69,7 @@ double StandardModel_exp_constraint::get_scale() const
 
 void StandardModel_exp_constraint::set_model(Two_scale_model* model)
 {
-   sm = cast_model<StandardModel<Two_scale> >(model);
+   sm = cast_model<StandardModel<Two_scale>*>(model);
 }
 
 }

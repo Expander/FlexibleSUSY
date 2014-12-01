@@ -53,8 +53,8 @@ public:
       return 3000;
    }
    virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
-      sm = cast_model<StandardModel<Two_scale> >(sm_);
-      smcw = cast_model<StandardModelCW<Two_scale> >(smcw_);
+      sm = cast_model<StandardModel<Two_scale>*>(sm_);
+      smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }
 private:
    StandardModel<Two_scale>* sm;
@@ -95,8 +95,8 @@ public:
       return scale;
    }
    virtual void set_models(Two_scale_model* sm_, Two_scale_model* smcw_) {
-      sm = cast_model<StandardModel<Two_scale> >(sm_);
-      smcw = cast_model<StandardModelCW<Two_scale> >(smcw_);
+      sm = cast_model<StandardModel<Two_scale>*>(sm_);
+      smcw = cast_model<StandardModelCW<Two_scale>*>(smcw_);
    }
    virtual void update_scale() {
       const double new_scale = smcw->calcZprimeMass();

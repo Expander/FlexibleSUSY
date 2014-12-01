@@ -114,7 +114,7 @@ double @ModelName@_high_scale_constraint<Two_scale>::get_initial_scale_guess() c
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<@ModelName@<Two_scale> >(model_);
+   model = cast_model<@ModelName@<Two_scale>*>(model_);
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_input_parameters(const @ModelName@_input_parameters& inputPars_)

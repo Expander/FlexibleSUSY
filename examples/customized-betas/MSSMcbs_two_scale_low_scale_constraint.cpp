@@ -113,7 +113,7 @@ double MSSMcbs_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
 
 void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<MSSMcbs<Two_scale> >(model_);
+   model = cast_model<MSSMcbs<Two_scale>*>(model_);
 }
 
 void MSSMcbs_low_scale_constraint<Two_scale>::set_input_parameters(const CMSSM_input_parameters& inputPars_)

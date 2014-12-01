@@ -14,6 +14,7 @@ LIBTEST_DEP := \
 LIBTEST     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 TEST_SRC := \
+		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_goldstones.cpp \
@@ -236,6 +237,9 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
+
+$(DIR)/test_cast_model.x: $(DIR)/test_cast_model.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)

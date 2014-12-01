@@ -168,8 +168,8 @@ double MSSMD5O_MSSMRHN_matching<Two_scale>::get_initial_scale_guess() const
 
 void MSSMD5O_MSSMRHN_matching<Two_scale>::set_models(Two_scale_model *lower_, Two_scale_model *upper_)
 {
-    lower = cast_model<MSSMD5O<Two_scale> >(lower_);
-    upper = cast_model<MSSMRHN<Two_scale> >(upper_);
+    lower = cast_model<MSSMD5O<Two_scale>*>(lower_);
+    upper = cast_model<MSSMRHN<Two_scale>*>(upper_);
 }
 
 void MSSMD5O_MSSMRHN_matching<Two_scale>::set_lower_input_parameters(const MSSMD5O_input_parameters& inputPars_)
