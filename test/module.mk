@@ -128,6 +128,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_info.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-NSM),yes)
+TEST_SRC += \
+		$(DIR)/test_NSM_low_scale_constraint.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-CMSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
@@ -368,6 +373,8 @@ $(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) 
 $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 # general test rule which links all libraries needed for a generated model
 $(DIR)/test_%.x: $(DIR)/test_%.o
