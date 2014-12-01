@@ -36,7 +36,7 @@ template<>
 class @ModelName@_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_susy_scale_constraint();
-   @ModelName@_susy_scale_constraint(const @ModelName@_input_parameters&);
+   @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*, const @ModelName@_input_parameters&);
    virtual ~@ModelName@_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;

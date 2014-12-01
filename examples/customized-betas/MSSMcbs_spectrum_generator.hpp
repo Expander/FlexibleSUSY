@@ -20,12 +20,12 @@
 #define MSSMCBS_SPECTRUM_GENERATOR_H
 
 #include "MSSMcbs_two_scale_model.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
+#include "CMSSM_two_scale_high_scale_constraint.hpp"
+#include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "MSSMcbs_two_scale_low_scale_constraint.hpp"
-#include "MSSM_two_scale_convergence_tester.hpp"
+#include "CMSSM_two_scale_convergence_tester.hpp"
 #include "MSSMcbs_two_scale_initial_guesser.hpp"
-#include "MSSM_utilities.hpp"
+#include "CMSSM_utilities.hpp"
 
 #include "coupling_monitor.hpp"
 #include "error.hpp"
@@ -59,7 +59,7 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const MSSMcbs<T>& get_model() const { return model; }
-   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
+   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); };
@@ -73,15 +73,15 @@ public:
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
 
-   void run(const QedQcd& oneset, const MSSM_input_parameters& input);
-   void write_running_couplings(const std::string& filename = "MSSM_rge_running.dat") const;
-   void write_spectrum(const std::string& filename = "MSSM_spectrum.dat") const;
+   void run(const QedQcd& oneset, const CMSSM_input_parameters& input);
+   void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
+   void write_spectrum(const std::string& filename = "CMSSM_spectrum.dat") const;
 
 private:
    RGFlow<T> solver;
    MSSMcbs<T> model;
-   MSSM_high_scale_constraint<T> high_scale_constraint;
-   MSSM_susy_scale_constraint<T> susy_scale_constraint;
+   CMSSM_high_scale_constraint<T> high_scale_constraint;
+   CMSSM_susy_scale_constraint<T> susy_scale_constraint;
    MSSMcbs_low_scale_constraint<T> low_scale_constraint;
    double high_scale, susy_scale, low_scale;
    double input_scale; ///< high-scale parameter input scale
@@ -106,11 +106,14 @@ private:
  */
 template <class T>
 void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
-					const MSSM_input_parameters& input)
+					const CMSSM_input_parameters& input)
 {
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
+   high_scale_constraint.set_model(&model);
+   susy_scale_constraint.set_model(&model);
+   low_scale_constraint .set_model(&model);
    high_scale_constraint.set_input_parameters(input);
    susy_scale_constraint.set_input_parameters(input);
    low_scale_constraint .set_input_parameters(input);
@@ -139,7 +142,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections_loop_order);
 
-   MSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
+   CMSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
@@ -199,8 +202,8 @@ void MSSMcbs_spectrum_generator<T>::write_running_couplings(const std::string& f
    MSSMcbs<T> tmp_model(model);
    tmp_model.run_to(low_scale);
 
-   MSSM_parameter_getter parameter_getter;
-   Coupling_monitor<MSSMcbs<T>, MSSM_parameter_getter>
+   CMSSM_parameter_getter parameter_getter;
+   Coupling_monitor<MSSMcbs<T>, CMSSM_parameter_getter>
       coupling_monitor(tmp_model, parameter_getter);
 
    coupling_monitor.run(low_scale, high_scale, 100, true);
@@ -215,7 +218,7 @@ void MSSMcbs_spectrum_generator<T>::write_running_couplings(const std::string& f
 template <class T>
 void MSSMcbs_spectrum_generator<T>::write_spectrum(const std::string& filename) const
 {
-   MSSM_spectrum_plotter plotter;
+   CMSSM_spectrum_plotter plotter;
    plotter.extract_spectrum<T>(model);
    plotter.write_to_file(filename);
 }

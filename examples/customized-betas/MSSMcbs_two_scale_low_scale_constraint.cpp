@@ -39,7 +39,7 @@ namespace flexiblesusy {
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
-#define MODELCLASSNAME MSSM<Two_scale>
+#define MODELCLASSNAME CMSSM<Two_scale>
 
 MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -56,9 +56,11 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
 {
 }
 
-MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint(const MSSM_input_parameters& inputPars_, const QedQcd& oneset_)
+MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint(
+   MSSMcbs<Two_scale>* model_,
+   const CMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
    , oneset(oneset_)
    , new_g1(0.)
@@ -114,7 +116,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
    model = cast_model<MSSMcbs<Two_scale> >(model_);
 }
 
-void MSSMcbs_low_scale_constraint<Two_scale>::set_input_parameters(const MSSM_input_parameters& inputPars_)
+void MSSMcbs_low_scale_constraint<Two_scale>::set_input_parameters(const CMSSM_input_parameters& inputPars_)
 {
    inputPars = inputPars_;
 }

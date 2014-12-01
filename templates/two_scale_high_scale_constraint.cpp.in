@@ -55,10 +55,12 @@ namespace flexiblesusy {
 {
 }
 
-@ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+@ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
+   @ModelName@<Two_scale>* model_,
+   const @ModelName@_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , fixed_scale(0.)
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();

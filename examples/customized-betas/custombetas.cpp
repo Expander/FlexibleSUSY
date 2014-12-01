@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_slha_io.hpp"
+#include "CMSSM_input_parameters.hpp"
+#include "CMSSM_slha_io.hpp"
 #include "MSSMcbs_spectrum_generator.hpp"
 
 #include "error.hpp"
@@ -36,7 +36,7 @@ int main(int argc, const char* argv[])
 
    Command_line_options options(argc, argv);
    if (options.must_print_model_info())
-      MSSM_info::print(std::cout);
+      CMSSM_info::print(std::cout);
    if (options.must_exit())
       return options.status();
 
@@ -44,10 +44,10 @@ int main(int argc, const char* argv[])
    const std::string slha_input_file(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
    const std::string spectrum_file(options.get_spectrum_file());
-   MSSM_slha_io slha_io;
+   CMSSM_slha_io slha_io;
    Spectrum_generator_settings spectrum_generator_settings;
    QedQcd oneset;
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
 
    if (slha_input_file.empty()) {
       ERROR("No SLHA input file given!\n"
@@ -91,7 +91,7 @@ int main(int argc, const char* argv[])
 
    const MSSMcbs<algorithm_type>& model
       = spectrum_generator.get_model();
-   const Problems<MSSM_info::NUMBER_OF_PARTICLES>& problems
+   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
    // output

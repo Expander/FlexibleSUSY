@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( test_threshold_corrections )
    QedQcd oneset;
    setup_CMSSM(m, s, input);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    const double Q1 = constraint.get_scale();
    const double Q2 = 2. * Q1;
@@ -77,8 +77,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    setup_CMSSM(m, s, input);
    s.setData(oneset);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
-   constraint.set_model(&m);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
@@ -104,8 +103,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    s.setData(oneset);
    setup_CMSSM(m, s, input);
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(input, oneset);
-   constraint.set_model(&m);
+   CMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();

@@ -58,9 +58,11 @@ namespace flexiblesusy {
 {
 }
 
-@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
+@ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
+   @ModelName@<Two_scale>* model_,
+   const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
    , oneset(oneset_)
    , new_@hyperchargeCoupling@(0.)

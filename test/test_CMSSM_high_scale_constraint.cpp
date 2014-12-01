@@ -91,8 +91,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    input.TanBeta = m.get_vd() / m.get_vu();
    input.Azero = 300;
 
-   CMSSM_high_scale_constraint<Two_scale> constraint(input);
-   constraint.set_model(&m);
+   CMSSM_high_scale_constraint<Two_scale> constraint(&m, input);
 
    double mgut = constraint.get_scale(); // initial guess
    double mgut_new = mgut;
@@ -141,10 +140,9 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.signMu = input.SignMu;
 
-   CMSSM_high_scale_constraint<Two_scale> CMSSM_sugra_constraint(input);
+   CMSSM_high_scale_constraint<Two_scale> CMSSM_sugra_constraint(&m,input);
    SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
 
-   CMSSM_sugra_constraint.set_model(&m);
    mssm_sugra_constraint.set_model((Two_scale_model*)&s);
 
    CMSSM_sugra_constraint.update_scale();

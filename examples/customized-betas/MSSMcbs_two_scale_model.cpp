@@ -22,10 +22,10 @@
 
 namespace flexiblesusy {
 
-using namespace MSSM_info;
+using namespace CMSSM_info;
 
-MSSMcbs<Two_scale>::MSSMcbs(const MSSM_input_parameters& input_)
-   : MSSM<Two_scale>(input_)
+MSSMcbs<Two_scale>::MSSMcbs(const CMSSM_input_parameters& input_)
+   : CMSSM<Two_scale>(input_)
 {
 }
 
@@ -38,9 +38,9 @@ Eigen::ArrayXd MSSMcbs<Two_scale>::beta() const
    return calc_beta().get();
 }
 
-MSSM_soft_parameters MSSMcbs<Two_scale>::calc_beta() const
+CMSSM_soft_parameters MSSMcbs<Two_scale>::calc_beta() const
 {
-   MSSM_soft_parameters betas(MSSM<Two_scale>::calc_beta());
+   CMSSM_soft_parameters betas(CMSSM<Two_scale>::calc_beta());
    if (get_loops() <= 2) return betas;
 
    // 3-loop g3 beta function from http://www.liv.ac.uk/~dij/betas/

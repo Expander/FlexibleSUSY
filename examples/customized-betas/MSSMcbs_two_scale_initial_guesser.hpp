@@ -20,10 +20,10 @@
 #define MSSMCBS_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "MSSMcbs_initial_guesser.hpp"
-#include "MSSM_input_parameters.hpp"
+#include "CMSSM_input_parameters.hpp"
 #include "MSSMcbs_two_scale_low_scale_constraint.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
+#include "CMSSM_two_scale_susy_scale_constraint.hpp"
+#include "CMSSM_two_scale_high_scale_constraint.hpp"
 #include "two_scale_initial_guesser.hpp"
 
 #include <sstream>
@@ -39,11 +39,11 @@ template<>
 class MSSMcbs_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
    MSSMcbs_initial_guesser(MSSMcbs<Two_scale>*,
-                               const MSSM_input_parameters&,
+                               const CMSSM_input_parameters&,
                                const QedQcd&,
                                const MSSMcbs_low_scale_constraint<Two_scale>&,
-                               const MSSM_susy_scale_constraint<Two_scale>&,
-                               const MSSM_high_scale_constraint<Two_scale>&);
+                               const CMSSM_susy_scale_constraint<Two_scale>&,
+                               const CMSSM_high_scale_constraint<Two_scale>&);
    virtual ~MSSMcbs_initial_guesser();
    virtual void guess();
 
@@ -51,7 +51,7 @@ public:
 
 private:
    MSSMcbs<Two_scale>* model;
-   MSSM_input_parameters input_pars;
+   CMSSM_input_parameters input_pars;
    QedQcd oneset;
    double mu_guess;
    double mc_guess;
@@ -64,8 +64,8 @@ private:
    double mtau_guess;
    double running_precision;
    MSSMcbs_low_scale_constraint<Two_scale> low_constraint;
-   MSSM_susy_scale_constraint<Two_scale> susy_constraint;
-   MSSM_high_scale_constraint<Two_scale> high_constraint;
+   CMSSM_susy_scale_constraint<Two_scale> susy_constraint;
+   CMSSM_high_scale_constraint<Two_scale> high_constraint;
 
    void guess_susy_parameters();
    void guess_soft_parameters();

@@ -35,11 +35,11 @@ namespace flexiblesusy {
 
 MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
    MSSMcbs<Two_scale>* model_,
-   const MSSM_input_parameters& input_pars_,
+   const CMSSM_input_parameters& input_pars_,
    const QedQcd& oneset_,
    const MSSMcbs_low_scale_constraint<Two_scale>& low_constraint_,
-   const MSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
-   const MSSM_high_scale_constraint<Two_scale>& high_constraint_
+   const CMSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
+   const CMSSM_high_scale_constraint<Two_scale>& high_constraint_
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
@@ -59,7 +59,7 @@ MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
    , susy_constraint(susy_constraint_)
    , high_constraint(high_constraint_)
 {
-   assert(model && "MSSM_initial_guesser: Error: pointer to model"
+   assert(model && "CMSSM_initial_guesser: Error: pointer to model"
           " MSSMcbs<Two_scale> must not be zero");
 }
 

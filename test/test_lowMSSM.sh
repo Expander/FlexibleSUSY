@@ -7,8 +7,8 @@
 
 BASEDIR=$(dirname $0)
 
-mssm_input="$BASEDIR/../model_files/MSSM/LesHouches.in.MSSM"
-mssm_output="$BASEDIR/MSSM.out.spc"
+mssm_input="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
+mssm_output="$BASEDIR/CMSSM.out.spc"
 lowmssm_input="$BASEDIR/lowMSSM.in.spc"
 lowmssm_output="$BASEDIR/lowMSSM.out.spc"
 rel_error="1.7e-2"
@@ -16,7 +16,7 @@ rel_error="1.7e-2"
 sed_cmd=`command -v sed`
 awk_cmd=`command -v awk`
 numdiff_cmd=`command -v numdiff`
-mssm_exe="$BASEDIR/../models/MSSM/run_MSSM.x"
+mssm_exe="$BASEDIR/../models/CMSSM/run_CMSSM.x"
 lowmssm_exe="$BASEDIR/../models/lowMSSM/run_lowMSSM.x"
 
 if [ -z "$sed_cmd" ]; then
@@ -32,7 +32,7 @@ if [ -z "$numdiff_cmd" ]; then
     exit 1
 fi
 if test ! -x "$mssm_exe"; then
-    echo "Error: MSSM spectrum generator not found: $mssm_exe"
+    echo "Error: CMSSM spectrum generator not found: $mssm_exe"
     exit 1
 fi
 if test ! -x "$lowmssm_exe"; then
@@ -48,11 +48,11 @@ echo "CMSSM SLHA input file:  $mssm_input"
 echo "CMSSM SLHA output file: $mssm_output"
 
 if test ! -r "$mssm_output"; then
-    echo "Error: generated MSSM spectrum not found: $mssm_output"
+    echo "Error: generated CMSSM spectrum not found: $mssm_output"
     exit 1
 fi
 
-# remove comments from MSSM output spectrum
+# remove comments from CMSSM output spectrum
 $sed_cmd -i~ -e '/^ *#/d' $mssm_output
 # rename output blocks to be input blocks for lowMSSM
 $sed_cmd \
