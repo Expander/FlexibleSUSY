@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE( test_delta_spectrum )
 
    m.calculate_DRbar_masses();
 
-   const double MVZ = 0.5 * vev * Sqrt(0.6*g1*g1 + g2*g2);
+   const double MVZ = 0.5 * vev * Sqrt(g1*g1 + g2*g2);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_MVZ(), MVZ, 1.0e-10);
 }
