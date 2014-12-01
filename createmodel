@@ -36,6 +36,8 @@ exit_syntax_error="1"
 exit_model_dir_exists="2"
 exit_no_default_model="3"
 
+createmodel_log="createmodel.log"
+
 #_____________________________________________________________________
 find_default_model_files() {
     # searches for FlexibleSUSY.m.in files within the model_files/
@@ -141,12 +143,18 @@ check_model_name() {
 }
 
 check_sarah_model() {
-    if test $# -ne 1 ; then
+    if test $# -ne 2 ; then
         echo "check_sarah_model: Exactly one argument required"
         exit 1
     fi
 
     local _sarah_model="$1"
+    local _sub_model="$2"
+
+    if [ -n "${_sub_model}" ]; then
+        _sarah_model="${_sarah_model}/${_sub_model}"
+    fi
+
     local found="no"
 
     printf "Checking SARAH model ${_sarah_model} ... "
@@ -174,7 +182,7 @@ EOF
     fi
 
     # trying to load model file
-    "${mathematica_kernel}" <<EOF > /dev/null
+    "${mathematica_kernel}" <<EOF 1> /dev/null 2> ${createmodel_log}
 FindModelFiles[dir_String, modelName_String, submodeldir_] :=
     Module[{files, modelFile, modelDir},
            If[submodeldir =!= False,
@@ -214,7 +222,9 @@ If[files === {},
   ];
 
 If[files === {},
-   Quit[1],
+   WriteString["stderr", "    " <> \$sarahModelDir <> "\n    ${flexiblesusy_sarah_dir}" <> "\n"];
+   Quit[1];
+   ,
    Quit[0]
   ];
 EOF
@@ -228,7 +238,8 @@ EOF
         return 0
     else
         printf "not found\n"
-        echo "Error: SARAH model ${_sarah_model} not found"
+        echo "Error: SARAH model ${_sarah_model} not found in"
+        cat ${createmodel_log}
         exit 1
     fi
 }
@@ -238,6 +249,8 @@ if test $# -lt 1 ; then
     help
     exit ${exit_syntax_error}
 fi
+
+rm -f ${createmodel_log}
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
@@ -273,7 +286,7 @@ if [ -z "$sarah_model" ]; then
 fi
 
 check_model_name "${name}"
-check_sarah_model "${sarah_model}/${sub_model}"
+check_sarah_model "${sarah_model}" "${sub_model}"
 
 # create target directory name
 targetdir="models/${name}"
