@@ -63,3 +63,35 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    BOOST_CHECK_CLOSE_FRACTION(delta_alpha_em_fs, delta_alpha_em, 1.0e-12);
    BOOST_CHECK_CLOSE_FRACTION(delta_alpha_s_fs , delta_alpha_s , 1.0e-12);
 }
+
+BOOST_AUTO_TEST_CASE( test_delta_spectrum )
+{
+   NSM<Two_scale> m;
+   NSM_input_parameters input;
+   input.LambdaInput1 = 0.1;
+   input.LambdaInput2 = 0.1;
+   input.LambdaInput3 = 0.1;
+   input.LambdaInput4 = 0.0;
+   input.LambdaInput5 = 0.0;
+   QedQcd oneset;
+
+   const double vev = 246.;
+   const double g1 = 0.2;
+   const double g2 = 0.3;
+   const double g3 = 0.4;
+
+   m.set_scale(91.);
+   m.set_vH(246.);
+   m.set_g1(g1);
+   m.set_g2(g2);
+   m.set_g3(g3);
+   m.set_Yu(2, 2, 165.0   * Sqrt(2.) / vev);
+   m.set_Yd(2, 2, 2.9     * Sqrt(2.) / vev);
+   m.set_Ye(2, 2, 1.77699 * Sqrt(2.) / vev);
+
+   m.calculate_DRbar_masses();
+
+   const double MVZ = 0.5 * vev * Sqrt(0.6*g1*g1 + g2*g2);
+
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MVZ(), MVZ, 1.0e-10);
+}
