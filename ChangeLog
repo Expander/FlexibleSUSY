@@ -4,6 +4,10 @@ FlexibleSUSY-1.0.4 [not released yet]
    parameter point using command line parameters instead of an SLHA
    input file.
 
+ * Allow input parameters in first guesses of scale definitions, for
+   example
+   SUSYScaleFirstGuess = Sqrt[Sqrt[LHInput[mq2[3,3]] * LHInput[mu2[3,3]]]]
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 
