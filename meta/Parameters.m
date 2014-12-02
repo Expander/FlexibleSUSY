@@ -119,6 +119,7 @@ FindAllParameters[expr_] :=
            symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allInputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
                      };
