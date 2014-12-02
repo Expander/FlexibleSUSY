@@ -1261,6 +1261,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
+           (* replace all indices in the user-defined model file variables *)
+           ReplaceIndicesInUserInput[allIndexReplacementRules];
+
            (* replace LHInput[p] by pInput in the constraints *)
 
            lesHouchesInputParameterReplacementRules = Flatten[{
@@ -1288,9 +1291,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
                                                lesHouchesInputParameters];
              ];
-
-           (* replace all indices in the user-defined model file variables *)
-           ReplaceIndicesInUserInput[allIndexReplacementRules];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
