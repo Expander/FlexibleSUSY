@@ -1,7 +1,7 @@
 set terminal epslatex standalone size 12cm,8cm header '\renewcommand*{\familydefault}{\sfdefault}\usepackage[cm]{sfmath}\usepackage{amsmath}'
 
-set xlabel "Energieskala / GeV"
-set ylabel "Kopplungsst\\\"{a}rke" offset 2
+set xlabel "$\\mu$ / GeV"
+set ylabel ""
 set logscale x
 set output "MSSM_gauge_couplings.tex"
 set format x "$10^{%L}$"
@@ -15,7 +15,7 @@ set xtics 1,1000,1e18
 set size 0.58,1.0
 set origin 0.0,0.0
 
-set label 1 "Standardmodell" at 1e6,0.9
+set label 1 "Standard Modell" at 1e6,0.9
 set style arrow 1 head filled size screen 0.02,10,45
 
 plot [1:1e17] [0.4:1.2] \
