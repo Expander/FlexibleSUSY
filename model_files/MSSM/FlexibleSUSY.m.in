@@ -29,7 +29,7 @@ SUSYScaleFirstGuess = SM[MZ];
 
 SUSYScaleInput = {};
 
-HighScale == Qin;
+HighScale = Qin;
 
 HighScaleFirstGuess = 2.0 10^16;
 
