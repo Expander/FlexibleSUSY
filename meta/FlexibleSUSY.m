@@ -1096,7 +1096,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, massMatrices, phases,
             diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
             fixedParameters, treeLevelEwsbOutputFile,
-            lesHouchesInputParameters,
+            lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks,
 	    vertexRules, vertexRuleFileName,
 	    Lat$massMatrices},
@@ -1262,12 +1262,27 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
            (* replace LHInput[p] by pInput in the constraints *)
+
+           lesHouchesInputParameterReplacementRules = Flatten[{
+               Rule[SARAH`LHInput[#[[1]]], #[[2]]],
+               Rule[SARAH`LHInput[#[[1]][p__]], #[[2]][p]]
+           }& /@ lesHouchesInputParameters];
+
+           Print[lesHouchesInputParameterReplacementRules];
+
            FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
-               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+               lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
-               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+               lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
-               (Rule[SARAH`LHInput[#[[1]]], #[[2]]]& /@ lesHouchesInputParameters);
+               lesHouchesInputParameterReplacementRules;
+
+           FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`LowScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`SUSYScaleFirstGuess = FlexibleSUSY`SUSYScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`HighScaleFirstGuess = FlexibleSUSY`HighScaleFirstGuess /.
+               lesHouchesInputParameterReplacementRules;
 
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
               lesHouchesInputParameters = Join[FlexibleSUSY`FSUnfixedParameters,
