@@ -1271,8 +1271,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Rule[SARAH`LHInput[#[[1]][p__]], #[[2]][p]]
            }& /@ lesHouchesInputParameters];
 
-           Print[lesHouchesInputParameterReplacementRules];
-
            FlexibleSUSY`LowScaleInput = FlexibleSUSY`LowScaleInput /.
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
