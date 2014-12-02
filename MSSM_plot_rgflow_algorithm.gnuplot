@@ -1,6 +1,6 @@
 set terminal epslatex standalone size 12cm,8cm header '\renewcommand*{\familydefault}{\sfdefault}\usepackage[cm]{sfmath}\usepackage{amsmath}'
 
-set xlabel "Energieskala / GeV"
+set xlabel "renormalization scale / GeV"
 set logscale x
 set format x "$10^{%L}$"
 set format y "$%g$"
