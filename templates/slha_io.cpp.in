@@ -215,11 +215,6 @@ void @ModelName@_slha_io::fill_minpar_tuple(@ModelName@_input_parameters& input,
 void @ModelName@_slha_io::fill_extpar_tuple(@ModelName@_input_parameters& input,
                                                 int key, double value)
 {
-   // key 0 is the model parameter input scale, which is read in
-   // slha_io.{hpp,cpp}
-   if (key == 0)
-      return;
-
 @fillInputParametersFromEXTPAR@
 }
 
