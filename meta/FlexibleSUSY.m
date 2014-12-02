@@ -248,19 +248,19 @@ CheckModelFileSettings[] :=
              ];
           ];
 
-ReplaceIndicesInUserInput[] :=
+ReplaceIndicesInUserInput[rules_] :=
     Block[{},
-          FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. allIndexReplacementRules;
-          FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. allIndexReplacementRules;
-          FlexibleSUSY`HighScale               = FlexibleSUSY`HighScale               /. allIndexReplacementRules;
-          FlexibleSUSY`HighScaleFirstGuess     = FlexibleSUSY`HighScaleFirstGuess     /. allIndexReplacementRules;
-          FlexibleSUSY`HighScaleInput          = FlexibleSUSY`HighScaleInput          /. allIndexReplacementRules;
-          FlexibleSUSY`LowScale                = FlexibleSUSY`LowScale                /. allIndexReplacementRules;
-          FlexibleSUSY`LowScaleFirstGuess      = FlexibleSUSY`LowScaleFirstGuess      /. allIndexReplacementRules;
-          FlexibleSUSY`LowScaleInput           = FlexibleSUSY`LowScaleInput           /. allIndexReplacementRules;
-          FlexibleSUSY`SUSYScale               = FlexibleSUSY`SUSYScale               /. allIndexReplacementRules;
-          FlexibleSUSY`SUSYScaleFirstGuess     = FlexibleSUSY`SUSYScaleFirstGuess     /. allIndexReplacementRules;
-          FlexibleSUSY`SUSYScaleInput          = FlexibleSUSY`SUSYScaleInput          /. allIndexReplacementRules;
+          FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. rules;
+          FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. rules;
+          FlexibleSUSY`HighScale               = FlexibleSUSY`HighScale               /. rules;
+          FlexibleSUSY`HighScaleFirstGuess     = FlexibleSUSY`HighScaleFirstGuess     /. rules;
+          FlexibleSUSY`HighScaleInput          = FlexibleSUSY`HighScaleInput          /. rules;
+          FlexibleSUSY`LowScale                = FlexibleSUSY`LowScale                /. rules;
+          FlexibleSUSY`LowScaleFirstGuess      = FlexibleSUSY`LowScaleFirstGuess      /. rules;
+          FlexibleSUSY`LowScaleInput           = FlexibleSUSY`LowScaleInput           /. rules;
+          FlexibleSUSY`SUSYScale               = FlexibleSUSY`SUSYScale               /. rules;
+          FlexibleSUSY`SUSYScaleFirstGuess     = FlexibleSUSY`SUSYScaleFirstGuess     /. rules;
+          FlexibleSUSY`SUSYScaleInput          = FlexibleSUSY`SUSYScaleInput          /. rules;
          ];
 
 GUTNormalization[coupling_] :=
@@ -1290,7 +1290,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            (* replace all indices in the user-defined model file variables *)
-           ReplaceIndicesInUserInput[];
+           ReplaceIndicesInUserInput[allIndexReplacementRules];
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
