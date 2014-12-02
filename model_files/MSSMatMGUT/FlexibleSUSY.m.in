@@ -24,7 +24,7 @@ EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
-SUSYScaleFirstGuess = Sqrt[mq2[3,3] * mu2[3,3]];
+SUSYScaleFirstGuess = 100; 
 
 SUSYScaleInput = {};
 
