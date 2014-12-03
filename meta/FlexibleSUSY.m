@@ -1120,6 +1120,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
 	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
+
+           FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
+                                                     FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
+
            (* adapt SARAH`Conj to our needs *)
            (* Clear[Conj]; *)
            SARAH`Conj[(B_)[b__]] = .;

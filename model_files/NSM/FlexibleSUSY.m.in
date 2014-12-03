@@ -48,8 +48,6 @@ InitialGuessAtLowScale = {
 
 OnlyLowEnergyFlexibleSUSY = True;
 
-FSRenormalizationScheme = MSbar;
-
 SMParticles = {
     Electron, TopQuark, BottomQuark,
     VectorP, VectorZ, VectorG, VectorW, Neutrino,
