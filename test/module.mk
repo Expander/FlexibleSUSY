@@ -128,6 +128,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_info.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+TEST_SRC += \
+		$(DIR)/test_SM_beta_functions.cpp \
+		$(DIR)/test_SM_low_scale_constraint.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-NSM),yes)
 TEST_SRC += \
 		$(DIR)/test_NSM_low_scale_constraint.cpp
@@ -373,6 +379,10 @@ $(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) 
 $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_low_scale_constraint.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
