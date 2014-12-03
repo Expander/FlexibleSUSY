@@ -41,6 +41,8 @@ SMParticles = {
     hh (* Higgs *)
 };
 
+FSRenormalizationScheme = MSbar;
+
 OnlyLowEnergyFlexibleSUSY = True;
 
 SARAH`ParameterDefinitions = Append[
