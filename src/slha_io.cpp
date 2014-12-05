@@ -23,6 +23,8 @@
 #include "ew_input.hpp"
 
 #include <fstream>
+#include <algorithm>
+#include <string>
 #include <boost/bind.hpp>
 
 namespace flexiblesusy {
@@ -44,6 +46,13 @@ void SLHA_io::clear()
 bool SLHA_io::block_exists(const std::string& block_name) const
 {
    return data.find(block_name) != data.cend();
+}
+
+std::string SLHA_io::to_lower(const std::string& str)
+{
+   std::string lower(str.size(), ' ');
+   std::transform(str.begin(), str.end(), lower.begin(), ::tolower);
+   return lower;
 }
 
 /**
@@ -127,25 +136,68 @@ void SLHA_io::fill(QedQcd& oneset) const
  */
 double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   if (!block_exists(block_name))
-      return 0.;
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
 
    double scale = 0.;
 
-   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
-        end = data.at(block_name).cend(); line != end; ++line) {
-      if (!line->is_data_line()) {
-         // read scale from block definition
-         if (line->size() > 3 && (*line)[2] == "Q=")
-            scale = convert_to<double>((*line)[3]);
-         continue;
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
+
+         if (line->size() >= 2) {
+            const int key = convert_to<int>((*line)[0]);
+            const double value = convert_to<double>((*line)[1]);
+            processor(key, value);
+         }
       }
 
-      if (line->size() >= 2) {
-         const int key = convert_to<int>((*line)[0]);
-         const double value = convert_to<double>((*line)[1]);
-         processor(key, value);
+      ++block;
+      block = data.find(block, data.cend(), block_name);
+   }
+
+   return scale;
+}
+
+/**
+ * Fills an entry from a SLHA block
+ *
+ * @param block_name block name
+ * @param entry entry to be filled
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double SLHA_io::read_block(const std::string& block_name, double& entry) const
+{
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   double scale = 0.;
+
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
+
+         if (line->size() >= 1)
+            entry = convert_to<double>((*line)[0]);
       }
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -153,23 +205,22 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
-   const SLHAea::Coll::const_iterator block = data.find(block_name);
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
 
-   if (!block_exists(block_name)) {
-      WARNING("block " << block_name << " not found");
-      return 0.;
-   }
-
+   double entry = 0.;
    const SLHAea::Block::key_type keys(1, ToString(key));
-   const SLHAea::Block::const_iterator line = block->find(keys);
+   SLHAea::Block::const_iterator line;
 
-   if (line == block->end() || !line->is_data_line() || line->size() < 2) {
-      WARNING("no valid entry for key " << key << " in block "
-              << block_name << " found");
-      return 0.;
+   while (block != data.cend()) {
+      line = block->find(keys);
+
+      if (line != block->end() && line->is_data_line() && line->size() > 1)
+         entry = convert_to<double>(line->at(1));
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
    }
-
-   const double entry = convert_to<double>(line->at(1));
 
    return entry;
 }
@@ -191,7 +242,8 @@ double SLHA_io::read_scale(const std::string& block_name) const
    for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
         end = data.at(block_name).cend(); line != end; ++line) {
       if (!line->is_data_line()) {
-         if (line->size() > 3 && (*line)[2] == "Q=")
+         if (line->size() > 3 &&
+             to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
             scale = convert_to<double>((*line)[3]);
          break;
       }
@@ -222,7 +274,7 @@ void SLHA_io::set_block(const std::string& name, double value,
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n'
       << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
 
@@ -235,7 +287,7 @@ void SLHA_io::set_block(const std::string& name, const softsusy::DoubleMatrix& m
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)
@@ -253,7 +305,7 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
    std::ostringstream ss;
    ss << "Block " << name;
    if (scale != 0.)
-      ss << " Q= " << FORMAT_NUMBER(scale);
+      ss << " Q= " << FORMAT_SCALE(scale);
    ss << '\n';
 
    for (int i = 1; i <= matrix.displayRows(); ++i)

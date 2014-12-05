@@ -4,11 +4,13 @@ BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
+PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
+WriteExtraSLHAOutputBlock::usage="";
 ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
@@ -63,6 +65,9 @@ TransposeIfVector[parameter_, CConversion`ArrayType[__]] :=
 TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
     SARAH`Tp[parameter];
 
+TransposeIfVector[p:FlexibleSUSY`Sign[parameter_], _] :=
+    CConversion`ToValidCSymbolString[p];
+
 TransposeIfVector[parameter_, _] := parameter;
 
 PrintParameter[Null, streamName_String] := "";
@@ -81,6 +86,65 @@ PrintParameter[parameter_, streamName_String] :=
 PrintParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintParameter[#,streamName])& /@ parameters;
+           Return[result];
+          ];
+
+PrintInputParameter[Null, _] := "";
+
+PrintInputParameter[{parameter_, type_}, streamName_String] :=
+    Module[{parameterStr, expr},
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
+           expr = TransposeIfVector[parameter, type];
+           Return[streamName <> " << \"" <> parameterStr <> " = \" << " <>
+                  "INPUT(" <> CConversion`RValueToCFormString[expr] <> ") << \", \";\n"];
+          ];
+
+PrintInputParameter[parameter_, streamName_String] :=
+    PrintInputParameter[{parameter, Parameters`GetType[parameter]}, streamName];
+
+PrintInputParameters[parameters_List, streamName_String] :=
+    Module[{result = ""},
+           (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
+           Return[result];
+          ];
+
+(* Write constant MW from ew_input.hpp
+ *
+ * Note: This function can be removed as soon as we no longer
+ * use MW as an input at the low-scale, for example at the point
+ * when we calculate sin(theta_W) from the muon decay constant G_F.
+ *)
+WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix /; TreeMasses`GetMassEigenstate[massMatrix] === SARAH`VectorW] :=
+    Module[{result = "", eigenstateName, eigenstateNameStr,
+            pdgList, pdg, dim, i},
+           eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
+           dim = TreeMasses`GetDimension[eigenstateName];
+           pdgList = SARAH`getPDGList[eigenstateName];
+           If[Length[pdgList] != dim,
+              Print["Error: length of PDG number list != dimension of particle ", eigenstateName];
+              Print["       PDG number list = ", pdgList];
+              Print["       dimension of particle ", eigenstateName, " = ", dim];
+             ];
+           If[Length[pdgList] < dim,
+              Return[""];
+             ];
+           If[dim == 1,
+              pdg = Abs[pdgList[[1]]];
+              If[pdg != 0,
+                 eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName];
+                 result = "<< FORMAT_MASS(" <> ToString[pdg] <>
+                          ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
+                ];
+              ,
+              For[i = 1, i <= dim, i++,
+                  pdg = Abs[pdgList[[i]]];
+                  If[pdg != 0,
+                     eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "(" <> ToString[i] <> ")";
+                     result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
+                              ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
+                    ];
+                 ];
+             ];
            Return[result];
           ];
 
@@ -110,7 +174,7 @@ WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix] :=
               For[i = 1, i <= dim, i++,
                   pdg = Abs[pdgList[[i]]];
                   If[pdg != 0,
-                     eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "_" <> ToString[i];
+                     eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "(" <> ToString[i] <> ")";
                      massNameStr = CConversion`RValueToCFormString[FlexibleSUSY`M[eigenstateName[i-1]]];
                      result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
                               ", LOCALPHYSICAL(" <> massNameStr <> "), \"" <> eigenstateNameStr <> "\")\n";
@@ -125,6 +189,8 @@ WriteSLHAMassBlock[massMatrices_List] :=
             smMassesStr = "", susyMassesStr = ""},
            allMasses = FlexibleSUSY`M[TreeMasses`GetMassEigenstate[#]]& /@ massMatrices;
            smMasses = Select[massMatrices, (SARAH`SMQ[TreeMasses`GetMassEigenstate[#]])&];
+           (* filter out MW, because MW should always appear in the output *)
+           smMasses = Select[smMasses, (TreeMasses`GetMassEigenstate[#] =!= SARAH`VectorW)&];
            susyMasses = Complement[massMatrices, smMasses];
            (smMassesStr = smMassesStr <> WriteSLHAMass[#])& /@ smMasses;
            (susyMassesStr = susyMassesStr <> WriteSLHAMass[#])& /@ susyMasses;
@@ -185,6 +251,11 @@ GetSLHAMixinMatrices[] :=
 GetSLHAModelParameters[] :=
     DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
                        MemberQ[Parameters`GetModelParameters[],#[[1]]]&],
+                {_,None}];
+
+GetSLHAInputParameters[] :=
+    DeleteCases[Select[FlexibleSUSY`FSLesHouchesList,
+                       MemberQ[Parameters`GetInputParameters[],#[[1]]]&],
                 {_,None}];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
@@ -327,36 +398,87 @@ SortBlocks[modelParameters_List] :=
            Return[collected];
           ];
 
+CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
+    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];
+
+CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
+    Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
+
+WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
+                             protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
+    Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
+           replacements = Join[
+               RuleDelayed[#     , macroSymbol[#]   ]& /@ symbols,
+               RuleDelayed[#[i__], macroSymbol[#][i]]& /@ symbols,
+               {RuleDelayed[FlexibleSUSY`M[p_[i__]], macroSymbol[FlexibleSUSY`M[p]][i]]}
+           ];
+           protectionRules = CreateRulesForProtectedHead[expr, protectedHeads];
+           exprWithoutProtectedSymbols = expr /. protectionRules;
+           (* substitute back protected symbols *)
+           exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
+          ];
+
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
+    Module[{parStr, parVal, idx1Str, idx2Str},
+           parStr = CConversion`RValueToCFormString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           idx1Str = ToString[idx1];
+           idx2Str = ToString[idx2];
+           (* result *)
+           "      << FORMAT_MIXING_MATRIX(" <> idx1Str <> ", " <> idx2Str <>
+           ", (" <> parVal <> "), \"" <> parStr <> "\")" <> "\n"
+          ];
+
+WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
+    Module[{parStr, parVal, pdgStr},
+           parStr = CConversion`RValueToCFormString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           (* print unnormalized hypercharge gauge coupling *)
+           If[par === SARAH`hyperchargeCoupling,
+              parVal = parVal <> " * " <>
+                           CConversion`RValueToCFormString[
+                               Parameters`GetGUTNormalization[par]];
+              parStr = "gY";
+             ];
+           pdgStr = ToString[pdg];
+           (* result *)
+           "      << FORMAT_ELEMENT(" <> pdgStr <> ", (" <> parVal <>
+           "), \"" <> parStr <> "\")" <> "\n"
+          ];
+
+WriteSLHABlockEntry[{par_}] :=
+    Module[{parStr, parVal},
+           parStr = CConversion`RValueToCFormString[par];
+           parVal = CConversion`RValueToCFormString[
+               WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
+                                                     Parameters`GetOutputParameters[]],
+                                           Global`MODELPARAMETER]];
+           (* result *)
+           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> parStr <> "\")\n"
+          ];
+
+WriteSLHABlockEntry[tuple_] :=
+    Block[{},
+          Print["WriteSLHABlock: Error: tuple ", tuple,
+                " is not a list of lenght 2."];
+          ""
+         ];
+
 WriteSLHABlock[{blockName_, tuples_List}] :=
-    Module[{result = "", blockNameStr, t, pdg, par, parStr, parVal, scale},
+    Module[{result = "", blockNameStr, scale},
            blockNameStr = ToString[blockName];
            scale = "model.get_scale()";
            result = "std::ostringstream block;\n" <>
-                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_NUMBER(" <>
+                    "block << \"Block " <> blockNameStr <> " Q= \" << FORMAT_SCALE(" <>
                     scale <> ") << '\\n'\n";
-           For[t = 1, t <= Length[tuples], t++,
-               If[Head[tuples[[t]]] =!= List || Length[tuples[[t]]] < 2,
-                  Print["WriteSLHABlock: Error: tuple ", tuples[[t]],
-                        " is not a list of lenght 2."];
-                  Print["  Tuples list: ", tuples];
-                  Continue[];
-                 ];
-               par = tuples[[t,1]];
-               parStr = CConversion`ToValidCSymbolString[par];
-               parVal = "MODELPARAMETER(" <> parStr <> ")";
-               (* print unnormalized hypercharge gauge coupling *)
-               If[par === SARAH`hyperchargeCoupling,
-                  parVal = "(" <> parVal <> " * " <>
-                           CConversion`RValueToCFormString[
-                               Parameters`GetGUTNormalization[par]] <> ")";
-                  parStr = "gY";
-                 ];
-               pdg = ToString[tuples[[t,2]]];
-               result = result <> "      << FORMAT_ELEMENT(" <> pdg <> ", " <>
-                        parVal <> ", \"" <> parStr <> "\")" <>
-                        If[t == Length[tuples], ";", ""] <> "\n";
-              ];
-           result = result <> "slha_io.set_block(block);\n";
+           (result = result <> WriteSLHABlockEntry[#])& /@ tuples;
+           result = result <> ";\n" <> "slha_io.set_block(block);\n";
            result = "{\n" <> TextFormatting`IndentText[result] <> "}\n";
            Return[result];
           ];
@@ -375,9 +497,20 @@ WriteSLHAModelParametersBlocks[] :=
            Return[result];
           ];
 
-ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
+WriteExtraSLHAOutputBlock[outputBlocks_List] :=
+    Module[{result = "", reformed},
+           ReformeBlocks[{block_, tuples_List}] := {block, ReformeBlocks /@ tuples};
+           ReformeBlocks[{expr_}]               := {expr};
+           ReformeBlocks[{idx_, expr_}]         := {expr, idx};
+           ReformeBlocks[{idx1_, idx2_, expr_}] := {expr, idx1, idx2};
+           reformed = ReformeBlocks /@ outputBlocks;
+           (result = result <> WriteSLHABlock[#])& /@ reformed;
+           Return[result];
+          ];
+
+ReadSLHAInputBlock[{parameter_, {blockName_, pdg_?NumberQ}}] :=
     Module[{result, blockNameStr, parmStr, pdgStr},
-           blockNameStr = ToString[blockName] <> "IN";
+           blockNameStr = ToString[blockName];
            parmStr = CConversion`ToValidCSymbolString[parameter];
            pdgStr = ToString[pdg];
            result = "input." <> parmStr <>
@@ -386,22 +519,29 @@ ReadSLHAInputBlock[{parameter_, {blockName_Symbol, pdg_?NumberQ}}] :=
            Return[result];
           ];
 
-ReadSLHAInputBlock[{parameter_, blockName_Symbol}] :=
+ReadSLHAInputBlock[{parameter_, blockName_}] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
-           blockNameStr = ToString[blockName] <> "IN";
+           blockNameStr = ToString[blockName];
            "slha_io.read_block(\"" <> blockNameStr <> "\", input." <>
            paramStr <> ");\n"
           ];
 
+CreateInputBlockName[{blockName_, pdg_?NumberQ}] :=
+    {ToString[blockName] <> "IN", pdg};
+
+CreateInputBlockName[blockName_] :=
+    ToString[blockName] <> "IN";
+
 ReadLesHouchesInputParameters[lesHouchesInputParameters_List] :=
-    Module[{result = "", modelParameters, names, rules},
+    Module[{result = "", parameters, names, rules},
            names = (#[[1]])& /@ lesHouchesInputParameters;
-           rules = Rule[#[[1]], #[[2]]]& /@ lesHouchesInputParameters;
+           rules = Cases[lesHouchesInputParameters, {p_, block_, _} /; MemberQ[Parameters`GetModelParameters[],p] :> Rule[p,block]];
            (* get block names of all les Houches input parameters (names) *)
-           modelParameters = Select[GetSLHAModelParameters[], MemberQ[names,#[[1]]]&];
-           modelParameters = {#[[1]] /. rules, #[[2]]}& /@ modelParameters;
-           (result = result <> ReadSLHAInputBlock[#])& /@ modelParameters;
+           parameters = Select[Join[GetSLHAModelParameters[],GetSLHAInputParameters[]], MemberQ[names,#[[1]]]&];
+           parameters = {#[[1]] /. rules,
+                         If[MemberQ[Parameters`GetModelParameters[],#[[1]]], CreateInputBlockName[#[[2]]], #[[2]]]}& /@ parameters;
+           (result = result <> ReadSLHAInputBlock[#])& /@ parameters;
            Return[result];
           ];
 

@@ -20,18 +20,18 @@
 #define MSSMCBS_TWO_SCALE_H
 
 #include "MSSMcbs_model.hpp"
-#include "MSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model.hpp"
 
 namespace flexiblesusy {
 
 template<>
-class MSSMcbs<Two_scale> : public MSSM<Two_scale> {
+class MSSMcbs<Two_scale> : public CMSSM<Two_scale> {
 public:
-   explicit MSSMcbs(const MSSM_input_parameters& input_ = MSSM_input_parameters());
+   explicit MSSMcbs(const CMSSM_input_parameters& input_ = CMSSM_input_parameters());
    virtual ~MSSMcbs();
 
    virtual Eigen::ArrayXd beta() const;
-   MSSM_soft_parameters calc_beta() const;
+   CMSSM_soft_parameters calc_beta() const;
 };
 
 } // namespace flexiblesusy

@@ -39,7 +39,7 @@ double StandardModelCWGUTConstraint::get_scale() const
 
 void StandardModelCWGUTConstraint::set_model(Two_scale_model* model)
 {
-   smcw = cast_model<StandardModelCW<Two_scale> >(model);
+   smcw = cast_model<StandardModelCW<Two_scale>*>(model);
 }
 
 void StandardModelCWGUTConstraint::update_scale()

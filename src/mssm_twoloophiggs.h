@@ -217,4 +217,19 @@ extern "C" int dilogwrap_(double * a, double * b, double * c, double * d);
 
 extern "C" int dummy_();
 
+#define tadpole_higgs_2loop_at_as_mssm                ewsb2loop_
+#define tadpole_higgs_2loop_ab_as_mssm                ewsb2loop_
+#define tadpole_higgs_2loop_at_at_mssm                ddstad_
+#define tadpole_higgs_2loop_atau_atau_mssm            tausqtad_
+
+#define self_energy_higgs_2loop_at_as_mssm            dszhiggs_
+#define self_energy_higgs_2loop_ab_as_mssm            dszhiggs_
+#define self_energy_higgs_2loop_at_at_mssm            ddshiggs_
+#define self_energy_higgs_2loop_atau_atau_mssm        tausqhiggs_
+
+#define self_energy_pseudoscalar_2loop_at_as_mssm     dszodd_
+#define self_energy_pseudoscalar_2loop_ab_as_mssm     dszodd_
+#define self_energy_pseudoscalar_2loop_at_at_mssm     ddsodd_
+#define self_energy_pseudoscalar_2loop_atau_atau_mssm tausqodd_
+
 #endif

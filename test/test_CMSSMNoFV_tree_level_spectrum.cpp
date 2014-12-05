@@ -1,19 +1,19 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSMNoFV_tree_level_spectrum
+#define BOOST_TEST_MODULE test_CMSSMNoFV_tree_level_spectrum
 
 #include <boost/test/unit_test.hpp>
 
 #include "test.h"
-#include "test_MSSMNoFV.hpp"
-#include "MSSM_two_scale_model.hpp"
-#include "MSSMNoFV_two_scale_model.hpp"
+#include "test_CMSSMNoFV.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSMNoFV_two_scale_model.hpp"
 
 #define COMPARE_MASS(p) TEST_EQUALITY(a.get_##p(), b.get_##p());
 
 using namespace flexiblesusy;
 
-void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>& b)
+void test_spectrum_equality(const CMSSMNoFV<Two_scale>& a, const CMSSM<Two_scale>& b)
 {
    COMPARE_MASS(Mhh);
    COMPARE_MASS(MAh);
@@ -142,12 +142,18 @@ void test_spectrum_equality(const MSSMNoFV<Two_scale>& a, const MSSM<Two_scale>&
    TEST_EQUALITY(MFe_full, MFe_mixed);
 }
 
-BOOST_AUTO_TEST_CASE( test_MSSMNoFV_tree_level_spectrum )
+BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_tree_level_spectrum )
 {
-   MSSMNoFV_input_parameters input;
-   MSSMNoFV<Two_scale> m1;
-   MSSM<Two_scale> m2;
-   setup_MSSM_models(m1, m2, input);
+   CMSSMNoFV_input_parameters input;
+   input.TanBeta = 10.;
+   input.m0 = 125.;
+   input.m12 = 200.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   CMSSMNoFV<Two_scale> m1;
+   CMSSM<Two_scale> m2;
+   setup_CMSSM_models(m1, m2, input);
 
    test_spectrum_equality(m1, m2);
    BOOST_REQUIRE(gErrors == 0);

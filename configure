@@ -6,9 +6,10 @@
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
 FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=2
+FLEXIBLESUSY_PATCH=3
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
+GIT_COMMIT="`git describe --tags || echo unknown`"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -33,8 +34,6 @@ default_inc_paths="/usr/include /usr/local/include"
 logfile="$BASEDIR/config.log"
 statusfile="$BASEDIR/config.status"
 sarahconfig="$BASEDIR/config.sarah"
-boostconfig="$BASEDIR/config.boost"
-gppconfig="$BASEDIR/config.g++"
 mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
@@ -93,6 +92,7 @@ options="                    \
    enable_compile            \
    enable_compiler_warnings  \
    enable_debug              \
+   enable_mass_error_check   \
    enable_fflite             \
    enable_looptools          \
    enable_silent             \
@@ -111,6 +111,7 @@ enable_compile="yes"
 enable_compiler_warnings="no"
 enable_colors="no"
 enable_debug=""
+enable_mass_error_check="no"
 enable_fflite="no"
 enable_looptools="no"
 enable_meta="no"
@@ -125,6 +126,7 @@ enable_verbose="no"
 # corresponding preprocessor define statements
 DEFINE_ENABLE_COLOR_PRINTOUT="#undef ENABLE_COLOR_PRINTOUT"
 DEFINE_ENABLE_DEBUG="#undef ENABLE_DEBUG"
+DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
 DEFINE_ENABLE_FFLITE="#undef ENABLE_FFLITE"
 DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
@@ -267,9 +269,10 @@ logmsg() {
 
 #_____________________________________________________________________
 log_package_information() {
-    logmsg "Package: ${PROGRAM_NAME}"
-    logmsg "Version: ${FLEXIBLESUSY_VERSION}"
-    logmsg "Date:    ${DATE}"
+    logmsg "Package:    ${PROGRAM_NAME}"
+    logmsg "Version:    ${FLEXIBLESUSY_VERSION}"
+    logmsg "Date:       ${DATE}"
+    logmsg "Git commit: ${GIT_COMMIT}"
 }
 
 #_____________________________________________________________________
@@ -1433,6 +1436,28 @@ check_eigen_incl() {
 }
 
 #_____________________________________________________________________
+check_eigen_version() {
+    checking_msg "eigen version"
+
+    try_compile_run_cpp_program "#include <iostream>
+#include <Eigen/Core>
+int main() {
+   std::cout << EIGEN_WORLD_VERSION << '.' << EIGEN_MAJOR_VERSION << '.' << EIGEN_MINOR_VERSION << '\n';
+   return 0;
+}" "$CXX" "${EIGENFLAGS}" && [ $cpp_exit = 0 ] || {
+        result "unknown"
+        message "Warning: could not determine eigen version because"
+        message "   compilation or execution of the eigen test program failed."
+	return 1
+    }
+
+    local eigen_version="$cpp_output"
+
+    result "ok (version ${eigen_version})"
+    logmsg "   Eigen version found: ${eigen_version}"
+}
+
+#_____________________________________________________________________
 check_gsl_config() {
     checking_msg "GSL configuration $gsl_config"
     exists_in_path "$gsl_config"
@@ -1846,6 +1871,16 @@ enable_defines() {
         logmsg "   CPPFLAGS = ${CPPFLAGS}"
     fi
 
+    if test "x$enable_mass_error_check" = "xyes" ; then
+        DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#define CHECK_EIGENVALUE_ERROR 1"
+        message "Enabling mass eigenvalue error check"
+        logmsg "   ${DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR}"
+    else
+        DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR="#undef CHECK_EIGENVALUE_ERROR"
+        logmsg "Disabling eigenvalue error check"
+        logmsg "   ${DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR}"
+    fi
+
     if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
 	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
 	exit 1
@@ -1925,6 +1960,7 @@ replace_markers() {
 	-e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
 	-e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
 	-e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
+        -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
 	-e "s|@PKGNAME@|$PROGRAM_NAME|"    \
 	-e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
 	-e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
@@ -1956,6 +1992,7 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_COLOR_PRINTOUT@|$enable_colors|" \
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
+	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
@@ -1982,6 +2019,7 @@ enable/disable options, prefix with either --enable- or --disable-
   compile           Compile the source code (default: $enable_compile)
   compiler-warnings Enable compiler warnings (default: $enable_compiler_warnings)
   debug             Debug messages and assertions (no default)
+  mass-error-check  Check mass eigenvalue precision (default: $enable_mass_error_check)
   fflite            Use fflite to compute the loop functions (default: $enable_fflite)
   looptools         Use LoopTools to compute the loop functions (default: $enable_looptools)
 EOF
@@ -2149,6 +2187,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_boost_test_incl
     check_boost_test_libs
     check_eigen_incl
+    check_eigen_version
     check_fortran_libs
     check_gsl_config
     check_blas_libs
@@ -2201,6 +2240,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
+    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
@@ -2219,6 +2259,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
+    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"                 \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
     -e "s|@BLASLIBS@|$BLASLIBS|"                     \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \
@@ -2244,6 +2285,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DATE@|$DATE|"                             \
     -e "s|@DEFINE_ENABLE_COLOR_PRINTOUT@|$DEFINE_ENABLE_COLOR_PRINTOUT|" \
     -e "s|@DEFINE_ENABLE_DEBUG@|$DEFINE_ENABLE_DEBUG|"         \
+    -e "s|@DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR@|$DEFINE_ENABLE_CHECK_EIGENVALUE_ERROR|" \
     -e "s|@DEFINE_ENABLE_FFLITE@|$DEFINE_ENABLE_FFLITE|" \
     -e "s|@DEFINE_ENABLE_LOOPTOOLS@|$DEFINE_ENABLE_LOOPTOOLS|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
@@ -2257,6 +2299,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
+    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $TEXVERSION_TMPL > $TEXVERSION
 
@@ -2265,6 +2308,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
+    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     < $DOC_MAINPAGE_TMPL > $DOC_MAINPAGE
 

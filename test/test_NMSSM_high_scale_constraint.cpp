@@ -28,8 +28,7 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    NmssmSoftsusy s;
    setup_NMSSM(m, s, input);
 
-   NMSSM_high_scale_constraint<Two_scale> constraint(input);
-   constraint.set_model(&m);
+   NMSSM_high_scale_constraint<Two_scale> constraint(&m, input);
 
    double mgut = constraint.get_scale(); // initial guess
    double mgut_new = mgut;
@@ -84,10 +83,9 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.lambda = input.LambdaInput;
 
-   NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(input);
+   NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(&m, input);
    SoftsusyNMSSM_sugra_constraint snmssm_sugra_constraint(pp);
 
-   NMSSM_sugra_constraint.set_model(&m);
    snmssm_sugra_constraint.set_model((Two_scale_model*)&s);
 
    NMSSM_sugra_constraint.update_scale();

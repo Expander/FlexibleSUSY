@@ -9,7 +9,7 @@ FSCONFIG="$BASEDIR/../flexiblesusy-config"
 
 program_dirs=""
 
-[ $("$FSCONFIG" --with-MSSM) = yes ] &&
+[ $("$FSCONFIG" --with-CMSSM) = yes ] &&
     program_dirs="$program_dirs customized-betas"
 [ $("$FSCONFIG" --with-MSSMD5O) = yes -a $("$FSCONFIG" --with-MSSMRHN) = yes ] &&
     program_dirs="$program_dirs tower"

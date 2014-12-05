@@ -58,7 +58,8 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
     Module[{result = "", body = "", dim, i, eq},
            dim = TreeMasses`GetDimension[higgs];
            If[dim =!= Length[equation],
-              Print["Error: number of Higgs bosons != number of EWSB eqs."];
+              Print["Error: number of Higgs bosons (", dim,
+                    ") != number of EWSB eqs. (",Length[equation],")"];
               Quit[1];
              ];
            For[i = 1, i <= dim, i++,
@@ -89,11 +90,12 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
            freePhase = FindFreePhase[parameter, freePhases];
            gslInput = "gsl_vector_get(" <> gslIntputVector <> ", " <> ToString[index] <> ")";
            If[freePhase =!= Null,
-              result = "model->set_" <> parameterStr <> "(" <>
-                       "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <>
-                       "Abs(" <> gslInput <> "));\n";
+              result = Parameters`SetParameter[
+                  parameter,
+                  "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <> "Abs(" <> gslInput <> ")",
+                  "model"];
               ,
-              result = "model->set_" <> parameterStr <> "(" <> gslInput <> ");\n";
+              result = Parameters`SetParameter[parameter, gslInput, "model"];
              ];
            Return[result];
           ];
@@ -126,7 +128,7 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                result = result <> arrayName <> "[" <> ToString[i-1] <> "] = " <>
-                        ToValidCSymbolString[parametersFixedByEWSB[[i]]] <>
+                        CConversion`RValueToCFormString[parametersFixedByEWSB[[i]]] <>
                         ";\n";
               ];
            Return[result];
@@ -321,7 +323,7 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
 
 CreateTreeLevelEwsbSolver[solution_List] :=
     Module[{result = "", body = "",
-            i, par, expr, parStr, reducedSolution},
+            i, par, expr, parStr, oldParStr, reducedSolution},
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
@@ -335,16 +337,17 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = CConversion`ToValidCSymbolString[par];
+                  parStr = CConversion`RValueToCFormString[par];
+                  oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   result = result <>
-                           "const double old_" <> parStr <> " = " <> parStr <> ";\n";
+                           "const double " <> oldParStr <> " = " <> parStr <> ";\n";
                  ];
               result = result <> "\n";
               (* write solution *)
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = CConversion`ToValidCSymbolString[par];
+                  parStr = CConversion`RValueToCFormString[par];
                   result = result <> parStr <> " = " <>
                            CConversion`RValueToCFormString[expr] <> ";\n";
                  ];
@@ -353,7 +356,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               result = result <> "const bool is_finite = ";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
-                  parStr = CConversion`ToValidCSymbolString[par];
+                  parStr = CConversion`RValueToCFormString[par];
                   result = result <> "std::isfinite(" <> parStr <> ")";
                   If[i != Length[reducedSolution],
                      result = result <> " && ";
@@ -363,8 +366,9 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               body = "";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
-                  parStr = CConversion`ToValidCSymbolString[par];
-                  body = body <> parStr <> " = old_" <> parStr <> ";\n";
+                  parStr = CConversion`RValueToCFormString[par];
+                  oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
+                  body = body <> parStr <> " = " <> oldParStr <> ";\n";
                  ];
               body = body <> "error = 1;\n";
               result = result <>
@@ -379,14 +383,20 @@ CreateTreeLevelEwsbSolver[solution_List] :=
 
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
     Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
+           If[Length[equations] =!= Length[parameters],
+              Print["Error: SolveTreeLevelEwsbVia: trying to solve ",
+                    Length[equations], " equations for ", Length[parameters],
+                    " parameters ", InputForm[parameters]];
+              Quit[1];
+             ];
            simplifiedEqs = (# == 0)& /@ equations;
            solution = TimeConstrained[Solve[simplifiedEqs, parameters],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",
                     parameters, " uniquely"];
-              Print["Here are the EWSB equations we have: ", simplifiedEqs];
-              Print["Here is the solution we get: ", solution];
+              Print["Here are the EWSB equations we have: ", InputForm[simplifiedEqs]];
+              Print["Here is the solution we get: ", InputForm[solution]];
               Return[result];
              ];
            solution = solution[[1]]; (* select first solution *)
@@ -407,7 +417,8 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
                parStr = CConversion`ToValidCSymbolString[par];
                result = result <>
                "if (std::isfinite(new_" <> parStr <> "))\n" <>
-               IndentText[parStr <> " = new_" <> parStr <> ";"] <> "\n" <>
+               IndentText[CConversion`RValueToCFormString[par] <>
+                          " = new_" <> parStr <> ";"] <> "\n" <>
                "else\n" <>
                IndentText["error = 1;"] <> "\n";
                If[i < Length[solution],

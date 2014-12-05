@@ -59,7 +59,6 @@ private:
     void update_scale();
     void invert_seesaw_formula
     (const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
-     const Eigen::Vector3d& vSpectrum,
      Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv);
 };
 

@@ -1,10 +1,40 @@
-FlexibleSUSY-1.0.3 [not released yet]
+FlexibleSUSY-1.0.4 [not released yet]
+
+ * Add new user example program run_cmd_line_<model>.x to run a
+   parameter point using command line parameters instead of an SLHA
+   input file.
+
+ * Allow input parameters in first guesses of scale definitions, for
+   example
+   SUSYScaleFirstGuess = Sqrt[Sqrt[LHInput[mq2[3,3]] * LHInput[mu2[3,3]]]]
+
+ * Bugfix (commit 6f7d3de): allow plain model parameters for scale
+   definition, for example in the form SUSYScale = vu .
+
+ * Bugfix (commit 44baa73): allow model parameters in first guesses of
+   scale definitions, for example
+   SUSYScaleFirstGuess = Sqrt[mq2[3,3] * mu2[3,3]]
+
+FlexibleSUSY-1.0.3 [November, 21 2014]
+
+ * Allow selection of Higgs 2-loop contributions in SLHA input file
+
+ * Allow extra user-defined SLHA output blocks
+
+ * Allow user-defined matrix- or vector-like SLHA input parameters
 
  * Support low-energy quark flavour violation via CKM matrix
 
  * Bugfix (commit 5f78968): perform residual color contractions before
    stripping group factors.  Thanks to Philip Diessner and Wojciech
    Kotlarski.
+
+ * Bugfix (commit 7160095): Correcting check for tachyons in pole
+   masses of scalar particles, calculated with LowPrecision
+
+ * Bugfix (commit a7a33d3): Implement reading of data from multiple
+   SLHA blocks with the same name.  Subsequent block entries will
+   overwrite former entries.
 
 FlexibleSUSY-1.0.2 [July, 15 2014]
 

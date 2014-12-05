@@ -1,16 +1,16 @@
 
-#ifndef TEST_MSSM_H
-#define TEST_MSSM_H
+#ifndef TEST_CMSSM_H
+#define TEST_CMSSM_H
 
 #include "test.h"
 #include "softsusy.h"
-#include "MSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 
 using namespace flexiblesusy;
 
-void ensure_tree_level_ewsb(MSSM<Two_scale>& m)
+void ensure_tree_level_ewsb(CMSSM<Two_scale>& m)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222)
    const double vu = m.get_vu();
@@ -51,7 +51,7 @@ void ensure_tree_level_ewsb(MssmSoftsusy& softSusy)
    TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
 }
 
-void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
+void ensure_n_loop_ewsb(CMSSM<Two_scale>& m, int loop_level)
 {
    ensure_tree_level_ewsb(m);
 
@@ -65,7 +65,7 @@ void ensure_n_loop_ewsb(MSSM<Two_scale>& m, int loop_level)
    }
 }
 
-void ensure_one_loop_ewsb(MSSM<Two_scale>& m)
+void ensure_one_loop_ewsb(CMSSM<Two_scale>& m)
 {
    ensure_n_loop_ewsb(m, 1);
 }
@@ -82,7 +82,7 @@ void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)
    s.rewsb(signMu, mtrun, pars);
 }
 
-void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, MSSM_input_parameters& input)
+void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s, CMSSM_input_parameters& input)
 {
    input.m0 = 125.;
    input.m12 = 500.;
@@ -192,7 +192,7 @@ void setup_MSSM(MSSM<Two_scale>& m, MssmSoftsusy& s, MSSM_input_parameters& inpu
    s.calcDrBarPars();
 }
 
-void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& b)
+void test_parameter_equality(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
 {
    TEST_EQUALITY(a.displayLoops(), b.get_loops());
    TEST_EQUALITY(a.displayMu(), b.get_scale());
@@ -238,7 +238,7 @@ void test_parameter_equality(const SoftParsMssm& a, const MSSM_soft_parameters& 
    TEST_EQUALITY(a.displayHvev(), vev);
 }
 
-void copy_parameters(const MSSM<Two_scale>& mssm, MssmSoftsusy& softsusy)
+void copy_parameters(const CMSSM<Two_scale>& mssm, MssmSoftsusy& softsusy)
 {
    // copy base class parameters
    softsusy.setLoops(mssm.get_loops());

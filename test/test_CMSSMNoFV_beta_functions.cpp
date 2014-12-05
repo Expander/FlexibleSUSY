@@ -1,13 +1,13 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSMNoFV_beta_functions
+#define BOOST_TEST_MODULE test_CMSSMNoFV_beta_functions
 
 #include <boost/test/unit_test.hpp>
 
 #include "test.h"
-#include "test_MSSMNoFV.hpp"
-#include "MSSM_two_scale_model.hpp"
-#include "MSSMNoFV_two_scale_model.hpp"
+#include "test_CMSSMNoFV.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSMNoFV_two_scale_model.hpp"
 
 #define COMPARE_PARAMETERS(p) TEST_EQUALITY(a.get_##p(), b.get_##p());
 
@@ -60,23 +60,29 @@ void test_beta_function_equality(const T1& a, const T2& b)
    test_parameter_equality(beta_a, beta_b);
 }
 
-BOOST_AUTO_TEST_CASE( test_MSSMNoFV_beta_functions )
+BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_beta_functions )
 {
-   MSSMNoFV_input_parameters input;
-   MSSMNoFV<Two_scale> m1;
-   MSSM<Two_scale> m2;
-   setup_MSSM_models(m1, m2, input);
+   CMSSMNoFV_input_parameters input;
+   input.TanBeta = 10.;
+   input.m0 = 125.;
+   input.m12 = 200.;
+   input.SignMu = 1;
+   input.Azero = 0.;
 
-   test_parameter_equality(static_cast<MSSMNoFV_soft_parameters>(m1),
-                           static_cast<MSSM_soft_parameters>(m2));
+   CMSSMNoFV<Two_scale> m1;
+   CMSSM<Two_scale> m2;
+   setup_CMSSM_models(m1, m2, input);
+
+   test_parameter_equality(static_cast<CMSSMNoFV_soft_parameters>(m1),
+                           static_cast<CMSSM_soft_parameters>(m2));
    BOOST_REQUIRE(gErrors == 0);
    if (gErrors) {
       BOOST_FAIL("parameters are not equal");
       gErrors = 0;
    }
 
-   test_beta_function_equality(static_cast<MSSMNoFV_soft_parameters>(m1),
-                               static_cast<MSSM_soft_parameters>(m2));
+   test_beta_function_equality(static_cast<CMSSMNoFV_soft_parameters>(m1),
+                               static_cast<CMSSM_soft_parameters>(m2));
    BOOST_CHECK(gErrors == 0);
    if (gErrors) {
       BOOST_FAIL("beta functions are not equal");

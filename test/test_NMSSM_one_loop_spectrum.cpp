@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
 
    if (m.get_problems().have_problem()) {
       std::ostringstream ostr;
-      m.get_problems().print(ostr);
+      m.get_problems().print_problems(ostr);
       BOOST_FAIL(ostr.str());
    }
 
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )
 
    if (m.get_problems().have_problem()) {
       std::ostringstream ostr;
-      m.get_problems().print(ostr);
+      m.get_problems().print_problems(ostr);
       BOOST_FAIL(ostr.str());
    }
 

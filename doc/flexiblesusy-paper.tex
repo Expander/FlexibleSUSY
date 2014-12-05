@@ -51,6 +51,7 @@ bookmarks=true, linktocpage]{hyperref}
 \newcommand{\tabref}[1]{\tablename~\ref{#1}}
 \newcommand{\ptitle}[1]{\emph{#1}}
 \renewcommand{\ptitle}[1]{}
+\newcommand{\Zv}{\mathbf{\backslash}\mkern-11.0mu{Z}}
 \makeatletter
 \lstnewenvironment{numlstlisting}[1][]{%
   \lstset{%
@@ -86,6 +87,7 @@ bookmarks=true, linktocpage]{hyperref}
 \def\oabq{O(\ab^2)}
 \def\oatauq{O(\atau^2)}
 \def\oabatau{O(\ab \atau)}
+\def\oatplusabsq{O((\at+\ab)^2)}
 \def\oas{O(\as)}
 \def\oatauqatab{O(\atau^2 +\ab \atau )}
 
@@ -97,8 +99,8 @@ bookmarks=true, linktocpage]{hyperref}
 \author[adelaide]{Peter Athron}
 \author[valencia]{Jae-hyeon Park}
 \author[dresden]{Dominik St\"ockinger}
-\author[dresden]{Alexander Voigt\corref{cor1}}
-\ead{Alexander.Voigt@physik.tu-dresden.de}
+\author[desy]{Alexander Voigt\corref{cor1}}
+\ead{Alexander.Voigt@desy.de}
 \cortext[cor1]{Corresponding author}
 \address[adelaide]{ARC Centre of Excellence for Particle Physics at 
 the Tera-scale, School of Chemistry and Physics, University of Adelaide, 
@@ -108,6 +110,7 @@ Universitat de Val\`{e}ncia-CSIC,
 46100, Burjassot, Spain}
 \address[dresden]{Institut f\"ur Kern- und Teilchenphysik,
 TU Dresden, Zellescher Weg 19, 01069 Dresden, Germany}
+\address[desy]{Deutsches Elektronen-Synchrotron (DESY), 22607 Hamburg, Germany}
    
   \begin{abstract}
     We introduce \fs, a \mathematica and C++ package, which generates a fast,
@@ -181,11 +184,12 @@ ADP-14-17/T875
 
 \newpage
 \section{Introduction}
+
 Supersymmetry (SUSY) provides the only non-trivial way to extend the
 space-time symmetries of the Poincar\'e
 group, which still has scattering in the resulting quantum theory \cite{Coleman:1967ad,Haag:1974qh}. This leads many to suspect that
 SUSY may be realized in nature in some form. In particular
-supersymmetric extensions of the standard model (SM) where SUSY is broken
+supersymmetric extensions of the Standard Model (SM) where SUSY is broken
 at the TeV scale have been proposed to solve the hierarchy
 problem \cite{Weinberg:1975gm, Weinberg:1979bn, Gildener:1976ai,
   Susskind:1978ms, 'tHooft:1980xb}, allow gauge coupling
@@ -199,16 +203,20 @@ as the low energy effective models originating from string
 theory.
 
 Detailed phenomenological studies have been carried out for scenarios
-within the minimal supersymmetric standard model (MSSM).  Such work
-has been greatly aided by public spectrum generators for the MSSM
+within the minimal supersymmetric Standard Model (MSSM), for a review
+see \cite{Chung:2003fi}.  Such work has been greatly aided by public
+spectrum generators for the MSSM
 \cite{Allanach:2001kg,Porod:2003um,Djouadi:2002ze,Baer:1993ae,Chowdhury:2011zr},
 allowing fast and reliable exploration of the sparticle spectrum,
 mixings and couplings, which can be obtained from particular choices
 of breaking mechanism inspired boundary conditions and specified
 parameters. Beyond the MSSM there are also two public spectrum
-generators \cite{Ellwanger:2006rn,Allanach:2013kza} for the next to
-minimal supersymmetric standard model (NMSSM) \cite{NMSSM} (or for recent
-reviews see \cite{Ellwanger:2009dp,Maniatis:2009re}).
+generators \cite{Ellwanger:2004xm, Ellwanger:2005dv,
+  Ellwanger:2006rn,Ellwanger:2008py, Allanach:2013kza} for the next to
+minimal supersymmetric Standard Model (NMSSM)  (for
+recent reviews see \cite{Ellwanger:2009dp, Maniatis:2009re}).
+
+
 
 None of the fundamental motivations of supersymmetry require
 minimality, and specific alternatives to (or extensions of) the MSSM
@@ -229,7 +237,7 @@ Firstly low energy signatures expected from such models, such as the
 classic jets plus missing transverse energy signature, have not been
 observed, substantially raising the lower limit on sparticle masses
 (see e.g.~\cite{Aad:2013wta,Chatrchyan:2014lfa}). No other signature
-of beyond the standard model (BSM) physics has been observed, leaving
+of beyond the Standard Model (BSM) physics has been observed, leaving
 the fundamental questions which motivated BSM physics
 unanswered. Secondly ATLAS and CMS discovered \cite{ATLAS:2012ae,
   Chatrchyan:2012tx} a light Higgs of $125$ GeV, within the mass range
@@ -239,10 +247,12 @@ indirect limits that appears in constrained models from the
 significantly higher limits on first and second generation squarks.
 
 These developments motivate the exploration of non-minimal SUSY models
-which ameliorate the naturalness problems, as can happen in the \ESSM
-\cite{King:2005jy,King:2005my,King:2007uj,Athron:2010zz,Nevzorov:2012hs,Nevzorov:2013tta,Nevzorov:2013ixa}, USSM
-\cite{Fayet:1977yc,Suematsu:1994qm,Cvetic:1995rj,deCarlos:1997yv,Cvetic:1997ky,Demir:1998dk,Langacker:1998tc,Erler:2002pr,Choi:2006fz,Ham:2007wc,Langacker:2008yv,Ham:2008xf,Kalinowski:2008iq} or from other gauge extensions \cite{Batra:2003nj, Medina:2009ey, Bharucha:2013ela}, 
-by raising the tree level Higgs mass. At the same time they can also
+which ameliorate the naturalness problems by raising the tree level
+Higgs mass, as can happen in the USSM
+\cite{Fayet:1977yc,Cvetic:1997ky,Langacker:2008yv}, \ESSM
+\cite{King:2005jy,Athron:2010zz} and similar models
+\cite{Nevzorov:2012hs}, or from other gauge extensions
+\cite{Batra:2003nj, Bharucha:2013ela}. At the same time they can also
 motivate models that are developed with a fresh perspective, based on
 other considerations.  In both cases exploration of such models can be
 aided if it is possible to quickly create a fast spectrum generator.
@@ -337,7 +347,30 @@ been found the pole mass spectrum is eventually calculated using full
 one-loop self-energies (and leading two-loop Higgs self-energy
 contributions for the MSSM and NMSSM).
 
-\subsection*{Design goals}
+The standard input and output of the generated spectrum generator is
+the SLHA format \cite{Skands:2003cj,Allanach:2008qq}, which is
+intended for the communication between MSSM and NMSSM spectrum
+generators and observable calculators.  The user has control over the
+SLHA block names by editing the SARAH model files and may also add
+extra blocks in the \code{FlexibleSUSY.m} model file, as described in
+\secref{sec:modfile}.
+Internally, \fs uses the SLHAea library \cite{slhaea} to read and
+write the SLHA files.  The internally stored SLHAea object can be
+passed to other programs at the C++ level for inter program
+communication.
+We have tested that the HDECAY $3.4$ \cite{hdecay} and SDECAY $1.4$
+\cite{sdecay}, which are shipped with SUSY-HIT \cite{susyhit},
+understand the SLHA output of \fs and give matching output to that
+from Softsusy.
+%
+For models which go beyond the MSSM and NMSSM no fixed standard exists
+which specifies the spectrum generator input and output format.  For
+this reason, \fs allows the user to control the SLHA input and output
+blocks in order to simplify the process of passing the output of a
+custom \fs-generated spectrum generator to any private or new public
+tool developed for that model.
+
+\subsection{Design goals}
 
 Since the calculation of the pole mass spectrum in a SUSY model is a
 non-trivial task, \fs is designed with the following points in mind:
@@ -432,6 +465,28 @@ given in \secref{sec:tower construction}, where right-handed neutrinos
 are integrated out at the see-saw scale, between the SUSY and the GUT
 scale.
 
+\subsection{Current limitations and future extensions}
+Although we try to handle as many models as possible, there are still
+some limitations to what can be done. In its current form \fs assumes
+all couplings are real, therefore it is limited to $CP$-conserving
+versions of SUSY models.  Although it is implicit in the title, we
+would like to stress that currently we cannot provide a spectrum
+generator for non-SUSY models.  This also means that like other
+spectrum generators it is difficult to reliably predict the mass
+spectrum in extreme cases such as Split-SUSY
+\cite{Wells:2003tf,ArkaniHamed:2004fb,Giudice:2004tc}, where the mass
+scales of the SUSY model are drastically split, leading to very large
+logarithms which are not resummed.  In such cases the tower of
+effective theories offers the best possibility for a solution.
+However, for this to work \fs must be extended to include non-SUSY
+models.  Finally, the gauge group of the model is currently restricted
+to be semi-simple and to contain the Standard Model gauge group as
+factor, so that the SUSY model can be directly matched to the SM at
+low energies.
+%
+Future releases which extend \fs beyond each of these limitations are
+already planned.  
+
 \section{Quick start}
 \label{sec:download}
 
@@ -469,12 +524,12 @@ Optional:
 
 \fs can be downloaded as a gzipped tar file from
 \url{http://flexiblesusy.hepforge.org}.  To download and install
-version 1.0.1 run:
+version 1.0.3 run:
 %
 \begin{lstlisting}[language=bash]
-$ wget https://www.hepforge.org/archive/flexiblesusy/FlexibleSUSY-1.0.1.tar.gz
-$ tar -xf FlexibleSUSY-1.0.1.tar.gz
-$ cd FlexibleSUSY-1.0.1
+$ wget https://www.hepforge.org/archive/flexiblesusy/FlexibleSUSY-1.0.3.tar.gz
+$ tar -xf FlexibleSUSY-1.0.3.tar.gz
+$ cd FlexibleSUSY-1.0.3
 \end{lstlisting}%% $
 %
 A CMSSM spectrum generator can be created with the following three
@@ -548,8 +603,7 @@ Block MASS
 \label{sec:quick-start-alternative-models}
 
 \fs already comes with plenty of predefined models: the CMSSM (simply
-called \code{MSSM}), the NMSSM \cite{NMSSM} in it's $Z_3$-symmetric form (called \code{NMSSM}), $Z_3$-violating NMSSM (\code{SMSSM}), the USSM (\code{UMSSM})
-\cite{Fayet:1977yc,Suematsu:1994qm,Cvetic:1995rj,deCarlos:1997yv,Cvetic:1997ky,Demir:1998dk,Langacker:1998tc,Erler:2002pr,Choi:2006fz,Ham:2007wc,Langacker:2008yv,Ham:2008xf,Kalinowski:2008iq},
+called \code{MSSM}), the NMSSM in its $Z_3$-symmetric form (called \code{NMSSM}), $Z_3$-violating NMSSM (\code{SMSSM}), the USSM (\code{UMSSM}),
 the NUHM \ESSM (\code{E6SSM}) \cite{Athron:2007en}, the
 right-handed neutrino extended MSSM (\code{MSSMRHN}), the NUHM-MSSM
 (\code{NUHMSSM}) and the $R$-symmetric MSSM (\code{MRSSM})
@@ -678,7 +732,7 @@ HighScaleInput = {
    {MassG, m12}
 };
 
-SUSYScale = Sqrt[M[Su[1]]*M[Su[6]]];
+SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
@@ -722,6 +776,47 @@ DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
+
+(* optional *)
+ExtraSLHAOutputBlocks = {
+   {ALPHA, {{ArcCos[Pole[ZH[1,2]]]}}},
+   {HMIX , {{1, \[Mu]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {4, M[Ah[2]]^2},
+            {101, B[\[Mu]]},
+            {102, vd},
+            {103, vu} } },
+   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
+            {2, 2, T[Yu][2,2] / Yu[2,2]},
+            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
+   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
+            {2, 2, T[Yd][2,2] / Yd[2,2]},
+            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
+   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
+            {2, 2, T[Ye][2,2] / Ye[2,2]},
+            {3, 3, T[Ye][3,3] / Ye[3,3]} } },
+   {MSOFT, {{1, MassB},
+            {2, MassWB},
+            {3, MassG},
+            {21, mHd2},
+            {22, mHu2},
+            {31, Sqrt[ml2[1,1]]},
+            {32, Sqrt[ml2[2,2]]},
+            {33, Sqrt[ml2[3,3]]},
+            {34, Sqrt[me2[1,1]]},
+            {35, Sqrt[me2[2,2]]},
+            {36, Sqrt[me2[3,3]]},
+            {41, Sqrt[mq2[1,1]]},
+            {42, Sqrt[mq2[2,2]]},
+            {43, Sqrt[mq2[3,3]]},
+            {44, Sqrt[mu2[1,1]]},
+            {45, Sqrt[mu2[2,2]]},
+            {46, Sqrt[mu2[3,3]]},
+            {47, Sqrt[md2[1,1]]},
+            {48, Sqrt[md2[2,2]]},
+            {49, Sqrt[md2[3,3]]} } }
+};
 \end{lstlisting}
 %
 The first line \code{FSModelName = "@CLASSNAME@";} will be replaced
@@ -779,12 +874,16 @@ The meaning of the three constraints is the following:
 \item \emph{SUSY-scale constraint:} The SUSY-scale is the typical mass
   scale of the SUSY particle spectrum.  At this scale \fs imposes the
   EWSB conditions and calculates the pole mass spectrum.  The
-  SUSY-scale, $M_S$, is usually defined as $M_S =
-  \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$.  However, in the example
-  above, where sfermion flavour violation is enabled, it has the value
-  $M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}}$, where
-  $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the \DRbar\ masses of
-  the lightest and heaviest up-type squark, respectively.
+  SUSY-scale, $M_S$, is defined as
+  \begin{align}
+    M_S = \sqrt{\prod_{i=1}^6 m_{\tilde{u}_i}^{|(Z_u)_{i3}|^2 + |(Z_u)_{i6}|^2}} ,
+    \label{eq:definition_of_MS}
+  \end{align}
+  where $m_{\tilde{u}_i}$ is the \DRbar\ mass of the $i$th up-type
+  squark and $Z_u$ is the up-type squark mixing matrix.  The
+  definition \eqref{eq:definition_of_MS} is equivalent to the usual
+  choice $M_S = \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}$ without squark
+  flavour mixing.
 %
 \item \emph{Low-scale constraint:} The low-scale constraint is the
   constraint where the SUSY model is matched to the Standard Model.
@@ -891,38 +990,47 @@ the low- and high-scale using the variables
 respectively.  The gauge couplings will be guessed automatically at
 the low-scale from the known Standard Model parameters.
 
-\fs allows the user to add leading two-loop contributions to the CP-even Higgs
-tadpoles and self-energies.  For MSSM-like models (with two CP-even
-Higgs bosons, one CP-odd Higgs boson, one neutral Goldstone boson)
-these corrections can be enabled by setting \code{UseHiggs2LoopMSSM =
-  True} in the model file and by defining the effective $\mu$-term
-\code{EffectiveMu = \\[Mu]}.  This will add the zero-momentum
-corrections of the order $O(y_t^4 + y_b^2 y_t^2 + y_b^4)$, $O(y_t^2
-g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$ from
+\fs allows the user to add leading two-loop contributions to the
+$CP$-even and $CP$-odd Higgs self-energies as well as to the $CP$-even Higgs
+tadpoles.  For MSSM-like models (with two $CP$-even Higgs bosons, one
+$CP$-odd Higgs boson, one neutral Goldstone boson) routines for
+calculating these corrections will be generated by setting
+\code{UseHiggs2LoopMSSM = True} in the model file and by defining the
+effective $\mu$-term \code{EffectiveMu = \\[Mu]}.  This will add the
+zero-momentum corrections of the order $O(y_t^4 + y_b^2 y_t^2 +
+y_b^4)$, $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$, $O(y_\tau^4)$ from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}.
-For NMSSM-like models (with three CP-even Higgs bosons, two CP-odd
+For NMSSM-like models (with three $CP$-even Higgs bosons, two $CP$-odd
 Higgs bosons, one neutral Goldstone boson) the two-loop contributions
-are enabled by setting \code{UseHiggs2LoopNMSSM = True} and by
+are generated by setting \code{UseHiggs2LoopNMSSM = True} and by
 defining the effective $\mu$-term like \code{EffectiveMu = \\[Lambda]
   vS / Sqrt[2]}, for example.  This will add the zero-momentum
 corrections of the order $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ from
-\cite{Degrassi:2009yq}.  If one also wishes to include the MSSM contributions of the order $O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ as well
-\cite{Brignole:2001jy,Dedes:2003km} then one can also set both\footnote{Please note that with both of thse options set true it is the NMSSM corrections for $O(y_t^2 g_3^2)$, $O(y_b^2 g_3^2)$ which will be applied rather the the MSSM corrections for that order.} \code{UseHiggs2LoopMSSM = True} and \code{UseHiggs2LoopNMSSM = True}. 
+\cite{Degrassi:2009yq} and also the MSSM contributions of the order
+$O(y_\tau^4)$, $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ as well
+\cite{Brignole:2001jy,Dedes:2003km} which only represent a partial
+correction for that order in the NMSSM, but can be a good
+approximation when singlet mixing is very small\footnote{These
+  corrections may be disabled in the SLHA file, as described in
+  section \secref{sec:PoleMasses}.}.
 
- In the case of the NMSSM the default option is to have both flags set
- to true as we feel that it is valuable to have these MSSM corrections
- for scenarios where there singlet mixing is very small and in
- particular for cross checks against the MSSM when close to the MSSM
- limit of the model.  However in cases where the singlet mixing is
- large the result at $O(y_t^4 + y_t^2 y_b^2 + y_b^4)$ and
- $O(y_\tau^4)$ will not be complete and including these corrections
- could in principle even make the numerical result further away from
- the correct two loop result at that order if there is a cancellation
- with the missing contributions.  So while including such partial
- two-loop corrections is does not change the formal accuracy the user
- should choose whether or not to include these corrections based on
- the physics they study.  Similarly in models that go beyond the NMSSM
- the user must decide based the physics whether on not these
+ The corrections can then be used in the calculation of the Higgs
+ masses, when appropriate settings are selected in the SLHA file. Note
+ that even in the NMSSM the user must make an important decision as
+ to whether or not to enable the generated MSSM corrections which are
+ incomplete in the NMSSM.  We feel that it is valuable to have
+ these MSSM corrections for scenarios where singlet mixing is
+ very small and in particular for cross checks against the MSSM when
+ close to the MSSM limit of the model.  However in cases where the
+ singlet mixing is large the result at $O(y_t^4 + y_t^2 y_b^2 +
+ y_b^4)$ and $O(y_\tau^4)$ will not be complete and including these
+ corrections could in principle even make the numerical result further
+ away from the correct two loop result at that order if there is a
+ cancellation with the missing contributions.  So while including such
+ partial two-loop corrections does not change the formal accuracy
+ the user should choose whether or not to include these corrections
+ based on the physics they study.  Similarly in models that go beyond
+ the NMSSM the user must decide based the physics whether on not these
  corrections will give the leading two-loop corrections in their
  model.
 
@@ -944,6 +1052,70 @@ model file example above, the particles \code{Chi}, \code{Cha},
 \code{Glu}, \code{Sv}, \code{Su}, \code{Sd}, \code{Se} (neutralino,
 chargino, gluino, sneutrino, up-type squark, down-type squark,
 selectron) are considered to be LSP candidates.
+
+Finally, with the variable \code{ExtraSLHAOutputBlocks} the user can
+define extra SLHA output blocks.  The values of the block entries will
+be calculated at the output scale, which is specified in entry $12$ in
+the SLHA input block \code{MODSEL}.  In the example model file above
+the following six extra SLHA compliant output blocks are defined:
+\code{ALPHA}, \code{HMIX}, \code{Au}, \code{Ad}, \code{Ae} and
+\code{MSOFT}.  The \code{ALPHA} output block contains the CP-even
+Higgs pole mass mixing angle as the only entry.  The \code{HMIX}
+output block contains the $\mu$-parameter, the ratio $\tan\beta =
+v_u/v_d$, the combination $v=\sqrt{v_u^2 + v_d^2}$, the squared mass
+of the CP-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
+the values of $v_u$ and $v_d$, all defined in the \DRbar\ scheme.  In
+an analogous way four more output blocks for the soft-breaking \DRbar\
+parameters are defined.  For a CMSSM example parameter point with $m_0
+= 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$, $\tan\beta = 10$,
+$\sign\mu = +1$ and $A_0 = 0$ the \fs-generated CMSSM spectrum
+generator writes the so defined blocks to the output in the form
+%
+\begin{lstlisting}
+Block ALPHA Q= 8.76740936E+02
+           1.06784138E-01   # ArcCos(Pole(ZH(0,1)))
+Block HMIX Q= 8.76740936E+02
+     1     6.31218384E+02   # Mu
+     2     9.67312621E+00   # vu/vd
+     3     2.44053433E+02   # Sqrt(Sqr(vd) + Sqr(vu))
+     4     5.36777230E+05   # Sqr(MAh(1))
+   101     5.49048159E+04   # BMu
+   102     2.50962986E+01   # vd
+   103     2.42759663E+02   # vu
+Block Au Q= 8.76740936E+02
+  1  1    -1.14477419E+03   # TYu(0,0)/Yu(0,0)
+  2  2    -1.14476911E+03   # TYu(1,1)/Yu(1,1)
+  3  3    -8.83902977E+02   # TYu(2,2)/Yu(2,2)
+Block Ad Q= 8.76740936E+02
+  1  1    -1.40026447E+03   # TYd(0,0)/Yd(0,0)
+  2  2    -1.40025976E+03   # TYd(1,1)/Yd(1,1)
+  3  3    -1.30885006E+03   # TYd(2,2)/Yd(2,2)
+Block Ae Q= 8.76740936E+02
+  1  1    -3.00005426E+02   # TYe(0,0)/Ye(0,0)
+  2  2    -3.00000006E+02   # TYe(1,1)/Ye(1,1)
+  3  3    -2.98364373E+02   # TYe(2,2)/Ye(2,2)
+Block MSOFT Q= 8.76740936E+02
+     1     2.09018579E+02   # MassB
+     2     3.88257873E+02   # MassWB
+     3     1.11544211E+03   # MassG
+    21     1.09683411E+05   # mHd2
+    22    -3.85898988E+05   # mHu2
+    31     3.54416224E+02   # Sqrt(ml2(0,0))
+    32     3.54412891E+02   # Sqrt(ml2(1,1))
+    33     3.53407333E+02   # Sqrt(ml2(2,2))
+    34     2.22035720E+02   # Sqrt(me2(0,0))
+    35     2.22024873E+02   # Sqrt(me2(1,1))
+    36     2.18731935E+02   # Sqrt(me2(2,2))
+    41     1.02053367E+03   # Sqrt(mq2(0,0))
+    42     1.02053107E+03   # Sqrt(mq2(1,1))
+    43     9.40760849E+02   # Sqrt(mq2(2,2))
+    44     9.82565930E+02   # Sqrt(mu2(0,0))
+    45     9.82563167E+02   # Sqrt(mu2(1,1))
+    46     8.09126982E+02   # Sqrt(mu2(2,2))
+    47     9.77979392E+02   # Sqrt(md2(0,0))
+    48     9.77976666E+02   # Sqrt(md2(1,1))
+    49     9.73121951E+02   # Sqrt(md2(2,2))
+\end{lstlisting}
 
 \section{Structure of the spectrum generator}
 \label{sec:SpecGenStruct}
@@ -1054,7 +1226,7 @@ in form of a vector as well.
 All model parameters and their $\beta$-functions are contained in
 the first and second derived classes.  The structure of the
 $\beta$-functions of a general supersymmetric model
-\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,MV94,Fonseca:2011vn,Yam94,Sperling:2013eva,Sperling:2013xqa}
+\cite{Jones:1974pg,Jones:1983vk,West:1984dg,Martin:1993yx,Yamada:1993ga,Jack:1994kd,Jack:1994rk,Yam94,MV94,Fonseca:2011vn,Goodsell:2012fm,Sperling:2013eva,Sperling:2013xqa}
 allows to split these parameters into two classes:
 %
 \begin{enumerate}
@@ -1141,14 +1313,13 @@ condition classes are generated as follows:
 
 \item The \emph{SUSY-scale constraint} is intended to set boundary
   conditions at the mass scale $M_S$ of the SUSY particles.  The value
-  of $M_S$ is defined by the model file variable \code{SUSYScale}.  In
-  the example model file in \secref{sec:modfile} it is defined to be
-  $\sqrt{m_{\tilde{u}_1} m_{\tilde{u}_6}}$, where $m_{\tilde{u}_1}$ is
-  the mass of the lightest, and $m_{\tilde{u}_6}$ is the mass of the
-  heaviest up-type squark.  The \code{apply()} function for this
-  constraint sets the model parameters to the values defined in
-  \code{SUSYScaleInput}.  Afterwards, \code{apply()} solves the EWSB
-  equations at the loop level by adjusting the parameters given in
+  of $M_S$ is defined in the model file variable \code{SUSYScale}.  In
+  the example model file in \secref{sec:modfile} it is given by the
+  expression written in Eq.~\eqref{eq:definition_of_MS}.  The
+  \code{apply()} function for this constraint sets the model
+  parameters to the values defined in \code{SUSYScaleInput}.
+  Afterwards, \code{apply()} solves the EWSB equations at the loop
+  level by adjusting the parameters given in
   \code{EWSBOutputParameters} such that the effective Higgs potential
   is minimized.  See \secref{sec:ewsb} for a more detailed description
   of the EWSB in \fs.
@@ -1331,10 +1502,10 @@ fermion mass matrices are composed as
 %
 where the values for $m_{u,c,d,s,e,\mu}^{\userinput}$ are read from
 the \code{SMINPUTS} block of the SLHA input file \cite{Skands:2003cj}.
-The CKM mixing matrix is currently assumed to be diagonal.  The third
-generation quark masses are calculated in the \DRbar scheme from the
-SLHA user input quantities $m_t^\text{pole}$,
-$m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$ and
+The CKM mixing matrix is currently set to unity and $CP$-violating
+phases are set to zero.  The third generation quark masses are
+calculated in the \DRbar scheme from the SLHA user input quantities
+$m_t^\text{pole}$, $m_{b,\text{SM}}^{\text{\MSbar}}(M_Z)$ and
 $m_{\tau,\text{SM}}^{\text{\MSbar}}(M_Z)$ \cite{Skands:2003cj}.  In
 detail, the top quark \DRbar mass is calculated as
 %
@@ -1353,7 +1524,7 @@ where the $\Sigma_{t}$ is the top one-loop self-energy without QCD
 contributions.  The labels $L,R,S$ denote the left-, right- and
 non-polarized part of the self-energy.  The separated QCD corrections
 $\Delta m_t^{(1),\text{qcd}}$ and $\Delta m_t^{(2),\text{qcd}}$ are
-taken from \cite{Bednyakov:2002sf} and read
+taken from \cite{Avdeev:1997sz,Bednyakov:2002sf} and read
 %
 \begin{align}
   \Delta m_t^{(1),\text{qcd}} &= -\frac{g_3^2}{12 \pi^2} \left[5-3 \log\left(\frac{m_t^2}{\mu^2}\right)\right],\\
@@ -1368,7 +1539,7 @@ taken from \cite{Bednyakov:2002sf} and read
 \end{align}
 %
 The \DRbar mass of the bottom quark is calculated as
-\cite{Baer:2002ek,Skands:2003cj}
+\cite{Avdeev:1997sz,Baer:2002ek,Skands:2003cj}
 %
 \begin{align}
   m_{b,\text{susy}}^{\text{\DRbar}}(\mu) &=
@@ -1416,17 +1587,115 @@ EWSB consistency conditions are formulated in \fs at the one-loop
 level as
 %
 \begin{align}
-  0 = \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
+  0 &= \frac{\partial V^\text{tree}}{\partial v_i} - t_i,
+  & & (i=1,\ldots,N)
   \label{eq:one-loop-ewsb-eq}
 \end{align}
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
 VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
-tadpole diagram of $H_i$.  The electroweak symmetry breaking
-conditions \eqref{eq:one-loop-ewsb-eq} are solved simultaneously using
-the iterative multi-dimensional root finder algorithm
-\code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific Library
-(GSL).  If no root can be found, the
+tadpole diagram of $H_i$.  Already at the tree-level ($t_i = 0$) Eqs.\
+\eqref{eq:one-loop-ewsb-eq} can have multiple solutions, depending on
+which paramters are chosen to be fixed by these equations.  A
+well-known example is the real MSSM, where the $\mu$-parameter is
+chosen to be fixed by the EWSB equations.  In this model, the EWSB
+equations, Eqs.\ \eqref{eq:one-loop-ewsb-eq} can only determine
+$|\mu|$, while the sign of $\mu$ is not fixed.  This results in two
+solutions for $\mu$ of the form
+%
+\begin{align}
+  \mu = \sign\mu \cdot |\mu| .
+  \label{eq:EWSB-solution-for-mu}
+\end{align}
+%
+Currently, \fs handles only real model parameters and renormalizable
+theories, which restricts the number of possible multiple solutions of
+Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less or equal to $4N$.  In
+some cases, as for example in the real MSSM, the different solutions
+are related by one or more global signs for the parameters, as for example in
+Eq.~\eqref{eq:EWSB-solution-for-mu}.  \fs recognizes such cases and
+introduces these global signs as additional free parameters to allow
+the user to choose between the different solutions.  The case of the
+real MSSM Eq.~\eqref{eq:EWSB-solution-for-mu} is therefore handled
+automatically in \fs, because $\sign\mu$ is automatically introduced
+as an additional free parameter.
+
+If, however, the different solutions are not related by global signs,
+then \fs writes all solutions to the file
+\code{models/<model>/<model>_tree_level_EWSB_solution.m}.  The user
+has then the option to pick a particular solution by setting it in the
+\code{TreeLevelEWSBSolution} variable in the model file.  This is for
+example the case in the $Z_3$-violating NMSSM (\code{SMSSM}), which is shipped with \fs, where
+$\mu$ is chosen to be fixed by the EWSB equations: There the
+tree-level solution for $\mu$ has the form
+%
+\begin{align}
+  \mu = -\frac{v_s \lambda}{\sqrt{2}} + \sign X \cdot \sqrt{\ldots}
+\end{align}
+%
+with $\sign X$ as free parameter.  When \fs solves the tree-level EWSB
+equations for $\mu$, $B\mu$ and $\xi_S$ it finds the two solutions and
+writes them to \code{models/SMSSM/SMSSM_tree_level_EWSB_solution.m} in
+the form
+%
+\begin{lstlisting}[language=Mathematica]
+{
+   {{B[\[Mu]] -> ...}},
+   {
+      {\[Mu] -> (-20*Sqrt[2]*vd*vS*(\[Lambda] + conj[\[Lambda]])
+                 - Sqrt[...])/(80*vd)},
+      {\[Mu] -> (-20*Sqrt[2]*vd*vS*(\[Lambda] + conj[\[Lambda]])
+                 + Sqrt[...])/(80*vd)}
+   },
+   {{L[L1] -> ...}}
+}
+\end{lstlisting}
+%
+In the above solutions the dots stand for the full expression, which
+is left out here for better readability.  Inspecting the two above
+solutions for $\mu$, one finds that both can be parametrized by an
+additional free sign in front of the \code{Sqrt[...]}.  The user can
+now introduce an additional free sign by hand in the \code{MINPAR}
+block
+%
+\begin{lstlisting}[language=Mathematica]
+MINPAR = {
+   {1, m0},
+   {2, m12},
+   {3, TanBeta},
+   {4, Sign[X]},  (* <-- additional free sign *)
+   {5, Azero}
+};
+\end{lstlisting}
+%
+and set the the tree-level solution, parametrized in terms of
+\code{Sign[X]}, in the \code{TreeLevelEWSBSolution} variable in
+the model file:
+%
+\begin{lstlisting}
+TreeLevelEWSBSolution = {
+   { B[\[Mu]], ... },
+   { \[Mu], (-20*Sqrt[2]*vd*vS*(\[Lambda] + conj[\[Lambda]])
+             + Sign[X] * Sqrt[...])/(80*vd) },
+   { L[L1], ... }
+};
+\end{lstlisting}
+%
+One can now choose between the two solutions by setting entry $4$ in
+the \code{MINPAR} block of the SLHA input file to either $+1$ or $-1$.
+See \code{model_files/SMSSM/FlexibleSUSY.m.in} for a complete example
+model file.  If the user decides to not pick a particular solution by
+leaving the variable \code{TreeLevelEWSBSolution} empty, \fs tries to
+find a solution to the tree-level EWSB equations numerically via an
+iteration.  In this case, however, the user does not have the option
+to choose between the different solutions.
+
+%
+If a solution of the tree-level EWSB equations has been found, the
+one-loop equations \eqref{eq:one-loop-ewsb-eq} are solved
+simultaneously using the iterative multi-dimensional root finder
+algorithm \code{gsl_multiroot_fsolver_hybrid} from the GNU Scientific
+Library (GSL).  If no root can be found, the
 \code{gsl_multiroot_fsolver_hybrids} algorithm is tried as
 alternative, which uses a variable step size but might be a little
 slower.
@@ -1679,10 +1948,10 @@ actual iteration starts
   \item Calculate the \DRbar\ mass spectrum.
   \item Recalculate the SUSY-scale $M_S$ as
     \begin{align}
-      M_S = \sqrt{m_{\tilde{u}_1}m_{\tilde{u}_6}},
+      M_S = \sqrt{\prod_{i=1}^6 m_{\tilde{u}_i}^{|(Z_u)_{i3}|^2 + |(Z_u)_{i6}|^2}} ,
     \end{align}
-    where $m_{\tilde{u}_1}$ and $m_{\tilde{u}_6}$ are the lightest and
-    heaviest up-type squarks, respectively.
+    where $m_{\tilde{u}_i}$ is the \DRbar\ mass of the $i$th up-type
+    squark.
   \item Impose the SUSY-scale constraint (\code{SUSYScaleInput}).  In
     the example above, this step is trivial since
     \code{SUSYScaleInput} is set to be empty.
@@ -1801,7 +2070,7 @@ $\Sigma_f(p^2)$ as
     + \Big( \Sigma_\chi^{L,T}(p^2) + \Sigma_\chi^R(p^2) \Big) m_{\chi} \notag \\
     &&&\phantom{= m_{\chi} - \frac{1}{2}\Big[}
     + m_{\chi} \Big( \Sigma_\chi^L(p^2) + \Sigma_\chi^{R,T}(p^2) \Big)
-  \Big], \\
+  \Big], \label{eq:majorana-loop-corrections} \\
   &\text{Dirac fermions } \psi: &
   m_{\psi,1L}(p^2) &= m_{\psi}
   - \Sigma_\psi^S(p^2)
@@ -1814,13 +2083,41 @@ one-loop mass matrix $m_{f,1L}(p^2)$.  However, since $m_{f,1L}(p^2)$
 depends on the momentum $p$, an iteration over $p$ must be performed.
 Since this iteration can be very time consuming for large field
 multiplets, \fs provides two approximative procedures with a shorter
-run-time.  The used procedure can be set in the model file for each
-field.  These approximations work as follows:
+run-time in addition to the iterative procedure.  In the \fs model
+file the two approximative procedures are called \code{LowPrecision}
+and \code{MediumPrecision}.  The iterative procedure is called
+\code{HighPrecision}.  The procedure to be used can be set in the
+model file for each field.  The default setting is
+%
+\begin{lstlisting}
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh, Ah, Hpm};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+\end{lstlisting}
+%
+In the variable \code{DefaultPoleMassPrecision} the default pole mass
+calculation precision to be used for all particles is selected.
+Possible values are \code{LowPrecision}, \code{MediumPrecision} and
+\code{HighPrecision}.  The values \code{LowPrecision} and
+\code{MediumPrecision} correspond to the two approximations described
+below and \code{HighPrecision} corresponds to the iterative
+determination of the pole masses.  In the variables
+\code{HighPoleMassPrecision}, \code{MediumPoleMassPrecision} and
+\code{LowPoleMassPrecision} the pole mass calculation precision can be
+changed for individual particles.  The settings in these variables
+overwrite the setting in \code{DefaultPoleMassPrecision} for these
+particles.  In the above example the pole masses of all particles are
+calculated with \code{MediumPrecision}, except for the Higgs boson
+pole masses, which are calculated with the iterative procedure
+(\code{HighPrecision}).
+
+The three different pole mass calculation procedures work as follows:
 %
 \begin{itemize}
-\item \code{LowPoleMassPrecision}: This option provides the
-  lowest precision but is also the fastest one.  Here the one-loop
-  mass matrix $m_{f,1L}^\text{low}$ is calculated exactly once as
+\item \code{LowPrecision}: This option provides the lowest precision
+  but is also the fastest one.  Here the one-loop mass matrix
+  $m_{f,1L}^\text{low}$ is calculated exactly once as
 %
   \begin{align}
     \forall i,j: (m_{f,1L}^\text{low})_{ij} = (m_{f,1L}(p^2 = m_{f_i}
@@ -1830,12 +2127,23 @@ field.  These approximations work as follows:
   where $m_{f_i}$ is the $i$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, $m_{f,1L}^\text{low}$ is diagonalized and
   the eigenvalues are interpreted as pole masses $m_{f_i}^\pole$.
-  This method neglects what are formally of two-loop order.  This
-  method is imprecise if the self-energy corrections to the mass
-  matrix are large or the tree-level mass spectrum of the multiplet is
-  very split.
+  This method neglects terms of the form
+  %
+  \begin{align}
+    \left[(m_{f_k}^\pole)^2 - m_{f_i}m_{f_j}\right]
+    \left.\frac{\partial m_{f,1L}(p^2)}{\partial
+        p^2}\right|_{p^2=m_{f_i}m_{f_j}} ,
+  \end{align}
+  %
+  which are formally of two-loop order.  The method is imprecise if
+  the self-energy corrections to the mass matrix are large or the
+  tree-level mass spectrum of the multiplet is very split.  Note: We
+  strongly discourage the use of this method for the determination of the
+  Higgs pole masses, as the result will be very imprecise due to the
+  large loop corrections.  \fs will print a warning if this method is
+  used for any Higgs boson.
 
-\item \code{MediumPoleMassPrecision} (default): This option
+\item \code{MediumPrecision} (default): This option
   provides calculation with medium precision with a medium execution
   time.  Here the one-loop mass matrix $m_{f,1L}^\text{medium}$ is
   calculated $n$ times as
@@ -1848,16 +2156,25 @@ field.  These approximations work as follows:
   where $m_{f_k}$ is the $k$th mass eigenvalue of the tree-level mass
   matrix $m_f$.  Afterwards, each mass matrix
   $(m_{f,1L}^\text{medium})^{(k)}$ is diagonalized and the $k$th
-  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.  This method
-  is imprecise if the self-energy corrections to the mass matrix are
-  large.
+  eigenvalue is interpreted as pole mass $m_{f_k}^\pole$.  Thereby for
+  the $k$th eigenvalue two-loop terms of the form
+  %
+  \begin{align}
+    \left[(m_{f_k}^\pole)^2 - m_{f_k}^2\right] \left.\frac{\partial
+        m_{f,1L}(p^2)}{\partial p^2}\right|_{p^2=m_{f_k}^2}
+  \end{align}
+  %
+  are neglected.  This method is imprecise if the self-energy
+  corrections to the mass matrix are large.  Note, that this method is
+  used in Softsusy to calculate the pole masses of the non-Higgs
+  fields.
 
-\item \code{HighPoleMassPrecision}: This option solves
+\item \code{HighPrecision}: This option solves
   Eq.~\eqref{eq:pole-mass-def} exactly by iterating over the momentum
   $p$.  It therefore provides the determination of the pole masses
   with highest precision, but has also the highest execution time.
   Here the one-loop mass matrix $m_{f,1L}^\text{high}$ is diagonalized
-  $n$ times, as in the case of \code{MediumPoleMassPrecision},
+  $n$ times, as in the case of \code{MediumPrecision},
   resulting in $n$ pole masses $m_{f_k}^\pole$ ($k = 1,\ldots,n$).
   Afterwards, the diagonalization is repeated, this time using the
   calculated pole masses $m_{f_k}^\pole$ for the momentum calculation
@@ -1865,42 +2182,139 @@ field.  These approximations work as follows:
   reached.
 \end{itemize}
 %
-If higher accuracy is required, two-loop corrections to the
-self-energies can be added by setting \code{UseHiggs2LoopMSSM = True}
-in the MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the
-model file.  The former enables two-loop Higgs FORTRAN routines
-supplied by P.~Slavich from
+A numerical comparison of the three different methods for a specific
+CMSSM parameter point can be found in
+\tabref{tab:pole-mass-precision-comparison}.  One finds that
+%
+(i) the calculated lightest $CP$-even Higgs pole mass, $m_h$, differs
+about $2\unit{GeV}$ between \code{MediumPrecision} and
+\code{HighPrecision}, due to large loop corrections.  Since the
+experimental Higgs mass uncertainty is currently around
+$0.4\unit{GeV}$ \cite{Beringer:1900zz}, we strongly recommend the use
+of \code{HighPrecision} to calculate the Higgs pole mass (this is the
+default).  Especially, if two-loop contributions to the Higgs tadpoles
+and self-energies are added \code{MediumPrecision} must not be used,
+because it neglects terms of two-loop order.  The Higgs boson mass for
+the \code{LowPrecision} method is not given in the table, as it will
+lead to an imprecise result and is therefore strongly discouraged to
+be used, see \secref{sec:PoleMasses}.
+%
+(ii) The gluino pole mass, $m_{\tilde{g}}$, is given in the second
+row.  Since the gluino does not mix with other particles, there is no
+difference between \code{LowPrecision} and \code{MediumPrecision}.
+Not neglecting the two-loop terms by using \code{HighPrecision}
+increases the gluino mass about $1\unit{\%}$ for this parameter point.
+%
+(iii) The pole masses of the lightest and heaviest neutralinos,
+$m_{\tilde{\chi}_1^0}$ and $m_{\tilde{\chi}_4^0}$, are given in the rows
+$3$--$4$.  Since the
+momentum-dependent loop-corrections to the lightest neutralino mass
+are small for this parameter point, its pole mass varies only in the
+sub-GeV range between the three methods.  However, the run-time of the
+\code{LowPrecision} method is more than a factor $10$ smaller than of
+the \code{HighPrecision}, due to the complicated structure of the loop
+corrections in Eq.~\eqref{eq:majorana-loop-corrections}.
+%
+(iv) The pole masses of the lightest sfermions are given in rows
+$5$--$7$.  Since these particles are contained in $6$-plets, the
+run-time for the calculation of their pole masses is dramatically
+increased by around a factor $20$ between \code{LowPrecision} and
+\code{HighPrecision}.  However, since the change in the lightest
+sfermion masses between the three different methods is less than
+$\unit{0.4\%}$, one can consider calculating them with
+\code{MediumPrecision} only.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    & \code{LowPrecision}
+    & \code{MediumPrecision}
+    & \code{HighPrecision}\\
+    \midrule
+    $m_h$
+    & --
+    & $128.3\unit{GeV}$ ($2.45\unit{ms}$)
+    & $126.3\unit{GeV}$ ($9.53\unit{ms}$) \\
+    $m_{\tilde{g}}$
+    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
+    & $10167\unit{GeV}$ ($0.10\unit{ms}$)
+    & $10251\unit{GeV}$ ($0.38\unit{ms}$) \\
+    $m_{\tilde{\chi}_1^0}$
+    & $2295\unit{GeV}$ ($4.17\unit{ms}$)
+    & $2295\unit{GeV}$ ($16.1\unit{ms}$)
+    & $2295\unit{GeV}$ ($64.2\unit{ms}$) \\
+    $m_{\tilde{\chi}_4^0}$
+    & $4181\unit{GeV}$ ($4.17\unit{ms}$)
+    & $4174\unit{GeV}$ ($16.1\unit{ms}$)
+    & $4174\unit{GeV}$ ($64.2\unit{ms}$) \\
+    $m_{\tilde{u}_1}$
+    & $8703\unit{GeV}$ ($2.45\unit{ms}$)
+    & $8714\unit{GeV}$ ($14.9\unit{ms}$)
+    & $8734\unit{GeV}$ ($58.5\unit{ms}$) \\
+    $m_{\tilde{d}_1}$
+    & $10442\unit{GeV}$ ($2.48\unit{ms}$)
+    & $10391\unit{GeV}$ ($15.0\unit{ms}$)
+    & $10418\unit{GeV}$ ($59.9\unit{ms}$) \\
+    $m_{\tilde{e}_1}$
+    & $7913\unit{GeV}$ ($1.94\unit{ms}$)
+    & $7909\unit{GeV}$ ($11.2\unit{ms}$)
+    & $7909\unit{GeV}$ ($34.1\unit{ms}$) \\
+    \bottomrule
+  \end{tabular}
+  \caption{Comparison of pole masses with different calculation
+    methods for the CMSSM with $m_0=8\unit{TeV}$, $M_{1/2}=A_0=5\unit{TeV}$,
+    $\tan\beta=20$, $\sign\mu=+1$.  In brackets the time used to calculate
+    the pole masses of the whole multiplet is given.}
+  \label{tab:pole-mass-precision-comparison}
+\end{table}
+%
+
+For the Higgs states two-loop corrections to the self-energies can
+optionally be added by setting \code{UseHiggs2LoopMSSM = True} in the
+MSSM or \code{UseHiggs2LoopNMSSM = True} in the NMSSM in the model
+file.  The former provides routines that call the two-loop Higgs
+FORTRAN routines supplied by P.~Slavich from
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km}
-which add two-loop corrections of $\oatas$, $\oabas$, $\oatq$,
-$\oabq$, $\oatauq$ and $\oatab$.  The latter adds corrections
-calculated in the NMSSM at $\oatas$, $\oabas$ from
-\cite{Degrassi:2009yq}. If wants to include the $\oatq$, $\oabq$,
-$\oatauq$ and $\oatab$ the MSSM pieces are used though it NMSSM
-corrections at $\oatas$, $\oabas$ along with the MSSM corrections at
-$\oatq$, $\oabq$, $\oatauq$ and $\oatab$ then both flags
-\code{UseHiggs2LoopMSSM} and \code{UseHiggs2LoopNMSSM} should be set
-to \code{True}.  Since the Higgs mass is a very important measurement
-and the two-loop corrections can be larger than the current
-experimental error \cite{Degrassi:2009yq} we recommend to set these
-switches to \code{True} in any MSSM-\footnote{In \fs a model is
-  MSSM-like if (i) its superpotential is approximately given by the
-  MSSM one, (ii) it implements $R$-parity conservation or something
-  equivalent, and (iii) contains two CP-even and CP-odd Higgs bosons,
-  where one CP-odd Higgs boson may be a Goldstone boson, all with an
-  MSSM-like coupling to $t$, $b$ and $\tau$.} and
-NMSSM-like\footnote{In \fs a model is NMSSM-like if (i) its
-  superpotential is approximately given by the NMSSM one, (ii) it
+for calculating corrections of $\oatas$, $\oabas$, $\oatq$, $\oabq$,
+$\oatauq$ and $\oatab$.  The latter adds corrections calculated in the
+NMSSM at $\oatas$, $\oabas$ from \cite{Degrassi:2009yq} and partial
+corrections for the order $\oatq$, $\oabq$, $\oatauq$ and $\oatab$
+from the MSSM.  These corrections can then be included in the
+calculation of the Higgs pole masses when running the spectrum
+generator by setting the appropriate SLHA flags.
+
+When two-loop corrections have been enabled in the SLHA file by
+setting entry $4$ of the \code{FlexibleSUSY} block to $2$ the user may
+also select individual corrections.  The \code{FlexibleSUSY} block
+entries $9$, $10$, $11$ and $12$, correspond to two-loop corrections
+of the order $\oatas$, $\oabas$, $\oatplusabsq$ and $\oatauq$
+respectively and will be disabled when the corresponding entry is set
+to zero.  In this way, for example, in the NMSSM the user may decide
+not to use the partial corrections at order $\oatplusabsq$ and
+$\oatauq$, all of which have only been computed in the MSSM.
+
+Since the Higgs mass is a very important measurement and the two-loop
+corrections can be larger than the current experimental error
+\cite{Degrassi:2009yq} we recommend to set these switches to
+\code{True} in any MSSM-\footnote{In \fs a model is MSSM-like if (i)
+  its superpotential is approximately given by the MSSM one, (ii) it
   implements $R$-parity conservation or something equivalent, and
-  (iii) contains three CP-even and CP-odd Higgs bosons, where one or
-  two CP-odd Higgs bosons may be Goldstone bosons, all with an
-  NMSSM-like coupling to $t$, $b$ and $\tau$\@.  Examples for
-  NMSSM-like models are the USSM and the \ESSM.} model.  However in
-such models the user should still consider whether these corrections
-are really the leading corrections in the model or if there are other
-potentially large two-loop corrections.  For models
-with a more extended Higgs sector we recommend that the leading log
-two-loop corrections are estimated by generalizing those of the MSSM
-or NMSSM.
+  (iii) contains two $CP$-even and $CP$-odd Higgs bosons, where one $CP$-odd
+  Higgs boson may be a Goldstone boson, all with an MSSM-like coupling
+  to $t$, $b$ and $\tau$.} and NMSSM-like\footnote{In \fs a model is
+  NMSSM-like if (i) its superpotential is approximately given by the
+  NMSSM one, (ii) it implements $R$-parity conservation or something
+  equivalent, and (iii) contains three $CP$-even and $CP$-odd Higgs
+  bosons, where one or two $CP$-odd Higgs bosons may be Goldstone
+  bosons, all with an NMSSM-like coupling to $t$, $b$ and $\tau$\@.
+  Examples for NMSSM-like models are the USSM and the \ESSM.} model.
+However in such models the user should still consider whether these
+corrections are really the leading corrections in the model or %if
+there are other potentially large two-loop corrections which are
+missing.  For models with a more extended Higgs sector we recommend
+that the leading log two-loop corrections are estimated by
+generalizing those of the MSSM or NMSSM.
 
 \section{Flexible Applications}
 \label{sec:Flexible}
@@ -2024,6 +2438,7 @@ it installs them into the model directory.  The argument to
 \code{--slha-input-file=} in line 4 has been thus created.
 
 \subsubsection{Extending existing models}
+\label{sec:extending existing models}
 
 The preceding example was a modest alteration of a physics scenario
 in that an existing model has been reused.
@@ -2031,13 +2446,17 @@ A more non-trivial modification might involve
 an extension of the particle content as well as the interactions.
 One of the simplest classes of models beyond the MSSM is
 those with additional gauge-singlet fields.
-In what follows, a supersymmetric type-I see-saw model
+In what follows, a supersymmetric type-I see-saw scenario
 \cite{see-saw} 
-shall be considered in which
-three neutral (heavy) chiral superfields are introduced.
+shall be considered.
+For this, two extensions of the MSSM are introduced:
+MSSMRHN with three extra neutral (heavy) chiral superfields,
+and MSSMD5O with the dimension-5 neutrino mass operator
+added to the superpotential.
+Both models are included in the package.
 
 % To create a new model, one should name it.
-In the package, this model is named \code{MSSMRHN}, standing for
+The name MSSMRHN of the first model stands for
 the MSSM plus right-handed neutrinos.
 % Since \fs needs the outcome of \sarah,
 One needs to prepare an input file to \sarah which might be placed in
@@ -2142,26 +2561,75 @@ in \code{model_files/MSSMRHN/}.
 The high-scale boundary conditions therein might read:
 \begin{numlstlisting}
 HighScaleInput = {
-  {Mv, LHInput[Mv]}, {B[Mv], LHInput[B[Mv]]},
-  {Yv, LHInput[Yv]}, {T[Yv], Azero*Yv},
   {mv2, UNITMATRIX[3] m0^2},
+  {T[Yv], Azero*Yv},
+  {B[Mv], LHInput[B[Mv]]},
   ...
 };
 \end{numlstlisting}
-In this particular example,
-the new parameters shown in lines 2--3
-are constrained at the $M_X$ scale
-to the values given in the SLHA input file.
-In a data-driven approach,
-they might alternatively be fixed from a matching against
-a low-energy theory containing the dimension-5
-neutrino mass operator in conjunction with supplementary constraints.
+
+The second model is called MSSMD5O, standing for
+the MSSM including the dimension-5 operator.
+Obviously, one can compose it by adding
+the additional term to the superpotential in \code{MSSMD5O.m}:
+\begin{numlstlisting}
+SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd \
+               + WOp/2 l.Hu.l.Hu;
+\end{numlstlisting}
+where line 2 contains the dimension-5 operator
+multiplied by its coeffficient matrix \code{WOp}.
+The declarations of the neutrino Dirac spinors and mixing are
+very similar to those in the MSSMRHN,
+except that \code{FvR} is absent.
+
+One can specify the low-scale constraints on \code{WOp}
+in \code{model_files/MSSMRHN/FlexibleSUSY.m.in}:
+\begin{numlstlisting}
+EXTPAR = {
+  {1, mv1}, {2, mv2}, {3, mv3},
+  {4, ThetaV12}, {5, ThetaV13}, {6, ThetaV23},
+  {7, YvDiag1}, {8, YvDiag2}, {9, YvDiag3}
+};
+
+UPMNS = Module[{
+    s12 = Sin @ ThetaV12, c12 = Cos @ ThetaV12,
+    s13 = Sin @ ThetaV13, c13 = Cos @ ThetaV13,
+    s23 = Sin @ ThetaV23, c23 = Cos @ ThetaV23
+  },
+  {{  c12 c13              ,  s12 c13              , s13     },
+   { -s12 c23 - c12 s23 s13,  c12 c23 - s12 s23 s13, s23 c13 },
+   {  s12 s23 - c12 c23 s13, -c12 s23 - s12 c23 s13, c23 c13 }}
+];
+
+mv = conj[UPMNS].DiagonalMatrix[{mv1, mv2, mv3}].Transpose[conj @ UPMNS];
+
+LowScaleInput = Join[
+  { (* MSSM low-scale constraints *) },
+  Flatten[Table[{WOp[i,j], mv[[i,j]] / (vu/Sqrt[2])^2}, {i,3}, {j,3}], 1]
+];
+
+InitialGuessAtLowScale = Join[
+  { (* MSSM initial guesses at low scale *) },
+  Flatten[Table[{WOp[i,j], mv[[i,j]] / (vu/Sqrt[2])^2}, {i,3}, {j,3}], 1]
+];
+\end{numlstlisting}
+The \code{EXTPAR} list contains the input parameters
+to be read from the corresponding SLHA block.
+The low-energy neutrino mass eigenvalues and mixing angles are
+declared in lines 2--3.
+They are followed by the neutrino Yukawa eigenvalues,
+which shall be used as part of the matching condition
+described in \ref{sec:tower construction}.
+The constraint on and the initial guess of \code{WOp}
+in lines 21 and 26 should be self-explanatory.
 
 With the above set of input files,
-\fs can generate the C++ code and compile it
-to produce \code{libMSSMRHN}.
-These products shall be employed as the implementation of the theory that
-underlies the MSSM in the next subsection.
+\fs can generate the C++ class libraries,
+\code{libMSSMRHN} and \code{libMSSMD5O}\@.
+These products shall be employed as the two effective theories
+in the implementation of the see-saw mechanism.
+To this end, one further needs to code at the C++ level,
+as explained in the next subsection and \ref{sec:tower construction}.
 
 \subsection{Adapting C++ code}
 \label{sec:adapting-cpp-code}
@@ -2172,11 +2640,342 @@ To unlock the full potential of \fs,
 it is an advantage not to avoid programming at the C++ level.
 For this, it should help to have working knowledge about the basic structure
 of a spectrum generator, set out in \secref{sec:SpecGenStruct}.
-In what follows,
-it shall be demonstrated that
+In \ref{sec:examples of c++ code adaptation},
+two examples are presented for demonstrating that
 the clean class structure serves as firm guidance on the job.
 
-\subsubsection{Stacking models in a tower of effective theories}
+The first project in \ref{sec:tower construction} is
+to build a spectrum generator that can handle
+a tower of multiple effective field theories.
+The aim is to take a first step towards
+a study of slepton-mediated lepton flavour violation
+due to radiative corrections in the type-I supersymmetric see-saw model
+\cite{Borzumati:1986qx}.
+To this end, \code{MSSMRHN} is stacked on top of \code{MSSMD5O}.
+The preparation of these two models has been covered in
+\secref{sec:extending existing models}.
+
+Since each model class has its own $\beta$-functions,
+the spectrum generator contains two different sets of RGEs
+that are connected by a matching object.
+The program shall accept
+the low-energy neutrino masses and mixing angles
+which determine \code{WOp}, the coefficients
+of the $L H_u L H_u$ operator.
+These $6 \times 6$ coefficients evolve to
+the right-handed neutrino mass scale at which
+they are matched to the neutrino Yukawa couplings \code{Yv} and
+the right-handed neutrino masses \code{Mv}.
+Since there are more degrees of freedom in the pair of
+\code{Yv} and \code{Mv} than in \code{WOp},
+one needs supplementary conditions in addition to the see-saw relation.
+In the presented matching code, it is assumed that all mixing in \code{WOp}
+stems from the left-handed rotation of \code{Yv} whose eigenvalues are
+fixed to those specified by the user.
+The non-trivial flavour structure of the neutrino Yukawa couplings then
+causes running slepton mass matrices to acquire flavour-violating elements.
+The output from the spectrum generator includes
+the slepton mass matrices as well as
+the resulting mass eigenvalues and mixing.
+One might pass this outcome on to another routine
+to calculate rates of lepton flavour violating processes.
+
+For brevity,
+threshold corrections are ignored
+in the specimen matching code connecting the two models
+as well as in the low-scale boundary condition on \code{WOp}
+from the neutrino oscillation data.
+Therefore, the result maintains only the accuracy of one-loop RGEs,
+even though two-loop $\beta$-functions are computed by each model class.
+For a full accuracy of two-loop RGEs, one can incorporate the omitted
+one-loop corrections into the constraint classes.
+The way to implement them should be self-evident from the code structure.
+
+The second project in \ref{sec:integrating-custom-built} shows
+% is essentially all that is needed
+how one can employ new spectrum generator components,
+which may be composed from scratch or through
+a linkage to external routines.
+In the procedure,
+it would be noticed that there is an evident limit on the scope of
+modules which one has to deal with.
+For instance, it is clear from the outset
+that one does not have to go through the code of the central
+fixed-point iteration engine, \code{RGFlow}.
+This manifests the power of the clear separation among objects
+each with its well-defined distinct role.
+This is just like the fact that one does not need to access the internals
+of the \code{std::sort} function in the C++ Standard Library.
+It might be entertaining to complete the analogy by
+mapping the model objects in \code{RGFlow}
+to the elements that \code{std::sort} sorts
+and the boundary condition objects
+to the comparator function.
+
+
+\section{Tests and comparisons with other spectrum generators}
+\label{sec:comparison}
+
+\subsection{Numeric tests}
+
+To check the correctness of \fs's generated spectrum generators
+extensive unit testing against Softsusy's MSSM and NMSSM
+implementations (both $Z_3$-invariant and $Z_3$-violating variants)
+has been carried out.  These unit tests systematically compare all
+tree-level mass matrices, EWSB equations, one- and two-loop
+$\beta$-functions, one- and two-loop self-energies and one- and
+two-loop tadpoles numerically for the CMSSM, the semi-constrained
+$Z_3$-invariant NMSSM ($Z_3$-NMSSM)\footnote{With the semi-constrained
+  $Z_3$-invariant NMSSM ($Z_3$-NMSSM) we denote a constrained variant
+  of the NMSSM with universal gaugino masses $M_{1/2}$, universal
+  trilinear couplings $A_0$ and universal MSSM-like soft-breaking
+  squared scalar masses $m_0^2$ at the GUT scale.  The soft-breaking
+  singlet mass $m_S^2$, the trilinear singlet superpotential coupling
+  $\kappa$ and the singlet VEV $s$ are fixed by the EWSB conditions at
+  the SUSY scale.  The $Z_3$-NMSSM has the $6$ free parameters
+  $(m_0^2, M_{1/2}, A_0, \tan\beta, \sign\mu_\text{eff}, \lambda)$.}
+and the constrained $Z_3$-violating NMSSM
+($\Zv_3$-NMSSM)\footnote{With the constrained $Z_3$-violating NMSSM
+  ($\Zv_3$-NMSSM) we denote a constrained variant of the
+  $Z_3$-violating NMSSM with universal gaugino masses $M_{1/2}$,
+  universal trilinear couplings $A_0$ and universal MSSM-like
+  soft-breaking squared scalar masses $m_0^2$ at the GUT scale.  The
+  $\mu$-parameter, its soft-breaking equivalent $B\mu$ and the
+  soft-breaking singlet tadpole coupling $\xi_S$ are fixed by the EWSB
+  conditions at the SUSY scale.  The $\Zv_3$-NMSSM has the $11$ free
+  parameters $(m_0^2, M_{1/2}, A_0, \tan\beta, \sign\mu_\text{eff},
+  \lambda, \kappa, s, \mu', m_S^{\prime 2}, \xi_F)$.}  parameter
+points given in \tabref{tab:unit-test-parameter-points}.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    SUSY Model & Tested parameter points\\
+    \midrule CMSSM & $m_0 = 125\unit{GeV}$, $M_{1/2} = 500\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = 0$, $\sign\mu = \pm 1$
+    \\
+    $Z_3$-NMSSM & $m_0 = \{250,300\}\unit{GeV}$, $M_{1/2} =
+    200\unit{GeV}$, $\tan\beta = 10$, $A_0 = -500\unit{GeV}$,
+    $\sign\mu_\text{eff} = +1$, $\lambda = 0.1$
+    \\
+    $\Zv_3$-NMSSM & $m_0 = 540\unit{GeV}$, $M_{1/2} = 200\unit{GeV}$,
+    $\tan\beta = 10$, $A_0 = -350\unit{GeV}$, $\sign\mu_\text{eff} =
+    \pm 1$, $\lambda = \kappa = 0.1$, $s = 1\unit{TeV}$, $\mu' =
+    290\unit{GeV}$, $m_S^{\prime 2} = 400\unit{GeV}$, $\xi_F =
+    300\unit{GeV}$
+    \\
+    \bottomrule
+  \end{tabularx}
+  \caption{CMSSM, semi-constrained
+    $Z_3$-invariant NMSSM ($Z_3$-NMSSM) and constrained
+    $Z_3$-violating NMSSM ($\Zv_3$-NMSSM) parameter points
+    used for the unit tests against Softsusy.
+    We follow the notation of the NMSSM model parameters used in
+    \cite{Allanach:2013kza,Ellwanger:2009dp}.}
+  \label{tab:unit-test-parameter-points}
+\end{table}
+%
+All tested expressions were found to agree within double machine
+precision.\footnote{Due to the systematic and detailed tests several
+  bugs in Softsusy, SARAH and \fs could be identified and corrected.}
+Furthermore, the output of the iterative procedures which solve the
+one- and two-loop corrected tadpole equations
+\eqref{eq:one-loop-ewsb-eq} to find the minimum of the effective Higgs
+potential were compared numerically for these parameter points and
+found to agree within machine precision as well.  Finally, the overall
+pole mass spectrum and mixing after the full fixed-point iteration has
+finished has been compared, and was found to agree at the sub-permille
+level.  The origin of the sub-permille level difference between \fs
+and Softsusy is the different determination of the weak mixing angle
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ in the SUSY model in the
+\DRbar\ scheme: \fs calculates
+$\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from $M_W$ and $M_Z$, as
+described in \secref{sec:calculation-of-gauge-couplings}, while
+Softsusy determines $\theta_{W,\text{susy}}^{\text{\DRbar}}(M_Z)$ from
+the muon decay constant $G_\mu$.  The approach used in Softsusy
+results in more precise \DRbar\ gauge couplings at the $M_Z$ scale,
+because the muon decay constant is known with a higher accuracy than
+the $W$-boson mass.  Furthermore, in Softsusy $3.5.0$ some three-loop
+$\beta$-functions and two-loop threshold corrections can be enabled in
+the MSSM to increase the accuracy of the RG running and the
+determination of the \DRbar\ gauge and Yukawa couplings at $M_Z$
+\cite{Allanach:2014nba}.  These corrections are not implemented in \fs
+so far.  The complete set of unit tests is shipped with \fs and can be
+found in the \code{test/} directory.  The tests can be run with the
+command \code{make execute-tests}.  All unit tests are carried out
+nightly in order to continuously check the correctness of the meta
+code and the generated spectrum generators for the shipped models.
+The nightly test results can be found at
+\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
+
+The \fs generated NUHM \ESSM\ spectrum generator has also been
+compared against a handwritten one for a constrained version of the
+\ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
+$\beta$-functions were systematically compared in unit tests and were
+found to match within numerical precision.  The handwritten code
+doesn't include full one-loop self-energies or tadpoles, so tests on
+these were not carried out.  Although the generators assume different
+constraints and solve the boundary value problem with completely
+different algorithms they could be compared by using the output of
+the CE$_6$SSM generator as an input to \fs and the spectra were found
+to be in reasonable agreement  given the different levels of precision with deviations in the mass spectra $\lesssim 10\%$.
+
+In addition \fs has already undergone some user testing. This includes
+analytic tests of the $R$-symmetric low-energy model (MRSSM) and
+alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
+with this are thanked in the acknowledgements.
+
+We also compared the run-time of \fs against SPheno, Softsusy and the
+SARAH generated MSSM spectrum generator SPhenoMSSM.  The results of
+the comparison can be found in \secref{sec:run-time comparison}.
+
+\subsection{Run-time comparison}
+\label{sec:run-time comparison}
+
+One of \fs's design goals is a short run-time.  In this section we
+demonstrate that this goal was achieved by comparing the run-time of
+two different sets of CMSSM spectrum generators:
+%
+\begin{itemize}
+\item \emph{Without sfermion flavour violation:} Disallowing sfermion
+  flavour violation simplifies the calculation of the pole masses,
+  because flavour-off-diagonal sfermion self-energy matrix elements
+  don't need to be calculated.  Here we compare \fs's non-flavour
+  violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
+  against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
+%
+\item \emph{With sfermion flavour violation:} Allowing for sfermion
+  flavour violation in general increases the run-time of spectrum
+  generators, because the full $6\times 6$ sfermion self-energy
+  matrices have to be calculated.  Here we compare FlexibleSUSY-FV
+  (version 1.0.0) and SPhenoMSSM (generated with SARAH 4.1.0 and
+  linked against SPheno 3.2.4).  Both spectrum generators are based on
+  SARAH's MSSM model file, which allows for sfermion flavour
+  violation.
+\end{itemize}
+%
+For the run-time comparison the CKM matrix is set to unity, all
+$CP$-violating phases are set to zero and $R$-parity violation is
+disabled.  \fs and Softsusy are compiled with g++ 4.8.0 and Intel
+ifort 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel
+ifort 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
+  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
+  compared to gfortran.}  We're generating $2\cdot 10^{4}$ random
+CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
+[50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
+and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
+file is created by appending the values of $m_0$, $m_{1/2}$,
+$\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
+SLHA template file given in \ref{sec:speed-test-slha-template-file}.
+The resulting SLHA input file is passed to each spectrum generator and
+the (wall-clock) time is measured until the program has finished.  The
+average run-times for three different CPU types can be found in
+\tabref{tab:run-time-comparison}.  The first column shows the run-time
+on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
+enabled.  The second column shows the run-time on the same processor
+where both cores were enabled.  In the third column a machine with two
+Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
+%
+\begin{table}[tbh]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+                            & Intel Core2 Duo    & Intel Core2 Duo   & $2$ $\times$ Intel Xeon\\
+                            & (P8600, $1$ core)  & (P8600, $2$ cores)& (L5640, $6$ cores)\\
+    \midrule
+    FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
+    SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
+    Softsusy 3.4.0          & $0.175\unit{s}$    & $0.171\unit{s}$   & $0.147\unit{s}$\\
+    \midrule
+    FlexibleSUSY-FV 1.0.0   & $0.150\unit{s}$    & $0.113\unit{s}$   & $0.074\unit{s}$\\
+    SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
+    \bottomrule
+  \end{tabular}
+  \caption{Average run-time of CMSSM spectrum generators
+    for random parameter points.  The first three rows show three
+    spectrum generators with disabled sfermion flavour violation.  Rows
+    $4$--$5$ show two spectrum generators with enabled sfermion flavour violation, both based
+    on SARAH's MSSM model file.}
+  \label{tab:run-time-comparison}
+\end{table}
+
+Under both the non-flavour violating spectrum generators (first three
+rows) as well as the flavour violating ones (4th and 5th row) we find
+that \fs is significantly fastest.  Compared to SPheno,
+FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
+Softsusy around a factor $2$--$2.5$.  Under the flavour violating
+spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
+factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
+long calculation duration of the two-loop $\beta$-functions.  Here \fs
+benefits a lot from Eigen's well-optimizable matrix expressions.  We
+also find that increasing the number of CPU cores reduces the run-time
+of \fs.  The reason is that \fs calculates each pole mass in a
+separate thread, and therefore benefits from multi-core CPUs.
+
+\section{Conclusions}
+
+We have presented \fs, a Mathematica and C++ package, which generates fast and
+modular spectrum generators for any user specified SUSY model.  \fs is
+distributed with a large number of predefined models for the CMSSM,
+NMSSM, USSM, \ESSM, MRSSM etc., which can be generated immediately
+without any editing.  In particular the CMSSM and NMSSM spectrum
+generators constitute a fast and reliable alternative to the existing
+publicly available spectrum generators, Softsusy, SPheno and
+NMSPEC. 
+
+We have described how the generated source code can be influenced at
+two different levels: The \mathematica level where the user provides a
+model file, and the C++ level where the generated objects can be
+easily exchanged, extended, modified and reused.  This provides great
+flexibility for creating custom spectrum generators for both the most
+common and most extraordinary models.  We have demonstrated these
+features in detailed examples for the NUHMSSM, right handed neutrinos
+and on adding three-loop RGEs and two-loop matching for the strong
+gauge coupling.  
+
+The generated code has been extensively tested against Softsusy, and
+additional tests have been carried out for non-minimal models, the
+\ESSM and MRSSM.  Speed tests have also been performed against
+Softsusy, SPheno and SPheno-like MSSM code generated by SARAH,
+demonstrating that \fs runs faster than all three.
+
+As a result \fs enables fast exploitation of new SUSY models with high
+precision and reliability.
+
+\section*{Acknowledgments}
+
+A.V.\ would like to thank Florian Staub for countless explanations of
+SARAH's internals, discussions, and exceptionally fast bug
+fixing. P.A.~would like to thank Roman Nevzorov for useful discussions
+about challenges in non-minimal SUSY models and the GAMBIT
+collaboration for helpful suggestions, particularly regarding
+lowering our compiler prerequisites. The authors would also like to
+thank Lewis Tunstall for helping with early tests against
+Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
+when introducing couplings with a single family index; Gregor Hellwig
+for writing the first version of the E6SSM model file; Philip Diessner
+for further adaptions to the E6SSM model file and for supplying it to
+us and for for testing and identifying several bugs in \fs and in
+SARAH, in work on the MRSSM; Ulrik Günther for compilation tests on
+Mac OS X and Dylan Harries for spotting a bug in the configuration
+script.
+%
+J.P. acknowledges support from the MEC and FEDER (EC) Grants
+FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
+This work has been supported by the German Research Foundation DFG
+through Grant No.~STO876/2-1.
+
+\appendix
+
+\section{Examples of C++ code adaptation}
+\label{sec:examples of c++ code adaptation}
+
+In what follows, technical details of \fs programming at the C++ level are
+set out which supplement the outline given
+in \secref{sec:adapting-cpp-code}.
+
+\subsection{Stacking models in a tower of effective theories}
 \label{sec:tower construction}
 
 Consider a physics scenario which is best described
@@ -2186,8 +2985,8 @@ a faithful reflection of
 this physicist's view on the given problem.
 Here we illustrate this point
 using a well-known configuration in which
-the higher-energy theory is the MSSMRHN discussed above which
-gives rise to the MSSM as the lower-energy effective theory.
+the higher-energy theory is the MSSMRHN which
+gives rise to the MSSMD5O as the lower-energy effective theory.
 The relevant classes are sketched
 in \figref{fig:class structure for tower}.
 \begin{figure}
@@ -2208,15 +3007,15 @@ in \figref{fig:class structure for tower}.
         (MX) ++(.3,0) coordinate(MXR) +(3,0) coordinate(MXRR);
 
   \draw (MZ) +(-.1,0) -- +(+.1,0); \draw[<-] (MZ) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_low_scale_constraint}};
+     node[left,draw] {\code{MSSMD5O_low_scale_constraint}};
   \draw (MS) +(-.1,0) -- +(+.1,0); \draw[<-] (MS) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_susy_scale_constraint}};
+     node[left,draw] {\code{MSSMD5O_susy_scale_constraint}};
   \draw (Mv) +(-.1,0) -- +(+.1,0); \draw[<-] (Mv) ++(-.8,0) -- ++(-.5,0)
-     node[left,draw] {\code{MSSM_MSSMRHN_matching}};
+     node[left,draw] {\code{MSSMD5O_MSSMRHN_matching}};
   \draw (MX) +(-.1,0) -- +(+.1,0); \draw[<-] (MX) ++(-.8,0) -- ++(-.5,0)
      node[left,draw] {\code{MSSMRHN_high_scale_constraint}};
 
-  \draw (MvRR) +(0,-.03) rectangle (MZR) node[pos=.5] {\code{MSSM}};
+  \draw (MvRR) +(0,-.03) rectangle (MZR) node[pos=.5] {\code{MSSMD5O}};
   \draw (MvRR) +(0, .03) rectangle (MXR) node[pos=.5] {\code{MSSMRHN}};
 
   \path (bottom) +(3.8,0) coordinate(SE) (top) +(-6.8,0) coordinate(NW);
@@ -2230,7 +3029,7 @@ in \figref{fig:class structure for tower}.
 \end{figure}
 The \code{MSSMRHN} object is in effect from the $M_X$ scale down to
 the $M_\nu$ scale at which the right-handed neutrinos are decoupled.
-Below this scale, the \code{MSSM} object takes over.
+Below this scale, the \code{MSSMD5O} object takes over.
 On the left of the vertical axis,
 the boundary condition objects acting on either model are displayed,
 together with the matching object connecting the two theories.
@@ -2252,9 +3051,9 @@ for one of the models forming the tower.
 As the target spectrum generator depends on two models,
 one should first build these prerequisites by:
 \begin{numlstlisting}
-$ ./createmodel --name=MSSM
+$ ./createmodel --name=MSSMD5O
 $ ./createmodel --name=MSSMRHN
-$ ./configure --with-models=MSSM,MSSMRHN
+$ ./configure --with-models=MSSMD5O,MSSMRHN
 $ make
 \end{numlstlisting}
 As a by-product, line 3
@@ -2262,44 +3061,44 @@ also creates a \code{Makefile} in \code{examples/tower/}.
 One can best see the overall code structure of the application in this file:
 \begin{numlstlisting}
 CPPFLAGS  := -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) $(INCSLHAEA) \
-             $(INCMSSM) $(INCMSSMRHN)
+             $(INCMSSMD5O) $(INCMSSMRHN)
 
 TOWER_SRC := run_tower.cpp \
-	     MSSM_MSSMRHN_two_scale_matching.cpp \
-	     MSSM_MSSMRHN_two_scale_initial_guesser.cpp
+	     MSSMD5O_MSSMRHN_two_scale_matching.cpp \
+	     MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp
 
 TOWER_OBJ := $(patsubst %.cpp, %.o, $(filter %.cpp, $(TOWER_SRC)))
 
-run_tower.x: $(TOWER_OBJ) $(LIBMSSM) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
-  $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(FLIBS)
-\end{numlstlisting}
+run_tower.x: $(TOWER_OBJ) $(LIBMSSMD5O) $(LIBMSSMRHN) $(LIBFLEXI) $(LIBLEGACY)
+  $(CXX) -o $@ $^ $(LOOPFUNCLIBS) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+\end{numlstlisting}%% $
 The include directives in line 2 tell the compiler
-where to find the headers for either \code{MSSM} or \code{MSSMRHN}.
+where to find the headers for either \code{MSSMD5O} or \code{MSSMRHN}.
 The \code{.cpp} files in lines 4--6 and the \code{.hpp} files
 that they include are to be written by hand.
 Obviously, the executable \code{run_tower.x}, in line 10, depends on both
-\code{$(LIBMSSM)} and \code{$(LIBMSSMRHN)}
+\code{$(LIBMSSMD5O)} and \code{$(LIBMSSMRHN)}
 that implement the auto-generated
 components in \figref{fig:class structure for tower}.
 
 To prepare the main source file \code{run_tower.cpp},
 one can extend % make a straightforward extension to
-\code{run_MSSM.cpp} or \code{run_MSSMRHN.cpp}
+\code{run_MSSMD5O.cpp} or \code{run_MSSMRHN.cpp}
 produced in either model directory.
 The shipped example reads:
 \begin{numlstlisting}
-#include "MSSM_MSSMRHN_spectrum_generator.hpp"
+#include "MSSMD5O_MSSMRHN_spectrum_generator.hpp"
 
 int main(int argc, char* argv[])
 {
   // define objects;
   QedQcd oneset;
-  MSSM_input_parameters    input_1;
+  MSSMD5O_input_parameters input_1;
   MSSMRHN_input_parameters input_2;
   // fill in input_1 and input_2;
   oneset.toMz(); // run SM fermion masses to MZ
   typedef Two_scale algorithm_type;
-  MSSM_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
+  MSSMD5O_MSSMRHN_spectrum_generator<algorithm_type> spectrum_generator;
   // set up spectrum_generator;
   spectrum_generator.run(oneset, input_1, input_2);
   // extract outcome from models;
@@ -2312,32 +3111,32 @@ one declares two sets of input parameters,
 \code{input_1} and \code{input_2}, in lines 7--8.
 
 The crucial point is the definition of the
-\code{MSSM_MSSMRHN_spectrum_generator} object in line 12, which
+\code{MSSMD5O_MSSMRHN_spectrum_generator} object in line 12, which
 creates and drives the \code{RGFlow} object in \figref{fig:class
   structure for tower}.  This task is started by calling the
 \code{run()} member function in line 14.  It is defined in
-\code{MSSM_MSSMRHN_spectrum_generator.hpp} and reads:
+\code{MSSMD5O_MSSMRHN_spectrum_generator.hpp} and reads:
 %
 \begin{numlstlisting}[name=SGrun,language=C++]
-template<class T> void MSSM_MSSMRHN_spectrum_generator<T>::run
+template<class T> void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
 (const QedQcd& oneset,
- const MSSM_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
+ const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
 {
   high_scale_constraint_2.clear(); // of type MSSMRHN_high_scale_constraint<T>
-  susy_scale_constraint_1.clear(); // of type MSSM_susy_scale_constraint<T>
-  low_scale_constraint_1 .clear(); // of type MSSM_low_scale_constraint<T>
-  matching.reset();                // of type MSSM_MSSMRHN_matching<T>
+  susy_scale_constraint_1.clear(); // of type MSSMD5O_susy_scale_constraint<T>
+  low_scale_constraint_1 .clear(); // of type MSSMD5O_low_scale_constraint<T>
+  matching.reset();                // of type MSSMD5O_MSSMRHN_matching<T>
   high_scale_constraint_2.set_input_parameters(input_2);
   susy_scale_constraint_1.set_input_parameters(input_1);
   low_scale_constraint_1 .set_input_parameters(input_1);
-  matching.set_upper_input_parameters(input_2);
+  matching.set_lower_input_parameters(input_1);
   high_scale_constraint_2.initialize();
   susy_scale_constraint_1.initialize();
   low_scale_constraint_1 .initialize();
   if (!is_zero(input_scale_2)) high_scale_constraint_2.set_scale(input_scale_2);
 \end{numlstlisting}
 This piece of code is nearly a verbatim copy of
-the corresponding part of \code{MSSM_spectrum_generator.hpp}.
+the corresponding part of \code{MSSMD5O_spectrum_generator.hpp}.
 The only differences are that the type of
 \code{high_scale_constraint_2} is
 \code{MSSMRHN_high_scale_constraint<T>} and that
@@ -2345,7 +3144,7 @@ the \code{matching} object has been added.
 Recall that the template parameter \code{T} has been bound to
 \code{Two_scale} in the \code{main} function.
 One then constructs a list of
-the constraints on \code{MSSM}:
+the constraints on \code{MSSMD5O}:
 \begin{numlstlisting}[name=SGrun]
   std::vector<Constraint<T>*> upward_constraints_1;
   upward_constraints_1.push_back(&low_scale_constraint_1);
@@ -2353,9 +3152,9 @@ the constraints on \code{MSSM}:
   downward_constraints_1.push_back(&susy_scale_constraint_1);
   downward_constraints_1.push_back(&low_scale_constraint_1);
 \end{numlstlisting}
-and initializes the \code{MSSM} object:
+and initializes the \code{MSSMD5O} object:
 \begin{numlstlisting}[name=SGrun,language=C++]
-  model_1.clear();                 // of type MSSM<T>
+  model_1.clear();                 // of type MSSMD5O<T>
   model_1.set_input_parameters(input_1);
   model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
 \end{numlstlisting}
@@ -2374,9 +3173,9 @@ which is assumed to be much higher than the weak scale.
 To test the convergence of both models,
 one may construct a composite convergence tester
 out of auto-generated
-\code{MSSM_convergence_tester} and \code{MSSMRHN_convergence_tester}:
+\code{MSSMD5O_convergence_tester} and \code{MSSMRHN_convergence_tester}:
 \begin{numlstlisting}[name=SGrun]
-  MSSM_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
+  MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
   MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
   if (max_iterations > 0) {
     convergence_tester_1.set_max_iterations(max_iterations);
@@ -2390,8 +3189,8 @@ On construction,
 the initial guesser accepts the following parameters
 including the two model objects:
 \begin{numlstlisting}[name=SGrun]
-  MSSM_MSSMRHN_initial_guesser<T> initial_guesser
-    (&model_1, &model_2, input_2, oneset,
+  MSSMD5O_MSSMRHN_initial_guesser<T> initial_guesser
+    (&model_1, &model_2, input_1, oneset,
      low_scale_constraint_1, susy_scale_constraint_1, high_scale_constraint_2,
      matching);
 \end{numlstlisting}
@@ -2431,7 +3230,7 @@ Since \code{model_1} is in contact with the lowest energy,
 let it calculate the spectrum:
 \begin{numlstlisting}[name=SGrun,language=C++]
   susy_scale_1 = susy_scale_constraint_1.get_scale();
-  model_1.run_to(susy_scale_1);    // of type MSSM<T>
+  model_1.run_to(susy_scale_1);    // of type MSSMD5O<T>
   model_1.calculate_spectrum();
   if (!is_zero(parameter_output_scale_1))
     model_1.run_to(parameter_output_scale_1);
@@ -2446,22 +3245,22 @@ models from scratch.
 It shall be based on the abstract class \code{Matching<Two_scale>}
 that comes with \fs.
 In the present example, the class is declared in the header
-\code{MSSM_MSSMRHN_two_scale_matching.hpp}:
+\code{MSSMD5O_MSSMRHN_two_scale_matching.hpp}:
 \begin{numlstlisting}
-template<> class MSSM_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
+template<> class MSSMD5O_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
 public:
-  MSSM_MSSMRHN_matching();
-  MSSM_MSSMRHN_matching(const MSSMRHN_input_parameters&);
+  MSSMD5O_MSSMRHN_matching();
+  MSSMD5O_MSSMRHN_matching(const MSSMD5O_input_parameters&);
   void match_low_to_high_scale_model();
   void match_high_to_low_scale_model();
   double get_scale() const;
   void set_models(Two_scale_model *lower, Two_scale_model *upper);
   double get_initial_scale_guess() const;
-  void set_upper_input_parameters(const MSSMRHN_input_parameters&);
+  void set_lower_input_parameters(const MSSMD5O_input_parameters&);
   void set_scale(double);
   void reset();
 private:
-  MSSM   <Two_scale> *lower;
+  MSSMD5O<Two_scale> *lower;
   MSSMRHN<Two_scale> *upper;
   void make_initial_scale_guess();
   void update_scale();
@@ -2469,58 +3268,103 @@ private:
 };
 \end{numlstlisting}
 As lines 4 and 10 indicate,
-this class takes an \code{MSSMRHN_input_parameters} object as input.
-The \code{MvInput} field thereof is referenced
-for the initial guess of the matching scale
-in line 25 of \code{MSSM_MSSMRHN_two_scale_matching.cpp}:
+this class takes an \code{MSSMD5O_input_parameters} object as input.
+The low-energy neutrino data therein is referenced by
+\code{make_initial_scale_guess}
+starting from line 23 of \code{MSSMD5O_MSSMRHN_two_scale_matching.cpp}:
 \begin{numlstlisting}
-void MSSM_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+void MSSMD5O_MSSMRHN_matching<Two_scale>::invert_seesaw_formula
+(const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
+ Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv)
 {
-  upper->set_Yd(lower->get_Yd());
-  // copy rest of couplings from lower to upper;
-  upper->set_scale(lower->get_scale());
+  Eigen::Matrix3cd uh;
+  Eigen::Array3d s;
+  fs_diagonalize_symmetric(WOp, s, uh);
+  Eigen::Matrix3d U = uh.adjoint().real();
+  Eigen::Vector3d YvDiagInv(1, 1, 1);
+  YvDiagInv.array() /= YvDiag.array();
+  Eigen::Matrix3d YvInv = U * YvDiagInv.asDiagonal();
+  Mv = (YvInv.transpose() * WOp * YvInv).inverse();
+  Yv = YvDiag.asDiagonal() * U.adjoint();
 }
 
-void MSSM_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
-{
-  update_scale();
-  lower->set_Yd(upper->get_Yd());
-  // copy rest of couplings from upper to lower;
-  lower->set_scale(upper->get_scale());
-}
-
-void MSSM_MSSMRHN_matching<Two_scale>::set_upper_input_parameters
-(const MSSMRHN_input_parameters& inputPars_)
+void MSSMD5O_MSSMRHN_matching<Two_scale>::set_lower_input_parameters
+(const MSSMD5O_input_parameters& inputPars_)
 {
   inputPars = inputPars_;
   make_initial_scale_guess();
 }
 
-void MSSM_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
+void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
 {
-  double RHN_scale = pow(abs(inputPars.MvInput.determinant()), 1.0/3);
+  Eigen::Matrix3d WOp;
+  // fill WOp with elements in terms of data from inputPars;
+  Eigen::Vector3d YvDiag;
+  YvDiag << inputPars.YvDiag1, inputPars.YvDiag2, inputPars.YvDiag3;
+  Eigen::Matrix3d Yv;
+  Eigen::Matrix3d Mv;
+  invert_seesaw_formula(WOp, YvDiag, Yv, Mv);
+  double RHN_scale = pow(abs(Mv.determinant()), 1.0/3);
   scale = initial_scale_guess = RHN_scale;
 }
+\end{numlstlisting}
+To guess the matching scale, this function estimates
+the right-handed neutrino mass matrix \code{Mv}
+from \code{WOp}, the dimension-5 operator coefficients,
+and \code{YvDiag}, the neutrino Yukawa eigenvalues,
+by calling \code{invert_seesaw_formula}.
+Since the mapping,
+$\mbox{\code{WOp}} \rightarrow (\mbox{\code{Yv}}, \mbox{\code{Mv}})$,
+is not unique, \code{invert_seesaw_formula}
+opts to impose the following additional constraints:
+the eigenvalues of \code{Yv} are fixed to the user input (line 10),
+and all mixing in \code{WOp} originates from the rotation of the SU(2)
+doublets (line 11).
 
-void MSSM_MSSMRHN_matching<Two_scale>::update_scale()
+The actual matching process takes place in the two functions
+\code{match_low_to_high_scale_model} and \code{match_high_to_low_scale_model}:
+\begin{numlstlisting}
+void MSSMD5O_MSSMRHN_matching<Two_scale>::match_low_to_high_scale_model()
+{
+  Eigen::Vector3d YvDiag;
+  YvDiag << inputPars.YvDiag1, inputPars.YvDiag2, inputPars.YvDiag3;
+  Eigen::Matrix3d Yv;
+  Eigen::Matrix3d Mv;
+  invert_seesaw_formula(lower->get_WOp(), YvDiag, Yv, Mv);
+  upper->set_Yv(Yv);
+  upper->set_Mv(Mv);
+
+  upper->set_Yd(lower->get_Yd());
+  // copy rest of couplings from lower to upper;
+  upper->set_scale(lower->get_scale());
+}
+
+void MSSMD5O_MSSMRHN_matching<Two_scale>::match_high_to_low_scale_model()
+{
+  update_scale();
+
+  const auto& Yv = upper->get_Yv();
+  const auto& Mv = upper->get_Mv();
+  lower->set_WOp(Yv.transpose() * Mv.inverse() * Yv);
+
+  lower->set_Yd(upper->get_Yd());
+  // copy rest of couplings from upper to lower;
+  lower->set_scale(upper->get_scale());
+}
+
+void MSSMD5O_MSSMRHN_matching<Two_scale>::update_scale()
 {
   double RHN_scale = pow(abs(upper->get_Mv().determinant()), 1.0/3);
   scale = RHN_scale;
 }
 \end{numlstlisting}
-Recall that \code{MvInput} is the high-scale boundary value of \code{Mv}.
-If one had opted for an alternative strategy to fix \code{Mv},
-then \code{MSSM_MSSMRHN_matching} might have required a different input.
-Subsequently, the matching scale is updated at each iteration
+For the low-to-high matching, \code{invert_seesaw_formula} is called in line 7,
+this time with \code{WOp} at the matching scale.
+The high-to-low matching function contains the well-known
+see-saw formula in line 22.
+The matching scale is updated at each iteration
 to be the geometric mean of the running \code{Mv} eigenvalues
 in lines 31--32.
-The actual matching process takes place in the two functions
-\code{match_low_to_high_scale_model} and \code{match_high_to_low_scale_model}.
-For brevity,
-their examples shown above simply copy each coupling
-upwards or downwards, neglecting threshold corrections.
-The way to incorporate these corrections should be self-evident
-from the code structure.
 
 % \begin{numlstlisting}
 % template<>
@@ -2549,10 +3393,10 @@ from the code structure.
 % \end{numlstlisting}
 The last missing piece is the initial guesser.
 One can extend the already available
-\code{MSSM_initial_guesser} class. % in a straightforward manner.
+\code{MSSMD5O_initial_guesser} class. % in a straightforward manner.
 The essential task is done by the following member function:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
-void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
+void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess()
 {
   // guess SUSY couplings in model-1 at low energy;
 
@@ -2560,10 +3404,10 @@ void MSSM_MSSMRHN_initial_guesser<Two_scale>::guess()
   const double high_scale_guess_2 = high_constraint_2.get_initial_scale_guess();
   const double matching_scale_guess = matching.get_initial_scale_guess();
 \end{numlstlisting}
-Compared to the MSSM case, the differences are that the type of
+Compared to the MSSMD5O case, the differences are that the type of
 \code{high_constraint_2} is \linebreak {\code{MSSMRHN_high_scale_constraint<Two_scale>} and that \code{matching_scale_guess} has been inserted.  Due to this intermediate scale, the initial run-up is divided into two steps, with a matching procedure in-between:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
-  model_1->run_to(matching_scale_guess); // of type MSSM<Two_scale>
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp,language=C++]
+  model_1->run_to(matching_scale_guess); // of type MSSMD5O<Two_scale>
   matching.set_models(model_1, model_2);
   matching.match_low_to_high_scale_model();
   model_2->run_to(high_scale_guess_2);   // of type MSSMRHN<Two_scale>
@@ -2571,20 +3415,20 @@ Compared to the MSSM case, the differences are that the type of
 The high-scale constraints are applied to \code{model_2},
 the higher-energy model,
 and the remaining undetermined parameters are guessed:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   high_constraint_2.set_model(model_2);
   high_constraint_2.apply();
   model_2->set_Mu(1.0); model_2->set_BMu(0.0);
 \end{numlstlisting}
 The initial two-step run-down again involves a matching process:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   model_2->run_to(matching_scale_guess);
   matching.match_high_to_low_scale_model();
   model_1->run_to(low_scale_guess_1);
 \end{numlstlisting}
-At the low scale where \code{MSSM} is valid,
-the code is the same as in \code{MSSM_initial_guesser}:
-\begin{numlstlisting}[name=MSSM_MSSMRHN_two_scale_initial_guesser.cpp]
+At the low scale where \code{MSSMD5O} is valid,
+the code is the same as in \code{MSSMD5O_initial_guesser}:
+\begin{numlstlisting}[name=MSSMD5O_MSSMRHN_two_scale_initial_guesser.cpp]
   model_1->solve_ewsb_tree_level();
   model_1->calculate_DRbar_masses();
   model_1->set_thresholds(3); model_1->set_loops(2);
@@ -2594,23 +3438,24 @@ the code is the same as in \code{MSSM_initial_guesser}:
 Finally,
 one prescribes the additional input parameters in the SLHA input file:
 \begin{numlstlisting}
-Block YvIN                   # neutrino Yukawas at MX
-1 1  0.1568611               # Yv(1,1)
-1 2  0.6400513               # Yv(1,2)
-1 3  0.7521494               # Yv(1,3)
-2 1  0.4663838               # Yv(2,1)
-...                          # remaining 5 entries
-Block MvIN                   # heavy neutrino masses at MX
-1 1  4.150000E+14            # Mv(1,1)
-...                          # remaining 8 entries
+Block EXTPAR  # Input parameters
+    1	5.0E-11		     # mv1
+    2	5.07523E-11	     # mv2
+    3	6.96419E-11	     # mv3
+    4	0.586168	     # ThetaV12
+    5	0.157512	     # ThetaV13
+    6	0.705053	     # ThetaV23
+    7	0.6		     # YvDiag1
+    8	0.8		     # YvDiag2
+    9	1.0		     # YvDiag3
 Block BMvIN                  # right-handed sneutrino bilinear terms
 1 1  1.000000E+02            # BMv(1,1)
 ...                          # remaining 8 entries
 \end{numlstlisting}
-The file in the package contains the values that approximately reproduce
-the observed neutrino masses and mixing angles
-\cite{Beringer:1900zz}
-through the see-saw mechanism.
+The file in the package contains the values % that approximately reproduce
+consistent with
+the observed neutrino mass-squared differences and mixing angles
+\cite{Beringer:1900zz}.
 
 For further details, browse the directory \code{examples/tower/}.
 One can build and run the example therein by:
@@ -2620,18 +3465,18 @@ $ make
 $ ./run_tower.x --slha-input-file=LesHouches.in.tower
 \end{numlstlisting}%% $
 In the output,
-a part of significant physical interest might be:
+a part of the main interest is:
 \begin{numlstlisting}
-Block MSL2 Q=   8.97114431E+02
-  1  1     1.25652698E+05   # ml2(1,1)
-  1  2    -7.64196328E+01   # ml2(1,2)
-  1  3    -7.08429254E+01   # ml2(1,3)
-  2  1    -7.64196328E+01   # ml2(2,1)
-  2  2     1.25388732E+05   # ml2(2,2)
-  2  3    -3.15865242E+02   # ml2(2,3)
-  3  1    -7.08429254E+01   # ml2(3,1)
-  3  2    -3.15865242E+02   # ml2(3,2)
-  3  3     1.24556532E+05   # ml2(3,3)
+Block MSL2 Q= 8.82028104E+02
+  1  1     1.26231305E+05   # ml2(1,1)
+  1  2    -5.08365953E+02   # ml2(1,2)
+  1  3     4.67463327E+01   # ml2(1,3)
+  2  1    -5.08365953E+02   # ml2(2,1)
+  2  2     1.25328663E+05   # ml2(2,2)
+  2  3    -6.93488070E+02   # ml2(2,3)
+  3  1     4.67463327E+01   # ml2(3,1)
+  3  2    -6.93488070E+02   # ml2(3,2)
+  3  3     1.24229816E+05   # ml2(3,3)
 \end{numlstlisting}
 This result demonstrates the well-known effect on
 the off-diagonal slepton mass matrix elements
@@ -2642,7 +3487,7 @@ matrices, \code{ZE} and \code{ZV},
 which contain inter-generational mixings apart from the
 generic left-right mixings.
 
-\subsubsection{Integrating custom-built C++ components}
+\subsection{Integrating custom-built C++ components}
 \label{sec:integrating-custom-built}
 
 In \secref{sec:changing boundary conditions},
@@ -2817,198 +3662,6 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
 One can find a working realization of this example
 in \code{examples/customized-betas/}.
 
-The procedure described above is essentially all that is needed
-to employ new spectrum generator components,
-which may be composed from scratch or through
-a linkage to external routines.
-In doing so,
-notice that there was an evident limit on the scope of
-modules which one had to deal with.
-For instance, it was clear from the outset
-that one does not have to go through the code of the central
-fixed-point iteration engine, \code{RGFlow}.
-This manifests the power of the clear separation among objects
-each with its well-defined distinct role.
-This is just like the fact that one does not need to access the internals
-of the \code{std::sort} function in the C++ Standard Library.
-It might be entertaining to complete the analogy by
-mapping the model objects in \code{RGFlow}
-to the elements that \code{std::sort} sorts
-and the boundary condition objects
-to the comparator function.
-
-\section{Tests and comparisons with other spectrum generators}
-\label{sec:comparison}
-
-\subsection{Run-time comparison}
-\label{sec:run-time comparison}
-
-One of \fs's design goals is a short run-time.  In this section we
-demonstrate that this goal was achieved by comparing the run-time of
-two different sets of CMSSM spectrum generators:
-%
-\begin{itemize}
-\item \emph{Without flavour violation:} Disallowing flavour violation
-  simplifies the calculation of the pole masses, because
-  flavour-off-diagonal sfermion self-energy matrix elements don't need
-  to be calculated.  Here we compare \fs's non-flavour violating CMSSM
-  spectrum generator FlexibleSUSY-NoFV (version 1.0.0) against SPheno
-  (version 3.2.4) and Softsusy (version 3.4.0).
-%
-\item \emph{With flavour violation:} Allowing for flavour violation in
-  general increases the run-time of spectrum generators, because the
-  full $6\times 6$ sfermion self-energy matrices have to be
-  calculated.  Here we compare FlexibleSUSY-FV (version 1.0.0) and
-  SPhenoMSSM (generated with SARAH 4.1.0 and linked against SPheno
-  3.2.4).  Both spectrum generators are based on SARAH's MSSM model
-  file, which allows for flavour violation.
-\end{itemize}
-%
-\fs and Softsusy are compiled with g++ 4.8.0 and Intel ifort
-13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel ifort
-13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
-  run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
-  compared to gfortran.}
-
-For the run-time comparison we're generating $2\cdot 10^{4}$ random
-CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
-[50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
-and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
-file is created by appending the values of $m_0$, $m_{1/2}$,
-$\tan\beta$, $\sign\mu$, $A_0$ in form of a \code{MINPAR} block to the
-SLHA template file given in
-\ref{sec:speed-test-slha-template-file}.  The resulting SLHA input
-file is passed to each spectrum generator and the (wall-clock) time is
-measured until the program has finished.  The average run-times for
-three different CPU types can be found in
-\tabref{tab:run-time-comparison}.  The first column shows the run-time
-on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
-enabled.  The second column shows the run-time on the same processor
-where both cores were enabled.  In the third column a machine with two
-Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
-%
-\begin{table}[tbh]
-  \centering
-  \begin{tabular}{llll}
-    \toprule
-                            & Intel Core2 Duo    & Intel Core2 Duo   & $2$ $\times$ Intel Xeon\\
-                            & (P8600, $1$ core)  & (P8600, $2$ cores)& (L5640, $6$ cores)\\
-    \midrule
-    FlexibleSUSY-NoFV 1.0.0 & $0.086\unit{s}$    & $0.079\unit{s}$   & $0.060\unit{s}$\\
-    SPheno 3.2.4            & $0.119\unit{s}$    & $0.114\unit{s}$   & $0.101\unit{s}$\\
-    Softsusy 3.4.0          & $0.175\unit{s}$    & $0.171\unit{s}$   & $0.147\unit{s}$\\
-    \midrule
-    FlexibleSUSY-FV 1.0.0   & $0.150\unit{s}$    & $0.113\unit{s}$   & $0.074\unit{s}$\\
-    SPhenoMSSM 4.1.0        & $0.415\unit{s}$    & $0.401\unit{s}$   & $0.370\unit{s}$\\
-    \bottomrule
-  \end{tabular}
-  \caption{Average run-time of CMSSM spectrum generators
-    for random parameter points.  The first three rows show
-    spectrum generators which disallow flavour violation.  Rows
-    $4$--$5$ contain flavour violating spectrum generators, based
-    on SARAH's MSSM model file.}
-  \label{tab:run-time-comparison}
-\end{table}
-
-Under both the non-flavour violating spectrum generators (first three
-rows) as well as the flavour violating ones (4th and 5th row) we find
-that \fs is significantly fastest.  Compared to SPheno,
-FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
-Softsusy around a factor $2$--$2.5$.  Under the flavour violating
-spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
-factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
-long calculation duration of the two-loop $\beta$-functions.  Here \fs
-benefits a lot from Eigen's well-optimizable matrix expressions.  We
-also find that increasing the number of CPU cores reduces the run-time
-of \fs.  The reason is that \fs calculates each pole mass in a
-separate thread, and therefore benefits from multi-core CPUs.
-
-\subsection{Numeric tests}
-
-To check the correctness of \fs's generated spectrum generators
-extensive unit testing against Softsusy's MSSM and NMSSM
-implementations (both $Z_3$-invariant and $Z_3$-violating variants)
-was carried out. We checked mass matrices, EWSB equations, one- and two-loop
-$\beta$-functions, one- and two-loop self-energies and one- and
-two-loop tadpoles and found all to agree within double machine
-precision.  We also compared the overall pole mass spectrum after the
-full fixed-point iteration has finished, and found the spectra to
-agree at the sub-permille level.  
-
-\fs generated NUHM \ESSM has also been compared against a handwritten
-spectrum generator for a constrained version of the \ESSM
-\cite{Athron:2009ue, Athron:2009bs, Athron:2011wu, Athron:2012sq,
-  Athron:2012pw, Athron:2013ipa}.  The RGEs could be compared directly
-in unit tests and were found to match.  The handwritten code doesn't
-include full one-loop self-energies or tadpoles so tests on these were
-not carried out.  Although the generators assume different constraints
-they could be compared by using the output of the CE$_6$SSM generator
-as an input to \fs and the spectra were found to be in reasonable
-agreement, given the different levels of precision.
-
-In addition \fs has already undergone some user testing. This includes
-analytic tests of the $R$-symmetric low-energy model (MRSSM) and
-alternative $E_6$-inspired SUSY scenarios.  The users who have helped us
-with this are thanked in the acknowledgements.
-
-We also compared the run-time of \fs against SPheno, Softsusy and the
-SARAH generated MSSM spectrum generator SPhenoMSSM.  The test results
-can be found in \secref{sec:run-time comparison}.
-
-\section{Conclusions}
-
-We have presented \fs, a Mathematica and C++ package, which generates fast and
-modular spectrum generators for any user specified SUSY model.  \fs is
-distributed with a large number of predefined models for the CMSSM,
-NMSSM, USSM, \ESSM, MRSSM etc., which can be generated immediately
-without any editing.  In particular the CMSSM and NMSSM spectrum
-generators constitute a fast and reliable alternative to the existing
-publicly available spectrum generators, Softsusy, SPheno and
-NMSPEC. 
-
-We have described how the generated source code can be influenced at
-two different levels: The \mathematica level where the user provides a
-model file, and the C++ level where the generated objects can be
-easily exchanged, extended, modified and reused.  This provides great
-flexibility for creating custom spectrum generators for both the most
-common and most extraordinary models.  We have demonstrated these
-features in detailed examples for the NUHMSSM, right handed neutrinos
-and on adding three-loop RGEs and two-loop matching for the strong
-gauge coupling.  
-
-The generated code has been extensively tested against Softsusy, and
-additional tests have been carried out for non-minimal models, the
-\ESSM and MRSSM.  Speed tests have also been performed against
-Softsusy, SPheno and SPheno-like MSSM code generated by SARAH,
-demonstrating that \fs runs faster than all three.
-
-As a result \fs enables fast exploitation of new SUSY models with high
-precision and reliability.
-
-\section*{Acknowledgments}
-
-A.V.\ would like to thank Florian Staub for countless explanations of
-SARAH's internals, discussions, and exceptionally fast bug
-fixing. P.A.~would like to thank Roman Nevzorov for useful discussions
-about challenges in non-minimal SUSY models and the GAMBIT
-collaboration for helpful suggestions, particularly regarding
-lowering our compiler prerequisites. The authors would also like to
-thank Lewis Tunstall for helping with early tests against
-Next-to-Minimal Softsusy; Sophie Underwood for discovering problems
-when introducing couplings with a single family index; Gregor Hellwig
-for writing the first version of the E6SSM model file; Philip Diessner
-for further adaptions to the E6SSM model file and for supplying it to
-us and for for testing and identifying several bugs in \fs and in
-SARAH, in work on the MRSSM; Ulrik Günther for compilation tests on
-Mac OS X and Dylan Harries for spotting a bug in the configuration
-script.
-%
-J.P. acknowledges support from the MEC and FEDER (EC) Grants
-FPA2011--23596 and the Generalitat Valenciana under grant PROMETEOII/2013/017.
-This work has been supported by the German Research Foundation DFG
-through Grant No.~STO876/2-1.
-
-\appendix
 
 \section{Speed test SLHA input file}
 \label{sec:speed-test-slha-template-file}
@@ -3039,6 +3692,11 @@ Block FlexibleSUSY
     4   2                    # pole mass loop order
     5   2                    # EWSB loop order
     6   2                    # beta-functions loop order
+    7   1                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
 Block SPhenoInput            # SPheno specific input
     1  -1                    # error level
     2   1                    # SPA conventions
@@ -3200,6 +3858,13 @@ Block MINPAR
   Nucl.\ Phys.\ B {\bf 194} (1982) 65.
   %%CITATION = NUPHA,B194,65;%%
   %717 citations counted in INSPIRE as of 21 Feb 2014
+\bibitem{Chung:2003fi} D.~J.~H.~Chung, L.~L.~Everett, G.~L.~Kane,
+  S.~F.~King, J.~D.~Lykken and L.~T.~Wang,
+  %``The Soft supersymmetry breaking Lagrangian: Theory and applications,''
+  Phys.\ Rept.\  {\bf 407}, 1 (2005)
+  [hep-ph/0312378].
+  %%CITATION = HEP-PH/0312378;%%
+  %389 citations counted in INSPIRE as of 23 Oct 2014
 
 %\cite{Allanach:2001kg}
 \bibitem{Allanach:2001kg} 
@@ -3244,6 +3909,25 @@ Block MINPAR
   %%CITATION = ARXIV:1109.3551;%%
   %16 citations counted in INSPIRE as of 03 Jun 2014
 
+%\cite{Ellwanger:2004xm}
+\bibitem{Ellwanger:2004xm} 
+  U.~Ellwanger, J.~F.~Gunion and C.~Hugonie,
+  %``NMHDECAY: A Fortran code for the Higgs masses, couplings and decay widths in the NMSSM,''
+  JHEP {\bf 0502}, 066 (2005)
+  [hep-ph/0406215].
+  %%CITATION = HEP-PH/0406215;%%
+  %256 citations counted in INSPIRE as of 23 Oct 2014
+
+%\cite{Ellwanger:2005dv}
+\bibitem{Ellwanger:2005dv} 
+  U.~Ellwanger and C.~Hugonie,
+  %``NMHDECAY 2.0: An Updated program for sparticle masses, Higgs masses, couplings and decay widths in the NMSSM,''
+  Comput.\ Phys.\ Commun.\  {\bf 175}, 290 (2006)
+  [hep-ph/0508022].
+  %%CITATION = HEP-PH/0508022;%%
+  %227 citations counted in INSPIRE as of 23 Oct 2014
+
+
 %\cite{Ellwanger:2006rn}
 \bibitem{Ellwanger:2006rn} 
   U.~Ellwanger and C.~Hugonie,
@@ -3252,6 +3936,19 @@ Block MINPAR
   [hep-ph/0612134].
   %%CITATION = HEP-PH/0612134;%%
   %81 citations counted in INSPIRE as of 03 Nov 2013
+
+  %\cite{Ellwanger:2008py}
+\bibitem{Ellwanger:2008py} 
+  U.~Ellwanger, C.-C.~Jean-Louis and A.~M.~Teixeira,
+  %``Phenomenology of the General NMSSM with Gauge Mediated Supersymmetry Breaking,''
+  JHEP {\bf 0805}, 044 (2008)
+  [arXiv:0803.2962 [hep-ph]].
+  %%CITATION = ARXIV:0803.2962;%%
+  %34 citations counted in INSPIRE as of 23 Oct 2014
+
+
+
+
 %\cite{Allanach:2013kza}
 \bibitem{Allanach:2013kza} 
   B.~C.~Allanach, P.~Athron, L.~C.~Tunstall, A.~Voigt and A.~G.~Williams,
@@ -3260,22 +3957,6 @@ Block MINPAR
   [arXiv:1311.7659 [hep-ph]].
   %%CITATION = ARXIV:1311.7659;%%
   %2 citations counted in INSPIRE as of 15 Jun 2014
-\bibitem{NMSSM} P. Fayet, Nucl. Phys. B \textbf{90} (1975) 104; Phys. Lett.
-B \textbf{64} (1976) 159; Phys. Lett. B \textbf{69} (1977) 489 and Phys. Lett. B
-\textbf{84} (1979) 416; H.P. Nilles, M. Srednicki and D. Wyler, Phys. Lett. B
-\textbf{120} (1983) 346; J.M. Frere, D.R. Jones and S. Raby, Nucl. Phys. B
-\textbf{222} (1983) 11; J.P. Derendinger and C.A. Savoy, Nucl. Phys. B
-\textbf{237} (1984) 307;  A.I. Veselov, M.I. Vysotsky and K.A. Ter-Martirosian,
-Sov. Phys. JETP \textbf{63} (1986) 489; J.R. Ellis, J.F. Gunion, H.E. Haber, L.
-Roszkowski and F. Zwirner, Phys. Rev. D \textbf{39}  (1989) 844; M. Drees, Int.
-J. Mod. Phys. A \textbf{4}  (1989) 3635; U. Ellwanger, M. Rausch de
-Traubenberg and C.A. Savoy, Phys. 
-Lett. B \textbf{315} (1993) 331, Z. Phys. C {\bf 67} (1995) 665 and Nucl. Phys.
-B \textbf{492} (1997) 307; U.~Ellwanger, Phys.\ Lett.\  B {\bf 303} (1993) 271; P.
-Pandita, Z. Phys. C \textbf{59} (1993) 575; T. Elliott, S.F. King and P.L.
-White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
-\textbf{52} (1995) 4183;  F.~Franke and H.~Fraas, Int.\ J.\ Mod.\ Phys.\  A {\bf
-12} (1997) 479.   D.~J.~Miller, R.~Nevzorov and P.~M.~Zerwas,  Nucl.\ Phys.\ B {\bf 681}, 3 (2004) [hep-ph/0304049].
 %\cite{Ellwanger:2009dp}
 \bibitem{Ellwanger:2009dp} 
   U.~Ellwanger, C.~Hugonie and A.~M.~Teixeira,
@@ -3348,6 +4029,36 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   %592 citations counted in INSPIRE as of 24 Apr 2014
 %\cite{Chatrchyan:2014lfa}
 
+%\cite{Fayet:1977yc}
+\bibitem{Fayet:1977yc}
+  P.~Fayet,
+  %``Spontaneously Broken Supersymmetric Theories of Weak, Electromagnetic and Strong Interactions,''
+  Phys.\ Lett.\ B {\bf 69} (1977) 489.
+  %%CITATION = PHLTA,B69,489;%%
+  %817 citations counted in INSPIRE as of 04 Jun 2014
+%\cite{deCarlos:1997yv}
+%\cite{Suematsu:1994qm}
+
+\bibitem{Cvetic:1997ky}
+  M.~Cvetic, D.~A.~Demir, J.~R.~Espinosa, L.~L.~Everett and P.~Langacker,
+  %``Electroweak breaking and the mu problem in supergravity models with an additional U(1),''
+  Phys.\ Rev.\ D {\bf 56} (1997) 2861
+   [Erratum-ibid.\ D {\bf 58} (1998) 119905]
+  [hep-ph/9703317].
+  %%CITATION = HEP-PH/9703317;%%
+  %237 citations counted in INSPIRE as of 04 Jun 2014
+
+%\cite{Langacker:2008yv}
+\bibitem{Langacker:2008yv} 
+  P.~Langacker,
+  %``The Physics of Heavy $Z^\prime$ Gauge Bosons,''
+  Rev.\ Mod.\ Phys.\  {\bf 81}, 1199 (2009)
+  [arXiv:0801.1345 [hep-ph]].
+  %%CITATION = ARXIV:0801.1345;%%
+  %519 citations counted in INSPIRE as of 09 Jun 2014
+
+
+
 %\cite{King:2005jy}
 \bibitem{King:2005jy} 
   S.~F.~King, S.~Moretti and R.~Nevzorov,
@@ -3356,24 +4067,6 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   [hep-ph/0510419].
   %%CITATION = HEP-PH/0510419;%%
   %130 citations counted in INSPIRE as of 03 Nov 2013
-
-%\cite{King:2005my}
-\bibitem{King:2005my} 
-  S.~F.~King, S.~Moretti and R.~Nevzorov,
-  %``Exceptional supersymmetric standard model,''
-  Phys.\ Lett.\ B {\bf 634}, 278 (2006)
-  [hep-ph/0511256].
-  %%CITATION = HEP-PH/0511256;%%
-  %90 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{King:2007uj}
-\bibitem{King:2007uj} 
-  S.~F.~King, S.~Moretti and R.~Nevzorov,
-  %``Gauge coupling unification in the exceptional supersymmetric standard model,''
-  Phys.\ Lett.\ B {\bf 650}, 57 (2007)
-  [hep-ph/0701064].
-  %%CITATION = HEP-PH/0701064;%%
-  %46 citations counted in INSPIRE as of 09 Jun 2014
 
 %\cite{Athron:2010zz}
 \bibitem{Athron:2010zz} 
@@ -3392,142 +4085,7 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   %%CITATION = ARXIV:1205.5967;%%
   %4 citations counted in INSPIRE as of 13 Jun 2014
 
-%\cite{Nevzorov:2013tta}
-\bibitem{Nevzorov:2013tta} 
-  R.~Nevzorov and S.~Pakvasa,
-  %``Exotic Higgs decays in the $E_6$ inspired SUSY models,''
-  Phys.\ Lett.\ B {\bf 728}, 210 (2014)
-  [arXiv:1308.1021 [hep-ph]].
-  %%CITATION = ARXIV:1308.1021;%%
-  %2 citations counted in INSPIRE as of 13 Jun 2014
 
-%\cite{Nevzorov:2013ixa}
-\bibitem{Nevzorov:2013ixa} 
-  R.~Nevzorov,
-  %``Quasi-fixed point scenarios and the Higgs mass in the E6 inspired SUSY models,''
-  Phys.\ Rev.\ D {\bf 89}, 055010 (2014)
-  [arXiv:1309.4738 [hep-ph]].
-  %%CITATION = ARXIV:1309.4738;%%
-  %1 citations counted in INSPIRE as of 13 Jun 2014
-
-
-%\cite{Fayet:1977yc}
-\bibitem{Fayet:1977yc}
-  P.~Fayet,
-  %``Spontaneously Broken Supersymmetric Theories of Weak, Electromagnetic and Strong Interactions,''
-  Phys.\ Lett.\ B {\bf 69} (1977) 489.
-  %%CITATION = PHLTA,B69,489;%%
-  %817 citations counted in INSPIRE as of 04 Jun 2014
-%\cite{deCarlos:1997yv}
-%\cite{Suematsu:1994qm}
-\bibitem{Suematsu:1994qm} 
-  D.~Suematsu and Y.~Yamagishi,
-  %``Radiative symmetry breaking in a supersymmetric model with an extra U(1),''
-  Int.\ J.\ Mod.\ Phys.\ A {\bf 10}, 4521 (1995)
-  [hep-ph/9411239].
-  %%CITATION = HEP-PH/9411239;%%
-  %116 citations counted in INSPIRE as of 09 Jun 2014
-
-  %\cite{Cvetic:1995rj}
-\bibitem{Cvetic:1995rj} 
-  M.~Cvetic and P.~Langacker,
-  %``Implications of Abelian extended gauge structures from string models,''
-  Phys.\ Rev.\ D {\bf 54}, 3570 (1996)
-  [hep-ph/9511378].
-  %%CITATION = HEP-PH/9511378;%%
-  %207 citations counted in INSPIRE as of 09 Jun 2014
-
-
-\bibitem{deCarlos:1997yv} 
-  B.~de Carlos and J.~R.~Espinosa,
-  %``Cold dark matter candidate in a class of supersymmetric models with an extra U(1),''
-  Phys.\ Lett.\ B {\bf 407}, 12 (1997)
-  [hep-ph/9705315].
-  %%CITATION = HEP-PH/9705315;%%
-  %51 citations counted in INSPIRE as of 09 Jun 2014
-%\cite{Cvetic:1997ky}
-\bibitem{Cvetic:1997ky}
-  M.~Cvetic, D.~A.~Demir, J.~R.~Espinosa, L.~L.~Everett and P.~Langacker,
-  %``Electroweak breaking and the mu problem in supergravity models with an additional U(1),''
-  Phys.\ Rev.\ D {\bf 56} (1997) 2861
-   [Erratum-ibid.\ D {\bf 58} (1998) 119905]
-  [hep-ph/9703317].
-  %%CITATION = HEP-PH/9703317;%%
-  %237 citations counted in INSPIRE as of 04 Jun 2014
-
-%\cite{Demir:1998dk}
-\bibitem{Demir:1998dk} 
-  D.~A.~Demir and N.~K.~Pak,
-  %``One loop effects in supergravity models with an additional U(1),''
-  Phys.\ Rev.\ D {\bf 57}, 6609 (1998)
-  [hep-ph/9809357].
-  %%CITATION = HEP-PH/9809357;%%
-  %19 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{Langacker:1998tc}
-\bibitem{Langacker:1998tc} 
-  P.~Langacker and J.~Wang,
-  %``U(1)-prime symmetry breaking in supersymmetric E(6) models,''
-  Phys.\ Rev.\ D {\bf 58}, 115010 (1998)
-  [hep-ph/9804428].
-  %%CITATION = HEP-PH/9804428;%%
-  %108 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{Erler:2002pr}
-\bibitem{Erler:2002pr}
-  J.~Erler, P.~Langacker and T.~-j.~Li,
-  %``The $Z$ - $Z^\prime$ mass hierarchy in a supersymmetric model with a secluded U(1) -prime breaking sector,''
-  Phys.\ Rev.\ D {\bf 66} (2002) 015002
-  [hep-ph/0205001].
-  %%CITATION = HEP-PH/0205001;%%
-  %84 citations counted in INSPIRE as of 04 Jun 2014
-
-%\cite{Choi:2006fz}
-\bibitem{Choi:2006fz} 
-  S.~Y.~Choi, H.~E.~Haber, J.~Kalinowski and P.~M.~Zerwas,
-  %``The Neutralino sector in the U(1)-extended supersymmetric standard model,''
-  Nucl.\ Phys.\ B {\bf 778}, 85 (2007)
-  [hep-ph/0612218].
-  %%CITATION = HEP-PH/0612218;%%
-  %43 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{Ham:2007wc}
-\bibitem{Ham:2007wc} 
-  S.~W.~Ham and S.~K.~OH,
-  %``Electroweak phase transition in MSSM with U(1)-prime in explicit CP violation scenario,''
-  Phys.\ Rev.\ D {\bf 76}, 095018 (2007)
-  [arXiv:0708.1785 [hep-ph]].
-  %%CITATION = ARXIV:0708.1785;%%
-  %20 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{Langacker:2008yv}
-\bibitem{Langacker:2008yv} 
-  P.~Langacker,
-  %``The Physics of Heavy $Z^\prime$ Gauge Bosons,''
-  Rev.\ Mod.\ Phys.\  {\bf 81}, 1199 (2009)
-  [arXiv:0801.1345 [hep-ph]].
-  %%CITATION = ARXIV:0801.1345;%%
-  %519 citations counted in INSPIRE as of 09 Jun 2014
-
-%\cite{Ham:2008xf}
-\bibitem{Ham:2008xf} 
-  S.~W.~Ham, T.~Hur, P.~Ko and S.~K.~Oh,
-  %``Neutral scalar Higgs bosons in the USSM at the LHC,''
-  J.\ Phys.\ G {\bf 35}, 095007 (2008)
-  [arXiv:0801.2361 [hep-ph]].
-  %%CITATION = ARXIV:0801.2361;%%
-  %10 citations counted in INSPIRE as of 09 Jun 2014
-
-
-%\cite{Kalinowski:2008iq}
-\bibitem{Kalinowski:2008iq} 
-  J.~Kalinowski, S.~F.~King and J.~P.~Roberts,
-  %``Neutralino Dark Matter in the USSM,''
-  JHEP {\bf 0901}, 066 (2009)
-  [arXiv:0811.2204 [hep-ph]].
-  %%CITATION = ARXIV:0811.2204;%%
-  %30 citations counted in INSPIRE as of 09 Jun 2014
-%\cite{Bharucha:2013ela}
 
 %\cite{Batra:2003nj}
 \bibitem{Batra:2003nj} 
@@ -3537,14 +4095,6 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   [hep-ph/0309149].
   %%CITATION = HEP-PH/0309149;%%
   %174 citations counted in INSPIRE as of 12 Jun 2014
-%\cite{Medina:2009ey}
-\bibitem{Medina:2009ey} 
-  A.~D.~Medina, N.~R.~Shah and C.~E.~M.~Wagner,
-  %``A Heavy Higgs and a Light Sneutrino NLSP in the MSSM with Enhanced SU(2) D-terms,''
-  Phys.\ Rev.\ D {\bf 80}, 015001 (2009)
-  [arXiv:0904.1625 [hep-ph]].
-  %%CITATION = ARXIV:0904.1625;%%
-  %9 citations counted in INSPIRE as of 12 Jun 2014
 
 \bibitem{Bharucha:2013ela} 
   A.~Bharucha, A.~Goudelis and M.~McGarrie,
@@ -3642,6 +4192,59 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   [hep-ph/0305127].
   %%CITATION = HEP-PH/0305127;%%
   %99 citations counted in INSPIRE as of 04 Apr 2014
+
+\bibitem{slhaea} F.S.~Thomas http://fthomas.github.io/slhaea/
+
+\bibitem{hdecay}  A. Djouadi, M. Spira and P.M. Zerwas, Phys. Lett.  B {\bf 264}
+(1991) 440 and  Z. Phys. C {\bf 70} (1996) 427;  M. Spira {\it et al.}, Nucl.\
+Phys.\ B {\bf 453} (1995) 17;  A.~Djouadi, J.~Kalinowski and M.~Spira, Comput.
+Phys. Commun. {\bf 108} (1998) 56; J.~M.~Butterworth, A.~Arbey, L.~Basso, S.~Belov, A.~Bharucha, F.~Braam, A.~Buckley and M.~Campanelli {\it et al.},
+  %``The Tools and Monte Carlo working group Summary Report,''
+  arXiv:1003.1643 [hep-ph].
+%\cite{Muhlleitner:2003vg}
+\bibitem{sdecay} 
+  M.~Muhlleitner, A.~Djouadi and Y.~Mambrini,
+  %``SDECAY: A Fortran code for the decays of the supersymmetric particles in the MSSM,''
+  Comput.\ Phys.\ Commun.\  {\bf 168}, 46 (2005)
+  [hep-ph/0311167].
+  %%CITATION = HEP-PH/0311167;%%
+  %235 citations counted in INSPIRE as of 29 Oct 2014
+
+
+%\cite{Djouadi:2006bz}
+\bibitem{susyhit} 
+  A.~Djouadi, M.~M.~Muhlleitner and M.~Spira,
+  %``Decays of supersymmetric particles: The Program SUSY-HIT (SUspect-SdecaY-Hdecay-InTerface),''
+  Acta Phys.\ Polon.\ B {\bf 38}, 635 (2007)
+  [hep-ph/0609292].
+  %%CITATION = HEP-PH/0609292;%%
+  %238 citations counted in INSPIRE as of 29 Oct 2014
+
+%\cite{Wells:2003tf}
+\bibitem{Wells:2003tf} 
+  J.~D.~Wells,
+  %``Implications of supersymmetry breaking with a little hierarchy between gauginos and scalars,''
+  hep-ph/0306127.
+  %%CITATION = HEP-PH/0306127;%%
+  %81 citations counted in INSPIRE as of 05 Nov 2014
+
+%\cite{ArkaniHamed:2004fb}
+\bibitem{ArkaniHamed:2004fb} 
+  N.~Arkani-Hamed and S.~Dimopoulos,
+  %``Supersymmetric unification without low energy supersymmetry and signatures for fine-tuning at the LHC,''
+  JHEP {\bf 0506}, 073 (2005)
+  [hep-th/0405159].
+  %%CITATION = HEP-TH/0405159;%%
+  %772 citations counted in INSPIRE as of 05 Nov 2014
+%\cite{Giudice:2004tc}
+\bibitem{Giudice:2004tc}
+  G.~F.~Giudice and A.~Romanino,
+  %``Split supersymmetry,''
+  Nucl.\ Phys.\ B {\bf 699} (2004) 65
+   [Erratum-ibid.\ B {\bf 706} (2005) 65]
+  [hep-ph/0406088].
+  %%CITATION = HEP-PH/0406088;%%
+  %576 citations counted in INSPIRE as of 05 Nov 2014
 
 %\cite{Degrassi:2009yq}
 \bibitem{Degrassi:2009yq} 
@@ -3755,14 +4358,7 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   %%CITATION = HEP-PH/9311340;%%
   %568 citations counted in INSPIRE as of 24 Sep 2013
 
-%\cite{Fonseca:2011vn}
-\bibitem{Fonseca:2011vn}
-  R.~M.~Fonseca, M.~Malinsky, W.~Porod and F.~Staub,
-  %``Running soft parameters in SUSY models with multiple U(1) gauge factors,''
-  Nucl.\ Phys.\ B {\bf 854} (2012) 28
-  [arXiv:1107.2670 [hep-ph]].
-  %%CITATION = ARXIV:1107.2670;%%
-  %29 citations counted in INSPIRE as of 21 Feb 2014
+
 
 %\cite{Yam94}
 \bibitem{Yam94} 
@@ -3772,6 +4368,41 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   [hep-ph/9401241].
   %%CITATION = HEP-PH/9401241;%%
   %225 citations counted in INSPIRE as of 24 Sep 2013
+%\cite{}
+\bibitem{Jack:1994kd} 
+  I.~Jack and D.~R.~T.~Jones,
+  %``Soft supersymmetry breaking and finiteness,''
+  Phys.\ Lett.\ B {\bf 333}, 372 (1994)
+  [hep-ph/9405233].
+  %%CITATION = HEP-PH/9405233;%%
+  %195 citations counted in INSPIRE as of 14 Nov 2014
+
+%\cite{Jack:1994rk}
+\bibitem{Jack:1994rk} 
+  I.~Jack, D.~R.~T.~Jones, S.~P.~Martin, M.~T.~Vaughn and Y.~Yamada,
+  %``Decoupling of the epsilon scalar mass in softly broken supersymmetry,''
+  Phys.\ Rev.\ D {\bf 50}, 5481 (1994)
+  [hep-ph/9407291].
+  %%CITATION = HEP-PH/9407291;%%
+  %170 citations counted in INSPIRE as of 14 Nov 2014
+
+%\cite{Fonseca:2011vn}
+\bibitem{Fonseca:2011vn}
+  R.~M.~Fonseca, M.~Malinsky, W.~Porod and F.~Staub,
+  %``Running soft parameters in SUSY models with multiple U(1) gauge factors,''
+  Nucl.\ Phys.\ B {\bf 854} (2012) 28
+  [arXiv:1107.2670 [hep-ph]].
+  %%CITATION = ARXIV:1107.2670;%%
+  %29 citations counted in INSPIRE as of 21 Feb 2014
+
+%\cite{Goodsell:2012fm}
+\bibitem{Goodsell:2012fm} 
+  M.~D.~Goodsell,
+  %``Two-loop RGEs with Dirac gaugino masses,''
+  JHEP {\bf 1301}, 066 (2013)
+  [arXiv:1206.6697 [hep-ph]].
+  %%CITATION = ARXIV:1206.6697;%%
+  %23 citations counted in INSPIRE as of 14 Nov 2014
 
 %\cite{Sperling:2013eva}
 \bibitem{Sperling:2013eva}
@@ -3791,6 +4422,9 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   %%CITATION = ARXIV:1310.7629;%%
   %4 citations counted in INSPIRE as of 21 Feb 2014
 
+
+
+
 %\cite{Beringer:1900zz}
 \bibitem{Beringer:1900zz}
   J.~Beringer {\it et al.}  [Particle Data Group Collaboration],
@@ -3806,6 +4440,15 @@ White, Phys. Rev. D {\bf 49} (1994) 2435; S.F. King and P.L. White, Phys. Rev. D
   Nucl.\ Phys.\ B {\bf 178} (1981) 75.
   %%CITATION = NUPHA,B178,75;%%
   %265 citations counted in INSPIRE as of 10 May 2014
+
+%\cite{Avdeev:1997sz}
+\bibitem{Avdeev:1997sz}
+  L.~V.~Avdeev and M.~Y.~Kalmykov,
+  %``Pole masses of quarks in dimensional reduction,''
+  Nucl.\ Phys.\ B {\bf 502} (1997) 419
+  [hep-ph/9701308].
+  %%CITATION = HEP-PH/9701308;%%
+  %66 citations counted in INSPIRE as of 28 Nov 2014
 
 %\cite{Bednyakov:2002sf}
 \bibitem{Bednyakov:2002sf}
@@ -3957,20 +4600,12 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   %%CITATION = PRLTA,57,961;%%
   %582 citations counted in INSPIRE as of 28 Oct 2013
 
-\bibitem{3-loop MSSM betas}
-  I.~Jack and D.~R.~T.~Jones, \ptitle{
-    3-loop MSSM beta functions,}
-  \url{http://www.liv.ac.uk/~dij/betas}.
-
-\bibitem{Harlander:2005wm}
-  R.~Harlander, L.~Mihaila and M.~Steinhauser,
-  %``Two-loop matching coefficients for the strong coupling in the MSSM,''
-  Phys.\ Rev.\ D {\bf 72} (2005) 095009
-  [hep-ph/0509048].
-  %%CITATION = HEP-PH/0509048;%%
-  %27 citations counted in INSPIRE as of 05 Jun 2014
-
-
+\bibitem{Allanach:2014nba}
+  B.~C.~Allanach, A.~Bednyakov and R.~Ruiz de Austri,
+  %``Higher Order Corrections and Unification in the Minimal Supersymmetric Standard Model: SOFTSUSY3.5.0,''
+  arXiv:1407.6130 [hep-ph].
+  %%CITATION = ARXIV:1407.6130;%%
+  %2 citations counted in INSPIRE as of 03 Nov 2014
 
 %\cite{Athron:2009ue}
 \bibitem{Athron:2009ue} 
@@ -3993,25 +4628,6 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
 
 
 
-%\cite{Athron:2011wu}
-\bibitem{Athron:2011wu} 
-  P.~Athron, S.~F.~King, D.~J.~Miller, S.~Moretti and R.~Nevzorov,
-  %``LHC Signatures of the Constrained Exceptional Supersymmetric Standard Model,''
-  Phys.\ Rev.\ D {\bf 84}, 055006 (2011)
-  [arXiv:1102.4363 [hep-ph]].
-  %%CITATION = ARXIV:1102.4363;%%
-  %25 citations counted in INSPIRE as of 09 Jun 2014
-
-  
-%\cite{Athron:2012sq}
-\bibitem{Athron:2012sq} 
-  P.~Athron, S.~F.~King, D.~J.~Miller, S.~Moretti and R.~Nevzorov,
-  %``Constrained Exceptional Supersymmetric Standard Model with a Higgs Near 125 GeV,''
-  Phys.\ Rev.\ D {\bf 86}, 095003 (2012)
-  [arXiv:1206.5028 [hep-ph]].
-  %%CITATION = ARXIV:1206.5028;%%
-  %21 citations counted in INSPIRE as of 09 Jun 2014
-
 %\cite{Athron:2012pw}
 \bibitem{Athron:2012pw}
   P.~Athron, D.~Stockinger and A.~Voigt,
@@ -4021,14 +4637,19 @@ Large Muon- and electron-Number Nonconservation in Supergravity Theories,}
   %%CITATION = ARXIV:1209.1470;%%
   %5 citations counted in INSPIRE as of 03 Jun 2014
 
-  %\cite{Athron:2013ipa}
-\bibitem{Athron:2013ipa} 
-  P.~Athron, M.~Binjonaid and S.~F.~King,
-  %``Fine Tuning in the Constrained Exceptional Supersymmetric Standard Model,''
-  Phys.\ Rev.\ D {\bf 87}, no. 11, 115023 (2013)
-  [arXiv:1302.5291 [hep-ph]].
-  %%CITATION = ARXIV:1302.5291;%%
-  %10 citations counted in INSPIRE as of 09 Jun 2014
+
+\bibitem{3-loop MSSM betas}
+  I.~Jack and D.~R.~T.~Jones, \ptitle{
+    3-loop MSSM beta functions,}
+  \url{http://www.liv.ac.uk/~dij/betas}.
+
+\bibitem{Harlander:2005wm}
+  R.~Harlander, L.~Mihaila and M.~Steinhauser,
+  %``Two-loop matching coefficients for the strong coupling in the MSSM,''
+  Phys.\ Rev.\ D {\bf 72} (2005) 095009
+  [hep-ph/0509048].
+  %%CITATION = HEP-PH/0509048;%%
+  %27 citations counted in INSPIRE as of 05 Jun 2014
 
 \end{thebibliography}
 \end{document}

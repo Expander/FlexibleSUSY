@@ -7,9 +7,15 @@ SARAH_MODEL  := @MODEL@
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
 
-@CLASSNAME@_TWO_SCALE_MK := \
-		$(DIR)/two_scale_susy.mk \
+@CLASSNAME@_TWO_SCALE_SUSY_MK := \
+		$(DIR)/two_scale_susy.mk
+
+@CLASSNAME@_TWO_SCALE_SOFT_MK := \
 		$(DIR)/two_scale_soft.mk
+
+@CLASSNAME@_TWO_SCALE_MK := \
+		$(@CLASSNAME@_TWO_SCALE_SUSY_MK) \
+		$(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 
 @CLASSNAME@_SLHA_INPUT := \
 @SLHA_INPUT@
@@ -29,6 +35,7 @@ LIB@CLASSNAME@_HDR :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_info.cpp \
+		$(DIR)/@CLASSNAME@_input_parameters.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
 		$(DIR)/@CLASSNAME@_physical.cpp \
 		$(DIR)/@CLASSNAME@_utilities.cpp \
@@ -37,11 +44,13 @@ LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_two_scale_initial_guesser.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_model.cpp \
+		$(DIR)/@CLASSNAME@_two_scale_model_slha.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
+		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \
 		$(DIR)/scan_@CLASSNAME@.cpp
 LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
@@ -51,6 +60,7 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_input_parameters.hpp \
 		$(DIR)/@CLASSNAME@_low_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_model.hpp \
+		$(DIR)/@CLASSNAME@_model_slha.hpp \
 		$(DIR)/@CLASSNAME@_physical.hpp \
 		$(DIR)/@CLASSNAME@_slha_io.hpp \
 		$(DIR)/@CLASSNAME@_spectrum_generator.hpp \
@@ -61,6 +71,7 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_two_scale_initial_guesser.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_low_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_model.hpp \
+		$(DIR)/@CLASSNAME@_two_scale_model_slha.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp
@@ -69,17 +80,17 @@ ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
 ifneq ($(MAKECMDGOALS),release)
 ifneq ($(MAKECMDGOALS),doc)
--include $(DIR)/two_scale_susy.mk
--include $(DIR)/two_scale_soft.mk
+-include $(@CLASSNAME@_TWO_SCALE_SUSY_MK)
+-include $(@CLASSNAME@_TWO_SCALE_SOFT_MK)
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),pack-$(MODNAME)-src)
 ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
-$(DIR)/two_scale_susy.mk: run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SUSY_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
-$(DIR)/two_scale_soft.mk: run-metacode-$(MODNAME)
+$(@CLASSNAME@_TWO_SCALE_SOFT_MK): run-metacode-$(MODNAME)
 		@$(CONVERT_DOS_PATHS) $@
 endif
 endif
@@ -116,6 +127,9 @@ LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 RUN_@CLASSNAME@_OBJ := $(DIR)/run_@CLASSNAME@.o
 RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
+
+RUN_CMD_LINE_@CLASSNAME@_OBJ := $(DIR)/run_cmd_line_@CLASSNAME@.o
+RUN_CMD_LINE_@CLASSNAME@_EXE := $(DIR)/run_cmd_line_@CLASSNAME@.x
 
 SCAN_@CLASSNAME@_OBJ := $(DIR)/scan_@CLASSNAME@.o
 SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
@@ -170,6 +184,7 @@ clean-$(MODNAME): clean-$(MODNAME)-src
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIB@CLASSNAME@)
 		-rm -f $(RUN_@CLASSNAME@_EXE)
+		-rm -f $(RUN_CMD_LINE_@CLASSNAME@_EXE)
 		-rm -f $(SCAN_@CLASSNAME@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
@@ -217,10 +232,13 @@ $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 $(RUN_@CLASSNAME@_EXE): $(RUN_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
+$(RUN_CMD_LINE_@CLASSNAME@_EXE): $(RUN_CMD_LINE_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+
 $(SCAN_@CLASSNAME@_EXE): $(SCAN_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP)
 ALLSRC += $(LIB@CLASSNAME@_SRC) $(EXE@CLASSNAME@_SRC)
 ALLLIB += $(LIB@CLASSNAME@)
-ALLEXE += $(RUN_@CLASSNAME@_EXE) $(SCAN_@CLASSNAME@_EXE)
+ALLEXE += $(RUN_@CLASSNAME@_EXE) $(RUN_CMD_LINE_@CLASSNAME@_EXE) $(SCAN_@CLASSNAME@_EXE)

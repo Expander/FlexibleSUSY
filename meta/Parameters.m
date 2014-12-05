@@ -27,6 +27,7 @@ RestoreParameter::usage="Restore parameters from local variables";
 GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
+GetTypeFromDimension::usage="";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -70,6 +71,9 @@ independent parameters of a real symmetric nxn matrix";
 
 ClearPhases::usage="";
 
+ExpandExpressions::usage="";
+AppendGenerationIndices::usage="";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -112,9 +116,10 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
+                       Cases[compactExpr, a_[__] /; MemberQ[allInputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
                      };
@@ -230,7 +235,7 @@ GetTypeFromDimension[sym_, {}] :=
        CConversion`ScalarType[CConversion`complexScalarCType]
       ];
 
-GetTypeFromDimension[sym_, {1}] :=
+GetTypeFromDimension[sym_, {0|1}] :=
     GetTypeFromDimension[sym, {}];
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
@@ -247,6 +252,21 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`realScalarCType, num1, num2],
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
+
+GetTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
+GetTypeFromDimension[{0}] :=
+    GetTypeFromDimension[{}];
+
+GetTypeFromDimension[{1}] :=
+    GetTypeFromDimension[{}];
+
+GetTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`realScalarCType, num];
+
+GetTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
@@ -519,9 +539,10 @@ SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
           ];
 
 SaveParameterLocally[parameter_, prefix_String, caller_String] :=
-    Module[{ parStr },
-           parStr = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStr <> " = " <>
+    Module[{ parStr, parStrSym },
+           parStr = CConversion`RValueToCFormString[parameter];
+           parStrSym = CConversion`ToValidCSymbolString[parameter];
+           "const auto " <> prefix <> parStrSym <> " = " <>
            If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
           ];
 
@@ -534,11 +555,12 @@ RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
           ];
 
 RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
-    Module[{ parStr },
-           parStr = CConversion`ToValidCSymbolString[parameter];
+    Module[{ parStr, parStrSym },
+           parStr = CConversion`RValueToCFormString[parameter];
+           parStrSym = CConversion`ToValidCSymbolString[parameter];
            If[modelPtr != "",
-              SetParameter[parameter, prefix <> parStr, modelPtr],
-              CConversion`ToValidCSymbolString[parameter] <> " = " <> prefix <> parStr <> ";\n"]
+              SetParameter[parameter, prefix <> parStrSym, modelPtr],
+              parStr <> " = " <> prefix <> parStrSym <> ";\n"]
           ];
 
 RemoveProtectedHeads[expr_] :=
@@ -578,7 +600,7 @@ CreateLocalConstRefs[expr_] :=
 CreateLocalConstRefsForPhysicalParameters[expr_] :=
     Module[{result = "", symbols, outputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
                        Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
@@ -592,7 +614,7 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
 CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", symbols, modelPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, Infinity],
+           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
                        Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
@@ -603,7 +625,7 @@ CreateLocalConstRefsForBetas[expr_] :=
 CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
     Module[{result = "", symbols, inputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = Cases[compactExpr, _Symbol, Infinity];
+           symbols = Cases[compactExpr, _Symbol, {0,Infinity}];
            symbols = DeleteDuplicates[Flatten[symbols]];
            inputPars = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, head])& /@ inputPars;
@@ -642,7 +664,7 @@ DecreaseIndexLiterals[expr_] :=
 
 DecreaseIndexLiterals[expr_, heads_List] :=
     Module[{indexedSymbols, rules, decrExpr, allHeads},
-           allHeads = Join[heads, {SARAH`Delta, SARAH`ThetaStep}];
+           allHeads = Join[heads /. FlexibleSUSY`M -> Identity, {SARAH`Delta, SARAH`ThetaStep}];
            indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
            rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
            decrExpr = expr /. rules;
@@ -689,6 +711,51 @@ ClearPhase[phase_] :=
 
 ClearPhases[phases_List] :=
     StringJoin[ClearPhase /@ phases];
+
+AppendGenerationIndices[expr_List] :=
+    AppendGenerationIndices /@ expr;
+
+AppendGenerationIndices[expr_Symbol] :=
+    Switch[SARAH`getDimParameters[expr],
+           {}                          , expr,
+           {0}                         , expr,
+           {1}                         , expr,
+           {idx_}                      , expr[SARAH`gt1],
+           {idx1_, idx2_}              , expr[SARAH`gt1, SARAH`gt2],
+           {idx1_, idx2_, idx3_}       , expr[SARAH`gt1, SARAH`gt2, SARAH`gt3],
+           {idx1_, idx2_, idx3_, idx4_}, expr[SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4]
+          ];
+
+AppendGenerationIndices[expr_] := expr;
+
+(*
+ * Expands a list of expressions of the form
+ *
+ *   { {1 + A[SARAH`gt1]},
+ *     {1 + B[SARAH`gt2]} }
+ *
+ * to
+ *
+ *   { {1 + A[1]}, {1 + A[2]}, {1 + A[3]},
+ *     {1 + B[1]}, {1 + B[2]}, {1 + B[3]} }
+ *
+ * where the indices SARAH`gt1 and SARAH`gt2 are assumed to run from 1
+ * to 3.
+ *)
+ExpandExpressions[eqs_List] :=
+    Module[{result = {}, i, expanded},
+           For[i = 1, i <= Length[eqs], i++,
+               expanded = {eqs[[i]]};
+               If[!FreeQ[expanded, SARAH`gt1],
+                  expanded = Table[expanded, {SARAH`gt1, 1, 3}];
+                 ];
+               If[!FreeQ[expanded, SARAH`gt2],
+                  expanded = Table[expanded, {SARAH`gt2, 1, 3}];
+                 ];
+               result = Join[result, Flatten[expanded]];
+              ];
+           Return[result];
+          ];
 
 End[];
 

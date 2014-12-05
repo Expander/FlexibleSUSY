@@ -39,7 +39,7 @@ void test_tree_level_ewsb(const SMSSM_input_parameters& input)
    m.set_ewsb_iteration_precision(precision);
    const int error = m.solve_ewsb_tree_level();
 
-   BOOST_CHECK_EQUAL(error, 0);
+   BOOST_REQUIRE(error == 0);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), precision);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), precision);
    BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), precision);
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_tadpoles )
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {
       INFO("FlexibleSUSY problem detected: ");
-      m.get_problems().print();
+      m.get_problems().print_problems();
       INFO("");
    }
    BOOST_REQUIRE(!m.get_problems().have_problem());
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    // chech that there this is a valid point
    if (m.get_problems().have_problem()) {
       INFO("FlexibleSUSY problem detected: ");
-      m.get_problems().print();
+      m.get_problems().print_problems();
       INFO("");
    }
    BOOST_REQUIRE(!m.get_problems().have_problem());

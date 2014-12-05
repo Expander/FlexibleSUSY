@@ -21,16 +21,18 @@
 #ifndef @ModelName@_SLHA_IO_H
 #define @ModelName@_SLHA_IO_H
 
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model_slha.hpp"
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_physical.hpp"
 #include "slha_io.hpp"
 #include "ckm.hpp"
+#include "ew_input.hpp"
 
 #include <Eigen/Core>
 #include <string>
 #include <utility>
 
+#define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -38,6 +40,7 @@
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
+#define SM(p) Electroweak_constants::p
 
 namespace flexiblesusy {
 
@@ -53,14 +56,17 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
-   template <class T> void fill(@ModelName@<T>&) const;
+   template <class T> void fill(@ModelName@_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_input_scale() const;
    double get_parameter_output_scale() const;
+   const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const @ModelName@_input_parameters&);
+   template <class T> void set_extra(const @ModelName@_slha<T>&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
+   template <class T> void set_spectrum(const @ModelName@_slha<T>&);
    template <class T> void set_spectrum(const @ModelName@<T>&);
    void set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>&);
    void write_to_file(const std::string&);
@@ -70,20 +76,27 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
+   static void convert_to_slha_convention(@ModelName@_physical&);
+
+   template <class T>
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd& qedqcd);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd& qedqcd);
+
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;
    static char const * const drbar_blocks[NUMBER_OF_DRBAR_BLOCKS];
 
-   static void convert_to_slha_convention(@ModelName@_physical&);
    void set_mass(const @ModelName@_physical&, bool);
    void set_mixing_matrices(const @ModelName@_physical&, bool);
-   template <class T> void set_model_parameters(const @ModelName@<T>&);
+   template <class T> void set_model_parameters(const @ModelName@_slha<T>&);
    template <class T> void set_ckm(const @ModelName@<T>&);
    void set_ckm(const Eigen::Matrix<std::complex<double>,3,3>&, const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
-   template <class T> void fill_drbar_parameters(@ModelName@<T>&) const;
-   template <class T> void fill_physical(@ModelName@<T>&) const;
+   template <class T> void fill_drbar_parameters(@ModelName@_slha<T>&) const;
+   template <class T> void fill_physical(@ModelName@_slha<T>&) const;
 };
 
 /**
@@ -91,7 +104,7 @@ private:
  * SLHA output file.
  */
 template <class T>
-void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
+void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 {
    fill_drbar_parameters(model);
    fill_physical(model);
@@ -101,7 +114,7 @@ void @ModelName@_slha_io::fill(@ModelName@<T>& model) const
  * Reads DR-bar parameters from a SLHA output file.
  */
 template <class T>
-void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@<T>& model) const
+void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_slha<T>& model) const
 {
 @readLesHouchesOutputParameters@
 
@@ -112,9 +125,39 @@ void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@<T>& model) const
  * Reads pole masses and mixing matrices from a SLHA output file.
  */
 template <class T>
-void @ModelName@_slha_io::fill_physical(@ModelName@<T>& model) const
+void @ModelName@_slha_io::fill_physical(@ModelName@_slha<T>& model) const
 {
 @readLesHouchesPhyicalParameters@
+}
+
+template <class T>
+void @ModelName@_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+{
+   @ModelName@_slha_io slha_io;
+   const @ModelName@_input_parameters& input = model.get_input();
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
+      = model.get_problems();
+   const bool error = problems.have_problem();
+
+   slha_io.set_spinfo(problems);
+   slha_io.set_sminputs(qedqcd);
+   slha_io.set_minpar(input);
+   slha_io.set_extpar(input);
+   if (!error) {
+      slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
+   }
+
+   slhaea = slha_io.get_slha_io().get_data();
+}
+
+template <class T>
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+{
+   SLHAea::Coll slhaea;
+   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd);
+
+   return slhaea;
 }
 
 /**
@@ -123,23 +166,47 @@ void @ModelName@_slha_io::fill_physical(@ModelName@<T>& model) const
  * @param model model class
  */
 template <class T>
-void @ModelName@_slha_io::set_model_parameters(const @ModelName@<T>& model)
+void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
 {
 @writeSLHAModelParametersBlocks@
+}
+
+/**
+ * Writes extra SLHA blocks
+ *
+ * @param model model class
+ */
+template <class T>
+void @ModelName@_slha_io::set_extra(const @ModelName@_slha<T>& model)
+{
+   const @ModelName@_physical physical(model.get_physical_slha());
+
+@writeExtraSLHAOutputBlock@
 }
 
 /**
  * Stores the model (DR-bar) parameters, masses and mixing matrices in
  * the SLHA object.
  *
- * @param model model class
+ * @param model model class in BPMZ convention
  */
 template <class T>
 void @ModelName@_slha_io::set_spectrum(const @ModelName@<T>& model)
 {
-   @ModelName@_physical physical(model.get_physical());
-   convert_to_slha_convention(physical);
+   const @ModelName@_slha<T> model_slha(model);
+   set_spectrum(model_slha);
+}
 
+/**
+ * Stores the model (DR-bar) parameters, masses and mixing matrices in
+ * the SLHA object.
+ *
+ * @param model model class in SLHA convention
+ */
+template <class T>
+void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
+{
+   const @ModelName@_physical physical(model.get_physical_slha());
    const bool write_sm_masses = model.do_calculate_sm_pole_masses();
 
    set_model_parameters(model);

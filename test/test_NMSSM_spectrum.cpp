@@ -79,7 +79,7 @@ public:
       nmpars(4) = 0.;
       nmpars(5) = 0.;
 
-      softSusy.setAlternativeMs(true);
+      softSusy.setAlternativeMs(false);
       softSusy.lowOrg(NmssmMsugraBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
                       oneset, gaugeUnification);
       mx = softSusy.displayMxBC();
@@ -123,11 +123,11 @@ public:
    void set_high_scale_constraint(NMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
    void setup_default_constaints(const NMSSM_input_parameters& pp, const QedQcd& oneset) {
       if (!high_constraint)
-         high_constraint = new NMSSM_high_scale_constraint<Two_scale>(pp);
+         high_constraint = new NMSSM_high_scale_constraint<Two_scale>(&mssm, pp);
       if (!susy_constraint)
-         susy_constraint = new NMSSM_susy_scale_constraint<Two_scale>(pp);
+         susy_constraint = new NMSSM_susy_scale_constraint<Two_scale>(&mssm, pp);
       if (!low_constraint)
-         low_constraint = new NMSSM_low_scale_constraint<Two_scale>(pp, oneset);
+         low_constraint = new NMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
    }
    void test(const NMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints(pp, oneset);
@@ -191,7 +191,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    pp.LambdaInput = 0.1;
    pp.SignvS = 1;
 
-   const NMSSM_high_scale_constraint<Two_scale> high_constraint(pp);
+   NMSSM<Two_scale> _model;
+   const NMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    NMSSM_tester nmssm_tester;

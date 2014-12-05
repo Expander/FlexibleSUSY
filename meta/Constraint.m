@@ -57,10 +57,22 @@ GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
 ApplyConstraint[{parameter_, value_}, modelName_String] :=
     Parameters`SetParameter[parameter, value, modelName];
 
-ApplyConstraint[{parameter_ /; MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
+ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
+                 value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
+                modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
-ApplyConstraint[{parameter_, value_ /; value === Automatic}, modelName_String] :=
+ApplyConstraint[{parameter_ /; parameter === SARAH`DownYukawa,
+                 value_ /; (!FreeQ[value, Global`bottomDRbar] || value === Automatic)},
+                modelName_String] :=
+    "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
+
+ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
+                 value_ /; (!FreeQ[value, Global`electronDRbar] || value === Automatic)},
+                modelName_String] :=
+    "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
+
+ApplyConstraint[{parameter_ /; !MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
     Block[{},
           Print["Error: cannot determine ", parameter, " automatically!"];
           Quit[1];
@@ -130,7 +142,8 @@ ApplyConstraint[FlexibleSUSY`FSMinimize[parameters_List, function_], modelName_S
 
 CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_List] :=
 "struct " <> className <> " {
-   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f) {
+   static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f)
+   {
       if (contains_nan(x, " <> dim <> "))
          return 1;
 
@@ -399,7 +412,7 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
           ];
 
 CalculateScaleFromExpr[expr_, scaleName_String] :=
-    scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, TreeMasses`GetParticles[]]] <> ";\n";
+    scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
 DefineParameter[parameter_Symbol] :=
     CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>

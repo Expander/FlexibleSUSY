@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_higgs_iteration
+#define BOOST_TEST_MODULE test_CMSSM_higgs_iteration
 
 #include <boost/test/unit_test.hpp>
 #include <gsl/gsl_vector.h>
@@ -16,14 +16,14 @@
 #include "wrappers.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
-#include "MSSM_two_scale_susy_scale_constraint.hpp"
-#include "MSSM_two_scale_low_scale_constraint.hpp"
-#include "MSSM_two_scale_convergence_tester.hpp"
-#include "MSSM_two_scale_initial_guesser.hpp"
-#include "test_MSSM.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_input_parameters.hpp"
+#include "CMSSM_two_scale_high_scale_constraint.hpp"
+#include "CMSSM_two_scale_susy_scale_constraint.hpp"
+#include "CMSSM_two_scale_low_scale_constraint.hpp"
+#include "CMSSM_two_scale_convergence_tester.hpp"
+#include "CMSSM_two_scale_initial_guesser.hpp"
+#include "test_CMSSM.hpp"
 
 #define SM(p) Electroweak_constants::p
 #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
@@ -34,15 +34,15 @@ BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
    Minimizer<2> minimizer2(minimizer1);
 }
 
-BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
+BOOST_AUTO_TEST_CASE( test_CMSSM_higgs_iteration )
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
    input.TanBeta = 10.;
    input.SignMu = 1;
    input.Azero = 0.;
-   MSSM<Two_scale> model(input);
+   CMSSM<Two_scale> model(input);
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_MSSM_higgs_iteration )
          if (contains_nan(x, 2))
             return std::numeric_limits<double>::max();
 
-         MSSM<Two_scale>* model = static_cast<MSSM<Two_scale>*>(params);
+         CMSSM<Two_scale>* model = static_cast<CMSSM<Two_scale>*>(params);
 
          const double vd = gsl_vector_get(x, 0);
          const double vu = gsl_vector_get(x, 1);

@@ -22,7 +22,6 @@
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_spectrum_generator.hpp"
 
-#include "error.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
 #include "command_line_options.hpp"
@@ -88,11 +87,12 @@ int main(int argc, const char* argv[])
       spectrum_generator_settings.get(Spectrum_generator_settings::beta_loop_order));
    spectrum_generator.set_threshold_corrections_loop_order(
       spectrum_generator_settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   spectrum_generator.set_higgs_2loop_corrections(
+      spectrum_generator_settings.get_higgs_2loop_corrections());
 
    spectrum_generator.run(oneset, input);
 
-   const @ModelName@<algorithm_type>& model
-      = spectrum_generator.get_model();
+   const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& problems
       = spectrum_generator.get_problems();
 
@@ -101,8 +101,10 @@ int main(int argc, const char* argv[])
    slha_io.set_sminputs(oneset);
    slha_io.set_minpar(input);
    slha_io.set_extpar(input);
-   if (!problems.have_serious_problem())
+   if (!problems.have_problem()) {
       slha_io.set_spectrum(model);
+      slha_io.set_extra(model);
+   }
 
    if (slha_output_file.empty()) {
       slha_io.write_to_stream(std::cout);

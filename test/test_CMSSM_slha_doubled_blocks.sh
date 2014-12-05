@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# This checks that doubled SLHA input blocks do not change the output
+# spectrum
+
+BASEDIR=$(dirname $0)
+
+mssm_exe="$BASEDIR/../models/CMSSM/run_CMSSM.x"
+mssm_input="$BASEDIR/test_CMSSM_slha_doubled_blocks.spc.in"
+mssm_output="$BASEDIR/test_CMSSM_slha_doubled_blocks.spc.out"
+
+diff_cmd=`command -v diff`
+
+if [ -z "$diff_cmd" ]; then
+    echo "Error: diff command not found"
+    exit 1
+fi
+
+if test ! -x "$mssm_exe"; then
+    echo "Error: CMSSM spectrum generator not found: $mssm_exe"
+    exit 1
+fi
+
+echo -n "running CCMSSM point ... "
+$mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
+echo "done"
+echo "CCMSSM SLHA input file:  $mssm_input"
+echo "CCMSSM SLHA output file: $mssm_output"
+
+# append redundant SMINPUTS block
+mssm_input_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_sminputs.spc.in"
+mssm_output_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_sminputs.spc.out"
+
+cp $mssm_input $mssm_input_appended_sminputs
+echo "Block SMINPUTS" >> $mssm_input_appended_sminputs
+
+echo -n "running CCMSSM point with extra appended SMINPUTS block ... "
+$mssm_exe --slha-input-file=$mssm_input_appended_sminputs --slha-output-file=$mssm_output_appended_sminputs
+echo "done"
+echo "CCMSSM SLHA input file:  $mssm_input_appended_sminputs"
+echo "CCMSSM SLHA output file: $mssm_output_appended_sminputs"
+
+difference=`$diff_cmd $mssm_output $mssm_output_appended_sminputs`
+
+if [ -n "$difference" ]; then
+    echo "Error: difference between $mssm_output and $mssm_output_appended_sminputs not empty!"
+    echo "$difference"
+    exit 1
+else
+    echo "Difference between $mssm_output and $mssm_output_appended_sminputs is empty"
+    echo "OK"
+fi

@@ -25,6 +25,9 @@
  * Contains the definition of the @ModelName@ model class methods
  * which solve EWSB and calculate pole masses and mixings from DRbar
  * parameters.
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
 #include "@ModelName@_two_scale_model.hpp"
@@ -56,16 +59,18 @@ using namespace @ModelName@_info;
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 
-#ifdef ENABLE_THREADS
-std::mutex CLASSNAME::mtx_fortran;
-#endif
+#define HIGGS_2LOOP_CORRECTION_AT_AS     higgs_2loop_corrections.at_as
+#define HIGGS_2LOOP_CORRECTION_AB_AS     higgs_2loop_corrections.ab_as
+#define HIGGS_2LOOP_CORRECTION_AT_AT     higgs_2loop_corrections.at_at
+#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU higgs_2loop_corrections.atau_atau
 
 #ifdef ENABLE_THREADS
-#define LOCK_MUTEX() mtx_fortran.lock()
-#define UNLOCK_MUTEX() mtx_fortran.unlock()
+   std::mutex CLASSNAME::mtx_fortran;
+   #define LOCK_MUTEX() mtx_fortran.lock()
+   #define UNLOCK_MUTEX() mtx_fortran.unlock()
 #else
-#define LOCK_MUTEX()
-#define UNLOCK_MUTEX()
+   #define LOCK_MUTEX()
+   #define UNLOCK_MUTEX()
 #endif
 
 CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
@@ -80,6 +85,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
    , problems(@ModelName@_info::particle_names)
+   , higgs_2loop_corrections()
 #ifdef ENABLE_THREADS
    , thread_exception()
 #endif
@@ -106,6 +112,11 @@ bool CLASSNAME::do_calculate_sm_pole_masses() const
 void CLASSNAME::set_ewsb_loop_order(unsigned loop_order)
 {
    ewsb_loop_order = loop_order;
+}
+
+void CLASSNAME::set_higgs_2loop_corrections(const Higgs_2loop_corrections& higgs_2loop_corrections_)
+{
+   higgs_2loop_corrections = higgs_2loop_corrections_;
 }
 
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
@@ -341,6 +352,7 @@ void CLASSNAME::print(std::ostream& ostr) const
 @printMixingMatrices@
    physical.print(ostr);
 }
+
 /**
  * wrapper routines for passarino Veltman functions
  */
@@ -466,7 +478,7 @@ void CLASSNAME::calculate_spectrum()
    else
       reorder_pole_masses();
 
-   if (problems.have_serious_problem()) {
+   if (problems.have_problem()) {
       clear_DRbar_parameters();
       physical.clear();
    }

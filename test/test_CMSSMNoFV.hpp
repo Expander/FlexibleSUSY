@@ -1,6 +1,6 @@
 
-#ifndef TEST_MSSMNOFV_H
-#define TEST_MSSMNOFV_H
+#ifndef TEST_CMSSMNOFV_H
+#define TEST_CMSSMNOFV_H
 
 #include "test.h"
 #include "wrappers.hpp"
@@ -12,7 +12,7 @@ template <class T>
 void ensure_tree_level_ewsb(T& m)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222) for an
-   // MSSM-like model
+   // CMSSM-like model
    const double vu = m.get_vu();
    const double vd = m.get_vd();
    const double gY = m.get_g1() * Sqrt(0.6);
@@ -41,7 +41,7 @@ void ensure_n_loop_ewsb(T& m, int loop_level)
 }
 
 template <class T1, class T2, class TInput>
-void setup_MSSM_models(T1& m1, T2& m2, const TInput& input)
+void setup_CMSSM_models(T1& m1, T2& m2, const TInput& input)
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;

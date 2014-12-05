@@ -47,6 +47,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
+		$(DIR)/higgs_2loop_corrections.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
 		$(DIR)/linalg.h \

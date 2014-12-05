@@ -19,6 +19,7 @@ model_files/LHInputMSSM         export-ignore
 model_files/MSSMCPV             export-ignore
 model_files/minMSSM             export-ignore
 model_files/NoYukawaMSSM        export-ignore
+model_files/NSM                 export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 
@@ -29,6 +30,7 @@ models/smcw                     export-ignore
 
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
+sarah/NSM                       export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore

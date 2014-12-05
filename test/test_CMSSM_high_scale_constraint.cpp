@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MSSM_high_scale_constraint
+#define BOOST_TEST_MODULE test_CMSSM_high_scale_constraint
 
 #include <boost/test/unit_test.hpp>
 #include "test.h"
@@ -12,14 +12,14 @@
 #include "softsusy.h"
 #include "SoftsusyMSSM_parameter_point.hpp"
 #include "SoftsusyMSSM_two_scale_sugra_constraint.hpp"
-#include "test_MSSM.hpp"
-#include "MSSM_two_scale_model.hpp"
-#include "MSSM_two_scale_high_scale_constraint.hpp"
+#include "test_CMSSM.hpp"
+#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_two_scale_high_scale_constraint.hpp"
 #include "wrappers.hpp"
 
-MSSM<Two_scale> setup_MSSM()
+CMSSM<Two_scale> setup_CMSSM()
 {
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -51,7 +51,7 @@ MSSM<Two_scale> setup_MSSM()
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
-   MSSM<Two_scale> m(input);
+   CMSSM<Two_scale> m(input);
    m.set_scale(91);
    m.set_loops(1);
    m.set_g1(g1);
@@ -83,16 +83,15 @@ MSSM<Two_scale> setup_MSSM()
 
 BOOST_AUTO_TEST_CASE( test_unification_condition )
 {
-   MSSM<Two_scale> m(setup_MSSM());
+   CMSSM<Two_scale> m(setup_CMSSM());
 
-   MSSM_input_parameters input;
+   CMSSM_input_parameters input;
    input.m0 = 100;
    input.m12 = 200;
    input.TanBeta = m.get_vd() / m.get_vu();
    input.Azero = 300;
 
-   MSSM_high_scale_constraint<Two_scale> constraint(input);
-   constraint.set_model(&m);
+   CMSSM_high_scale_constraint<Two_scale> constraint(&m, input);
 
    double mgut = constraint.get_scale(); // initial guess
    double mgut_new = mgut;
@@ -131,9 +130,9 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
 
 BOOST_AUTO_TEST_CASE( test_mx_calculation )
 {
-   MSSM<Two_scale> m; SoftsusyMSSM<Two_scale> s;
-   MSSM_input_parameters input;
-   setup_MSSM(m, s, input);
+   CMSSM<Two_scale> m; SoftsusyMSSM<Two_scale> s;
+   CMSSM_input_parameters input;
+   setup_CMSSM(m, s, input);
    SoftsusyMSSM_parameter_point pp;
    pp.tanBeta = input.TanBeta;
    pp.a0 = input.Azero;
@@ -141,15 +140,14 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.signMu = input.SignMu;
 
-   MSSM_high_scale_constraint<Two_scale> MSSM_sugra_constraint(input);
+   CMSSM_high_scale_constraint<Two_scale> CMSSM_sugra_constraint(&m,input);
    SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
 
-   MSSM_sugra_constraint.set_model(&m);
    mssm_sugra_constraint.set_model((Two_scale_model*)&s);
 
-   MSSM_sugra_constraint.update_scale();
+   CMSSM_sugra_constraint.update_scale();
    mssm_sugra_constraint.update_scale();
 
-   BOOST_CHECK_CLOSE_FRACTION(MSSM_sugra_constraint.get_scale(),
+   BOOST_CHECK_CLOSE_FRACTION(CMSSM_sugra_constraint.get_scale(),
                               mssm_sugra_constraint.get_scale(), 1.0e-13);
 }

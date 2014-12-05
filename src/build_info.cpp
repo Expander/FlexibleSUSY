@@ -59,6 +59,7 @@ void print_version_info(std::ostream& ostr)
 
    ostr <<
       "FlexibleSUSY version:            " FLEXIBLESUSY_VERSION "\n"
+      "FlexibleSUSY git commit:         " GIT_COMMIT "\n"
       "SARAH version:                   " SARAH_VERSION "\n"
       "Mathematica version:             " << MATHEMATICA_VERSION << "\n"
       "Boost version:                   " << boost_major << '.' << boost_minor
@@ -101,6 +102,13 @@ void print_build_info(std::ostream& ostr)
       "\n"
       "Use fflite:                      "
 #ifdef ENABLE_FFLITE
+      "yes"
+#else
+      "no"
+#endif
+      "\n"
+      "Eigenvalue error check:          "
+#ifdef CHECK_EIGENVALUE_ERROR
       "yes"
 #else
       "no"

@@ -55,10 +55,12 @@ namespace flexiblesusy {
 {
 }
 
-@ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(const @ModelName@_input_parameters& inputPars_)
+@ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
+   @ModelName@<Two_scale>* model_,
+   const @ModelName@_input_parameters& inputPars_)
    : Constraint<Two_scale>()
    , fixed_scale(0.)
-   , model(0)
+   , model(model_)
    , inputPars(inputPars_)
 {
    initialize();
@@ -70,7 +72,7 @@ namespace flexiblesusy {
 
 void @ModelName@_high_scale_constraint<Two_scale>::apply()
 {
-   assert(model && "Error: @ModelName@_high_scale_constraint:"
+   assert(model && "Error: @ModelName@_high_scale_constraint::apply():"
           " model pointer must not be zero");
 
    if (std::fabs(model->get_@hyperchargeCoupling@()) > 3.0) {
@@ -112,7 +114,7 @@ double @ModelName@_high_scale_constraint<Two_scale>::get_initial_scale_guess() c
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
-   model = cast_model<@ModelName@<Two_scale> >(model_);
+   model = cast_model<@ModelName@<Two_scale>*>(model_);
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
@@ -135,12 +137,18 @@ void @ModelName@_high_scale_constraint<Two_scale>::clear()
 
 void @ModelName@_high_scale_constraint<Two_scale>::initialize()
 {
+   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
+          "initialize(): model pointer is zero.");
+
 @scaleGuess@
    scale = initial_scale_guess;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 {
+   assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
+          "update_scale(): model pointer is zero.");
+
    if (!is_zero(fixed_scale)) {
       scale = fixed_scale;
       return;
