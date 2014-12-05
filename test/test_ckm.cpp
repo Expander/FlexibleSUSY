@@ -103,6 +103,7 @@ BOOST_AUTO_TEST_CASE( test_CKM_pdg_convention )
 
    Eigen::Matrix<double,3,3> ckm(vu*vd.adjoint());
 
+   // transpose in order to make (0,1), (1,2) negative
    ckm.transposeInPlace();
    BOOST_CHECK(is_unitary(ckm, 1.e-10));
 
