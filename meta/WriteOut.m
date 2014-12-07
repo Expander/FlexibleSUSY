@@ -24,6 +24,7 @@ PrintCmdLineOptions::usage="";
 CreateSLHAYukawaDefinition::usage="";
 CreateSLHAYukawaGetters::usage="";
 ConvertYukawaCouplingsToSLHA::usage="";
+CreateSLHAFermionMixingMatricesDef::usage="";
 
 Begin["`Private`"];
 
@@ -722,14 +723,41 @@ PrintCmdLineOption[_] := "";
 PrintCmdLineOptions[inputParameters_List] :=
     StringJoin[PrintCmdLineOption /@ inputParameters];
 
-GetYukawas[] := Select[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
-                       MemberQ[Parameters`GetModelParameters[],#]&];
+(* SLHA CKM conversion *)
+
+GetYukawas[] :=
+    Select[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+           MemberQ[Parameters`GetModelParameters[],#]&];
+
+GetFermionMixingMatrices[] :=
+    Select[{SARAH`DownMatrixL, SARAH`UpMatrixL,
+            SARAH`DownMatrixR, SARAH`UpMatrixR,
+            SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
+           MemberQ[Parameters`GetOutputParameters[],#]&];
+
+GetMixingMatricesFor[yuk_] :=
+    Switch[yuk,
+           SARAH`UpYukawa      , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
+           SARAH`DownYukawa    , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
+           SARAH`ElectronYukawa, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR}
+          ];
+
+(* SLHA Yukawa couplings *)
 
 CreateSLHAYukawaName[yuk_] :=
     CConversion`ToValidCSymbolString[yuk] <> "_slha";
 
 GetSLHAYukawaType[yuk_] :=
-    CConversion`ArrayType[CConversion`realScalarCType, SARAH`getDimParameters[yuk][[1]]];
+    CConversion`ArrayType[CConversion`realScalarCType,
+                          SARAH`getDimParameters[yuk][[1]]];
+
+CreateSLHAFermionMixingMatrixName[m_] :=
+    CConversion`ToValidCSymbolString[m] <> "_slha";
+
+GetSLHAFermionMixingMatrixType[m_] :=
+    CConversion`MatrixType[CConversion`complexScalarCType,
+                           SARAH`getDimParameters[m][[1]],
+                           SARAH`getDimParameters[m][[2]]];
 
 CreateSLHAYukawaDefinition[] :=
     Module[{result = "", yuks},
@@ -748,10 +776,10 @@ CreateSLHAYukawaGetters[] :=
            Block[{},
               result = result <>
                        CConversion`CreateInlineGetter[
-                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#], "_slha", ""
+                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#]
                        ] <>
                        CConversion`CreateInlineElementGetter[
-                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#], "_slha", ""
+                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#]
                        ];
            ]& /@ yuks;
            result
@@ -760,20 +788,27 @@ CreateSLHAYukawaGetters[] :=
 ConvertYukawaCouplingsToSLHA[] :=
     Module[{result = ""},
            yuks = GetYukawas[];
-           Block[{dim},
-                 dim = SARAH`getDimParameters[#][[1]];
+           Module[{dim, vL, vR},
+                  dim = SARAH`getDimParameters[#][[1]];
+                  {vL, vR} = GetMixingMatricesFor[#];
+                  result = result <>
+                           "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
+                                   CreateSLHAYukawaName[#] <> ", " <>
+                                   CreateSLHAFermionMixingMatrixName[vL] <> ", " <>
+                                   CreateSLHAFermionMixingMatrixName[vR] <> ");\n";
+           ]& /@ yuks;
+           result
+          ];
+
+(* SLHA fermion mixing matrices *)
+
+CreateSLHAFermionMixingMatricesDef[] :=
+    Module[{result = "", yuks},
+           yuks = GetFermionMixingMatrices[];
+           Block[{},
                  result = result <>
-                          "{\n" <>
-                          TextFormatting`IndentText[
-                              CConversion`CreateCType[
-                                  CConversion`MatrixType[
-                                      CConversion`complexScalarCType, dim, dim
-                                  ]
-                              ] <> " u, v;\n" <>
-                              "fs_svd(" <> CConversion`ToValidCSymbolString[#] <>
-                                      ", " <> CreateSLHAYukawaName[#] <> ", u, v);\n"
-                          ] <>
-                          "}\n";
+                          CConversion`CreateCType[GetSLHAFermionMixingMatrixType[#]] <>
+                          " " <> CreateSLHAFermionMixingMatrixName[#] <> ";\n";
            ]& /@ yuks;
            result
           ];
