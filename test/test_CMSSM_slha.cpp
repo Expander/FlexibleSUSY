@@ -255,11 +255,11 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
    model.set_MassB(M12);
    model.set_MassG(M12);
    model.set_MassWB(M12);
-   model.set_mq2(mm0);
-   model.set_ml2(mm0);
-   model.set_md2(mm0);
-   model.set_mu2(mm0);
-   model.set_me2(mm0);
+   model.set_mq2(mm0 * Yu);
+   model.set_ml2(mm0 * Ye);
+   model.set_md2(mm0 * Yd);
+   model.set_mu2(mm0 * Yu);
+   model.set_me2(mm0 * Ye);
    model.set_mHd2(sqr(m0));
    model.set_mHu2(sqr(m0));
    model.set_TYu(a0 * Yu);
@@ -315,6 +315,30 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
          BOOST_CHECK_CLOSE_FRACTION(model.get_TYu(i,k), TYu(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(model.get_TYd(i,k), TYd(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(model.get_TYe(i,k), TYe(i,k), 1.0e-10);
+      }
+   }
+
+   // slha convention
+   const Eigen::Matrix<double,3,3> mq2_slha(model.get_mq2_slha());
+   const Eigen::Matrix<double,3,3> ml2_slha(model.get_ml2_slha());
+   const Eigen::Matrix<double,3,3> mu2_slha(model.get_mu2_slha());
+   const Eigen::Matrix<double,3,3> md2_slha(model.get_md2_slha());
+   const Eigen::Matrix<double,3,3> me2_slha(model.get_me2_slha());
+
+   // non-slha
+   const Eigen::Matrix<double,3,3> mq2((ZDL_slha.adjoint() * mq2_slha * ZDL_slha).real());
+   const Eigen::Matrix<double,3,3> ml2((ZEL_slha.adjoint() * ml2_slha * ZEL_slha).real());
+   const Eigen::Matrix<double,3,3> mu2((ZUR_slha.transpose() * mu2_slha * ZUR_slha.conjugate()).real());
+   const Eigen::Matrix<double,3,3> md2((ZDR_slha.transpose() * md2_slha * ZDR_slha.conjugate()).real());
+   const Eigen::Matrix<double,3,3> me2((ZER_slha.transpose() * me2_slha * ZER_slha.conjugate()).real());
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(model.get_mq2(i,k), mq2(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_ml2(i,k), ml2(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_mu2(i,k), mu2(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_md2(i,k), md2(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_me2(i,k), me2(i,k), 1.0e-10);
       }
    }
 }
