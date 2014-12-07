@@ -523,6 +523,9 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaTrilinearCouplingsDef = "",
             slhaTrilinearCouplingsGetter = "",
             convertTrilinearCouplingsToSLHA = "",
+            slhaSoftSquaredMassesDef = "",
+            slhaSoftSquaredMassesGetter = "",
+            convertSoftSquaredMassesToSLHA = "",
             slhaFerimonMixingMatricesDef = "",
             slhaFerimonMixingMatricesGetters = "",
             slhaPoleMassGetters = "",
@@ -534,6 +537,9 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            slhaTrilinearCouplingsDef    = WriteOut`CreateSLHATrilinearCouplingDefinition[];
            slhaTrilinearCouplingsGetter = WriteOut`CreateSLHATrilinearCouplingGetters[];
            convertTrilinearCouplingsToSLHA = WriteOut`ConvertTrilinearCouplingsToSLHA[];
+           slhaSoftSquaredMassesDef    = WriteOut`CreateSLHASoftSquaredMassesDefinition[];
+           slhaSoftSquaredMassesGetter = WriteOut`CreateSLHASoftSquaredMassesGetters[];
+           convertSoftSquaredMassesToSLHA = WriteOut`ConvertSoftSquaredMassesToSLHA[];
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
            For[k = 1, k <= Length[massMatrices], k++,
@@ -549,6 +555,9 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@slhaTrilinearCouplingsDef@"      -> IndentText[slhaTrilinearCouplingsDef],
                             "@slhaTrilinearCouplingsGetter@"   -> IndentText[slhaTrilinearCouplingsGetter],
                             "@convertTrilinearCouplingsToSLHA@"-> IndentText[convertTrilinearCouplingsToSLHA],
+                            "@slhaSoftSquaredMassesDef@"       -> IndentText[slhaSoftSquaredMassesDef],
+                            "@slhaSoftSquaredMassesGetter@"    -> IndentText[slhaSoftSquaredMassesGetter],
+                            "@convertSoftSquaredMassesToSLHA@" -> IndentText[convertSoftSquaredMassesToSLHA],
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
                             Sequence @@ GeneralReplacementRules[]

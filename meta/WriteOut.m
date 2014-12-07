@@ -29,6 +29,9 @@ CreateSLHAFermionMixingMatricesGetters::usage=""
 CreateSLHATrilinearCouplingDefinition::usage="";
 CreateSLHATrilinearCouplingGetters::usage="";
 ConvertTrilinearCouplingsToSLHA::usage="";
+CreateSLHASoftSquaredMassesDefinition::usage="";
+CreateSLHASoftSquaredMassesGetters::usage="";
+ConvertSoftSquaredMassesToSLHA::usage="";
 
 Begin["`Private`"];
 
@@ -746,11 +749,30 @@ GetMixingMatricesFor[yuk_] :=
            SARAH`ElectronYukawa , {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
            SARAH`TrilinearUp    , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
            SARAH`TrilinearDown  , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
-           SARAH`TrilinearLepton, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR}
+           SARAH`TrilinearLepton, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
+           SARAH`SoftSquark     , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
+           SARAH`SoftUp         , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
+           SARAH`SoftDown       , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
+           SARAH`SoftLeftLepton , {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
+           SARAH`SoftRightLepton, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR}
+          ];
+
+IsLeftHanded[c_] :=
+    Switch[c,
+           SARAH`SoftSquark     , True,
+           SARAH`SoftUp         , False,
+           SARAH`SoftDown       , False,
+           SARAH`SoftLeftLepton , True,
+           SARAH`SoftRightLepton, False
           ];
 
 GetTrilinearCouplings[] :=
     Select[{SARAH`TrilinearUp, SARAH`TrilinearDown, SARAH`TrilinearLepton},
+           MemberQ[Parameters`GetModelParameters[],#]&];
+
+GetSoftSquaredMasses[] :=
+    Select[{SARAH`SoftSquark, SARAH`SoftUp, SARAH`SoftDown,
+            SARAH`SoftLeftLepton, SARAH`SoftRightLepton},
            MemberQ[Parameters`GetModelParameters[],#]&];
 
 (* SLHA Yukawa couplings *)
@@ -774,6 +796,12 @@ CreateSLHATrilinearCouplingName[c_] :=
     CConversion`ToValidCSymbolString[c] <> "_slha";
 
 GetSLHATrilinearCouplingType[c_] :=
+    Parameters`GetType[c];
+
+CreateSLHASoftSquaredMassName[c_] :=
+    CConversion`ToValidCSymbolString[c] <> "_slha";
+
+GetSLHASoftSquaredMassType[c_] :=
     Parameters`GetType[c];
 
 CreateSLHAYukawaDefinition[] :=
@@ -857,7 +885,7 @@ CreateSLHATrilinearCouplingGetters[] :=
           ];
 
 ConvertTrilinearCouplingsToSLHA[] :=
-    Module[{result = ""},
+    Module[{result = "", tril},
            tril = GetTrilinearCouplings[];
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
@@ -883,6 +911,56 @@ CreateSLHAFermionMixingMatricesGetters[] :=
                            CreateSLHAFermionMixingMatrixName[#], GetSLHAFermionMixingMatrixType[#]
                        ];
            ]& /@ mix;
+           result
+          ];
+
+CreateSLHASoftSquaredMassesDefinition[] :=
+    Module[{result = "", massSq},
+           massSq = GetSoftSquaredMasses[];
+           Block[{},
+               result = result <>
+                        CConversion`CreateCType[GetSLHASoftSquaredMassType[#]] <>
+                        " " <> CreateSLHASoftSquaredMassName[#] <> ";\n";
+           ]& /@ massSq;
+           result
+          ];
+
+CreateSLHASoftSquaredMassesGetters[] :=
+    Module[{result = "", massSq},
+           massSq = GetSoftSquaredMasses[];
+           Block[{},
+              result = result <>
+                       CConversion`CreateInlineGetter[
+                           CreateSLHASoftSquaredMassName[#], GetSLHASoftSquaredMassType[#]
+                       ] <>
+                       CConversion`CreateInlineElementGetter[
+                           CreateSLHASoftSquaredMassName[#], GetSLHASoftSquaredMassType[#]
+                       ];
+           ]& /@ massSq;
+           result
+          ];
+
+ConvertSoftSquaredMassesToSLHA[] :=
+    Module[{result = "", massSq},
+           massSq = GetSoftSquaredMasses[];
+           Module[{vL, vR},
+                  {vL, vR} = GetMixingMatricesFor[#];
+                  If[IsLeftHanded[#],
+                     result = result <>
+                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                              CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
+                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                              ").real();\n";
+                     ,
+                     result = result <>
+                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                              CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
+                              ").real();\n";
+                    ];
+           ]& /@ massSq;
            result
           ];
 

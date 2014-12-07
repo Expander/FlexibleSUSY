@@ -59,6 +59,7 @@ public:
 @slhaPoleMixingMatrixGetters@
 @slhaYukawaGetter@
 @slhaTrilinearCouplingsGetter@
+@slhaSoftSquaredMassesGetter@
 @slhaFerimonMixingMatricesGetters@
 
 private:
@@ -66,9 +67,11 @@ private:
 @slhaYukawaDef@
 @slhaFerimonMixingMatricesDef@
 @slhaTrilinearCouplingsDef@
+@slhaSoftSquaredMassesDef@
 
    void convert_yukawa_couplings_to_slha();
    void convert_trilinear_couplings_to_slha();
+   void convert_soft_squared_masses_to_slha();
 };
 
 } // namespace flexiblesusy

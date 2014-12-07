@@ -70,6 +70,7 @@ void CLASSNAME::convert_to_slha()
 
    convert_yukawa_couplings_to_slha();
    convert_trilinear_couplings_to_slha();
+   convert_soft_squared_masses_to_slha();
 
    @ModelName@_slha_io::convert_to_slha_convention(physical_slha);
 }
@@ -88,6 +89,14 @@ void CLASSNAME::convert_yukawa_couplings_to_slha()
 void CLASSNAME::convert_trilinear_couplings_to_slha()
 {
 @convertTrilinearCouplingsToSLHA@
+}
+
+/**
+ * Convert trilinear couplings to SLHA convention
+ */
+void CLASSNAME::convert_soft_squared_masses_to_slha()
+{
+@convertSoftSquaredMassesToSLHA@
 }
 
 const @ModelName@_physical& CLASSNAME::get_physical_slha() const
