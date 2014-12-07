@@ -224,13 +224,15 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& 
 {
    // currently we convert only real part of mixing matrices
 
+   Eigen::Matrix<double,3,3> ckm_real(ckm.real());
    Eigen::Matrix<double,3,3> Vu_real(Vu.real());
    Eigen::Matrix<double,3,3> Vd_real(Vd.real());
    Eigen::Matrix<double,3,3> Uu_real(Uu.real());
    Eigen::Matrix<double,3,3> Ud_real(Ud.real());
 
-   to_pdg_convention(Vu_real, Vd_real, Uu_real, Ud_real);
+   to_pdg_convention(ckm_real, Vu_real, Vd_real, Uu_real, Ud_real);
 
+   ckm.real() = ckm_real;
    Vu.real() = Vu_real;
    Vd.real() = Vd_real;
    Uu.real() = Uu_real;
