@@ -520,14 +520,22 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaYukawaDef = "",
             slhaYukawaGetter = "",
             convertYukawaCouplingsToSLHA = "",
+            slhaTrilinearCouplingsDef = "",
+            slhaTrilinearCouplingsGetter = "",
+            convertTrilinearCouplingsToSLHA = "",
             slhaFerimonMixingMatricesDef = "",
+            slhaFerimonMixingMatricesGetters = "",
             slhaPoleMassGetters = "",
             slhaPoleMixingMatrixGetters = ""
            },
            slhaYukawaDef        = WriteOut`CreateSLHAYukawaDefinition[];
            slhaYukawaGetter     = WriteOut`CreateSLHAYukawaGetters[];
            convertYukawaCouplingsToSLHA = WriteOut`ConvertYukawaCouplingsToSLHA[];
+           slhaTrilinearCouplingsDef    = WriteOut`CreateSLHATrilinearCouplingDefinition[];
+           slhaTrilinearCouplingsGetter = WriteOut`CreateSLHATrilinearCouplingGetters[];
+           convertTrilinearCouplingsToSLHA = WriteOut`ConvertTrilinearCouplingsToSLHA[];
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
+           slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
            For[k = 1, k <= Length[massMatrices], k++,
                slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
                slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
@@ -537,6 +545,10 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@slhaYukawaGetter@"               -> IndentText[slhaYukawaGetter],
                             "@convertYukawaCouplingsToSLHA@"   -> IndentText[convertYukawaCouplingsToSLHA],
                             "@slhaFerimonMixingMatricesDef@"   -> IndentText[slhaFerimonMixingMatricesDef],
+                            "@slhaFerimonMixingMatricesGetters@" -> IndentText[slhaFerimonMixingMatricesGetters],
+                            "@slhaTrilinearCouplingsDef@"      -> IndentText[slhaTrilinearCouplingsDef],
+                            "@slhaTrilinearCouplingsGetter@"   -> IndentText[slhaTrilinearCouplingsGetter],
+                            "@convertTrilinearCouplingsToSLHA@"-> IndentText[convertTrilinearCouplingsToSLHA],
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
                             Sequence @@ GeneralReplacementRules[]

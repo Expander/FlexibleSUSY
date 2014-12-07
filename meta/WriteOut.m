@@ -25,6 +25,10 @@ CreateSLHAYukawaDefinition::usage="";
 CreateSLHAYukawaGetters::usage="";
 ConvertYukawaCouplingsToSLHA::usage="";
 CreateSLHAFermionMixingMatricesDef::usage="";
+CreateSLHAFermionMixingMatricesGetters::usage=""
+CreateSLHATrilinearCouplingDefinition::usage="";
+CreateSLHATrilinearCouplingGetters::usage="";
+ConvertTrilinearCouplingsToSLHA::usage="";
 
 Begin["`Private`"];
 
@@ -737,10 +741,17 @@ GetFermionMixingMatrices[] :=
 
 GetMixingMatricesFor[yuk_] :=
     Switch[yuk,
-           SARAH`UpYukawa      , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
-           SARAH`DownYukawa    , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
-           SARAH`ElectronYukawa, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR}
+           SARAH`UpYukawa       , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
+           SARAH`DownYukawa     , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
+           SARAH`ElectronYukawa , {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
+           SARAH`TrilinearUp    , {SARAH`UpMatrixL      , SARAH`UpMatrixR      },
+           SARAH`TrilinearDown  , {SARAH`DownMatrixL    , SARAH`DownMatrixR    },
+           SARAH`TrilinearLepton, {SARAH`ElectronMatrixL, SARAH`ElectronMatrixR}
           ];
+
+GetTrilinearCouplings[] :=
+    Select[{SARAH`TrilinearUp, SARAH`TrilinearDown, SARAH`TrilinearLepton},
+           MemberQ[Parameters`GetModelParameters[],#]&];
 
 (* SLHA Yukawa couplings *)
 
@@ -758,6 +769,12 @@ GetSLHAFermionMixingMatrixType[m_] :=
     CConversion`MatrixType[CConversion`complexScalarCType,
                            SARAH`getDimParameters[m][[1]],
                            SARAH`getDimParameters[m][[2]]];
+
+CreateSLHATrilinearCouplingName[c_] :=
+    CConversion`ToValidCSymbolString[c] <> "_slha";
+
+GetSLHATrilinearCouplingType[c_] :=
+    Parameters`GetType[c];
 
 CreateSLHAYukawaDefinition[] :=
     Module[{result = "", yuks},
@@ -794,8 +811,8 @@ ConvertYukawaCouplingsToSLHA[] :=
                   result = result <>
                            "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
                                    CreateSLHAYukawaName[#] <> ", " <>
-                                   CreateSLHAFermionMixingMatrixName[vL] <> ", " <>
-                                   CreateSLHAFermionMixingMatrixName[vR] <> ");\n";
+                                   CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
+                                   CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
            ]& /@ yuks;
            result
           ];
@@ -810,6 +827,62 @@ CreateSLHAFermionMixingMatricesDef[] :=
                           CConversion`CreateCType[GetSLHAFermionMixingMatrixType[#]] <>
                           " " <> CreateSLHAFermionMixingMatrixName[#] <> ";\n";
            ]& /@ yuks;
+           result
+          ];
+
+CreateSLHATrilinearCouplingDefinition[] :=
+    Module[{result = "", tril},
+           tril = GetTrilinearCouplings[];
+           Block[{},
+               result = result <>
+                        CConversion`CreateCType[GetSLHATrilinearCouplingType[#]] <>
+                        " " <> CreateSLHATrilinearCouplingName[#] <> ";\n";
+           ]& /@ tril;
+           result
+          ];
+
+CreateSLHATrilinearCouplingGetters[] :=
+    Module[{result = "", tril},
+           tril = GetTrilinearCouplings[];
+           Block[{},
+              result = result <>
+                       CConversion`CreateInlineGetter[
+                           CreateSLHATrilinearCouplingName[#], GetSLHATrilinearCouplingType[#]
+                       ] <>
+                       CConversion`CreateInlineElementGetter[
+                           CreateSLHATrilinearCouplingName[#], GetSLHATrilinearCouplingType[#]
+                       ];
+           ]& /@ tril;
+           result
+          ];
+
+ConvertTrilinearCouplingsToSLHA[] :=
+    Module[{result = ""},
+           tril = GetTrilinearCouplings[];
+           Module[{vL, vR},
+                  {vL, vR} = GetMixingMatricesFor[#];
+                  result = result <>
+                           CreateSLHATrilinearCouplingName[#] <> " = (" <>
+                           CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                           CConversion`ToValidCSymbolString[#] <> " * " <>
+                           CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                           ").real();\n";
+           ]& /@ tril;
+           result
+          ];
+
+CreateSLHAFermionMixingMatricesGetters[] :=
+    Module[{result = "", mix},
+           mix = GetFermionMixingMatrices[];
+           Block[{},
+              result = result <>
+                       CConversion`CreateInlineGetter[
+                           CreateSLHAFermionMixingMatrixName[#], GetSLHAFermionMixingMatrixType[#]
+                       ] <>
+                       CConversion`CreateInlineElementGetter[
+                           CreateSLHAFermionMixingMatrixName[#], GetSLHAFermionMixingMatrixType[#]
+                       ];
+           ]& /@ mix;
            result
           ];
 
