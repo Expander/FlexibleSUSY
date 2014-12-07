@@ -262,16 +262,4 @@ double @ModelName@_slha_io::read_scale() const
    return scale;
 }
 
-/**
- * Convert masses and mixing matrices to SLHA convention: Fermion
- * mixing matrices are always real and fermion masses are allowed to
- * be negative.
- *
- * @param physical struct of physical parameters to convert
- */
-void @ModelName@_slha_io::convert_to_slha_convention(@ModelName@_physical& physical)
-{
-@convertMixingsToSLHAConvention@
-}
-
 } // namespace flexiblesusy

@@ -529,7 +529,8 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaFerimonMixingMatricesDef = "",
             slhaFerimonMixingMatricesGetters = "",
             slhaPoleMassGetters = "",
-            slhaPoleMixingMatrixGetters = ""
+            slhaPoleMixingMatrixGetters = "",
+            convertMixingsToSLHAConvention = ""
            },
            slhaYukawaDef        = WriteOut`CreateSLHAYukawaDefinition[];
            slhaYukawaGetter     = WriteOut`CreateSLHAYukawaGetters[];
@@ -542,6 +543,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            convertSoftSquaredMassesToSLHA = WriteOut`ConvertSoftSquaredMassesToSLHA[];
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
+           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            For[k = 1, k <= Length[massMatrices], k++,
                slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
                slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
@@ -560,6 +562,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@convertSoftSquaredMassesToSLHA@" -> IndentText[convertSoftSquaredMassesToSLHA],
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
+                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -796,7 +799,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
             writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhyicalParameters,
-            convertMixingsToSLHAConvention = "",
             numberOfDRbarBlocks, drBarBlockNames},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
@@ -825,7 +827,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
-           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            WriteOut`ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -848,7 +849,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
-                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@numberOfDRbarBlocks@"            -> ToString[numberOfDRbarBlocks],
                             "@drBarBlockNames@"                -> WrapLines[drBarBlockNames],
                             Sequence @@ GeneralReplacementRules[]

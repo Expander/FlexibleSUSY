@@ -24,11 +24,13 @@
  */
 
 #include "@ModelName@_two_scale_model_slha.hpp"
-#include "@ModelName@_slha_io.hpp"
+#include "slha_io.hpp"
+#include "ckm.hpp"
 
 namespace flexiblesusy {
 
 #define CLASSNAME @ModelName@_slha<Two_scale>
+#define LOCALPHYSICAL(p) physical.p
 
 CLASSNAME::@ModelName@_slha(const @ModelName@_input_parameters& input_)
    : @ModelName@<Two_scale>(input_)
@@ -68,11 +70,23 @@ void CLASSNAME::convert_to_slha()
 {
    physical_slha = get_physical();
 
+   convert_to_slha(physical_slha);
+
    convert_yukawa_couplings_to_slha();
    convert_trilinear_couplings_to_slha();
    convert_soft_squared_masses_to_slha();
+}
 
-   @ModelName@_slha_io::convert_to_slha_convention(physical_slha);
+/**
+ * Convert masses and mixing matrices to SLHA convention: Fermion
+ * mixing matrices are always real and fermion masses are allowed to
+ * be negative.
+ *
+ * @param physical struct of physical parameters to convert
+ */
+void CLASSNAME::convert_to_slha(@ModelName@_physical& physical)
+{
+@convertMixingsToSLHAConvention@
 }
 
 /**

@@ -607,18 +607,6 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
                            mixingMatrixSymStr <> "));\n";
                  ];
               ];
-           (* convert CKM matrix to PDG convention *)
-           If[ValueQ[SARAH`DownMatrixL] &&
-              ValueQ[SARAH`UpMatrixL  ] &&
-              ValueQ[SARAH`DownMatrixR] &&
-              ValueQ[SARAH`UpMatrixR  ]
-              ,
-              result = result <> "CKM_parameters::to_pdg_convention(" <>
-              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`UpMatrixL  ] <> "), " <>
-              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`DownMatrixL] <> "), " <>
-              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`UpMatrixR  ] <> "), " <>
-              "LOCALPHYSICAL(" <> CConversion`ToValidCSymbolString[SARAH`DownMatrixR] <> "));\n";
-             ];
            Return[result];
           ];
 
@@ -770,6 +758,18 @@ ConvertYukawaCouplingsToSLHA[] :=
                                    CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
                                    CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
            ]& /@ yuks;
+           (* convert CKM matrix to PDG convention *)
+           If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL  ] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ]
+              ,
+              result = result <> "CKM_parameters::to_pdg_convention(" <>
+              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixL] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixR  ] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixR] <> ");\n";
+             ];
            result
           ];
 
