@@ -125,8 +125,11 @@ BOOST_AUTO_TEST_CASE( test_CKM_pdg_convention )
       const Eigen::Matrix<double,3,3> ckm_check(vu*vd.adjoint());
       for (int i = 0; i < 3; i++) {
          for (int k = 0; k < 3; k++) {
-            BOOST_CHECK_CLOSE_FRACTION(Re(ckm(i,k)), Re(ckm_check(i,k)), 1.0e-10);
-            BOOST_CHECK_CLOSE_FRACTION(Im(ckm(i,k)), Im(ckm_check(i,k)), 1.0e-10);
+            // check for transposed equality here, because the CKM
+            // matrix from above was transposed to generate negative
+            // (0,1), (1,2) elements
+            BOOST_CHECK_CLOSE_FRACTION(Re(ckm(i,k)), Re(ckm_check(k,i)), 1.0e-10);
+            BOOST_CHECK_CLOSE_FRACTION(Im(ckm(i,k)), Im(ckm_check(k,i)), 1.0e-10);
          }
       }
    }
