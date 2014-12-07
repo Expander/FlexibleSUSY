@@ -190,3 +190,101 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
    BOOST_CHECK_LT(model.get_physical_slha().MChi.minCoeff(), 0.);
    BOOST_CHECK_EQUAL(model.get_physical_slha().ZN.imag().maxCoeff(), 0.);
 }
+
+BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
+{
+   CMSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   const double ALPHASMZ = 0.1176;
+   const double ALPHAMZ = 1.0 / 127.918;
+   const double sinthWsq = 0.23122;
+   const double alpha1 = 5 * ALPHAMZ / (3 * (1 - sinthWsq));
+   const double alpha2 = ALPHAMZ / sinthWsq;
+   const double g1 = sqrt(4 * PI * alpha1);
+   const double g2 = sqrt(4 * PI * alpha2);
+   const double g3 = sqrt(4 * PI * ALPHASMZ);
+   const double tanBeta = 10;
+   const double sinBeta = sin(atan(tanBeta));
+   const double cosBeta = cos(atan(tanBeta));
+   const double M12 = 100.0;
+   const double m0 = 250.0;
+   const double a0 = 50.0;
+   const double root2 = sqrt(2.0);
+   const double vev = 246.0;
+   const double vu = vev * sinBeta;
+   const double vd = vev * cosBeta;
+   const double susyMu = 120.0;
+   const double BMu = sqr(2.0 * susyMu);
+
+   Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero()),
+      Yd(Eigen::Matrix<double,3,3>::Zero()),
+      Ye(Eigen::Matrix<double,3,3>::Zero()),
+      mm0(Eigen::Matrix<double,3,3>::Zero());
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         Yu(i,k) = 0.1 * (i+1) * (k+1);
+         Yd(i,k) = 0.1 * (i+1) * (k+1);
+         Ye(i,k) = 0.1 * (i+1) * (k+1);
+      }
+   }
+   Yu <<  0.1, 0.2, 0.3,
+         -0.2, 0.4, 0.6,
+          0.3, 0.6, 165.0   * root2 / (vev * sinBeta);
+   Yd <<  0.1, 0.2, 0.3,
+         -0.2, 0.4, 0.6,
+          0.3, 0.6, 2.9     * root2 / (vev * sinBeta);
+   Ye <<  0.1, 0.2, 0.3,
+         -0.2, 0.4, 0.6,
+          0.3, 0.6, 1.77699 * root2 / (vev * sinBeta);
+   mm0 = sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
+
+   CMSSM_slha<Two_scale> model(input);
+   model.set_scale(91);
+   model.set_loops(1);
+   model.set_g1(g1);
+   model.set_g2(g2);
+   model.set_g3(g3);
+   model.set_Yu(Yu);
+   model.set_Yd(Yd);
+   model.set_Ye(Ye);
+   model.set_MassB(M12);
+   model.set_MassG(M12);
+   model.set_MassWB(M12);
+   model.set_mq2(mm0);
+   model.set_ml2(mm0);
+   model.set_md2(mm0);
+   model.set_mu2(mm0);
+   model.set_me2(mm0);
+   model.set_mHd2(sqr(m0));
+   model.set_mHu2(sqr(m0));
+   model.set_TYu(a0 * Yu);
+   model.set_TYd(a0 * Yd);
+   model.set_TYe(a0 * Ye);
+   model.set_Mu(susyMu);
+   model.set_BMu(BMu);
+   model.set_vu(vu);
+   model.set_vd(vd);
+
+   model.solve_ewsb_tree_level();
+   model.calculate_spectrum(); // conversion happens here
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK(model.get_Yu(i,k) != 0.);
+         BOOST_CHECK(model.get_Yd(i,k) != 0.);
+         BOOST_CHECK(model.get_Ye(i,k) != 0.);
+      }
+   }
+
+   // check that SLHA-compliant Yukawa couplings are diagonal
+   for (int i = 0; i < 3; i++) {
+      BOOST_CHECK_GT(model.get_Yu_slha(i), 0.);
+      BOOST_CHECK_GT(model.get_Yd_slha(i), 0.);
+      BOOST_CHECK_GT(model.get_Ye_slha(i), 0.);
+   }
+}

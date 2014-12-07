@@ -67,7 +67,17 @@ void CLASSNAME::calculate_spectrum()
 void CLASSNAME::convert_to_slha()
 {
    physical_slha = get_physical();
+
+   convert_yukawa_couplings_to_slha();
    @ModelName@_slha_io::convert_to_slha_convention(physical_slha);
+}
+
+/**
+ * Convert Yukawa couplings to SLHA convention
+ */
+void CLASSNAME::convert_yukawa_couplings_to_slha()
+{
+@convertYukawaCouplingsToSLHA@
 }
 
 const @ModelName@_physical& CLASSNAME::get_physical_slha() const

@@ -125,7 +125,7 @@ CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
 
 CreateGetterReturnType[type_] :=
-    Print["Error: unknown type: " <> ToString[type]];
+    Print["Error: CreateGetterReturnType: unknown type: " <> ToString[type]];
 
 CreateGetterReturnType[CConversion`ScalarType[type_]] :=
     CreateCType[CConversion`ScalarType[type]];
@@ -216,8 +216,8 @@ CreateInlineGetter[parameter_String, type_String, postFix_String:"", struct_Stri
     type <> " get_" <> parameter <> postFix <>
     "() const { return " <> struct <> parameter <> "; }\n";
 
-CreateInlineGetter[parameter_, type_, postFix_String:"", struct_String:""] :=
-    CreateInlineGetter[parameter, CreateGetterReturnType[type], postFix, struct];
+CreateInlineGetter[parameter_String, type_, postFix_String:"", struct_String:""] :=
+    CreateInlineGetter[ToValidCSymbolString[parameter], CreateGetterReturnType[type], postFix, struct];
 
 (* Creates C++ getter prototype *)
 CreateGetterPrototype[parameter_String, type_String] :=
@@ -438,6 +438,8 @@ ToValidCSymbol[symbol_ /; Length[symbol] > 0] :=
 
 (* creates a valid C parameter name string by converting the symbol to
    a valid C variable name and removing matrix indices *)
+ToValidCSymbolString[symbol_String] := symbol;
+
 ToValidCSymbolString[symbol_] :=
     ToString[ToValidCSymbol[symbol]];
 

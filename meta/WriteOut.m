@@ -21,6 +21,10 @@ StringJoinWithSeparator::usage="Joins a list of strings with a given separator s
 ParseCmdLineOptions::usage="";
 PrintCmdLineOptions::usage="";
 
+CreateSLHAYukawaDefinition::usage="";
+CreateSLHAYukawaGetters::usage="";
+ConvertYukawaCouplingsToSLHA::usage="";
+
 Begin["`Private`"];
 
 StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
@@ -717,6 +721,62 @@ PrintCmdLineOption[_] := "";
 
 PrintCmdLineOptions[inputParameters_List] :=
     StringJoin[PrintCmdLineOption /@ inputParameters];
+
+GetYukawas[] := Select[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+                       MemberQ[Parameters`GetModelParameters[],#]&];
+
+CreateSLHAYukawaName[yuk_] :=
+    CConversion`ToValidCSymbolString[yuk] <> "_slha";
+
+GetSLHAYukawaType[yuk_] :=
+    CConversion`ArrayType[CConversion`realScalarCType, SARAH`getDimParameters[yuk][[1]]];
+
+CreateSLHAYukawaDefinition[] :=
+    Module[{result = "", yuks},
+           yuks = GetYukawas[];
+           Block[{},
+               result = result <>
+                        CConversion`CreateCType[GetSLHAYukawaType[#]] <>
+                        " " <> CreateSLHAYukawaName[#] <> ";\n";
+           ]& /@ yuks;
+           result
+          ];
+
+CreateSLHAYukawaGetters[] :=
+    Module[{result = "", yuks},
+           yuks = GetYukawas[];
+           Block[{},
+              result = result <>
+                       CConversion`CreateInlineGetter[
+                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#], "_slha", ""
+                       ] <>
+                       CConversion`CreateInlineElementGetter[
+                           CreateSLHAYukawaName[#], GetSLHAYukawaType[#], "_slha", ""
+                       ];
+           ]& /@ yuks;
+           result
+          ];
+
+ConvertYukawaCouplingsToSLHA[] :=
+    Module[{result = ""},
+           yuks = GetYukawas[];
+           Block[{dim},
+                 dim = SARAH`getDimParameters[#][[1]];
+                 result = result <>
+                          "{\n" <>
+                          TextFormatting`IndentText[
+                              CConversion`CreateCType[
+                                  CConversion`MatrixType[
+                                      CConversion`complexScalarCType, dim, dim
+                                  ]
+                              ] <> " u, v;\n" <>
+                              "fs_svd(" <> CConversion`ToValidCSymbolString[#] <>
+                                      ", " <> CreateSLHAYukawaName[#] <> ", u, v);\n"
+                          ] <>
+                          "}\n";
+           ]& /@ yuks;
+           result
+          ];
 
 End[];
 

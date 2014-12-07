@@ -515,13 +515,37 @@ CreateHiggsToEWSBEqAssociation[] :=
            {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ phi])
           ];
 
+WriteModelSLHAClass[massMatrices_List, files_List] :=
+    Module[{k,
+            slhaYukawaDef = "",
+            slhaYukawaGetter = "",
+            convertYukawaCouplingsToSLHA = "",
+            slhaPoleMassGetters = "",
+            slhaPoleMixingMatrixGetters = ""
+           },
+           slhaYukawaDef        = WriteOut`CreateSLHAYukawaDefinition[];
+           slhaYukawaGetter     = WriteOut`CreateSLHAYukawaGetters[];
+           convertYukawaCouplingsToSLHA = WriteOut`ConvertYukawaCouplingsToSLHA[];
+           For[k = 1, k <= Length[massMatrices], k++,
+               slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
+               slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
+              ];
+           WriteOut`ReplaceInFiles[files,
+                          { "@slhaYukawaDef@"                  -> IndentText[slhaYukawaDef],
+                            "@slhaYukawaGetter@"               -> IndentText[slhaYukawaGetter],
+                            "@convertYukawaCouplingsToSLHA@"   -> IndentText[convertYukawaCouplingsToSLHA],
+                            "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
+                            "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
     Module[{massGetters = "", k,
             mixingMatrixGetters = "",
-            slhaPoleMassGetters = "", slhaPoleMixingMatrixGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
@@ -559,8 +583,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
-               slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
-               slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
                physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
@@ -651,8 +673,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@lspFunctions@"         -> lspFunctions,
                             "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
-                            "@slhaPoleMassGetters@"  -> IndentText[slhaPoleMassGetters],
-                            "@slhaPoleMixingMatrixGetters@" -> IndentText[slhaPoleMixingMatrixGetters],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
@@ -1514,6 +1534,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName]];
 
+           PrintHeadline["Creating SLHA model"];
+           Print["Creating class for SLHA model ..."];
+           WriteModelSLHAClass[massMatrices,
+                               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
+                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
+                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]}
+                               }];
+
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
@@ -1521,16 +1552,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            nPointFunctions, vertexRules, phases,
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],

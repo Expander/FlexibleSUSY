@@ -57,9 +57,13 @@ public:
 
 @slhaPoleMassGetters@
 @slhaPoleMixingMatrixGetters@
+@slhaYukawaGetter@
 
 private:
    @ModelName@_physical physical_slha; ///< contains the pole masses and mixings in slha convention
+@slhaYukawaDef@
+
+   void convert_yukawa_couplings_to_slha();
 };
 
 } // namespace flexiblesusy
