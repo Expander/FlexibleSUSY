@@ -316,6 +316,18 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define ZEROVECTOR(rows) Eigen::Matrix<double,rows,1>::Zero()
 #define ZEROARRAY(rows) Eigen::Array<double,rows,1>::Zero()
 
+template<class Scalar, int M>
+Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
+{
+   return Eigen::Matrix<Scalar,M,M>(a.matrix().asDiagonal());
+}
+
+template<class Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> ToMatrix(const Eigen::Matrix<Scalar,M,N>& a)
+{
+   return a;
+}
+
 template <typename T>
 std::string ToString(T a)
 {

@@ -274,8 +274,7 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String] :=
     WriteSLHAMatrix[{mixingMatrix, lesHouchesName}, head, ""];
 
 WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
-    Module[{str, lhs, wrapper, dim, diagMatrix,
-            yukawa, yukawaStr, yukawaDiagStr, yukawaStrWrapper},
+    Module[{str, strSLHA, lhs, wrapper},
            If[SARAH`getDimParameters[mixingMatrix] === {} ||
               SARAH`getDimParameters[mixingMatrix] === {1},
               Print["Warning: You are trying to create a SLHA matrix block for"];
@@ -283,103 +282,32 @@ WriteSLHAMatrix[{mixingMatrix_, lesHouchesName_}, head_String, scale_String] :=
               Print["   Please specify a Les Houches index in the SARAH model file."];
              ];
            str = CConversion`ToValidCSymbolString[mixingMatrix];
+           (* use SLHA compliant yukawas, trilinears, soft-squared masses *)
+           strSLHA = If[mixingMatrix === SARAH`UpYukawa ||
+                        mixingMatrix === SARAH`DownYukawa ||
+                        mixingMatrix === SARAH`ElectronYukawa ||
+                        mixingMatrix === SARAH`TrilinearUp ||
+                        mixingMatrix === SARAH`TrilinearDown ||
+                        mixingMatrix === SARAH`TrilinearLepton ||
+                        mixingMatrix === SARAH`SoftSquark ||
+                        mixingMatrix === SARAH`SoftUp ||
+                        mixingMatrix === SARAH`SoftDown ||
+                        mixingMatrix === SARAH`SoftLeftLepton ||
+                        mixingMatrix === SARAH`SoftRightLepton,
+                        str <> "_slha",
+                        str
+                       ];
            lhs = ToString[lesHouchesName];
-           wrapper = If[head == "", str, head <> "(" <> str <> ")"];
-           Which[
-                 (* mixingMatrix is a Yukawa matrix *)
-                 mixingMatrix === SARAH`UpYukawa ||
-                 mixingMatrix === SARAH`DownYukawa ||
-                 mixingMatrix === SARAH`ElectronYukawa
-                 ,
-                 (* In SLHA-2 the diagonalized Yukawa couplings must be
-                    output.  See SLHA-2 standard, Sec. 4.1.3, p.15 *)
-                 dim = SARAH`getDimParameters[mixingMatrix][[1]];
-                 diagMatrix = str <> "_diag";
-                 "{\n" <> IndentText[
-                     "// diagonalize the " <> lhs <> " Yukawa coupling for SLHA-2 compatible output\n" <>
-                     CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <> " " <>
-                     diagMatrix <> ";\n" <>
-                     CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]] <> " " <>
-                     " u, v;\n" <>
-                     "fs_svd(" <> wrapper <> ", " <> diagMatrix <> ", u, v);\n" <>
-                     "slha_io.set_block(\"" <> lhs <> "\", " <>
-                     CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]] <>
-                     "(" <> diagMatrix <> ".matrix().asDiagonal()), \"" <> lhs <> "\", model.get_scale());"
-                 ] <> "\n}\n"
-                 ,
-                 (* mixingMatrix is a soft-breaking Trilinear coupling *)
-                 mixingMatrix === SARAH`TrilinearUp ||
-                 mixingMatrix === SARAH`TrilinearDown ||
-                 mixingMatrix === SARAH`TrilinearLepton
-                 ,
-                 (* In SLHA-2 the diagonalized Trilinear couplings must be
-                    output.  See SLHA-2 standard, Sec. 4.1.3, p.11, p.15 *)
-                 dim = SARAH`getDimParameters[mixingMatrix][[1]];
-                 (* determine corresponding Yukawa coupling *)
-                 yukawa = Which[mixingMatrix === SARAH`TrilinearUp    , SARAH`UpYukawa,
-                                mixingMatrix === SARAH`TrilinearDown  , SARAH`DownYukawa,
-                                mixingMatrix === SARAH`TrilinearLepton, SARAH`ElectronYukawa];
-                 yukawaStr = CConversion`ToValidCSymbolString[yukawa];
-                 yukawaDiagStr = yukawaStr <> "_diag";
-                 yukawaStrWrapper = If[head == "", yukawaStr, head <> "(" <> yukawaStr <> ")"];
-                 diagMatrix = "(u.conjugate()*" <> wrapper <> "*v.adjoint()).real()";
-                 "{\n" <> IndentText[
-                     "// diagonalize the " <> yukawaStr <> " Yukawa coupling for SLHA-2 compatible output\n" <>
-                     CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <> " " <>
-                     yukawaDiagStr <> ";\n" <>
-                     CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]] <> " " <>
-                     " u, v;\n" <>
-                     "fs_svd(" <> yukawaStrWrapper <> ", " <> yukawaDiagStr <> ", u, v);\n" <>
-                     "slha_io.set_block(\"" <> lhs <> "\", " <>
-                     CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]] <>
-                     "(" <> diagMatrix <> "), \"" <> lhs <> "\", model.get_scale());"
-                 ] <> "\n}\n"
-                 ,
-                 (* mixingMatrix is a soft-breaking squark mass coupling *)
-                 mixingMatrix === SARAH`SoftSquark ||
-                 mixingMatrix === SARAH`SoftUp ||
-                 mixingMatrix === SARAH`SoftDown ||
-                 mixingMatrix === SARAH`SoftLeftLepton ||
-                 mixingMatrix === SARAH`SoftRightLepton
-                 ,
-                 (* In SLHA-2 the diagonalized Trilinear couplings must be
-                    output.  See SLHA-2 standard, Sec. 4.1.3, p.11, p.15 *)
-                 dim = SARAH`getDimParameters[mixingMatrix][[1]];
-                 (* determine corresponding Yukawa coupling *)
-                 yukawa = Which[mixingMatrix === SARAH`SoftSquark     , SARAH`DownYukawa,
-                                mixingMatrix === SARAH`SoftUp         , SARAH`UpYukawa,
-                                mixingMatrix === SARAH`SoftDown       , SARAH`DownYukawa,
-                                mixingMatrix === SARAH`SoftLeftLepton , SARAH`ElectronYukawa,
-                                mixingMatrix === SARAH`SoftRightLepton, SARAH`ElectronYukawa];
-                 yukawaStr = CConversion`ToValidCSymbolString[yukawa];
-                 yukawaDiagStr = yukawaStr <> "_diag";
-                 yukawaStrWrapper = If[head == "", yukawaStr, head <> "(" <> yukawaStr <> ")"];
-                 diagMatrix = Which[mixingMatrix === SARAH`SoftSquark,
-                                    "(v*" <> wrapper <> "*v.adjoint()).real()",
-                                    mixingMatrix === SARAH`SoftUp || mixingMatrix === SARAH`SoftDown,
-                                    "(u.conjugate()*" <> wrapper <> "*u.transpose()).real()",
-                                    mixingMatrix === SARAH`SoftLeftLepton,
-                                    "(v*" <> wrapper <> "*v.adjoint()).real()",
-                                    mixingMatrix === SARAH`SoftRightLepton,
-                                    "(u.conjugate()*" <> wrapper <> "*u.transpose()).real()"];
-                 "{\n" <> IndentText[
-                     "// diagonalize the " <> yukawaStr <> " Yukawa coupling for SLHA-2 compatible output\n" <>
-                     CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]] <> " " <>
-                     yukawaDiagStr <> ";\n" <>
-                     CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]] <> " " <>
-                     " u, v;\n" <>
-                     "fs_svd(" <> yukawaStrWrapper <> ", " <> yukawaDiagStr <> ", u, v);\n" <>
-                     "slha_io.set_block(\"" <> lhs <> "\", " <>
-                     CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]] <>
-                     "(" <> diagMatrix <> "), \"" <> lhs <> "\", model.get_scale());"
-                 ] <> "\n}\n"
-                 ,
-                 (* default *)
-                 True
-                 ,
-                 "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
-                 "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
-                ]
+           wrapper = If[head == "", strSLHA, head <> "(" <> strSLHA <> ")"];
+           (* convert SLHA yukawa vectors to matrix *)
+           wrapper = If[mixingMatrix === SARAH`UpYukawa ||
+                        mixingMatrix === SARAH`DownYukawa ||
+                        mixingMatrix === SARAH`ElectronYukawa,
+                        "ToMatrix(" <> wrapper <> ")",
+                        wrapper
+                       ];
+           "slha_io.set_block(\"" <> lhs <> "\", " <> wrapper <> ", \"" <> str <>
+           "\"" <> If[scale != "", ", " <> scale, ""] <> ");\n"
           ];
 
 WriteSLHAMixingMatricesBlocks[] :=
