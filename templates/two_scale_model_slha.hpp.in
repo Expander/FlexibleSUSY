@@ -47,6 +47,7 @@ public:
    virtual ~@ModelName@_slha();
 
    virtual void clear();
+   void convert_to_slha(); ///< converts pole masses to SLHA convention
    const @ModelName@_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
    @ModelName@_physical& get_physical_slha(); ///< returns pole masses to SLHA convention
 
@@ -59,8 +60,6 @@ public:
 
 private:
    @ModelName@_physical physical_slha; ///< contains the pole masses and mixings in slha convention
-
-   void convert_to_slha(); ///< converts pole masses to SLHA convention
 };
 
 } // namespace flexiblesusy
