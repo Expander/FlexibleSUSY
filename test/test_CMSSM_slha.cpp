@@ -6,6 +6,8 @@
 
 #include "CMSSM_two_scale_model.hpp"
 #include "CMSSM_two_scale_model_slha.hpp"
+#include "wrappers.hpp"
+#include "ckm.hpp"
 
 using namespace flexiblesusy;
 
@@ -339,6 +341,31 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
          BOOST_CHECK_CLOSE_FRACTION(model.get_mu2(i,k), mu2(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(model.get_md2(i,k), md2(i,k), 1.0e-10);
          BOOST_CHECK_CLOSE_FRACTION(model.get_me2(i,k), me2(i,k), 1.0e-10);
+      }
+   }
+
+   // check CKM matrix
+   const Eigen::Matrix<std::complex<double>,3,3> ckm_matrix(ZUL_slha * ZDL_slha.adjoint());
+   const Eigen::Matrix<std::complex<double>,3,3> ckm_slha(model.get_ckm_matrix());
+
+   // check that SLHA mixing matrix is in PDG convention
+   BOOST_CHECK(Re(ckm_slha(0,0)) > 0.);
+   BOOST_CHECK(Re(ckm_slha(1,1)) > 0.);
+   BOOST_CHECK(Re(ckm_slha(2,2)) > 0.);
+   BOOST_CHECK(Re(ckm_slha(0,1)) > 0.);
+   BOOST_CHECK(Re(ckm_slha(1,2)) > 0.);
+
+   // check that SLHA mixing matrix is in PDG convention
+   BOOST_CHECK(Re(ckm_matrix(0,1)) > 0.);
+   BOOST_CHECK(Re(ckm_matrix(1,2)) > 0.);
+   BOOST_CHECK(Re(ckm_matrix(0,0)) > 0.);
+   BOOST_CHECK(Re(ckm_matrix(1,1)) > 0.);
+   BOOST_CHECK(Re(ckm_matrix(2,2)) > 0.);
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(Re(ckm_matrix(i,k)), Re(ckm_slha(i,k)), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(Im(ckm_matrix(i,k)), Im(ckm_slha(i,k)), 1.0e-10);
       }
    }
 }

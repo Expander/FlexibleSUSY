@@ -33,6 +33,8 @@ CreateSLHASoftSquaredMassesDefinition::usage="";
 CreateSLHASoftSquaredMassesGetters::usage="";
 ConvertSoftSquaredMassesToSLHA::usage="";
 
+CalculateCKMMatrix::usage="";
+
 Begin["`Private`"];
 
 StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
@@ -758,18 +760,6 @@ ConvertYukawaCouplingsToSLHA[] :=
                                    CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
                                    CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
            ]& /@ yuks;
-           (* convert CKM matrix to PDG convention *)
-           If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL  ] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
-              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ]
-              ,
-              result = result <> "CKM_parameters::to_pdg_convention(" <>
-              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> ", " <>
-              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixL] <> ", " <>
-              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixR  ] <> ", " <>
-              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixR] <> ");\n";
-             ];
            result
           ];
 
@@ -889,6 +879,30 @@ ConvertSoftSquaredMassesToSLHA[] :=
                               ").real();\n";
                     ];
            ]& /@ massSq;
+           result
+          ];
+
+CalculateCKMMatrix[] :=
+    Module[{result = ""},
+           If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL]
+              ,
+              result = result <> "ckm = " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> " * " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixL] <> ".adjoint();\n";
+             ];
+           (* convert CKM matrix to PDG convention *)
+           If[MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixL] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixL  ] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`DownMatrixR] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`UpMatrixR  ]
+              ,
+              result = result <> "CKM_parameters::to_pdg_convention(ckm, " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixL  ] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixL] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixR  ] <> ", " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixR] <> ");\n";
+             ];
            result
           ];
 

@@ -35,6 +35,7 @@ namespace flexiblesusy {
 CLASSNAME::@ModelName@_slha(const @ModelName@_input_parameters& input_)
    : @ModelName@<Two_scale>(input_)
    , physical_slha()
+   , ckm(Eigen::Matrix<std::complex<double>,3,3>::Identity())
 {
 }
 
@@ -73,6 +74,7 @@ void CLASSNAME::convert_to_slha()
    convert_to_slha(physical_slha);
 
    convert_yukawa_couplings_to_slha();
+   calculate_ckm_matrix();
    convert_trilinear_couplings_to_slha();
    convert_soft_squared_masses_to_slha();
 }
@@ -87,6 +89,11 @@ void CLASSNAME::convert_to_slha()
 void CLASSNAME::convert_to_slha(@ModelName@_physical& physical)
 {
 @convertMixingsToSLHAConvention@
+}
+
+void CLASSNAME::calculate_ckm_matrix()
+{
+@calculateCKMMatrix@
 }
 
 /**
