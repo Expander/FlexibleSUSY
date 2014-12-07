@@ -122,9 +122,21 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_slha_reading )
 
    for (int i = 0; i < 3; i++) {
       for (int k = 0; k < 3; k++) {
-         BOOST_CHECK_CLOSE_FRACTION(model.get_Yu(i,k), Yu(i,k), 1.0e-8);
-         BOOST_CHECK_CLOSE_FRACTION(model.get_Yd(i,k), Yd(i,k), 1.0e-8);
-         BOOST_CHECK_CLOSE_FRACTION(model.get_Ye(i,k), Ye(i,k), 1.0e-8);
+         if (i == k) {
+            if (Abs(model.get_Yu(i,k)) > 1.0e-8 && Abs(Yu(i,k)) > 1.0e-8)
+               BOOST_CHECK_CLOSE_FRACTION(model.get_Yu(i,k), Yu(i,k), 1.0e-8);
+            if (Abs(model.get_Yd(i,k)) > 1.0e-8 && Abs(Yd(i,k)) > 1.0e-8)
+               BOOST_CHECK_CLOSE_FRACTION(model.get_Yd(i,k), Yd(i,k), 1.0e-8);
+            if (Abs(model.get_Ye(i,k)) > 1.0e-8 && Abs(Ye(i,k)) > 1.0e-8)
+               BOOST_CHECK_CLOSE_FRACTION(model.get_Ye(i,k), Ye(i,k), 1.0e-8);
+         } else {
+            BOOST_CHECK_SMALL(model.get_Yu(i,k), 1.0e-8);
+            BOOST_CHECK_SMALL(model.get_Yd(i,k), 1.0e-8);
+            BOOST_CHECK_SMALL(model.get_Ye(i,k), 1.0e-8);
+            BOOST_CHECK_SMALL(Yu(i,k), 1.0e-8);
+            BOOST_CHECK_SMALL(Yd(i,k), 1.0e-8);
+            BOOST_CHECK_SMALL(Ye(i,k), 1.0e-8);
+         }
       }
    }
 
