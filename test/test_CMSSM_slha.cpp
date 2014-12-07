@@ -278,6 +278,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
          BOOST_CHECK(model.get_Yu(i,k) != 0.);
          BOOST_CHECK(model.get_Yd(i,k) != 0.);
          BOOST_CHECK(model.get_Ye(i,k) != 0.);
+
+         BOOST_CHECK(model.get_TYu(i,k) != 0.);
+         BOOST_CHECK(model.get_TYd(i,k) != 0.);
+         BOOST_CHECK(model.get_TYe(i,k) != 0.);
       }
    }
 
@@ -286,5 +290,31 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_diagonal_yukawas )
       BOOST_CHECK_GT(model.get_Yu_slha(i), 0.);
       BOOST_CHECK_GT(model.get_Yd_slha(i), 0.);
       BOOST_CHECK_GT(model.get_Ye_slha(i), 0.);
+   }
+
+   // check SLHA-compliant trilinear couplings
+   const Eigen::Matrix<std::complex<double>,3,3> ZDL_slha(model.get_ZDL_slha());
+   const Eigen::Matrix<std::complex<double>,3,3> ZUL_slha(model.get_ZUL_slha());
+   const Eigen::Matrix<std::complex<double>,3,3> ZDR_slha(model.get_ZDR_slha());
+   const Eigen::Matrix<std::complex<double>,3,3> ZUR_slha(model.get_ZUR_slha());
+   const Eigen::Matrix<std::complex<double>,3,3> ZEL_slha(model.get_ZEL_slha());
+   const Eigen::Matrix<std::complex<double>,3,3> ZER_slha(model.get_ZER_slha());
+
+   // slha convention
+   const Eigen::Matrix<double,3,3> TYu_slha(model.get_TYu_slha());
+   const Eigen::Matrix<double,3,3> TYd_slha(model.get_TYd_slha());
+   const Eigen::Matrix<double,3,3> TYe_slha(model.get_TYe_slha());
+
+   // non-slha
+   const Eigen::Matrix<double,3,3> TYu((ZUR_slha.transpose() * TYu_slha * ZUL_slha).real());
+   const Eigen::Matrix<double,3,3> TYd((ZDR_slha.transpose() * TYd_slha * ZDL_slha).real());
+   const Eigen::Matrix<double,3,3> TYe((ZER_slha.transpose() * TYe_slha * ZEL_slha).real());
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(model.get_TYu(i,k), TYu(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_TYd(i,k), TYd(i,k), 1.0e-10);
+         BOOST_CHECK_CLOSE_FRACTION(model.get_TYe(i,k), TYe(i,k), 1.0e-10);
+      }
    }
 }
