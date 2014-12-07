@@ -119,15 +119,4 @@ BOOST_AUTO_TEST_CASE( test_CKM_pdg_convention )
 
    BOOST_CHECK(is_equal(mu, uu.transpose() * su.matrix().asDiagonal() * vu, 1.e-10));
    BOOST_CHECK(is_equal(md, ud.transpose() * sd.matrix().asDiagonal() * vd, 1.e-10));
-
-   {
-      // check that converted matrices are consistent
-      const Eigen::Matrix<double,3,3> ckm_check(vu*vd.adjoint());
-      for (int i = 0; i < 3; i++) {
-         for (int k = 0; k < 3; k++) {
-            BOOST_CHECK_CLOSE_FRACTION(Re(ckm(i,k)), Re(ckm_check(i,k)), 1.0e-10);
-            BOOST_CHECK_CLOSE_FRACTION(Im(ckm(i,k)), Im(ckm_check(i,k)), 1.0e-10);
-         }
-      }
-   }
 }
