@@ -267,8 +267,12 @@ Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
    return x;
 }
 
-template<int M, int N>
-Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<std::complex<double>,M,N>& x)
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Re(const Eigen::MatrixBase<Derived>& x)
 {
    return x.real();
 }
