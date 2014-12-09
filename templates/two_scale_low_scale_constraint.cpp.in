@@ -42,6 +42,7 @@ namespace flexiblesusy {
 #define Pole(p) model->get_physical().p
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define CKM ckm
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -50,12 +51,16 @@ namespace flexiblesusy {
    , model(0)
    , inputPars()
    , oneset()
+   , ckm()
    , MZDRbar(0.)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
    , threshold_corrections_loop_order(1)
 {
+   ckm << 1., 0., 0.,
+          0., 1., 0.,
+          0., 0., 1.;
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
@@ -141,6 +146,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
+
+   ckm = oneset.displayCKM().get_complex_ckm();
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
@@ -217,10 +224,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 
    if (model->get_thresholds())
       topDRbar(2,2) = model->calculate_M@TopQuark@_DRbar(oneset.displayPoleMt(), 2);
-
-   // CKM rotation
-   const Eigen::Matrix<double,3,3> CKM(oneset.displayCKM().get_real_ckm());
-   topDRbar = CKM.transpose() * topDRbar;
 
 @setDRbarUpQuarkYukawaCouplings@
 }

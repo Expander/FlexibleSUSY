@@ -57,6 +57,7 @@ private:
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters inputPars;
    QedQcd oneset;
+   Eigen::Matrix<std::complex<double>,3,3> ckm;
    double MZDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
