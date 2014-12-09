@@ -261,6 +261,18 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
+template<int M, int N>
+Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
+{
+   return x;
+}
+
+template<int M, int N>
+Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<std::complex<double>,M,N>& x)
+{
+   return x.real();
+}
+
 inline double Im(double x)
 {
    return x;
