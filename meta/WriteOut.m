@@ -34,6 +34,7 @@ CreateSLHASoftSquaredMassesGetters::usage="";
 ConvertSoftSquaredMassesToSLHA::usage="";
 
 CalculateCKMMatrix::usage="";
+CalculatePMNSMatrix::usage="";
 
 Begin["`Private`"];
 
@@ -657,7 +658,8 @@ GetYukawas[] :=
 GetFermionMixingMatrices[] :=
     Select[{SARAH`DownMatrixL, SARAH`UpMatrixL,
             SARAH`DownMatrixR, SARAH`UpMatrixR,
-            SARAH`ElectronMatrixL, SARAH`ElectronMatrixR},
+            SARAH`ElectronMatrixL, SARAH`ElectronMatrixR,
+            SARAH`NeutrinoMM},
            MemberQ[Parameters`GetOutputParameters[],#]&];
 
 GetMixingMatricesFor[yuk_] :=
@@ -902,6 +904,21 @@ CalculateCKMMatrix[] :=
               CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixL] <> ", " <>
               CreateSLHAFermionMixingMatrixName[SARAH`UpMatrixR  ] <> ", " <>
               CreateSLHAFermionMixingMatrixName[SARAH`DownMatrixR] <> ");\n";
+             ];
+           result
+          ];
+
+CalculatePMNSMatrix[] :=
+    Module[{result = ""},
+           If[MemberQ[Parameters`GetOutputParameters[], SARAH`ElectronMatrixL] &&
+              MemberQ[Parameters`GetOutputParameters[], SARAH`NeutrinoMM] &&
+              SARAH`getDimParameters[SARAH`ElectronMatrixL] === SARAH`getDimParameters[SARAH`NeutrinoMM]
+              ,
+              result = "pmns = " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`ElectronMatrixL] <> " * " <>
+              CreateSLHAFermionMixingMatrixName[SARAH`NeutrinoMM] <> ".adjoint();\n";
+              ,
+              result = "pmns << 1, 0, 0, 0, 1, 0, 0, 0, 1;\n";
              ];
            result
           ];

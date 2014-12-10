@@ -531,7 +531,8 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaPoleMassGetters = "",
             slhaPoleMixingMatrixGetters = "",
             convertMixingsToSLHAConvention = "",
-            calculateCKMMatrix = ""
+            calculateCKMMatrix = "",
+            calculatePMNSMatrix = ""
            },
            slhaYukawaDef        = WriteOut`CreateSLHAYukawaDefinition[];
            slhaYukawaGetter     = WriteOut`CreateSLHAYukawaGetters[];
@@ -546,6 +547,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            calculateCKMMatrix = WriteOut`CalculateCKMMatrix[];
+           calculatePMNSMatrix = WriteOut`CalculatePMNSMatrix[];
            For[k = 1, k <= Length[massMatrices], k++,
                slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
                slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
@@ -566,6 +568,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@calculateCKMMatrix@"             -> IndentText[calculateCKMMatrix],
+                            "@calculatePMNSMatrix@"             -> IndentText[calculatePMNSMatrix],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

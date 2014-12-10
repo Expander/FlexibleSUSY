@@ -143,6 +143,14 @@ void @ModelName@_slha_io::set_ckm(
    slha_io.set_block("IMVCKM", ckm_matrix.imag(), "Im(CKM)", scale);
 }
 
+void @ModelName@_slha_io::set_pmns(
+   const Eigen::Matrix<std::complex<double>,3,3>& pmns_matrix,
+   double scale)
+{
+   slha_io.set_block("VPMNS"  , pmns_matrix.real(), "Re(PMNS)", scale);
+   slha_io.set_block("IMVPMNS", pmns_matrix.imag(), "Im(PMNS)", scale);
+}
+
 /**
  * Write SLHA object to file.
  *
