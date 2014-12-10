@@ -43,6 +43,7 @@ namespace flexiblesusy {
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 #define CKM ckm
+#define PMNS pmns
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -52,6 +53,7 @@ namespace flexiblesusy {
    , inputPars()
    , oneset()
    , ckm()
+   , pmns()
    , MZDRbar(0.)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
@@ -61,6 +63,10 @@ namespace flexiblesusy {
    ckm << 1., 0., 0.,
           0., 1., 0.,
           0., 0., 1.;
+
+   pmns << 1., 0., 0.,
+           0., 1., 0.,
+           0., 0., 1.;
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
@@ -147,7 +153,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
 
-   ckm = oneset.displayCKM().get_complex_ckm();
+   ckm = oneset.get_complex_ckm();
+   pmns = oneset.get_complex_pmns();
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
@@ -252,6 +259,14 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
       electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarElectronYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
+{
+   neutrinoDRbar.setZero();
+   neutrinoDRbar(0,0) = oneset.displayNeutrinoPoleMass(1);
+   neutrinoDRbar(1,1) = oneset.displayNeutrinoPoleMass(2);
+   neutrinoDRbar(2,2) = oneset.displayNeutrinoPoleMass(3);
 }
 
 } // namespace flexiblesusy
