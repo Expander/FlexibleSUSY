@@ -459,16 +459,19 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setPoleMtau(value);
       break;
    case 8:
+      oneset.setNeutrinoPoleMass(3, value);
       break;
    case 11:
       oneset.setMass(mElectron, value);
       break;
    case 12:
+      oneset.setNeutrinoPoleMass(1, value);
       break;
    case 13:
       oneset.setMass(mMuon, value);
       break;
    case 14:
+      oneset.setNeutrinoPoleMass(2, value);
       break;
    case 21:
       oneset.setMass(mDown, value);
