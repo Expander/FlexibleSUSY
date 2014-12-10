@@ -15,8 +15,8 @@ namespace softsusy {
 static QedQcd *tempLe;
 
 QedQcd::QedQcd()
-  : a(2), mf(9), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM), 
-    mtauPole(MTAU), ckm() {
+  : a(2), mf(9), mnu(3), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM),
+    mtauPole(MTAU), ckm(), pmns() {
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(1) = MUP; mf(2) = MCHARM; 
@@ -37,7 +37,9 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mtauPole = m.mtauPole;
   a = m.a;
   mf = m.mf;
+  mnu = m.mnu;
   ckm = m.ckm;
+  pmns = m.pmns;
   setLoops(m.displayLoops());
   setThresholds(m.displayThresholds());
   setMu(m.displayMu());

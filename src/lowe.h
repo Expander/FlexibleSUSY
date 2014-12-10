@@ -59,6 +59,7 @@ class QedQcd: public RGE
 private:
   DoubleVector a;   ///< gauge couplings
   DoubleVector mf;  ///< fermion running masses
+  DoubleVector mnu; ///< neutrino pole masses
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
@@ -77,6 +78,8 @@ public:
   void setMbMb(double mb)   { mbMb = mb;   }; ///< set mb(mb)
   /// sets a running quark mass
   void setMass(mass mno, double m) { mf(mno) = m; }; 
+  /// sets a neutrino pole mass
+  void setNeutrinoPoleMass(int i, double m) { mnu(i) = m; }
   /// sets QED or QCD structure constant
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
   /// sets CKM parameters (in the MS-bar scheme at MZ)
@@ -96,6 +99,8 @@ public:
   const DoubleVector & displayMass() const { return mf; };
   /// Returns a single running mass
   double displayMass(mass mno) const { return mf.display(mno); };
+  /// Returns a single neutrino pole mass
+  double displayNeutrinoPoleMass(int i) const { return mnu.display(i); }
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
   /// Obgligatory: returns vector of all running parameters
@@ -108,6 +113,12 @@ public:
   Eigen::Matrix<double,3,3> get_real_ckm() const { return ckm.get_real_ckm(); }
   /// Returns complex CKM matrix
   Eigen::Matrix<std::complex<double>,3,3> get_complex_ckm() const { return ckm.get_complex_ckm(); }
+  /// returns PMNS parameters
+  flexiblesusy::PMNS_parameters displayPMNS() const { return pmns; }
+  /// Returns real PMNS matrix
+  Eigen::Matrix<double,3,3> get_real_pmns() const { return pmns.get_real_pmns(); }
+  /// Returns complex PMNS matrix
+  Eigen::Matrix<std::complex<double>,3,3> get_complex_pmns() const { return pmns.get_complex_pmns(); }
   
   int flavours(double) const;  /// returns number of active flavours
   
@@ -162,8 +173,8 @@ double getAsmt(double mtop, double alphasMz);
 double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
-  : RGE(), a(m.a), mf(m.mf), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-   mtauPole(m.mtauPole), ckm(m.ckm) {
+  : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
+   mtauPole(m.mtauPole), ckm(m.ckm), pmns(m.pmns) {
   setPars(11); 
   setMu(m.displayMu());
   setLoops(m.displayLoops());
