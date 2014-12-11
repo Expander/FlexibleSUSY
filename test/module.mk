@@ -53,7 +53,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_model.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp
 endif
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSMLowPrecision),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
 endif
