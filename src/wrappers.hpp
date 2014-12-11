@@ -285,12 +285,7 @@ void reorder_vector(
    Eigen::Array<double,Eigen::MatrixBase<Derived>::RowsAtCompileTime,1>& v,
    const Eigen::MatrixBase<Derived>& matrix)
 {
-   enum { N = Eigen::MatrixBase<Derived>::RowsAtCompileTime };
-   typedef typename Derived::Scalar Scalar;
-
-   Eigen::Array<Scalar,N,1> diag(matrix.diagonal().array());
-
-   reorder_vector(v, diag);
+   reorder_vector(v, matrix.diagonal().array().eval());
 }
 
 inline double Im(double x)
