@@ -272,7 +272,11 @@ void reorder_vector(
    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
              CompareAbs<Real, N>(v2));
 
+#if EIGEN_VERSION_AT_LEAST(3,1,4)
    v.matrix().transpose() *= p.inverse();
+#else
+   Eigen::Map<Eigen::Matrix<Real,N,1> >(v.data()).transpose() *= p.inverse();
+#endif
 }
 
 /**
