@@ -4,13 +4,13 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <Eigen/Core>
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "ew_input.hpp"
 #include "CMSSMLowPrecision_two_scale_model.hpp"
 
 using namespace flexiblesusy;
-using namespace softsusy;
 
 void ensure_tree_level_ewsb(CMSSMLowPrecision<Two_scale>& m)
 {
