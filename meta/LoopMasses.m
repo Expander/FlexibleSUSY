@@ -83,26 +83,33 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
 (* ********** fast diagonalization routines ********** *)
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
-    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
+    Module[{result, dim, dimStr, massName, massNameReordered, particleName,
+            mixingMatrix, selfEnergyFunction, reorderMasses,
             tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric, selfEnergyMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           massNameReordered = massName <> "_reordered";
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
+           reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
+                       massNameReordered <> "(" <> massName <> ");\n" <>
+                       "reorder_vector(" <> massNameReordered <> ", " <>
+                       "get_mass_matrix_" <> particleName <> "());\n";
            If[dim > 1,
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
-              result = tadpoleMatrix <>
+              result = reorderMasses <> "\n" <>
+                       tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
-                                             massName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                             massNameReordered <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
                                              selfEnergyFunction <> "(p,i1,i2));\n"] <>
                                   "}\n"
@@ -141,12 +148,14 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
 
 DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
+            massNameReordered, reorderMasses,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             massMatrixStr, selfEnergyMatrixType, particleName},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[particleName];
+           particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           massNameReordered = massName <> "_reordered";
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
@@ -159,14 +168,19 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
+           reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
+                       massNameReordered <> "(" <> massName <> ");\n" <>
+                       "reorder_vector(" <> massNameReordered <> ", " <>
+                       "get_mass_matrix_" <> particleName <> "());\n";
            If[dim > 1,
-              result = selfEnergyMatrixType <> " self_energy_1;\n" <>
+              result = reorderMasses <> "\n" <>
+                       selfEnergyMatrixType <> " self_energy_1;\n" <>
                        selfEnergyMatrixType <> " self_energy_PL;\n" <>
                        selfEnergyMatrixType <> " self_energy_PR;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
-                                             massName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                             massNameReordered <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = Re(" <>
                                              selfEnergyFunctionS <> "(p,i1,i2));\n" <>
                                              "self_energy_PL(i1,i2) = Re(" <>
