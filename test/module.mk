@@ -53,6 +53,10 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_model.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp
 endif
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSMLowPrecision),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMLowPrecision.cpp
+endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_benchmark.cpp \
@@ -345,6 +349,8 @@ $(DIR)/test_CMSSM_slha_input.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-ou
 $(DIR)/test_CMSSM_slha.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
