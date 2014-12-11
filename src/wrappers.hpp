@@ -26,6 +26,7 @@
 #include <string>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
+#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -254,6 +255,42 @@ inline double Re(double x)
 inline double Re(const std::complex<double>& x)
 {
    return std::real(x);
+}
+
+/**
+ * @brief reorders vector v according to ordering in vector v2
+ * @param v vector with elementes to be reordered
+ * @param v2 vector with reference ordering
+ */
+template<class Real, int N>
+void reorder_vector(
+   Eigen::Array<Real,N,1>& v,
+   const Eigen::Array<Real,N,1>& v2)
+{
+   Eigen::PermutationMatrix<N> p;
+   p.setIdentity();
+   std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
+             CompareAbs<Real, N>(v2));
+
+   v.matrix().transpose() *= p.inverse();
+}
+
+/**
+ * @brief reorders vector v according to ordering of diagonal elements in mass_matrix
+ * @param v vector with elementes to be reordered
+ * @param matrix matrix with diagonal elements with reference ordering
+ */
+template<class Derived>
+void reorder_vector(
+   Eigen::Array<double,Eigen::MatrixBase<Derived>::RowsAtCompileTime,1>& v,
+   const Eigen::MatrixBase<Derived>& matrix)
+{
+   enum { N = Eigen::MatrixBase<Derived>::RowsAtCompileTime };
+   typedef typename Derived::Scalar Scalar;
+
+   Eigen::Array<Scalar,N,1> diag(matrix.diagonal().array());
+
+   reorder_vector(v, diag);
 }
 
 inline double Im(double x)

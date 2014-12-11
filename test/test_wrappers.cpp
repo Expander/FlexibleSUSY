@@ -200,3 +200,33 @@ BOOST_AUTO_TEST_CASE(test_ToString)
    MEASURE(sprintf     , number, number_of_iterations);
    MEASURE(lexical_cast, number, number_of_iterations);
 }
+
+BOOST_AUTO_TEST_CASE(test_reorder_vector)
+{
+   Eigen::Array<double,3,1> vec1, vec2;
+   vec1 << 1, 2, 3;
+   vec2 << 3, 1, 2;
+
+   reorder_vector(vec1, vec2);
+
+   BOOST_CHECK_EQUAL(vec1(0), 3);
+   BOOST_CHECK_EQUAL(vec1(1), 1);
+   BOOST_CHECK_EQUAL(vec1(2), 2);
+}
+
+BOOST_AUTO_TEST_CASE(test_reorder_vector_with_matrix)
+{
+   Eigen::Array<double,3,1> vec1;
+   vec1 << 1, 2, 3;
+
+   Eigen::Matrix<double,3,3> matrix;
+   matrix << 3, 0, 0,
+             0, 1, 0,
+             0, 0, 2;
+
+   reorder_vector(vec1, matrix);
+
+   BOOST_CHECK_EQUAL(vec1(0), 3);
+   BOOST_CHECK_EQUAL(vec1(1), 1);
+   BOOST_CHECK_EQUAL(vec1(2), 2);
+}
