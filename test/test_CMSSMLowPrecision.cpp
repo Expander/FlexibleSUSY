@@ -144,5 +144,5 @@ BOOST_AUTO_TEST_CASE( test_CMSSMLowPrecision_pole_masses )
 
    // neutral CP even Higgs
    const DoubleVector hh(ToDoubleVector(m.get_physical().Mhh));
-   BOOST_CHECK_CLOSE(hh(1), 118.888, 0.001);
+   BOOST_CHECK_CLOSE(hh(1), 119.220, 0.001);
 }
