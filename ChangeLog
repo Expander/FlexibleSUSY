@@ -15,6 +15,9 @@ FlexibleSUSY-1.0.4 [not released yet]
    scale definitions, for example
    SUSYScaleFirstGuess = Sqrt[mq2[3,3] * mu2[3,3]]
 
+ * Bugfix (commit 77dce8b): correct momentum guess for the calculation
+   of the self-energies with LowPrecision.
+
 FlexibleSUSY-1.0.3 [November, 21 2014]
 
  * Allow selection of Higgs 2-loop contributions in SLHA input file
