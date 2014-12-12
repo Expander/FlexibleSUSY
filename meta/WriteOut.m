@@ -310,6 +310,8 @@ CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
 CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
     Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
 
+WrapPreprocessorMacroAround[expr_String, ___] := expr;
+
 WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
                              protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
     Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
@@ -324,8 +326,24 @@ WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
            exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
           ];
 
-WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
-    Module[{parStr, parVal, idx1Str, idx2Str},
+SetAttributes[WriteSLHABlockEntry, HoldFirst];
+
+WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
+    Module[{parStr, commentStr},
+           parStr = ToString[Unevaluated[par]];
+           commentStr = If[comment == "", parStr, comment];
+           parStr = StringReplace[parStr,
+                                  {"SUSYScale" -> "SCALES(SUSYScale)",
+                                   "HighScale" -> "SCALES(HighScale)",
+                                   "LowScale"  -> "SCALES(LowScale)"}
+                                 ];
+           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+          ];
+
+ClearAttributes[WriteSLHABlockEntry, HoldFirst];
+
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
@@ -333,13 +351,14 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
            "      << FORMAT_MIXING_MATRIX(" <> idx1Str <> ", " <> idx2Str <>
-           ", (" <> parVal <> "), \"" <> parStr <> "\")" <> "\n"
+           ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
-    Module[{parStr, parVal, pdgStr},
+WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, pdgStr, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
@@ -353,26 +372,27 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
               parStr = "gY";
              ];
            pdgStr = ToString[pdg];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
            "      << FORMAT_ELEMENT(" <> pdgStr <> ", (" <> parVal <>
-           "), \"" <> parStr <> "\")" <> "\n"
+           "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_}] :=
-    Module[{parStr, parVal},
+WriteSLHABlockEntry[{par_}, comment_String:""] :=
+    Module[{parStr, parVal, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                      Parameters`GetOutputParameters[]],
                                            Global`MODELPARAMETER]];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
-           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> parStr <> "\")\n"
+           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> commentStr <> "\")\n"
           ];
 
-WriteSLHABlockEntry[tuple_] :=
+WriteSLHABlockEntry[tuple___] :=
     Block[{},
-          Print["WriteSLHABlock: Error: tuple ", tuple,
-                " is not a list of lenght 2."];
+          Print["WriteSLHABlockEntry: Error: malformed entry ", tuple];
           ""
          ];
 
