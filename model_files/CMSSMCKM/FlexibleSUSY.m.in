@@ -10,7 +10,6 @@ MINPAR = {
 };
 
 EXTPAR = {
-    {0, Qin},
     {21, mHd2IN},
     {22, mHu2IN}
 };
@@ -23,7 +22,7 @@ SUSYScaleFirstGuess = SM[MZ];
 
 SUSYScaleInput = {};
 
-HighScale = Qin;
+HighScale = g1 == g2;
 
 HighScaleFirstGuess = 2.0 10^16;
 

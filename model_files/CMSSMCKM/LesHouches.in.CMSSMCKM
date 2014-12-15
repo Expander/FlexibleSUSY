@@ -5,7 +5,7 @@ Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
-    3   0                    # calculate SM pole masses
+    3   1                    # calculate SM pole masses
     4   2                    # pole mass loop order
     5   2                    # EWSB loop order
     6   2                    # beta-functions loop order
@@ -45,21 +45,20 @@ Block MINPAR                 # Input parameters
     3   10.                  # TanBeta
     4   1                    # SignMu
 Block EXTPAR
-    0   1.9422e+16            # unification scale 
    21   15625                # mHd2
    22   15625                # mHu2
-Block AeijIN
-    1   1   0.0
-    2   2   0.0
-    3   3   0.0
-Block AdijIN
-    1   1   0.0
-    2   2   0.0
-    3   3   0.0
-Block AuijIN
-    1   1   0.0
-    2   2   0.0
-    3   3   0.0
+Block TEIN
+    1   1   0                # T[Ye][1,1]
+    2   2   0                # T[Ye][2,2]
+    3   3   0                # T[Ye][3,3]
+Block TDIN
+    1   1   0                # T[Yd][1,1]
+    2   2   0                # T[Yd][2,2]
+    3   3   0                # T[Yd][3,3]
+Block TUIN
+    1   1   0                # T[Yu][1,1]
+    2   2   0                # T[Yu][2,2]
+    3   3   0                # T[Yu][3,3]
 Block MSQ2IN
   1  1     15625.0          # mq2(1,1)
   1  2     0.00000000E+00   # mq2(1,2)
