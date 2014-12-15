@@ -121,9 +121,13 @@ ALLDEP += $(LIBFFLITE_DEP)
 endif
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
+TEST_SH += \
+		$(DIR)/test_standalone.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
 TEST_SH += \
-		$(DIR)/test_standalone.sh \
 		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_CMSSM_slha_doubled_blocks.sh
 TEST_SRC += \
