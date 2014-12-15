@@ -27,9 +27,9 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput = {
-   {T[Ye], Re[MatMul[ZUR, Tp[LHInput[T[Ye]]], Tp[ZUL]]]},
+   {T[Ye], Re[MatMul[ZER, Tp[LHInput[T[Ye]]], Tp[ZEL]]]},
    {T[Yd], Re[MatMul[ZDR, Tp[LHInput[T[Yd]]], Tp[ZDL]]]},
-   {T[Yu], Re[MatMul[ZER, Tp[LHInput[T[Yu]]], Tp[ZEL]]]},
+   {T[Yu], Re[MatMul[ZUR, Tp[LHInput[T[Yu]]], Tp[ZUL]]]},
    {mHd2, mHd2IN},
    {mHu2, mHu2IN},
    {mq2, Re[MatMul[ZDL, LHInput[mq2], Tp[ZDL]]]},
