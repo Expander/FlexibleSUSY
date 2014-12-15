@@ -5,7 +5,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include "test.h"
-#include "flavoursoft.h"
 #include "ckm.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
