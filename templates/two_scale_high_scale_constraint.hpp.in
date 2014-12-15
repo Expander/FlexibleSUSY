@@ -51,7 +51,6 @@ public:
 private:
    double scale;
    double initial_scale_guess;
-   double fixed_scale; ///< fixed unification scale (0 = unfixed)
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters inputPars;
 

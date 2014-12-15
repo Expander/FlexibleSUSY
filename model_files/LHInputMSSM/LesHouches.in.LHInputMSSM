@@ -37,7 +37,6 @@ Block MINPAR                 # Input parameters
     4   1                    # SignMu
     5   0                    # Azero
 Block EXTPAR
-    0   0                    # unification scale (0 = automatic)
 Block MSQ2IN
     1   1   1.0e+06
     2   2   1.0e+06

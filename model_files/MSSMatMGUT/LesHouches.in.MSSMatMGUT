@@ -34,7 +34,6 @@ Block MINPAR                 # Input parameters
     3   10.                  # TanBeta
     4   1                    # SignMu
 Block EXTPAR
-    0   0                    # unification scale (0 = automatic)
    21   15625                # mHd2
    22   15625                # mHu2
 Block AeijIN

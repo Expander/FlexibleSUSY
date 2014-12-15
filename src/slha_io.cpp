@@ -31,7 +31,6 @@ namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
    : data()
-   , extpar()
    , modsel()
 {
 }
@@ -39,7 +38,6 @@ SLHA_io::SLHA_io()
 void SLHA_io::clear()
 {
    data.clear();
-   extpar.clear();
    modsel.clear();
 }
 
@@ -70,14 +68,6 @@ void SLHA_io::read_from_file(const std::string& file_name)
       msg << "cannot read SLHA file: \"" << file_name << "\"";
       throw ReadError(msg.str());
    }
-}
-
-void SLHA_io::read_extpar()
-{
-   SLHA_io::Tuple_processor extpar_processor
-      = boost::bind(&SLHA_io::process_extpar_tuple, boost::ref(extpar), _1, _2);
-
-   read_block("EXTPAR", extpar_processor);
 }
 
 void SLHA_io::read_modsel()
@@ -337,24 +327,6 @@ void SLHA_io::write_to_stream(std::ostream& ostr)
       ostr << data;
    else
       ERROR("cannot write SLHA file");
-}
-
-/**
- * fill Extpar struct from given key - value pair
- *
- * @param extpar EXTPAR data
- * @param key SLHA key in EXTPAR
- * @param value value corresponding to key
- */
-void SLHA_io::process_extpar_tuple(Extpar& extpar, int key, double value)
-{
-   if (key == 0) {
-      if (value > -std::numeric_limits<double>::epsilon()) {
-         extpar.input_scale = value;
-      } else {
-         WARNING("Negative values for EXTPAR entry 0 currently not supported");
-      }
-   }
 }
 
 /**

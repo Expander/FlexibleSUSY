@@ -39,7 +39,6 @@ Block MINPAR                 # Input parameters
     4   1                    # SignMu
     5   0                    # Azero
 Block EXTPAR  # Input parameters
-    0   0                    # unification scale (0 = automatic)
 			     # specimen normal spectrum
     1	5.0E-11		     # mv1
     2	5.07523E-11	     # mv2

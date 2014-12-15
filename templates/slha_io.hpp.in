@@ -63,7 +63,6 @@ public:
    void fill(@ModelName@_input_parameters&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
-   double get_input_scale() const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
