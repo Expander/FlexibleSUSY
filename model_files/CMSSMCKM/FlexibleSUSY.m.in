@@ -27,16 +27,16 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput = {
-   {T[Ye], Re[MatMul[ZER, Tp[LHInput[T[Ye]]], Tp[ZEL]]]},
-   {T[Yd], Re[MatMul[ZDR, Tp[LHInput[T[Yd]]], Tp[ZDL]]]},
-   {T[Yu], Re[MatMul[ZUR, Tp[LHInput[T[Yu]]], Tp[ZUL]]]},
+   {T[Ye], Re[MatMul[Tp[ZER], Tp[LHInput[T[Ye]]], ZEL]]},
+   {T[Yd], Re[MatMul[Tp[ZDR], Tp[LHInput[T[Yd]]], ZDL]]},
+   {T[Yu], Re[MatMul[Tp[ZUR], Tp[LHInput[T[Yu]]], ZUL]]},
    {mHd2, mHd2IN},
    {mHu2, mHu2IN},
-   {mq2, Re[MatMul[ZDL, LHInput[mq2], Tp[ZDL]]]},
-   {ml2, Re[MatMul[ZEL, LHInput[ml2], Tp[ZEL]]]},
-   {md2, Re[MatMul[ZDR, Tp[LHInput[md2]], Tp[ZDR]]]},
-   {mu2, Re[MatMul[ZUR, Tp[LHInput[mu2]], Tp[ZUR]]]},
-   {me2, Re[MatMul[ZER, Tp[LHInput[me2]], Tp[ZER]]]},
+   {mq2, Re[MatMul[Tp[ZDL], LHInput[mq2], ZDL]]},
+   {ml2, Re[MatMul[Tp[ZEL], LHInput[ml2], ZEL]]},
+   {md2, Re[MatMul[Tp[ZDR], Tp[LHInput[md2]], ZDR]]},
+   {mu2, Re[MatMul[Tp[ZUR], Tp[LHInput[mu2]], ZUR]]},
+   {me2, Re[MatMul[Tp[ZER], Tp[LHInput[me2]], ZER]]},
    {MassB, LHInput[MassB]},
    {MassWB,LHInput[MassWB]},
    {MassG, LHInput[MassG]}
