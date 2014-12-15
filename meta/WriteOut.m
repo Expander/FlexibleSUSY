@@ -333,9 +333,9 @@ WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
            parStr = ToString[Unevaluated[par]];
            commentStr = If[comment == "", parStr, comment];
            parStr = StringReplace[parStr,
-                                  {"SUSYScale" -> "SCALES(SUSYScale)",
-                                   "HighScale" -> "SCALES(HighScale)",
-                                   "LowScale"  -> "SCALES(LowScale)"}
+                                  {RegularExpression["\\bSUSYScale\\b"] -> "SCALES(SUSYScale)",
+                                   RegularExpression["\\bHighScale\\b"] -> "SCALES(HighScale)",
+                                   RegularExpression["\\bLowScale\\b"]  -> "SCALES(LowScale)"}
                                  ];
            WriteSLHABlockEntry[{parStr, idx}, commentStr]
           ];
