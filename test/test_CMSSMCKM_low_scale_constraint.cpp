@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_CMSSM_low_scale_constraint
+#define BOOST_TEST_MODULE test_CMSSMCKM_low_scale_constraint
 
 #include <boost/test/unit_test.hpp>
 #include "test_CMSSM.hpp"
@@ -9,8 +9,8 @@
 
 #define private public
 
-#include "CMSSM_two_scale_model.hpp"
-#include "CMSSM_two_scale_low_scale_constraint.hpp"
+#include "CMSSMCKM_two_scale_model.hpp"
+#include "CMSSMCKM_two_scale_low_scale_constraint.hpp"
 #include "softsusy.h"
 #include "flavoursoft.h"
 #include "wrappers.hpp"
@@ -19,7 +19,7 @@
 
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 {
-   CMSSM_input_parameters input;
+   CMSSMCKM_input_parameters input;
    QedQcd oneset;
    oneset.setPoleMt(175.);       // non-default
    oneset.setMass(mBottom, 4.3); // non-default
@@ -29,11 +29,11 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    ckm_parameters.reset_to_observation();
    oneset.setCKM(ckm_parameters);
 
-   CMSSM<Two_scale> m;
+   CMSSMCKM<Two_scale> m;
    FlavourMssmSoftsusy s;
 
    s.setData(oneset);
-   setup_CMSSM(m, s, input);
+   setup_CMSSMCKM(m, s, input);
    s.setTheta12(ckm_parameters.theta_12);
    s.setTheta13(ckm_parameters.theta_13);
    s.setTheta23(ckm_parameters.theta_23);
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
       BOOST_REQUIRE(gErrors == 0);
    }
 
-   CMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();
