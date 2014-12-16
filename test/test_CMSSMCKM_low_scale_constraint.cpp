@@ -231,10 +231,10 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    // set non-diagonal CKM matrix
    CKM_parameters ckm_parameters;
    ckm_parameters.reset_to_observation();
-   ckm_parameters.theta_12 = 0.;
-   ckm_parameters.theta_13 = 0.;
-   ckm_parameters.theta_23 = 0.;
-   ckm_parameters.delta = 0.;
+   // ckm_parameters.theta_12 = 0.;
+   // ckm_parameters.theta_13 = 0.;
+   // ckm_parameters.theta_23 = 0.;
+   // ckm_parameters.delta = 0.;
    oneset.setCKM(ckm_parameters);
 
    s.setData(oneset);
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
          if (i == k)
             continue;
          BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.01);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
       }

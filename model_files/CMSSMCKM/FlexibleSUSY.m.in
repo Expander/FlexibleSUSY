@@ -47,9 +47,9 @@ LowScale = SM[MZ];
 LowScaleFirstGuess = SM[MZ];
 
 LowScaleInput = {
-   {Yu, Sqrt[2] Re[MatMul[ZUR, topDRbar, CKM, ZUL]] / vu},
-   {Yd, Sqrt[2] Re[MatMul[ZDR, bottomDRbar, ZDL]] / vd},
-   {Ye, Sqrt[2] Re[MatMul[ZER, electronDRbar, ZEL]] / vd},
+   {Yu, Sqrt[2] Re[MatMul[Tp[CKM], topDRbar]] / vu},
+   {Yd, Sqrt[2] Re[MatMul[bottomDRbar]] / vd},
+   {Ye, Sqrt[2] Re[MatMul[electronDRbar]] / vd},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
 };
