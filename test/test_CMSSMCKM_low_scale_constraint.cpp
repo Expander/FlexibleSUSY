@@ -3,7 +3,6 @@
 #define BOOST_TEST_MODULE test_CMSSMCKM_low_scale_constraint
 
 #include <boost/test/unit_test.hpp>
-#include "test_CMSSM.hpp"
 #include <functional>
 #include <Eigen/Dense>
 
@@ -11,11 +10,119 @@
 
 #include "CMSSMCKM_two_scale_model.hpp"
 #include "CMSSMCKM_two_scale_low_scale_constraint.hpp"
-#include "softsusy.h"
 #include "flavoursoft.h"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 #include "ckm.hpp"
+#include "conversion.hpp"
+#include "test.h"
+
+using namespace flexiblesusy;
+using namespace softsusy;
+
+void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
+                    const CMSSMCKM_input_parameters& input)
+{
+   Eigen::Matrix<double,3,3>
+      Yu(Eigen::Matrix<double,3,3>::Zero()),
+      Yd(Eigen::Matrix<double,3,3>::Zero()),
+      Ye(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<double,3,3> mm0;
+   Eigen::Matrix<double,3,3> TYuInput;
+
+   const double scale = MZ;
+   const double ALPHASMZ = 0.1176;
+   const double ALPHAMZ = 1.0 / 127.918;
+   const double sinthWsq = 0.23122;
+   const double alpha1 = 5 * ALPHAMZ / (3 * (1 - sinthWsq));
+   const double alpha2 = ALPHAMZ / sinthWsq;
+   const double g1 = sqrt(4 * Pi * alpha1);
+   const double g2 = sqrt(4 * Pi * alpha2);
+   const double g3 = sqrt(4 * Pi * ALPHASMZ);
+   const double root2 = sqrt(2.0);
+   const double vev = 246.0;
+   const double tanBeta = 10;
+   const double sinBeta = sin(atan(tanBeta));
+   const double cosBeta = cos(atan(tanBeta));
+   const double vu = vev * sinBeta;
+   const double vd = vev * cosBeta;
+   const double susyMu = 120.0;
+   const double BMu = Sqr(2.0 * susyMu);
+   const double M12 = 100.0;
+   const double m0 = 250.0;
+   const double a0 = 50.0;
+
+   Yu << 1, 0.2, 0.1,
+         0, 2  , 0.2,
+         0, 0  , 3;
+
+   Yd << 4, 0.3, 0.2,
+         0, 5  , 0.3,
+         0, 0  , 6;
+
+   Ye << 7, 0.4, 0.1,
+         0, 8  , 0.4,
+         0, 0  , 9;
+
+   mm0 << Sqr(130), 200     , 100,
+          200     , Sqr(170), 300,
+          100     , 300     , Sqr(200);
+
+   TYuInput << 100, 2  , 3,
+               4  , 500, 6,
+               7  , 8  , 900;
+
+   m.set_scale(scale);
+   m.set_Yu(Yu);
+   m.set_Yd(Yd);
+   m.set_Ye(Ye);
+   m.set_vu(vu);
+   m.set_vd(vd);
+   m.set_g1(g1);
+   m.set_g2(g2);
+   m.set_g3(g3);
+   m.set_Mu(susyMu);
+   m.set_BMu(BMu);
+   m.set_MassB(M12);
+   m.set_MassG(M12);
+   m.set_MassWB(M12);
+   m.set_mq2(mm0);
+   m.set_ml2(mm0);
+   m.set_md2(mm0);
+   m.set_mu2(mm0);
+   m.set_me2(mm0);
+   m.set_mHd2(Sqr(125));
+   m.set_mHu2(Sqr(150));
+   m.set_TYu(TYuInput);
+   m.set_TYd(m.get_TYu());
+   m.set_TYe(m.get_TYu());
+
+   s.setMu(scale);
+   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu));
+   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd));
+   s.setYukawaMatrix(YE, ToDoubleMatrix(Ye));
+   s.setTanb(tanBeta);
+   s.setHvev(vev);
+   s.setGaugeCoupling(1, g1);
+   s.setGaugeCoupling(2, g2);
+   s.setGaugeCoupling(3, g3);
+   s.setSusyMu(susyMu);
+   s.setM3Squared(BMu);
+   s.setGauginoMass(1, M12);
+   s.setGauginoMass(2, M12);
+   s.setGauginoMass(3, M12);
+   s.setSoftMassMatrix(mQl, ToDoubleMatrix(mm0));
+   s.setSoftMassMatrix(mLl, ToDoubleMatrix(mm0));
+   s.setSoftMassMatrix(mUr, ToDoubleMatrix(mm0));
+   s.setSoftMassMatrix(mDr, ToDoubleMatrix(mm0));
+   s.setSoftMassMatrix(mEr, ToDoubleMatrix(mm0));
+   s.setMh1Squared(Sqr(125));
+   s.setMh2Squared(Sqr(150));
+   s.setTrilinearMatrix(UA, ToDoubleMatrix(m.get_TYu()));
+   s.setTrilinearMatrix(DA, ToDoubleMatrix(m.get_TYu()));
+   s.setTrilinearMatrix(EA, ToDoubleMatrix(m.get_TYu()));
+
+}
 
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 {
