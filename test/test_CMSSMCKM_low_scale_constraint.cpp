@@ -133,10 +133,6 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    TYd = a0 * Yd;
    TYe = a0 * Ye;
 
-   // TYuInput << 100, 2  , 3,
-   //             4  , 500, 6,
-   //             7  , 8  , 900;
-
    m.set_input_parameters(input);
    m.set_scale(scale);
    m.set_loops(1);
@@ -290,6 +286,10 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vu / fs_new_vd, s.displayTanb(), 1.0e-10);
+
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFu(2), s.displayDrBarPars().mt, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFd(2), s.displayDrBarPars().mb, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFe(2), s.displayDrBarPars().mtau, 1.0e-10);
 
    // apply constraints
    constraint.apply();
