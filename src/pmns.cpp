@@ -27,6 +27,8 @@ PMNS_parameters::PMNS_parameters()
    , theta_13(0.)
    , theta_23(0.)
    , delta(0.)
+   , alpha_1(0.)
+   , alpha_2(0.)
 {
 }
 
@@ -36,6 +38,8 @@ void PMNS_parameters::reset_to_diagonal()
    theta_13 = 0.;
    theta_23 = 0.;
    delta    = 0.;
+   alpha_1  = 0.;
+   alpha_2  = 0.;
 }
 
 void PMNS_parameters::reset_to_observation()
@@ -44,6 +48,8 @@ void PMNS_parameters::reset_to_observation()
    theta_13 = Electroweak_constants::PMNS_THETA13;
    theta_23 = Electroweak_constants::PMNS_THETA23;
    delta    = Electroweak_constants::PMNS_DELTA;
+   alpha_1  = Electroweak_constants::PMNS_ALPHA1;
+   alpha_2  = Electroweak_constants::PMNS_ALPHA2;
 }
 
 Eigen::Matrix<double,3,3> PMNS_parameters::get_real_pmns() const
@@ -77,6 +83,8 @@ Eigen::Matrix<double,3,3> PMNS_parameters::get_real_pmns() const
 Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_pmns() const
 {
    const std::complex<double> eID(std::polar(1.0, delta));
+   const std::complex<double> eIAlpha1(std::polar(1.0, 0.5*alpha_1));
+   const std::complex<double> eIAlpha2(std::polar(1.0, 0.5*alpha_2));
    const double s12 = Sin(theta_12);
    const double s13 = Sin(theta_13);
    const double s23 = Sin(theta_23);
@@ -85,11 +93,11 @@ Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_pmns() cons
    const double c23 = Cos(theta_23);
 
    Eigen::Matrix<std::complex<double>,3,3> pmns_matrix;
-   pmns_matrix(0, 0) = c12 * c13;
+   pmns_matrix(0, 0) = c12 * c13 * eIAlpha1;
    pmns_matrix(0, 1) = s12 * c13;
    pmns_matrix(0, 2) = s13 / eID;
    pmns_matrix(1, 0) = -s12 * c23 - c12 * s23 * s13 * eID;
-   pmns_matrix(1, 1) = c12 * c23 - s12 * s23 * s13 * eID;
+   pmns_matrix(1, 1) = (c12 * c23 - s12 * s23 * s13 * eID) * eIAlpha2;
    pmns_matrix(1, 2) = s23 * c13;
    pmns_matrix(2, 0) = s12 * s23 - c12 * c23 * s13 * eID;
    pmns_matrix(2, 1) = -c12 * s23 - s12 * c23 * s13 * eID;
