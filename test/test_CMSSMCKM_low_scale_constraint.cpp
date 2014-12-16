@@ -41,7 +41,7 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    const double g3 = sqrt(4 * Pi * ALPHASMZ);
    const double root2 = sqrt(2.0);
    const double vev = 246.0;
-   const double tanBeta = 10;
+   const double tanBeta = input.TanBeta;
    const double sinBeta = sin(atan(tanBeta));
    const double cosBeta = cos(atan(tanBeta));
    const double vu = vev * sinBeta;
@@ -127,6 +127,7 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 {
    CMSSMCKM_input_parameters input;
+   input.TanBeta = 10.;
    QedQcd oneset;
    oneset.setPoleMt(175.);       // non-default
    oneset.setMass(mBottom, 4.3); // non-default
@@ -136,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    ckm_parameters.reset_to_observation();
    oneset.setCKM(ckm_parameters);
 
-   CMSSMCKM<Two_scale> m;
+   CMSSMCKM<Two_scale> m(input);
    FlavourMssmSoftsusy s;
 
    s.setData(oneset);
@@ -172,7 +173,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    const double fs_mt = m.calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
    const double fs_mb = m.calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
    const double fs_me = m.calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
-   const double fs_MZ = m.calculate_MVZ_DRbar(Electroweak_constants::MZ);
+   const double fs_MZ = m.calculate_MVZ_DRbar(MZ);
    const double fs_old_vd = m.get_vd();
    const double fs_old_vu = m.get_vu();
    // const double fs_old_vev = Sqrt(Sqr(fs_old_vu) + Sqr(fs_old_vd));
