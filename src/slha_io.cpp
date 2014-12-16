@@ -541,6 +541,11 @@ void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, d
    case 4:
       pmns_parameters.delta = value;
       break;
+   case 5:
+      pmns_parameters.alpha_1 = value;
+   case 6:
+      pmns_parameters.alpha_2 = value;
+      break;
    default:
       WARNING("Unrecognized key in UPMNSIN: " << key);
       break;
