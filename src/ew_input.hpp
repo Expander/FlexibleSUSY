@@ -74,6 +74,8 @@ namespace Electroweak_constants {
       const double PMNS_THETA13 = 0.5 * asin(sqrt(0.093));
       const double PMNS_THETA23 = 0.5 * asin(sqrt(0.999));
       const double PMNS_DELTA   = 0.;
+      const double PMNS_ALPHA1  = 0.;
+      const double PMNS_ALPHA2  = 0.;
    }
 }
 
