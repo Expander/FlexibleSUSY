@@ -20,6 +20,47 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
+void ensure_tree_level_ewsb(CMSSMCKM<Two_scale>& m)
+{
+   // ensure that the EWSB eqs. are satisfied (Drees p.222)
+   const double vu = m.get_vu();
+   const double vd = m.get_vd();
+   const double gY = m.get_g1() * sqrt(0.6);
+   const double g2 = m.get_g2();
+   const double Mu = m.get_Mu();
+   const double BMu = m.get_BMu();
+   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   m.set_mHd2(mHd2);
+   m.set_mHu2(mHu2);
+}
+
+void ensure_tree_level_ewsb(FlavourMssmSoftsusy& softSusy)
+{
+   const double Mu = softSusy.displaySusyMu();
+   // const int signMu = Mu >= 0.0 ? 1 : -1;
+   const double vev = softSusy.displayHvev();
+   const double tanBeta = softSusy.displayTanb();
+   const double beta = atan(tanBeta);
+   const double sinBeta = sin(beta);
+   const double cosBeta = cos(beta);
+   const double vu = vev * sinBeta;
+   const double vd = vev * cosBeta;
+   const double g1 = softSusy.displayGaugeCoupling(1);
+   const double gY = g1 * sqrt(0.6);
+   const double g2 = softSusy.displayGaugeCoupling(2);
+   const double BMu = softSusy.displayM3Squared();
+   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double MZrun = 0.5 * vev * sqrt(sqr(gY) + sqr(g2));
+
+   softSusy.setMh1Squared(mHd2);
+   softSusy.setMh2Squared(mHu2);
+
+   TEST_CLOSE(MZrun, softSusy.displayMzRun(), 1.0e-10);
+   TEST_CLOSE(-2 * BMu, (mHd2 - mHu2) * tan(2*beta) + sqr(MZrun) * sin(2*beta), 1.0e-10);
+}
+
 void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
                     const CMSSMCKM_input_parameters& input)
 {
@@ -52,17 +93,21 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    const double m0 = 250.0;
    const double a0 = 50.0;
 
-   Yu << 1, 0.2, 0.1,
-         0, 2  , 0.2,
-         0, 0  , 3;
+   Yu << 0.0023, 1.e-3, 1.e-3,
+         0     , 1.275, 1.e-3,
+         0     , 0    , 165.0;
 
-   Yd << 4, 0.3, 0.2,
-         0, 5  , 0.3,
-         0, 0  , 6;
+   Yd << 0.0048, 1.e-3, 1.e-3,
+         0     , 0.095, 1.e-3,
+         0     , 0    , 2.9;
 
-   Ye << 7, 0.4, 0.1,
-         0, 8  , 0.4,
-         0, 0  , 9;
+   Ye << 0.000511, 1.e-5, 1.e-5,
+         0       , 0.105, 1.e-5,
+         0       , 0    , 1.77699;
+
+   Yu *= root2 / vu;
+   Yd *= root2 / vd;
+   Ye *= root2 / vd;
 
    mm0 << Sqr(130), 200     , 100,
           200     , Sqr(170), 300,
@@ -122,6 +167,8 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    s.setTrilinearMatrix(DA, ToDoubleMatrix(m.get_TYu()));
    s.setTrilinearMatrix(EA, ToDoubleMatrix(m.get_TYu()));
 
+   ensure_tree_level_ewsb(m);
+   ensure_tree_level_ewsb(s);
 }
 
 BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
@@ -135,18 +182,29 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    // set non-diagonal CKM matrix
    CKM_parameters ckm_parameters;
    ckm_parameters.reset_to_observation();
+   // ckm_parameters.theta_12 = 0.;
+   // ckm_parameters.theta_13 = 0.;
+   // ckm_parameters.theta_23 = 0.;
+   // ckm_parameters.delta = 0.;
    oneset.setCKM(ckm_parameters);
 
    CMSSMCKM<Two_scale> m(input);
    FlavourMssmSoftsusy s;
 
+   m.set_loops(0);
+   s.setLoops(0);
+
    s.setData(oneset);
    setup_CMSSMCKM(m, s, input);
+
    s.setTheta12(ckm_parameters.theta_12);
    s.setTheta13(ckm_parameters.theta_13);
    s.setTheta23(ckm_parameters.theta_23);
    s.setDelta(ckm_parameters.delta);
    softsusy::MIXING = 3; // up-type mixing with only one CKM factor
+
+   m.calculate_DRbar_masses();
+   s.calcDrBarPars();
 
    {
       // compare CKM matrices
@@ -155,6 +213,25 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
       TEST_CLOSE(ckm_ss, ckm_fs, 1.0e-10);
       BOOST_REQUIRE(gErrors == 0);
    }
+
+   BOOST_CHECK_CLOSE_FRACTION(m.get_scale(), s.displayMu(), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFu(2), s.displayDrBarPars().mt, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFd(2), s.displayDrBarPars().mb, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_MFe(2), s.displayDrBarPars().mtau, 1.0e-10);
+   BOOST_CHECK(is_equal(ToDoubleMatrix(m.get_Yu()), s.displayYukawaMatrix(YU), 1.0e-10));
+   BOOST_CHECK(is_equal(ToDoubleMatrix(m.get_Yd()), s.displayYukawaMatrix(YD), 1.0e-10));
+   BOOST_CHECK(is_equal(ToDoubleMatrix(m.get_Ye()), s.displayYukawaMatrix(YE), 1.0e-10));
+   BOOST_CHECK_CLOSE_FRACTION(m.v(), s.displayHvev(), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-10);
+
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mDown)    , s.displayDataSet().displayMass(mDown)    , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mStrange) , s.displayDataSet().displayMass(mStrange) , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mUp)      , s.displayDataSet().displayMass(mUp)      , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mCharm)   , s.displayDataSet().displayMass(mCharm)   , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mElectron), s.displayDataSet().displayMass(mElectron), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mMuon)    , s.displayDataSet().displayMass(mMuon)    , 1.0e-10);
 
    CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
@@ -181,17 +258,11 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    const double fs_new_vu = (2*fs_MZ*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)));
    const double fs_new_vev = Sqrt(Sqr(fs_new_vu) + Sqr(fs_new_vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mDown)    , s.displayDataSet().displayMass(mDown)    , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mStrange) , s.displayDataSet().displayMass(mStrange) , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mUp)      , s.displayDataSet().displayMass(mUp)      , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mCharm)   , s.displayDataSet().displayMass(mCharm)   , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mElectron), s.displayDataSet().displayMass(mElectron), 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(oneset.displayMass(mMuon)    , s.displayDataSet().displayMass(mMuon)    , 1.0e-10);
-
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
    BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
 
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.self_energy_VZ(MZ)), pizzt, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
