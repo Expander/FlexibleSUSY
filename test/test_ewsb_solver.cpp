@@ -97,6 +97,9 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
       BOOST_CHECK(status == EWSB_solver<dimension>::SUCCESS);
 
+      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(0), 5., 0.01);
+      BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(1), 1., 0.01);
+
       BOOST_MESSAGE("solver " << i << ": "
                     << (status == EWSB_solver<dimension>::SUCCESS ?
                         "success" : "fail")
