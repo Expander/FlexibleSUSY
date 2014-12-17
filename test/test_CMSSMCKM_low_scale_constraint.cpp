@@ -62,7 +62,7 @@ void ensure_tree_level_ewsb(FlavourMssmSoftsusy& softSusy)
 }
 
 void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
-                    CMSSMCKM_input_parameters& input)
+                    CMSSMCKM_input_parameters& input, QedQcd& oneset)
 {
    input.TanBeta = 10.;
 
@@ -90,29 +90,17 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
 
    Eigen::Matrix<double,3,3> Yu, Yd, Ye;
 
-   // Yu << 0.0023, 1.e-3, 1.e-3,
-   //       0     , 1.275, 1.e-3,
-   //       0     , 0    , 165.0;
+   Yu << oneset.displayMass(mUp), 0, 0,
+         0, oneset.displayMass(mCharm), 0,
+         0, 0, oneset.displayMass(mTop);
 
-   // Yd << 0.0048, 1.e-3, 1.e-3,
-   //       0     , 0.095, 1.e-3,
-   //       0     , 0    , 2.9;
+   Yd << oneset.displayMass(mDown), 0, 0,
+         0, oneset.displayMass(mStrange), 0,
+         0, 0, oneset.displayMass(mBottom);
 
-   // Ye << 0.000511, 1.e-5, 1.e-5,
-   //       0       , 0.105, 1.e-5,
-   //       0       , 0    , 1.77699;
-
-   Yu << 0, 0, 0,
-         0, 0, 0,
-         0, 0, 165.0;
-
-   Yd << 0, 0, 0,
-         0, 0, 0,
-         0, 0, 2.9;
-
-   Ye << 0, 0, 0,
-         0, 0, 0,
-         0, 0, 1.77699;
+   Ye << oneset.displayMass(mElectron), 0, 0,
+         0, oneset.displayMass(mMuon), 0,
+         0, 0, oneset.displayMass(mTau);
 
    Yu *= root2 / vu;
    Yd *= root2 / vd;
@@ -189,6 +177,17 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    s.setTanb(tanBeta);
    s.setMw(s.displayMwRun());
 
+   // set non-diagonal CKM matrix
+   CKM_parameters ckm_parameters;
+   ckm_parameters.reset_to_observation();
+   oneset.setCKM(ckm_parameters);
+
+   s.setData(oneset);
+   s.setTheta12(ckm_parameters.theta_12);
+   s.setTheta13(ckm_parameters.theta_13);
+   s.setTheta23(ckm_parameters.theta_23);
+   s.setDelta(ckm_parameters.delta);
+
    ensure_tree_level_ewsb(m);
    m.calculate_DRbar_masses();
 
@@ -201,7 +200,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    CMSSMCKM<Two_scale> m; FlavourMssmSoftsusy s;
    CMSSMCKM_input_parameters input;
    QedQcd oneset;
-   setup_CMSSMCKM(m, s, input);
+   setup_CMSSMCKM(m, s, input, oneset);
    s.setData(oneset);
 
    CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
@@ -228,33 +227,19 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    oneset.setMass(mBottom, 4.3); // non-default
    CMSSMCKM<Two_scale> m; FlavourMssmSoftsusy s;
 
-   // set non-diagonal CKM matrix
-   CKM_parameters ckm_parameters;
-   ckm_parameters.reset_to_observation();
-   // ckm_parameters.theta_12 = 0.;
-   // ckm_parameters.theta_13 = 0.;
-   // ckm_parameters.theta_23 = 0.;
-   // ckm_parameters.delta = 0.;
-   oneset.setCKM(ckm_parameters);
+   setup_CMSSMCKM(m, s, input, oneset);
 
-   s.setData(oneset);
-   setup_CMSSMCKM(m, s, input);
-
-   s.setTheta12(ckm_parameters.theta_12);
-   s.setTheta13(ckm_parameters.theta_13);
-   s.setTheta23(ckm_parameters.theta_23);
-   s.setDelta(ckm_parameters.delta);
    softsusy::MIXING = 3; // up-type mixing with only one CKM factor
+
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    {
       // compare CKM matrices
-      const Eigen::Matrix<double,3,3> ckm_fs(ckm_parameters.get_real_ckm());
+      const Eigen::Matrix<double,3,3> ckm_fs(Re(constraint.get_ckm()));
       const DoubleMatrix ckm_ss(s.displayCkm());
       TEST_CLOSE(ckm_ss, ckm_fs, 1.0e-10);
       BOOST_REQUIRE(gErrors == 0);
    }
-
-   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();
@@ -282,8 +267,8 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 9.0e-15);
    BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
-   BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
-   BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
+   BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 5.0e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 5.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vu / fs_new_vd, s.displayTanb(), 1.0e-10);
 
@@ -293,11 +278,26 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    // apply constraints
    constraint.apply();
-   s.sparticleThresholdCorrections(input.TanBeta);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), s.displayGaugeCoupling(1), 0.0025);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), s.displayGaugeCoupling(2), 0.0070);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-10);
+   {
+      // this is the code from Softsusy's low-energy constraint
+      // (sparticleThresholdCorrections())
+      const double vev = s.displayHvev();
+      const double beta = atan(s.displayTanb());
+      const double root2 = sqrt(2.0);
+      DoubleMatrix mUq(3, 3), mDq(3, 3), mLep(3, 3);
+
+      softsusy::massFermions(oneset, mDq, mUq, mLep);
+      mDq(3, 3)  = s.calcRunningMb();
+      mUq(3, 3)  = s.calcRunningMt();
+      mLep(3, 3) = s.calcRunningMtau();
+
+      s.doQuarkMixing(mDq, mUq);
+
+      s.setYukawaMatrix(YU, mUq * (root2 / (vev * sin(beta))));
+      s.setYukawaMatrix(YD, mDq * (root2 / (vev * cos(beta))));
+      s.setYukawaMatrix(YE, mLep * (root2 / (vev * cos(beta))));
+   }
 
    // test off-diagonal elements
    BOOST_MESSAGE("testing off-diagonal yukawa elements");
@@ -306,32 +306,22 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
          if (i == k)
             continue;
          BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.01);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.0001);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
       }
    }
 
-   // The following Yukawa couplings differ a lot from Softsusy,
-   // because Ben uses the new vev (= the value of the vev after
-   // sparticleThresholdCorrections() was called) to calculate the
-   // Yukawa couplings.  We use the old vev (= combination of vu, vd
-   // from the last run) to calculate the Yukawa couplings.
-
    BOOST_MESSAGE("testing diagonal yukawa elements");
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), s.displayYukawaMatrix(YU)(1,1), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), s.displayYukawaMatrix(YD)(1,1), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), s.displayYukawaMatrix(YE)(1,1), 0.011);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), s.displayYukawaMatrix(YU)(1,1), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), s.displayYukawaMatrix(YD)(1,1), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), s.displayYukawaMatrix(YE)(1,1), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), s.displayYukawaMatrix(YU)(2,2), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), s.displayYukawaMatrix(YD)(2,2), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), s.displayYukawaMatrix(YE)(2,2), 0.011);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), s.displayYukawaMatrix(YU)(2,2), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), s.displayYukawaMatrix(YD)(2,2), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), s.displayYukawaMatrix(YE)(2,2), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.011);
-
-   BOOST_MESSAGE("testing running VEV");
-   const double running_vev = Sqrt(Sqr(m.get_vu()) +  Sqr(m.get_vd()));
-   BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.00014);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.00001);
 }
