@@ -26,6 +26,7 @@
 
 #include "logger.hpp"
 #include "error.hpp"
+#include "ewsb_solver.hpp"
 
 namespace flexiblesusy {
 
@@ -57,15 +58,15 @@ namespace flexiblesusy {
  * @endcode
  */
 template <std::size_t dimension>
-class Root_finder {
+class Root_finder : public EWSB_solver<dimension> {
 public:
    /// pointer to function to find root of
    typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
 
    Root_finder();
-   Root_finder(Function_t, void*, std::size_t, double);
+   Root_finder(Function_t, void*, std::size_t, double, const gsl_multiroot_fsolver_type* solver_type_ = gsl_multiroot_fsolver_hybrid);
    Root_finder(const Root_finder&);
-   ~Root_finder();
+   virtual ~Root_finder();
 
    double get_root(std::size_t) const;
    void set_function(Function_t f) { function = f; }
@@ -74,6 +75,9 @@ public:
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    void set_solver_type(const gsl_multiroot_fsolver_type* t) { solver_type = t; }
    int find_root(const double[dimension]);
+
+   // EWSB_solver interface methods
+   virtual int solve(const double[dimension]);
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -112,14 +116,18 @@ Root_finder<dimension>::Root_finder()
  * @param precision_ precision goal
  */
 template <std::size_t dimension>
-Root_finder<dimension>::Root_finder(Function_t function_, void* parameters_,
-                                    std::size_t max_iterations_,
-                                    double precision_)
+Root_finder<dimension>::Root_finder(
+   Function_t function_,
+   void* parameters_,
+   std::size_t max_iterations_,
+   double precision_,
+   const gsl_multiroot_fsolver_type* solver_type_
+)
    : max_iterations(max_iterations_)
    , precision(precision_)
    , parameters(parameters_)
    , function(function_)
-   , solver_type(gsl_multiroot_fsolver_hybrid)
+   , solver_type(solver_type_)
 {
    root = gsl_vector_alloc(dimension);
 
@@ -233,6 +241,13 @@ double Root_finder<dimension>::get_root(std::size_t i) const
    assert(i < dimension && "Root_finder<>::get_root: index out"
           " of bounds");
    return gsl_vector_get(root, i);
+}
+
+template <std::size_t dimension>
+int Root_finder<dimension>::solve(const double start[dimension])
+{
+   return (find_root(start) == GSL_SUCCESS ?
+           EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
 }
 
 } // namespace flexiblesusy

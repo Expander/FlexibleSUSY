@@ -27,6 +27,7 @@
 
 #include "wrappers.hpp"
 #include "error.hpp"
+#include "ewsb_solver.hpp"
 
 namespace flexiblesusy {
 
@@ -131,7 +132,7 @@ private:
  * @todo implement check for no progress towards solution
  */
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
-class Fixed_point_iterator {
+class Fixed_point_iterator : public EWSB_solver<dimension> {
 public:
    typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
 
@@ -145,6 +146,9 @@ public:
    void set_parameters(void* m) { parameters = m; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
    int find_fixed_point(const double[dimension]);
+
+   // EWSB_solver interface methods
+   virtual int solve(const double[dimension]);
 
 private:
    std::size_t max_iterations;       ///< maximum number of iterations
@@ -332,6 +336,13 @@ double Fixed_point_iterator<dimension,Convergence_tester>::get_fixed_point(std::
    assert(i < dimension && "Fixed_point_iterator<>::get_fixed_point: index out"
           " of bounds");
    return gsl_vector_get(fixed_point, i);
+}
+
+template <std::size_t dimension, class Convergence_tester>
+int Fixed_point_iterator<dimension,Convergence_tester>::solve(const double start[dimension])
+{
+   return (find_fixed_point(start) == GSL_SUCCESS ?
+           EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
 }
 
 } // namespace flexiblesusy
