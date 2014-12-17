@@ -55,11 +55,11 @@ public:
     *
     * @return fixed point iteration update steps
     */
-   static int update(const double x[2], void*, double f[2]) {
-      const double y = x[0];
-      const double z = x[1];
-      f[0] = -25./(y - 10.);
-      f[1] = -1./(z - 2.);
+   static int update(const gsl_vector* x, void*, gsl_vector* f) {
+      const double y = gsl_vector_get(x, 0);
+      const double z = gsl_vector_get(x, 1);
+      gsl_vector_set(f, 0, -25./(y - 10.));
+      gsl_vector_set(f, 1, -1./(z - 2.));
       number_of_calls++;
       return GSL_SUCCESS;
    }
@@ -151,11 +151,11 @@ public:
     * @param x touple (x,y)
     * @return fixed point iteration update steps
     */
-   static int update(const double x[2], void*, double f[2]) {
-      const double y = x[0];
-      const double z = x[1];
-      f[0] =  0.5 + small*0.5*(y*y + z*z);
-      f[1] = -1.5 - small*1.5*(y*y + z*z);
+   static int update(const gsl_vector* x, void*, gsl_vector* f) {
+      const double y = gsl_vector_get(x, 0);
+      const double z = gsl_vector_get(x, 1);
+      gsl_vector_set(f, 0,  0.5 + small*0.5*(y*y + z*z));
+      gsl_vector_set(f, 1, -1.5 - small*1.5*(y*y + z*z));
       number_of_calls++;
       return GSL_SUCCESS;
    }

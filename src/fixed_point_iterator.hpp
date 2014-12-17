@@ -134,7 +134,7 @@ private:
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
 class Fixed_point_iterator : public EWSB_solver {
 public:
-   typedef int (*Function_t)(const double[dimension], void*, double[dimension]);
+   typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
 
    Fixed_point_iterator();
    Fixed_point_iterator(Function_t, void*, std::size_t, const Convergence_tester&);
@@ -297,7 +297,7 @@ int Fixed_point_iterator<dimension,Convergence_tester>::fixed_point_iterator_ite
 {
    gsl_vector_memcpy(xn, fixed_point);
 
-   int status = function(xn->data, parameters, fixed_point->data);
+   int status = function(xn, parameters, fixed_point);
 
    if (status != GSL_SUCCESS)
       return GSL_EBADFUNC;
