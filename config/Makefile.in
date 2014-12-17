@@ -27,11 +27,12 @@ ENABLE_VERBOSE        := @ENABLE_VERBOSE@
 
 # Makefile modules
 MODELS             := @MODELS@
+ADDONS             := @ADDONS@
 MODULES            := config src fflite legacy slhaea doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
-MODULES            += $(MODELS)
+MODULES            += $(MODELS) $(ADDONS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += test examples
 # END:   NOT EXPORTED ##########################################
@@ -204,6 +205,7 @@ showbuild:
 	@echo ""
 	@echo "MATH               = $(MATH)"
 	@echo "MODELS             = $(MODELS)"
+	@echo "ADDONS             = $(ADDONS)"
 	@echo "ALGORITHMS         = $(ALGORITHMS)"
 	@echo ""
 	@echo "CXX                = $(CXX)"
