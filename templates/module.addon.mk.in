@@ -1,0 +1,73 @@
+DIR          := @DIR@
+MODNAME      := @ADDON@
+
+# source files
+LIB@ADDON@_SRC :=
+#		$(DIR)/file1.cpp
+
+# main()
+EXE@ADDON@_SRC :=
+#		$(DIR)/run.cpp
+
+# header files
+LIB@ADDON@_HDR :=
+
+LIB@ADDON@_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIB@ADDON@_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(LIB@ADDON@_SRC)))
+
+EXE@ADDON@_OBJ := \
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXE@ADDON@_SRC))) \
+		$(patsubst %.f, %.o, $(filter %.f, $(EXE@ADDON@_SRC)))
+
+LIB@ADDON@_DEP := \
+		$(LIB@ADDON@_OBJ:.o=.d)
+
+EXE@ADDON@_DEP := \
+		$(EXE@ADDON@_OBJ:.o=.d)
+
+EXE@ADDON@_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXE@ADDON@_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXE@ADDON@_SRC)))
+
+LIB@ADDON@     := \
+		$(DIR)/lib$(MODNAME)$(LIBEXT)
+
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) clean-$(MODNAME)-src \
+		distclean-$(MODNAME) run-metacode-$(MODNAME) \
+		pack-$(MODNAME)-src
+
+clean-$(MODNAME)-dep:
+		-rm -f $(LIB@ADDON@_DEP)
+		-rm -f $(EXE@ADDON@_DEP)
+
+clean-$(MODNAME)-obj:
+		-rm -f $(LIB@ADDON@_OBJ)
+		-rm -f $(EXE@ADDON@_OBJ)
+
+clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		-rm -f $(LIB@ADDON@)
+		-rm -f $(EXE@ADDON@_EXE)
+
+distclean-$(MODNAME): clean-$(MODNAME)
+
+clean::         clean-$(MODNAME)
+
+distclean::     distclean-$(MODNAME)
+
+$(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+
+ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
+$(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP) $(LIB@ADDON@_OBJ) $(EXE@ADDON@_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
+endif
+
+$(LIB@ADDON@): $(LIB@ADDON@_OBJ)
+		$(MAKELIB) $@ $^
+
+$(EXE@ADDON@_EXE): $(EXE@ADDON@_OBJ) $(LIB@ADDON@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+
+ALLDEP += $(LIB@ADDON@_DEP) $(EXE@ADDON@_DEP)
+ALLSRC += $(LIB@ADDON@_SRC) $(EXE@ADDON@_SRC)
+ALLLIB += $(LIB@ADDON@)
+ALLEXE += $(EXE@ADDON@_EXE)
