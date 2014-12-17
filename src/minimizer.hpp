@@ -53,7 +53,7 @@ namespace flexiblesusy {
  * @endcode
  */
 template <std::size_t dimension>
-class Minimizer : public EWSB_solver<dimension> {
+class Minimizer : public EWSB_solver {
 public:
    /// pointer to function to minimize
    typedef double (*Function_t)(const gsl_vector*, void*);
@@ -249,7 +249,7 @@ template <std::size_t dimension>
 int Minimizer<dimension>::solve(const double start[dimension])
 {
    return (minimize(start) == GSL_SUCCESS ?
-           EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
+           EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension>

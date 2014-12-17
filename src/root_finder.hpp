@@ -58,7 +58,7 @@ namespace flexiblesusy {
  * @endcode
  */
 template <std::size_t dimension>
-class Root_finder : public EWSB_solver<dimension> {
+class Root_finder : public EWSB_solver {
 public:
    /// pointer to function to find root of
    typedef int (*Function_t)(const gsl_vector*, void*, gsl_vector*);
@@ -248,7 +248,7 @@ template <std::size_t dimension>
 int Root_finder<dimension>::solve(const double start[dimension])
 {
    return (find_root(start) == GSL_SUCCESS ?
-           EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
+           EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension>

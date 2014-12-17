@@ -25,13 +25,12 @@ namespace flexiblesusy {
  * @class EWSB_solver
  * @brief interface for numeric EWSB solvers
  */
-template <std::size_t dimension>
 class EWSB_solver {
 public:
    enum Status : int { SUCCESS = 0, FAIL = 1 };
 
    virtual ~EWSB_solver() {}
-   virtual int solve(const double[dimension]) = 0;
+   virtual int solve(const double*) = 0;
    virtual double get_solution(unsigned) = 0;
 };
 

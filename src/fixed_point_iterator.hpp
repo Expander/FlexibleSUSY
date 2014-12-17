@@ -132,7 +132,7 @@ private:
  * @todo implement check for no progress towards solution
  */
 template <std::size_t dimension, class Convergence_tester = fixed_point_iterator::Convergence_tester_relative>
-class Fixed_point_iterator : public EWSB_solver<dimension> {
+class Fixed_point_iterator : public EWSB_solver {
 public:
    typedef int (*Function_t)(const double[dimension], void*, double[dimension]);
 
@@ -343,7 +343,7 @@ template <std::size_t dimension, class Convergence_tester>
 int Fixed_point_iterator<dimension,Convergence_tester>::solve(const double start[dimension])
 {
    return (find_fixed_point(start) == GSL_SUCCESS ?
-           EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
+           EWSB_solver::SUCCESS : EWSB_solver::FAIL);
 }
 
 template <std::size_t dimension, class Convergence_tester>

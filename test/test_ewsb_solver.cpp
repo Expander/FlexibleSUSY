@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
    double start[dimension] = { 9, 9 };
 
-   EWSB_solver<dimension>* solvers[] = {
+   EWSB_solver* solvers[] = {
       new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
       new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
       new Root_finder<dimension>(Parabola::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_broyden),
@@ -95,13 +95,13 @@ BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 
       const int status = solvers[i]->solve(start);
 
-      BOOST_CHECK(status == EWSB_solver<dimension>::SUCCESS);
+      BOOST_CHECK(status == EWSB_solver::SUCCESS);
 
       BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(0), 5., 0.01);
       BOOST_CHECK_CLOSE_FRACTION(solvers[i]->get_solution(1), 1., 0.01);
 
       BOOST_MESSAGE("solver " << i << ": "
-                    << (status == EWSB_solver<dimension>::SUCCESS ?
+                    << (status == EWSB_solver::SUCCESS ?
                         "success" : "fail")
                     << " ("
                     << Parabola::get_number_of_calls() << " function calls)");
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
 
    double start[dimension] = { 10, 10 };
 
-   EWSB_solver<dimension>* solvers[] = {
+   EWSB_solver* solvers[] = {
       new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrid),
       new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_hybrids),
       new Root_finder<dimension>(Perturbation::func, NULL, max_iterations, precision, gsl_multiroot_fsolver_broyden),
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
 
       const int status = solvers[i]->solve(start);
 
-      BOOST_CHECK(status == EWSB_solver<dimension>::SUCCESS);
+      BOOST_CHECK(status == EWSB_solver::SUCCESS);
 
       const double solution_1 = solvers[i]->get_solution(0);
       const double solution_2 = solvers[i]->get_solution(1);
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
       BOOST_CHECK_CLOSE_FRACTION(solution_2, -1.52453, 0.01);
 
       BOOST_MESSAGE("solver " << i << ": "
-                    << (status == EWSB_solver<dimension>::SUCCESS ?
+                    << (status == EWSB_solver::SUCCESS ?
                         "success" : "fail")
                     << ", solution = (" << solution_1 << ", " << solution_2
                     << ") ("
