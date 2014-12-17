@@ -149,6 +149,7 @@ public:
 
    // EWSB_solver interface methods
    virtual int solve(const double[dimension]);
+   virtual double get_solution(unsigned);
 
 private:
    std::size_t max_iterations;       ///< maximum number of iterations
@@ -343,6 +344,12 @@ int Fixed_point_iterator<dimension,Convergence_tester>::solve(const double start
 {
    return (find_fixed_point(start) == GSL_SUCCESS ?
            EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
+}
+
+template <std::size_t dimension, class Convergence_tester>
+double Fixed_point_iterator<dimension,Convergence_tester>::get_solution(unsigned i)
+{
+   return get_fixed_point(i);
 }
 
 } // namespace flexiblesusy

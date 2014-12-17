@@ -32,6 +32,7 @@ public:
 
    virtual ~EWSB_solver() {}
    virtual int solve(const double[dimension]) = 0;
+   virtual double get_solution(unsigned) = 0;
 };
 
 } // namespace flexiblesusy

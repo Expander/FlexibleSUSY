@@ -78,6 +78,7 @@ public:
 
    // EWSB_solver interface methods
    virtual int solve(const double[dimension]);
+   virtual double get_solution(unsigned);
 
 private:
    std::size_t max_iterations; ///< maximum number of iterations
@@ -248,6 +249,12 @@ int Root_finder<dimension>::solve(const double start[dimension])
 {
    return (find_root(start) == GSL_SUCCESS ?
            EWSB_solver<dimension>::SUCCESS : EWSB_solver<dimension>::FAIL);
+}
+
+template <std::size_t dimension>
+double Root_finder<dimension>::get_solution(unsigned i)
+{
+   return get_root(i);
 }
 
 } // namespace flexiblesusy
