@@ -169,6 +169,8 @@ ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
+# addons that will be compiled
+ADDONS=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -935,6 +937,50 @@ check_models() {
 
     result "ok (${model_names})"
     logmsg "   Models: ${MODELS}"
+}
+
+#_____________________________________________________________________
+check_addons() {
+    if test -z "${ADDONS}"; then
+        logmsg "No addons specified"
+        return 0
+    fi
+
+    checking_msg "addons"
+    addons=`echo $ADDONS | tr ',' ' '`
+    ADDONS=""
+    for a in ${addons}; do
+        case "$a" in
+            all)
+                ADDONS=`find $BASEDIR/addons/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
+                break ;;
+            *)
+                if test -d "$BASEDIR/addons/$a" ; then
+                    ADDONS="$ADDONS addons/$a"
+                    continue
+                else
+                    result "not ok"
+                    message "Error: addon directory \"$BASEDIR/addons/$a\" does not exist!"
+                    message "Please create the directory and put an addon in it."
+                    exit 1
+                fi ;;
+        esac
+    done
+
+    # check for Makefile module
+    for m in ${ADDONS}; do
+        if ! test -r ${m}/module.mk; then
+            result "not ok"
+            message "Error: No Makefile module found in ${m}"
+            message "   Please create ${m}/module.mk !"
+            exit 1
+        fi
+    done
+
+    local addon_names="`echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//'`"
+
+    result "ok (${addon_names})"
+    logmsg "   Addons: ${ADDONS}"
 }
 
 #_____________________________________________________________________
@@ -1963,6 +2009,7 @@ replace_markers() {
         -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
 	-e "s|@PKGNAME@|$PROGRAM_NAME|"    \
 	-e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+	-e "s|@ADDONS@|$ADDONS|"           \
 	-e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
 	-e "s|@ALGORITHMS@|$ALGORITHMS|"   \
 	-e "s|@BLASLIBS@|$BLASLIBS|"       \
@@ -2036,6 +2083,8 @@ cat <<EOF
 
 Package directories, compilation settings and model selection
 
+  --with-addons=            Comma separated list of addons to be build
+                            (default: $ADDONS)
   --with-algorithms=        Comma separated list of RG solver algorithms
                             (default: $ALGORITHMS)
                             possible values: all $available_algorithms
@@ -2134,6 +2183,7 @@ if test $# -gt 0 ; then
                     echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
                 fi
                 ;;
+            --with-addons=*)         ADDONS=$optarg ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
@@ -2216,6 +2266,7 @@ if test "x${enable_meta}" = "xyes"; then
 fi
 
 check_models
+check_addons
 
 enable_defines
 
@@ -2242,6 +2293,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@ADDONS@|$ADDONS|"           \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
