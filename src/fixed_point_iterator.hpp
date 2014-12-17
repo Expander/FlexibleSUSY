@@ -139,7 +139,7 @@ public:
    Fixed_point_iterator();
    Fixed_point_iterator(Function_t, void*, std::size_t, const Convergence_tester&);
    Fixed_point_iterator(const Fixed_point_iterator&);
-   ~Fixed_point_iterator();
+   virtual ~Fixed_point_iterator();
 
    double get_fixed_point(std::size_t) const;
    void set_function(Function_t f) { function = f; }

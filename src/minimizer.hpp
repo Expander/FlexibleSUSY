@@ -61,7 +61,7 @@ public:
    Minimizer();
    Minimizer(Function_t, void*, std::size_t, double, const gsl_multimin_fminimizer_type* solver_type_ = gsl_multimin_fminimizer_nmsimplex2);
    Minimizer(const Minimizer&);
-   ~Minimizer();
+   virtual ~Minimizer();
 
    double get_minimum_value() const { return minimum_value; }
    double get_minimum_point(std::size_t) const;
