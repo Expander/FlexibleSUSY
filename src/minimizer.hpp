@@ -68,6 +68,7 @@ public:
    void set_parameters(void* m) { parameters = m; }
    void set_precision(double p) { precision = p; }
    void set_max_iterations(std::size_t n) { max_iterations = n; }
+   void set_solver_type(const gsl_multimin_fminimizer_type* t) { solver_type = t; }
    int minimize(const double[dimension]);
 
 private:
@@ -79,6 +80,7 @@ private:
    gsl_vector* step_size;      ///< GSL vector of initial step size
    void* parameters;           ///< pointer to parameters
    Function_t function;        ///< function to minimize
+   const gsl_multimin_fminimizer_type* solver_type; ///< GSL minimizer type
 
    void print_state(gsl_multimin_fminimizer*, std::size_t) const;
 };
@@ -94,6 +96,7 @@ Minimizer<dimension>::Minimizer()
    , minimum_value(0.0)
    , parameters(NULL)
    , function(NULL)
+   , solver_type(gsl_multimin_fminimizer_nmsimplex2)
 {
    minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
@@ -117,6 +120,7 @@ Minimizer<dimension>::Minimizer(Function_t function_, void* parameters_,
    , minimum_value(0.0)
    , parameters(parameters_)
    , function(function_)
+   , solver_type(gsl_multimin_fminimizer_nmsimplex2)
 {
    minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
@@ -130,6 +134,7 @@ Minimizer<dimension>::Minimizer(const Minimizer& other)
    , minimum_value(other.minimum_value)
    , parameters(other.parameters)
    , function(other.function)
+   , solver_type(other.solver_type)
 {
    minimum_point = gsl_vector_alloc(dimension);
    step_size = gsl_vector_alloc(dimension);
@@ -158,8 +163,6 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    assert(function && "Minimizer<dimension>::minimize: function pointer"
           " must not be zero!");
 
-   const gsl_multimin_fminimizer_type *type =
-      gsl_multimin_fminimizer_nmsimplex2;
    gsl_multimin_fminimizer *minimizer;
    gsl_multimin_function minex_func;
 
@@ -175,7 +178,7 @@ int Minimizer<dimension>::minimize(const double start[dimension])
    minex_func.f = function;
    minex_func.params = parameters;
 
-   minimizer = gsl_multimin_fminimizer_alloc(type, dimension);
+   minimizer = gsl_multimin_fminimizer_alloc(solver_type, dimension);
    gsl_multimin_fminimizer_set(minimizer, &minex_func, minimum_point, step_size);
 
    size_t iter = 0;
