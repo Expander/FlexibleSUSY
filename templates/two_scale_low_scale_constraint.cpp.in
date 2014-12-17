@@ -103,6 +103,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@strongCoupling@(new_@strongCoupling@);
 }
 
+const Eigen::Matrix<std::complex<double>,3,3>& @ModelName@_low_scale_constraint<Two_scale>::get_ckm()
+{
+   return ckm;
+}
+
+const Eigen::Matrix<std::complex<double>,3,3>& @ModelName@_low_scale_constraint<Two_scale>::get_pmns()
+{
+   return pmns;
+}
+
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
 {
    return scale;

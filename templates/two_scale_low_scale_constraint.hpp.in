@@ -45,6 +45,8 @@ public:
    virtual void set_model(Two_scale_model*);
 
    void clear();
+   const Eigen::Matrix<std::complex<double>,3,3>& get_ckm();
+   const Eigen::Matrix<std::complex<double>,3,3>& get_pmns();
    double get_initial_scale_guess() const;
    void initialize();
    void set_input_parameters(const @ModelName@_input_parameters&);
