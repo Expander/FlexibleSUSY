@@ -1,10 +1,14 @@
 
+#define private public
+
 #include "CMSSM_two_scale_model.hpp"
 #include "test.h"
 #include "test_CMSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "conversion.hpp"
+#include "root_finder.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -1278,6 +1282,93 @@ void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
 }
 
+void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_masses();
+
+   const double BMu = model.get_BMu();
+   const double Mu  = model.get_Mu();
+   const double Mu2 = sqr(Mu);
+   const double m1sq = model.get_mHd2();
+   const double m2sq = -model.get_mHu2();
+   const int signMu = Mu >= 0.0 ? 1 : -1;
+   const DoubleVector pars(3); // unused
+   const double precision = model.get_ewsb_iteration_precision();
+   model.set_mHd2(m1sq);
+   model.set_mHu2(m2sq);
+   softSusy.setMh1Squared(m1sq);
+   softSusy.setMh2Squared(m2sq);
+
+   const int ewsb_loop_order = 1;
+   const int number_of_ewsb_iterations = 100;
+   const double ewsb_iteration_precision = 1.0e-5;
+   model.set_ewsb_loop_order(ewsb_loop_order);
+   model.set_number_of_ewsb_iterations(number_of_ewsb_iterations);
+   model.set_ewsb_iteration_precision(ewsb_iteration_precision);
+
+   // these conditions must be fulfilled to have EWSB
+   // see Drees p. 221 and 222
+   TEST_GREATER(sqr(BMu), (m2sq + Mu2)*(m1sq + Mu2));
+
+   // solve with Softsusy for reference
+   softsusy::numRewsbLoops = 1;
+   softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
+
+   const double Mu_ss = softSusy.displaySusyMu();
+   const double BMu_ss = softSusy.displayM3Squared();
+
+   // prepare solvers
+   CMSSM<Two_scale>::Ewsb_parameters params = {&model, ewsb_loop_order};
+
+   EWSB_solver* solvers[] = {
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrid),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton)
+   };
+
+   double x_init[2];
+   model.ewsb_initial_guess(x_init);
+
+   // starting values for Mu, BMu
+   const double Mu_0 = model.get_Mu();
+   const double BMu_0 = model.get_BMu();
+
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+      model.set_Mu(Mu_0);
+      model.set_BMu(BMu_0);
+
+      model.solve_ewsb_iteratively_with(solvers[i], x_init);
+
+      const double Mu_1 = model.get_Mu();
+      const double BMu_1 = model.get_BMu();
+
+      double test_precision = precision;
+
+      if (i == 3) {
+         // The newton method does not provide a precise root for this
+         // point.  However, the values for Mu and BMu are close
+         // enough to the values from Softsusy, see below.
+         test_precision = 0.01;
+      }
+
+      TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, test_precision);
+      TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, test_precision);
+
+      TEST_CLOSE_REL(Mu_1 , Mu_ss , precision);
+      TEST_CLOSE_REL(BMu_1, BMu_ss, precision);
+   }
+}
+
 void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
                                     MssmSoftsusy softSusy, int loop_order)
 {
@@ -1493,6 +1584,10 @@ void compare_models(int loopLevel)
 
       std::cout << "test one-loop ewsb ... ";
       test_ewsb_1loop(m, softSusy);
+      std::cout << "done\n";
+
+      std::cout << "test one-loop ewsb solvers ... ";
+      test_ewsb_solvers(m, softSusy);
       std::cout << "done\n";
 
       std::cout << "comparing tree level masses ... ";
