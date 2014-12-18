@@ -49,6 +49,8 @@
 #include <thread>
 #endif
 
+#include <gsl/gsl_multiroots.h>
+
 namespace flexiblesusy {
 
 using namespace @ModelName@_info;
@@ -246,7 +248,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    int status;
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solvers[i]->solve(x_init);
+      status = solve_ewsb_iteratively_with(solvers[i], x_init);
       if (status == GSL_SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
@@ -271,6 +273,16 @@ int CLASSNAME::solve_ewsb_iteratively()
 
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
       delete solvers[i];
+
+   return status;
+}
+
+int CLASSNAME::solve_ewsb_iteratively_with(
+   EWSB_solver* solver,
+   const double x_init[number_of_ewsb_equations]
+)
+{
+   const int status = solver->solve(x_init);
 
    return status;
 }

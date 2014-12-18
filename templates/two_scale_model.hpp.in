@@ -48,11 +48,11 @@
 #endif
 
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_multiroots.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 
+class EWSB_solver;
 class Two_scale;
 /**
  * @class @ModelName@<Two_scale>
@@ -153,6 +153,7 @@ private:
 
    int solve_ewsb_iteratively();
    int solve_ewsb_iteratively(unsigned);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
    int solve_ewsb_tree_level_via_soft_higgs_masses();
    void ewsb_initial_guess(double[number_of_ewsb_equations]);
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
