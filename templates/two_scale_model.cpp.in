@@ -249,7 +249,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
       status = solve_ewsb_iteratively_with(solvers[i], x_init);
-      if (status == GSL_SUCCESS) {
+      if (status == EWSB_solver::SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
       }
@@ -261,14 +261,14 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   if (status != GSL_SUCCESS) {
+   if (status == EWSB_solver::SUCCESS) {
+      problems.unflag_no_ewsb();
+   } else {
       problems.flag_no_ewsb();
 #ifdef ENABLE_VERBOSE
       WARNING("\tCould not find a solution to the EWSB equations!"
               " (requested precision: " << ewsb_iteration_precision << ")");
 #endif
-   } else {
-      problems.unflag_no_ewsb();
    }
 
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
@@ -277,6 +277,14 @@ int CLASSNAME::solve_ewsb_iteratively()
    return status;
 }
 
+/**
+ * Solves EWSB equations with given EWSB solver
+ *
+ * @param solver EWSB solver
+ * @param x_init initial values
+ *
+ * @return status of the EWSB solver
+ */
 int CLASSNAME::solve_ewsb_iteratively_with(
    EWSB_solver* solver,
    const double x_init[number_of_ewsb_equations]
