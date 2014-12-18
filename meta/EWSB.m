@@ -428,17 +428,20 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            Return[result];
           ];
 
+CreateNewEWSBRootFinder[] :=
+    "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations,ewsb_iteration_precision, ";
+
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
-    "gsl_multiroot_fsolver_hybrid";
+    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybridS] :=
-    "gsl_multiroot_fsolver_hybrids";
+    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrids)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLBroyden] :=
-    "gsl_multiroot_fsolver_broyden";
+    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_broyden)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLNewton] :=
-    "gsl_multiroot_fsolver_dnewton";
+    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_dnewton)";
 
 CreateEWSBRootFinders[{}] :=
     Block[{},
@@ -447,7 +450,7 @@ CreateEWSBRootFinders[{}] :=
          ];
 
 CreateEWSBRootFinders[rootFinders_List] :=
-    WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ", "];
+    WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
 
 End[];
 

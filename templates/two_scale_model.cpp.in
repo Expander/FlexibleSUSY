@@ -221,14 +221,16 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 }
 
 /**
- * method which solves the EWSB conditions iteratively, trying GSL
+ * This method solves the EWSB conditions iteratively, trying several
  * root finding methods
  * @gslEWSBRootFinders@
  * in that order until a solution is found.
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   const gsl_multiroot_fsolver_type* solvers[] = {
+   Ewsb_parameters params = {this, ewsb_loop_order};
+
+   EWSB_solver* solvers[] = {
 @gslEWSBRootFinders@
    };
 
@@ -246,7 +248,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    int status;
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
-      status = solve_ewsb_iteratively_with(solvers[i], x_init);
+      status = solvers[i]->solve(x_init);
       if (status == GSL_SUCCESS) {
          VERBOSE_MSG("\tSolver " << i << " finished successfully!");
          break;
@@ -268,6 +270,9 @@ int CLASSNAME::solve_ewsb_iteratively()
    } else {
       problems.unflag_no_ewsb();
    }
+
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
+      delete solvers[i];
 
    return status;
 }
@@ -320,20 +325,6 @@ int CLASSNAME::solve_ewsb()
 void CLASSNAME::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
 {
 @ewsbInitialGuess@
-}
-
-int CLASSNAME::solve_ewsb_iteratively_with(const gsl_multiroot_fsolver_type* solver,
-                                           const double x_init[number_of_ewsb_equations])
-{
-   Ewsb_parameters params = {this, ewsb_loop_order};
-   Root_finder<number_of_ewsb_equations> root_finder(CLASSNAME::tadpole_equations,
-                              &params,
-                              number_of_ewsb_iterations,
-                              ewsb_iteration_precision);
-   root_finder.set_solver_type(solver);
-   const int status = root_finder.find_root(x_init);
-
-   return status;
 }
 
 void CLASSNAME::print(std::ostream& ostr) const
