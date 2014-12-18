@@ -222,9 +222,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 
 /**
  * This method solves the EWSB conditions iteratively, trying several
- * root finding methods
- * @gslEWSBRootFinders@
- * in that order until a solution is found.
+ * root finding methods until a solution is found.
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
