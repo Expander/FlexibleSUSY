@@ -429,7 +429,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
           ];
 
 CreateNewEWSBRootFinder[] :=
-    "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations,ewsb_iteration_precision, ";
+    "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, ";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
     CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
