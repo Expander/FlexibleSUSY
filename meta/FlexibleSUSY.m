@@ -549,7 +549,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
-            gslEWSBRootFinders = "",
+            EWSBSolvers = "",
             enablePoleMassThreads = True
            },
            For[k = 1, k <= Length[massMatrices], k++,
@@ -639,7 +639,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];,
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
              ];
-           gslEWSBRootFinders           = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
+           EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
@@ -697,7 +697,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
-                            "@gslEWSBRootFinders@"           -> IndentText[IndentText[gslEWSBRootFinders]],
+                            "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];

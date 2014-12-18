@@ -231,7 +231,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    Ewsb_parameters params = {this, ewsb_loop_order};
 
    EWSB_solver* solvers[] = {
-@gslEWSBRootFinders@
+@EWSBSolvers@
    };
 
    double x_init[number_of_ewsb_equations];
