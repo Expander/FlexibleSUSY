@@ -292,6 +292,8 @@ int CLASSNAME::solve_ewsb_iteratively_with(
 {
    const int status = solver->solve(x_init);
 
+@setEWSBSolution@
+
    return status;
 }
 

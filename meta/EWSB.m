@@ -26,6 +26,9 @@ solution can be found";
 CreateEWSBRootFinders::usage="Creates comma separated list of GSL root
 finders";
 
+SetEWSBSolution::usage="sets the model parameters to the solution
+provided by the solver";
+
 Begin["`Private`"];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
@@ -451,6 +454,17 @@ CreateEWSBRootFinders[{}] :=
 
 CreateEWSBRootFinders[rootFinders_List] :=
     WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
+
+SetEWSBSolution[par_, idx_, func_String] :=
+    CConversion`ToValidCSymbolString[par] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
+
+SetEWSBSolution[parametersFixedByEWSB_List, func_String] :=
+    Module[{result = "", i},
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, func];
+              ];
+           result
+          ];
 
 End[];
 
