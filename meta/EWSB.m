@@ -29,6 +29,23 @@ finders";
 SetEWSBSolution::usage="sets the model parameters to the solution
 provided by the solver";
 
+FillArrayWithParameters::usage="fill an array with parameters";
+
+DivideTadpolesByVEV::usage="Divides an array of tadpoles by their
+corresponding VEV";
+
+CreateEwsbSolverWithTadpoles::usage="Solve EWSB eqs. including
+tadpoles (one step, no iteration)";
+
+GetEWSBParametersFromGSLVector::usage="Create local copies of EWSB
+output parameters from GSL vector";
+
+SetEWSBParametersFromLocalCopies::usage="Set model parameters from
+local copies";
+
+CreateEWSBParametersInitializationList::usage="Creates initialization
+list with EWSB output parameters";
+
 Begin["`Private`"];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
@@ -87,20 +104,23 @@ FindFreePhase[parameter_, freePhases_] :=
            If[phases === {}, Null, phases[[1]]]
           ];
 
-SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
+GetValueWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
     Module[{result, parameterStr, freePhase, gslInput},
            parameterStr = ToValidCSymbolString[parameter];
            freePhase = FindFreePhase[parameter, freePhases];
            gslInput = "gsl_vector_get(" <> gslIntputVector <> ", " <> ToString[index] <> ")";
            If[freePhase =!= Null,
-              result = Parameters`SetParameter[
-                  parameter,
-                  "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <> "Abs(" <> gslInput <> ")",
-                  "model"];
+              result = "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <> "Abs(" <> gslInput <> ")";
               ,
-              result = Parameters`SetParameter[parameter, gslInput, "model"];
+              result = gslInput;
              ];
            Return[result];
+          ];
+
+SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
+    Module[{value},
+           value = GetValueWithPhase[parameter, gslIntputVector, index, freePhases];
+           Parameters`SetParameter[parameter, value, "model"]
           ];
 
 FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
@@ -463,6 +483,105 @@ SetEWSBSolution[parametersFixedByEWSB_List, func_String] :=
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, func];
               ];
+           result
+          ];
+
+FillArrayEntryWithParameter[arrayName_String, par_, idx_] :=
+    arrayName <> "[" <> ToString[idx-1] <> "] = " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+FillArrayWithParameters[arrayName_String, parameters_List] :=
+    Module[{result = "", i},
+           For[i = 1, i <= Length[parameters], i++,
+               result = result <> FillArrayEntryWithParameter[arrayName, parameters[[i]], i];
+              ];
+           result
+          ];
+
+DivideArrayEntryByParameter[arrayName_String, par_, idx_] :=
+    arrayName <> "[" <> ToString[idx-1] <> "] /= " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+DivideTadpolesByVEV[arrayName_String, vevToTadpoleAssociation_List] :=
+    Module[{result = "", i, vevs},
+           vevs = #[[3]]& /@ vevToTadpoleAssociation;
+           For[i = 1, i <= Length[vevs], i++,
+               result = result <> DivideArrayEntryByParameter[arrayName, vevs[[i]], i];
+              ];
+           result
+          ];
+
+CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_List] :=
+    Module[{result = "", i, par, expr, parStr, reducedSolution, rules},
+           reducedSolution = solution;
+           If[reducedSolution =!= {},
+              (* create local const refs to input parameters appearing
+                 in the solution *)
+              reducedSolution = reducedSolution /. {
+                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
+                  FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
+                                                   };
+              result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"];
+              (* define variables for new parameters *)
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  expr = reducedSolution[[i,2]];
+                  parStr = CConversion`RValueToCFormString[par];
+                  result = result <> "double " <> parStr <> ";\n";
+                 ];
+              result = result <> "\n";
+              (* write solution *)
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  expr = reducedSolution[[i,2]];
+                  parStr = CConversion`RValueToCFormString[par];
+                  result = result <> parStr <> " = " <>
+                           CConversion`RValueToCFormString[expr] <> ";\n";
+                 ];
+              result = result <> "\n";
+              (* check for errors *)
+              result = result <> "const bool is_finite = ";
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par    = reducedSolution[[i,1]];
+                  parStr = CConversion`RValueToCFormString[par];
+                  result = result <> "std::isfinite(" <> parStr <> ")";
+                  If[i != Length[reducedSolution],
+                     result = result <> " && ";
+                    ];
+                 ];
+              result = result <> ";\n";
+              ,
+              result = "error = solve_ewsb_iteratively(0);\n";
+             ];
+           Return[result];
+          ];
+
+GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
+                               gslIntputVector_String:"x"] :=
+    Module[{i, result = "", par, parStr},
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par = parametersFixedByEWSB[[i]];
+               parStr = CConversion`ToValidCSymbolString[par];
+               result = result <>
+                        "const double " <> parStr <> " = " <>
+                        GetValueWithPhase[par, gslIntputVector, i-1, freePhases] <> ";\n";
+              ];
+           Return[result];
+          ];
+
+SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
+    Module[{result = ""},
+           (result = result <> Parameters`SetParameter[#, CConversion`RValueToCFormString[#], struct])& /@ parameters;
+           result
+          ];
+
+CreateEWSBParametersInitializationList[parameters_List] :=
+    Module[{result = ""},
+           If[Length[parameters] > 0,
+              result = WriteOut`StringJoinWithSeparator[
+                  CConversion`ToValidCSymbolString /@ parameters,
+                  ", "
+              ];
+              result = "{ " <> result <> " }";
+             ];
            result
           ];
 

@@ -461,7 +461,7 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            Return[{prototypes, defs}];
           ];
 
-FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String:"tadpole"] :=
+FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, struct_String:""] :=
     Module[{body = "", v, field, idx, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
@@ -469,23 +469,23 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String:"tadpole"] :=
                functionName = CreateTadpoleFunctionName[field];
                If[Length[higgsAndIdx] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                         "Re(model->" <> functionName <> "());\n";
+                         "Re(" <> struct <> functionName <> "());\n";
                   ,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                         "Re(model->" <> functionName <>
+                         "Re(" <> struct <> functionName <>
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
               ];
            Return[IndentText[body]];
           ];
 
-FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String:"tadpole"] :=
+FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
            functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
            body = "double two_loop_tadpole[" <> dimStr <> "];\n" <>
-                  "model->" <> functionName <>
+                  struct <> functionName <>
                   "(two_loop_tadpole);\n";
            For[v = 1, v <= dim, v++,
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>

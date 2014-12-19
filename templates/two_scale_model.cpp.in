@@ -362,26 +362,18 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
    double tadpole[number_of_ewsb_equations] = { 0. };
 
    if (ewsb_loop_order > 0) {
-      tadpole[0] = -Re(tadpole_hh(0)) / vd;
-      tadpole[1] = -Re(tadpole_hh(1)) / vu;
+@calculateOneLoopTadpolesNoStruct@
+      if (ewsb_loop_order > 1) {
+@calculateTwoLoopTadpolesNoStruct@
+      }
    }
 
-   double BMu;
-   double Mu;
-
-   BMu = (0.05*(-20*(mHd2 + tadpole[0])*vd*vu + 20*(mHu2 + tadpole[1])*vd*vu - 3*Power(vd,3)*vu*Sqr(g1) + 3*
-      vd*Power(vu,3)*Sqr(g1) - 5*Power(vd,3)*vu*Sqr(g2) + 5*vd*Power(vu,3)*Sqr(g2)
-      ))/(Sqr(vd) - Sqr(vu));
-   Mu = LOCALINPUT(SignMu)*Sqrt((-((mHd2 + tadpole[0])*vd) + vu*BMu - 0.075*Power(vd,3)*Sqr(g1
-      ) - 0.125*Power(vd,3)*Sqr(g2) + 0.075*vd*Sqr(g1)*Sqr(vu) + 0.125*vd*Sqr(g2)*
-      Sqr(vu))/vd);
-
-   const bool is_finite = std::isfinite(BMu) && std::isfinite(Mu);
+@divideTadpolesByVEV@
+@solveEwsbWithTadpoles@
 
    if (is_finite) {
       error = GSL_SUCCESS;
-      ewsb_parameters[0] = BMu;
-      ewsb_parameters[1] = Mu;
+@fillArrayWithEWSBParameters@
    } else {
       error = GSL_EDOM;
    }
@@ -411,16 +403,14 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    CMSSM* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
-   const double BMu = gsl_vector_get(x, 0);
-   const double Mu  = INPUT(SignMu) * Abs(gsl_vector_get(x, 1));
-
-   model->set_BMu(BMu);
-   model->set_Mu(Mu);
+@getEWSBParametersFromGSLVector@
+@setEWSBParametersFromLocalCopies@
 
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double ewsb_parameters[number_of_ewsb_equations] = { BMu, Mu };
+   double ewsb_parameters[number_of_ewsb_equations] =
+      @ewsbParametersInitializationList@;
 
    const int status = model->ewsb_step(ewsb_parameters);
 

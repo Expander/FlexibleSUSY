@@ -511,6 +511,21 @@ CreateHiggsToEWSBEqAssociation[] :=
            {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ phi])
           ];
 
+(* Returns a list of three-component lists where the information is
+   stored which VEV corresponds to which Tadpole eq.
+
+   Example: MRSSM
+   It[] := CreateVEVToTadpoleAssociation[]
+   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
+ *)
+CreateVEVToTadpoleAssociation[] :=
+    Module[{association, vev},
+           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           association = CreateHiggsToEWSBEqAssociation[];
+           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+          ];
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
@@ -525,6 +540,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
+            calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
@@ -551,6 +567,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             lspGetters = "", lspFunctions = "",
             EWSBSolvers = "",
             setEWSBSolution = "",
+            fillArrayWithEWSBParameters = "",
+            solveEwsbWithTadpoles = "",
+            divideTadpolesByVEV = "",
+            getEWSBParametersFromGSLVector = "",
+            setEWSBParametersFromLocalCopies = "",
+            ewsbParametersInitializationList = "",
+            softHiggsMassToTadpoleAssociation,
             enablePoleMassThreads = True
            },
            For[k = 1, k <= Length[massMatrices], k++,
@@ -579,10 +602,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "model->"];
+           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
-              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
+              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "model->"];
+              calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
@@ -642,6 +667,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, "solver->get_solution"];
+           fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
+           softHiggsMassToTadpoleAssociation = softHiggsMasses;
+           solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, softHiggsMassToTadpoleAssociation];
+           divideTadpolesByVEV          = EWSB`DivideTadpolesByVEV["tadpole", CreateVEVToTadpoleAssociation[]];
+           getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
+           setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
+           ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
@@ -657,6 +689,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
+                            "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],
+                            "@calculateTwoLoopTadpolesNoStruct@" -> IndentText[calculateTwoLoopTadpolesNoStruct],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@clearPhases@"            -> IndentText[clearPhases],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
@@ -700,6 +734,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
+                            "@fillArrayWithEWSBParameters@"  -> IndentText[IndentText[fillArrayWithEWSBParameters]],
+                            "@divideTadpolesByVEV@"          -> IndentText[divideTadpolesByVEV],
+                            "@solveEwsbWithTadpoles@"        -> IndentText[solveEwsbWithTadpoles],
+                            "@getEWSBParametersFromGSLVector@" -> IndentText[getEWSBParametersFromGSLVector],
+                            "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies],
+                            "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
