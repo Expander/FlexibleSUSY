@@ -550,7 +550,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
                  ];
               result = result <> ";\n";
               ,
-              result = "error = solve_ewsb_iteratively(0);\n";
+              result = "const bool is_finite = false;\n";
              ];
            Return[result];
           ];
