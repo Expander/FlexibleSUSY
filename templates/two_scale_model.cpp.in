@@ -368,7 +368,6 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
       }
    }
 
-@divideTadpolesByVEV@
 @solveEwsbWithTadpoles@
 
    if (is_finite) {

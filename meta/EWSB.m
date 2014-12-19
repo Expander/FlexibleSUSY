@@ -511,7 +511,7 @@ DivideTadpolesByVEV[arrayName_String, vevToTadpoleAssociation_List] :=
 
 CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_List] :=
     Module[{result = "", i, par, expr, parStr, reducedSolution, rules},
-           reducedSolution = solution;
+           reducedSolution = solution /. FlexibleSUSY`tadpole[p_] :> HoldForm[FlexibleSUSY`tadpole[[p-1]]];
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
                  in the solution *)
