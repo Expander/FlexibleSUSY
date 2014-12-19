@@ -68,7 +68,24 @@ MakeUnique::usage="create a unique symbol from a string";
 
 ProtectTensorProducts::usage="";
 
+ReleaseHoldAt::usage="Release a Hold-ed expression at a specified
+level.
+
+Example:
+
+  In[]:= expr = Hold[Plus[Plus[2, 2], 2]];
+  In[]:= ReleaseHoldAt[expr, {1, 1}]
+  Out[]= Hold[4 + 2]
+
+Taken from:
+
+  https://stackoverflow.com/questions/3136604/evaluate-beyond-one-level-within-hold-in-mathematica
+";
+
 Begin["`Private`"];
+
+ReleaseHoldAt[expr_, partspec_] :=
+    ReplacePart[expr, partspec -> Extract[expr, partspec]]
 
 (* This rule is essential for the ExpandSums[] function.
  * It prevents the following bug:
