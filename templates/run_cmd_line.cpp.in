@@ -27,6 +27,7 @@
 #include "logger.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace flexiblesusy {
 
@@ -44,10 +45,10 @@ void set_command_line_parameters(int argc, char* argv[],
                                  @ModelName@_input_parameters& input)
 {
    for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+      const char* option = argv[i];
 
 @parseCmdLineOptions@
-      if (option == "--help" || option == "-h") {
+      if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
       }
