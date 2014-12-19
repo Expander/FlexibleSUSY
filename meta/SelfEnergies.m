@@ -461,17 +461,17 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            Return[{prototypes, defs}];
           ];
 
-FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, struct_String:""] :=
+FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body = "", v, field, idx, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                functionName = CreateTadpoleFunctionName[field];
                If[Length[higgsAndIdx] == 1,
-                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          "Re(" <> struct <> functionName <> "());\n";
                   ,
-                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          "Re(" <> struct <> functionName <>
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
@@ -479,7 +479,7 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, struct_String:"
            Return[IndentText[body]];
           ];
 
-FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, struct_String:""] :=
+FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
            functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
            dim = GetDimension[higgsBoson];
@@ -488,7 +488,7 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, struct_String:""] :=
                   struct <> functionName <>
                   "(two_loop_tadpole);\n";
            For[v = 1, v <= dim, v++,
-               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                       "two_loop_tadpole[" <> ToString[v-1] <> "];\n";
               ];
            Return[IndentText[IndentText[body]]];

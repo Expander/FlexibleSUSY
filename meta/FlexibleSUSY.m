@@ -606,12 +606,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "model->"];
-           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole"];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-", "model->"];
+           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
-              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "model->"];
-              calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole"];
+              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-", "model->"];
+              calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
@@ -1368,7 +1368,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
            (* adding tadpoles to the EWSB eqs. *)
-           ewsbEquations = MapIndexed[#1 + tadpole[First[#2]]&, ewsbEquations];
+           ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
 
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
