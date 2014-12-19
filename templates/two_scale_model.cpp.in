@@ -399,7 +399,7 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
 
    const CLASSNAME::EWSB_args* ewsb_args
       = static_cast<CLASSNAME::EWSB_args*>(params);
-   CMSSM* model = ewsb_args->model;
+   @ModelName@* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
 @getEWSBParametersFromGSLVector@
