@@ -112,7 +112,7 @@ public:
 @dependenceNumPrototypes@
 
 private:
-   struct Ewsb_parameters {
+   struct EWSB_args {
       @ModelName@<Two_scale>* model;
       unsigned ewsb_loop_order;
    };

@@ -184,10 +184,10 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
 
 /**
  * Method which calculates the tadpoles at loop order specified in the
- * pointer to the CLASSNAME::Ewsb_parameters struct.
+ * pointer to the CLASSNAME::EWSB_args struct.
  *
  * @param x GSL vector of EWSB output parameters
- * @param params pointer to CLASSNAME::Ewsb_parameters struct
+ * @param params pointer to CLASSNAME::EWSB_args struct
  * @param f GSL vector with tadpoles
  *
  * @return GSL_EDOM if x contains Nans, GSL_SUCCESS otherwise.
@@ -200,10 +200,10 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
       return GSL_EDOM;
    }
 
-   const CLASSNAME::Ewsb_parameters* ewsb_parameters
-      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
-   @ModelName@* model = ewsb_parameters->model;
-   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
+   const CLASSNAME::EWSB_args* ewsb_args
+      = static_cast<CLASSNAME::EWSB_args*>(params);
+   @ModelName@* model = ewsb_args->model;
+   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
    double tadpole[number_of_ewsb_equations];
 
@@ -228,7 +228,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
  */
 int CLASSNAME::solve_ewsb_iteratively()
 {
-   Ewsb_parameters params = {this, ewsb_loop_order};
+   EWSB_args params = {this, ewsb_loop_order};
 
    EWSB_solver* solvers[] = {
 @EWSBSolvers@
@@ -406,10 +406,10 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
       return GSL_EDOM;
    }
 
-   const CLASSNAME::Ewsb_parameters* ewsb_parameters
-      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
-   CMSSM* model = ewsb_parameters->model;
-   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
+   const CLASSNAME::EWSB_args* ewsb_args
+      = static_cast<CLASSNAME::EWSB_args*>(params);
+   CMSSM* model = ewsb_args->model;
+   const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
    const double BMu = gsl_vector_get(x, 0);
    const double Mu  = INPUT(SignMu) * Abs(gsl_vector_get(x, 1));
@@ -420,12 +420,12 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
    if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
 
-   double ewsb_step[number_of_ewsb_equations] = { BMu, Mu };
+   double ewsb_parameters[number_of_ewsb_equations] = { BMu, Mu };
 
-   const int status = model->ewsb_step(ewsb_step);
+   const int status = model->ewsb_step(ewsb_parameters);
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      gsl_vector_set(f, i, ewsb_step[i]);
+      gsl_vector_set(f, i, ewsb_parameters[i]);
 
    return status;
 }

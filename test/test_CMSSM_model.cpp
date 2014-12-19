@@ -1320,7 +1320,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double BMu_ss = softSusy.displayM3Squared();
 
    // prepare solvers
-   CMSSM<Two_scale>::Ewsb_parameters params = {&model, ewsb_loop_order};
+   CMSSM<Two_scale>::EWSB_args params = {&model, ewsb_loop_order};
 
    EWSB_solver* solvers[] = {
       new Root_finder<2>(
@@ -1354,7 +1354,9 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
       model.set_Mu(Mu_0);
       model.set_BMu(BMu_0);
 
-      model.solve_ewsb_iteratively_with(solvers[i], x_init);
+      const int status = model.solve_ewsb_iteratively_with(solvers[i], x_init);
+
+      TEST_EQUALITY(status, EWSB_solver::SUCCESS);
 
       const double Mu_1 = model.get_Mu();
       const double BMu_1 = model.get_BMu();
@@ -1373,6 +1375,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          break;
       default:
          test_precision = precision;
+         break;
       }
 
       TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, test_precision);
@@ -1381,6 +1384,9 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
       TEST_CLOSE_REL(Mu_1 , Mu_ss , precision);
       TEST_CLOSE_REL(BMu_1, BMu_ss, precision);
    }
+
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
+      delete solvers[i];
 }
 
 void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
