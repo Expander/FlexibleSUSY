@@ -58,6 +58,7 @@ LowScaleInput={
 };
 
 InitialGuessAtLowScale = {
+   {ml2[3,3], LHInput[ml2[3,3]]},
    {vd, SM[vev] Cos[ArcTan[TanBeta]]},
    {vu, SM[vev] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},

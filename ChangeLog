@@ -8,6 +8,10 @@ FlexibleSUSY-1.0.4 [not released yet]
    example
    SUSYScaleFirstGuess = Sqrt[Sqrt[LHInput[mq2[3,3]] * LHInput[mu2[3,3]]]]
 
+ * Adding support for FlexibleSUSY addons.  They are placed inside the
+   addons/ directory and can be configued and compiled via
+   ./configure --with-addons=<addon> && make
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 

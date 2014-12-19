@@ -54,6 +54,7 @@ public:
       , calculate_sm_masses(false) {}
    ~@ModelName@_spectrum_generator() {}
 
+   double get_high_scale() const { return 0.; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const @ModelName@<T>& get_model() const { return model; }

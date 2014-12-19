@@ -1287,14 +1287,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
              ];
 
-           lesHouchesInputParameters = DeleteDuplicates[Flatten[Cases[Join[FlexibleSUSY`LowScaleInput,
-                                                                           FlexibleSUSY`SUSYScaleInput,
-                                                                           FlexibleSUSY`HighScaleInput],
-                                                                      SARAH`LHInput[p_] :> p,
-                                                                      Infinity
-                                                                     ]
-                                                               ]
-                                                       ];
+           lesHouchesInputParameters = DeleteDuplicates[
+               Flatten[
+                   Cases[
+                       Join[FlexibleSUSY`LowScaleInput,
+                            FlexibleSUSY`SUSYScaleInput,
+                            FlexibleSUSY`HighScaleInput,
+                            FlexibleSUSY`InitialGuessAtLowScale,
+                            FlexibleSUSY`InitialGuessAtHighScale,
+                            {FlexibleSUSY`LowScaleFirstGuess,
+                             FlexibleSUSY`SUSYScaleFirstGuess,
+                             FlexibleSUSY`HighScaleFirstGuess}
+                           ],
+                       SARAH`LHInput[p_] :> CConversion`GetHead[p],
+                       Infinity
+                        ]
+                      ]
+           ];
 
            lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                    {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
@@ -1326,6 +1335,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
+               lesHouchesInputParameterReplacementRules;
+
+           FlexibleSUSY`InitialGuessAtLowScale = FlexibleSUSY`InitialGuessAtLowScale /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /.
                lesHouchesInputParameterReplacementRules;
 
            FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`LowScaleFirstGuess /.
