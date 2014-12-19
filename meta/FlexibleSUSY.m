@@ -1241,14 +1241,21 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
              ];
 
-           lesHouchesInputParameters = DeleteDuplicates[Flatten[Cases[Join[FlexibleSUSY`LowScaleInput,
-                                                                           FlexibleSUSY`SUSYScaleInput,
-                                                                           FlexibleSUSY`HighScaleInput],
-                                                                      SARAH`LHInput[p_] :> p,
-                                                                      Infinity
-                                                                     ]
-                                                               ]
-                                                       ];
+           lesHouchesInputParameters = DeleteDuplicates[
+               Flatten[
+                   Cases[
+                       Join[FlexibleSUSY`LowScaleInput,
+                            FlexibleSUSY`SUSYScaleInput,
+                            FlexibleSUSY`HighScaleInput,
+                            {FlexibleSUSY`LowScaleFirstGuess,
+                             FlexibleSUSY`SUSYScaleFirstGuess,
+                             FlexibleSUSY`HighScaleFirstGuess}
+                           ],
+                       SARAH`LHInput[p_] :> CConversion`GetHead[p],
+                       Infinity
+                        ]
+                      ]
+           ];
 
            lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                    {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
