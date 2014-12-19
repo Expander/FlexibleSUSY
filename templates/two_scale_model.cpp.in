@@ -347,6 +347,89 @@ void CLASSNAME::ewsb_initial_guess(double x_init[number_of_ewsb_equations])
 @ewsbInitialGuess@
 }
 
+/**
+ * Calculates EWSB output parameters including loop-corrections.
+ *
+ * @param ewsb_parameters new EWSB output parameters.  \a
+ * ewsb_parameters is only modified if all new parameters are finite.
+ *
+ * @return GSL_SUCCESS if new EWSB output parameters are finite,
+ * GSL_EDOM otherwise.
+ */
+int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
+{
+   int error;
+   double tadpole[number_of_ewsb_equations] = { 0. };
+
+   if (ewsb_loop_order > 0) {
+      tadpole[0] = -Re(tadpole_hh(0)) / vd;
+      tadpole[1] = -Re(tadpole_hh(1)) / vu;
+   }
+
+   double BMu;
+   double Mu;
+
+   BMu = (0.05*(-20*(mHd2 + tadpole[0])*vd*vu + 20*(mHu2 + tadpole[1])*vd*vu - 3*Power(vd,3)*vu*Sqr(g1) + 3*
+      vd*Power(vu,3)*Sqr(g1) - 5*Power(vd,3)*vu*Sqr(g2) + 5*vd*Power(vu,3)*Sqr(g2)
+      ))/(Sqr(vd) - Sqr(vu));
+   Mu = LOCALINPUT(SignMu)*Sqrt((-((mHd2 + tadpole[0])*vd) + vu*BMu - 0.075*Power(vd,3)*Sqr(g1
+      ) - 0.125*Power(vd,3)*Sqr(g2) + 0.075*vd*Sqr(g1)*Sqr(vu) + 0.125*vd*Sqr(g2)*
+      Sqr(vu))/vd);
+
+   const bool is_finite = std::isfinite(BMu) && std::isfinite(Mu);
+
+   if (is_finite) {
+      error = GSL_SUCCESS;
+      ewsb_parameters[0] = BMu;
+      ewsb_parameters[1] = Mu;
+   } else {
+      error = GSL_EDOM;
+   }
+
+   return error;
+}
+
+/**
+ * Calculates EWSB output parameters including loop-corrections.
+ *
+ * @param x old EWSB output parameters
+ * @param params further function parameters
+ * @param f new EWSB output parameters
+ *
+ * @return Returns status of CLASSNAME::ewsb_step
+ */
+int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
+{
+   if (contains_nan(x, number_of_ewsb_equations)) {
+      for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
+         gsl_vector_set(f, i, std::numeric_limits<double>::max());
+      return GSL_EDOM;
+   }
+
+   const CLASSNAME::Ewsb_parameters* ewsb_parameters
+      = static_cast<CLASSNAME::Ewsb_parameters*>(params);
+   CMSSM* model = ewsb_parameters->model;
+   const unsigned ewsb_loop_order = ewsb_parameters->ewsb_loop_order;
+
+   const double BMu = gsl_vector_get(x, 0);
+   const double Mu  = INPUT(SignMu) * Abs(gsl_vector_get(x, 1));
+
+   model->set_BMu(BMu);
+   model->set_Mu(Mu);
+
+   if (ewsb_loop_order > 0)
+      model->calculate_DRbar_masses();
+
+   double ewsb_step[number_of_ewsb_equations] = { BMu, Mu };
+
+   const int status = model->ewsb_step(ewsb_step);
+
+   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
+      gsl_vector_set(f, i, ewsb_step[i]);
+
+   return status;
+}
+
 void CLASSNAME::print(std::ostream& ostr) const
 {
    ostr << "========================================\n"

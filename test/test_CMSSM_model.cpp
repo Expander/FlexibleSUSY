@@ -8,6 +8,7 @@
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "root_finder.hpp"
+#include "fixed_point_iterator.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -1333,7 +1334,13 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
       new Root_finder<2>(
          CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton)
+         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
+      new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
+         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision),
+      new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
+         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision)
    };
 
    double x_init[2];
@@ -1352,13 +1359,20 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
       const double Mu_1 = model.get_Mu();
       const double BMu_1 = model.get_BMu();
 
-      double test_precision = precision;
+      double test_precision;
 
-      if (i == 3) {
+      switch(i) {
+      case 3:
          // The newton method does not provide a precise root for this
          // point.  However, the values for Mu and BMu are close
          // enough to the values from Softsusy, see below.
          test_precision = 0.01;
+         break;
+      case 4:
+         test_precision = 0.006;
+         break;
+      default:
+         test_precision = precision;
       }
 
       TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, test_precision);
