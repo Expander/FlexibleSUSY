@@ -36,6 +36,7 @@
 #include "logger.hpp"
 #include "error.hpp"
 #include "root_finder.hpp"
+#include "fixed_point_iterator.hpp"
 #include "gsl_utils.hpp"
 #include "config.h"
 #include "pv.hpp"

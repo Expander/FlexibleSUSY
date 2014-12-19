@@ -84,6 +84,7 @@ GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
 GSLBroyden;  (* Broyden method *)
 GSLNewton;   (* Newton method *)
+FixedPointIteration; (* Fixed point iteration, using parts of GSL *)
 FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
@@ -1408,6 +1409,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
+             ];
+
+           (* FixedPointIteration can only be used if an analytic EWSB solution exists *)
+           If[ewsbSolution =!= {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FixedPointIteration],
+              Print["Warning: FixedPointIteration was selected, but no analytic"];
+              Print["   solution to the EWSB eqs. is provided."];
+              Print["   FixedPointIteration will be removed from the list of EWSB solvers."];
+              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FixedPointIteration]];
              ];
 
            Print["Creating class for input parameters ..."];
