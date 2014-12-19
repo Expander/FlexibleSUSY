@@ -1412,7 +1412,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            (* FixedPointIteration can only be used if an analytic EWSB solution exists *)
-           If[ewsbSolution =!= {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FixedPointIteration],
+           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FixedPointIteration],
               Print["Warning: FixedPointIteration was selected, but no analytic"];
               Print["   solution to the EWSB eqs. is provided."];
               Print["   FixedPointIteration will be removed from the list of EWSB solvers."];
