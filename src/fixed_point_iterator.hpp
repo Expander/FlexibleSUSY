@@ -24,6 +24,7 @@
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_multiroots.h>
 
 #include "wrappers.hpp"
 #include "error.hpp"
