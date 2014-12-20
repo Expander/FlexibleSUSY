@@ -14,6 +14,12 @@ meta/Format.m                   export-ignore
 meta/writeNRGE.m                export-ignore
 meta/writeRGE.m                 export-ignore
 
+model_files/CMSSMFPIAbsolute    export-ignore
+model_files/CMSSMFPIRelative    export-ignore
+model_files/CMSSMGSLBroyden     export-ignore
+model_files/CMSSMGSLHybrid      export-ignore
+model_files/CMSSMGSLHybridS     export-ignore
+model_files/CMSSMGSLNewton      export-ignore
 model_files/CMSSMLowPrecision   export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
