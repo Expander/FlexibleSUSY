@@ -2,6 +2,7 @@ DIR      := test
 MODNAME  := test
 
 LIBTEST_SRC := \
+		$(DIR)/run_cmd.cpp \
 		$(DIR)/stopwatch.cpp
 
 LIBTEST_OBJ := \
