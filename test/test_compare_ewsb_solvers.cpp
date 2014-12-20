@@ -1,3 +1,4 @@
+#define BOOST_TEST_IGNORE_NON_ZERO_CHILD_CODE
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_compare_ewsb_solvers
@@ -126,7 +127,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
          if (solvers[i].status == 0)
             printf("%12g", solvers[i].runtime);
          else
-            printf("%2s(%8d)", "- ", solvers[i].status);
+            printf("    %2s(%4d)", "- ", solvers[i].status);
       }
       printf("\n");
    }
