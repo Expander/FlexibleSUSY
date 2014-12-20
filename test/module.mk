@@ -154,6 +154,11 @@ TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute),yes yes yes yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_compare_ewsb_solvers.cpp
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
@@ -334,6 +339,8 @@ $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-ou
 endif
 
 $(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_compare_ewsb_solvers.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_loopfunctions.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
