@@ -229,7 +229,8 @@ $(DIR)/%.x.log: $(DIR)/%.x
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< --log_level=test_suite >> $@ 2>&1; \
+		@BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
+		$< --log_level=test_suite >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
