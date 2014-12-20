@@ -98,6 +98,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
       {"GSLNewton"  , "./models/CMSSMGSLNewton/run_CMSSMGSLNewton.x"    , 0., 0},
       {"FPIRelative", "./models/CMSSMFPIRelative/run_CMSSMFPIRelative.x", 0., 0},
       {"FPIAbsolute", "./models/CMSSMFPIAbsolute/run_CMSSMFPIAbsolute.x", 0., 0},
+      {"FPITadpole" , "./models/CMSSMFPITadpole/run_CMSSMFPITadpole.x"  , 0., 0},
    };
 
    const unsigned number_of_solvers = sizeof(solvers)/sizeof(*solvers);

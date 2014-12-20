@@ -155,7 +155,7 @@ TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute),yes yes yes yes yes yes)
+ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute --with-CMSSMFPITadpole),yes yes yes yes yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_compare_ewsb_solvers.cpp
 endif

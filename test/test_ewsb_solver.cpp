@@ -185,7 +185,8 @@ BOOST_AUTO_TEST_CASE( test_perturbation )
       new Minimizer<dimension>(Perturbation::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2),
       new Minimizer<dimension>(Perturbation::chi2, NULL, max_iterations, precision, gsl_multimin_fminimizer_nmsimplex2rand),
       new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_relative>(Perturbation::update, NULL, max_iterations, precision),
-      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(Perturbation::update, NULL, max_iterations, precision)
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_absolute>(Perturbation::update, NULL, max_iterations, precision),
+      new Fixed_point_iterator<dimension,fixed_point_iterator::Convergence_tester_tadpole>(Perturbation::update, NULL, max_iterations, fixed_point_iterator::Convergence_tester_tadpole(precision, Perturbation::func, NULL))
    };
 
    for (int i = 0; i < sizeof(solvers)/sizeof(solvers[0]); i++) {
