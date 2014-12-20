@@ -107,6 +107,69 @@ private:
    double precision;                 ///< precision goal
 };
 
+class Convergence_tester_tadpole {
+public:
+   /// pointer to tadpole function
+   typedef int (*Tadpole_function_t)(const gsl_vector*, void*, gsl_vector*);
+
+   Convergence_tester_tadpole(double precision_,
+                              Tadpole_function_t tadpole_function_,
+                              void* parameters_)
+      : precision(precision_)
+      , tadpole_function(tadpole_function_)
+      , parameters(parameters_)
+   {
+      assert(tadpole_function_);
+   }
+
+   /**
+    * Test whether the relative difference is less than the set
+    * precision. The relative difference test used here is carried out
+    * by applying \a MaxRelDiff to each element of the vector. If the
+    * relative difference is below the precision, it is tested whether
+    * the tadpoles are below the precision. If the tadpoles are larger
+    * than the precision, GSL_CONTINUE is returned.
+    *
+    * @param a GSL vector
+    * @param b GSL vector
+    * @return GSL error code (GSL_SUCCESS or GSL_CONTINUE)
+    */
+   int operator()(const gsl_vector* a, const gsl_vector* b) const {
+      assert(a->size == b->size && "Error: vectors have different size.");
+
+      const std::size_t dimension = a->size;
+      double rel_diff = 0.;
+
+      if (precision < 0.)
+         GSL_ERROR("relative tolerance is negative", GSL_EBADTOL);
+
+      for (std::size_t i = 0; i < dimension; ++i) {
+         rel_diff = MaxRelDiff(gsl_vector_get(a, i), gsl_vector_get(b, i));
+
+         if (rel_diff > precision)
+            return GSL_CONTINUE;
+      }
+
+      const int status = check_tadpoles(a, parameters);
+
+      return status;
+   }
+
+private:
+   double precision;                 ///< precision goal
+   const Tadpole_function_t tadpole_function; ///< function to calculate tadpole
+   void* parameters;                 ///< tadpole function parameters
+
+   int check_tadpoles(const gsl_vector* x, void* parameters) const {
+      gsl_vector* t = gsl_vector_alloc(x->size);
+      tadpole_function(x, parameters, t);
+      const int status = gsl_multiroot_test_residual(t, precision);
+      gsl_vector_free(t);
+
+      return status;
+   }
+};
+
 } // namespace fixed_point_iterator
 
 /**
