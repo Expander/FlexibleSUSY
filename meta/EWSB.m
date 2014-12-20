@@ -460,6 +460,9 @@ CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIRelative] :=
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIAbsolute] :=
     "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
 
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPITadpole] :=
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_tadpole(ewsb_iteration_precision, CLASSNAME::tadpole_equations, &params))";
+
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
     CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
 
