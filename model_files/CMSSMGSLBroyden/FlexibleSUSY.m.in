@@ -119,4 +119,4 @@ ExtraSLHAOutputBlocks = {
             {49, Sqrt[md2[3,3]]} } }
 };
 
-FSEWSBSolvers = { GSLHybrid };
+FSEWSBSolvers = { GSLBroyden };
