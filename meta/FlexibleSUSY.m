@@ -86,7 +86,7 @@ GSLBroyden;  (* Broyden method *)
 GSLNewton;   (* Newton method *)
 FPIRelative; (* Fixed point iteration, convergence crit. relative step size *)
 FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
-FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
+FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
 
