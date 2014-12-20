@@ -79,16 +79,16 @@ SLHAea::Coll create_point(Point point, const std::string& input_file)
 BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
 {
    Point point = {
-      /* .m0      = */ 200.,
-      /* .m12     = */ 500.,
+      /* .m0      = */ 2000.,
+      /* .m12     = */ 5000.,
       /* .tanBeta = */ 10.,
-      /* .a0      = */ 0.,
+      /* .a0      = */ -3000.,
       /* .signMu  = */ 1
    };
 
-   const unsigned num_points = 100;
+   const unsigned num_points = 20;
    const double tanBeta_start = 2.;
-   const double tanBeta_stop = 80.;
+   const double tanBeta_stop = 50.;
    const double tanBeta_step = (tanBeta_stop - tanBeta_start) / num_points;
 
    Solvers solvers[] = {
