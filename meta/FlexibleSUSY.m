@@ -84,7 +84,8 @@ GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
 GSLBroyden;  (* Broyden method *)
 GSLNewton;   (* Newton method *)
-FixedPointIteration; (* Fixed point iteration, using parts of GSL *)
+FPIRelative; (* Fixed point iteration, convergence crit. relative step size *)
+FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
 FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
@@ -1425,12 +1426,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Note: adding free phases: ", freePhases];
              ];
 
-           (* FixedPointIteration can only be used if an analytic EWSB solution exists *)
-           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FixedPointIteration],
-              Print["Warning: FixedPointIteration was selected, but no analytic"];
+           (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
+           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIRelative],
+              Print["Warning: FPIRelative was selected, but no analytic"];
               Print["   solution to the EWSB eqs. is provided."];
-              Print["   FixedPointIteration will be removed from the list of EWSB solvers."];
-              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FixedPointIteration]];
+              Print["   FPIRelative will be removed from the list of EWSB solvers."];
+              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIRelative]];
+             ];
+           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIAbsolute],
+              Print["Warning: FPIAbsolute was selected, but no analytic"];
+              Print["   solution to the EWSB eqs. is provided."];
+              Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
+              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
              ];
 
            Print["Creating class for input parameters ..."];

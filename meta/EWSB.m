@@ -454,8 +454,11 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
 CreateNewEWSBRootFinder[] :=
     "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, ";
 
-CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FixedPointIteration] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIRelative] :=
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(" <> FlexibleSUSY`FSModelName <> "<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
+
+CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIAbsolute] :=
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(" <> FlexibleSUSY`FSModelName <> "<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations, ewsb_iteration_precision)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
     CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
