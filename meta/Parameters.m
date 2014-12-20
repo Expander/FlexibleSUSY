@@ -74,6 +74,8 @@ ClearPhases::usage="";
 ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
 
+StripIndices::usage="removes indices from model parameter";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -756,6 +758,14 @@ ExpandExpressions[eqs_List] :=
               ];
            Return[result];
           ];
+
+(* removes indices from model Parameter, taking SARAH's L, B, T, Q
+   into account.  *)
+StripIndices[par_[idx___] /; And @@ (NumberQ /@ {idx})] := par;
+
+StripIndices[par_[idx___] /; MemberQ[Join[allModelParameters,allOutputParameters],par]] := par;
+
+StripIndices[par_] := par;
 
 End[];
 

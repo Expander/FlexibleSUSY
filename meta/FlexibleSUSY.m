@@ -1253,7 +1253,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FlexibleSUSY`SUSYScaleFirstGuess,
                              FlexibleSUSY`HighScaleFirstGuess}
                            ],
-                       SARAH`LHInput[p_] :> CConversion`GetHead[p],
+                       SARAH`LHInput[p_] :> Parameters`StripIndices[p],
                        Infinity
                         ]
                       ]
