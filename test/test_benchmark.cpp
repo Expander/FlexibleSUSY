@@ -16,7 +16,7 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
    flexiblesusy::Stopwatch stopwatch;
 
    stopwatch.start();
-   status = run_cmd("./models/MSSM/run_MSSM.x --slha-input-file=" +
+   status = run_cmd("./models/CMSSM/run_CMSSM.x --slha-input-file=" +
                     slha_file + " --slha-output-file="
                     "test/test_benchmark.out.spc > /dev/null 2>&1");
    stopwatch.stop();
