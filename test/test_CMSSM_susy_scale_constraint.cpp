@@ -36,6 +36,6 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    }
 
    // check that EWSB eqs. are fulfilled
-   BOOST_CHECK_SMALL(std::fabs(tadpole[0]), 1.2e-7);
-   BOOST_CHECK_SMALL(std::fabs(tadpole[1]), 1.5e-7);
+   BOOST_CHECK_SMALL(std::fabs(tadpole[0]), 5.0e-6);
+   BOOST_CHECK_SMALL(std::fabs(tadpole[1]), 5.0e-6);
 }
