@@ -5,26 +5,10 @@
 #include <boost/lexical_cast.hpp>
 
 #include "test.h"
+#include "run_cmd.hpp"
 #include "slhaea.h"
 #include "stopwatch.hpp"
 #include "logger.hpp"
-
-int run_cmd(const std::string& cmd)
-{
-   if (!system(NULL)) {
-      ERROR("Error: command processor not available!");
-      return -1;
-   }
-
-   const int status = system(cmd.c_str());
-
-   if (status) {
-      VERBOSE_MSG("Command \"" << cmd << "\" returned with exit code "
-                  << status);
-   }
-
-   return status;
-}
 
 int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
 {
