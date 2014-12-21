@@ -16,6 +16,7 @@ meta/writeRGE.m                 export-ignore
 
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
+model_files/CMSSMFPITadpole     export-ignore
 model_files/CMSSMGSLBroyden     export-ignore
 model_files/CMSSMGSLHybrid      export-ignore
 model_files/CMSSMGSLHybridS     export-ignore
