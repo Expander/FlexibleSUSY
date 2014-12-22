@@ -55,7 +55,6 @@ public:
       , matching()
       , high_scale_2(0.), susy_scale_1(0.), low_scale_1(0.)
       , matching_scale(0)
-      , input_scale_2(0.)
       , parameter_output_scale_1(0.)
       , precision_goal(1.0e-4)
       , max_iterations(0)
@@ -72,7 +71,6 @@ public:
       return model_1.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); };
-   void set_input_scale_2(double m) { input_scale_2 = m; }
    void set_parameter_output_scale_1(double s) { parameter_output_scale_1 = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model_1.set_pole_mass_loop_order(l); }
@@ -94,7 +92,6 @@ private:
    MSSMD5O_MSSMRHN_matching<T> matching;
    double high_scale_2, susy_scale_1, low_scale_1;
    double matching_scale;
-   double input_scale_2; ///< high-scale parameter input scale
    double parameter_output_scale_1; ///< output scale for running parameters
    double precision_goal; ///< precision goal
    unsigned max_iterations; ///< maximum number of iterations
@@ -120,17 +117,22 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    high_scale_constraint_2.clear();
    susy_scale_constraint_1.clear();
    low_scale_constraint_1.clear();
+
    matching.reset();
+
+   // needed for constraint::initialize()
+   high_scale_constraint_2.set_model(&model_2);
+   susy_scale_constraint_1.set_model(&model_1);
+   low_scale_constraint_1 .set_model(&model_1);
+
    high_scale_constraint_2.set_input_parameters(input_2);
    susy_scale_constraint_1.set_input_parameters(input_1);
    low_scale_constraint_1.set_input_parameters(input_1);
+   low_scale_constraint_1.set_sm_parameters(oneset);
    matching.set_lower_input_parameters(input_1);
    high_scale_constraint_2.initialize();
    susy_scale_constraint_1.initialize();
    low_scale_constraint_1.initialize();
-
-   if (!is_zero(input_scale_2))
-      high_scale_constraint_2.set_scale(input_scale_2);
 
    std::vector<Constraint<T>*> upward_constraints_1;
    upward_constraints_1.push_back(&low_scale_constraint_1);
