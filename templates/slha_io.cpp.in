@@ -178,6 +178,7 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
       = boost::bind(&@ModelName@_slha_io::fill_extpar_tuple, boost::ref(input), _1, _2);
 
    slha_io.read_block("MINPAR", minpar_processor);
+   slha_io.read_block("EXTPAR", extpar_processor);
 
 @readLesHouchesInputParameters@
 }
