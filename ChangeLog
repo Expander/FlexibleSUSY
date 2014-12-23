@@ -12,6 +12,10 @@ FlexibleSUSY-1.0.4 [not released yet]
    addons/ directory and can be configued and compiled via
    ./configure --with-addons=<addon> && make
 
+ * Adding EWSB solvers using a fixed-point iteration (FPIRelative,
+   FPIAbsolute, FPITadpole).  FPIRelative is now the first default
+   solver used.
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 
