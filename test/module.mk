@@ -107,6 +107,7 @@ TEST_SRC += \
 endif
 
 TEST_SH := \
+		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_space_dir.sh
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
@@ -131,7 +132,6 @@ endif
 
 ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
 TEST_SH += \
-		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_CMSSM_slha_doubled_blocks.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_slha.cpp \
