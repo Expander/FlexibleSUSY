@@ -206,9 +206,9 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    BOOST_CHECK_SMALL(Im(tadpole_hh_2), 1.0e-12);
    BOOST_CHECK_SMALL(Im(tadpole_hh_3), 1.0e-12);
 
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), precision);
-   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(tadpole_hh_3), precision);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1() - Re(tadpole_hh_1), 0.5);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2() - Re(tadpole_hh_2), 0.03);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3() - Re(tadpole_hh_3), 0.3);
 
    softsusy::numRewsbLoops = 1;
    s.rewsb(signMu, mt);
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE( test_SMSSM_one_loop_ewsb )
    const double bmu_fs = m.get_BMu();
    const double xis_fs = m.get_LL1();
 
-   BOOST_CHECK_CLOSE_FRACTION(mu_ss , mu_fs , 5.0e-11);
-   BOOST_CHECK_CLOSE_FRACTION(bmu_ss, bmu_fs, 2.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(xis_ss, xis_fs, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(mu_ss , mu_fs , 2.1e-8);
+   BOOST_CHECK_CLOSE_FRACTION(bmu_ss, bmu_fs, 8.5e-8);
+   BOOST_CHECK_CLOSE_FRACTION(xis_ss, xis_fs, 3.0e-9);
 }

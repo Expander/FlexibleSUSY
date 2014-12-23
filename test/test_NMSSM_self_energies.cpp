@@ -73,9 +73,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    const double vS_fs    = m.get_vS();
    const double ms2_fs   = m.get_ms2();
 
-   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 1.0e-11);
-   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 4.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 3.1e-8);
+   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 6.2e-8);
 
    const int accuracy = loop_order;
    const double piWWT = 0., pizztMS = 0.;
