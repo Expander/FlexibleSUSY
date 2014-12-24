@@ -484,6 +484,12 @@ CreateEWSBRootFinders[{}] :=
 CreateEWSBRootFinders[rootFinders_List] :=
     WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
 
+CreateIndices[indices_List] :=
+    "(" <> WriteOut`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
+
+SetEWSBSolution[par_[indices__], idx_, func_String] :=
+    CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
+
 SetEWSBSolution[par_, idx_, func_String] :=
     CConversion`ToValidCSymbolString[par] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
 
