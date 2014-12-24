@@ -540,7 +540,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = CConversion`RValueToCFormString[par];
+                  parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> "double " <> parStr <> ";\n";
                  ];
               result = result <> "\n";
@@ -548,7 +548,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = CConversion`RValueToCFormString[par];
+                  parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> parStr <> " = " <>
                            CConversion`RValueToCFormString[expr] <> ";\n";
                  ];
@@ -557,7 +557,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               result = result <> "const bool is_finite = ";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
-                  parStr = CConversion`RValueToCFormString[par];
+                  parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> "std::isfinite(" <> parStr <> ")";
                   If[i != Length[reducedSolution],
                      result = result <> " && ";
@@ -585,7 +585,7 @@ GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
 
 SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
     Module[{result = ""},
-           (result = result <> Parameters`SetParameter[#, CConversion`RValueToCFormString[#], struct])& /@ parameters;
+           (result = result <> Parameters`SetParameter[#, CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
            result
           ];
 
