@@ -184,6 +184,22 @@ Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& CLASSNAME::get_problems()
 }
 
 /**
+ * Method which calculates the tadpoles at the current loop order.
+ *
+ * @param tadpole array of tadpole
+ */
+void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) const
+{
+@calculateTreeLevelTadpoles@
+   if (ewsb_loop_order > 0) {
+@calculateOneLoopTadpoles@
+      if (ewsb_loop_order > 1) {
+@calculateTwoLoopTadpoles@
+      }
+   }
+}
+
+/**
  * Method which calculates the tadpoles at loop order specified in the
  * pointer to the CLASSNAME::EWSB_args struct.
  *
@@ -206,21 +222,24 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    @ModelName@* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
-   double tadpole[number_of_ewsb_equations];
+@setEWSBParametersFromGSLVector@
 
-@calculateTreeLevelTadpoles@
-   if (ewsb_loop_order > 0) {
+   if (ewsb_loop_order > 0)
       model->calculate_DRbar_masses();
-@calculateOneLoopTadpoles@
-      if (ewsb_loop_order > 1) {
-@calculateTwoLoopTadpoles@
-      }
-   }
+
+   double tadpole[number_of_ewsb_equations] = { 0. };
+
+   model->tadpole_equations(tadpole);
 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   return GSL_SUCCESS;
+   bool is_finite = true;
+
+   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
+      is_finite = is_finite && std::isfinite(tadpole[i]);
+
+   return (is_finite ? GSL_SUCCESS : GSL_EDOM);
 }
 
 /**

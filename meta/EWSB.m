@@ -43,6 +43,9 @@ output parameters from GSL vector";
 SetEWSBParametersFromLocalCopies::usage="Set model parameters from
 local copies";
 
+SetEWSBParametersFromGSLVector::usage="Set model parameters from GSL
+vector.";
+
 CreateEWSBParametersInitializationList::usage="Creates initialization
 list with EWSB output parameters";
 
@@ -124,7 +127,7 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
           ];
 
 FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
-                     gslIntputVector_String:"x", gslOutputVector_String:"tadpole"] :=
+                     gslOutputVector_String] :=
     Module[{i, result = "", par, dim},
            dim = TreeMasses`GetDimension[higgs];
            If[dim =!= Length[parametersFixedByEWSB],
@@ -133,14 +136,9 @@ FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
                     Length[parametersFixedByEWSB],")"];
               Return[""];
              ];
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par = parametersFixedByEWSB[[i]];
-               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
-              ];
-           result = result <> "\n";
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
-                        "] = " <> "model->get_ewsb_eq_" <>
+                        "] = " <> "get_ewsb_eq_" <>
                         ToValidCSymbolString[higgs] <> "_" <>
                         ToString[i] <> "();\n";
               ];
@@ -587,6 +585,16 @@ SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
     Module[{result = ""},
            (result = result <> Parameters`SetParameter[#, CConversion`ToValidCSymbolString[#], struct])& /@ parameters;
            result
+          ];
+
+SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
+                               gslIntputVector_String] :=
+    Module[{i, result = "", par},
+           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+               par = parametersFixedByEWSB[[i]];
+               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
+              ];
+           Return[result];
           ];
 
 CreateEWSBParametersInitializationList[parameters_List] :=
