@@ -487,7 +487,7 @@ CreateEWSBRootFinders[rootFinders_List] :=
 CreateIndices[indices_List] :=
     "(" <> WriteOut`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-SetEWSBSolution[par_[indices__], idx_, func_String] :=
+SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par], idx_, func_String] :=
     CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
 
 SetEWSBSolution[par_, idx_, func_String] :=
