@@ -9,7 +9,7 @@ FLEXIBLESUSY_MINOR=0
 FLEXIBLESUSY_PATCH=3
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
-GIT_COMMIT="`git describe --tags || echo unknown`"
+GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
 
 # directory of this script
 BASEDIR=$(dirname $0)
