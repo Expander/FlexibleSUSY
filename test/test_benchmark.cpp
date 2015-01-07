@@ -115,7 +115,7 @@ void test_tanbeta_scan()
 
    Data fs_data, ss_data;
 
-   printf("%16s %30s %30s \n", "tan(beta)",
+   printf("%10s %30s %30s \n", "tan(beta)",
           "Softsusy / s (status)",
           "FlexibleSUSY / s (status)");
 
@@ -130,7 +130,7 @@ void test_tanbeta_scan()
 
       run_point(input_file, fs_data, ss_data);
 
-      printf("%16g %24g (%3d) %24g (%3d)\n", tanBeta,
+      printf("%10g %24g (%3d) %24g (%3d)\n", tanBeta,
              ss_data.time, ss_data.error,
              fs_data.time, fs_data.error);
    }
