@@ -10,7 +10,16 @@
 #include "stopwatch.hpp"
 #include "logger.hpp"
 
-int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
+struct Data {
+   Data() : number_of_valid_points(0), sum_of_times(0.) {}
+
+   double time;
+   int error;
+   unsigned number_of_valid_points;
+   double sum_of_times;
+};
+
+int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
 {
    int status;
    flexiblesusy::Stopwatch stopwatch;
@@ -20,20 +29,26 @@ int run_point(const std::string& slha_file, double& fs_time, double& ss_time)
                     slha_file + " --slha-output-file="
                     "test/test_benchmark.out.spc > /dev/null 2>&1");
    stopwatch.stop();
-   fs_time = stopwatch.get_time_in_seconds();
 
-   if (status) {
-      VERBOSE_MSG("FlexibleSUSY returned exit code " << status);
+   fs_data.time = stopwatch.get_time_in_seconds();
+   fs_data.error = status;
+
+   if (!fs_data.error) {
+      fs_data.number_of_valid_points++;
+      fs_data.sum_of_times += fs_data.time;
    }
 
    stopwatch.start();
    status = run_cmd("./models/SoftsusyNMSSM/run_softpoint.x leshouches < " +
                     slha_file + " > test/test_benchmark.out.spc");
    stopwatch.stop();
-   ss_time = stopwatch.get_time_in_seconds();
 
-   if (status) {
-      VERBOSE_MSG("Softsusy returned exit code " << status);
+   ss_data.time = stopwatch.get_time_in_seconds();
+   ss_data.error = status;
+
+   if (!ss_data.error) {
+      ss_data.number_of_valid_points++;
+      ss_data.sum_of_times += ss_data.time;
    }
 
    return 0;
@@ -66,7 +81,11 @@ void test_tanbeta_scan()
    const double tanBeta_stop = 80.;
    const double tanBeta_step = (tanBeta_stop - tanBeta_start) / num_points;
 
-   double fs_time_sum = 0., ss_time_sum = 0.;
+   Data fs_data, ss_data;
+
+   printf("%16s %30s %30s \n", "tan(beta)",
+          "Softsusy / s (status)",
+          "FlexibleSUSY / s (status)");
 
    for (unsigned i = 0; i < num_points; i++) {
       const double tanBeta = tanBeta_start + i * tanBeta_step;
@@ -77,27 +96,23 @@ void test_tanbeta_scan()
       ofs << coll;
       ofs.close();
 
-      double fs_time = 0., ss_time = 0.;
+      run_point(input_file, fs_data, ss_data);
 
-      INFO(">>> running point tan(beta) = " << tanBeta);
-      run_point(input_file, fs_time, ss_time);
-
-      INFO("\ttime: SS = " << ss_time << "s, FS = " << fs_time << "s"
-           << ", rel. diff. = "
-           << (fs_time - ss_time) * 100. / ss_time << "%");
-
-      fs_time_sum += fs_time;
-      ss_time_sum += ss_time;
+      printf("%16g %24g (%3d) %24g (%3d)\n", tanBeta,
+             ss_data.time, ss_data.error,
+             fs_data.time, fs_data.error);
    }
 
-   fs_time_sum /= num_points;
-   ss_time_sum /= num_points;
+   const double fs_average_time = fs_data.sum_of_times / fs_data.number_of_valid_points;
+   const double ss_average_time = ss_data.sum_of_times / ss_data.number_of_valid_points;
 
    INFO("Summary: average times (in seconds) \n"
-        "  FlexibleSUSY: " << fs_time_sum << '\n' <<
-        "  Softsusy    : " << ss_time_sum);
+        "  FlexibleSUSY: " << fs_average_time <<
+        " (" << fs_data.number_of_valid_points << "/" << num_points << " points)\n" <<
+        "  Softsusy    : " << ss_average_time <<
+        " (" << ss_data.number_of_valid_points << "/" << num_points << " points)");
 
-   TEST_GREATER(ss_time_sum, 1.9 * fs_time_sum);
+   TEST_GREATER(ss_average_time, 1.8 * fs_average_time);
 }
 
 int main()
