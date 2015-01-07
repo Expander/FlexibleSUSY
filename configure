@@ -1241,6 +1241,27 @@ check_cxx_compiler_version() {
 }
 
 #_____________________________________________________________________
+check_icpc_features() {
+    local compiler="$1"
+    local version="$2"
+
+    checking_msg "$compiler compiler features"
+
+    local major minor patch
+    split_version "$version" major minor patch
+
+    # disable multi-threading for versions < 14.0.0
+    if ! major_minor_patch_at_least $major $minor $patch "14" "0" "0" &&
+       [ "$enable_threads" = "yes" ]; then
+	message ""
+	message "   Warning: multi-threading support requires $compiler 14.0.0 or newer."
+	enable_threads="no"
+    else
+	result "ok"
+    fi
+}
+
+#_____________________________________________________________________
 check_cxx_dep_gen_type() {
     checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
 
@@ -1357,6 +1378,13 @@ get_icpc_version() {
 	sed 's/^.*__INTEL_COMPILER[[:space:]]*\([[:digit:]]*\)\([[:digit:]]\)\([[:digit:]]\).*$/\1.\2.\3/p;d')
 
     eval "$ret_var=\"$version\""
+}
+
+#_____________________________________________________________________
+check_cxx_compiler_features() {
+    case "$cxx_compiler_type" in
+    intel) check_icpc_features "$CXX" "$cxx_compiler_version" ;;
+    esac
 }
 
 #_____________________________________________________________________
@@ -2226,6 +2254,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx
     check_cxx_compiler_type
     check_cxx_compiler_version
+    check_cxx_compiler_features
     check_cxxflags
     check_cxx_dep_gen
     check_cxx_dep_gen_type
