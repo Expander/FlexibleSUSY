@@ -48,6 +48,10 @@ HighScaleInput = {
    {MassG,m12}
 };
 
+HighScaleMinimum = 1.0 10^8;
+
+HighScaleMaximum = 5.0 10^17;
+
 LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
