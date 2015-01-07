@@ -45,7 +45,8 @@ EXESoftsusyNMSSM_DEP  := \
 RUN_SOFTPOINT_EXE := \
 		$(EXESoftsusyNMSSM_OBJ:.o=.x)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 
 all-$(MODNAME): $(LIBSoftsusyNMSSM)
 

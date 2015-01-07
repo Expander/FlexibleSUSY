@@ -37,7 +37,8 @@ EXESoftsusyMSSM_DEP := \
 RUN_SoftsusyMSSM_EXE := \
 		$(EXESoftsusyMSSM_OBJ:.o=.x)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 
 all-$(MODNAME): $(LIBSoftsusyMSSM)
 
