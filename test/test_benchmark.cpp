@@ -97,7 +97,7 @@ void test_tanbeta_scan()
         "  FlexibleSUSY: " << fs_time_sum << '\n' <<
         "  Softsusy    : " << ss_time_sum);
 
-   TEST_GREATER(ss_time_sum, 2. * fs_time_sum);
+   TEST_GREATER(ss_time_sum, 1.9 * fs_time_sum);
 }
 
 int main()
