@@ -29,6 +29,6 @@ Block MINPAR                 # Input parameters
 Block EXTPAR                 # Input parameters
    61   0.683                # LambdaInput
    62   0.093                # KappaInput
-   63   -1774.9              # ALambdaInput
+   63   1774.9               # ALambdaInput
    64   2533.4               # AKappaInput
    65   229.2                # MuEff
