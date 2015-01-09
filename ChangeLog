@@ -16,6 +16,10 @@ FlexibleSUSY-1.0.4 [not released yet]
    FPIAbsolute, FPITadpole).  FPIRelative is now the first default
    solver used.
 
+ * Adding new NMSSM model file `NUTNMSSM' with non-universal soft
+   Higgs masses (EWSB output) and non-universal trilinear couplings
+   A_lambda and A_kappa at MX.
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 
