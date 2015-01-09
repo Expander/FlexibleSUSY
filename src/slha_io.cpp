@@ -290,7 +290,7 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
    ss << FORMAT_ELEMENT( 1, alphaEmInv                   , "alpha^(-1) SM MSbar(MZ)");
    ss << FORMAT_ELEMENT( 2, 1.166370000e-05              , "G_Fermi");
    ss << FORMAT_ELEMENT( 3, qedqcd.displayAlpha(ALPHAS)  , "alpha_s(MZ) SM MSbar");
-   ss << FORMAT_ELEMENT( 4, Electroweak_constants::MZ    , "MZ(pole)");
+   ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()       , "MZ(pole)");
    ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()         , "mb(mb) SM MSbar");
    ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()       , "mtop(pole)");
    ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
@@ -377,8 +377,7 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setAlpha(ALPHAS, value);
       break;
    case 4:
-      // MZ cannot be set yet
-      // oneset.setMu(value);
+      oneset.setPoleMZ(value);
       break;
    case 5:
       oneset.setMass(mBottom, value);

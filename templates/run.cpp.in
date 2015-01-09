@@ -67,6 +67,7 @@ int main(int argc, const char* argv[])
    }
 
    oneset.toMz(); // run SM fermion masses to MZ
+   oneset.setPoleMW(spectrum_generator_settings.get(Spectrum_generator_settings::mw_pole));
 
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(
