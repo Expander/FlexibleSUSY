@@ -193,7 +193,7 @@ ApplyConstraints[settings_List] :=
            Return[result];
           ];
 
-FindFixedParametersFromSetting[{parameter_, value_}] := parameter;
+FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[parameter];
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
 FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, value_]] := parameters;
 
