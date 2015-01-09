@@ -160,6 +160,11 @@ TEST_SRC += \
 		$(DIR)/test_compare_ewsb_solvers.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM),yes)
+TEST_SH += \
+		$(DIR)/test_NUTNMSSM.sh
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
