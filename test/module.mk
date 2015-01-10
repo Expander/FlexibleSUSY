@@ -132,7 +132,8 @@ endif
 
 ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
 TEST_SH += \
-		$(DIR)/test_CMSSM_slha_doubled_blocks.sh
+		$(DIR)/test_CMSSM_slha_doubled_blocks.sh \
+		$(DIR)/test_CMSSM_profile.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_slha.cpp \
 		$(DIR)/test_CMSSM_slha_input.cpp \
