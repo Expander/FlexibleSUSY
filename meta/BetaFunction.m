@@ -158,7 +158,7 @@ CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
                {localDecl, beta1L, beta2L} = CreateBetaFunctionCall[betaFunctions[[i]]];
                allDecl = allDecl <> localDecl;
                allBeta1L = allBeta1L <> beta1L;
-               allBeta2L = allBeta2L <> "   " <> beta2L;
+               allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
               ];
            allBeta = allDecl <> "\n" <> allBeta1L <> "\nif (get_loops() > 1) {\n" <>
                      allBeta2L <> "\n}\n";
