@@ -145,7 +145,7 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
             beta1L        = dataType <> " " <> betaName <> "(" <> oneLoopBetaStr <> ");\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
               twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
-              beta2L = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
+              beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
              ];
             Return[{localDecl, beta1L, beta2L}];
           ];
