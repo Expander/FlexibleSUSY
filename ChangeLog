@@ -35,6 +35,8 @@ FlexibleSUSY-1.0.4 [not released yet]
  * Bugfix (commit 77dce8b): correct momentum guess for the calculation
    of the self-energies with LowPrecision.
 
+ * Bugfix (commit fb0b906): Fix compilation with g++ 4.5.3.
+
  * Support Intel C++ compiler versions 12.1 and 13.x (commits 78d73e7
    and bf5a08e)
 
