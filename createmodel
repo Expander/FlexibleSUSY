@@ -386,3 +386,5 @@ for slha_in in $SLHA_input_files; do
     cp $model_file_dir/$slha_in $targetdir
     echo "done"
 done
+
+rm -f ${createmodel_log}
