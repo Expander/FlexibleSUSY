@@ -8,7 +8,7 @@ VALGRIND="`command -v valgrind`"
 CMSSM_EXE="$BASEDIR/../models/CMSSM/run_CMSSM.x"
 CMSSM_INPUT="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
 CMSSM_OUTPUT="$BASEDIR/LesHouches.out.CMSSM"
-VALGRIND_OUTPUT="${BASEDIR}/test_CMSSM_profile.valgrind.log"
+VALGRIND_OUTPUT="${BASEDIR}/test_CMSSM_profile.valgrind.out"
 CALLGRIND_OUTPUT="${BASEDIR}/test_CMSSM_profile.callgrind.out"
 
 if [ -z "$VALGRIND" ]; then
