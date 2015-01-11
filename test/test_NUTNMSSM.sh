@@ -5,6 +5,8 @@ BASEDIR=$(dirname $0)
 
 exit_code=0
 
+echo "Running benchmark points BP1-3 from arxiv:1308.1333"
+
 for point in BP1 BP2 BP3
 do
     echo "Running $point ..."
