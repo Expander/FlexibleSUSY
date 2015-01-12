@@ -919,7 +919,7 @@ FindColorGaugeGroup[] :=
 
 FindLeftGaugeGroup[] :=
     Module[{coupling, gaugeGroup, result},
-           coupling = FindHyperchargeGaugeCoupling[];
+           coupling = FindLeftGaugeCoupling[];
            gaugeGroup = Cases[SARAH`Gauge, {_, group_, name_, coupling, ___}];
            If[gaugeGroup === {},
               Print["Error: could not weak gauge group"];
@@ -932,7 +932,7 @@ FindLeftGaugeGroup[] :=
 
 FindHyperchargeGaugeGroup[] :=
     Module[{coupling, gaugeGroup, result},
-           coupling = FindColorGaugeCoupling[];
+           coupling = FindHyperchargeGaugeGroup[];
            gaugeGroup = Cases[SARAH`Gauge, {_, group_, name_, coupling, ___}];
            If[gaugeGroup === {},
               Print["Error: could not find Hypercharge gauge group"];
