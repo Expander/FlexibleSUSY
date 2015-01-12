@@ -180,13 +180,13 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    } catch (const NonPerturbativeRunningError&) {
       model.get_problems().flag_no_perturbative();
    } catch (const Error& error) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(error.what());
    } catch (const std::string& str) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(str);
    } catch (const char* str) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(str);
    } catch (const std::exception& error) {
-      model.get_problems().flag_thrown();
+      model.get_problems().flag_thrown(error.what());
    }
 }
 

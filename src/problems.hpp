@@ -36,14 +36,17 @@ public:
 
    void flag_bad_mass(unsigned, bool flag = true);
    void flag_tachyon(unsigned, bool flag = true);
-   void flag_thrown()          { thrown = true; }
+   void flag_thrown(const std::string& msg = "") {
+      thrown = true;
+      exception_msg = msg;
+   }
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
 
    void unflag_bad_mass(unsigned);
    void unflag_tachyon(unsigned);
-   void unflag_thrown()          { thrown = false; }
+   void unflag_thrown()          { thrown = false; exception_msg = ""; }
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
@@ -71,6 +74,7 @@ private:
    bool failed_ewsb;                   ///< no EWSB
    bool failed_convergence;            ///< no convergence
    bool non_perturbative;              ///< non-perturbative running
+   std::string exception_msg;          ///< exception message
 };
 
 template <unsigned Number_of_particles>
@@ -82,6 +86,7 @@ Problems<Number_of_particles>::Problems(const char** particle_names_)
    , failed_ewsb(false)
    , failed_convergence(false)
    , non_perturbative(false)
+   , exception_msg("")
 {
 }
 
@@ -164,6 +169,7 @@ void Problems<Number_of_particles>::clear()
    failed_convergence = false;
    non_perturbative = false;
    thrown = false;
+   exception_msg = "";
 }
 
 template <unsigned Number_of_particles>
@@ -197,7 +203,7 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
    if (non_perturbative)
       ostr << "non-perturbative, ";
    if (thrown)
-      ostr << "exception thrown";
+      ostr << "exception thrown(" << exception_msg << ")";
 }
 
 template <unsigned Number_of_particles>
