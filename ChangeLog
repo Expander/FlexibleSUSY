@@ -20,8 +20,7 @@ FlexibleSUSY-1.0.4 [not released yet]
    Higgs masses (EWSB output) and non-universal trilinear couplings
    A_lambda and A_kappa at MX.
 
- * Allow user input of W boson pole mass in FlexibleSUSY block entry
-   12.
+ * Read user input W boson pole mass form SMINPUTS block entry 9.
 
  * Read user input Z boson pole mass from SMINPUTS block entry 4.
 
