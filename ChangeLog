@@ -39,6 +39,8 @@ FlexibleSUSY-1.0.4 [not released yet]
  * Support Intel C++ compiler versions 12.1 and 13.x (commits 78d73e7
    and bf5a08e)
 
+ * More descriptive error message when an exception is thrown.
+
 FlexibleSUSY-1.0.3 [November, 21 2014]
 
  * Allow selection of Higgs 2-loop contributions in SLHA input file
