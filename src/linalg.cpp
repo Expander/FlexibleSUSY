@@ -1231,7 +1231,9 @@ ComplexMatrix ComplexMatrix::hermitianConjugate() const {
 }
 
 namespace {
-   Complex conjugator(const Complex& z) { return std::conj(z); }
+   Complex conjugator(const Complex& z) {
+      return Complex(std::conj(static_cast<std::complex<double> >(z)));
+   }
 }
 
 ComplexMatrix ComplexMatrix::complexConjugate() const { 
