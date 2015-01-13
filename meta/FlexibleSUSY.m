@@ -75,6 +75,8 @@ FSEigenstates = SARAH`EWSB;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
+FSCheckPerturbativityOfDimensionlessParameters = True;
+FSPerturbativityThreshold = N[Sqrt[4 Pi]];
 
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
@@ -404,6 +406,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
+           checkPerturbativityForDimensionlessParameters = "",
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
@@ -420,6 +423,13 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
+          If[FSCheckPerturbativityOfDimensionlessParameters,
+             checkPerturbativityForDimensionlessParameters =
+                 Constraint`CheckPerturbativityForParameters[
+                     Parameters`GetModelParametersWithMassDimension[0],
+                     FlexibleSUSY`FSPerturbativityThreshold
+                 ];
+            ];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
@@ -433,6 +443,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
                    "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
+                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[IndentText[checkPerturbativityForDimensionlessParameters]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];

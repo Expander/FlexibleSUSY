@@ -17,6 +17,8 @@ SetBetaFunctions::usage=""
 
 RestrictScale::usage="";
 
+CheckPerturbativityForParameters::usage="";
+
 Begin["`Private`"];
 
 allBetaFunctions = {};
@@ -493,6 +495,23 @@ if (" <> scaleName <> " > " <> value <> ") {
              ];
            Return[result];
           ];
+
+CheckPerturbativityForParameter[par_, thresh_, model_String:"model"] :=
+    Module[{snippet, parStr, threshStr},
+           parStr = CConversion`ToValidCSymbolString[par];
+           threshStr = CConversion`RValueToCFormString[thresh];
+           snippet = "\
+if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ")
+   " <> model <> "->get_problems().flag_non_perturbative_parameter_warning(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
+else
+   " <> model <> "->get_problems().unflag_non_perturbative_parameter_warning(\"" <> parStr <> "\");
+";
+           snippet
+          ];
+
+CheckPerturbativityForParameters[pars_List, thresh_] :=
+    Parameters`CreateLocalConstRefs[pars] <> "\n" <>
+    StringJoin[CheckPerturbativityForParameter[#,thresh]& /@ pars];
 
 End[];
 
