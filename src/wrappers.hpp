@@ -199,6 +199,17 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
+inline double MaxAbsValue(double x)
+{
+   return Abs(x);
+}
+
+template <class Derived>
+double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.cwiseAbs().maxCoeff();
+}
+
 inline int Sign(double x)
 {
    return (x >= 0.0 ? 1 : -1);
