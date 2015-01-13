@@ -42,6 +42,8 @@ SetOutputParameters::usage="";
 GetInputParameters::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
+GetModelParametersWithMassDimension::usage="Returns model parameters
+with given mass dimension";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -766,6 +768,24 @@ StripIndices[par_[idx___] /; And @@ (NumberQ /@ {idx})] := par;
 StripIndices[par_[idx___] /; MemberQ[Join[allModelParameters,allOutputParameters],par]] := par;
 
 StripIndices[par_] := par;
+
+ExtractParametersFromSARAHBetaLists[beta_List] :=
+    StripIndices[#[[1]]]& /@ beta;
+
+GetModelParametersWithMassDimension[dim_?IntegerQ] :=
+    Module[{dimPars},
+           Switch[dim,
+                  0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk, SARAH`BetaQijkl];,
+                  1, dimPars = Join[SARAH`BetaMuij, SARAH`BetaTijk, SARAH`BetaMi, SARAH`BetaDGi, SARAH`BetaVEV];,
+                  2, dimPars = Join[SARAH`BetaLSi, SARAH`BetaBij, SARAH`Betam2ij];,
+                  3, dimPars = Join[SARAH`BetaLi];,
+                  _,
+                  Print["Error: GetModelParametersWithMassDimension: ", dim,
+                        " is not a valid dimension"];
+                  Return[{}];
+                 ];
+           ExtractParametersFromSARAHBetaLists[dimPars]
+          ];
 
 End[];
 
