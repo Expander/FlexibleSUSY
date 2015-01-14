@@ -789,7 +789,7 @@ ExtractParametersFromSARAHBetaLists[beta_List] :=
 GetModelParametersWithMassDimension[dim_?IntegerQ] :=
     Module[{dimPars},
            Switch[dim,
-                  0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk];,
+                  0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk, SARAH`BetaQijkl];,
                   1, dimPars = Join[SARAH`BetaMuij, SARAH`BetaTijk, SARAH`BetaMi, SARAH`BetaDGi, SARAH`BetaVEV];,
                   2, dimPars = Join[SARAH`BetaLSi, SARAH`BetaBij, SARAH`Betam2ij];,
                   3, dimPars = Join[SARAH`BetaLi];,
