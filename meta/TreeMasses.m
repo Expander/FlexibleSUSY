@@ -716,10 +716,14 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         "problems.flag_tachyon(" <>
-                         FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                         ev <> ".minCoeff() < 0.);\n\n" <>
-                         ev <> " = AbsSqrt(" <> ev <> ");\n"];
+                         "if (" <> ev <> ".minCoeff() < 0.)\n" <>
+                         IndentText[
+                             "problems.flag_tachyon(" <>
+                             FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                             ");"
+                         ] <> "\n\n" <>
+                         ev <> " = AbsSqrt(" <> ev <> ");\n"
+                     ];
              ];
            Return[result <> body <> "}\n"];
           ];
@@ -765,9 +769,12 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
               body = body <> "\n" <>
-                     "problems.flag_tachyon(" <>
-                     FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                     ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.);\n\n" <>
+                     "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
+                     IndentText[
+                         "problems.flag_tachyon(" <>
+                         FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                         ");"
+                     ] <> "\n\n" <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
