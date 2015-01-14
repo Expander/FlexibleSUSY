@@ -18,16 +18,30 @@ do
         --slha-input-file=${input_file} \
         --slha-output-file=${output_file}
 
-    if test "x$?" = "x0"; then
+    error="$?"
+
+    expected=0
+    # BP2 should fail due to tree-level hh tachyon
+    if test "$point" = "BP2"; then
+        expected=1
+    fi
+
+    if test "x$error" = "x$expected"; then
         echo "=========="
         echo "${point}: OK"
+        echo "exit code = $error"
+        echo "expected  = $expected"
         echo "=========="
+        grep Problems ${output_file}
         grep hh ${output_file}
     else
         echo "=========="
         echo "${point}: FAIL"
+        echo "exit code = $error"
+        echo "expected  = $expected"
         echo "=========="
         grep Problems ${output_file}
+        grep hh ${output_file}
         exit_code=1
     fi
 
