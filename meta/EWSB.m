@@ -269,10 +269,12 @@ EliminateOneParameter[equations_List, parameters_List] :=
 MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
 MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
 MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
+MakeParameterUnique[SARAH`Q[par_]] := Rule[SARAH`Q[par], CConversion`ToValidCSymbol[SARAH`Q[par]]];
 MakeParameterUnique[par_]          :=
     { MakeParameterUnique[SARAH`L[par]],
       MakeParameterUnique[SARAH`B[par]],
-      MakeParameterUnique[SARAH`T[par]] };
+      MakeParameterUnique[SARAH`T[par]],
+      MakeParameterUnique[SARAH`Q[par]] };
 
 MakeParametersUnique[parameters_List] :=
     Flatten[MakeParameterUnique /@ parameters];
