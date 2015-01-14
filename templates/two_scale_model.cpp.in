@@ -593,6 +593,11 @@ void CLASSNAME::clear_DRbar_parameters()
 @clearPhases@
 }
 
+void CLASSNAME::clear_problems()
+{
+   problems.unflag_all_tachyons();
+}
+
 void CLASSNAME::clear()
 {
    @ModelName@_soft_parameters::clear();
