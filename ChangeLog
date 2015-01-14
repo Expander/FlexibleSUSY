@@ -31,6 +31,11 @@ FlexibleSUSY-1.0.4 [not released yet]
    FSPerturbativityThreshold variable.  The default threshold is
    N[Sqrt[4 Pi]] = 3.54491.
 
+ * Check for tree-level tachyons at each scale (MZ and M_SUSY)
+
+ * Allow to force SLHA output for unphysical points (for example where
+   tachyons exist) in FlexibleSUSY block, entry 12.
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 
