@@ -568,7 +568,7 @@ MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`r
            dim = Length[matrix];
            dimStr = ToString[dim];
            matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
-           result = matrixType <> " " <> symbol <> ";\n"; (* not initialized *)
+           result = matrixType <> " " <> symbol <> ";\n\n"; (* not initialized *)
            For[i = 1, i <= dim, i++,
                For[k = 1, k <= dim, k++,
                    result = result <> symbol <> "(" <> ToString[i-1] <>
@@ -716,10 +716,14 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         "problems.flag_tachyon(" <>
-                         FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                         ev <> ".minCoeff() < 0.);\n\n" <>
-                         ev <> " = AbsSqrt(" <> ev <> ");\n"];
+                         "if (" <> ev <> ".minCoeff() < 0.)\n" <>
+                         IndentText[
+                             "problems.flag_tachyon(" <>
+                             FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                             ");"
+                         ] <> "\n\n" <>
+                         ev <> " = AbsSqrt(" <> ev <> ");\n"
+                     ];
              ];
            Return[result <> body <> "}\n"];
           ];
@@ -765,9 +769,12 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
               body = body <> "\n" <>
-                     "problems.flag_tachyon(" <>
-                     FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                     ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.);\n\n" <>
+                     "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
+                     IndentText[
+                         "problems.flag_tachyon(" <>
+                         FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                         ");"
+                     ] <> "\n\n" <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];

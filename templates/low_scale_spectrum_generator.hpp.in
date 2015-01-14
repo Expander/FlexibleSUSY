@@ -51,7 +51,9 @@ public:
       , max_iterations(0)
       , beta_loop_order(2)
       , threshold_corrections_loop_order(1)
-      , calculate_sm_masses(false) {}
+      , calculate_sm_masses(false)
+      , force_output(false)
+   {}
    ~@ModelName@_spectrum_generator() {}
 
    double get_high_scale() const { return 0.; }
@@ -69,6 +71,7 @@ public:
    void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
+   void set_force_output(bool flag) { force_output = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
    void set_higgs_2loop_corrections(const Higgs_2loop_corrections& c) { model.set_higgs_2loop_corrections(c); }
 
@@ -88,6 +91,7 @@ private:
    unsigned beta_loop_order; ///< beta-function loop order
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
    bool calculate_sm_masses; ///< calculate SM pole masses
+   bool force_output; ///< force output
 };
 
 /**
@@ -129,6 +133,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
 
    model.set_input_parameters(input);
    model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.do_force_output(force_output);
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections_loop_order);
 

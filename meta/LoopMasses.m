@@ -549,8 +549,8 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            If[!IsFermion[particle] &&
               !(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
-                     IndentText["return;"] <> "\n";
+              body = "if (!force_output && problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+                     IndentText["return;"] <> "\n\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
            result = "void CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>

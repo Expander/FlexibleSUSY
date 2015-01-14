@@ -48,6 +48,7 @@ public:
 
    void unflag_bad_mass(unsigned);
    void unflag_tachyon(unsigned);
+   void unflag_all_tachyons();
    void unflag_thrown()          { thrown = false; exception_msg = ""; }
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
@@ -134,6 +135,13 @@ void Problems<Number_of_particles>::unflag_tachyon(unsigned particle)
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    tachyons[particle] = false;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_all_tachyons()
+{
+   for (unsigned i = 0; i < Number_of_particles; ++i)
+      tachyons[i] = false;
 }
 
 template <unsigned Number_of_particles>
