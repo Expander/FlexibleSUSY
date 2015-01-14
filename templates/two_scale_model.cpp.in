@@ -84,6 +84,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , ewsb_loop_order(2)
    , pole_mass_loop_order(2)
    , calculate_sm_pole_masses(false)
+   , force_output(false)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
@@ -110,6 +111,16 @@ void CLASSNAME::do_calculate_sm_pole_masses(bool flag)
 bool CLASSNAME::do_calculate_sm_pole_masses() const
 {
    return calculate_sm_pole_masses;
+}
+
+void CLASSNAME::do_force_output(bool flag)
+{
+   force_output = flag;
+}
+
+bool CLASSNAME::do_force_output() const
+{
+   return force_output;
 }
 
 void CLASSNAME::set_ewsb_loop_order(unsigned loop_order)
@@ -581,7 +592,7 @@ void CLASSNAME::calculate_spectrum()
    else
       reorder_pole_masses();
 
-   if (problems.have_problem()) {
+   if (problems.have_problem() && !force_output) {
       clear_DRbar_parameters();
       physical.clear();
    }
