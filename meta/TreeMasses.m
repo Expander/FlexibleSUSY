@@ -568,7 +568,7 @@ MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`r
            dim = Length[matrix];
            dimStr = ToString[dim];
            matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
-           result = matrixType <> " " <> symbol <> ";\n"; (* not initialized *)
+           result = matrixType <> " " <> symbol <> ";\n\n"; (* not initialized *)
            For[i = 1, i <= dim, i++,
                For[k = 1, k <= dim, k++,
                    result = result <> symbol <> "(" <> ToString[i-1] <>
