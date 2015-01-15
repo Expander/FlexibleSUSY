@@ -1,4 +1,4 @@
-FlexibleSUSY-1.0.4 [not released yet]
+FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
    parameter point using command line parameters instead of an SLHA
