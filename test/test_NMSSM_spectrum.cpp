@@ -616,6 +616,28 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
    BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00012);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
 
-   BOOST_MESSAGE("SoftSUSY    :\n mh = " << mh  << " mA = " << mA);
-   BOOST_MESSAGE("FlexibleSUSY:\n mh = " << Mhh << " mA = " << MAh);
+   BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
+
+   // comparing 1-loop pole masses
+
+   const DoubleVector
+      MHpm_1l(ToDoubleVector(fs.get_physical().MHpm)),
+      MAh_1l(ToDoubleVector(fs.get_physical().MAh)),
+      Mhh_1l(ToDoubleVector(fs.get_physical().Mhh));
+   const double mHpm_1l = ss.displayPhys().mHpm;
+   const DoubleVector mA_1l(ss.displayPhys().mA0);
+   const DoubleVector mh_1l(ss.displayPhys().mh0);
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0001);
+
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.00015);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh_1l(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
+
+   BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
 }
