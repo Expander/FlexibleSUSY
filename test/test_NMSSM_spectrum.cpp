@@ -167,6 +167,7 @@ public:
       solver.add_model(&mssm, upward_constraints, downward_constraints);
       solver.solve();
       mssm.run_to(susy_constraint->get_scale());
+      mssm.solve_ewsb();
       mssm.calculate_spectrum();
       mssm.run_to(Electroweak_constants::MZ);
 
@@ -393,13 +394,13 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0044);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l  , 0.004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l  , 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.0004);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.0005);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.004);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh0_1l(3), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.00006);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh0_1l(3), 0.001);
 
    // down-type squarks
    const DoubleVector Sd_1l(ToDoubleVector(fs.get_physical().MSd));
