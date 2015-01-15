@@ -26,6 +26,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    NMSSM<Two_scale> m;
    NmssmSoftsusy s;
    setup_NMSSM_const(m, s, input);
+   m.do_force_output(true);
 
    // initial guess
    m.set_Kappa(0.1);
