@@ -597,16 +597,20 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
    const double MwRun = fs.get_MVWm();
    const double MzRun = fs.get_MVZ();
    const double mHpm = ss.displayDrBarPars().mHpm;
-   const double mA0 = ss.displayDrBarPars().mA0(1);
-   const double mh0 = ss.displayDrBarPars().mh0(1);
-   const double mH0 = ss.displayDrBarPars().mh0(2);
+   const DoubleVector mA(ss.displayDrBarPars().mA0);
+   const DoubleVector mh(ss.displayDrBarPars().mh0);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0002);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0002);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.00012);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00012);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
+
+   BOOST_MESSAGE("SoftSUSY    :\n mh = " << mh  << " mA = " << mA);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh = " << Mhh << " mA = " << MAh);
 }
