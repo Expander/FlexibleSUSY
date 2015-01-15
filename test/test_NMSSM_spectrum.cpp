@@ -52,16 +52,17 @@ public:
 class SoftSusy_tester {
 public:
    SoftSusy_tester()
-      : mx(0.0), msusy(0.0), softSusy(), gaugeUnification(true) {}
+      : mx(0.0), msusy(0.0), softSusy(), gaugeUnification(true), loops(1) {}
    ~SoftSusy_tester() {}
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
+   void set_loops(unsigned l) { loops = l; }
    void test(const NMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
       // run softsusy
-      softsusy::numRewsbLoops = 1;
-      softsusy::numHiggsMassLoops = 1;
+      softsusy::numRewsbLoops = loops;
+      softsusy::numHiggsMassLoops = loops;
       softsusy::TOLERANCE = 1.0e-4;
       softsusy::Z3 = true;
       softsusy::GUTlambda = true;
@@ -102,13 +103,15 @@ private:
    double mx, msusy;
    NmssmSoftsusy softSusy;
    bool gaugeUnification;
+   unsigned loops;
 };
 
 class NMSSM_tester {
 public:
    NMSSM_tester()
       : mx(0.0), msusy(0.0), mssm()
-      , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL) {}
+      , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL)
+      , loops(1) {}
    ~NMSSM_tester() {
       delete high_constraint;
       delete susy_constraint;
@@ -118,6 +121,7 @@ public:
    double get_msusy() const { return msusy; }
    NMSSM_physical get_physical() const { return mssm.get_physical(); }
    NMSSM<Two_scale> get_model() const { return mssm; }
+   void set_loops(unsigned l) { loops = l; }
    void set_low_scale_constraint(NMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(NMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(NMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -146,8 +150,8 @@ public:
       mssm.clear();
       mssm.set_loops(2);
       mssm.set_thresholds(1);
-      mssm.set_ewsb_loop_order(1);
-      mssm.set_pole_mass_loop_order(1);
+      mssm.set_ewsb_loop_order(loops);
+      mssm.set_pole_mass_loop_order(loops);
       mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
 
@@ -180,6 +184,7 @@ private:
    NMSSM_high_scale_constraint<Two_scale>* high_constraint;
    NMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
    NMSSM_low_scale_constraint<Two_scale>*  low_constraint;
+   unsigned loops;
 };
 
 BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
