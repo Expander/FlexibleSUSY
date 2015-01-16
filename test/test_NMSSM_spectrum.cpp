@@ -546,17 +546,11 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_vd(vd);
 }
 
-BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
+void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
+   const NMSSM_input_parameters& pp,
+   const softsusy::QedQcd& oneset
+)
 {
-   NMSSM_input_parameters pp;
-   pp.m0 = 200.;
-   pp.m12 = 200.;
-   pp.TanBeta = 10.;
-   pp.Azero = -500.;
-   pp.LambdaInput = 0.1;
-   pp.SignvS = 1;
-   softsusy::QedQcd oneset;
-
    NMSSM<Two_scale> _model;
    const NMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
@@ -640,4 +634,21 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
+}
+
+BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
+{
+   // standard NMSSM testing point
+   {
+      softsusy::QedQcd oneset;
+      NMSSM_input_parameters pp;
+      pp.m0 = 200.;
+      pp.m12 = 200.;
+      pp.TanBeta = 10.;
+      pp.Azero = -500.;
+      pp.LambdaInput = 0.1;
+      pp.SignvS = 1;
+
+      test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   }
 }
