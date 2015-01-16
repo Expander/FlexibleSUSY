@@ -45,3 +45,12 @@ When releasing FlexibleSUSY, please follow these steps:
 
       scp FlexibleSUSY-<version>.tar.gz* \
          USERNAME@login.hepforge.org:/hepforge/home/flexiblesusy/downloads/
+
+ 7. Pregenerate models:
+
+      ./release/generate-models.sh \
+         --number-of-jobs=2 \
+         --version=<version>
+
+      scp *.tar.gz \
+         USERNAME@login.hepforge.org:/hepforge/home/flexiblesusy/downloads/models/<version>/
