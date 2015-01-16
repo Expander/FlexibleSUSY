@@ -36,6 +36,9 @@ models/fmssmn                   export-ignore
 models/sm                       export-ignore
 models/smcw                     export-ignore
 
+release/                        export-ignore
+release/generate-models.sh      export-ignore
+
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
