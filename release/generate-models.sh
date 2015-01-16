@@ -34,18 +34,23 @@ fi
 echo "Using $number_of_jobs parallel jobs"
 
 # models and corresponding SARAH model files
-models_array="            \
-   MSSM,MSSM        \
-   NUHMSSM,MSSM     \
-   lowMSSM,MSSM     \
-   MSSMRHN,MSSMRHN  \
-   NMSSM,NMSSM      \
-   NUTNMSSM,NMSSM   \
-   SMSSM,SMSSM      \
-   UMSSM,UMSSM      \
-   E6SSM,E6SSM      \
-   MRSSM,MRSSM      \
-   TMSSM,TMSSM      \
+models_array="             \
+   CMSSM,MSSM              \
+   MSSM,MSSM               \
+   MSSMatMGUT,MSSM         \
+   MSSMNoFV,MSSMNoFV       \
+   MSSMNoFVatMGUT,MSSMNoFV \
+   CMSSMNoFV,MSSMNoFV      \
+   NUHMSSM,MSSM            \
+   lowMSSM,MSSM            \
+   MSSMRHN,MSSMRHN         \
+   NMSSM,NMSSM             \
+   NUTNMSSM,NMSSM          \
+   SMSSM,SMSSM             \
+   UMSSM,UMSSM             \
+   E6SSM,E6SSM             \
+   MRSSM,MRSSM             \
+   TMSSM,TMSSM             \
 "
 
 models="`echo $models_array | sed 's/,[a-zA-Z0-9]*//g'`"
