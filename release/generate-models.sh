@@ -3,6 +3,7 @@
 # creates models for public release
 
 number_of_jobs=1
+version=
 
 #_____________________________________________________________________
 help() {
@@ -11,6 +12,7 @@ Usage: ./`basename $0` [options]
 Options:
 
   --number-of-jobs=    number of parallel makefile jobs
+  --version=           FlexibleSUSY version
   --help,-h            Print this help message
 EOF
 }
@@ -24,6 +26,7 @@ if test $# -gt 0 ; then
 
         case $1 in
             --number-of-jobs=*)      number_of_jobs=$optarg ;;
+            --version=*)             version=$optarg ;;
             --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
@@ -84,4 +87,20 @@ for m in ${models}
 do
     echo "packing ${m} ..."
     make pack-${m}-src
+done
+
+# moving models
+if test "x$version" != "x"; then
+    mkdir -p release/${version}/
+else
+    mkdir -p release/
+fi
+
+for m in ${models}
+do
+    if test "x$version" != "x"; then
+        mv ${m}.tar.gz release/${version}/
+    else
+        mv ${m}.tar.gz release/
+    fi
 done
