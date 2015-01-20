@@ -549,20 +549,10 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_vd(vd);
 }
 
-BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
+void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
+   const NUTNMSSM_input_parameters& pp,
+   const softsusy::QedQcd& oneset)
 {
-   NUTNMSSM_input_parameters pp;
-   pp.m0 = 200.;
-   pp.m12 = 200.;
-   pp.TanBeta = 10.;
-   pp.Azero = -500.;
-   pp.LambdaInput = 0.1;
-   pp.KappaInput = 0.1;
-   pp.ALambdaInput = -500.;
-   pp.AKappaInput = -500.;
-   pp.MuEff = 0.1 * 1000. / Sqrt(2.);
-   softsusy::QedQcd oneset;
-
    NUTNMSSM<Two_scale> _model;
    const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
@@ -646,4 +636,58 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
+
+   // comparing 2-loop pole masses
+
+   nmssm_tester.set_loops(2);
+   softSusy_tester.set_loops(2);
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+
+   // compare model parameters
+   const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
+   const NUTNMSSM<Two_scale> fs_2l(nmssm_tester.get_model());
+
+   const DoubleVector
+      MHpm_2l(ToDoubleVector(fs_2l.get_physical().MHpm)),
+      MAh_2l(ToDoubleVector(fs_2l.get_physical().MAh)),
+      Mhh_2l(ToDoubleVector(fs_2l.get_physical().Mhh));
+   const double mHpm_2l = ss_2l.displayPhys().mHpm;
+   const DoubleVector mA_2l(ss_2l.displayPhys().mA0);
+   const DoubleVector mh_2l(ss_2l.displayPhys().mh0);
+
+   BOOST_CHECK_EQUAL(fs_2l.get_loops(), 2);
+   BOOST_CHECK_EQUAL(fs_2l.get_loops(), ss_2l.displayLoops());
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
+
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00015);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 0.00007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
+
+   BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
+}
+
+BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
+{
+   // standard NUTNMSSM testing point
+   {
+      softsusy::QedQcd oneset;
+      NUTNMSSM_input_parameters pp;
+      pp.m0 = 200.;
+      pp.m12 = 200.;
+      pp.TanBeta = 10.;
+      pp.Azero = -500.;
+      pp.LambdaInput = 0.1;
+      pp.KappaInput = 0.1;
+      pp.ALambdaInput = -500.;
+      pp.AKappaInput = -500.;
+      pp.MuEff = 0.1 * 1000. / Sqrt(2.);
+
+      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   }
 }
