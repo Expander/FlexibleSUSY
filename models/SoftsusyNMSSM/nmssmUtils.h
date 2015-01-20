@@ -1,3 +1,12 @@
+/** \file nmssmUtils.h
+    - Project: Next-to-minimal SOFTSUSY 
+    - Author: Ben Allanach, Peter Athron, Lewis Tunstall, Alexander Voigt,
+      Anthony Williams
+    - Manual: http://arxiv.org/abs/1311.7659
+    - Webpage: http://hepforge.cedar.ac.uk/softsusy/
+
+    \brief A few handy routines for the NMSSM: SUSY breaking conditions etc
+*/
 
 #ifndef NMSSM_UTILS_H
 #define NMSSM_UTILS_H
@@ -10,6 +19,8 @@
 namespace softsusy {
 
 class NmssmSoftsusy;
+class SoftParsNmssm;
+template <class SoftPars> class Softsusy;
 
 /// class for NMSSM input parameters
 class NMSSM_input {
@@ -69,13 +80,13 @@ public:
    /// parse command line options
    void parse(int argc, char* argv[]);
    /// returns model identification string
-   const std::string& get_modelIdent() const;
+   const char* get_modelIdent() const;
    /// returns vector of GUT parameters
    DoubleVector get_pars() const;
 
 private:
    NMSSM_input* nmssm_input;  ///< pointer to NMSSM input parameters
-   std::string model_ident;   ///< model identification string
+   const char* model_ident;   ///< model identification string
    double m0, m12, a0;        ///< GUT parameters
 
    /// returns floating point number from string like --m0=125.4
@@ -90,10 +101,12 @@ void MssmMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters);
 
 void SemiMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters);
 
+void NmssmSugraNoSoftHiggsMassBcs(NmssmSoftsusy&, const DoubleVector&);
+
 void extendedNMSugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters);
 
 /// Calculates fractional difference in Drbar masses between in and out
-double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries);
+double sumTol(const Softsusy<SoftParsNmssm> & in, const Softsusy<SoftParsNmssm> & out, int numTries);
 
 } // namespace softsusy
 
