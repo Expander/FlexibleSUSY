@@ -59,7 +59,7 @@ public:
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
    void set_loops(unsigned l) { loops = l; }
-   void test(const NUTNMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
+   void test(const NUTNMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset) {
       // run softsusy
       softsusy::numRewsbLoops = loops;
       softsusy::numHiggsMassLoops = loops;
@@ -87,8 +87,15 @@ public:
       nmpars(5) = 0.;
 
       softSusy.setAlternativeMs(false);
-      softSusy.lowOrg(NmssmSugraNoSoftHiggsMassBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
-                      oneset, gaugeUnification);
+
+      try {
+         softSusy.lowOrg(NmssmSugraNoSoftHiggsMassBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
+                         oneset, gaugeUnification);
+      } catch (const std::string& str) {
+         BOOST_MESSAGE("SoftSusy problem: " << str);
+         throw SoftSusy_error(str);
+      }
+
       mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
@@ -139,7 +146,7 @@ public:
       if (!low_constraint)
          low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
    }
-   void test(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
+   void test(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset) {
       setup_default_constaints(pp, oneset);
       high_constraint->set_input_parameters(pp);
       low_constraint->set_input_parameters(pp);
@@ -175,11 +182,20 @@ public:
       solver.set_running_precision(&precision);
       solver.set_initial_guesser(&initial_guesser);
       solver.add_model(&mssm, upward_constraints, downward_constraints);
-      solver.solve();
-      mssm.run_to(susy_constraint->get_scale());
-      mssm.solve_ewsb();
-      mssm.calculate_spectrum();
-      mssm.run_to(Electroweak_constants::MZ);
+
+      try {
+         solver.solve();
+         mssm.run_to(susy_constraint->get_scale());
+         mssm.solve_ewsb();
+         mssm.calculate_spectrum();
+         mssm.run_to(Electroweak_constants::MZ);
+      } catch (const Error& error) {
+         mssm.get_problems().flag_thrown(error.what());
+         BOOST_MESSAGE("FlexibleSUSY error: " << error.what());
+      } catch (const std::string& str) {
+         mssm.get_problems().flag_thrown(str);
+         BOOST_MESSAGE("FlexibleSUSY error: " << str);
+      }
 
       mx = high_constraint->get_scale();
       msusy = susy_constraint->get_scale();
@@ -193,28 +209,35 @@ private:
    unsigned loops;
 };
 
+NUTNMSSM_input_parameters get_S1() {
+   NUTNMSSM_input_parameters pp;
+
+   pp.m0 = 500.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.Azero = -1500.;
+   pp.LambdaInput = 0.1;
+   pp.KappaInput = 0.11;
+   pp.ALambdaInput = -1500.;
+   pp.AKappaInput = -36.;
+   pp.MuEff = 965;
+}
+
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 {
-   NUTNMSSM_input_parameters pp;
-   pp.m0 = 200.;
-   pp.m12 = 200.;
-   pp.TanBeta = 10.;
-   pp.Azero = -500.;
-   pp.LambdaInput = 0.1;
-   pp.KappaInput = 0.1;
-   pp.ALambdaInput = -500.;
-   pp.AKappaInput = -500.;
-   pp.MuEff = pp.LambdaInput * 1000. / Sqrt(2.);
+   NUTNMSSM_input_parameters pp(get_S1());
+   softsusy::QedQcd oneset;
+   oneset.toMz();
 
    NUTNMSSM<Two_scale> _model;
    const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    NUTNMSSM_tester nmssm_tester;
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.18);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.006);
@@ -566,10 +589,10 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    NUTNMSSM_tester nmssm_tester;
    nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
    // nmssm_tester.set_susy_scale_constraint(new NUTNMSSM_softsusy_ewsb_susy_scale_constraint(&_model, pp));
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.009);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 4.6e-4);
@@ -647,8 +670,8 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    nmssm_tester.set_loops(2);
    softSusy_tester.set_loops(2);
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    // compare model parameters
    const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
@@ -680,20 +703,11 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
 {
-   // standard NUTNMSSM testing point
+   // standard NUTNMSSM testing point S1
    {
       softsusy::QedQcd oneset;
-      NUTNMSSM_input_parameters pp;
-      pp.m0 = 200.;
-      pp.m12 = 200.;
-      pp.TanBeta = 10.;
-      pp.Azero = -500.;
-      pp.LambdaInput = 0.1;
-      pp.KappaInput = 0.1;
-      pp.ALambdaInput = -500.;
-      pp.AKappaInput = -500.;
-      pp.MuEff = 0.1 * 1000. / Sqrt(2.);
-
+      oneset.toMz();
+      NUTNMSSM_input_parameters pp(get_S1());
       test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
    }
 }
