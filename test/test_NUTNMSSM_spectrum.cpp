@@ -66,22 +66,28 @@ public:
       softsusy::TOLERANCE = 1.0e-4;
       softsusy::Z3 = true;
       softsusy::GUTlambda = false;
+      softsusy::GUTkappa = false;
+      softsusy::GUTsVev = false;
+      softsusy::SoftHiggsOut = true;
 #ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
-      DoubleVector pars(3);
+      DoubleVector pars(6);
       pars(1) = pp.m0;
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
+      pars(4) = 0.; // Mu
+      pars(5) = 0.; // BMu / (Cos(Beta) Sin(Beta))
+      pars(6) = 0.; // xiS
       DoubleVector nmpars(5);
       nmpars(1) = pp.LambdaInput;
-      nmpars(2) = 0.1;   // initial guess at the low scale
-      nmpars(3) = 1000.; // initial guess at the low scale
+      nmpars(2) = pp.KappaInput;
+      nmpars(3) = pp.MuEff * Sqrt(2.) / pp.LambdaInput;
       nmpars(4) = 0.;
       nmpars(5) = 0.;
 
       softSusy.setAlternativeMs(false);
-      softSusy.lowOrg(NmssmMsugraBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
+      softSusy.lowOrg(NmssmSugraNoSoftHiggsMassBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
                       oneset, gaugeUnification);
       mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
@@ -90,7 +96,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         VERBOSE_MSG(ss.str());
+         BOOST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -198,7 +204,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    pp.KappaInput = 0.1;
    pp.ALambdaInput = -500.;
    pp.AKappaInput = -500.;
-   pp.MuEff = 0.1 * 1000. / Sqrt(2.);
+   pp.MuEff = pp.LambdaInput * 1000. / Sqrt(2.);
 
    NUTNMSSM<Two_scale> _model;
    const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
