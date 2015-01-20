@@ -8258,7 +8258,15 @@ void NmssmSoftsusy::itLowsoft
     predictedMzSq = predMzsq(tbIn);
     setPredMzSq(predictedMzSq); 
     if(!softsusy::GUTlambda) setLambda(nmpars(1));
-                      
+    if (!softsusy::GUTkappa && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setKappa(nmpars(2));
+    if (!softsusy::GUTsVev && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setSvev(nmpars(3));
+    if (!softsusy::GUTxiF && !softsusy::Z3)
+      setXiF(nmpars(4));
+    if (!softsusy::GUTmuPrime && !softsusy::Z3)
+      setMupr(nmpars(5));
+                       
     if (!ewsbBCscale) err = runto(mxBC, eps);
 
     /// Guard against the top Yukawa fixed point
@@ -8306,6 +8314,15 @@ void NmssmSoftsusy::itLowsoft
     
     boundaryCondition(*this, pars);
     if(softsusy::GUTlambda) setLambda(nmpars(1));
+    if (softsusy::GUTkappa && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setKappa(nmpars(2));
+    if (softsusy::GUTsVev && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setSvev(nmpars(3));
+    if (softsusy::GUTxiF && !softsusy::Z3)
+      setXiF(nmpars(4));
+    if (softsusy::GUTmuPrime && !softsusy::Z3)
+      setMupr(nmpars(5));
+
     if (!ewsbBCscale) err = runto(displayMsusy(), eps);
 
     calcDrBarPars();
@@ -8460,6 +8477,15 @@ void NmssmSoftsusy::lowOrg
     /// Initial guess: B=0, mu=1st parameter, need better guesses
     boundaryCondition(*this, pars);
     if(softsusy::GUTlambda) setLambda(nmpars(1));
+    if (softsusy::GUTkappa && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setKappa(nmpars(2));
+    if (softsusy::GUTsVev && (!softsusy::Z3 || softsusy::SoftHiggsOut))
+      setSvev(nmpars(3));
+    if (softsusy::GUTxiF && !softsusy::Z3)
+      setXiF(nmpars(4));
+    if (softsusy::GUTmuPrime && !softsusy::Z3)
+      setMupr(nmpars(5));
+
     if ((sgnMu == 1 || sgnMu == -1) && !ewsbBCscale) {
       /// LCT: Changed sets to match softsusy.cpp 8/8/13
       if(Z3){
