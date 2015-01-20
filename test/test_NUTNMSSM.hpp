@@ -25,7 +25,7 @@ void copy_parameters(const NUTNMSSM<Two_scale>& nmssm, NmssmSoftsusy& softsusy)
    const double vd = nmssm.get_vd();
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
-   const double vs = nmssm.get_vS();;
+   const double vs = nmssm.get_vS();
 
    softsusy.setTanb(tanBeta);
    softsusy.setHvev(vev);
@@ -76,6 +76,8 @@ void copy_parameters(const NUTNMSSM<Two_scale>& nmssm, NmssmSoftsusy& softsusy)
    softsusy.setMupr(0.);
 
    softsusy.setMw(softsusy.displayMwRun());
+
+   softsusy::Z3 = true;
 }
 
 #endif
