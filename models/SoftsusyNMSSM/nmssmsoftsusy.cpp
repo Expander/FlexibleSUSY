@@ -3328,48 +3328,50 @@ int NmssmSoftsusy::rewsbmH2sq(double & mH2sq) const {
   return 0;
 }
 
-
-//PA: Imposes EWSB at the tree level. 
+/// PA: Imposes EWSB at the tree level. 
 // Curently works for general nmssm mapping
 // mu --> mZ, m3sq --> tan beta, s --> XiS  (Z3 = false) 
 // ie (mu, m3sq, XiS) --> (mZ, tb, s) 
 //and s --> mZ, kappa --> tan beta, mS --> s  (Z3 = true)
 //ie (kappa, mS) --> (mZ, tb)   
 void NmssmSoftsusy::rewsbTreeLevel(int sgnMu) {
-  double mu, m3sq, s, kap;
-  double xiS, mSsq;
-  //PA: also takes s now for Z3 preserving case with s as output, 
+  double mu=0.0, m3sq=0.0, s=0.0, kap=0.0;
+  double xiS=0.0, mSsq=0.0;
+  double mH1sq=0.0, mH2sq=0.0;
+  /// PA: also takes s now for Z3 preserving case with s as output, 
   //but here we set Z3 false anyway
-  if(Z3){
-    if (rewsbSvev(sgnMu,s)) flagMusqwrongsign(true);
-    else flagMusqwrongsign(false);
-    setSvev(s);
+  if(SoftHiggsOut){
+     rewsbmH1sq(mH1sq);
+     setMh1Squared(mH1sq);
+     rewsbmH2sq(mH2sq);
+     setMh2Squared(mH2sq);
+     rewsbmSsq(mSsq);
+     setMsSquared(mSsq);
   }
-  else{
-    if (rewsbMu(sgnMu, mu)) flagMusqwrongsign(true);
-    else flagMusqwrongsign(false);
-    setSusyMu(mu);
-  }
-  if(Z3){ 
-    if (rewsbKap(kap)) flagM3sq(true);  
-    else flagM3sq(false); 
-    setKappa(kap);
-  }
-  //PA:  again using rewsbM3sq which can work for Z3 violating case  
-  else { 
-    if (rewsbM3sq(mu, m3sq)) flagM3sq(true);  
-    else flagM3sq(false); 
-    setM3Squared(m3sq);
-  }
-  if(Z3 == false){
-    rewsbXiS(xiS);
-    setXiS(xiS);
-  }
-  else{
+  else if(Z3){
+   if (rewsbSvev(sgnMu,s)) flagMusqwrongsign(true);
+   else flagMusqwrongsign(false);
+   setSvev(s);
+   if (rewsbKap(kap)) flagM3sq(true);  
+   else flagM3sq(false); 
+   setKappa(kap);
     rewsbmSsq(mSsq);
     setMsSquared(mSsq);
   }
-  
+  else{
+   if (rewsbMu(sgnMu, mu)) flagMusqwrongsign(true);
+   else flagMusqwrongsign(false);
+   setSusyMu(mu);
+   /// PA:  again using rewsbM3sq which can work for Z3 violating case  
+   if (rewsbM3sq(mu, m3sq)) flagM3sq(true);  
+   else flagM3sq(false); 
+   setM3Squared(m3sq); 
+   rewsbXiS(xiS);
+   setXiS(xiS);
+  }
+
+
+
 }
 
 
@@ -3566,6 +3568,20 @@ void NmssmSoftsusy::iterateSvev(double & sold, int sgnMu,
 /// mT2^2)) is best, or below if it's decoupled from there. 
 /// Call with zero, or no mt if you want tree level
 void NmssmSoftsusy::rewsb(int sgnMu, double mt, double muOld, double eps) {
+   if(SoftHiggsOut) {
+     calcDrBarPars();
+     double sinthDRbarMS = calcSinthdrbar();
+     doTadpoles(mt, sinthDRbarMS);
+     double mH1sq = 0.0, mH2sq = 0.0, mSsq = 0.0;
+     rewsbmH1sq(mH1sq);
+     setMh1Squared(mH1sq);
+     rewsbmH2sq(mH2sq);
+     setMh2Squared(mH2sq);
+     rewsbmSsq(mSsq);
+     setMsSquared(mSsq);
+     return;
+   }
+   else {
   double munew, m3sqnew, kapnew, snew;
   double xiSnew, mSsqnew;
   double sinthDRbarMS = calcSinthdrbar();
@@ -3612,14 +3628,14 @@ void NmssmSoftsusy::rewsb(int sgnMu, double mt, double muOld, double eps) {
     }
     
   }
-  //PA: using Z3 version of EWSB
+  /// PA: using Z3 version of EWSB
   //with kappa as output
   if(Z3){
-if (rewsbKap(kapnew) == 0) flagM3sq(false);
+     if (rewsbKap(kapnew) == 0) flagM3sq(false);
   else flagM3sq(true);   
   setKappa(kapnew);
   }
-  else{ //PA: use rewsbM3sq which can work for Z3 violating case
+  else{ /// PA: use rewsbM3sq which can work for Z3 violating case
   if (rewsbM3sq(munew, m3sqnew) == 0) flagM3sq(false);
   else flagM3sq(true);   
   setM3Squared(m3sqnew);
@@ -3632,10 +3648,8 @@ if (rewsbKap(kapnew) == 0) flagM3sq(false);
      rewsbmSsq(mSsqnew);
      setMsSquared(mSsqnew);
   }
-
+   }
 }
-
-
 
 /// Organises calculation of physical quantities such as sparticle masses etc
 /// Call AT MSusy
