@@ -221,6 +221,8 @@ NUTNMSSM_input_parameters get_S1() {
    pp.ALambdaInput = -1500.;
    pp.AKappaInput = -36.;
    pp.MuEff = 965;
+
+   return pp;
 }
 
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
