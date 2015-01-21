@@ -209,9 +209,8 @@ private:
    unsigned loops;
 };
 
-NUTNMSSM_input_parameters get_S1() {
-   NUTNMSSM_input_parameters pp;
-
+void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
    pp.m0 = 500.;
    pp.m12 = 500.;
    pp.TanBeta = 10.;
@@ -222,14 +221,24 @@ NUTNMSSM_input_parameters get_S1() {
    pp.AKappaInput = -36.;
    pp.MuEff = 965;
 
-   return pp;
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
 }
 
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 {
-   NUTNMSSM_input_parameters pp(get_S1());
+   NUTNMSSM_input_parameters pp;
    softsusy::QedQcd oneset;
-   oneset.toMz();
+   set_S1(pp, oneset);
 
    NUTNMSSM<Two_scale> _model;
    const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
@@ -708,8 +717,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
    // standard NUTNMSSM testing point S1
    {
       softsusy::QedQcd oneset;
-      oneset.toMz();
-      NUTNMSSM_input_parameters pp(get_S1());
+      NUTNMSSM_input_parameters pp;
+      set_S1(pp, oneset);
       test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
    }
 }
