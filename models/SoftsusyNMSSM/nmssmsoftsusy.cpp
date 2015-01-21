@@ -25,7 +25,7 @@ const NmssmSoftsusy & NmssmSoftsusy::operator=(const NmssmSoftsusy & s) {
 }
 
 
- //PA: A print method used in development.  I find it useful and easier to read than couting the normal display function or calling printlong etc.
+ /// PA: A print method used in development.  I find it useful and easier to read than couting the normal display function or calling printlong etc.
 void NmssmSoftsusy::printall() const {
    cout << "At scale " << displayMu() << '\n';
   cout << "mH1 = " << displayPhys().mh0(1) << '\n';
@@ -104,18 +104,18 @@ void NmssmSoftsusy::printall() const {
 }
 
 
-//PA: calls routines to calculate all three tadpoles and sets them.
+/// PA: calls routines to calculate all three tadpoles and sets them.
 // Currently only works at one loop.  
 // Two loop should be added later. 
 void NmssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
-   //PA: all the MSSM parts could be replaced by a single call to 
+   /// PA: all the MSSM parts could be replaced by a single call to 
    //Softsusy::doTadpoles and then add MSSM ones
    //But we need to call some 2loop MSSM routines anyway
    // to get 2loop S tadpoles
     calcTadpole1Ms1loop(mt, sinthDRbar);
     calcTadpole2Ms1loop(mt, sinthDRbar);
     calcTadpoleSMs1loop(mt, sinthDRbar);
-    //PA: set to one loop first
+    /// PA: set to one loop first
     double t1OV1 = displayTadpole1Ms1loop();
     double t2OV2 = displayTadpole2Ms1loop();
     double tSOVS = displayTadpoleSMs1loop();
@@ -180,7 +180,7 @@ void NmssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
 
     }
 
-    //PA: After one and two loop tadpoles are added they are then set
+    /// PA: After one and two loop tadpoles are added they are then set
     setT1OV1Ms(t1OV1); 
     setT2OV2Ms(t2OV2); 
     tSOVSMs = tSOVS;
@@ -241,36 +241,36 @@ void NmssmSoftsusy::P3SfSfCouplings(DoubleMatrix & lp3tt, DoubleMatrix & lp3bb, 
 
 
 
-//PA: obtains NMSSM H1-sfermion-sfermion couplings
+/// PA: obtains NMSSM H1-sfermion-sfermion couplings
   //for 3rd generation sfermions
 void NmssmSoftsusy::H1SfSfCouplings(DoubleMatrix & lTS1Lr, DoubleMatrix & lBS1Lr, DoubleMatrix  & lTauS1Lr, double gmzOcthW, double mu,  double cosb, double v1) const {
-  //PA: NMSSM parameters required.
+  /// PA: NMSSM parameters required.
   double s = displaySvev();
   double lam = displayLambda();
-  //PA: fill with parts from MSSM
-   //PA: Add extra NMSSM coupling.
-  //PA: minus sign since mu = - displaySusyMu for BPMZ conventions here.
+  /// PA: fill with parts from MSSM
+   /// PA: Add extra NMSSM coupling.
+  /// PA: minus sign since mu = - displaySusyMu for BPMZ conventions here.
   double    mueff   = mu - lam * s / root2;
   Softsusy<SoftParsNmssm>::H1SfSfCouplings(lTS1Lr, lBS1Lr, lTauS1Lr, gmzOcthW, mueff, cosb, v1);
 }
 
-//PA: obtains NMSSM H2-sfermion-sfermion couplings
+/// PA: obtains NMSSM H2-sfermion-sfermion couplings
   //for 3rd generation sfermions
 
 void NmssmSoftsusy::H2SfSfCouplings(DoubleMatrix & lTS2Lr, DoubleMatrix & lBS2Lr, DoubleMatrix  & lTauS2Lr, double gmzOcthW, double mu,  double sinb) const
 {
-  //PA: NMSSM parameters required.
+  /// PA: NMSSM parameters required.
   double s = displaySvev();
   double lam = displayLambda();
-  //PA: fill with parts from MSSM
-   //PA: Add extra NMSSM coupling.
-  //PA: minus sign since mu = - displaySusyMu for BPMZ conventions here.
+  /// PA: fill with parts from MSSM
+   /// PA: Add extra NMSSM coupling.
+  /// PA: minus sign since mu = - displaySusyMu for BPMZ conventions here.
   double    mueff   = mu - lam * s / root2;
   Softsusy<SoftParsNmssm>::H2SfSfCouplings(lTS2Lr, lBS2Lr, lTauS2Lr, gmzOcthW, mueff, sinb);
 }
 
 
-//PA: obtains NMSSM S-sfermion-sfermion couplings
+/// PA: obtains NMSSM S-sfermion-sfermion couplings
   //for 3rd generation sfermions
 void NmssmSoftsusy::SSfSfCouplings(DoubleMatrix & lTS3Lr, DoubleMatrix & lBS3Lr, DoubleMatrix  & lTauS3Lr,  double lam) const
 {
@@ -315,7 +315,7 @@ double NmssmSoftsusy::doCalcTadSSfermions(DoubleMatrix lTS3Lr, DoubleMatrix lBS3
   return sfermions;
 }
 
-//PA: for loop corrections, helps adding Higgs corrections in a tidy way
+/// PA: for loop corrections, helps adding Higgs corrections in a tidy way
 void NmssmSoftsusy::assignHiggs(DoubleVector & higgsm, DoubleVector & higgsa,
                                   DoubleVector & higgsc) const {
   const drBarPars& f = displayDrBarPars();
@@ -330,7 +330,7 @@ void NmssmSoftsusy::assignHiggs(DoubleVector & higgsm, DoubleVector & higgsa,
   higgsc(2) = f.mHpm;
 }
 
-//PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
+/// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
 //Includes goldstone bosons.
 double NmssmSoftsusy::doCalcTad1Higgs(double q, double costhDRbar,
                                            double g, double tanb) const
@@ -397,7 +397,7 @@ double NmssmSoftsusy::doCalcTad1Higgs(double q, double costhDRbar,
   hphps1(1, 1) = 0.25 * gsq / costhDRbar2 * c2b + lsq * sb2;
   hphps1(2, 2) = 0.25 * gsq * (2.0 - c2b / sqr(costhDRbar)) - lsq * sb2;
   double higgs = 0.0;
-  //PA: add cpeven and cpodd (inc. neutral goldstone) contriobutions to higgs
+  /// PA: add cpeven and cpodd (inc. neutral goldstone) contriobutions to higgs
  for (int i=1; i <=3; i++) {
   higgs = higgs + hhs1(i, i) * a0(higgsm(i), q) + aas1(i, i) * a0(higgsa(i), q);
   }
@@ -410,7 +410,7 @@ double NmssmSoftsusy::doCalcTad1Higgs(double q, double costhDRbar,
 }
 
 
-//PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t2/v2
+/// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t2/v2
 //Includes goldstone bosons.
 double NmssmSoftsusy::doCalcTad2Higgs(double q, double costhDRbar,
                                            double g, double tanb) const
@@ -493,7 +493,7 @@ double NmssmSoftsusy::doCalcTad2Higgs(double q, double costhDRbar,
   return higgs;
 }
 
-//PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
+/// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
 //Includes goldstone bosons.
 double NmssmSoftsusy::doCalcTadSHiggs(double q, double tb) const
 {
@@ -666,15 +666,15 @@ double NmssmSoftsusy::doCalcTadpole1oneLoop(double /* mt */, double sinthDRbar) 
   DoubleMatrix lTS1Lr(2, 2), lBS1Lr(2, 2), lTauS1Lr(2, 2);
   H1SfSfCouplings(lTS1Lr, lBS1Lr, lTauS1Lr, gmzOcthW, mu, cosb, v1);
 
-  //PA: Now we take these couplings and obtain sfermion contributions
+  /// PA: Now we take these couplings and obtain sfermion contributions
   double sfermions = Softsusy<SoftParsNmssm>::doCalcTad1Sfermions(lTS1Lr, lBS1Lr, lTauS1Lr, costhDRbar);
-  //PA: Higgs contributions, including goldstone bosons
+  /// PA: Higgs contributions, including goldstone bosons
   double higgs = doCalcTad1Higgs(q, costhDRbar, g, tanb);
   /// Neutralinos
   double neutralinos = doCalcTad1Neutralinos(q, costhDRbar, g, cosb);
   /// Charginos PA::Unchanged from MSSM
   double charginos = doCalcTad1Charginos(q, g, cosb);
-  //PA:  gauge boson contributions are not changed from the MSSM,
+  /// PA:  gauge boson contributions are not changed from the MSSM,
   //     *but* the goldstone parts are now included in the Higgs
   //      contributions so this is *not* the same as the Softsusy version
    double gaugeBosons = 3.0 * sqr(g) / 4.0 *
@@ -705,14 +705,14 @@ double NmssmSoftsusy::doCalcTadpole2oneLoop(double /* mt */, double sinthDRbar) 
   /// Sfermion couplings
   DoubleMatrix lTS2Lr(2, 2),  lBS2Lr(2, 2),  lTauS2Lr(2, 2);
   H2SfSfCouplings(lTS2Lr, lBS2Lr, lTauS2Lr, gmzOcthW, mu, sinb);
-  //PA: Now we take these couplings and obtain sfermion contributions
+  /// PA: Now we take these couplings and obtain sfermion contributions
   double sfermions =  Softsusy<SoftParsNmssm>::doCalcTad2Sfermions(lTS2Lr, lBS2Lr, lTauS2Lr, costhDRbar);
-  //PA: Higgs contributions, including goldstone bosons
+  /// PA: Higgs contributions, including goldstone bosons
   double  higgs = doCalcTad2Higgs(q, costhDRbar, g, tanb);
   double neutralinos = doCalcTad2Neutralinos(q, costhDRbar, g, sinb);
   /// Charginos PA::Unchanged from MSSM
   double charginos = doCalcTad2Charginos(q, g, sinb);
-  //PA:  gauge boson contributions are not changed from the MSSM,
+  /// PA:  gauge boson contributions are not changed from the MSSM,
   //     *but* the goldstone parts are now included in the Higgs
   //      contributions so this is *not* the same as the Softsusy version
   double gaugeBosons = 3.0 * sqr(g) / 4.0 *
@@ -742,7 +742,7 @@ double NmssmSoftsusy::doCalcTadpoleSoneLoop(double /* mt */, double /* sinthDRba
   /// Sfermion couplings
   DoubleMatrix lTS3Lr(2, 2),lBS3Lr(2, 2), lTauS3Lr(2, 2);
   SSfSfCouplings(lTS3Lr, lBS3Lr, lTauS3Lr, lam);
-  ///PA: 3rd gen sfermions only.
+  //// PA: 3rd gen sfermions only.
   double sfermions = doCalcTadSSfermions(lTS3Lr, lBS3Lr, lTauS3Lr, q, s);
   double higgs = doCalcTadSHiggs(q, tanb);
    /// Neutralinos
@@ -754,7 +754,7 @@ double NmssmSoftsusy::doCalcTadpoleSoneLoop(double /* mt */, double /* sinthDRba
  return delta / (16.0 * sqr(PI));
 }
 
-//PA: functions to set tadpoles.  We could remove these and exploit the virtual nature of these routines, so that when used by an NmssmSoftsusy object, calcTadpole routines would point to the NmssmSoftsusy doCalc routines.  This would work the same as now but the drawback would be the code may be less easy to read.
+/// PA: functions to set tadpoles.  We could remove these and exploit the virtual nature of these routines, so that when used by an NmssmSoftsusy object, calcTadpole routines would point to the NmssmSoftsusy doCalc routines.  This would work the same as now but the drawback would be the code may be less easy to read.
 void NmssmSoftsusy::calcTadpole1Ms1loop(double mt, double sinthDRbar) {
    double t1OV1 = doCalcTadpole1oneLoop(mt, sinthDRbar);
   if (testNan(t1OV1)) {
@@ -784,7 +784,7 @@ void NmssmSoftsusy::calcTadpoleSMs1loop(double mt, double sinthDRbar) {
 void NmssmSoftsusy::treeUpSquark(DoubleMatrix & mass, double mtrun,
 				double pizztMS, double sinthDRbarMS,
 				int family) {
-  //PA: only modification is to add lambda * s / root to mu
+  /// PA: only modification is to add lambda * s / root to mu
   double lam = displayLambda(), svev = displaySvev(), tanb = displayTanb();
   Softsusy<SoftParsNmssm>::treeUpSquark(mass, mtrun, pizztMS, sinthDRbarMS, family);
   if (family == 3){
@@ -799,7 +799,7 @@ void NmssmSoftsusy::treeUpSquark(DoubleMatrix & mass, double mtrun,
 void NmssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun,
 				double pizztMS, double sinthDRbarMS,
 				int family) {
-  //PA: only modification is to add lambda * s / root to mu
+  /// PA: only modification is to add lambda * s / root to mu
   double lam = displayLambda(), svev = displaySvev(), tanb = displayTanb();
   Softsusy<SoftParsNmssm>::treeDownSquark(mass, mbrun, pizztMS, sinthDRbarMS, family);
   if (family == 3){
@@ -812,7 +812,7 @@ void NmssmSoftsusy::treeDownSquark(DoubleMatrix & mass, double mbrun,
 void NmssmSoftsusy::treeChargedSlepton(DoubleMatrix & mass, double mtaurun,
 				double pizztMS, double sinthDRbarMS,
 				int family) {
-   //PA: only modification is to add lambda * s / root to mu
+   /// PA: only modification is to add lambda * s / root to mu
    double lam = displayLambda(), svev = displaySvev(), tanb = displayTanb();
   Softsusy<SoftParsNmssm>::treeChargedSlepton(mass, mtaurun, pizztMS, sinthDRbarMS, family);
   if (family == 3) {
@@ -870,12 +870,12 @@ void NmssmSoftsusy::calcDrBarGauginos(double beta, double mw, double mz, double 
 }
 
 
-// PA: fills tree level CP even and CP odd Higgs mass matrices 
-// and tree level mHPm all with treel level EWSB conditions used.
-// Called in higgs and calcDrBarParsHiggs
-// CP even mass matrix in (Hd, Hu, S) basis  
-// CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
-// and mP2 in rotated basis (A, S) -- goldstone boson removed      
+///  PA: fills tree level CP even and CP odd Higgs mass matrices 
+///  and tree level mHPm all with treel level EWSB conditions used.
+///  Called in higgs and calcDrBarParsHiggs
+///  CP even mass matrix in (Hd, Hu, S) basis  
+///  CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
+///  and mP2 in rotated basis (A, S) -- goldstone boson removed      
 void NmssmSoftsusy::treeHiggs(DoubleMatrix & mS, DoubleMatrix & mPpr, 
                                DoubleMatrix & mP2, double & mHpmsq, 
                                double beta) const {
@@ -946,13 +946,13 @@ void NmssmSoftsusy::treeHiggs(DoubleMatrix & mS, DoubleMatrix & mPpr,
 }
 
 
-// PA: fills tree level CP even and CP odd Higgs mass matrices 
-// and tree level mHPm all without treel level EWSB conditions used.
-// Same as treeHiggs at tree level *if* tree level EWSB is imposed.
-// Useful when s is set to zero and for testing EWSB conditions.
-// CP even mass matrix in (Hd, Hu, S) basis  
-// CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
-// and mP2 in rotated basis (A, S) -- goldstone boson removed      
+///  PA: fills tree level CP even and CP odd Higgs mass matrices 
+///  and tree level mHPm all without treel level EWSB conditions used.
+///  Same as treeHiggs at tree level *if* tree level EWSB is imposed.
+///  Useful when s is set to zero and for testing EWSB conditions.
+///  CP even mass matrix in (Hd, Hu, S) basis  
+///  CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
+///  and mP2 in rotated basis (A, S) -- goldstone boson removed      
 void NmssmSoftsusy::treeHiggsAlt(DoubleMatrix & mS, DoubleMatrix & mPpr, 
                                DoubleMatrix & mP2, double & mHpmsq, 
                                double beta) const {
@@ -1028,12 +1028,12 @@ void NmssmSoftsusy::calcDrBarHiggs(double beta, double /* mz2 */, double /* mw2 
     if (eg.mt < 50.) eg.mt = 50.;
   }
    
-   //PA: initialise CP even mass matrix in (Hd, Hu, S) basis
+   /// PA: initialise CP even mass matrix in (Hd, Hu, S) basis
   // CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
    //and mP2 in roatated basis (A, S) -- goldstone boson removed    
    DoubleMatrix mS(3,3), mPpr(3,3), mP2(2,2); 
    double mHpmsq; 
- //PA: fill tree level CP even and CP odd Higgs mass matrices 
+ /// PA: fill tree level CP even and CP odd Higgs mass matrices 
   //and tree level mHPm. 
    treeHiggs(mS, mPpr, mP2, mHpmsq, beta);
 	/// LCT: Diagonalise 3 x 3 CP-even Higgs mass matrix.
@@ -1054,12 +1054,12 @@ void NmssmSoftsusy::calcDrBarHiggs(double beta, double /* mz2 */, double /* mw2 
 
   DoubleVector mHiggs(mhsq.apply(ccbSqrt));
   eg.mh0 = mHiggs;
-  //PA:  the diagonaliseSym gives us a mixing matrix A such that
+  /// PA:  the diagonaliseSym gives us a mixing matrix A such that
   //A^T h^gauge = h^mass, but we want SLHA convention, so take transpose. 
   eg.mixh0 = mixh.transpose();
 
   /// LCT: Diagonalise
-  //PA using thetaA0 for CP odd mixing angle
+  /// PA using thetaA0 for CP odd mixing angle
   DoubleVector mSq = mP2.sym2by2(eg.thetaA0);
 
   if (mSq(1) < 0. || mSq(2) < 0.) {
@@ -1083,7 +1083,7 @@ void NmssmSoftsusy::calcDrBarHiggs(double beta, double /* mz2 */, double /* mw2 
 
 void NmssmSoftsusy::calcDrBarPars() {
   drBarPars eg(displayDrBarPars());
-  //PA: set up drBarPars object to be suitable for NMSSM
+  /// PA: set up drBarPars object to be suitable for NMSSM
   eg.mh0.setEnd(3);
   eg.mA0.setEnd(2);
   eg.mixh0.resize(3,3);
@@ -1150,7 +1150,7 @@ void NmssmSoftsusy::calcDrBarPars() {
       eg.me(i, family) = mstauDRbar(i);
     }
     double mSnuSquared;
-    //PA unmodified by NMSSM.
+    /// PA unmodified by NMSSM.
     treeSnu(mSnuSquared, pizzt, family);
     if (mSnuSquared < 0.) {
       switch(family) {
@@ -3091,7 +3091,7 @@ void NmssmSoftsusy::addNeutralinoLoop(double p, DoubleMatrix & mass) {
 
 /// Returns mu from rewsb requirement. 
 /// returns 1 if there's a problem. Call at MSusy
-//PA: To be used in general Z3 violating nmssm 
+/// PA: To be used in general Z3 violating nmssm 
 int NmssmSoftsusy::rewsbMu(int sgnMu, double & mu) const {
   int flag = 0;
    if (abs(sgnMu) != 1) {
@@ -3106,13 +3106,13 @@ int NmssmSoftsusy::rewsbMu(int sgnMu, double & mu) const {
   double musqeff = (mH1sq - mH2sq * tanb2) 
     / (tanb2 - 1.0) - 0.5 * sqr(displayMz());
   
-  //PA real root test
+  /// PA real root test
   // bsqM4ac = 2.0 * sqr(lam * s) - 4 * 0.5 * sqr(lam * s) + 4 * musqeff;
   double bsqM4ac =  4.0 * musqeff;
  
   if(bsqM4ac < 0) {
-    mu = - lam * s / root2; //PA: take real part
-    flag = 1; //PA: mu is not real!
+    mu = - lam * s / root2; /// PA: take real part
+    flag = 1; /// PA: mu is not real!
   }
   else{
     mu = - lam * s / root2 + 0.5 * sgnMu * sqrt(bsqM4ac);
@@ -3149,7 +3149,7 @@ int NmssmSoftsusy::rewsbSvev(int sgnMu, double & svev) const {
 }
 
 /// returns 1 if mu < 1.0e-9
-//PA:  nmssm version for use in Z3 violating case.  
+/// PA:  nmssm version for use in Z3 violating case.  
 int NmssmSoftsusy::rewsbM3sq(double mu, double & m3sq) const {
    int flag = 0;
 
@@ -3167,7 +3167,7 @@ int NmssmSoftsusy::rewsbM3sq(double mu, double & m3sq) const {
      double t1 = displayTadpole1Ms();
      double t2 = displayTadpole2Ms();
      double s2b = sin(2 * atan(displayTanb()));
-     //PA now using:
+     /// PA now using:
      // m3sqeff = m3sq  + lam * (mupr * svev / root2 + xiF)
      // + al * svev / root2  +   0.5 * lam * kap * sqr(svev); 
      // and swapping musq on the RHS for musqeff
@@ -3187,7 +3187,7 @@ int NmssmSoftsusy::rewsbM3sq(double mu, double & m3sq) const {
 
 
 
-//PA:: In case of Z3 invariance EWSB outputs kappa instead.
+/// PA:: In case of Z3 invariance EWSB outputs kappa instead.
 int NmssmSoftsusy::rewsbKap(double & kap) const {
   int flag = 0;
   if(abs(displayLambda()) < 1e-99){
@@ -3214,7 +3214,7 @@ int NmssmSoftsusy::rewsbKap(double & kap) const {
     (mH1sq + mH2sq - t2 - t1 + 2.0 * sqr(mu + lam * s / root2)  
      + 0.5 * sqr(lam * vev) ) * s2b;
   
-  //PA this doesn't work when lam = 0.  Should add warning.
+  /// PA this doesn't work when lam = 0.  Should add warning.
   kap = (m3sqeff - m3sq - lam * (mupr * s / root2 + xiF)
 	 - al * s / root2) * 2.0 / (lam * s * s);
   
@@ -3222,7 +3222,7 @@ int NmssmSoftsusy::rewsbKap(double & kap) const {
   return flag;
 }
 
-//PA: third EWSB condition (for the singlet Higgs field) 
+/// PA: third EWSB condition (for the singlet Higgs field) 
 //new with respect to the MSSM.
 int NmssmSoftsusy::rewsbXiS(double & xiS) const {
    double mSsq = displayMsSquared();
@@ -3263,11 +3263,11 @@ int NmssmSoftsusy::rewsbmSsq(double & mSsq) const {
   double xiS   = displayXiS();
   double mSprsq = displayMspSquared();
   
-  //PA: Z3 part first
+  /// PA: Z3 part first
   mSsq = - akap * s / root2 - sqr(kap * s) - 0.5 * sqr(lam * vev) 
     + 0.5 * lam * kap * sqr(vev) * sin2b 
     + 0.25 * alam * sqr(vev) * sin2b * root2 / s ;
-  //PA: now Z3 violating terms added on part added on.
+  /// PA: now Z3 violating terms added on part added on.
   mSsq = mSsq - mSprsq - sqr(mupr) - 2.0 * kap * xiF  
     - 3.0 * kap * s * mupr / root2 - (xiS + xiF * mupr) * root2 / s 
     + 0.25 * lam * mupr * sqr(vev) * sin2b * root2 / s 
@@ -3276,7 +3276,7 @@ int NmssmSoftsusy::rewsbmSsq(double & mSsq) const {
   return 0;
 }
 
-//PA: for low energy non-universal Higgs versions 
+/// PA: for low energy non-universal Higgs versions 
 int NmssmSoftsusy::rewsbmH1sq(double & mH1sq) const {
   double kap = displayKappa(); 
   double lam = displayLambda();
@@ -3303,7 +3303,7 @@ int NmssmSoftsusy::rewsbmH1sq(double & mH1sq) const {
 
 }
 
-//PA: for low energy non-universal Higgs versions 
+/// PA: for low energy non-universal Higgs versions 
 int NmssmSoftsusy::rewsbmH2sq(double & mH2sq) const {
   double kap = displayKappa(); 
   double lam = displayLambda();
@@ -3423,7 +3423,7 @@ void NmssmSoftsusy::iterateMu(double & muold, int sgnMu,
 	(displayTadpole2Ms() * sqr(tanb) - displayTadpole1Ms()) /
 	(sqr(tanb) - 1.0); 
     }
-     //PA real root test
+     /// PA real root test
      // bsqM4ac = 2.0*sqr(lam * s) - 4*0.5*sqr(lam * s) + 4 * oneLoopMusqeff;
      double bsqM4ac =  4 * oneLoopMusqeff;
      if(bsqM4ac < 0) {
@@ -3438,7 +3438,7 @@ void NmssmSoftsusy::iterateMu(double & muold, int sgnMu,
      setSusyMu(munew); 
     double m3sqnew;
   
-    //PA:  using a rewsbM3sq for the Z3 violating case 
+    /// PA:  using a rewsbM3sq for the Z3 violating case 
     if (rewsbM3sq(munew, m3sqnew) == 0) {
        flagM3sq(false);
     }
@@ -3532,7 +3532,7 @@ void NmssmSoftsusy::iterateSvev(double & sold, int sgnMu,
    
      double kapnew;
    
-    //PA:  using a rewsKap which can work for Z3 symmetric version
+    /// PA:  using a rewsKap which can work for Z3 symmetric version
     //with kappa as output  
     if (rewsbKap(kapnew) == 0) {
        flagM3sq(false);
@@ -3680,7 +3680,7 @@ void NmssmSoftsusy::physical(int accuracy) {
   calcTadpoleSMs1loop(mt, sinthDRbarMS);
 
   /// Sfermion masses: all three families in each
-  //PA: virtual methods diagonalisation carried out by
+  /// PA: virtual methods diagonalisation carried out by
   //Softsusy class methods, tree level matrices filled by
   //NmssmSoftsusy methods
   doUpSquarks(mt, pizztMS, sinthDRbarMS, accuracy); 
@@ -3688,10 +3688,10 @@ void NmssmSoftsusy::physical(int accuracy) {
   doChargedSleptons(mtau, pizztMS, sinthDRbarMS, accuracy); 
   doSnu(pizztMS, accuracy);
 
-  //PA:Fill with current values of physpars, 
+  /// PA:Fill with current values of physpars, 
   //including those set by routines immediately above
   sPhysical phys(displayPhys());
-  //PA: set up sPhysical object to be suitable for NMSSM
+  /// PA: set up sPhysical object to be suitable for NMSSM
   phys.mh0.setEnd(3);
   phys.mA0.setEnd(2);
   phys.mixh0.resize(3,3);
@@ -3747,12 +3747,12 @@ void NmssmSoftsusy::physical(int accuracy) {
 
   charginos(accuracy, piwwtMS, phys); 
   neutralinos(accuracy, piwwtMS, pizztMS, phys);
-  //PA: now set these values from NMSSM routines
+  /// PA: now set these values from NMSSM routines
   setPhys(phys);
   gluino(accuracy); 
 }
 
-//PA: Higgs routine for NMSSM
+/// PA: Higgs routine for NMSSM
 bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
                           sPhysical & phys) {
   double tanb = displayTanb();
@@ -3768,12 +3768,12 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
   double m3sqeff = m3sq  + lam * (mupr * svev / root2 + xiF)
     + alam * svev / root2  +   0.5 * lam * kap * sqr(svev);
   double MAeffsq =  m3sqeff / (sb * cb); ;
-   //PA: initialise CP even mass matrix in (Hd, Hu, S) basis
+   /// PA: initialise CP even mass matrix in (Hd, Hu, S) basis
    // CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
    //and mP2 in roatated basis (A, S) -- goldstone boson removed    
    DoubleMatrix mS(3,3), mPpr(3,3), mP2(2,2); 
    double mHpmsq, beta = atan(displayTanb()); 
-   //PA: fill tree level CP even and CP odd Higgs mass matrices 
+   /// PA: fill tree level CP even and CP odd Higgs mass matrices 
    //and tree level mHPm .
    treeHiggs(mS, mPpr, mP2, mHpmsq, beta);
    
@@ -3848,15 +3848,15 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 double svevS = svev / root2;
 	 
 	 int loop = 2;
-	 //PA: get alpha_s alpha_t pieces
+	 /// PA: get alpha_s alpha_t pieces
 	 effpot_(&loop, &rmt, &mg, &mst1sq, &mst2sq, &sxt, &cxt,
 		 &scalesq, &tanb, &vevS, &lamS, &svevS, &as, &DMS, &DMP);
-	 //PA: get alpha_s alpha_b pieces
+	 /// PA: get alpha_s alpha_b pieces
 	 double cotb = 1.0 / tanb;
 	 effpot_(&loop, &rmb, &mg, &msb1sq, &msb2sq, &sxb, &cxb,
 		 &scalesq, &cotb, &vevS, &lamS, &svevS, &as, &DMSB, &DMPB);
 	 
-	 //PA: Make appropriate substitutions for elements following 0907.4682
+	 /// PA: Make appropriate substitutions for elements following 0907.4682
 	 // bottom of page 9
          std::swap(DMSB[0][0], DMSB[1][1]);
          std::swap(DMSB[0][2], DMSB[1][2]);
@@ -3899,11 +3899,11 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 	 tausqodd_(&rmtausq, &fmasq, &msnusq, &mstau1sq, &mstau2sq, &sintau,
 		   &costau, &scalesq, &amu, &tanb, &vev2, &p2tau);
        
-   	 //PA: Add O(y_t^4 + y_t^2y_b^2 + y_b^4) from mssm two loop parts
+   	 /// PA: Add O(y_t^4 + y_t^2y_b^2 + y_b^4) from mssm two loop parts
 	 DMS[0][0] = DMS[0][0] + s11w + sqr(sb) * p2w;
 	 DMS[0][1] = DMS[0][1] + s12w - sb * cb * p2w;
 	 DMS[1][1] = DMS[1][1] + s22w + sqr(cb) * p2w;
-	 //PA: Add alpha_tau^2 and alpha_tau alpha_b from mssm two loop parts  
+	 /// PA: Add alpha_tau^2 and alpha_tau alpha_b from mssm two loop parts  
 	 DMS[0][0] = DMS[0][0] + s11tau + sqr(sb) * p2tau;
 	 DMS[0][1] = DMS[0][1] + s12tau - sb * cb * p2tau;
 	 DMS[1][1] = DMS[1][1] + s22tau + sqr(cb) * p2tau;
@@ -3920,7 +3920,7 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
 
 	
 
-	 //PA: Now add two loop parts to the full one loop self energy
+	 /// PA: Now add two loop parts to the full one loop self energy
 	 sigmaMH1(1, 1) = sigmaMH1(1, 1) - DMS[0][0]; 
 	 sigmaMH1(1, 2) = sigmaMH1(1, 2) - DMS[0][1]; 
 	 sigmaMH1(2, 2) = sigmaMH1(2, 2) - DMS[1][1]; 
@@ -3965,7 +3965,7 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
      sigmaMH3.symmetrise();
      sigmaMA1.symmetrise();
      sigmaMA2.symmetrise();
-     //PA: adding *one loop* tadpoles
+     /// PA: adding *one loop* tadpoles
      mhAtmH1(1, 1) =  mhAtmH1(1, 1) + displayTadpole1Ms1loop();
      mhAtmH2(1, 1) =  mhAtmH2(1, 1) + displayTadpole1Ms1loop();
      mhAtmH3(1, 1) =  mhAtmH3(1, 1) + displayTadpole1Ms1loop();
@@ -3982,7 +3982,7 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
      mhAtmH2 = mhAtmH2 - sigmaMH2;
      mhAtmH3 = mhAtmH3 - sigmaMH3;
      
-     //PA: adding *one loop* tadpoles
+     /// PA: adding *one loop* tadpoles
      maAtmA1(1, 1) = mPpr(1, 1) + displayTadpole1Ms1loop();
      maAtmA1(1, 2) = mPpr(1, 2);
      maAtmA1(1, 3) = mPpr(1, 3);
@@ -4147,7 +4147,7 @@ if (poleMhcSq > 0. && !h0Htachyon) return false;
 }
 
 
-//PA: adds gauge boson contribitions to the left right and scalar parts 
+/// PA: adds gauge boson contribitions to the left right and scalar parts 
 //of the chargino self energy
 void NmssmSoftsusy::addChaLoopHiggs(double /* p */, DoubleMatrix & sigmaL, DoubleMatrix & sigmaR, DoubleMatrix & sigmaS, DoubleMatrix b1pCha, DoubleMatrix b0pCha, DoubleMatrix b1pNeut, DoubleMatrix b0pNeut) const {
   double g = displayGaugeCoupling(2), 
@@ -4248,7 +4248,7 @@ void NmssmSoftsusy::addChaLoopHiggs(double /* p */, DoubleMatrix & sigmaL, Doubl
   aPsiChih1 = S(1,1) * aPsiChis1 + S(1,2) * aPsiChis2 + S(1,3) * aPsiChis3;
   aPsiChih2 = S(2,1) * aPsiChis1 + S(2,2) * aPsiChis2 + S(2,3) * aPsiChis3;
   aPsiChih3 = S(3,1) * aPsiChis1 + S(3,2) * aPsiChis2 + S(3,3) * aPsiChis3;
-  //PA: mixing in slavich conventions, rules should be altered too
+  /// PA: mixing in slavich conventions, rules should be altered too
   aPsiChiG  = - P(1,1) * aPsiChip1 + P(1,2) * aPsiChip2 + P(1,3) * aPsiChip3;
   aPsiChiA1 =   P(2,1) * aPsiChip1 - P(2,2) * aPsiChip2 + P(2,3) * aPsiChip3;
   aPsiChiA2 =   P(3,1) * aPsiChip1 - P(3,2) * aPsiChip2 + P(3,3) * aPsiChip3;
@@ -4256,7 +4256,7 @@ void NmssmSoftsusy::addChaLoopHiggs(double /* p */, DoubleMatrix & sigmaL, Doubl
   bPsiChih1 = S(1,1) * bPsiChis1 + S(1,2) * bPsiChis2 + S(1,3) * bPsiChis3;
   bPsiChih2 = S(2,1) * bPsiChis1 + S(2,2) * bPsiChis2 + S(2,3) * bPsiChis3;
   bPsiChih3 = S(3,1) * bPsiChis1 + S(3,2) * bPsiChis2 + S(3,3) * bPsiChis3;
-  //PA: mixing in slavich conventions, rules should be altered too
+  /// PA: mixing in slavich conventions, rules should be altered too
   bPsiChiG  = - P(1,1) * bPsiChip1 + P(1,2) * bPsiChip2 + P(1,3) * bPsiChip3;
   bPsiChiA1 =   P(2,1) * bPsiChip1 - P(2,2) * bPsiChip2 + P(2,3) * bPsiChip3;
   bPsiChiA2 =   P(3,1) * bPsiChip1 - P(3,2) * bPsiChip2 + P(3,3) * bPsiChip3;
@@ -4344,7 +4344,7 @@ void NmssmSoftsusy::addCharginoLoop(double p, DoubleMatrix & mass) {
   DoubleVector mch(displayDrBarPars().mchBpmz); 
   const int dimN =  mneut.displayEnd();
   DoubleMatrix sigmaL(2, 2), sigmaR(2, 2), sigmaS(2, 2);
-  //PA: calculate P-V's for gauge and Higgs at outset 
+  /// PA: calculate P-V's for gauge and Higgs at outset 
   //avoids repeated calls for same function
   //1st indice runs over neutralino or charginos
   //2nd runs over higgs and gaige bosons in bases:
@@ -4378,7 +4378,7 @@ void NmssmSoftsusy::addCharginoLoop(double p, DoubleMatrix & mass) {
     b0pNeut(k,2) = b0(p, mneut(k), displayDrBarPars().mHpm, q);
   }
 
-  //PA: sfermion contributions to sigmaL, sigmaR and sigmaS
+  /// PA: sfermion contributions to sigmaL, sigmaR and sigmaS
   //calls MSSM method, no NMSSM alterations
   addChaLoopSfermion(p, sigmaL, sigmaR, sigmaS);
   //Gauge bosons calls MSSM method, no NMSSM alterations!
@@ -4467,7 +4467,7 @@ void NmssmSoftsusy::neutralinos(int accuracy, double /* piwwtMS */, double /* pi
 }
 
 
-//PA:: fixes The CP odd mixing matrix with the conventions 
+/// PA:: fixes The CP odd mixing matrix with the conventions 
 // Degrassi and Slavich arXiv:0907.4682
 void NmssmSoftsusy::DegrassiSlavicMix(DoubleMatrix & P) const {
   double alphaP = displayDrBarPars().thetaA0;
@@ -4485,7 +4485,7 @@ void NmssmSoftsusy::DegrassiSlavicMix(DoubleMatrix & P) const {
 
 double NmssmSoftsusy::piZZTHiggs(double p, double q, 
 				      double thetaWDRbar) const {
-  //PA: NMSSM extensiion of BPMZ terms 
+  /// PA: NMSSM extensiion of BPMZ terms 
   //(only need to change mixing for new mass eigenstates, no new couplings)
   double    mz      = displayMzRun();
   double    cw2DRbar    = sqr(cos(thetaWDRbar));
@@ -4562,15 +4562,15 @@ double NmssmSoftsusy::piZZT(double p, double q, bool usePoleMt) const {
   double    g       = displayGaugeCoupling(2);
   double rhs = 0.0;
  
-  //PA: obtain Higgs contributions in separate method
+  /// PA: obtain Higgs contributions in separate method
   double higgs = piZZTHiggs(p, q, thetaWDRbar);
-  //PA: obtain sfermion contributions in separate method
+  /// PA: obtain sfermion contributions in separate method
   double sfermions = piZZTsfermions(p, q);
-  //PA: obtain fermion contributions in separate method
+  /// PA: obtain fermion contributions in separate method
   double fermions = piZZTfermions(p, q, usePoleMt);
-   //PA: obtain neutralino contributions in separate method
+   /// PA: obtain neutralino contributions in separate method
   double neutralinos = piZZTNeutralinos(p, q, thetaWDRbar);
-   //PA: obtain neutralino contributions in separate method
+   /// PA: obtain neutralino contributions in separate method
   double charginos = piZZTCharginos(p, q, thetaWDRbar);
   
   rhs = higgs + charginos + neutralinos + fermions + sfermions ;
@@ -4667,7 +4667,7 @@ double NmssmSoftsusy::piWWT(double p, double q, bool usePoleMt) const {
 }
 
 
-//PA: pseudoscalar self energies in basis Im(H_d), Im(H_u), Im(S).
+/// PA: pseudoscalar self energies in basis Im(H_d), Im(H_u), Im(S).
 double NmssmSoftsusy::pip1p1(double p, double q) const {
   const drBarPars& tree = displayDrBarPars();
 	
@@ -5884,7 +5884,7 @@ double NmssmSoftsusy::pip3p3(double p, double q) const {
 
 }
 
-//PA: Obtains trilnear couplings of P1-Pi-Sj and P1-Hpm-Hpm 
+/// PA: Obtains trilnear couplings of P1-Pi-Sj and P1-Hpm-Hpm 
 //for use in loop functions
 void NmssmSoftsusy::getP1HiggsTriCoup(DoubleMatrix & spp1, DoubleMatrix & hphpp1, double cw2DRbar) const {
   double beta = atan(displayTanb());
@@ -5962,7 +5962,7 @@ void NmssmSoftsusy::getP3HiggsTriCoup(DoubleMatrix & spp3, DoubleMatrix & hphpp3
 
 }
 
-//PA: Obtains trilnear couplings of s1-higgs-higgs for use in loop functions
+/// PA: Obtains trilnear couplings of s1-higgs-higgs for use in loop functions
 void NmssmSoftsusy::getS1HiggsTriCoup(DoubleMatrix & sss1, DoubleMatrix & pps1,DoubleMatrix & hphps1, double thetaWDRbar) const {
   double lam =  displayLambda(), lsq = sqr(lam);
   double s = displaySvev();
@@ -6005,7 +6005,7 @@ void NmssmSoftsusy::getS1HiggsTriCoup(DoubleMatrix & sss1, DoubleMatrix & pps1,D
   
 }
 
-//PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
+/// PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
 void NmssmSoftsusy::getS2HiggsTriCoup(DoubleMatrix & sss2, DoubleMatrix & pps2, DoubleMatrix & hphps2, double thetaWDRbar) const {
   double lam =  displayLambda(), lsq = sqr(lam);
   double s = displaySvev();
@@ -6046,7 +6046,7 @@ void NmssmSoftsusy::getS2HiggsTriCoup(DoubleMatrix & sss2, DoubleMatrix & pps2, 
 
 }
 
-//PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
+/// PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
 void NmssmSoftsusy::getS3HiggsTriCoup(DoubleMatrix & sss3, DoubleMatrix & pps3, DoubleMatrix & hphps3) const {
   double lam =  displayLambda(), lsq = sqr(lam);
   double s = displaySvev();
@@ -6130,7 +6130,7 @@ double NmssmSoftsusy::pis1s1Higgs(double p, double q) const {
                                         + mz2 * b0(p, mz, mz, q) / cw2DRbar) 
      + gsq * (2.0 * a0(mw, q) + a0(mz, q) / cw2DRbar);
 
-  //PA: trilinear couplings for s1 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s1 to CP even, CP odd and charged Higgs
   DoubleMatrix sss1(3, 3), pps1(3, 3), hphps1(2, 2);
   getS1HiggsTriCoup(sss1, pps1, hphps1, thetaWDRbar);
   /// LCT: Rotate to mass basis s1 Hi Hj
@@ -6225,7 +6225,7 @@ double NmssmSoftsusy::pis1s2Higgs(double p, double q) const {
      higgs = higgs - 0.25 * gsq * P(i, 1) * P(i, 2) 
         * ffn(p, higgsa(i), mz, q) / cw2DRbar;
   }
-  //PA: trilinear couplings for s1, s2 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s1, s2 to CP even, CP odd and charged Higgs
   DoubleMatrix sss1(3, 3), pps1(3, 3), hphps1(2, 2);
   getS1HiggsTriCoup(sss1, pps1, hphps1, thetaWDRbar);
   DoubleMatrix sss2(3, 3), pps2(3, 3), hphps2(2, 2);
@@ -6331,7 +6331,7 @@ double NmssmSoftsusy::pis2s2Higgs(double p, double q) const {
                                         + mz2 * b0(p, mz, mz, q) / cw2DRbar) 
      + gsq * (2.0 * a0(mw, q) + a0(mz, q) / cw2DRbar);
   
-  //PA: trilinear couplings for s2 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s2 to CP even, CP odd and charged Higgs
   DoubleMatrix sss2(3, 3), pps2(3, 3), hphps2(2, 2);
   getS2HiggsTriCoup(sss2, pps2, hphps2, thetaWDRbar);
   /// LCT: Rotate to mass basis s2 Hi Hj
@@ -6415,7 +6415,7 @@ double NmssmSoftsusy::pis1s3Higgs(double p, double q) const {
   assignHiggs(higgsm, higgsa, higgsc);
   
   double higgs = 0.0;	
-  //PA: trilinear couplings for s1, s3 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s1, s3 to CP even, CP odd and charged Higgs
   DoubleMatrix sss1(3, 3), pps1(3, 3), hphps1(2, 2);
   getS1HiggsTriCoup(sss1, pps1, hphps1, thetaWDRbar);
   DoubleMatrix sss3(3, 3), pps3(3, 3), hphps3(2, 2);
@@ -6469,7 +6469,7 @@ double NmssmSoftsusy::pis1s3Higgs(double p, double q) const {
   }
   
   /// LCT: No charged quadrilinears 
-  //PA: get trilinear charged Higgs contribution
+  /// PA: get trilinear charged Higgs contribution
   for (int i=1; i <=2; i++) {
      for (int j=1; j <=2; j++) {
         higgs = higgs + hphps1(i, j) * hphps3(j, i) *
@@ -6498,7 +6498,7 @@ double NmssmSoftsusy::pis2s3Higgs(double p, double q) const {
   assignHiggs(higgsm, higgsa, higgsc);
   
   double higgs = 0.0;	
-  //PA: trilinear couplings for s2, s3 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s2, s3 to CP even, CP odd and charged Higgs
   DoubleMatrix sss2(3, 3), pps2(3, 3), hphps2(2, 2);
   getS2HiggsTriCoup(sss2, pps2, hphps2, thetaWDRbar);
   DoubleMatrix sss3(3, 3), pps3(3, 3), hphps3(2, 2);
@@ -6579,7 +6579,7 @@ double NmssmSoftsusy::pis3s3Higgs(double p, double q) const {
   assignHiggs(higgsm, higgsa, higgsc);
   
   double higgs = 0.0;	
-  //PA: trilinear couplings for s3 to CP even, CP odd and charged Higgs
+  /// PA: trilinear couplings for s3 to CP even, CP odd and charged Higgs
   DoubleMatrix sss3(3, 3), pps3(3, 3), hphps3(2, 2);
   getS3HiggsTriCoup(sss3, pps3, hphps3);
 
@@ -6646,7 +6646,7 @@ double NmssmSoftsusy::pis3s3Higgs(double p, double q) const {
 
   return higgs;
 }
-//PA: obtains CP odd Higgs-Neutralino couplings
+/// PA: obtains CP odd Higgs-Neutralino couplings
 void NmssmSoftsusy::getP1NeutralinoCoup(ComplexMatrix & aChi, 
                                         ComplexMatrix & bChi) const {
   double g   = displayGaugeCoupling(2);
@@ -7077,15 +7077,15 @@ double NmssmSoftsusy::pis1s1(double p, double q) const {
   double mz   = displayMzRun();
   double g    = displayGaugeCoupling(2);
   double cosb = cos(beta);
-  //PA: get fermion contribution, uses MSSM version
+  /// PA: get fermion contribution, uses MSSM version
   double fermions = pis1s1Fermions(p, q);
   // sfermion couplings to s1 Higgs state
   DoubleMatrix ls1tt(2, 2), ls1bb(2, 2), ls1tautau(2, 2);
   double gmzOcthW = g * mz / costhDrbar;
   H1SfSfCouplings(ls1tt, ls1bb, ls1tautau, gmzOcthW, smu, cosb, root2*mb/hb);
-  //PA: get sfermion contribution
+  /// PA: get sfermion contribution
   double sfermions = pis1s1Sfermions(p, q, ls1tt, ls1bb, ls1tautau);
-  //PA: get Higgs contribution
+  /// PA: get Higgs contribution
   double higgs = pis1s1Higgs(p, q);
   /// Neutralino contribution
   double neutralinos = pis1s1Neutralinos(p, q);
@@ -7114,9 +7114,9 @@ double NmssmSoftsusy::pis1s2(double p, double q) const {
   /// sfermion couplings to s2 Higgs state
   DoubleMatrix ls2tt(2, 2), ls2bb(2, 2), ls2tautau(2, 2);
   H2SfSfCouplings(ls2tt, ls2bb, ls2tautau, gmzOcthW, smu, sinb);
-  //PA: get sfermion contribution
+  /// PA: get sfermion contribution
   double sfermions = pis1s2Sfermions(p, q, ls1tt, ls1bb, ls1tautau, ls2tt, ls2bb, ls2tautau);
-  //PA: get Higgs contribution (NMSSM version)
+  /// PA: get Higgs contribution (NMSSM version)
   double higgs = pis1s2Higgs(p, q);
   /// Neutralino contribution (NMSSM version)
   double neutralinos = pis1s2Neutralinos(p, q); 
@@ -7136,18 +7136,18 @@ double NmssmSoftsusy::pis2s2(double p, double q) const {
   double sinb = sin(beta);
   double mz = displayMzRun();
   double gmzOcthW = g * mz / costhDrbar;
-  //PA: get femions (same as MSSM) 
+  /// PA: get femions (same as MSSM) 
   double fermions = pis2s2Fermions(p, q);
-  ///PA: sfermion couplings to s2 Higgs state (NMSSM version)
+  //// PA: sfermion couplings to s2 Higgs state (NMSSM version)
   DoubleMatrix ls2tt(2, 2), ls2bb(2, 2), ls2tautau(2, 2);
   H2SfSfCouplings(ls2tt, ls2bb, ls2tautau, gmzOcthW, smu, sinb);
-  //PA: get sfermions (MSSM routine but with NMSSM couplings input)
+  /// PA: get sfermions (MSSM routine but with NMSSM couplings input)
   double sfermions = pis2s2Sfermions(p, q, ls2tt, ls2bb, ls2tautau);
-  //PA: get higgs (NMSSM version)
+  /// PA: get higgs (NMSSM version)
   double higgs = pis2s2Higgs(p, q);
-  //PA: get neutralinos (NMSSM version)
+  /// PA: get neutralinos (NMSSM version)
   double neutralinos = pis2s2Neutralinos(p, q); 
-  //PA: get charginos (same as in MSSM version)
+  /// PA: get charginos (same as in MSSM version)
   double chargino = pis2s2Charginos(p, q);   
 
   return (fermions + sfermions + higgs + neutralinos + chargino) 
@@ -8131,7 +8131,7 @@ double NmssmSoftsusy::calcRunningMtau() const {
   return mTauSMMZ * (1.0 + sigmaNeutralino + sigmaChargino + sigmaHiggs);
 }
 
-//PA: returns the mixing of Hu into between h1
+/// PA: returns the mixing of Hu into between h1
 double NmssmSoftsusy::h1s2Mix(){
    return displayDrBarPars().mixh0(1,2);
 }
@@ -8168,7 +8168,7 @@ double NmssmSoftsusy::predTanb(double MuEff) const  {
 // Apply at scale MSusy:
 /// Displays PHYSICAL MZ, ie MZ(q) - piZz^T(q)
 double NmssmSoftsusy::predMzsq(double & tanb, double mueffOld, double eps) {
-  //PA: new Nmssm parameters needed for mu effective
+  /// PA: new Nmssm parameters needed for mu effective
   double lam = displayLambda();
   double s = displaySvev();
   
@@ -8179,7 +8179,7 @@ double NmssmSoftsusy::predMzsq(double & tanb, double mueffOld, double eps) {
     double mt = displayDrBarPars().mt;
     doTadpoles(mt, sinthDRbar);
   }
-  //PA: this is now mueff = mu + lam * s /root2
+  /// PA: this is now mueff = mu + lam * s /root2
   double susyMu = displaySusyMu() + lam * s /  root2;
   tanb = predTanb(susyMu);
   if (mueffOld > -6.e66) susyMu = susyMu / eps - mueffOld * (1. / eps - 1.);
@@ -8239,7 +8239,7 @@ void NmssmSoftsusy::itLowsoft
   
   numTries = numTries + 1;
  
-  //PA: reset new low energy inputs of general nmssm at mz.
+  /// PA: reset new low energy inputs of general nmssm at mz.
   if(Z3){
     setXiF(0.0);                         
     setMupr(0.0);
@@ -8430,9 +8430,9 @@ void NmssmSoftsusy::itLowsoft
 /// into account etc. 
 NmssmSusy NmssmSoftsusy::guessAtSusyMt(double tanb, DoubleVector nmpars, const QedQcd & oneset) {
    
-   //PA: Most of the work is already done by the MSSM
+   /// PA: Most of the work is already done by the MSSM
    NmssmSusy t(Softsusy<SoftParsNmssm>::guessAtSusyMt(tanb, oneset));
-   //PA: now we just add our new nmssm parameters. 
+   /// PA: now we just add our new nmssm parameters. 
    //Only lambda directly affects the running of the MSSM Yukawas 
    // at one loop and only kappa additionally at two loop.
    t.setLambda(nmpars(1));
@@ -8525,7 +8525,7 @@ void NmssmSoftsusy::lowOrg
 
     setThresholds(3); setLoops(2);
     
-    //PA: itLowsoft to be added along with the rest of lowOrg
+    /// PA: itLowsoft to be added along with the rest of lowOrg
     itLowsoft(maxtries, sgnMu, tol, tanb, boundaryCondition, pars, 
               nmpars, gaugeUnification, ewsbBCscale);
 
