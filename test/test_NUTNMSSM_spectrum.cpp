@@ -259,14 +259,12 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
-   // BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
+   BOOST_CHECK(fs.get_thresholds());
+   BOOST_CHECK(ss.displayThresholds());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00076);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0015);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00013);
-
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.0009);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa()  , ss.displayKappa() , 0.007);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(0,0), ss.displayYukawaMatrix(YU)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(1,1), ss.displayYukawaMatrix(YU)(2,2), 0.0093);
@@ -279,6 +277,17 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Ye()(0,0), ss.displayYukawaMatrix(YE)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Ye()(1,1), ss.displayYukawaMatrix(YE)(2,2), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Ye()(2,2), ss.displayYukawaMatrix(YE)(3,3), 0.0096);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa()  , ss.displayKappa(), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00003);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS()     , ss.displaySvev(), 0.00001);
+
+   BOOST_CHECK_EQUAL(ss.displaySusyMu()    , 0.);
+   BOOST_CHECK_EQUAL(ss.displayM3Squared() , 0.);
+   BOOST_CHECK_EQUAL(ss.displayMspSquared(), 0.);
+   BOOST_CHECK_EQUAL(ss.displayXiS()       , 0.);
+   BOOST_CHECK_EQUAL(ss.displayXiF()       , 0.);
+   BOOST_CHECK_EQUAL(ss.displayMupr()      , 0.);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassB() , ss.displayGaugino(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.0046);
