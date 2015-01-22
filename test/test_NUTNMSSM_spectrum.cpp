@@ -285,6 +285,70 @@ void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    BOOST_CHECK_CLOSE_FRACTION(ts / vs, ss.displayTadpoleSMs1loop(), 1.0e-6);
 }
 
+void compare_tadpoles_2loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
+
+   softsusy::SoftHiggsOut = true;
+
+   ss.calcDrBarPars();
+   fs.calculate_DRbar_masses();
+
+   const double mt = ss.displayDrBarPars().mt;
+   const double sinthDRbar = ss.calcSinthdrbar();
+   const double vd = fs.get_vd();
+   const double vu = fs.get_vu();
+   const double vs = fs.get_vS();
+
+   const double td_fs = fs.tadpole_hh(0).real();
+   const double tu_fs = fs.tadpole_hh(1).real();
+   const double ts_fs = fs.tadpole_hh(2).real();
+
+   double td_ss = ss.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   double tu_ss = ss.doCalcTadpole2oneLoop(mt, sinthDRbar);
+   double ts_ss = ss.doCalcTadpoleSoneLoop(mt, sinthDRbar);
+
+   // check equality of 1-loop tadpoles
+   BOOST_CHECK_CLOSE_FRACTION(td_fs / vd, td_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu_fs / vu, tu_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts_fs / vs, ts_ss, 1.0e-6);
+
+   // make sure the one-loop tadpoles are calculated correctly
+   softsusy::numRewsbLoops = 1;
+   ss.doTadpoles(mt, sinthDRbar);
+
+   td_ss = ss.displayTadpole1Ms();
+   tu_ss = ss.displayTadpole2Ms();
+   ts_ss = ss.displayTadpoleSMs();
+
+   // check equality of 1-loop tadpoles again
+   BOOST_CHECK_CLOSE_FRACTION(td_fs / vd, td_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu_fs / vu, tu_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts_fs / vs, ts_ss, 1.0e-6);
+
+   // calculate 2-loop tadpoles
+   softsusy::numRewsbLoops = 2;
+   ss.doTadpoles(mt, sinthDRbar);
+
+   const double td_1_and_2loop_ss = ss.displayTadpole1Ms();
+   const double tu_1_and_2loop_ss = ss.displayTadpole2Ms();
+   const double ts_1_and_2loop_ss = ss.displayTadpoleSMs();
+
+   double two_loop_tadpole[3];
+   fs.tadpole_hh_2loop(two_loop_tadpole);
+
+   // check equality of 1-loop tadpoles again
+   // works only if amu = the lightest CP-even Higgs,
+   // but not the goldstone boson
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[2] / vs, ts_1_and_2loop_ss - ts_ss, 1.0e-11);
+}
+
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 {
    NUTNMSSM_input_parameters pp;
@@ -310,7 +374,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 
    compare_tadpoles_0loop(fs, ss);
    compare_tadpoles_1loop(fs, ss);
-   // compare_tadpoles_2loop(fs, ss);
+   compare_tadpoles_2loop(fs, ss);
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
