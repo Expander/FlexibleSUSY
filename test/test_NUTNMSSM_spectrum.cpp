@@ -257,6 +257,9 @@ void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
 
    ss.setTadpole1Ms(0.);
    ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
+
+   softsusy::SoftHiggsOut = true;
    ss.calcDrBarPars();
    fs.set_ewsb_loop_order(1);
    fs.calculate_DRbar_masses();
