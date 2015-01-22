@@ -240,6 +240,7 @@ void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
 
    ss.setTadpole1Ms(0.);
    ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
 
    softsusy::SoftHiggsOut = true;
    ss.rewsbTreeLevel(1);
@@ -247,7 +248,7 @@ void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
 
    BOOST_CHECK_CLOSE_FRACTION(ss.displayMh1Squared(), fs.get_mHd2(), 1.e-10);
    BOOST_CHECK_CLOSE_FRACTION(ss.displayMh2Squared(), fs.get_mHu2(), 1.e-10);
-   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 2.e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 1.e-10);
 }
 
 void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
