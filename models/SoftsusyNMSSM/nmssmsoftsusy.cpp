@@ -3571,7 +3571,8 @@ void NmssmSoftsusy::rewsb(int sgnMu, double mt, double muOld, double eps) {
    if(SoftHiggsOut) {
      calcDrBarPars();
      double sinthDRbarMS = calcSinthdrbar();
-     doTadpoles(mt, sinthDRbarMS);
+     if (numRewsbLoops > 0)
+        doTadpoles(mt, sinthDRbarMS);
      double mH1sq = 0.0, mH2sq = 0.0, mSsq = 0.0;
      rewsbmH1sq(mH1sq);
      setMh1Squared(mH1sq);
