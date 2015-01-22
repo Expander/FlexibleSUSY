@@ -27,7 +27,8 @@ DATE="`date 2>/dev/null || echo unknown`"
 debmultiarch=""
 
 # default library directories
-default_lib_paths="/usr/lib /usr/local/lib"
+ld_library_path="`echo ${LD_LIBRARY_PATH} | tr ':' ' '`"
+default_lib_paths="${ld_library_path} /usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
 # configure log file
@@ -1003,6 +1004,11 @@ check_platform() {
     local _paths="`echo $PATH | tr ':' ' '`"
     for p in ${_paths}; do
         logmsg "PATH: ${p}"
+    done
+    logmsg ""
+
+    for p in ${ld_library_path}; do
+        logmsg "LD_LIBRARY_PATH: ${p}"
     done
     logmsg ""
 
