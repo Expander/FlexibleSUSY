@@ -448,6 +448,9 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_TYe()(1,1), ss.displayTrilinear(EA)(2,2), 0.021);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_TYe()(2,2), ss.displayTrilinear(EA)(3,3), 0.021);
 
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_TLambdax(), ss.displayTrialambda(), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_TKappa()  , ss.displayTriakappa() , 0.00001);
+
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();
    const double vs = fs.get_vS();
