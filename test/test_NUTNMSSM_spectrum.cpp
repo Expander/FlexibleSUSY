@@ -234,6 +234,22 @@ void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
    oneset.toMz();
 }
 
+void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+
+   softsusy::SoftHiggsOut = true;
+   ss.rewsbTreeLevel(1);
+   fs.solve_ewsb_tree_level();
+
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh1Squared(), fs.get_mHd2(), 1.e10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh2Squared(), fs.get_mHu2(), 1.e10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 1.e10);
+}
+
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 {
    NUTNMSSM_input_parameters pp;
@@ -256,6 +272,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    // compare model parameters
    const NmssmSoftsusy ss(softSusy_tester.get_model());
    const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
+
+   compare_tadpoles_0loop(fs, ss);
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
