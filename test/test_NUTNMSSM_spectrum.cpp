@@ -245,9 +245,40 @@ void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
    ss.rewsbTreeLevel(1);
    fs.solve_ewsb_tree_level();
 
-   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh1Squared(), fs.get_mHd2(), 1.e10);
-   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh2Squared(), fs.get_mHu2(), 1.e10);
-   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 1.e10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh1Squared(), fs.get_mHd2(), 1.e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh2Squared(), fs.get_mHu2(), 1.e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 2.e-4);
+}
+
+void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+   ss.calcDrBarPars();
+   fs.set_ewsb_loop_order(1);
+   fs.calculate_DRbar_masses();
+
+   const double mt = ss.displayDrBarPars().mt;
+   const double sinthDRbar = ss.calcSinthdrbar();
+
+   ss.calcTadpole1Ms1loop(mt, sinthDRbar);
+   ss.calcTadpole2Ms1loop(mt, sinthDRbar);
+   ss.calcTadpoleSMs1loop(mt, sinthDRbar);
+
+   const double td = Re(fs.tadpole_hh(0));
+   const double tu = Re(fs.tadpole_hh(1));
+   const double ts = Re(fs.tadpole_hh(2));
+
+   const double vd = fs.get_vd();
+   const double vu = fs.get_vu();
+   const double vs = fs.get_vS();
+
+   // check equality of tadpoles
+   BOOST_CHECK_CLOSE_FRACTION(td / vd, ss.displayTadpole1Ms1loop(), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu / vu, ss.displayTadpole2Ms1loop(), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts / vs, ss.displayTadpoleSMs1loop(), 1.0e-6);
 }
 
 BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
@@ -274,6 +305,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
 
    compare_tadpoles_0loop(fs, ss);
+   compare_tadpoles_1loop(fs, ss);
+   // compare_tadpoles_2loop(fs, ss);
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
