@@ -338,9 +338,9 @@ void SemiMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
 
 /// NMSSM Msugra, without setting the soft Higgs masses
 void NmssmSugraNoSoftHiggsMassBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
-  assert(inputParameters.size() == 6 &&
+  assert(inputParameters.size() >= 6 &&
          "NmssmSugraNoSoftHiggsMassBcs: input parameter"
-         " vector is not of length 6");
+         " vector has size < 6");
 
   const double mHd2 = m.displayMh1Squared(),
     mHu2 = m.displayMh2Squared(),
@@ -358,6 +358,24 @@ void NmssmSugraNoSoftHiggsMassBcs(NmssmSoftsusy & m, const DoubleVector & inputP
     m.setM3Squared(inputParameters(5));
     m.setXiS(inputParameters(6));
   }
+}
+
+/// NMSSM Msugra, without setting the soft Higgs masses
+/// and non-universal Alambda and Akappa
+void NmssmSemiMsugraNoSoftHiggsMassBcs(NmssmSoftsusy& m, const DoubleVector& inputParameters)
+{
+  assert(inputParameters.size() == 8 &&
+         "NmssmSemiMsugraNoSoftHiggsMassBcs: input parameter"
+         " vector is not of length 8");
+
+  // mSUGRA without setting mHd2, mHu2, ms2
+  NmssmSugraNoSoftHiggsMassBcs(m, inputParameters);
+
+  const double Alambda = inputParameters(7);
+  const double Akappa  = inputParameters(8);
+
+  m.setTrialambda(Alambda * m.displayLambda());
+  m.setTriakappa(Akappa * m.displayKappa());
 }
 
 void generalNmssmBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {

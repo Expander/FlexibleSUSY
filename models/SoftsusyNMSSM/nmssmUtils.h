@@ -103,6 +103,8 @@ void SemiMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters);
 
 void NmssmSugraNoSoftHiggsMassBcs(NmssmSoftsusy&, const DoubleVector&);
 
+void NmssmSemiMsugraNoSoftHiggsMassBcs(NmssmSoftsusy&, const DoubleVector&);
+
 void extendedNMSugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters);
 
 /// Calculates fractional difference in Drbar masses between in and out
