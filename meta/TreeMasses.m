@@ -127,6 +127,7 @@ CallThirdGenerationHelperFunctionName::usage="";
 GetThirdGenerationMass::usage;
 
 ReorderGoldstoneBosons::usage="";
+CreateHiggsMassGetters::usage="";
 
 (* exported for the use in LoopMasses.m *)
 CallSVDFunction::usage="";
@@ -654,6 +655,40 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
+
+CreateHiggsMassGetters[macro_String] :=
+    CreateHiggsMassGetters[GetParticles[], macro];
+
+CreateHiggsMassGetters[particle_, mixingMatrix_, macro_String] :=
+    Module[{goldstoneList, type = "", prototype, def},
+           goldstoneList = Cases[SARAH`GoldstoneGhost,
+                                 {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
+           prototype =
+                type <> " get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
+               "() const";
+           def = prototype <> " {\n" <>
+               type <> " " <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_tmp" <>
+               StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList] <>
+               "return ...;\n" <>
+               "}\n";
+           prototype = prototype <> ";\n";
+           {prototype, definition}
+          ];
+
+CreateHiggsMassGetters[particles_List, macro_String] :=
+    Module[{result = ""},
+           (result = result <> CreateHiggsMassGetters[#,macro])& /@ particles;
+           Return[result];
+          ];
+
+CreateHiggsMassGetters[particle_Symbol, macro_String] :=
+    CreateHiggsMassGetters[particle, FindMixingMatrixSymbolFor[particle], macro];
+
+CreateHiggsMassGetters[particle_[___], macro_String] :=
+    CreateHiggsMassGetters[particle, macro];
+
+CreateHiggsMassGetters[macro_String] :=
+    CreateHiggsMassGetters[GetParticles[], macro];
 
 CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
     "\

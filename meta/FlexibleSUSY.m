@@ -551,6 +551,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
     Module[{ewsbEquationsTreeLevel, massGetters = "", k,
             mixingMatrixGetters = "",
             slhaPoleMassGetters = "", slhaPoleMixingMatrixGetters = "",
+            higgsMassGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
@@ -610,6 +611,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
+           higgsMassGetters = TreeMasses`CreateHiggsMassGetters[""];
            clearPhases = Parameters`ClearPhases[phases];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
@@ -702,6 +704,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@slhaPoleMassGetters@"  -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@" -> IndentText[slhaPoleMixingMatrixGetters],
+                            "@higgsMassGetters@"     -> IndentText[higgsMassGetters[[2]]],
+                            "@higgsMassGetterPrototypes@"   -> IndentText[higgsMassGetters[[1]]],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],

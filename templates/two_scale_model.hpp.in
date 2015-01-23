@@ -102,6 +102,7 @@ public:
 
 @lspGetters@
 @massGetters@
+@higgsMassGetterPrototypes@
 @mixingMatrixGetters@
 @phasesGetterSetters@
 @massCalculationPrototypes@
