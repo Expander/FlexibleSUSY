@@ -72,13 +72,15 @@ public:
 #ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
-      DoubleVector pars(6);
+      DoubleVector pars(8);
       pars(1) = pp.m0;
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
       pars(4) = 0.; // Mu
       pars(5) = 0.; // BMu / (Cos(Beta) Sin(Beta))
       pars(6) = 0.; // xiS
+      pars(7) = pp.ALambdaInput;
+      pars(8) = pp.AKappaInput;
       DoubleVector nmpars(5);
       nmpars(1) = pp.LambdaInput;
       nmpars(2) = pp.KappaInput;
@@ -89,8 +91,8 @@ public:
       softSusy.setAlternativeMs(false);
 
       try {
-         softSusy.lowOrg(NmssmSugraNoSoftHiggsMassBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
-                         oneset, gaugeUnification);
+         softSusy.lowOrg(NmssmSemiMsugraNoSoftHiggsMassBcs, mxGuess, pars,
+                         nmpars, 1, pp.TanBeta, oneset, gaugeUnification);
       } catch (const std::string& str) {
          BOOST_MESSAGE("SoftSusy problem: " << str);
          throw SoftSusy_error(str);
