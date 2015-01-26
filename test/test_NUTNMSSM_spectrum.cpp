@@ -478,6 +478,9 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    const DoubleVector mA0(ss.displayDrBarPars().mA0);
    const DoubleVector mh0(ss.displayDrBarPars().mh0);
 
+   BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh0 << " mA_tree = " << mA0);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
+
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.002);
    BOOST_CHECK_CLOSE_FRACTION(MCha(2), mch(2), 0.008);
@@ -565,6 +568,9 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    const double mHpm_1l = ss.displayPhys().mHpm;
    const DoubleVector mA0_1l(ss.displayPhys().mA0);
    const DoubleVector mh0_1l(ss.displayPhys().mh0);
+
+   BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh0_1l << " mA_1l = " << mA0_1l);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
 
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0016);
@@ -710,6 +716,7 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // Now calculate the gauge couplings using
    // NmssmSoftsusy::sparticleThresholdCorrections
    NmssmSoftsusy softsusy;
+   softsusy.setData(oneset);
    copy_parameters(nmssm, softsusy);
 
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
