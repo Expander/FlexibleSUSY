@@ -121,8 +121,7 @@ void NmssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
     double tSOVS = displayTadpoleSMs1loop();
  
     /// tachyons tend to screw up this, so only calculate if we don't have them
-    //  if (numRewsbLoops > 1 && displayProblem().tachyon == none && Z3 == true) {
-    if (numRewsbLoops > 1 && Z3 == true) {
+    if (numRewsbLoops > 1) {
        double lam = displayLambda(), s = displaySvev();
        const drBarPars& forLoops = displayDrBarPars();
        /// add the two-loop terms, prepare inputs
