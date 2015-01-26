@@ -659,9 +659,6 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    update_scale();
    calculate_DRbar_gauge_couplings();
 
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
-
    const double TanBeta = inputPars.TanBeta;
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
