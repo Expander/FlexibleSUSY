@@ -696,6 +696,12 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // run NUTNMSSM_low_scale_constraint::apply(), without the gauge
    // couplings
    model->calculate_DRbar_masses();
+
+   if (model->get_problems().have_problem()) {
+      INFO("Problem in NUTNMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): " << model->get_problems());
+   }
+
    update_scale();
    calculate_DRbar_gauge_couplings();
 
@@ -719,7 +725,18 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    softsusy.setData(oneset);
    copy_parameters(nmssm, softsusy);
 
+   // prevent tan(beta) from being reset
+   softsusy.setSetTbAtMX(true);
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   if (softsusy.displayProblem().test()) {
+      std::ostringstream ss;
+      ss << "Softsusy problem in NUTNMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): "
+           "error while calculating the sparticle thresholds: "
+         << softsusy.displayProblem();
+      INFO(ss.str());
+   }
 
    BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
                  << new_g1 - softsusy.displayGaugeCoupling(1));
