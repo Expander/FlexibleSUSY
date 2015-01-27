@@ -746,20 +746,9 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
                  << new_g3 - softsusy.displayGaugeCoupling(3));
 
-   BOOST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yu) - softsusy.displayYukawaMatrix(YU));
-   BOOST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yd) - softsusy.displayYukawaMatrix(YD));
-   BOOST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Ye) - softsusy.displayYukawaMatrix(YE));
-
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
-
-   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
 }
 
 void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
@@ -791,8 +780,8 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 1.5e-07);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.1e-3);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 3.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.6e-2);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 5.0e-05);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
 
    const double vu = fs.get_vu();
@@ -815,14 +804,14 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mh(ss.displayDrBarPars().mh0);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0002);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00012);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.0007);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
@@ -838,13 +827,13 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mA_1l(ss.displayPhys().mA0);
    const DoubleVector mh_1l(ss.displayPhys().mh0);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0007);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0007);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
@@ -874,10 +863,10 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.00013);
    BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00015);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 0.00007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.1e-05);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0001);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
