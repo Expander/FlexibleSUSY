@@ -237,6 +237,84 @@ void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
    oneset.toMz();
 }
 
+void set_BP1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2400;
+   pp.m12 = 550;
+   pp.TanBeta = 2.665;
+   pp.Azero = -972.1;
+   pp.LambdaInput = 0.646;
+   pp.KappaInput = 0.377;
+   pp.ALambdaInput = -511.0;
+   pp.AKappaInput = -845.7;
+   pp.MuEff = 120.5;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void set_BP2(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2450;
+   pp.m12 = 550;
+   pp.TanBeta = 4.229;
+   pp.Azero = -1923.9;
+   pp.LambdaInput = 0.683;
+   pp.KappaInput = 0.093;
+   pp.ALambdaInput = 1774.9;
+   pp.AKappaInput = 2533.4;
+   pp.MuEff = 229.2;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void set_BP3(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2400;
+   pp.m12 = 600;
+   pp.TanBeta = 3.042;
+   pp.Azero = -1956.4;
+   pp.LambdaInput = 0.650;
+   pp.KappaInput = 0.164;
+   pp.ALambdaInput = 763.8;
+   pp.AKappaInput = 1268.2;
+   pp.MuEff = 265.2;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
 void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
 {
    copy_parameters(fs, ss);
