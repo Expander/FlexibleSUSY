@@ -58,6 +58,12 @@ public:
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
+   void reset() {
+      mx = 0.0;
+      msusy = 0.0;
+      gaugeUnification = true;
+      loops = 1;
+   }
    void set_loops(unsigned l) { loops = l; }
    void test(const NUTNMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset) {
       // run softsusy
@@ -136,6 +142,15 @@ public:
    double get_msusy() const { return msusy; }
    NUTNMSSM_physical get_physical() const { return mssm.get_physical(); }
    NUTNMSSM<Two_scale> get_model() const { return mssm; }
+   void reset() {
+      mx = 0.0;
+      msusy = 0.0;
+      mssm.clear();
+      high_constraint = NULL;
+      susy_constraint = NULL;
+      low_constraint = NULL;
+      loops = 1;
+   }
    void set_loops(unsigned l) { loops = l; }
    void set_low_scale_constraint(NUTNMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(NUTNMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
@@ -711,10 +726,12 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
 
    // comparing 2-loop pole masses
 
+   nmssm_tester.reset();
    nmssm_tester.set_loops(2);
+   softSusy_tester.reset();
    softSusy_tester.set_loops(2);
    BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    // compare model parameters
    const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
@@ -846,7 +863,7 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0008);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.1e-4);
@@ -922,10 +939,13 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    // comparing 2-loop pole masses
 
+   nmssm_tester.reset();
    nmssm_tester.set_loops(2);
+   nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
+   softSusy_tester.reset();
    softSusy_tester.set_loops(2);
    BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    // compare model parameters
    const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
