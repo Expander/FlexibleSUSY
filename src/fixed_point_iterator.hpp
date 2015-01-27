@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <limits>
 #include <gsl/gsl_sys.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
@@ -149,6 +150,9 @@ public:
 
          if (rel_diff > precision)
             return GSL_CONTINUE;
+
+         if (rel_diff < std::numeric_limits<double>::epsilon())
+            return GSL_SUCCESS;
       }
 
       const int status = check_tadpoles(a, parameters);
