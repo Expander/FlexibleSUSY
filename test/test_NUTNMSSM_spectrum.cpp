@@ -805,18 +805,18 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 5.0e-06);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 1.6e-07);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0016);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.0013);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.013);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.0018);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 1.5e-07);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.11);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 3.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
 
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 8.0e-3);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.00005);
 
    // comparing tree-level masses
