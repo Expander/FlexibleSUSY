@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_NMSSM_spectrum
+#define BOOST_TEST_MODULE test_NUTNMSSM_spectrum
 
 #include <boost/test/unit_test.hpp>
 
@@ -14,14 +14,14 @@
 #include "conversion.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
-#include "NMSSM_two_scale_model.hpp"
-#include "NMSSM_input_parameters.hpp"
-#include "NMSSM_two_scale_high_scale_constraint.hpp"
-#include "NMSSM_two_scale_susy_scale_constraint.hpp"
-#include "NMSSM_two_scale_low_scale_constraint.hpp"
-#include "NMSSM_two_scale_convergence_tester.hpp"
-#include "NMSSM_two_scale_initial_guesser.hpp"
-#include "test_NMSSM.hpp"
+#include "NUTNMSSM_two_scale_model.hpp"
+#include "NUTNMSSM_input_parameters.hpp"
+#include "NUTNMSSM_two_scale_high_scale_constraint.hpp"
+#include "NUTNMSSM_two_scale_susy_scale_constraint.hpp"
+#include "NUTNMSSM_two_scale_low_scale_constraint.hpp"
+#include "NUTNMSSM_two_scale_convergence_tester.hpp"
+#include "NUTNMSSM_two_scale_initial_guesser.hpp"
+#include "test_NUTNMSSM.hpp"
 
 class SoftSusy_error : public Error {
 public:
@@ -58,31 +58,52 @@ public:
    double get_msusy() const { return msusy; }
    sPhysical get_physical() const { return softSusy.displayPhys(); }
    NmssmSoftsusy get_model() const { return softSusy; }
+   void reset() {
+      mx = 0.0;
+      msusy = 0.0;
+      gaugeUnification = true;
+      loops = 1;
+   }
    void set_loops(unsigned l) { loops = l; }
-   void test(const NMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset = QedQcd()) {
+   void test(const NUTNMSSM_input_parameters& pp, double mxGuess, const QedQcd& oneset) {
       // run softsusy
       softsusy::numRewsbLoops = loops;
       softsusy::numHiggsMassLoops = loops;
       softsusy::TOLERANCE = 1.0e-4;
       softsusy::Z3 = true;
-      softsusy::GUTlambda = true;
+      softsusy::GUTlambda = false;
+      softsusy::GUTkappa = false;
+      softsusy::GUTsVev = false;
+      softsusy::SoftHiggsOut = true;
 #ifdef ENABLE_VERBOSE
       softsusy::PRINTOUT = 1;
 #endif
-      DoubleVector pars(3);
+      DoubleVector pars(8);
       pars(1) = pp.m0;
       pars(2) = pp.m12;
       pars(3) = pp.Azero;
+      pars(4) = 0.; // Mu
+      pars(5) = 0.; // BMu / (Cos(Beta) Sin(Beta))
+      pars(6) = 0.; // xiS
+      pars(7) = pp.ALambdaInput;
+      pars(8) = pp.AKappaInput;
       DoubleVector nmpars(5);
       nmpars(1) = pp.LambdaInput;
-      nmpars(2) = 0.1;   // initial guess at the low scale
-      nmpars(3) = 1000.; // initial guess at the low scale
+      nmpars(2) = pp.KappaInput;
+      nmpars(3) = pp.MuEff * Sqrt(2.) / pp.LambdaInput;
       nmpars(4) = 0.;
       nmpars(5) = 0.;
 
       softSusy.setAlternativeMs(false);
-      softSusy.lowOrg(NmssmMsugraBcs, mxGuess, pars, nmpars, 1, pp.TanBeta,
-                      oneset, gaugeUnification);
+
+      try {
+         softSusy.lowOrg(NmssmSemiMsugraNoSoftHiggsMassBcs, mxGuess, pars,
+                         nmpars, 1, pp.TanBeta, oneset, gaugeUnification);
+      } catch (const std::string& str) {
+         BOOST_MESSAGE("SoftSusy problem: " << str);
+         throw SoftSusy_error(str);
+      }
+
       mx = softSusy.displayMxBC();
       msusy = softSusy.displayMsusy();
       softsusy::PRINTOUT = 0;
@@ -90,7 +111,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         VERBOSE_MSG(ss.str());
+         BOOST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -106,42 +127,52 @@ private:
    unsigned loops;
 };
 
-class NMSSM_tester {
+class NUTNMSSM_tester {
 public:
-   NMSSM_tester()
+   NUTNMSSM_tester()
       : mx(0.0), msusy(0.0), mssm()
       , high_constraint(NULL), susy_constraint(NULL), low_constraint(NULL)
       , loops(1) {}
-   ~NMSSM_tester() {
+   ~NUTNMSSM_tester() {
       delete high_constraint;
       delete susy_constraint;
       delete low_constraint;
    }
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
-   NMSSM_physical get_physical() const { return mssm.get_physical(); }
-   NMSSM<Two_scale> get_model() const { return mssm; }
-   void set_loops(unsigned l) { loops = l; }
-   void set_low_scale_constraint(NMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
-   void set_susy_scale_constraint(NMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
-   void set_high_scale_constraint(NMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
-   void setup_default_constaints(const NMSSM_input_parameters& pp, const QedQcd& oneset) {
-      if (!high_constraint)
-         high_constraint = new NMSSM_high_scale_constraint<Two_scale>(&mssm, pp);
-      if (!susy_constraint)
-         susy_constraint = new NMSSM_susy_scale_constraint<Two_scale>(&mssm, pp);
-      if (!low_constraint)
-         low_constraint = new NMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
+   NUTNMSSM_physical get_physical() const { return mssm.get_physical(); }
+   NUTNMSSM<Two_scale> get_model() const { return mssm; }
+   void reset() {
+      mx = 0.0;
+      msusy = 0.0;
+      mssm.clear();
+      high_constraint = NULL;
+      susy_constraint = NULL;
+      low_constraint = NULL;
+      loops = 1;
    }
-   void test(const NMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
+   void set_loops(unsigned l) { loops = l; }
+   void set_low_scale_constraint(NUTNMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
+   void set_susy_scale_constraint(NUTNMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
+   void set_high_scale_constraint(NUTNMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
+   void setup_default_constaints(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset) {
+      if (!high_constraint)
+         high_constraint = new NUTNMSSM_high_scale_constraint<Two_scale>(&mssm, pp);
+      if (!susy_constraint)
+         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm, pp);
+      if (!low_constraint)
+         low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
+   }
+   void test(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset) {
       setup_default_constaints(pp, oneset);
       high_constraint->set_input_parameters(pp);
       low_constraint->set_input_parameters(pp);
       low_constraint->set_sm_parameters(oneset);
       susy_constraint->set_input_parameters(pp);
 
-      NMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
-      NMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
+      NUTNMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
+      convergence_tester.set_max_iterations(100);
+      NUTNMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);
@@ -154,6 +185,7 @@ public:
       mssm.set_pole_mass_loop_order(loops);
       mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
+      mssm.do_force_output(true);
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
@@ -169,61 +201,287 @@ public:
       solver.set_running_precision(&precision);
       solver.set_initial_guesser(&initial_guesser);
       solver.add_model(&mssm, upward_constraints, downward_constraints);
-      solver.solve();
-      mssm.run_to(susy_constraint->get_scale());
-      mssm.solve_ewsb();
-      mssm.calculate_spectrum();
-      mssm.run_to(Electroweak_constants::MZ);
+
+      try {
+         solver.solve();
+         mssm.run_to(susy_constraint->get_scale());
+         mssm.solve_ewsb();
+         mssm.calculate_spectrum();
+         mssm.run_to(Electroweak_constants::MZ);
+      } catch (const Error& error) {
+         mssm.get_problems().flag_thrown(error.what());
+         BOOST_MESSAGE("FlexibleSUSY error: " << error.what());
+      } catch (const std::string& str) {
+         mssm.get_problems().flag_thrown(str);
+         BOOST_MESSAGE("FlexibleSUSY error: " << str);
+      }
 
       mx = high_constraint->get_scale();
       msusy = susy_constraint->get_scale();
    }
 private:
    double mx, msusy;
-   NMSSM<Two_scale> mssm;
-   NMSSM_high_scale_constraint<Two_scale>* high_constraint;
-   NMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
-   NMSSM_low_scale_constraint<Two_scale>*  low_constraint;
+   NUTNMSSM<Two_scale> mssm;
+   NUTNMSSM_high_scale_constraint<Two_scale>* high_constraint;
+   NUTNMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
+   NUTNMSSM_low_scale_constraint<Two_scale>*  low_constraint;
    unsigned loops;
 };
 
-BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
+void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
 {
-   NMSSM_input_parameters pp;
-   pp.m0 = 200.;
-   pp.m12 = 200.;
+   pp.m0 = 500.;
+   pp.m12 = 500.;
    pp.TanBeta = 10.;
-   pp.Azero = -500.;
+   pp.Azero = -1500.;
    pp.LambdaInput = 0.1;
-   pp.SignvS = 1;
+   pp.KappaInput = 0.11;
+   pp.ALambdaInput = -1500.;
+   pp.AKappaInput = -36.;
+   pp.MuEff = 965;
 
-   NMSSM<Two_scale> _model;
-   const NMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void set_BP1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2400;
+   pp.m12 = 550;
+   pp.TanBeta = 2.665;
+   pp.Azero = -972.1;
+   pp.LambdaInput = 0.646;
+   pp.KappaInput = 0.377;
+   pp.ALambdaInput = -511.0;
+   pp.AKappaInput = -845.7;
+   pp.MuEff = 120.5;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void set_BP2(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2450;
+   pp.m12 = 550;
+   pp.TanBeta = 4.229;
+   pp.Azero = -1923.9;
+   pp.LambdaInput = 0.683;
+   pp.KappaInput = 0.093;
+   pp.ALambdaInput = 1774.9;
+   pp.AKappaInput = 2533.4;
+   pp.MuEff = 229.2;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void set_BP3(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
+{
+   pp.m0 = 2400;
+   pp.m12 = 600;
+   pp.TanBeta = 3.042;
+   pp.Azero = -1956.4;
+   pp.LambdaInput = 0.650;
+   pp.KappaInput = 0.164;
+   pp.ALambdaInput = 763.8;
+   pp.AKappaInput = 1268.2;
+   pp.MuEff = 265.2;
+
+   oneset.setAlpha(ALPHA , 1./127.944);
+   oneset.setAlpha(ALPHAS, 1.185e-01);
+   softsusy::GMU = 1.1663787e-5;
+   softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
+   oneset.setMass(mBottom, 4.18000000E+00);
+   oneset.setMbMb(4.18000000E+00);
+   oneset.setPoleMt(1.73070000E+02);
+   oneset.setMass(mTau, 1.77682);
+   oneset.setPoleMtau(1.77682);
+
+   oneset.toMz();
+}
+
+void compare_tadpoles_0loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
+
+   softsusy::SoftHiggsOut = true;
+   ss.rewsbTreeLevel(1);
+   fs.solve_ewsb_tree_level();
+
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh1Squared(), fs.get_mHd2(), 1.e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMh2Squared(), fs.get_mHu2(), 1.e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss.displayMsSquared() , fs.get_ms2() , 1.e-10);
+}
+
+void compare_tadpoles_1loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
+
+   softsusy::SoftHiggsOut = true;
+   ss.calcDrBarPars();
+   fs.set_ewsb_loop_order(1);
+   fs.calculate_DRbar_masses();
+
+   const double mt = ss.displayDrBarPars().mt;
+   const double sinthDRbar = ss.calcSinthdrbar();
+
+   ss.calcTadpole1Ms1loop(mt, sinthDRbar);
+   ss.calcTadpole2Ms1loop(mt, sinthDRbar);
+   ss.calcTadpoleSMs1loop(mt, sinthDRbar);
+
+   const double td = Re(fs.tadpole_hh(0));
+   const double tu = Re(fs.tadpole_hh(1));
+   const double ts = Re(fs.tadpole_hh(2));
+
+   const double vd = fs.get_vd();
+   const double vu = fs.get_vu();
+   const double vs = fs.get_vS();
+
+   // check equality of tadpoles
+   BOOST_CHECK_CLOSE_FRACTION(td / vd, ss.displayTadpole1Ms1loop(), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu / vu, ss.displayTadpole2Ms1loop(), 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts / vs, ss.displayTadpoleSMs1loop(), 1.0e-6);
+}
+
+void compare_tadpoles_2loop(NUTNMSSM<Two_scale> fs, NmssmSoftsusy ss)
+{
+   copy_parameters(fs, ss);
+
+   ss.setTadpole1Ms(0.);
+   ss.setTadpole2Ms(0.);
+   ss.setTadpoleSMs(0.);
+
+   softsusy::SoftHiggsOut = true;
+
+   ss.calcDrBarPars();
+   fs.calculate_DRbar_masses();
+
+   const double mt = ss.displayDrBarPars().mt;
+   const double sinthDRbar = ss.calcSinthdrbar();
+   const double vd = fs.get_vd();
+   const double vu = fs.get_vu();
+   const double vs = fs.get_vS();
+
+   const double td_fs = fs.tadpole_hh(0).real();
+   const double tu_fs = fs.tadpole_hh(1).real();
+   const double ts_fs = fs.tadpole_hh(2).real();
+
+   double td_ss = ss.doCalcTadpole1oneLoop(mt, sinthDRbar);
+   double tu_ss = ss.doCalcTadpole2oneLoop(mt, sinthDRbar);
+   double ts_ss = ss.doCalcTadpoleSoneLoop(mt, sinthDRbar);
+
+   // check equality of 1-loop tadpoles
+   BOOST_CHECK_CLOSE_FRACTION(td_fs / vd, td_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu_fs / vu, tu_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts_fs / vs, ts_ss, 1.0e-6);
+
+   // make sure the one-loop tadpoles are calculated correctly
+   softsusy::numRewsbLoops = 1;
+   ss.doTadpoles(mt, sinthDRbar);
+
+   td_ss = ss.displayTadpole1Ms();
+   tu_ss = ss.displayTadpole2Ms();
+   ts_ss = ss.displayTadpoleSMs();
+
+   // check equality of 1-loop tadpoles again
+   BOOST_CHECK_CLOSE_FRACTION(td_fs / vd, td_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(tu_fs / vu, tu_ss, 1.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(ts_fs / vs, ts_ss, 1.0e-6);
+
+   // calculate 2-loop tadpoles
+   softsusy::numRewsbLoops = 2;
+   ss.doTadpoles(mt, sinthDRbar);
+
+   const double td_1_and_2loop_ss = ss.displayTadpole1Ms();
+   const double tu_1_and_2loop_ss = ss.displayTadpole2Ms();
+   const double ts_1_and_2loop_ss = ss.displayTadpoleSMs();
+
+   double two_loop_tadpole[3];
+   fs.tadpole_hh_2loop(two_loop_tadpole);
+
+   // check equality of 1-loop tadpoles again
+   // works only if amu = the lightest CP-even Higgs,
+   // but not the goldstone boson
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[0] / vd, td_1_and_2loop_ss - td_ss, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[1] / vu, tu_1_and_2loop_ss - tu_ss, 1.0e-11);
+   BOOST_CHECK_CLOSE_FRACTION(two_loop_tadpole[2] / vs, ts_1_and_2loop_ss - ts_ss, 1.0e-11);
+}
+
+BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
+{
+   NUTNMSSM_input_parameters pp;
+   softsusy::QedQcd oneset;
+   set_S1(pp, oneset);
+
+   NUTNMSSM<Two_scale> _model;
+   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
-   NMSSM_tester nmssm_tester;
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
+   NUTNMSSM_tester nmssm_tester;
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.18);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.006);
 
    // compare model parameters
    const NmssmSoftsusy ss(softSusy_tester.get_model());
-   const NMSSM<Two_scale> fs(nmssm_tester.get_model());
+   const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
+
+   compare_tadpoles_0loop(fs, ss);
+   compare_tadpoles_1loop(fs, ss);
+   compare_tadpoles_2loop(fs, ss);
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
-   // BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
+   BOOST_CHECK(fs.get_thresholds());
+   BOOST_CHECK(ss.displayThresholds());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00076);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0015);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00013);
-
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.0009);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa()  , ss.displayKappa() , 0.007);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(0,0), ss.displayYukawaMatrix(YU)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(1,1), ss.displayYukawaMatrix(YU)(2,2), 0.0093);
@@ -237,11 +495,22 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Ye()(1,1), ss.displayYukawaMatrix(YE)(2,2), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Ye()(2,2), ss.displayYukawaMatrix(YE)(3,3), 0.0096);
 
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa()  , ss.displayKappa(), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00003);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS()     , ss.displaySvev(), 0.00001);
+
+   BOOST_CHECK_EQUAL(ss.displaySusyMu()    , 0.);
+   BOOST_CHECK_EQUAL(ss.displayM3Squared() , 0.);
+   BOOST_CHECK_EQUAL(ss.displayMspSquared(), 0.);
+   BOOST_CHECK_EQUAL(ss.displayXiS()       , 0.);
+   BOOST_CHECK_EQUAL(ss.displayXiF()       , 0.);
+   BOOST_CHECK_EQUAL(ss.displayMupr()      , 0.);
+
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassB() , ss.displayGaugino(1), 0.006);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.0046);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0051);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.015);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.07);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.009);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2() , ss.displayMsSquared() , 0.015);
 
@@ -277,6 +546,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_TYe()(1,1), ss.displayTrilinear(EA)(2,2), 0.021);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_TYe()(2,2), ss.displayTrilinear(EA)(3,3), 0.021);
 
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_TLambdax(), ss.displayTrialambda(), 0.001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_TKappa()  , ss.displayTriakappa() , 0.023);
+
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();
    const double vs = fs.get_vS();
@@ -302,6 +574,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    const DoubleVector mA0(ss.displayDrBarPars().mA0);
    const DoubleVector mh0(ss.displayDrBarPars().mh0);
 
+   BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh0 << " mA_tree = " << mA0);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
+
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha(1), mch(1), 0.002);
    BOOST_CHECK_CLOSE_FRACTION(MCha(2), mch(2), 0.008);
@@ -316,11 +591,11 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.004);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun , 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0(1), 0.0025);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA0(2), 0.0015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0(1), 0.008);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA0(2), 0.0032);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0(1), 0.0007);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh0(2), 0.0025);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh0(2), 0.0032);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh0(3), 0.004);
 
    // down-type squarks
@@ -390,6 +665,9 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    const DoubleVector mA0_1l(ss.displayPhys().mA0);
    const DoubleVector mh0_1l(ss.displayPhys().mh0);
 
+   BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh0_1l << " mA_1l = " << mA0_1l);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
+
    // charginos
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(1), mch_1l(1), 0.0016);
    BOOST_CHECK_CLOSE_FRACTION(MCha_1l(2), mch_1l(2), 0.0040);
@@ -399,12 +677,12 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0044);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l  , 0.0004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.0004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l  , 0.0032);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.008);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.0032);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.00006);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.0033);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh0_1l(3), 0.001);
 
    // down-type squarks
@@ -445,46 +723,85 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(Snu_1l(3), msnu_1l(3), 0.0090);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_physical().MGlu, ss.displayPhys().mGluino, 0.005);
+
+   // comparing 2-loop pole masses
+
+   nmssm_tester.reset();
+   nmssm_tester.set_loops(2);
+   softSusy_tester.reset();
+   softSusy_tester.set_loops(2);
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
+
+   // compare model parameters
+   const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
+   const NUTNMSSM<Two_scale> fs_2l(nmssm_tester.get_model());
+
+   const DoubleVector
+      MHpm_2l(ToDoubleVector(fs_2l.get_physical().MHpm)),
+      MAh_2l(ToDoubleVector(fs_2l.get_physical().MAh)),
+      Mhh_2l(ToDoubleVector(fs_2l.get_physical().Mhh));
+   const double mHpm_2l = ss_2l.displayPhys().mHpm;
+   const DoubleVector mA_2l(ss_2l.displayPhys().mA0);
+   const DoubleVector mh_2l(ss_2l.displayPhys().mh0);
+
+   BOOST_CHECK_EQUAL(fs_2l.get_loops(), 2);
+   BOOST_CHECK_EQUAL(fs_2l.get_loops(), ss_2l.displayLoops());
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.004);
+
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.008);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.004);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.0-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
+
+   BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
+   BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
 // ===== test with gauge couplings determined from the Rho parameter =====
 
 /**
- * @class NMSSM_precise_gauge_couplings_low_scale_constraint
+ * @class NUTNMSSM_precise_gauge_couplings_low_scale_constraint
  *
- * Replacement class for NMSSM_low_scale_constraint, which calculates
+ * Replacement class for NUTNMSSM_low_scale_constraint, which calculates
  * the gauge couplings at the low scale as Softsusy does it.
  */
-class NMSSM_precise_gauge_couplings_low_scale_constraint
-   : public NMSSM_low_scale_constraint<Two_scale> {
+class NUTNMSSM_precise_gauge_couplings_low_scale_constraint
+   : public NUTNMSSM_low_scale_constraint<Two_scale> {
 public:
-   NMSSM_precise_gauge_couplings_low_scale_constraint()
-      : NMSSM_low_scale_constraint<Two_scale>() {}
-   NMSSM_precise_gauge_couplings_low_scale_constraint(
-      NMSSM<Two_scale>* model_, const NMSSM_input_parameters& inputPars_,
+   NUTNMSSM_precise_gauge_couplings_low_scale_constraint()
+      : NUTNMSSM_low_scale_constraint<Two_scale>() {}
+   NUTNMSSM_precise_gauge_couplings_low_scale_constraint(
+      NUTNMSSM<Two_scale>* model_, const NUTNMSSM_input_parameters& inputPars_,
       const QedQcd& oneset_)
-      : NMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
-   virtual ~NMSSM_precise_gauge_couplings_low_scale_constraint() {}
+      : NUTNMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+   virtual ~NUTNMSSM_precise_gauge_couplings_low_scale_constraint() {}
 
    virtual void apply();
 };
 
-void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
+void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
 {
-   assert(model && "Error: NMSSM_precise_gauge_couplings_low_scale_constraint:"
+   assert(model && "Error: NUTNMSSM_precise_gauge_couplings_low_scale_constraint:"
           " model pointer must not be zero");
 
    // save old model parmeters
-   const NMSSM<Two_scale> nmssm(*model);
+   const NUTNMSSM<Two_scale> nmssm(*model);
 
-   // run NMSSM_low_scale_constraint::apply(), without the gauge
+   // run NUTNMSSM_low_scale_constraint::apply(), without the gauge
    // couplings
    model->calculate_DRbar_masses();
+
+   if (model->get_problems().have_problem()) {
+      INFO("Problem in NUTNMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): " << model->get_problems());
+   }
+
    update_scale();
    calculate_DRbar_gauge_couplings();
-
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
 
    const double TanBeta = inputPars.TanBeta;
    const double g1 = model->get_g1();
@@ -503,9 +820,22 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // Now calculate the gauge couplings using
    // NmssmSoftsusy::sparticleThresholdCorrections
    NmssmSoftsusy softsusy;
+   softsusy.setData(oneset);
+   softsusy.setMw(oneset.displayPoleMW());
    copy_parameters(nmssm, softsusy);
 
+   // prevent tan(beta) from being reset
+   softsusy.setSetTbAtMX(true);
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   if (softsusy.displayProblem().test()) {
+      std::ostringstream ss;
+      ss << "Softsusy problem in NUTNMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): "
+           "error while calculating the sparticle thresholds: "
+         << softsusy.displayProblem();
+      INFO(ss.str());
+   }
 
    BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
                  << new_g1 - softsusy.displayGaugeCoupling(1));
@@ -514,78 +844,50 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
                  << new_g3 - softsusy.displayGaugeCoupling(3));
 
-   BOOST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yu) - softsusy.displayYukawaMatrix(YU));
-   BOOST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yd) - softsusy.displayYukawaMatrix(YD));
-   BOOST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Ye) - softsusy.displayYukawaMatrix(YE));
-
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
-
-   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
-
-   const double tanBeta = softsusy.displayTanb();
-   const double vev = softsusy.displayHvev();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = sinBeta * vev;
-   const double vd = cosBeta * vev;
-
-   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
-                 << model->get_vu() - vu);
-   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
-                 << model->get_vd() - vd);
-
-   model->set_vu(vu);
-   model->set_vd(vd);
 }
 
-void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
-   const NMSSM_input_parameters& pp,
-   const softsusy::QedQcd& oneset
-)
+void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
+   const NUTNMSSM_input_parameters& pp,
+   const softsusy::QedQcd& oneset)
 {
-   NMSSM<Two_scale> _model;
-   const NMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   NUTNMSSM<Two_scale> _model;
+   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
-   NMSSM_tester nmssm_tester;
-   nmssm_tester.set_low_scale_constraint(new NMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
-   // nmssm_tester.set_susy_scale_constraint(new NMSSM_softsusy_ewsb_susy_scale_constraint(&_model, pp));
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
+   NUTNMSSM_tester nmssm_tester;
+   nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
+   // nmssm_tester.set_susy_scale_constraint(new NUTNMSSM_softsusy_ewsb_susy_scale_constraint(&_model, pp));
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
-   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.009);
-   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 4.6e-4);
+   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0008);
+   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.1e-4);
 
    // compare model parameters
    const NmssmSoftsusy ss(softSusy_tester.get_model());
-   const NMSSM<Two_scale> fs(nmssm_tester.get_model());
+   const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00003);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00008);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 3.0e-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 6.5e-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 4.0e-07);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0016);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.0013);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.013);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.0018);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 1.5e-07);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.6e-2);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 5.0e-05);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
 
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();
    const double tanBeta = vu / vd;
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 3.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 8.0e-3);
    BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.00005);
 
    // comparing tree-level masses
@@ -600,14 +902,14 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mh(ss.displayDrBarPars().mh0);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0002);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00012);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.0007);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
@@ -623,13 +925,13 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mA_1l(ss.displayPhys().mA0);
    const DoubleVector mh_1l(ss.displayPhys().mh0);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0007);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.0007);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0007);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
@@ -637,14 +939,17 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    // comparing 2-loop pole masses
 
+   nmssm_tester.reset();
    nmssm_tester.set_loops(2);
+   nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
+   softSusy_tester.reset();
    softSusy_tester.set_loops(2);
-   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp));
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+   BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
+   BOOST_CHECK_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
    // compare model parameters
    const NmssmSoftsusy ss_2l(softSusy_tester.get_model());
-   const NMSSM<Two_scale> fs_2l(nmssm_tester.get_model());
+   const NUTNMSSM<Two_scale> fs_2l(nmssm_tester.get_model());
 
    const DoubleVector
       MHpm_2l(ToDoubleVector(fs_2l.get_physical().MHpm)),
@@ -659,10 +964,10 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.00013);
    BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00015);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 0.00007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.1e-05);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0001);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
@@ -670,19 +975,41 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
-BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum_with_Softsusy_gauge_couplings )
+BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
 {
-   // standard NMSSM testing point
+   // standard NUTNMSSM testing point S1
    {
+      BOOST_MESSAGE("testing S1 ...");
       softsusy::QedQcd oneset;
-      NMSSM_input_parameters pp;
-      pp.m0 = 200.;
-      pp.m12 = 200.;
-      pp.TanBeta = 10.;
-      pp.Azero = -500.;
-      pp.LambdaInput = 0.1;
-      pp.SignvS = 1;
-
-      test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+      NUTNMSSM_input_parameters pp;
+      set_S1(pp, oneset);
+      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
    }
+
+   // // NUTNMSSM point BP1
+   // {
+   //    BOOST_MESSAGE("testing BP1 ...");
+   //    softsusy::QedQcd oneset;
+   //    NUTNMSSM_input_parameters pp;
+   //    set_BP1(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   // }
+
+   // // NUTNMSSM point BP2
+   // {
+   //    BOOST_MESSAGE("testing BP2 ...");
+   //    softsusy::QedQcd oneset;
+   //    NUTNMSSM_input_parameters pp;
+   //    set_BP2(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   // }
+
+   // // NUTNMSSM point BP3
+   // {
+   //    BOOST_MESSAGE("testing BP3 ...");
+   //    softsusy::QedQcd oneset;
+   //    NUTNMSSM_input_parameters pp;
+   //    set_BP3(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   // }
 }
