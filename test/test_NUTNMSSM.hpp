@@ -75,8 +75,6 @@ void copy_parameters(const NUTNMSSM<Two_scale>& nmssm, NmssmSoftsusy& softsusy)
    softsusy.setXiF(0.);
    softsusy.setMupr(0.);
 
-   softsusy.setMw(softsusy.displayMwRun());
-
    softsusy::Z3 = true;
 }
 

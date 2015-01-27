@@ -723,6 +723,7 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // NmssmSoftsusy::sparticleThresholdCorrections
    NmssmSoftsusy softsusy;
    softsusy.setData(oneset);
+   softsusy.setMw(oneset.displayPoleMW());
    copy_parameters(nmssm, softsusy);
 
    // prevent tan(beta) from being reset
@@ -793,16 +794,16 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess, oneset));
 
-   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.05);
-   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 6.0e-4);
+   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0008);
+   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.1e-4);
 
    // compare model parameters
    const NmssmSoftsusy ss(softSusy_tester.get_model());
    const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00013);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0004);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 2.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 3.0e-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 5.0e-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 1.6e-07);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0016);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.0013);
