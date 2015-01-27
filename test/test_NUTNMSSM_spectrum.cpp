@@ -760,22 +760,6 @@ void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
    model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
    model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
-
-   const double tanBeta = softsusy.displayTanb();
-   const double vev = softsusy.displayHvev();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = sinBeta * vev;
-   const double vd = cosBeta * vev;
-
-   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
-                 << model->get_vu() - vu);
-   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
-                 << model->get_vd() - vd);
-
-   model->set_vu(vu);
-   model->set_vd(vd);
 }
 
 void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
@@ -802,12 +786,12 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const NUTNMSSM<Two_scale> fs(nmssm_tester.get_model());
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 3.0e-06);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 5.0e-06);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 1.6e-07);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 6.5e-06);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 4.0e-07);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 1.5e-07);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.11);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.1e-3);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 3.5e-05);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
 
