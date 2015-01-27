@@ -227,6 +227,7 @@ void set_S1(NUTNMSSM_input_parameters& pp, softsusy::QedQcd& oneset)
    oneset.setAlpha(ALPHAS, 1.185e-01);
    softsusy::GMU = 1.1663787e-5;
    softsusy::MZ = 91.1876;
+   oneset.setPoleMZ(softsusy::MZ);
    oneset.setMass(mBottom, 4.18000000E+00);
    oneset.setMbMb(4.18000000E+00);
    oneset.setPoleMt(1.73070000E+02);
