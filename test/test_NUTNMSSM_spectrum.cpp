@@ -878,6 +878,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
 {
    // standard NUTNMSSM testing point S1
    {
+      BOOST_MESSAGE("testing S1 ...");
       softsusy::QedQcd oneset;
       NUTNMSSM_input_parameters pp;
       set_S1(pp, oneset);
