@@ -156,6 +156,7 @@ public:
       susy_constraint->set_input_parameters(pp);
 
       NUTNMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
+      convergence_tester.set_max_iterations(100);
       NUTNMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
                                                       *low_constraint,
                                                       *susy_constraint,
@@ -169,6 +170,7 @@ public:
       mssm.set_pole_mass_loop_order(loops);
       mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
+      mssm.do_force_output(true);
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
@@ -961,6 +963,33 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
       softsusy::QedQcd oneset;
       NUTNMSSM_input_parameters pp;
       set_S1(pp, oneset);
+      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   }
+
+   // NUTNMSSM point BP1
+   {
+      BOOST_MESSAGE("testing BP1 ...");
+      softsusy::QedQcd oneset;
+      NUTNMSSM_input_parameters pp;
+      set_BP1(pp, oneset);
+      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   }
+
+   // NUTNMSSM point BP2
+   {
+      BOOST_MESSAGE("testing BP2 ...");
+      softsusy::QedQcd oneset;
+      NUTNMSSM_input_parameters pp;
+      set_BP2(pp, oneset);
+      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   }
+
+   // NUTNMSSM point BP3
+   {
+      BOOST_MESSAGE("testing BP3 ...");
+      softsusy::QedQcd oneset;
+      NUTNMSSM_input_parameters pp;
+      set_BP3(pp, oneset);
       test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
    }
 }
