@@ -1379,7 +1379,7 @@ bool Softsusy<SoftPars>::higgs(int accuracy, double piwwtMS,
     h0Htachyon = true;
     if (PRINTOUT > 2) cout << " h0/H tachyon: m^2=" << temp;
   }
-  temp = temp.apply(zeroSqrt);
+  temp = temp.apply(ccbSqrt);
 
   /// If certain DRbar ratios are large, they can cause massive higher order
   /// corrections in the higgs mass, making it have O(1) uncertainties. 
@@ -1412,7 +1412,7 @@ bool Softsusy<SoftPars>::higgs(int accuracy, double piwwtMS,
     h0Htachyon = true;
     if (PRINTOUT > 2) cout << " h0/H tachyon: m^2=" << temp;
   }
-  temp = temp.apply(zeroSqrt);
+  temp = temp.apply(ccbSqrt);
   double bigMh = temp.max();
 
 
@@ -1470,9 +1470,9 @@ double piaa = piAA(mApole, displayMu());
   /*-------------------------------------------------------------------------*/
 
   physpars.mh0(1) = littleMh;
-  physpars.mA0(1) = zeroSqrt(poleMasq);
+  physpars.mA0(1) = ccbSqrt(poleMasq);
   physpars.mh0(2) = bigMh;
-  physpars.mHpm = zeroSqrt(poleMhcSq);
+  physpars.mHpm = ccbSqrt(poleMhcSq);
 
   if (poleMhcSq > 0. && poleMasq > 0. && !h0Htachyon) return false;
   else {
@@ -6292,7 +6292,7 @@ void Softsusy<SoftPars>::doUpSquarks(double mt, double pizztMS, double sinthDRba
       else if (family == 2) flagTachyon(scharm);
     }
 
-    DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(zeroSqrt));
+    DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(ccbSqrt));
 
     physpars.mu(1, family) = physicalStopMasses(1);
     physpars.mu(2, family) = physicalStopMasses(2);
@@ -6324,9 +6324,9 @@ void Softsusy<SoftPars>::doUpSquarks(double mt, double pizztMS, double sinthDRba
     flagTachyon(stop);
   }
   
-  DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(zeroSqrt));
+  DoubleVector physicalStopMasses(physicalStopMassesSquared.apply(ccbSqrt));
   DoubleVector 
-      physicalStopMasses2(physicalStopMassesSquared2.apply(zeroSqrt));
+      physicalStopMasses2(physicalStopMassesSquared2.apply(ccbSqrt));
   
   double lightStopMass = minimum(physicalStopMasses(1), physicalStopMasses(2));
   double heavyStopMass = maximum(physicalStopMasses2(1), 
@@ -6394,7 +6394,7 @@ void Softsusy<SoftPars>::doDownSquarks(double mb, double pizztMS, double
       else if (family == 2) flagTachyon(sstrange);
     }
 
-    DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(zeroSqrt));
+    DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(ccbSqrt));
 
     physpars.md(1, family) = physicalSbotMasses(1);
     physpars.md(2, family) = physicalSbotMasses(2);
@@ -6428,8 +6428,8 @@ void Softsusy<SoftPars>::doDownSquarks(double mb, double pizztMS, double
     flagTachyon(sbottom);
   }
 
-  DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(zeroSqrt));
-  DoubleVector physicalSbotMasses2(physicalSbotMassesSquared2.apply(zeroSqrt));
+  DoubleVector physicalSbotMasses(physicalSbotMassesSquared.apply(ccbSqrt));
+  DoubleVector physicalSbotMasses2(physicalSbotMassesSquared2.apply(ccbSqrt));
 
   /// twisted measures the ordering of the sbottom masses. If msbot1 > msbot2,
   /// twisted is defined to be true (msbot2 > msbot1 is defined "untwisted").
@@ -6492,8 +6492,8 @@ void Softsusy<SoftPars>::doChargedSleptons(double mtau, double pizztMS, double
       else if (family == 2) flagTachyon(smuon);
     }
       
-    physpars.me(1, family) = zeroSqrt(mSlepSquared(1, 1));
-    physpars.me(2, family) = zeroSqrt(mSlepSquared(2, 2));
+    physpars.me(1, family) = ccbSqrt(mSlepSquared(1, 1));
+    physpars.me(2, family) = ccbSqrt(mSlepSquared(2, 2));
   }
 
   /// do third family
@@ -6520,9 +6520,9 @@ void Softsusy<SoftPars>::doChargedSleptons(double mtau, double pizztMS, double
     flagTachyon(stau);
   }
   
-  DoubleVector physicalStauMasses(physicalStauMassesSquared.apply(zeroSqrt));
+  DoubleVector physicalStauMasses(physicalStauMassesSquared.apply(ccbSqrt));
   DoubleVector 
-      physicalStauMasses2(physicalStauMassesSquared2.apply(zeroSqrt));
+      physicalStauMasses2(physicalStauMassesSquared2.apply(ccbSqrt));
   
   double lightStauMass = minimum(physicalStauMasses(1), physicalStauMasses(2));
   double heavyStauMass = maximum(physicalStauMasses2(1), 
@@ -6552,7 +6552,7 @@ void Softsusy<SoftPars>::doSnu(double pizztMS, int accuracy) {
       addSnuCorrection(mSnuSquared, family);
     }
 
-    physpars.msnu(family) = zeroSqrt(mSnuSquared);
+    physpars.msnu(family) = ccbSqrt(mSnuSquared);
   }
 }
 
@@ -7209,7 +7209,7 @@ void Softsusy<SoftPars>::sparticleThresholdCorrections(double tb) {
   double poleMwSq = 0.25 * sqr(newGauge(2)) * sqr(vev) - 
     piWWT(displayMw(), displayMu());
   if (poleMwSq < 0.) flagTachyon(W);
-  setMw(zeroSqrt(poleMwSq)); 
+  setMw(ccbSqrt(poleMwSq)); 
   setGaugeCoupling(1, newGauge(1));
   setGaugeCoupling(2, newGauge(2));
   setGaugeCoupling(3, newGauge(3));
@@ -7304,7 +7304,7 @@ void Softsusy<SoftPars>::calcDrBarHiggs(double beta, double mz2, double mw2,
       }
      */
     flagTachyon(softsusy::A0); 
-    if (mAFlag == false) mAsq = zeroSqrt(mAsq); 
+    if (mAFlag == false) mAsq = ccbSqrt(mAsq); 
     /// This may be  a bad idea in terms of convergence
     else mAsq = fabs(mAsq);
     
@@ -7324,7 +7324,7 @@ void Softsusy<SoftPars>::calcDrBarHiggs(double beta, double mz2, double mw2,
   if (mSq(1) < 0. || mSq(2) < 0.) {
     flagTachyon(h0);
   }
-  DoubleVector temp(mSq.apply(zeroSqrt));
+  DoubleVector temp(mSq.apply(ccbSqrt));
   if (temp(2) > temp(1)) eg.thetaH = eg.thetaH + PI * 0.5; 
 
   int pos;
@@ -7399,7 +7399,7 @@ void Softsusy<SoftPars>::calcDrBarPars() {
   double savedMu = displaySusyMu();
   if (sphenoMassConv) {
      double muSq = treeLevelMuSq();
-     double muForNow = zeroSqrt(muSq);
+     double muForNow = ccbSqrt(muSq);
      setSusyMu(muForNow);
   }
 
@@ -7432,7 +7432,7 @@ void Softsusy<SoftPars>::calcDrBarPars() {
       }
       if (PRINTOUT > 2) cout << " tree sup(" << family << ") tachyon ";
     }
-    DoubleVector mstopDRbar(mSq.apply(zeroSqrt));   
+    DoubleVector mstopDRbar(mSq.apply(ccbSqrt));   
     
     treeDownSquark(mSquared, eg.mb, pizzt, sinthDRbar, family);
     mSq = mSquared.sym2by2(eg.thetab);
@@ -7445,7 +7445,7 @@ void Softsusy<SoftPars>::calcDrBarPars() {
       }
     if (PRINTOUT > 1) cout << " tree sdown(" << family << ") tachyon ";
     }
-    DoubleVector msbotDRbar(mSq.apply(zeroSqrt));   
+    DoubleVector msbotDRbar(mSq.apply(ccbSqrt));   
     
     treeChargedSlepton(mSquared, eg.mtau, pizzt, sinthDRbar, family);
     mSq = mSquared.sym2by2(eg.thetatau);
@@ -7458,7 +7458,7 @@ void Softsusy<SoftPars>::calcDrBarPars() {
       }
     if (PRINTOUT > 1) cout << " tree selectron(" << family << ") tachyon ";
     }
-    DoubleVector mstauDRbar(mSq.apply(zeroSqrt));   
+    DoubleVector mstauDRbar(mSq.apply(ccbSqrt));   
     
     int i; for (i=1; i<=2; i++) {
       eg.mu(i, family) = mstopDRbar(i);    eg.md(i, family) = msbotDRbar(i);
@@ -7476,7 +7476,7 @@ void Softsusy<SoftPars>::calcDrBarPars() {
     if (PRINTOUT > 1) cout << " tree sneutrino(" << family << ") tachyon@"
 			   << displayMu() << " ";
     }
-    eg.msnu(family) = zeroSqrt(mSnuSquared);
+    eg.msnu(family) = ccbSqrt(mSnuSquared);
   }
 
   double mw = displayMwRun();
