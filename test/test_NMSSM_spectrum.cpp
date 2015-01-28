@@ -483,9 +483,6 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    update_scale();
    calculate_DRbar_gauge_couplings();
 
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
-
    const double TanBeta = inputPars.TanBeta;
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
@@ -504,7 +501,11 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // NmssmSoftsusy::sparticleThresholdCorrections
    NmssmSoftsusy softsusy;
    copy_parameters(nmssm, softsusy);
+   softsusy.setData(oneset);
+   softsusy.setMw(oneset.displayPoleMW());
 
+   // prevent tan(beta) from being reset
+   softsusy.setSetTbAtMX(true);
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
 
    BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
@@ -524,26 +525,6 @@ void NMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
-
-   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
-
-   const double tanBeta = softsusy.displayTanb();
-   const double vev = softsusy.displayHvev();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = sinBeta * vev;
-   const double vd = cosBeta * vev;
-
-   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
-                 << model->get_vu() - vu);
-   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
-                 << model->get_vd() - vd);
-
-   model->set_vu(vu);
-   model->set_vd(vd);
 }
 
 void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
@@ -563,7 +544,7 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
-   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.009);
+   BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0002);
    BOOST_CHECK_CLOSE_FRACTION(nmssm_tester.get_msusy(), softSusy_tester.get_msusy(), 4.6e-4);
 
    // compare model parameters
@@ -574,11 +555,11 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00008);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0016);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0017);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.0013);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.013);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.0018);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.002);
 
    const double vu = fs.get_vu();
    const double vd = fs.get_vd();
@@ -600,15 +581,15 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mh(ss.displayDrBarPars().mh0);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.00023);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.00023);
    BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0002);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00012);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00024);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.00052);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_tree = " << Mhh << " mA_tree = " << MAh);
@@ -623,14 +604,14 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mA_1l(ss.displayPhys().mA0);
    const DoubleVector mh_1l(ss.displayPhys().mh0);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0003);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.0002);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0006);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_1l = " << Mhh_1l << " mA_1l = " << MAh_1l);
@@ -659,12 +640,12 @@ void test_NMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.0002);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 0.00007);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 3.e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0006);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
