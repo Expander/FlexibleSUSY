@@ -1,5 +1,5 @@
 
-BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`"}];
+BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
 
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
 phases / signs."
@@ -482,10 +482,10 @@ CreateEWSBRootFinders[{}] :=
          ];
 
 CreateEWSBRootFinders[rootFinders_List] :=
-    WriteOut`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
+    Utils`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
 
 CreateIndices[indices_List] :=
-    "(" <> WriteOut`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
+    "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
 SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par], idx_, func_String] :=
     CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
@@ -602,7 +602,7 @@ SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
 CreateEWSBParametersInitializationList[parameters_List] :=
     Module[{result = ""},
            If[Length[parameters] > 0,
-              result = WriteOut`StringJoinWithSeparator[
+              result = Utils`StringJoinWithSeparator[
                   CConversion`ToValidCSymbolString /@ parameters,
                   ", "
               ];

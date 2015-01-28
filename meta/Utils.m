@@ -1,6 +1,8 @@
 
 BeginPackage["Utils`"];
 
+StringJoinWithSeparator::usage = "Joins a list of strings with a given separator string";
+
 Zip::usage = "Combines two lists to a list of touples.
 Example:
 
@@ -15,13 +17,32 @@ In[]:= StringZip[{\"a\",\"b\"},{\"d\",\"e\"}]
 Out[]= {\"ad\", \"be\"}}
 ";
 
+StringZipWithSeparator::usage = "Combines two lists of strings to a list of concated strings using a separator.
+Example:
+
+In[]:= StringZipWithSeparator[{\"a\",\"b\"},{\"d\",\"e\"}, \"_\"]
+Out[]= {\"a_d\", \"b_e\"}}
+";
+
 Begin["`Private`"];
+
+StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
+    Module[{result = "", i},
+           For[i = 1, i <= Length[list], i++,
+               If[i > 1, result = result <> separator;];
+               result = result <> transformer[list[[i]]];
+              ];
+           Return[result];
+          ];
 
 Zip[list1_List, list2_List] :=
     MapThread[List, {list1, list2}];
 
 StringZip[list1_List, list2_List] :=
     MapThread[StringJoin, {list1, list2}];
+
+StringZipWithSeparator[list1_List, list2_List, separator_String] :=
+    MapThread[StringJoinWithSeparator[{#1,#2},separator]&, {list1, list2}];
 
 End[];
 

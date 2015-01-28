@@ -1,6 +1,7 @@
 
 BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
-                           "Parameters`", "TreeMasses`", "LatticeUtils`"}];
+                           "Parameters`", "TreeMasses`", "LatticeUtils`",
+                           "Utils`"}];
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
@@ -17,20 +18,10 @@ ReadLesHouchesPhysicalParameters::usage="";
 ConvertMixingsToSLHAConvention::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
-StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 ParseCmdLineOptions::usage="";
 PrintCmdLineOptions::usage="";
 
 Begin["`Private`"];
-
-StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
-    Module[{result = "", i},
-           For[i = 1, i <= Length[list], i++,
-               If[i > 1, result = result <> separator;];
-               result = result <> transformer[list[[i]]];
-              ];
-           Return[result];
-          ];
 
 (*
  * @brief Replaces tokens in files.
@@ -572,7 +563,7 @@ GetDRbarBlockNames[] :=
     Module[{blocks, transformer},
            blocks = GetDRbarBlocks[];
            transformer = ("\"" <> ToString[#] <> "\"")&;
-           "{ " <> StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
+           "{ " <> Utils`StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
           ];
 
 GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
