@@ -266,13 +266,6 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
-namespace {
-   template <class T>
-   struct Is_not_finite {
-      bool operator()(T x) { return !std::isfinite(x); }
-   };
-}
-
 /**
  * Copies all elements from src to dst which are not close to the
  * elements in cmp.
