@@ -54,11 +54,15 @@ void CMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // run CMSSM_low_scale_constraint::apply(), without the gauge
    // couplings
    model->calculate_DRbar_masses();
+
+   if (model->get_problems().have_problem()) {
+      BOOST_MESSAGE("Problem in CMSSM_precise_gauge_couplings_"
+                    "low_scale_constraint::apply(): "
+                    << model->get_problems());
+   }
+
    update_scale();
    calculate_DRbar_gauge_couplings();
-
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
 
    const double TanBeta = inputPars.TanBeta;
    const double g1 = model->get_g1();
@@ -78,8 +82,21 @@ void CMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    // MssmSoftsusy::sparticleThresholdCorrections
    MssmSoftsusy softsusy;
    copy_parameters(mssm, softsusy);
+   softsusy.setData(oneset);
+   softsusy.setMw(oneset.displayPoleMW());
 
+   // prevent tan(beta) from being reset
+   softsusy.setSetTbAtMX(true);
    softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   if (softsusy.displayProblem().test()) {
+      std::ostringstream ss;
+      ss << "Softsusy problem in CMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): "
+           "error while calculating the sparticle thresholds: "
+         << softsusy.displayProblem();
+      BOOST_MESSAGE(ss.str());
+   }
 
    BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
                  << new_g1 - softsusy.displayGaugeCoupling(1));
@@ -98,26 +115,6 @@ void CMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
-
-   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
-
-   const double tanBeta = softsusy.displayTanb();
-   const double vev = softsusy.displayHvev();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = sinBeta * vev;
-   const double vd = cosBeta * vev;
-
-   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
-                 << model->get_vu() - vu);
-   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
-                 << model->get_vd() - vd);
-
-   model->set_vu(vu);
-   model->set_vd(vd);
 }
 
 /**
@@ -625,16 +622,16 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_Softsusy_gauge_couplings )
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.04);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 6.3e-4);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 2.0e-5);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
    const CMSSM<Two_scale> fs(mssm_tester.get_model());
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00066);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00010);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.0000023);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0000066);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.0000010);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0024);
@@ -662,13 +659,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_Softsusy_gauge_couplings )
    const double mH0 = ss.displayDrBarPars().mh0(2);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0011);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 4.e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.0012);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 4.e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.000022);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.0011);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 3.e-6);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 4.e-5);
 }
 
 
