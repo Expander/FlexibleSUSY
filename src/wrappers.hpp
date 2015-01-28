@@ -229,7 +229,6 @@ inline int Sign(int x)
  * @param v vector of masses
  * @param z corresponding mixing matrix
  */
-
 template <typename DerivedArray, typename DerivedMatrix>
 void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
                        Eigen::MatrixBase<DerivedMatrix>& z)
@@ -248,7 +247,6 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
       z.row(new_pos).swap(z.row(pos));
       pos = new_pos;
    }
-
 }
 
 template <typename Base, typename Exponent>
