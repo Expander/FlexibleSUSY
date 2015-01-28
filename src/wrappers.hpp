@@ -87,7 +87,7 @@ inline double ArcCos(double a)
 }
 
 template <typename Derived>
-unsigned closest_index(double mass, Eigen::ArrayBase<Derived>& v)
+unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 {
    unsigned pos;
    typename Derived::PlainObject tmp;
@@ -264,6 +264,46 @@ inline double Re(double x)
 inline double Re(const std::complex<double>& x)
 {
    return std::real(x);
+}
+
+/**
+ * Copies all elements from src to dst which are not close to the
+ * elements in cmp.
+ *
+ * @param src source vector
+ * @param cmp vector with elements to compare against
+ * @param dst destination vector
+ */
+template<class Real, int Nsrc, int Ncmp, int Ndst>
+void remove_if_equal(const Eigen::Array<Real,Nsrc,1>& src,
+                     const Eigen::Array<Real,Ncmp,1>& cmp,
+                     Eigen::Array<Real,Ndst,1>& dst)
+{
+   static_assert(Nsrc == Ncmp + Ndst,
+                 "Error: remove_if_equal: vectors have incompatible length!");
+
+   // list of indices to be skipped
+   int skip_indices[Ncmp] = { 0 };
+
+   for (int i = 0; i < Ncmp; i++) {
+      const int idx = closest_index(cmp(i), src);
+      skip_indices[i] = idx;
+   }
+
+   // copy from src to dst skipping the indices contained in skip_indices
+   int idst = 0;
+
+   for (int i = 0; i < Nsrc; i++) {
+      const int* skip_index = std::find(skip_indices, skip_indices + Ncmp, i);
+      const bool dont_skip = (skip_index == skip_indices + Ncmp);
+
+      if (dont_skip) {
+         dst(idst) = src(i);
+         idst++;
+      }
+   }
+
+   assert(idst == Ndst);
 }
 
 /**
