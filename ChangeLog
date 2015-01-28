@@ -1,3 +1,9 @@
+FlexibleSUSY-1.0.5 [not released yet]
+
+ * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
+   is used in the two-loop Higgs self-energy and tadpole corrections.
+   Before, there were cases where a Goldstone boson mass was used.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
