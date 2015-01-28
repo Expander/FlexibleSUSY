@@ -266,6 +266,13 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
+namespace {
+   template <class T>
+   struct Is_not_finite {
+      bool operator()(T x) { return !std::isfinite(x); }
+   };
+}
+
 /**
  * Copies all elements from src to dst which are not close to the
  * elements in cmp.
@@ -282,28 +289,15 @@ void remove_if_equal(const Eigen::Array<Real,Nsrc,1>& src,
    static_assert(Nsrc == Ncmp + Ndst,
                  "Error: remove_if_equal: vectors have incompatible length!");
 
-   // list of indices to be skipped
-   int skip_indices[Ncmp] = { 0 };
+   Eigen::Array<Real,Nsrc,1> non_equal(src);
 
    for (int i = 0; i < Ncmp; i++) {
-      const int idx = closest_index(cmp(i), src);
-      skip_indices[i] = idx;
+      const int idx = closest_index(cmp(i), non_equal);
+      non_equal(idx) = std::numeric_limits<double>::infinity();
    }
 
-   // copy from src to dst skipping the indices contained in skip_indices
-   int idst = 0;
-
-   for (int i = 0; i < Nsrc; i++) {
-      const int* skip_index = std::find(skip_indices, skip_indices + Ncmp, i);
-      const bool dont_skip = (skip_index == skip_indices + Ncmp);
-
-      if (dont_skip) {
-         dst(idst) = src(i);
-         idst++;
-      }
-   }
-
-   assert(idst == Ndst);
+   std::remove_copy_if(non_equal.data(), non_equal.data() + Nsrc,
+                       dst.data(), Is_not_finite<Real>());
 }
 
 /**

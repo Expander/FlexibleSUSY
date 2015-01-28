@@ -247,3 +247,20 @@ BOOST_AUTO_TEST_CASE(test_remove_if_equal)
    BOOST_CHECK_EQUAL(dst(1), 3);
    BOOST_CHECK_EQUAL(dst(2), 5);
 }
+
+BOOST_AUTO_TEST_CASE(test_remove_if_equal_double_indices)
+{
+   Eigen::Array<double,5,1> src;
+   src << 1, 2, 2.3, 4, 5;
+
+   Eigen::Array<double,2,1> cmp; // to be removed from src
+   cmp << 2, 2.1;
+
+   Eigen::Array<double,3,1> dst;
+
+   remove_if_equal(src, cmp, dst);
+
+   BOOST_CHECK_EQUAL(dst(0), 1);
+   BOOST_CHECK_EQUAL(dst(1), 4);
+   BOOST_CHECK_EQUAL(dst(2), 5);
+}
