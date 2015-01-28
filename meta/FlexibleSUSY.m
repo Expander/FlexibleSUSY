@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`"}];
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 FS`Authors = {"P. Athron", "Jae-hyeon Park", "D. Stöckinger", "A. Voigt"};
@@ -8,7 +8,7 @@ FS`References = Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"references"}]];
 
 Print["*****************************************************************"];
 Print["FlexibleSUSY ", FS`Version];
-Print["by " <> WriteOut`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
+Print["by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
 Print[""];
 Print["References:"];
@@ -611,7 +611,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
-           higgsMassGetters = TreeMasses`CreateHiggsMassGetters[""];
+           higgsMassGetters =
+               Utils`StringZipWithSeparator[
+                   TreeMasses`CreateHiggsMassGetters[SARAH`ChargedHiggs,"ChargedHiggs",""],
+                   TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,"PseudoscalarHiggs",""],
+                   "\n"
+               ];
            clearPhases = Parameters`ClearPhases[phases];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
@@ -704,8 +709,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
                             "@slhaPoleMassGetters@"  -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@" -> IndentText[slhaPoleMixingMatrixGetters],
-                            "@higgsMassGetters@"     -> IndentText[higgsMassGetters[[2]]],
-                            "@higgsMassGetterPrototypes@"   -> IndentText[higgsMassGetters[[1]]],
+                            "@higgsMassGetterPrototypes@"   -> higgsMassGetters[[1]],
+                            "@higgsMassGetters@"     -> higgsMassGetters[[2]],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
@@ -790,7 +795,7 @@ WritePlotScripts[files_List] :=
 
 WriteMakefileModule[rgeFile_List, files_List] :=
     Module[{concatenatedFileList},
-           concatenatedFileList = "\t" <> WriteOut`StringJoinWithSeparator[rgeFile, " \\\n\t"];
+           concatenatedFileList = "\t" <> Utils`StringJoinWithSeparator[rgeFile, " \\\n\t"];
            WriteOut`ReplaceInFiles[files,
                           { "@generatedBetaFunctionModules@" -> concatenatedFileList,
                             Sequence @@ GeneralReplacementRules[]

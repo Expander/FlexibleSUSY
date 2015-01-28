@@ -656,39 +656,66 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
-CreateHiggsMassGetters[macro_String] :=
-    CreateHiggsMassGetters[GetParticles[], macro];
+CreateHiggsMassGetters[particle_Symbol, name_String, macro_String] :=
+    CreateHiggsMassGetters[particle, name, FindMixingMatrixSymbolFor[particle], macro];
 
-CreateHiggsMassGetters[particle_, mixingMatrix_, macro_String] :=
-    Module[{goldstoneList, type = "", prototype, def},
-           goldstoneList = Cases[SARAH`GoldstoneGhost,
-                                 {vector_, particle[{idx_}]} :> {idx, vector, particle, mixingMatrix}];
-           prototype =
-                type <> " get_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-               "() const";
-           def = prototype <> " {\n" <>
-               type <> " " <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_tmp" <>
-               StringJoin[CreateReorderingFunctionCalls[#,macro]& /@ goldstoneList] <>
-               "return ...;\n" <>
+CreateHiggsMassGetters[particle_[___], name_String, macro_String] :=
+    CreateHiggsMassGetters[particle, name, macro];
+
+(* function that fills array with vector boson masses *)
+FillGoldstoneMassVector[targetVector_String, vectorList_List] :=
+    Module[{i, result = ""},
+           For[i = 0, i < Length[vectorList], i++,
+               result = result <> targetVector <> "(" <> ToString[i] <> ") = " <>
+                        CConversion`ToValidCSymbolString[FlexibleSUSY`M[vectorList[[i+1]]]] <>
+                        ";\n";
+              ];
+           result
+          ];
+
+CreateHiggsMassGetters[particle_, name_String, mixingMatrix_, macro_String] :=
+    Module[{vectorList, prototype, def, particleStr,
+            particleHiggsStr, particleGoldstoneStr,
+            typeHiggs, typeGoldstone, body,
+            dim, dimGoldstone, dimHiggs},
+           particleStr          = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           particleHiggsStr     = particleStr <> "_" <> name;
+           particleGoldstoneStr = particleStr <> "_goldstone";
+           vectorList = Cases[SARAH`GoldstoneGhost,
+                                 {vector_, particle[{_}]} :> vector];
+           dimGoldstone = Length[vectorList];
+           If[dimGoldstone == 0,
+              Return[{"",""}]
+             ];
+           dim = GetDimension[particle];
+           (* number of physical (non-goldstone) particles *)
+           dimHiggs = dim - dimGoldstone;
+           If[dimHiggs <= 0,
+              Print["Error: CreateHiggsMassGetters: There are more",
+                    " Goldstone bosons than Higgs bosons."];
+              Print["   Dimension of ", particle, " = ", dim];
+              Print["   Number of Goldstones = ", dimGoldstone];
+              Return[{"",""}];
+             ];
+           typeHiggs     = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimHiggs]];
+           typeGoldstone = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimGoldstone]];
+           prototype = typeHiggs <> " get_M" <> name <> "() const;\n";
+           body =
+               typeHiggs     <> " " <> particleHiggsStr <> ";\n" <>
+               typeGoldstone <> " " <> particleGoldstoneStr <> ";\n" <>
+               "\n" <>
+               FillGoldstoneMassVector[particleGoldstoneStr, vectorList] <>
+               "\n" <>
+               "remove_if_equal(" <> particleStr <> ", " <>
+                                particleGoldstoneStr <> ", " <>
+                                particleHiggsStr <> ");\n" <>
+               "\n" <>
+               "return " <> particleHiggsStr <> ";\n";
+           def = typeHiggs <> " CLASSNAME::get_M" <> name <> "() const\n{\n" <>
+               IndentText[body] <>
                "}\n";
-           prototype = prototype <> ";\n";
-           {prototype, definition}
+           {prototype, def}
           ];
-
-CreateHiggsMassGetters[particles_List, macro_String] :=
-    Module[{result = ""},
-           (result = result <> CreateHiggsMassGetters[#,macro])& /@ particles;
-           Return[result];
-          ];
-
-CreateHiggsMassGetters[particle_Symbol, macro_String] :=
-    CreateHiggsMassGetters[particle, FindMixingMatrixSymbolFor[particle], macro];
-
-CreateHiggsMassGetters[particle_[___], macro_String] :=
-    CreateHiggsMassGetters[particle, macro];
-
-CreateHiggsMassGetters[macro_String] :=
-    CreateHiggsMassGetters[GetParticles[], macro];
 
 CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
     "\
