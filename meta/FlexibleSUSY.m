@@ -613,8 +613,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               ];
            higgsMassGetters =
                Utils`StringZipWithSeparator[
-                   TreeMasses`CreateHiggsMassGetters[SARAH`ChargedHiggs,"ChargedHiggs",""],
-                   TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,"PseudoscalarHiggs",""],
+                   TreeMasses`CreateHiggsMassGetters[SARAH`ChargedHiggs,""],
+                   TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,""],
                    "\n"
                ];
            clearPhases = Parameters`ClearPhases[phases];

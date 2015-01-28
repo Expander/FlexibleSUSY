@@ -128,6 +128,7 @@ GetThirdGenerationMass::usage;
 
 ReorderGoldstoneBosons::usage="";
 CreateHiggsMassGetters::usage="";
+CallPseudoscalarHiggsMassGetterFunction::usage="";
 
 (* exported for the use in LoopMasses.m *)
 CallSVDFunction::usage="";
@@ -656,11 +657,19 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
-CreateHiggsMassGetters[particle_Symbol, name_String, macro_String] :=
-    CreateHiggsMassGetters[particle, name, FindMixingMatrixSymbolFor[particle], macro];
+GetHiggsName[sym_] :=
+    Switch[sym,
+           SARAH`ChargedHiggs, "ChargedHiggs",
+           SARAH`PseudoScalar, "PseudoscalarHiggs",
+           SARAH`HiggsBoson  , "Higgs",
+           _                 , ""
+          ];
 
-CreateHiggsMassGetters[particle_[___], name_String, macro_String] :=
-    CreateHiggsMassGetters[particle, name, macro];
+CallHiggsMassGetterFunction[name_String] :=
+    "get_M" <> name <> "()";
+
+CallPseudoscalarHiggsMassGetterFunction[] :=
+    CallHiggsMassGetterFunction[GetHiggsName[SARAH`PseudoScalar]];
 
 (* function that fills array with vector boson masses *)
 FillGoldstoneMassVector[targetVector_String, vectorList_List] :=
@@ -673,11 +682,15 @@ FillGoldstoneMassVector[targetVector_String, vectorList_List] :=
            result
           ];
 
-CreateHiggsMassGetters[particle_, name_String, mixingMatrix_, macro_String] :=
+CreateHiggsMassGetters[particle_[___], macro_String] :=
+    CreateHiggsMassGetters[particle, macro];
+
+CreateHiggsMassGetters[particle_, macro_String] :=
     Module[{vectorList, prototype, def, particleStr,
             particleHiggsStr, particleGoldstoneStr,
-            typeHiggs, typeGoldstone, body,
+            typeHiggs, typeGoldstone, body, name,
             dim, dimGoldstone, dimHiggs},
+           name                 = GetHiggsName[particle];
            particleStr          = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
            particleHiggsStr     = particleStr <> "_" <> name;
            particleGoldstoneStr = particleStr <> "_goldstone";
