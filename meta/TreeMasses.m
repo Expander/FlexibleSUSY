@@ -696,18 +696,27 @@ CreateHiggsMassGetters[particle_, macro_String] :=
            particleGoldstoneStr = particleStr <> "_goldstone";
            vectorList = Cases[SARAH`GoldstoneGhost,
                                  {vector_, particle[{_}]} :> vector];
+           dim          = GetDimension[particle];
            dimGoldstone = Length[vectorList];
-           If[dimGoldstone == 0,
-              Return[{"",""}]
-             ];
-           dim = GetDimension[particle];
            (* number of physical (non-goldstone) particles *)
-           dimHiggs = dim - dimGoldstone;
-           If[dimHiggs <= 0,
-              Print["Error: CreateHiggsMassGetters: There are more",
-                    " Goldstone bosons than Higgs bosons."];
-              Print["   Dimension of ", particle, " = ", dim];
-              Print["   Number of Goldstones = ", dimGoldstone];
+           dimHiggs     = dim - dimGoldstone;
+           (* If dimHiggs == 0, all particles in the particle
+              multiplet are Goldstone bosons and no one is a Higgs.
+
+              If dimGoldstone == 0, all particles in the particle
+              multiplet are Higgs bosons and there is no point in
+              generating this function.
+            *)
+           If[dimHiggs <= 0 || dimGoldstone == 0
+              || !MemberQ[GetParticles[], particle]
+              ,
+              If[dimHiggs < 0,
+                 Print["Error: CreateHiggsMassGetters: There are more",
+                       " Goldstone bosons than Higgs bosons."];
+                 Print["   Dimension of ", particle, " = ", dim];
+                 Print["   Number of Goldstones = ", dimGoldstone];
+                 Return[{"",""}];
+                ];
               Return[{"",""}];
              ];
            typeHiggs     = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimHiggs]];
