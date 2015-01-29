@@ -1,6 +1,21 @@
 List of features for future FlexibleSUSY releases
 =================================================
 
+G_mu input
+----------
+
+Replacement for low-scale boundary condition which calculates g1 and
+g2 from G_mu in the MSSM and NMSSM.
+
+
+Explicit path to SARAH installation
+-----------------------------------
+
+Allow the user to specify full path to the SARAH installation
+(suggested by Florian).  This will modify the Needs[] command used in
+all the scripts (createmodel, configure, start.m).
+
+
 Decays
 ------
 
