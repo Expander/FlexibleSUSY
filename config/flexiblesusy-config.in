@@ -19,7 +19,7 @@ threadlibs="@THREADLIBS@"
 usage="\
 Usage: `basename $0` [--all-addons] [--all-models] [--cxx] [--cxxflags]\
  [--cppflags] [--fc] [--fflags] [--flibs] [--make-lib-cmd] [--math-cmd]\
- [--threadlibs] [--with-<model>] [--help] [--version]"
+ [--threadlibs] [--with-<addon>] [--with-<model>] [--help] [--version]"
 
 if test $# -eq 0; then
     echo "${usage}" 1>&2
