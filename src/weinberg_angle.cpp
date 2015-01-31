@@ -112,10 +112,10 @@ double Weinberg_angle::calculate_delta_vb(
   const double g       = g2;
   const double gp      = gY;
   const double costh   = mw_pole / mz_pole;
-  const double cw2     = sqr(costh);
+  const double cw2     = Sqr(costh);
   const double sw2     = 1.0 - cw2;
-  const double sinThetaW2 = sqr(sinThetaW);
-  const double outcos  = sqrt(1.0 - sinThetaW2);
+  const double sinThetaW2 = Sqr(sinThetaW);
+  const double outcos  = Sqrt(1.0 - sinThetaW2);
   const double q       = scale;
 
   //PA: get the dimension of menut
@@ -124,7 +124,7 @@ double Weinberg_angle::calculate_delta_vb(
   const double deltaVbSm =
     rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
     (6.0 + log(cw2) / sw2 *
-     (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / sqr(outcos))));
+     (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos))));
 
   Eigen::VectorXd bPsi0NuNul(Eigen::VectorXd::Zero(dimN)),
      bPsicNuSell(Eigen::VectorXd::Zero(2));
@@ -152,14 +152,14 @@ double Weinberg_angle::calculate_delta_vb(
   for (int i = 0; i < dimN; i++) {
    if (i < 2) {
       deltaZnue = deltaZnue -
-        sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
+        Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
       deltaZe = deltaZe -
-        sqr(Abs(aChicESnul(i))) * b1(0.0, mch(i), msnue, q);
+        Sqr(Abs(aChicESnul(i))) * b1(0.0, mch(i), msnue, q);
     }
     deltaZnue = deltaZnue -
-      sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnue, q);
+      Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnue, q);
     deltaZe = deltaZe -
-      sqr(Abs(bChi0ESell(i))) * b1(0.0, mneut(i), mselL, q);
+      Sqr(Abs(bChi0ESell(i))) * b1(0.0, mneut(i), mselL, q);
   }
 
   Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(2));
@@ -185,14 +185,14 @@ double Weinberg_angle::calculate_delta_vb(
   for(int i = 0; i < dimN; i++) {
     if (i < 2) {
       deltaZnumu = deltaZnumu -
-	sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmuL, q);
+	Sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmuL, q);
       deltaZmu = deltaZmu -
-        sqr(Abs(aChicMuSnul(i))) * b1(0.0, mch(i), msnumu, q);
+        Sqr(Abs(aChicMuSnul(i))) * b1(0.0, mch(i), msnumu, q);
     }
     deltaZnumu = deltaZnumu -
-      sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnumu, q);
+      Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnumu, q);
     deltaZmu = deltaZmu -
-      sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmuL, q);
+      Sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmuL, q);
   }
 
   Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,2)),
@@ -218,18 +218,18 @@ double Weinberg_angle::calculate_delta_vb(
 	(- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
 	 c0(mselL, mch(i), mneut(j)) + 1.0 / (root2 * g) *
 	 bChi0ChicW(j, i) *
-	 (b0(0.0, mch(i), mneut(j), q) + sqr(mselL) *
+	 (b0(0.0, mch(i), mneut(j), q) + Sqr(mselL) *
 	  c0(mselL, mch(i), mneut(j)) - 0.5));
       deltaVE = deltaVE - aChicESnul(i) * bChi0NuNul(j) *
 	(- root2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
 	 c0(msnue, mch(i), mneut(j)) + 1.0 / (root2 * g) *
 	 aChi0ChicW(j, i) *
-	 (b0(0.0, mch(i), mneut(j), q) + sqr(msnue) *
+	 (b0(0.0, mch(i), mneut(j), q) + Sqr(msnue) *
 	  c0(msnue, mch(i), mneut(j)) - 0.5));
       if (i == 0)
 	deltaVE = deltaVE +
 	  0.5 * Conj(bChi0ESell(j)) * bChi0NuNul(j) *
-	  (b0(0.0, mselL, msnue, q) + sqr(mneut(j)) *
+	  (b0(0.0, mselL, msnue, q) + Sqr(mneut(j)) *
 	   c0(mneut(j), mselL, msnue) + 0.5);
     }
   }
@@ -241,18 +241,18 @@ double Weinberg_angle::calculate_delta_vb(
 	(- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
 	 c0(msmuL, mch(i), mneut(j)) + 1.0 / (root2 * g) *
 	 bChi0ChicW(j, i) *
-	 (b0(0.0, mch(i), mneut(j), q) + sqr(msmuL) *
+	 (b0(0.0, mch(i), mneut(j), q) + Sqr(msmuL) *
 	  c0(msmuL, mch(i), mneut(j)) - 0.5));
       deltaVMu = deltaVMu - aChicMuSnul(i) * bChi0NuNul(j) *
 	(- root2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
 	 c0(msnumu, mch(i), mneut(j)) + 1.0 / (root2 * g) *
 	 aChi0ChicW(j, i) *
-	 (b0(0.0, mch(i), mneut(j), q) + sqr(msnumu) *
+	 (b0(0.0, mch(i), mneut(j), q) + Sqr(msnumu) *
 	  c0(msnumu, mch(i), mneut(j)) - 0.5));
       if (i == 0)
 	deltaVMu = deltaVMu +
 	  0.5 * Conj(bChi0MuSmul(j)) * bChi0NuNul(j) *
-	  (b0(0.0, msmuL, msnumu, q) + sqr(mneut(j)) * c0(mneut(j), msmuL,
+	  (b0(0.0, msmuL, msnumu, q) + Sqr(mneut(j)) * c0(mneut(j), msmuL,
 							  msnumu) + 0.5);
     }
   }
@@ -276,7 +276,7 @@ double Weinberg_angle::calculate_delta_vb(
   }
 
   const double deltaVbSusy =
-    (-sinThetaW2 * sqr(outcos) / (2.0 * Pi * alphaDRbar) * sqr(mz_pole)
+    (-sinThetaW2 * Sqr(outcos) / (2.0 * Pi * alphaDRbar) * Sqr(mz_pole)
      * a1.real() + deltaVE.real() + deltaVMu.real() +
      0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) * oneOver16PiSqr;
 
