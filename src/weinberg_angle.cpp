@@ -114,16 +114,17 @@ double Weinberg_angle::calculate_delta_vb(
   const double costh   = mw_pole / mz_pole;
   const double cw2     = sqr(costh);
   const double sw2     = 1.0 - cw2;
-  const double outcos  = sqrt(1.0 - sqr(sinThetaW));
+  const double sinThetaW2 = sqr(sinThetaW);
+  const double outcos  = sqrt(1.0 - sinThetaW2);
   const double q       = scale;
 
   //PA: get the dimension of menut
   const int dimN =  mneut.rows();
 
   const double deltaVbSm =
-    rho * alphaDRbar / (4.0 * PI * sqr(sinThetaW)) *
+    rho * alphaDRbar / (4.0 * PI * sinThetaW2) *
     (6.0 + log(cw2) / sw2 *
-     (3.5 - 2.5 * sw2 - sqr(sinThetaW) * (5.0 - 1.5 * cw2 / sqr(outcos))));
+     (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / sqr(outcos))));
 
   Eigen::VectorXd bPsi0NuNul(Eigen::VectorXd::Zero(dimN)),
      bPsicNuSell(Eigen::VectorXd::Zero(2));
@@ -275,7 +276,7 @@ double Weinberg_angle::calculate_delta_vb(
   }
 
   const double deltaVbSusy =
-    (-sqr(sinThetaW) * sqr(outcos) / (2.0 * PI * alphaDRbar) * sqr(mz_pole)
+    (-sinThetaW2 * sqr(outcos) / (2.0 * PI * alphaDRbar) * sqr(mz_pole)
      * a1.real() + deltaVE.real() + deltaVMu.real() +
      0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) /
     (sqr(PI) * 16.0);
