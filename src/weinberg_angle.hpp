@@ -19,6 +19,11 @@
 #ifndef WEINBERG_ANGLE_H
 #define WEINBERG_ANGLE_H
 
+namespace softsusy {
+   class ComplexMatrix;
+   class DoubleVector;
+}
+
 namespace flexiblesusy {
 
 namespace weinberg_angle {
@@ -50,6 +55,27 @@ private:
    double self_energy_w_at_mw;    ///< self-energy W at p = MW
 
    double rho_hat;
+
+   double calculate_delta_vb(
+      double scale,
+      double rho,
+      double sinThetaW,
+      double mw_pole,
+      double mz_pole,
+      double alphaDRbar,
+      double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
+      double g2,                 // displayGaugeCoupling(2)
+      double hmu,                // = displayYukawaElement(YE, 2, 2)
+      double mselL,              // tree.me(1, 1)
+      double msmuL,              // tree.me(1, 2)
+      double msnue,              // tree.msnu(1)
+      double msnumu,             // tree.msnu(2)
+      const softsusy::DoubleVector& mneut, // tree.mnBpmz
+      const softsusy::ComplexMatrix& n,    // tree.nBpmz
+      const softsusy::DoubleVector& mch,   // tree.mchBpmz
+      const softsusy::ComplexMatrix& u,    // tree.uBpmz
+      const softsusy::ComplexMatrix& v     // tree.vBpmz
+   ) const;
 };
 
 } // namespace weinberg_angle
