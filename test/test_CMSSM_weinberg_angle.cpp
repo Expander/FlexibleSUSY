@@ -58,30 +58,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    const ComplexMatrix u    = ss.displayDrBarPars().uBpmz;
    const ComplexMatrix v    = ss.displayDrBarPars().vBpmz;
 
-   double fs_delta_vb =
-      weinberg.calculate_delta_vb(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-         g2,                 // displayGaugeCoupling(2)
-         hmu,                // = displayYukawaElement(YE, 2, 2)
-         mselL,              // tree.me(1, 1)
-         msmuL,              // tree.me(1, 2)
-         msnue,              // tree.msnu(1)
-         msnumu,             // tree.msnu(2)
-         mneut,              // tree.mnBpmz
-         n,                  // tree.nBpmz
-         mch,                // tree.mchBpmz
-         u,                  // tree.uBpmz
-         v                   // tree.vBpmz
-      );
-
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 1.0e-10);
-
    const auto MSe(fs.get_MSe());
    const auto ZE(fs.get_ZE());
    const auto MSv(fs.get_MSv());
@@ -115,6 +91,32 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    BOOST_CHECK_CLOSE_FRACTION(fs_msnue , msnue , 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_msnumu, msnumu, 1.0e-10);
 
+   // test with SoftSusy parameters
+   double fs_delta_vb =
+      weinberg.calculate_delta_vb(
+         scale,
+         outrho,
+         outsin,
+         mw_pole,
+         mz_pole,
+         alphaDrbar,
+         gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
+         g2,                 // displayGaugeCoupling(2)
+         hmu,                // = displayYukawaElement(YE, 2, 2)
+         mselL,              // tree.me(1, 1)
+         msmuL,              // tree.me(1, 2)
+         msnue,              // tree.msnu(1)
+         msnumu,             // tree.msnu(2)
+         mneut,              // tree.mnBpmz
+         n,                  // tree.nBpmz
+         mch,                // tree.mchBpmz
+         u,                  // tree.uBpmz
+         v                   // tree.vBpmz
+      );
+
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 1.0e-10);
+
+   // test with FlexibleSUSY CMSSM parameters
    fs_delta_vb =
       weinberg.calculate_delta_vb(
          scale,
