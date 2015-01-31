@@ -211,7 +211,7 @@ double Weinberg_angle::calculate_delta_vb(
   bChi0ChicW = n * bPsi0PsicW * u.adjoint();
 
   std::complex<double> deltaVE;
-  for(int i = 0; i < 2; i++)
+  for(int i = 0; i < 2; i++) {
     for(int j = 0; j < dimN; j++) {
       deltaVE = deltaVE + bChicNuSell(i) * Conj(bChi0ESell(j)) *
 	(- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
@@ -231,9 +231,10 @@ double Weinberg_angle::calculate_delta_vb(
 	  (b0(0.0, mselL, msnue, q) + sqr(mneut(j)) *
 	   c0(mneut(j), mselL, msnue) + 0.5);
     }
+  }
 
   std::complex<double> deltaVMu;
-  for(int i = 0; i < 2; i++)
+  for(int i = 0; i < 2; i++) {
     for(int j = 0; j < dimN; j++) {
       deltaVMu = deltaVMu + bChicNuSmul(i) * Conj(bChi0MuSmul(j)) *
 	(- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
@@ -253,9 +254,10 @@ double Weinberg_angle::calculate_delta_vb(
 	  (b0(0.0, msmuL, msnumu, q) + sqr(mneut(j)) * c0(mneut(j), msmuL,
 							  msnumu) + 0.5);
     }
+  }
 
   std::complex<double> a1;
-  for(int i = 0; i < 2; i++)
+  for(int i = 0; i < 2; i++) {
     for(int j = 0; j < dimN; j++) {
       a1 = a1 + 0.5 * aChicMuSnul(i) * Conj(bChicNuSell(i)) *
 	bChi0NuNul(j) * bChi0ESell(j) * mch(i) * mneut(j) *
@@ -270,6 +272,7 @@ double Weinberg_angle::calculate_delta_vb(
 	bChi0NuNul(j) * Conj(bChi0NuNul(j)) *
 	d27(msnumu, msnue, mch(i), mneut(j));
     }
+  }
 
   const double deltaVbSusy =
     (-sqr(sinThetaW) * sqr(outcos) / (2.0 * PI * alphaDRbar) * sqr(mz_pole)
