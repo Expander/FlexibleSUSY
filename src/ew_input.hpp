@@ -66,6 +66,7 @@ namespace Electroweak_constants {
       const double g1 = sqrt(4.0 * M_PI * alpha1);
       const double g2 = sqrt(4.0 * M_PI * alpha2);
       const double g3 = sqrt(4.0 * M_PI * alpha3);
+      const double gfermi = 1.16637e-5; ///< Fermi constant G_F
    }
 }
 
