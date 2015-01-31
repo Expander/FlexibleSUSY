@@ -36,6 +36,8 @@ public:
    void set_self_energy_z_at_0(double);
    void set_self_energy_w_at_mw(double);
 
+   double get_rho_hat() const;
+
    double calculate() const;
 
 private:
@@ -46,6 +48,8 @@ private:
    double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
    double self_energy_z_at_0;     ///< self-energy Z at p = MZ
    double self_energy_w_at_mw;    ///< self-energy W at p = MW
+
+   double rho_hat;
 };
 
 } // namespace weinberg_angle

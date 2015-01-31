@@ -31,6 +31,7 @@ Weinberg_angle::Weinberg_angle()
    , self_energy_z_at_mz(0.)
    , self_energy_z_at_0(0.)
    , self_energy_w_at_mw(0.)
+   , rho_hat(0.)
 {
 }
 
@@ -71,6 +72,11 @@ void Weinberg_angle::set_self_energy_z_at_0(double s)
 void Weinberg_angle::set_self_energy_w_at_mw(double s)
 {
    self_energy_w_at_mw = s;
+}
+
+double Weinberg_angle::get_rho_hat() const
+{
+   return rho_hat;
 }
 
 double Weinberg_angle::calculate() const
