@@ -82,14 +82,9 @@ void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)
    s.rewsb(signMu, mtrun, pars);
 }
 
-void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s, CMSSM_input_parameters& input)
+void setup_CMSSM_const(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                       const CMSSM_input_parameters& input)
 {
-   input.m0 = 125.;
-   input.m12 = 500.;
-   input.TanBeta = 10.;
-   input.SignMu = 1;
-   input.Azero = 0.;
-
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -190,6 +185,18 @@ void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s, CMSSM_input_parameters& i
 
    ensure_tree_level_ewsb(s);
    s.calcDrBarPars();
+}
+
+void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                 CMSSM_input_parameters& input)
+{
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   setup_CMSSM_const(m, s, input);
 }
 
 void test_parameter_equality(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
