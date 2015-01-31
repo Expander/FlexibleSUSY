@@ -19,10 +19,7 @@
 #ifndef WEINBERG_ANGLE_H
 #define WEINBERG_ANGLE_H
 
-namespace softsusy {
-   class ComplexMatrix;
-   class DoubleVector;
-}
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
@@ -70,11 +67,11 @@ private:
       double msmuL,              // tree.me(1, 2)
       double msnue,              // tree.msnu(1)
       double msnumu,             // tree.msnu(2)
-      const softsusy::DoubleVector& mneut, // tree.mnBpmz
-      const softsusy::ComplexMatrix& n,    // tree.nBpmz
-      const softsusy::DoubleVector& mch,   // tree.mchBpmz
-      const softsusy::ComplexMatrix& u,    // tree.uBpmz
-      const softsusy::ComplexMatrix& v     // tree.vBpmz
+      const Eigen::ArrayXd& mneut, // tree.mnBpmz
+      const Eigen::MatrixXcd& n,   // tree.nBpmz
+      const Eigen::ArrayXd& mch,   // tree.mchBpmz
+      const Eigen::MatrixXcd& u,   // tree.uBpmz
+      const Eigen::MatrixXcd& v    // tree.vBpmz
    ) const;
 };
 

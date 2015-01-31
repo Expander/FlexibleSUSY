@@ -52,11 +52,11 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    const double msmuL       = ss.displayDrBarPars().me(1, 2);
    const double msnue       = ss.displayDrBarPars().msnu(1);
    const double msnumu      = ss.displayDrBarPars().msnu(2);
-   const DoubleVector mneut = ss.displayDrBarPars().mnBpmz;
-   const ComplexMatrix n    = ss.displayDrBarPars().nBpmz;
-   const DoubleVector mch   = ss.displayDrBarPars().mchBpmz;
-   const ComplexMatrix u    = ss.displayDrBarPars().uBpmz;
-   const ComplexMatrix v    = ss.displayDrBarPars().vBpmz;
+   const Eigen::ArrayXd mneut = ToEigenArray(ss.displayDrBarPars().mnBpmz);
+   const Eigen::MatrixXcd n   = ToEigenMatrix(ss.displayDrBarPars().nBpmz);
+   const Eigen::ArrayXd mch   = ToEigenArray(ss.displayDrBarPars().mchBpmz);
+   const Eigen::MatrixXcd u   = ToEigenMatrix(ss.displayDrBarPars().uBpmz);
+   const Eigen::MatrixXcd v   = ToEigenMatrix(ss.displayDrBarPars().vBpmz);
 
    const auto MSe(fs.get_MSe());
    const auto ZE(fs.get_ZE());
@@ -70,11 +70,11 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    double fs_msmuL             = 0.;
    double fs_msnue             = 0.;
    double fs_msnumu            = 0.;
-   const DoubleVector fs_mneut = ToDoubleVector(fs.get_MChi());
-   const ComplexMatrix fs_n    = ToComplexMatrix(fs.get_ZN());
-   const DoubleVector fs_mch   = ToDoubleVector(fs.get_MCha());
-   const ComplexMatrix fs_u    = ToComplexMatrix(fs.get_UM());
-   const ComplexMatrix fs_v    = ToComplexMatrix(fs.get_UP());
+   const Eigen::ArrayXd fs_mneut = fs.get_MChi();
+   const Eigen::MatrixXcd fs_n   = fs.get_ZN();
+   const Eigen::ArrayXd fs_mch   = fs.get_MCha();
+   const Eigen::MatrixXcd fs_u   = fs.get_UM();
+   const Eigen::MatrixXcd fs_v   = fs.get_UP();
 
    for (int i = 0; i < 6; i++) {
       fs_mselL += AbsSqr(ZE(i,0))*MSe(i);
