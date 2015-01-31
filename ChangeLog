@@ -20,7 +20,7 @@ FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Adding EWSB solvers using a fixed-point iteration (FPIRelative,
    FPIAbsolute, FPITadpole).  FPIRelative is now the first default
-   solver used.
+   solver used.  Thanks to Dylan Harries.
 
  * Adding new NMSSM model file `NUTNMSSM' with non-universal soft
    Higgs masses (EWSB output) and non-universal trilinear couplings
