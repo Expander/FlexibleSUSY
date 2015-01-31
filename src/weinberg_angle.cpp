@@ -278,8 +278,7 @@ double Weinberg_angle::calculate_delta_vb(
   const double deltaVbSusy =
     (-sinThetaW2 * sqr(outcos) / (2.0 * Pi * alphaDRbar) * sqr(mz_pole)
      * a1.real() + deltaVE.real() + deltaVMu.real() +
-     0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) /
-    (sqr(Pi) * 16.0);
+     0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) * oneOver16PiSqr;
 
   const double deltaVb = deltaVbSusy + deltaVbSm;
 
