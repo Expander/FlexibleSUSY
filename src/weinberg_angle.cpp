@@ -122,7 +122,7 @@ double Weinberg_angle::calculate_delta_vb(
   const int dimN =  mneut.rows();
 
   const double deltaVbSm =
-    rho * alphaDRbar / (4.0 * PI * sinThetaW2) *
+    rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
     (6.0 + log(cw2) / sw2 *
      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / sqr(outcos))));
 
@@ -276,10 +276,10 @@ double Weinberg_angle::calculate_delta_vb(
   }
 
   const double deltaVbSusy =
-    (-sinThetaW2 * sqr(outcos) / (2.0 * PI * alphaDRbar) * sqr(mz_pole)
+    (-sinThetaW2 * sqr(outcos) / (2.0 * Pi * alphaDRbar) * sqr(mz_pole)
      * a1.real() + deltaVE.real() + deltaVMu.real() +
      0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) /
-    (sqr(PI) * 16.0);
+    (sqr(Pi) * 16.0);
 
   const double deltaVb = deltaVbSusy + deltaVbSm;
 
