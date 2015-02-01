@@ -35,7 +35,7 @@ public:
    void set_alpha_em_drbar(double);
    void set_fermi_contant(double);
    void set_self_energy_z_at_mz(double);
-   void set_self_energy_z_at_0(double);
+   void set_self_energy_w_at_0(double);
    void set_self_energy_w_at_mw(double);
 
    double get_rho_hat() const;
@@ -48,7 +48,7 @@ private:
    double alpha_em_drbar;         ///< alpha_em(MZ, DR-bar)
    double fermi_contant;          ///< fermi constant
    double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
-   double self_energy_z_at_0;     ///< self-energy Z at p = 0
+   double self_energy_w_at_0;     ///< self-energy Z at p = 0
    double self_energy_w_at_mw;    ///< self-energy W at p = MW
 
    double rho_hat;

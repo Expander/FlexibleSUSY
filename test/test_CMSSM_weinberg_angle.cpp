@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_alpha_em_drbar(alphaDrbar);
    weinberg.set_fermi_contant(gfermi);
    weinberg.set_self_energy_z_at_mz(pizztMZ);
-   weinberg.set_self_energy_z_at_0(piwwt0);
+   weinberg.set_self_energy_w_at_0(piwwt0);
    weinberg.set_self_energy_w_at_mw(piwwtMW);
 
    const double fs_sintheta = weinberg.calculate();

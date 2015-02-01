@@ -33,7 +33,7 @@ Weinberg_angle::Weinberg_angle()
    , alpha_em_drbar(Electroweak_constants::aem)
    , fermi_contant(Electroweak_constants::gfermi)
    , self_energy_z_at_mz(0.)
-   , self_energy_z_at_0(0.)
+   , self_energy_w_at_0(0.)
    , self_energy_w_at_mw(0.)
    , rho_hat(0.)
 {
@@ -68,9 +68,9 @@ void Weinberg_angle::set_self_energy_z_at_mz(double s)
    self_energy_z_at_mz = s;
 }
 
-void Weinberg_angle::set_self_energy_z_at_0(double s)
+void Weinberg_angle::set_self_energy_w_at_0(double s)
 {
-   self_energy_z_at_0 = s;
+   self_energy_w_at_0 = s;
 }
 
 void Weinberg_angle::set_self_energy_w_at_mw(double s)
