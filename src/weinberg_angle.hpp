@@ -77,11 +77,11 @@ private:
       double pizztMZ,
       double piwwt0,
       double mt,
-      double GMU,
+      double gfermi,
       double g3,                 // displayGaugeCoupling(3)
       double tanBeta,
       double mh,
-      double alpha
+      double hmix12
    ) const;
 
    double calculate_delta_vb(

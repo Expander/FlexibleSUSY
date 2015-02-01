@@ -114,7 +114,7 @@ double Weinberg_angle::calculate_delta_r(
    double g3,                 // displayGaugeCoupling(3)
    double tanBeta,
    double mh,
-   double alpha
+   double hmix12
 ) const
 {
    const double outcos = Cos(ArcSin(sinThetaW));
@@ -154,7 +154,7 @@ double Weinberg_angle::calculate_delta_r(
       (16.0 * Sqr(Pi) * Pi * Sqr(sinThetaW) * Sqr(outcos)) *
       (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224
        - 0.144 * Sqr(mz) / Sqr(mt)) -
-      Sqr(xt) * Sqr(alpha) / Sqr(sinb) *
+      Sqr(xt) * Sqr(hmix12) / Sqr(sinb) *
       rho_2(mh / mt) * (1.0 - deltaR) * rho / 3.0;
 
    const double deltaR_full = deltaR + deltaR2LoopSm;
