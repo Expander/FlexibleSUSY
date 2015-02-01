@@ -41,10 +41,10 @@ public:
       double mt_pole;                ///< top quark pole mass
       double mh_drbar;               ///< lightest CP-even Higgs DR-bar mass
       double hmix_12;                ///< CP-even Higgs mixing Cos(alpha)
-      double mse_L;                  ///< left-handed selectron DR-bar mass
-      double msmu_L;                 ///< left-handed smuon DR-bar mass
-      double msnu_e;                 ///< left-handed electron-sneutrino DR-bar mass
-      double msnu_mu;                ///< left-handed muon-sneutrino DR-bar mass
+      double msel_drbar;             ///< left-handed selectron DR-bar mass
+      double msmul_drbar;            ///< left-handed smuon DR-bar mass
+      double msve_drbar;             ///< electron-sneutrino DR-bar mass
+      double msvm_drbar;             ///< muon-sneutrino DR-bar mass
       Eigen::ArrayXd mn_drbar;       ///< Neutralino DR-bar mass
       Eigen::ArrayXd mc_drbar;       ///< Chargino DR-bar mass
       Eigen::MatrixXcd zn;           ///< Neutralino mixing matrix
