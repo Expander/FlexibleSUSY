@@ -19,7 +19,14 @@
 #include "weinberg_angle.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
+#include "logger.hpp"
+#include "numerics.hpp"
+#include "config.h"
 #include "numerics.h"
+
+#define CHECK_FOR_NON_ZERO(p,fun)               \
+   if (is_zero(p))                              \
+      WARNING(#fun ": " #p " is zero!");
 
 namespace flexiblesusy {
 
@@ -86,6 +93,21 @@ double Weinberg_angle::calculate_delta_rho(
    const double piwwtMW = data.self_energy_w_at_mw;
    const double hmix12 = data.hmix_12;
 
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mt, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mh, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(sinb, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(xt, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(pizztMZ, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(piwwtMW, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(hmix12, calculate_delta_rho)
+#endif
+
    const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
       (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
       (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24
@@ -120,6 +142,22 @@ double Weinberg_angle::calculate_delta_r(
    const double piwwt0 = data.self_energy_w_at_0;
    const double hmix12 = data.hmix_12;
 
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mt, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mh, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(sinb, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(xt, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(g3, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(pizztMZ, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(piwwt0, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(hmix12, calculate_delta_rho)
+#endif
+
    const double dvb = calculate_delta_vb(rho, sinThetaW, data);
 
    const double deltaR = rho * piwwt0 / Sqr(mw) -
@@ -145,13 +183,14 @@ double Weinberg_angle::calculate_delta_vb(
 {
   const double g       = data.g2;
   const double gp      = data.gY;
-  const double costh   = data.mw_pole / data.mz_pole;
+  const double mz      = data.mz_pole;
+  const double mw      = data.mw_pole;
+  const double costh   = mw / mz;
   const double cw2     = Sqr(costh);
   const double sw2     = 1.0 - cw2;
   const double sinThetaW2 = Sqr(sinThetaW);
   const double outcos  = Sqrt(1.0 - sinThetaW2);
   const double q       = data.scale;
-  const double mz      = data.mz_pole;
   const double alphaDRbar = data.alpha_em_drbar;
   const double hmu     = data.ymu;
   const double mselL = data.mse_L;
@@ -163,6 +202,22 @@ double Weinberg_angle::calculate_delta_vb(
   const Eigen::MatrixXcd& n(data.n);
   const Eigen::MatrixXcd& u(data.u);
   const Eigen::MatrixXcd& v(data.v);
+
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(g, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(gp, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(q, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(hmu, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(mselL, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(msmuL, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(msnue, calculate_delta_rho)
+   CHECK_FOR_NON_ZERO(msnumu, calculate_delta_rho)
+#endif
 
   const int dimN =  mneut.rows();
 
