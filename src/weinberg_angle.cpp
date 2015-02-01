@@ -109,17 +109,17 @@ double Weinberg_angle::calculate_delta_rho(
    const double mw = mw_pole;
    const double mt   = mt_pole;
    const double sinb = sin(atan(tanBeta));
-   const double xt = 3.0 * gfermi * sqr(mt) / (8.0 * sqr(PI) * root2);
+   const double xt = 3.0 * gfermi * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
 
-   const double deltaRho2LoopSm = alphaDRbar * sqr(g3) /
-      (16.0 * PI * sqr(PI) * sqr(sinThetaW)) *
-      (-2.145 * sqr(mt) / sqr(mw) + 1.262 * log(mt / mz) - 2.24
-       - 0.85 * sqr(mz)
-       / sqr(mt)) + sqr(xt) * sqr(hmix12) / sqr(sinb) *
+   const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
+      (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
+      (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24
+       - 0.85 * Sqr(mz)
+       / Sqr(mt)) + Sqr(xt) * Sqr(hmix12) / Sqr(sinb) *
       rho_2(mh / mt) / 3.0;
 
-   const double deltaRhoOneLoop = pizztMZ / (rho * sqr(mz))
-      - piwwtMW / sqr(mw);
+   const double deltaRhoOneLoop = pizztMZ / (rho * Sqr(mz))
+      - piwwtMW / Sqr(mw);
 
    const double deltaRho = deltaRhoOneLoop + deltaRho2LoopSm;
 
