@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    fs_delta_vb =
       weinberg.calculate_delta_vb(outrho, outsin, data);
 
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 3.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_r )
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    fs_delta_r =
       weinberg.calculate_delta_r(outrho, outsin, data);
 
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 4.0e-9);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_rho )
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    fs_delta_rho =
       weinberg.calculate_delta_rho(outrho, outsin, data);
 
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_rho, fs_delta_rho, 1.0e-8);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_rho, fs_delta_rho, 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
