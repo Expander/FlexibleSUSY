@@ -45,8 +45,8 @@ public:
       double msmu_L;                 ///< left-handed smuon DR-bar mass
       double msnu_e;                 ///< left-handed electron-sneutrino DR-bar mass
       double msnu_mu;                ///< left-handed muon-sneutrino DR-bar mass
-      Eigen::ArrayXd mneut;          ///< Neutralino DR-bar mass
-      Eigen::ArrayXd mch;            ///< Chargino DR-bar mass
+      Eigen::ArrayXd mn_drbar;       ///< Neutralino DR-bar mass
+      Eigen::ArrayXd mc_drbar;       ///< Chargino DR-bar mass
       Eigen::MatrixXcd zn;           ///< Neutralino mixing matrix
       Eigen::MatrixXcd um;           ///< Chargino mixing matrix
       Eigen::MatrixXcd up;           ///< Chargino mixing matrix

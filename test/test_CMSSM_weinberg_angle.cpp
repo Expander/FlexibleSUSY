@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.msmu_L = msmuL;
    data.msnu_e = msnue;
    data.msnu_mu = msnumu;
-   data.mneut = mneut;
-   data.mch = mch;
+   data.mn_drbar = mneut;
+   data.mc_drbar = mch;
    data.zn = n;
    data.um = u;
    data.up = v;
@@ -147,8 +147,8 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.msmu_L = fs_msmuL;
    data.msnu_e = fs_msnue;
    data.msnu_mu = fs_msnumu;
-   data.mneut = fs_mneut;
-   data.mch = fs_mch;
+   data.mn_drbar = fs_mneut;
+   data.mc_drbar = fs_mch;
    data.zn = fs_n;
    data.um = fs_u;
    data.up = fs_v;
@@ -271,8 +271,8 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.msmu_L = msmuL;
    data.msnu_e = msnue;
    data.msnu_mu = msnumu;
-   data.mneut = mneut;
-   data.mch = mch;
+   data.mn_drbar = mneut;
+   data.mc_drbar = mch;
    data.zn = n;
    data.um = u;
    data.up = v;
@@ -307,8 +307,8 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.msmu_L = fs_msmuL;
    data.msnu_e = fs_msnue;
    data.msnu_mu = fs_msnumu;
-   data.mneut = fs_mneut;
-   data.mch = fs_mch;
+   data.mn_drbar = fs_mneut;
+   data.mc_drbar = fs_mch;
    data.zn = fs_n;
    data.um = fs_u;
    data.up = fs_v;

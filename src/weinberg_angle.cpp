@@ -50,8 +50,8 @@ Weinberg_angle::Data::Data()
    , msmu_L(0.)
    , msnu_e(0.)
    , msnu_mu(0.)
-   , mneut()
-   , mch()
+   , mn_drbar()
+   , mc_drbar()
    , zn()
    , um()
    , up()
@@ -222,8 +222,8 @@ double Weinberg_angle::calculate_delta_vb(
   const double msmuL = data.msmu_L;
   const double msnue = data.msnu_e;
   const double msnumu = data.msnu_mu;
-  const Eigen::ArrayXd& mneut(data.mneut);
-  const Eigen::ArrayXd& mch(data.mch);
+  const Eigen::ArrayXd& mneut(data.mn_drbar);
+  const Eigen::ArrayXd& mch(data.mc_drbar);
   const Eigen::MatrixXcd& n(data.zn);
   const Eigen::MatrixXcd& u(data.um);
   const Eigen::MatrixXcd& v(data.up);
