@@ -36,25 +36,25 @@ public:
       double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
       double self_energy_w_at_0;     ///< self-energy W at p = 0
       double self_energy_w_at_mw;    ///< self-energy W at p = MW
-      double mw_pole;
-      double mz_pole;
-      double mt_pole;
-      double mh_drbar;
-      double hmix_12;
-      double mse_L;
-      double msmu_L;
-      double msnu_e;
-      double msnu_mu;
-      Eigen::ArrayXd mneut;
-      Eigen::ArrayXd mch;
-      Eigen::MatrixXcd zn;
-      Eigen::MatrixXcd um;
-      Eigen::MatrixXcd up;
-      double gY;
-      double g2;
-      double g3;
-      double tan_beta;
-      double ymu;
+      double mw_pole;                ///< W pole mass
+      double mz_pole;                ///< Z pole mass
+      double mt_pole;                ///< top quark pole mass
+      double mh_drbar;               ///< lightest CP-even Higgs DR-bar mass
+      double hmix_12;                ///< CP-even Higgs mixing Cos(alpha)
+      double mse_L;                  ///< left-handed selectron DR-bar mass
+      double msmu_L;                 ///< left-handed smuon DR-bar mass
+      double msnu_e;                 ///< left-handed electron-sneutrino DR-bar mass
+      double msnu_mu;                ///< left-handed muon-sneutrino DR-bar mass
+      Eigen::ArrayXd mneut;          ///< Neutralino DR-bar mass
+      Eigen::ArrayXd mch;            ///< Chargino DR-bar mass
+      Eigen::MatrixXcd zn;           ///< Neutralino mixing matrix
+      Eigen::MatrixXcd um;           ///< Chargino mixing matrix
+      Eigen::MatrixXcd up;           ///< Chargino mixing matrix
+      double gY;                     ///< U(1)_Y gauge coupling
+      double g2;                     ///< SU(2)_L gauge coupling
+      double g3;                     ///< SU(3)_c gauge coupling
+      double tan_beta;               ///< tan(beta) = vu / vd
+      double ymu;                    ///< Myon Yukawa coupling
    };
 
    Weinberg_angle();
