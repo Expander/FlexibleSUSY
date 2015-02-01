@@ -27,17 +27,42 @@ namespace weinberg_angle {
 
 class Weinberg_angle {
 public:
+   struct Data {
+      Data();
+
+      double scale;                  ///< renormalization scale
+      double alpha_em_drbar;         ///< alpha_em(MZ, DR-bar, SUSY)
+      double fermi_contant;          ///< Fermi constant
+      double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
+      double self_energy_w_at_0;     ///< self-energy W at p = 0
+      double self_energy_w_at_mw;    ///< self-energy W at p = MW
+      double mw_pole;
+      double mz_pole;
+      double mt_pole;
+      double mh_drbar;
+      double hmix_12;
+      double mse_L;
+      double msmu_L;
+      double msnu_e;
+      double msnu_mu;
+      Eigen::ArrayXd mneut;
+      Eigen::ArrayXd mch;
+      Eigen::MatrixXcd n;
+      Eigen::MatrixXcd u;
+      Eigen::MatrixXcd v;
+      double gY;
+      double g2;
+      double g3;
+      double tan_beta;
+      double ymu;
+   };
+
    Weinberg_angle();
    ~Weinberg_angle();
 
+   void set_data(const Data&);
    void set_number_of_iterations(unsigned);
    void set_precision_goal(double);
-   void set_alpha_em_drbar(double);
-   void set_fermi_contant(double);
-   void set_self_energy_z_at_mz(double);
-   void set_self_energy_w_at_0(double);
-   void set_self_energy_w_at_mw(double);
-
    double get_rho_hat() const;
 
    double calculate() const;
@@ -45,82 +70,14 @@ public:
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
    double precision_goal;         ///< precision goal
-   double alpha_em_drbar;         ///< alpha_em(MZ, DR-bar)
-   double fermi_contant;          ///< fermi constant
-   double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
-   double self_energy_w_at_0;     ///< self-energy Z at p = 0
-   double self_energy_w_at_mw;    ///< self-energy W at p = MW
-
-   double rho_hat;
+   double rho_hat;                ///< output rho-hat parameter
+   Data data;
 
    double rho_2(double) const;
 
-   double calculate_delta_rho(
-      double scale,
-      double rho,
-      double sinThetaW,
-      double mw_pole,
-      double mz_pole,
-      double alphaDRbar,
-      double pizztMZ,
-      double piwwtMW,
-      double mt_pole,
-      double gfermi,
-      double g3,
-      double tanBeta,
-      double mh,
-      double hmix12
-   ) const;
-
-   double calculate_delta_r(
-      double scale,
-      double rho,
-      double sinThetaW,
-      double mw_pole,
-      double mz_pole,
-      double alphaDRbar,
-      double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-      double g2,                 // displayGaugeCoupling(2)
-      double hmu,                // = displayYukawaElement(YE, 2, 2)
-      double mselL,              // tree.me(1, 1)
-      double msmuL,              // tree.me(1, 2)
-      double msnue,              // tree.msnu(1)
-      double msnumu,             // tree.msnu(2)
-      const Eigen::ArrayXd& mneut, // tree.mnBpmz
-      const Eigen::MatrixXcd& n,   // tree.nBpmz
-      const Eigen::ArrayXd& mch,   // tree.mchBpmz
-      const Eigen::MatrixXcd& u,   // tree.uBpmz
-      const Eigen::MatrixXcd& v,   // tree.vBpmz
-      double pizztMZ,
-      double piwwt0,
-      double mt_pole,
-      double gfermi,
-      double g3,                 // displayGaugeCoupling(3)
-      double tanBeta,
-      double mh,
-      double hmix12
-   ) const;
-
-   double calculate_delta_vb(
-      double scale,
-      double rho,
-      double sinThetaW,
-      double mw_pole,
-      double mz_pole,
-      double alphaDRbar,
-      double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-      double g2,                 // displayGaugeCoupling(2)
-      double hmu,                // = displayYukawaElement(YE, 2, 2)
-      double mselL,              // tree.me(1, 1)
-      double msmuL,              // tree.me(1, 2)
-      double msnue,              // tree.msnu(1)
-      double msnumu,             // tree.msnu(2)
-      const Eigen::ArrayXd& mneut, // tree.mnBpmz
-      const Eigen::MatrixXcd& n,   // tree.nBpmz
-      const Eigen::ArrayXd& mch,   // tree.mchBpmz
-      const Eigen::MatrixXcd& u,   // tree.uBpmz
-      const Eigen::MatrixXcd& v    // tree.vBpmz
-   ) const;
+   double calculate_delta_r(double, double, const Data&) const;
+   double calculate_delta_rho(double, double, const Data&) const;
+   double calculate_delta_vb(double, double, const Data&) const;
 };
 
 } // namespace weinberg_angle

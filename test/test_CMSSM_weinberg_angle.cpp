@@ -64,8 +64,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    const double ss_delta_vb =
       ss.deltaVb(outrho, outsin, alphaDrbar, 0. /* ignored */);
 
-   Weinberg_angle weinberg;
-
    const double gY          = ss.displayGaugeCoupling(1) * sqrt(0.6);
    const double g2          = ss.displayGaugeCoupling(2);
    const double hmu         = ss.displayYukawaElement(YE, 2, 2);
@@ -112,53 +110,54 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    BOOST_CHECK_CLOSE_FRACTION(fs_msnue , msnue , 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_msnumu, msnumu, 1.0e-10);
 
+   Weinberg_angle::Data data;
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mse_L = mselL;
+   data.msmu_L = msmuL;
+   data.msnu_e = msnue;
+   data.msnu_mu = msnumu;
+   data.mneut = mneut;
+   data.mch = mch;
+   data.n = n;
+   data.u = u;
+   data.v = v;
+   data.gY = gY;
+   data.g2 = g2;
+   data.ymu = hmu;
+
+   Weinberg_angle weinberg;
+   weinberg.set_data(data);
+
    // test with SoftSusy parameters
    double fs_delta_vb =
-      weinberg.calculate_delta_vb(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-         g2,                 // displayGaugeCoupling(2)
-         hmu,                // = displayYukawaElement(YE, 2, 2)
-         mselL,              // tree.me(1, 1)
-         msmuL,              // tree.me(1, 2)
-         msnue,              // tree.msnu(1)
-         msnumu,             // tree.msnu(2)
-         mneut,              // tree.mnBpmz
-         n,                  // tree.nBpmz
-         mch,                // tree.mchBpmz
-         u,                  // tree.uBpmz
-         v                   // tree.vBpmz
-      );
+      weinberg.calculate_delta_vb(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 1.0e-10);
 
    // test with FlexibleSUSY CMSSM parameters
+
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mse_L = fs_mselL;
+   data.msmu_L = fs_msmuL;
+   data.msnu_e = fs_msnue;
+   data.msnu_mu = fs_msnumu;
+   data.mneut = fs_mneut;
+   data.mch = fs_mch;
+   data.n = fs_n;
+   data.u = fs_u;
+   data.v = fs_v;
+   data.gY = fs_gY;
+   data.g2 = fs_g2;
+   data.ymu = fs_hmu;
+
    fs_delta_vb =
-      weinberg.calculate_delta_vb(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         fs_gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-         fs_g2,                 // displayGaugeCoupling(2)
-         fs_hmu,                // = displayYukawaElement(YE, 2, 2)
-         fs_mselL,              // tree.me(1, 1)
-         fs_msmuL,              // tree.me(1, 2)
-         fs_msnue,              // tree.msnu(1)
-         fs_msnumu,             // tree.msnu(2)
-         fs_mneut,              // tree.mnBpmz
-         fs_n,                  // tree.nBpmz
-         fs_mch,                // tree.mchBpmz
-         fs_u,                  // tree.uBpmz
-         fs_v                   // tree.vBpmz
-      );
+      weinberg.calculate_delta_vb(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_vb, fs_delta_vb, 1.0e-8);
 }
@@ -195,8 +194,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    const double ss_delta_r =
       ss.dR(outrho, outsin, alphaDrbar, pizztMZ, piwwt0);
 
-   Weinberg_angle weinberg;
-
    const double gY          = ss.displayGaugeCoupling(1) * sqrt(0.6);
    const double g2          = ss.displayGaugeCoupling(2);
    const double hmu         = ss.displayYukawaElement(YE, 2, 2);
@@ -259,69 +256,70 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    BOOST_CHECK_CLOSE_FRACTION(fs_mh, mh, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_alpha, alpha, 1.0e-10);
 
+   Weinberg_angle::Data data;
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_0 = piwwt0;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = mt;
+   data.mh_drbar = mh;
+   data.hmix_12 = alpha;
+   data.mse_L = mselL;
+   data.msmu_L = msmuL;
+   data.msnu_e = msnue;
+   data.msnu_mu = msnumu;
+   data.mneut = mneut;
+   data.mch = mch;
+   data.n = n;
+   data.u = u;
+   data.v = v;
+   data.gY = gY;
+   data.g2 = g2;
+   data.g3 = g3;
+   data.tan_beta = tanBeta;
+   data.ymu = hmu;
+
+   Weinberg_angle weinberg;
+   weinberg.set_data(data);
+
    // test with SoftSusy parameters
    double fs_delta_r =
-      weinberg.calculate_delta_r(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-         g2,                 // displayGaugeCoupling(2)
-         hmu,                // = displayYukawaElement(YE, 2, 2)
-         mselL,              // tree.me(1, 1)
-         msmuL,              // tree.me(1, 2)
-         msnue,              // tree.msnu(1)
-         msnumu,             // tree.msnu(2)
-         mneut,              // tree.mnBpmz
-         n,                  // tree.nBpmz
-         mch,                // tree.mchBpmz
-         u,                  // tree.uBpmz
-         v,                  // tree.vBpmz
-         pizztMZ,
-         piwwt0,
-         mt,
-         gfermi,
-         g3,                 // displayGaugeCoupling(3)
-         tanBeta,
-         mh,
-         alpha
-      );
+      weinberg.calculate_delta_r(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 1.0e-10);
 
    // test with FlexibleSUSY CMSSM parameters
+
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_0 = piwwt0;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = fs_mt;
+   data.mh_drbar = fs_mh;
+   data.hmix_12 = fs_alpha;
+   data.mse_L = fs_mselL;
+   data.msmu_L = fs_msmuL;
+   data.msnu_e = fs_msnue;
+   data.msnu_mu = fs_msnumu;
+   data.mneut = fs_mneut;
+   data.mch = fs_mch;
+   data.n = fs_n;
+   data.u = fs_u;
+   data.v = fs_v;
+   data.gY = fs_gY;
+   data.g2 = fs_g2;
+   data.g3 = fs_g3;
+   data.ymu = fs_hmu;
+   data.tan_beta = fs_tanBeta;
+
    fs_delta_r =
-      weinberg.calculate_delta_r(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         fs_gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-         fs_g2,                 // displayGaugeCoupling(2)
-         fs_hmu,                // = displayYukawaElement(YE, 2, 2)
-         fs_mselL,              // tree.me(1, 1)
-         fs_msmuL,              // tree.me(1, 2)
-         fs_msnue,              // tree.msnu(1)
-         fs_msnumu,             // tree.msnu(2)
-         fs_mneut,              // tree.mnBpmz
-         fs_n,                  // tree.nBpmz
-         fs_mch,                // tree.mchBpmz
-         fs_u,                  // tree.uBpmz
-         fs_v,                  // tree.vBpmz
-         pizztMZ,
-         piwwt0,
-         fs_mt,
-         gfermi,
-         fs_g3,                 // displayGaugeCoupling(3)
-         fs_tanBeta,
-         fs_mh,
-         fs_alpha
-      );
+      weinberg.calculate_delta_r(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 1.0e-8);
 }
@@ -358,8 +356,6 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    const double ss_delta_rho =
       ss.dRho(outrho, outsin, alphaDrbar, pizztMZ, piwwtMW);
 
-   Weinberg_angle weinberg;
-
    const double mt          = ss.displayDataSet().displayPoleMt();
    const double g3          = ss.displayGaugeCoupling(3);
    const double tanBeta     = ss.displayTanb();
@@ -378,45 +374,46 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    BOOST_CHECK_CLOSE_FRACTION(fs_mh, mh, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_alpha, alpha, 1.0e-10);
 
+   Weinberg_angle::Data data;
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_mw = piwwtMW;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = mt;
+   data.mh_drbar = mh;
+   data.hmix_12 = alpha;
+   data.g3 = g3;
+   data.tan_beta = tanBeta;
+
+   Weinberg_angle weinberg;
+   weinberg.set_data(data);
+
    // test with SoftSusy parameters
    double fs_delta_rho =
-      weinberg.calculate_delta_rho(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         pizztMZ,
-         piwwtMW,
-         mt,
-         gfermi,
-         g3,
-         tanBeta,
-         mh,
-         alpha
-      );
+      weinberg.calculate_delta_rho(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_rho, fs_delta_rho, 1.0e-10);
 
    // test with FlexibleSUSY CMSSM parameters
+
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_mw = piwwtMW;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = fs_mt;
+   data.mh_drbar = fs_mh;
+   data.hmix_12 = fs_alpha;
+   data.g3 = fs_g3;
+   data.tan_beta = fs_tanBeta;
+
    fs_delta_rho =
-      weinberg.calculate_delta_rho(
-         scale,
-         outrho,
-         outsin,
-         mw_pole,
-         mz_pole,
-         alphaDrbar,
-         pizztMZ,
-         piwwtMW,
-         fs_mt,
-         gfermi,
-         fs_g3,
-         fs_tanBeta,
-         fs_mh,
-         fs_alpha
-      );
+      weinberg.calculate_delta_rho(outrho, outsin, data);
 
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_rho, fs_delta_rho, 1.0e-8);
 }
@@ -461,11 +458,6 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
 
    weinberg.set_number_of_iterations(maxTries);
    weinberg.set_precision_goal(tol);
-   weinberg.set_alpha_em_drbar(alphaDrbar);
-   weinberg.set_fermi_contant(gfermi);
-   weinberg.set_self_energy_z_at_mz(pizztMZ);
-   weinberg.set_self_energy_w_at_0(piwwt0);
-   weinberg.set_self_energy_w_at_mw(piwwtMW);
 
    const double fs_sintheta = weinberg.calculate();
    const double fs_rhohat   = weinberg.get_rho_hat();

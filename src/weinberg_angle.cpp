@@ -27,15 +27,15 @@ namespace weinberg_angle {
 
 using namespace softsusy;
 
+Weinberg_angle::Data::Data()
+{
+}
+
 Weinberg_angle::Weinberg_angle()
    : number_of_iterations(20)
    , precision_goal(1.0e-8)
-   , alpha_em_drbar(Electroweak_constants::aem)
-   , fermi_contant(Electroweak_constants::gfermi)
-   , self_energy_z_at_mz(0.)
-   , self_energy_w_at_0(0.)
-   , self_energy_w_at_mw(0.)
    , rho_hat(0.)
+   , data()
 {
 }
 
@@ -48,34 +48,14 @@ void Weinberg_angle::set_number_of_iterations(unsigned n)
    number_of_iterations = n;
 }
 
+void Weinberg_angle::set_data(const Data& data_)
+{
+   data = data_;
+}
+
 void Weinberg_angle::set_precision_goal(double p)
 {
    precision_goal = p;
-}
-
-void Weinberg_angle::set_alpha_em_drbar(double a)
-{
-   alpha_em_drbar = a;
-}
-
-void Weinberg_angle::set_fermi_contant(double gfermi)
-{
-   fermi_contant = gfermi;
-}
-
-void Weinberg_angle::set_self_energy_z_at_mz(double s)
-{
-   self_energy_z_at_mz = s;
-}
-
-void Weinberg_angle::set_self_energy_w_at_0(double s)
-{
-   self_energy_w_at_0 = s;
-}
-
-void Weinberg_angle::set_self_energy_w_at_mw(double s)
-{
-   self_energy_w_at_mw = s;
 }
 
 double Weinberg_angle::get_rho_hat() const
@@ -89,27 +69,22 @@ double Weinberg_angle::calculate() const
 }
 
 double Weinberg_angle::calculate_delta_rho(
-   double scale,
    double rho,
    double sinThetaW,
-   double mw_pole,
-   double mz_pole,
-   double alphaDRbar,
-   double pizztMZ,
-   double piwwtMW,
-   double mt_pole,
-   double gfermi,
-   double g3,
-   double tanBeta,
-   double mh,
-   double hmix12
+   const Data& data
 ) const
 {
-   const double mz = mz_pole;
-   const double mw = mw_pole;
-   const double mt   = mt_pole;
-   const double sinb = sin(atan(tanBeta));
-   const double xt = 3.0 * gfermi * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double mz = data.mz_pole;
+   const double mw = data.mw_pole;
+   const double mt = data.mt_pole;
+   const double mh = data.mh_drbar;
+   const double sinb = sin(atan(data.tan_beta));
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double g3 = data.g3;
+   const double pizztMZ = data.self_energy_z_at_mz;
+   const double piwwtMW = data.self_energy_w_at_mw;
+   const double hmix12 = data.hmix_12;
 
    const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
       (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
@@ -127,61 +102,27 @@ double Weinberg_angle::calculate_delta_rho(
 }
 
 double Weinberg_angle::calculate_delta_r(
-   double scale,
    double rho,
    double sinThetaW,
-   double mw_pole,
-   double mz_pole,
-   double alphaDRbar,
-   double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-   double g2,                 // displayGaugeCoupling(2)
-   double hmu,                // = displayYukawaElement(YE, 2, 2)
-   double mselL,              // tree.me(1, 1)
-   double msmuL,              // tree.me(1, 2)
-   double msnue,              // tree.msnu(1)
-   double msnumu,             // tree.msnu(2)
-   const Eigen::ArrayXd& mneut, // tree.mnBpmz
-   const Eigen::MatrixXcd& n,   // tree.nBpmz
-   const Eigen::ArrayXd& mch,   // tree.mchBpmz
-   const Eigen::MatrixXcd& u,   // tree.uBpmz
-   const Eigen::MatrixXcd& v,    // tree.vBpmz
-   double pizztMZ,
-   double piwwt0,
-   double mt_pole,
-   double gfermi,
-   double g3,                 // displayGaugeCoupling(3)
-   double tanBeta,
-   double mh,
-   double hmix12
+   const Data& data
 ) const
 {
    const double outcos = Cos(ArcSin(sinThetaW));
-   const double sinb = Sin(ArcTan(tanBeta));
-   const double mz = mz_pole;
-   const double mt = mt_pole;
-   const double xt = 3.0 * gfermi * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double sinb = sin(atan(data.tan_beta));
+   const double mz = data.mz_pole;
+   const double mw = data.mw_pole;
+   const double mt = data.mt_pole;
+   const double mh = data.mh_drbar;
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double g3 = data.g3;
+   const double pizztMZ = data.self_energy_z_at_mz;
+   const double piwwt0 = data.self_energy_w_at_0;
+   const double hmix12 = data.hmix_12;
 
-   const double dvb = calculate_delta_vb(
-       scale,
-       rho,
-       sinThetaW,
-       mw_pole,
-       mz_pole,
-       alphaDRbar,
-       gY,
-       g2,
-       hmu,
-       mselL,
-       msmuL,
-       msnue,
-       msnumu,
-       mneut,
-       n,
-       mch,
-       u,
-       v);
+   const double dvb = calculate_delta_vb(rho, sinThetaW, data);
 
-   const double deltaR = rho * piwwt0 / Sqr(mw_pole) -
+   const double deltaR = rho * piwwt0 / Sqr(mw) -
       pizztMZ / Sqr(mz) + dvb;
 
    const double deltaR2LoopSm = alphaDRbar * Sqr(g3) /
@@ -197,34 +138,31 @@ double Weinberg_angle::calculate_delta_r(
 }
 
 double Weinberg_angle::calculate_delta_vb(
-   double scale,
    double rho,
    double sinThetaW,
-   double mw_pole,
-   double mz_pole,
-   double alphaDRbar,
-   double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
-   double g2,                 // displayGaugeCoupling(2)
-   double hmu,                // = displayYukawaElement(YE, 2, 2)
-   double mselL,              // tree.me(1, 1)
-   double msmuL,              // tree.me(1, 2)
-   double msnue,              // tree.msnu(1)
-   double msnumu,             // tree.msnu(2)
-   const Eigen::ArrayXd& mneut, // tree.mnBpmz
-   const Eigen::MatrixXcd& n,   // tree.nBpmz
-   const Eigen::ArrayXd& mch,   // tree.mchBpmz
-   const Eigen::MatrixXcd& u,   // tree.uBpmz
-   const Eigen::MatrixXcd& v    // tree.vBpmz
+   const Data& data
 ) const
 {
-  const double g       = g2;
-  const double gp      = gY;
-  const double costh   = mw_pole / mz_pole;
+  const double g       = data.g2;
+  const double gp      = data.gY;
+  const double costh   = data.mw_pole / data.mz_pole;
   const double cw2     = Sqr(costh);
   const double sw2     = 1.0 - cw2;
   const double sinThetaW2 = Sqr(sinThetaW);
   const double outcos  = Sqrt(1.0 - sinThetaW2);
-  const double q       = scale;
+  const double q       = data.scale;
+  const double mz      = data.mz_pole;
+  const double alphaDRbar = data.alpha_em_drbar;
+  const double hmu     = data.ymu;
+  const double mselL = data.mse_L;
+  const double msmuL = data.msmu_L;
+  const double msnue = data.msnu_e;
+  const double msnumu = data.msnu_mu;
+  const Eigen::ArrayXd& mneut(data.mneut);
+  const Eigen::ArrayXd& mch(data.mch);
+  const Eigen::MatrixXcd& n(data.n);
+  const Eigen::MatrixXcd& u(data.u);
+  const Eigen::MatrixXcd& v(data.v);
 
   const int dimN =  mneut.rows();
 
@@ -385,7 +323,7 @@ double Weinberg_angle::calculate_delta_vb(
   }
 
   const double deltaVbSusy =
-     (-sinThetaW2 * Sqr(outcos) / (2.0 * Pi * alphaDRbar) * Sqr(mz_pole)
+     (-sinThetaW2 * Sqr(outcos) / (2.0 * Pi * alphaDRbar) * Sqr(mz)
       * a1.real() + deltaVE.real() + deltaVMu.real() +
       0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) * oneOver16PiSqr;
 
