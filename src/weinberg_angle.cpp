@@ -110,7 +110,7 @@ double Weinberg_angle::calculate_delta_rho(
    const double mw = data.mw_pole;
    const double mt = data.mt_pole;
    const double mh = data.mh_drbar;
-   const double sinb = sin(atan(data.tan_beta));
+   const double sinb = Sin(ArcTan(data.tan_beta));
    const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
    const double alphaDRbar = data.alpha_em_drbar;
    const double g3 = data.g3;
@@ -155,7 +155,7 @@ double Weinberg_angle::calculate_delta_r(
 ) const
 {
    const double outcos = Cos(ArcSin(sinThetaW));
-   const double sinb = sin(atan(data.tan_beta));
+   const double sinb = Sin(ArcTan(data.tan_beta));
    const double mz = data.mz_pole;
    const double mw = data.mw_pole;
    const double mt = data.mt_pole;
