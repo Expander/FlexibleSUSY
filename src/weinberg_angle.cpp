@@ -147,7 +147,7 @@ double Weinberg_angle::calculate_delta_r(
    const Eigen::MatrixXcd& v,    // tree.vBpmz
    double pizztMZ,
    double piwwt0,
-   double mt,
+   double mt_pole,
    double gfermi,
    double g3,                 // displayGaugeCoupling(3)
    double tanBeta,
@@ -156,10 +156,9 @@ double Weinberg_angle::calculate_delta_r(
 ) const
 {
    const double outcos = Cos(ArcSin(sinThetaW));
-
-   // 2-loop SM contribution
    const double sinb = Sin(ArcTan(tanBeta));
-
+   const double mz = mz_pole;
+   const double mt = mt_pole;
    const double xt = 3.0 * gfermi * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
 
    const double dvb = calculate_delta_vb(
@@ -182,12 +181,9 @@ double Weinberg_angle::calculate_delta_r(
        u,
        v);
 
-   const double mz = mz_pole;
-
    const double deltaR = rho * piwwt0 / Sqr(mw_pole) -
       pizztMZ / Sqr(mz) + dvb;
 
-   // Dominant 2-loop SM term
    const double deltaR2LoopSm = alphaDRbar * Sqr(g3) /
       (16.0 * Sqr(Pi) * Pi * Sqr(sinThetaW) * Sqr(outcos)) *
       (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224

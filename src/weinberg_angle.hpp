@@ -93,7 +93,7 @@ private:
       const Eigen::MatrixXcd& v,   // tree.vBpmz
       double pizztMZ,
       double piwwt0,
-      double mt,
+      double mt_pole,
       double gfermi,
       double g3,                 // displayGaugeCoupling(3)
       double tanBeta,
