@@ -55,6 +55,23 @@ private:
 
    double rho_2(double) const;
 
+   double calculate_delta_rho(
+      double scale,
+      double rho,
+      double sinThetaW,
+      double mw_pole,
+      double mz_pole,
+      double alphaDRbar,
+      double pizztMZ,
+      double piwwtMW,
+      double mt_pole,
+      double gfermi,
+      double g3,
+      double tanBeta,
+      double mh,
+      double hmix12
+   ) const;
+
    double calculate_delta_r(
       double scale,
       double rho,

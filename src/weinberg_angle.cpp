@@ -88,6 +88,44 @@ double Weinberg_angle::calculate() const
    return 0.;
 }
 
+double Weinberg_angle::calculate_delta_rho(
+   double scale,
+   double rho,
+   double sinThetaW,
+   double mw_pole,
+   double mz_pole,
+   double alphaDRbar,
+   double pizztMZ,
+   double piwwtMW,
+   double mt_pole,
+   double gfermi,
+   double g3,
+   double tanBeta,
+   double mh,
+   double hmix12
+) const
+{
+   const double mz = mz_pole;
+   const double mw = mw_pole;
+   const double mt   = mt_pole;
+   const double sinb = sin(atan(tanBeta));
+   const double xt = 3.0 * gfermi * sqr(mt) / (8.0 * sqr(PI) * root2);
+
+   const double deltaRho2LoopSm = alphaDRbar * sqr(g3) /
+      (16.0 * PI * sqr(PI) * sqr(sinThetaW)) *
+      (-2.145 * sqr(mt) / sqr(mw) + 1.262 * log(mt / mz) - 2.24
+       - 0.85 * sqr(mz)
+       / sqr(mt)) + sqr(xt) * sqr(hmix12) / sqr(sinb) *
+      rho_2(mh / mt) / 3.0;
+
+   const double deltaRhoOneLoop = pizztMZ / (rho * sqr(mz))
+      - piwwtMW / sqr(mw);
+
+   const double deltaRho = deltaRhoOneLoop + deltaRho2LoopSm;
+
+   return deltaRho;
+}
+
 double Weinberg_angle::calculate_delta_r(
    double scale,
    double rho,
