@@ -47,9 +47,9 @@ public:
       double msnu_mu;
       Eigen::ArrayXd mneut;
       Eigen::ArrayXd mch;
-      Eigen::MatrixXcd n;
-      Eigen::MatrixXcd u;
-      Eigen::MatrixXcd v;
+      Eigen::MatrixXcd zn;
+      Eigen::MatrixXcd um;
+      Eigen::MatrixXcd up;
       double gY;
       double g2;
       double g3;

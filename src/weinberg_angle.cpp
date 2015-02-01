@@ -52,9 +52,9 @@ Weinberg_angle::Data::Data()
    , msnu_mu(0.)
    , mneut()
    , mch()
-   , n()
-   , u()
-   , v()
+   , zn()
+   , um()
+   , up()
    , gY(0.)
    , g2(0.)
    , g3(0.)
@@ -224,9 +224,9 @@ double Weinberg_angle::calculate_delta_vb(
   const double msnumu = data.msnu_mu;
   const Eigen::ArrayXd& mneut(data.mneut);
   const Eigen::ArrayXd& mch(data.mch);
-  const Eigen::MatrixXcd& n(data.n);
-  const Eigen::MatrixXcd& u(data.u);
-  const Eigen::MatrixXcd& v(data.v);
+  const Eigen::MatrixXcd& n(data.zn);
+  const Eigen::MatrixXcd& u(data.um);
+  const Eigen::MatrixXcd& v(data.up);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
