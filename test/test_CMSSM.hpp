@@ -199,6 +199,20 @@ void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s,
    setup_CMSSM_const(m, s, input);
 }
 
+void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                                   const CMSSM_input_parameters& input)
+{
+   setup_CMSSM_const(m, s, input);
+
+   const double ymu = 0.1;
+
+   s.setYukawaElement(YE, 2, 2, ymu);
+
+   Eigen::Matrix<double,3,3> Ye(m.get_Ye());
+   Ye(1,1) = ymu;
+   m.set_Ye(Ye);
+}
+
 void test_parameter_equality(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
 {
    TEST_EQUALITY(a.displayLoops(), b.get_loops());
