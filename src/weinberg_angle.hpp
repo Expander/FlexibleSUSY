@@ -53,6 +53,37 @@ private:
 
    double rho_hat;
 
+   double rho_2(double) const;
+
+   double calculate_delta_r(
+      double scale,
+      double rho,
+      double sinThetaW,
+      double mw_pole,
+      double mz_pole,
+      double alphaDRbar,
+      double gY,                 // displayGaugeCoupling(1) * sqrt(0.6)
+      double g2,                 // displayGaugeCoupling(2)
+      double hmu,                // = displayYukawaElement(YE, 2, 2)
+      double mselL,              // tree.me(1, 1)
+      double msmuL,              // tree.me(1, 2)
+      double msnue,              // tree.msnu(1)
+      double msnumu,             // tree.msnu(2)
+      const Eigen::ArrayXd& mneut, // tree.mnBpmz
+      const Eigen::MatrixXcd& n,   // tree.nBpmz
+      const Eigen::ArrayXd& mch,   // tree.mchBpmz
+      const Eigen::MatrixXcd& u,   // tree.uBpmz
+      const Eigen::MatrixXcd& v,   // tree.vBpmz
+      double pizztMZ,
+      double piwwt0,
+      double mt,
+      double GMU,
+      double g3,                 // displayGaugeCoupling(3)
+      double tanBeta,
+      double mh,
+      double alpha
+   ) const;
+
    double calculate_delta_vb(
       double scale,
       double rho,
