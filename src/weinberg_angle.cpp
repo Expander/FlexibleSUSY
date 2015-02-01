@@ -24,7 +24,7 @@
 #include "config.h"
 #include "numerics.h"
 
-#define CHECK_FOR_NON_ZERO(p,fun)               \
+#define WARN_IF_ZERO(p,fun)                     \
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
 
@@ -119,18 +119,18 @@ double Weinberg_angle::calculate_delta_rho(
    const double hmix12 = data.hmix_12;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mt, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mh, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(sinb, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(xt, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(pizztMZ, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(piwwtMW, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(hmix12, calculate_delta_rho)
+   WARN_IF_ZERO(rho, calculate_delta_rho)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
+   WARN_IF_ZERO(mz, calculate_delta_rho)
+   WARN_IF_ZERO(mw, calculate_delta_rho)
+   WARN_IF_ZERO(mt, calculate_delta_rho)
+   WARN_IF_ZERO(mh, calculate_delta_rho)
+   WARN_IF_ZERO(sinb, calculate_delta_rho)
+   WARN_IF_ZERO(xt, calculate_delta_rho)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
+   WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
+   WARN_IF_ZERO(piwwtMW, calculate_delta_rho)
+   WARN_IF_ZERO(hmix12, calculate_delta_rho)
 #endif
 
    const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
@@ -168,19 +168,19 @@ double Weinberg_angle::calculate_delta_r(
    const double hmix12 = data.hmix_12;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mt, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mh, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(sinb, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(xt, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(g3, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(pizztMZ, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(piwwt0, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(hmix12, calculate_delta_rho)
+   WARN_IF_ZERO(rho, calculate_delta_rho)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
+   WARN_IF_ZERO(mz, calculate_delta_rho)
+   WARN_IF_ZERO(mw, calculate_delta_rho)
+   WARN_IF_ZERO(mt, calculate_delta_rho)
+   WARN_IF_ZERO(mh, calculate_delta_rho)
+   WARN_IF_ZERO(sinb, calculate_delta_rho)
+   WARN_IF_ZERO(xt, calculate_delta_rho)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
+   WARN_IF_ZERO(g3, calculate_delta_rho)
+   WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
+   WARN_IF_ZERO(piwwt0, calculate_delta_rho)
+   WARN_IF_ZERO(hmix12, calculate_delta_rho)
 #endif
 
    const double dvb = calculate_delta_vb(rho, sinThetaW, data);
@@ -229,19 +229,19 @@ double Weinberg_angle::calculate_delta_vb(
   const Eigen::MatrixXcd& v(data.up);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   CHECK_FOR_NON_ZERO(rho, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(sinThetaW, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(g, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(gp, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mz, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mw, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(q, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(alphaDRbar, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(hmu, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(mselL, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(msmuL, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(msnue, calculate_delta_rho)
-   CHECK_FOR_NON_ZERO(msnumu, calculate_delta_rho)
+   WARN_IF_ZERO(rho, calculate_delta_rho)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
+   WARN_IF_ZERO(g, calculate_delta_rho)
+   WARN_IF_ZERO(gp, calculate_delta_rho)
+   WARN_IF_ZERO(mz, calculate_delta_rho)
+   WARN_IF_ZERO(mw, calculate_delta_rho)
+   WARN_IF_ZERO(q, calculate_delta_rho)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
+   WARN_IF_ZERO(hmu, calculate_delta_rho)
+   WARN_IF_ZERO(mselL, calculate_delta_rho)
+   WARN_IF_ZERO(msmuL, calculate_delta_rho)
+   WARN_IF_ZERO(msnue, calculate_delta_rho)
+   WARN_IF_ZERO(msnumu, calculate_delta_rho)
 #endif
 
   const int dimN =  mneut.rows();
