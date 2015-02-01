@@ -129,7 +129,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.ymu = hmu;
 
    Weinberg_angle weinberg;
-   weinberg.set_data(data);
 
    // test with SoftSusy parameters
    double fs_delta_vb =
@@ -283,7 +282,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.ymu = hmu;
 
    Weinberg_angle weinberg;
-   weinberg.set_data(data);
 
    // test with SoftSusy parameters
    double fs_delta_r =
@@ -389,7 +387,6 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    data.tan_beta = tanBeta;
 
    Weinberg_angle weinberg;
-   weinberg.set_data(data);
 
    // test with SoftSusy parameters
    double fs_delta_rho =
