@@ -150,7 +150,7 @@ double Weinberg_angle::calculate_delta_vb(
 
   double deltaZnue = 0.0, deltaZe = 0.0;
   for (int i = 0; i < dimN; i++) {
-   if (i < 2) {
+    if (i < 2) {
       deltaZnue = deltaZnue -
         Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
       deltaZe = deltaZe -
@@ -226,11 +226,12 @@ double Weinberg_angle::calculate_delta_vb(
 	 aChi0ChicW(j, i) *
 	 (b0(0.0, mch(i), mneut(j), q) + Sqr(msnue) *
 	  c0(msnue, mch(i), mneut(j)) - 0.5));
-      if (i == 0)
+      if (i == 0) {
 	deltaVE = deltaVE +
 	  0.5 * Conj(bChi0ESell(j)) * bChi0NuNul(j) *
 	  (b0(0.0, mselL, msnue, q) + Sqr(mneut(j)) *
 	   c0(mneut(j), mselL, msnue) + 0.5);
+      }
     }
   }
 
@@ -249,11 +250,12 @@ double Weinberg_angle::calculate_delta_vb(
 	 aChi0ChicW(j, i) *
 	 (b0(0.0, mch(i), mneut(j), q) + Sqr(msnumu) *
 	  c0(msnumu, mch(i), mneut(j)) - 0.5));
-      if (i == 0)
+      if (i == 0) {
 	deltaVMu = deltaVMu +
 	  0.5 * Conj(bChi0MuSmul(j)) * bChi0NuNul(j) *
 	  (b0(0.0, msmuL, msnumu, q) + Sqr(mneut(j)) * c0(mneut(j), msmuL,
 							  msnumu) + 0.5);
+      }
     }
   }
 
