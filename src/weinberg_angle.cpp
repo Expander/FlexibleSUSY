@@ -35,6 +35,31 @@ namespace weinberg_angle {
 using namespace softsusy;
 
 Weinberg_angle::Data::Data()
+   : scale(0.)
+   , alpha_em_drbar(0.)
+   , fermi_contant(0.)
+   , self_energy_z_at_mz(0.)
+   , self_energy_w_at_0(0.)
+   , self_energy_w_at_mw(0.)
+   , mw_pole(0.)
+   , mz_pole(0.)
+   , mt_pole(0.)
+   , mh_drbar(0.)
+   , hmix_12(0.)
+   , mse_L(0.)
+   , msmu_L(0.)
+   , msnu_e(0.)
+   , msnu_mu(0.)
+   , mneut()
+   , mch()
+   , n()
+   , u()
+   , v()
+   , gY(0.)
+   , g2(0.)
+   , g3(0.)
+   , tan_beta(0.)
+   , ymu(0.)
 {
 }
 
