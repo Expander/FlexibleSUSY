@@ -127,14 +127,14 @@ void Weinberg_angle::rhohat(
    const double piwwt0     = data.self_energy_w_at_0;
    const double tol        = precision_goal;
    const double maxTries   = number_of_iterations;
-   const double mz         = data.mz_pole;
+   const double mz_pole    = data.mz_pole;
    const double scale      = data.scale;
    const double gfermi     = data.fermi_contant;
    const double min_tol    = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(scale - mz)) {
+   if (!is_equal(scale, mz_pole)) {
       WARNING("Weinberg_angle::rhohat() called at scale "
-              << scale << " != MZ_pole(" << mz << ")");
+              << scale << " != MZ_pole(" << mz_pole << ")");
    }
 
    static int numTries = 0;
@@ -177,7 +177,7 @@ void Weinberg_angle::rhohat(
                << " piwwt0=" << piwwt0);
 
    double sin2thetasqO4 = Pi * alphaDRbar /
-      (root2 * Sqr(mz) * gfermi * (1.0 - deltaR));
+      (root2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
 
    if (sin2thetasqO4 >= 0.25)
       sin2thetasqO4 = 0.25;
