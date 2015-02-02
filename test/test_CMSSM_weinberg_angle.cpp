@@ -534,7 +534,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
 
    stopwatch.start();
-   const double fs_sintheta = weinberg.calculate();
+   const double fs_sintheta = weinberg.calculate(outrho, outsin);
    stopwatch.stop();
    const double fs_time = stopwatch.get_time_in_seconds();
 
