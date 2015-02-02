@@ -104,18 +104,7 @@ double Weinberg_angle::get_rho_hat() const
    return rho_hat;
 }
 
-double Weinberg_angle::calculate() const
-{
-   double outrho = 1.0, outsin = 0.48;
-
-   rhohat(outrho, outsin, data);
-
-   rho_hat = outrho;
-
-   return outsin;
-}
-
-double Weinberg_angle::calculate_sin(double rho_start, double sin_start) const
+double Weinberg_angle::calculate(double rho_start, double sin_start) const
 {
    const double alphaDRbar = data.alpha_em_drbar;
    const double pizztMZ    = data.self_energy_z_at_mz;
@@ -186,6 +175,15 @@ double Weinberg_angle::calculate_sin(double rho_start, double sin_start) const
    rho_hat = rho_new;
 
    return sin_new;
+}
+
+double Weinberg_angle::calculate_softsusy_style(double outrho, double outsin) const
+{
+   rhohat(outrho, outsin, data);
+
+   rho_hat = outrho;
+
+   return outsin;
 }
 
 void Weinberg_angle::rhohat(

@@ -65,7 +65,7 @@ public:
    void set_precision_goal(double);
    double get_rho_hat() const;
 
-   double calculate() const;
+   double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
 
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
@@ -79,7 +79,7 @@ private:
    static double calculate_delta_vb(double, double, const Data&);
    static double rho_2(double);
 
-   double calculate_sin(double rho_start = 1.0, double sin_start = 0.48) const;
+   double calculate_softsusy_style(double rho_start = 1.0, double sin_start = 0.48) const;
 };
 
 } // namespace weinberg_angle
