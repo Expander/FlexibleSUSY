@@ -28,6 +28,14 @@
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
 
+#define QUIT_IF_ZERO(p,fun)                     \
+   if (is_zero(p))                              \
+      FATAL(#fun ": " #p " is zero!");
+
+#define QUIT_IF(condition,fun)                  \
+   if (condition)                               \
+      FATAL(#fun ": condition " #condition " not fullfilled!");
+
 namespace flexiblesusy {
 
 namespace weinberg_angle {
@@ -97,7 +105,103 @@ double Weinberg_angle::get_rho_hat() const
 
 double Weinberg_angle::calculate() const
 {
-   return 0.;
+   double outrho = 1.0, outsin = 0.48;
+
+   rhohat(outrho, outsin, data);
+
+   rho_hat = outrho;
+
+   return outsin;
+}
+
+void Weinberg_angle::rhohat(
+   double& outrho,
+   double& outsin,
+   const Data& data
+) const
+{
+   static double oldrho = 0.23, oldsin = 0.8;
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double pizztMZ    = data.self_energy_z_at_mz;
+   const double piwwtMW    = data.self_energy_w_at_mw;
+   const double piwwt0     = data.self_energy_w_at_0;
+   const double tol        = precision_goal;
+   const double maxTries   = number_of_iterations;
+   const double mz         = data.mz_pole;
+   const double scale      = data.scale;
+   const double gfermi     = data.fermi_contant;
+   const double min_tol    = std::numeric_limits<double>::epsilon();
+
+   if (scale != mz) {
+      std::ostringstream ii;
+      ii << "Called Weinberg_angle::rhohat "
+         << "with scale " << scale << endl;
+      throw ii.str();
+   }
+
+   static int numTries = 0;
+
+   if (outrho < min_tol
+       || outsin < min_tol
+       || Abs(outsin) > 1.
+       || numTries - 1 > maxTries) {
+      oldrho = 0.23; oldsin = 0.8;
+      numTries = 0;
+      outrho = 0.23; outsin = 0.8;
+      // flagNoRhoConvergence(true);
+      VERBOSE_MSG("Problem: rhohat reached maximum number"
+                  " of iterations " << maxTries);
+      return;
+   }
+
+   // Difference to last iteration
+   const double sumTol
+      = Abs(oldrho / outrho - 1.0) + Abs(oldsin / outsin - 1.0);
+
+   if (numTries != 0 && sumTol < tol) {
+      numTries = 0;
+      oldrho = 0.23, oldsin = 0.8;
+      VERBOSE_MSG("Note: sin(thetaW) and rho converged");
+      return;
+   }
+
+   numTries++;
+
+   oldrho = outrho;
+   oldsin = outsin;
+
+   const double deltaR
+      = calculate_delta_r(outrho, outsin, data);
+
+   VERBOSE_MSG("Iteration step: st2=" << sumTol << " dr=" << deltaR
+               << " outrho=" << outrho << " outsin=" << outsin
+               << " aDRbar=" << alphaDRbar << " piZ=" << pizztMZ
+               << " piwwt0=" << piwwt0);
+
+   double sin2thetasqO4 = Pi * alphaDRbar /
+      (root2 * Sqr(mz) * gfermi * (1.0 - deltaR));
+
+   if (sin2thetasqO4 >= 0.25)
+      sin2thetasqO4 = 0.25;
+   if (sin2thetasqO4 < 0.0)
+      sin2thetasqO4 = 0.0;
+
+   const double sin2theta = sqrt(4.0 * sin2thetasqO4);
+   const double theta = 0.5 * asin(sin2theta);
+
+   outsin = sin(theta);
+
+   const double deltaRho
+      = calculate_delta_rho(outrho, outsin, data);
+
+   if (Abs(deltaRho) < 1.0)
+      outrho = 1.0 / (1.0 - deltaRho);
+   else
+      outrho = 1.0;
+
+   VERBOSE_MSG("Note: drho=" << deltaRho << " sw=" << outsin);
+
+   rhohat(outrho, outsin, data);
 }
 
 double Weinberg_angle::calculate_delta_rho(
@@ -168,19 +272,19 @@ double Weinberg_angle::calculate_delta_r(
    const double hmix12 = data.hmix_12;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rho, calculate_delta_rho)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
-   WARN_IF_ZERO(mz, calculate_delta_rho)
-   WARN_IF_ZERO(mw, calculate_delta_rho)
-   WARN_IF_ZERO(mt, calculate_delta_rho)
-   WARN_IF_ZERO(mh, calculate_delta_rho)
-   WARN_IF_ZERO(sinb, calculate_delta_rho)
-   WARN_IF_ZERO(xt, calculate_delta_rho)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
-   WARN_IF_ZERO(g3, calculate_delta_rho)
-   WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
-   WARN_IF_ZERO(piwwt0, calculate_delta_rho)
-   WARN_IF_ZERO(hmix12, calculate_delta_rho)
+   WARN_IF_ZERO(rho, calculate_delta_r)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_r)
+   WARN_IF_ZERO(mz, calculate_delta_r)
+   WARN_IF_ZERO(mw, calculate_delta_r)
+   WARN_IF_ZERO(mt, calculate_delta_r)
+   WARN_IF_ZERO(mh, calculate_delta_r)
+   WARN_IF_ZERO(sinb, calculate_delta_r)
+   WARN_IF_ZERO(xt, calculate_delta_r)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_r)
+   WARN_IF_ZERO(g3, calculate_delta_r)
+   WARN_IF_ZERO(pizztMZ, calculate_delta_r)
+   WARN_IF_ZERO(piwwt0, calculate_delta_r)
+   WARN_IF_ZERO(hmix12, calculate_delta_r)
 #endif
 
    const double dvb = calculate_delta_vb(rho, sinThetaW, data);
@@ -229,19 +333,29 @@ double Weinberg_angle::calculate_delta_vb(
   const Eigen::MatrixXcd& v(data.up);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rho, calculate_delta_rho)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
-   WARN_IF_ZERO(g, calculate_delta_rho)
-   WARN_IF_ZERO(gp, calculate_delta_rho)
-   WARN_IF_ZERO(mz, calculate_delta_rho)
-   WARN_IF_ZERO(mw, calculate_delta_rho)
-   WARN_IF_ZERO(q, calculate_delta_rho)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
-   WARN_IF_ZERO(hmu, calculate_delta_rho)
-   WARN_IF_ZERO(mselL, calculate_delta_rho)
-   WARN_IF_ZERO(msmuL, calculate_delta_rho)
-   WARN_IF_ZERO(msnue, calculate_delta_rho)
-   WARN_IF_ZERO(msnumu, calculate_delta_rho)
+   WARN_IF_ZERO(rho, calculate_delta_vb)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
+   WARN_IF_ZERO(g, calculate_delta_vb)
+   WARN_IF_ZERO(gp, calculate_delta_vb)
+   WARN_IF_ZERO(mz, calculate_delta_vb)
+   WARN_IF_ZERO(mw, calculate_delta_vb)
+   WARN_IF_ZERO(q, calculate_delta_vb)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
+   WARN_IF_ZERO(hmu, calculate_delta_vb)
+   WARN_IF_ZERO(mselL, calculate_delta_vb)
+   WARN_IF_ZERO(msmuL, calculate_delta_vb)
+   WARN_IF_ZERO(msnue, calculate_delta_vb)
+   WARN_IF_ZERO(msnumu, calculate_delta_vb)
+   QUIT_IF(mneut.rows() < 4, calculate_delta_vb)
+   QUIT_IF(mneut.cols() != 1, calculate_delta_vb)
+   QUIT_IF(mch.rows() < 2, calculate_delta_vb)
+   QUIT_IF(mch.cols() != 1, calculate_delta_vb)
+   QUIT_IF(mneut.rows() != n.rows(), calculate_delta_vb)
+   QUIT_IF(mneut.rows() != n.cols(), calculate_delta_vb)
+   QUIT_IF(mch.rows() != u.rows(), calculate_delta_vb)
+   QUIT_IF(mch.rows() != u.cols(), calculate_delta_vb)
+   QUIT_IF(mch.rows() != v.rows(), calculate_delta_vb)
+   QUIT_IF(mch.rows() != v.cols(), calculate_delta_vb)
 #endif
 
   const int dimN =  mneut.rows();

@@ -70,9 +70,10 @@ public:
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
    double precision_goal;         ///< precision goal
-   double rho_hat;                ///< output rho-hat parameter
+   mutable double rho_hat;        ///< output rho-hat parameter
    Data data;
 
+   void rhohat(double&, double&, const Data&) const;
    static double calculate_delta_r(double, double, const Data&);
    static double calculate_delta_rho(double, double, const Data&);
    static double calculate_delta_vb(double, double, const Data&);

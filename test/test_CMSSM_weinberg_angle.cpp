@@ -439,16 +439,75 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    const double piwwtMW = ss.piWWT(mw_pole, scale, true);
    const double alphaMsbar = ss.displayDataSet().displayAlpha(ALPHA);
    const double alphaDrbar = ss.qedSusythresh(alphaMsbar, scale);
+   const double gY         = fs.get_g1() * sqrt(0.6);
+   const double g2         = fs.get_g2();
+   const double hmu        = fs.get_Ye(1,1);
+   const double g3         = fs.get_g3();
+   const double mt         = ss.displayDataSet().displayPoleMt();
+   const double mh         = fs.get_Mhh(0);
+   const double alpha      = fs.get_ZH(0,1);
+   const double tanBeta    = fs.get_vu() / fs.get_vd();
+   double mselL            = 0.;
+   double msmuL            = 0.;
+   double msnue            = 0.;
+   double msnumu           = 0.;
+   const Eigen::ArrayXd mneut = fs.get_MChi();
+   const Eigen::MatrixXcd n   = fs.get_ZN();
+   const Eigen::ArrayXd mch   = fs.get_MCha();
+   const Eigen::MatrixXcd u   = fs.get_UM();
+   const Eigen::MatrixXcd v   = fs.get_UP();
+
+   const auto MSe(fs.get_MSe());
+   const auto ZE(fs.get_ZE());
+   const auto MSv(fs.get_MSv());
+   const auto ZV(fs.get_ZV());
+
+   for (int i = 0; i < 6; i++) {
+      mselL += AbsSqr(ZE(i,0))*MSe(i);
+      msmuL += AbsSqr(ZE(i,1))*MSe(i);
+   }
+
+   for (int i = 0; i < 3; i++) {
+      msnue  += AbsSqr(ZV(i,0))*MSv(i);
+      msnumu += AbsSqr(ZV(i,1))*MSv(i);
+   }
 
    softsusy::GMU = gfermi;
 
    ss.rhohat(outrho, outsin, alphaDrbar, pizztMZ, piwwt0, piwwtMW,
              tol, maxTries);
 
+   Weinberg_angle::Data data;
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_0 = piwwt0;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = mt;
+   data.mh_drbar = mh;
+   data.hmix_12 = alpha;
+   data.msel_drbar = mselL;
+   data.msmul_drbar = msmuL;
+   data.msve_drbar = msnue;
+   data.msvm_drbar = msnumu;
+   data.mn_drbar = mneut;
+   data.mc_drbar = mch;
+   data.zn = n;
+   data.um = u;
+   data.up = v;
+   data.gY = gY;
+   data.g2 = g2;
+   data.g3 = g3;
+   data.tan_beta = tanBeta;
+   data.ymu = hmu;
+
    Weinberg_angle weinberg;
 
    weinberg.set_number_of_iterations(maxTries);
    weinberg.set_precision_goal(tol);
+   weinberg.set_data(data);
 
    const double fs_sintheta = weinberg.calculate();
    const double fs_rhohat   = weinberg.get_rho_hat();
