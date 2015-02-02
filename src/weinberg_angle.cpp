@@ -122,7 +122,7 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
    double rho_old = rho_start, sin_old = sin_start;
    double rho_new = rho_start, sin_new = sin_start;
 
-   while (not_converged && iteration++ < number_of_iterations) {
+   while (not_converged && iteration < number_of_iterations) {
       const double deltaR
          = calculate_delta_r(rho_old, sin_old, data);
 
@@ -162,6 +162,7 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
 
       rho_old = rho_new;
       sin_old = sin_new;
+      iteration++;
    }
 
    if (iteration == number_of_iterations)
