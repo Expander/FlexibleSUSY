@@ -473,15 +473,19 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    }
 
    softsusy::GMU = gfermi;
+   softsusy::PRINTOUT = 10;
 
+   BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
    ss.rhohat(outrho, outsin, alphaDrbar, pizztMZ, piwwt0, piwwtMW,
              tol, maxTries);
+   BOOST_MESSAGE("MssmSoftsusy::rhohat() finished!");
 
    Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = gfermi;
    data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_mw = piwwtMW;
    data.self_energy_w_at_0 = piwwt0;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
@@ -509,8 +513,10 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_precision_goal(tol);
    weinberg.set_data(data);
 
+   BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
    const double fs_sintheta = weinberg.calculate();
    const double fs_rhohat   = weinberg.get_rho_hat();
+   BOOST_MESSAGE("running Weinberg_angle::calculate() finished!");
 
    BOOST_CHECK_CLOSE_FRACTION(outsin, fs_sintheta, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(outrho, fs_rhohat  , 1.0e-10);
