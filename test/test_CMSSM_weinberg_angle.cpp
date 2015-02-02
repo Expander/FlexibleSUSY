@@ -420,7 +420,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    input.SignMu = 1;
    input.Azero = 0.;
 
-   setup_CMSSM_const(fs, ss, input);
+   setup_CMSSM_const_non_3rd_gen(fs, ss, input);
 
    const double scale = ss.displayMu();
    const double mw_pole = ss.displayMw();
