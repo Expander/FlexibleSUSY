@@ -37,6 +37,8 @@
    if (condition)                               \
       FATAL(#fun ": condition " #condition " not fullfilled!");
 
+#define ROOT2 Electroweak_constants::root2
+
 namespace flexiblesusy {
 
 namespace weinberg_angle {
@@ -147,7 +149,7 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
          = calculate_delta_r(rho_old, sin_old, data);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
-         (root2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
+         (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
 
       if (sin2thetasqO4 >= 0.25)
          sin2thetasqO4 = 0.25;
@@ -214,7 +216,7 @@ double Weinberg_angle::calculate_delta_rho(
    const double mt = data.mt_pole;
    const double mh = data.mh_drbar;
    const double sinb = Sin(ArcTan(data.tan_beta));
-   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * ROOT2);
    const double alphaDRbar = data.alpha_em_drbar;
    const double g3 = data.g3;
    const double pizztMZ = data.self_energy_z_at_mz;
@@ -273,7 +275,7 @@ double Weinberg_angle::calculate_delta_r(
    const double mw = data.mw_pole;
    const double mt = data.mt_pole;
    const double mh = data.mh_drbar;
-   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * root2);
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * ROOT2);
    const double alphaDRbar = data.alpha_em_drbar;
    const double g3 = data.g3;
    const double pizztMZ = data.self_energy_z_at_mz;
@@ -395,11 +397,11 @@ double Weinberg_angle::calculate_delta_vb(
      aChicESnul(Eigen::VectorXcd::Zero(2));
 
   bPsicNuSell(0) = g;
-  bPsi0NuNul(1) = root2 * g * 0.5;
-  bPsi0NuNul(0) = -gp / root2;
+  bPsi0NuNul(1) = ROOT2 * g * 0.5;
+  bPsi0NuNul(0) = -gp / ROOT2;
   aPsicESnul(0) = g;
-  bPsi0ESell(0) = -gp / root2;
-  bPsi0ESell(1) = -g * root2 * 0.5;
+  bPsi0ESell(0) = -gp / ROOT2;
+  bPsi0ESell(1) = -g * ROOT2 * 0.5;
 
   bChicNuSell = u * bPsicNuSell;
   bChi0ESell =  n * bPsi0ESell;
@@ -432,8 +434,8 @@ double Weinberg_angle::calculate_delta_vb(
   bPsicNuSmul(1) = -hmu;
   aPsicMuSnul(0) = g;
   aPsicMuSnul(1) = -hmu;
-  bPsi0MuSmul(0) = -gp / root2;
-  bPsi0MuSmul(1) = -g * root2 * 0.5;
+  bPsi0MuSmul(0) = -gp / ROOT2;
+  bPsi0MuSmul(1) = -g * ROOT2 * 0.5;
 
   bChicNuSmul = u * bPsicNuSmul;
   bChi0MuSmul =  n * bPsi0MuSmul;
@@ -463,8 +465,8 @@ double Weinberg_angle::calculate_delta_vb(
 
   aPsi0PsicW(1, 0) = - g;
   bPsi0PsicW(1, 0) = - g;
-  aPsi0PsicW(3, 1) = g / root2;
-  bPsi0PsicW(2, 1) = -g / root2;
+  aPsi0PsicW(3, 1) = g / ROOT2;
+  bPsi0PsicW(2, 1) = -g / ROOT2;
 
   /// These ought to be in physpars
   aChi0ChicW = n.conjugate() * aPsi0PsicW * v.transpose();
@@ -474,14 +476,14 @@ double Weinberg_angle::calculate_delta_vb(
   for(int i = 0; i < 2; i++) {
      for(int j = 0; j < dimN; j++) {
         deltaVE += bChicNuSell(i) * Conj(bChi0ESell(j)) *
-           (- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-            c0(mselL, mch(i), mneut(j)) + 1.0 / (root2 * g) *
+           (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
+            c0(mselL, mch(i), mneut(j)) + 1.0 / (ROOT2 * g) *
             bChi0ChicW(j, i) *
             (b0(0.0, mch(i), mneut(j), q) + Sqr(mselL) *
              c0(mselL, mch(i), mneut(j)) - 0.5));
         deltaVE += - aChicESnul(i) * bChi0NuNul(j) *
-           (- root2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-            c0(msnue, mch(i), mneut(j)) + 1.0 / (root2 * g) *
+           (- ROOT2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
+            c0(msnue, mch(i), mneut(j)) + 1.0 / (ROOT2 * g) *
             aChi0ChicW(j, i) *
             (b0(0.0, mch(i), mneut(j), q) + Sqr(msnue) *
              c0(msnue, mch(i), mneut(j)) - 0.5));
@@ -498,14 +500,14 @@ double Weinberg_angle::calculate_delta_vb(
   for(int i = 0; i < 2; i++) {
      for(int j = 0; j < dimN; j++) {
         deltaVMu += bChicNuSmul(i) * Conj(bChi0MuSmul(j)) *
-           (- root2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-            c0(msmuL, mch(i), mneut(j)) + 1.0 / (root2 * g) *
+           (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
+            c0(msmuL, mch(i), mneut(j)) + 1.0 / (ROOT2 * g) *
             bChi0ChicW(j, i) *
             (b0(0.0, mch(i), mneut(j), q) + Sqr(msmuL) *
              c0(msmuL, mch(i), mneut(j)) - 0.5));
         deltaVMu += - aChicMuSnul(i) * bChi0NuNul(j) *
-           (- root2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-            c0(msnumu, mch(i), mneut(j)) + 1.0 / (root2 * g) *
+           (- ROOT2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
+            c0(msnumu, mch(i), mneut(j)) + 1.0 / (ROOT2 * g) *
             aChi0ChicW(j, i) *
             (b0(0.0, mch(i), mneut(j), q) + Sqr(msnumu) *
              c0(msnumu, mch(i), mneut(j)) - 0.5));
