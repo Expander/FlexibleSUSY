@@ -410,17 +410,11 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_rho, fs_delta_rho, 1.0e-10);
 }
 
-BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
+void setup_data(const CMSSM_input_parameters& input,
+                CMSSM<Two_scale> fs,
+                MssmSoftsusy& ss,
+                Weinberg_angle::Data& data)
 {
-   CMSSM<Two_scale> fs;
-   MssmSoftsusy ss;
-   CMSSM_input_parameters input;
-   input.m0 = 125.;
-   input.m12 = 500.;
-   input.TanBeta = 10.;
-   input.SignMu = 1;
-   input.Azero = 0.;
-
    setup_CMSSM_const_non_3rd_gen(fs, ss, input);
 
    const double scale = ss.displayMu();
@@ -431,9 +425,6 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_REQUIRE(mz_pole > 0.);
    BOOST_CHECK_EQUAL(scale, mz_pole);
 
-   double outrho = 1.0, outsin = 0.48;
-   const double tol = 1.0e-8;
-   const int maxTries = 20;
    const double gfermi = Electroweak_constants::gfermi;
    const double pizztMZ = ss.piZZT(mz_pole, scale, true);
    const double piwwt0  = ss.piWWT(0., scale, true);
@@ -476,12 +467,6 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    softsusy::GMU = gfermi;
    softsusy::PRINTOUT = 10;
 
-   BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
-   ss.rhohat(outrho, outsin, alphaDrbar, pizztMZ, piwwt0, piwwtMW,
-             tol, maxTries);
-   BOOST_MESSAGE("MssmSoftsusy::rhohat() finished!");
-
-   Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = gfermi;
@@ -507,10 +492,41 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    data.g3 = g3;
    data.tan_beta = tanBeta;
    data.ymu = hmu;
+}
 
+BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
+{
    Stopwatch stopwatch;
-   Weinberg_angle weinberg;
+   Weinberg_angle::Data data;
+   CMSSM<Two_scale> fs;
+   MssmSoftsusy ss;
+   CMSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
 
+   setup_data(input, fs, ss, data);
+
+   const double tol = 1.0e-8;
+   const int maxTries = 20;
+
+   BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
+   double outrho = 1.0, outsin = 0.48;
+   stopwatch.start();
+   ss.rhohat(outrho, outsin,
+             data.alpha_em_drbar,
+             data.self_energy_z_at_mz,
+             data.self_energy_w_at_0,
+             data.self_energy_w_at_mw,
+             tol, maxTries);
+   stopwatch.stop();
+   const double ss_time = stopwatch.get_time_in_seconds();
+   BOOST_MESSAGE("MssmSoftsusy::rhohat() finished!");
+   BOOST_MESSAGE("MssmSoftsusy::rhohat() takes " << ss_time << " seconds");
+
+   Weinberg_angle weinberg;
    weinberg.set_number_of_iterations(maxTries);
    weinberg.set_precision_goal(tol);
    weinberg.set_data(data);
