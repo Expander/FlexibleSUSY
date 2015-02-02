@@ -515,22 +515,6 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_precision_goal(tol);
    weinberg.set_data(data);
 
-   BOOST_MESSAGE("running Weinberg_angle::calculate_softsusy_style() ...");
-
-   stopwatch.start();
-   const double fs_ss_sintheta = weinberg.calculate_softsusy_style();
-   stopwatch.stop();
-   const double fs_ss_time = stopwatch.get_time_in_seconds();
-
-   BOOST_MESSAGE("running Weinberg_angle::calculate_softsusy_style() finished!");
-   BOOST_MESSAGE("Weinberg_angle::calculate_softsusy_style() takes " << fs_ss_time
-                 << " seconds");
-
-   const double fs_ss_rhohat = weinberg.get_rho_hat();
-
-   BOOST_CHECK_CLOSE_FRACTION(outsin, fs_ss_sintheta, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(outrho, fs_ss_rhohat  , 1.0e-10);
-
    BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
 
    stopwatch.start();
@@ -546,6 +530,4 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
 
    BOOST_CHECK_CLOSE_FRACTION(outsin, fs_sintheta, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(outrho, fs_rhohat  , 1.0e-10);
-
-   BOOST_CHECK_LT(fs_time, fs_ss_time);
 }

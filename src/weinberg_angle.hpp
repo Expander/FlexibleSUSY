@@ -73,13 +73,10 @@ private:
    mutable double rho_hat;        ///< output rho-hat parameter
    Data data;
 
-   void rhohat(double&, double&, const Data&) const;
    static double calculate_delta_r(double, double, const Data&);
    static double calculate_delta_rho(double, double, const Data&);
    static double calculate_delta_vb(double, double, const Data&);
    static double rho_2(double);
-
-   double calculate_softsusy_style(double rho_start = 1.0, double sin_start = 0.48) const;
 };
 
 } // namespace weinberg_angle
