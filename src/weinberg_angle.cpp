@@ -107,11 +107,6 @@ double Weinberg_angle::get_rho_hat() const
 double Weinberg_angle::calculate(double rho_start, double sin_start) const
 {
    const double alphaDRbar = data.alpha_em_drbar;
-   const double pizztMZ    = data.self_energy_z_at_mz;
-   const double piwwtMW    = data.self_energy_w_at_mw;
-   const double piwwt0     = data.self_energy_w_at_0;
-   const double tol        = precision_goal;
-   const double maxTries   = number_of_iterations;
    const double mz_pole    = data.mz_pole;
    const double scale      = data.scale;
    const double gfermi     = data.fermi_contant;
