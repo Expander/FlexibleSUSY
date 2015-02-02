@@ -29,10 +29,6 @@
    if (is_zero(p))                              \
       WARNING(#fun ": " #p " is zero!");
 
-#define QUIT_IF_ZERO(p,fun)                     \
-   if (is_zero(p))                              \
-      FATAL(#fun ": " #p " is zero!");
-
 #define QUIT_IF(condition,fun)                  \
    if (condition)                               \
       FATAL(#fun ": condition " #condition " not fullfilled!");
