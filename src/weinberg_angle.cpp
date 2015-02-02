@@ -104,7 +104,7 @@ double Weinberg_angle::calculate_delta_rho(
    double rho,
    double sinThetaW,
    const Data& data
-) const
+)
 {
    const double mz = data.mz_pole;
    const double mw = data.mw_pole;
@@ -152,7 +152,7 @@ double Weinberg_angle::calculate_delta_r(
    double rho,
    double sinThetaW,
    const Data& data
-) const
+)
 {
    const double outcos = Cos(ArcSin(sinThetaW));
    const double sinb = Sin(ArcTan(data.tan_beta));
@@ -204,7 +204,7 @@ double Weinberg_angle::calculate_delta_vb(
    double rho,
    double sinThetaW,
    const Data& data
-) const
+)
 {
   const double g       = data.g2;
   const double gp      = data.gY;
@@ -412,7 +412,7 @@ double Weinberg_angle::calculate_delta_vb(
   return deltaVb;
 }
 
-double Weinberg_angle::rho_2(double r) const
+double Weinberg_angle::rho_2(double r)
 {
    if (r <= 1.9) {
       return 19.0 - 16.5 * r + 43.0 * Sqr(r) / 12.0 + 7.0 / 120.0 * Sqr(r) * r -

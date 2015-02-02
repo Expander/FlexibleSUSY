@@ -73,11 +73,10 @@ private:
    double rho_hat;                ///< output rho-hat parameter
    Data data;
 
-   double rho_2(double) const;
-
-   double calculate_delta_r(double, double, const Data&) const;
-   double calculate_delta_rho(double, double, const Data&) const;
-   double calculate_delta_vb(double, double, const Data&) const;
+   static double calculate_delta_r(double, double, const Data&);
+   static double calculate_delta_rho(double, double, const Data&);
+   static double calculate_delta_vb(double, double, const Data&);
+   static double rho_2(double);
 };
 
 } // namespace weinberg_angle
