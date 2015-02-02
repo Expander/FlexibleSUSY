@@ -25,6 +25,10 @@ namespace flexiblesusy {
 
 namespace weinberg_angle {
 
+/**
+ * @class Weinberg_angle
+ * @brief Class to calculate the DR-bar weak mixing angle
+ */
 class Weinberg_angle {
 public:
    struct Data {
@@ -60,11 +64,12 @@ public:
    Weinberg_angle();
    ~Weinberg_angle();
 
-   void set_data(const Data&);
-   void set_number_of_iterations(unsigned);
-   void set_precision_goal(double);
-   double get_rho_hat() const;
+   void set_data(const Data&);       ///< set data necessary for the calculation
+   void set_number_of_iterations(unsigned); ///< maximum number of iterations
+   void set_precision_goal(double);  ///< set precision goal
+   double get_rho_hat() const;       ///< returns the rho parameter
 
+   /// calculates the Weinberg angle
    double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
 
 private:

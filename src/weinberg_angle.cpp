@@ -72,6 +72,10 @@ Weinberg_angle::Data::Data()
 {
 }
 
+/**
+ * Sets the maximum number of iterations to 20 and
+ * sets the precision goal to 1.0e-8.
+ */
 Weinberg_angle::Weinberg_angle()
    : number_of_iterations(20)
    , precision_goal(1.0e-8)
@@ -104,6 +108,22 @@ double Weinberg_angle::get_rho_hat() const
    return rho_hat;
 }
 
+/**
+ * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
+ * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
+ * the Z-boson pole mass and the DR-bar electromagnetic coupling as
+ * input.  In addition, the function stores the value of
+ * \f$\Delta\hat{\rho}\f$ in the variable rho_hat .
+ *
+ * The function throws an exception of type NoConvergenceError if the
+ * iterative procedure to determine the weak mixing angle does not
+ * converge.
+ *
+ * @param rho_start initial guess for the rho-hat-parameter
+ * @param sin_start initial guess for the sinus of the weak mixing angle
+ *
+ * @return \f$\sin\hat{\theta}_W\f$ from Eq. (C.3) hep-ph/9606211
+ */
 double Weinberg_angle::calculate(double rho_start, double sin_start) const
 {
    const double alphaDRbar = data.alpha_em_drbar;
@@ -173,6 +193,16 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
    return sin_new;
 }
 
+/**
+ * Calculates the \f$\Delta\hat{\rho}\f$ corrections as defined in
+ * Eqs. (C.4), (C.6) from hep-ph/9606211 .
+ *
+ * @param rho rho-hat-parameter
+ * @param sinThetaW sin(theta_W)
+ * @param data data structure with model parameters
+ *
+ * @return \f$\Delta\hat{\rho}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
+ */
 double Weinberg_angle::calculate_delta_rho(
    double rho,
    double sinThetaW,
@@ -221,6 +251,16 @@ double Weinberg_angle::calculate_delta_rho(
    return deltaRho;
 }
 
+/**
+ * Calculates the \f$\Delta\hat{r}\f$ corrections as defined in Eqs. (C.3),
+ * (C.5) from hep-ph/9606211 .
+ *
+ * @param rho rho-hat-parameter
+ * @param sinThetaW sin(theta_W)
+ * @param data data structure with model parameters
+ *
+ * @return \f$\Delta\hat{r}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
+ */
 double Weinberg_angle::calculate_delta_r(
    double rho,
    double sinThetaW,
@@ -273,6 +313,17 @@ double Weinberg_angle::calculate_delta_r(
    return deltaR_full;
 }
 
+/**
+ * Calculates the vertex, box and external wave-function
+ * renormalizations \f$\delta_{\text{VB}}\f$ as given in
+ * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211 .
+ *
+ * @param rho rho-hat-parameter
+ * @param sinThetaW sin(theta_W)
+ * @param data data structure with model parameters
+ *
+ * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ */
 double Weinberg_angle::calculate_delta_vb(
    double rho,
    double sinThetaW,
@@ -495,6 +546,14 @@ double Weinberg_angle::calculate_delta_vb(
   return deltaVb;
 }
 
+/**
+ * Calculates \f$\rho^{(2)}(r)\f$ as given in Eqs. (C.7)-(C.8) from
+ * hep-ph/9606211 .
+ *
+ * @param r ratio of Higgs mass over top quark mass
+ *
+ * @return \f$\rho^{(2)}(r)\f$
+ */
 double Weinberg_angle::rho_2(double r)
 {
    if (r <= 1.9) {
