@@ -115,6 +115,79 @@ double Weinberg_angle::calculate() const
    return outsin;
 }
 
+double Weinberg_angle::calculate_sin(double rho_start, double sin_start) const
+{
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double pizztMZ    = data.self_energy_z_at_mz;
+   const double piwwtMW    = data.self_energy_w_at_mw;
+   const double piwwt0     = data.self_energy_w_at_0;
+   const double tol        = precision_goal;
+   const double maxTries   = number_of_iterations;
+   const double mz_pole    = data.mz_pole;
+   const double scale      = data.scale;
+   const double gfermi     = data.fermi_contant;
+   const double min_tol    = std::numeric_limits<double>::epsilon();
+
+   if (!is_equal(scale, mz_pole)) {
+      WARNING("Weinberg_angle::rhohat() called at scale "
+              << scale << " != MZ_pole(" << mz_pole << ")");
+   }
+
+   unsigned iteration = 0;
+   bool not_converged = true;
+   double rho_old = rho_start, sin_old = sin_start;
+   double rho_new = rho_start, sin_new = sin_start;
+
+   while (not_converged && iteration++ < number_of_iterations) {
+      const double deltaR
+         = calculate_delta_r(rho_old, sin_old, data);
+
+      double sin2thetasqO4 = Pi * alphaDRbar /
+         (root2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
+
+      if (sin2thetasqO4 >= 0.25)
+         sin2thetasqO4 = 0.25;
+
+      if (sin2thetasqO4 < 0.0)
+         sin2thetasqO4 = 0.0;
+
+      const double sin2theta = sqrt(4.0 * sin2thetasqO4);
+      const double theta = 0.5 * asin(sin2theta);
+
+      sin_new = sin(theta);
+
+      const double deltaRho
+         = calculate_delta_rho(rho_old, sin_new, data);
+
+      if (Abs(deltaRho) < 1.0)
+         rho_new = 1.0 / (1.0 - deltaRho);
+      else
+         rho_new = 1.0;
+
+      const double precision
+         = Abs(rho_old / rho_new - 1.0) + Abs(sin_old / sin_new - 1.0);
+
+      VERBOSE_MSG("Iteration step " << iteration
+                  << ": prec=" << precision
+                  << " dr=" << deltaR
+                  << " drho=" << deltaRho
+                  << " rho_new=" << rho_new
+                  << " sin_new=" << sin_new);
+
+      not_converged = precision >= precision_goal;
+
+      rho_old = rho_new;
+      sin_old = sin_new;
+   }
+
+   if (iteration == number_of_iterations)
+      throw NoConvergenceError(iteration);
+
+   rho_hat = rho_new;
+
+   return sin_new;
+}
+
 void Weinberg_angle::rhohat(
    double& outrho,
    double& outsin,
@@ -171,9 +244,7 @@ void Weinberg_angle::rhohat(
       = calculate_delta_r(outrho, outsin, data);
 
    VERBOSE_MSG("Iteration step: st2=" << sumTol << " dr=" << deltaR
-               << " outrho=" << outrho << " outsin=" << outsin
-               << " aDRbar=" << alphaDRbar << " piZ=" << pizztMZ
-               << " piwwt0=" << piwwt0);
+               << " outrho=" << outrho << " outsin=" << outsin);
 
    double sin2thetasqO4 = Pi * alphaDRbar /
       (root2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
@@ -196,7 +267,7 @@ void Weinberg_angle::rhohat(
    else
       outrho = 1.0;
 
-   VERBOSE_MSG("Note: drho=" << deltaRho << " sw=" << outsin);
+   VERBOSE_MSG("   drho=" << deltaRho << " sw=" << outsin);
 
    rhohat(outrho, outsin, data);
 }
