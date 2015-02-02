@@ -21,6 +21,7 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "numerics.hpp"
+#include "error.hpp"
 #include "config.h"
 #include "numerics.h"
 
@@ -143,13 +144,11 @@ void Weinberg_angle::rhohat(
        || outsin < min_tol
        || Abs(outsin) > 1.
        || numTries - 1 > maxTries) {
-      oldrho = 0.23; oldsin = 0.8;
+      const unsigned _number_of_iterations = numTries;
       numTries = 0;
+      oldrho = 0.23; oldsin = 0.8;
       outrho = 0.23; outsin = 0.8;
-      // flagNoRhoConvergence(true);
-      VERBOSE_MSG("Problem: rhohat reached maximum number"
-                  " of iterations " << maxTries);
-      return;
+      throw NoConvergenceError(_number_of_iterations);
    }
 
    // Difference to last iteration
