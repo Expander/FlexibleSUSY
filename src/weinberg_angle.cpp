@@ -135,10 +135,10 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
       if (sin2thetasqO4 < 0.0)
          sin2thetasqO4 = 0.0;
 
-      const double sin2theta = sqrt(4.0 * sin2thetasqO4);
-      const double theta = 0.5 * asin(sin2theta);
+      const double sin2theta = Sqrt(4.0 * sin2thetasqO4);
+      const double theta = 0.5 * ArcSin(sin2theta);
 
-      sin_new = sin(theta);
+      sin_new = Sin(theta);
 
       const double deltaRho
          = calculate_delta_rho(rho_old, sin_new, data);
@@ -247,10 +247,10 @@ void Weinberg_angle::rhohat(
    if (sin2thetasqO4 < 0.0)
       sin2thetasqO4 = 0.0;
 
-   const double sin2theta = sqrt(4.0 * sin2thetasqO4);
-   const double theta = 0.5 * asin(sin2theta);
+   const double sin2theta = Sqrt(4.0 * sin2thetasqO4);
+   const double theta = 0.5 * ArcSin(sin2theta);
 
-   outsin = sin(theta);
+   outsin = Sin(theta);
 
    const double deltaRho
       = calculate_delta_rho(outrho, outsin, data);
