@@ -7,6 +7,7 @@
 #include "softsusy.h"
 #include "CMSSM_two_scale_model.hpp"
 #include "test_CMSSM.hpp"
+#include "stopwatch.hpp"
 
 #define private public
 
@@ -507,6 +508,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    data.tan_beta = tanBeta;
    data.ymu = hmu;
 
+   Stopwatch stopwatch;
    Weinberg_angle weinberg;
 
    weinberg.set_number_of_iterations(maxTries);
@@ -514,9 +516,17 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_data(data);
 
    BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
+
+   stopwatch.start();
    const double fs_sintheta = weinberg.calculate();
-   const double fs_rhohat   = weinberg.get_rho_hat();
+   stopwatch.stop();
+   const double fs_time = stopwatch.get_time_in_seconds();
+
    BOOST_MESSAGE("running Weinberg_angle::calculate() finished!");
+   BOOST_MESSAGE("Weinberg_angle::calculate() takes " << fs_time
+                 << " seconds");
+
+   const double fs_rhohat   = weinberg.get_rho_hat();
 
    BOOST_CHECK_CLOSE_FRACTION(outsin, fs_sintheta, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(outrho, fs_rhohat  , 1.0e-10);
