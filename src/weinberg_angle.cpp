@@ -132,11 +132,9 @@ void Weinberg_angle::rhohat(
    const double gfermi     = data.fermi_contant;
    const double min_tol    = std::numeric_limits<double>::epsilon();
 
-   if (scale != mz) {
-      std::ostringstream ii;
-      ii << "Called Weinberg_angle::rhohat "
-         << "with scale " << scale << endl;
-      throw ii.str();
+   if (is_zero(scale - mz)) {
+      WARNING("Weinberg_angle::rhohat() called at scale "
+              << scale << " != MZ_pole(" << mz << ")");
    }
 
    static int numTries = 0;
