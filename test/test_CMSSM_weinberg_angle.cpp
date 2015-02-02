@@ -513,7 +513,8 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    const int maxTries = 20;
 
    BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
-   double outrho = 1.0, outsin = 0.48;
+   const double rho_start = 1.0, sin_start = 0.48;
+   double outrho = rho_start, outsin = sin_start;
    stopwatch.start();
    ss.rhohat(outrho, outsin,
              data.alpha_em_drbar,
@@ -534,7 +535,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
 
    stopwatch.start();
-   const double fs_sintheta = weinberg.calculate();
+   const double fs_sintheta = weinberg.calculate(rho_start, sin_start);
    stopwatch.stop();
    const double fs_time = stopwatch.get_time_in_seconds();
 
