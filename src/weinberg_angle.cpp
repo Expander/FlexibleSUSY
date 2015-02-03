@@ -573,10 +573,42 @@ double Weinberg_angle::rho_2(double r)
    }
 }
 
-double Weinberg_angle::replace_top_contribution_in_self_energy_z(
-   double self_energy_z, const Data& data)
+double Weinberg_angle::calculate_top_contribution_in_self_energy_z(
+   double p, double mt, const Data& data)
 {
+   const double q = data.scale;
+   const double Nc = 3.0;
+   const double gY = data.gY;
+   const double g2 = data.g2;
+   const double gY2 = Sqr(gY);
+   const double g22 = Sqr(g2);
+   const double sw2 = gY2 / (gY2 + g22);
+   const double cw2 = 1.0 - sw2;
+   const double guL = 0.5 - 2.0 * sw2 / 3.0;
+   const double guR = 2.0 * sw2 / 3.0;
+
+   const double self_energy_z =
+      Nc * (hfn(p, mt, mt, q) * (Sqr(guL) + Sqr(guR))
+             - 4.0 * guL * guR * Sqr(mt) * b0(p, mt, mt, q))
+      * Sqr(g2) / cw2 * oneOver16PiSqr;
+
    return self_energy_z;
+}
+
+double Weinberg_angle::replace_top_contribution_in_self_energy_z(
+   double self_energy_z, double p, double mt_drbar, const Data& data)
+{
+   const double mt_pole  = data.mt_pole;
+
+   const double self_energy_z_mt_drbar
+      = calculate_top_contribution_in_self_energy_z(p, mt_drbar, data);
+   const double self_energy_z_mt_pole
+      = calculate_top_contribution_in_self_energy_z(p, mt_pole, data);
+
+   const double self_energy_z_with_mt_pole
+      = self_energy_z - self_energy_z_mt_drbar + self_energy_z_mt_pole;
+
+   return self_energy_z_with_mt_pole;
 }
 
 } // namespace weinberg_angle

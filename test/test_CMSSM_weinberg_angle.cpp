@@ -578,11 +578,13 @@ BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
    const double scale = ss.displayMu();
    const double mw_pole = ss.displayMw();
    const double mz_pole = ss.displayMz();
+   const double mt_drbar = fs.get_MFu(2);
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
    BOOST_CHECK_EQUAL(scale, mz_pole);
    BOOST_CHECK_EQUAL(fs.get_scale(), mz_pole);
+   BOOST_CHECK_CLOSE_FRACTION(mt_drbar, ss.displayDrBarPars().mt, 1.0e-10);
 
    // reference values
    const double pizztMZ = ss.piZZT(mz_pole, scale, true);
@@ -601,7 +603,7 @@ BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwt0 , fs_piwwt0 , 5.0e-04);
 
    const double fs_pizztMZ_corrected =
-      Weinberg_angle::replace_top_contribution_in_self_energy_z(fs_pizztMZ, data);
+      Weinberg_angle::replace_top_contribution_in_self_energy_z(fs_pizztMZ, mz_pole, mt_drbar, data);
 
    BOOST_CHECK_CLOSE_FRACTION(fs_pizztMZ_corrected, pizztMZ, 1.0e-10);
 }
