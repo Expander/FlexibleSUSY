@@ -14,6 +14,7 @@
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 #include "conversion.hpp"
+#include "weinberg_angle.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
 #include "CMSSM_two_scale_model.hpp"
@@ -24,6 +25,8 @@
 #include "CMSSM_two_scale_convergence_tester.hpp"
 #include "CMSSM_two_scale_initial_guesser.hpp"
 #include "test_CMSSM.hpp"
+
+using namespace weinberg_angle;
 
 /**
  * @class CMSSM_precise_gauge_couplings_low_scale_constraint
@@ -115,6 +118,242 @@ void CMSSM_precise_gauge_couplings_low_scale_constraint::apply()
    model->set_g1(softsusy.displayGaugeCoupling(1));
    model->set_g2(softsusy.displayGaugeCoupling(2));
    model->set_g3(softsusy.displayGaugeCoupling(3));
+}
+
+/**
+ * @class CMSSM_weinberg_angle_low_scale_constraint
+ *
+ * Replacement class for CMSSM_low_scale_constraint, which calculates
+ * the gauge couplings at the low scale as Softsusy does it.
+ */
+class CMSSM_weinberg_angle_low_scale_constraint
+   : public CMSSM_low_scale_constraint<Two_scale> {
+public:
+   CMSSM_weinberg_angle_low_scale_constraint()
+      : CMSSM_low_scale_constraint<Two_scale>() {}
+   CMSSM_weinberg_angle_low_scale_constraint(
+      CMSSM<Two_scale>* model_,
+      const CMSSM_input_parameters& inputPars_,
+      const QedQcd& oneset_)
+      : CMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+   virtual ~CMSSM_weinberg_angle_low_scale_constraint() {}
+
+   virtual void apply();
+
+private:
+   void calculate_DRbar_gauge_couplings_gmu();
+   void fill_data(Weinberg_angle::Data&, double);
+};
+
+void CMSSM_weinberg_angle_low_scale_constraint::apply()
+{
+   assert(model && "Error: CMSSM_weinberg_angle_low_scale_constraint:"
+          " model pointer must not be zero");
+
+   // save old model parmeters
+   const CMSSM<Two_scale> mssm(*model);
+
+   model->calculate_DRbar_masses();
+   update_scale();
+   calculate_DRbar_gauge_couplings();
+
+   // save gauge couplings calculated from MW, MZ
+   const double g1_mw_mz = new_g1;
+   const double g2_mw_mz = new_g2;
+
+   calculate_DRbar_gauge_couplings_gmu();
+
+   // save gauge couplings calculated from GF, MZ
+   const double g1_gf_mz = new_g1;
+   const double g2_gf_mz = new_g2;
+
+   BOOST_MESSAGE("Difference (g1_mw_mz - g1_gf_mz)(MZ) = "
+                 << g1_mw_mz - g1_gf_mz);
+   BOOST_MESSAGE("Difference (g2_mw_mz - g2_gf_mz)(MZ) = "
+                 << g2_mw_mz - g2_gf_mz);
+
+   const auto TanBeta = inputPars.TanBeta;
+   const auto g1 = model->get_g1();
+   const auto g2 = model->get_g2();
+
+   calculate_Yu_DRbar();
+   calculate_Yd_DRbar();
+   calculate_Ye_DRbar();
+   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
+      )));
+   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
+      TanBeta))));
+
+   // Now calculate the gauge couplings using
+   // MssmSoftsusy::sparticleThresholdCorrections
+   MssmSoftsusy softsusy;
+   copy_parameters(mssm, softsusy);
+   softsusy.setData(oneset);
+   softsusy.setMw(oneset.displayPoleMW());
+
+   // prevent tan(beta) from being reset
+   softsusy.setSetTbAtMX(true);
+   softsusy::PRINTOUT = 10;
+   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+
+   if (softsusy.displayProblem().test()) {
+      std::ostringstream ss;
+      ss << "Softsusy problem in CMSSM_precise_gauge_couplings_"
+           "low_scale_constraint::apply(): "
+           "error while calculating the sparticle thresholds: "
+         << softsusy.displayProblem();
+      BOOST_MESSAGE(ss.str());
+   }
+
+   // save gauge couplings calculated from GF, MZ with Softsusy
+   const double g1_ss = softsusy.displayGaugeCoupling(1);
+   const double g2_ss = softsusy.displayGaugeCoupling(2);
+
+   BOOST_MESSAGE("Difference (g1_gf_mz - g1_ss)(MZ) = "
+                 << g1_gf_mz - g1_ss);
+   BOOST_MESSAGE("Difference (g2_gf_mz - g2_ss)(MZ) = "
+                 << g2_gf_mz - g2_ss);
+
+   model->set_g1(new_g1);
+   model->set_g2(new_g2);
+   model->set_g3(new_g3);
+}
+
+void CMSSM_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_couplings_gmu()
+{
+   assert(oneset.displayMu() == get_scale() && "Error: low-energy data"
+          " set is not defined at the same scale as the low-energy"
+          " constraint.  You need to run the low-energy data set to this"
+          " scale!");
+
+   const double alpha_em = oneset.displayAlpha(ALPHA);
+   const double alpha_s  = oneset.displayAlpha(ALPHAS);
+
+   double delta_alpha_em = 0.;
+   double delta_alpha_s  = 0.;
+
+   if (model->get_thresholds()) {
+      delta_alpha_em = calculate_delta_alpha_em(alpha_em);
+      delta_alpha_s  = calculate_delta_alpha_s(alpha_s);
+   }
+
+   const double alpha_em_drbar = alpha_em / (1.0 - delta_alpha_em);
+   const double alpha_s_drbar  = alpha_s  / (1.0 - delta_alpha_s);
+   const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
+
+   // interface variables
+   MZDRbar = oneset.displayPoleMZ();
+   double MWDRbar = oneset.displayPoleMW();
+
+   if (model->get_thresholds()) {
+      MZDRbar = model->calculate_MVZ_DRbar(oneset.displayPoleMZ());
+      MWDRbar = model->calculate_MVWm_DRbar(oneset.displayPoleMW());
+   }
+
+   const double AlphaS = alpha_s_drbar;
+   const double EDRbar = e_drbar;
+
+   Weinberg_angle::Data data;
+   fill_data(data, alpha_em_drbar);
+
+   Weinberg_angle weinberg;
+   weinberg.set_data(data);
+
+   const double ThetaW = ArcSin(weinberg.calculate());
+
+   new_g1 = 1.2909944487358056*EDRbar*Sec(ThetaW);
+   new_g2 = EDRbar*Csc(ThetaW);
+   new_g3 = 3.5449077018110318*Sqrt(AlphaS);
+
+   BOOST_MESSAGE("ThetaW = " << ThetaW);
+   BOOST_MESSAGE("EDRbar = " << EDRbar);
+   BOOST_MESSAGE("=> g1 = " << new_g1);
+   BOOST_MESSAGE("   g2 = " << new_g2);
+}
+
+void CMSSM_weinberg_angle_low_scale_constraint::fill_data(
+   Weinberg_angle::Data& data, double alpha_em_drbar)
+{
+   const double scale   = model->get_scale();
+   const double mw_pole = oneset.displayPoleMW();
+   const double mz_pole = oneset.displayPoleMZ();
+   const double mt_pole = oneset.displayPoleMt();
+
+   BOOST_REQUIRE(mw_pole > 0.);
+   BOOST_REQUIRE(mz_pole > 0.);
+   BOOST_CHECK_EQUAL(scale, mz_pole);
+
+   const double gfermi     = softsusy::GMU;
+
+   const double mt_drbar   = model->get_MFu(2);
+   model->MFu(2) = mt_pole;
+   const double pizztMZ    = Re(model->self_energy_VZ(mz_pole));
+   const double piwwt0     = Re(model->self_energy_VWm(0));
+   const double piwwtMW    = Re(model->self_energy_VWm(mw_pole));
+   model->MFu(2) = mt_drbar;
+
+   const double alphaDrbar = alpha_em_drbar;
+   const double gY         = model->get_g1() * sqrt(0.6);
+   const double g2         = model->get_g2();
+   const double hmu        = model->get_Ye(1,1);
+   const double g3         = model->get_g3();
+   const double mt         = oneset.displayPoleMt();
+   const double mh         = model->get_Mhh(0);
+   const double alpha      = model->get_ZH(0,1);
+   const double tanBeta    = model->get_vu() / model->get_vd();
+   double mselL            = 0.;
+   double msmuL            = 0.;
+   double msnue            = 0.;
+   double msnumu           = 0.;
+   const Eigen::ArrayXd mneut = model->get_MChi();
+   const Eigen::MatrixXcd n   = model->get_ZN();
+   const Eigen::ArrayXd mch   = model->get_MCha();
+   const Eigen::MatrixXcd u   = model->get_UM();
+   const Eigen::MatrixXcd v   = model->get_UP();
+
+   const auto MSe(model->get_MSe());
+   const auto ZE(model->get_ZE());
+   const auto MSv(model->get_MSv());
+   const auto ZV(model->get_ZV());
+
+   for (int i = 0; i < 6; i++) {
+      mselL += AbsSqr(ZE(i,0))*MSe(i);
+      msmuL += AbsSqr(ZE(i,1))*MSe(i);
+   }
+
+   for (int i = 0; i < 3; i++) {
+      msnue  += AbsSqr(ZV(i,0))*MSv(i);
+      msnumu += AbsSqr(ZV(i,1))*MSv(i);
+   }
+
+   softsusy::GMU = gfermi;
+   softsusy::PRINTOUT = 10;
+
+   data.scale = scale;
+   data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = gfermi;
+   data.self_energy_z_at_mz = pizztMZ;
+   data.self_energy_w_at_mw = piwwtMW;
+   data.self_energy_w_at_0 = piwwt0;
+   data.mw_pole = mw_pole;
+   data.mz_pole = mz_pole;
+   data.mt_pole = mt;
+   data.mh_drbar = mh;
+   data.hmix_12 = alpha;
+   data.msel_drbar = mselL;
+   data.msmul_drbar = msmuL;
+   data.msve_drbar = msnue;
+   data.msvm_drbar = msnumu;
+   data.mn_drbar = mneut;
+   data.mc_drbar = mch;
+   data.zn = n;
+   data.um = u;
+   data.up = v;
+   data.gY = gY;
+   data.g2 = g2;
+   data.g3 = g3;
+   data.tan_beta = tanBeta;
+   data.ymu = hmu;
 }
 
 /**
@@ -598,7 +837,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_physical().MGlu, ss.displayPhys().mGluino, 0.005);
 }
 
-// ===== test with gauge couplings determined from the Rho parameter =====
+// ===== test with gauge couplings determined from the Rho parameter (SoftSUSY variant) =====
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_Softsusy_gauge_couplings )
 {
@@ -624,6 +863,75 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_Softsusy_gauge_couplings )
 
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.0007);
    BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 2.0e-5);
+
+   // compare model parameters
+   const MssmSoftsusy ss(softSusy_tester.get_model());
+   const CMSSM<Two_scale> fs(mssm_tester.get_model());
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.0000023);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0000066);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.0000010);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0024);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0022);
+
+   const double vu = fs.get_vu();
+   const double vd = fs.get_vd();
+   const double tanBeta = vu / vd;
+   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
+
+   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
+   BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0068);
+
+   // comparing tree-level masses
+
+   const DoubleVector MHpm(ToDoubleVector(fs.get_MHpm())),
+      MAh(ToDoubleVector(fs.get_MAh())),
+      Mhh(ToDoubleVector(fs.get_Mhh()));
+   const double MwRun = fs.get_MVWm();
+   const double MzRun = fs.get_MVZ();
+   const double mHpm = ss.displayDrBarPars().mHpm;
+   const double mA0 = ss.displayDrBarPars().mA0(1);
+   const double mh0 = ss.displayDrBarPars().mh0(1);
+   const double mH0 = ss.displayDrBarPars().mh0(2);
+
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 4.e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 4.e-5);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 3.e-6);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 4.e-5);
+}
+
+// ===== test with gauge couplings determined from the Rho parameter (FlexibleSUSY variant) =====
+
+BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_weinberg_angle )
+{
+   CMSSM_input_parameters pp;
+   pp.m0 = 125.;
+   pp.m12 = 500.;
+   pp.TanBeta = 10.;
+   pp.SignMu = 1;
+   pp.Azero = 0.;
+   softsusy::QedQcd oneset;
+
+   CMSSM<Two_scale> _model;
+   const CMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   const double mxGuess = high_constraint.get_initial_scale_guess();
+
+   CMSSM_tester mssm_tester;
+   mssm_tester.set_low_scale_constraint(new CMSSM_weinberg_angle_low_scale_constraint(&_model, pp, oneset));
+   BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
+
+   SoftSusy_tester softSusy_tester;
+   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
+
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 6.2e-4);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.5e-5);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
