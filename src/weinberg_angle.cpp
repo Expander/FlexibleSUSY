@@ -606,10 +606,10 @@ double Weinberg_angle::calculate_self_energy_w_top(
    const double sw2 = gY2 / (gY2 + g22);
    const double cw2 = 1.0 - sw2;
 
-   const double self_energy_z =
+   const double self_energy_w =
       0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;
 
-   return self_energy_z;
+   return self_energy_w;
 }
 
 /**
