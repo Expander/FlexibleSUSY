@@ -449,6 +449,17 @@ void setup_data(const CMSSM_input_parameters& input,
    const Eigen::MatrixXcd u   = fs.get_UM();
    const Eigen::MatrixXcd v   = fs.get_UP();
 
+   const double ss_pizztMZ = ss.piZZT(mz_pole, scale, false);
+   const double ss_piwwt0  = ss.piWWT(0., scale, false);
+   const double ss_piwwtMW = ss.piWWT(mw_pole, scale, false);
+   const double fs_pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double fs_piwwt0  = Re(fs.self_energy_VWm(0));
+   const double fs_piwwtMW = Re(fs.self_energy_VWm(mw_pole));
+
+   BOOST_CHECK_CLOSE_FRACTION(ss_pizztMZ, fs_pizztMZ, 5.0e-08);
+   BOOST_CHECK_CLOSE_FRACTION(ss_piwwtMW, fs_piwwtMW, 3.0e-05);
+   BOOST_CHECK_CLOSE_FRACTION(ss_piwwt0 , fs_piwwt0 , 5.0e-04);
+
    const auto MSe(fs.get_MSe());
    const auto ZE(fs.get_ZE());
    const auto MSv(fs.get_MSv());
