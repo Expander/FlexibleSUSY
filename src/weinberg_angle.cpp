@@ -599,12 +599,7 @@ double Weinberg_angle::calculate_self_energy_w_top(
    const double q = data.scale;
    const double mb = data.mb_drbar;
    const double Nc = 3.0;
-   const double gY = data.gY;
    const double g2 = data.g2;
-   const double gY2 = Sqr(gY);
-   const double g22 = Sqr(g2);
-   const double sw2 = gY2 / (gY2 + g22);
-   const double cw2 = 1.0 - sw2;
 
    const double self_energy_w =
       0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;
