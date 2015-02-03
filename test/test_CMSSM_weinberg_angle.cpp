@@ -560,3 +560,48 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_CHECK_CLOSE_FRACTION(outsin, fs_sintheta, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(outrho, fs_rhohat  , 1.0e-10);
 }
+
+BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
+{
+   Weinberg_angle::Data data;
+   CMSSM<Two_scale> fs;
+   MssmSoftsusy ss;
+   CMSSM_input_parameters input;
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   setup_data(input, fs, ss, data);
+
+   const double scale = ss.displayMu();
+   const double mw_pole = ss.displayMw();
+   const double mz_pole = ss.displayMz();
+
+   BOOST_REQUIRE(mw_pole > 0.);
+   BOOST_REQUIRE(mz_pole > 0.);
+   BOOST_CHECK_EQUAL(scale, mz_pole);
+   BOOST_CHECK_EQUAL(fs.get_scale(), mz_pole);
+
+   // reference values
+   const double pizztMZ = ss.piZZT(mz_pole, scale, true);
+   const double piwwtMW = ss.piWWT(mw_pole, scale, true);
+   const double piwwt0  = ss.piWWT(0.     , scale, true);
+
+   const double ss_pizztMZ = ss.piZZT(mz_pole, scale, false);
+   const double ss_piwwtMW = ss.piWWT(mw_pole, scale, false);
+   const double ss_piwwt0  = ss.piWWT(0.     , scale, false);
+   const double fs_pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double fs_piwwtMW = Re(fs.self_energy_VWm(mw_pole));
+   const double fs_piwwt0  = Re(fs.self_energy_VWm(0));
+
+   BOOST_CHECK_CLOSE_FRACTION(ss_pizztMZ, fs_pizztMZ, 5.0e-08);
+   BOOST_CHECK_CLOSE_FRACTION(ss_piwwtMW, fs_piwwtMW, 3.0e-05);
+   BOOST_CHECK_CLOSE_FRACTION(ss_piwwt0 , fs_piwwt0 , 5.0e-04);
+
+   const double fs_pizztMZ_corrected =
+      Weinberg_angle::replace_top_contribution_in_self_energy_z(fs_pizztMZ, data);
+
+   BOOST_CHECK_CLOSE_FRACTION(fs_pizztMZ_corrected, pizztMZ, 1.0e-10);
+}

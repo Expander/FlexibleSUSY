@@ -573,6 +573,12 @@ double Weinberg_angle::rho_2(double r)
    }
 }
 
+double Weinberg_angle::replace_top_contribution_in_self_energy_z(
+   double self_energy_z, const Data& data)
+{
+   return self_energy_z;
+}
+
 } // namespace weinberg_angle
 
 } // namespace flexiblesusy

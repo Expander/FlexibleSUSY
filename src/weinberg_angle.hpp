@@ -72,6 +72,8 @@ public:
    /// calculates the Weinberg angle
    double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
 
+   static double replace_top_contribution_in_self_energy_z(double, const Data&);
+
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
    double precision_goal;         ///< precision goal
