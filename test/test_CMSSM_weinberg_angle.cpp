@@ -411,7 +411,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
 }
 
 void setup_data(const CMSSM_input_parameters& input,
-                CMSSM<Two_scale> fs,
+                CMSSM<Two_scale>& fs,
                 MssmSoftsusy& ss,
                 Weinberg_angle::Data& data)
 {
@@ -424,6 +424,7 @@ void setup_data(const CMSSM_input_parameters& input,
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
    BOOST_CHECK_EQUAL(scale, mz_pole);
+   BOOST_CHECK_EQUAL(fs.get_scale(), scale);
 
    const double gfermi = Electroweak_constants::gfermi;
    const double pizztMZ = ss.piZZT(mz_pole, scale, true);
