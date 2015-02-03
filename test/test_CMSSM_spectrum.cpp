@@ -278,22 +278,9 @@ void CMSSM_weinberg_angle_low_scale_constraint::fill_data(
    const double mw_pole = oneset.displayPoleMW();
    const double mz_pole = oneset.displayPoleMZ();
    const double mt_pole = oneset.displayPoleMt();
-
-   BOOST_REQUIRE(mw_pole > 0.);
-   BOOST_REQUIRE(mz_pole > 0.);
-   BOOST_CHECK_EQUAL(scale, mz_pole);
-
    const double gfermi     = softsusy::GMU;
-
-   // temporary workaround: Need to use top pole mass for the W and Z
-   // self-energy calculation
    const double mt_drbar   = model->get_MFu(2);
-   model->MFu(2) = mt_pole;
-   const double pizztMZ    = Re(model->self_energy_VZ(mz_pole));
-   const double piwwt0     = Re(model->self_energy_VWm(0));
-   const double piwwtMW    = Re(model->self_energy_VWm(mw_pole));
-   model->MFu(2) = mt_drbar;
-
+   const double mb_drbar   = model->get_MFd(2);
    const double alphaDrbar = alpha_em_drbar;
    const double gY         = model->get_g1() * sqrt(0.6);
    const double g2         = model->get_g2();
@@ -331,12 +318,50 @@ void CMSSM_weinberg_angle_low_scale_constraint::fill_data(
    softsusy::GMU = gfermi;
    softsusy::PRINTOUT = 10;
 
+   BOOST_REQUIRE(mw_pole > 0.);
+   BOOST_REQUIRE(mz_pole > 0.);
+   BOOST_CHECK_EQUAL(scale, mz_pole);
+
+   const double pizztMZ = Re(model->self_energy_VZ(mz_pole));
+   const double piwwt0  = Re(model->self_energy_VWm(0));
+   const double piwwtMW = Re(model->self_energy_VWm(mw_pole));
+
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale = scale;
+   se_data.mt_pole = mt_pole;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY = gY;
+   se_data.g2 = g2;
+
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+
+   // check corrected self-energies
+   {
+      model->MFu(2) = mt_pole;
+      const double pizztMZ_check = Re(model->self_energy_VZ(mz_pole));
+      const double piwwt0_check  = Re(model->self_energy_VWm(0));
+      const double piwwtMW_check = Re(model->self_energy_VWm(mw_pole));
+      model->MFu(2) = mt_drbar;
+
+      BOOST_CHECK_CLOSE_FRACTION(pizztMZ_check, pizztMZ_corrected, 1.0e-10);
+      BOOST_CHECK_CLOSE_FRACTION(piwwtMW_check, piwwtMW_corrected, 1.0e-10);
+      BOOST_CHECK_CLOSE_FRACTION(piwwt0_check , piwwt0_corrected , 1.0e-10);
+   }
+
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = gfermi;
-   data.self_energy_z_at_mz = pizztMZ;
-   data.self_energy_w_at_mw = piwwtMW;
-   data.self_energy_w_at_0 = piwwt0;
+   data.self_energy_z_at_mz = pizztMZ_corrected;
+   data.self_energy_w_at_mw = piwwtMW_corrected;
+   data.self_energy_w_at_0 = piwwt0_corrected;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
    data.mt_pole = mt;
