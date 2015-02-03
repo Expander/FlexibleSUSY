@@ -285,6 +285,8 @@ void CMSSM_weinberg_angle_low_scale_constraint::fill_data(
 
    const double gfermi     = softsusy::GMU;
 
+   // temporary workaround: Need to use top pole mass for the W and Z
+   // self-energy calculation
    const double mt_drbar   = model->get_MFu(2);
    model->MFu(2) = mt_pole;
    const double pizztMZ    = Re(model->self_energy_VZ(mz_pole));
