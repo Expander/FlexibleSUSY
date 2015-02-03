@@ -79,7 +79,7 @@ public:
    void set_precision_goal(double);  ///< set precision goal
    double get_rho_hat() const;       ///< returns the rho parameter
 
-   /// calculates the Weinberg angle
+   /// calculates the sinus of the Weinberg angle
    double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
 
    static double replace_mtop_in_self_energy_z(double, double, const Self_energy_data&);
