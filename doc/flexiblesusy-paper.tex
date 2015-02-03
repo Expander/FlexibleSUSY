@@ -1603,7 +1603,7 @@ where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
 VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
 tadpole diagram of $H_i$.  Already at the tree-level ($t_i = 0$) Eqs.\
 \eqref{eq:one-loop-ewsb-eq} can have multiple solutions, depending on
-which paramters are chosen to be fixed by these equations.  A
+which parameters are chosen to be fixed by these equations.  A
 well-known example is the real MSSM, where the $\mu$-parameter is
 chosen to be fixed by the EWSB equations.  In this model, the EWSB
 equations, Eqs.\ \eqref{eq:one-loop-ewsb-eq} can only determine
@@ -1832,7 +1832,7 @@ we use
   \qquad U^\dagger U = \unity = V^\dagger V ,
 \end{align}
 %
-where we're again choosing the phases of $U$ and $V$ such that all mass
+where we are again choosing the phases of $U$ and $V$ such that all mass
 eigenvalues are positive.
 
 \subsection{Two-scale fixed point iteration}
@@ -2584,7 +2584,7 @@ SuperPotential = Yu u.q.Hu - Yd d.q.Hd - Ye e.l.Hd + \[Mu] Hu.Hd \
                + WOp/2 l.Hu.l.Hu;
 \end{numlstlisting}
 where line 2 contains the dimension-5 operator
-multiplied by its coeffficient matrix \code{WOp}.
+multiplied by its coefficient matrix \code{WOp}.
 The declarations of the neutrino Dirac spinors and mixing are
 very similar to those in the MSSMRHN,
 except that \code{FvR} is absent.
@@ -2821,7 +2821,7 @@ compared against a handwritten one for a constrained version of the
 \ESSM \cite{Athron:2009ue, Athron:2009bs, Athron:2012pw}.  The
 $\beta$-functions were systematically compared in unit tests and were
 found to match within numerical precision.  The handwritten code
-doesn't include full one-loop self-energies or tadpoles, so tests on
+does not include full one-loop self-energies or tadpoles, so tests on
 these were not carried out.  Although the generators assume different
 constraints and solve the boundary value problem with completely
 different algorithms they could be compared by using the output of
@@ -2848,7 +2848,7 @@ two different sets of CMSSM spectrum generators:
 \item \emph{Without sfermion flavour violation:} Disallowing sfermion
   flavour violation simplifies the calculation of the pole masses,
   because flavour-off-diagonal sfermion self-energy matrix elements
-  don't need to be calculated.  Here we compare \fs's non-flavour
+  do not need to be calculated.  Here we compare \fs's non-flavour
   violating CMSSM spectrum generator FlexibleSUSY-NoFV (version 1.0.0)
   against SPheno (version 3.2.4) and Softsusy (version 3.4.0).
 %
@@ -2868,7 +2868,7 @@ disabled.  \fs and Softsusy are compiled with g++ 4.8.0 and Intel
 ifort 13.1.3 20130607.  SPheno and SPhenoMSSM are compiled with Intel
 ifort 13.1.3 20130607.\footnote{Intel's ifort compiler decreases the
   run-time of SPheno and SPhenoMSSM by approximately a factor $1.5$,
-  compared to gfortran.}  We're generating $2\cdot 10^{4}$ random
+  compared to gfortran.}  We are generating $2\cdot 10^{4}$ random
 CMSSM parameter points with $m_0\in [50,1000]\unit{GeV}$, $m_{1/2}\in
 [50,1000]\unit{GeV}$, $\tan\beta\in [1,100]$, $\sign\mu\in \{-1,+1\}$
 and $A_0\in [-1000,$ $1000]\unit{GeV}$.  For each point an SLHA input
