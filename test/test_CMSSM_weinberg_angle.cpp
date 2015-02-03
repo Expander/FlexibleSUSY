@@ -605,13 +605,13 @@ BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwt0 , fs_piwwt0 , 5.0e-04);
 
    const double fs_pizztMZ_corrected =
-      Weinberg_angle::replace_top_contribution_in_self_energy_z(fs_pizztMZ, mz_pole, mt_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_z(fs_pizztMZ, mz_pole, mt_drbar, data);
 
    const double fs_piwwtMW_corrected =
-      Weinberg_angle::replace_top_contribution_in_self_energy_w(fs_piwwtMW, mw_pole, mt_drbar, mb_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwtMW, mw_pole, mt_drbar, mb_drbar, data);
 
    const double fs_piwwt0_corrected =
-      Weinberg_angle::replace_top_contribution_in_self_energy_w(fs_piwwt0, 0., mt_drbar, mb_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwt0, 0., mt_drbar, mb_drbar, data);
 
    BOOST_CHECK_CLOSE_FRACTION(fs_pizztMZ_corrected, pizztMZ, 5.0e-08);
    BOOST_CHECK_CLOSE_FRACTION(fs_piwwtMW_corrected, piwwtMW, 3.0e-05);
