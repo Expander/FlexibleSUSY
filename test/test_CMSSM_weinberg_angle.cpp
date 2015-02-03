@@ -604,14 +604,22 @@ BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwtMW, fs_piwwtMW, 3.0e-05);
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwt0 , fs_piwwt0 , 5.0e-04);
 
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale = scale;
+   se_data.mt_pole = data.mt_pole;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY = data.gY;
+   se_data.g2 = data.g2;
+
    const double fs_pizztMZ_corrected =
-      Weinberg_angle::replace_mtop_in_self_energy_z(fs_pizztMZ, mz_pole, mt_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_z(fs_pizztMZ, mz_pole, se_data);
 
    const double fs_piwwtMW_corrected =
-      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwtMW, mw_pole, mt_drbar, mb_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwtMW, mw_pole, se_data);
 
    const double fs_piwwt0_corrected =
-      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwt0, 0., mt_drbar, mb_drbar, data);
+      Weinberg_angle::replace_mtop_in_self_energy_w(fs_piwwt0, 0., se_data);
 
    BOOST_CHECK_CLOSE_FRACTION(fs_pizztMZ_corrected, pizztMZ, 5.0e-08);
    BOOST_CHECK_CLOSE_FRACTION(fs_piwwtMW_corrected, piwwtMW, 3.0e-05);

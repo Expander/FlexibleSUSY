@@ -61,6 +61,16 @@ public:
       double ymu;                    ///< Myon Yukawa coupling
    };
 
+   struct Self_energy_data {
+      Self_energy_data();
+      double scale;                  ///< renormalization scale
+      double mt_pole;                ///< top quark pole mass
+      double mt_drbar;               ///< top quark DR-bar mass
+      double mb_drbar;               ///< bottom quark DR-bar mass
+      double gY;                     ///< U(1)_Y gauge coupling
+      double g2;                     ///< SU(2)_L gauge coupling
+   };
+
    Weinberg_angle();
    ~Weinberg_angle();
 
@@ -72,8 +82,8 @@ public:
    /// calculates the Weinberg angle
    double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
 
-   static double replace_mtop_in_self_energy_z(double, double, double, const Data&);
-   static double replace_mtop_in_self_energy_w(double, double, double, double, const Data&);
+   static double replace_mtop_in_self_energy_z(double, double, const Self_energy_data&);
+   static double replace_mtop_in_self_energy_w(double, double, const Self_energy_data&);
 
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
@@ -86,8 +96,8 @@ private:
    static double calculate_delta_vb(double, double, const Data&);
    static double rho_2(double);
 
-   static double calculate_self_energy_z_top(double, double, const Data&);
-   static double calculate_self_energy_w_top(double, double, double, const Data&);
+   static double calculate_self_energy_z_top(double, double, const Self_energy_data&);
+   static double calculate_self_energy_w_top(double, double, const Self_energy_data&);
 };
 
 } // namespace weinberg_angle
