@@ -573,6 +573,16 @@ double Weinberg_angle::rho_2(double r)
    }
 }
 
+/**
+ * Calculates 1-loop top-quark contribution to W boson self-energy.
+ *
+ * @param p momentum
+ * @param mt top-quark mass
+ * @param mb botton-quark mass
+ * @param data model parameters
+ *
+ * @return 1-loop top-quark contribution to W boson self-energy
+ */
 double Weinberg_angle::calculate_self_energy_w_top(
    double p, double mt, double mb, const Data& data)
 {
@@ -591,6 +601,15 @@ double Weinberg_angle::calculate_self_energy_w_top(
    return self_energy_z;
 }
 
+/**
+ * Calculates 1-loop top-quark contribution to Z boson self-energy.
+ *
+ * @param p momentum
+ * @param mt top-quark mass
+ * @param data model parameters
+ *
+ * @return 1-loop top-quark contribution to Z boson self-energy
+ */
 double Weinberg_angle::calculate_self_energy_z_top(
    double p, double mt, const Data& data)
 {
@@ -613,6 +632,18 @@ double Weinberg_angle::calculate_self_energy_z_top(
    return self_energy_z;
 }
 
+/**
+ * Replaces the 1-loop top-quark DR-bar mass contribution in the given
+ * W boson self-energy by the 1-loop top-quark pole mass contribution.
+ *
+ * @param self_energy_w full W boson self-energy
+ * @param p momentum
+ * @param mt_drbar top-quark DR-bar mass
+ * @param mb_drbar bottom-quark DR-bar mass
+ * @param data model parameters
+ *
+ * @return W self-energy with top DR-bar mass replaced by top pole mass
+ */
 double Weinberg_angle::replace_mtop_in_self_energy_w(
    double self_energy_w, double p, double mt_drbar, double mb_drbar, const Data& data)
 {
@@ -629,6 +660,17 @@ double Weinberg_angle::replace_mtop_in_self_energy_w(
    return self_energy_w_with_mt_pole;
 }
 
+/**
+ * Replaces the 1-loop top-quark DR-bar mass contribution in the given
+ * Z boson self-energy by the 1-loop top-quark pole mass contribution.
+ *
+ * @param self_energy_w full Z boson self-energy
+ * @param p momentum
+ * @param mt_drbar top-quark DR-bar mass
+ * @param data model parameters
+ *
+ * @return Z self-energy with top DR-bar mass replaced by top pole mass
+ */
 double Weinberg_angle::replace_mtop_in_self_energy_z(
    double self_energy_z, double p, double mt_drbar, const Data& data)
 {
