@@ -397,10 +397,8 @@ double Weinberg_angle::calculate_delta_vb(
      bPsicNuSell(Eigen::VectorXd::Zero(2));
   Eigen::VectorXd bPsi0ESell(Eigen::VectorXd::Zero(dimN)),
      aPsicESnul(Eigen::VectorXd::Zero(2));
-  Eigen::VectorXcd bChi0NuNul(Eigen::VectorXcd::Zero(dimN)),
-     bChicNuSell(Eigen::VectorXcd::Zero(2));
-  Eigen::VectorXcd bChi0ESell(Eigen::VectorXcd::Zero(dimN)),
-     aChicESnul(Eigen::VectorXcd::Zero(2));
+  Eigen::VectorXcd bChi0NuNul, bChicNuSell;
+  Eigen::VectorXcd bChi0ESell, aChicESnul;
 
   bPsicNuSell(0) = g;
   bPsi0NuNul(1) = ROOT2 * g * 0.5;
@@ -432,9 +430,8 @@ double Weinberg_angle::calculate_delta_vb(
   Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(2));
   Eigen::VectorXd bPsi0MuSmul(Eigen::VectorXd::Zero(dimN)),
      aPsicMuSnul(Eigen::VectorXd::Zero(2));
-  Eigen::VectorXcd bChicNuSmul(Eigen::VectorXcd::Zero(2));
-  Eigen::VectorXcd bChi0MuSmul(Eigen::VectorXcd::Zero(dimN)),
-     aChicMuSnul(Eigen::VectorXcd::Zero(2));
+  Eigen::VectorXcd bChicNuSmul;
+  Eigen::VectorXcd bChi0MuSmul, aChicMuSnul;
 
   bPsicNuSmul(0) = g;
   bPsicNuSmul(1) = -hmu;
@@ -466,8 +463,7 @@ double Weinberg_angle::calculate_delta_vb(
      bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,2)),
      fW(Eigen::MatrixXd::Zero(dimN,2)),
      gW(Eigen::MatrixXd::Zero(dimN,2));
-  Eigen::MatrixXcd aChi0ChicW(Eigen::MatrixXcd::Zero(dimN,2)),
-     bChi0ChicW(Eigen::MatrixXcd::Zero(dimN,2));
+  Eigen::MatrixXcd aChi0ChicW, bChi0ChicW;
 
   aPsi0PsicW(1, 0) = - g;
   bPsi0PsicW(1, 0) = - g;
