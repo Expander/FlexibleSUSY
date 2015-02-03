@@ -442,7 +442,6 @@ double Weinberg_angle::calculate_delta_vb(
 
   bChicNuSmul = u * bPsicNuSmul;
   bChi0MuSmul =  n * bPsi0MuSmul;
-  bChi0NuNul = n * bPsi0NuNul;
   aChicMuSnul = v.conjugate() * aPsicMuSnul;
 
   double deltaZnumu = 0.0, deltaZmu = 0.0;
