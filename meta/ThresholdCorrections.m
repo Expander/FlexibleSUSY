@@ -4,6 +4,7 @@ BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
+CalculateThetaW::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
@@ -248,21 +249,31 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
            Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
-CalculateGaugeCouplings[] :=
-    Module[{subst, weinbergAngle, g1Def, g2Def, g3Def, result},
+CalculateThetaW[] :=
+    Module[{subst, weinbergAngle, result},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
+                    "ThetaW = " <>
+                    CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
+           Return[result];
+          ];
+
+CalculateGaugeCouplings[] :=
+    Module[{subst, g1Def, g2Def, g3Def, result},
+           subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
+                     SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
+                     SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
+                     SARAH`Weinberg            -> FlexibleSUSY`ThetaW };
            g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
                     / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
            g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]
                     / Parameters`GetGUTNormalization[SARAH`leftCoupling]) /. subst;
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
                     / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
-           result = Parameters`CreateLocalConstRefs[{weinbergAngle, g1Def, g2Def, g3Def}] <>
-                    "const double " <> CConversion`ToValidCSymbolString[SARAH`Weinberg] <>
-                    " = " <> CConversion`RValueToCFormString[weinbergAngle] <> ";\n" <>
+           result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
                     "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
                     " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
                     "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>

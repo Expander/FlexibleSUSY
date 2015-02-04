@@ -54,6 +54,7 @@ MZ;
 MZDRbar;
 MWDRbar;
 EDRbar;
+ThetaW;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
@@ -406,6 +407,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
+           calculateThetaW,
            checkPerturbativityForDimensionlessParameters = "",
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
@@ -415,6 +417,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
@@ -438,6 +441,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
+                   "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
