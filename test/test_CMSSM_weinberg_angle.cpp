@@ -96,12 +96,12 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    const Eigen::MatrixXcd fs_u   = fs.get_UM();
    const Eigen::MatrixXcd fs_v   = fs.get_UP();
 
-   for (int i = 0; i < 6; i++) {
+   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       fs_mselL += AbsSqr(ZE(i,0))*MSe(i);
       fs_msmuL += AbsSqr(ZE(i,1))*MSe(i);
    }
 
-   for (int i = 0; i < 3; i++) {
+   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
       fs_msnue  += AbsSqr(ZV(i,0))*MSv(i);
       fs_msnumu += AbsSqr(ZV(i,1))*MSv(i);
    }
@@ -233,12 +233,12 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    const double fs_mh          = fs.get_Mhh(0);
    const double fs_alpha       = fs.get_ZH(0,1);
 
-   for (int i = 0; i < 6; i++) {
+   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       fs_mselL += AbsSqr(ZE(i,0))*MSe(i);
       fs_msmuL += AbsSqr(ZE(i,1))*MSe(i);
    }
 
-   for (int i = 0; i < 3; i++) {
+   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
       fs_msnue  += AbsSqr(ZV(i,0))*MSv(i);
       fs_msnumu += AbsSqr(ZV(i,1))*MSv(i);
    }
@@ -466,12 +466,12 @@ void setup_data(const CMSSM_input_parameters& input,
    const auto MSv(fs.get_MSv());
    const auto ZV(fs.get_ZV());
 
-   for (int i = 0; i < 6; i++) {
+   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       mselL += AbsSqr(ZE(i,0))*MSe(i);
       msmuL += AbsSqr(ZE(i,1))*MSe(i);
    }
 
-   for (int i = 0; i < 3; i++) {
+   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
       msnue  += AbsSqr(ZV(i,0))*MSv(i);
       msnumu += AbsSqr(ZV(i,1))*MSv(i);
    }

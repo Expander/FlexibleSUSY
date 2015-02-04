@@ -305,12 +305,12 @@ void CMSSM_weinberg_angle_low_scale_constraint::fill_data(
    const auto MSv(model->get_MSv());
    const auto ZV(model->get_ZV());
 
-   for (int i = 0; i < 6; i++) {
+   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       mselL += AbsSqr(ZE(i,0))*MSe(i);
       msmuL += AbsSqr(ZE(i,1))*MSe(i);
    }
 
-   for (int i = 0; i < 3; i++) {
+   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
       msnue  += AbsSqr(ZV(i,0))*MSv(i);
       msnumu += AbsSqr(ZV(i,1))*MSv(i);
    }
