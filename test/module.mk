@@ -44,6 +44,7 @@ TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
+
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
@@ -57,6 +58,12 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_spectrum.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp
 endif
+
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSMMassWInput),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMMassWInput_spectrum.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
@@ -384,6 +391,8 @@ $(DIR)/test_CMSSM_slha.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$
 $(DIR)/test_CMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
