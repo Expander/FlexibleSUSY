@@ -45,6 +45,7 @@ namespace flexiblesusy {
 #define MODELCLASSNAME @ModelName@<Two_scale>
 #define THETAW theta_w
 #define ALPHA_EM_DRBAR alpha_em_drbar
+#define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -97,6 +98,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@hyperchargeCoupling@(new_@hyperchargeCoupling@);
    model->set_@leftCoupling@(new_@leftCoupling@);
    model->set_@strongCoupling@(new_@strongCoupling@);
+
+   recalculate_mw_pole();
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
@@ -275,6 +278,14 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
       electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarElectronYukawaCouplings@
+}
+
+/**
+ * Recalculates the W boson pole mass using the new gauge couplings.
+ */
+void @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole()
+{
+@recalculateMWPole@
 }
 
 } // namespace flexiblesusy

@@ -1,10 +1,11 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
 CalculateThetaW::usage="";
+RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
@@ -417,6 +418,17 @@ CalculateThetaW[input_] :=
            Print["   Using default input: ", FlexibleSUSY`FSMassW];
            CalculateThetaWFromMW[]
           ];
+
+RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
+    "\
+MODEL->calculate_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorW]] <> "();
+MODEL->" <> LoopMasses`CreateLoopMassFunctionName[SARAH`VectorW] <> "();
+
+const double mw_pole = Pole(" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorW]] <> ");
+
+oneset.setPoleMW(mw_pole);";
+
+RecalculateMWPole[input_] := "";
 
 CalculateGaugeCouplings[] :=
     Module[{subst, g1Def, g2Def, g3Def, result},

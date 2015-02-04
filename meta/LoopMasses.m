@@ -8,6 +8,7 @@ CreateOneLoopPoleMassPrototypes::usage="";
 CallAllPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
+CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for

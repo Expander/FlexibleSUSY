@@ -413,6 +413,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
            calculateThetaW,
+           recalculateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
@@ -424,6 +425,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleInput];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleInput];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
@@ -447,6 +449,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
                    "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
+                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
