@@ -469,7 +469,6 @@ double Weinberg_angle::calculate_delta_vb(
   aPsi0PsicW(3, 1) = g / ROOT2;
   bPsi0PsicW(2, 1) = -g / ROOT2;
 
-  /// These ought to be in physpars
   aChi0ChicW = n.conjugate() * aPsi0PsicW * v.transpose();
   bChi0ChicW = n * bPsi0PsicW * u.adjoint();
 
