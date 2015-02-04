@@ -65,6 +65,7 @@ private:
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
+   double calculate_theta_w(double);
    void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

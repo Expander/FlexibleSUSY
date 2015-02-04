@@ -42,6 +42,7 @@ namespace flexiblesusy {
 #define Pole(p) model->get_physical().p
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define THETAW theta_w
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -197,7 +198,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
    AlphaS = alpha_s_drbar;
    EDRbar = e_drbar;
+   ThetaW = calculate_theta_w(alpha_em_drbar);
+}
+
+double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
+{
+   double theta_w = 0.;
+
 @calculateThetaW@
+
+   return theta_w;
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()

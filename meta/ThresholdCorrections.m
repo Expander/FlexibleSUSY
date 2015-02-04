@@ -256,7 +256,7 @@ CalculateThetaW[] :=
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
            result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
-                    "ThetaW = " <>
+                    "THETAW = " <>
                     CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
            Return[result];
           ];
