@@ -250,39 +250,40 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
           ];
 
 CalculateThetaWFromFermiConstant[] :=
+    Module[{},
     "\
 using namespace weinberg_angle;
 
-const double scale         = model->get_scale();
+const double scale         = MODEL->get_scale();
 const double mw_pole       = oneset.displayPoleMW();
 const double mz_pole       = oneset.displayPoleMZ();
 const double mt_pole       = oneset.displayPoleMt();
 const double gfermi        = softsusy::GMU; // @todo
-const double mt_drbar      = model->get_MFu(2);
-const double mb_drbar      = model->get_MFd(2);
+const double mt_drbar      = MODEL->get_MFu(2);
+const double mb_drbar      = MODEL->get_MFd(2);
 const double alphaDrbar    = ALPHA_EM_DRBAR;
-const double gY            = model->get_g1() * sqrt(0.6);
-const double g2            = model->get_g2();
-const double hmu           = model->get_Ye(1,1);
-const double g3            = model->get_g3();
+const double gY            = MODEL->get_g1() * sqrt(0.6);
+const double g2            = MODEL->get_g2();
+const double hmu           = MODEL->get_Ye(1,1);
+const double g3            = MODEL->get_g3();
 const double mt            = oneset.displayPoleMt();
-const double mh            = model->get_Mhh(0);
-const double alpha         = model->get_ZH(0,1);
-const double tanBeta       = model->get_vu() / model->get_vd();
+const double mh            = MODEL->get_Mhh(0);
+const double alpha         = MODEL->get_ZH(0,1);
+const double tanBeta       = MODEL->get_vu() / MODEL->get_vd();
 double mselL               = 0.;
 double msmuL               = 0.;
 double msnue               = 0.;
 double msnumu              = 0.;
-const Eigen::ArrayXd mneut = model->get_MChi();
-const Eigen::MatrixXcd n   = model->get_ZN();
-const Eigen::ArrayXd mch   = model->get_MCha();
-const Eigen::MatrixXcd u   = model->get_UM();
-const Eigen::MatrixXcd v   = model->get_UP();
+const Eigen::ArrayXd mneut = MODEL->get_MChi();
+const Eigen::MatrixXcd zn  = MODEL->get_ZN();
+const Eigen::ArrayXd mch   = MODEL->get_MCha();
+const Eigen::MatrixXcd um  = MODEL->get_UM();
+const Eigen::MatrixXcd up  = MODEL->get_UP();
 
-const auto MSe(model->get_MSe());
-const auto ZE(model->get_ZE());
-const auto MSv(model->get_MSv());
-const auto ZV(model->get_ZV());
+const auto MSe(MODEL->get_MSe());
+const auto ZE(MODEL->get_ZE());
+const auto MSv(MODEL->get_MSv());
+const auto ZV(MODEL->get_ZV());
 
 for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
    mselL += AbsSqr(ZE(i,0))*MSe(i);
@@ -294,9 +295,9 @@ for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
    msnumu += AbsSqr(ZV(i,1))*MSv(i);
 }
 
-const double pizztMZ = Re(model->self_energy_VZ(mz_pole));
-const double piwwt0  = Re(model->self_energy_VWm(0));
-const double piwwtMW = Re(model->self_energy_VWm(mw_pole));
+const double pizztMZ = Re(MODEL->self_energy_VZ(mz_pole));
+const double piwwt0  = Re(MODEL->self_energy_VWm(0));
+const double piwwtMW = Re(MODEL->self_energy_VWm(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -333,9 +334,9 @@ data.msve_drbar          = msnue;
 data.msvm_drbar          = msnumu;
 data.mn_drbar            = mneut;
 data.mc_drbar            = mch;
-data.zn                  = n;
-data.um                  = u;
-data.up                  = v;
+data.zn                  = zn;
+data.um                  = um;
+data.up                  = up;
 data.gY                  = gY;
 data.g2                  = g2;
 data.g3                  = g3;
@@ -345,7 +346,8 @@ data.ymu                 = hmu;
 Weinberg_angle weinberg;
 weinberg.set_data(data);
 
-THETAW = ArcSin(weinberg.calculate());";
+THETAW = ArcSin(weinberg.calculate());"
+          ];
 
 CalculateThetaWFromMW[] :=
     Module[{subst, weinbergAngle, result},
