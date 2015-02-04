@@ -249,7 +249,19 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
            Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
-CalculateThetaW[] :=
+CalculateThetaWFromFermiConstant[] :=
+    "\
+using namespace weinberg_angle;
+
+Weinberg_angle::Data data;
+fill_data(data, ALPHA_EM_DRBAR);
+
+Weinberg_angle weinberg;
+weinberg.set_data(data);
+
+THETAW = ArcSin(weinberg.calculate());";
+
+CalculateThetaWFromMW[] :=
     Module[{subst, weinbergAngle, result},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
@@ -259,6 +271,16 @@ CalculateThetaW[] :=
                     "THETAW = " <>
                     CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
            Return[result];
+          ];
+
+CalculateThetaW[input_] :=
+    Switch[input,
+           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[],
+           FlexibleSUSY`FSMassW, CalculateThetaWFromMW[],
+           _,
+           Print["Error: CalculateThetaW[", input, "]: unknown input ", input];
+           Print["   Using default input: ", FlexibleSUSY`FSMassW];
+           CalculateThetaWFromMW[]
           ];
 
 CalculateGaugeCouplings[] :=

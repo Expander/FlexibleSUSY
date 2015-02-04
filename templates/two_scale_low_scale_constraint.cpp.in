@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "weinberg_angle.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -43,6 +44,7 @@ namespace flexiblesusy {
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 #define THETAW theta_w
+#define ALPHA_EM_DRBAR alpha_em_drbar
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()

@@ -92,6 +92,11 @@ FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
 FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + tadpoles *)
 FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 
+(* input value for the calculation of the weak mixing angle *)
+FSFermiConstant;
+FSMassW;
+FSWeakMixingAngleInput = FSFermiConstant;
+
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
 
 tadpole::usage="symbolic expression for a tadpole contribution in the
@@ -417,7 +422,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
-          calculateThetaW         = ThresholdCorrections`CalculateThetaW[];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleInput];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
