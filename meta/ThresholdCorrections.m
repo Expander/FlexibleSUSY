@@ -311,7 +311,7 @@ CalculateThetaWFromFermiConstant[] :=
 using namespace weinberg_angle;
 
 const double scale         = MODEL->get_scale();
-const double gfermi        = softsusy::GMU; // @todo
+const double gfermi        = oneset.displayFermiConstant();
 const double mw_pole       = oneset.displayPoleMW();
 const double mz_pole       = oneset.displayPoleMZ();
 const double mt_pole       = oneset.displayPoleMt();

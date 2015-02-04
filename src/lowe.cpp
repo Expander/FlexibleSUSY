@@ -19,7 +19,9 @@ QedQcd::QedQcd()
   : a(2), mf(9), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM), 
     mtauPole(MTAU)
   , mwPole(flexiblesusy::Electroweak_constants::MW)
-  , mzPole(flexiblesusy::Electroweak_constants::MZ) {
+  , mzPole(flexiblesusy::Electroweak_constants::MZ)
+  , gfermi(flexiblesusy::Electroweak_constants::gfermi)
+{
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(1) = MUP; mf(2) = MCHARM; 
@@ -40,6 +42,7 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mtauPole = m.mtauPole;
   mwPole = m.mwPole;
   mzPole = m.mzPole;
+  gfermi = m.gfermi;
   a = m.a;
   mf = m.mf;
   setLoops(m.displayLoops());
