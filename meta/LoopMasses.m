@@ -597,8 +597,11 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
-           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
-           smParticles = Complement[particles, susyParticles];
+           smParticles = Select[particles, SARAH`SMQ[#]&];
+           (* filter out MW, because MW is a prediction and should
+              always be calculated *)
+           smParticles = Select[smParticles, (# =!= SARAH`VectorW)&];
+           susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
               (callSusy = callSusy <> CallPoleMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallPoleMassFunction[#])& /@ smParticles;
