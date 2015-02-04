@@ -311,14 +311,12 @@ CalculateThetaWFromFermiConstant[] :=
 using namespace weinberg_angle;
 
 const double scale         = MODEL->get_scale();
-const double gfermi        = oneset.displayFermiConstant();
 const double mw_pole       = oneset.displayPoleMW();
 const double mz_pole       = oneset.displayPoleMZ();
 const double mt_pole       = oneset.displayPoleMt();
 const double mt_drbar      = " <> mtStr <> ";
 const double mb_drbar      = " <> mbStr <> ";
 const double mh_drbar      = " <> mhStr <> ";
-const double alphaDrbar    = ALPHA_EM_DRBAR;
 const double gY            = " <> g1Str <> ";
 const double g2            = " <> g2Str <> ";
 const double g3            = " <> g3Str <> ";
@@ -329,11 +327,6 @@ double mselL               = 0.;
 double msmuL               = 0.;
 double msnue               = 0.;
 double msnumu              = 0.;
-const Eigen::ArrayXd mneut(" <> mnStr <> ");
-const Eigen::MatrixXcd zn (" <> znStr <> ");
-const Eigen::ArrayXd mch  (" <> mcStr <> ");
-const Eigen::MatrixXcd um (" <> umStr <> ");
-const Eigen::MatrixXcd up (" <> upStr <> ");
 const auto MSe(" <> mseStr <> ");
 const auto ZE(" <> zseStr <> ");
 const auto MSv(" <> msvStr <> ");
@@ -350,7 +343,7 @@ for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
 }
 
 const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
-const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0));
+const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
 const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
@@ -372,8 +365,8 @@ const double piwwt0_corrected =
 
 Weinberg_angle::Data data;
 data.scale               = scale;
-data.alpha_em_drbar      = alphaDrbar;
-data.fermi_contant       = gfermi;
+data.alpha_em_drbar      = ALPHA_EM_DRBAR;
+data.fermi_contant       = oneset.displayFermiConstant();
 data.self_energy_z_at_mz = pizztMZ_corrected;
 data.self_energy_w_at_mw = piwwtMW_corrected;
 data.self_energy_w_at_0  = piwwt0_corrected;
@@ -386,11 +379,11 @@ data.msel_drbar          = mselL;
 data.msmul_drbar         = msmuL;
 data.msve_drbar          = msnue;
 data.msvm_drbar          = msnumu;
-data.mn_drbar            = mneut;
-data.mc_drbar            = mch;
-data.zn                  = zn;
-data.um                  = um;
-data.up                  = up;
+data.mn_drbar            = " <> mnStr <> ";
+data.mc_drbar            = " <> mcStr <> ";
+data.zn                  = " <> znStr <> ";
+data.um                  = " <> umStr <> ";
+data.up                  = " <> upStr <> ";
 data.gY                  = gY;
 data.g2                  = g2;
 data.g3                  = g3;
