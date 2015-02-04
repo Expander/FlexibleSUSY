@@ -54,7 +54,7 @@ MZ;
 MZDRbar;
 MWDRbar;
 EDRbar;
-ThetaW;
+ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};

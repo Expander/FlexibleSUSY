@@ -435,7 +435,7 @@ CalculateGaugeCouplings[] :=
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
-                     SARAH`Weinberg            -> FlexibleSUSY`ThetaW };
+                     SARAH`Weinberg            -> FlexibleSUSY`ThetaWDRbar };
            g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
                     / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
            g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]

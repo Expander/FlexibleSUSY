@@ -58,7 +58,7 @@ namespace flexiblesusy {
    , MZDRbar(0.)
    , AlphaS(0.)
    , EDRbar(0.)
-   , ThetaW(0.)
+   , ThetaWDRbar(0.)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
@@ -137,7 +137,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    MZDRbar = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
-   ThetaW = 0.;
+   ThetaWDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
@@ -155,7 +155,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    MZDRbar = 0.;
    AlphaS = 0.;
    EDRbar = 0.;
-   ThetaW = 0.;
+   ThetaWDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
@@ -203,7 +203,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
    AlphaS = alpha_s_drbar;
    EDRbar = e_drbar;
-   ThetaW = calculate_theta_w(alpha_em_drbar);
+   ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
