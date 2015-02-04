@@ -31,15 +31,23 @@ namespace weinberg_angle {
  */
 class Weinberg_angle {
 public:
+   /**
+    * @class Data
+    * @brief Model parameters necessary for calculating weak mixing angle
+    *
+    * @attention The W and Z self-energies are assumed to be
+    * calculated using the top quark pole mass, instead of the top
+    * quark DR-bar mass.
+    */
    struct Data {
       Data();
 
       double scale;                  ///< renormalization scale
       double alpha_em_drbar;         ///< alpha_em(MZ, DR-bar, SUSY)
       double fermi_contant;          ///< Fermi constant
-      double self_energy_z_at_mz;    ///< self-energy Z at p = MZ
-      double self_energy_w_at_0;     ///< self-energy W at p = 0
-      double self_energy_w_at_mw;    ///< self-energy W at p = MW
+      double self_energy_z_at_mz;    ///< self-energy Z at p = MZ, mt = mt_pole
+      double self_energy_w_at_0;     ///< self-energy W at p = 0, mt = mt_pole
+      double self_energy_w_at_mw;    ///< self-energy W at p = MW, mt = mt_pole
       double mw_pole;                ///< W pole mass
       double mz_pole;                ///< Z pole mass
       double mt_pole;                ///< top quark pole mass
