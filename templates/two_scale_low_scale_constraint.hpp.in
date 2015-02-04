@@ -59,9 +59,12 @@ private:
    QedQcd oneset;
    double MWDRbar;
    double MZDRbar;
+   double AlphaS;
+   double EDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
+   void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();
    void calculate_@UpYukawa@_DRbar();
