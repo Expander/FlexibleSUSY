@@ -50,6 +50,7 @@ namespace flexiblesusy {
    , model(0)
    , inputPars()
    , oneset()
+   , MWDRbar(0.)
    , MZDRbar(0.)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
@@ -123,6 +124,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    initial_scale_guess = 0.;
    model = NULL;
    oneset = QedQcd();
+   MWDRbar = 0.;
    MZDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
@@ -137,6 +139,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 @scaleGuess@
    scale = initial_scale_guess;
 
+   MWDRbar = 0.;
    MZDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
@@ -176,7 +179,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
    // interface variables
    MZDRbar = oneset.displayPoleMZ();
-   double MWDRbar = oneset.displayPoleMW();
+   MWDRbar = oneset.displayPoleMW();
 
    if (model->get_thresholds()) {
       MZDRbar = model->calculate_M@VectorZ@_DRbar(oneset.displayPoleMZ());
