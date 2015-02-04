@@ -222,7 +222,7 @@ double Weinberg_angle::calculate_delta_rho(
    const double mt = data.mt_pole;
    const double mh = data.mh_drbar;
    const double sinb = Sin(ArcTan(data.tan_beta));
-   const double xt = 3.0 * data.fermi_contant * Sqr(mt) / (8.0 * Sqr(Pi) * ROOT2);
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) * ROOT2 * oneOver16PiSqr;
    const double alphaDRbar = data.alpha_em_drbar;
    const double g3 = data.g3;
    const double pizztMZ = data.self_energy_z_at_mz;
