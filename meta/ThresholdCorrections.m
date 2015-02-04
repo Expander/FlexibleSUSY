@@ -249,41 +249,95 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
            Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
+MultiplyBy[factor_ /; factor == 1] := "";
+
+MultiplyBy[factor_] :=
+    " * " <> CConversion`RValueToCFormString[factor];
+
+GetParameter[par_[idx1_,idx2_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <>
+    "(" <> CConversion`RValueToCFormString[idx1] <> "," <>
+    CConversion`RValueToCFormString[idx2] <> ")" <>
+    MultiplyBy[factor];
+
+GetParameter[FlexibleSUSY`M[par_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[FlexibleSUSY`M[par]] <> "()" <>
+    MultiplyBy[factor];
+
+GetParameter[par_[idx_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <>
+    "(" <> CConversion`RValueToCFormString[idx] <> ")" <>
+    MultiplyBy[factor];
+
+GetParameter[par_, factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <> "()" <>
+    MultiplyBy[factor];
+
 CalculateThetaWFromFermiConstant[] :=
-    Module[{},
+    Module[{g1Str, g2Str, g3Str, vuStr, vdStr,
+            mTop, mBot, mHiggs,
+            mtStr, mbStr,
+            mnStr, mcStr, znStr, umStr, upStr,
+            mhStr, zhStr,
+            mseStr, zseStr,
+            msvStr, zsvStr,
+            zStr, wStr, ymStr
+           },
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mtStr   = GetParameter[mTop];
+           mbStr   = GetParameter[mBot];
+           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
+           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
+           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
+           vuStr   = GetParameter[SARAH`VEVSM2];
+           vdStr   = GetParameter[SARAH`VEVSM1];
+           mnStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Neutralinos"]]];
+           mcStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Charginos"]]];
+           znStr   = GetParameter[SARAH`NeutralinoMM];
+           umStr   = GetParameter[SARAH`CharginoMinusMM];
+           upStr   = GetParameter[SARAH`CharginoPlusMM];
+           mhStr   = GetParameter[mHiggs];
+           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
+           mseStr  = GetParameter[FlexibleSUSY`M[SARAH`Selectron]];
+           zseStr  = GetParameter[SARAH`SleptonMM];
+           msvStr  = GetParameter[FlexibleSUSY`M[SARAH`Sneutrino]];
+           zsvStr  = GetParameter[SARAH`SneutrinoMM];
+           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
+           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
+           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
     "\
 using namespace weinberg_angle;
 
 const double scale         = MODEL->get_scale();
+const double gfermi        = softsusy::GMU; // @todo
 const double mw_pole       = oneset.displayPoleMW();
 const double mz_pole       = oneset.displayPoleMZ();
 const double mt_pole       = oneset.displayPoleMt();
-const double gfermi        = softsusy::GMU; // @todo
-const double mt_drbar      = MODEL->get_MFu(2);
-const double mb_drbar      = MODEL->get_MFd(2);
+const double mt_drbar      = " <> mtStr <> ";
+const double mb_drbar      = " <> mbStr <> ";
+const double mh_drbar      = " <> mhStr <> ";
 const double alphaDrbar    = ALPHA_EM_DRBAR;
-const double gY            = MODEL->get_g1() * sqrt(0.6);
-const double g2            = MODEL->get_g2();
-const double hmu           = MODEL->get_Ye(1,1);
-const double g3            = MODEL->get_g3();
-const double mt            = oneset.displayPoleMt();
-const double mh            = MODEL->get_Mhh(0);
-const double alpha         = MODEL->get_ZH(0,1);
-const double tanBeta       = MODEL->get_vu() / MODEL->get_vd();
+const double gY            = " <> g1Str <> ";
+const double g2            = " <> g2Str <> ";
+const double g3            = " <> g3Str <> ";
+const double ymu           = " <> ymStr <> ";
+const double alpha         = " <> zhStr <> ";
+const double tanBeta       = " <> vuStr <> " / " <> vdStr <> ";
 double mselL               = 0.;
 double msmuL               = 0.;
 double msnue               = 0.;
 double msnumu              = 0.;
-const Eigen::ArrayXd mneut = MODEL->get_MChi();
-const Eigen::MatrixXcd zn  = MODEL->get_ZN();
-const Eigen::ArrayXd mch   = MODEL->get_MCha();
-const Eigen::MatrixXcd um  = MODEL->get_UM();
-const Eigen::MatrixXcd up  = MODEL->get_UP();
-
-const auto MSe(MODEL->get_MSe());
-const auto ZE(MODEL->get_ZE());
-const auto MSv(MODEL->get_MSv());
-const auto ZV(MODEL->get_ZV());
+const Eigen::ArrayXd mneut(" <> mnStr <> ");
+const Eigen::MatrixXcd zn (" <> znStr <> ");
+const Eigen::ArrayXd mch  (" <> mcStr <> ");
+const Eigen::MatrixXcd um (" <> umStr <> ");
+const Eigen::MatrixXcd up (" <> upStr <> ");
+const auto MSe(" <> mseStr <> ");
+const auto ZE(" <> zseStr <> ");
+const auto MSv(" <> msvStr <> ");
+const auto ZV(" <> zsvStr <> ");
 
 for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
    mselL += AbsSqr(ZE(i,0))*MSe(i);
@@ -295,9 +349,9 @@ for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
    msnumu += AbsSqr(ZV(i,1))*MSv(i);
 }
 
-const double pizztMZ = Re(MODEL->self_energy_VZ(mz_pole));
-const double piwwt0  = Re(MODEL->self_energy_VWm(0));
-const double piwwtMW = Re(MODEL->self_energy_VWm(mw_pole));
+const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0));
+const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -325,8 +379,8 @@ data.self_energy_w_at_mw = piwwtMW_corrected;
 data.self_energy_w_at_0  = piwwt0_corrected;
 data.mw_pole             = mw_pole;
 data.mz_pole             = mz_pole;
-data.mt_pole             = mt;
-data.mh_drbar            = mh;
+data.mt_pole             = mt_pole;
+data.mh_drbar            = mh_drbar;
 data.hmix_12             = alpha;
 data.msel_drbar          = mselL;
 data.msmul_drbar         = msmuL;
@@ -341,7 +395,7 @@ data.gY                  = gY;
 data.g2                  = g2;
 data.g3                  = g3;
 data.tan_beta            = tanBeta;
-data.ymu                 = hmu;
+data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.set_data(data);
