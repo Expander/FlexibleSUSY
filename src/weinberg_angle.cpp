@@ -558,11 +558,14 @@ double Weinberg_angle::calculate_delta_vb(
  */
 double Weinberg_angle::rho_2(double r)
 {
+   const double Pi2 = Pi * Pi;
+
    if (r <= 1.9) {
-      return 19.0 - 16.5 * r + 43.0 * Sqr(r) / 12.0 + 7.0 / 120.0 * Sqr(r) * r -
-         Pi * Sqrt(r) * (4.0 - 1.5 * r + 3.0 / 32.0 * Sqr(r) + Sqr(r) * r /
-                         256.0) - Sqr(Pi) * (2.0 - 2.0 * r + 0.5 * Sqr(r)) -
-         Log(r) * (3.0 * r - 0.5 * Sqr(r));
+      const double r2 = Sqr(r);
+      return 19.0 - 16.5 * r + 43.0 * r2 / 12.0 + 7.0 / 120.0 * r2 * r -
+         Pi * Sqrt(r) * (4.0 - 1.5 * r + 3.0 / 32.0 * r2 + r2 * r /
+                         256.0) - Pi2 * (2.0 - 2.0 * r + 0.5 * r2) -
+         Log(r) * (3.0 * r - 0.5 * r2);
    } else {
       const double rm1 = 1.0 / r, rm2 = Sqr(rm1), rm3 = rm2 * rm1,
          rm4 = rm3 * rm1, rm5 = rm4 * rm1;
@@ -570,7 +573,7 @@ double Weinberg_angle::rho_2(double r)
                             * rm4 - 612.0 * rm5) -
          Log(r) * (13.5 + 4.0 * rm1 - 125.0 / 4.0 * rm2 - 558.0 / 5.0 * rm3 -
                    8307.0 / 20.0 * rm4 - 109321.0 / 70.0 * rm5)
-         + Sqr(Pi) * (1.0 - 4.0 * rm1 - 5.0 * rm2 - 16.0 * rm3 -
+         + Pi2 * (1.0 - 4.0 * rm1 - 5.0 * rm2 - 16.0 * rm3 -
                       56.0 * rm4 - 204.0 * rm5)
          + 49.0 / 4.0 + 2.0 / 3.0 * rm1 + 1613.0 / 48.0 * rm2 + 87.57 * rm3 +
          341959.0 / 1200.0 * rm4 + 9737663.0 / 9800.0 * rm5;
