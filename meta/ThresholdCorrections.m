@@ -253,8 +253,94 @@ CalculateThetaWFromFermiConstant[] :=
     "\
 using namespace weinberg_angle;
 
+const double scale         = model->get_scale();
+const double mw_pole       = oneset.displayPoleMW();
+const double mz_pole       = oneset.displayPoleMZ();
+const double mt_pole       = oneset.displayPoleMt();
+const double gfermi        = softsusy::GMU; // @todo
+const double mt_drbar      = model->get_MFu(2);
+const double mb_drbar      = model->get_MFd(2);
+const double alphaDrbar    = ALPHA_EM_DRBAR;
+const double gY            = model->get_g1() * sqrt(0.6);
+const double g2            = model->get_g2();
+const double hmu           = model->get_Ye(1,1);
+const double g3            = model->get_g3();
+const double mt            = oneset.displayPoleMt();
+const double mh            = model->get_Mhh(0);
+const double alpha         = model->get_ZH(0,1);
+const double tanBeta       = model->get_vu() / model->get_vd();
+double mselL               = 0.;
+double msmuL               = 0.;
+double msnue               = 0.;
+double msnumu              = 0.;
+const Eigen::ArrayXd mneut = model->get_MChi();
+const Eigen::MatrixXcd n   = model->get_ZN();
+const Eigen::ArrayXd mch   = model->get_MCha();
+const Eigen::MatrixXcd u   = model->get_UM();
+const Eigen::MatrixXcd v   = model->get_UP();
+
+const auto MSe(model->get_MSe());
+const auto ZE(model->get_ZE());
+const auto MSv(model->get_MSv());
+const auto ZV(model->get_ZV());
+
+for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
+   mselL += AbsSqr(ZE(i,0))*MSe(i);
+   msmuL += AbsSqr(ZE(i,1))*MSe(i);
+}
+
+for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
+   msnue  += AbsSqr(ZV(i,0))*MSv(i);
+   msnumu += AbsSqr(ZV(i,1))*MSv(i);
+}
+
+const double pizztMZ = Re(model->self_energy_VZ(mz_pole));
+const double piwwt0  = Re(model->self_energy_VWm(0));
+const double piwwtMW = Re(model->self_energy_VWm(mw_pole));
+
+Weinberg_angle::Self_energy_data se_data;
+se_data.scale    = scale;
+se_data.mt_pole  = mt_pole;
+se_data.mt_drbar = mt_drbar;
+se_data.mb_drbar = mb_drbar;
+se_data.gY       = gY;
+se_data.g2       = g2;
+
+const double pizztMZ_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+const double piwwtMW_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+const double piwwt0_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+
 Weinberg_angle::Data data;
-fill_data(data, ALPHA_EM_DRBAR);
+data.scale               = scale;
+data.alpha_em_drbar      = alphaDrbar;
+data.fermi_contant       = gfermi;
+data.self_energy_z_at_mz = pizztMZ_corrected;
+data.self_energy_w_at_mw = piwwtMW_corrected;
+data.self_energy_w_at_0  = piwwt0_corrected;
+data.mw_pole             = mw_pole;
+data.mz_pole             = mz_pole;
+data.mt_pole             = mt;
+data.mh_drbar            = mh;
+data.hmix_12             = alpha;
+data.msel_drbar          = mselL;
+data.msmul_drbar         = msmuL;
+data.msve_drbar          = msnue;
+data.msvm_drbar          = msnumu;
+data.mn_drbar            = mneut;
+data.mc_drbar            = mch;
+data.zn                  = n;
+data.um                  = u;
+data.up                  = v;
+data.gY                  = gY;
+data.g2                  = g2;
+data.g3                  = g3;
+data.tan_beta            = tanBeta;
+data.ymu                 = hmu;
 
 Weinberg_angle weinberg;
 weinberg.set_data(data);
