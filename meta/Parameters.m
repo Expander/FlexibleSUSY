@@ -724,21 +724,21 @@ GetParameterFromDescription[description_String] :=
           ];
 
 GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{parameter},
-           parameter =Cases[SARAH`ParticleDefinitions[eigenstates],
-                            {parameter_,
+    Module[{particle},
+           particle =Cases[SARAH`ParticleDefinitions[eigenstates],
+                            {particle_,
                              {___, SARAH`Description -> description, ___}} :>
-                            parameter];
-           If[Length[parameter] == 0,
-              Print["Error: Parameter with description \"", description,
+                            particle];
+           If[Length[particle] == 0,
+              Print["Error: Particle with description \"", description,
                     "\" not found."];
               Return[Null];
              ];
-           If[Length[parameter] > 1,
-              Print["Warning: Parameter with description \"", description,
+           If[Length[particle] > 1,
+              Print["Warning: Particle with description \"", description,
                     "\" not unique."];
              ];
-           parameter[[1]]
+           particle[[1]]
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
