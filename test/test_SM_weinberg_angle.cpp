@@ -120,6 +120,8 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    const double scale   = fs.get_scale();
    const double mw_pole = Electroweak_constants::MW;
    const double mz_pole = Electroweak_constants::MZ;
+   const double mt_drbar = fs.get_MFu(2);
+   const double mb_drbar = fs.get_MFd(2);
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
@@ -130,15 +132,46 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
    const double fs_gY  = fs.get_g1() * sqrt(0.6);
    const double fs_g2  = fs.get_g2();
+   const double fs_g3  = fs.get_g3();
    const double fs_hmu = fs.get_Ye(1,1);
+
+   const double pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double piwwt0  = Re(fs.self_energy_VWp(0.));
+   const double piwwtMW = Re(fs.self_energy_VWp(mw_pole));
+
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale    = scale;
+   se_data.mt_pole  = Electroweak_constants::PMTOP;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY       = fs_gY;
+   se_data.g2       = fs_g2;
+
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole,
+         se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole,
+         se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
 
    Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
+   data.fermi_contant = Electroweak_constants::gfermi;
+   data.self_energy_z_at_mz = pizztMZ_corrected;
+   data.self_energy_w_at_mw = piwwtMW_corrected;
+   data.self_energy_w_at_0  = piwwt0_corrected;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
+   data.mt_pole = Electroweak_constants::PMTOP;
+   data.mh_drbar = Electroweak_constants::MH;
    data.gY = fs_gY;
    data.g2 = fs_g2;
+   data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
    const double ss_delta_vb =
@@ -161,6 +194,8 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    const double scale   = fs.get_scale();
    const double mw_pole = Electroweak_constants::MW;
    const double mz_pole = Electroweak_constants::MZ;
+   const double mt_drbar = fs.get_MFu(2);
+   const double mb_drbar = fs.get_MFd(2);
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
@@ -171,18 +206,46 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
    const double fs_gY  = fs.get_g1() * sqrt(0.6);
    const double fs_g2  = fs.get_g2();
+   const double fs_g3  = fs.get_g3();
    const double fs_hmu = fs.get_Ye(1,1);
+
+   const double pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double piwwt0  = Re(fs.self_energy_VWp(0.));
+   const double piwwtMW = Re(fs.self_energy_VWp(mw_pole));
+
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale    = scale;
+   se_data.mt_pole  = Electroweak_constants::PMTOP;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY       = fs_gY;
+   se_data.g2       = fs_g2;
+
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole,
+         se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole,
+         se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
 
    Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = Electroweak_constants::gfermi;
+   data.self_energy_z_at_mz = pizztMZ_corrected;
+   data.self_energy_w_at_mw = piwwtMW_corrected;
+   data.self_energy_w_at_0  = piwwt0_corrected;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
    data.mt_pole = Electroweak_constants::PMTOP;
    data.mh_drbar = Electroweak_constants::MH;
    data.gY = fs_gY;
    data.g2 = fs_g2;
+   data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
    const double ss_delta_r =
@@ -205,6 +268,8 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    const double scale   = fs.get_scale();
    const double mw_pole = Electroweak_constants::MW;
    const double mz_pole = Electroweak_constants::MZ;
+   const double mt_drbar = fs.get_MFu(2);
+   const double mb_drbar = fs.get_MFd(2);
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
@@ -215,18 +280,46 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
 
    const double fs_gY  = fs.get_g1() * sqrt(0.6);
    const double fs_g2  = fs.get_g2();
+   const double fs_g3  = fs.get_g3();
    const double fs_hmu = fs.get_Ye(1,1);
+
+   const double pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double piwwt0  = Re(fs.self_energy_VWp(0.));
+   const double piwwtMW = Re(fs.self_energy_VWp(mw_pole));
+
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale    = scale;
+   se_data.mt_pole  = Electroweak_constants::PMTOP;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY       = fs_gY;
+   se_data.g2       = fs_g2;
+
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole,
+         se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole,
+         se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
 
    Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = Electroweak_constants::gfermi;
+   data.self_energy_z_at_mz = pizztMZ_corrected;
+   data.self_energy_w_at_mw = piwwtMW_corrected;
+   data.self_energy_w_at_0  = piwwt0_corrected;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
    data.mt_pole = Electroweak_constants::PMTOP;
    data.mh_drbar = Electroweak_constants::MH;
    data.gY = fs_gY;
    data.g2 = fs_g2;
+   data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
    const double ss_delta_r =
@@ -249,6 +342,8 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    const double scale   = fs.get_scale();
    const double mw_pole = Electroweak_constants::MW;
    const double mz_pole = Electroweak_constants::MZ;
+   const double mt_drbar = fs.get_MFu(2);
+   const double mb_drbar = fs.get_MFd(2);
 
    BOOST_REQUIRE(mw_pole > 0.);
    BOOST_REQUIRE(mz_pole > 0.);
@@ -259,18 +354,46 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
 
    const double fs_gY  = fs.get_g1() * sqrt(0.6);
    const double fs_g2  = fs.get_g2();
+   const double fs_g3  = fs.get_g3();
    const double fs_hmu = fs.get_Ye(1,1);
+
+   const double pizztMZ = Re(fs.self_energy_VZ(mz_pole));
+   const double piwwt0  = Re(fs.self_energy_VWp(0.));
+   const double piwwtMW = Re(fs.self_energy_VWp(mw_pole));
+
+   Weinberg_angle::Self_energy_data se_data;
+   se_data.scale    = scale;
+   se_data.mt_pole  = Electroweak_constants::PMTOP;
+   se_data.mt_drbar = mt_drbar;
+   se_data.mb_drbar = mb_drbar;
+   se_data.gY       = fs_gY;
+   se_data.g2       = fs_g2;
+
+   const double pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole,
+         se_data);
+
+   const double piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole,
+         se_data);
+
+   const double piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
 
    Weinberg_angle::Data data;
    data.scale = scale;
    data.alpha_em_drbar = alphaDrbar;
    data.fermi_contant = Electroweak_constants::gfermi;
+   data.self_energy_z_at_mz = pizztMZ_corrected;
+   data.self_energy_w_at_mw = piwwtMW_corrected;
+   data.self_energy_w_at_0  = piwwt0_corrected;
    data.mw_pole = mw_pole;
    data.mz_pole = mz_pole;
    data.mt_pole = Electroweak_constants::PMTOP;
    data.mh_drbar = Electroweak_constants::MH;
    data.gY = fs_gY;
    data.g2 = fs_g2;
+   data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
    Weinberg_angle weinberg;
