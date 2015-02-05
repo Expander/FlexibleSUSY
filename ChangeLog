@@ -1,5 +1,15 @@
 FlexibleSUSY-1.0.5 [not released yet]
 
+ * Feature: Calculation of DR-bar weak mixing angle from Fermi
+   constant and Z pole mass.  The implementation is based on
+   expressions from SoftSUSY and works for the SM, MSSM, NMSSM and
+   their variants.  The method for the calculation of the weak mixing
+   angle can be selected via the FSWeakMixingAngleInput variable in
+   the FlexibleSUSY model file.
+   Example:
+   FSWeakMixingAngleInput = FSFermiConstant; (* or FSMassW *)
+
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
