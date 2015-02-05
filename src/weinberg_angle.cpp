@@ -226,7 +226,8 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
 double Weinberg_angle::calculate_delta_rho(
    double rho,
    double sinThetaW,
-   const Data& data
+   const Data& data,
+   bool susy_contributions
 )
 {
    const double mz = data.mz_pole;
@@ -256,11 +257,15 @@ double Weinberg_angle::calculate_delta_rho(
    WARN_IF_ZERO(hmix12, calculate_delta_rho)
 #endif
 
+   double hmix_r = 1.0;
+   if (susy_contributions)
+      hmix_r = Sqr(hmix12 / sinb);
+
    const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
       (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
       (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24
        - 0.85 * Sqr(mz)
-       / Sqr(mt)) + Sqr(xt) * Sqr(hmix12) / Sqr(sinb) *
+       / Sqr(mt)) + Sqr(xt) * hmix_r *
       rho_2(mh / mt) / 3.0;
 
    const double deltaRhoOneLoop = pizztMZ / (rho * Sqr(mz))
