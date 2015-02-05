@@ -103,7 +103,7 @@ private:
    Data data;
    bool susy_contributions;       ///< model type
 
-   static double calculate_delta_r(double, double, const Data&);
+   static double calculate_delta_r(double, double, const Data&, bool susy_contributions = true);
    static double calculate_delta_rho(double, double, const Data&);
    static double calculate_delta_vb(double, double, const Data&, bool susy_contributions = true);
    static double calculate_delta_vb_sm(double, double, const Data&);

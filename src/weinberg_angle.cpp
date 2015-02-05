@@ -284,7 +284,8 @@ double Weinberg_angle::calculate_delta_rho(
 double Weinberg_angle::calculate_delta_r(
    double rho,
    double sinThetaW,
-   const Data& data
+   const Data& data,
+   bool susy_contributions
 )
 {
    const double outcos = Cos(ArcSin(sinThetaW));
@@ -316,7 +317,12 @@ double Weinberg_angle::calculate_delta_r(
    WARN_IF_ZERO(hmix12, calculate_delta_r)
 #endif
 
-   const double dvb = calculate_delta_vb(rho, sinThetaW, data);
+   const double dvb
+      = calculate_delta_vb(rho, sinThetaW, data, susy_contributions);
+
+   double hmix_r = 1.0;
+   if (susy_contributions)
+      hmix_r = Sqr(hmix12 / sinb);
 
    const double deltaR = rho * piwwt0 / Sqr(mw) -
       pizztMZ / Sqr(mz) + dvb;
@@ -325,7 +331,7 @@ double Weinberg_angle::calculate_delta_r(
       (16.0 * Sqr(Pi) * Pi * Sqr(sinThetaW) * Sqr(outcos)) *
       (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224
        - 0.144 * Sqr(mz) / Sqr(mt)) -
-      Sqr(xt) * Sqr(hmix12) / Sqr(sinb) *
+      Sqr(xt) * hmix_r *
       rho_2(mh / mt) * (1.0 - deltaR) * rho / 3.0;
 
    const double deltaR_full = deltaR + deltaR2LoopSm;
