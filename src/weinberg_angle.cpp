@@ -250,12 +250,14 @@ double Weinberg_angle::calculate_delta_rho(
    WARN_IF_ZERO(mw, calculate_delta_rho)
    WARN_IF_ZERO(mt, calculate_delta_rho)
    WARN_IF_ZERO(mh, calculate_delta_rho)
-   WARN_IF_ZERO(sinb, calculate_delta_rho)
    WARN_IF_ZERO(xt, calculate_delta_rho)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
    WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
    WARN_IF_ZERO(piwwtMW, calculate_delta_rho)
-   WARN_IF_ZERO(hmix12, calculate_delta_rho)
+   if (add_susy_contributions) {
+      WARN_IF_ZERO(sinb, calculate_delta_rho)
+      WARN_IF_ZERO(hmix12, calculate_delta_rho)
+   }
 #endif
 
    double hmix_r = 1.0;
@@ -315,13 +317,15 @@ double Weinberg_angle::calculate_delta_r(
    WARN_IF_ZERO(mw, calculate_delta_r)
    WARN_IF_ZERO(mt, calculate_delta_r)
    WARN_IF_ZERO(mh, calculate_delta_r)
-   WARN_IF_ZERO(sinb, calculate_delta_r)
    WARN_IF_ZERO(xt, calculate_delta_r)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_r)
    WARN_IF_ZERO(g3, calculate_delta_r)
    WARN_IF_ZERO(pizztMZ, calculate_delta_r)
    WARN_IF_ZERO(piwwt0, calculate_delta_r)
-   WARN_IF_ZERO(hmix12, calculate_delta_r)
+   if (add_susy_contributions) {
+      WARN_IF_ZERO(sinb, calculate_delta_rho)
+      WARN_IF_ZERO(hmix12, calculate_delta_rho)
+   }
 #endif
 
    const double dvb
