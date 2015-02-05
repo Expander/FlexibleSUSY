@@ -395,7 +395,12 @@ Weinberg_angle weinberg;
 weinberg.enable_susy_contributions();
 weinberg.set_data(data);
 
-THETAW = ArcSin(weinberg.calculate());"
+try {
+   THETAW = ArcSin(weinberg.calculate());
+} catch (const NoRhoConvergenceError& error) {
+   MODEL->get_problems().flag_no_rho_convergence();
+   THETAW = ArcSin(error.get_sin_theta());
+}"
           ];
 
 CalculateThetaWFromFermiConstantNonSUSY[] :=
@@ -474,7 +479,12 @@ Weinberg_angle weinberg;
 weinberg.disable_susy_contributions();
 weinberg.set_data(data);
 
-THETAW = ArcSin(weinberg.calculate());"
+try {
+   THETAW = ArcSin(weinberg.calculate());
+} catch (const NoRhoConvergenceError& error) {
+   MODEL->get_problems().flag_no_rho_convergence();
+   THETAW = ArcSin(error.get_sin_theta());
+}"
           ];
 
 CalculateThetaWFromFermiConstant[isSUSYModel_] :=
