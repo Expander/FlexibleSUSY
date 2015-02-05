@@ -160,6 +160,75 @@ CheckSARAHVersion[] :=
              ];
           ];
 
+CheckFermiConstantInputRequirementsForSUSYModel[] :=
+    ValueQ[SARAH`TopQuark] &&
+    ValueQ[SARAH`BottomQuark] &&
+    ValueQ[SARAH`HiggsBoson] &&
+    ValueQ[SARAH`hyperchargeCoupling] &&
+    ValueQ[SARAH`leftCoupling] &&
+    ValueQ[SARAH`strongCoupling] &&
+    ValueQ[SARAH`VEVSM2] &&
+    ValueQ[SARAH`VEVSM1] &&
+    Parameters`GetParticleFromDescription["Neutralinos"] =!= Null &&
+    Parameters`GetParticleFromDescription["Charginos"] =!= Null &&
+    ValueQ[SARAH`NeutralinoMM] &&
+    ValueQ[SARAH`CharginoMinusMM] &&
+    ValueQ[SARAH`CharginoPlusMM] &&
+    ValueQ[SARAH`HiggsMixingMatrix] &&
+    ValueQ[SARAH`Selectron] &&
+    ValueQ[SARAH`SleptonMM] &&
+    ValueQ[SARAH`Sneutrino] &&
+    ValueQ[SARAH`SneutrinoMM] &&
+    ValueQ[SARAH`VectorW] &&
+    ValueQ[SARAH`VectorZ] &&
+    ValueQ[SARAH`ElectronYukawa];
+
+CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
+    ValueQ[SARAH`TopQuark] &&
+    ValueQ[SARAH`BottomQuark] &&
+    ValueQ[SARAH`HiggsBoson] &&
+    ValueQ[SARAH`hyperchargeCoupling] &&
+    ValueQ[SARAH`leftCoupling] &&
+    ValueQ[SARAH`strongCoupling] &&
+    ValueQ[SARAH`VectorW] &&
+    ValueQ[SARAH`VectorZ] &&
+    ValueQ[SARAH`ElectronYukawa];
+
+CheckWeakMixingAngleInputRequirements[input_] :=
+    Switch[input,
+           FlexibleSUSY`FSFermiConstant,
+               Switch[SARAH`SupersymmetricModel,
+                      True,
+                          If[CheckFermiConstantInputRequirementsForSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      False,
+                          If[CheckFermiConstantInputRequirementsForNonSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      _,
+                          Print["Error: model type: ", SARAH`SupersymmetricModel];
+                          Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                          FlexibleSUSY`FSMassW
+               ],
+           FlexibleSUSY`FSMassW,
+               input,
+           _,
+               Print["Error: unknown input ", input];
+               Print["   Using default input: ", FlexibleSUSY`FSMassW];
+               FlexibleSUSY`FSMassW
+          ];
+
 CheckModelFileSettings[] :=
     Module[{},
            (* FlexibleSUSY model name *)
@@ -261,6 +330,8 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
+           FlexibleSUSY`FSWeakMixingAngleInput =
+               CheckWeakMixingAngleInputRequirements[FlexibleSUSY`FSWeakMixingAngleInput];
           ];
 
 ReplaceIndicesInUserInput[rules_] :=
