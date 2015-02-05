@@ -400,9 +400,9 @@ const int error = weinberg.calculate();
 THETAW = ArcSin(weinberg.get_sin_theta());
 
 if (error)
-   MODEL->get_problems().unflag_no_rho_convergence();
+   MODEL->get_problems().flag_no_rho_convergence();
 else
-   MODEL->get_problems().flag_no_rho_convergence();"
+   MODEL->get_problems().unflag_no_rho_convergence();"
           ];
 
 CalculateThetaWFromFermiConstantNonSUSY[] :=
@@ -486,9 +486,9 @@ const int error = weinberg.calculate();
 THETAW = ArcSin(weinberg.get_sin_theta());
 
 if (error)
-   MODEL->get_problems().unflag_no_rho_convergence();
+   MODEL->get_problems().flag_no_rho_convergence();
 else
-   MODEL->get_problems().flag_no_rho_convergence();"
+   MODEL->get_problems().unflag_no_rho_convergence();"
           ];
 
 CalculateThetaWFromFermiConstant[isSUSYModel_] :=
