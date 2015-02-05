@@ -64,6 +64,26 @@ private:
 };
 
 /**
+ * @class NoRhoConvergenceError
+ * @brief No convergence while calculating the rho-hat parameter
+ */
+class NoRhoConvergenceError : public Error {
+public:
+   explicit NoRhoConvergenceError(unsigned number_of_iterations_)
+      : number_of_iterations(number_of_iterations_) {}
+   virtual ~NoRhoConvergenceError() {}
+   virtual std::string what() const {
+      std::stringstream message;
+      message << "RGFlow<Two_scale>::NoRhoConvergenceError: no convergence"
+              << " after " << number_of_iterations << " iterations";
+      return message.str();
+   }
+   unsigned get_number_of_iterations() { return number_of_iterations; }
+private:
+   unsigned number_of_iterations;
+};
+
+/**
  * @class NonPerturbativeRunningError
  * @brief Non-perturbative RG running
  */

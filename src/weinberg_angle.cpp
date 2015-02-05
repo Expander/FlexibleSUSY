@@ -206,7 +206,7 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
    }
 
    if (iteration == number_of_iterations)
-      throw NoConvergenceError(iteration);
+      throw NoRhoConvergenceError(iteration);
 
    rho_hat = rho_new;
 
