@@ -274,7 +274,7 @@ GetParameter[par_, factor_:1] :=
     "MODEL->get_" <> CConversion`RValueToCFormString[par] <> "()" <>
     MultiplyBy[factor];
 
-CalculateThetaWFromFermiConstant[] :=
+CalculateThetaWFromFermiConstantSUSY[] :=
     Module[{g1Str, g2Str, g3Str, vuStr, vdStr,
             mTop, mBot, mHiggs,
             mtStr, mbStr,
@@ -392,10 +392,96 @@ data.tan_beta            = tanBeta;
 data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
+weinberg.enable_susy_contributions();
 weinberg.set_data(data);
 
 THETAW = ArcSin(weinberg.calculate());"
           ];
+
+CalculateThetaWFromFermiConstantNonSUSY[] :=
+    Module[{g1Str, g2Str, g3Str,
+            mTop, mBot, mHiggs,
+            mtStr, mbStr,
+            mhStr, zhStr,
+            zStr, wStr, ymStr
+           },
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mtStr   = GetParameter[mTop];
+           mbStr   = GetParameter[mBot];
+           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
+           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
+           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
+           mhStr   = GetParameter[mHiggs];
+           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
+           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
+           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
+           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
+    "\
+using namespace weinberg_angle;
+
+const double scale         = MODEL->get_scale();
+const double mw_pole       = oneset.displayPoleMW();
+const double mz_pole       = oneset.displayPoleMZ();
+const double mt_pole       = oneset.displayPoleMt();
+const double mt_drbar      = " <> mtStr <> ";
+const double mb_drbar      = " <> mbStr <> ";
+const double mh_drbar      = " <> mhStr <> ";
+const double gY            = " <> g1Str <> ";
+const double g2            = " <> g2Str <> ";
+const double g3            = " <> g3Str <> ";
+const double ymu           = " <> ymStr <> ";
+
+const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
+const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+
+Weinberg_angle::Self_energy_data se_data;
+se_data.scale    = scale;
+se_data.mt_pole  = mt_pole;
+se_data.mt_drbar = mt_drbar;
+se_data.mb_drbar = mb_drbar;
+se_data.gY       = gY;
+se_data.g2       = g2;
+
+const double pizztMZ_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+const double piwwtMW_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+const double piwwt0_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+
+Weinberg_angle::Data data;
+data.scale               = scale;
+data.alpha_em_drbar      = ALPHA_EM_DRBAR;
+data.fermi_contant       = oneset.displayFermiConstant();
+data.self_energy_z_at_mz = pizztMZ_corrected;
+data.self_energy_w_at_mw = piwwtMW_corrected;
+data.self_energy_w_at_0  = piwwt0_corrected;
+data.mw_pole             = mw_pole;
+data.mz_pole             = mz_pole;
+data.mt_pole             = mt_pole;
+data.mh_drbar            = mh_drbar;
+data.gY                  = gY;
+data.g2                  = g2;
+data.g3                  = g3;
+data.ymu                 = ymu;
+
+Weinberg_angle weinberg;
+weinberg.disable_susy_contributions();
+weinberg.set_data(data);
+
+THETAW = ArcSin(weinberg.calculate());"
+          ];
+
+CalculateThetaWFromFermiConstant[isSUSYModel_] :=
+    If[isSUSYModel,
+       CalculateThetaWFromFermiConstantSUSY[],
+       CalculateThetaWFromFermiConstantNonSUSY[]
+      ];
 
 CalculateThetaWFromMW[] :=
     Module[{subst, weinbergAngle, result},
@@ -409,9 +495,9 @@ CalculateThetaWFromMW[] :=
            Return[result];
           ];
 
-CalculateThetaW[input_] :=
+CalculateThetaW[input_,isSUSYModel_] :=
     Switch[input,
-           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[],
+           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[isSUSYModel],
            FlexibleSUSY`FSMassW, CalculateThetaWFromMW[],
            _,
            Print["Error: CalculateThetaW[", input, "]: unknown input ", input];
