@@ -1,6 +1,13 @@
 List of features for future FlexibleSUSY releases
 =================================================
 
+Muon decay and CMSSMNoFV
+------------------------
+
+The muon decay input does not work for the CMSSMNoFV at the moment.
+This needs to be fixed.
+
+
 MW predicition
 --------------
 
