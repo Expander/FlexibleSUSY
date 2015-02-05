@@ -105,7 +105,9 @@ private:
 
    static double calculate_delta_r(double, double, const Data&);
    static double calculate_delta_rho(double, double, const Data&);
-   static double calculate_delta_vb(double, double, const Data&);
+   static double calculate_delta_vb(double, double, const Data&, bool susy_contributions = true);
+   static double calculate_delta_vb_sm(double, double, const Data&);
+   static double calculate_delta_vb_susy(double, double, const Data&);
    static double rho_2(double);
 
    static double calculate_self_energy_z_top(double, double, const Self_energy_data&);

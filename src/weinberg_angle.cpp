@@ -341,10 +341,82 @@ double Weinberg_angle::calculate_delta_r(
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
+ * @param susy_contributions use SUSY particle contributions
  *
  * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
  */
 double Weinberg_angle::calculate_delta_vb(
+   double rho,
+   double sinThetaW,
+   const Data& data,
+   bool susy_contributions)
+{
+   double deltaVbSusy = 0.;
+   const double deltaVbSm = calculate_delta_vb_sm(rho, sinThetaW, data);
+
+   if (susy_contributions)
+      deltaVbSusy = calculate_delta_vb_susy(rho, sinThetaW, data);
+
+   const double deltaVb = deltaVbSm + deltaVbSusy;
+
+   return deltaVb;
+}
+
+/**
+ * Calculates the Standard Model vertex, box corrections
+ * \f$\delta_{\text{VB}}\f$ as given in Eqs. (C.12) from
+ * hep-ph/9606211 .
+ *
+ * @param rho rho-hat-parameter
+ * @param sinThetaW sin(theta_W)
+ * @param data data structure with model parameters
+ *
+ * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ */
+double Weinberg_angle::calculate_delta_vb_sm(
+   double rho,
+   double sinThetaW,
+   const Data& data
+)
+{
+  const double mz      = data.mz_pole;
+  const double mw      = data.mw_pole;
+  const double costh   = mw / mz;
+  const double cw2     = Sqr(costh);
+  const double sw2     = 1.0 - cw2;
+  const double sinThetaW2 = Sqr(sinThetaW);
+  const double outcos  = Sqrt(1.0 - sinThetaW2);
+  const double alphaDRbar = data.alpha_em_drbar;
+
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+   WARN_IF_ZERO(rho, calculate_delta_vb)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
+   WARN_IF_ZERO(mz, calculate_delta_vb)
+   WARN_IF_ZERO(mw, calculate_delta_vb)
+   WARN_IF_ZERO(q, calculate_delta_vb)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
+#endif
+
+  const double deltaVbSm =
+     rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
+     (6.0 + log(cw2) / sw2 *
+      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos))));
+
+  return deltaVbSm;
+}
+
+/**
+ * Calculates the SUSY vertex, box and external wave-function
+ * renormalizations \f$\delta_{\text{VB}}\f$ as given in
+ * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211 .
+ *
+ * @param rho rho-hat-parameter
+ * @param sinThetaW sin(theta_W)
+ * @param data data structure with model parameters
+ *
+ * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ */
+double Weinberg_angle::calculate_delta_vb_susy(
    double rho,
    double sinThetaW,
    const Data& data
@@ -399,11 +471,6 @@ double Weinberg_angle::calculate_delta_vb(
 #endif
 
   const int dimN =  mneut.rows();
-
-  const double deltaVbSm =
-     rho * alphaDRbar / (4.0 * Pi * sinThetaW2) *
-     (6.0 + log(cw2) / sw2 *
-      (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / Sqr(outcos))));
 
   Eigen::VectorXd bPsi0NuNul(Eigen::VectorXd::Zero(dimN)),
      bPsicNuSell(Eigen::VectorXd::Zero(2));
@@ -555,9 +622,7 @@ double Weinberg_angle::calculate_delta_vb(
       * a1.real() + deltaVE.real() + deltaVMu.real() +
       0.5 * (deltaZe + deltaZnue + deltaZmu + deltaZnumu) ) * oneOver16PiSqr;
 
-  const double deltaVb = deltaVbSusy + deltaVbSm;
-
-  return deltaVb;
+  return deltaVbSusy;
 }
 
 /**
