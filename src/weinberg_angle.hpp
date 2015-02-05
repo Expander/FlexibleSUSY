@@ -82,6 +82,9 @@ public:
    Weinberg_angle();
    ~Weinberg_angle();
 
+   void enable_susy_contributions(); ///< enable susy contributions
+   void disable_susy_contributions(); ///< disable susy contributions
+
    void set_data(const Data&);       ///< set data necessary for the calculation
    void set_number_of_iterations(unsigned); ///< maximum number of iterations
    void set_precision_goal(double);  ///< set precision goal
@@ -98,6 +101,7 @@ private:
    double precision_goal;         ///< precision goal
    mutable double rho_hat;        ///< output rho-hat parameter
    Data data;
+   bool susy_contributions;       ///< model type
 
    static double calculate_delta_r(double, double, const Data&);
    static double calculate_delta_rho(double, double, const Data&);

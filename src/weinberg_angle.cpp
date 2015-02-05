@@ -82,18 +82,30 @@ Weinberg_angle::Self_energy_data::Self_energy_data()
 
 /**
  * Sets the maximum number of iterations to 20 and
- * sets the precision goal to 1.0e-8.
+ * sets the precision goal to 1.0e-8 and
+ * sets enables the SUSY contributions by default.
  */
 Weinberg_angle::Weinberg_angle()
    : number_of_iterations(20)
    , precision_goal(1.0e-8)
    , rho_hat(0.)
    , data()
+   , susy_contributions(true)
 {
 }
 
 Weinberg_angle::~Weinberg_angle()
 {
+}
+
+void Weinberg_angle::enable_susy_contributions()
+{
+   susy_contributions = true;
+}
+
+void Weinberg_angle::disable_susy_contributions()
+{
+   susy_contributions = false;
 }
 
 void Weinberg_angle::set_number_of_iterations(unsigned n)
