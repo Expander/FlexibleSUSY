@@ -521,12 +521,10 @@ CalculateThetaW[input_,isSUSYModel_] :=
 
 RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
     "\
-MODEL->calculate_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorW]] <> "();
-MODEL->" <> LoopMasses`CreateLoopMassFunctionName[SARAH`VectorW] <> "();
+const double mw_pole_old = oneset.displayPoleMW();
+const double mw_pole_new = MODEL->" <> LoopMasses`CreateLoopMassFunctionName[SARAH`VectorW] <> "(mw_pole_old);
 
-const double mw_pole = Pole(" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[SARAH`VectorW]] <> ");
-
-oneset.setPoleMW(mw_pole);";
+oneset.setPoleMW(mw_pole_new);";
 
 RecalculateMWPole[input_] := "";
 
