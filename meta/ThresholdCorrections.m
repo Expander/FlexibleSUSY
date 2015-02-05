@@ -1,9 +1,11 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
 CalculateDeltaAlphaS::usage="";
+CalculateThetaW::usage="";
+RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
@@ -248,21 +250,297 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
            Parameters`SetParameter[yukawa, f, "MODEL"]
           ];
 
-CalculateGaugeCouplings[] :=
-    Module[{subst, weinbergAngle, g1Def, g2Def, g3Def, result},
+MultiplyBy[factor_ /; factor == 1] := "";
+
+MultiplyBy[factor_] :=
+    " * " <> CConversion`RValueToCFormString[factor];
+
+GetParameter[par_[idx1_,idx2_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <>
+    "(" <> CConversion`RValueToCFormString[idx1] <> "," <>
+    CConversion`RValueToCFormString[idx2] <> ")" <>
+    MultiplyBy[factor];
+
+GetParameter[FlexibleSUSY`M[par_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[FlexibleSUSY`M[par]] <> "()" <>
+    MultiplyBy[factor];
+
+GetParameter[par_[idx_], factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <>
+    "(" <> CConversion`RValueToCFormString[idx] <> ")" <>
+    MultiplyBy[factor];
+
+GetParameter[par_, factor_:1] :=
+    "MODEL->get_" <> CConversion`RValueToCFormString[par] <> "()" <>
+    MultiplyBy[factor];
+
+CalculateThetaWFromFermiConstantSUSY[] :=
+    Module[{g1Str, g2Str, g3Str, vuStr, vdStr,
+            mTop, mBot, mHiggs,
+            mtStr, mbStr,
+            mnStr, mcStr, znStr, umStr, upStr,
+            mhStr, zhStr,
+            mseStr, zseStr,
+            msvStr, zsvStr,
+            zStr, wStr, ymStr
+           },
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mtStr   = GetParameter[mTop];
+           mbStr   = GetParameter[mBot];
+           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
+           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
+           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
+           vuStr   = GetParameter[SARAH`VEVSM2];
+           vdStr   = GetParameter[SARAH`VEVSM1];
+           mnStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Neutralinos"]]];
+           mcStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Charginos"]]];
+           znStr   = GetParameter[SARAH`NeutralinoMM];
+           umStr   = GetParameter[SARAH`CharginoMinusMM];
+           upStr   = GetParameter[SARAH`CharginoPlusMM];
+           mhStr   = GetParameter[mHiggs];
+           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
+           mseStr  = GetParameter[FlexibleSUSY`M[SARAH`Selectron]];
+           zseStr  = GetParameter[SARAH`SleptonMM];
+           msvStr  = GetParameter[FlexibleSUSY`M[SARAH`Sneutrino]];
+           zsvStr  = GetParameter[SARAH`SneutrinoMM];
+           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
+           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
+           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
+    "\
+using namespace weinberg_angle;
+
+const double scale         = MODEL->get_scale();
+const double mw_pole       = oneset.displayPoleMW();
+const double mz_pole       = oneset.displayPoleMZ();
+const double mt_pole       = oneset.displayPoleMt();
+const double mt_drbar      = " <> mtStr <> ";
+const double mb_drbar      = " <> mbStr <> ";
+const double mh_drbar      = " <> mhStr <> ";
+const double gY            = " <> g1Str <> ";
+const double g2            = " <> g2Str <> ";
+const double g3            = " <> g3Str <> ";
+const double ymu           = " <> ymStr <> ";
+const double hmix_12       = " <> zhStr <> ";
+const double tanBeta       = " <> vuStr <> " / " <> vdStr <> ";
+double mselL               = 0.;
+double msmuL               = 0.;
+double msnue               = 0.;
+double msnumu              = 0.;
+const auto MSe(" <> mseStr <> ");
+const auto ZE(" <> zseStr <> ");
+const auto MSv(" <> msvStr <> ");
+const auto ZV(" <> zsvStr <> ");
+
+for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
+   mselL += AbsSqr(ZE(i,0))*MSe(i);
+   msmuL += AbsSqr(ZE(i,1))*MSe(i);
+}
+
+for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
+   msnue  += AbsSqr(ZV(i,0))*MSv(i);
+   msnumu += AbsSqr(ZV(i,1))*MSv(i);
+}
+
+const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
+const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+
+Weinberg_angle::Self_energy_data se_data;
+se_data.scale    = scale;
+se_data.mt_pole  = mt_pole;
+se_data.mt_drbar = mt_drbar;
+se_data.mb_drbar = mb_drbar;
+se_data.gY       = gY;
+se_data.g2       = g2;
+
+const double pizztMZ_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+const double piwwtMW_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+const double piwwt0_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+
+Weinberg_angle::Data data;
+data.scale               = scale;
+data.alpha_em_drbar      = ALPHA_EM_DRBAR;
+data.fermi_contant       = oneset.displayFermiConstant();
+data.self_energy_z_at_mz = pizztMZ_corrected;
+data.self_energy_w_at_mw = piwwtMW_corrected;
+data.self_energy_w_at_0  = piwwt0_corrected;
+data.mw_pole             = mw_pole;
+data.mz_pole             = mz_pole;
+data.mt_pole             = mt_pole;
+data.mh_drbar            = mh_drbar;
+data.hmix_12             = hmix_12;
+data.msel_drbar          = mselL;
+data.msmul_drbar         = msmuL;
+data.msve_drbar          = msnue;
+data.msvm_drbar          = msnumu;
+data.mn_drbar            = " <> mnStr <> ";
+data.mc_drbar            = " <> mcStr <> ";
+data.zn                  = " <> znStr <> ";
+data.um                  = " <> umStr <> ";
+data.up                  = " <> upStr <> ";
+data.gY                  = gY;
+data.g2                  = g2;
+data.g3                  = g3;
+data.tan_beta            = tanBeta;
+data.ymu                 = ymu;
+
+Weinberg_angle weinberg;
+weinberg.enable_susy_contributions();
+weinberg.set_data(data);
+
+const int error = weinberg.calculate();
+
+THETAW = ArcSin(weinberg.get_sin_theta());
+
+if (error)
+   MODEL->get_problems().flag_no_rho_convergence();
+else
+   MODEL->get_problems().unflag_no_rho_convergence();"
+          ];
+
+CalculateThetaWFromFermiConstantNonSUSY[] :=
+    Module[{g1Str, g2Str, g3Str,
+            mTop, mBot, mHiggs,
+            mtStr, mbStr,
+            mhStr, zhStr,
+            zStr, wStr, ymStr
+           },
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
+           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mtStr   = GetParameter[mTop];
+           mbStr   = GetParameter[mBot];
+           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
+           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
+           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
+           mhStr   = GetParameter[mHiggs];
+           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
+           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
+           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
+           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
+    "\
+using namespace weinberg_angle;
+
+const double scale         = MODEL->get_scale();
+const double mw_pole       = oneset.displayPoleMW();
+const double mz_pole       = oneset.displayPoleMZ();
+const double mt_pole       = oneset.displayPoleMt();
+const double mt_drbar      = " <> mtStr <> ";
+const double mb_drbar      = " <> mbStr <> ";
+const double mh_drbar      = " <> mhStr <> ";
+const double gY            = " <> g1Str <> ";
+const double g2            = " <> g2Str <> ";
+const double g3            = " <> g3Str <> ";
+const double ymu           = " <> ymStr <> ";
+
+const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
+const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+
+Weinberg_angle::Self_energy_data se_data;
+se_data.scale    = scale;
+se_data.mt_pole  = mt_pole;
+se_data.mt_drbar = mt_drbar;
+se_data.mb_drbar = mb_drbar;
+se_data.gY       = gY;
+se_data.g2       = g2;
+
+const double pizztMZ_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+
+const double piwwtMW_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+
+const double piwwt0_corrected =
+   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+
+Weinberg_angle::Data data;
+data.scale               = scale;
+data.alpha_em_drbar      = ALPHA_EM_DRBAR;
+data.fermi_contant       = oneset.displayFermiConstant();
+data.self_energy_z_at_mz = pizztMZ_corrected;
+data.self_energy_w_at_mw = piwwtMW_corrected;
+data.self_energy_w_at_0  = piwwt0_corrected;
+data.mw_pole             = mw_pole;
+data.mz_pole             = mz_pole;
+data.mt_pole             = mt_pole;
+data.mh_drbar            = mh_drbar;
+data.gY                  = gY;
+data.g2                  = g2;
+data.g3                  = g3;
+data.ymu                 = ymu;
+
+Weinberg_angle weinberg;
+weinberg.disable_susy_contributions();
+weinberg.set_data(data);
+
+const int error = weinberg.calculate();
+
+THETAW = ArcSin(weinberg.get_sin_theta());
+
+if (error)
+   MODEL->get_problems().flag_no_rho_convergence();
+else
+   MODEL->get_problems().unflag_no_rho_convergence();"
+          ];
+
+CalculateThetaWFromFermiConstant[isSUSYModel_] :=
+    If[isSUSYModel,
+       CalculateThetaWFromFermiConstantSUSY[],
+       CalculateThetaWFromFermiConstantNonSUSY[]
+      ];
+
+CalculateThetaWFromMW[] :=
+    Module[{subst, weinbergAngle, result},
            subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
                      SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
                      SARAH`electricCharge      -> FlexibleSUSY`EDRbar };
            weinbergAngle = Parameters`FindSymbolDef[SARAH`Weinberg] /. subst;
+           result = Parameters`CreateLocalConstRefs[{weinbergAngle}] <>
+                    "THETAW = " <>
+                    CConversion`RValueToCFormString[weinbergAngle] <> ";\n";
+           Return[result];
+          ];
+
+CalculateThetaW[input_,isSUSYModel_] :=
+    Switch[input,
+           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[isSUSYModel],
+           FlexibleSUSY`FSMassW, CalculateThetaWFromMW[],
+           _,
+           Print["Error: CalculateThetaW[", input, "]: unknown input ", input];
+           Print["   Using default input: ", FlexibleSUSY`FSMassW];
+           CalculateThetaWFromMW[]
+          ];
+
+RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
+    "\
+const double mw_pole_old = oneset.displayPoleMW();
+const double mw_pole_new = MODEL->" <> LoopMasses`CreateLoopMassFunctionName[SARAH`VectorW] <> "(mw_pole_old);
+
+oneset.setPoleMW(mw_pole_new);";
+
+RecalculateMWPole[input_] := "";
+
+CalculateGaugeCouplings[] :=
+    Module[{subst, g1Def, g2Def, g3Def, result},
+           subst = { SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`MWDRbar,
+                     SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`MZDRbar,
+                     SARAH`electricCharge      -> FlexibleSUSY`EDRbar,
+                     SARAH`Weinberg            -> FlexibleSUSY`ThetaWDRbar };
            g1Def = (Parameters`FindSymbolDef[SARAH`hyperchargeCoupling]
                     / Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]) /. subst;
            g2Def = (Parameters`FindSymbolDef[SARAH`leftCoupling]
                     / Parameters`GetGUTNormalization[SARAH`leftCoupling]) /. subst;
            g3Def = (Parameters`FindSymbolDef[SARAH`strongCoupling]
                     / Parameters`GetGUTNormalization[SARAH`strongCoupling]) /. subst;
-           result = Parameters`CreateLocalConstRefs[{weinbergAngle, g1Def, g2Def, g3Def}] <>
-                    "const double " <> CConversion`ToValidCSymbolString[SARAH`Weinberg] <>
-                    " = " <> CConversion`RValueToCFormString[weinbergAngle] <> ";\n" <>
+           result = Parameters`CreateLocalConstRefs[{g1Def, g2Def, g3Def}] <>
                     "new_" <> CConversion`ToValidCSymbolString[SARAH`hyperchargeCoupling] <>
                     " = " <> CConversion`RValueToCFormString[g1Def] <> ";\n" <>
                     "new_" <> CConversion`ToValidCSymbolString[SARAH`leftCoupling] <>

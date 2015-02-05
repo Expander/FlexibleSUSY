@@ -57,10 +57,16 @@ private:
    @ModelName@<Two_scale>* model;
    @ModelName@_input_parameters inputPars;
    QedQcd oneset;
+   double MWDRbar;
    double MZDRbar;
+   double AlphaS;
+   double EDRbar;
+   double ThetaWDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
+   double calculate_theta_w(double);
+   void calculate_threshold_corrections();
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();
    void calculate_@UpYukawa@_DRbar();
@@ -68,6 +74,7 @@ private:
    void calculate_@ElectronYukawa@_DRbar();
    double calculate_delta_alpha_em(double) const;
    double calculate_delta_alpha_s(double) const;
+   void recalculate_mw_pole();
    void update_scale();
 };
 

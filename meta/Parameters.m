@@ -67,6 +67,8 @@ GetEffectiveMu::usage="";
 
 GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
+GetParticleFromDescription::usage="Returns particle symbol from a
+given description string.";
 
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
@@ -719,6 +721,24 @@ GetParameterFromDescription[description_String] :=
                     "\" not unique."];
              ];
            parameter[[1]]
+          ];
+
+GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Module[{particle},
+           particle =Cases[SARAH`ParticleDefinitions[eigenstates],
+                            {particle_,
+                             {___, SARAH`Description -> description, ___}} :>
+                            particle];
+           If[Length[particle] == 0,
+              Print["Error: Particle with description \"", description,
+                    "\" not found."];
+              Return[Null];
+             ];
+           If[Length[particle] > 1,
+              Print["Warning: Particle with description \"", description,
+                    "\" not unique."];
+             ];
+           particle[[1]]
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;

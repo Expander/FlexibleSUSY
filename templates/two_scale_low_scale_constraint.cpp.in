@@ -26,6 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
+#include "weinberg_angle.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -42,6 +43,9 @@ namespace flexiblesusy {
 #define Pole(p) model->get_physical().p
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define THETAW theta_w
+#define ALPHA_EM_DRBAR alpha_em_drbar
+#define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint()
    : Constraint<Two_scale>()
@@ -50,7 +54,11 @@ namespace flexiblesusy {
    , model(0)
    , inputPars()
    , oneset()
+   , MWDRbar(0.)
    , MZDRbar(0.)
+   , AlphaS(0.)
+   , EDRbar(0.)
+   , ThetaWDRbar(0.)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
@@ -90,6 +98,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@hyperchargeCoupling@(new_@hyperchargeCoupling@);
    model->set_@leftCoupling@(new_@leftCoupling@);
    model->set_@strongCoupling@(new_@strongCoupling@);
+
+   recalculate_mw_pole();
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
@@ -123,7 +133,11 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    initial_scale_guess = 0.;
    model = NULL;
    oneset = QedQcd();
+   MWDRbar = 0.;
    MZDRbar = 0.;
+   AlphaS = 0.;
+   EDRbar = 0.;
+   ThetaWDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
@@ -137,7 +151,11 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
 @scaleGuess@
    scale = initial_scale_guess;
 
+   MWDRbar = 0.;
    MZDRbar = 0.;
+   AlphaS = 0.;
+   EDRbar = 0.;
+   ThetaWDRbar = 0.;
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
@@ -152,7 +170,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
 @restrictScale@
 }
 
-void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_corrections()
 {
    assert(oneset.displayMu() == get_scale() && "Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
@@ -176,15 +194,30 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
    // interface variables
    MZDRbar = oneset.displayPoleMZ();
-   double MWDRbar = oneset.displayPoleMW();
+   MWDRbar = oneset.displayPoleMW();
 
    if (model->get_thresholds()) {
       MZDRbar = model->calculate_M@VectorZ@_DRbar(oneset.displayPoleMZ());
       MWDRbar = model->calculate_M@VectorW@_DRbar(oneset.displayPoleMW());
    }
 
-   const double AlphaS = alpha_s_drbar;
-   const double EDRbar = e_drbar;
+   AlphaS = alpha_s_drbar;
+   EDRbar = e_drbar;
+   ThetaWDRbar = calculate_theta_w(alpha_em_drbar);
+}
+
+double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
+{
+   double theta_w = 0.;
+
+@calculateThetaW@
+
+   return theta_w;
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
+{
+   calculate_threshold_corrections();
 
 @calculateGaugeCouplings@
 }
@@ -245,6 +278,14 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
       electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarElectronYukawaCouplings@
+}
+
+/**
+ * Recalculates the W boson pole mass using the new gauge couplings.
+ */
+void @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole()
+{
+@recalculateMWPole@
 }
 
 } // namespace flexiblesusy

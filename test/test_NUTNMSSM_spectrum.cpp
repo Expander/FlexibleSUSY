@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l(1), 0.008);
    BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3) , mA0_1l(2), 0.0032);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.00006);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l(1), 0.000083);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh0_1l(2), 0.0033);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh0_1l(3), 0.001);
 
@@ -761,95 +761,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
-// ===== test with gauge couplings determined from the Rho parameter =====
-
-/**
- * @class NUTNMSSM_precise_gauge_couplings_low_scale_constraint
- *
- * Replacement class for NUTNMSSM_low_scale_constraint, which calculates
- * the gauge couplings at the low scale as Softsusy does it.
- */
-class NUTNMSSM_precise_gauge_couplings_low_scale_constraint
-   : public NUTNMSSM_low_scale_constraint<Two_scale> {
-public:
-   NUTNMSSM_precise_gauge_couplings_low_scale_constraint()
-      : NUTNMSSM_low_scale_constraint<Two_scale>() {}
-   NUTNMSSM_precise_gauge_couplings_low_scale_constraint(
-      NUTNMSSM<Two_scale>* model_, const NUTNMSSM_input_parameters& inputPars_,
-      const QedQcd& oneset_)
-      : NUTNMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
-   virtual ~NUTNMSSM_precise_gauge_couplings_low_scale_constraint() {}
-
-   virtual void apply();
-};
-
-void NUTNMSSM_precise_gauge_couplings_low_scale_constraint::apply()
-{
-   assert(model && "Error: NUTNMSSM_precise_gauge_couplings_low_scale_constraint:"
-          " model pointer must not be zero");
-
-   // save old model parmeters
-   const NUTNMSSM<Two_scale> nmssm(*model);
-
-   // run NUTNMSSM_low_scale_constraint::apply(), without the gauge
-   // couplings
-   model->calculate_DRbar_masses();
-
-   if (model->get_problems().have_problem()) {
-      INFO("Problem in NUTNMSSM_precise_gauge_couplings_"
-           "low_scale_constraint::apply(): " << model->get_problems());
-   }
-
-   update_scale();
-   calculate_DRbar_gauge_couplings();
-
-   const double TanBeta = inputPars.TanBeta;
-   const double g1 = model->get_g1();
-   const double g2 = model->get_g2();
-
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
-      )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
-      TanBeta))));
-
-   calculate_DRbar_yukawa_couplings();
-
-   const Eigen::Matrix<double,3,3> new_Yu(model->get_Yu()),
-      new_Yd(model->get_Yd()), new_Ye(model->get_Ye());
-
-   // Now calculate the gauge couplings using
-   // NmssmSoftsusy::sparticleThresholdCorrections
-   NmssmSoftsusy softsusy;
-   softsusy.setData(oneset);
-   softsusy.setMw(oneset.displayPoleMW());
-   copy_parameters(nmssm, softsusy);
-
-   // prevent tan(beta) from being reset
-   softsusy.setSetTbAtMX(true);
-   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
-
-   if (softsusy.displayProblem().test()) {
-      std::ostringstream ss;
-      ss << "Softsusy problem in NUTNMSSM_precise_gauge_couplings_"
-           "low_scale_constraint::apply(): "
-           "error while calculating the sparticle thresholds: "
-         << softsusy.displayProblem();
-      INFO(ss.str());
-   }
-
-   BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
-                 << new_g1 - softsusy.displayGaugeCoupling(1));
-   BOOST_MESSAGE("Difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
-                 << new_g2 - softsusy.displayGaugeCoupling(2));
-   BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
-                 << new_g3 - softsusy.displayGaugeCoupling(3));
-
-   model->set_g1(softsusy.displayGaugeCoupling(1));
-   model->set_g2(softsusy.displayGaugeCoupling(2));
-   model->set_g3(softsusy.displayGaugeCoupling(3));
-}
-
-void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
+void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    const NUTNMSSM_input_parameters& pp,
    const softsusy::QedQcd& oneset)
 {
@@ -858,8 +770,6 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    NUTNMSSM_tester nmssm_tester;
-   nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
-   // nmssm_tester.set_susy_scale_constraint(new NUTNMSSM_softsusy_ewsb_susy_scale_constraint(&_model, pp));
    BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
 
    SoftSusy_tester softSusy_tester;
@@ -874,11 +784,11 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 3.0e-06);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 6.5e-06);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 4.0e-07);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 9.0e-07);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 1.5e-07);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 5.0e-8);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.6e-2);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 1.76e-2);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 5.0e-05);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 3.5-06);
 
@@ -902,14 +812,14 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mh(ss.displayDrBarPars().mh0);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.00078);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA(1), 0.0002);
-   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(3), mA(2), 0.00078);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh(1), 0.00015);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mh(2), 0.00078);
    BOOST_CHECK_CLOSE_FRACTION(Mhh(3), mh(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_tree = " << mh  << " mA_tree = " << mA);
@@ -925,13 +835,13 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    const DoubleVector mA_1l(ss.displayPhys().mA0);
    const DoubleVector mh_1l(ss.displayPhys().mh0);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l, 0.00079);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2), mA_1l(1), 0.0004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(3), mA_1l(2), 0.00079);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh_1l(1), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0007);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mh_1l(2), 0.0008);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(3), mh_1l(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_1l = " << mh_1l  << " mA_1l = " << mA_1l);
@@ -941,7 +851,6 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
 
    nmssm_tester.reset();
    nmssm_tester.set_loops(2);
-   nmssm_tester.set_low_scale_constraint(new NUTNMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
    softSusy_tester.reset();
    softSusy_tester.set_loops(2);
    BOOST_REQUIRE_NO_THROW(nmssm_tester.test(pp, oneset));
@@ -965,17 +874,17 @@ void test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(
    BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.00013);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00016);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.1e-05);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.00017);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
    BOOST_MESSAGE("FlexibleSUSY:\n mh_2l = " << Mhh_2l << " mA_2l = " << MAh_2l);
 }
 
-BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
+BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_fermi_constant_input )
 {
    // standard NUTNMSSM testing point S1
    {
@@ -983,7 +892,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
       softsusy::QedQcd oneset;
       NUTNMSSM_input_parameters pp;
       set_S1(pp, oneset);
-      test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+      test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(pp, oneset);
    }
 
    // // NUTNMSSM point BP1
@@ -992,7 +901,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
    //    softsusy::QedQcd oneset;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP1(pp, oneset);
-   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(pp, oneset);
    // }
 
    // // NUTNMSSM point BP2
@@ -1001,7 +910,7 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
    //    softsusy::QedQcd oneset;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP2(pp, oneset);
-   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(pp, oneset);
    // }
 
    // // NUTNMSSM point BP3
@@ -1010,6 +919,6 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings )
    //    softsusy::QedQcd oneset;
    //    NUTNMSSM_input_parameters pp;
    //    set_BP3(pp, oneset);
-   //    test_NUTNMSSM_spectrum_with_Softsusy_gauge_couplings_for_point(pp, oneset);
+   //    test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(pp, oneset);
    // }
 }

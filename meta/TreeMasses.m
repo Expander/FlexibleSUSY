@@ -125,6 +125,7 @@ CreateThirdGenerationHelpers::usage="";
 CallThirdGenerationHelperFunctionName::usage="";
 
 GetThirdGenerationMass::usage;
+GetLightestMass::usage;
 
 ReorderGoldstoneBosons::usage="";
 CreateHiggsMassGetters::usage="";
@@ -1261,6 +1262,16 @@ GetThirdGenerationMass[fermion_] :=
            If[dim == 1,
               mass = FlexibleSUSY`M[fermion];,
               mass = FlexibleSUSY`M[fermion][dim - 1];
+             ];
+           Return[mass];
+          ];
+
+GetLightestMass[par_] :=
+    Module[{dim, mass},
+           dim = GetDimension[par];
+           If[dim == 1,
+              mass = FlexibleSUSY`M[par];,
+              mass = FlexibleSUSY`M[par][0];
              ];
            Return[mass];
           ];

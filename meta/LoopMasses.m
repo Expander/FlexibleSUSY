@@ -8,6 +8,7 @@ CreateOneLoopPoleMassPrototypes::usage="";
 CallAllPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
+CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for
@@ -558,6 +559,43 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
            Return[result];
           ];
 
+(* return W pole mass as a function of p *)
+CreateWPoleMassPrototype[particle_Symbol] :=
+    If[GetDimension[particle] > 1,
+       Print["Warning: cannot generate extra pole mass"
+             " calculation function for W boson, because"
+             " it has more than 1 generation"];
+       "",
+       "double " <> CreateLoopMassFunctionName[particle] <> "(double);\n"
+      ];
+
+(* return W pole mass as a function of p *)
+CreateWPoleMassFunction[particle_Symbol] :=
+    Module[{result, body = "", particleName, massName},
+           If[GetDimension[particle] > 1,
+              Print["Warning: cannot generate extra pole mass"
+                    " calculation function for W boson, because"
+                    " it has more than 1 generation"];
+              Return[""];
+             ];
+           If[!(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
+              body = "if (!force_output && problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+                     IndentText["return 0.;"] <> "\n\n";
+             ];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           body = body <>
+                  "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+                  "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
+                  "if (mass_sqr < 0.)\n" <>
+                  IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                  "return AbsSqrt(mass_sqr);\n";
+           result = "double CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
+                    "(double p)\n{\n" <> IndentText[body] <> "}\n\n";
+           Return[result];
+          ];
+
 CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] :=
     Module[{result = "", particle, prec, i = 1, f, d, tadpole, fieldsAndVevs = {}},
            (* create list that associates fields at vevs *)
@@ -573,6 +611,9 @@ CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] 
                tadpole  = Cases[fieldsAndVevs, {particle[_], __}];
                result   = result <> CreateLoopMassFunction[particle, prec, tadpole];
               ];
+           If[ValueQ[SARAH`VectorW],
+              result = result <> CreateWPoleMassFunction[SARAH`VectorW];
+             ];
            Return[result];
           ];
 
@@ -580,6 +621,9 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, result = ""},
            particles = GetLoopCorrectedParticles[states];
            (result = result <> CreateLoopMassPrototype[#])& /@ particles;
+           If[ValueQ[SARAH`VectorW],
+              result = result <> CreateWPoleMassPrototype[SARAH`VectorW];
+             ];
            Return[result];
           ];
 
@@ -597,8 +641,11 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
-           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
-           smParticles = Complement[particles, susyParticles];
+           smParticles = Select[particles, SARAH`SMQ[#]&];
+           (* filter out MW, because MW is a prediction and should
+              always be calculated *)
+           smParticles = Select[smParticles, (# =!= SARAH`VectorW)&];
+           susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
               (callSusy = callSusy <> CallPoleMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallPoleMassFunction[#])& /@ smParticles;

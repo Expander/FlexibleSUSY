@@ -7,6 +7,7 @@
 #include "CMSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
+#include "test_CMSSM_like.hpp"
 
 using namespace flexiblesusy;
 
@@ -82,14 +83,9 @@ void ensure_n_loop_ewsb(MssmSoftsusy& s, int loop_level)
    s.rewsb(signMu, mtrun, pars);
 }
 
-void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s, CMSSM_input_parameters& input)
+void setup_CMSSM_const(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                       const CMSSM_input_parameters& input)
 {
-   input.m0 = 125.;
-   input.m12 = 500.;
-   input.TanBeta = 10.;
-   input.SignMu = 1;
-   input.Azero = 0.;
-
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
    const double sinthWsq = 0.23122;
@@ -192,6 +188,32 @@ void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s, CMSSM_input_parameters& i
    s.calcDrBarPars();
 }
 
+void setup_CMSSM(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                 CMSSM_input_parameters& input)
+{
+   input.m0 = 125.;
+   input.m12 = 500.;
+   input.TanBeta = 10.;
+   input.SignMu = 1;
+   input.Azero = 0.;
+
+   setup_CMSSM_const(m, s, input);
+}
+
+void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& m, MssmSoftsusy& s,
+                                   const CMSSM_input_parameters& input)
+{
+   setup_CMSSM_const(m, s, input);
+
+   const double ymu = 0.1;
+
+   s.setYukawaElement(YE, 2, 2, ymu);
+
+   Eigen::Matrix<double,3,3> Ye(m.get_Ye());
+   Ye(1,1) = ymu;
+   m.set_Ye(Ye);
+}
+
 void test_parameter_equality(const SoftParsMssm& a, const CMSSM_soft_parameters& b)
 {
    TEST_EQUALITY(a.displayLoops(), b.get_loops());
@@ -236,61 +258,6 @@ void test_parameter_equality(const SoftParsMssm& a, const CMSSM_soft_parameters&
    const double vev = sqrt(sqr(b.get_vu()) + sqr(b.get_vd()));
    TEST_EQUALITY(a.displayTanb(), tanBeta);
    TEST_EQUALITY(a.displayHvev(), vev);
-}
-
-void copy_parameters(const CMSSM<Two_scale>& mssm, MssmSoftsusy& softsusy)
-{
-   // copy base class parameters
-   softsusy.setLoops(mssm.get_loops());
-   softsusy.setMu(mssm.get_scale());
-   softsusy.setThresholds(mssm.get_thresholds());
-
-   // copy susy parameters
-   softsusy.setGaugeCoupling(1, mssm.get_g1());
-   softsusy.setGaugeCoupling(2, mssm.get_g2());
-   softsusy.setGaugeCoupling(3, mssm.get_g3());
-
-   const double vu = mssm.get_vu();
-   const double vd = mssm.get_vd();
-   const double tanBeta = vu / vd;
-   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
-
-   softsusy.setSusyMu(mssm.get_Mu());
-   softsusy.setTanb(tanBeta);
-   softsusy.setHvev(vev);
-
-   for (int i = 1; i <= 3; i++) {
-      for (int k = 1; k <= 3; k++) {
-         softsusy.setYukawaElement(YU, i, k, mssm.get_Yu()(i-1,k-1));
-         softsusy.setYukawaElement(YD, i, k, mssm.get_Yd()(i-1,k-1));
-         softsusy.setYukawaElement(YE, i, k, mssm.get_Ye()(i-1,k-1));
-      }
-   }
-
-   // copy soft parameters
-   softsusy.setGauginoMass(1, mssm.get_MassB());
-   softsusy.setGauginoMass(2, mssm.get_MassWB());
-   softsusy.setGauginoMass(3, mssm.get_MassG());
-
-   softsusy.setM3Squared(mssm.get_BMu());
-   softsusy.setMh1Squared(mssm.get_mHd2());
-   softsusy.setMh2Squared(mssm.get_mHu2());
-
-   for (int i = 1; i <= 3; i++) {
-      for (int k = 1; k <= 3; k++) {
-         softsusy.setSoftMassElement(mQl, i, k,  mssm.get_mq2()(i-1,k-1));
-         softsusy.setSoftMassElement(mUr, i, k,  mssm.get_mu2()(i-1,k-1));
-         softsusy.setSoftMassElement(mDr, i, k,  mssm.get_md2()(i-1,k-1));
-         softsusy.setSoftMassElement(mLl, i, k,  mssm.get_ml2()(i-1,k-1));
-         softsusy.setSoftMassElement(mEr, i, k,  mssm.get_me2()(i-1,k-1));
-
-         softsusy.setTrilinearElement(UA, i, k, mssm.get_TYu()(i-1,k-1));
-         softsusy.setTrilinearElement(DA, i, k, mssm.get_TYd()(i-1,k-1));
-         softsusy.setTrilinearElement(EA, i, k, mssm.get_TYe()(i-1,k-1));
-      }
-   }
-
-   softsusy.setMw(softsusy.displayMwRun());
 }
 
 #endif

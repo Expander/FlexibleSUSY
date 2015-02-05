@@ -54,6 +54,7 @@ MZ;
 MZDRbar;
 MWDRbar;
 EDRbar;
+ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
@@ -90,6 +91,11 @@ FPIRelative; (* Fixed point iteration, convergence crit. relative step size *)
 FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
 FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + tadpoles *)
 FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
+
+(* input value for the calculation of the weak mixing angle *)
+FSFermiConstant;
+FSMassW;
+FSWeakMixingAngleInput = FSFermiConstant;
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
 
@@ -152,6 +158,75 @@ CheckSARAHVersion[] :=
                     " or higher"];
               Quit[1];
              ];
+          ];
+
+CheckFermiConstantInputRequirementsForSUSYModel[] :=
+    ValueQ[SARAH`TopQuark] &&
+    ValueQ[SARAH`BottomQuark] &&
+    ValueQ[SARAH`HiggsBoson] &&
+    ValueQ[SARAH`hyperchargeCoupling] &&
+    ValueQ[SARAH`leftCoupling] &&
+    ValueQ[SARAH`strongCoupling] &&
+    ValueQ[SARAH`VEVSM2] &&
+    ValueQ[SARAH`VEVSM1] &&
+    Parameters`GetParticleFromDescription["Neutralinos"] =!= Null &&
+    Parameters`GetParticleFromDescription["Charginos"] =!= Null &&
+    ValueQ[SARAH`NeutralinoMM] &&
+    ValueQ[SARAH`CharginoMinusMM] &&
+    ValueQ[SARAH`CharginoPlusMM] &&
+    ValueQ[SARAH`HiggsMixingMatrix] &&
+    ValueQ[SARAH`Selectron] &&
+    ValueQ[SARAH`SleptonMM] &&
+    ValueQ[SARAH`Sneutrino] &&
+    ValueQ[SARAH`SneutrinoMM] &&
+    ValueQ[SARAH`VectorW] &&
+    ValueQ[SARAH`VectorZ] &&
+    ValueQ[SARAH`ElectronYukawa];
+
+CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
+    ValueQ[SARAH`TopQuark] &&
+    ValueQ[SARAH`BottomQuark] &&
+    ValueQ[SARAH`HiggsBoson] &&
+    ValueQ[SARAH`hyperchargeCoupling] &&
+    ValueQ[SARAH`leftCoupling] &&
+    ValueQ[SARAH`strongCoupling] &&
+    ValueQ[SARAH`VectorW] &&
+    ValueQ[SARAH`VectorZ] &&
+    ValueQ[SARAH`ElectronYukawa];
+
+CheckWeakMixingAngleInputRequirements[input_] :=
+    Switch[input,
+           FlexibleSUSY`FSFermiConstant,
+               Switch[SARAH`SupersymmetricModel,
+                      True,
+                          If[CheckFermiConstantInputRequirementsForSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      False,
+                          If[CheckFermiConstantInputRequirementsForNonSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      _,
+                          Print["Error: model type: ", SARAH`SupersymmetricModel];
+                          Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                          FlexibleSUSY`FSMassW
+               ],
+           FlexibleSUSY`FSMassW,
+               input,
+           _,
+               Print["Error: unknown input ", input];
+               Print["   Using default input: ", FlexibleSUSY`FSMassW];
+               FlexibleSUSY`FSMassW
           ];
 
 CheckModelFileSettings[] :=
@@ -255,6 +330,8 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
+           FlexibleSUSY`FSWeakMixingAngleInput =
+               CheckWeakMixingAngleInputRequirements[FlexibleSUSY`FSWeakMixingAngleInput];
           ];
 
 ReplaceIndicesInUserInput[rules_] :=
@@ -406,6 +483,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
+           calculateThetaW,
+           recalculateMWPole,
            checkPerturbativityForDimensionlessParameters = "",
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
@@ -415,7 +494,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleInput,SARAH`SupersymmetricModel];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleInput];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
@@ -438,6 +519,8 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
+                   "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
+                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],

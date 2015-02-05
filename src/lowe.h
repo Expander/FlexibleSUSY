@@ -62,6 +62,7 @@ private:
   double mtauPole; ///< tau pole mass
   double mwPole; ///< W boson pole mass
   double mzPole; ///< Z boson pole mass
+  double gfermi; ///< Fermi constant
 
 public:
   QedQcd(); ///< Initialises with default values defined in lowe.h
@@ -79,6 +80,8 @@ public:
   void setMass(mass mno, double m) { mf(mno) = m; }; 
   /// sets QED or QCD structure constant
   void setAlpha(leGauge ai, double ap) { a(ai) = ap; }; 
+  /// sets Fermi constant
+  void setFermiConstant(double gf) { gfermi = gf; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   
@@ -98,6 +101,8 @@ public:
   double displayMass(mass mno) const { return mf.display(mno); };
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
+  /// Returns Fermi constant
+  double displayFermiConstant() const { return gfermi; }
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
@@ -157,7 +162,8 @@ double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole) {
+   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi)
+{
   setPars(11); 
   setMu(m.displayMu());
   setLoops(m.displayLoops());
