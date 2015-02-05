@@ -220,6 +220,7 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
+ * @param add_susy_contributions add SUSY particle contributions
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
  */
@@ -227,7 +228,7 @@ double Weinberg_angle::calculate_delta_rho(
    double rho,
    double sinThetaW,
    const Data& data,
-   bool susy_contributions
+   bool add_susy_contributions
 )
 {
    const double mz = data.mz_pole;
@@ -258,7 +259,7 @@ double Weinberg_angle::calculate_delta_rho(
 #endif
 
    double hmix_r = 1.0;
-   if (susy_contributions)
+   if (add_susy_contributions)
       hmix_r = Sqr(hmix12 / sinb);
 
    const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
@@ -283,6 +284,7 @@ double Weinberg_angle::calculate_delta_rho(
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
+ * @param add_susy_contributions add SUSY particle contributions
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.5) and (C.5) from hep-ph/9606211
  */
@@ -290,7 +292,7 @@ double Weinberg_angle::calculate_delta_r(
    double rho,
    double sinThetaW,
    const Data& data,
-   bool susy_contributions
+   bool add_susy_contributions
 )
 {
    const double outcos = Cos(ArcSin(sinThetaW));
@@ -323,10 +325,10 @@ double Weinberg_angle::calculate_delta_r(
 #endif
 
    const double dvb
-      = calculate_delta_vb(rho, sinThetaW, data, susy_contributions);
+      = calculate_delta_vb(rho, sinThetaW, data, add_susy_contributions);
 
    double hmix_r = 1.0;
-   if (susy_contributions)
+   if (add_susy_contributions)
       hmix_r = Sqr(hmix12 / sinb);
 
    const double deltaR = rho * piwwt0 / Sqr(mw) -
@@ -352,7 +354,7 @@ double Weinberg_angle::calculate_delta_r(
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
- * @param susy_contributions use SUSY particle contributions
+ * @param add_susy_contributions add SUSY particle contributions
  *
  * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
  */
@@ -360,12 +362,12 @@ double Weinberg_angle::calculate_delta_vb(
    double rho,
    double sinThetaW,
    const Data& data,
-   bool susy_contributions)
+   bool add_susy_contributions)
 {
    double deltaVbSusy = 0.;
    const double deltaVbSm = calculate_delta_vb_sm(rho, sinThetaW, data);
 
-   if (susy_contributions)
+   if (add_susy_contributions)
       deltaVbSusy = calculate_delta_vb_susy(rho, sinThetaW, data);
 
    const double deltaVb = deltaVbSm + deltaVbSusy;
