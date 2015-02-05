@@ -406,7 +406,6 @@ double Weinberg_angle::calculate_delta_vb_sm(
    WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
    WARN_IF_ZERO(mz, calculate_delta_vb)
    WARN_IF_ZERO(mw, calculate_delta_vb)
-   WARN_IF_ZERO(q, calculate_delta_vb)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
 #endif
 
