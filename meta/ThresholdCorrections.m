@@ -399,8 +399,8 @@ try {
    THETAW = ArcSin(weinberg.calculate());
    MODEL->get_problems().unflag_no_rho_convergence();
 } catch (const NoRhoConvergenceError& error) {
-   MODEL->get_problems().flag_no_rho_convergence();
    THETAW = ArcSin(error.get_sin_theta());
+   MODEL->get_problems().flag_no_rho_convergence();
 }"
           ];
 
@@ -484,8 +484,8 @@ try {
    THETAW = ArcSin(weinberg.calculate());
    MODEL->get_problems().unflag_no_rho_convergence();
 } catch (const NoRhoConvergenceError& error) {
-   MODEL->get_problems().flag_no_rho_convergence();
    THETAW = ArcSin(error.get_sin_theta());
+   MODEL->get_problems().flag_no_rho_convergence();
 }"
           ];
 
