@@ -315,13 +315,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0040);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 4.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 5.5e-5);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 4.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 5.5e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 3.e-6);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 4.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 4.e-6);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 5.5e-5);
 
    // down-type squarks
    const DoubleVector Sd(ToDoubleVector(fs.get_MSd()));
@@ -400,11 +400,11 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0043);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 4.e-05);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 4.e-05);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 5.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 5.5e-05);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 7.1e-05);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 4.0e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 7.3e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 6.0e-05);
 
    // down-type squarks
    const DoubleVector Sd_1l(ToDoubleVector(fs.get_physical().MSd));
