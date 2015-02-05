@@ -154,7 +154,6 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
    const double mz_pole    = data.mz_pole;
    const double scale      = data.scale;
    const double gfermi     = data.fermi_contant;
-   const double min_tol    = std::numeric_limits<double>::epsilon();
 
    if (!is_equal(scale, mz_pole)) {
       WARNING("Weinberg_angle::rhohat() called at scale "
@@ -376,7 +375,7 @@ double Weinberg_angle::calculate_delta_vb(
    const double deltaVbSm = calculate_delta_vb_sm(rho, sinThetaW, data);
 
    if (add_susy_contributions)
-      deltaVbSusy = calculate_delta_vb_susy(rho, sinThetaW, data);
+      deltaVbSusy = calculate_delta_vb_susy(sinThetaW, data);
 
    const double deltaVb = deltaVbSm + deltaVbSusy;
 
@@ -439,7 +438,6 @@ double Weinberg_angle::calculate_delta_vb_sm(
  * from hep-ph/9606211
  */
 double Weinberg_angle::calculate_delta_vb_susy(
-   double rho,
    double sinThetaW,
    const Data& data
 )
@@ -447,10 +445,6 @@ double Weinberg_angle::calculate_delta_vb_susy(
   const double g       = data.g2;
   const double gp      = data.gY;
   const double mz      = data.mz_pole;
-  const double mw      = data.mw_pole;
-  const double costh   = mw / mz;
-  const double cw2     = Sqr(costh);
-  const double sw2     = 1.0 - cw2;
   const double sinThetaW2 = Sqr(sinThetaW);
   const double outcos  = Sqrt(1.0 - sinThetaW2);
   const double q       = data.scale;
@@ -467,12 +461,10 @@ double Weinberg_angle::calculate_delta_vb_susy(
   const Eigen::MatrixXcd& v(data.up);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rho, calculate_delta_vb)
    WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
    WARN_IF_ZERO(g, calculate_delta_vb)
    WARN_IF_ZERO(gp, calculate_delta_vb)
    WARN_IF_ZERO(mz, calculate_delta_vb)
-   WARN_IF_ZERO(mw, calculate_delta_vb)
    WARN_IF_ZERO(q, calculate_delta_vb)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
    WARN_IF_ZERO(hmu, calculate_delta_vb)
@@ -751,7 +743,6 @@ double Weinberg_angle::replace_mtop_in_self_energy_w(
 {
    const double mt_pole = data.mt_pole;
    const double mt_drbar = data.mt_drbar;
-   const double mb_drbar = data.mb_drbar;
 
    const double self_energy_w_mt_drbar
       = calculate_self_energy_w_top(p, mt_drbar, data);
