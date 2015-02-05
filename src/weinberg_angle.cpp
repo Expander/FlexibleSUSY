@@ -205,10 +205,10 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
       iteration++;
    }
 
-   if (iteration == number_of_iterations)
-      throw NoRhoConvergenceError(iteration);
-
    rho_hat = rho_new;
+
+   if (iteration == number_of_iterations)
+      throw NoRhoConvergenceError(iteration, sin_new, rho_new);
 
    return sin_new;
 }
