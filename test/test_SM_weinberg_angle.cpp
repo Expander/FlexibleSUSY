@@ -402,7 +402,10 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    weinberg.set_precision_goal(1.0e-8);
    weinberg.set_data(data);
 
-   const double fs_sin = weinberg.calculate();
+   const int error = weinberg.calculate();
 
+   const double fs_sin = weinberg.get_sin_theta();
+
+   BOOST_REQUIRE(error == 0);
    BOOST_MESSAGE("SM sin(ThetaW) = " << fs_sin);
 }

@@ -259,7 +259,9 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::calculate_DRbar_gauge_
    Weinberg_angle weinberg;
    weinberg.set_data(data);
 
-   const double ThetaW = ArcSin(weinberg.calculate());
+   const int error = weinberg.calculate();
+   BOOST_REQUIRE(error == 0);
+   const double ThetaW = ArcSin(weinberg.get_sin_theta());
 
    new_g1 = 1.2909944487358056*EDRbar*Sec(ThetaW);
    new_g2 = EDRbar*Csc(ThetaW);

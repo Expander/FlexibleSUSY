@@ -21,7 +21,6 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "numerics.hpp"
-#include "error.hpp"
 #include "config.h"
 #include "numerics.h"
 
@@ -89,6 +88,7 @@ Weinberg_angle::Weinberg_angle()
    : number_of_iterations(20)
    , precision_goal(1.0e-8)
    , rho_hat(0.)
+   , sin_theta(0.)
    , data()
    , susy_contributions(true)
 {
@@ -128,12 +128,16 @@ double Weinberg_angle::get_rho_hat() const
    return rho_hat;
 }
 
+double Weinberg_angle::get_sin_theta() const
+{
+   return sin_theta;
+}
+
 /**
  * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as
- * input.  In addition, the function stores the value of
- * \f$\Delta\hat{\rho}\f$ in the variable rho_hat .
+ * input.
  *
  * The function throws an exception of type NoConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not
@@ -142,9 +146,9 @@ double Weinberg_angle::get_rho_hat() const
  * @param rho_start initial guess for the rho-hat-parameter
  * @param sin_start initial guess for the sinus of the weak mixing angle
  *
- * @return \f$\sin\hat{\theta}_W\f$ from Eq. (C.3) hep-ph/9606211
+ * @return value != 0 if an error has occured
  */
-double Weinberg_angle::calculate(double rho_start, double sin_start) const
+int Weinberg_angle::calculate(double rho_start, double sin_start)
 {
    const double alphaDRbar = data.alpha_em_drbar;
    const double mz_pole    = data.mz_pole;
@@ -206,11 +210,11 @@ double Weinberg_angle::calculate(double rho_start, double sin_start) const
    }
 
    rho_hat = rho_new;
+   sin_theta = sin_new;
 
-   if (iteration == number_of_iterations)
-      throw NoRhoConvergenceError(iteration, sin_new, rho_new);
+   const int no_convergence_error = iteration == number_of_iterations;
 
-   return sin_new;
+   return no_convergence_error;
 }
 
 /**

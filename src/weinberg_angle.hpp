@@ -89,9 +89,10 @@ public:
    void set_number_of_iterations(unsigned); ///< maximum number of iterations
    void set_precision_goal(double);  ///< set precision goal
    double get_rho_hat() const;       ///< returns the rho parameter
+   double get_sin_theta() const;     ///< returns sin(theta_w)
 
    /// calculates the sinus of the Weinberg angle
-   double calculate(double rho_start = 1.0, double sin_start = 0.48) const;
+   int calculate(double rho_start = 1.0, double sin_start = 0.48);
 
    static double replace_mtop_in_self_energy_z(double, double, const Self_energy_data&);
    static double replace_mtop_in_self_energy_w(double, double, const Self_energy_data&);
@@ -99,7 +100,8 @@ public:
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
    double precision_goal;         ///< precision goal
-   mutable double rho_hat;        ///< output rho-hat parameter
+   double rho_hat;                ///< output rho-hat parameter
+   double sin_theta;              ///< output sin(theta)
    Data data;
    bool susy_contributions;       ///< model type
 
