@@ -381,14 +381,15 @@ double Weinberg_angle::calculate_delta_vb(
 
 /**
  * Calculates the Standard Model vertex, box corrections
- * \f$\delta_{\text{VB}}\f$ as given in Eqs. (C.12) from
+ * \f$\delta_{\text{VB}}^{\text{SM}}\f$ as given in Eqs. (C.12) from
  * hep-ph/9606211 .
  *
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
  *
- * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ * @return \f$\delta_{\text{VB}}^{\text{SM}}\f$ as defined in (C.11)
+ * from hep-ph/9606211
  */
 double Weinberg_angle::calculate_delta_vb_sm(
    double rho,
@@ -423,14 +424,15 @@ double Weinberg_angle::calculate_delta_vb_sm(
 
 /**
  * Calculates the SUSY vertex, box and external wave-function
- * renormalizations \f$\delta_{\text{VB}}\f$ as given in
+ * renormalizations \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as given in
  * Eqs. (C.11)-(C.16), (C.20) from hep-ph/9606211 .
  *
  * @param rho rho-hat-parameter
  * @param sinThetaW sin(theta_W)
  * @param data data structure with model parameters
  *
- * @return \f$\delta_{\text{VB}}\f$ as defined in (C.11) from hep-ph/9606211
+ * @return \f$\delta_{\text{VB}}^{\text{SUSY}}\f$ as defined in (C.11)
+ * from hep-ph/9606211
  */
 double Weinberg_angle::calculate_delta_vb_susy(
    double rho,
