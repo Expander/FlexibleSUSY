@@ -90,13 +90,13 @@ FSGetOption[opts_List, opt_] :=
 
 FSSetOption[opts_List, rule:Rule[opt_, value_]] :=
     Join[
-        Cases[opts, Except[Rule[opt, _]]],
+        Cases[opts, Except[Rule[opt,_] | RuleDelayed[opt,_]]],
         {rule}
         ];
 
 FSSetOption[opts_List, rule:RuleDelayed[opt_, value_]] :=
     Join[
-        Cases[opts, Except[RuleDelayed[opt, _]]],
+        Cases[opts, Except[Rule[opt,_] | RuleDelayed[opt,_]]],
         {rule}
         ];
 
