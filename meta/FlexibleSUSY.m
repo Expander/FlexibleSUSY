@@ -95,7 +95,37 @@ FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 (* input value for the calculation of the weak mixing angle *)
 FSFermiConstant;
 FSMassW;
-FSWeakMixingAngleInput = FSFermiConstant;
+
+{FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+ FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
+ FSChargino, FSNeutralinoMM, FSCharginoMinusMM, FSCharginoPlusMM,
+ FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL, FSSmuonL,
+ FSSmuonNeutrinoL, FSVectorW, FSVectorZ, FSElectronYukawa};
+
+FSWeakMixingAngleOptions = {
+    FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
+    FlexibleSUSY`FSTopQuark             -> SARAH`TopQuark,
+    FlexibleSUSY`FSBottomQuark          -> SARAH`BottomQuark,
+    FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
+    FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
+    FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
+    FlexibleSUSY`FSStrongCoupling       -> SARAH`strongCoupling,
+    FlexibleSUSY`FSVEVSM1               -> SARAH`VEVSM1,
+    FlexibleSUSY`FSVEVSM2               -> SARAH`VEVSM2,
+    FlexibleSUSY`FSNeutralino           :> Parameters`GetParticleFromDescription["Neutralinos"],
+    FlexibleSUSY`FSChargino             :> Parameters`GetParticleFromDescription["Charginos"],
+    FlexibleSUSY`FSNeutralinoMM         -> SARAH`NeutralinoMM,
+    FlexibleSUSY`FSCharginoMinusMM      -> SARAH`CharginoMinusMM,
+    FlexibleSUSY`FSCharginoPlusMM       -> SARAH`CharginoPlusMM,
+    FlexibleSUSY`FSHiggsMM              -> SARAH`HiggsMixingMatrix,
+    FlexibleSUSY`FSSelectronL           :> Sum[Susyno`LieGroups`conj[SARAH`SleptonMM[Susyno`LieGroups`i,1]] SARAH`SleptonMM[Susyno`LieGroups`i,1] FlexibleSUSY`M[SARAH`Selectron[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Selectron]}],
+    FlexibleSUSY`FSSelectronNeutrinoL   :> Sum[Susyno`LieGroups`conj[SARAH`SneutrinoMM[Susyno`LieGroups`i,1]] SARAH`SneutrinoMM[Susyno`LieGroups`i,1] FlexibleSUSY`M[SARAH`Sneutrino[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Sneutrino]}],
+    FlexibleSUSY`FSSmuonL               :> Sum[Susyno`LieGroups`conj[SARAH`SleptonMM[Susyno`LieGroups`i,2]] SARAH`SleptonMM[Susyno`LieGroups`i,2] FlexibleSUSY`M[SARAH`Selectron[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Selectron]}],
+    FlexibleSUSY`FSSmuonNeutrinoL       :> Sum[Susyno`LieGroups`conj[SARAH`SneutrinoMM[Susyno`LieGroups`i,2]] SARAH`SneutrinoMM[Susyno`LieGroups`i,2] FlexibleSUSY`M[SARAH`Sneutrino[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Sneutrino]}],
+    FlexibleSUSY`FSVectorW              -> SARAH`VectorW,
+    FlexibleSUSY`FSVectorZ              -> SARAH`VectorZ,
+    FlexibleSUSY`FSElectronYukawa       -> SARAH`ElectronYukawa
+};
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
 
@@ -160,39 +190,41 @@ CheckSARAHVersion[] :=
              ];
           ];
 
+CheckFermiConstantInputRequirements[requiredSymbols_List, printout_:True] :=
+    Module[{resolvedSymbols, symbols, areDefined, availPars},
+           resolvedSymbols = requiredSymbols /. FlexibleSUSY`FSWeakMixingAngleOptions;
+           resolvedSymbols = resolvedSymbols /. {
+               a_[idx__] :> a /; And @@ (NumberQ /@ {idx})
+           };
+           symbols = DeleteDuplicates[Cases[resolvedSymbols, _Symbol, {0,Infinity}]];
+           availPars = Join[TreeMasses`GetParticles[],
+                            Parameters`GetInputParameters[],
+                            Parameters`GetModelParameters[],
+                            Parameters`GetOutputParameters[]];
+           areDefined = MemberQ[availPars, #]& /@ symbols;
+           If[printout,
+              Print["Unknown symbol: ", #]& /@
+              Cases[Utils`Zip[areDefined, symbols], {False, p_} :> p];
+             ];
+           And @@ areDefined
+          ];
+
 CheckFermiConstantInputRequirementsForSUSYModel[] :=
-    ValueQ[SARAH`TopQuark] &&
-    ValueQ[SARAH`BottomQuark] &&
-    ValueQ[SARAH`HiggsBoson] &&
-    ValueQ[SARAH`hyperchargeCoupling] &&
-    ValueQ[SARAH`leftCoupling] &&
-    ValueQ[SARAH`strongCoupling] &&
-    ValueQ[SARAH`VEVSM2] &&
-    ValueQ[SARAH`VEVSM1] &&
-    Parameters`GetParticleFromDescription["Neutralinos"] =!= Null &&
-    Parameters`GetParticleFromDescription["Charginos"] =!= Null &&
-    ValueQ[SARAH`NeutralinoMM] &&
-    ValueQ[SARAH`CharginoMinusMM] &&
-    ValueQ[SARAH`CharginoPlusMM] &&
-    ValueQ[SARAH`HiggsMixingMatrix] &&
-    ValueQ[SARAH`Selectron] &&
-    ValueQ[SARAH`SleptonMM] &&
-    ValueQ[SARAH`Sneutrino] &&
-    ValueQ[SARAH`SneutrinoMM] &&
-    ValueQ[SARAH`VectorW] &&
-    ValueQ[SARAH`VectorZ] &&
-    ValueQ[SARAH`ElectronYukawa];
+    CheckFermiConstantInputRequirements[
+        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+         FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2,
+         FSNeutralino, FSChargino, FSNeutralinoMM, FSCharginoMinusMM,
+         FSCharginoPlusMM, FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL,
+         FSSmuonL, FSSmuonNeutrinoL, FSVectorW, FSVectorZ,
+         FSElectronYukawa}
+    ];
 
 CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
-    ValueQ[SARAH`TopQuark] &&
-    ValueQ[SARAH`BottomQuark] &&
-    ValueQ[SARAH`HiggsBoson] &&
-    ValueQ[SARAH`hyperchargeCoupling] &&
-    ValueQ[SARAH`leftCoupling] &&
-    ValueQ[SARAH`strongCoupling] &&
-    ValueQ[SARAH`VectorW] &&
-    ValueQ[SARAH`VectorZ] &&
-    ValueQ[SARAH`ElectronYukawa];
+    CheckFermiConstantInputRequirements[
+        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+         FSLeftCoupling, FSStrongCoupling, FSVectorW, FSVectorZ,
+         FSElectronYukawa}
+    ];
 
 CheckWeakMixingAngleInputRequirements[input_] :=
     Switch[input,
@@ -330,8 +362,6 @@ CheckModelFileSettings[] :=
                        " {{A, AInput, {3,3}}, ... }"];
                 ];
              ];
-           FlexibleSUSY`FSWeakMixingAngleInput =
-               CheckWeakMixingAngleInputRequirements[FlexibleSUSY`FSWeakMixingAngleInput];
           ];
 
 ReplaceIndicesInUserInput[rules_] :=
@@ -494,9 +524,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
-          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleInput,SARAH`SupersymmetricModel];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
-          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleInput];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[Utils`FSGetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput]];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
@@ -1579,6 +1609,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                FlexibleSUSY`ExtraSLHAOutputBlocks,
                Join[Parameters`GetOutputParameters[], Parameters`GetModelParameters[]]
            ];
+
+           (* check weak mixing angle parameters *)
+           FlexibleSUSY`FSWeakMixingAngleOptions =
+               Utils`FSSetOption[FlexibleSUSY`FSWeakMixingAngleOptions,
+                                 FlexibleSUSY`FSWeakMixingAngleInput ->
+                                 CheckWeakMixingAngleInputRequirements[Utils`FSGetOption[
+                                     FlexibleSUSY`FSWeakMixingAngleOptions,
+                                     FlexibleSUSY`FSWeakMixingAngleInput]
+                                 ]
+               ];
 
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];

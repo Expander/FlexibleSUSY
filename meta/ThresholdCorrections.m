@@ -1,5 +1,5 @@
 
-BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`"}];
+BeginPackage["ThresholdCorrections`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Constraint`", "Vertices`", "LoopMasses`", "Utils`"}];
 
 CalculateGaugeCouplings::usage="";
 CalculateDeltaAlphaEm::usage="";
@@ -274,43 +274,54 @@ GetParameter[par_, factor_:1] :=
     "MODEL->get_" <> CConversion`RValueToCFormString[par] <> "()" <>
     MultiplyBy[factor];
 
-CalculateThetaWFromFermiConstantSUSY[] :=
+CalculateThetaWFromFermiConstantSUSY[options_List] :=
     Module[{g1Str, g2Str, g3Str, vuStr, vdStr,
             mTop, mBot, mHiggs,
             mtStr, mbStr,
             mnStr, mcStr, znStr, umStr, upStr,
             mhStr, zhStr,
-            mseStr, zseStr,
-            msvStr, zsvStr,
-            zStr, wStr, ymStr
+            mseExpr, msveExpr, msmExpr, msvmExpr,
+            mseStr, msveStr, msmStr, msvmStr,
+            zStr, wStr, ymStr,
+            gHyp, gLef, gCol,
+            localConstRefs = ""
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
+           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
            mtStr   = GetParameter[mTop];
            mbStr   = GetParameter[mBot];
-           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
-           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
-           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
-           vuStr   = GetParameter[SARAH`VEVSM2];
-           vdStr   = GetParameter[SARAH`VEVSM1];
-           mnStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Neutralinos"]]];
-           mcStr   = GetParameter[FlexibleSUSY`M[Parameters`GetParticleFromDescription["Charginos"]]];
-           znStr   = GetParameter[SARAH`NeutralinoMM];
-           umStr   = GetParameter[SARAH`CharginoMinusMM];
-           upStr   = GetParameter[SARAH`CharginoPlusMM];
            mhStr   = GetParameter[mHiggs];
-           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
-           mseStr  = GetParameter[FlexibleSUSY`M[SARAH`Selectron]];
-           zseStr  = GetParameter[SARAH`SleptonMM];
-           msvStr  = GetParameter[FlexibleSUSY`M[SARAH`Sneutrino]];
-           zsvStr  = GetParameter[SARAH`SneutrinoMM];
-           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
-           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
-           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
+           gHyp    = Utils`FSGetOption[options, FlexibleSUSY`FSHyperchargeCoupling];
+           gLef    = Utils`FSGetOption[options, FlexibleSUSY`FSLeftCoupling];
+           gCol    = Utils`FSGetOption[options, FlexibleSUSY`FSStrongCoupling];
+           g1Str   = GetParameter[gHyp, Parameters`GetGUTNormalization[gHyp]];
+           g2Str   = GetParameter[gLef, Parameters`GetGUTNormalization[gLef]];
+           g3Str   = GetParameter[gCol, Parameters`GetGUTNormalization[gCol]];
+           vuStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSVEVSM2]];
+           vdStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSVEVSM1]];
+           mnStr   = GetParameter[FlexibleSUSY`M[Utils`FSGetOption[options,FlexibleSUSY`FSNeutralino]]];
+           mcStr   = GetParameter[FlexibleSUSY`M[Utils`FSGetOption[options,FlexibleSUSY`FSChargino]]];
+           znStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSNeutralinoMM]];
+           umStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSCharginoMinusMM]];
+           upStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSCharginoPlusMM]];
+           zhStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSHiggsMM][0,1]];
+           wStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorW]];
+           zStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorZ]];
+           ymStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSElectronYukawa][1,1]];
+           mseExpr  = Utils`FSGetOption[options,FlexibleSUSY`FSSelectronL];
+           msveExpr = Utils`FSGetOption[options,FlexibleSUSY`FSSelectronNeutrinoL];
+           msmExpr  = Utils`FSGetOption[options,FlexibleSUSY`FSSmuonL];
+           msvmExpr = Utils`FSGetOption[options,FlexibleSUSY`FSSmuonNeutrinoL];
+           mseStr  = CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[mseExpr]];
+           msveStr = CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[msveExpr]];
+           msmStr  = CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[msmExpr]];
+           msvmStr = CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[msvmExpr]];
+           localConstRefs = Parameters`CreateLocalConstRefs[{mseExpr, msveExpr, msmExpr, msvmExpr}];
     "\
 using namespace weinberg_angle;
 
+" <> localConstRefs <> "
 const double scale         = MODEL->get_scale();
 const double mw_pole       = oneset.displayPoleMW();
 const double mz_pole       = oneset.displayPoleMZ();
@@ -324,28 +335,13 @@ const double g3            = " <> g3Str <> ";
 const double ymu           = " <> ymStr <> ";
 const double hmix_12       = " <> zhStr <> ";
 const double tanBeta       = " <> vuStr <> " / " <> vdStr <> ";
-double mselL               = 0.;
-double msmuL               = 0.;
-double msnue               = 0.;
-double msnumu              = 0.;
-const auto MSe(" <> mseStr <> ");
-const auto ZE(" <> zseStr <> ");
-const auto MSv(" <> msvStr <> ");
-const auto ZV(" <> zsvStr <> ");
-
-for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
-   mselL += AbsSqr(ZE(i,0))*MSe(i);
-   msmuL += AbsSqr(ZE(i,1))*MSe(i);
-}
-
-for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
-   msnue  += AbsSqr(ZV(i,0))*MSv(i);
-   msnumu += AbsSqr(ZV(i,1))*MSv(i);
-}
-
-const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
-const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
-const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+const double mselL         = " <> mseStr <> ";
+const double msmuL         = " <> msmStr <> ";
+const double msnue         = " <> msveStr <> ";
+const double msnumu        = " <> msvmStr <> ";
+const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
+const double piwwtMW       = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -405,26 +401,30 @@ else
    MODEL->get_problems().unflag_no_rho_convergence();"
           ];
 
-CalculateThetaWFromFermiConstantNonSUSY[] :=
+CalculateThetaWFromFermiConstantNonSUSY[options_List] :=
     Module[{g1Str, g2Str, g3Str,
             mTop, mBot, mHiggs,
             mtStr, mbStr,
             mhStr, zhStr,
-            zStr, wStr, ymStr
+            zStr, wStr, ymStr,
+            gHyp, gLef, gCol
            },
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mHiggs  = TreeMasses`GetLightestMass[SARAH`HiggsBoson];
+           mTop    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSTopQuark]];
+           mBot    = TreeMasses`GetThirdGenerationMass[Utils`FSGetOption[options,FlexibleSUSY`FSBottomQuark]];
+           mHiggs  = TreeMasses`GetLightestMass[Utils`FSGetOption[options,FlexibleSUSY`FSHiggs]];
+           gHyp    = Utils`FSGetOption[options, FlexibleSUSY`FSHyperchargeCoupling];
+           gLef    = Utils`FSGetOption[options, FlexibleSUSY`FSLeftCoupling];
+           gCol    = Utils`FSGetOption[options, FlexibleSUSY`FSStrongCoupling];
            mtStr   = GetParameter[mTop];
            mbStr   = GetParameter[mBot];
-           g1Str   = GetParameter[SARAH`hyperchargeCoupling, Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]];
-           g2Str   = GetParameter[SARAH`leftCoupling       , Parameters`GetGUTNormalization[SARAH`leftCoupling]];
-           g3Str   = GetParameter[SARAH`strongCoupling     , Parameters`GetGUTNormalization[SARAH`strongCoupling]];
+           g1Str   = GetParameter[gHyp, Parameters`GetGUTNormalization[gHyp]];
+           g2Str   = GetParameter[gLef, Parameters`GetGUTNormalization[gLef]];
+           g3Str   = GetParameter[gCol, Parameters`GetGUTNormalization[gCol]];
            mhStr   = GetParameter[mHiggs];
-           zhStr   = GetParameter[SARAH`HiggsMixingMatrix[0,1]];
-           wStr    = CConversion`RValueToCFormString[SARAH`VectorW];
-           zStr    = CConversion`RValueToCFormString[SARAH`VectorZ];
-           ymStr   = GetParameter[SARAH`ElectronYukawa[1,1]];
+           zhStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSHiggsMM][0,1]];
+           wStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorW]];
+           zStr    = CConversion`RValueToCFormString[Utils`FSGetOption[options,FlexibleSUSY`FSVectorZ]];
+           ymStr   = GetParameter[Utils`FSGetOption[options,FlexibleSUSY`FSElectronYukawa][1,1]];
     "\
 using namespace weinberg_angle;
 
@@ -439,10 +439,9 @@ const double gY            = " <> g1Str <> ";
 const double g2            = " <> g2Str <> ";
 const double g3            = " <> g3Str <> ";
 const double ymu           = " <> ymStr <> ";
-
-const double pizztMZ = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
-const double piwwt0  = Re(MODEL->self_energy_" <> wStr <> "(0.));
-const double piwwtMW = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
+const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
+const double piwwtMW       = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -491,10 +490,10 @@ else
    MODEL->get_problems().unflag_no_rho_convergence();"
           ];
 
-CalculateThetaWFromFermiConstant[isSUSYModel_] :=
+CalculateThetaWFromFermiConstant[options_List,isSUSYModel_] :=
     If[isSUSYModel,
-       CalculateThetaWFromFermiConstantSUSY[],
-       CalculateThetaWFromFermiConstantNonSUSY[]
+       CalculateThetaWFromFermiConstantSUSY[options],
+       CalculateThetaWFromFermiConstantNonSUSY[options]
       ];
 
 CalculateThetaWFromMW[] :=
@@ -509,9 +508,9 @@ CalculateThetaWFromMW[] :=
            Return[result];
           ];
 
-CalculateThetaW[input_,isSUSYModel_] :=
-    Switch[input,
-           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[isSUSYModel],
+CalculateThetaW[options_List,isSUSYModel_] :=
+    Switch[Utils`FSGetOption[options, FlexibleSUSY`FSWeakMixingAngleInput],
+           FlexibleSUSY`FSFermiConstant, CalculateThetaWFromFermiConstant[options,isSUSYModel],
            FlexibleSUSY`FSMassW, CalculateThetaWFromMW[],
            _,
            Print["Error: CalculateThetaW[", input, "]: unknown input ", input];
