@@ -71,7 +71,7 @@ EffectiveMu = \[Mu];
 (* low-energy input to determine weak mixing angle
  * Possible values: FSFermiConstant (default), FSMassW
  *)
-FSWeakMixingAngleInput = FSFermiConstant;
+FSWeakMixingAngleOptions = FSSetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput -> FSFermiConstant];
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 
