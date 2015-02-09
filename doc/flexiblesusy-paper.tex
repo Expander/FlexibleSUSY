@@ -219,7 +219,7 @@ recent reviews see \cite{Ellwanger:2009dp, Maniatis:2009re}).
 
 
 
-None of the fundamental motivations of supersymmetry require
+None of the fundamental motivations of supersymmetry requires
 minimality, and specific alternatives to (or extensions of) the MSSM
 are, for example, motivated by the $\mu$-problem of the MSSM
 \cite{Kim:1983dt}; explaining the family structure (see
@@ -420,7 +420,7 @@ mixed particles:
 \begin{itemize}
 \item \emph{Calculation of the $\beta$-functions:} The RG solving
   algorithms usually need $O(10)$ iterations between the high and the
-  low scale to find a set of parameters consistent will all boundary
+  low scale to find a set of parameters consistent with all boundary
   conditions with a $0.01\%$ precision goal.  During each iteration
   the Runge-Kutta algorithm needs to calculate all $\beta$-functions
   $O(50)$ times.  Most two-loop $\beta$-functions involve $O(50)$
@@ -683,7 +683,7 @@ The model boundary conditions are defined in the \fs model file
 \code{model_files/<model>/}.  When the \code{./createmodel} script is
 executed, the \code{FlexibleSUSY.m} file is created from the
 \code{model_files/<model-file-name>/FlexibleSUSY.m.in} file, where the
-directory \code{<model-file-name>} is the specified by the
+directory \code{<model-file-name>} is specified by the
 \code{--model-file=<model-file-name>} option.  If no such option is
 given the directory matching the \code{--name=<model>} option is used.
 In either case the \code{FlexibleSUSY.m} file which is created is then
@@ -900,7 +900,7 @@ The meaning of the three constraints is the following:
   \secref{sec:calculation-of-yukawa-couplings}.
 \end{itemize}
 %
-The variables \code{LowScaleInput}, \code{SUSYScaleInput}
+The variables \code{LowScaleInput}, \code{SUSYScaleInput} and
 \code{HighScaleInput}, which list the parameter settings for imposing
 the constraints can contain as elements any of the following:
 %
@@ -1031,7 +1031,7 @@ approximation when singlet mixing is very small\footnote{These
  partial two-loop corrections does not change the formal accuracy
  the user should choose whether or not to include these corrections
  based on the physics they study.  Similarly in models that go beyond
- the NMSSM the user must decide based the physics whether on not these
+ the NMSSM the user must decide based on the physics whether on not these
  corrections will give the leading two-loop corrections in their
  model.
 
@@ -1060,11 +1060,11 @@ be calculated at the output scale, which is specified in entry $12$ in
 the SLHA input block \code{MODSEL}.  In the example model file above
 the following six extra SLHA compliant output blocks are defined:
 \code{ALPHA}, \code{HMIX}, \code{Au}, \code{Ad}, \code{Ae} and
-\code{MSOFT}.  The \code{ALPHA} output block contains the CP-even
+\code{MSOFT}.  The \code{ALPHA} output block contains the $CP$-even
 Higgs pole mass mixing angle as the only entry.  The \code{HMIX}
 output block contains the $\mu$-parameter, the ratio $\tan\beta =
 v_u/v_d$, the combination $v=\sqrt{v_u^2 + v_d^2}$, the squared mass
-of the CP-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
+of the $CP$-odd Higgs $m_A^2$, the soft-breaking parameter $B\mu$ and
 the values of $v_u$ and $v_d$, all defined in the \DRbar\ scheme.  In
 an analogous way four more output blocks for the soft-breaking \DRbar\
 parameters are defined.  For a CMSSM example parameter point with $m_0
@@ -1235,7 +1235,8 @@ allows to split these parameters into two classes:
   parameters and VEVs and
 \item \emph{soft-breaking parameters} \cite{Girardello:1981wz}: soft
   linear scalar terms, soft bilinear scalar interactions, soft
-  trilinear scalar interactions, soft gaugino mass terms and soft
+  trilinear scalar interactions, soft quadlinear scalar interactions,
+  soft gaugino mass terms and soft
   scalar squared masses.
 \end{enumerate}
 %
@@ -1600,7 +1601,7 @@ level as
 \end{align}
 %
 where $V^\text{tree}$ is the tree-level Higgs potential, $v_i$ is the
-VEV corresponding to the Higgs fields $H_i$ and $t_i$ is the one-loop
+VEV corresponding to the Higgs field $H_i$ and $t_i$ is the one-loop
 tadpole diagram of $H_i$.  Already at the tree-level ($t_i = 0$) Eqs.\
 \eqref{eq:one-loop-ewsb-eq} can have multiple solutions, depending on
 which parameters are chosen to be fixed by these equations.  A
@@ -1617,7 +1618,7 @@ solutions for $\mu$ of the form
 %
 Currently, \fs handles only real model parameters and renormalizable
 theories, which restricts the number of possible multiple solutions of
-Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less or equal to $4N$.  In
+Eqs.\ \eqref{eq:one-loop-ewsb-eq} to be less than or equal to $4N$.  In
 some cases, as for example in the real MSSM, the different solutions
 are related by one or more global signs for the parameters, as for example in
 Eq.~\eqref{eq:EWSB-solution-for-mu}.  \fs recognizes such cases and
@@ -2027,11 +2028,11 @@ flag.
 
 It is important to note that in the case of such problem points it is
 non-trivial to judge whether this is because there is no physical
-solution for the given parameter space point or whether a solution
+solution for the given parameter space point or a solution
 exists but the fixed point iteration is unable to find the solution.
 While \fs makes it as easy as possible to find spectra, when studying
 new models a physical understanding of the model is still essential
-and this can help the user determine why the such problems arise.
+and this can help the user determine why such problems arise.
 
 Nonetheless \fs provides help for such cases in several ways. One may
 adjust initial guesses specified in the \fs model file, such
@@ -2814,7 +2815,7 @@ command \code{make execute-tests}.  All unit tests are carried out
 nightly in order to continuously check the correctness of the meta
 code and the generated spectrum generators for the shipped models.
 The nightly test results can be found at
-\url{http://iktp.tu-dresden.de/~avoigt/FlexibleSUSY/test.xhtml}
+\url{https://www.desy.de/~alvoigt/FlexibleSUSY/test.xhtml}
 
 The \fs generated NUHM \ESSM\ spectrum generator has also been
 compared against a handwritten one for a constrained version of the
@@ -2879,7 +2880,7 @@ The resulting SLHA input file is passed to each spectrum generator and
 the (wall-clock) time is measured until the program has finished.  The
 average run-times for three different CPU types can be found in
 \tabref{tab:run-time-comparison}.  The first column shows the run-time
-on a Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
+on an Intel Core2 Duo (P8600, $2.40\unit{GHz}$) where only one core was
 enabled.  The second column shows the run-time on the same processor
 where both cores were enabled.  In the third column a machine with two
 Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
@@ -2907,11 +2908,11 @@ Intel Xeon CPUs (L5640, $2.27\unit{GHz}$, $6$ cores) was used.
   \label{tab:run-time-comparison}
 \end{table}
 
-Under both the non-flavour violating spectrum generators (first three
+Among both the non-flavour violating spectrum generators (first three
 rows) as well as the flavour violating ones (4th and 5th row) we find
 that \fs is significantly fastest.  Compared to SPheno,
 FlexibleSUSY-NoFV is faster by a factor $1.4$--$1.7$, and compared to
-Softsusy around a factor $2$--$2.5$.  Under the flavour violating
+Softsusy around a factor $2$--$2.5$.  Between the flavour violating
 spectrum generators FlexibleSUSY-FV is faster than SPhenoMSSM by a
 factor $2.8$--$5$.  Reason for the long run-time of SPhenoMSSM is the
 long calculation duration of the two-loop $\beta$-functions.  Here \fs
