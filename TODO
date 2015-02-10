@@ -1,13 +1,6 @@
 List of features for future FlexibleSUSY releases
 =================================================
 
-MW predicition
---------------
-
-The output value of MW should be taken from oneset, instead of the
-model class.  Reason: The model class calculates MW at MSUSY, while
-oneset calculates MW at MZ.
-
 
 Explicit path to SARAH installation
 -----------------------------------
