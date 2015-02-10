@@ -1,10 +1,15 @@
 
+#define private public
+
 #include "CMSSM_two_scale_model.hpp"
 #include "test.h"
 #include "test_CMSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "conversion.hpp"
+#include "root_finder.hpp"
+#include "fixed_point_iterator.hpp"
+
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -1128,8 +1133,8 @@ void compare_loop_masses(MssmSoftsusy s, CMSSM<Two_scale> m)
    ensure_n_loop_ewsb(m, 2);
    ensure_n_loop_ewsb(s, 2);
    // check that the important scalar potential parameters are equal
-   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 1.0e-7);
-   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 1.0e-8);
+   TEST_CLOSE(m.get_mHd2(), s.displayMh1Squared(), 2.0e-3);
+   TEST_CLOSE(m.get_mHu2(), s.displayMh2Squared(), 7.0e-4);
    TEST_CLOSE_REL(m.get_Mu(), s.displaySusyMu(), 0.0000001);
    TEST_CLOSE_REL(m.get_BMu(), s.displayM3Squared(), 0.04);
    m.calculate_pole_masses();
@@ -1227,14 +1232,14 @@ void test_ewsb_1loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    // one-loop
    model.solve_ewsb_one_loop();
-   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, precision);
-   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, precision);
+   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, 0.006);
+   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, 0.006);
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
-   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
-   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
-   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-8);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-6);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-6);
 }
 
 void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
@@ -1267,15 +1272,121 @@ void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    model.tadpole_hh_2loop(two_loop_tadpole);
 
    TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real()
-              - two_loop_tadpole[0], 0.0, precision);
+              - two_loop_tadpole[0], 0.0, 0.007);
    TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real()
-              - two_loop_tadpole[1], 0.0, precision);
+              - two_loop_tadpole[1], 0.0, 0.001);
 
    softsusy::numRewsbLoops = 2;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
-   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-9);
-   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
-   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 7.0e-7);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 2.0e-7);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 5.0e-7);
+}
+
+void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
+{
+   softSusy.calcDrBarPars();
+   model.calculate_DRbar_masses();
+
+   const double BMu = model.get_BMu();
+   const double Mu  = model.get_Mu();
+   const double Mu2 = sqr(Mu);
+   const double m1sq = model.get_mHd2();
+   const double m2sq = -model.get_mHu2();
+   const int signMu = Mu >= 0.0 ? 1 : -1;
+   const DoubleVector pars(3); // unused
+   const double precision = model.get_ewsb_iteration_precision();
+   model.set_mHd2(m1sq);
+   model.set_mHu2(m2sq);
+   softSusy.setMh1Squared(m1sq);
+   softSusy.setMh2Squared(m2sq);
+
+   const int ewsb_loop_order = 1;
+   const int number_of_ewsb_iterations = 100;
+   const double ewsb_iteration_precision = 1.0e-5;
+   model.set_ewsb_loop_order(ewsb_loop_order);
+   model.set_number_of_ewsb_iterations(number_of_ewsb_iterations);
+   model.set_ewsb_iteration_precision(ewsb_iteration_precision);
+
+   // these conditions must be fulfilled to have EWSB
+   // see Drees p. 221 and 222
+   TEST_GREATER(sqr(BMu), (m2sq + Mu2)*(m1sq + Mu2));
+
+   // solve with Softsusy for reference
+   softsusy::numRewsbLoops = 1;
+   softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
+
+   const double Mu_ss = softSusy.displaySusyMu();
+   const double BMu_ss = softSusy.displayM3Squared();
+
+   // prepare solvers
+   CMSSM<Two_scale>::EWSB_args params = {&model, ewsb_loop_order};
+
+   EWSB_solver* solvers[] = {
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrid),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
+      new Root_finder<2>(
+         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
+      new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
+         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision),
+      new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
+         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_iteration_precision)
+   };
+
+   double x_init[2];
+   model.ewsb_initial_guess(x_init);
+
+   // starting values for Mu, BMu
+   const double Mu_0 = model.get_Mu();
+   const double BMu_0 = model.get_BMu();
+
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+      model.set_Mu(Mu_0);
+      model.set_BMu(BMu_0);
+
+      const int status = model.solve_ewsb_iteratively_with(solvers[i], x_init);
+
+      TEST_EQUALITY(status, EWSB_solver::SUCCESS);
+
+      const double Mu_1 = model.get_Mu();
+      const double BMu_1 = model.get_BMu();
+
+      double test_precision;
+
+      switch(i) {
+      case 3:
+         // The newton method does not provide a precise root for this
+         // point.  However, the values for Mu and BMu are close
+         // enough to the values from Softsusy, see below.
+         test_precision = 0.01;
+         break;
+      case 4:
+         test_precision = 0.006;
+         break;
+      default:
+         test_precision = precision;
+         break;
+      }
+
+      TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, test_precision);
+      TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, test_precision);
+
+      TEST_CLOSE_REL(Mu_1 , Mu_ss , precision);
+      TEST_CLOSE_REL(BMu_1, BMu_ss, precision);
+   }
+
+   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
+      delete solvers[i];
 }
 
 void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
@@ -1299,11 +1410,11 @@ void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
    ensure_n_loop_ewsb(model, loop_order);
    ensure_n_loop_ewsb(softSusy, loop_order);
 
-   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-08);
-   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 3.0e-4);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 3.0e-4);
 
-   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
-   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 4.0e-6);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 4.0e-6);
 
    const int accuracy = loop_order;
    const double piWWT = 0., pizztMS = 0.;
@@ -1322,8 +1433,8 @@ void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
    hh_ss = softSusy.displayPhys().mh0;
    hh_fs = model.get_physical().Mhh;
 
-   TEST_CLOSE(hh_ss(1), hh_fs(0), 1.0e-10);
-   TEST_CLOSE(hh_ss(2), hh_fs(1), 1.0e-10);
+   TEST_CLOSE(hh_ss(1), hh_fs(0), 7.0e-7);
+   TEST_CLOSE(hh_ss(2), hh_fs(1), 2.0e-6);
 }
 
 void compare_self_energy_CP_odd_higgs(CMSSM<Two_scale> model,
@@ -1346,11 +1457,11 @@ void compare_self_energy_CP_odd_higgs(CMSSM<Two_scale> model,
    ensure_n_loop_ewsb(model, loop_order);
    ensure_n_loop_ewsb(softSusy, loop_order);
 
-   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-08);
-   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 1.0e-10);
+   TEST_CLOSE(softSusy.displayM3Squared(), model.get_BMu(), 3.0e-4);
+   TEST_CLOSE_REL(softSusy.displayM3Squared(), model.get_BMu(), 3.0e-4);
 
-   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
-   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 1.0e-10);
+   TEST_CLOSE(softSusy.displaySusyMu(), model.get_Mu(), 4.0e-6);
+   TEST_CLOSE_REL(softSusy.displaySusyMu(), model.get_Mu(), 4.0e-6);
 
    TEST_CLOSE(softSusy.displayMh1Squared(), model.get_mHd2(), 1.0e-10);
    TEST_CLOSE(softSusy.displayMh2Squared(), model.get_mHu2(), 1.0e-10);
@@ -1493,6 +1604,10 @@ void compare_models(int loopLevel)
 
       std::cout << "test one-loop ewsb ... ";
       test_ewsb_1loop(m, softSusy);
+      std::cout << "done\n";
+
+      std::cout << "test one-loop ewsb solvers ... ";
+      test_ewsb_solvers(m, softSusy);
       std::cout << "done\n";
 
       std::cout << "comparing tree level masses ... ";

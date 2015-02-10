@@ -1,6 +1,15 @@
 List of features for future FlexibleSUSY releases
 =================================================
 
+
+Explicit path to SARAH installation
+-----------------------------------
+
+Allow the user to specify full path to the SARAH installation
+(suggested by Florian).  This will modify the Needs[] command used in
+all the scripts (createmodel, configure, start.m).
+
+
 Decays
 ------
 
@@ -93,22 +102,6 @@ We should use the user-defined output name, i.e.
 
    \[Mu]    -->   "Mu"
    B[\[Mu]] -->   "Bmu"
-
-
-Use SLHA convetion for complex fermion mixing matrices
-------------------------------------------------------
-
-The fermion mixing matrices are in general complex.  If a fermion
-masse eigenstate is negative, we multiply the corresponding column by
-i.  When we write the SLHA output, we currently write out the positive
-fermion masses and the real part of the mixing matrices.  This is ok
-and should be kept!
-
-However, the SLHA standard demands to treat the mixing matrices as
-real, but allow for negative fermion masses.
-
-To fix this we need to do a conversion when writing the SLHA output
-file (but only there).
 
 
 Create a function which provides particle information

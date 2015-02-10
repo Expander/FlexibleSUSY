@@ -145,7 +145,7 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
             beta1L        = dataType <> " " <> betaName <> "(" <> oneLoopBetaStr <> ");\n";
            If[Length[GetAllBetaFunctions[betaFunction]] > 1,
               twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
-              beta2L = beta2L <> betaName <> " += " <> twoLoopBetaStr <> ";\n";
+              beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
              ];
             Return[{localDecl, beta1L, beta2L}];
           ];
@@ -158,7 +158,7 @@ CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
                {localDecl, beta1L, beta2L} = CreateBetaFunctionCall[betaFunctions[[i]]];
                allDecl = allDecl <> localDecl;
                allBeta1L = allBeta1L <> beta1L;
-               allBeta2L = allBeta2L <> "   " <> beta2L;
+               allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
               ];
            allBeta = allDecl <> "\n" <> allBeta1L <> "\nif (get_loops() > 1) {\n" <>
                      allBeta2L <> "\n}\n";

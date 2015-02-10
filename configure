@@ -6,10 +6,10 @@
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
 FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=3
+FLEXIBLESUSY_PATCH=4
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
-GIT_COMMIT="`git describe --tags || echo unknown`"
+GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -27,7 +27,8 @@ DATE="`date 2>/dev/null || echo unknown`"
 debmultiarch=""
 
 # default library directories
-default_lib_paths="/usr/lib /usr/local/lib"
+ld_library_path="`echo ${LD_LIBRARY_PATH} | tr ':' ' '`"
+default_lib_paths="${ld_library_path} /usr/lib /usr/local/lib"
 default_inc_paths="/usr/include /usr/local/include"
 
 # configure log file
@@ -169,6 +170,8 @@ ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
 MODELS="all"
+# addons that will be compiled
+ADDONS=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -195,7 +198,7 @@ std_cxx11_clang_version="3.0.0"
 std_cxx11_icpc_version="13.0.0"
 
 # required boost version
-required_boost_version="1.49.0"
+required_boost_version="1.37.0"
 
 # required Mathematica version
 required_mathematica_version="7"
@@ -888,8 +891,10 @@ check_models() {
                 MODELS=`find $BASEDIR/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
                 break ;;
             *)
-                if test -d "$BASEDIR/models/$a" ; then
-                    MODELS="$MODELS models/$a"
+                if test -d "$BASEDIR/models/$a"; then
+                    if contains_not "$MODELS" "models/$a"; then
+                        MODELS="$MODELS models/$a"
+                    fi
                     continue
                 else
                     result "not ok"
@@ -938,6 +943,50 @@ check_models() {
 }
 
 #_____________________________________________________________________
+check_addons() {
+    if test -z "${ADDONS}"; then
+        logmsg "No addons specified"
+        return 0
+    fi
+
+    checking_msg "addons"
+    addons=`echo $ADDONS | tr ',' ' '`
+    ADDONS=""
+    for a in ${addons}; do
+        case "$a" in
+            all)
+                ADDONS=`find $BASEDIR/addons/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g'`
+                break ;;
+            *)
+                if test -d "$BASEDIR/addons/$a" ; then
+                    ADDONS="$ADDONS addons/$a"
+                    continue
+                else
+                    result "not ok"
+                    message "Error: addon directory \"$BASEDIR/addons/$a\" does not exist!"
+                    message "Please create the directory and put an addon in it."
+                    exit 1
+                fi ;;
+        esac
+    done
+
+    # check for Makefile module
+    for m in ${ADDONS}; do
+        if ! test -r ${m}/module.mk; then
+            result "not ok"
+            message "Error: No Makefile module found in ${m}"
+            message "   Please create ${m}/module.mk !"
+            exit 1
+        fi
+    done
+
+    local addon_names="`echo ${ADDONS} | sed -e 's|addons/||g' -e 's/^ *//' -e 's/ *$//'`"
+
+    result "ok (${addon_names})"
+    logmsg "   Addons: ${ADDONS}"
+}
+
+#_____________________________________________________________________
 check_platform() {
     # checks which platform we have
 
@@ -955,6 +1004,11 @@ check_platform() {
     local _paths="`echo $PATH | tr ':' ' '`"
     for p in ${_paths}; do
         logmsg "PATH: ${p}"
+    done
+    logmsg ""
+
+    for p in ${ld_library_path}; do
+        logmsg "LD_LIBRARY_PATH: ${p}"
     done
     logmsg ""
 
@@ -1193,6 +1247,27 @@ check_cxx_compiler_version() {
 }
 
 #_____________________________________________________________________
+check_icpc_features() {
+    local compiler="$1"
+    local version="$2"
+
+    checking_msg "$compiler compiler features"
+
+    local major minor patch
+    split_version "$version" major minor patch
+
+    # disable multi-threading for versions < 14.0.0
+    if ! major_minor_patch_at_least $major $minor $patch "14" "0" "0" &&
+       [ "$enable_threads" = "yes" ]; then
+	message ""
+	message "   Warning: multi-threading support requires $compiler 14.0.0 or newer."
+	enable_threads="no"
+    else
+	result "ok"
+    fi
+}
+
+#_____________________________________________________________________
 check_cxx_dep_gen_type() {
     checking_msg "type of C++ file dependency generator ${CXX_DEP_GEN}"
 
@@ -1309,6 +1384,13 @@ get_icpc_version() {
 	sed 's/^.*__INTEL_COMPILER[[:space:]]*\([[:digit:]]*\)\([[:digit:]]\)\([[:digit:]]\).*$/\1.\2.\3/p;d')
 
     eval "$ret_var=\"$version\""
+}
+
+#_____________________________________________________________________
+check_cxx_compiler_features() {
+    case "$cxx_compiler_type" in
+    intel) check_icpc_features "$CXX" "$cxx_compiler_version" ;;
+    esac
 }
 
 #_____________________________________________________________________
@@ -1557,10 +1639,8 @@ check_blas_libs_using_options() {
     check_library "libblas" "$blas_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: libblas must be installed"
-        message "  to run the lattice algorithm, see http://www.netlib.org/blas"
-        message "  You can disable the lattice algorithm with the"
-        message "  --with-algorithms= flag"
+        message "Error: libblas must be installed!"
+        message "  It can be downloaded from http://www.netlib.org/blas"
         exit 1
     else
         local BLASLIBS_=-lblas
@@ -1579,10 +1659,8 @@ check_lapack_libs_using_options() {
     check_library "liblapack" "$lapack_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: liblapack must be installed"
-        message "  to run the lattice algorithm, see http://www.netlib.org/lapack"
-        message "  You can disable the lattice algorithm with the"
-        message "  --with-algorithms= flag"
+        message "Error: liblapack must be installed!"
+        message "  It can be downloaded from http://www.netlib.org/lapack"
         exit 1
     else
         local LAPACKLIBS_=-llapack
@@ -1963,6 +2041,7 @@ replace_markers() {
         -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
 	-e "s|@PKGNAME@|$PROGRAM_NAME|"    \
 	-e "s|@ABSBASEDIR@|$ABSBASEDIR|"   \
+	-e "s|@ADDONS@|$ADDONS|"           \
 	-e "s|@INSTALL_DIR@|$INSTALL_DIR|" \
 	-e "s|@ALGORITHMS@|$ALGORITHMS|"   \
 	-e "s|@BLASLIBS@|$BLASLIBS|"       \
@@ -2036,6 +2115,8 @@ cat <<EOF
 
 Package directories, compilation settings and model selection
 
+  --with-addons=            Comma separated list of addons to be build
+                            (default: $ADDONS)
   --with-algorithms=        Comma separated list of RG solver algorithms
                             (default: $ALGORITHMS)
                             possible values: all $available_algorithms
@@ -2134,6 +2215,7 @@ if test $# -gt 0 ; then
                     echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
                 fi
                 ;;
+            --with-addons=*)         ADDONS=$optarg ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
@@ -2174,6 +2256,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx
     check_cxx_compiler_type
     check_cxx_compiler_version
+    check_cxx_compiler_features
     check_cxxflags
     check_cxx_dep_gen
     check_cxx_dep_gen_type
@@ -2216,6 +2299,7 @@ if test "x${enable_meta}" = "xyes"; then
 fi
 
 check_models
+check_addons
 
 enable_defines
 
@@ -2242,6 +2326,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
+    -e "s|@ADDONS@|$ADDONS|"           \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \

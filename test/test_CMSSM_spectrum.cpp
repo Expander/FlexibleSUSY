@@ -14,6 +14,7 @@
 #include "ew_input.hpp"
 #include "wrappers.hpp"
 #include "conversion.hpp"
+#include "weinberg_angle.hpp"
 #include "two_scale_solver.hpp"
 #include "two_scale_running_precision.hpp"
 #include "CMSSM_two_scale_model.hpp"
@@ -25,162 +26,7 @@
 #include "CMSSM_two_scale_initial_guesser.hpp"
 #include "test_CMSSM.hpp"
 
-/**
- * @class CMSSM_precise_gauge_couplings_low_scale_constraint
- *
- * Replacement class for CMSSM_low_scale_constraint, which calculates
- * the gauge couplings at the low scale as Softsusy does it.
- */
-class CMSSM_precise_gauge_couplings_low_scale_constraint
-   : public CMSSM_low_scale_constraint<Two_scale> {
-public:
-   CMSSM_precise_gauge_couplings_low_scale_constraint()
-      : CMSSM_low_scale_constraint<Two_scale>() {}
-   CMSSM_precise_gauge_couplings_low_scale_constraint(CMSSM<Two_scale>* model_, const CMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
-      : CMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
-   virtual ~CMSSM_precise_gauge_couplings_low_scale_constraint() {}
-
-   virtual void apply();
-};
-
-void CMSSM_precise_gauge_couplings_low_scale_constraint::apply()
-{
-   assert(model && "Error: CMSSM_precise_gauge_couplings_low_scale_constraint:"
-          " model pointer must not be zero");
-
-   // save old model parmeters
-   const CMSSM<Two_scale> mssm(*model);
-
-   // run CMSSM_low_scale_constraint::apply(), without the gauge
-   // couplings
-   model->calculate_DRbar_masses();
-   update_scale();
-   calculate_DRbar_gauge_couplings();
-
-   const double MZDRbar
-      = model->calculate_MVZ_DRbar(Electroweak_constants::MZ);
-
-   const double TanBeta = inputPars.TanBeta;
-   const double g1 = model->get_g1();
-   const double g2 = model->get_g2();
-
-   model->set_vd((2*MZDRbar)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(TanBeta)
-      )));
-   model->set_vu((2*MZDRbar*TanBeta)/(Sqrt(0.6*Sqr(g1) + Sqr(g2))*Sqrt(1 + Sqr(
-      TanBeta))));
-
-   calculate_DRbar_yukawa_couplings();
-
-   const Eigen::Matrix<double,3,3> new_Yu(model->get_Yu()),
-      new_Yd(model->get_Yd()), new_Ye(model->get_Ye());
-
-   // Now calculate the gauge couplings using
-   // MssmSoftsusy::sparticleThresholdCorrections
-   MssmSoftsusy softsusy;
-   copy_parameters(mssm, softsusy);
-
-   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
-
-   BOOST_MESSAGE("Difference (g1_FlexibleSUSY - g1_softsusy)(MZ) = "
-                 << new_g1 - softsusy.displayGaugeCoupling(1));
-   BOOST_MESSAGE("Difference (g2_FlexibleSUSY - g2_softsusy)(MZ) = "
-                 << new_g2 - softsusy.displayGaugeCoupling(2));
-   BOOST_MESSAGE("Difference (g3_FlexibleSUSY - g3_softsusy)(MZ) = "
-                 << new_g3 - softsusy.displayGaugeCoupling(3));
-
-   BOOST_MESSAGE("Difference (Yu_FlexibleSUSY - Yu_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yu) - softsusy.displayYukawaMatrix(YU));
-   BOOST_MESSAGE("Difference (Yd_FlexibleSUSY - Yd_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Yd) - softsusy.displayYukawaMatrix(YD));
-   BOOST_MESSAGE("Difference (Ye_FlexibleSUSY - Ye_softsusy)(MZ) = "
-                 << ToDoubleMatrix(new_Ye) - softsusy.displayYukawaMatrix(YE));
-
-   model->set_g1(softsusy.displayGaugeCoupling(1));
-   model->set_g2(softsusy.displayGaugeCoupling(2));
-   model->set_g3(softsusy.displayGaugeCoupling(3));
-
-   model->set_Yu(ToEigenMatrix(softsusy.displayYukawaMatrix(YU)));
-   model->set_Yd(ToEigenMatrix(softsusy.displayYukawaMatrix(YD)));
-   model->set_Ye(ToEigenMatrix(softsusy.displayYukawaMatrix(YE)));
-
-   const double tanBeta = softsusy.displayTanb();
-   const double vev = softsusy.displayHvev();
-   const double beta = atan(tanBeta);
-   const double sinBeta = sin(beta);
-   const double cosBeta = cos(beta);
-   const double vu = sinBeta * vev;
-   const double vd = cosBeta * vev;
-
-   BOOST_MESSAGE("Difference (vu_FlexibleSUSY - vu_softsusy)(MZ) = "
-                 << model->get_vu() - vu);
-   BOOST_MESSAGE("Difference (vd_FlexibleSUSY - vd_softsusy)(MZ) = "
-                 << model->get_vd() - vd);
-
-   model->set_vu(vu);
-   model->set_vd(vd);
-}
-
-/**
- * @class CMSSM_softsusy_ewsb_susy_scale_constraint
- *
- * Replacement class for CMSSM_susy_scale_constraint, which does the
- * one-loop ewsb at the susy scale as Softsusy does it.
- */
-class CMSSM_softsusy_ewsb_susy_scale_constraint
-   : public CMSSM_susy_scale_constraint<Two_scale> {
-public:
-   CMSSM_softsusy_ewsb_susy_scale_constraint()
-      : CMSSM_susy_scale_constraint<Two_scale>() {}
-   CMSSM_softsusy_ewsb_susy_scale_constraint(CMSSM<Two_scale>* model_, const CMSSM_input_parameters& inputPars_)
-      : CMSSM_susy_scale_constraint<Two_scale>(model_, inputPars_) {}
-   virtual ~CMSSM_softsusy_ewsb_susy_scale_constraint() {}
-
-   virtual void apply();
-};
-
-void CMSSM_softsusy_ewsb_susy_scale_constraint::apply()
-{
-   assert(model && "Error: CMSSM_softsusy_ewsb_susy_scale_constraint:"
-          " model pointer must not be zero");
-
-   // save old model parmeters
-   model->calculate_DRbar_masses();
-   const CMSSM<Two_scale> mssm(*model);
-
-   CMSSM_susy_scale_constraint<Two_scale>::apply();
-
-   // Now do the one-loop EWSB using MssmSoftsusy::rewsb
-   MssmSoftsusy softsusy;
-   softsusy.setAlternativeMs(false);
-   copy_parameters(mssm, softsusy);
-   softsusy.calcDrBarPars();
-   const double new_Msusy = softsusy.calcMs();
-
-   const int signMu = inputPars.SignMu;
-   const double mt = softsusy.displayDrBarPars().mt;
-   DoubleVector highScaleSoftPars(3);
-   highScaleSoftPars(1) = inputPars.m0;
-   highScaleSoftPars(2) = inputPars.m12;
-   highScaleSoftPars(3) = inputPars.Azero;
-
-   softsusy.rewsb(signMu, mt, highScaleSoftPars);
-
-   const double new_Mu  = softsusy.displaySusyMu();
-   const double new_BMu = softsusy.displayM3Squared();
-
-   BOOST_MESSAGE("Difference (Mu_FlexibleSUSY - Mu_softsusy)(Msusy) = "
-                 << model->get_Mu() - new_Mu);
-   BOOST_MESSAGE("Difference (BMu_FlexibleSUSY - BMu_softsusy)(Msusy) = "
-                 << model->get_BMu() - new_BMu);
-   BOOST_MESSAGE("Difference (mt_FlexibleSUSY - mt_softsusy)(Msusy) = "
-                 << model->get_MFu()(2) - mt);
-   BOOST_MESSAGE("Difference (Msusy_FlexibleSUSY - Msusy_softsusy)(Msusy) = "
-                 << get_scale() - new_Msusy);
-
-   model->set_Mu(new_Mu);
-   model->set_BMu(new_BMu);
-   scale = new_Msusy;
-}
+using namespace weinberg_angle;
 
 class SoftSusy_error : public Error {
 public:
@@ -368,8 +214,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.13);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.006);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 6.2e-4);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.5e-5);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
@@ -377,11 +223,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
 
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
-   // BOOST_CHECK_EQUAL(ss.displayThresholds(), fs.get_thresholds());
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00076);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0011);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00013);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.0000023);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0000066);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.0000010);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(0,0), ss.displayYukawaMatrix(YU)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(1,1), ss.displayYukawaMatrix(YU)(2,2), 0.0093);
@@ -399,10 +244,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.0046);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0051);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0043);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.009);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0017);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0077);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0024);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0005);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0022);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(0,0), ss.displaySoftMassSquared(mQl)(1,1), 0.012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(1,1), ss.displaySoftMassSquared(mQl)(2,2), 0.012);
@@ -442,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
 
    BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
-   BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0093);
+   BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0068);
 
    // comparing tree-level masses
 
@@ -470,13 +315,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0040);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 5.5e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0  , 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 5.5e-5);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.00007);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 5.e-6);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 5.5e-5);
 
    // down-type squarks
    const DoubleVector Sd(ToDoubleVector(fs.get_MSd()));
@@ -555,11 +400,11 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0043);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 0.004);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 5.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 5.5e-05);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 0.0005);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.004);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 7.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 6.0e-05);
 
    // down-type squarks
    const DoubleVector Sd_1l(ToDoubleVector(fs.get_physical().MSd));
@@ -600,77 +445,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_physical().MGlu, ss.displayPhys().mGluino, 0.005);
 }
-
-// ===== test with gauge couplings determined from the Rho parameter =====
-
-BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_with_Softsusy_gauge_couplings )
-{
-   CMSSM_input_parameters pp;
-   pp.m0 = 125.;
-   pp.m12 = 500.;
-   pp.TanBeta = 10.;
-   pp.SignMu = 1;
-   pp.Azero = 0.;
-   softsusy::QedQcd oneset;
-
-   CMSSM<Two_scale> _model;
-   const CMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
-   const double mxGuess = high_constraint.get_initial_scale_guess();
-
-   CMSSM_tester mssm_tester;
-   mssm_tester.set_low_scale_constraint(new CMSSM_precise_gauge_couplings_low_scale_constraint(&_model, pp, oneset));
-   mssm_tester.set_susy_scale_constraint(new CMSSM_softsusy_ewsb_susy_scale_constraint(&_model, pp));
-   BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
-
-   SoftSusy_tester softSusy_tester;
-   BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
-
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.04);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 6.3e-4);
-
-   // compare model parameters
-   const MssmSoftsusy ss(softSusy_tester.get_model());
-   const CMSSM<Two_scale> fs(mssm_tester.get_model());
-
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.00023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00066);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00010);
-
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0012);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0024);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0005);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0022);
-
-   const double vu = fs.get_vu();
-   const double vd = fs.get_vd();
-   const double tanBeta = vu / vd;
-   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
-
-   BOOST_CHECK_CLOSE_FRACTION(tanBeta, ss.displayTanb(), 1.0e-9);
-   BOOST_CHECK_CLOSE_FRACTION(vev    , ss.displayHvev(), 0.0068);
-
-   // comparing tree-level masses
-
-   const DoubleVector MHpm(ToDoubleVector(fs.get_MHpm())),
-      MAh(ToDoubleVector(fs.get_MAh())),
-      Mhh(ToDoubleVector(fs.get_Mhh()));
-   const double MwRun = fs.get_MVWm();
-   const double MzRun = fs.get_MVZ();
-   const double mHpm = ss.displayDrBarPars().mHpm;
-   const double mA0 = ss.displayDrBarPars().mA0(1);
-   const double mh0 = ss.displayDrBarPars().mh0(1);
-   const double mH0 = ss.displayDrBarPars().mh0(2);
-
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm, 0.0011);
-
-   BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.0012);
-
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 0.000022);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.0011);
-}
-
 
 /**
  * @class CMSSM_iterative_low_scale_constraint

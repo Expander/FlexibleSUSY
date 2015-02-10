@@ -76,9 +76,9 @@ void ensure_one_loop_ewsb(SMSSM<Two_scale>& m, NmssmSoftsusy& s)
    const double bmu_fs = m.get_BMu();
    const double xis_fs = m.get_LL1();
 
-   BOOST_CHECK_CLOSE_FRACTION(mu_ss , mu_fs , 5.0e-11);
-   BOOST_CHECK_CLOSE_FRACTION(bmu_ss, bmu_fs, 2.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(xis_ss, xis_fs, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(mu_ss , mu_fs , 1.6e-8);
+   BOOST_CHECK_CLOSE_FRACTION(bmu_ss, bmu_fs, 6.4e-8);
+   BOOST_CHECK_CLOSE_FRACTION(xis_ss, xis_fs, 2.1e-9);
 
    m.set_Mu(s.displaySusyMu());
    m.set_BMu(s.displayM3Squared());

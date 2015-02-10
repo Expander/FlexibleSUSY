@@ -7,6 +7,7 @@
 */
 
 #include "lowe.h"
+#include "ew_input.hpp"
 
 namespace softsusy {
 
@@ -16,7 +17,13 @@ static QedQcd *tempLe;
 
 QedQcd::QedQcd()
   : a(2), mf(9), mnu(3), mtPole(PMTOP), mbPole(PMBOTTOM), mbMb(MBOTTOM),
-    mtauPole(MTAU), ckm(), pmns() {
+    mtauPole(MTAU)
+  , mwPole(flexiblesusy::Electroweak_constants::MW)
+  , mzPole(flexiblesusy::Electroweak_constants::MZ)
+  , gfermi(flexiblesusy::Electroweak_constants::gfermi)
+  , ckm()
+  , pmns()
+{
   setPars(11);
   // Default object: 1998 PDB defined in 'def.h'
   mf(1) = MUP; mf(2) = MCHARM; 
@@ -35,6 +42,9 @@ const QedQcd & QedQcd::operator=(const QedQcd & m) {
   mbPole = m.mbPole;
   mbMb   = m.mbMb;
   mtauPole = m.mtauPole;
+  mwPole = m.mwPole;
+  mzPole = m.mzPole;
+  gfermi = m.gfermi;
   a = m.a;
   mf = m.mf;
   mnu = m.mnu;

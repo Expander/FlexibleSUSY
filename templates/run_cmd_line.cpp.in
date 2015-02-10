@@ -27,6 +27,7 @@
 #include "logger.hpp"
 
 #include <iostream>
+#include <cstring>
 
 namespace flexiblesusy {
 
@@ -44,10 +45,10 @@ void set_command_line_parameters(int argc, char* argv[],
                                  @ModelName@_input_parameters& input)
 {
    for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+      const char* option = argv[i];
 
 @parseCmdLineOptions@
-      if (option == "--help" || option == "-h") {
+      if (strcmp(option,"--help") == 0 || strcmp(option,"-h") == 0) {
          print_usage();
          exit(EXIT_SUCCESS);
       }
@@ -87,8 +88,13 @@ int main(int argc, char* argv[])
    const int exit_code = spectrum_generator.get_exit_code();
    const @ModelName@_slha<algorithm_type> model(spectrum_generator.get_model());
 
+   @ModelName@_scales scales;
+   scales.HighScale = spectrum_generator.get_high_scale();
+   scales.SUSYScale = spectrum_generator.get_susy_scale();
+   scales.LowScale  = spectrum_generator.get_low_scale();
+
    // SLHA output
-   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, oneset));
+   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(model, oneset, scales));
 
    std::cout << slhaea;
 

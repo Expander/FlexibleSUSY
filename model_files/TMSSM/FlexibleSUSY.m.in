@@ -48,6 +48,10 @@ HighScaleInput = {
    {MassG,m12}
 };
 
+HighScaleMinimum = 1.0 10^8;
+
+HighScaleMaximum = 5.0 10^17;
+
 LowScale = SM[MZ];
 
 LowScaleFirstGuess = SM[MZ];
@@ -71,6 +75,41 @@ InitialGuessAtLowScale = {
 InitialGuessAtHighScale = {
    {\[Mu]   , 1.0},
    {B[\[Mu]], 0.0}
+};
+
+(* This EWSB solution was generated with FlexibleSUSY
+   1.0.4-alpha. *)
+TreeLevelEWSBSolution = {
+   { B[\[Mu]],
+    (-20*mHd2*vd*vu + 20*mHu2*vd*vu - 3*g1^2*vd^3*vu -
+      5*g2^2*vd^3*vu + 3*g1^2*vd*vu^3 + 5*g2^2*vd*vu^3 -
+      10*vd^2*vT*\[Lambda]*conj[MT] + 10*vT*vu^2*\[Lambda]*conj[MT] -
+      10*MT*vd^2*vT*conj[\[Lambda]] + 10*MT*vT*vu^2*conj[\[Lambda]] +
+      5*vd^3*vu*\[Lambda]*conj[\[Lambda]] - 5*vd*vu^3*\[Lambda]*
+       conj[\[Lambda]] - 5*vd^2*vT*conj[T[\[Lambda]]] +
+      5*vT*vu^2*conj[T[\[Lambda]]] - 5*vd^2*vT*T[\[Lambda]] +
+      5*vT*vu^2*T[\[Lambda]] + 20*vu*tadpole[1] - 20*vd*tadpole[2])/
+     (20*(vd^2 - vu^2))
+   },
+   { \[Mu],
+    (-20*vd*vT*\[Lambda] - 20*vd*vT*conj[\[Lambda]] +
+      Sign[\[Mu]] *
+      Sqrt[(20*vd*vT*\[Lambda] + 20*vd*vT*conj[\[Lambda]])^2 -
+        160*vd*(40*mHd2*vd + 3*g1^2*vd^3 + 5*g2^2*vd^3 - 3*g1^2*vd*vu^2 -
+          5*g2^2*vd*vu^2 - 40*vu*B[\[Mu]] - 20*vT*vu*\[Lambda]*conj[MT] -
+          20*MT*vT*vu*conj[\[Lambda]] + 10*vd*vT^2*\[Lambda]*
+           conj[\[Lambda]] + 10*vd*vu^2*\[Lambda]*conj[\[Lambda]] -
+          10*vT*vu*conj[T[\[Lambda]]] - 10*vT*vu*T[\[Lambda]] -
+          40*tadpole[1])])/(80*vd)
+   },
+   { mT2,
+     (-(vd^2*\[Lambda]*\[Mu]) - vu^2*\[Lambda]*\[Mu] - 4*vT*B[MT] -
+      16*MT*vT*conj[MT] + 2*vd*vu*\[Lambda]*conj[MT] +
+      2*MT*vd*vu*conj[\[Lambda]] - vd^2*vT*\[Lambda]*conj[\[Lambda]] -
+      vT*vu^2*\[Lambda]*conj[\[Lambda]] - vd^2*\[Mu]*conj[\[Lambda]] -
+      vu^2*\[Mu]*conj[\[Lambda]] - 4*vT*conj[B[MT]] +
+      vd*vu*conj[T[\[Lambda]]] + vd*vu*T[\[Lambda]] + 4*tadpole[3])/(4*vT)
+   }
 };
 
 UseHiggs2LoopMSSM = False;

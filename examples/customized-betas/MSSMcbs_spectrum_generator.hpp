@@ -46,7 +46,6 @@ public:
       , high_scale(0.)
       , susy_scale(0.)
       , low_scale(0.)
-      , input_scale(0.)
       , parameter_output_scale(0.)
       , precision_goal(1.0e-4)
       , max_iterations(0)
@@ -63,7 +62,6 @@ public:
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); };
-   void set_input_scale(double m) { input_scale = m; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
@@ -84,7 +82,6 @@ private:
    CMSSM_susy_scale_constraint<T> susy_scale_constraint;
    MSSMcbs_low_scale_constraint<T> low_scale_constraint;
    double high_scale, susy_scale, low_scale;
-   double input_scale; ///< high-scale parameter input scale
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
    unsigned max_iterations; ///< maximum number of iterations
@@ -121,9 +118,6 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
-
-   if (!is_zero(input_scale))
-      high_scale_constraint.set_scale(input_scale);
 
    std::vector<Constraint<T>*> upward_constraints {
       &low_scale_constraint,

@@ -1,15 +1,15 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`"}];
 
 FS`Version = StringTrim[Import[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}], "String"]];
 FS`Authors = {"P. Athron", "Jae-hyeon Park", "D. Stöckinger", "A. Voigt"};
-FS`Years   = {2013, 2014};
+FS`Years   = "2013-2015";
 FS`References = Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"references"}]];
 
 Print["*****************************************************************"];
 Print["FlexibleSUSY ", FS`Version];
-Print["by " <> WriteOut`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
-      WriteOut`StringJoinWithSeparator[FS`Years, ", "]];
+Print["by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
+      FS`Years];
 Print[""];
 Print["References:"];
 Print["  " <> #]& /@ FS`References;
@@ -54,6 +54,7 @@ MZ;
 MZDRbar;
 MWDRbar;
 EDRbar;
+ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 PotentialLSPParticles = {};
@@ -75,6 +76,8 @@ FSEigenstates = SARAH`EWSB;
 FSSolveEWSBTimeConstraint = 120;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
+FSCheckPerturbativityOfDimensionlessParameters = True;
+FSPerturbativityThreshold = N[Sqrt[4 Pi]];
 
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
@@ -84,9 +87,51 @@ GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
 GSLBroyden;  (* Broyden method *)
 GSLNewton;   (* Newton method *)
-FSEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden };
+FPIRelative; (* Fixed point iteration, convergence crit. relative step size *)
+FPIAbsolute; (* Fixed point iteration, convergence crit. absolute step size *)
+FPITadpole;  (* Fixed point iteration, convergence crit. relative step size + tadpoles *)
+FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
+
+(* input value for the calculation of the weak mixing angle *)
+FSFermiConstant;
+FSMassW;
+
+{FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+ FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
+ FSChargino, FSNeutralinoMM, FSCharginoMinusMM, FSCharginoPlusMM,
+ FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL, FSSmuonL,
+ FSSmuonNeutrinoL, FSVectorW, FSVectorZ, FSElectronYukawa};
+
+FSWeakMixingAngleOptions = {
+    FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
+    FlexibleSUSY`FSTopQuark             -> SARAH`TopQuark,
+    FlexibleSUSY`FSBottomQuark          -> SARAH`BottomQuark,
+    FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
+    FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
+    FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
+    FlexibleSUSY`FSStrongCoupling       -> SARAH`strongCoupling,
+    FlexibleSUSY`FSVEVSM1               -> SARAH`VEVSM1,
+    FlexibleSUSY`FSVEVSM2               -> SARAH`VEVSM2,
+    FlexibleSUSY`FSNeutralino           :> Parameters`GetParticleFromDescription["Neutralinos"],
+    FlexibleSUSY`FSChargino             :> Parameters`GetParticleFromDescription["Charginos"],
+    FlexibleSUSY`FSNeutralinoMM         -> SARAH`NeutralinoMM,
+    FlexibleSUSY`FSCharginoMinusMM      -> SARAH`CharginoMinusMM,
+    FlexibleSUSY`FSCharginoPlusMM       -> SARAH`CharginoPlusMM,
+    FlexibleSUSY`FSHiggsMM              -> SARAH`HiggsMixingMatrix,
+    FlexibleSUSY`FSSelectronL           :> Sum[Susyno`LieGroups`conj[SARAH`SleptonMM[Susyno`LieGroups`i,1]] SARAH`SleptonMM[Susyno`LieGroups`i,1] FlexibleSUSY`M[SARAH`Selectron[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Selectron]}],
+    FlexibleSUSY`FSSelectronNeutrinoL   :> Sum[Susyno`LieGroups`conj[SARAH`SneutrinoMM[Susyno`LieGroups`i,1]] SARAH`SneutrinoMM[Susyno`LieGroups`i,1] FlexibleSUSY`M[SARAH`Sneutrino[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Sneutrino]}],
+    FlexibleSUSY`FSSmuonL               :> Sum[Susyno`LieGroups`conj[SARAH`SleptonMM[Susyno`LieGroups`i,2]] SARAH`SleptonMM[Susyno`LieGroups`i,2] FlexibleSUSY`M[SARAH`Selectron[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Selectron]}],
+    FlexibleSUSY`FSSmuonNeutrinoL       :> Sum[Susyno`LieGroups`conj[SARAH`SneutrinoMM[Susyno`LieGroups`i,2]] SARAH`SneutrinoMM[Susyno`LieGroups`i,2] FlexibleSUSY`M[SARAH`Sneutrino[Susyno`LieGroups`i]], {Susyno`LieGroups`i,1,TreeMasses`GetDimension[SARAH`Sneutrino]}],
+    FlexibleSUSY`FSVectorW              -> SARAH`VectorW,
+    FlexibleSUSY`FSVectorZ              -> SARAH`VectorZ,
+    FlexibleSUSY`FSElectronYukawa       -> SARAH`ElectronYukawa
+};
 
 ReadPoleMassPrecisions::ImpreciseHiggs="Warning: Calculating the Higgs pole mass M[`1`] with `2` will lead to an inaccurate result!  Please select MediumPrecision or HighPrecision (recommended) for `1`.";
+
+tadpole::usage="symbolic expression for a tadpole contribution in the
+EWSB eqs.  The index corresponds to the ordering of the tadpole
+equations in SARAH`TadpoleEquations[] .";
 
 Begin["`Private`"];
 
@@ -143,6 +188,77 @@ CheckSARAHVersion[] :=
                     " or higher"];
               Quit[1];
              ];
+          ];
+
+CheckFermiConstantInputRequirements[requiredSymbols_List, printout_:True] :=
+    Module[{resolvedSymbols, symbols, areDefined, availPars},
+           resolvedSymbols = requiredSymbols /. FlexibleSUSY`FSWeakMixingAngleOptions;
+           resolvedSymbols = resolvedSymbols /. {
+               a_[idx__] :> a /; And @@ (NumberQ /@ {idx})
+           };
+           symbols = DeleteDuplicates[Cases[resolvedSymbols, _Symbol, {0,Infinity}]];
+           availPars = Join[TreeMasses`GetParticles[],
+                            Parameters`GetInputParameters[],
+                            Parameters`GetModelParameters[],
+                            Parameters`GetOutputParameters[]];
+           areDefined = MemberQ[availPars, #]& /@ symbols;
+           If[printout,
+              Print["Unknown symbol: ", #]& /@
+              Cases[Utils`Zip[areDefined, symbols], {False, p_} :> p];
+             ];
+           And @@ areDefined
+          ];
+
+CheckFermiConstantInputRequirementsForSUSYModel[] :=
+    CheckFermiConstantInputRequirements[
+        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+         FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2,
+         FSNeutralino, FSChargino, FSNeutralinoMM, FSCharginoMinusMM,
+         FSCharginoPlusMM, FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL,
+         FSSmuonL, FSSmuonNeutrinoL, FSVectorW, FSVectorZ,
+         FSElectronYukawa}
+    ];
+
+CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
+    CheckFermiConstantInputRequirements[
+        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+         FSLeftCoupling, FSStrongCoupling, FSVectorW, FSVectorZ,
+         FSElectronYukawa}
+    ];
+
+CheckWeakMixingAngleInputRequirements[input_] :=
+    Switch[input,
+           FlexibleSUSY`FSFermiConstant,
+               Switch[SARAH`SupersymmetricModel,
+                      True,
+                          If[CheckFermiConstantInputRequirementsForSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      False,
+                          If[CheckFermiConstantInputRequirementsForNonSUSYModel[],
+                             input
+                             ,
+                             Print["Error: cannot use ", input, " because model"
+                                   " requirements are not fulfilled"];
+                             Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                             FlexibleSUSY`FSMassW
+                          ],
+                      _,
+                          Print["Error: model type: ", SARAH`SupersymmetricModel];
+                          Print["   Using default input: ", FlexibleSUSY`FSMassW];
+                          FlexibleSUSY`FSMassW
+               ],
+           FlexibleSUSY`FSMassW,
+               input,
+           _,
+               Print["Error: unknown input ", input];
+               Print["   Using default input: ", FlexibleSUSY`FSMassW];
+               FlexibleSUSY`FSMassW
           ];
 
 CheckModelFileSettings[] :=
@@ -401,6 +517,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            setDRbarYukawaCouplings,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
+           calculateThetaW,
+           recalculateMWPole,
+           checkPerturbativityForDimensionlessParameters = "",
            saveEwsbOutputParameters, restoreEwsbOutputParameters},
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
           applyConstraint = Constraint`ApplyConstraints[settings];
@@ -409,7 +528,9 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
+          calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleOptions];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
@@ -417,6 +538,13 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           };
           saveEwsbOutputParameters    = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", "MODELPARAMETER"];
           restoreEwsbOutputParameters = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", "model"];
+          If[FSCheckPerturbativityOfDimensionlessParameters,
+             checkPerturbativityForDimensionlessParameters =
+                 Constraint`CheckPerturbativityForParameters[
+                     Parameters`GetModelParametersWithMassDimension[0],
+                     FlexibleSUSY`FSPerturbativityThreshold
+                 ];
+            ];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
@@ -425,11 +553,14 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
+                   "@calculateThetaW@"       -> IndentText[WrapLines[calculateThetaW]],
+                   "@recalculateMWPole@"     -> IndentText[WrapLines[recalculateMWPole]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
                    "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
+                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[IndentText[checkPerturbativityForDimensionlessParameters]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -573,12 +704,29 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                           } ];
           ];
 
+(* Returns a list of three-component lists where the information is
+   stored which VEV corresponds to which Tadpole eq.
+
+   Example: MRSSM
+   It[] := CreateVEVToTadpoleAssociation[]
+   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
+ *)
+CreateVEVToTadpoleAssociation[] :=
+    Module[{association, vev},
+           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           association = CreateHiggsToEWSBEqAssociation[];
+           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+          ];
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
-    Module[{massGetters = "", k,
+    Module[{ewsbEquationsTreeLevel, massGetters = "", k,
             mixingMatrixGetters = "",
+            slhaPoleMassGetters = "", slhaPoleMixingMatrixGetters = "",
+            higgsMassGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
             numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
@@ -586,6 +734,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             massCalculationPrototypes = "", massCalculationFunctions = "",
             calculateAllMasses = "",
             calculateOneLoopTadpoles = "", calculateTwoLoopTadpoles = "",
+            calculateOneLoopTadpolesNoStruct = "", calculateTwoLoopTadpolesNoStruct = "",
             selfEnergyPrototypes = "", selfEnergyFunctions = "",
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
@@ -610,9 +759,18 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
-            gslEWSBRootFinders = "",
+            EWSBSolvers = "",
+            setEWSBSolution = "",
+            fillArrayWithEWSBParameters = "",
+            solveEwsbWithTadpoles = "",
+            getEWSBParametersFromGSLVector = "",
+            setEWSBParametersFromLocalCopies = "",
+            ewsbParametersInitializationList = "",
+            setEWSBParametersFromGSLVector = "",
+            softHiggsMassToTadpoleAssociation,
             enablePoleMassThreads = True
            },
+           ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
@@ -626,10 +784,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
               ];
+           higgsMassGetters =
+               Utils`StringZipWithSeparator[
+                   TreeMasses`CreateHiggsMassGetters[SARAH`ChargedHiggs,""],
+                   TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,""],
+                   "\n"
+               ];
            clearPhases = Parameters`ClearPhases[phases];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
-           tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquations];
+           tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquationsTreeLevel];
            If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
@@ -637,10 +801,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            higgsToEWSBEqAssociation     = CreateHiggsToEWSBEqAssociation[];
            oneLoopTadpoles              = Cases[nPointFunctions, SelfEnergies`Tadpole[___]];
-           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation];
+           calculateOneLoopTadpoles     = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "-"];
+           calculateOneLoopTadpolesNoStruct = SelfEnergies`FillArrayWithOneLoopTadpoles[higgsToEWSBEqAssociation, "tadpole", "+"];
            If[SARAH`UseHiggs2LoopMSSM === True ||
               FlexibleSUSY`UseHiggs2LoopNMSSM === True,
-              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson];
+              calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
+              calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
@@ -653,9 +819,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesNMSSM[{SARAH`HiggsBoson, SARAH`PseudoScalar}];
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, parametersFixedByEWSB, freePhases];
+           setEWSBParametersFromGSLVector = EWSB`SetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, parametersFixedByEWSB, freePhases, "tadpole"];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
-           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution];
+           solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
            phasesDefinition             = Phases`CreatePhasesDefinition[phases];
            phasesGetterSetters          = Phases`CreatePhasesGetterSetters[phases];
@@ -695,10 +862,17 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
            restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
-              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquations, softHiggsMasses];,
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquationsTreeLevel, softHiggsMasses];,
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
              ];
-           gslEWSBRootFinders           = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
+           EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
+           setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, "solver->get_solution"];
+           fillArrayWithEWSBParameters  = EWSB`FillArrayWithParameters["ewsb_parameters", parametersFixedByEWSB];
+           softHiggsMassToTadpoleAssociation = softHiggsMasses;
+           solveEwsbWithTadpoles        = EWSB`CreateEwsbSolverWithTadpoles[ewsbSolution, softHiggsMassToTadpoleAssociation];
+           getEWSBParametersFromGSLVector = EWSB`GetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
+           setEWSBParametersFromLocalCopies = EWSB`SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, "model"];
+           ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
@@ -706,12 +880,18 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@lspFunctions@"         -> lspFunctions,
                             "@massGetters@"          -> IndentText[massGetters],
                             "@mixingMatrixGetters@"  -> IndentText[mixingMatrixGetters],
+                            "@slhaPoleMassGetters@"  -> IndentText[slhaPoleMassGetters],
+                            "@slhaPoleMixingMatrixGetters@" -> IndentText[slhaPoleMixingMatrixGetters],
+                            "@higgsMassGetterPrototypes@"   -> higgsMassGetters[[1]],
+                            "@higgsMassGetters@"     -> higgsMassGetters[[2]],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
                             "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
+                            "@calculateOneLoopTadpolesNoStruct@" -> IndentText[calculateOneLoopTadpolesNoStruct],
+                            "@calculateTwoLoopTadpolesNoStruct@" -> IndentText[calculateTwoLoopTadpolesNoStruct],
                             "@clearOutputParameters@"  -> IndentText[clearOutputParameters],
                             "@clearPhases@"            -> IndentText[clearPhases],
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
@@ -754,7 +934,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
-                            "@gslEWSBRootFinders@"           -> IndentText[IndentText[gslEWSBRootFinders]],
+                            "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
+                            "@fillArrayWithEWSBParameters@"  -> IndentText[IndentText[fillArrayWithEWSBParameters]],
+                            "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
+                            "@getEWSBParametersFromGSLVector@" -> IndentText[getEWSBParametersFromGSLVector],
+                            "@setEWSBParametersFromLocalCopies@" -> IndentText[setEWSBParametersFromLocalCopies],
+                            "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
+                            "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
+                            "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -781,7 +968,7 @@ WritePlotScripts[files_List] :=
 
 WriteMakefileModule[rgeFile_List, files_List] :=
     Module[{concatenatedFileList},
-           concatenatedFileList = "\t" <> WriteOut`StringJoinWithSeparator[rgeFile, " \\\n\t"];
+           concatenatedFileList = "\t" <> Utils`StringJoinWithSeparator[rgeFile, " \\\n\t"];
            WriteOut`ReplaceInFiles[files,
                           { "@generatedBetaFunctionModules@" -> concatenatedFileList,
                             Sequence @@ GeneralReplacementRules[]
@@ -1295,14 +1482,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                  (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
              ];
 
-           lesHouchesInputParameters = DeleteDuplicates[Flatten[Cases[Join[FlexibleSUSY`LowScaleInput,
-                                                                           FlexibleSUSY`SUSYScaleInput,
-                                                                           FlexibleSUSY`HighScaleInput],
-                                                                      SARAH`LHInput[p_] :> p,
-                                                                      Infinity
-                                                                     ]
-                                                               ]
-                                                       ];
+           lesHouchesInputParameters = DeleteDuplicates[
+               Flatten[
+                   Cases[
+                       Join[FlexibleSUSY`LowScaleInput,
+                            FlexibleSUSY`SUSYScaleInput,
+                            FlexibleSUSY`HighScaleInput,
+                            FlexibleSUSY`InitialGuessAtLowScale,
+                            FlexibleSUSY`InitialGuessAtHighScale,
+                            {FlexibleSUSY`LowScaleFirstGuess,
+                             FlexibleSUSY`SUSYScaleFirstGuess,
+                             FlexibleSUSY`HighScaleFirstGuess}
+                           ],
+                       SARAH`LHInput[p_] :> Parameters`StripIndices[p],
+                       Infinity
+                        ]
+                      ]
+           ];
 
            lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
                                                    {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
@@ -1334,6 +1530,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FlexibleSUSY`SUSYScaleInput = FlexibleSUSY`SUSYScaleInput /.
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`HighScaleInput = FlexibleSUSY`HighScaleInput /.
+               lesHouchesInputParameterReplacementRules;
+
+           FlexibleSUSY`InitialGuessAtLowScale = FlexibleSUSY`InitialGuessAtLowScale /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /.
                lesHouchesInputParameterReplacementRules;
 
            FlexibleSUSY`LowScaleFirstGuess = FlexibleSUSY`LowScaleFirstGuess /.
@@ -1376,6 +1577,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
            FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
+           (* adding tadpoles to the EWSB eqs. *)
+           ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
+
            If[FlexibleSUSY`TreeLevelEWSBSolution === {},
               (* trying to find an analytic solution for the EWSB eqs. *)
               treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
@@ -1416,6 +1620,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Note: adding free phases: ", freePhases];
              ];
 
+           (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
+           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIRelative],
+              Print["Warning: FPIRelative was selected, but no analytic"];
+              Print["   solution to the EWSB eqs. is provided."];
+              Print["   FPIRelative will be removed from the list of EWSB solvers."];
+              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIRelative]];
+             ];
+           If[ewsbSolution === {} && MemberQ[FlexibleSUSY`FSEWSBSolvers, FlexibleSUSY`FPIAbsolute],
+              Print["Warning: FPIAbsolute was selected, but no analytic"];
+              Print["   solution to the EWSB eqs. is provided."];
+              Print["   FPIAbsolute will be removed from the list of EWSB solvers."];
+              FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
+             ];
+
            Print["Creating class for input parameters ..."];
            WriteInputParameterClass[FlexibleSUSY`InputParameters, Complement[freePhases, FlexibleSUSY`InputParameters],
                                     Join[{#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
@@ -1448,6 +1666,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                FlexibleSUSY`ExtraSLHAOutputBlocks,
                Join[Parameters`GetOutputParameters[], Parameters`GetModelParameters[]]
            ];
+
+           (* check weak mixing angle parameters *)
+           FlexibleSUSY`FSWeakMixingAngleOptions =
+               Utils`FSSetOption[FlexibleSUSY`FSWeakMixingAngleOptions,
+                                 FlexibleSUSY`FSWeakMixingAngleInput ->
+                                 CheckWeakMixingAngleInputRequirements[Utils`FSGetOption[
+                                     FlexibleSUSY`FSWeakMixingAngleOptions,
+                                     FlexibleSUSY`FSWeakMixingAngleInput]
+                                 ]
+               ];
 
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];

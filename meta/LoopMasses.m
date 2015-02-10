@@ -8,6 +8,7 @@ CreateOneLoopPoleMassPrototypes::usage="";
 CallAllPoleMassFunctions::usage="";
 CreateRunningDRbarMassPrototypes::usage="";
 CreateRunningDRbarMassFunctions::usage="";
+CreateLoopMassFunctionName::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for
@@ -83,26 +84,33 @@ Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
 (* ********** fast diagonalization routines ********** *)
 
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
-    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
+    Module[{result, dim, dimStr, massName, massNameReordered, particleName,
+            mixingMatrix, selfEnergyFunction, reorderMasses,
             tadpoleMatrix, U, V, massMatrixStr, selfEnergyIsSymmetric, selfEnergyMatrixType},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           massNameReordered = massName <> "_reordered";
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
+           reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
+                       massNameReordered <> "(" <> massName <> ");\n" <>
+                       "reorder_vector(" <> massNameReordered <> ", " <>
+                       "get_mass_matrix_" <> particleName <> "());\n";
            If[dim > 1,
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
-              result = tadpoleMatrix <>
+              result = reorderMasses <> "\n" <>
+                       tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
-                                             massName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                             massNameReordered <> "(i2));\n" <>
                                              "self_energy(i1,i2) = Re(" <>
                                              selfEnergyFunction <> "(p,i1,i2));\n"] <>
                                   "}\n"
@@ -141,12 +149,14 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
 
 DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
+            massNameReordered, reorderMasses,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             massMatrixStr, selfEnergyMatrixType, particleName},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
-           particleName = ToValidCSymbolString[particleName];
+           particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           massNameReordered = massName <> "_reordered";
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
@@ -159,14 +169,19 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
+           reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
+                       massNameReordered <> "(" <> massName <> ");\n" <>
+                       "reorder_vector(" <> massNameReordered <> ", " <>
+                       "get_mass_matrix_" <> particleName <> "());\n";
            If[dim > 1,
-              result = selfEnergyMatrixType <> " self_energy_1;\n" <>
+              result = reorderMasses <> "\n" <>
+                       selfEnergyMatrixType <> " self_energy_1;\n" <>
                        selfEnergyMatrixType <> " self_energy_PL;\n" <>
                        selfEnergyMatrixType <> " self_energy_PR;\n" <>
                        "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                        IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                  IndentText["const double p = AbsSqrt(" <> massName <> "(i1) * " <> 
-                                             massName <> "(i2));\n" <>
+                                  IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
+                                             massNameReordered <> "(i2));\n" <>
                                              "self_energy_1(i1,i2)  = Re(" <>
                                              selfEnergyFunctionS <> "(p,i1,i2));\n" <>
                                              "self_energy_PL(i1,i2) = Re(" <>
@@ -535,12 +550,49 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
     Module[{result, body = ""},
            If[!IsFermion[particle] &&
               !(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
-              body = "if (problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
-                     IndentText["return;"] <> "\n";
+              body = "if (!force_output && problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+                     IndentText["return;"] <> "\n\n";
              ];
            body = body <> DoDiagonalization[particle, precision, tadpole];
            result = "void CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
                     "()\n{\n" <> IndentText[body] <> "}\n\n";
+           Return[result];
+          ];
+
+(* return W pole mass as a function of p *)
+CreateWPoleMassPrototype[particle_Symbol] :=
+    If[GetDimension[particle] > 1,
+       Print["Warning: cannot generate extra pole mass"
+             " calculation function for W boson, because"
+             " it has more than 1 generation"];
+       "",
+       "double " <> CreateLoopMassFunctionName[particle] <> "(double);\n"
+      ];
+
+(* return W pole mass as a function of p *)
+CreateWPoleMassFunction[particle_Symbol] :=
+    Module[{result, body = "", particleName, massName},
+           If[GetDimension[particle] > 1,
+              Print["Warning: cannot generate extra pole mass"
+                    " calculation function for W boson, because"
+                    " it has more than 1 generation"];
+              Return[""];
+             ];
+           If[!(IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0),
+              body = "if (!force_output && problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
+                     IndentText["return 0.;"] <> "\n\n";
+             ];
+           particleName = ToValidCSymbolString[particle];
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           body = body <>
+                  "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+                  "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
+                  "if (mass_sqr < 0.)\n" <>
+                  IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                  "return AbsSqrt(mass_sqr);\n";
+           result = "double CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
+                    "(double p)\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
           ];
 
@@ -559,6 +611,9 @@ CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] 
                tadpole  = Cases[fieldsAndVevs, {particle[_], __}];
                result   = result <> CreateLoopMassFunction[particle, prec, tadpole];
               ];
+           If[ValueQ[SARAH`VectorW],
+              result = result <> CreateWPoleMassFunction[SARAH`VectorW];
+             ];
            Return[result];
           ];
 
@@ -566,6 +621,9 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
     Module[{particles, result = ""},
            particles = GetLoopCorrectedParticles[states];
            (result = result <> CreateLoopMassPrototype[#])& /@ particles;
+           If[ValueQ[SARAH`VectorW],
+              result = result <> CreateWPoleMassPrototype[SARAH`VectorW];
+             ];
            Return[result];
           ];
 
@@ -583,8 +641,8 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
     Module[{particles, susyParticles, smParticles, callSusy = "",
             callSM = "", result, joinSmThreads = "", joinSusyThreads = ""},
            particles = GetLoopCorrectedParticles[states];
-           susyParticles = Select[particles, (!SARAH`SMQ[#])&];
-           smParticles = Complement[particles, susyParticles];
+           smParticles = Select[particles, SARAH`SMQ[#]&];
+           susyParticles = Complement[particles, smParticles];
            If[enablePoleMassThreads =!= True,
               (callSusy = callSusy <> CallPoleMassFunction[#])& /@ susyParticles;
               (callSM   = callSM   <> CallPoleMassFunction[#])& /@ smParticles;

@@ -76,6 +76,7 @@ namespace Electroweak_constants {
       const double PMNS_DELTA   = 0.;
       const double PMNS_ALPHA1  = 0.;
       const double PMNS_ALPHA2  = 0.;
+      const double gfermi = 1.16637e-5; ///< Fermi constant G_F
    }
 }
 

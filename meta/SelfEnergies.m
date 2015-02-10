@@ -461,34 +461,34 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            Return[{prototypes, defs}];
           ];
 
-FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String:"tadpole"] :=
+FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body = "", v, field, idx, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                functionName = CreateTadpoleFunctionName[field];
                If[Length[higgsAndIdx] == 1,
-                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                         "Re(model->" <> functionName <> "());\n";
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
+                         "Re(" <> struct <> functionName <> "());\n";
                   ,
-                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
-                         "Re(model->" <> functionName <>
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
+                         "Re(" <> struct <> functionName <>
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
               ];
            Return[IndentText[body]];
           ];
 
-FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String:"tadpole"] :=
+FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
            functionName = CreateTwoLoopTadpoleFunctionName[higgsBoson];
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
            body = "double two_loop_tadpole[" <> dimStr <> "];\n" <>
-                  "model->" <> functionName <>
+                  struct <> functionName <>
                   "(two_loop_tadpole);\n";
            For[v = 1, v <= dim, v++,
-               body = body <> arrayName <> "[" <> ToString[v-1] <> "] -= " <>
+               body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                       "two_loop_tadpole[" <> ToString[v-1] <> "];\n";
               ];
            Return[IndentText[IndentText[body]]];
@@ -522,7 +522,7 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            body = "\
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
@@ -618,7 +618,7 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            svevStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            body = "\
 // calculate 3rd generation sfermion masses and mixing angles
@@ -755,7 +755,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            body = "\
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
@@ -885,7 +885,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            body = "\
 // calculate 3rd generation sfermion masses and mixing angles
 double mst_1, mst_2, theta_t;
@@ -996,7 +996,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
            body = "\
@@ -1148,7 +1148,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = CConversion`RValueToCFormString[FlexibleSUSY`M[PseudoScalar][1]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            vsStr   = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            lambdaStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-Higgs-Interaction"]];
            body = "\

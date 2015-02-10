@@ -45,7 +45,8 @@ EXESoftsusyNMSSM_DEP  := \
 RUN_SOFTPOINT_EXE := \
 		$(EXESoftsusyNMSSM_OBJ:.o=.x)
 
-.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
+.PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
+		clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 
 all-$(MODNAME): $(LIBSoftsusyNMSSM)
 
@@ -72,7 +73,7 @@ $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP) $(LIBSoftsusyNMSSM_OBJ) $(EXESof
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/run_softpoint.x: $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(RUN_SOFTPOINT_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP)

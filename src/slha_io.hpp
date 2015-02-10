@@ -132,11 +132,7 @@ public:
          parameter_output_scale = 0.;
       }
    };
-   struct Extpar {
-      double input_scale; ///< key = 0
-      Extpar() : input_scale(0.) {}
-      void clear() { input_scale = 0.; }
-   };
+
    struct CKM_wolfenstein {
       double lambdaW, aCkm, rhobar, etabar;
       CKM_wolfenstein() : lambdaW(0.), aCkm(0.), rhobar(0.), etabar(0.) {}
@@ -165,7 +161,6 @@ public:
    // reading functions
    bool block_exists(const std::string&) const;
    void fill(softsusy::QedQcd&) const;
-   const Extpar& get_extpar() const { return extpar; }
    const Modsel& get_modsel() const { return modsel; }
    const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
@@ -174,7 +169,6 @@ public:
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_block(const std::string&, double&) const;
    double read_entry(const std::string&, int) const;
-   void read_extpar();
    void read_modsel();
    double read_scale(const std::string&) const;
 
@@ -204,13 +198,11 @@ public:
 
 private:
    SLHAea::Coll data;          ///< SHLA data
-   Extpar extpar;              ///< data from block EXTPAR
    Modsel modsel;              ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
    static std::string to_lower(const std::string&); ///< string to lower case
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
-   static void process_extpar_tuple(Extpar&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);

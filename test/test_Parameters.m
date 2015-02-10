@@ -53,4 +53,15 @@ TestEquality[Parameters`Private`IsHermitian[a], True];
 
 TestEquality[Parameters`IsRealExpression[trace[Adj[x],x,a]], True];
 
+Print["testing FindAllParameters[] ..."];
+
+modelParameters = { Mu, SARAH`B[Mu], WOp, SARAH`Q[WOp] };
+Parameters`SetModelParameters[modelParameters];
+
+expr = 2 * Mu SARAH`B[Mu] + WOp SARAH`Q[WOp] + a;
+
+TestEquality[Sort[Parameters`Private`FindAllParameters[expr]],
+             Sort[modelParameters]
+            ];
+
 PrintTestSummary[];

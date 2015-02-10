@@ -1,6 +1,7 @@
 
 BeginPackage["WriteOut`", {"SARAH`", "TextFormatting`", "CConversion`",
-                           "Parameters`", "TreeMasses`", "LatticeUtils`"}];
+                           "Parameters`", "TreeMasses`", "LatticeUtils`",
+                           "Utils`"}];
 
 ReplaceInFiles::usage="Replaces tokens in files.";
 PrintParameters::usage="Creates parameter printout statements";
@@ -17,7 +18,6 @@ ReadLesHouchesPhysicalParameters::usage="";
 ConvertMixingsToSLHAConvention::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
-StringJoinWithSeparator::usage="Joins a list of strings with a given separator string";
 ParseCmdLineOptions::usage="";
 PrintCmdLineOptions::usage="";
 
@@ -37,15 +37,6 @@ CalculateCKMMatrix::usage="";
 CalculatePMNSMatrix::usage="";
 
 Begin["`Private`"];
-
-StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
-    Module[{result = "", i},
-           For[i = 1, i <= Length[list], i++,
-               If[i > 1, result = result <> separator;];
-               result = result <> transformer[list[[i]]];
-              ];
-           Return[result];
-          ];
 
 (*
  * @brief Replaces tokens in files.
@@ -120,46 +111,6 @@ PrintInputParameter[parameter_, streamName_String] :=
 PrintInputParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
-           Return[result];
-          ];
-
-(* Write constant MW from ew_input.hpp
- *
- * Note: This function can be removed as soon as we no longer
- * use MW as an input at the low-scale, for example at the point
- * when we calculate sin(theta_W) from the muon decay constant G_F.
- *)
-WriteSLHAMass[massMatrix_TreeMasses`FSMassMatrix /; TreeMasses`GetMassEigenstate[massMatrix] === SARAH`VectorW] :=
-    Module[{result = "", eigenstateName, eigenstateNameStr,
-            pdgList, pdg, dim, i},
-           eigenstateName = TreeMasses`GetMassEigenstate[massMatrix];
-           dim = TreeMasses`GetDimension[eigenstateName];
-           pdgList = SARAH`getPDGList[eigenstateName];
-           If[Length[pdgList] != dim,
-              Print["Error: length of PDG number list != dimension of particle ", eigenstateName];
-              Print["       PDG number list = ", pdgList];
-              Print["       dimension of particle ", eigenstateName, " = ", dim];
-             ];
-           If[Length[pdgList] < dim,
-              Return[""];
-             ];
-           If[dim == 1,
-              pdg = Abs[pdgList[[1]]];
-              If[pdg != 0,
-                 eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName];
-                 result = "<< FORMAT_MASS(" <> ToString[pdg] <>
-                          ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
-                ];
-              ,
-              For[i = 1, i <= dim, i++,
-                  pdg = Abs[pdgList[[i]]];
-                  If[pdg != 0,
-                     eigenstateNameStr = CConversion`RValueToCFormString[eigenstateName] <> "(" <> ToString[i] <> ")";
-                     result = result <> "<< FORMAT_MASS(" <> ToString[pdg] <>
-                              ", SM(MW), \"" <> eigenstateNameStr <> "\")\n";
-                    ];
-                 ];
-             ];
            Return[result];
           ];
 
@@ -347,6 +298,8 @@ CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
 CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
     Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
 
+WrapPreprocessorMacroAround[expr_String, ___] := expr;
+
 WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
                              protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
     Module[{replacements, protectionRules, exprWithoutProtectedSymbols},
@@ -361,8 +314,24 @@ WrapPreprocessorMacroAround[expr_, symbols_, macroSymbol_,
            exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
           ];
 
-WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
-    Module[{parStr, parVal, idx1Str, idx2Str},
+SetAttributes[WriteSLHABlockEntry, HoldFirst];
+
+WriteSLHABlockEntry[{Hold[par_], idx___}, comment_String:""] :=
+    Module[{parStr, commentStr},
+           parStr = ToString[Unevaluated[par]];
+           commentStr = If[comment == "", parStr, comment];
+           parStr = StringReplace[parStr,
+                                  {RegularExpression["\\bSUSYScale\\b"] -> "SCALES(SUSYScale)",
+                                   RegularExpression["\\bHighScale\\b"] -> "SCALES(HighScale)",
+                                   RegularExpression["\\bLowScale\\b"]  -> "SCALES(LowScale)"}
+                                 ];
+           WriteSLHABlockEntry[{parStr, idx}, commentStr]
+          ];
+
+ClearAttributes[WriteSLHABlockEntry, HoldFirst];
+
+WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
@@ -370,13 +339,14 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}] :=
                                            Global`MODELPARAMETER]];
            idx1Str = ToString[idx1];
            idx2Str = ToString[idx2];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
            "      << FORMAT_MIXING_MATRIX(" <> idx1Str <> ", " <> idx2Str <>
-           ", (" <> parVal <> "), \"" <> parStr <> "\")" <> "\n"
+           ", (" <> parVal <> "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
-    Module[{parStr, parVal, pdgStr},
+WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
+    Module[{parStr, parVal, pdgStr, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
@@ -390,26 +360,27 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}] :=
               parStr = "gY";
              ];
            pdgStr = ToString[pdg];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
            "      << FORMAT_ELEMENT(" <> pdgStr <> ", (" <> parVal <>
-           "), \"" <> parStr <> "\")" <> "\n"
+           "), \"" <> commentStr <> "\")" <> "\n"
           ];
 
-WriteSLHABlockEntry[{par_}] :=
-    Module[{parStr, parVal},
+WriteSLHABlockEntry[{par_}, comment_String:""] :=
+    Module[{parStr, parVal, commentStr},
            parStr = CConversion`RValueToCFormString[par];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                      Parameters`GetOutputParameters[]],
                                            Global`MODELPARAMETER]];
+           commentStr = If[comment == "", parStr, comment];
            (* result *)
-           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> parStr <> "\")\n"
+           "      << FORMAT_NUMBER((" <> parVal <> "), \"" <> commentStr <> "\")\n"
           ];
 
-WriteSLHABlockEntry[tuple_] :=
+WriteSLHABlockEntry[tuple___] :=
     Block[{},
-          Print["WriteSLHABlock: Error: tuple ", tuple,
-                " is not a list of lenght 2."];
+          Print["WriteSLHABlockEntry: Error: malformed entry ", tuple];
           ""
          ];
 
@@ -589,7 +560,7 @@ GetDRbarBlockNames[] :=
     Module[{blocks, transformer},
            blocks = GetDRbarBlocks[];
            transformer = ("\"" <> ToString[#] <> "\"")&;
-           "{ " <> StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
+           "{ " <> Utils`StringJoinWithSeparator[blocks, ", ", transformer] <> " }"
           ];
 
 GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];

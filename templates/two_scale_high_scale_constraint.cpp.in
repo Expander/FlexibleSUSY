@@ -49,7 +49,6 @@ namespace flexiblesusy {
    : Constraint<Two_scale>()
    , scale(0.)
    , initial_scale_guess(0.)
-   , fixed_scale(0.)
    , model(0)
    , inputPars()
 {
@@ -59,7 +58,6 @@ namespace flexiblesusy {
    @ModelName@<Two_scale>* model_,
    const @ModelName@_input_parameters& inputPars_)
    : Constraint<Two_scale>()
-   , fixed_scale(0.)
    , model(model_)
    , inputPars(inputPars_)
 {
@@ -100,6 +98,9 @@ void @ModelName@_high_scale_constraint<Two_scale>::apply()
    update_scale();
 
 @applyConstraint@
+   {
+@checkPerturbativityForDimensionlessParameters@
+   }
 }
 
 double @ModelName@_high_scale_constraint<Two_scale>::get_scale() const
@@ -124,14 +125,13 @@ void @ModelName@_high_scale_constraint<Two_scale>::set_input_parameters(const @M
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_scale(double s)
 {
-   fixed_scale = s;
+   scale = s;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
    initial_scale_guess = 0.;
-   fixed_scale = 0.;
    model = NULL;
 }
 
@@ -148,11 +148,6 @@ void @ModelName@_high_scale_constraint<Two_scale>::update_scale()
 {
    assert(model && "@ModelName@_high_scale_constraint<Two_scale>::"
           "update_scale(): model pointer is zero.");
-
-   if (!is_zero(fixed_scale)) {
-      scale = fixed_scale;
-      return;
-   }
 
    const double currentScale = model->get_scale();
    const @ModelName@_soft_parameters beta_functions(model->calc_beta());

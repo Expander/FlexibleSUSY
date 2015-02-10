@@ -63,6 +63,9 @@ private:
   double mtPole, mbPole; ///< pole masses of third family quarks
   double mbMb; ///< mb(mb) in the MSbar scheme with only QCD corrections
   double mtauPole; ///< tau pole mass
+  double mwPole; ///< W boson pole mass
+  double mzPole; ///< Z boson pole mass
+  double gfermi; ///< Fermi constant
   flexiblesusy::CKM_parameters ckm; ///< CKM parameters (in the MS-bar scheme at MZ)
   flexiblesusy::PMNS_parameters pmns; ///< PMNS parameters (in the MS-bar scheme at MZ)
 
@@ -76,6 +79,8 @@ public:
   void setPoleMb(double mb) { mbPole = mb; }; ///< set pole bottom mass
   void setPoleMtau(double mtau) { mtauPole = mtau; }; ///< set pole tau mass
   void setMbMb(double mb)   { mbMb = mb;   }; ///< set mb(mb)
+  void setPoleMW(double mw) { mwPole = mw; } ///< set W boson pole mass
+  void setPoleMZ(double mz) { mzPole = mz; } ///< set Z boson pole mass
   /// sets a running quark mass
   void setMass(mass mno, double m) { mf(mno) = m; }; 
   /// sets a neutrino pole mass
@@ -86,6 +91,8 @@ public:
   void setCKM(const flexiblesusy::CKM_parameters& ckm_) { ckm = ckm_; }
   /// sets PMNS parameters (in the MS-bar scheme at MZ)
   void setPMNS(const flexiblesusy::PMNS_parameters& pmns_) { pmns = pmns_; }
+  /// sets Fermi constant
+  void setFermiConstant(double gf) { gfermi = gf; }
   /// For exporting beta functions to Runge-Kutta
   void set(const DoubleVector &); 
   
@@ -95,6 +102,10 @@ public:
   double displayPoleMtau() const { return mtauPole; };
   /// Returns bottom "pole" mass
   double displayPoleMb() const { return mbPole; };
+  /// Returns W boson pole mass
+  double displayPoleMW() const { return mwPole; }
+  /// Returns Z boson pole mass
+  double displayPoleMZ() const { return mzPole; }
   /// Returns a vector of running fermion masses
   const DoubleVector & displayMass() const { return mf; };
   /// Returns a single running mass
@@ -103,6 +114,8 @@ public:
   double displayNeutrinoPoleMass(int i) const { return mnu.display(i); }
   /// Returns a single gauge structure constant
   double displayAlpha(leGauge ai) const { return a.display(ai); };
+  /// Returns Fermi constant
+  double displayFermiConstant() const { return gfermi; }
   /// Obgligatory: returns vector of all running parameters
   const DoubleVector display() const;
   /// Returns mb(mb) MSbar
@@ -174,7 +187,9 @@ double getRunMtFromMz(double poleMt, double asMZ);
 
 inline QedQcd::QedQcd(const QedQcd &m)
   : RGE(), a(m.a), mf(m.mf), mnu(m.mnu), mtPole(m.mtPole), mbPole(m.mbPole), mbMb(m.mbMb), 
-   mtauPole(m.mtauPole), ckm(m.ckm), pmns(m.pmns) {
+   mtauPole(m.mtauPole), mwPole(m.mwPole), mzPole(m.mzPole), gfermi(m.gfermi),
+   ckm(m.ckm), pmns(m.pmns)
+{
   setPars(11); 
   setMu(m.displayMu());
   setLoops(m.displayLoops());

@@ -21,17 +21,17 @@ LowScale = SM[MZ];
 LowScaleFirstGuess = SM[MZ];
 
 LowScaleInput = {
+   {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
    {Yu, Automatic},
    {Yd, Automatic},
-   {Ye, Automatic},
-   {v, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]}
+   {Ye, Automatic}
 };
 
 InitialGuessAtLowScale = {
+   {v, SM[vev]},
    {Yu, Automatic},
    {Yd, Automatic},
-   {Ye, Automatic},
-   {v, SM[vev]}
+   {Ye, Automatic}
 };
 
 SMParticles = {

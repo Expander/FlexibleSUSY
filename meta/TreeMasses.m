@@ -125,8 +125,11 @@ CreateThirdGenerationHelpers::usage="";
 CallThirdGenerationHelperFunctionName::usage="";
 
 GetThirdGenerationMass::usage;
+GetLightestMass::usage;
 
 ReorderGoldstoneBosons::usage="";
+CreateHiggsMassGetters::usage="";
+CallPseudoscalarHiggsMassGetterFunction::usage="";
 
 (* exported for the use in LoopMasses.m *)
 CallSVDFunction::usage="";
@@ -568,7 +571,7 @@ MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`r
            dim = Length[matrix];
            dimStr = ToString[dim];
            matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
-           result = matrixType <> " " <> symbol <> ";\n"; (* not initialized *)
+           result = matrixType <> " " <> symbol <> ";\n\n"; (* not initialized *)
            For[i = 1, i <= dim, i++,
                For[k = 1, k <= dim, k++,
                    result = result <> symbol <> "(" <> ToString[i-1] <>
@@ -655,6 +658,88 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
+GetHiggsName[sym_] :=
+    Switch[sym,
+           SARAH`ChargedHiggs, "ChargedHiggs",
+           SARAH`PseudoScalar, "PseudoscalarHiggs",
+           SARAH`HiggsBoson  , "Higgs",
+           _                 , ""
+          ];
+
+CallHiggsMassGetterFunction[name_String] :=
+    "get_M" <> name <> "()";
+
+CallPseudoscalarHiggsMassGetterFunction[] :=
+    CallHiggsMassGetterFunction[GetHiggsName[SARAH`PseudoScalar]];
+
+(* function that fills array with vector boson masses *)
+FillGoldstoneMassVector[targetVector_String, vectorList_List] :=
+    Module[{i, result = ""},
+           For[i = 0, i < Length[vectorList], i++,
+               result = result <> targetVector <> "(" <> ToString[i] <> ") = " <>
+                        CConversion`ToValidCSymbolString[FlexibleSUSY`M[vectorList[[i+1]]]] <>
+                        ";\n";
+              ];
+           result
+          ];
+
+CreateHiggsMassGetters[particle_[___], macro_String] :=
+    CreateHiggsMassGetters[particle, macro];
+
+CreateHiggsMassGetters[particle_, macro_String] :=
+    Module[{vectorList, prototype, def, particleStr,
+            particleHiggsStr, particleGoldstoneStr,
+            typeHiggs, typeGoldstone, body, name,
+            dim, dimGoldstone, dimHiggs},
+           name                 = GetHiggsName[particle];
+           particleStr          = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           particleHiggsStr     = particleStr <> "_" <> name;
+           particleGoldstoneStr = particleStr <> "_goldstone";
+           vectorList = Cases[SARAH`GoldstoneGhost,
+                                 {vector_, particle[{_}]} :> vector];
+           dim          = GetDimension[particle];
+           dimGoldstone = Length[vectorList];
+           (* number of physical (non-goldstone) particles *)
+           dimHiggs     = dim - dimGoldstone;
+           (* If dimHiggs == 0, all particles in the particle
+              multiplet are Goldstone bosons and no one is a Higgs.
+
+              If dimGoldstone == 0, all particles in the particle
+              multiplet are Higgs bosons and there is no point in
+              generating this function.
+            *)
+           If[dimHiggs <= 0 || dimGoldstone == 0
+              || !MemberQ[GetParticles[], particle]
+              ,
+              If[dimHiggs < 0,
+                 Print["Error: CreateHiggsMassGetters: There are more",
+                       " Goldstone bosons than Higgs bosons."];
+                 Print["   Dimension of ", particle, " = ", dim];
+                 Print["   Number of Goldstones = ", dimGoldstone];
+                 Return[{"",""}];
+                ];
+              Return[{"",""}];
+             ];
+           typeHiggs     = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimHiggs]];
+           typeGoldstone = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dimGoldstone]];
+           prototype = typeHiggs <> " get_M" <> name <> "() const;\n";
+           body =
+               typeHiggs     <> " " <> particleHiggsStr <> ";\n" <>
+               typeGoldstone <> " " <> particleGoldstoneStr <> ";\n" <>
+               "\n" <>
+               FillGoldstoneMassVector[particleGoldstoneStr, vectorList] <>
+               "\n" <>
+               "remove_if_equal(" <> particleStr <> ", " <>
+                                particleGoldstoneStr <> ", " <>
+                                particleHiggsStr <> ");\n" <>
+               "\n" <>
+               "return " <> particleHiggsStr <> ";\n";
+           def = typeHiggs <> " CLASSNAME::get_M" <> name <> "() const\n{\n" <>
+               IndentText[body] <>
+               "}\n";
+           {prototype, def}
+          ];
+
 CallSVDFunction[particle_String, matrix_String, eigenvalue_String, U_String, V_String] :=
     "\
 #ifdef CHECK_EIGENVALUE_ERROR
@@ -716,10 +801,14 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
               (* check for tachyons *)
               body = body <> "\n" <>
                      IndentText[
-                         "problems.flag_tachyon(" <>
-                         FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                         ev <> ".minCoeff() < 0.);\n\n" <>
-                         ev <> " = AbsSqrt(" <> ev <> ");\n"];
+                         "if (" <> ev <> ".minCoeff() < 0.)\n" <>
+                         IndentText[
+                             "problems.flag_tachyon(" <>
+                             FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                             ");"
+                         ] <> "\n\n" <>
+                         ev <> " = AbsSqrt(" <> ev <> ");\n"
+                     ];
              ];
            Return[result <> body <> "}\n"];
           ];
@@ -765,9 +854,12 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
               (* check for tachyons *)
               particle = ToValidCSymbolString[massESSymbol];
               body = body <> "\n" <>
-                     "problems.flag_tachyon(" <>
-                     FlexibleSUSY`FSModelName <> "_info::" <> particle <> ", " <>
-                     ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.);\n\n" <>
+                     "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
+                     IndentText[
+                         "problems.flag_tachyon(" <>
+                         FlexibleSUSY`FSModelName <> "_info::" <> particle <>
+                         ");"
+                     ] <> "\n\n" <>
                      ev <> " = AbsSqrt(" <> ev <> ");\n";
              ];
            body = IndentText[body];
@@ -919,7 +1011,7 @@ FindColorGaugeGroup[] :=
 
 FindLeftGaugeGroup[] :=
     Module[{coupling, gaugeGroup, result},
-           coupling = FindHyperchargeGaugeCoupling[];
+           coupling = FindLeftGaugeCoupling[];
            gaugeGroup = Cases[SARAH`Gauge, {_, group_, name_, coupling, ___}];
            If[gaugeGroup === {},
               Print["Error: could not weak gauge group"];
@@ -932,7 +1024,7 @@ FindLeftGaugeGroup[] :=
 
 FindHyperchargeGaugeGroup[] :=
     Module[{coupling, gaugeGroup, result},
-           coupling = FindColorGaugeCoupling[];
+           coupling = FindHyperchargeGaugeGroup[];
            gaugeGroup = Cases[SARAH`Gauge, {_, group_, name_, coupling, ___}];
            If[gaugeGroup === {},
               Print["Error: could not find Hypercharge gauge group"];
@@ -1170,6 +1262,16 @@ GetThirdGenerationMass[fermion_] :=
            If[dim == 1,
               mass = FlexibleSUSY`M[fermion];,
               mass = FlexibleSUSY`M[fermion][dim - 1];
+             ];
+           Return[mass];
+          ];
+
+GetLightestMass[par_] :=
+    Module[{dim, mass},
+           dim = GetDimension[par];
+           If[dim == 1,
+              mass = FlexibleSUSY`M[par];,
+              mass = FlexibleSUSY`M[par][0];
              ];
            Return[mass];
           ];

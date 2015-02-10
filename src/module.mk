@@ -27,6 +27,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/utils.cpp \
+		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
@@ -35,6 +36,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/cextensions.hpp \
 		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
+		$(DIR)/compare.hpp \
 		$(DIR)/composite_convergence_tester.hpp \
 		$(DIR)/compound_constraint.hpp \
 		$(DIR)/constraint.hpp \
@@ -45,6 +47,8 @@ LIBFLEXI_HDR := \
 		$(DIR)/dilog.h \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
+		$(DIR)/ewsb_solver.hpp \
+		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
 		$(DIR)/higgs_2loop_corrections.hpp \
@@ -73,6 +77,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/utils.h \
+		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/wrappers.hpp \
 		$(DIR)/xpr-base.h \
 		$(DIR)/xpr-matrix.h \

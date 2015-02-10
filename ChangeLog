@@ -1,4 +1,20 @@
-FlexibleSUSY-1.0.4 [not released yet]
+FlexibleSUSY-1.0.5 [not released yet]
+
+ * Feature: Calculation of DR-bar weak mixing angle from Fermi
+   constant and Z pole mass.  The implementation is based on
+   expressions from SoftSUSY and works for the SM, MSSM, NMSSM and
+   their variants.  The method for the calculation of the weak mixing
+   angle can be selected via the FSWeakMixingAngleInput variable in
+   the FlexibleSUSY model file.
+   Example:
+   FSWeakMixingAngleInput = FSFermiConstant; (* or FSMassW *)
+
+
+ * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
+   is used in the two-loop Higgs self-energy and tadpole corrections.
+   Before, there were cases where a Goldstone boson mass was used.
+
+FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
    parameter point using command line parameters instead of an SLHA
@@ -8,12 +24,50 @@ FlexibleSUSY-1.0.4 [not released yet]
    example
    SUSYScaleFirstGuess = Sqrt[Sqrt[LHInput[mq2[3,3]] * LHInput[mu2[3,3]]]]
 
+ * Adding support for FlexibleSUSY addons.  They are placed inside the
+   addons/ directory and can be configued and compiled via
+   ./configure --with-addons=<addon> && make
+
+ * Adding EWSB solvers using a fixed-point iteration (FPIRelative,
+   FPIAbsolute, FPITadpole).  FPIRelative is now the first default
+   solver used.  Thanks to Dylan Harries.
+
+ * Adding new NMSSM model file `NUTNMSSM' with non-universal soft
+   Higgs masses (EWSB output) and non-universal trilinear couplings
+   A_lambda and A_kappa at MX.
+
+ * Read user input W boson pole mass form SMINPUTS block entry 9.
+
+ * Read user input Z boson pole mass from SMINPUTS block entry 4.
+
+ * Automatic check for non-perturbative dimensionless model parameters
+   at the high-scale.  The check can be disabled by stetting
+   FSCheckPerturbativityOfDimensionlessParameters = False;
+   in the model file.  The threshold can be set via the
+   FSPerturbativityThreshold variable.  The default threshold is
+   N[Sqrt[4 Pi]] = 3.54491.
+
+ * Check for tree-level tachyons at each scale (MZ and M_SUSY)
+
+ * Allow to force SLHA output for unphysical points (for example where
+   tachyons exist) in FlexibleSUSY block, entry 12.
+
  * Bugfix (commit 6f7d3de): allow plain model parameters for scale
    definition, for example in the form SUSYScale = vu .
 
  * Bugfix (commit 44baa73): allow model parameters in first guesses of
    scale definitions, for example
    SUSYScaleFirstGuess = Sqrt[mq2[3,3] * mu2[3,3]]
+
+ * Bugfix (commit 77dce8b): correct momentum guess for the calculation
+   of the self-energies with LowPrecision.
+
+ * Bugfix (commit fb0b906): Fix compilation with g++ 4.5.3.
+
+ * Support Intel C++ compiler versions 12.1 and 13.x (commits 78d73e7
+   and bf5a08e)
+
+ * More descriptive error message when an exception is thrown.
 
 FlexibleSUSY-1.0.3 [November, 21 2014]
 

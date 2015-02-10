@@ -19,13 +19,13 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
-#include <def.h>
-#include <utils.h>
-#include <numerics.h>
-#include <physpars.h> 
-#include <lowe.h>
-#include <nmssmsoftpars.h>
-#include <softsusy.h>
+#include "def.h"
+#include "utils.h"
+#include "numerics.h"
+#include "physpars.h"
+#include "lowe.h"
+#include "nmssmsoftpars.h"
+#include "softsusy.h"
 #include "mssmUtils.h"
 #include <nmssm2loop.h>
 #include <nmssm1loop.h>
@@ -63,57 +63,58 @@ public:
   
   double displayTadpoleSMs() const; ///< displays t_s/s tadpole
   double displayTadpoleSMs1loop() const; ///< displays t_2/v_s tadpole@1 loop
-  //PA: obtains NMSSM P1-sfermion-sfermion couplings 
+  void setTadpoleSMs(double t) { tSOVSMs = t; }
+  /// PA: obtains NMSSM P1-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void  P1SfSfCouplings(DoubleMatrix & lTP1Lr, DoubleMatrix & lBP1Lr, 
 			DoubleMatrix  & lTauP1Lr) const;
-  //PA: obtains NMSSM P2-sfermion-sfermion couplings 
+  /// PA: obtains NMSSM P2-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void  P2SfSfCouplings(DoubleMatrix & lTP2Lr, DoubleMatrix & lBP2Lr, 
 			DoubleMatrix  & lTauP2Lr) const;
-  //PA: obtains NMSSM P3-sfermion-sfermion couplings 
+  /// PA: obtains NMSSM P3-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void  P3SfSfCouplings(DoubleMatrix & lTP3Lr, DoubleMatrix & lBP3Lr, 
 			DoubleMatrix  & lTauP3Lr) const;
 
-  //PA: obtains NMSSM H1-sfermion-sfermion couplings 
+  /// PA: obtains NMSSM H1-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void  H1SfSfCouplings(DoubleMatrix & lTS1Lr, DoubleMatrix & lBS1Lr, 
 			DoubleMatrix  & lTauS1Lr, double gmzOcthW, 
 			double mu,  double cosb, double v1) const;
-  //PA: obtains NMSSM H2-sfermion-sfermion couplings 
+  /// PA: obtains NMSSM H2-sfermion-sfermion couplings 
   //for 3rd generation sfermions
   void H2SfSfCouplings(DoubleMatrix & lTS1Lr, DoubleMatrix & lBS1Lr, 
 		       DoubleMatrix  & lTauS1Lr, double gmzOcthW, 
 		       double mu,  double sinb) const;
-  //PA: obtains NMSSM S-sfermion-sfermion couplings 
+  /// PA: obtains NMSSM S-sfermion-sfermion couplings 
   //for 3rd generation sfermion
   void SSfSfCouplings(DoubleMatrix & lTS3Lr, DoubleMatrix & lBS3Lr, 
 		      DoubleMatrix & lTauS3Lr, double lam) const;
-  //PA:routine to calculate sfermiom contributions to (16 \pi^2) ts / s 
+  /// PA:routine to calculate sfermiom contributions to (16 \pi^2) ts / s 
   double doCalcTadSSfermions(DoubleMatrix lTS3Lr, DoubleMatrix lBS3Lr, 
 			     DoubleMatrix lTauS3Lr, double q, double s) const;
-  //PA: for loop corrections, helps adding Higgs corrections in a tidy way
+  /// PA: for loop corrections, helps adding Higgs corrections in a tidy way
   void assignHiggs(DoubleVector & higgsm, DoubleVector & higgsa, 
                      DoubleVector & higgsc) const;
-  //PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
+  /// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t1/v1
 //Includes goldstone bosons. 
   double doCalcTad1Higgs(double q, double costhDRbar, double g, double tanb) const;
-  //PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t2/v2
+  /// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) t2/v2
   //Includes goldstone bosons.
   double doCalcTad2Higgs(double q, double costhDRbar, double g, double tanb) const;
-  //PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) ts/s
+  /// PA: NMSSM routine to obtain Higgs loop parts of (16 \pi^2) ts/s
   //Includes goldstone bosons.
   double doCalcTadSHiggs(double q, double tanb) const;
-  //PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) t1/v1
+  /// PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) t1/v1
   double doCalcTad1Neutralinos(double q, double costhDRbar, double g, 
                                double tanb) const;
-  //PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) t2/v2
+  /// PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) t2/v2
   double doCalcTad2Neutralinos(double q, double costhDRbar, 
 			     double g, double sinb) const;
-  //PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) tS/s
+  /// PA: NMSSM routine to obtain Neutralino loop parts of (16 \pi^2) tS/s
   double doCalcTadSNeutralinos(double q,  double lam, double kap) const;
-  //PA: NMSSM routine to obtain Chargino loop parts of (16 \pi^2) tS/s
+  /// PA: NMSSM routine to obtain Chargino loop parts of (16 \pi^2) tS/s
   double doCalcTadSCharginos(double q,  double lam) const;
 /// Does the calculation of one-loop pieces of \f$ t_1 / v_1 \f$ 
   virtual double doCalcTadpole1oneLoop(double mt, double sinthDRbar) const;
@@ -133,7 +134,7 @@ public:
   /// Calculates then sets the one-loop pieces of \f$ t_s / s \f$: sets both
   /// 1-loop and total pieces equal to the one-loop piece
   virtual void calcTadpoleSMs1loop(double mt, double sinthDRbar);
-  //PA: calls routines to calculate all three tadpoles and sets them.
+  /// PA: calls routines to calculate all three tadpoles and sets them.
   // Currently only works at one loop.  
   // Two loop should be added later. 
   void doTadpoles(double mt, double sinthDRbar);
@@ -245,15 +246,15 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   //Returns tree-level Neutralino mass matrix in the NMSSM 
   void treeNeutralinos(DoubleMatrix & mass, double beta, double mz, double mw, 
                        double sinthDRbar);
-  //PA:  calls  treeCharginos and treeNeutralinos, 
+  /// PA:  calls  treeCharginos and treeNeutralinos, 
   // performs diagonalisation and fills eg with appropriate values.
   void calcDrBarGauginos(double beta, double mw, double mz, double sinth, 
                          drBarPars & eg);
-   //PA: fills tree level CP even and CP odd Higgs mass matrices 
+   /// PA: fills tree level CP even and CP odd Higgs mass matrices 
   //and tree level mHPm. Does *not* use EWSB substitution   
   void treeHiggsAlt(DoubleMatrix & mS, DoubleMatrix & mPpr, DoubleMatrix & mP2, 
                   double & mHpm, double beta) const;
-  //PA: fills tree level CP even and CP odd Higgs mass matrices 
+  /// PA: fills tree level CP even and CP odd Higgs mass matrices 
   //and tree level mHPm. Uses EWSB substitution. 
   //Called in higgs and calcDrBarParsHiggs   
   void treeHiggs(DoubleMatrix & mS, DoubleMatrix & mPpr, DoubleMatrix & mP2, 
@@ -264,7 +265,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   
   /// Returns mu from rewsb requirement. 
   /// returns 1 if there's a problem. Call at MSusy
-  //PA: To be used in general Z3 violating nmssm 
+  /// PA: To be used in general Z3 violating nmssm 
   virtual int rewsbMu(int sgnMu, double & mu) const;
   // PA: NMssm rewsb routine which fixes imn much the same way as 
   // mu is fixed in the Mssm using mueff = lambda * s / root 
@@ -272,23 +273,23 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   // where mu = 0
   virtual int rewsbSvev(int sgnMu, double & svev) const;
   /// returns 1 if mu < 1.0e-9
-  //PA:  nmssm version for use in Z3 violating case.  
+  /// PA:  nmssm version for use in Z3 violating case.  
   virtual int rewsbM3sq(double mu, double & m3sq) const;
-  //PA:: In case of Z3 invariance EWSB outputs kappa instead.
+  /// PA:: In case of Z3 invariance EWSB outputs kappa instead.
   virtual int rewsbKap(double & kap) const;
-  //PA: third EWSB condition (for the singlet Higgs field) 
+  /// PA: third EWSB condition (for the singlet Higgs field) 
   //new with respect to the MSSM.
   virtual int rewsbXiS(double & xiS) const;
   // PA:For Z3 invariant NMSSM when we solve for s, kappa and mS
   // or for non universal Higgs
   virtual int rewsbmSsq(double & mSsq) const;
-  //PA: for non universal Higgs
+  /// PA: for non universal Higgs
   virtual int rewsbmH1sq(double & mH1sq) const;
-  //PA: for non universal Higgs
+  /// PA: for non universal Higgs
   virtual int rewsbmH2sq(double & mH211sq) const;
-  //PA: Imposes EWSB at the tree level. 
+  /// PA: Imposes EWSB at the tree level. 
   virtual void rewsbTreeLevel(int sgnMu);
-  //PA: finds mu iteratively in the casew where we use EWSB to swap 
+  /// PA: finds mu iteratively in the casew where we use EWSB to swap 
   //(mu, m3sq, XiS) --> (mZ, tb, s) 
   // Uses the full one loop tadpole from Degrassi and Slavich.  
   // No two loop added yet.
@@ -303,7 +304,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   void iterateSvev(double & sold, int sgnMu,
 		   double mt, int maxTries, double pizzMS,
 		   double sinthDRbar, double tol, int & err);
-  //PA: organises imposition of EWSB conditions. 
+  /// PA: organises imposition of EWSB conditions. 
   // Currently at full one loop, two loop to be added.
   // Currently works for two cases depending on Z3 switch
   //Z3 = true:  s --> mZ, kappa --> tan beta, mS --> s 
@@ -314,7 +315,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   /// Calculates physical sparticle masses to accuracy number of loops. Should
   /// be called at M_{SUSY}.
   virtual void physical(int accuracy);
-  ///PA: Fills sigmaL, sigmaR and sigmaS with NMSSM Higgs parts 
+  //// PA: Fills sigmaL, sigmaR and sigmaS with NMSSM Higgs parts 
   ///of the charginos loop corrections.
   virtual void addChaLoopHiggs(double p, DoubleMatrix & sigmaL, DoubleMatrix & sigmaR, DoubleMatrix & sigmaS, DoubleMatrix b1pCha, DoubleMatrix b0pCha, DoubleMatrix b1pNeut, DoubleMatrix b0pNeut) const;
 /// Adds the loop corrections on to an input tree-level chargino mass
@@ -336,7 +337,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   /// of loops (0 or 1) to use and pizzt is the Z self-energy at M_SUSY
   /// Returns "true" if there's a tachyon problem
   bool higgs(int accuracy, double piwwt, double pizzt, sPhysical & phys);
-  //PA:: fixes The CP odd mixing matrix with the conventions 
+  /// PA:: fixes The CP odd mixing matrix with the conventions 
   // Degrassi and Slavich arXiv:0907.4682
   void DegrassiSlavicMix(DoubleMatrix & P) const; 
   /// Calculates Higgs contribution to the transverse part of Z self-energy: 
@@ -357,26 +358,26 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   /// Calculates transverse part of W self-energy: for p=external momentum,
   /// Q=renormalisation scale
   virtual double piWWT(double p, double Q, bool usePoleMt = false) const;
-  //PA: self energy routines for pseudo scalar self energies
+  /// PA: self energy routines for pseudo scalar self energies
   double pip1p1(double p, double q) const;
   double pip1p2(double p, double q) const;
   double pip2p2(double p, double q) const;
   double pip1p3(double p, double q) const;
   double pip2p3(double p, double q) const;
   double pip3p3(double p, double q) const;
-  //PA: Obtains trilnear couplings of P1-Higgs, for use in loop functions
+  /// PA: Obtains trilnear couplings of P1-Higgs, for use in loop functions
   void getP1HiggsTriCoup(DoubleMatrix & spp1, DoubleMatrix & hphpp1, double cw2DRbar) const;
-   //PA: Obtains trilnear couplings of P2-Higgs for use in loop functions
+   /// PA: Obtains trilnear couplings of P2-Higgs for use in loop functions
   void getP2HiggsTriCoup(DoubleMatrix & spp2, DoubleMatrix & hphpp2, double cw2DRbar) const;
-   //PA: Obtains trilnear couplings of P3-Higgs for use in loop functions
+   /// PA: Obtains trilnear couplings of P3-Higgs for use in loop functions
   void getP3HiggsTriCoup(DoubleMatrix & spp2, DoubleMatrix & hphpp2) const;
-  //PA: Obtains trilnear couplings of s1-higgs-higgs for use in loop functions
+  /// PA: Obtains trilnear couplings of s1-higgs-higgs for use in loop functions
    void getS1HiggsTriCoup(DoubleMatrix & sss1, DoubleMatrix & pps1, DoubleMatrix & hphps1, double thetaWDRbar) const; 
-  //PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
+  /// PA: Obtains trilnear couplings of s2-higgs-higgs for use in loop functions
   void getS2HiggsTriCoup(DoubleMatrix & sss2, DoubleMatrix & pps2, DoubleMatrix & hphps2, double thetaWDRbar) const; 
-  //PA: Obtains trilnear couplings of s3-higgs-higgs for use in loop functions
+  /// PA: Obtains trilnear couplings of s3-higgs-higgs for use in loop functions
   void getS3HiggsTriCoup(DoubleMatrix & sss3, DoubleMatrix & pps3, DoubleMatrix & hphps3) const; 
-  //PA:Calculates (16 Pi^2) times the Higgs contribution to Higgs self-energy: 
+  /// PA:Calculates (16 Pi^2) times the Higgs contribution to Higgs self-energy: 
   //for p=external momentum, q=renormalisation scale
   double pis1s1Higgs(double p, double q) const;
   double pis1s2Higgs(double p, double q) const;
@@ -384,15 +385,15 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   double pis1s3Higgs(double p, double q) const;
   double pis2s3Higgs(double p, double q) const;
   double pis3s3Higgs(double p, double q) const;
-  //PA: obtains CP even Higgs-Neutralino couplings
+  /// PA: obtains CP even Higgs-Neutralino couplings
   void getS1NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
   void getS2NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
   void getS3NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
-  //PA: obtains CP odd Higgs-Neutralino couplings
+  /// PA: obtains CP odd Higgs-Neutralino couplings
   void getP1NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
   void getP2NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
   void getP3NeutralinoCoup(ComplexMatrix & aChi, ComplexMatrix & bChi) const;
-  //PA:Calculates (16 Pi^2) times Neutralino contrib. to Higgs self-energy: 
+  /// PA:Calculates (16 Pi^2) times Neutralino contrib. to Higgs self-energy: 
   //for p=external momentum, q=renormalisation scale
   double pis1s1Neutralinos(double p, double q) const;
   double pis1s2Neutralinos(double p, double q) const;
@@ -400,13 +401,13 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   double pis1s3Neutralinos(double p, double q) const;
   double pis2s3Neutralinos(double p, double q) const;
   double pis3s3Neutralinos(double p, double q) const;
-  //PA:Calculates (16 Pi^2) times Chargino contrib. to Higgs self-energy: 
+  /// PA:Calculates (16 Pi^2) times Chargino contrib. to Higgs self-energy: 
   //for p=external momentum, q=renormalisation scale
   double pis1s3Charginos(double p, double q) const; 
   double pis2s3Charginos(double p, double q) const;
   double pis3s3Charginos(double p, double q) const;
   
-   //PA:Calculates (16 Pi^2) times sfermion contrib. to Higgs self-energy: 
+   /// PA:Calculates (16 Pi^2) times sfermion contrib. to Higgs self-energy: 
   //for p=external momentum, q=renormalisation scale
   double pis1s3Sfermions(double p, double q, DoubleMatrix ls1tt,  
                          DoubleMatrix ls1bb,  DoubleMatrix ls1tautau, 
@@ -428,7 +429,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
   double pis2s3(double p, double q) const;
   double pis3s3(double p, double q) const;
 
-  //PA: gets h1 mixing element with Hu.
+  /// PA: gets h1 mixing element with Hu.
   virtual double h1s2Mix();
 
   /// LCT: Charged Higgs trilinear couplings with CP-odd and CP-even Higgs'
@@ -460,23 +461,23 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
  /// LCT: Calculates the charged Higgs self-energy in mass basis: 
   /// for p=external momentum, q=renormalisation scale
   double piHpHm(double p, double q) const;
-  //PA: routine to calculate the Higgs loop contributions to running Mt
+  /// PA: routine to calculate the Higgs loop contributions to running Mt
   virtual double calcRunMtHiggs() const;
-  //PA: routine to calculate the Neutralino loop contributions to running Mt
+  /// PA: routine to calculate the Neutralino loop contributions to running Mt
   virtual double calcRunMtNeutralinos() const;
-  //PA: routine to calculate the DrBar running top mass from the pole mass
+  /// PA: routine to calculate the DrBar running top mass from the pole mass
   // and full one loop self energy, with also two loop qcd included.
   virtual double calcRunningMt();
-   //PA: routine to calculate the Higgs loop contributions to running Mb
+   /// PA: routine to calculate the Higgs loop contributions to running Mb
   virtual double calcRunMbHiggs() const;
-  //PA: routine to calculate the Neutralino loop contributions to running Mb
+  /// PA: routine to calculate the Neutralino loop contributions to running Mb
   virtual double calcRunMbNeutralinos() const;
   //  PA: routine to calculate the DrBar running bottom mass from the SM MS-bar 
   //bottom m and one loop self energy minus photon and gluon parts.
   virtual double calcRunningMb() const;
-  //PA: routine to calculate the Higgs loop contributions to running Mtau
+  /// PA: routine to calculate the Higgs loop contributions to running Mtau
   virtual double calcRunMtauHiggs() const;
-  //PA: routine to calculate the Neutralino loop contributions to running Mtau
+  /// PA: routine to calculate the Neutralino loop contributions to running Mtau
   virtual double calcRunMtauNeutralinos(double mTauSMMZ) const;
   //  PA: routine to calculate the DrBar running tau mass from the SM MS-bar 
   //tau mass and one loop self energy minus photon parts.
@@ -512,7 +513,7 @@ virtual  void treeChargedSlepton(DoubleMatrix & mass, double mTrun, double pizzt
 		const QedQcd & oneset, bool gaugeUnification, 
 		bool ewsbBCscale =  false); 
   
- //PA: A print method used in development.  I find it useful and easier to read than couting the normal display function or calling printlong etc.    
+ /// PAq: A print method used in development.  I find it useful and easier to read than couting the normal display function or calling printlong etc.    
   void printall() const;
 
   /// Outputs with Les Houches accord conventions to standard output.
@@ -593,10 +594,6 @@ inline double NmssmSoftsusy::displayTadpoleSMs() const {
 inline double NmssmSoftsusy::displayTadpoleSMs1loop() const {
   return tSOVSMs1loop; 
 }
-
-// Calculates fractional difference in Drbar masses between in and out
-/// LCT: May be able to do something cleverer with MSSM version
-double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries);
 
 } // namespace softsusy
 

@@ -21,11 +21,11 @@ if test ! -x "$mssm_exe"; then
     exit 1
 fi
 
-echo -n "running CCMSSM point ... "
+echo -n "running CMSSM point ... "
 $mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
 echo "done"
-echo "CCMSSM SLHA input file:  $mssm_input"
-echo "CCMSSM SLHA output file: $mssm_output"
+echo "CMSSM SLHA input file:  $mssm_input"
+echo "CMSSM SLHA output file: $mssm_output"
 
 # append redundant SMINPUTS block
 mssm_input_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_sminputs.spc.in"
@@ -34,11 +34,11 @@ mssm_output_appended_sminputs="$BASEDIR/test_CMSSM_slha_doubled_blocks_appenden_
 cp $mssm_input $mssm_input_appended_sminputs
 echo "Block SMINPUTS" >> $mssm_input_appended_sminputs
 
-echo -n "running CCMSSM point with extra appended SMINPUTS block ... "
+echo -n "running CMSSM point with extra appended SMINPUTS block ... "
 $mssm_exe --slha-input-file=$mssm_input_appended_sminputs --slha-output-file=$mssm_output_appended_sminputs
 echo "done"
-echo "CCMSSM SLHA input file:  $mssm_input_appended_sminputs"
-echo "CCMSSM SLHA output file: $mssm_output_appended_sminputs"
+echo "CMSSM SLHA input file:  $mssm_input_appended_sminputs"
+echo "CMSSM SLHA output file: $mssm_output_appended_sminputs"
 
 difference=`$diff_cmd $mssm_output $mssm_output_appended_sminputs`
 

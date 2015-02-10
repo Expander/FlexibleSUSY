@@ -41,11 +41,17 @@
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 #define SM(p) Electroweak_constants::p
+#define SCALES(p) scales.p
 
 namespace flexiblesusy {
 
 struct @ModelName@_input_parameters;
 class Spectrum_generator_settings;
+
+struct @ModelName@_scales {
+   @ModelName@_scales() : HighScale(0.), SUSYScale(0.), LowScale(0.) {}
+   double HighScale, SUSYScale, LowScale;
+};
 
 class @ModelName@_slha_io {
 public:
@@ -58,12 +64,11 @@ public:
    void fill(@ModelName@_input_parameters&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
-   double get_input_scale() const;
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
    void set_extpar(const @ModelName@_input_parameters&);
-   template <class T> void set_extra(const @ModelName@_slha<T>&);
+   template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&);
    void set_minpar(const @ModelName@_input_parameters&);
    void set_sminputs(const softsusy::QedQcd&);
    template <class T> void set_spectrum(const @ModelName@_slha<T>&);
@@ -77,10 +82,13 @@ public:
    static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd& qedqcd);
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd& qedqcd);
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd&);
+
+   template <class T>
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -129,7 +137,9 @@ void @ModelName@_slha_io::fill_physical(@ModelName@_slha<T>& model) const
 }
 
 template <class T>
-void @ModelName@_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+void @ModelName@_slha_io::fill_slhaea(
+   SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model,
+   const QedQcd& qedqcd, const @ModelName@_scales& scales)
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
@@ -143,17 +153,28 @@ void @ModelName@_slha_io::fill_slhaea(SLHAea::Coll& slhaea, const @ModelName@_sl
    slha_io.set_extpar(input);
    if (!error) {
       slha_io.set_spectrum(model);
-      slha_io.set_extra(model);
+      slha_io.set_extra(model, scales);
    }
 
    slhaea = slha_io.get_slha_io().get_data();
 }
 
 template <class T>
-SLHAea::Coll @ModelName@_slha_io::fill_slhaea(const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
+   const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+{
+   @ModelName@_scales scales;
+
+   return fill_slhaea(model, qedqcd, scales);
+}
+
+template <class T>
+SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
+   const @ModelName@_slha<T>& model, const QedQcd& qedqcd,
+   const @ModelName@_scales& scales)
 {
    SLHAea::Coll slhaea;
-   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd);
+   @ModelName@_slha_io::fill_slhaea(slhaea, model, qedqcd, scales);
 
    return slhaea;
 }
@@ -175,7 +196,8 @@ void @ModelName@_slha_io::set_model_parameters(const @ModelName@_slha<T>& model)
  * @param model model class
  */
 template <class T>
-void @ModelName@_slha_io::set_extra(const @ModelName@_slha<T>& model)
+void @ModelName@_slha_io::set_extra(
+   const @ModelName@_slha<T>& model, const @ModelName@_scales& scales)
 {
    const @ModelName@_physical physical(model.get_physical_slha());
 

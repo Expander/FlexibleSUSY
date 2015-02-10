@@ -2,6 +2,7 @@ DIR      := test
 MODNAME  := test
 
 LIBTEST_SRC := \
+		$(DIR)/run_cmd.cpp \
 		$(DIR)/stopwatch.cpp
 
 LIBTEST_OBJ := \
@@ -18,6 +19,8 @@ TEST_SRC := \
 		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
+		$(DIR)/test_ewsb_solver.cpp \
+		$(DIR)/test_fixed_point_iterator.cpp \
 		$(DIR)/test_goldstones.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
@@ -42,6 +45,7 @@ TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_solver.cpp \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
+
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
@@ -52,7 +56,18 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_model.cpp \
-		$(DIR)/test_CMSSM_spectrum.cpp
+		$(DIR)/test_CMSSM_spectrum.cpp \
+		$(DIR)/test_CMSSM_weinberg_angle.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSMMassWInput),yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMMassWInput_spectrum.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-CMSSMLowPrecision),yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMLowPrecision.cpp
 endif
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM --with-CMSSM),yes yes yes)
 TEST_SRC += \
@@ -108,6 +123,7 @@ TEST_SRC += \
 endif
 
 TEST_SH := \
+		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_space_dir.sh
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
@@ -125,11 +141,15 @@ ALLDEP += $(LIBFFLITE_DEP)
 endif
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-MSSM),yes)
+TEST_SH += \
+		$(DIR)/test_standalone.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSM),yes)
 TEST_SH += \
-		$(DIR)/test_standalone.sh \
-		$(DIR)/test_run_examples.sh \
-		$(DIR)/test_CMSSM_slha_doubled_blocks.sh
+		$(DIR)/test_CMSSM_slha_doubled_blocks.sh \
+		$(DIR)/test_CMSSM_profile.sh
 TEST_SRC += \
 		$(DIR)/test_CMSSM_slha.cpp \
 		$(DIR)/test_CMSSM_slha_input.cpp \
@@ -139,7 +159,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
-		$(DIR)/test_SM_low_scale_constraint.cpp
+		$(DIR)/test_SM_low_scale_constraint.cpp \
+		$(DIR)/test_SM_weinberg_angle.cpp
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-NSM),yes)
@@ -150,6 +171,21 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-lowMSSM --with-CMSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute --with-CMSSMFPITadpole),yes yes yes yes yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_compare_ewsb_solvers.cpp
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM),yes)
+TEST_SH += \
+		$(DIR)/test_NUTNMSSM.sh
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM --with-SoftsusyNMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_NUTNMSSM_spectrum.cpp
 endif
 
 TEST_META := \
@@ -221,7 +257,8 @@ $(DIR)/%.x.log: $(DIR)/%.x
 		@echo "**************************************************" >> $@;
 		@echo "* executing test: $< " >> $@;
 		@echo "**************************************************" >> $@;
-		@$< --log_level=test_suite >> $@ 2>&1; \
+		@BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
+		$< --log_level=test_suite >> $@ 2>&1; \
 		if [ $$? = 0 ]; then echo "$<: OK"; else echo "$<: FAILED"; fi
 
 $(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
@@ -268,6 +305,12 @@ $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out
 
 $(DIR)/test_betafunction.x: $(DIR)/test_betafunction.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+
+$(DIR)/test_ewsb_solver.x: $(DIR)/test_ewsb_solver.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+
+$(DIR)/test_fixed_point_iterator.x: $(DIR)/test_fixed_point_iterator.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
 $(DIR)/test_goldstones.x: $(DIR)/test_goldstones.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
@@ -328,7 +371,11 @@ $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-ou
 		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
-$(DIR)/test_benchmark.x: $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/test_benchmark.x: CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
+$(DIR)/test_benchmark.x: $(DIR)/test_benchmark.cpp $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE) $(LIBTEST)
+		$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$<) $(LIBTEST) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
+
+$(DIR)/test_compare_ewsb_solvers.x: $(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $(LIBCMSSMGSLBroyden) $(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_loopfunctions.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
@@ -361,6 +408,12 @@ $(DIR)/test_CMSSMCKM_high_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSof
 
 $(DIR)/test_CMSSMCKM_low_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
 $(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSM_ewsb.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
@@ -389,6 +442,8 @@ $(DIR)/test_SMSSM_one_loop_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(
 
 $(DIR)/test_SMSSM_tree_level_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
+$(DIR)/test_NUTNMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNUTNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
 $(DIR)/test_CMSSMNoFV_beta_functions.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
@@ -398,6 +453,8 @@ $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBF
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_low_scale_constraint.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

@@ -10,7 +10,7 @@
 namespace softsusy {
 
 char const * const NMSSM_input::parameter_names[NUMBER_OF_NMSSM_INPUT_PARAMETERS] = {
-   "tan(beta)", "mHd^2", "mHu^2", "mu", "Bmu/(cos(beta)sin(beta))", "lambda",
+   "tan(beta)", "mHd^2", "mHu^2", "mu", "m3^2/(cos(beta)sin(beta))", "lambda",
    "kappa", "Alambda", "Akappa", "lambda*S", "xiF", "xiS", "mu'",
    "mS'^2", "mS^2"
 };
@@ -43,14 +43,14 @@ DoubleVector NMSSM_input::get_nmpars() const {
          std::string msg =
             "# Error: you set lambda * <S> to a non-zero value"
             ", but lambda is zero.  "
-            "Please set lambda (EXTPAR entry 61) to a non-zero value.";
+            "Please set lambda (EXTPAR entry 61) to a non-zero value.\n";
          throw msg;
       }
    }
    nmpars(4) = get(NMSSM_input::xiF);
    nmpars(5) = get(NMSSM_input::muPrime);
    return nmpars;
-}
+};
 
 bool NMSSM_input::is_set(NMSSM_parameters par) const {
    assert(par < NUMBER_OF_NMSSM_INPUT_PARAMETERS);
@@ -75,12 +75,25 @@ void NMSSM_input::check_ewsb_output_parameters() const {
 
    // check supported cases
    const bool Z3_symmetric = is_Z3_symmetric();
-   if (Z3_symmetric) {
-      if (!is_set(lambdaS) && !is_set(kappa) && !is_set(mS2))
+   if (SoftHiggsOut) {
+      if (!is_set(mHd2) && !is_set(mHu2) && !is_set(mS2))
          supported = true;
+      if (!is_set(lambdaS) || close(parameter[lambdaS], 0., EPSTOL))
+        throw "# ERROR: <S> is zero!  Since SoftHiggsOut == true, <S> is not"
+          " determined by the EWSB conditions, so <S> has to be set to"
+          " a non-zero value on the user-side!\n";
    } else {
-      if (!is_set(mu) && !is_set(BmuOverCosBetaSinBeta) && !is_set(xiS))
-         supported = true;
+      if (Z3_symmetric) {
+         if (!is_set(lambdaS) && !is_set(kappa) && !is_set(mS2))
+            supported = true;
+      } else {
+         if (!is_set(mu) && !is_set(BmuOverCosBetaSinBeta) && !is_set(xiS))
+            supported = true;
+         if (!is_set(lambdaS) || close(parameter[lambdaS], 0., EPSTOL))
+            throw "# ERROR: <S> is zero!  In the Z3 violating NMSSM <S> is not"
+               " determined by the EWSB conditions, so <S> has to be set to"
+               " a non-zero value on the user-side!\n";
+      }
    }
 
    if (!supported) {
@@ -93,14 +106,20 @@ void NMSSM_input::check_ewsb_output_parameters() const {
             msg << parameter_names[i] << ", ";
       }
       msg << "\n" "# Note: supported are: ";
-      if (Z3_symmetric) {
-         msg << "{" << parameter_names[lambdaS]
-             << ", " << parameter_names[kappa]
-             << ", " << parameter_names[mS2] << "}";
+      if (SoftHiggsOut) {
+            msg << "{" << parameter_names[mHd2]
+                << ", " << parameter_names[mHu2]
+                << ", " << parameter_names[mS2] << "}";
       } else {
-         msg << "{" << parameter_names[mu]
-             << ", " << parameter_names[BmuOverCosBetaSinBeta]
-             << ", " << parameter_names[xiS] << "}";
+         if (Z3_symmetric) {
+            msg << "{" << parameter_names[lambdaS]
+                << ", " << parameter_names[kappa]
+                << ", " << parameter_names[mS2] << "}";
+         } else {
+            msg << "{" << parameter_names[mu]
+                << ", " << parameter_names[BmuOverCosBetaSinBeta]
+                << ", " << parameter_names[xiS] << "}";
+         }
       }
       msg << '\n';
       throw msg.str();
@@ -156,8 +175,13 @@ void NMSSM_command_line_parser::parse(int argc, char* argv[]) {
          nmssm_input->set(NMSSM_input::mHd2, get_value(argv[i], "--mHd2="));
       else if (starts_with(argv[i], "--mu="))
          nmssm_input->set(NMSSM_input::mu, get_value(argv[i], "--mu="));
-      else if (starts_with(argv[i], "--BmuOverCosBetaSinBeta="))
-         nmssm_input->set(NMSSM_input::BmuOverCosBetaSinBeta, get_value(argv[i], "--BmuOverCosBetaSinBeta="));
+      else if (starts_with(argv[i], "--m3SqrOverCosBetaSinBeta="))
+         nmssm_input->set(NMSSM_input::BmuOverCosBetaSinBeta, get_value(argv[i], "--m3SqrOverCosBetaSinBeta="));
+      else if (starts_with(argv[i], "--BmuSqrOverCosBetaSinBeta=")) {
+         nmssm_input->set(NMSSM_input::BmuOverCosBetaSinBeta, get_value(argv[i], "--BmuSqrOverCosBetaSinBeta="));
+         cout << "# Warning: --BmuSqrOverCosBetaSinBeta= is deprecated, "
+            "please use --m3SqrOverCosBetaSinBeta= instead.\n";
+      }
       else if (starts_with(argv[i], "--lambda="))
          nmssm_input->set(NMSSM_input::lambda, get_value(argv[i], "--lambda="));
       else if (starts_with(argv[i], "--kappa="))
@@ -184,7 +208,7 @@ void NMSSM_command_line_parser::parse(int argc, char* argv[]) {
    }
 
    // check universality condition
-   if (model_ident == "sugra") {
+   if (strcmp(model_ident, "sugra") == 0) {
       // relax sugra condition if one of the following parameters is
       // set
       if (nmssm_input->is_set(NMSSM_input::Alambda) ||
@@ -201,19 +225,19 @@ void NMSSM_command_line_parser::parse(int argc, char* argv[]) {
    }
 }
 
-const std::string& NMSSM_command_line_parser::get_modelIdent() const {
+const char* NMSSM_command_line_parser::get_modelIdent() const {
    return model_ident;
 }
 
 DoubleVector NMSSM_command_line_parser::get_pars() const {
    DoubleVector pars(3);
 
-   if (model_ident == "sugra") {
+   if (strcmp(model_ident, "sugra") == 0) {
       pars(1) = m0;
       pars(2) = m12;
       pars(3) = a0;
-   } else if (model_ident == "nonUniversal") {
-      pars.setEnd(53);
+   } else if (strcmp(model_ident, "nonUniversal") == 0) {
+      pars.setEnd(56);
       for (int i = 1; i <= 3; i++) pars(i) = m12;
       for (int i = 11; i <= 13; i++) pars(i) = a0;
       pars(21) = m0*m0;
@@ -233,10 +257,14 @@ DoubleVector NMSSM_command_line_parser::get_pars() const {
          pars(21) = nmssm_input->get(NMSSM_input::mHd2);
       if (nmssm_input->is_set(NMSSM_input::mHu2))
          pars(22) = nmssm_input->get(NMSSM_input::mHu2);
-      if (nmssm_input->is_set(NMSSM_input::mu))
+      if (nmssm_input->is_set(NMSSM_input::mu)) {
          pars(23) = nmssm_input->get(NMSSM_input::mu);
-      if (nmssm_input->is_set(NMSSM_input::BmuOverCosBetaSinBeta))
+         pars(54) = nmssm_input->get(NMSSM_input::mu);
+      }
+      if (nmssm_input->is_set(NMSSM_input::BmuOverCosBetaSinBeta)) {
          pars(24) = nmssm_input->get(NMSSM_input::BmuOverCosBetaSinBeta);
+         pars(55) = nmssm_input->get(NMSSM_input::BmuOverCosBetaSinBeta);
+      }
       if (nmssm_input->is_set(NMSSM_input::mPrimeS2) &&
           nmssm_input->is_set(NMSSM_input::muPrime)) {
          // setting pars(52) = B' = mS'^2 / mu'
@@ -247,6 +275,8 @@ DoubleVector NMSSM_command_line_parser::get_pars() const {
       }
       if (nmssm_input->is_set(NMSSM_input::mS2))
          pars(53) = nmssm_input->get(NMSSM_input::mS2);
+      if (nmssm_input->is_set(NMSSM_input::xiS))
+         pars(56) = nmssm_input->get(NMSSM_input::xiS);
    } else {
       throw std::string("# Error: NMSSM boundary condition ") + model_ident
          + " currently not supported at the command line\n";
@@ -292,6 +322,9 @@ void MssmMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
 
 //PA: semi-msugra bcs for the nmssm
 void SemiMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
+  assert(inputParameters.size() == 5 &&
+         "SemiMsugraBcs: input parameter vector is not of length 5");
+
   double m0 = inputParameters.display(1);
   double m12 = inputParameters.display(2);
   double a0 = inputParameters.display(3);
@@ -301,6 +334,48 @@ void SemiMsugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
   /// Sets scalar soft masses equal to m0, fermion ones to m12 and sets the
   /// trilinear scalar coupling to be a0
   m.standardsemiSugra(m0, m12, a0, Al, Ak);
+}
+
+/// NMSSM Msugra, without setting the soft Higgs masses
+void NmssmSugraNoSoftHiggsMassBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
+  assert(inputParameters.size() >= 6 &&
+         "NmssmSugraNoSoftHiggsMassBcs: input parameter"
+         " vector has size < 6");
+
+  const double mHd2 = m.displayMh1Squared(),
+    mHu2 = m.displayMh2Squared(),
+    ms2 = m.displayMsSquared();
+
+  NmssmMsugraBcs(m, inputParameters);
+  m.setMh1Squared(mHd2);
+  m.setMh2Squared(mHu2);
+  m.setMsSquared(ms2);
+
+  // If SoftHiggsOut == true, then mu, Bmu and xiS are not fixed by
+  // EWSB.  In this case they must be set in the BCS.
+  if (!softsusy::Z3 && softsusy::SoftHiggsOut) {
+    m.setSusyMu(inputParameters(4));
+    m.setM3Squared(inputParameters(5));
+    m.setXiS(inputParameters(6));
+  }
+}
+
+/// NMSSM Msugra, without setting the soft Higgs masses
+/// and non-universal Alambda and Akappa
+void NmssmSemiMsugraNoSoftHiggsMassBcs(NmssmSoftsusy& m, const DoubleVector& inputParameters)
+{
+  assert(inputParameters.size() == 8 &&
+         "NmssmSemiMsugraNoSoftHiggsMassBcs: input parameter"
+         " vector is not of length 8");
+
+  // mSUGRA without setting mHd2, mHu2, ms2
+  NmssmSugraNoSoftHiggsMassBcs(m, inputParameters);
+
+  const double Alambda = inputParameters(7);
+  const double Akappa  = inputParameters(8);
+
+  m.setTrialambda(Alambda * m.displayLambda());
+  m.setTriakappa(Akappa * m.displayKappa());
 }
 
 void generalNmssmBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
@@ -378,15 +453,29 @@ void extendedNMSugraBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters)
   m.setSoftMassElement(mDr, 1, 1, signedSqr(inputParameters.display(47)));
   m.setSoftMassElement(mDr, 2, 2, signedSqr(inputParameters.display(48)));
   m.setSoftMassElement(mDr, 3, 3, signedSqr(inputParameters.display(49)));
-  m.setMh1Squared(inputParameters.display(21));
-  m.setMh2Squared(inputParameters.display(22));
+
+  // If SoftHiggsOut == true, then mHu2, mHd2 and mS2 will be EWSB
+  // output.  If Z3 == true, mS2 will be EWSB output.
+  if (!softsusy::SoftHiggsOut) {
+    m.setMh1Squared(inputParameters.display(21));
+    m.setMh2Squared(inputParameters.display(22));
+    if (!softsusy::Z3)
+      m.setMsSquared(inputParameters.display(53));
+  }
 
   m.setTrialambda(m.displayLambda() * inputParameters.display(50));
   m.setTriakappa(m.displayKappa() * inputParameters.display(51));
 
-  if (Z3 == false) {
+  if (!softsusy::Z3) {
     m.setMspSquared(inputParameters.display(52) * m.displayMupr());
-    m.setMsSquared(signedSqr(inputParameters.display(53)));
+  }
+
+  // If SoftHiggsOut == true, then mu, Bmu and xiS are not fixed by
+  // EWSB.  In this case they must be set in the BCS.
+  if (!softsusy::Z3 && softsusy::SoftHiggsOut) {
+    m.setSusyMu(inputParameters(54));
+    m.setM3Squared(inputParameters(55));
+    m.setXiS(inputParameters(56));
   }
 }
 
@@ -446,7 +535,7 @@ void amsbBcs(NmssmSoftsusy & m, const DoubleVector & inputParameters) {
 }
 
 /// LCT: Difference between two NMSSM SOFTSUSY objects in and out: EWSB terms only
-double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries) {
+double sumTol(const Softsusy<SoftParsNmssm> & in, const Softsusy<SoftParsNmssm> & out, int numTries) {
   DoubleVector sT(37);
   sumTol(in.displayDrBarPars(), out.displayDrBarPars(), sT);
   /// The predicted value of MZ^2 is an absolute measure of how close to a
@@ -464,5 +553,9 @@ double sumTol(const NmssmSoftsusy & in, const NmssmSoftsusy & out, int numTries)
 
   return sT.max();
 }
-
-} // namespace softsusy
+  
+  /// explicit template instantiations
+  template class Softsusy<SoftParsNmssm>;
+  template class SoftPars<NmssmSusy, nmsBrevity>;
+  
+} ///< namespace softsusy

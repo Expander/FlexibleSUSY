@@ -42,6 +42,8 @@ SetOutputParameters::usage="";
 GetInputParameters::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
+GetModelParametersWithMassDimension::usage="Returns model parameters
+with given mass dimension";
 
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
@@ -65,6 +67,8 @@ GetEffectiveMu::usage="";
 
 GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
+GetParticleFromDescription::usage="Returns particle symbol from a
+given description string.";
 
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
@@ -73,6 +77,8 @@ ClearPhases::usage="";
 
 ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
+
+StripIndices::usage="removes indices from model parameter";
 
 Begin["`Private`"];
 
@@ -114,16 +120,30 @@ FindSymbolDef[sym_] :=
 
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
-    Module[{symbols, compactExpr},
+    Module[{symbols, compactExpr, allParameters},
+           allParameters = Join[allModelParameters, allOutputParameters, allInputParameters];
            compactExpr = RemoveProtectedHeads[expr];
-           symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, a_[__] /; MemberQ[allInputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
-                     };
-           Return[DeleteDuplicates[Flatten[symbols]]];
+           (* find all model parameters with SARAH head *)
+           symbols = DeleteDuplicates[Flatten[
+               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], Infinity],
+                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], Infinity],
+                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], Infinity],
+                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], Infinity],
+                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], Infinity],
+                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], Infinity],
+                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], Infinity],
+                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], Infinity]
+               }]];
+           (* remove parameters found from compactExpr *)
+           compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
+           (* find all model parameters without SARAH head in compactExpr *)
+           symbols = Join[symbols,
+               { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
+                 Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, Infinity],
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+               }];
+           DeleteDuplicates[Flatten[symbols]]
           ];
 
 IsScalar[sym_] :=
@@ -703,6 +723,24 @@ GetParameterFromDescription[description_String] :=
            parameter[[1]]
           ];
 
+GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Module[{particle},
+           particle =Cases[SARAH`ParticleDefinitions[eigenstates],
+                            {particle_,
+                             {___, SARAH`Description -> description, ___}} :>
+                            particle];
+           If[Length[particle] == 0,
+              Print["Error: Particle with description \"", description,
+                    "\" not found."];
+              Return[Null];
+             ];
+           If[Length[particle] > 1,
+              Print["Warning: Particle with description \"", description,
+                    "\" not unique."];
+             ];
+           particle[[1]]
+          ];
+
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 ClearPhase[phase_] :=
@@ -755,6 +793,32 @@ ExpandExpressions[eqs_List] :=
                result = Join[result, Flatten[expanded]];
               ];
            Return[result];
+          ];
+
+(* removes indices from model Parameter, taking SARAH's L, B, T, Q
+   into account.  *)
+StripIndices[par_[idx___] /; And @@ (NumberQ /@ {idx})] := par;
+
+StripIndices[par_[idx___] /; MemberQ[Join[allModelParameters,allOutputParameters],par]] := par;
+
+StripIndices[par_] := par;
+
+ExtractParametersFromSARAHBetaLists[beta_List] :=
+    StripIndices[#[[1]]]& /@ beta;
+
+GetModelParametersWithMassDimension[dim_?IntegerQ] :=
+    Module[{dimPars},
+           Switch[dim,
+                  0, dimPars = Join[SARAH`BetaGauge, SARAH`BetaLijkl, SARAH`BetaYijk, SARAH`BetaQijkl];,
+                  1, dimPars = Join[SARAH`BetaMuij, SARAH`BetaTijk, SARAH`BetaMi, SARAH`BetaDGi, SARAH`BetaVEV];,
+                  2, dimPars = Join[SARAH`BetaLSi, SARAH`BetaBij, SARAH`Betam2ij];,
+                  3, dimPars = Join[SARAH`BetaLi];,
+                  _,
+                  Print["Error: GetModelParametersWithMassDimension: ", dim,
+                        " is not a valid dimension"];
+                  Return[{}];
+                 ];
+           ExtractParametersFromSARAHBetaLists[dimPars]
           ];
 
 End[];

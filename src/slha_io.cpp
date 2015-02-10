@@ -31,7 +31,6 @@ namespace flexiblesusy {
 
 SLHA_io::SLHA_io()
    : data()
-   , extpar()
    , modsel()
 {
 }
@@ -39,7 +38,6 @@ SLHA_io::SLHA_io()
 void SLHA_io::clear()
 {
    data.clear();
-   extpar.clear();
    modsel.clear();
 }
 
@@ -70,14 +68,6 @@ void SLHA_io::read_from_file(const std::string& file_name)
       msg << "cannot read SLHA file: \"" << file_name << "\"";
       throw ReadError(msg.str());
    }
-}
-
-void SLHA_io::read_extpar()
-{
-   SLHA_io::Tuple_processor extpar_processor
-      = boost::bind(&SLHA_io::process_extpar_tuple, boost::ref(extpar), _1, _2);
-
-   read_block("EXTPAR", extpar_processor);
 }
 
 void SLHA_io::read_modsel()
@@ -327,13 +317,14 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
 
    ss << "Block SMINPUTS\n";
    ss << FORMAT_ELEMENT( 1, alphaEmInv                   , "alpha^(-1) SM MSbar(MZ)");
-   ss << FORMAT_ELEMENT( 2, 1.166370000e-05              , "G_Fermi");
+   ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant(), "G_Fermi");
    ss << FORMAT_ELEMENT( 3, qedqcd.displayAlpha(ALPHAS)  , "alpha_s(MZ) SM MSbar");
-   ss << FORMAT_ELEMENT( 4, Electroweak_constants::MZ    , "MZ(pole)");
+   ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()       , "MZ(pole)");
    ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()         , "mb(mb) SM MSbar");
    ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()       , "mtop(pole)");
    ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
    ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "mnu3(pole)");
+   ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()       , "MW(pole)");
    ss << FORMAT_ELEMENT(11, qedqcd.displayMass(mElectron), "melectron(pole)");
    ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
    ss << FORMAT_ELEMENT(13, qedqcd.displayMass(mMuon)    , "mmuon(pole)");
@@ -366,24 +357,6 @@ void SLHA_io::write_to_stream(std::ostream& ostr)
       ostr << data;
    else
       ERROR("cannot write SLHA file");
-}
-
-/**
- * fill Extpar struct from given key - value pair
- *
- * @param extpar EXTPAR data
- * @param key SLHA key in EXTPAR
- * @param value value corresponding to key
- */
-void SLHA_io::process_extpar_tuple(Extpar& extpar, int key, double value)
-{
-   if (key == 0) {
-      if (value > -std::numeric_limits<double>::epsilon()) {
-         extpar.input_scale = value;
-      } else {
-         WARNING("Negative values for EXTPAR entry 0 currently not supported");
-      }
-   }
 }
 
 /**
@@ -438,14 +411,13 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setAlpha(ALPHA, 1.0 / value);
       break;
    case 2:
-      // Gmu cannot be set yet
+      oneset.setFermiConstant(value);
       break;
    case 3:
       oneset.setAlpha(ALPHAS, value);
       break;
    case 4:
-      // MZ cannot be set yet
-      // oneset.setMu(value);
+      oneset.setPoleMZ(value);
       break;
    case 5:
       oneset.setMass(mBottom, value);
@@ -460,6 +432,9 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       break;
    case 8:
       oneset.setNeutrinoPoleMass(3, value);
+      break;
+   case 9:
+      oneset.setPoleMW(value);
       break;
    case 11:
       oneset.setMass(mElectron, value);

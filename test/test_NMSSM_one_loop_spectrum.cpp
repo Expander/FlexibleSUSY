@@ -75,9 +75,9 @@ void ensure_one_loop_ewsb(NMSSM<Two_scale>& m, NmssmSoftsusy& s)
    const double vS_fs    = m.get_vS();
    const double ms2_fs   = m.get_ms2();
 
-   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 1.0e-11);
-   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 2.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 2.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(kappa_ss, kappa_fs, 1.1e-8);
+   BOOST_CHECK_CLOSE_FRACTION(vS_ss   , vS_fs   , 1.1e-7);
+   BOOST_CHECK_CLOSE_FRACTION(ms2_ss  , ms2_fs  , 1.6e-7);
 }
 
 BOOST_AUTO_TEST_CASE( test_NMSSM_pole_masses )

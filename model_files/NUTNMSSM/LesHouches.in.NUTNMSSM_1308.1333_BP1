@@ -1,0 +1,35 @@
+Block MODSEL                 # Select model
+    6   0                    # flavour violation
+Block FlexibleSUSY
+    0   1.000000000e-04      # precision goal
+    1   100                  # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   0                    # calculate SM pole masses
+    4   2                    # pole mass loop order
+    5   2                    # EWSB loop order
+    6   2                    # beta-functions loop order
+    7   1                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   12   0                    # force output
+Block SMINPUTS               # Standard Model inputs
+    1   127.944	             # ALPHA_EM^-1(MZ)
+    2   1.1663787E-5         # GF
+    3   1.18500000E-01       # ALPHA_S(MZ)
+    4   91.1876              # MZ
+    5   4.18000000E+00       # MB(MB)
+    6   1.73070000E+02       # MTOP
+    7   1.77682              # MTAU
+Block MINPAR                 # Input parameters
+    1   2400                 # m0
+    2   550                  # m12
+    3   2.665                # TanBeta
+    5   -972.1               # Azero
+Block EXTPAR                 # Input parameters
+   61   0.646                # LambdaInput
+   62   0.377                # KappaInput
+   63   -511.0               # ALambdaInput
+   64   -845.7               # AKappaInput
+   65   120.5                # MuEff
