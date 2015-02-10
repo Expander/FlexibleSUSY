@@ -341,7 +341,7 @@ const double msnue         = " <> msveStr <> ";
 const double msnumu        = " <> msvmStr <> ";
 const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
 const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
-const double piwwtMW       = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -355,7 +355,7 @@ const double pizztMZ_corrected =
    Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
 
 const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
 
 const double piwwt0_corrected =
    Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
@@ -441,7 +441,7 @@ const double g3            = " <> g3Str <> ";
 const double ymu           = " <> ymStr <> ";
 const double pizztMZ       = Re(MODEL->self_energy_" <> zStr <> "(mz_pole));
 const double piwwt0        = Re(MODEL->self_energy_" <> wStr <> "(0.));
-const double piwwtMW       = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
+self_energy_w_at_mw        = Re(MODEL->self_energy_" <> wStr <> "(mw_pole));
 
 Weinberg_angle::Self_energy_data se_data;
 se_data.scale    = scale;
@@ -455,7 +455,7 @@ const double pizztMZ_corrected =
    Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
 
 const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwtMW, mw_pole, se_data);
+   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
 
 const double piwwt0_corrected =
    Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
@@ -518,14 +518,29 @@ CalculateThetaW[options_List,isSUSYModel_] :=
            CalculateThetaWFromMW[]
           ];
 
-RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant] :=
-    "\
-const double mw_pole_old = oneset.displayPoleMW();
-const double mw_pole_new = MODEL->" <> LoopMasses`CreateLoopMassFunctionName[SARAH`VectorW] <> "(mw_pole_old);
+RecalculateMWPole[options_List] :=
+    RecalculateMWPole[Utils`FSGetOption[options, FlexibleSUSY`FSWeakMixingAngleInput],
+                      Utils`FSGetOption[options,FlexibleSUSY`FSVectorW]];
 
-oneset.setPoleMW(mw_pole_new);";
+RecalculateMWPole[input_ /; input === FlexibleSUSY`FSFermiConstant, w_] :=
+    Module[{mwStr, wStr},
+           wStr = CConversion`RValueToCFormString[w];
+           mwStr = CConversion`RValueToCFormString[FlexibleSUSY`M[w]];
+           "\
+MODEL->calculate_" <> mwStr <> "();
 
-RecalculateMWPole[input_] := "";
+const double mw_drbar    = MODEL->get_" <> mwStr <> "();
+const double mw_pole_sqr = Sqr(mw_drbar) - self_energy_w_at_mw;
+
+if (mw_pole_sqr < 0.)
+   MODEL->get_problems().flag_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::" <> wStr <> ");
+
+const double mw_pole = AbsSqrt(mw_pole_sqr);
+
+oneset.setPoleMW(mw_pole);"
+          ];
+
+RecalculateMWPole[_,_] := "";
 
 CalculateGaugeCouplings[] :=
     Module[{subst, g1Def, g2Def, g3Def, result},

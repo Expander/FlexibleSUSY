@@ -526,7 +526,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateThetaW         = ThresholdCorrections`CalculateThetaW[FSWeakMixingAngleOptions,SARAH`SupersymmetricModel];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
-          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[Utils`FSGetOption[FSWeakMixingAngleOptions, FSWeakMixingAngleInput]];
+          recalculateMWPole       = ThresholdCorrections`RecalculateMWPole[FSWeakMixingAngleOptions];
           setDRbarYukawaCouplings = {
               ThresholdCorrections`SetDRbarYukawaCouplingTop[settings],
               ThresholdCorrections`SetDRbarYukawaCouplingBottom[settings],
