@@ -222,12 +222,12 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.00008);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00011);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Lambdax(), ss.displayLambda(), 0.00012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Kappa() , ss.displayKappa(), 0.0017);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_vS() , ss.displaySvev(), 0.0013);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.013);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.0021);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_ms2(), ss.displayMsSquared(), 0.0022);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(0,0), ss.displayYukawaMatrix(YU)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(1,1), ss.displayYukawaMatrix(YU)(2,2), 0.0093);
