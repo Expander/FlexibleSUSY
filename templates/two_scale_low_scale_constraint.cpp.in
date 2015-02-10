@@ -129,6 +129,11 @@ void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd
    oneset = oneset_;
 }
 
+const QedQcd& @ModelName@_low_scale_constraint<Two_scale>::get_sm_parameters() const
+{
+   return oneset;
+}
+
 void @ModelName@_low_scale_constraint<Two_scale>::clear()
 {
    scale = 0.;
