@@ -296,6 +296,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
  */
 void @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole()
 {
+   if (!model->get_thresholds())
+      return;
+
 @recalculateMWPole@
 }
 
