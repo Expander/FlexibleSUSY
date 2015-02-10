@@ -62,6 +62,7 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
+   , self_energy_w_at_mw(0.)
    , threshold_corrections_loop_order(1)
 {
 }
@@ -76,6 +77,7 @@ namespace flexiblesusy {
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
    , new_@strongCoupling@(0.)
+   , self_energy_w_at_mw(0.)
 {
    initialize();
 }
@@ -141,6 +143,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::clear()
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
+   self_energy_w_at_mw = 0.;
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::initialize()
@@ -159,6 +162,7 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
+   self_energy_w_at_mw = 0.;
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::update_scale()
@@ -179,6 +183,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double mw_pole  = oneset.displayPoleMW();
+   const double mz_pole  = oneset.displayPoleMZ();
 
    double delta_alpha_em = 0.;
    double delta_alpha_s  = 0.;
@@ -193,12 +199,12 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
    const double e_drbar        = Sqrt(4.0 * Pi * alpha_em_drbar);
 
    // interface variables
-   MZDRbar = oneset.displayPoleMZ();
-   MWDRbar = oneset.displayPoleMW();
+   MZDRbar = mz_pole;
+   MWDRbar = mw_pole;
 
    if (model->get_thresholds()) {
-      MZDRbar = model->calculate_M@VectorZ@_DRbar(oneset.displayPoleMZ());
-      MWDRbar = model->calculate_M@VectorW@_DRbar(oneset.displayPoleMW());
+      MZDRbar = model->calculate_M@VectorZ@_DRbar(mz_pole);
+      MWDRbar = model->calculate_M@VectorW@_DRbar(mw_pole);
    }
 
    AlphaS = alpha_s_drbar;

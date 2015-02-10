@@ -63,6 +63,7 @@ private:
    double EDRbar;
    double ThetaWDRbar;
    double new_@hyperchargeCoupling@, new_@leftCoupling@, new_@strongCoupling@;
+   double self_energy_w_at_mw;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
 
    double calculate_theta_w(double);
