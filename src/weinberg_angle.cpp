@@ -156,7 +156,7 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
    const double gfermi     = data.fermi_contant;
 
    if (!is_equal(scale, mz_pole)) {
-      WARNING("Weinberg_angle::rhohat() called at scale "
+      WARNING("Weinberg_angle::calculate() called at scale "
               << scale << " != MZ_pole(" << mz_pole << ")");
    }
 
