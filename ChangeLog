@@ -15,6 +15,11 @@ FlexibleSUSY-1.0.5 [not released yet]
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
 
+ * Bugfix (commit 08128f0): For a non-SUSY model the all running
+   masses are checked for convergence.  Before, only non-SM particle
+   masses were checked for convergence, which led to an empty
+   convergence tester for the SM.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
