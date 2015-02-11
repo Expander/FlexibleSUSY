@@ -38,7 +38,7 @@ CreateCompareFunction[crit_ /; crit === Automatic] :=
               particles = TreeMasses`GetSusyParticles[];,
               particles = TreeMasses`GetParticles[];
              ];
-           particles = Select[particles, (!TreeMasses`IsMassless[#] && !IsGhost[#])&];
+           particles = Select[particles, (!TreeMasses`IsMassless[#] && !IsGhost[#] && !IsGoldstone[#])&];
            particles = FlexibleSUSY`M /@ particles;
            CreateCompareFunction[particles]
           ];
