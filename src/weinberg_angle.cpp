@@ -237,7 +237,8 @@ double Weinberg_angle::calculate_delta_rho(
    double rho,
    double sinThetaW,
    const Data& data,
-   bool add_susy_contributions
+   bool add_susy_contributions,
+   unsigned number_of_loops
 )
 {
    const double mz = data.mz_pole;
@@ -273,15 +274,21 @@ double Weinberg_angle::calculate_delta_rho(
    if (add_susy_contributions)
       hmix_r = Sqr(hmix12 / sinb);
 
-   const double deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
-      (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
-      (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24
-       - 0.85 * Sqr(mz)
-       / Sqr(mt)) + Sqr(xt) * hmix_r *
-      rho_2(mh / mt) / 3.0;
+   double deltaRhoOneLoop = 0.;
 
-   const double deltaRhoOneLoop = pizztMZ / (rho * Sqr(mz))
-      - piwwtMW / Sqr(mw);
+   if (number_of_loops > 0)
+      deltaRhoOneLoop = pizztMZ / (rho * Sqr(mz)) - piwwtMW / Sqr(mw);
+
+   double deltaRho2LoopSm = 0.;
+
+   if (number_of_loops > 1) {
+      deltaRho2LoopSm = alphaDRbar * Sqr(g3) /
+         (16.0 * Pi * Sqr(Pi) * Sqr(sinThetaW)) *
+         (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24
+          - 0.85 * Sqr(mz)
+          / Sqr(mt)) + Sqr(xt) * hmix_r *
+         rho_2(mh / mt) / 3.0;
+   }
 
    const double deltaRho = deltaRhoOneLoop + deltaRho2LoopSm;
 

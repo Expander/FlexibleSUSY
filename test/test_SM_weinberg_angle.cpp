@@ -386,13 +386,17 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    const double ss_delta_r_2l =
       ::calculate_delta_rho_sm_2loop(outrho, outsin, data);
 
-   // const double fs_delta_r_1l =
-   //    Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 1);
+   const double fs_delta_r_0l =
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 0);
+
+   const double fs_delta_r_1l =
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 1);
 
    const double fs_delta_r_2l =
-      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false);
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 2);
 
-   // BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_1l, fs_delta_r_1l, 1.0e-10);
+   BOOST_CHECK_SMALL(fs_delta_r_0l, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_1l, fs_delta_r_1l, 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_2l, fs_delta_r_2l, 1.0e-10);
 }
 
