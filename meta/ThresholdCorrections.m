@@ -389,6 +389,7 @@ data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.enable_susy_contributions();
+weinberg.set_number_of_loops(MODEL->get_thresholds());
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();
@@ -478,6 +479,7 @@ data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.disable_susy_contributions();
+weinberg.set_number_of_loops(MODEL->get_thresholds());
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();
