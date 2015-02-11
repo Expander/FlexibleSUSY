@@ -34,8 +34,11 @@ CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
 
 CreateCompareFunction[crit_ /; crit === Automatic] :=
     Module[{particles},
-           particles = TreeMasses`GetParticles[];
-           particles = Select[particles, (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#] && !IsGhost[#])&];
+           If[SARAH`SupersymmetricModel,
+              particles = TreeMasses`GetSusyParticles[];,
+              particles = TreeMasses`GetParticles[];
+             ];
+           particles = Select[particles, (!TreeMasses`IsMassless[#] && !IsGhost[#])&];
            particles = FlexibleSUSY`M /@ particles;
            CreateCompareFunction[particles]
           ];
