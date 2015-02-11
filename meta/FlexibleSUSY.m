@@ -82,7 +82,14 @@ FSPerturbativityThreshold = N[Sqrt[4 Pi]];
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
 
-(* list of masses and parameters to check for convergence *)
+(* list of masses and parameters to check for convergence
+
+   Example:
+
+   FSConvergenceCheck = {
+      M[hh], g3, Yu, Yd[3,3], Ye, B[\[Mu]]
+   };
+*)
 FSConvergenceCheck = Automatic;
 
 (* EWSB solvers *)
