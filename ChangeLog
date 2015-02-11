@@ -8,7 +8,8 @@ FlexibleSUSY-1.0.5 [not released yet]
    the FlexibleSUSY model file.
    Example:
    FSWeakMixingAngleInput = FSFermiConstant; (* or FSMassW *)
-
+   Note: To achieve the maximum accuracy available, set the threshold
+   corrections loop order to 2 (FlexibleSUSY block entry 7)
 
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
