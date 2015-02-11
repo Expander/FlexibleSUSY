@@ -1,5 +1,5 @@
 
-BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMasses`", "Parameters`"}];
+BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMasses`", "Parameters`", "Utils`"}];
 
 CreateCompareFunction::usage="";
 
@@ -23,13 +23,13 @@ CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
            esStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[dim == 1,
               result = diff <> "[" <> ToString[offset] <> "] = " <>
-                       "MaxRelDiff(OLD1(" <> esStr <> "),NEW1(" <> esStr <> "));\n";
+                       "MaxRelDiff(OLD(" <> esStr <> "),NEW(" <> esStr <> "));\n";
               ,
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle] - 1;
               result = "for (unsigned i = " <> ToString[dimStart] <>
                        "; i < " <> ToString[dim] <> "; ++i) {\n";
               body = diff <> "[i + " <> ToString[offset] <> "] = " <>
-                     "MaxRelDiff(OLD(" <> esStr <> ",i),NEW(" <> esStr <> ",i));";
+                     "MaxRelDiff(OLD1(" <> esStr <> ",i),NEW1(" <> esStr <> ",i));";
               result = result <> IndentText[body] <> "\n}\n";
              ];
            Return[result];
