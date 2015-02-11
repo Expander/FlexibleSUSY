@@ -51,7 +51,7 @@ CalcDifference[parameter_[], offset_Integer, diff_String] :=
            Return[result];
           ];
 
-CalcDifference[parameter_[idx___], offset_Integer, diff_String] :=
+CalcDifference[parameter_[idx___Integer], offset_Integer, diff_String] :=
     Module[{result, parStr, dim, dimStr},
            dim = Length[{idx}];
            dimStr = ToString[dim];
