@@ -28,6 +28,7 @@ GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
 GetTypeFromDimension::usage="";
+GetParameterDimensions::usage="";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -293,6 +294,16 @@ GetType[FlexibleSUSY`M[sym_]] :=
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
+
+GetParameterDimensions[sym_] :=
+    Module[{dim},
+           dim = SARAH`getDimParameters[sym];
+           Switch[dim,
+                  {}, {1},
+                  {0}, {1},
+                  _, dim
+                 ]
+          ];
 
 CreateIndexReplacementRules[pars_List] :=
     Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},
