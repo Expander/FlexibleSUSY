@@ -303,7 +303,8 @@ double Weinberg_angle::calculate_delta_r(
    double rho,
    double sinThetaW,
    const Data& data,
-   bool add_susy_contributions
+   bool add_susy_contributions,
+   unsigned number_of_loops
 )
 {
    const double outcos = Cos(ArcSin(sinThetaW));
@@ -337,22 +338,30 @@ double Weinberg_angle::calculate_delta_r(
    }
 #endif
 
-   const double dvb
-      = calculate_delta_vb(rho, sinThetaW, data, add_susy_contributions);
+   double dvb = 0.;
+
+   if (number_of_loops > 0)
+      dvb = calculate_delta_vb(rho, sinThetaW, data, add_susy_contributions);
 
    double hmix_r = 1.0;
    if (add_susy_contributions)
       hmix_r = Sqr(hmix12 / sinb);
 
-   const double deltaR = rho * piwwt0 / Sqr(mw) -
-      pizztMZ / Sqr(mz) + dvb;
+   double deltaR = 0.;
 
-   const double deltaR2LoopSm = alphaDRbar * Sqr(g3) /
-      (16.0 * Sqr(Pi) * Pi * Sqr(sinThetaW) * Sqr(outcos)) *
-      (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224
-       - 0.144 * Sqr(mz) / Sqr(mt)) -
-      Sqr(xt) * hmix_r *
-      rho_2(mh / mt) * (1.0 - deltaR) * rho / 3.0;
+   if (number_of_loops > 0)
+      deltaR = rho * piwwt0 / Sqr(mw) - pizztMZ / Sqr(mz) + dvb;
+
+   double deltaR2LoopSm = 0.;
+
+   if (number_of_loops > 1) {
+      deltaR2LoopSm = alphaDRbar * Sqr(g3) /
+         (16.0 * Sqr(Pi) * Pi * Sqr(sinThetaW) * Sqr(outcos)) *
+         (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224
+          - 0.144 * Sqr(mz) / Sqr(mt)) -
+         Sqr(xt) * hmix_r *
+         rho_2(mh / mt) * (1.0 - deltaR) * rho / 3.0;
+   }
 
    const double deltaR_full = deltaR + deltaR2LoopSm;
 
