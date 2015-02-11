@@ -1,5 +1,5 @@
 
-BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMasses`"}];
+BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMasses`", "Parameters`"}];
 
 CreateCompareFunction::usage="";
 
@@ -8,11 +8,14 @@ Begin["`Private`"];
 CountNumberOfParameters[FlexibleSUSY`M[particle_]] :=
     TreeMasses`GetDimension[particle];
 
-CountNumberOfParameters[particle_] :=
-    TreeMasses`GetDimension[particle];
+CountNumberOfParameters[parameters_List] :=
+    Plus @@ (CountNumberOfParameters /@ parameters);
 
-CountNumberOfParameters[particles_List] :=
-    Plus @@ (CountNumberOfParameters /@ particles);
+CountNumberOfParameters[parameter_[__]] :=
+    If[Parameters`IsRealParameter[parameter], 1, 2];
+
+CountNumberOfParameters[parameter_] :=
+    If[Parameters`IsRealParameter[parameter], 1, 2] * (Times @@ Parameters`GetParameterDimensions[parameter]);
 
 CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
     Module[{result, body, dim, dimStart, esStr},
