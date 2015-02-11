@@ -8,7 +8,7 @@ Block FlexibleSUSY
     4   1                    # pole mass loop order
     5   1                    # EWSB loop order
     6   2                    # beta-functions loop order
-    7   1                    # threshold corrections loop order
+    7   2                    # threshold corrections loop order
     8   0                    # Higgs 2-loop corrections O(alpha_t alpha_s)
     9   0                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   0                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
