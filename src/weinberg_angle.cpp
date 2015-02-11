@@ -86,6 +86,7 @@ Weinberg_angle::Self_energy_data::Self_energy_data()
  */
 Weinberg_angle::Weinberg_angle()
    : number_of_iterations(20)
+   , number_of_loops(2)
    , precision_goal(1.0e-8)
    , rho_hat(0.)
    , sin_theta(0.)
@@ -111,6 +112,11 @@ void Weinberg_angle::disable_susy_contributions()
 void Weinberg_angle::set_number_of_iterations(unsigned n)
 {
    number_of_iterations = n;
+}
+
+void Weinberg_angle::set_number_of_loops(unsigned n)
+{
+   number_of_loops = n;
 }
 
 void Weinberg_angle::set_data(const Data& data_)
