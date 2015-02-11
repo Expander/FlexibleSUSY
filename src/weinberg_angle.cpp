@@ -173,7 +173,8 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
 
    while (not_converged && iteration < number_of_iterations) {
       const double deltaR
-         = calculate_delta_r(rho_old, sin_old, data, susy_contributions);
+         = calculate_delta_r(rho_old, sin_old, data, susy_contributions,
+                             number_of_loops);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
          (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
@@ -190,7 +191,8 @@ int Weinberg_angle::calculate(double rho_start, double sin_start)
       sin_new = Sin(theta);
 
       const double deltaRho
-         = calculate_delta_rho(rho_old, sin_new, data, susy_contributions);
+         = calculate_delta_rho(rho_old, sin_new, data, susy_contributions,
+                               number_of_loops);
 
       if (Abs(deltaRho) < 1.0)
          rho_new = 1.0 / (1.0 - deltaRho);

@@ -156,6 +156,22 @@ double calculate_delta_rho_sm_2loop(
    return deltaRho;
 }
 
+double calculate_sin_theta_tree(const Weinberg_angle::Data& data)
+{
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double mz_pole    = data.mz_pole;
+   const double gfermi     = data.fermi_contant;
+
+
+   const double sin2thetasqO4 = Pi * alphaDRbar /
+      (Sqrt(2.) * Sqr(mz_pole) * gfermi);
+
+   const double sin2theta = Sqrt(4.0 * sin2thetasqO4);
+   const double theta = 0.5 * ArcSin(sin2theta);
+
+   return Sin(theta);
+}
+
 BOOST_AUTO_TEST_CASE( test_delta_vb )
 {
    SM<Two_scale> fs;
@@ -465,16 +481,24 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
+   const double sin_theta_tree = ::calculate_sin_theta_tree(data);
+
    Weinberg_angle weinberg;
    weinberg.disable_susy_contributions();
    weinberg.set_number_of_iterations(20);
+   weinberg.set_number_of_loops(0);
    weinberg.set_precision_goal(1.0e-8);
    weinberg.set_data(data);
 
-   const int error = weinberg.calculate();
+   for (unsigned loops = 0; loops < 3; loops++) {
+      weinberg.set_number_of_loops(loops);
+      const int error = weinberg.calculate();
+      const double fs_sin = weinberg.get_sin_theta();
 
-   const double fs_sin = weinberg.get_sin_theta();
+      BOOST_REQUIRE(error == 0);
+      BOOST_MESSAGE("SM sin(ThetaW) " << loops << "-loop = " << fs_sin);
 
-   BOOST_REQUIRE(error == 0);
-   BOOST_MESSAGE("SM sin(ThetaW) = " << fs_sin);
+      if (loops == 0)
+         BOOST_CHECK_CLOSE_FRACTION(fs_sin, sin_theta_tree, 1.0e-10);
+   }
 }
