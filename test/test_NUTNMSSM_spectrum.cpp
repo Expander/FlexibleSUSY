@@ -180,7 +180,7 @@ public:
 
       mssm.clear();
       mssm.set_loops(2);
-      mssm.set_thresholds(1);
+      mssm.set_thresholds(2);
       mssm.set_ewsb_loop_order(loops);
       mssm.set_pole_mass_loop_order(loops);
       mssm.set_input_parameters(pp);
