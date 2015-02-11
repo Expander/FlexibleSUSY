@@ -35,7 +35,7 @@ CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
               ,
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle] - 1;
               result = "for (unsigned i = " <> ToString[dimStart] <>
-                       "; i < " <> ToString[dim] <> "; ++i) {\n";
+                       "; i < " <> ToString[dim] <> "; i++) {\n";
               body = diff <> "[i + " <> ToString[offset] <> "] = " <>
                      "MaxRelDiff(OLD1(" <> esStr <> ",i),NEW1(" <> esStr <> ",i));";
               result = result <> IndentText[body] <> "\n}\n";
