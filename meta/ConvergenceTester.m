@@ -5,13 +5,16 @@ CreateCompareFunction::usage="";
 
 Begin["`Private`"];
 
-CountNumberOfMasses[particles_List] :=
-    Plus @@ (TreeMasses`GetDimension /@ particles);
-
-CountNumberOfMasses[particle_] :=
+CountNumberOfParameters[FlexibleSUSY`M[particle_]] :=
     TreeMasses`GetDimension[particle];
 
-CalcDifference[particle_, offset_Integer, diff_String] :=
+CountNumberOfParameters[particle_] :=
+    TreeMasses`GetDimension[particle];
+
+CountNumberOfParameters[particles_List] :=
+    Plus @@ (CountNumberOfParameters /@ particles);
+
+CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
     Module[{result, body, dim, dimStart, esStr},
            dim = TreeMasses`GetDimension[particle];
            esStr = ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -29,27 +32,33 @@ CalcDifference[particle_, offset_Integer, diff_String] :=
            Return[result];
           ];
 
-CreateCompareFunction[particles_List] :=
-    Module[{result, numberOfMasses, i, offset = 0, massiveSusyParticles},
-           massiveSusyParticles = Select[particles /. FlexibleSUSY`M -> Identity,
-                                         (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#])&];
-           numberOfMasses = CountNumberOfMasses[massiveSusyParticles];
-           If[numberOfMasses == 0,
-              Print["Warning: model has no massive susy particles!"];
+CreateCompareFunction[crit_ /; crit === Automatic] :=
+    Module[{particles},
+           particles = TreeMasses`GetParticles[];
+           particles = Select[particles, (!TreeMasses`IsMassless[#] && !SARAH`SMQ[#] && !IsGhost[#])&];
+           particles = FlexibleSUSY`M /@ particles;
+           CreateCompareFunction[particles]
+          ];
+
+CreateCompareFunction[parameters_List] :=
+    Module[{result, numberOfParameters, i, offset = 0},
+           numberOfParameters = CountNumberOfParameters[parameters];
+           If[numberOfParameters == 0,
+              Print["Error: no parameters specified for the convergence test!"];
               Return["return 0.;"];
              ];
-           result = "double diff[" <> ToString[numberOfMasses] <> "] = { 0 };\n\n";
-           For[i = 1, i <= Length[massiveSusyParticles], i++,
-               result = result <> CalcDifference[massiveSusyParticles[[i]], offset, "diff"];
-               offset += CountNumberOfMasses[massiveSusyParticles[[i]]];
+           result = "double diff[" <> ToString[numberOfParameters] <> "] = { 0 };\n\n";
+           For[i = 1, i <= Length[parameters], i++,
+               result = result <> CalcDifference[parameters[[i]], offset, "diff"];
+               offset += CountNumberOfParameters[parameters[[i]]];
               ];
-           If[offset != numberOfMasses,
+           If[offset != numberOfParameters,
               Print["Error: something is wrong with the counting of masses:"];
-              Print["  numberOfMasses = ", numberOfMasses, ", offset = ", offset];
+              Print["  numberOfParameters = ", numberOfParameters, ", offset = ", offset];
              ];
            result = result <>
                     "\nreturn *std::max_element(diff, diff + " <>
-                    ToString[numberOfMasses] <> ");\n";
+                    ToString[numberOfParameters] <> ");\n";
            Return[result];
           ];
 

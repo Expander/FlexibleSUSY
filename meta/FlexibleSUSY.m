@@ -82,6 +82,9 @@ FSPerturbativityThreshold = N[Sqrt[4 Pi]];
 (* list of soft breaking Higgs masses for solving EWSB eqs. *)
 FSSoftHiggsMasses = {};
 
+(* list of masses and parameters to check for convergence *)
+FSConvergenceCheck = Automatic;
+
 (* EWSB solvers *)
 GSLHybrid;   (* hybrid method *)
 GSLHybridS;  (* hybrid method with dynamic step size *)
@@ -582,9 +585,9 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
                  } ];
           ];
 
-WriteConvergenceTesterClass[particles_List, files_List] :=
+WriteConvergenceTesterClass[parameters_, files_List] :=
    Module[{compareFunction},
-          compareFunction = ConvergenceTester`CreateCompareFunction[particles];
+          compareFunction = ConvergenceTester`CreateCompareFunction[parameters];
           WriteOut`ReplaceInFiles[files,
                  { "@compareFunction@"      -> IndentText[WrapLines[compareFunction]],
                    Sequence @@ GeneralReplacementRules[]
@@ -1622,7 +1625,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            PrintHeadline["Creating utilities"];
            Print["Creating class for convergence tester ..."];
-           WriteConvergenceTesterClass[allParticles,
+           WriteConvergenceTesterClass[FlexibleSUSY`FSConvergenceCheck,
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "convergence_tester.hpp.in"}],
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_convergence_tester.hpp"}]},
                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_convergence_tester.hpp.in"}],
