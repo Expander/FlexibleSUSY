@@ -517,7 +517,7 @@ double CLASSNAME::G0(double p, double m1, double m2) const
 void CLASSNAME::calculate_DRbar_masses()
 {
 @saveSoftHiggsMasses@
-   solve_ewsb_tree_level_via_soft_higgs_masses();
+@solveEWSBTemporarily@
 
 @calculateAllMasses@
 @restoreSoftHiggsMasses@

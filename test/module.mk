@@ -152,6 +152,7 @@ ifeq ($(shell $(FSCONFIG) --with-SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
 		$(DIR)/test_SM_low_scale_constraint.cpp \
+		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_weinberg_angle.cpp
 endif
 
@@ -438,6 +439,8 @@ $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBF
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_low_scale_constraint.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_tree_level_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 

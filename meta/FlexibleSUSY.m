@@ -692,6 +692,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             softScalarMasses, softHiggsMasses,
             saveSoftHiggsMasses, restoreSoftHiggsMasses,
             solveTreeLevelEWSBviaSoftHiggsMasses,
+            solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
             higgsToEWSBEqAssociation,
@@ -799,11 +800,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softHiggsMasses = FlexibleSUSY`FSSoftHiggsMasses;
              ];
            softHiggsMasses              = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]]];
-           saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
-           restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
-              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquationsTreeLevel, softHiggsMasses];,
+              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
+              restoreSoftHiggsMasses    = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquationsTreeLevel, softHiggsMasses];
+              solveEWSBTemporarily = "solve_ewsb_tree_level_via_soft_higgs_masses();";
+              ,
+              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
+              restoreSoftHiggsMasses    = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
+              solveEWSBTemporarily = "solve_ewsb_tree_level();";
              ];
            EWSBSolvers                  = EWSB`CreateEWSBRootFinders[FlexibleSUSY`FSEWSBSolvers];
            setEWSBSolution              = EWSB`SetEWSBSolution[parametersFixedByEWSB, "solver->get_solution"];
@@ -874,6 +880,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@saveSoftHiggsMasses@"          -> IndentText[saveSoftHiggsMasses],
                             "@restoreSoftHiggsMasses@"       -> IndentText[restoreSoftHiggsMasses],
                             "@solveTreeLevelEWSBviaSoftHiggsMasses@" -> IndentText[WrapLines[solveTreeLevelEWSBviaSoftHiggsMasses]],
+                            "@solveEWSBTemporarily@"         -> IndentText[solveEWSBTemporarily],
                             "@EWSBSolvers@"                  -> IndentText[IndentText[EWSBSolvers]],
                             "@fillArrayWithEWSBParameters@"  -> IndentText[IndentText[fillArrayWithEWSBParameters]],
                             "@solveEwsbWithTadpoles@"        -> IndentText[WrapLines[solveEwsbWithTadpoles]],
