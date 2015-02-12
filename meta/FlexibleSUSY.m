@@ -800,12 +800,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               softHiggsMasses = FlexibleSUSY`FSSoftHiggsMasses;
              ];
            softHiggsMasses              = Parameters`DecreaseIndexLiterals[Parameters`ExpandExpressions[Parameters`AppendGenerationIndices[softHiggsMasses]]];
-           saveSoftHiggsMasses          = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
-           restoreSoftHiggsMasses       = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
+              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
+              restoreSoftHiggsMasses    = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
               solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquationsTreeLevel, softHiggsMasses];
               solveEWSBTemporarily = "solve_ewsb_tree_level_via_soft_higgs_masses();";
               ,
+              saveSoftHiggsMasses       = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
+              restoreSoftHiggsMasses    = Parameters`RestoreParameter[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
               solveTreeLevelEWSBviaSoftHiggsMasses = "";
               solveEWSBTemporarily = "solve_ewsb_tree_level();";
              ];
