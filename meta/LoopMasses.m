@@ -62,14 +62,14 @@ Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
-Do1DimFermion[massName_String, selfEnergyFunctionS_String,
+Do1DimFermion[massName_String, massMatrixName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
     "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
     "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
-    "PHYSICAL(" <> massName <> ") = " <> massName <>
-    " - self_energy_1 - " <> massName <> " * (self_energy_PL + self_energy_PR);\n";
+    "PHYSICAL(" <> massName <> ") = " <> massMatrixName <>
+    " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n";
 
 Do1DimVector[particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String] :=
@@ -162,7 +162,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            massNameReordered = massName <> "_reordered";
-           massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
+           massMatrixStr = "get_mass_matrix_" <> particleName;
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
                  Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
@@ -170,7 +170,11 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                 ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           If[dim == 1,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
@@ -227,7 +231,8 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana ferimion or not *)
-              result = Do1DimFermion[massName, selfEnergyFunctionS,
+              result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimFermion[massName, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      massName];
              ];
@@ -405,13 +410,17 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                 ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           massMatrixStr = "get_mass_matrix_" <> particleName;
+           If[dim == 1,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
-              massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = selfEnergyMatrixType <> " self_energy_1;\n" <>
                        selfEnergyMatrixType <> " self_energy_PL;\n" <>
                        selfEnergyMatrixType <> " self_energy_PR;\n" <>
@@ -486,7 +495,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               ,
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana fermion or not *)
-              result = Do1DimFermion[massName, selfEnergyFunctionS,
+              result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimFermion[massName, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      momentum];
              ];
