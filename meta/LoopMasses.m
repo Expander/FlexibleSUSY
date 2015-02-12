@@ -71,11 +71,11 @@ Do1DimFermion[massName_String, selfEnergyFunctionS_String,
     "PHYSICAL(" <> massName <> ") = " <> massName <>
     " - self_energy_1 - " <> massName <> " * (self_energy_PL + self_energy_PR);\n";
 
-Do1DimVector[particleName_String, massName_String, selfEnergyFunction_String,
-             momentum_String] :=
+Do1DimVector[particleName_String, massName_String, massMatrixName_String,
+             selfEnergyFunction_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-    "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
+    "const double mass_sqr = " <> massMatrixName <> " - self_energy;\n\n" <>
     "if (mass_sqr < 0.)\n" <>
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
@@ -235,13 +235,20 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
           ];
 
 DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
-    Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction},
+    Module[{result, dim, dimStr, massName, particleName, mixingMatrix,
+            selfEnergyFunction, selfEnergyMatrixType, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
+           massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           If[dim == 1,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
                  Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
@@ -251,7 +258,8 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = Do1DimVector[particleName, massName, selfEnergyFunction, massName];
+              result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimVector[particleName, massName, "M_tree", selfEnergyFunction, massName];
              ];
            Return[result];
           ];
@@ -487,14 +495,20 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
 
 DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
-            momentum = inputMomentum},
+            momentum = inputMomentum, selfEnergyMatrixType, massMatrixStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
+           massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+           If[dim == 1,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
                  Return["PHYSICAL(" <> massName <> ") = 0.;\n"];,
@@ -504,7 +518,8 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            If[dim > 1,
               result = "WARNING(\"diagonalization of " <> ToString[particle] <> " not implemented\");\n";
               ,
-              result = Do1DimVector[particleName, massName, selfEnergyFunction, momentum];
+              result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimVector[particleName, massName, "M_tree", selfEnergyFunction, momentum];
              ];
            Return[result];
           ];
