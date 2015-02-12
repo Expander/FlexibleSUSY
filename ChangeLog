@@ -19,6 +19,9 @@ FlexibleSUSY-1.0.5 [not released yet]
    are fulfilled during calculation of the tree-level spectrum in
    non-SUSY models.
 
+ * Bugfix (commit 29a0833): incorporate tadpole contributions in pole
+   masses of singlets
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
