@@ -52,11 +52,11 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-Do1DimScalar[particleName_String, massName_String, selfEnergyFunction_String,
-             momentum_String, tadpole_String:""] :=
+Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
+             selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-    "const double mass_sqr = Sqr(" <> massName <> ") - self_energy" <>
+    "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "if (mass_sqr < 0.)\n" <>
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
@@ -95,7 +95,11 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           selfEnergyMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           If[dim == 1,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
                        massNameReordered <> "(" <> massName <> ");\n" <>
@@ -141,7 +145,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        "PHYSICAL(" <> massName <> ") = AbsSqrt(PHYSICAL(" <>
                        massName <> "));\n";
               ,
-              result = Do1DimScalar[particleName, massName, selfEnergyFunction, massName,
+              result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, massName,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
@@ -269,7 +274,11 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           mixingMatrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           If[dim == 1,
+              mixingMatrixType = Parameters`GetTypeFromDimension[{1}];,
+              mixingMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           mixingMatrixType = CreateCType[mixingMatrixType];
            selfEnergyMatrixType = mixingMatrixType;
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            (* create diagonalisation code snippet *)
@@ -307,6 +316,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
              ];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            tadpoleMatrix = FillTadpoleMatrix[tadpole, "tadpoles"];
+           massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            (* fill self-energy and do diagonalisation *)
            If[dim > 1,
               If[SARAH`UseHiggs2LoopMSSM === True ||
@@ -338,7 +348,6 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
                    ];
                 ];
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
-              massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
               result = tadpoleMatrix <>
                        selfEnergyMatrixType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
@@ -364,7 +373,8 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
                        "}\n";
               ,
               result = tadpoleMatrix <>
-                       Do1DimScalar[particleName, massName, selfEnergyFunction, momentum,
+                       "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
+                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, momentum,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
