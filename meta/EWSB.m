@@ -197,7 +197,12 @@ EliminateOneParameter[{eq_}, {p_}] :=
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, rest = {}, solution},
-           If[FreeQ[{eq1, eq2}, p1] || FreeQ[{eq1, eq2}, p2],
+           If[FreeQ[{eq1, eq2}, p1],
+              Print["Error: EWSB output parameter ", p1, " does not appear in the EWSB eqs."];
+              Return[{}];
+             ];
+           If[FreeQ[{eq1, eq2}, p2],
+              Print["Error: EWSB output parameter ", p2, " does not appear in the EWSB eqs."];
               Return[{}];
              ];
            reduction[[1]] =
@@ -207,7 +212,6 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[reduction[[1]] === {} || reduction[[2]] === {} ||
-
               reduction[[1]] === {{}} || reduction[[2]] === {{}},
               Return[{}];
              ];
