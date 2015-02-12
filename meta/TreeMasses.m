@@ -486,10 +486,11 @@ CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol
     Module[{matrix, dim},
            dim = GetDimension[massESSymbol];
            If[dim == 1,
-              Print["Warning: trying to create a mass matrix from the 1-plet ", massESSymbol];
+              matrix = expr;
+              ,
+              matrix = Table[expr /. List -> Identity,
+                             {SARAH`gt1, 1, dim}, {SARAH`gt2, 1, dim}];
              ];
-           matrix = Table[expr /. List -> Identity,
-                          {SARAH`gt1, 1, dim}, {SARAH`gt2, 1, dim}];
            TreeMasses`FSMassMatrix[matrix, massESSymbol, Null]
           ];
 
@@ -497,11 +498,9 @@ CreateMassCalculationPrototype[m:TreeMasses`FSMassMatrix[expr_, massESSymbol_, N
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]],
             massMatrix},
            result = "void calculate_" <> ev <> "();\n";
-           If[!FreeQ[expr, SARAH`gt1] && !FreeQ[expr, SARAH`gt2],
-              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
-              result = CreateMassMatrixGetterPrototype[massMatrix] <>
-                       result;
-             ];
+           massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+           result = CreateMassMatrixGetterPrototype[massMatrix] <>
+                    result;
            Return[result];
           ];
 
@@ -565,7 +564,7 @@ IsHermitian[matrix_List, op_:Susyno`LieGroups`conj] :=
            Return[True];
           ];
 
-MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`realScalarCType] :=
+MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String, matrixElementType_:CConversion`realScalarCType] :=
     Module[{dim, result = "", i, k, isSymmetric = IsSymmetric[matrix],
             isHermitian = IsHermitian[matrix], matrixType, dimStr},
            dim = Length[matrix];
@@ -593,6 +592,19 @@ MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`r
            Return[result];
           ];
 
+MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`realScalarCType] :=
+    Module[{result = "", type},
+           If[Length[matrix] != 1,
+              Print["Error: Expression is not a 1-element list: ", matrix];
+              Return["return 0.;"];
+             ];
+           type = CreateCType[CConversion`ScalarType[matrixElementType]];
+           result = "const " <> type <> " " <> symbol <> " = " <>
+                    RValueToCFormString[matrix[[1]]] <>
+                    ";\n"; (* not initialized *)
+           Return[result];
+          ];
+
 CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, body, ev, matrixSymbol, matrix, massESSymbol,
             inputParsDecl, matrixType, dim, dimStr},
@@ -602,7 +614,11 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            matrix = GetMassMatrix[massMatrix];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           matrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           If[dim == 1,
+              matrixType = Parameters`GetTypeFromDimension[{1}];,
+              matrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           matrixType = CreateCType[matrixType];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
            body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
            result = matrixType <> " CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
@@ -619,7 +635,11 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            matrix = GetMassMatrix[massMatrix];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           matrixType = CreateCType[CConversion`MatrixType[CConversion`realScalarCType, dim, dim]];
+           If[dim == 1,
+              matrixType = Parameters`GetTypeFromDimension[{1}];,
+              matrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+             ];
+           matrixType = CreateCType[matrixType];
            matrixSymbol = "mass_matrix_" <> ev;
            result = matrixType <> " get_" <> matrixSymbol <> "() const;\n";
            Return[result];
@@ -864,11 +884,9 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
              ];
            body = IndentText[body];
            result = result <> body <> "}\n\n";
-           If[!FreeQ[mass, SARAH`gt1] && !FreeQ[mass, SARAH`gt2],
-              massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
-              result = CreateMassMatrixGetterFunction[massMatrix] <>
-                       "\n" <> result;
-             ];
+           massMatrix = CreateFSMassMatrixForUnmixedParticle[m];
+           result = CreateMassMatrixGetterFunction[massMatrix] <>
+                    "\n" <> result;
            Return[result];
           ];
 
