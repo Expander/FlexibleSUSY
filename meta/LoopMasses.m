@@ -622,7 +622,7 @@ CreateWPoleMassFunction[particle_Symbol] :=
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            body = body <>
                   "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-                  "const double mass_sqr = Sqr(" <> massName <> ") - self_energy;\n\n" <>
+                  "const double mass_sqr = get_mass_matrix_" <> particleName <> "() - self_energy;\n\n" <>
                   "if (mass_sqr < 0.)\n" <>
                   IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                   "return AbsSqrt(mass_sqr);\n";
