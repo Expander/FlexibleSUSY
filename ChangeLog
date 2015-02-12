@@ -15,6 +15,10 @@ FlexibleSUSY-1.0.5 [not released yet]
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
 
+ * Bugfix (commit 8335640): ensure that the tree-level EWSB conditions
+   are fulfilled during calculation of the tree-level spectrum in
+   non-SUSY models.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
