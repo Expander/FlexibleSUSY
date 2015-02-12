@@ -205,6 +205,15 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               Print["Error: EWSB output parameter ", p2, " does not appear in the EWSB eqs."];
               Return[{}];
              ];
+           (* special case: no elimination needed *)
+           If[!FreeQ[{eq1},p1] && FreeQ[{eq1},p2] &&
+              !FreeQ[{eq2},p2] && FreeQ[{eq2},p1],
+              reduction[[1]] =
+              TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              reduction[[2]] =
+              TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              Return[reduction];
+             ];
            reduction[[1]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];

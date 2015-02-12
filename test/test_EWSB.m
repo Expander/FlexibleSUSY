@@ -21,9 +21,9 @@ TestEquality[mssmFreePhases, {FlexibleSUSY`Sign[mu]}];
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
 TestEquality[Sort /@ mssmFullSolution,
-             Sort /@ { {{B[mu] -> -5 + x^2 - x*y - z}},
-                       {{mu -> -Sqrt[-5 - x^2 - x*y - z]},
-                        {mu -> Sqrt[-5 - x^2 - x*y - z]}}
+             Sort /@ { {{mu -> -Sqrt[-5 - x^2 - x*y - z]},
+                        {mu -> Sqrt[-5 - x^2 - x*y - z]}},
+                       {{B[mu] -> -5 + x^2 - x*y - z}}
                      }];
 
 TestEquality[Sort[mssmSolution],
@@ -126,6 +126,22 @@ TestEquality[Sort /@ oneIndependentSubeqSolution,
              Sort /@ { s -> -(Z/mS2),
                        vu -> -((s*(mHd2 - X))/(mHd2*mHu2 - X*Y)),
                        vd -> (-s - mHu2*vu)/X
+                     }];
+
+Print["testing NSM EWSB for mH2, mS2 ..."];
+
+nsmEwsbOutputParameters = {mH2, mS2};
+
+nsmEwsbEqs = {
+    mH2*vH - vH^3*l1 - vH*vS^2*l3 - vH*vS*l4 - tadpole[1],
+    2*mS2*vS - 4*vS^3*l2 - vH^2*vS*l3 - (vH^2*l4)/2 - 3*vS^2*l5 - tadpole[2]
+};
+
+nsmFullSolution = EWSB`Private`FindSolution[nsmEwsbEqs, nsmEwsbOutputParameters];
+
+TestEquality[Sort /@ nsmFullSolution,
+             Sort /@ { {{mH2 -> (vH^3*l1 + vH*vS^2*l3 + vH*vS*l4 + tadpole[1])/vH}},
+                       {{mS2 -> (8*vS^3*l2 + 2*vH^2*vS*l3 + vH^2*l4 + 6*vS^2*l5 + 2*tadpole[2])/(4*vS)}}
                      }];
 
 PrintTestSummary[];
