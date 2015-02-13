@@ -594,22 +594,22 @@ CreateLoopMassFunction[particle_Symbol, precision_Symbol, tadpole_] :=
            Return[result];
           ];
 
-(* return W pole mass as a function of p *)
-CreateWPoleMassPrototype[particle_Symbol] :=
+(* return pole mass of a singlet as a function of p *)
+Create1DimPoleMassPrototype[particle_Symbol] :=
     If[GetDimension[particle] > 1,
        Print["Warning: cannot generate extra pole mass"
-             " calculation function for W boson, because"
+             " calculation function for ", particle, ", because"
              " it has more than 1 generation"];
        "",
        "double " <> CreateLoopMassFunctionName[particle] <> "(double);\n"
       ];
 
-(* return W pole mass as a function of p *)
-CreateWPoleMassFunction[particle_Symbol] :=
+(* return pole mass of a singlet as a function of p *)
+Create1DimPoleMassFunction[particle_Symbol] :=
     Module[{result, body = "", particleName, massName},
            If[GetDimension[particle] > 1,
               Print["Warning: cannot generate extra pole mass"
-                    " calculation function for W boson, because"
+                    " calculation function for ", particle, ", because"
                     " it has more than 1 generation"];
               Return[""];
              ];
@@ -647,7 +647,10 @@ CreateOneLoopPoleMassFunctions[precision_List, oneLoopTadpoles_List, vevs_List] 
                result   = result <> CreateLoopMassFunction[particle, prec, tadpole];
               ];
            If[ValueQ[SARAH`VectorW],
-              result = result <> CreateWPoleMassFunction[SARAH`VectorW];
+              result = result <> Create1DimPoleMassFunction[SARAH`VectorW];
+             ];
+           If[ValueQ[SARAH`VectorZ],
+              result = result <> Create1DimPoleMassFunction[SARAH`VectorZ];
              ];
            Return[result];
           ];
@@ -657,7 +660,10 @@ CreateOneLoopPoleMassPrototypes[states_:FlexibleSUSY`FSEigenstates] :=
            particles = GetLoopCorrectedParticles[states];
            (result = result <> CreateLoopMassPrototype[#])& /@ particles;
            If[ValueQ[SARAH`VectorW],
-              result = result <> CreateWPoleMassPrototype[SARAH`VectorW];
+              result = result <> Create1DimPoleMassPrototype[SARAH`VectorW];
+             ];
+           If[ValueQ[SARAH`VectorZ],
+              result = result <> Create1DimPoleMassPrototype[SARAH`VectorZ];
              ];
            Return[result];
           ];
