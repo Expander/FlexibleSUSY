@@ -25,9 +25,10 @@ FlexibleSUSY-1.0.5 [not released yet]
  * Bugfix (commit 3422d88): ensure only gluon is removed from top
    self-energy for calculation of top DR-bar mass in the SM
 
- * Bugfix (commit 3422d88): ensure Higgs and Goldstone boson
-   contributions are contained in the bottom and tau self-energies for
-   calculation of bottom and tau DR-bar masses in the SM
+ * Bugfix (commits 66d38f4 and 4ed231d): ensure Higgs and Goldstone
+   boson contributions are contained in the bottom and tau
+   self-energies for calculation of bottom and tau DR-bar masses in
+   the SM
 
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
