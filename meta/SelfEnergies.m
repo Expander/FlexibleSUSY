@@ -73,6 +73,18 @@ GetField[sym_] :=
            Quit[1];
           ];
 
+ExprContainsParticle[expr_, particle_] :=
+    !FreeQ[expr,particle];
+
+RemoveParticle[head_[p_,expr_], particle_] :=
+    Module[{strippedExpr, a},
+           strippedExpr = expr //. {
+               SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]][_] -> 0,
+               SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]] -> 0
+                                   };
+           Return[head[p,strippedExpr]];
+          ];
+
 RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__], _] :=
     SelfEnergies`FSSelfEnergy[p,expr];
 
@@ -198,7 +210,7 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
-                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`VectorP}]& /@ heavySE)];
+                         ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
