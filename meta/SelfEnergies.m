@@ -95,8 +95,15 @@ ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
 RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
-    Module[{strippedExpr, susyParticles, a, goldstones, g, i},
+    Module[{strippedExpr, susyParticles, a, goldstones,
+            goldstonesWithoutIndex, g, i},
            susyParticles = Join[TreeMasses`GetSusyParticles[], except];
+           goldstones = TreeMasses`GetSMGoldstoneBosons[];
+           goldstonesWithoutIndex = goldstones /. a_[_] :> a;
+           If[removeGoldstones,
+              susyParticles = Complement[susyParticles, goldstonesWithoutIndex];,
+              susyParticles = DeleteDuplicates[Join[susyParticles, goldstonesWithoutIndex]];
+             ];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
                SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]][_] -> 0,
@@ -104,7 +111,6 @@ RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
                                            };
            (* remove goldstone bosons *)
            If[removeGoldstones,
-              goldstones = TreeMasses`GetSMGoldstoneBosons[];
               For[i = 1, i <= Length[goldstones], i++,
                   g = CConversion`GetHead[goldstones[[i]]];
                   strippedExpr = strippedExpr //.
