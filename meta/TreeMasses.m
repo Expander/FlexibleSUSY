@@ -612,6 +612,13 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
            matrixSymbol = "mass_matrix_" <> ev;
            matrix = GetMassMatrix[massMatrix];
+           (* Remove color SU(3) generators, structure functions and
+              Kronecker delta with color indices.
+              Note: ct1 ... ct4 are reserved SU(3) color indices of
+              the fundamental representation of SU(3) in SARAH.
+           *)
+           matrix = StripGenerators[matrix,
+                                    {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            dim = Length[matrix];
            dimStr = ToString[dim];
            If[dim == 1,
