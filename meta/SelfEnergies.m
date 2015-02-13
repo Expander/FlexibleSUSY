@@ -95,19 +95,19 @@ ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
 RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
-    Module[{strippedExpr, susyParticles, a, goldstones,
+    Module[{strippedExpr, keepParticles, a, goldstones,
             goldstonesWithoutIndex, g, i},
-           susyParticles = Join[TreeMasses`GetSusyParticles[], except];
+           keepParticles = Join[TreeMasses`GetSusyParticles[], except];
            goldstones = TreeMasses`GetSMGoldstoneBosons[];
            goldstonesWithoutIndex = goldstones /. a_[_] :> a;
            If[removeGoldstones,
-              susyParticles = Complement[susyParticles, goldstonesWithoutIndex];,
-              susyParticles = DeleteDuplicates[Join[susyParticles, goldstonesWithoutIndex]];
+              keepParticles = Complement[keepParticles, goldstonesWithoutIndex];,
+              keepParticles = DeleteDuplicates[Join[keepParticles, goldstonesWithoutIndex]];
              ];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
-               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]][_] -> 0,
-               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},keepParticles]][_] -> 0,
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},keepParticles]] -> 0
                                            };
            (* remove goldstone bosons *)
            If[removeGoldstones,
