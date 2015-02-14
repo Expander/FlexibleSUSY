@@ -32,4 +32,8 @@ BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
    const double v = m.get_v();
    const double hh_tree = Sqrt(lambda * Sqr(v));
    BOOST_CHECK_CLOSE(hh, hh_tree, 1.0e-12);
+
+   // check Goldstone boson masses
+   BOOST_CHECK_EQUAL(m.get_MHp(), m.get_MVWp());
+   BOOST_CHECK_EQUAL(m.get_MAh(), m.get_MVZ());
 }
