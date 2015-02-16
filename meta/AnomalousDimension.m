@@ -126,9 +126,11 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
               exprTwoLoop = CConversion`twoLoop * GetAnomDim2Loop[anomDim];
-              body = body <> "\nif (get_loops() > 1) {\n" <>
-                     IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
-                     ";\n}\n";
+              If[exprTwoLoop =!= 0,
+                 body = body <> "\nif (get_loops() > 1) {\n" <>
+                        IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
+                        ";\n}\n";
+                ];
              ];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[exprOneLoop + exprTwoLoop];
            body = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n" <>
