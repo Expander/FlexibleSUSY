@@ -85,8 +85,8 @@ DEFINITION[EWSB][GaugeSector] =
 (* ----- VEVs ---- *)
 
 DEFINITION[EWSB][VEVs]= 
-  {{SHd0, {vd, 1/Sqrt[2]}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
-   {SHu0, {vu, 1/Sqrt[2]}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}}};
+  {{SHd0, {vd, 1}, {sigmad, \[ImaginaryI]/Sqrt[2]},{phid,1/Sqrt[2]}},
+   {SHu0, {vu, 1}, {sigmau, \[ImaginaryI]/Sqrt[2]},{phiu,1/Sqrt[2]}}};
 
 
  
