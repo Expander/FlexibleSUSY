@@ -49,7 +49,6 @@ ParameterDefinitions = {
     {MassWB,    { Description -> "Wino Mass parameter" }},
     {MassG,     { Description -> "Gluino Mass parameter" }},
     {PhaseGlu,  { Description -> "Gluino-Phase" }},
-    {ZfW,       { Description -> "Wino Mixing Matrix" }},
     {\[Mu],     { Description -> "Mu-parameter",
                   LaTeX -> "\\mu_{\\text{MSSM}}",
                   OutputName -> Mu }},

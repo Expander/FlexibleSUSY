@@ -30,7 +30,8 @@ FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3, RpM};
 FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, RpM};
 
 FermionFields[[6]]  = {G , 1, fG          ,   0  , 1, 8, RpP};
-FermionFields[[7]]  = {WB, 1, fWB         ,   0  , 3, 1, RpP};
+FermionFields[[7]]  = {WB, 1, {{fW0/Sqrt[2],fWp},
+                               {fWm,-fW0/Sqrt[2]}}, 0 , 3, 1, RpP};
 FermionFields[[8]]  = {B , 1, fB          ,   0  , 1, 1, RpP};
 FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1, RpP};
 FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpP};
@@ -59,7 +60,8 @@ LagSplit = - MassG/2 G.G - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
 
 DEFINITION[GaugeES][DiracSpinors] = {
     Bino -> {fB , conj[fB] },
-    Wino -> {fWB, conj[fWB]},
+    FWB0 -> {fW0, 0},
+    FWBp -> {fWp, conj[fWm]},
     Glu  -> {fG , conj[fG] },
     FH0  -> {FHd0, conj[FHu0]},
     FHC  -> {FHdm, conj[FHup]},
@@ -78,8 +80,7 @@ DEFINITION[GaugeES][DiracSpinors] = {
 
 DEFINITION[EWSB][GaugeSector] = {
   {{VB,VWB[3]},{VP,VZ},ZZ},
-  {{VWB[1],VWB[2]},{VWp,conj[VWp]},ZW},
-  {{fWB[1],fWB[2],fWB[3]},{fWm,fWp,fW0},ZfW}
+  {{VWB[1],VWB[2]},{VWp,conj[VWp]},ZW}
 };
 
 (* ----- VEVs ---- *)

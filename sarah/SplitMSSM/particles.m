@@ -30,12 +30,27 @@ ParticleDefinitions[GaugeES] = {
     (* split MSSM particles *)
 
     {Glu,  { Description -> "Gluino"}},
-    {Wino, { Description -> "Wino"}},
     {Bino, { Description -> "Bino"}},
     {FH0,  { Description -> "Neutral Higgsinos",
              OutputName -> "FH0"}},
     {FHC,  { Description -> "Charged Higgsinos",
-             OutputName -> "FHC"}}
+             OutputName -> "FHC"}},
+    {FWB0, { Description -> "Neutral Wino",
+             PDG -> {0},
+             PDG.IX -> {0},
+             Width -> 0,
+             Mass -> Automatic,
+             FeynArtsNr -> 666,
+             LaTeX -> "\\tilde{W}^0",
+             OutputName -> "FW0" }},
+    {FWBp, { Description -> "Positive Wino",
+             PDG -> {0},
+             PDG.IX -> {0},
+             Width -> 0,
+             Mass -> Automatic,
+             FeynArtsNr -> 667,
+             LaTeX -> "\\tilde{W}^+",
+             OutputName -> "FWp" }}
 };
 
 ParticleDefinitions[EWSB] = {
@@ -147,7 +162,6 @@ WeylFermionAndIndermediate = {
      {Lm,     { Description -> "Negative Chargino Weyl-Spinor"}},
      {Lp,     { Description -> "Positive Chargino Weyl-Spinor"}},
      {fG,     { Description ->"Gluino Weyl-Spinor"}},
-     {fWB,    { Description ->"Wino Weyl-Spinor"}},
      {fW0,    { Description ->"Neutral Wino" }},
      {fWm,    { Description ->"Negative Wino"}},
      {fWp,    { Description ->"Positive Wino"}},
