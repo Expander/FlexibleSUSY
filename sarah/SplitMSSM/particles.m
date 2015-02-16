@@ -24,6 +24,13 @@ ParticleDefinitions[GaugeES] = {
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
       {gWB,  { Description -> "W-Boson Ghost"}},
+      {Fd1,  { Description -> "Dirac Left Down-Quark"}},
+      {Fd2,  { Description -> "Dirac Right Down-Quark"}},
+      {Fu1,  { Description -> "Dirac Left Up-Quark"}},
+      {Fu2,  { Description -> "Dirac Right Up-Quark"}},
+      {Fe1,  { Description -> "Dirac Left Electron"}},
+      {Fe2,  { Description -> "Dirac Right Electron"}},
+      {Fv,   { Description -> "Neutrinos" }},
 
 (* split MSSM particles *)
 

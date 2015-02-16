@@ -25,7 +25,9 @@ ParameterDefinitions = {
              									{0, 0, Mass[Fe,3]}}}}, 
                                                                             
                                                                            
-{mu2,         { Description -> "SM Mu Parameter"}},                                        
+{mu2,         { Description -> "SM Mu Parameter",
+                LaTeX -> "\\mu_{\text{SM}}",
+	        OutputName -> mu2 }},
 {\[Lambda],  { Description -> "SM Higgs Selfcouplings",
                DependenceNum -> Mass[hh]^2/(2 v^2)}},
 {v,          { Description -> "EW-VEV",
@@ -58,7 +60,22 @@ ParameterDefinitions = {
 {MassWB,    { Description -> "Wino Mass parameter" }},
 {MassG,     { Description -> "Gluino Mass parameter" }},
 {PhaseGlu,  { Description -> "Gluino-Phase" }},
-{ZfW,       { Description -> "Wino Mixing Matrix" }}
+{ZfW,       { Description -> "Wino Mixing Matrix" }},
+{\[Mu],     { Description -> "Mu-parameter",
+              LaTeX -> "\\mu_{\\text{MSSM}}",
+              OutputName -> Mu }},
+{g1u,       { Description -> "Higgs-Bino-Up-Higgsino-Coupling",
+              OutputName -> g1u,
+              LaTeX -> "\\tilde{g}_{1\\text{u}}" }},
+{g2u,       { Description -> "Higgs-Wino-Up-Higgsino-Coupling",
+              OutputName -> g2u,
+              LaTeX -> "\\tilde{g}_{2\\text{u}}" }},
+{g1d,       { Description -> "Higgs-Bino-Down-Higgsino-Coupling",
+              OutputName -> g1d,
+              LaTeX -> "\\tilde{g}_{1\\text{d}}" }},
+{g2d,       { Description -> "Higgs-Wino-Down-Higgsino-Coupling",
+              OutputName -> g2d,
+              LaTeX -> "\\tilde{g}_{2\\text{d}}" }}
  }; 
  
 

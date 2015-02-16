@@ -1157,7 +1157,7 @@ FSPrepareRGEs[] :=
     Module[{needToCalculateRGEs, betas},
            needToCalculateRGEs = NeedToCalculateRGEs[];
            SARAH`CalcRGEs[ReadLists -> !needToCalculateRGEs,
-                          TwoLoop -> True,
+                          TwoLoop -> False,
                           NoMatrixMultiplication -> False];
            (* check if the beta functions were calculated correctly *)
            betas = { SARAH`BetaWijkl, SARAH`BetaYijk, SARAH`BetaMuij,

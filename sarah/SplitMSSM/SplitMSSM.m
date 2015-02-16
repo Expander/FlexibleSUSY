@@ -9,6 +9,12 @@ Model`Date = "2015-02-16";
 (*   Particle Content*)
 (*-------------------------------------------*)
 
+(* Global symmetries *)
+
+Global[[1]] = {Z[2],RParity};
+RpM = {-1,-1,1};
+RpP = {1,1,-1};
+
 (* Vector Superfields *)
 
 Gauge[[1]]={B,   U[1], hypercharge, g1,False,RpM};
@@ -17,19 +23,19 @@ Gauge[[3]]={G,  SU[3], color,       g3,False,RpM};
 
 (* Matter fields *)
 
-FermionFields[[1]] = {q, 3, {uL, dL},     1/6, 2,  3};
-FermionFields[[2]] = {l, 3, {vL, eL},    -1/2, 2,  1};
-FermionFields[[3]] = {d, 3, conj[dR],     1/3, 1, -3};
-FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3};
-FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1};
+FermionFields[[1]] = {q, 3, {uL, dL},     1/6, 2,  3, RpM};
+FermionFields[[2]] = {l, 3, {vL, eL},    -1/2, 2,  1, RpM};
+FermionFields[[3]] = {d, 3, conj[dR],     1/3, 1, -3, RpM};
+FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3, RpM};
+FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, RpM};
 
-FermionFields[[6]]  = {G , 1, fG          ,   0  , 1, 8};
-FermionFields[[7]]  = {WB, 1, fWB         ,   0  , 3, 1};
-FermionFields[[8]]  = {B , 1, fB          ,   0  , 1, 1};
-FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1};
-FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1};
+FermionFields[[6]]  = {G , 1, fG          ,   0  , 1, 8, RpP};
+FermionFields[[7]]  = {WB, 1, fWB         ,   0  , 3, 1, RpP};
+FermionFields[[8]]  = {B , 1, fB          ,   0  , 1, 1, RpP};
+FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1, RpP};
+FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpP};
 
-ScalarFields[[1]]  = {H, 1, {Hp, H0},     1/2, 2,  1};
+ScalarFields[[1]]  = {H, 1, {Hp, H0},     1/2, 2,  1, RpP};
 
 (*----------------------------------------------*)
 (*   ROTATIONS                                  *)
@@ -47,21 +53,23 @@ DEFINITION[GaugeES][LagrangianInput] = {
 
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
-LagSplit = - MassG/2 G.G - MassWB/2 WB.WB - MassB/2 B.B;
+LagSplit = - MassG/2 G.G - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
+    - (g2u/Sqrt[2]) conj[H].WB.Hu - (g1u/Sqrt[2]) conj[H].B.Hu \
+    + (g2d/Sqrt[2]) H.WB.Hd - (g1d/Sqrt[2]) H.B.Hd;
 
 DEFINITION[GaugeES][DiracSpinors] = {
     Bino -> {fB , conj[fB] },
     Wino -> {fWB, conj[fWB]},
     Glu  -> {fG , conj[fG] },
-    FH0 -> {FHd0, conj[FHu0]},
-    FHC -> {FHdm, conj[FHup]}
-    (* Fd1 -> {FdL, 0}, *)
-    (* Fd2 -> {0, FdR}, *)
-    (* Fu1 -> {FuL, 0}, *)
-    (* Fu2 -> {0, FuR}, *)
-    (* Fe1 -> {FeL, 0}, *)
-    (* Fe2 -> {0, FeR}, *)
-    (* Fv -> {FvL,0} *)
+    FH0  -> {FHd0, conj[FHu0]},
+    FHC  -> {FHdm, conj[FHup]},
+    Fd1  -> {dL, 0},
+    Fd2  -> {0, dR},
+    Fu1  -> {uL, 0},
+    Fu2  -> {0, uR},
+    Fe1  -> {eL, 0},
+    Fe2  -> {0, eR},
+    Fv   -> {vL,0}
 };
 
 (* ----- After EWSB ----- *)
