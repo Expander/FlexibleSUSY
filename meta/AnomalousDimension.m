@@ -133,8 +133,7 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
                 ];
              ];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[exprOneLoop + exprTwoLoop];
-           body = "const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;\n" <>
-                  CreateDefaultDefinition["anomDim", type] <> ";\n" <>
+           body = CreateDefaultDefinition["anomDim", type] <> ";\n" <>
                   inputParsDecl <>
                   body <>
                   "\nreturn anomDim;\n";
