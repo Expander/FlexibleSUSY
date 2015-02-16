@@ -6,9 +6,11 @@
 
 #include "test_SM.hpp"
 #include "wrappers.hpp"
+#include "pv.hpp"
 #include "SM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
+using namespace passarino_veltman;
 
 BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
 {
@@ -56,4 +58,86 @@ BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
 
    // check that tree-level Higgs mass has not changed
    BOOST_CHECK_CLOSE(m.get_Mhh(), hh_tree, 1.0e-12);
+}
+
+BOOST_AUTO_TEST_CASE( test_SM_wz_self_energies )
+{
+   SM_input_parameters input;
+   input.LambdaIN = 0.25;
+   SM<Two_scale> m;
+   setup_SM_const(m, input);
+
+   m.calculate_DRbar_masses();
+
+   if (m.get_problems().have_problem()) {
+      std::ostringstream ostr;
+      m.get_problems().print_problems(ostr);
+      BOOST_FAIL(ostr.str());
+   }
+
+   const double p = 100.;
+
+   const double se_w_heavy = Re(m.self_energy_VWp_heavy(p));
+   const double se_z_heavy = Re(m.self_energy_VZ_heavy(p));
+
+   BOOST_CHECK_SMALL(se_w_heavy, 1.0e-10);
+   BOOST_CHECK_SMALL(se_z_heavy, 1.0e-10);
+}
+
+BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
+{
+   SM_input_parameters input;
+   input.LambdaIN = 0.25;
+   SM<Two_scale> m;
+   setup_SM_const(m, input);
+
+   m.calculate_DRbar_masses();
+
+   if (m.get_problems().have_problem()) {
+      std::ostringstream ostr;
+      m.get_problems().print_problems(ostr);
+      BOOST_FAIL(ostr.str());
+   }
+
+   const double p = 100.;
+
+   const Eigen::Array<double,3,1> MFu(m.get_MFu());
+   const double g3 = m.get_g3();
+   const double scale = m.get_scale();
+
+   Eigen::Matrix<std::complex<double>,3,3> se_t;
+   Eigen::Matrix<std::complex<double>,3,3> se_t_no_gluon;
+
+   // top self-energies with and without gluon
+   for (unsigned i = 0; i < 3; i++) {
+      for (unsigned k = 0; k < 3; k++) {
+         se_t(i,k) = m.self_energy_Fu_1(p,i,k);
+         se_t_no_gluon(i,k) = m.self_energy_Fu_1_heavy_rotated(p,i,k);
+      }
+   }
+
+   // adding gluon contrbution
+   Eigen::Matrix<std::complex<double>,3,3> se_t_check(se_t_no_gluon);
+
+   for (unsigned i = 0; i < 3; i++) {
+      const double gluon_contrib =
+         -5.333333333333333 *
+         ReB0(Sqr(p),Sqr(MFu(i)),0,Sqr(scale))
+            * Sqr(g3) * MFu(i);
+
+      se_t_check(i,i) += gluon_contrib * oneOver16PiSqr;
+   }
+
+   const Eigen::Matrix<std::complex<double>,3,3> Uu(m.get_Uu());
+   const Eigen::Matrix<std::complex<double>,3,3> Vu(m.get_Vu());
+
+   se_t_check = Vu.transpose() * se_t_check * Uu;
+
+   for (unsigned i = 0; i < 3; i++) {
+      for (unsigned k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE(Re(se_t(i,k)), Re(se_t_check(i,k)), 1.0e-10);
+         BOOST_CHECK_CLOSE(Im(se_t(i,k)), Im(se_t_check(i,k)), 1.0e-10);
+      }
+   }
+
 }

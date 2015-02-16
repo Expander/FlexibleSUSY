@@ -73,6 +73,18 @@ GetField[sym_] :=
            Quit[1];
           ];
 
+ExprContainsParticle[expr_, particle_] :=
+    !FreeQ[expr,particle];
+
+RemoveParticle[head_[p_,expr_], particle_] :=
+    Module[{strippedExpr, a},
+           strippedExpr = expr //. {
+               SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]][_] -> 0,
+               SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]] -> 0
+                                   };
+           Return[head[p,strippedExpr]];
+          ];
+
 RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__], _] :=
     SelfEnergies`FSSelfEnergy[p,expr];
 
@@ -83,16 +95,22 @@ ExprContainsNonOfTheseParticles[expr_, particles_List] :=
     And @@ (FreeQ[expr,#]& /@ particles);
 
 RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
-    Module[{strippedExpr, susyParticles, a, goldstones, g, i},
-           susyParticles = Join[TreeMasses`GetSusyParticles[], except];
+    Module[{strippedExpr, keepParticles, a, goldstones,
+            goldstonesWithoutIndex, g, i},
+           keepParticles = Join[TreeMasses`GetSusyParticles[], except];
+           goldstones = TreeMasses`GetSMGoldstoneBosons[];
+           goldstonesWithoutIndex = goldstones /. a_[_] :> a;
+           If[removeGoldstones,
+              keepParticles = Complement[keepParticles, goldstonesWithoutIndex];,
+              keepParticles = DeleteDuplicates[Join[keepParticles, goldstonesWithoutIndex]];
+             ];
            strippedExpr = expr /. ReplaceGhosts[];
            strippedExpr = strippedExpr //. {
-               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]][_] -> 0,
-               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},susyParticles]] -> 0
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},keepParticles]][_] -> 0,
+               SARAH`Cp[a__  /; ExprContainsNonOfTheseParticles[{a},keepParticles]] -> 0
                                            };
            (* remove goldstone bosons *)
            If[removeGoldstones,
-              goldstones = TreeMasses`GetSMGoldstoneBosons[];
               For[i = 1, i <= Length[goldstones], i++,
                   g = CConversion`GetHead[goldstones[[i]]];
                   strippedExpr = strippedExpr //.
@@ -192,13 +210,13 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_]|SARAH`BottomQuark[_]|SARAH`Electron[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
-                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW}]& /@ heavySE)];
+                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`HiggsBoson}]& /@ heavySE)];
            (* Create Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
-                         ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`VectorP}]& /@ heavySE)];
+                         ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
