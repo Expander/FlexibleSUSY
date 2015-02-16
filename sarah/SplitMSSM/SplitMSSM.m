@@ -116,12 +116,3 @@ DEFINITION[EWSB][DiracSpinors] = {
     Cha -> {Lm, conj[Lp]},
     Glu -> {fG, conj[fG]}
 };
-
-(* DEFINITION[EWSB][GaugeES] = { *)
-(*     Fd1 -> {FdL, 0}, *)
-(*     Fd2 -> {0, FdR}, *)
-(*     Fu1 -> {Fu1, 0}, *)
-(*     Fu2 -> {0, Fu2}, *)
-(*     Fe1 -> {Fe1, 0}, *)
-(*     Fe2 -> {0, Fe2} *)
-(* }; *)
