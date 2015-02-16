@@ -2,75 +2,53 @@ ParameterDefinitions = {
 
 {g1,        { Description -> "Hypercharge-Coupling"}},
 {g2,        { Description -> "Left-Coupling"}},
-{g3,        { Description -> "Strong-Coupling"}},  
-				
-{AlphaS,    {Description -> "Alpha Strong"}},
+{g3,        { Description -> "Strong-Coupling"}},    
+{AlphaS,    {Description -> "Alpha Strong"}},	
+{e,         { Description -> "electric charge"}}, 
 
 {Gf,        { Description -> "Fermi's constant"}},
 {aEWinv,    { Description -> "inverse weak coupling constant at mZ"}},
-{e,         { Description -> "electric charge"}}, 
 
-{Yu,        { Description -> "Up-Yukawa-Coupling"   }}, 
-{Yd,        { Description -> "Down-Yukawa-Coupling"}},
-{Ye,        { Description -> "Lepton-Yukawa-Coupling"}}, 
+{Yu,        { Description -> "Up-Yukawa-Coupling",
+			 DependenceNum ->  Sqrt[2]/v* {{Mass[Fu,1],0,0},
+             									{0, Mass[Fu,2],0},
+             									{0, 0, Mass[Fu,3]}}}}, 
+             									
+{Yd,        { Description -> "Down-Yukawa-Coupling",
+			  DependenceNum ->  Sqrt[2]/v* {{Mass[Fd,1],0,0},
+             									{0, Mass[Fd,2],0},
+             									{0, 0, Mass[Fd,3]}}}},
+             									
+{Ye,        { Description -> "Lepton-Yukawa-Coupling",
+			  DependenceNum ->  Sqrt[2]/v* {{Mass[Fe,1],0,0},
+             									{0, Mass[Fe,2],0},
+             									{0, 0, Mass[Fe,3]}}}}, 
+                                                                            
+                                                                           
+{mu2,         { Description -> "SM Mu Parameter"}},                                        
+{\[Lambda],  { Description -> "SM Higgs Selfcouplings",
+               DependenceNum -> Mass[hh]^2/(2 v^2)}},
+{v,          { Description -> "EW-VEV",
+               DependenceNum -> Sqrt[4*Mass[VWp]^2/(g2^2)],
+               DependenceSPheno -> None  }},
+{mH2,        { Description -> "SM Higgs Mass Parameter"}},
 
-{T[Ye],     { Description -> "Trilinear-Lepton-Coupling"}},
-{T[Yd],     { Description -> "Trilinear-Down-Coupling"}}, 
-{T[Yu],     { Description -> "Trilinear-Up-Coupling"}}, 
+{ThetaW,    { Description -> "Weinberg-Angle",
+              DependenceNum -> ArcSin[Sqrt[1 - Mass[VWp]^2/Mass[VZ]^2]]  }},
 
-{\[Mu],     { Description -> "Mu-parameter"}}, 
-{B[\[Mu]],  { Description -> "Bmu-parameter"}},        
+{ZZ, {Description -> "Photon-Z Mixing Matrix"}},
+{ZW, {Description -> "W Mixing Matrix",
+       Dependence ->   1/Sqrt[2] {{1, 1},
+                  {\[ImaginaryI],-\[ImaginaryI]}} }},
 
-{mq2,       { Description -> "Softbreaking left Squark Mass"}},
-{me2,       { Description -> "Softbreaking right Slepton Mass"}},
-{ml2,       { Description -> "Softbreaking left Slepton Mass"}},
-{mu2,       { Description -> "Softbreaking right Up-Squark Mass"}},
-{md2,       { Description -> "Softbreaking right Down-Squark Mass"}},
-{mHd2,      { Description -> "Softbreaking Down-Higgs Mass"}}, 
-{mHu2,      { Description -> "Softbreaking Up-Higgs Mass"}}, 
 
-{MassB,     { Description -> "Bino Mass parameter"}},
-{MassWB,    { Description -> "Wino Mass parameter"}},
-{MassG,     { Description -> "Gluino Mass parameter"}},
-                           
-{vd,        { Description -> "Down-VEV"}}, 
-{vu,        { Description -> "Up-VEV"}},       
-{v,         { Description -> "EW-VEV"}},
-             
-{\[Beta],   { Description -> "Pseudo Scalar mixing angle"  }},             
-{TanBeta,   { Description -> "Tan Beta" }},              
-{\[Alpha],  { Description -> "Scalar mixing angle" }},                          
-             
-    
-{ZD,        { Description -> "Down-Squark-Mixing-Matrix" }},             
-{ZU,        { Description -> "Up-Squark-Mixing-Matrix"}},             
-{ZE,        { Description -> "Slepton-Mixing-Matrix"}}, 
-{ZV,        { Description->"Sneutrino Mixing-Matrix"}},   
-{ZH,        { Description->"Scalar-Mixing-Matrix"}},
-{ZA,        { Description->"Pseudo-Scalar-Mixing-Matrix"}},
-{ZP,        { Description->"Charged-Mixing-Matrix"}},                      
-                                          
- 
-{ZN,        { Description->"Neutralino Mixing-Matrix" }}, 
-{UP,        { Description->"Chargino-plus Mixing-Matrix"}}, 
-{UM,        { Description->"Chargino-minus Mixing-Matrix"}}, 
+{Vu,        {Description ->"Left-Up-Mixing-Matrix"}},
+{Vd,        {Description ->"Left-Down-Mixing-Matrix"}},
+{Uu,        {Description ->"Right-Up-Mixing-Matrix"}},
+{Ud,        {Description ->"Right-Down-Mixing-Matrix"}}, 
+{Ve,        {Description ->"Left-Lepton-Mixing-Matrix"}},
+{Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}}
 
-{ZEL,       { Description ->"Left-Lepton-Mixing-Matrix"}},
-{ZER,       { Description ->"Right-Lepton-Mixing-Matrix" }},                          
-{ZDL,       { Description ->"Left-Down-Mixing-Matrix"}},                       
-{ZDR,       { Description ->"Right-Down-Mixing-Matrix"}},              
-{ZUL,       { Description ->"Left-Up-Mixing-Matrix"}},                        
-{ZUR,       { Description ->"Right-Up-Mixing-Matrix"}},           
-              
-{ThetaW,    { Description -> "Weinberg-Angle"}},                           
-{PhaseGlu,  { Description -> "Gluino-Phase" }},
-{ZZ, {Description ->   "Photon-Z Mixing Matrix"}},
-{ZW, {Description -> "W Mixing Matrix" }},
-{ZfW, {Description ->    "Wino Mixing Matrix"}},
-
-{m32, {Description -> "Gravitino Mass"}},
-{MP, {Description -> "Planck Mass"}}
-                                  
  }; 
  
 
