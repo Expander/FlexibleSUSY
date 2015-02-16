@@ -47,8 +47,18 @@ ParameterDefinitions = {
 {Uu,        {Description ->"Right-Up-Mixing-Matrix"}},
 {Ud,        {Description ->"Right-Down-Mixing-Matrix"}}, 
 {Ve,        {Description ->"Left-Lepton-Mixing-Matrix"}},
-{Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}}
+{Ue,        {Description ->"Right-Lepton-Mixing-Matrix"}},
 
+(* split MSSM parameters *)
+
+{ZN,        { Description->"Neutralino Mixing-Matrix" }},
+{UP,        { Description->"Chargino-plus Mixing-Matrix"}},
+{UM,        { Description->"Chargino-minus Mixing-Matrix"}},
+{MassB,     { Description -> "Bino Mass parameter" }},
+{MassWB,    { Description -> "Wino Mass parameter" }},
+{MassG,     { Description -> "Gluino Mass parameter" }},
+{PhaseGlu,  { Description -> "Gluino-Phase" }},
+{ZfW,       { Description -> "Wino Mixing Matrix" }}
  }; 
  
 

@@ -23,8 +23,17 @@ ParticleDefinitions[GaugeES] = {
       {VWB,  { Description -> "W-Bosons"}},          
       {gB,   { Description -> "B-Boson Ghost"}},                                                   
       {gG,   { Description -> "Gluon Ghost" }},          
-      {gWB,  { Description -> "W-Boson Ghost"}}
-      
+      {gWB,  { Description -> "W-Boson Ghost"}},
+
+(* split MSSM particles *)
+
+      {Glu,  { Description -> "Gluino"}},
+      {Wino, { Description -> "Wino"}},
+      {Bino, { Description -> "Bino"}},
+      {FH0,  { Description -> "Neutral Higgsinos",
+               OutputName -> "FH0"}},
+      {FHC,  { Description -> "Charged Higgsinos",
+               OutputName -> "FHC"}}
       };
       
       
@@ -69,8 +78,13 @@ ParticleDefinitions[GaugeES] = {
       {Fd,   { Description -> "Down-Quarks"}},   
       {Fu,   { Description -> "Up-Quarks"}},   
       {Fe,   { Description -> "Leptons" }},
-      {Fv,   { Description -> "Neutrinos" }}                                                              
-     
+      {Fv,   { Description -> "Neutrinos" }},
+
+(* split MSSM particles *)
+
+      {Glu,  { Description -> "Gluino" }},
+      {Chi,  { Description -> "Neutralinos"}},
+      {Cha,  { Description -> "Charginos"}}
         };    
         
         
@@ -92,6 +106,51 @@ ParticleDefinitions[GaugeES] = {
    {dL,     {LaTeX -> "d_L" }},
    {uL,     {LaTeX -> "u_L" }},
    {vL,     {LaTeX -> "\\nu_L" }},
+
+   {G,      { Description -> "Gluino field",
+              PDG -> {0},
+              Width -> 0,
+              Mass -> Automatic,
+              LaTeX -> "G",
+              OutputName -> "" }},
+   {WB,     { Description -> "Wino field",
+              PDG -> {0},
+              Width -> 0,
+              Mass -> Automatic,
+              LaTeX -> "WB",
+              OutputName -> "" }},
+   {B,      { Description -> "Bino field",
+              PDG -> {0},
+              Width -> 0,
+              Mass -> Automatic,
+              LaTeX -> "B",
+              OutputName -> "" }},
+   {Hd,     { Description -> "Down-Higgs Superfield",
+              PDG -> {0},
+              Width -> 0,
+              Mass -> Automatic,
+              LaTeX -> "H_d",
+              OutputName -> "" }},
+   {Hu,     { Description -> "Up-Higgs Superfield",
+              PDG -> {0},
+              Width -> 0,
+              Mass -> Automatic,
+              LaTeX -> "H_u",
+              OutputName -> "" }},
+
+   {FHd0,   { Description -> "Neutral Down-Higgsino"}},
+   {FHu0,   { Description -> "Neutral Up-Higgsino" }},
+   {FHdm,   { Description -> "Charged Down-Higgsino"}},
+   {FHup,   { Description -> "Charged Up-Higgsino"}},
+   {L0,     { Description -> "Neutralino Weyl-Spinor"}},
+   {Lm,     { Description -> "Negative Chargino Weyl-Spinor"}},
+   {Lp,     { Description -> "Positive Chargino Weyl-Spinor"}},
+   {fG,     { Description ->"Gluino Weyl-Spinor"}},
+   {fWB,    { Description ->"Wino Weyl-Spinor"}},
+   {fW0,    { Description ->"Neutral Wino" }},
+   {fWm,    { Description ->"Negative Wino"}},
+   {fWp,    { Description ->"Positive Wino"}},
+   {fB,     { Description ->"Bino Weyl-Spinor"}},
 
    {DR,     {LaTeX -> "D_R" }},
    {ER,     {LaTeX -> "E_R" }},
