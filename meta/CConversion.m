@@ -11,6 +11,7 @@ realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
 UNITMATRIX::usage="";
+ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
 ZEROVECTOR::usage="";
 oneOver16PiSqr::usage="";
@@ -466,6 +467,18 @@ Format[Complex[r_,i_],CForm] :=
            OutputForm];
 
 Protect[Complex];
+
+Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
+    Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROVECTOR[a_,b_],CForm] :=
+    Format["ZEROVECTOR(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROMATRIX[a_,b_],CForm] :=
+    Format["ZEROMATRIX(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
 
 Format[CConversion`FSKroneckerDelta[a_,b_],CForm] :=
     Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>
