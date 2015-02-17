@@ -55,8 +55,8 @@ DEFINITION[GaugeES][LagrangianInput] = {
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
 LagSplit = - MassG/2 G.G - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
-    - g2u conj[H].WB.Hu - g1u conj[H].B.Hu \
-    + g2d H.WB.Hd - g1d H.B.Hd;
+    - g2u conj[H].WB.Hu - (g1u/Sqrt[2]) conj[H].B.Hu \
+    + g2d H.WB.Hd - (g1d/Sqrt[2]) H.B.Hd;
 
 DEFINITION[GaugeES][DiracSpinors] = {
     Bino -> {fB , conj[fB] },
