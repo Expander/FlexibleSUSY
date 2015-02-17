@@ -1,11 +1,11 @@
 Off[General::spell]
 
-Model`Name = "MSSM";
-Model`NameLaTeX ="MSSM";
-Model`Authors = "F.Staub";
-Model`Date = "2012-09-01";
+Model`Name = "FullMSSM";
+Model`NameLaTeX ="FullMSSM";
+Model`Authors = "F.Staub,A.Voigt";
+Model`Date = "2015-02-17";
 
-(* 2013-09-01: changing to new conventions for Superfields, Superpotential and global symmetries *)
+(* 2015-02-16: VEV normalization w/o factor 1/Sqrt[2] *)
 
 
 
