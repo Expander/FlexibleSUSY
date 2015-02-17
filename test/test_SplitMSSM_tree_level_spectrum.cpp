@@ -67,14 +67,14 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
 {
    SplitMSSM_input_parameters input;
    input.LambdaInput = 0.1;
-   input.g1uInput = 0.1;
-   input.g1dInput = 0.1;
-   input.g2uInput = 0.1;
-   input.g2dInput = 0.1;
+   input.g1uInput = 0.2;
+   input.g1dInput = 0.3;
+   input.g2uInput = 0.4;
+   input.g2dInput = 0.5;
    input.M1Input = 100.;
-   input.M2Input = 100.;
-   input.M3Input = 100.;
-   input.MuInput = 200.;
+   input.M2Input = 200.;
+   input.M3Input = 300.;
+   input.MuInput = 400.;
    SplitMSSM<Two_scale> m;
    setup_SplitMSSM_const(m, input);
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
 
    for (int i = 0; i < 2; i++) {
       for (int k = 0; k < 2; k++) {
-         BOOST_CHECK_EQUAL(M_Cha_em(i,k), M_Cha(i,k));
+         BOOST_CHECK_CLOSE(M_Cha_em(i,k), M_Cha(i,k), 1.0e-10);
       }
    }
 
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
 
    for (int i = 0; i < 4; i++) {
       for (int k = 0; k < 4; k++) {
-         BOOST_CHECK_EQUAL(M_Chi_em(i,k), M_Chi(i,k));
+         BOOST_CHECK_CLOSE(M_Chi_em(i,k), M_Chi(i,k), 1.0e-10);
       }
    }
 
