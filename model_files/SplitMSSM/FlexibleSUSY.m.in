@@ -2,9 +2,21 @@
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 
-(* SM input parameters *)
+(* input parameters *)
 
-MINPAR = { {1, LambdaIN} };
+MINPAR = {};
+
+EXTPAR = {
+    {1, LambdaInput},
+    {2, g1uInput},
+    {3, g1dInput},
+    {4, g2uInput},
+    {5, g2dInput},
+    {6, M1Input},
+    {7, M2Input},
+    {8, M3Input},
+    {9, MuInput}
+};
 
 EWSBOutputParameters = { mu2 };
 
@@ -13,7 +25,15 @@ SUSYScale = v;
 SUSYScaleFirstGuess = 1000;
 
 SUSYScaleInput = {
-    {\[Lambda], LambdaIN}
+    {\[Lambda], LambdaInput},
+    {g1u      , g1uInput},
+    {g1d      , g1dInput},
+    {g2u      , g2uInput},
+    {g2d      , g2dInput},
+    {MassB    , M1Input},
+    {MassWB   , M2Input},
+    {MassG    , M3Input},
+    {\[Mu]    , MuInput}
 };
 
 LowScale = SM[MZ];
