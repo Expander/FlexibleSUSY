@@ -86,6 +86,12 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
 
    BOOST_CHECK_CLOSE(Mhh_em, Mhh, 1.0e-10);
 
+   // Gluino mass
+   const double MGlu_em = m.get_MassG();
+   const double MGlu = m.get_MGlu();
+
+   BOOST_CHECK_CLOSE(MGlu_em, MGlu, 1.0e-10);
+
    // chargino mass matrix
    const Eigen::Matrix<double,2,2> M_Cha_em(calc_mass_matrix_Cha(m));
    const Eigen::Matrix<double,2,2> M_Cha(m.get_mass_matrix_Cha());
