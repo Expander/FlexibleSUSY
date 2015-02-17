@@ -123,7 +123,7 @@ WeylFermionAndIndermediate = {
 
     (* split MSSM particles *)
 
-     {G,      { Description -> "Gluino field",
+     {FG,     { Description -> "Gluino field",
                 PDG -> {0},
                 Width -> 0,
                 Mass -> Automatic,

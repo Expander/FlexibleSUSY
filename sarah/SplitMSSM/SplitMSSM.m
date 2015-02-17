@@ -29,7 +29,7 @@ FermionFields[[3]] = {d, 3, conj[dR],     1/3, 1, -3, RpM};
 FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3, RpM};
 FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, RpM};
 
-FermionFields[[6]]  = {G , 1, fG          ,   0  , 1, 8, RpP};
+FermionFields[[6]]  = {FG, 1, fG          ,   0  , 1, 8, RpP};
 FermionFields[[7]]  = {WB, 1, {{fW0/Sqrt[2],fWp},
                                {fWm,-fW0/Sqrt[2]}}, 0 , 3, 1, RpP};
 FermionFields[[8]]  = {B , 1, fB          ,   0  , 1, 1, RpP};
@@ -54,7 +54,7 @@ DEFINITION[GaugeES][LagrangianInput] = {
 
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
-LagSplit = - MassG/2 G.G - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
+LagSplit = - MassG/2 FG.FG - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
     - g2u conj[H].WB.Hu - (g1u/Sqrt[2]) conj[H].B.Hu \
     + g2d H.WB.Hd - (g1d/Sqrt[2]) H.B.Hd;
 
