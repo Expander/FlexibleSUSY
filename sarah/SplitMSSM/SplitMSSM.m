@@ -32,7 +32,7 @@ FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1, RpM};
 FermionFields[[6]]  = {FG, 1, fG          ,   0  , 1, 8, RpP};
 FermionFields[[7]]  = {WB, 1, {{fW0/Sqrt[2],fWp},
                                {fWm,-fW0/Sqrt[2]}}, 0 , 3, 1, RpP};
-FermionFields[[8]]  = {B , 1, fB          ,   0  , 1, 1, RpP};
+FermionFields[[8]]  = {FB, 1, fB          ,   0  , 1, 1, RpP};
 FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1, RpP};
 FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpP};
 
@@ -54,9 +54,9 @@ DEFINITION[GaugeES][LagrangianInput] = {
 
 LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 LagHC = Yd conj[H].d.q + Ye conj[H].e.l + Yu H.u.q;
-LagSplit = - MassG/2 FG.FG - MassWB/2 WB.WB - MassB/2 B.B - \[Mu] Hu.Hd \
-    - g2u conj[H].WB.Hu - (g1u/Sqrt[2]) conj[H].B.Hu \
-    + g2d H.WB.Hd - (g1d/Sqrt[2]) H.B.Hd;
+LagSplit = - MassG/2 FG.FG - MassWB/2 WB.WB - MassB/2 FB.FB - \[Mu] Hu.Hd \
+    - g2u conj[H].WB.Hu - (g1u/Sqrt[2]) conj[H].FB.Hu \
+    + g2d H.WB.Hd - (g1d/Sqrt[2]) H.FB.Hd;
 
 DEFINITION[GaugeES][DiracSpinors] = {
     Bino -> {fB , conj[fB] },
