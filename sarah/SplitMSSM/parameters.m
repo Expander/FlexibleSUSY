@@ -19,7 +19,7 @@ ParameterDefinitions = {
                                                 {0, Mass[Fe,2],0},
                                                 {0, 0, Mass[Fe,3]}}}},
     {mu2,       { Description -> "SM Mu Parameter",
-                  LaTeX -> "\\mu_{\text{SM}}",
+                  LaTeX -> "\\mu_{\\text{SM}}",
                   OutputName -> mu2 }},
     {\[Lambda], { Description -> "SM Higgs Selfcouplings",
                   DependenceNum -> Mass[hh]^2/(2 v^2)}},
