@@ -30,6 +30,11 @@ FlexibleSUSY-1.0.5 [not released yet]
    self-energies for calculation of bottom and tau DR-bar masses in
    the SM
 
+ * Bugfix (commit 08128f0): For a non-SUSY model the all running
+   masses are checked for convergence.  Before, only non-SM particle
+   masses were checked for convergence, which led to an empty
+   convergence tester for the SM.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
