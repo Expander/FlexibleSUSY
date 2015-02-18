@@ -132,6 +132,7 @@ void match_tree_level(const FullMSSM<Two_scale>& mssm,
    const double g2 = mssm.get_g2();
    const double g3 = mssm.get_g3();
    const double GUT = sqrt(0.6);
+   const double gY = GUT * g1;
    const double vu = mssm.get_vu();
    const double vd = mssm.get_vd();
    const double tan_beta = vu / vd;
@@ -140,11 +141,10 @@ void match_tree_level(const FullMSSM<Two_scale>& mssm,
    const double cos_beta = Cos(beta);
    const double cos_2beta = Cos(2*beta);
 
-   const double gY = GUT * mssm.get_g1();
-   const double lambda = 0.25 * (Sqr(g2) + Sqr(GUT*g1)) * Sqr(cos_2beta);
+   const double lambda = 0.25 * (Sqr(g2) + Sqr(gY)) * Sqr(cos_2beta);
    const double vev = Sqrt(Sqr(vu) + Sqr(vd));
-   const double g1u = GUT * g1 * sin_beta;
-   const double g1d = GUT * g1 * cos_beta;
+   const double g1u = gY * sin_beta;
+   const double g1d = gY * cos_beta;
    const double g2u = g2 * sin_beta;
    const double g2d = g2 * cos_beta;
 
@@ -213,4 +213,6 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_FullMSSM_tree_level_masses_convention )
    BOOST_CHECK_CLOSE(mssm.get_MChi(1), split.get_MChi(1), 1.0e-10);
    BOOST_CHECK_CLOSE(mssm.get_MChi(2), split.get_MChi(2), 1.0e-10);
    BOOST_CHECK_CLOSE(mssm.get_MChi(3), split.get_MChi(3), 1.0e-10);
+
+   BOOST_CHECK_CLOSE(mssm.get_Mhh(0), split.get_Mhh(), 1.0e-10);
 }
