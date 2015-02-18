@@ -5,9 +5,11 @@
 #include <boost/test/unit_test.hpp>
 
 #include "test_SplitMSSM.hpp"
+#include "test_FullMSSM.hpp"
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "SplitMSSM_two_scale_model.hpp"
+#include "FullMSSM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
 
@@ -63,7 +65,7 @@ Eigen::Matrix<double,4,4> calc_mass_matrix_Chi(const SplitMSSM<Two_scale>& m)
    return mchi_tree;
 }
 
-BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
+BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses_convention )
 {
    SplitMSSM_input_parameters input;
    input.LambdaInput = 0.1;
@@ -121,4 +123,76 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_tree_level_masses )
    //       BOOST_CHECK_EQUAL(M_top_em(i,k), M_top(i,k));
    //    }
    // }
+}
+
+void match_tree_level(const FullMSSM<Two_scale>& mssm,
+                      SplitMSSM<Two_scale>& split)
+{
+   const double g1 = mssm.get_g1();
+   const double g2 = mssm.get_g2();
+   const double g3 = mssm.get_g3();
+   const double GUT = sqrt(0.6);
+   const double vu = mssm.get_vu();
+   const double vd = mssm.get_vd();
+   const double tan_beta = vu / vd;
+   const double beta = ArcTan(tan_beta);
+   const double sin_beta = Sin(beta);
+   const double cos_beta = Cos(beta);
+   const double cos_2beta = Cos(2*beta);
+
+   const double gY = GUT * mssm.get_g1();
+   const double lambda = 0.25 * (Sqr(g2) + Sqr(GUT*g1)) * Sqr(cos_2beta);
+   const double vev = Sqrt(Sqr(vu) + Sqr(vd));
+   const double g1u = GUT * g1 * sin_beta;
+   const double g1d = GUT * g1 * cos_beta;
+   const double g2u = g2 * sin_beta;
+   const double g2d = g2 * cos_beta;
+
+   split.set_scale(mssm.get_scale());
+   split.set_loops(mssm.get_loops());
+   split.set_g1(gY);
+   split.set_g2(g2);
+   split.set_g3(g3);
+   split.set_Yu(mssm.get_Yu());
+   split.set_Yd(mssm.get_Yd());
+   split.set_Ye(mssm.get_Ye());
+   split.set_MassB(mssm.get_MassB());
+   split.set_MassG(mssm.get_MassG());
+   split.set_MassWB(mssm.get_MassWB());
+   split.set_Mu(mssm.get_Mu());
+
+   split.set_Lambdax(lambda);
+   split.set_v(vev);
+   split.set_g1u(g1u);
+   split.set_g1d(g1d);
+   split.set_g2u(g2u);
+   split.set_g2d(g2d);
+   // split.set_mu2(100); // unfixed
+}
+
+BOOST_AUTO_TEST_CASE( test_SplitMSSM_FullMSSM_tree_level_masses_convention )
+{
+   FullMSSM<Two_scale> mssm;
+   FullMSSM_input_parameters input_full;
+
+   input_full.m0 = 125.;
+   input_full.m12 = 500.;
+   input_full.TanBeta = 10.;
+   input_full.SignMu = 1;
+   input_full.Azero = 0.;
+
+   setup_FullMSSM(mssm, input_full);
+   mssm.solve_ewsb_tree_level();
+
+   SplitMSSM<Two_scale> split;
+
+   match_tree_level(mssm, split);
+   split.solve_ewsb_tree_level(); // fixes mu2
+
+   mssm.calculate_DRbar_masses();
+   split.calculate_DRbar_masses();
+
+   BOOST_CHECK_CLOSE(mssm.get_MVZ(), split.get_MVZ(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MVWm(), split.get_MVWp(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MGlu(), split.get_MGlu(), 1.0e-10);
 }

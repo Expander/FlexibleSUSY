@@ -114,7 +114,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-SplitMSSM),yes)
+ifeq ($(shell $(FSCONFIG) --with-SplitMSSM --with-FullMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_SplitMSSM_tree_level_spectrum.cpp
 endif
@@ -442,7 +442,7 @@ $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFL
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_SplitMSSM_tree_level_spectrum.x: $(LIBSplitMSSM) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_SplitMSSM_tree_level_spectrum.x: $(LIBSplitMSSM) $(LIBFullMSSM) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
