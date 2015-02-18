@@ -21,7 +21,7 @@ double calc_mh_tree(const SplitMSSM<Two_scale>& m)
    return Sqrt(mh_tree);
 }
 
-/// calculates Higgs mass in convention of arXiv:0705.1496
+/// calculates chargino mass matrix in convention of arXiv:0705.1496
 Eigen::Matrix<double,2,2> calc_mass_matrix_Cha(const SplitMSSM<Two_scale>& m)
 {
    const double M2 = m.get_MassWB();
@@ -38,7 +38,7 @@ Eigen::Matrix<double,2,2> calc_mass_matrix_Cha(const SplitMSSM<Two_scale>& m)
    return mcha_tree;
 }
 
-/// calculates Higgs mass in convention of arXiv:0705.1496
+/// calculates neutralino mass matrix in convention of arXiv:0705.1496
 Eigen::Matrix<double,4,4> calc_mass_matrix_Chi(const SplitMSSM<Two_scale>& m)
 {
    const double M1 = m.get_MassB();
