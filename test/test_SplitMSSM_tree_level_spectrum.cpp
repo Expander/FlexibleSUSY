@@ -148,6 +148,14 @@ void match_tree_level(const FullMSSM<Two_scale>& mssm,
    const double g2u = g2 * sin_beta;
    const double g2d = g2 * cos_beta;
 
+   const Eigen::Matrix<double,2,2> ZH(mssm.get_ZH());
+
+   const double lambda_vertex =
+      1./4. * (Sqr(gY) + Sqr(g2)) * Sqr(Sqr(ZH(0,0)) - Sqr(ZH(0,1)));
+
+   BOOST_MESSAGE("lambda in terms of cos(2*beta)  = " << lambda);
+   BOOST_MESSAGE("lambda in terms of cos(2*alpha) = " << lambda_vertex);
+
    split.set_scale(mssm.get_scale());
    split.set_loops(mssm.get_loops());
    split.set_g1(gY);
@@ -183,13 +191,12 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_FullMSSM_tree_level_masses_convention )
 
    setup_FullMSSM(mssm, input_full);
    mssm.solve_ewsb_tree_level();
+   mssm.calculate_DRbar_masses();
 
    SplitMSSM<Two_scale> split;
 
    match_tree_level(mssm, split);
    split.solve_ewsb_tree_level(); // fixes mu2
-
-   mssm.calculate_DRbar_masses();
    split.calculate_DRbar_masses();
 
    BOOST_CHECK_CLOSE(mssm.get_MVZ(), split.get_MVZ(), 1.0e-10);
