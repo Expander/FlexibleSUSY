@@ -65,9 +65,8 @@ CalcDifference[parameter_[idx___Integer], offset_Integer, diff_String] :=
 CalcDifference[parameter_ /; Parameters`GetParameterDimensions[parameter] == {1}, offset_Integer, diff_String] :=
     CalcDifference[parameter[], offset, diff];
 
-CalcDifference[parameter_, offset_Integer, diff_String, idx_List, pos_Integer /; pos > (Length[idx]+1), idxPool_List] :=
+CalcDifference[parameter_, offset_Integer, diff_String, {idx_List, pos_Integer, idxPool_List} /; pos > Length[idx]] :=
     Module[{body, dim, dimStr, parStr},
-           Print["pos = ", pos];
            dim = Length[idx];
            dimStr = ToString[dim];
            parStr = ToValidCSymbolString[parameter] <> "," <>
@@ -77,14 +76,14 @@ CalcDifference[parameter_, offset_Integer, diff_String, idx_List, pos_Integer /;
            Return[body];
           ];
 
-CalcDifference[parameter_, offset_Integer, diff_String, idx_List, pos_Integer, idxPool_List] :=
+CalcDifference[parameter_, offset_Integer, diff_String, {idx_List, pos_Integer, idxPool_List}] :=
     Module[{result, dim, dimStr, i},
            dim = Length[idx];
            dimStr = ToString[dim];
            i = idxPool[[pos]];
            result = "for (unsigned " <> i <> " = 0; " <> i <> " < " <> ToString[idx[[pos]]] <> "; " <> i <> "++) {\n" <>
                     IndentText[
-                        CalcDifference[parameter, offset, diff, idx, pos+1, idxPool]
+                        CalcDifference[parameter, offset, diff, {idx, pos+1, idxPool}]
                     ] <>
                     "\n}";
            Return[result];
@@ -94,7 +93,7 @@ CalcDifference[parameter_, offset_Integer, diff_String] :=
     Module[{result, body, dim, parStr, idxPool},
            dim = Parameters`GetParameterDimensions[parameter];
            idxPool = Take[{"i", "j", "k", "l","m","n"}, Length[dim]];
-           result = CalcDifference[parameter, offset, diff, dim, 1, idxPool] <> "\n";
+           result = CalcDifference[parameter, offset, diff, {dim, 1, idxPool}] <> "\n";
            Return[result];
           ];
 
