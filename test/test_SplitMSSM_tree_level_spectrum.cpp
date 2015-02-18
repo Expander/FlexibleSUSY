@@ -153,9 +153,9 @@ void match_tree_level(const FullMSSM<Two_scale>& mssm,
    split.set_g1(gY);
    split.set_g2(g2);
    split.set_g3(g3);
-   split.set_Yu(mssm.get_Yu());
-   split.set_Yd(mssm.get_Yd());
-   split.set_Ye(mssm.get_Ye());
+   split.set_Yu(mssm.get_Yu() * sin_beta);
+   split.set_Yd(mssm.get_Yd() * cos_beta);
+   split.set_Ye(mssm.get_Ye() * cos_beta);
    split.set_MassB(mssm.get_MassB());
    split.set_MassG(mssm.get_MassG());
    split.set_MassWB(mssm.get_MassWB());
@@ -194,5 +194,23 @@ BOOST_AUTO_TEST_CASE( test_SplitMSSM_FullMSSM_tree_level_masses_convention )
 
    BOOST_CHECK_CLOSE(mssm.get_MVZ(), split.get_MVZ(), 1.0e-10);
    BOOST_CHECK_CLOSE(mssm.get_MVWm(), split.get_MVWp(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MAh(0), split.get_MAh(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MHpm(0), split.get_MHp(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFu(0), split.get_MFu(0), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFu(1), split.get_MFu(1), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFu(2), split.get_MFu(2), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFd(0), split.get_MFd(0), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFd(1), split.get_MFd(1), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFd(2), split.get_MFd(2), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFe(0), split.get_MFe(0), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFe(1), split.get_MFe(1), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MFe(2), split.get_MFe(2), 1.0e-10);
+
    BOOST_CHECK_CLOSE(mssm.get_MGlu(), split.get_MGlu(), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MCha(0), split.get_MCha(0), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MCha(1), split.get_MCha(1), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MChi(0), split.get_MChi(0), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MChi(1), split.get_MChi(1), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MChi(2), split.get_MChi(2), 1.0e-10);
+   BOOST_CHECK_CLOSE(mssm.get_MChi(3), split.get_MChi(3), 1.0e-10);
 }
