@@ -22,11 +22,11 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
    NSM<Two_scale> m;
    NSM_input_parameters input;
-   input.LambdaInput1 = 0.1;
-   input.LambdaInput2 = 0.1;
-   input.LambdaInput3 = 0.1;
-   input.LambdaInput4 = 0.0;
-   input.LambdaInput5 = 0.0;
+   input.Lambda1Input = 0.1;
+   input.Lambda2Input = 0.1;
+   input.Lambda3Input = 0.1;
+   input.Lambda4Input = 0.0;
+   input.Lambda5Input = 0.0;
    QedQcd oneset;
 
    const double vev = 246.;
@@ -68,11 +68,11 @@ BOOST_AUTO_TEST_CASE( test_delta_spectrum )
 {
    NSM<Two_scale> m;
    NSM_input_parameters input;
-   input.LambdaInput1 = 0.1;
-   input.LambdaInput2 = 0.1;
-   input.LambdaInput3 = 0.1;
-   input.LambdaInput4 = 0.0;
-   input.LambdaInput5 = 0.0;
+   input.Lambda1Input = 0.1;
+   input.Lambda2Input = 0.1;
+   input.Lambda3Input = 0.1;
+   input.Lambda4Input = 0.0;
+   input.Lambda5Input = 0.0;
    QedQcd oneset;
 
    const double vev = 246.;
