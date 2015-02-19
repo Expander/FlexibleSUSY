@@ -19,7 +19,7 @@ SUSYScaleInput = {};
 
 HighScale = Ye[3,3] == Yd[3,3];
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = 1000;
 
 HighScaleInput={
    {T[Ye], Azero*Ye},
