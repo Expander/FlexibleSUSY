@@ -50,7 +50,7 @@ public:
       , precision_goal(1.0e-4)
       , max_iterations(0)
       , beta_loop_order(2)
-      , threshold_corrections_loop_order(1)
+      , threshold_corrections_loop_order(2)
       , calculate_sm_masses(false)
       , force_output(false)
    {}
