@@ -11,8 +11,11 @@ MINPAR = { {1, m0},
            {5, Azero},
            {6, MTinput} };
 
-EXTPAR = { {80, LambdaInput},
-           {85, vTInput} };
+EXTPAR = {
+    {0, Qin},
+    {80, LambdaInput},
+    {85, vTInput}
+};
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu], mT2 };
 
@@ -25,9 +28,9 @@ SUSYScaleInput = {
    {\[Lambda], LambdaInput}
 };
 
-HighScale = g1 == g2;
+HighScale = Qin;
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = Qin;
 
 HighScaleInput = {
    {T[Ye], Azero*Ye},

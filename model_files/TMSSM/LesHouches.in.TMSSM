@@ -35,5 +35,6 @@ Block MINPAR                 # Input parameters
     5   -500                 # Azero
     6   1000                 # MTinput
 Block EXTPAR
+    0   1000                 # Qin
    80   0.2                  # LambdaInput
    85   10                   # vTinput
