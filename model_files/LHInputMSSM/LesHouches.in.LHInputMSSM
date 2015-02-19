@@ -58,3 +58,11 @@ Block S1IN
     2000
 Block S2IN
     3000
+Block MSL2IN
+    1   1   1000
+    2   2   1000
+    3   3   1000
+Block MSU2IN
+    1   1   1000
+    2   2   1000
+    3   3   1000
