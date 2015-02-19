@@ -21,7 +21,7 @@ EWSBOutputParameters = { mH2, mS2 };
 
 SUSYScale = Qin;
 
-SUSYScaleFirstGuess = 1000;
+SUSYScaleFirstGuess = Qin;
 
 SUSYScaleInput = {
     {\[Lambda]1, Lambda1Input},
