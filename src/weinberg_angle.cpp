@@ -508,12 +508,13 @@ double Weinberg_angle::calculate_delta_vb_susy(
    QUIT_IF(mch.rows() != v.cols(), calculate_delta_vb)
 #endif
 
-  const int dimN =  mneut.rows();
+  const int dimN = mneut.rows();
+  const int dimC = mch.rows();
 
   Eigen::VectorXd bPsi0NuNul(Eigen::VectorXd::Zero(dimN)),
-     bPsicNuSell(Eigen::VectorXd::Zero(2));
+     bPsicNuSell(Eigen::VectorXd::Zero(dimC));
   Eigen::VectorXd bPsi0ESell(Eigen::VectorXd::Zero(dimN)),
-     aPsicESnul(Eigen::VectorXd::Zero(2));
+     aPsicESnul(Eigen::VectorXd::Zero(dimC));
   Eigen::VectorXcd bChi0NuNul, bChicNuSell;
   Eigen::VectorXcd bChi0ESell, aChicESnul;
 
@@ -532,7 +533,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
 
   double deltaZnue = 0.0, deltaZe = 0.0;
   for (int i = 0; i < dimN; i++) {
-     if (i < 2) {
+     if (i < dimC) {
         deltaZnue +=
            - Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
         deltaZe +=
@@ -544,9 +545,9 @@ double Weinberg_angle::calculate_delta_vb_susy(
         - Sqr(Abs(bChi0ESell(i))) * b1(0.0, mneut(i), mselL, q);
   }
 
-  Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(2));
+  Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(dimC));
   Eigen::VectorXd bPsi0MuSmul(Eigen::VectorXd::Zero(dimN)),
-     aPsicMuSnul(Eigen::VectorXd::Zero(2));
+     aPsicMuSnul(Eigen::VectorXd::Zero(dimC));
   Eigen::VectorXcd bChicNuSmul;
   Eigen::VectorXcd bChi0MuSmul, aChicMuSnul;
 
@@ -563,7 +564,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
 
   double deltaZnumu = 0.0, deltaZmu = 0.0;
   for(int i = 0; i < dimN; i++) {
-     if (i < 2) {
+     if (i < dimC) {
         deltaZnumu +=
            - Sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmuL, q);
         deltaZmu +=
@@ -575,10 +576,10 @@ double Weinberg_angle::calculate_delta_vb_susy(
         - Sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmuL, q);
   }
 
-  Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,2)),
-     bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,2)),
-     fW(Eigen::MatrixXd::Zero(dimN,2)),
-     gW(Eigen::MatrixXd::Zero(dimN,2));
+  Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
+     bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
+     fW(Eigen::MatrixXd::Zero(dimN,dimC)),
+     gW(Eigen::MatrixXd::Zero(dimN,dimC));
   Eigen::MatrixXcd aChi0ChicW, bChi0ChicW;
 
   aPsi0PsicW(1, 0) = - g;
@@ -590,7 +591,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
   bChi0ChicW = n * bPsi0PsicW * u.adjoint();
 
   std::complex<double> deltaVE;
-  for(int i = 0; i < 2; i++) {
+  for(int i = 0; i < dimC; i++) {
      for(int j = 0; j < dimN; j++) {
         deltaVE += bChicNuSell(i) * Conj(bChi0ESell(j)) *
            (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
@@ -614,7 +615,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
   }
 
   std::complex<double> deltaVMu;
-  for(int i = 0; i < 2; i++) {
+  for(int i = 0; i < dimC; i++) {
      for(int j = 0; j < dimN; j++) {
         deltaVMu += bChicNuSmul(i) * Conj(bChi0MuSmul(j)) *
            (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
@@ -638,7 +639,7 @@ double Weinberg_angle::calculate_delta_vb_susy(
   }
 
   std::complex<double> a1;
-  for(int i = 0; i < 2; i++) {
+  for(int i = 0; i < dimC; i++) {
      for(int j = 0; j < dimN; j++) {
         a1 += 0.5 * aChicMuSnul(i) * Conj(bChicNuSell(i)) *
            bChi0NuNul(j) * bChi0ESell(j) * mch(i) * mneut(j) *
