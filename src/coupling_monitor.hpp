@@ -81,7 +81,7 @@ public:
    /// delete all saved couplings
    void clear();
    /// write couplings to file
-   void write_to_file(const std::string&) const;
+   void write_to_file(const std::string&, bool overwrite = true) const;
 
 private:
    typedef std::vector<TTouple> TData; ///< container for the scales and couplings
@@ -169,14 +169,18 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
  * Write all couplings to a text file.
  *
  * @param file_name name of file to write the data to
+ * @param overwrite if true, file is overwritten, otherwise content is appended
  */
 template <class Model, class DataGetter>
-void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_name) const
+void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_name, bool overwrite) const
 {
    if (couplings.empty())
       return;
 
-   std::ofstream filestr(file_name.c_str(), std::ios::out);
+   const std::ios_base::openmode openmode
+      = (overwrite ? std::ios::out : std::ios::app);
+
+   std::ofstream filestr(file_name.c_str(), openmode);
    VERBOSE_MSG("Coupling_monitor<>::write_to_file: opening file: "
                << file_name.c_str());
    if (filestr.fail()) {
