@@ -34,18 +34,18 @@ Block SMINPUTS               # Standard Model inputs
    24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR                 # Input parameters
     1   500                  # m0
-    2   500                  # m12
+    2   300                  # m12
     3   10                   # TanBeta
-    5   100                  # Azero
+    5   -10                  # Azero
 Block EXTPAR                 # Input parameters
-   61   0.1                  # LambdaInput
+   61   0.2                  # LambdaInput
    62   0.1                  # KappaInput
-   63   0                    # ALambdaInput
-   65   100                  # vR1Input
-   200  100                  # vL1Input
-   201  100                  # vL2Input
-   202  100                  # vL3Input
+   63   10                   # ALambdaInput
+   65   10                   # vR1Input
+   200  10                   # vL1Input
+   201  10                   # vL2Input
+   202  10                   # vL3Input
 Block YVIN
-    1   0                    # Yv(1)
-    2   0                    # Yv(2)
-    3   0                    # Yv(3)
+    1   0.01                    # Yv(1)
+    2   0.01                    # Yv(2)
+    3   0.01                    # Yv(3)
