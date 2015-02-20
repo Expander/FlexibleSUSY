@@ -95,7 +95,7 @@ do
 
     echo "> running spectrum generator for $model"
     echo "> input file: ${input}"
-    echo "> cmd: ${cmd}"
+    echo "> command: ${cmd}"
     eval "${cmd}"
 
     exit_code="$?"
