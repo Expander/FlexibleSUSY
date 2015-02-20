@@ -24,6 +24,12 @@ InertMSSM,${DEFAULT_CMSSM_INPUT},0
 LHInputMSSM,_DEFAULT_,0
 lowMSSM,_DEFAULT_,0
 lowNMSSM,_DEFAULT_,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP1_1loop.in,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP1_2loop_alphaS.in,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP1_2loop_full.in,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP2_1loop.in,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP2_2loop_alphaS.in,0
+lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/TP2_2loop_full.in,0
 minMSSM,${DEFAULT_CMSSM_INPUT},1
 MRSSM,_DEFAULT_,0
 MSSM,_DEFAULT_,0
