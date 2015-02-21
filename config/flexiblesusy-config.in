@@ -45,11 +45,6 @@ Usage: `basename $0`\
  [--version]\
 "
 
-if test $# -eq 0; then
-    echo "${usage}" 1>&2
-    exit 1
-fi
-
 help() {
 cat <<EOF
 Usage: `basename $0` [options]
@@ -124,7 +119,7 @@ while test $# -gt 0; do
             ;;
         *)
       ### Give an error
-            echo "Unknown argument \"$1\"!" 1>&2
+            echo "Unknown argument: $1" 1>&2
             echo "${usage}" 1>&2
             exit 1
             ;;
