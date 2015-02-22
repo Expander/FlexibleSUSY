@@ -613,7 +613,7 @@ SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
           ];
 
 CreateEWSBParametersInitializationList[parameters_List] :=
-    Module[{result = ""},
+    Module[{result = "{}"},
            If[Length[parameters] > 0,
               result = Utils`StringJoinWithSeparator[
                   CConversion`ToValidCSymbolString /@ parameters,
