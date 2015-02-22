@@ -745,7 +745,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
            tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquationsTreeLevel];
-           If[Length[parametersFixedByEWSB] != numberOfEWSBEquations,
+           If[ewsbEquations =!= Table[0, {numberOfEWSBEquations}] &&
+              Length[parametersFixedByEWSB] != numberOfEWSBEquations,
               Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
@@ -1300,8 +1301,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
+            haveEWSB = True,
             ewsbEquations, massMatrices, phases,
-            diagonalizationPrecision, allParticles, freePhases, ewsbSolution,
+            diagonalizationPrecision, allParticles,
+            freePhases = {}, ewsbSolution = {},
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks,
@@ -1540,47 +1543,53 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
-           FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
+           haveEWSB = ewsbEquations =!= Table[0, {Length[ewsbEquations]}];
 
-           (* adding tadpoles to the EWSB eqs. *)
-           ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
+           If[haveEWSB,
+              ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
+              FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
-           If[FlexibleSUSY`TreeLevelEWSBSolution === {},
-              (* trying to find an analytic solution for the EWSB eqs. *)
-              treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
-                                                      FlexibleSUSY`FSModelName <> "_tree_level_EWSB_solution.m"}];
-              Print["Solving EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
-              {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
-                                                                          FlexibleSUSY`EWSBOutputParameters,
-                                                                          treeLevelEwsbOutputFile];
-              If[ewsbSolution === {},
-                 Print["Warning: could not find an analytic solution to the EWSB eqs."];
-                 Print["   An iterative algorithm will be used.  You can try to set"];
-                 Print["   the solution by hand in the model file like this:"];
-                 Print[""];
-                 Print["   TreeLevelEWSBSolution = {"];
-                 For[i = 1, i <= Length[FlexibleSUSY`EWSBOutputParameters], i++,
-                     Print["      { ", FlexibleSUSY`EWSBOutputParameters[[i]], ", ... }" <>
-                           If[i != Length[FlexibleSUSY`EWSBOutputParameters], ",", ""]];
-                    ];
-                 Print["   };\n"];
-                 Print["   The tree-level EWSB solution was written to the file:"];
-                 Print["      ", treeLevelEwsbOutputFile];
+              (* adding tadpoles to the EWSB eqs. *)
+              ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
+
+              If[FlexibleSUSY`TreeLevelEWSBSolution === {},
+                 (* trying to find an analytic solution for the EWSB eqs. *)
+                 treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                         FlexibleSUSY`FSModelName <> "_tree_level_EWSB_solution.m"}];
+                 Print["Solving EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
+                 {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
+                                                                             FlexibleSUSY`EWSBOutputParameters,
+                                                                             treeLevelEwsbOutputFile];
+                 If[ewsbSolution === {},
+                    Print["Warning: could not find an analytic solution to the EWSB eqs."];
+                    Print["   An iterative algorithm will be used.  You can try to set"];
+                    Print["   the solution by hand in the model file like this:"];
+                    Print[""];
+                    Print["   TreeLevelEWSBSolution = {"];
+                    For[i = 1, i <= Length[FlexibleSUSY`EWSBOutputParameters], i++,
+                        Print["      { ", FlexibleSUSY`EWSBOutputParameters[[i]], ", ... }" <>
+                              If[i != Length[FlexibleSUSY`EWSBOutputParameters], ",", ""]];
+                       ];
+                    Print["   };\n"];
+                    Print["   The tree-level EWSB solution was written to the file:"];
+                    Print["      ", treeLevelEwsbOutputFile];
+                   ];
+                 ,
+                 If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
+                    Print["Error: not enough EWSB solutions given!"];
+                    Quit[1];
+                   ];
+                 If[Sort[#[[1]]& /@ FlexibleSUSY`TreeLevelEWSBSolution] =!= Sort[FlexibleSUSY`EWSBOutputParameters],
+                    Print["Error: Parameters given in TreeLevelEWSBSolution, do not match"];
+                    Print["   the Parameters given in FlexibleSUSY`EWSBOutputParameters!"];
+                    Quit[1];
+                   ];
+                 Print["Using user-defined EWSB eqs. solution"];
+                 freePhases = {};
+                 ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
                 ];
               ,
-              If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
-                 Print["Error: not enough EWSB solutions given!"];
-                 Quit[1];
-                ];
-              If[Sort[#[[1]]& /@ FlexibleSUSY`TreeLevelEWSBSolution] =!= Sort[FlexibleSUSY`EWSBOutputParameters],
-                 Print["Error: Parameters given in TreeLevelEWSBSolution, do not match"];
-                 Print["   the Parameters given in FlexibleSUSY`EWSBOutputParameters!"];
-                 Quit[1];
-                ];
-              Print["Using user-defined EWSB eqs. solution"];
-              freePhases = {};
-              ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
+              Print["Note: EWSB equations are zero."];
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
