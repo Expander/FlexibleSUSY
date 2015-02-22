@@ -950,6 +950,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhyicalParameters,
             convertMixingsToSLHAConvention = "",
+            gaugeCouplingNormalizationDecls = "",
+            gaugeCouplingNormalizationDefs = "",
             numberOfDRbarBlocks, drBarBlockNames},
            particles = GetMassEigenstate /@ massMatrices;
            susyParticles = Select[particles, (!SARAH`SMQ[#])&];
@@ -979,6 +981,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
+           gaugeCouplingNormalizationDecls = WriteOut`GetGaugeCouplingNormalizationsDecls[SARAH`Gauge];
+           gaugeCouplingNormalizationDefs  = WriteOut`GetGaugeCouplingNormalizationsDefs[SARAH`Gauge];
            WriteOut`ReplaceInFiles[files,
                           { "@fillSpectrumVectorWithSusyParticles@" -> IndentText[fillSpectrumVectorWithSusyParticles],
                             "@fillSpectrumVectorWithSMParticles@"   -> IndentText[IndentText[fillSpectrumVectorWithSMParticles]],
@@ -1002,6 +1006,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
+                            "@gaugeCouplingNormalizationDecls@"-> IndentText[gaugeCouplingNormalizationDecls],
+                            "@gaugeCouplingNormalizationDefs@" -> IndentText[gaugeCouplingNormalizationDefs],
                             "@numberOfDRbarBlocks@"            -> ToString[numberOfDRbarBlocks],
                             "@drBarBlockNames@"                -> WrapLines[drBarBlockNames],
                             Sequence @@ GeneralReplacementRules[]

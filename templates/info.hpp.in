@@ -28,6 +28,7 @@ namespace flexiblesusy {
 namespace @ModelName@_info {
 @particleEnum@
 @parameterEnum@
+@gaugeCouplingNormalizationDecls@
    extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
    extern const char* particle_names[NUMBER_OF_PARTICLES];
    extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
