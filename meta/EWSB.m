@@ -162,6 +162,8 @@ SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
            equations /. simplificationRules
           ];
 
+FindIndependentSubset[equations_List, {}] := {};
+
 FindIndependentSubset[equations_List, parameters_List] :=
     Module[{equationSubsets, numberOfEquations, parameterSubsets,
             numberOfParameters, e, p, result = {}, isFreeOf},
