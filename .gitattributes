@@ -34,6 +34,7 @@ model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
+model_files/UnbrokenMSSM        export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
@@ -46,6 +47,7 @@ release/generate-models.sh      export-ignore
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
+sarah/UnbrokenMSSM              export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore
