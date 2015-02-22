@@ -60,6 +60,9 @@ a given parameter type";
 CreateDefaultDefinition::usage="creates C/C++ variable definition
 using the default constructor";
 
+CreateConstExternDecl::usage="";
+CreateConstDef::usage="";
+
 SetToDefault::usage="set parameter to default value";
 
 ExpandSums::usage="expands expressions that contain sum symbols of the
@@ -331,6 +334,21 @@ CreateZero[CConversion`VectorType[_, entries_]] :=
 
 CreateZero[CConversion`MatrixType[_, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
+
+CreateConstExternDecl[parameter_String, type_] :=
+    "extern const " <> CreateCType[type] <> " " <>
+    parameter <> ";\n";
+
+CreateConstExternDecl[parameter_, type_] :=
+    CreateConstExternDecl[ToValidCSymbolString[parameter], type];
+
+CreateConstDef[parameter_String, type_, value_] :=
+    "const " <> CreateCType[type] <> " " <>
+    parameter <> " = " <>
+    RValueToCFormString[value] <> ";\n";
+
+CreateConstDef[parameter_, type_, value_] :=
+    CreateConstDef[ToValidCSymbolString[parameter], type, value];
 
 MakeUnique[name_String] :=
     Module[{appendix = ""},
