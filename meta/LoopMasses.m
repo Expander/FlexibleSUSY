@@ -617,15 +617,19 @@ Create1DimPoleMassFunction[particle_Symbol] :=
               body = "if (!force_output && problems.is_tachyon(" <> ToValidCSymbolString[particle] <> "))\n" <>
                      IndentText["return 0.;"] <> "\n\n";
              ];
-           particleName = ToValidCSymbolString[particle];
-           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           body = body <>
-                  "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
-                  "const double mass_sqr = get_mass_matrix_" <> particleName <> "() - self_energy;\n\n" <>
-                  "if (mass_sqr < 0.)\n" <>
-                  IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                  "return AbsSqrt(mass_sqr);\n";
+           If[!IsMassless[particle],
+               particleName = ToValidCSymbolString[particle];
+               massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+               selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
+               body = body <>
+                      "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+                      "const double mass_sqr = get_mass_matrix_" <> particleName <> "() - self_energy;\n\n" <>
+                      "if (mass_sqr < 0.)\n" <>
+                      IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
+                      "return AbsSqrt(mass_sqr);\n";
+              ,
+              body = "return 0.;\n";
+             ];
            result = "double CLASSNAME::" <> CreateLoopMassFunctionName[particle] <>
                     "(double p)\n{\n" <> IndentText[body] <> "}\n\n";
            Return[result];
