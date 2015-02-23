@@ -88,6 +88,7 @@ const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECT
 const double currentScale = get_scale();
 
 const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop] <> ";
+
 double qcd_2l = 0.;
 
 if (add_2loop_corrections) {
