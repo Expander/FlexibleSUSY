@@ -211,12 +211,17 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`HiggsBoson}]& /@ heavySE)];
-           (* Create Top self-energy with only SUSY
+           (* Create rotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
+           (* Create unrotated Top self-energy with only SUSY
+              particles and W, Z and photon bosons in the loop *)
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
+                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
+           result = Join[result, RemoveParticle[#,SARAH`VectorG]& /@ heavySE];
            Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 

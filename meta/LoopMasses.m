@@ -62,14 +62,39 @@ Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
     IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
-Do1DimFermion[massName_String, massMatrixName_String, selfEnergyFunctionS_String,
+Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
     "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
     "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
-    "PHYSICAL(" <> massName <> ") = " <> massMatrixName <>
+    "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <> massMatrixName <>
     " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n";
+
+Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
+              selfEnergyFunctionS_String, selfEnergyFunctionPL_String, selfEnergyFunctionPR_String,
+              momentum_String] :=
+    Module[{massName, qcdTwoLoop},
+           massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
+"\
+const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
+const double currentScale = get_scale();
+
+double qcd_2l = 0.;
+
+if (add_2loop_corrections) {
+   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop] <> ";
+}
+
+const double p = " <> momentum <> ";
+const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));
+const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));
+const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));
+PHYSICAL(" <> massName <> ") = " <> massMatrixName <> "\
+ - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
+ - " <> massMatrixName <> " * qcd_2l;\n"
+          ];
 
 Do1DimVector[particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String] :=
@@ -232,7 +257,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana ferimion or not *)
               result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimFermion[massName, "M_tree", selfEnergyFunctionS,
+                       Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      massName];
              ];
@@ -397,7 +422,10 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
     Module[{result, dim, dimStr, massName, mixingMatrix, U, V,
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
-            eigenArrayType, mixingMatrixType, particleName},
+            eigenArrayType, mixingMatrixType, particleName,
+            topTwoLoop = False, thirdGenMass, qcdCorrections = "",
+            qcdTwoLoop, highestIdx, highestIdxStr
+           },
            dim = GetDimension[particle];
            dimStr = ToString[dim];
            particleName = ToValidCSymbolString[particle];
@@ -417,11 +445,30 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
+           topTwoLoop = particle === SARAH`TopQuark;
+           If[topTwoLoop,
+              highestIdx = dim - 1;
+              highestIdxStr = ToString[highestIdx];
+              thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
+              qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
+              qcdCorrections = "\
+const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
+
+double qcd_2l = 0.;
+
+if (add_2loop_corrections) {
+   const double currentScale = get_scale();
+   qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
+}
+
+";
+             ];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
            selfEnergyFunctionPR = SelfEnergies`CreateSelfEnergyFunctionName[particle[PR]];
            If[dim > 1,
-              result = selfEnergyMatrixType <> " self_energy_1;\n" <>
+              result = qcdCorrections <>
+                       selfEnergyMatrixType <> " self_energy_1;\n" <>
                        selfEnergyMatrixType <> " self_energy_PL;\n" <>
                        selfEnergyMatrixType <> " self_energy_PR;\n" <>
                        "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
@@ -429,18 +476,25 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
-                                             IndentText["self_energy_1(i1,i2)  = Re(" <>
-                                                        selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                        "self_energy_PL(i1,i2) = Re(" <>
-                                                        selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                        "self_energy_PR(i1,i2) = Re(" <>
-                                                        selfEnergyFunctionPR <> "(p,i1,i2));\n"
-                                                       ] <>
+                                             IndentText[
+                                                 "self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
+                                                 "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
+                                                 "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"
+                                             ] <>
                                              "}\n"
                                             ] <>
                                   "}\n" <>
-                                  "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
-                                  "- M_tree * self_energy_PL - self_energy_1);\n"
+                                  If[topTwoLoop,
+                                     selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
+                                     "- M_tree * self_energy_PL - self_energy_1);\n" <>
+                                     "if (add_2loop_corrections)\n" <>
+                                     IndentText["delta_M(" <> highestIdxStr <> "," <> highestIdxStr <> ") -= " <>
+                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * qcd_2l;"] <>
+                                     "\n"
+                                     ,
+                                     "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
+                                     "- M_tree * self_energy_PL - self_energy_1);\n"
+                                    ]
                                  ];
               If[IsMajoranaFermion[particle],
                  result = result <>
@@ -496,7 +550,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana fermion or not *)
               result = "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimFermion[massName, "M_tree", selfEnergyFunctionS,
+                       Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
                                      momentum];
              ];
