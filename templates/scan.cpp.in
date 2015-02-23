@@ -17,7 +17,6 @@
 // ====================================================================
 
 // File generated at @DateAndTime@
-// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_spectrum_generator.hpp"

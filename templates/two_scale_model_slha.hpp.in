@@ -22,7 +22,6 @@
  */
 
 // File generated at @DateAndTime@
-// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 #ifndef @ModelName@_TWO_SCALE_SLHA_H
 #define @ModelName@_TWO_SCALE_SLHA_H

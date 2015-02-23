@@ -17,7 +17,6 @@
 // ====================================================================
 
 // File generated at @DateAndTime@
-// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 #include "@ModelName@_lattice_susy_scale_constraint.hpp"
 #include "@ModelName@_lattice_model.hpp"
