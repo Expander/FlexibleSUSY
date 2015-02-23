@@ -27,7 +27,7 @@
  * parameters.
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
- * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
 #include "@ModelName@_two_scale_model.hpp"

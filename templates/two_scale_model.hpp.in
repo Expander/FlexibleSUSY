@@ -25,7 +25,7 @@
  *        and determine the pole masses and mixings
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
- * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
 #ifndef @ModelName@_TWO_SCALE_H
