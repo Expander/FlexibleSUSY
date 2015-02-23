@@ -11,6 +11,11 @@ FlexibleSUSY-1.0.5 [not released yet]
    Note: To achieve the maximum accuracy available, set the threshold
    corrections loop order to 2 (FlexibleSUSY block entry 7)
 
+ * Feature: 2-loop QCD corrections can be added when calculating the
+   top pole mass from the top DR-bar mass.  These 2-loop contributions
+   can be enabled/disabled using entries 13 or 4 of the FlexibleSUSY
+   block in the SLHA input file.
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
