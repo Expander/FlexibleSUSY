@@ -7,6 +7,7 @@
 
 config/config.h
 config/version
+config/git_commit
 config/required_sarah_version.m
 config/list_sarah_model_files.sh
 config.status
