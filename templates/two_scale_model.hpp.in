@@ -17,6 +17,8 @@
 // ====================================================================
 
 // File generated at @DateAndTime@
+// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
+// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 /**
  * @file @ModelName@_two_scale_model.hpp

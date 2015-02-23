@@ -17,6 +17,7 @@
 // ====================================================================
 
 // File generated at @DateAndTime@
+// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 #include "@ModelName@_lattice_convergence_tester.hpp"
 

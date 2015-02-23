@@ -17,6 +17,7 @@
 // ====================================================================
 
 // File generated at @DateAndTime@
+// with FlexibleSUSY @FlexibleSUSYVersion@ (@FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@
 
 #ifndef @ModelName@_LATTICE_SUSY_SCALE_CONSTRAINT_H
 #define @ModelName@_LATTICE_SUSY_SCALE_CONSTRAINT_H
