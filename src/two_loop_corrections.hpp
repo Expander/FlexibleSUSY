@@ -19,20 +19,25 @@
 // File generated at @DateAndTime@
 
 /**
- * @file higgs_2loop_corrections.hpp
+ * @file two_loop_corrections.hpp
  * @brief contains struct for selection of Higgs 2-loop corrections
  */
 
-#ifndef HIGGS_2LOOP_CORRECTIONS_H
-#define HIGGS_2LOOP_CORRECTIONS_H
+#ifndef TWO_LOOP_CORRECTIONS_H
+#define TWO_LOOP_CORRECTIONS_H
 
 namespace flexiblesusy {
 
-struct Higgs_2loop_corrections {
-   Higgs_2loop_corrections()
-      : at_as(true), ab_as(true), at_at(true), atau_atau(true)
+struct Two_loop_corrections {
+   Two_loop_corrections()
+      : higgs_at_as(true)
+      , higgs_ab_as(true)
+      , higgs_at_at(true)
+      , higgs_atau_atau(true)
+      , top_qcd(true)
       {}
-   bool at_as, ab_as, at_at, atau_atau;
+   bool higgs_at_as, higgs_ab_as, higgs_at_at, higgs_atau_atau;
+   bool top_qcd;
 };
 
 } // namespace flexiblesusy

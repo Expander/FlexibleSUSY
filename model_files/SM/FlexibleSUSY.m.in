@@ -43,6 +43,11 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = True;
 
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {hh};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
 SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],
     {SARAH`\[Lambda], { Description -> "SM Higgs Selfcouplings" } }
