@@ -2407,6 +2407,7 @@ sed -e "s|@MATH@|$MATH|" \
     < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
 
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
+echo "$GIT_COMMIT" > ${CONFIGDIR}/git_commit
 echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version.m
 
 chmod a+x $FSCONFIG
