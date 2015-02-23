@@ -72,22 +72,14 @@ Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
     " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n";
 
 Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
-              _String, _String, _String, momentum_String] :=
-    Module[{massName,
-            topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
-            qcdOneLoop, qcdTwoLoop
-           },
+              selfEnergyFunctionS_String, selfEnergyFunctionPL_String, selfEnergyFunctionPR_String,
+              momentum_String] :=
+    Module[{massName, qcdTwoLoop},
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
-           topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
-           topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
-           qcdOneLoop = -TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale];
            qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
 "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
 const double currentScale = get_scale();
-
-const double qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop] <> ";
 
 double qcd_2l = 0.;
 
@@ -96,12 +88,12 @@ if (add_2loop_corrections) {
 }
 
 const double p = " <> momentum <> ";
-const double self_energy_1  = Re(" <> topSelfEnergyFunctionS  <> "(p));
-const double self_energy_PL = Re(" <> topSelfEnergyFunctionPL <> "(p));
-const double self_energy_PR = Re(" <> topSelfEnergyFunctionPR <> "(p));
+const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));
+const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));
+const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));
 PHYSICAL(" <> massName <> ") = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
- - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n"
+ - " <> massMatrixName <> " * qcd_2l;\n"
           ];
 
 Do1DimVector[particleName_String, massName_String, massMatrixName_String,
@@ -431,9 +423,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
             selfEnergyFunctionS, selfEnergyFunctionPL, selfEnergyFunctionPR,
             momentum = inputMomentum, massMatrixStr, selfEnergyMatrixType,
             eigenArrayType, mixingMatrixType, particleName,
-            topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
             topTwoLoop = False, thirdGenMass, qcdCorrections = "",
-            qcdOneLoop, qcdTwoLoop, highestIdx, highestIdxStr
+            qcdTwoLoop, highestIdx, highestIdxStr
            },
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -456,21 +447,17 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            topTwoLoop = particle === SARAH`TopQuark;
            If[topTwoLoop,
-              topSelfEnergyFunctionS  = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[1]];
-              topSelfEnergyFunctionPL = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PL]];
-              topSelfEnergyFunctionPR = SelfEnergies`CreateHeavySelfEnergyFunctionName[particle[PR]];
               highestIdx = dim - 1;
               highestIdxStr = ToString[highestIdx];
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
-              qcdOneLoop = -TwoLoop`GetDeltaMOverMQCDOneLoop[particle, Global`currentScale];
               qcdTwoLoop = N[Expand[-TwoLoop`GetDeltaMOverMQCDTwoLoop[particle, Global`currentScale]]];
               qcdCorrections = "\
 const bool add_2loop_corrections = pole_mass_loop_order > 1 && TOP_2LOOP_CORRECTION_QCD;
-double qcd_1l = 0., qcd_2l = 0.;
+
+double qcd_2l = 0.;
 
 if (add_2loop_corrections) {
    const double currentScale = get_scale();
-   qcd_1l = " <> CConversion`RValueToCFormString[qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
    qcd_2l = " <> CConversion`RValueToCFormString[qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> ";
 }
 
@@ -490,21 +477,9 @@ if (add_2loop_corrections) {
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <>"; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                              IndentText[
-                                                If[topTwoLoop,
-                                                   "if (add_2loop_corrections && i1 == " <> highestIdxStr <> " && i2 == " <> highestIdxStr <> ") {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = Re(" <> topSelfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PL(i1,i2) = Re(" <> topSelfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PR(i1,i2) = Re(" <> topSelfEnergyFunctionPR <> "(p,i1,i2));\n"] <>
-                                                   "} else {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"] <>
-                                                   "}\n"
-                                                   ,
-                                                   "self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                   "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                   "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"
-                                                  ]
+                                                 "self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
+                                                 "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
+                                                 "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"
                                              ] <>
                                              "}\n"
                                             ] <>
@@ -514,7 +489,7 @@ if (add_2loop_corrections) {
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>
                                      "if (add_2loop_corrections)\n" <>
                                      IndentText["delta_M(" <> highestIdxStr <> "," <> highestIdxStr <> ") -= " <>
-                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * (qcd_1l + qcd_2l);"] <>
+                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * qcd_2l;"] <>
                                      "\n"
                                      ,
                                      "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
