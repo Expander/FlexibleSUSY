@@ -54,6 +54,7 @@ models_array="             \
    E6SSM,E6SSM             \
    MRSSM,MRSSM             \
    TMSSM,TMSSM             \
+   SM,SM                   \
 "
 
 models="`echo $models_array | sed 's/,[a-zA-Z0-9]*//g'`"
