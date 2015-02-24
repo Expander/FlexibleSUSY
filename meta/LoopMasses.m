@@ -487,10 +487,8 @@ if (add_2loop_corrections) {
                                   If[topTwoLoop,
                                      selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n" <>
-                                     "if (add_2loop_corrections)\n" <>
-                                     IndentText["delta_M(" <> highestIdxStr <> "," <> highestIdxStr <> ") -= " <>
-                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * qcd_2l;"] <>
-                                     "\n"
+                                     "delta_M(" <> highestIdxStr <> "," <> highestIdxStr <> ") -= " <>
+                                     "M_tree(" <> highestIdxStr <> "," <> highestIdxStr <> ") * qcd_2l;\n"
                                      ,
                                      "const " <> selfEnergyMatrixType <> " delta_M(- self_energy_PR * M_tree " <>
                                      "- M_tree * self_energy_PL - self_energy_1);\n"
