@@ -96,6 +96,8 @@ private:
    DataGetter data_getter; ///< hepler class which extracts the model parameters
    unsigned width;         ///< width of columns in output table
 
+   /// write line with parameter names
+   void write_parameter_names_line(std::ofstream&) const;
    /// write a comment line
    void write_comment_line(std::ofstream&) const;
 };
@@ -140,6 +142,32 @@ void Coupling_monitor<Model,DataGetter>::clear()
 }
 
 /**
+ * write line with parameter names
+ *
+ * @param fout output stream
+ */
+template <class Model, class DataGetter>
+void Coupling_monitor<Model,DataGetter>::write_parameter_names_line(std::ofstream& fout) const
+{
+   if (!fout.good() || couplings.empty())
+      return;
+
+   const std::size_t number_of_couplings = couplings.front().second.size();
+   const std::vector<std::string> parameter_names(data_getter.get_parameter_names(model));
+
+   if (number_of_couplings != parameter_names.size()) {
+      ERROR("number of couplings != length of list of parameter names");
+   }
+
+   fout << std::left << std::setw(width) << "scale";
+
+   for (std::size_t i = 0; i < number_of_couplings; ++i)
+      fout << std::left << std::setw(width) << parameter_names[i];
+
+   fout << '\n';
+}
+
+/**
  * write help line which describes the written data
  *
  * @param fout output stream
@@ -157,10 +185,14 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
       ERROR("number of couplings != length of list of parameter names");
    }
 
-   fout << std::left << std::setw(width) << "scale";
+   fout << std::left << std::setw(width) << "# [1] scale";
 
-   for (std::size_t i = 0; i < number_of_couplings; ++i)
-      fout << std::left << std::setw(width) << parameter_names[i];
+   for (std::size_t i = 0; i < number_of_couplings; ++i) {
+      std::ostringstream parameter;
+      parameter << '[' << (i+2) << "] " << parameter_names[i];
+
+      fout << std::left << std::setw(width) << parameter.str();
+   }
 
    fout << '\n';
 }
@@ -190,6 +222,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
    }
 
    write_comment_line(filestr);
+   write_parameter_names_line(filestr);
 
    // write data
    for (TData::const_iterator it = couplings.begin();
