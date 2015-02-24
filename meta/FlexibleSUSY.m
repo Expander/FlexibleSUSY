@@ -47,6 +47,7 @@ LowScaleMaximum;
 InitialGuessAtLowScale = {};
 InitialGuessAtHighScale = {};
 OnlyLowEnergyFlexibleSUSY = False;
+AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
 FSMinimize;
@@ -1435,7 +1436,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                  ];
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[fixedParameters];
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
-              FlexibleSUSY`OnlyLowEnergyFlexibleSUSY =!= True,
+              FlexibleSUSY`AutomaticInputAtMSUSY =!= True,
               Print["Warning: the following parameters are not fixed by any constraint:"];
               Print["  ", FlexibleSUSY`FSUnfixedParameters];
              ];
@@ -1446,7 +1447,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                      a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
                                                      MemberQ[FlexibleSUSY`FSUnfixedParameters,#[[1]]]&];
            (* add the unfixed parameters to the susy scale constraint *)
-           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True,
+           If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True &&
+              FlexibleSUSY`AutomaticInputAtMSUSY,
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               Parameters`SetInputParameters[Join[FlexibleSUSY`InputParameters,
