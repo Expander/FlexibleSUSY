@@ -44,6 +44,8 @@ public:
 
    void clear();
    double get_initial_scale_guess() const;
+   const @ModelName@_input_parameters& get_input_parameters() const;
+   @ModelName@<Two_scale>* get_model() const;
    void initialize();
    void set_input_parameters(const @ModelName@_input_parameters&);
 
