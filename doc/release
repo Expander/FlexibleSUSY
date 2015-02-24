@@ -50,7 +50,7 @@ When releasing FlexibleSUSY, please follow these steps:
 
       ./release/generate-models.sh \
          --number-of-jobs=2 \
-         --version=<version>
+         --directory=release/<version>
 
-      scp *.tar.gz \
+      scp release/<version>/*.tar.gz \
          USERNAME@login.hepforge.org:/hepforge/home/flexiblesusy/downloads/models/<version>/
