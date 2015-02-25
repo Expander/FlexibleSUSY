@@ -338,7 +338,7 @@ double b1(double p, double m1, double m2, double q) {
 		 0.5 * (sqr(m1) + sqr(m2)) / (sqr(m1) - sqr(m2))
 		 );
   } else {
-    ans = bIntegral(1, p, m1, m2, q); 
+    ans = bIntegral_threadsave(1, p, m1, m2, q);
   }
 
 #ifdef USE_LOOPTOOLS
