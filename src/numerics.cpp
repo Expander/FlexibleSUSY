@@ -289,9 +289,6 @@ double b1(double p, double m1, double m2, double q) {
 	   * b0(p, m1, m2, q)) / (2.0 * sqr(p)); 
   } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL) 
 	     && fabs(m2) > 1.0e-15) { ///< checked
-    const double Mmax2 = maximum(sqr(m1) , sqr(m2)), x = sqr(m2 / m1);
-    ans = 0.5 * (-log(Mmax2 / sqr(q)) + 0.5 + 1.0 / (1.0 - x) + log(x) /
-		 sqr(1.0 - x) - theta(1.0 - x) * log(x)); ///< checked
     ans = 0.5 * (1. + log(sqr(q) / sqr(m2)) + 
 		 sqr(sqr(m1) / (sqr(m1) - sqr(m2))) * log(sqr(m2) / sqr(m1)) +
 		 0.5 * (sqr(m1) + sqr(m2)) / (sqr(m1) - sqr(m2))
