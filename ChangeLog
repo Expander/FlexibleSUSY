@@ -40,6 +40,11 @@ FlexibleSUSY-1.0.5 [not released yet]
    masses were checked for convergence, which led to an empty
    convergence tester for the SM.
 
+ * Bugfix (commit c64a333): Softsusy's B1 function is now thread-save.
+   Before commit c64a333, the tau pole mass was varying due to a race
+   condition, if multi-threading is enabled and neither fflite nor
+   looptoos is used.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
