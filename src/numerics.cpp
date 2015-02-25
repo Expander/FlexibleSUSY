@@ -14,6 +14,7 @@
 #ifdef USE_LOOPTOOLS
 #include "clooptools.h"
 #endif
+#include <boost/bind.hpp>
 
 using namespace softsusy;
 using namespace Eigen;
@@ -118,8 +119,20 @@ ArrayXd dd(double x, const ArrayXd& /* y */) {
   return dydx;
 }
 
+ArrayXd dd_threadsave(double x, const ArrayXd&, int n1, double p, double m1, double m2, double mt)
+{
+  ArrayXd dydx(1);
+  dydx(0) = -integrandThreshbnr(x, n1, p, m1, m2, mt);
+  return dydx;
+}
+
 double integrandThreshbnr(double x) {
   return fnfn(x).real();
+}
+
+double integrandThreshbnr(double x, int n1, double p, double m1, double m2, double mt)
+{
+  return fnfn(x, n1, p, m1, m2, mt).real();
 }
 
 // Integration routine needs these variables
@@ -135,6 +148,20 @@ Complex fnfn(double x) {
     log( ((1 - x) * sqr(m1Int) + x * sqr(m2Int) - x * (1 - x) *
 	  sqr(pInt) - iEpsilon)
 	 / sqr(mtInt));
+}
+
+Complex fnfn(double x, int n1, double p, double m1, double m2, double mt)
+{
+  const static Complex iEpsilon(0.0, TOLERANCE * 1.0e-20);
+
+  double xn = 1.0;
+
+  for (int i = 1; i <= n1; i++)
+     xn *= x;
+
+  return xn *
+    log(((1 - x) * sqr(m1) + x * sqr(m2)
+         - x * (1 - x) * sqr(p) - iEpsilon) / sqr(mt));
 }
 
 DoubleVector dilogarg(double t, const DoubleVector & /* y */) {
@@ -179,6 +206,23 @@ double bIntegral(int n1, double p, double m1, double m2, double mt) {
   // odeint has a problem at f(0): therefore, define f'(b)=f(b)+1
   integrateOdes(v, from, to, eps, guess, hmin, dd, odeStepper);
   
+  return v(0) - 1.0;
+}
+
+// Returns real part of integral
+double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
+  using namespace flexiblesusy;
+
+  const double from = 0.0, to = 1.0, guess = 0.1, hmin = TOLERANCE * 1.0e-5;
+  const double eps = TOLERANCE * 1.0e-3;
+  ArrayXd v(1);
+  v(0) = 1.0;
+
+  runge_kutta::Derivs derivs = boost::bind(&dd_threadsave, _1, _2, n1, p, m1, m2, mt);
+
+  runge_kutta::integrateOdes(v, from, to, eps, guess, hmin, derivs,
+                             runge_kutta::odeStepper);
+
   return v(0) - 1.0;
 }
 
