@@ -138,10 +138,18 @@ diff=`$numdiff_cmd\
 
 diff_without_comments=`echo $diff | $sed_cmd -e '/^ *#/d' | $sed_cmd -e '/^+++/d'`
 
+exit_code=0
+
 if [ -n "$diff_without_comments" ]; then
     echo "Error: difference between $mssm_output and $lowmssm_output larger that $rel_error"
     echo "$diff"
-    exit 1
+    echo ""
+    echo "Test result: FAIL"
+    exit_code=1
 else
     echo "$diff"
+    echo ""
+    echo "Test result: OK"
 fi
+
+exit $exit_code
