@@ -6,6 +6,7 @@
 # spectrums are the same.
 
 BASEDIR=$(dirname $0)
+CONFIGDIR=${BASEDIR}/../config
 
 mssm_input="$BASEDIR/../model_files/CMSSM/LesHouches.in.CMSSM"
 mssm_output="$BASEDIR/CMSSM.out.spc"
@@ -75,7 +76,7 @@ echo "done"
 echo "lowMSSM SLHA input file:  $lowmssm_input"
 echo "lowMSSM SLHA output file: $lowmssm_output"
 
-# remove comments from lowMSSM output spectrum
+# remove comments and input blocks from lowMSSM output spectrum
 cp $lowmssm_output $lowmssm_output~
 $sed_cmd -e '/^ *#/d' < $lowmssm_output~ | $awk_cmd -f $BASEDIR/remove_input_blocks.awk > $lowmssm_output
 
@@ -84,13 +85,41 @@ if test ! -r "$lowmssm_output"; then
     exit 1
 fi
 
-# remove mixing matrix blocks because we don't want to compare objects
-# with phase ambiguities
-
+# remove input blocks from CMSSM spectrum file
 cp $mssm_output $mssm_output~
 $awk_cmd -f $BASEDIR/remove_input_blocks.awk < $mssm_output~ > $mssm_output
-$sed_cmd -i~ -e '172,$d' $mssm_output
-$sed_cmd -i~ -e '172,$d' $lowmssm_output
+
+# remove mixing matrix blocks because we don't want to compare objects
+# with phase ambiguities
+cp $mssm_output $mssm_output~
+cp $lowmssm_output $lowmssm_output~
+
+$awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX < $mssm_output~ \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0 \
+    > $mssm_output
+
+$awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX < $lowmssm_output~ \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
+    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0 \
+    > $lowmssm_output
 
 diff=`$numdiff_cmd\
  --absolute-tolerance=1.0e-12\
