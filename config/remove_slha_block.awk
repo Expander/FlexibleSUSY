@@ -1,9 +1,11 @@
-# This script removes a block from a SLHA file.
+# This script removes a block or an entry from a SLHA file.
 # Capitalization is ignored.
 #
 # Example:
 #
 #   awk -f config/remove_slha_block.awk -v block=MINPAR input.slha
+#
+#   awk -f config/remove_slha_block.awk -v block=MINPAR -v entry=1 input.slha
 
 BEGIN {
    is_block = 0
@@ -27,5 +29,7 @@ BEGIN {
    }
 
    if (!is_block)
+      print $0
+   else if (entry != "" && $1 != entry)
       print $0
 }
