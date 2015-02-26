@@ -41,6 +41,22 @@ if test ! -x "$lowmssm_exe"; then
     exit 1
 fi
 
+remove_input_blocks() {
+    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SMINPUTS \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MINPAR \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=EXTPAR \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSOFTIN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=HMIXIN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSQ2IN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSL2IN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSU2IN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSD2IN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSE2IN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TeIN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TuIN \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TdIN
+}
+
 # generate CMSSM point
 echo -n "running CMSSM point ... "
 $mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
@@ -78,7 +94,7 @@ echo "lowMSSM SLHA output file: $lowmssm_output"
 
 # remove comments and input blocks from lowMSSM output spectrum
 cp $lowmssm_output $lowmssm_output~
-$sed_cmd -e '/^ *#/d' < $lowmssm_output~ | $awk_cmd -f $BASEDIR/remove_input_blocks.awk > $lowmssm_output
+$sed_cmd -e '/^ *#/d' < $lowmssm_output~ | remove_input_blocks > $lowmssm_output
 
 if test ! -r "$lowmssm_output"; then
     echo "Error: generated lowMSSM spectrum not found: $lowmssm_output"
@@ -87,7 +103,7 @@ fi
 
 # remove input blocks from CMSSM spectrum file
 cp $mssm_output $mssm_output~
-$awk_cmd -f $BASEDIR/remove_input_blocks.awk < $mssm_output~ > $mssm_output
+remove_input_blocks < $mssm_output~ > $mssm_output
 
 # remove mixing matrix blocks because we don't want to compare objects
 # with phase ambiguities
