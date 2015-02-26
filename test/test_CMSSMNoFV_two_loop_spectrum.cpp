@@ -1,19 +1,15 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_CMSSMNoFV_one_loop_spectrum
+#define BOOST_TEST_MODULE test_CMSSMNoFV_two_loop_spectrum
 
 #include <boost/test/unit_test.hpp>
 
 #include "test_CMSSMNoFV.hpp"
 #include "wrappers.hpp"
-#include "pv.hpp"
 #include "CMSSMNoFV_two_scale_model.hpp"
 #include "lowe.h"
 
 using namespace flexiblesusy;
-using namespace softsusy;
-using namespace passarino_veltman;
-
 
 BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
 {
