@@ -68,7 +68,6 @@ remove_mixing_matrix_blocks() {
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
 }
 
