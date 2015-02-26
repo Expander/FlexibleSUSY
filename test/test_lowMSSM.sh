@@ -57,6 +57,21 @@ remove_input_blocks() {
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=TdIN
 }
 
+remove_mixing_matrix_blocks() {
+    $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0
+}
+
 # generate CMSSM point
 echo -n "running CMSSM point ... "
 $mssm_exe --slha-input-file=$mssm_input --slha-output-file=$mssm_output
@@ -110,32 +125,8 @@ remove_input_blocks < $mssm_output~ > $mssm_output
 cp $mssm_output $mssm_output~
 cp $lowmssm_output $lowmssm_output~
 
-$awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX < $mssm_output~ \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0 \
-    > $mssm_output
-
-$awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=UMIX < $lowmssm_output~ \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=VMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=PSEUDOSCALARMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=DSQMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SELMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SCALARMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=NMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=CHARGEMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=USQMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SNUMIX \
-    | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=FlexibleSUSYOutput -v entry=0 \
-    > $lowmssm_output
+remove_mixing_matrix_blocks < $mssm_output~ > $mssm_output
+remove_mixing_matrix_blocks < $lowmssm_output~ > $lowmssm_output
 
 diff=`$numdiff_cmd\
  --absolute-tolerance=1.0e-12\
