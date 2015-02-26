@@ -128,6 +128,10 @@ cp $lowmssm_output $lowmssm_output~
 remove_mixing_matrix_blocks < $mssm_output~ > $mssm_output
 remove_mixing_matrix_blocks < $lowmssm_output~ > $lowmssm_output
 
+echo ""
+echo "comparing files $mssm_output and $lowmssm_output ..."
+echo "required relative agreement: $rel_error"
+
 diff=`$numdiff_cmd\
  --absolute-tolerance=1.0e-12\
  --relative-tolerance=$rel_error\
