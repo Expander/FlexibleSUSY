@@ -167,6 +167,11 @@ TEST_SRC += \
 		$(DIR)/test_SM_weinberg_angle.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-SMHighPrecision),yes)
+TEST_SRC += \
+		$(DIR)/test_SMHighPrecision_two_loop_spectrum.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-NSM),yes)
 TEST_SRC += \
 		$(DIR)/test_NSM_low_scale_constraint.cpp
@@ -465,6 +470,8 @@ $(DIR)/test_SM_one_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-o
 $(DIR)/test_SM_two_loop_spectrum.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_SM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
