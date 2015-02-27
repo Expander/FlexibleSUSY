@@ -35,6 +35,7 @@ model_files/NSM                 export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
+model_files/SMHighPrecision     export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
