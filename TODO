@@ -1,13 +1,6 @@
 List of features for future FlexibleSUSY releases
 =================================================
 
-2-loop m_top QCD corrections DR-bar --> Pole
---------------------------------------------
-
-We add 2-loop QCD corrections when calculating the DR-bar m_top from
-pole m_top.  We could add the same corrections when calculating it the
-other way round.
-
 
 Explicit path to SARAH installation
 -----------------------------------
