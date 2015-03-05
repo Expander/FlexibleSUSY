@@ -228,14 +228,14 @@ double bIntegral_threadsave(int n1, double p, double m1, double m2, double mt) {
 
 double fB(const Complex & a) {
   /// First, special cases at problematic points
-  double x = a.real();
+  const double x = a.real();
   if (fabs(x) < EPSTOL) {
-    double ans = -1. - x + sqr(x) * 0.5;
+    const double ans = -1. - x + sqr(x) * 0.5;
     return ans;
   }
   if (close(x, 1., EPSTOL)) return -1.;
 
-  Complex ans = log(1. - a) - 1. - a * log(1.0 - 1.0 / a);
+  const Complex ans(log(1. - a) - 1. - a * log(1.0 - 1.0 / a));
 
   return ans.real();
 }
@@ -258,22 +258,21 @@ double b0(double p, double m1, double m2, double q) {
      return 0.0;
 
   double ans  = 0.;
-  double mMin = minimum(fabs(m1), fabs(m2));
-  double mMax = maximum(fabs(m1), fabs(m2));
+  const double mMin = minimum(fabs(m1), fabs(m2));
+  const double mMax = maximum(fabs(m1), fabs(m2));
 
-  double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
-  double s = 0.;
+  const double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax);
   /// Try to increase the accuracy of s
-  double dmSq = mMaxSq - mMinSq;
-  s = pSq + dmSq;
+  const double dmSq = mMaxSq - mMinSq;
+  const double s = pSq + dmSq;
 
-  double pTest = sqr(p) / sqr(mMax);
+  const double pTest = sqr(p) / sqr(mMax);
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-6; 
 
   /// p is not 0  
   if (pTest > pTolerance) {  
-    Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
+    const Complex iEpsilon(0.0, EPSTOL * sqr(mMax));
     
     Complex xPlus, xMinus;
 
@@ -287,7 +286,7 @@ double b0(double p, double m1, double m2, double q) {
     if (close(m1, m2, EPSTOL)) {
       ans = - log(sqr(m1 / q));
     } else {
-      double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin); 
+      const double Mmax2 = sqr(mMax), Mmin2 = sqr(mMin);
       if (Mmin2 < 1.e-30) {
 	ans = 1.0 - log(Mmax2 / sqr(q));
       } else {
@@ -392,7 +391,7 @@ double b22(double p,  double m1, double m2, double q) {
 	}
   }
   else {// checked
-    double b0Save = b0(p, m1, m2, q);
+    const double b0Save = b0(p, m1, m2, q);
 
     answer = 1.0 / 6.0 * 
       (0.5 * (a0(m1, q) + a0(m2, q)) + (sqr(m1) + sqr(m2) - 0.5 * sqr(p))
