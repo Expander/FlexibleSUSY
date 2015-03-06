@@ -8,6 +8,7 @@
 #include <Eigen/Dense>
 
 #define private public
+#define protected public
 
 #include "softsusy.h"
 #include "SoftsusyMSSM_parameter_point.hpp"

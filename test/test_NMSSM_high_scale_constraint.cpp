@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 
 #define private public
+#define protected public
 
 #include "test.h"
 #include "test_NMSSM.hpp"
