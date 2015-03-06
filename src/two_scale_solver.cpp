@@ -459,7 +459,7 @@ void RGFlow<Two_scale>::run_to(double scale)
    const size_t number_of_models = models.size();
 
    for (size_t m = 0; m < models.size(); ++m) {
-      TModel* model = models[m];
+      const TModel* model = models[m];
       double highest_scale, lowest_scale;
 
       if (!model) {
@@ -472,7 +472,7 @@ void RGFlow<Two_scale>::run_to(double scale)
       if (m != number_of_models - 1) {
          // if this is not the last model, the matching condition is
          // the highest scale
-         Matching<Two_scale>* mc = model->matching_condition;
+         const Matching<Two_scale>* mc = model->matching_condition;
          if (!mc) {
             std::ostringstream msg;
             msg << "RGFlow<Two_scale>::run_to: pointer to matching condition"
