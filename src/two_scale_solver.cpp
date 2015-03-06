@@ -73,7 +73,7 @@ void RGFlow<Two_scale>::solve()
 {
    check_setup();
 
-   unsigned int max_iterations = get_max_iterations();
+   const unsigned max_iterations = get_max_iterations();
    if (models.empty() || max_iterations == 0)
       return;
 
@@ -104,7 +104,7 @@ void RGFlow<Two_scale>::solve()
 void RGFlow<Two_scale>::check_setup() const
 {
    for (size_t m = 0; m < models.size(); ++m) {
-      TModel* model = models[m];
+      const TModel* model = models[m];
       if (!model->model) {
          std::stringstream message;
          message << "RGFlow<Two_scale>::Error: model pointer ["
