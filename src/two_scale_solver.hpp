@@ -90,6 +90,8 @@ public:
    void solve();
 
 private:
+   typedef std::vector<Constraint<Two_scale>*> Constraint_container;
+
    /**
     * @class TModel
     * @brief contains model, constraints and matching condition
@@ -99,13 +101,13 @@ private:
     */
    struct TModel {
       Two_scale_model* model;                          ///< the model
-      std::vector<Constraint<Two_scale>*> upwards_constraints; ///< upwards constraints
-      std::vector<Constraint<Two_scale>*> downwards_constraints; ///< downwards constraints
+      Constraint_container upwards_constraints; ///< upwards constraints
+      Constraint_container downwards_constraints; ///< downwards constraints
       Matching<Two_scale>* matching_condition;         ///< matching condition
 
       TModel(Two_scale_model* m,
-             const std::vector<Constraint<Two_scale>*>& uc,
-             const std::vector<Constraint<Two_scale>*>& dc,
+             const Constraint_container& uc,
+             const Constraint_container& dc,
              Matching<Two_scale>* mc)
          : model(m)
          , upwards_constraints(uc)

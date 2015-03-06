@@ -358,21 +358,21 @@ void RGFlow<Two_scale>::add_model(Two_scale_model* model,
                                   const std::vector<Constraint<Two_scale>*>& upwards_constraints,
                                   const std::vector<Constraint<Two_scale>*>& downwards_constraints)
 {
-   TModel* tmp_model = new TModel(model, upwards_constraints, downwards_constraints, mc);
+   TModel* new_model = new TModel(model, upwards_constraints, downwards_constraints, mc);
 
-   for (std::vector<Constraint<Two_scale>*>::iterator it = tmp_model->upwards_constraints.begin(),
-           end = tmp_model->upwards_constraints.end(); it != end; ++it)
+   for (Constraint_container::iterator it = new_model->upwards_constraints.begin(),
+           end = new_model->upwards_constraints.end(); it != end; ++it)
       (*it)->set_model(model);
 
-   for (std::vector<Constraint<Two_scale>*>::iterator it = tmp_model->downwards_constraints.begin(),
-           end = tmp_model->downwards_constraints.end(); it != end; ++it)
+   for (Constraint_container::iterator it = new_model->downwards_constraints.begin(),
+           end = new_model->downwards_constraints.end(); it != end; ++it)
       (*it)->set_model(model);
 
    if (!models.empty())
       models.back()->matching_condition->set_models(models.back()->model,
-						    model);
+                                                    model);
 
-   models.push_back(tmp_model);
+   models.push_back(new_model);
 }
 
 /**
