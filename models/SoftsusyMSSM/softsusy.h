@@ -246,8 +246,8 @@ public:
   /// Set MZ^2 predicted after iteration
   void setPredMzSq(double a) { predMzSq = a; }
   void setAlternativeMs(bool flag) { alternativeMs = flag; }
-  double setTadpole1Ms(double t) { t1OV1Ms = t; }
-  double setTadpole2Ms(double t) { t2OV2Ms = t; }
+  void setTadpole1Ms(double t) { t1OV1Ms = t; }
+  void setTadpole2Ms(double t) { t2OV2Ms = t; }
 
   //PA: sets fracDiff, needed for access by NmssmSoftsusy methods
   void setFracDiff(double fD) { fracDiff = fD; };
