@@ -25,6 +25,7 @@
 #include "two_scale_running_precision.hpp"
 #include "logger.hpp"
 #include "error.hpp"
+#include "functors.hpp"
 
 #include <cmath>
 #include <algorithm>
@@ -56,8 +57,7 @@ RGFlow<Two_scale>::RGFlow()
 
 RGFlow<Two_scale>::~RGFlow()
 {
-   for (size_t m = 0; m < models.size(); ++m)
-      delete models[m];
+   delete_models();
 }
 
 /**
@@ -143,6 +143,11 @@ void RGFlow<Two_scale>::clear_problems()
       TModel* model = models[m];
       model->model->clear_problems();
    }
+}
+
+void RGFlow<Two_scale>::delete_models()
+{
+   for_each(models.begin(), models.end(), Delete_object());
 }
 
 /**
@@ -431,8 +436,7 @@ unsigned int RGFlow<Two_scale>::get_max_iterations() const
  */
 void RGFlow<Two_scale>::reset()
 {
-   for (size_t m = 0; m < models.size(); ++m)
-      delete models[m];
+   delete_models();
    models.clear();
 
    iteration = 0;

@@ -124,6 +124,7 @@ private:
    bool accuracy_goal_reached() const; ///< check if accuracy goal is reached
    void check_setup() const;           ///< check the setup
    void clear_problems();              ///< clear model problems
+   void delete_models();               ///< delete all models
    unsigned int get_max_iterations() const; ///< returns max. number of iterations
    void initial_guess();               ///< initial guess
    void run_up();                      ///< run all models up
