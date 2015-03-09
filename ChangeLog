@@ -45,6 +45,12 @@ FlexibleSUSY-1.0.5 [not released yet]
    condition, if multi-threading is enabled and neither fflite nor
    looptoos is used.
 
+ * Bugfix (commit 2b3df8c): no DR-bar conversion for down-quark and
+   charged lepton running masses in non-SUSY models, because these
+   models are renormalized in the MS-bar scheme.  The bug affects the
+   calculation of the down-quark and charged lepton Yukawa couplings
+   in non-SUSY models, like the SM, for example.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
