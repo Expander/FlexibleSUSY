@@ -788,7 +788,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               *)
            loopMassesFunctions          = LoopMasses`CreateOneLoopPoleMassFunctions[diagonalizationPrecision, {}, {}];
            runningDRbarMassesPrototypes = LoopMasses`CreateRunningDRbarMassPrototypes[];
-           runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[];
+           runningDRbarMassesFunctions  = LoopMasses`CreateRunningDRbarMassFunctions[FlexibleSUSY`FSRenormalizationScheme];
            enablePoleMassThreads = False;
            callAllLoopMassFunctions     = LoopMasses`CallAllPoleMassFunctions[FlexibleSUSY`FSEigenstates, enablePoleMassThreads];
            enablePoleMassThreads = True;
