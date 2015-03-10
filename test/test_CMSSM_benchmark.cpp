@@ -46,7 +46,7 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
    int status;
    flexiblesusy::Stopwatch stopwatch;
 
-   const std::string slha_output_file("test/test_benchmark.out.spc");
+   const std::string slha_output_file("test/test_CMSSM_benchmark.out.spc");
 
    stopwatch.start();
    status = run_cmd("./models/CMSSM/run_CMSSM.x --slha-input-file=" +
@@ -88,7 +88,7 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
 
 SLHAea::Coll create_point(double tanBeta)
 {
-   std::ifstream ifs("test/test_benchmark.in.spc.in");
+   std::ifstream ifs("test/test_CMSSM_benchmark.in.spc.in");
    SLHAea::Coll coll(ifs);
    SLHAea::Block minpar;
 
@@ -122,7 +122,7 @@ void test_tanbeta_scan()
    for (unsigned i = 0; i < num_points; i++) {
       const double tanBeta = tanBeta_start + i * tanBeta_step;
       const SLHAea::Coll coll(create_point(tanBeta));
-      const std::string input_file("test/test_benchmark.in.spc");
+      const std::string input_file("test/test_CMSSM_benchmark.in.spc");
 
       std::ofstream ofs(input_file);
       ofs << coll;
