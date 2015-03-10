@@ -3,8 +3,16 @@ Block FlexibleSUSY
     1   0                    # max. iterations (0 = automatic)
     2   0                    # algorithm (0 = two_scale, 1 = lattice)
     3   0                    # calculate SM pole masses
-    4   1                    # calculate loop masses
+    4   1                    # pole mass loop order
     5   1                    # EWSB loop order
+    6   2                    # beta-functions loop order
+    7   2                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   12   0                    # force output
+   13   1                    # Top quark 2-loop corrections QCD
 Block SOFTSUSY               # SOFTSUSY specific inputs
     1   1.000000000e-04      # tolerance
     2   2                    # up-quark mixing (=1) or down (=2)
