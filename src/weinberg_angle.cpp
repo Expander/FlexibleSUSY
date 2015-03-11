@@ -434,11 +434,11 @@ double Weinberg_angle::calculate_delta_vb_sm(
   const double alphaDRbar = data.alpha_em_drbar;
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rho, calculate_delta_vb)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
-   WARN_IF_ZERO(mz, calculate_delta_vb)
-   WARN_IF_ZERO(mw, calculate_delta_vb)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
+   WARN_IF_ZERO(rho, calculate_delta_vb_sm)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_vb_sm)
+   WARN_IF_ZERO(mz, calculate_delta_vb_sm)
+   WARN_IF_ZERO(mw, calculate_delta_vb_sm)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb_sm)
 #endif
 
   const double deltaVbSm =
@@ -485,27 +485,27 @@ double Weinberg_angle::calculate_delta_vb_susy(
   const Eigen::MatrixXcd& v(data.up);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_vb)
-   WARN_IF_ZERO(g, calculate_delta_vb)
-   WARN_IF_ZERO(gp, calculate_delta_vb)
-   WARN_IF_ZERO(mz, calculate_delta_vb)
-   WARN_IF_ZERO(q, calculate_delta_vb)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb)
-   WARN_IF_ZERO(hmu, calculate_delta_vb)
-   WARN_IF_ZERO(mselL, calculate_delta_vb)
-   WARN_IF_ZERO(msmuL, calculate_delta_vb)
-   WARN_IF_ZERO(msnue, calculate_delta_vb)
-   WARN_IF_ZERO(msnumu, calculate_delta_vb)
-   QUIT_IF(mneut.rows() < 4, calculate_delta_vb)
-   QUIT_IF(mneut.cols() != 1, calculate_delta_vb)
-   QUIT_IF(mch.rows() < 2, calculate_delta_vb)
-   QUIT_IF(mch.cols() != 1, calculate_delta_vb)
-   QUIT_IF(mneut.rows() != n.rows(), calculate_delta_vb)
-   QUIT_IF(mneut.rows() != n.cols(), calculate_delta_vb)
-   QUIT_IF(mch.rows() != u.rows(), calculate_delta_vb)
-   QUIT_IF(mch.rows() != u.cols(), calculate_delta_vb)
-   QUIT_IF(mch.rows() != v.rows(), calculate_delta_vb)
-   QUIT_IF(mch.rows() != v.cols(), calculate_delta_vb)
+   WARN_IF_ZERO(sinThetaW, calculate_delta_vb_susy)
+   WARN_IF_ZERO(g, calculate_delta_vb_susy)
+   WARN_IF_ZERO(gp, calculate_delta_vb_susy)
+   WARN_IF_ZERO(mz, calculate_delta_vb_susy)
+   WARN_IF_ZERO(q, calculate_delta_vb_susy)
+   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb_susy)
+   WARN_IF_ZERO(hmu, calculate_delta_vb_susy)
+   WARN_IF_ZERO(mselL, calculate_delta_vb_susy)
+   WARN_IF_ZERO(msmuL, calculate_delta_vb_susy)
+   WARN_IF_ZERO(msnue, calculate_delta_vb_susy)
+   WARN_IF_ZERO(msnumu, calculate_delta_vb_susy)
+   QUIT_IF(mneut.rows() < 4, calculate_delta_vb_susy)
+   QUIT_IF(mneut.cols() != 1, calculate_delta_vb_susy)
+   QUIT_IF(mch.rows() < 2, calculate_delta_vb_susy)
+   QUIT_IF(mch.cols() != 1, calculate_delta_vb_susy)
+   QUIT_IF(mneut.rows() != n.rows(), calculate_delta_vb_susy)
+   QUIT_IF(mneut.rows() != n.cols(), calculate_delta_vb_susy)
+   QUIT_IF(mch.rows() != u.rows(), calculate_delta_vb_susy)
+   QUIT_IF(mch.rows() != u.cols(), calculate_delta_vb_susy)
+   QUIT_IF(mch.rows() != v.rows(), calculate_delta_vb_susy)
+   QUIT_IF(mch.rows() != v.cols(), calculate_delta_vb_susy)
 #endif
 
   const int dimN = mneut.rows();
@@ -533,16 +533,12 @@ double Weinberg_angle::calculate_delta_vb_susy(
 
   double deltaZnue = 0.0, deltaZe = 0.0;
   for (int i = 0; i < dimN; i++) {
-     if (i < dimC) {
-        deltaZnue +=
-           - Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
-        deltaZe +=
-           - Sqr(Abs(aChicESnul(i))) * b1(0.0, mch(i), msnue, q);
-     }
-     deltaZnue +=
-        - Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnue, q);
-     deltaZe +=
-        - Sqr(Abs(bChi0ESell(i))) * b1(0.0, mneut(i), mselL, q);
+     deltaZnue += - Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnue, q);
+     deltaZe   += - Sqr(Abs(bChi0ESell(i))) * b1(0.0, mneut(i), mselL, q);
+  }
+  for (int i = 0; i < dimC; i++) {
+     deltaZnue += - Sqr(Abs(bChicNuSell(i))) * b1(0.0, mch(i), mselL, q);
+     deltaZe   += - Sqr(Abs(aChicESnul(i))) * b1(0.0, mch(i), msnue, q);
   }
 
   Eigen::VectorXd bPsicNuSmul(Eigen::VectorXd::Zero(dimC));
@@ -563,17 +559,13 @@ double Weinberg_angle::calculate_delta_vb_susy(
   aChicMuSnul = v.conjugate() * aPsicMuSnul;
 
   double deltaZnumu = 0.0, deltaZmu = 0.0;
-  for(int i = 0; i < dimN; i++) {
-     if (i < dimC) {
-        deltaZnumu +=
-           - Sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmuL, q);
-        deltaZmu +=
-           - Sqr(Abs(aChicMuSnul(i))) * b1(0.0, mch(i), msnumu, q);
-     }
-     deltaZnumu +=
-        - Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnumu, q);
-     deltaZmu +=
-        - Sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmuL, q);
+  for (int i = 0; i < dimN; i++) {
+     deltaZnumu += - Sqr(Abs(bChi0NuNul(i))) * b1(0.0, mneut(i), msnumu, q);
+     deltaZmu   += - Sqr(Abs(bChi0MuSmul(i))) * b1(0.0, mneut(i), msmuL, q);
+  }
+  for (int i = 0; i < dimC; i++) {
+     deltaZnumu += - Sqr(Abs(bChicNuSmul(i))) * b1(0.0, mch(i), msmuL, q);
+     deltaZmu   += - Sqr(Abs(aChicMuSnul(i))) * b1(0.0, mch(i), msnumu, q);
   }
 
   Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
