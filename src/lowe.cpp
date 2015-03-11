@@ -467,9 +467,6 @@ void readIn(QedQcd &mset, const char fname[80]) {
 	  if(!fin) {
 	    mset = QedQcd();
 	    return;
-	    ostringstream ii;
-	    ii << "Can't find input file " << fname << endl;
-	    throw ii.str();
 	  }
 	  fin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE >> c >> PRINTOUT;
 	  fin.close();

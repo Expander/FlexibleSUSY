@@ -1563,7 +1563,6 @@ void broydn(DoubleVector x, int & check,
     }
   }
   throw("MAXITS exceeded in broydn\n");
-  return;
 }
 
 void qrdcmp(DoubleMatrix & a, int n, DoubleVector & c, DoubleVector & d, 
