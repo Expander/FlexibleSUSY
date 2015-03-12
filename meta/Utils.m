@@ -56,6 +56,8 @@ In[]:= FSSetOption[opts, o3 -> z]
 Out[]= {o1 -> x, o2 -> y, o3 -> z}
 ";
 
+FSImportString::usage = "Returns the content of a file in form of a string.  If the file does not exist, \"unknown\" is returned.";
+
 Begin["`Private`"];
 
 StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
@@ -99,6 +101,14 @@ FSSetOption[opts_List, rule:RuleDelayed[opt_, value_]] :=
         Cases[opts, Except[Rule[opt,_] | RuleDelayed[opt,_]]],
         {rule}
         ];
+
+FSImportString[fileName_String] :=
+    Module[{str = Import[fileName, "String"]},
+           If[str =!= $Failed,
+              str,
+              "unknown"
+             ]
+          ];
 
 End[];
 
