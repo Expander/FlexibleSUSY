@@ -109,7 +109,7 @@ ostream & operator <<(ostream &left, const QedQcd &m) {
 
 istream & operator >>(istream &left, QedQcd &m) {
 
-  char c[12], cmbmb[12], cmbpole[12];
+  string c, cmbmb, cmbpole;
   double mu, mc, mtpole, md, ms, me, mmu, mtau, invalph, 
     alphas, scale;
   int t, l;
@@ -137,7 +137,7 @@ istream & operator >>(istream &left, QedQcd &m) {
 
   m.setMass(mTop, getRunMtFromMz(mtpole, alphas));
 
-  if (!strcmp(cmbmb, "?") && !strcmp(cmbpole, "?")) {
+  if (cmbmb == "?" && cmbpole == "?") {
     ostringstream ii;
     ii << "Error reading in low energy QCDQED object: must specify ";
     ii << "running AND/OR pole bottom mass" << endl;
@@ -146,11 +146,11 @@ istream & operator >>(istream &left, QedQcd &m) {
 
   // If you set one of the bottom mass parameters to be "?", it will calculate
   // it from the other one
-  if (strcmp(cmbmb, "?") != 0) m.setMass(mBottom, atof(cmbmb)); 
-  if (strcmp(cmbpole, "?") != 0) m.setPoleMb(atof(cmbpole)); 
+  if (cmbmb != "?") m.setMass(mBottom, atof(cmbmb.c_str()));
+  if (cmbpole != "?") m.setPoleMb(atof(cmbpole.c_str()));
 
-  if (strcmp(cmbmb, "?") == 0) m.calcRunningMb();
-  if (strcmp(cmbpole, "?") == 0) m.calcPoleMb();
+  if (cmbmb == "?") m.calcRunningMb();
+  if (cmbpole == "?") m.calcPoleMb();
 
   return left;
 }
@@ -213,20 +213,16 @@ void QedQcd::massBeta(DoubleVector & x) const {
   static const double INVPI = 1.0 / PI, ZETA3 = 1.202056903159594;
   
   // qcd bits: 1,2,3 loop resp.
-  double qg1, qg2, qg3;
+  double qg1 = 0., qg2 = 0., qg3 = 0.;
   int quarkFlavours = flavours(displayMu());
-  if (displayLoops() > 0) qg1 = INVPI; else qg1 = 0.0;
+  if (displayLoops() > 0) qg1 = INVPI;
   if (displayLoops() > 1) 
     qg2 = (202.0 / 3.0 - (20.0e0 * quarkFlavours) / 9.0) * sqr(INVPI) / 16.0;
-  else 
-    qg2 = 0.0;
   if (displayLoops() > 2)
     qg3 = (1.249e3 - ((2.216e3 * quarkFlavours) / 27.0e0 +
 		      1.6e2 * ZETA3 * quarkFlavours / 3.0e0) -
 	   140.0e0 * quarkFlavours * quarkFlavours / 81.0e0) * sqr(INVPI) *
       INVPI / 64.0;
-  else 
-    qg3 = 0.0;
   
   double qcd = -2.0 * a.display(ALPHAS) * (qg1  + qg2 * a.display(ALPHAS) +
 					   qg3 * sqr(a.display(ALPHAS)));
@@ -458,7 +454,7 @@ void readIn(QedQcd &mset, const char fname[80]) {
 
   // Read in data if it's not been set
   if (accessedReadIn == 0) {
-    char c[14];
+    string c;
     if (!strcmp(fname,"")) cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE 
 			       >> c >> PRINTOUT; // from standard input 
     else {   
