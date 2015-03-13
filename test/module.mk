@@ -165,6 +165,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_info.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-NMSSM),yes)
+TEST_SH += \
+		$(DIR)/test_NMSSM_profile.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-SM),yes)
 TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
