@@ -31,6 +31,7 @@
  */
 
 #include "@ModelName@_two_scale_model.hpp"
+#include "eigen_utils.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
 #include "logger.hpp"
