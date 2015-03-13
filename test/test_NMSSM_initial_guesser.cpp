@@ -85,15 +85,15 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
 
    BOOST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), snmssm.displayYukawaMatrix(YU)(1,1), 1.5e-5);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), snmssm.displayYukawaMatrix(YD)(1,1), 2.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), snmssm.displayYukawaMatrix(YD)(1,1), 2.3e-5);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), snmssm.displayYukawaMatrix(YE)(1,1), 1.0e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), snmssm.displayYukawaMatrix(YU)(2,2), 1.5e-5);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), snmssm.displayYukawaMatrix(YD)(2,2), 2.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), snmssm.displayYukawaMatrix(YD)(2,2), 2.3e-5);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), snmssm.displayYukawaMatrix(YE)(2,2), 1.0e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), snmssm.displayYukawaMatrix(YU)(3,3), 1.0e-6);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), snmssm.displayYukawaMatrix(YD)(3,3), 1.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), snmssm.displayYukawaMatrix(YD)(3,3), 1.6e-5);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), snmssm.displayYukawaMatrix(YE)(3,3), 1.0e-6);
 
    const double vu = m.get_vu(), vd = m.get_vd(), vS = m.get_vS();
