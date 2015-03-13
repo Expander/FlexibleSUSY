@@ -391,19 +391,21 @@ double b1(double p, double m1, double m2, double q) {
      return 0.0;
 
   double ans = 0.;
-  const double pTest = sqr(p) / maximum(sqr(m1), sqr(m2));
+
+  const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
+  const double pTest = p2 / maximum(m12, sqr(m2));
 
   /// Decides level at which one switches to p=0 limit of calculations
   const double pTolerance = 1.0e-4; 
 
   if (pTest > pTolerance) {
-    ans = (a0(m2, q) - a0(m1, q) + (sqr(p) + sqr(m1) - sqr(m2)) 
-	   * b0(p, m1, m2, q)) / (2.0 * sqr(p)); 
-  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL) 
+    ans = (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
+	   * b0(p, m1, m2, q)) / (2.0 * p2);
+  } else if (fabs(m1) > 1.0e-15 && !close(m1, m2, EPSTOL)
 	     && fabs(m2) > 1.0e-15) { ///< checked
-    ans = 0.5 * (1. + log(sqr(q) / sqr(m2)) + 
-		 sqr(sqr(m1) / (sqr(m1) - sqr(m2))) * log(sqr(m2) / sqr(m1)) +
-		 0.5 * (sqr(m1) + sqr(m2)) / (sqr(m1) - sqr(m2))
+    ans = 0.5 * (1. + log(q2 / m22) +
+		 sqr(m12 / (m12 - m22)) * log(m22 / m12) +
+		 0.5 * (m12 + m22) / (m12 - m22)
 		 );
   } else {
     ans = bIntegral_threadsave(1, p, m1, m2, q);
@@ -437,36 +439,37 @@ double b22(double p,  double m1, double m2, double q) {
   double answer = 0.;
   
   /// Decides level at which one switches to p=0 limit of calculations
+  const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
   const double pTolerance = 1.0e-6; 
 
-  if (sqr(p) < pTolerance * maximum(sqr(m1), sqr(m2)) ) {
+  if (p2 < pTolerance * maximum(m12, m22) ) {
     // m1 == m2 with good accuracy
     if (close(m1, m2, EPSTOL)) {
-      answer = -sqr(m1) * log(sqr(m1 / q)) * 0.5 + sqr(m1) * 0.5;
+      answer = -m12 * log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
     }
     else
       /// This zero p limit is good
       if (fabs(m1) > EPSTOL && fabs(m2) > EPSTOL) {
-	answer = 0.375 * (sqr(m1) + sqr(m2)) - 0.25 * 
-	  (sqr(sqr(m2)) * log(sqr(m2 / q)) - sqr(sqr(m1)) * 
-	   log(sqr(m1 / q))) / (sqr(m2) - sqr(m1)); 
+	answer = 0.375 * (m12 + m22) - 0.25 *
+	  (sqr(m22) * log(sqr(m2 / q)) - sqr(m12) *
+	   log(sqr(m1 / q))) / (m22 - m12);
       }
       else
 	if (fabs(m1) < EPSTOL) {
-	  answer = 0.375 * sqr(m2) - 0.25 * sqr(m2) * log(sqr(m2 / q));
+	  answer = 0.375 * m22 - 0.25 * m22 * log(sqr(m2 / q));
 	}
 	else {
-	  answer = 0.375 * sqr(m1) - 0.25 * sqr(m1) * log(sqr(m1 / q));
+	  answer = 0.375 * m12 - 0.25 * m12 * log(sqr(m1 / q));
 	}
   }
   else {// checked
     const double b0Save = b0(p, m1, m2, q);
 
     answer = 1.0 / 6.0 * 
-      (0.5 * (a0(m1, q) + a0(m2, q)) + (sqr(m1) + sqr(m2) - 0.5 * sqr(p))
-       * b0Save + (sqr(m2) - sqr(m1)) / (2.0 * sqr(p)) *
-       (a0(m2, q) - a0(m1, q) - (sqr(m2) - sqr(m1)) * b0Save) +
-       sqr(m1) + sqr(m2) - sqr(p) / 3.0);
+      (0.5 * (a0(m1, q) + a0(m2, q)) + (m12 + m22 - 0.5 * p2)
+       * b0Save + (m22 - m12) / (2.0 * p2) *
+       (a0(m2, q) - a0(m1, q) - (m22 - m12) * b0Save) +
+       m12 + m22 - p2 / 3.0);
   }
 
 #ifdef USE_LOOPTOOLS
@@ -512,7 +515,7 @@ double d0(double m1, double m2, double m3, double m4) {
 double d27(double m1, double m2, double m3, double m4) {// checked
 
   if (close(m1, m2, EPSTOL)) {
-    double m1n = m1 + TOLERANCE * 0.01;
+    const double m1n = m1 + TOLERANCE * 0.01;
     return (sqr(m1n) * c0(m1n, m3, m4) - sqr(m2) * c0(m2, m3, m4)) 
       / (4.0 * (sqr(m1n) - sqr(m2)));
   }
