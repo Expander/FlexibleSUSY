@@ -59,6 +59,7 @@ double bIntegral_threadsave(int n, double p, double m1, double m2, double mt);
 
 /// Passarino-Veltman function definition
 double b0(double p, double m1, double m2, double q);
+double b0_fast(double p, double m1, double m2, double q);
 /// Passarino-Veltman function definition
 double b1(double p, double m1, double m2, double q);
 /// Passarino-Veltman function definition

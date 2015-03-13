@@ -308,6 +308,75 @@ double b0(double p, double m1, double m2, double q) {
   return ans;
 }
 
+double fB_fast(const Complex& a) {
+
+  const double x = a.real();
+
+  if (fabs(x) < EPSTOL) {
+    return -1. - x + sqr(x) * 0.5;
+  }
+
+  if (close(x, 1., EPSTOL))
+     return -1.;
+
+  return Complex(log(1. - a) - 1. - a * log(1.0 - 1.0 / a)).real();
+}
+
+double b0_fast(double p, double m1, double m2, double q) {
+  // protect against infrared divergence
+  if (close(p, 0.0, EPSTOL) && close(m1, 0.0, EPSTOL)
+      && close(m2, 0.0, EPSTOL))
+     return 0.0;
+
+  double ans  = 0.;
+  const double mMin = minimum(fabs(m1), fabs(m2));
+  const double mMax = maximum(fabs(m1), fabs(m2));
+
+  const double pSq = sqr(p), mMinSq = sqr(mMin), mMaxSq = sqr(mMax),
+     q2 = sqr(q);
+  /// Try to increase the accuracy of s
+  const double dmSq = mMaxSq - mMinSq;
+  const double s = pSq + dmSq, s2 = sqr(s);
+
+  const double pTest = pSq / mMaxSq;
+  /// Decides level at which one switches to p=0 limit of calculations
+  const double pTolerance = 1.0e-6;
+
+  /// p is not 0
+  if (pTest > pTolerance) {
+     const Complex iEpsilon(0.0, EPSTOL * mMaxSq);
+     if (mMinSq < 1.e-30) {
+        if (mMaxSq < 1.e-30) {
+           ans = - log((-pSq - iEpsilon)/q2).real() + 2.;
+        } else if (close(pSq, mMaxSq, EPSTOL)) {
+           ans = - log(mMaxSq / q2) + 2.;
+        } else {
+           ans = - log(mMaxSq / q2) + 2. + (mMaxSq - pSq) / pSq * log((mMaxSq - pSq - iEpsilon)/mMaxSq).real();
+        }
+     } else if (close(pSq, mMaxSq, EPSTOL) && close(pSq, mMinSq, EPSTOL)) {
+        ans = - log(mMaxSq / q2) + 2. - PI/sqrt(3.);
+     } else {
+        const Complex xPlus(0.5 * (s + sqrt(s2 - 4. * pSq * (mMaxSq - iEpsilon))) / pSq);
+        const Complex xMinus(2. * (mMaxSq - iEpsilon) / (s + sqrt(s2 - 4. * pSq * (mMaxSq - iEpsilon))));
+        ans = -2.0 * log(p / q) - fB_fast(xPlus) - fB_fast(xMinus);
+     }
+  } else {
+     if (close(m1, m2, EPSTOL)) {
+        ans = - log(sqr(m1 / q));
+     } else {
+        const double Mmax2 = mMaxSq, Mmin2 = mMinSq;
+        if (Mmin2 < 1.e-30) {
+           ans = 1.0 - log(Mmax2 / q2);
+        } else {
+           ans = 1.0 - log(Mmax2 / q2) + Mmin2 * log(Mmax2 / Mmin2)
+              / (Mmin2 - Mmax2);
+        }
+     }
+  }
+
+  return ans;
+}
+
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
 double b1(double p, double m1, double m2, double q) {
 #ifdef USE_LOOPTOOLS
