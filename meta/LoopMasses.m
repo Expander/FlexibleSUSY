@@ -378,11 +378,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                                ToString[l] <> ") += two_loop[" <> ToString[n] <> "];\n";
                            ];
                        ];
-                    addTwoLoopHiggsContributions = "
-if (pole_mass_loop_order > 1) {
-" <> IndentText[addTwoLoopHiggsContributions] <> "\
-}
-";
+                    addTwoLoopHiggsContributions = "\n" <> addTwoLoopHiggsContributions;
                     calcTwoLoopHiggsContributions = "
 // two-loop Higgs self-energy contributions
 double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
