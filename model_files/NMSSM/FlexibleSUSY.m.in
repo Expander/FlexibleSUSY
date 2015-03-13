@@ -23,7 +23,7 @@ SUSYScaleInput = {};
 
 HighScale = g1 == g2;
 
-HighScaleFirstGuess = 1.0 10^16;
+HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput={
    {T[Ye], Azero*Ye},
