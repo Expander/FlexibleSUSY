@@ -8,6 +8,7 @@
 #include "test_NMSSM.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
+#include "stopwatch.hpp"
 #include "nmssmsoftsusy.h"
 #include "NMSSM_two_scale_model.hpp"
 
@@ -183,4 +184,36 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_beta_functions )
       BOOST_FAIL("beta functions are not equal");
       gErrors = 0;
    }
+}
+
+BOOST_AUTO_TEST_CASE( test_NMSSM_beta_functions_benchmark )
+{
+   NMSSM_input_parameters input;
+   NMSSM<Two_scale> m;
+   NmssmSoftsusy s;
+   setup_NMSSM(m, s, input);
+
+   const unsigned N_calls = 10000;
+
+   Stopwatch stopwatch;
+   stopwatch.start();
+   for (unsigned i = 0; i < N_calls; i++) {
+      volatile SoftParsNmssm beta(s.beta2());
+   }
+   stopwatch.stop();
+   const double ss_time = stopwatch.get_time_in_seconds();
+
+   stopwatch.start();
+   for (unsigned i = 0; i < N_calls; i++) {
+      volatile NMSSM_soft_parameters beta(m.calc_beta());
+   }
+   stopwatch.stop();
+   const double fs_time = stopwatch.get_time_in_seconds();
+
+   BOOST_MESSAGE("Calcultating the NMSSM beta-functions " << N_calls
+                 << " times with\n"
+                 "Softsusy    : " << ss_time << "s\n"
+                 "FlexibleSUSY: " << fs_time << "s\n");
+
+   BOOST_CHECK_GT(ss_time, 1.5 * fs_time);
 }
