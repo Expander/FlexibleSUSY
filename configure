@@ -928,7 +928,7 @@ check_models() {
         fi
         if ! test -r ${m}/start.m; then
             logmsg ""
-            logmsg "Note: No start script not found in ${m}"
+            logmsg "Note: No start script found in ${m}"
         fi
         if ! test -r ${m}/FlexibleSUSY.m; then
             logmsg ""
