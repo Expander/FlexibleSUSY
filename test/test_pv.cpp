@@ -20,6 +20,8 @@
 #include <cmath>
 #include "pv.hpp"
 #include "wrappers.hpp"
+#include "stopwatch.hpp"
+#include "numerics.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_pv
@@ -93,6 +95,63 @@ BOOST_AUTO_TEST_CASE( test_ReF0 )
 BOOST_AUTO_TEST_CASE( test_ReG0 )
 {
    BOOST_CHECK_EQUAL(ReG0(0., 0., 0., scale2), 0.);
+}
+
+struct B0_args {
+   double p, m1, m2, q, prec, speedup;
+};
+
+double Softsusy_ReB0(double p2, double m2a, double m2b, double scl2)
+{
+   return b0(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
+}
+
+double Fast_ReB0(double p2, double m2a, double m2b, double scl2)
+{
+   return b0_fast(sqrt(p2), sqrt(m2a), sqrt(m2b), sqrt(scl2));
+}
+
+BOOST_AUTO_TEST_CASE(test_b0_b0_fast)
+{
+   Stopwatch stopwatch;
+
+   B0_args args[] = {
+      {91., 0.  , 0.  , 91., 1.0e-12, 1.0},
+      {91., 0.  , 91. , 91., 4.0e-06, 5.0},
+      {91., 91. , 91. , 91., 1.0e-12, 5.0},
+      {91., 91. , 0.  , 91., 4.0e-06, 5.0},
+      {91., 0.  , 100., 91., 1.0e-12, 2.0},
+      {91., 100., 100., 91., 1.0e-12, 1.0}
+   };
+
+   for (unsigned i = 0; i < sizeof(args)/sizeof(args[0]); i++) {
+      const double p2 = Sqr(args[i].p);
+      const double m12 = Sqr(args[i].m1);
+      const double m22 = Sqr(args[i].m2);
+      const double q2 = Sqr(args[i].q);
+      const double prec = args[i].prec;
+      const double speedup = args[i].speedup;
+      volatile double ss, fs;
+
+      BOOST_MESSAGE("testing B0(" << p2 << "," << m12 << "," << m22 << "," << q2 << ")");
+
+      stopwatch.start();
+      for (unsigned i = 0; i < 100000; i++)
+         ss = Softsusy_ReB0(p2, m12, m22, scale2);
+      stopwatch.stop();
+      const double ss_time = stopwatch.get_time_in_seconds();
+
+      stopwatch.start();
+      for (unsigned i = 0; i < 100000; i++)
+         fs = Fast_ReB0(p2, m12, m22, scale2);
+      stopwatch.stop();
+      const double fs_time = stopwatch.get_time_in_seconds();
+
+      BOOST_CHECK_CLOSE_FRACTION(ss, fs, prec);
+
+      if (speedup > 1.0)
+         BOOST_CHECK_GT(ss_time, speedup*fs_time);
+   }
 }
 
 #if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
