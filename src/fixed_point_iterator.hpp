@@ -390,11 +390,11 @@ void Fixed_point_iterator<dimension,Convergence_tester>::print_state(std::size_t
 {
    std::cout << "\tIteration n = " << iteration << ": x_{n} =";
    for (std::size_t i = 0; i < dimension; ++i) {
-      std::cout << " " << gsl_vector_get(xn, i);
+      std::cout << ' ' << gsl_vector_get(xn, i);
    }
    std::cout << ", x_{n+1} =";
    for (std::size_t i = 0; i < dimension; ++i) {
-      std::cout << " " << gsl_vector_get(fixed_point, i);
+      std::cout << ' ' << gsl_vector_get(fixed_point, i);
    }
    std::cout << '\n';
 }
