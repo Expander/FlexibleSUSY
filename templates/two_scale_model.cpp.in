@@ -41,11 +41,13 @@
 #include "gsl_utils.hpp"
 #include "config.h"
 #include "pv.hpp"
+#include "functors.hpp"
 
 @twoLoopHiggsHeaders@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #ifdef ENABLE_THREADS
 #include <thread>
@@ -267,6 +269,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 @EWSBSolvers@
    };
 
+   const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
    double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);
 
@@ -279,7 +282,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
 
    int status;
-   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+   for (std::size_t i = 0; i < number_of_solvers; ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
       status = solve_ewsb_iteratively_with(solvers[i], x_init);
       if (status == EWSB_solver::SUCCESS) {
@@ -304,8 +307,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
-      delete solvers[i];
+   for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }
