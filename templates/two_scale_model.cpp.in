@@ -274,7 +274,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    std::cout << "Solving EWSB equations ...\n"
       "\tInitial guess: x_init =";
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      std::cout << " " << x_init[i];
+      std::cout << ' ' << x_init[i];
    std::cout << '\n';
 #endif
 
