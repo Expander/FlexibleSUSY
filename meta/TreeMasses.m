@@ -575,11 +575,11 @@ MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String, matrixElement
                For[k = 1, k <= dim, k++,
                    result = result <> symbol <> "(" <> ToString[i-1] <>
                             "," <> ToString[k-1] <> ") = ";
-                   Which[isSymmetric && i > k,
+                   Which[isSymmetric && i > k && matrix[[i,k]] =!= 0,
                          result = result <> symbol <> "(" <> ToString[k-1] <>
                                   "," <> ToString[i-1] <> ");\n"
                          ,
-                         isHermitian && i > k,
+                         isHermitian && i > k && matrix[[i,k]] =!= 0,
                          result = result <> "Conj(" <> symbol <> "(" <> ToString[k-1] <>
                                   "," <> ToString[i-1] <> "));\n"
                          ,
