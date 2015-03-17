@@ -21,7 +21,7 @@ Begin["`Private`"];
 GetLoopCorrectedParticles[states_] :=
     Module[{particles},
            particles = GetParticles[states];
-           Select[particles, (!IsGhost[#])&]
+           Select[particles, (!IsGhost[#] && !IsGoldstone[#])&]
           ];
 
 FillTadpoleMatrix[{}, _] := "";
