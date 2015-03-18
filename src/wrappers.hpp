@@ -155,6 +155,24 @@ inline double FiniteLog(double a)
    return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
 }
 
+/**
+ * Fills lower triangle of hermitian matrix from values
+ * in upper triangle.
+ *
+ * @param m matrix
+ */
+template <typename Derived>
+void Hermitianize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Hermitianize is only defined for squared matrices");
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = Conj(m(k,i));
+}
+
 inline double Log(double a)
 {
    return std::log(a);
@@ -257,6 +275,12 @@ T Sqr(T a)
    return a * a;
 }
 
+/**
+ * Fills lower triangle of symmetric matrix from values in upper
+ * triangle.
+ *
+ * @param m matrix
+ */
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {
