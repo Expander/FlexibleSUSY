@@ -282,7 +282,8 @@ log_package_information() {
 guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
-        *32) machine_word_size="32"; return 0 ;;
+        *32|i[36]86)
+             machine_word_size="32"; return 0 ;;
         *64) machine_word_size="64"; return 0 ;;
         *)   machine_word_size="unknown"
              message "Warning: could not guess machine word size"
