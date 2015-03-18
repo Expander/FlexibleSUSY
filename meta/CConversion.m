@@ -23,6 +23,8 @@ TensorProd::usgae="";
 
 CreateCType::usage="returns string with the C/C++ data type";
 
+GetElementType::usage="returns type of matrix / vector / array elements";
+
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
 ToValidCSymbolString::usage="returns the result of ToValidCSymbol[] as
@@ -99,6 +101,11 @@ ReleaseHoldAt[expr_, partspec_] :=
  *   Out[]= 2
  *)
 SARAH`ThetaStep /: Power[SARAH`ThetaStep[a_,b_],_] := SARAH`ThetaStep[a,b];
+
+GetElementType[CConversion`ScalarType[type_]]     := type;
+GetElementType[CConversion`ArrayType[type_, __]]  := type;
+GetElementType[CConversion`VectorType[type_, __]] := type;
+GetElementType[CConversion`MatrixType[type_, __]] := type;
 
 EigenMatrix[elementType_String, dim1_String, dim2_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
