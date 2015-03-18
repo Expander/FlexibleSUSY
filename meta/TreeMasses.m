@@ -564,35 +564,51 @@ IsHermitian[matrix_List, op_:Susyno`LieGroups`conj] :=
            Return[True];
           ];
 
-MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String, matrixElementType_:CConversion`realScalarCType] :=
+MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String] :=
+    Module[{dim = Length[matrix], result = "", i, k},
+           For[i = 1, i <= dim, i++,
+               For[k = 1, k <= dim, k++,
+                   result = result <> symbol <> "(" <> ToString[i-1] <>
+                            "," <> ToString[k-1] <> ") = " <>
+                            RValueToCFormString[matrix[[i,k]]] <> ";\n";
+                  ];
+              ];
+           Return[result];
+          ];
+
+(* fill upper triangle of matrix *)
+UpperTriangleMatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String] :=
+    Module[{dim = Length[matrix], result = "", i, k},
+           For[i = 1, i <= dim, i++,
+               For[k = i, k <= dim, k++,
+                   result = result <> symbol <> "(" <> ToString[i-1] <>
+                            "," <> ToString[k-1] <> ") = " <>
+                            RValueToCFormString[matrix[[i,k]]] <> ";\n";
+                  ];
+              ];
+           Return[result];
+          ];
+
+MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String, matrixElementType_] :=
     Module[{dim, result = "", i, k, isSymmetric = IsSymmetric[matrix],
             isHermitian = IsHermitian[matrix], matrixType, dimStr},
            dim = Length[matrix];
            dimStr = ToString[dim];
            matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
            result = matrixType <> " " <> symbol <> ";\n\n"; (* not initialized *)
-           For[i = 1, i <= dim, i++,
-               For[k = 1, k <= dim, k++,
-                   result = result <> symbol <> "(" <> ToString[i-1] <>
-                            "," <> ToString[k-1] <> ") = ";
-                   Which[isSymmetric && i > k && matrix[[i,k]] =!= 0,
-                         result = result <> symbol <> "(" <> ToString[k-1] <>
-                                  "," <> ToString[i-1] <> ");\n"
-                         ,
-                         isHermitian && i > k && matrix[[i,k]] =!= 0,
-                         result = result <> "Conj(" <> symbol <> "(" <> ToString[k-1] <>
-                                  "," <> ToString[i-1] <> "));\n"
-                         ,
-                         True,
-                         result = result <>
-                                  RValueToCFormString[matrix[[i,k]]] <> ";\n";
-                     ];
-                  ];
-              ];
+           Which[isSymmetric,
+                 result = result <> UpperTriangleMatrixToCFormString[matrix, symbol] <> "\n" <>
+                          "Symmetrize(" <> symbol <> ");\n";,
+                 isHermitian,
+                 result = result <> UpperTriangleMatrixToCFormString[matrix, symbol] <> "\n" <>
+                          "Hermitianize(" <> symbol <> ");\n";,
+                 True,
+                 result = result <> MatrixToCFormString[matrix, symbol];
+                ];
            Return[result];
           ];
 
-MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`realScalarCType] :=
+MatrixToCFormString[matrix_List, symbol_String, matrixElementType_] :=
     Module[{result = "", type},
            If[Length[matrix] != 1,
               Print["Error: Expression is not a 1-element list: ", matrix];
@@ -607,7 +623,7 @@ MatrixToCFormString[matrix_List, symbol_String, matrixElementType_:CConversion`r
 
 CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
     Module[{result, body, ev, matrixSymbol, matrix, massESSymbol,
-            inputParsDecl, matrixType, dim, dimStr},
+            inputParsDecl, matrixType, matrixElementType, dim, dimStr},
            massESSymbol = GetMassEigenstate[massMatrix];
            ev = ToValidCSymbolString[GetHead[massESSymbol]];
            matrixSymbol = "mass_matrix_" <> ev;
@@ -625,9 +641,10 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
               matrixType = Parameters`GetTypeFromDimension[{1}];,
               matrixType = Parameters`GetTypeFromDimension[{dim,dim}];
              ];
+           matrixElementType = CConversion`GetElementType[matrixType];
            matrixType = CreateCType[matrixType];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
-           body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol] <> "\n";
+           body = inputParsDecl <> "\n" <> MatrixToCFormString[matrix, matrixSymbol, matrixElementType] <> "\n";
            result = matrixType <> " CLASSNAME::get_" <> matrixSymbol <> "() const\n{\n" <>
                     IndentText[body] <>
                     "return " <> matrixSymbol <> ";\n}\n";
