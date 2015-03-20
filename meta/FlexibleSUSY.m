@@ -1383,9 +1383,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-           Parameters`AddRealParameter[(BetaFunction`GetName /@ susyBetaFunctions) /.
-                                       a_[Susyno`LieGroups`i1] :> a /.
-                                       a_[Susyno`LieGroups`i1,SARAH`i2] :> a];
 
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
@@ -1404,9 +1401,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
-           Parameters`AddRealParameter[(BetaFunction`GetName /@ susyBreakingBetaFunctions) /.
-                                       a_[Susyno`LieGroups`i1] :> a /.
-                                       a_[Susyno`LieGroups`i1,SARAH`i2] :> a];
+
+           If[Head[SARAH`RealParameters] === List,
+              Parameters`AddRealParameter[SARAH`RealParameters];
+             ];
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
