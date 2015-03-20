@@ -8,6 +8,8 @@ MINPAR = { {1, LambdaIN} };
 
 EWSBOutputParameters = { mu2 };
 
+RealParameters = { mu2, \[Lambda] };
+
 SUSYScale = v;
 
 SUSYScaleFirstGuess = 1000;
