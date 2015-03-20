@@ -163,7 +163,7 @@ IsSymmetricMatrixParameter[sym_] :=
     IsMatrix[sym] && MemberQ[SARAH`ListSoftBreakingScalarMasses, sym];
 
 IsRealParameter[sym_] :=
-    MemberQ[Join[SARAH`realVar, additionalRealParameters], sym];
+    MemberQ[Join[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
@@ -251,7 +251,7 @@ GetPhase[particle_ /; HasPhase[particle]] :=
 GetPhase[_] := Null;
 
 GetTypeFromDimension[sym_, {}] :=
-    If[True || IsRealParameter[sym],
+    If[IsRealParameter[sym],
        CConversion`ScalarType[CConversion`realScalarCType],
        CConversion`ScalarType[CConversion`complexScalarCType]
       ];
@@ -261,7 +261,7 @@ GetTypeFromDimension[sym_, {0|1}] :=
 
 GetTypeFromDimension[sym_, {num_?NumberQ}] :=
     Module[{scalarType},
-           scalarType = If[True || IsRealParameter[sym],
+           scalarType = If[IsRealParameter[sym],
                            CConversion`realScalarCType,
                            CConversion`complexScalarCType
                           ];
@@ -269,7 +269,7 @@ GetTypeFromDimension[sym_, {num_?NumberQ}] :=
           ];
 
 GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
-    If[True || IsRealParameter[sym],
+    If[IsRealParameter[sym],
        CConversion`MatrixType[CConversion`realScalarCType, num1, num2],
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
