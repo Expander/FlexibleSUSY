@@ -204,7 +204,7 @@ CountNumberOfParameters[CConversion`ArrayType[CConversion`complexScalarCType, en
 CountNumberOfParameters[CConversion`VectorType[CConversion`realScalarCType, entries_]] := entries;
 CountNumberOfParameters[CConversion`VectorType[CConversion`complexScalarCType, entries_]] := 2 * entries;
 CountNumberOfParameters[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] := rows * cols;
-CountNumberOfParameters[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] := rows * cols;
+CountNumberOfParameters[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] := 2 * rows * cols;
 
 CountNumberOfParameters[betaFunctions_List] :=
     Module[{num = 0},
