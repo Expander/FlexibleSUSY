@@ -27,7 +27,7 @@ RestoreParameter::usage="Restore parameters from local variables";
 GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
-GetTypeFromDimension::usage="";
+GetRealTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
 
 IsRealParameter::usage="";
@@ -274,19 +274,19 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
-GetTypeFromDimension[{}] :=
+GetRealTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
 
-GetTypeFromDimension[{0}] :=
-    GetTypeFromDimension[{}];
+GetRealTypeFromDimension[{0}] :=
+    GetRealTypeFromDimension[{}];
 
-GetTypeFromDimension[{1}] :=
-    GetTypeFromDimension[{}];
+GetRealTypeFromDimension[{1}] :=
+    GetRealTypeFromDimension[{}];
 
-GetTypeFromDimension[{num_?NumberQ}] :=
+GetRealTypeFromDimension[{num_?NumberQ}] :=
     CConversion`VectorType[CConversion`realScalarCType, num];
 
-GetTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
     CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
 
 GetType[FlexibleSUSY`M[sym_]] :=

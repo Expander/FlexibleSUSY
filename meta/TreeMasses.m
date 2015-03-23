@@ -638,8 +638,8 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = Length[matrix];
            dimStr = ToString[dim];
            If[dim == 1,
-              matrixType = Parameters`GetTypeFromDimension[{1}];,
-              matrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              matrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              matrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            matrixElementType = CConversion`GetElementType[matrixType];
            matrixType = CreateCType[matrixType];
@@ -660,8 +660,8 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = Length[matrix];
            dimStr = ToString[dim];
            If[dim == 1,
-              matrixType = Parameters`GetTypeFromDimension[{1}];,
-              matrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              matrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              matrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            matrixType = CreateCType[matrixType];
            matrixSymbol = "mass_matrix_" <> ev;
@@ -983,7 +983,7 @@ ClearOutputParameters[massMatrix_TreeMasses`FSMassMatrix] :=
            massESSymbol = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = GetDimension[massESSymbol];
-           massESType = Parameters`GetTypeFromDimension[{dim}];
+           massESType = Parameters`GetRealTypeFromDimension[{dim}];
            result = CConversion`SetToDefault[ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]],
                                              massESType];
            If[mixingMatrixSymbol =!= Null,

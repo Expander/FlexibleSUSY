@@ -1478,7 +1478,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
 
            (* determine type of extra input parameters *)
-           FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
+           FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
            Parameters`SetInputParameters[Join[Parameters`GetInputParameters[],
                                               (#[[1]])& /@ FlexibleSUSY`FSExtraInputParameters,

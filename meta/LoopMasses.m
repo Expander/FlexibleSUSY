@@ -129,8 +129,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[dim == 1,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
@@ -204,8 +204,8 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            If[dim == 1,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
@@ -283,8 +283,8 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
            massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[dim == 1,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
@@ -321,8 +321,8 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            If[dim == 1,
-              mixingMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              mixingMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              mixingMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              mixingMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            mixingMatrixType = CreateCType[mixingMatrixType];
            selfEnergyMatrixType = mixingMatrixType;
@@ -445,8 +445,8 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> particleName;
            If[dim == 1,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
@@ -590,8 +590,8 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
            If[dim == 1,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{1}];,
-              selfEnergyMatrixType = Parameters`GetTypeFromDimension[{dim,dim}];
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{1}];,
+              selfEnergyMatrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
              ];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
