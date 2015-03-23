@@ -90,6 +90,8 @@ matrix";
 
 GetMassOfUnmixedParticle::usage="returns mass of unmixed particle";
 
+GetMassMatrixType::usage="returns mass matrix type of particle";
+
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
 
@@ -252,6 +254,23 @@ GetDimensionStartSkippingGoldstones[sym_] :=
                 ];
              ];
           ];
+
+GetMassMatrixType[_, dim:{}|{0|1}] :=
+    Parameters`GetRealTypeFromDimension[dim];
+
+GetMassMatrixType[particle_, {dim1_, dim2_}] :=
+    Which[IsFermion[particle],
+          CConversion`MatrixType[CConversion`complexScalarCType, dim1, dim2],
+          IsRealScalar[particle],
+          CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2],
+          IsComplexScalar[particle],
+          CConversion`MatrixType[CConversion`complexScalarCType, dim1, dim2],
+          IsVector[particle],
+          CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2],
+          _,
+          Print["Error: GetMassMatrixType: unknown particle type: ", particle];
+          Quit[1];
+         ];
 
 (* Removes generators and Delta with the given indices.
  * Especially the following replacements are done:
@@ -638,8 +657,8 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = Length[matrix];
            dimStr = ToString[dim];
            If[dim == 1,
-              matrixType = Parameters`GetRealTypeFromDimension[{1}];,
-              matrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
+              matrixType = GetMassMatrixType[massESSymbol, {1}];,
+              matrixType = GetMassMatrixType[massESSymbol, {dim,dim}];
              ];
            matrixElementType = CConversion`GetElementType[matrixType];
            matrixType = CreateCType[matrixType];
@@ -660,8 +679,8 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            dim = Length[matrix];
            dimStr = ToString[dim];
            If[dim == 1,
-              matrixType = Parameters`GetRealTypeFromDimension[{1}];,
-              matrixType = Parameters`GetRealTypeFromDimension[{dim,dim}];
+              matrixType = GetMassMatrixType[massESSymbol, {1}];,
+              matrixType = GetMassMatrixType[massESSymbol, {dim,dim}];
              ];
            matrixType = CreateCType[matrixType];
            matrixSymbol = "mass_matrix_" <> ev;
