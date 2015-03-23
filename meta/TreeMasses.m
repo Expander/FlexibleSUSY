@@ -255,22 +255,25 @@ GetDimensionStartSkippingGoldstones[sym_] :=
              ];
           ];
 
-GetMassMatrixType[_, dim:{}|{0|1}] :=
-    Parameters`GetRealTypeFromDimension[dim];
-
-GetMassMatrixType[particle_, {dim1_, dim2_}] :=
-    Which[IsFermion[particle],
-          CConversion`MatrixType[CConversion`complexScalarCType, dim1, dim2],
-          IsRealScalar[particle],
-          CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2],
-          IsComplexScalar[particle],
-          CConversion`MatrixType[CConversion`complexScalarCType, dim1, dim2],
-          IsVector[particle],
-          CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2],
-          _,
-          Print["Error: GetMassMatrixType: unknown particle type: ", particle];
-          Quit[1];
-         ];
+GetMassMatrixType[particle_] :=
+    Module[{dim = GetDimension[particle]},
+           If[dim <= 1,
+              Parameters`GetRealTypeFromDimension[{dim}]
+              ,
+              Which[IsFermion[particle],
+                    CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
+                    IsRealScalar[particle],
+                    CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
+                    IsComplexScalar[particle],
+                    CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
+                    IsVector[particle],
+                    CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
+                    _,
+                    Print["Error: GetMassMatrixType: unknown particle type: ", particle];
+                    Quit[1];
+                   ]
+             ]
+          ];
 
 (* Removes generators and Delta with the given indices.
  * Especially the following replacements are done:
@@ -656,10 +659,7 @@ CreateMassMatrixGetterFunction[massMatrix_TreeMasses`FSMassMatrix] :=
                                     {SARAH`ct1, SARAH`ct2, SARAH`ct3, SARAH`ct4}];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           If[dim == 1,
-              matrixType = GetMassMatrixType[massESSymbol, {1}];,
-              matrixType = GetMassMatrixType[massESSymbol, {dim,dim}];
-             ];
+           matrixType = GetMassMatrixType[massESSymbol];
            matrixElementType = CConversion`GetElementType[matrixType];
            matrixType = CreateCType[matrixType];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[matrix, "LOCALINPUT"];
@@ -678,10 +678,7 @@ CreateMassMatrixGetterPrototype[massMatrix_TreeMasses`FSMassMatrix] :=
            matrix = GetMassMatrix[massMatrix];
            dim = Length[matrix];
            dimStr = ToString[dim];
-           If[dim == 1,
-              matrixType = GetMassMatrixType[massESSymbol, {1}];,
-              matrixType = GetMassMatrixType[massESSymbol, {dim,dim}];
-             ];
+           matrixType = GetMassMatrixType[massESSymbol];
            matrixType = CreateCType[matrixType];
            matrixSymbol = "mass_matrix_" <> ev;
            result = matrixType <> " get_" <> matrixSymbol <> "() const;\n";

@@ -128,10 +128,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> ToValidCSymbolString[particle];
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           If[dim == 1,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            tadpoleMatrix = FillTadpoleMatrix[tadpoles, "tadpoles"];
            reorderMasses = CreateCType[CConversion`ArrayType[realScalarCType, dim]] <> " " <>
@@ -203,10 +200,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                 ];
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           If[dim == 1,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            selfEnergyFunctionS  = SelfEnergies`CreateSelfEnergyFunctionName[particle[1]];
            selfEnergyFunctionPL = SelfEnergies`CreateSelfEnergyFunctionName[particle[PL]];
@@ -282,10 +276,7 @@ DoFastDiagonalization[particle_Symbol /; IsVector[particle], _] :=
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           If[dim == 1,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
@@ -320,10 +311,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[inputMomentum == "", momentum = massName];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
-           If[dim == 1,
-              mixingMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              mixingMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           mixingMatrixType = TreeMasses`GetMassMatrixType[particle];
            mixingMatrixType = CreateCType[mixingMatrixType];
            selfEnergyMatrixType = mixingMatrixType;
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
@@ -444,10 +432,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
              ];
            mixingMatrix = FindMixingMatrixSymbolFor[particle];
            massMatrixStr = "get_mass_matrix_" <> particleName;
-           If[dim == 1,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            eigenArrayType = CreateCType[CConversion`ArrayType[CConversion`realScalarCType, dim]];
            topTwoLoop = particle === SARAH`TopQuark;
@@ -589,10 +574,7 @@ DoMediumDiagonalization[particle_Symbol /; IsVector[particle], inputMomentum_, _
            mixingMatrix = ToValidCSymbolString[FindMixingMatrixSymbolFor[particle]];
            massMatrixStr = "get_mass_matrix_" <> particleName;
            selfEnergyFunction = SelfEnergies`CreateSelfEnergyFunctionName[particle];
-           If[dim == 1,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {1}];,
-              selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle, {dim,dim}];
-             ];
+           selfEnergyMatrixType = TreeMasses`GetMassMatrixType[particle];
            selfEnergyMatrixType = CreateCType[selfEnergyMatrixType];
            If[IsUnmixed[particle] && GetMassOfUnmixedParticle[particle] === 0,
               If[dim == 1,
