@@ -657,31 +657,6 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            Return[ass];
           ];
 
-CastTo[expr_String, toType_ /; toType === None] := expr;
-
-CastTo[expr_String, toType_] :=
-    Switch[toType,
-           CConversion`ScalarType[CConversion`realScalarCType],
-           "Re(" <> expr <> ")"
-           ,
-           CConversion`VectorType[CConversion`realScalarCType,_] |
-           CConversion`ArrayType[ CConversion`realScalarCType,_] |
-           CConversion`MatrixType[CConversion`realScalarCType,__],
-           expr <> ".real()"
-           ,
-           CConversion`ScalarType[CConversion`complexScalarCType],
-           expr
-           ,
-           CConversion`VectorType[CConversion`complexScalarCType,_] |
-           CConversion`ArrayType[ CConversion`complexScalarCType,_] |
-           CConversion`MatrixType[CConversion`complexScalarCType,__],
-           expr <> ".cast<std::complex<double> >()"
-           ,
-           _,
-           Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
-           ""
-          ];
-
 CheckParameter[parameter_] :=
     MemberQ[allModelParameters, parameter] || MemberQ[allInputParameters, parameter];
 
@@ -689,7 +664,7 @@ SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
            If[CheckParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
-              class <> "->set_" <> parameterStr <> "(" <> CastTo[value,castToType] <> ");\n",
+              class <> "->set_" <> parameterStr <> "(" <> CConversion`CastTo[value,castToType] <> ");\n",
               ""
              ]
           ];
@@ -699,7 +674,7 @@ SetParameter[parameter_[idx_Integer], value_String, class_String, castToType_:No
            If[CheckParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               class <> "->set_" <> parameterStr <> "(" <> ToString[idx] <> ", " <>
-              CastTo[value,castToType] <> ");\n",
+              CConversion`CastTo[value,castToType] <> ");\n",
               ""
              ]
           ];
@@ -709,7 +684,7 @@ SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String,
            If[CheckParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               class <> "->set_" <> parameterStr <> "(" <> ToString[idx1] <> ", " <>
-              ToString[idx2] <> ", " <> CastTo[value,castToType] <> ");\n",
+              ToString[idx2] <> ", " <> CConversion`CastTo[value,castToType] <> ");\n",
               ""
              ]
           ];

@@ -25,6 +25,8 @@ CreateCType::usage="returns string with the C/C++ data type";
 
 GetElementType::usage="returns type of matrix / vector / array elements";
 
+CastTo::usage="cast an (string) expression to a give type";
+
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
 ToValidCSymbolString::usage="returns the result of ToValidCSymbol[] as
@@ -151,6 +153,31 @@ CreateCType[CConversion`MatrixType[realScalarCType, dim1_, dim2_]] :=
 
 CreateCType[CConversion`MatrixType[complexScalarCType, dim1_, dim2_]] :=
     EigenMatrix["std::complex<double>", ToString[dim1], ToString[dim2]];
+
+CastTo[expr_String, toType_ /; toType === None] := expr;
+
+CastTo[expr_String, toType_] :=
+    Switch[toType,
+           CConversion`ScalarType[CConversion`realScalarCType],
+           "Re(" <> expr <> ")"
+           ,
+           CConversion`VectorType[CConversion`realScalarCType,_] |
+           CConversion`ArrayType[ CConversion`realScalarCType,_] |
+           CConversion`MatrixType[CConversion`realScalarCType,__],
+           expr <> ".real()"
+           ,
+           CConversion`ScalarType[CConversion`complexScalarCType],
+           expr
+           ,
+           CConversion`VectorType[CConversion`complexScalarCType,_] |
+           CConversion`ArrayType[ CConversion`complexScalarCType,_] |
+           CConversion`MatrixType[CConversion`complexScalarCType,__],
+           expr <> ".cast<std::complex<double> >()"
+           ,
+           _,
+           Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
+           ""
+          ];
 
 CreateGetterReturnType[type_] :=
     Print["Error: unknown type: " <> ToString[type]];
