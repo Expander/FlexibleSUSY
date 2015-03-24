@@ -1,9 +1,7 @@
 
 BeginPackage["Traces`", {"SARAH`", "CConversion`", "Parameters`"}];
 
-CreateDoubleTraceAbbrs::usage="takes a list of traces and returns a
-two-component list, where the first entry is string of C/C++ variable
-definitions that hold the trace values.  The second entry is a list of
+CreateTraceRules::usage="takes a list of traces and returns a list of
 rules to replace the traces by their C/C++ variables.";
 
 ConvertSARAHTraces::usage="takes SARAH's `TraceAbbr' and returns a
@@ -71,17 +69,8 @@ FindMultipleTraces[list_List] :=
 FindAllTraces[list_List] :=
     DeleteDuplicates[Flatten[Cases[list, trace[__], Infinity]]];
 
-CreateDoubleTraceAbbrs[traces_List] :=
-    Module[{rules, decl = "", i, multipleTraces},
-           multipleTraces = FindAllTraces[traces];
-           rules = (Rule[#, ToValidCSymbol[#]])& /@ multipleTraces;
-           For[i = 1, i <= Length[multipleTraces], i++,
-               decl = decl <> "const " <> GetTraceCType[multipleTraces[[i]]] <>
-                      " " <> ToValidCSymbolString[multipleTraces[[i]]] <>
-                      " = " <> RValueToCFormString[multipleTraces[[i]]] <> ";\n";
-              ];
-           Return[{decl, rules}];
-          ];
+CreateTraceRules[traces_List] :=
+    (Rule[#, ToValidCSymbol[#]])& /@ FindAllTraces[traces];
 
 CreateLocalCopiesOfSARAHTraces[expr_, sarahTraces_List, structName_String] :=
     Module[{defs = "", traces},

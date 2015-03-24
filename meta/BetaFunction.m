@@ -116,7 +116,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
                               a_[Susyno`LieGroups`i1] :> a,
                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
                               a_[SARAH`i2,Susyno`LieGroups`i1] :> SARAH`Tp[a] };
-            {localDecl, traceRules} = Traces`CreateDoubleTraceAbbrs[{expr}];
+            traceRules = Traces`CreateTraceRules[{expr}];
             localDecl  = Traces`CreateLocalCopiesOfTraces[{expr}, "TRACE_STRUCT"];
             beta = beta /. traceRules;
             (* replace SARAH traces in expr *)
