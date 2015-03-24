@@ -1396,18 +1396,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
 
-           PrintHeadline["Creating model parameter classes"];
-           Print["Creating class for susy parameters ..."];
-           WriteRGEClass[susyBetaFunctions, anomDim,
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
-                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
-                         "two_scale_susy_beta_.cpp.in",
-                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
-                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_susy.mk"}]}}
-                        ];
-
            susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
 
@@ -1524,6 +1512,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
+
+           PrintHeadline["Creating model parameter classes"];
+           Print["Creating class for susy parameters ..."];
+           WriteRGEClass[susyBetaFunctions, anomDim,
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.hpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.hpp"}]},
+                          {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_susy_parameters.cpp.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_susy_parameters.cpp"}]}},
+                         "two_scale_susy_beta_.cpp.in",
+                         {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale.mk.in"}],
+                           FileNameJoin[{Global`$flexiblesusyOutputDir, "two_scale_susy.mk"}]}}
+                        ];
 
            Print["Creating class for soft parameters ..."];
            WriteRGEClass[susyBreakingBetaFunctions, {},
