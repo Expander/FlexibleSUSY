@@ -912,7 +912,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 
 WriteUserExample[inputParameters_List, freePhases_List,
                  lesHouchesInputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions},
+    Module[{parseCmdLineOptions, printCommandLineOptions, allParameters},
            allParameters = Join[inputParameters,freePhases,lesHouchesInputParameters];
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[allParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[allParameters];
