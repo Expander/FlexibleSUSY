@@ -9,6 +9,7 @@ allPars  = Join[realPars, compPars];
 
 Parameters`SetModelParameters[allPars];
 Parameters`AddRealParameter[realPars];
+SARAH`RealParameters = {};
 
 TestEquality[Parameters`IsRealExpression[a], True];
 TestEquality[Parameters`IsRealExpression[x], False];
@@ -52,6 +53,17 @@ SARAH`getDimParameters[a] = {1};
 TestEquality[Parameters`Private`IsHermitian[a], True];
 
 TestEquality[Parameters`IsRealExpression[trace[Adj[x],x,a]], True];
+
+(* make x hermitian*)
+SARAH`getDimParameters[x] = {2,2};
+SARAH`ListSoftBreakingScalarMasses = {x};
+
+TestEquality[Parameters`Private`IsHermitian[x], True];
+TestEquality[Parameters`IsRealExpression[trace[x]], True];
+
+(* test sum and products *)
+TestEquality[Parameters`IsRealExpression[c + b trace[x]], True];
+TestEquality[Parameters`IsRealExpression[c - b trace[x] - 2 trace[a]], True];
 
 Print["testing FindAllParameters[] ..."];
 
