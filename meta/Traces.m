@@ -106,18 +106,21 @@ CreateSARAHTraceDefs[list_List] :=
            Return[defs];
           ];
 
+CreateCastedTraceExprStr[expr_] :=
+    CConversion`CastTo[RValueToCFormString[expr], GetTraceType[expr]];
+
 CreateTraceCalculation[list_List, structName_String] :=
     Module[{defs = "", traces},
            traces = FindAllTraces[list];
            (defs = defs <> structName <> "." <> ToValidCSymbolString[#] <>
-            " = " <> RValueToCFormString[#] <> ";\n")& /@ traces;
+            " = " <> CreateCastedTraceExprStr[#] <> ";\n")& /@ traces;
            Return[defs];
           ];
 
 CreateSARAHTraceCalculation[list_List, structName_String] :=
     Module[{defs = ""},
            (defs = defs <> structName <> "." <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
-            " = " <> RValueToCFormString[GetSARAHTraceExpr[#]] <> ";\n")& /@ list;
+            " = " <> CreateCastedTraceExprStr[GetSARAHTraceExpr[#]] <> ";\n")& /@ list;
            defs = Parameters`CreateLocalConstRefsForInputParameters[list] <>
                   "\n" <> defs;
            Return[defs];
