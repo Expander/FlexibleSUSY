@@ -260,18 +260,22 @@ GetMassMatrixType[particle_] :=
            If[dim <= 1,
               Parameters`GetRealTypeFromDimension[{dim}]
               ,
-              Which[IsFermion[particle],
-                    CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
-                    IsRealScalar[particle],
-                    CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
-                    IsComplexScalar[particle],
-                    CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
-                    IsVector[particle],
-                    CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
-                    _,
-                    Print["Error: GetMassMatrixType: unknown particle type: ", particle];
-                    Quit[1];
-                   ]
+              If[Parameters`AllModelParametersAreReal[],
+                 CConversion`MatrixType[CConversion`realScalarCType, dim, dim]
+                 ,
+                 Which[IsFermion[particle],
+                       CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
+                       IsRealScalar[particle],
+                       CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
+                       IsComplexScalar[particle],
+                       CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
+                       IsVector[particle],
+                       CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
+                       _,
+                       Print["Error: GetMassMatrixType: unknown particle type: ", particle];
+                       Quit[1];
+                      ]
+                ]
              ]
           ];
 
