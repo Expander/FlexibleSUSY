@@ -275,6 +275,24 @@ T Sqr(T a)
    return a * a;
 }
 
+#define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
+   template <typename T>                                                \
+   std::complex<T> operator op(const std::complex<T>& lhs, int rhs)     \
+   {                                                                    \
+      return lhs op static_cast<T>(rhs);                                \
+   }                                                                    \
+                                                                        \
+   template <typename T>                                                \
+   std::complex<T> operator op(int lhs, const std::complex<T>& rhs)     \
+   {                                                                    \
+      return static_cast<T>(lhs) op rhs;                                \
+   }
+
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(*)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(/)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(+)
+DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(-)
+
 /**
  * Fills lower triangle of symmetric matrix from values in upper
  * triangle.
