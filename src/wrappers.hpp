@@ -226,7 +226,7 @@ inline int Sign(int x)
 }
 
 template <typename Base, typename Exponent>
-double Power(Base base, Exponent exp)
+Base Power(Base base, Exponent exp)
 {
    return std::pow(base, exp);
 }
