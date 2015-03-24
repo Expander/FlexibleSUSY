@@ -150,8 +150,6 @@ equations in SARAH`TadpoleEquations[] .";
 
 Begin["`Private`"];
 
-allParameters = {};
-
 allIndexReplacementRules = {};
 
 GetIndexReplacementRules[] := allIndexReplacementRules;
@@ -1279,12 +1277,12 @@ LoadModelFile[file_String] :=
              ];
           ];
 
-FindUnfixedParameters[fixed_List] :=
+FindUnfixedParameters[parameters_List, fixed_List] :=
     Module[{fixedParameters},
            fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
                                           { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
                                             SARAH`strongCoupling }]]];
-           Complement[allParameters, fixedParameters]
+           Complement[parameters, fixedParameters]
           ];
 
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
@@ -1309,7 +1307,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             numberOfSusyParameters, anomDim,
             haveEWSB = True,
             ewsbEquations, massMatrices, phases,
-            diagonalizationPrecision, allParticles,
+            diagonalizationPrecision,
+            allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
             fixedParameters, treeLevelEwsbOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
@@ -1384,6 +1383,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaVEV };
              ];
 
+           (* store all model parameters *)
+           allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
+                               a_[Susyno`LieGroups`i1] :> a /.
+                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
+           allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
+           Parameters`SetModelParameters[allParameters];
+
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
 
@@ -1411,13 +1417,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
 
-           (* store all model parameters *)
-           allParameters = Join[BetaFunction`GetName /@ susyBetaFunctions,
-                                BetaFunction`GetName /@ susyBreakingBetaFunctions] /.
-                               a_[Susyno`LieGroups`i1] :> a /.
-                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
-           allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
-           Parameters`SetModelParameters[allParameters];
            FlexibleSUSY`FSLesHouchesList = SA`LHList;
 
            (* search for unfixed parameters *)
@@ -1435,7 +1434,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
                                  ];
-           FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[fixedParameters];
+           FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[allParameters, fixedParameters];
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
               FlexibleSUSY`AutomaticInputAtMSUSY =!= True,
               Print["Warning: the following parameters are not fixed by any constraint:"];
