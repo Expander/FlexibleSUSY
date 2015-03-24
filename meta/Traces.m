@@ -102,7 +102,7 @@ CreateTraceDefs[list_List] :=
 
 CreateSARAHTraceDefs[list_List] :=
     Module[{defs = ""},
-           (defs = defs <> "" <> GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
+           (defs = defs <> GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
             ToValidCSymbolString[GetSARAHTraceName[#]] <> ";\n")& /@ list;
            Return[defs];
           ];
