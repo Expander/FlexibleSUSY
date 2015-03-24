@@ -35,6 +35,8 @@ IsComplexParameter::usage="";
 IsRealExpression::usage="";
 IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
+IsModelParameter::usage="returns True if parameter is a model parameter";
+IsInputParameter::usage="returns False if parameter is an input parameter";
 
 AllModelParametersAreReal::usage="returns True if all model parameters
 are real, False otherwise";
@@ -167,14 +169,18 @@ IsSymmetricMatrixParameter[sym_] :=
 
 AllModelParametersAreReal[] := MemberQ[SARAH`RealParameters, All];
 
+IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
+
+IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
+
 IsRealParameter[sym_] :=
-    AllModelParametersAreReal[] ||
+    (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
     MemberQ[Join[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
 
-IsRealExpression[parameter_ /; MemberQ[allModelParameters, parameter]] :=
+IsRealExpression[parameter_ /; IsModelParameter[parameter]] :=
     IsRealParameter[parameter];
 
 IsRealExpression[expr_?NumericQ] :=
@@ -664,7 +670,7 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
           ];
 
 CheckParameter[parameter_] :=
-    MemberQ[allModelParameters, parameter] || MemberQ[allInputParameters, parameter];
+    IsModelParameter[parameter] || IsInputParameter[parameter];
 
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
