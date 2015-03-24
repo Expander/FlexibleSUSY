@@ -73,12 +73,13 @@ CreateTraceRules[traces_List] :=
     (Rule[#, ToValidCSymbol[#]])& /@ FindAllTraces[traces];
 
 CreateLocalCopiesOfSARAHTraces[expr_, sarahTraces_List, structName_String] :=
-    Module[{defs = "", traces},
+    Module[{defs = "", traces, traceExprs},
            traces = FindSARAHTraces[expr, sarahTraces];
-           (defs = defs <> "const " <> GetTraceCType[#] <>
-            " " <> ToValidCSymbolString[#] <>
-            " = " <> structName <> "." <> ToValidCSymbolString[#] <>
-            ";\n")& /@ traces;
+           tracesAndExprs = Select[sarahTraces, MemberQ[traces, GetSARAHTraceName[#]]&];
+           (defs = defs <> "const " <> GetTraceCType[GetSARAHTraceExpr[#]] <>
+            " " <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
+            " = " <> structName <> "." <> ToValidCSymbolString[GetSARAHTraceName[#]] <>
+            ";\n")& /@ tracesAndExprs;
            Return[defs];
           ];
 
@@ -101,7 +102,7 @@ CreateTraceDefs[list_List] :=
 
 CreateSARAHTraceDefs[list_List] :=
     Module[{defs = ""},
-           (defs = defs <> "" <> GetTraceCType[GetSARAHTraceName[#]] <> " " <>
+           (defs = defs <> "" <> GetTraceCType[GetSARAHTraceExpr[#]] <> " " <>
             ToValidCSymbolString[GetSARAHTraceName[#]] <> ";\n")& /@ list;
            Return[defs];
           ];
