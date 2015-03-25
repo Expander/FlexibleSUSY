@@ -292,12 +292,14 @@ GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
            eigenstate = GetMassEigenstate[massMatrix];
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            dim = Length[GetMassMatrix[massMatrix]];
-           Which[Parameters`IsRealParameter[mixingMatrixSymbol],
+           Which[IsRealScalar[eigenstate],
                  type = CConversion`realScalarCType;,
-                 IsFermion[eigenstate],
-                 type = CConversion`complexScalarCType;,
+                 IsScalar[eigenstate] && Parameters`AllModelParametersAreReal[],
+                 type = CConversion`realScalarCType;,
+                 IsVector[eigenstate],
+                 type = CConversion`realScalarCType;,
                  True,
-                 type = CConversion`realScalarCType;
+                 type = CConversion`complexScalarCType;
                 ];
            Return[CConversion`MatrixType[type, dim, dim]];
           ];
