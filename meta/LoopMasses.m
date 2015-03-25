@@ -68,8 +68,10 @@ Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
     "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
     "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
     "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
-    "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <> massMatrixName <>
-    " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n";
+    "const auto M_1loop = " <> massMatrixName <>
+    " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n" <>
+    "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <>
+    "calculate_singlet_mass(M_1loop);\n";
 
 Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
               _String, _String, _String, momentum_String] :=
@@ -99,9 +101,10 @@ const double p = " <> momentum <> ";
 const double self_energy_1  = Re(" <> topSelfEnergyFunctionS  <> "(p));
 const double self_energy_PL = Re(" <> topSelfEnergyFunctionPL <> "(p));
 const double self_energy_PR = Re(" <> topSelfEnergyFunctionPR <> "(p));
-PHYSICAL(" <> massName <> ") = " <> massMatrixName <> "\
+const auto M_1loop = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
- - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n"
+ - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n
+PHYSICAL(" <> massName <> ") = calculate_singlet_mass(M_1loop);\n"
           ];
 
 Do1DimVector[particleName_String, massName_String, massMatrixName_String,
