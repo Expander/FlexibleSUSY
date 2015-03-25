@@ -341,10 +341,14 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
          m(i,k) = m(k,i);
 }
 
-#define UNITMATRIX(rows) Eigen::Matrix<double,rows,rows>::Identity()
-#define ZEROMATRIX(rows,cols) Eigen::Matrix<double,rows,cols>::Zero()
-#define ZEROVECTOR(rows) Eigen::Matrix<double,rows,1>::Zero()
-#define ZEROARRAY(rows) Eigen::Array<double,rows,1>::Zero()
+#define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
+#define ZEROMATRIX(rows,cols)        Eigen::Matrix<double,rows,cols>::Zero()
+#define ZEROVECTOR(rows)             Eigen::Matrix<double,rows,1>::Zero()
+#define ZEROARRAY(rows)              Eigen::Array<double,rows,1>::Zero()
+#define UNITMATRIXCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,rows>::Identity()
+#define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
+#define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
+#define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
 
 template <typename T>
 std::string ToString(T a)

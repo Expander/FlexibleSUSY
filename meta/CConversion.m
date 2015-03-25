@@ -14,6 +14,10 @@ UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
 ZEROVECTOR::usage="";
+UNITMATRIXCOMPLEX::usage="";
+ZEROARRAYCOMPLEX::usage="";
+ZEROMATRIXCOMPLEX::usage="";
+ZEROVECTORCOMPLEX::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
@@ -349,8 +353,11 @@ CreateUnitMatrix[CConversion`ArrayType[__]] := 1;
 
 CreateUnitMatrix[CConversion`VectorType[__]] := 1;
 
-CreateUnitMatrix[CConversion`MatrixType[_, rows_, rows_]] :=
+CreateUnitMatrix[CConversion`MatrixType[CConversion`realScalarCType, rows_, rows_]] :=
     CConversion`UNITMATRIX[rows];
+
+CreateUnitMatrix[CConversion`MatrixType[CConversion`complexScalarCType, rows_, rows_]] :=
+    CConversion`UNITMATRIXCOMPLEX[rows];
 
 CreateZero[type_] :=
     Block[{},
@@ -360,14 +367,23 @@ CreateZero[type_] :=
 
 CreateZero[CConversion`ScalarType[_]] := 0;
 
-CreateZero[CConversion`ArrayType[_, entries_]] :=
+CreateZero[CConversion`ArrayType[CConversion`realScalarCType, entries_]] :=
     CConversion`ZEROARRAY[entries];
 
-CreateZero[CConversion`VectorType[_, entries_]] :=
+CreateZero[CConversion`VectorType[CConversion`realScalarCType, entries_]] :=
     CConversion`ZEROVECTOR[entries];
 
-CreateZero[CConversion`MatrixType[_, rows_, cols_]] :=
+CreateZero[CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
+
+CreateZero[CConversion`ArrayType[CConversion`complexScalarCType, entries_]] :=
+    CConversion`ZEROARRAYCOMPLEX[entries];
+
+CreateZero[CConversion`VectorType[CConversion`complexScalarCType, entries_]] :=
+    CConversion`ZEROVECTORCOMPLEX[entries];
+
+CreateZero[CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
+    CConversion`ZEROMATRIXCOMPLEX[rows,cols];
 
 CreateConstExternDecl[parameter_String, type_] :=
     "extern const " <> CreateCType[type] <> " " <>
@@ -530,6 +546,18 @@ Format[CConversion`ZEROVECTOR[a_,b_],CForm] :=
 
 Format[CConversion`ZEROMATRIX[a_,b_],CForm] :=
     Format["ZEROMATRIX(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROARRAYCOMPLEX[a_,b_],CForm] :=
+    Format["ZEROARRAYCOMPLEX(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROVECTORCOMPLEX[a_,b_],CForm] :=
+    Format["ZEROVECTORCOMPLEX(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROMATRIXCOMPLEX[a_,b_],CForm] :=
+    Format["ZEROMATRIXCOMPLEX(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
 
 Format[CConversion`FSKroneckerDelta[a_,b_],CForm] :=
