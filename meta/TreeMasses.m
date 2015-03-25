@@ -918,9 +918,8 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
            phase = Parameters`GetPhase[massESSymbol];
            If[IsFermion[massESSymbol] && phase =!= Null &&
               !IsMassless[massESSymbol],
-              particle = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
               body = body <> "\n" <> "if (" <> ev <> " < 0.) {\n" <>
-                     IndentText[particle <> " *= -1;\n" <>
+                     IndentText[ev <> " *= -1;\n" <>
                                 CConversion`ToValidCSymbolString[phase] <> " = " <>
                                 CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
                                 "(0., 1.);"] <> "\n}\n";
@@ -928,7 +927,6 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
            (* check for tachyons *)
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
               !IsMassless[massESSymbol],
-              particle = ToValidCSymbolString[massESSymbol];
               body = body <> "\n" <>
                      "if (" <> ev <> If[dim == 1, "", ".minCoeff()"] <> " < 0.)\n" <>
                      IndentText[
