@@ -1207,16 +1207,16 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`TopSquark] :=
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
    sfermions::Mass_data sf_data;
-   sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ";
-   sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftUp[2,2]] <> ";
-   sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`UpYukawa[2,2]] <> ";
-   sf_data.vd  = " <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ";
-   sf_data.vu  = " <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ";
+   sf_data.ml2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ");
+   sf_data.mr2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftUp[2,2]] <> ");
+   sf_data.yf  = Re(" <> CConversion`RValueToCFormString[SARAH`UpYukawa[2,2]] <> ");
+   sf_data.vd  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ");
+   sf_data.vu  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ");
    sf_data.gY  = " <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling /.
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
-   sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
+   sf_data.Tyf = Re(" <> CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2]] <> ");
+   sf_data.mu  = Re(" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ");
    sf_data.T3  = sfermions::Isospin[sfermions::up];
    sf_data.Yl  = sfermions::Hypercharge_left[sfermions::up];
    sf_data.Yr  = sfermions::Hypercharge_right[sfermions::up];
@@ -1234,16 +1234,16 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`BottomSquark] 
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
    sfermions::Mass_data sf_data;
-   sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ";
-   sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftDown[2,2]] <> ";
-   sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`DownYukawa[2,2]] <> ";
-   sf_data.vd  = " <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ";
-   sf_data.vu  = " <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ";
+   sf_data.ml2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftSquark[2,2]] <> ");
+   sf_data.mr2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftDown[2,2]] <> ");
+   sf_data.yf  = Re(" <> CConversion`RValueToCFormString[SARAH`DownYukawa[2,2]] <> ");
+   sf_data.vd  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ");
+   sf_data.vu  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ");
    sf_data.gY  = " <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling /.
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
-   sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
+   sf_data.Tyf = Re(" <> CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2]] <> ");
+   sf_data.mu  = Re(" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ");
    sf_data.T3  = sfermions::Isospin[sfermions::down];
    sf_data.Yl  = sfermions::Hypercharge_left[sfermions::down];
    sf_data.Yr  = sfermions::Hypercharge_right[sfermions::down];
@@ -1261,16 +1261,16 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Selectron] :=
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
    sfermions::Mass_data sf_data;
-   sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ";
-   sf_data.mr2 = " <> CConversion`RValueToCFormString[SARAH`SoftRightLepton[2,2]] <> ";
-   sf_data.yf  = " <> CConversion`RValueToCFormString[SARAH`ElectronYukawa[2,2]] <> ";
-   sf_data.vd  = " <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ";
-   sf_data.vu  = " <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ";
+   sf_data.ml2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ");
+   sf_data.mr2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftRightLepton[2,2]] <> ");
+   sf_data.yf  = Re(" <> CConversion`RValueToCFormString[SARAH`ElectronYukawa[2,2]] <> ");
+   sf_data.vd  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ");
+   sf_data.vu  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ");
    sf_data.gY  = " <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling /.
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
-   sf_data.Tyf = " <> CConversion`RValueToCFormString[SARAH`TrilinearLepton[2,2]] <> ";
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
+   sf_data.Tyf = Re(" <> CConversion`RValueToCFormString[SARAH`TrilinearLepton[2,2]] <> ");
+   sf_data.mu  = Re(" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ");
    sf_data.T3  = sfermions::Isospin[sfermions::electron];
    sf_data.Yl  = sfermions::Hypercharge_left[sfermions::electron];
    sf_data.Yr  = sfermions::Hypercharge_right[sfermions::electron];
@@ -1288,16 +1288,16 @@ CreateThirdGenerationHelperFunction[fermion_ /; fermion === SARAH`Sneutrino] :=
     CConversion`ToValidCSymbolString[FlexibleSUSY`M[fermion]] <>
     "_3rd_generation(double& msf1, double& msf2, double& theta) const {
    sfermions::Mass_data sf_data;
-   sf_data.ml2 = " <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ";
+   sf_data.ml2 = Re(" <> CConversion`RValueToCFormString[SARAH`SoftLeftLepton[2,2]] <> ");
    sf_data.mr2 = 0.;
    sf_data.yf  = 0.;
-   sf_data.vd  = " <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ";
-   sf_data.vu  = " <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ";
+   sf_data.vd  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM1] <> ");
+   sf_data.vu  = Re(" <> CConversion`RValueToCFormString[SARAH`VEVSM2] <> ");
    sf_data.gY  = " <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling /.
                                                       Parameters`ApplyGUTNormalization[]] <> ";
    sf_data.g2  = " <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> ";
    sf_data.Tyf = 0.;
-   sf_data.mu  = " <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ";
+   sf_data.mu  = Re(" <> CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]] <> ");
    sf_data.T3  = sfermions::Isospin[sfermions::neutrino];
    sf_data.Yl  = sfermions::Hypercharge_left[sfermions::neutrino];
    sf_data.Yr  = sfermions::Hypercharge_right[sfermions::neutrino];
