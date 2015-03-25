@@ -51,7 +51,15 @@ GuessType[{field1_, field2_}] :=
            dim1 = TreeMasses`GetDimension[f1];
            dim2 = TreeMasses`GetDimension[f2];
            Which[dim1 > 1 && dim2 > 1,
-                 type = CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2];,
+                 Which[Parameters`AllModelParametersAreReal[],
+                       type = CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2];,
+                       TreeMasses`IsRealScalar[f1] || TreeMasses`IsRealScalar[f2],
+                       type = CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2];,
+                       TreeMasses`IsVector[f1] || TreeMasses`IsVector[f2],
+                       type = CConversion`MatrixType[CConversion`realScalarCType, dim1, dim2];,
+                       True,
+                       type = CConversion`MatrixType[CConversion`complexScalarCType, dim1, dim2];
+                      ];,
                  dim1 > 1,
                  type = CConversion`VectorType[CConversion`realScalarCType, dim1];,
                  dim2 > 1,
@@ -122,13 +130,13 @@ CreateAnomDimFunction[anomDim_AnomalousDimension] :=
            name = ToValidCSymbolString[GetName[anomDim]];
            (* one-loop *)
            exprOneLoop = CConversion`oneOver16PiSqr * GetAnomDim1Loop[anomDim];
-           body = "\nanomDim = " <> RValueToCFormString[exprOneLoop] <> ";\n";
+           body = "\nanomDim = " <> CastTo[RValueToCFormString[exprOneLoop],type] <> ";\n";
            (* two-loop *)
            If[Length[GetAllAnomDims[anomDim]] > 1,
               exprTwoLoop = CConversion`twoLoop * GetAnomDim2Loop[anomDim];
               If[exprTwoLoop =!= 0,
                  body = body <> "\nif (get_loops() > 1) {\n" <>
-                        IndentText["anomDim += " <> RValueToCFormString[exprTwoLoop]] <>
+                        IndentText["anomDim += " <> CastTo[RValueToCFormString[exprTwoLoop],type]] <>
                         ";\n}\n";
                 ];
              ];
