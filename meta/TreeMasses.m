@@ -287,6 +287,21 @@ GetMassMatrixType[particle_] :=
              ]
           ];
 
+GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
+    Module[{type, eigenstate, mixingMatrixSymbol, dim},
+           eigenstate = GetMassEigenstate[massMatrix];
+           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
+           dim = Length[GetMassMatrix[massMatrix]];
+           Which[Parameters`IsRealParameter[mixingMatrixSymbol],
+                 type = CConversion`realScalarCType;,
+                 IsFermion[eigenstate],
+                 type = CConversion`complexScalarCType;,
+                 True,
+                 type = CConversion`realScalarCType;
+                ];
+           Return[CConversion`MatrixType[type, dim, dim]];
+          ];
+
 (* Removes generators and Delta with the given indices.
  * Especially the following replacements are done:
  *
@@ -389,21 +404,6 @@ GetMixingMatrixSymbol[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[3]];
 GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 
 GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
-
-GetMixingMatrixType[massMatrix_TreeMasses`FSMassMatrix] :=
-    Module[{type, eigenstate, mixingMatrixSymbol, dim},
-           eigenstate = GetMassEigenstate[massMatrix];
-           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
-           dim = Length[GetMassMatrix[massMatrix]];
-           Which[Parameters`IsRealParameter[mixingMatrixSymbol],
-                 type = CConversion`realScalarCType;,
-                 IsFermion[eigenstate],
-                 type = CConversion`complexScalarCType;,
-                 True,
-                 type = CConversion`realScalarCType;
-                ];
-           Return[CConversion`MatrixType[type, dim, dim]];
-          ];
 
 CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
     Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr, CreateElementGetter},
