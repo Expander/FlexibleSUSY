@@ -70,6 +70,36 @@ Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.cwiseAbs().cwiseSqrt();
 }
 
+/**
+ * Calculates the mass of a singlet from a (possibly complex)
+ * numerical value by taking the magnitude of the value.
+ *
+ * @param value numerical value
+ * @return mass
+ */
+template <typename T>
+double calculate_singlet_mass(T value)
+{
+   return std::abs(value);
+}
+
+/**
+ * Calculates the mass of a singlet from a (possibly complex)
+ * numerical value by taking the magnitude of the value.  The phase is
+ * set to exp(i theta/2), where theta is the phase angle of the
+ * complex value.
+ *
+ * @param value numerical value
+ * @param[out] phase phase
+ * @return mass
+ */
+template <typename T>
+double calculate_singlet_mass(T value, std::complex<double>& phase)
+{
+   phase = std::polar(1., 0.5 * std::arg(std::complex<double>(value)));
+   return std::abs(value);
+}
+
 inline double ArcTan(double a)
 {
    return std::atan(a);

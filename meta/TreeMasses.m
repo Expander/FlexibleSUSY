@@ -887,7 +887,8 @@ CreateDiagonalizationFunction[matrix_List, eigenVector_, mixingMatrixSymbol_] :=
 
 CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Null]] :=
     Module[{result, ev = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]], body,
-            inputParsDecl, expr, particle, dim, dimStr, phase, massMatrix},
+            inputParsDecl, expr, particle, dim, dimStr, phase, massMatrix,
+            massMatrixStr},
            result = "void CLASSNAME::calculate_" <> ev <> "()\n{\n";
            (* Remove color SU(3) generators, structure functions and
               Kronecker delta with color indices.
@@ -900,9 +901,20 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
            dimStr = ToString[dim];
            inputParsDecl = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"];
            particle = ToValidCSymbolString[massESSymbol];
+           massMatrixStr = "mass_matrix_" <> particle;
            If[dim == 1,
-              body = inputParsDecl <> "\n" <> ev <> " = " <>
-                     "get_mass_matrix_" <> particle <> "();\n";
+              body = inputParsDecl <> "\n" <>
+                     "const auto " <> massMatrixStr <> " = " <>
+                     "get_" <> massMatrixStr <> "();\n";
+              (* adapt phases of massive fermions *)
+              phase = Parameters`GetPhase[massESSymbol];
+              If[IsFermion[massESSymbol] && phase =!= Null &&
+                 !IsMassless[massESSymbol],
+                 body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ", " <>
+                        CConversion`ToValidCSymbolString[phase] <> ");\n";
+                 ,
+                 body = body <> ev <> " = calculate_singlet_mass(" <> massMatrixStr <> ");\n";
+                ];
               ,
               If[FreeQ[expr, SARAH`gt1] && FreeQ[expr, SARAH`gt2],
                  body = inputParsDecl <> "\n" <> ev <>
@@ -913,16 +925,6 @@ CreateMassCalculationFunction[m:TreeMasses`FSMassMatrix[mass_, massESSymbol_, Nu
                         IndentText[ev <> "(gt1) = " <> RValueToCFormString[expr /. SARAH`gt2 -> SARAH`gt1] <> ";"] <>
                         "\n}\n";
                 ];
-             ];
-           (* adapt phases of massive fermions *)
-           phase = Parameters`GetPhase[massESSymbol];
-           If[IsFermion[massESSymbol] && phase =!= Null &&
-              !IsMassless[massESSymbol],
-              body = body <> "\n" <> "if (" <> ev <> " < 0.) {\n" <>
-                     IndentText[ev <> " *= -1;\n" <>
-                                CConversion`ToValidCSymbolString[phase] <> " = " <>
-                                CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
-                                "(0., 1.);"] <> "\n}\n";
              ];
            (* check for tachyons *)
            If[(IsVector[massESSymbol] || IsScalar[massESSymbol]) &&
