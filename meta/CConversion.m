@@ -168,7 +168,7 @@ CastTo[expr_String, toType_] :=
            CConversion`VectorType[CConversion`realScalarCType,_] |
            CConversion`ArrayType[ CConversion`realScalarCType,_] |
            CConversion`MatrixType[CConversion`realScalarCType,__],
-           expr <> ".real()"
+           "(" <> expr <> ").real()"
            ,
            CConversion`ScalarType[CConversion`complexScalarCType],
            expr
@@ -176,7 +176,7 @@ CastTo[expr_String, toType_] :=
            CConversion`VectorType[CConversion`complexScalarCType,_] |
            CConversion`ArrayType[ CConversion`complexScalarCType,_] |
            CConversion`MatrixType[CConversion`complexScalarCType,__],
-           expr <> ".cast<std::complex<double> >()"
+           "(" <> expr <> ").cast<std::complex<double> >()"
            ,
            _,
            Print["Error: CastTo: cannot cast expression ", expr, " to ", toType];
