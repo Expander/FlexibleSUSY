@@ -257,8 +257,16 @@ GetDimensionStartSkippingGoldstones[sym_] :=
 
 GetMassMatrixType[particle_] :=
     Module[{dim = GetDimension[particle]},
-           If[dim <= 1,
-              Parameters`GetRealTypeFromDimension[{dim}]
+           If[dim == 1,
+              If[Parameters`AllModelParametersAreReal[],
+                 CConversion`ScalarType[CConversion`realScalarCType]
+                 ,
+                 Which[IsFermion[particle],
+                       CConversion`ScalarType[CConversion`complexScalarCType],
+                       True,
+                       CConversion`ScalarType[CConversion`realScalarCType]
+                      ]
+                ]
               ,
               If[Parameters`AllModelParametersAreReal[],
                  CConversion`MatrixType[CConversion`realScalarCType, dim, dim]
@@ -271,7 +279,7 @@ GetMassMatrixType[particle_] :=
                        CConversion`MatrixType[CConversion`complexScalarCType, dim, dim],
                        IsVector[particle],
                        CConversion`MatrixType[CConversion`realScalarCType, dim, dim],
-                       _,
+                       True,
                        Print["Error: GetMassMatrixType: unknown particle type: ", particle];
                        Quit[1];
                       ]
