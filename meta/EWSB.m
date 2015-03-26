@@ -148,11 +148,14 @@ FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
            Return[result];
           ];
 
+InitialGuessFor[par_] :=
+    If[Parameters`IsRealParameter[par], par, Abs[par]];
+
 FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                result = result <> arrayName <> "[" <> ToString[i-1] <> "] = " <>
-                        CConversion`RValueToCFormString[parametersFixedByEWSB[[i]]] <>
+                        CConversion`RValueToCFormString[InitialGuessFor[parametersFixedByEWSB[[i]]]] <>
                         ";\n";
               ];
            Return[result];
@@ -624,8 +627,14 @@ SetEWSBSolution[parametersFixedByEWSB_List, func_String] :=
            result
           ];
 
+ConvertToReal[par_] :=
+    If[Parameters`IsRealParameter[par],
+       CConversion`ToValidCSymbolString[par],
+       "Abs(" <> CConversion`ToValidCSymbolString[par] <> ")"
+      ];
+
 FillArrayEntryWithParameter[arrayName_String, par_, idx_] :=
-    arrayName <> "[" <> ToString[idx-1] <> "] = " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+    arrayName <> "[" <> ToString[idx-1] <> "] = " <> ConvertToReal[par] <> ";\n";
 
 FillArrayWithParameters[arrayName_String, parameters_List] :=
     Module[{result = "", i},
