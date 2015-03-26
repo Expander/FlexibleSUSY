@@ -466,7 +466,8 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
 
 CreateTreeLevelEwsbSolver[solution_List] :=
     Module[{result = "", body = "",
-            i, par, expr, parStr, oldParStr, reducedSolution},
+            i, par, expr, parStr, oldParStr, reducedSolution,
+            type},
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
@@ -480,10 +481,11 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
+                  type = CConversion`CreateCType[Parameters`GetType[par]];
                   parStr = CConversion`RValueToCFormString[par];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   result = result <>
-                           "const double " <> oldParStr <> " = " <> parStr <> ";\n";
+                           "const " <> type <>" " <> oldParStr <> " = " <> parStr <> ";\n";
                  ];
               result = result <> "\n";
               (* write solution *)
@@ -525,7 +527,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
           ];
 
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
-    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr},
+    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr, type},
            If[Length[equations] =!= Length[parameters],
               Print["Error: SolveTreeLevelEwsbVia: trying to solve ",
                     Length[equations], " equations for ", Length[parameters],
@@ -549,9 +551,10 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            For[i = 1, i <= Length[solution], i++,
                par  = solution[[i,1]];
                expr = solution[[i,2]];
+               type = CConversion`CreateCType[Parameters`GetType[par]];
                parStr = "new_" <> CConversion`ToValidCSymbolString[par];
                result = result <>
-               "const double " <> parStr <> " = " <>
+               "const " <> type <> " " <> parStr <> " = " <>
                CConversion`RValueToCFormString[expr] <> ";\n";
               ];
            result = result <> "\n";
@@ -645,7 +648,7 @@ DivideTadpolesByVEV[arrayName_String, vevToTadpoleAssociation_List] :=
           ];
 
 CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_List] :=
-    Module[{result = "", i, par, expr, parStr, reducedSolution, rules},
+    Module[{result = "", i, par, expr, parStr, reducedSolution, rules, type},
            reducedSolution = solution /.
                FlexibleSUSY`tadpole[p_] :> CConversion`ReleaseHoldAt[HoldForm[FlexibleSUSY`tadpole[[p-1]]], {1,2}];
            If[reducedSolution =!= {},
@@ -660,8 +663,9 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
+                  type = CConversion`CreateCType[Parameters`GetType[par]];
                   parStr = CConversion`ToValidCSymbolString[par];
-                  result = result <> "double " <> parStr <> ";\n";
+                  result = result <> type <> " " <> parStr <> ";\n";
                  ];
               result = result <> "\n";
               (* write solution *)
