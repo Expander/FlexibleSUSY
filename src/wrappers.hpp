@@ -155,6 +155,16 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+inline bool IsFinite(double x)
+{
+   return std::isfinite(x);
+}
+
+inline bool IsFinite(const std::complex<double>& x)
+{
+   return std::isfinite(x.real()) && std::isfinite(x.imag());
+}
+
 inline int KroneckerDelta(int i, int j)
 {
    return i == j;

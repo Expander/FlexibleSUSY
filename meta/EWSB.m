@@ -502,7 +502,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
                   parStr = CConversion`RValueToCFormString[par];
-                  result = result <> "std::isfinite(" <> parStr <> ")";
+                  result = result <> "IsFinite(" <> parStr <> ")";
                   If[i != Length[reducedSolution],
                      result = result <> " && ";
                     ];
@@ -562,7 +562,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
                par  = solution[[i,1]];
                parStr = CConversion`ToValidCSymbolString[par];
                result = result <>
-               "if (std::isfinite(new_" <> parStr <> "))\n" <>
+               "if (IsFinite(new_" <> parStr <> "))\n" <>
                IndentText[CConversion`RValueToCFormString[par] <>
                           " = new_" <> parStr <> ";"] <> "\n" <>
                "else\n" <>
@@ -682,7 +682,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
                   parStr = CConversion`ToValidCSymbolString[par];
-                  result = result <> "std::isfinite(" <> parStr <> ")";
+                  result = result <> "IsFinite(" <> parStr <> ")";
                   If[i != Length[reducedSolution],
                      result = result <> " && ";
                     ];
