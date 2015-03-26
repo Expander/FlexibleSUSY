@@ -197,6 +197,9 @@ FindMinimumByteCount[{}] := {};
 FindMinimumByteCount[lst_List] :=
     First[Sort[lst, ByteCount[#1] < ByteCount[#2]]];
 
+IsNoSolution[expr_] :=
+    Head[expr] === Solve || Flatten[expr] === {};
+
 EliminateOneParameter[{}, {}] := {};
 
 EliminateOneParameter[{eq_}, {p_}] :=
@@ -241,9 +244,18 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               DebugPrint["simplified case: solving for ", p1, ": ", InputForm[eq1]];
               reduction[[1]] =
               TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              If[IsNoSolution[reduction[[1]]],
+                 DebugPrint["failed"];
+                 Return[{}];
+                ];
               DebugPrint["simplified case: solving for ", p2, ": ", InputForm[eq2]];
               reduction[[2]] =
               TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              If[IsNoSolution[reduction[[2]]],
+                 DebugPrint["failed"];
+                 Return[{}];
+                ];
+              DebugPrint["solution: ", reduction];
               Return[reduction];
              ];
            DebugPrint["eliminate ", p1, " and solve for ", p2, ": from ", InputForm[{eq1, eq2}]];
@@ -254,15 +266,14 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            reduction[[2]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           If[reduction[[1]] === {} || reduction[[2]] === {} ||
-              reduction[[1]] === {{}} || reduction[[2]] === {{}},
+           If[IsNoSolution[reduction[[1]]] || IsNoSolution[reduction[[2]]],
               DebugPrint["failed"];
               Return[{}];
              ];
            If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
               DebugPrint["continue with solution 1:", InputForm[reduction[[1]]]];
               rest = SolveRest[eq1, eq2, p1];
-              If[rest === {},
+              If[IsNoSolution[rest],
                  DebugPrint["could not solve rest for solution 1"];
                  Return[{}];
                 ];
@@ -270,7 +281,7 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               ,
               DebugPrint["continue with solution 2:", InputForm[reduction[[2]]]];
               rest = SolveRest[eq1, eq2, p2];
-              If[rest === {},
+              If[IsNoSolution[rest],
                  DebugPrint["could not solve rest for solution 2"];
                  Return[{}];
                 ];
