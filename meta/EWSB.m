@@ -51,10 +51,8 @@ list with EWSB output parameters";
 
 Begin["`Private`"];
 
-debug = False;
-
 DebugPrint[msg___] :=
-    If[debug, Print["Debug<EWSB>: ", msg]];
+    If[FlexibleSUSY`FSDebugOutput, Print["Debug<EWSB>: ", msg]];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
     FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];

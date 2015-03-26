@@ -148,6 +148,8 @@ tadpole::usage="symbolic expression for a tadpole contribution in the
 EWSB eqs.  The index corresponds to the ordering of the tadpole
 equations in SARAH`TadpoleEquations[] .";
 
+FSDebugOutput = False;
+
 Begin["`Private`"];
 
 allIndexReplacementRules = {};
@@ -1298,7 +1300,8 @@ SelectRenormalizationScheme[renormalizationScheme_] :=
 
 Options[MakeFlexibleSUSY] :=
     {
-        InputFile -> "FlexibleSUSY.m"
+        InputFile -> "FlexibleSUSY.m",
+        DebugOutput -> False
     };
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
@@ -1320,6 +1323,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Print["Error: Model`Name is not defined.  Did you call SARAH`Start[\"Model\"]?"];
               Quit[1];
              ];
+           FSDebugOutput = OptionValue[DebugOutput];
            CheckSARAHVersion[];
            (* load model file *)
            LoadModelFile[OptionValue[InputFile]];
