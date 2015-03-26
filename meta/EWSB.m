@@ -160,10 +160,33 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
            Return[result];
           ];
 
+ComplexParameterReplacementRules[eqs_List, pars_List] :=
+    Join[ComplexParameterReplacementRules[eqs,#]& /@ pars];
+
+(* returns replacement rules which, if appied to eqs, lead to
+   equations that are free of FlexibleSUSY`Phase[par] *)
+ComplexParameterReplacementRules[eqs_List, par_] :=
+    Module[{rules, replacedEqs},
+           rules = {Rule[par,Abs[par] FlexibleSUSY`Phase[par]],
+                    Rule[SARAH`Conj[par],Abs[par]/FlexibleSUSY`Phase[par]],
+                    Rule[Susyno`LieGroups`conj[par],Abs[par]/FlexibleSUSY`Phase[par]]};
+           replacedEqs = Simplify[eqs /. rules];
+           If[FreeQ[replacedEqs, FlexibleSUSY`Phase[par]],
+              rules,
+              {}
+             ]
+          ];
+
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
-    Module[{realParameters, simplificationRules},
+    Module[{realParameters, complexParameters, simplificationRules},
            realParameters = Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
-           simplificationRules = Flatten[{Rule[SARAH`Conj[#],#], Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters];
+           complexParameters = Complement[parametersFixedByEWSB, realParameters];
+           simplificationRules =
+               Flatten[Join[{Rule[SARAH`Conj[#],#],
+                             Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters,
+                            ComplexParameterReplacementRules[equations, complexParameters]& /@ complexParameters
+                           ]
+                      ];
            equations /. simplificationRules
           ];
 
@@ -216,14 +239,14 @@ SolveRest[eq1_, eq2_, par_] :=
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[IsNoSolution[solution],
               DebugPrint["failed"];,
-              DebugPrint["solution found: ", solution];
+              DebugPrint["solution found: ", InputForm[solution]];
               AppendTo[rest, solution];
              ];
            solution = TimeConstrained[Solve[eq2, par],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[IsNoSolution[solution],
               DebugPrint["failed"];,
-              DebugPrint["solution found: ", solution];
+              DebugPrint["solution found: ", InputForm[solution]];
               AppendTo[rest, solution];
              ];
            FindMinimumByteCount[rest]
@@ -247,16 +270,18 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[IsNoSolution[reduction[[1]]],
                  DebugPrint["failed"];
-                 Return[{}];
+                 Return[{}];,
+                 DebugPrint["solution: ", InputForm[reduction[[1]]]];
                 ];
               DebugPrint["simplified case: solving for ", p2, ": ", InputForm[eq2]];
               reduction[[2]] =
               TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[IsNoSolution[reduction[[2]]],
                  DebugPrint["failed"];
-                 Return[{}];
+                 Return[{}];,
+                 DebugPrint["solution: ", InputForm[reduction[[2]]]];
                 ];
-              DebugPrint["solution: ", reduction];
+              DebugPrint["full solution: ", InputForm[reduction]];
               Return[reduction];
              ];
            DebugPrint["eliminate ", p1, " and solve for ", p2, ": from ", InputForm[{eq1, eq2}]];
