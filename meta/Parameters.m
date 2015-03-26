@@ -175,7 +175,7 @@ IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
 
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
-    MemberQ[Join[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
+    MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
