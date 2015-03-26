@@ -132,6 +132,8 @@ Print["testing NSM EWSB for mH2, mS2 ..."];
 
 nsmEwsbOutputParameters = {mH2, mS2};
 
+Parameters`AddRealParameter[nsmEwsbOutputParameters];
+
 nsmEwsbEqs = {
     mH2*vH - vH^3*l1 - vH*vS^2*l3 - vH*vS*l4 - tadpole[1],
     2*mS2*vS - 4*vS^3*l2 - vH^2*vS*l3 - (vH^2*l4)/2 - 3*vS^2*l5 - tadpole[2]
@@ -143,5 +145,38 @@ TestEquality[Sort /@ nsmFullSolution,
              Sort /@ { {{mH2 -> (vH^3*l1 + vH*vS^2*l3 + vH*vS*l4 + tadpole[1])/vH}},
                        {{mS2 -> (8*vS^3*l2 + 2*vH^2*vS*l3 + vH^2*l4 + 6*vS^2*l5 + 2*tadpole[2])/(4*vS)}}
                      }];
+
+Print["testing cMSSM-like EWSB for |Mu| and BMu ..."];
+
+cmssmEwsbEqs = {
+    Susyno`LieGroups`conj[Mu] Mu + x^2 + x y + z + 5,
+    BMu - x^2 + x y + z + 5
+};
+
+cmssmEwsbOutputParameters = { Mu, BMu };
+
+TestEquality[Parameters`IsRealParameter[Mu], False];
+TestEquality[Parameters`IsRealParameter[BMu], False];
+
+Print["\t calling FindSolution[] ..."];
+
+cmssmFullSolution = EWSB`Private`FindSolution[cmssmEwsbEqs, cmssmEwsbOutputParameters];
+
+TestEquality[Sort /@ cmssmFullSolution,
+             Sort /@ { {{Mu -> -Sqrt[-5 - x^2 - x*y - z]},
+                        {Mu -> Sqrt[-5 - x^2 - x*y - z]}},
+                       {{B[Mu] -> -5 + x^2 - x*y - z}}
+                     }];
+
+Print["\t calling FindSolutionAndFreePhases[] ..."];
+
+{cmssmSolution, cmssmFreePhases} = EWSB`FindSolutionAndFreePhases[cmssmEwsbEqs, cmssmEwsbOutputParameters];
+
+TestEquality[cmssmFreePhases, {FlexibleSUSY`Phase[Mu]}];
+
+TestEquality[Sort[cmssmSolution],
+             Sort[{ B[Mu] -> -5 + x^2 - x*y - z,
+                    Mu -> FlexibleSUSY`Phase[Mu] Sqrt[-5 - x^2 - x*y - z]
+                  }]];
 
 PrintTestSummary[];
