@@ -24,6 +24,8 @@ In[]:= StringZipWithSeparator[{\"a\",\"b\"},{\"d\",\"e\"}, \"_\"]
 Out[]= {\"a_d\", \"b_e\"}}
 ";
 
+ForceJoin::usage = "Joins the given arguments if they are lists.";
+
 FSGetOption::usage = "Returns the value of an option from a list of
 options.
 
@@ -109,6 +111,9 @@ FSImportString[fileName_String] :=
               "unknown"
              ]
           ];
+
+ForceJoin[elem__] :=
+    Join[Sequence @@ Select[{elem}, (Head[#] === List)&]];
 
 End[];
 
