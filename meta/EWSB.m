@@ -208,22 +208,23 @@ EliminateOneParameter[{eq_}, {p_}] :=
           TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}]
          ];
 
+(* solves the two equations for `par' and returns the simpler solution *)
 SolveRest[eq1_, eq2_, par_] :=
     Module[{rest = {}, solution},
            DebugPrint["solving rest for ", par, ": ", InputForm[eq1]];
            solution = TimeConstrained[Solve[eq1, par],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           If[solution =!= {} && solution =!= {{}},
+           If[IsNoSolution[solution],
+              DebugPrint["failed"];,
               DebugPrint["solution found: ", solution];
-              AppendTo[rest, solution];,
-              DebugPrint["failed"];
+              AppendTo[rest, solution];
              ];
            solution = TimeConstrained[Solve[eq2, par],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           If[solution =!= {} && solution =!= {{}},
+           If[IsNoSolution[solution],
+              DebugPrint["failed"];,
               DebugPrint["solution found: ", solution];
-              AppendTo[rest, solution];,
-              DebugPrint["failed"];
+              AppendTo[rest, solution];
              ];
            FindMinimumByteCount[rest]
           ];
