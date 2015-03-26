@@ -8,13 +8,13 @@ MINPAR = {
     {1, m0},
     {2, m12},
     {3, TanBeta},
-    {4, Sign[\[Mu]]},
+    {4, Phase[\[Mu]]},
     {5, Azero}
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
-RealParameters = { B[\[Mu]], \[Mu] };
+RealParameters = { B[\[Mu]] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
