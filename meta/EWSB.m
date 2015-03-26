@@ -51,6 +51,11 @@ list with EWSB output parameters";
 
 Begin["`Private`"];
 
+debug = False;
+
+DebugPrint[msg___] :=
+    If[debug, Print["Debug<EWSB>: ", msg]];
+
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
     FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
 
@@ -187,7 +192,7 @@ FindIndependentSubset[equations_List, parameters_List] :=
            Return[result];
           ];
 
-FindMinimumByteCount[{}] := Null;
+FindMinimumByteCount[{}] := {};
 
 FindMinimumByteCount[lst_List] :=
     First[Sort[lst, ByteCount[#1] < ByteCount[#2]]];
@@ -195,10 +200,33 @@ FindMinimumByteCount[lst_List] :=
 EliminateOneParameter[{}, {}] := {};
 
 EliminateOneParameter[{eq_}, {p_}] :=
-    TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+    Block[{},
+          DebugPrint["eliminating ", p, " from eq. ", InputForm[eq]];
+          TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}]
+         ];
+
+SolveRest[eq1_, eq2_, par_] :=
+    Module[{rest = {}, solution},
+           DebugPrint["solving rest for ", par, ": ", InputForm[eq1]];
+           solution = TimeConstrained[Solve[eq1, par],
+                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           If[solution =!= {} && solution =!= {{}},
+              DebugPrint["solution found: ", solution];
+              AppendTo[rest, solution];,
+              DebugPrint["failed"];
+             ];
+           solution = TimeConstrained[Solve[eq2, par],
+                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           If[solution =!= {} && solution =!= {{}},
+              DebugPrint["solution found: ", solution];
+              AppendTo[rest, solution];,
+              DebugPrint["failed"];
+             ];
+           FindMinimumByteCount[rest]
+          ];
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
-    Module[{reduction = {{}, {}}, rest = {}, solution},
+    Module[{reduction = {{}, {}}, solution, rest},
            If[FreeQ[{eq1, eq2}, p1],
               Print["Error: EWSB output parameter ", p1, " does not appear in the EWSB eqs."];
               Return[{}];
@@ -210,41 +238,42 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            (* special case: no elimination needed *)
            If[!FreeQ[{eq1},p1] && FreeQ[{eq1},p2] &&
               !FreeQ[{eq2},p2] && FreeQ[{eq2},p1],
+              DebugPrint["simplified case: solving for ", p1, ": ", InputForm[eq1]];
               reduction[[1]] =
               TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              DebugPrint["simplified case: solving for ", p2, ": ", InputForm[eq2]];
               reduction[[2]] =
               TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               Return[reduction];
              ];
+           DebugPrint["eliminate ", p1, " and solve for ", p2, ": from ", InputForm[{eq1, eq2}]];
            reduction[[1]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           DebugPrint["eliminate ", p2, " and solve for ", p1, ": from ", InputForm[{eq1, eq2}]];
            reduction[[2]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[reduction[[1]] === {} || reduction[[2]] === {} ||
               reduction[[1]] === {{}} || reduction[[2]] === {{}},
+              DebugPrint["failed"];
               Return[{}];
              ];
            If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
-              solution = TimeConstrained[Solve[eq1, p1],
-                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {} && solution =!= {{}}, AppendTo[rest, solution]];
-              solution = TimeConstrained[Solve[eq2, p1],
-                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {} && solution =!= {{}}, AppendTo[rest, solution]];
-              If[rest === {}, Return[{}];];
-              rest = FindMinimumByteCount[rest];
+              DebugPrint["continue with solution 1:", InputForm[reduction[[1]]]];
+              rest = SolveRest[eq1, eq2, p1];
+              If[rest === {},
+                 DebugPrint["could not solve rest for solution 1"];
+                 Return[{}];
+                ];
               Return[{reduction[[1]], rest}];
               ,
-              solution = TimeConstrained[Solve[eq1, p2],
-                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {{}}, AppendTo[rest, solution]];
-              solution = TimeConstrained[Solve[eq2, p2],
-                                         FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-              If[solution =!= {{}}, AppendTo[rest, solution]];
-              If[rest === {}, Return[{}];];
-              rest = FindMinimumByteCount[rest];
+              DebugPrint["continue with solution 2:", InputForm[reduction[[2]]]];
+              rest = SolveRest[eq1, eq2, p2];
+              If[rest === {},
+                 DebugPrint["could not solve rest for solution 2"];
+                 Return[{}];
+                ];
               Return[{reduction[[2]], rest}];
              ];
           ];
