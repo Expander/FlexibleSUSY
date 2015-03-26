@@ -12,7 +12,7 @@ mssmEwsbEqs = {
 
 mssmEwsbOutputParameters = { mu, Bmu };
 
-Parameters`AddRealParameter[mssmEwsbOutputParameters];
+Parameters`SetRealParameters[mssmEwsbOutputParameters];
 
 {mssmSolution, mssmFreePhases} = EWSB`FindSolutionAndFreePhases[mssmEwsbEqs, mssmEwsbOutputParameters];
 
@@ -45,7 +45,7 @@ nmssmEwsbEqs = {
 
 nmssmEwsbOutputParameters = { s, kappa, mS2 };
 
-Parameters`AddRealParameter[nmssmEwsbOutputParameters];
+Parameters`SetRealParameters[nmssmEwsbOutputParameters];
 
 {nmssmSolution, nmssmFreePhases} = EWSB`FindSolutionAndFreePhases[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
@@ -82,7 +82,7 @@ umssmEwsbEqs = {
 
 umssmEwsbOutputParameters = { mHu2, mHd2, mS2 };
 
-Parameters`AddRealParameter[umssmEwsbOutputParameters];
+Parameters`SetRealParameters[umssmEwsbOutputParameters];
 
 {umssmSolution, umssmFreePhases} = EWSB`FindSolutionAndFreePhases[umssmEwsbEqs, umssmEwsbOutputParameters];
 
@@ -115,7 +115,7 @@ oneIndependentSubeq = {
 
 oneIndependentSubeqEwsbOutputParameters = { vu, vd, s };
 
-Parameters`AddRealParameter[oneIndependentSubeqEwsbOutputParameters];
+Parameters`SetRealParameters[oneIndependentSubeqEwsbOutputParameters];
 
 {oneIndependentSubeqSolution, oneIndependentSubeqFreePhases} =
     EWSB`FindSolutionAndFreePhases[oneIndependentSubeq, oneIndependentSubeqEwsbOutputParameters];
@@ -132,7 +132,7 @@ Print["testing NSM EWSB for mH2, mS2 ..."];
 
 nsmEwsbOutputParameters = {mH2, mS2};
 
-Parameters`AddRealParameter[nsmEwsbOutputParameters];
+Parameters`SetRealParameters[nsmEwsbOutputParameters];
 
 nsmEwsbEqs = {
     mH2*vH - vH^3*l1 - vH*vS^2*l3 - vH*vS*l4 - tadpole[1],
@@ -150,13 +150,13 @@ Print["testing cMSSM-like EWSB for |Mu| and BMu ..."];
 
 cmssmEwsbEqs = {
     Susyno`LieGroups`conj[Mu] Mu + x^2 + x y + z + 5,
-    BMu - x^2 + x y + z + 5
+    B[Mu] - x^2 + x y + z + 5
 };
 
-cmssmEwsbOutputParameters = { Mu, BMu };
+cmssmEwsbOutputParameters = { Mu, B[Mu] };
 
 TestEquality[Parameters`IsRealParameter[Mu], False];
-TestEquality[Parameters`IsRealParameter[BMu], False];
+TestEquality[Parameters`IsRealParameter[B[Mu]], False];
 
 Print["\t calling FindSolution[] ..."];
 
