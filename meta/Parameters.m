@@ -20,6 +20,7 @@ coupling";
 CreateIndexReplacementRules::usage="";
 
 AddRealParameter::usage="";
+SetRealParameters::usage="";
 
 SaveParameterLocally::usage="Save parameters in local variables";
 RestoreParameter::usage="Restore parameters from local variables";
@@ -107,6 +108,9 @@ AddRealParameter[parameter_List] :=
 
 AddRealParameter[parameter_] :=
     additionalRealParameters = DeleteDuplicates[Join[additionalRealParameters, {parameter}]];
+
+SetRealParameters[parameters_List] :=
+    additionalRealParameters = parameters;
 
 FindSymbolDef[sym_] :=
     Module[{symDef},
