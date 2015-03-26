@@ -162,11 +162,18 @@ WriteSLHAMassBlock[massMatrices_List] :=
            Return[result];
           ];
 
+ConvertToRealInputParameter[parameter_, struct_String] :=
+    struct <> CConversion`ToValidCSymbolString[parameter];
+
+ConvertToRealInputParameter[FlexibleSUSY`Phase[parameter_], struct_String] :=
+    "Re(" <> struct <> CConversion`ToValidCSymbolString[FlexibleSUSY`Phase[parameter]] <> ")";
+
 WriteParameterTuple[{key_?NumberQ, parameter_}, streamName_String] :=
     Module[{parameterStr},
            parameterStr = CConversion`ToValidCSymbolString[parameter];
-           streamName <> " << FORMAT_ELEMENT(" <> ToString[key] <> ", input." <>
-           parameterStr <> ", \"" <> parameterStr <> "\");\n"
+           streamName <> " << FORMAT_ELEMENT(" <> ToString[key] <> ", " <>
+           ConvertToRealInputParameter[parameter,"input."] <>
+           ", \"" <> parameterStr <> "\");\n"
           ];
 
 WriteParameterTuple[expr_, _] :=
