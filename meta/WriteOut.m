@@ -61,6 +61,9 @@ TransposeIfVector[parameter_, CConversion`VectorType[__]] :=
 TransposeIfVector[p:FlexibleSUSY`Sign[parameter_], _] :=
     CConversion`ToValidCSymbolString[p];
 
+TransposeIfVector[p:FlexibleSUSY`Phase[parameter_], _] :=
+    CConversion`ToValidCSymbolString[p];
+
 TransposeIfVector[parameter_, _] := parameter;
 
 PrintParameter[Null, streamName_String] := "";
