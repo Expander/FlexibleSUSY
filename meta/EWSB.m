@@ -705,12 +705,13 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
 
 GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
                                gslIntputVector_String:"x"] :=
-    Module[{i, result = "", par, parStr},
+    Module[{i, result = "", par, parStr, type},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par = parametersFixedByEWSB[[i]];
+               type = CConversion`CreateCType[Parameters`GetType[par]];
                parStr = CConversion`ToValidCSymbolString[par];
                result = result <>
-                        "const double " <> parStr <> " = " <>
+                        "const " <> type <> " " <> parStr <> " = " <>
                         GetValueWithPhase[par, gslIntputVector, i-1, freePhases] <> ";\n";
               ];
            Return[result];
@@ -736,7 +737,7 @@ CreateEWSBParametersInitializationList[parameters_List] :=
     Module[{result = "{}"},
            If[Length[parameters] > 0,
               result = Utils`StringJoinWithSeparator[
-                  CConversion`ToValidCSymbolString /@ parameters,
+                  ConvertToReal /@ parameters,
                   ", "
               ];
               result = "{ " <> result <> " }";
