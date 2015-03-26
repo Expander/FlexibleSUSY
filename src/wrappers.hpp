@@ -274,7 +274,7 @@ inline double Re(const std::complex<double>& x)
 
 inline double Im(double x)
 {
-   return x;
+   return 0.;
 }
 
 inline double Im(const std::complex<double>& x)
