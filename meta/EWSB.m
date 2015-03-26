@@ -158,6 +158,19 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
            Return[result];
           ];
 
+MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
+MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
+MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
+MakeParameterUnique[SARAH`Q[par_]] := Rule[SARAH`Q[par], CConversion`ToValidCSymbol[SARAH`Q[par]]];
+MakeParameterUnique[par_]          :=
+    { MakeParameterUnique[SARAH`L[par]],
+      MakeParameterUnique[SARAH`B[par]],
+      MakeParameterUnique[SARAH`T[par]],
+      MakeParameterUnique[SARAH`Q[par]] };
+
+MakeParametersUnique[parameters_List] :=
+    Flatten[MakeParameterUnique /@ parameters];
+
 ComplexParameterReplacementRules[eqs_List, pars_List] :=
     Join[ComplexParameterReplacementRules[eqs,#]& /@ pars];
 
@@ -176,16 +189,24 @@ ComplexParameterReplacementRules[eqs_List, par_] :=
           ];
 
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
-    Module[{realParameters, complexParameters, simplificationRules},
+    Module[{realParameters, complexParameters, simplificationRules,
+            renamedEqs},
            realParameters = Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
            complexParameters = Complement[parametersFixedByEWSB, realParameters];
+           (* make parameters unique *)
+           uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
+           realParameters = realParameters /. uniqueParameters;
+           complexParameters = complexParameters /. uniqueParameters;
+           renamedEqs = equations /. uniqueParameters;
            simplificationRules =
                Flatten[Join[{Rule[SARAH`Conj[#],#],
                              Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters,
-                            ComplexParameterReplacementRules[equations, complexParameters]& /@ complexParameters
+                            ComplexParameterReplacementRules[renamedEqs, complexParameters]& /@ complexParameters
                            ]
                       ];
-           equations /. simplificationRules
+           (* substitute back *)
+           uniqueParameters = Reverse /@ uniqueParameters;
+           renamedEqs /. simplificationRules /. uniqueParameters
           ];
 
 FindIndependentSubset[equations_List, {}] := {};
@@ -350,19 +371,6 @@ EliminateOneParameter[equations_List, parameters_List] :=
            complementSolution = EliminateOneParameter[complementEq, complementPar];
            Join[reducedSolution, complementSolution]
           ];
-
-MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
-MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
-MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
-MakeParameterUnique[SARAH`Q[par_]] := Rule[SARAH`Q[par], CConversion`ToValidCSymbol[SARAH`Q[par]]];
-MakeParameterUnique[par_]          :=
-    { MakeParameterUnique[SARAH`L[par]],
-      MakeParameterUnique[SARAH`B[par]],
-      MakeParameterUnique[SARAH`T[par]],
-      MakeParameterUnique[SARAH`Q[par]] };
-
-MakeParametersUnique[parameters_List] :=
-    Flatten[MakeParameterUnique /@ parameters];
 
 FindSolution[equations_List, parametersFixedByEWSB_List] :=
     Module[{simplifiedEqs, uniqueParameters, solution},
