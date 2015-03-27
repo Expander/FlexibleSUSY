@@ -51,8 +51,12 @@ list with EWSB output parameters";
 
 Begin["`Private`"];
 
+InputFormOfNonStrings[a_String] := a;
+InputFormOfNonStrings[a_] := InputForm[a];
+
 DebugPrint[msg___] :=
-    If[FlexibleSUSY`FSDebugOutput, Print["Debug<EWSB>: ", msg]];
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<EWSB>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
     FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
@@ -249,27 +253,27 @@ EliminateOneParameter[{}, {}] := {};
 
 EliminateOneParameter[{eq_}, {p_}] :=
     Block[{},
-          DebugPrint["eliminating ", p, ": ", InputForm[eq]];
+          DebugPrint["eliminating ", p, ": ", eq];
           TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}]
          ];
 
 (* solves the two equations for `par' and returns the simpler solution *)
 SolveRest[eq1_, eq2_, par_] :=
     Module[{rest = {}, solution},
-           DebugPrint["solving rest for ", par, ": ", InputForm[eq1]];
+           DebugPrint["solving rest for ", par, ": ", eq1];
            solution = TimeConstrained[Solve[eq1, par],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[IsNoSolution[solution],
               DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", InputForm[solution]];
+              DebugPrint["Solution found: ", solution];
               AppendTo[rest, solution];
              ];
-           DebugPrint["solving rest for ", par, ": ", InputForm[eq2]];
+           DebugPrint["solving rest for ", par, ": ", eq2];
            solution = TimeConstrained[Solve[eq2, par],
                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[IsNoSolution[solution],
               DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", InputForm[solution]];
+              DebugPrint["Solution found: ", solution];
               AppendTo[rest, solution];
              ];
            FindMinimumByteCount[rest]
@@ -278,8 +282,8 @@ SolveRest[eq1_, eq2_, par_] :=
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, solution, rest},
            DebugPrint["Tying to elimiate one of the parameters ",
-                      InputForm[{p1,p2}], " from the eqs.: ",
-                      InputForm[{eq1,eq2}]];
+                      {p1,p2}, " from the eqs.: ",
+                      {eq1,eq2}];
            If[FreeQ[{eq1, eq2}, p1],
               Print["Error: EWSB output parameter ", p1, " does not appear in the EWSB eqs."];
               Return[{}];
@@ -292,30 +296,30 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            If[!FreeQ[{eq1},p1] && FreeQ[{eq1},p2] &&
               !FreeQ[{eq2},p2] && FreeQ[{eq2},p1],
               DebugPrint["The two equations are independent of each other."];
-              DebugPrint["Step 1: solving for ", p1, ": ", InputForm[eq1]];
+              DebugPrint["Step 1: solving for ", p1, ": ", eq1];
               reduction[[1]] =
               TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[IsNoSolution[reduction[[1]]],
                  DebugPrint["Failed"];
                  Return[{}];,
-                 DebugPrint["Solution: ", InputForm[reduction[[1]]]];
+                 DebugPrint["Solution: ", reduction[[1]]];
                 ];
-              DebugPrint["Step 2: solving for ", p2, ": ", InputForm[eq2]];
+              DebugPrint["Step 2: solving for ", p2, ": ", eq2];
               reduction[[2]] =
               TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
               If[IsNoSolution[reduction[[2]]],
                  DebugPrint["Failed"];
                  Return[{}];,
-                 DebugPrint["Solution: ", InputForm[reduction[[2]]]];
+                 DebugPrint["Solution: ", reduction[[2]]];
                 ];
-              DebugPrint["Full solution: ", InputForm[reduction]];
+              DebugPrint["Full solution: ", reduction];
               Return[reduction];
              ];
-           DebugPrint["eliminate ", p1, " and solve for ", p2, ": ", InputForm[{eq1, eq2}]];
+           DebugPrint["eliminate ", p1, " and solve for ", p2, ": ", {eq1, eq2}];
            reduction[[1]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
-           DebugPrint["eliminate ", p2, " and solve for ", p1, ": ", InputForm[{eq1, eq2}]];
+           DebugPrint["eliminate ", p2, " and solve for ", p1, ": ", {eq1, eq2}];
            reduction[[2]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
@@ -325,7 +329,7 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
              ];
            If[ByteCount[reduction[[1]]] <= ByteCount[reduction[[2]]],
               DebugPrint["continue with solution 1, because it is simpler:",
-                         InputForm[reduction[[1]]]];
+                         reduction[[1]]];
               rest = SolveRest[eq1, eq2, p1];
               If[IsNoSolution[rest],
                  DebugPrint["could not solve rest for solution 1"];
@@ -333,7 +337,7 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
                 ];
               Return[{reduction[[1]], rest}];
               ,
-              DebugPrint["continue with solution 2, because it is simpler::", InputForm[reduction[[2]]]];
+              DebugPrint["continue with solution 2, because it is simpler::", reduction[[2]]];
               rest = SolveRest[eq1, eq2, p2];
               If[IsNoSolution[rest],
                  DebugPrint["could not solve rest for solution 2"];
@@ -380,11 +384,11 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            DebugPrint["Simplifying the EWSB eqs. ..."];
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
            simplifiedEqs = (# == 0)& /@ simplifiedEqs;
-           DebugPrint["Simplified EWSB eqs.: ", InputForm[simplifiedEqs]];
+           DebugPrint["Simplified EWSB eqs.: ", simplifiedEqs];
            (* replace non-symbol parameters by unique symbols *)
            uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
            DebugPrint["Eliminating the parameters ",
-                      InputForm[parametersFixedByEWSB /. uniqueParameters]];
+                      parametersFixedByEWSB /. uniqueParameters];
            solution = EliminateOneParameter[
                           simplifiedEqs /. uniqueParameters,
                           parametersFixedByEWSB /. uniqueParameters];
@@ -417,19 +421,19 @@ ReduceTwoSolutions[sol1_, sol2_] :=
              ];
            DebugPrint["The two solutions for ", par,
                       " are related by a global sign/phase: ",
-                      InputForm[sol1], ", ", InputForm[sol2]];
+                      sol1, ", ", sol2];
            reducedSolution = sol1 /.
                Rule[p_, expr_] :>
                Rule[p, signOrPhase StripSign[expr]];
            DebugPrint["=> the reduced solution is: ",
-                      InputForm[{{reducedSolution}, signOrPhase}]];
+                      {{reducedSolution}, signOrPhase}];
            {{reducedSolution}, signOrPhase}
           ];
 
 ReduceSolution[solution_List] :=
     Module[{reducedSolution = {}, freePhases = {},
             s, flattenedSolution, red},
-           DebugPrint["Reducing the solutions: ", InputForm[solution]];
+           DebugPrint["Reducing the solutions: ", solution];
            For[s = 1, s <= Length[solution], s++,
                flattenedSolution = Flatten[solution[[s]]];
                Switch[Length[flattenedSolution],
@@ -460,7 +464,7 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
            solution = FindSolution[equations, parametersFixedByEWSB];
            {reducedSolution, freePhases} = ReduceSolution[solution];
            DebugPrint["The full, reduced solution to the EWSB eqs. is:",
-                      InputForm[reducedSolution]];
+                      reducedSolution];
            If[reducedSolution === {} && outputFile != "",
               Put[solution, outputFile];
              ];
@@ -534,7 +538,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            If[Length[equations] =!= Length[parameters],
               Print["Error: SolveTreeLevelEwsbVia: trying to solve ",
                     Length[equations], " equations for ", Length[parameters],
-                    " parameters ", InputForm[parameters]];
+                    " parameters ", parameters];
               Quit[1];
              ];
            simplifiedEqs = (# == 0)& /@ equations;
@@ -543,8 +547,8 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",
                     parameters, " uniquely"];
-              Print["Here are the EWSB equations we have: ", InputForm[simplifiedEqs]];
-              Print["Here is the solution we get: ", InputForm[solution]];
+              Print["Here are the EWSB equations we have: ", simplifiedEqs];
+              Print["Here is the solution we get: ", solution];
               Return[result];
              ];
            solution = solution[[1]]; (* select first solution *)
