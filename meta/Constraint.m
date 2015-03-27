@@ -25,39 +25,15 @@ allBetaFunctions = {};
 
 SetBetaFunctions[pars_List] := allBetaFunctions = pars;
 
-GetParameter[parameter_Symbol, macro_String, namePrefix_:""] :=
-    Module[{parameterStr, cSymbol, decl},
-           parameterStr = ToValidCSymbolString[parameter];
-           cSymbol = namePrefix <> ToValidCSymbolString[parameter];
-           decl = "const double " <> cSymbol <> " = " <>
-                  macro <> "(" <> parameterStr <> ");\n";
-           Return[{cSymbol, decl}];
-          ];
-
-GetParameter[parameter_[idx_], macro_String, namePrefix_:""] :=
-    Module[{parameterStr, cSymbol, idxStr, decl},
-           parameterStr = ToValidCSymbolString[parameter];
-           cSymbol = namePrefix <> ToValidCSymbolString[parameter[idx]];
-           idxStr = ToValidCSymbolString[idx];
-           decl = "const double " <> cSymbol <> " = " <>
-                  macro <> "2(" <> parameterStr <> "," <> idxStr <> ");\n";
-           Return[{cSymbol, decl}];
-          ];
-
-GetParameter[parameter_[idx1_,idx2_], macro_String, namePrefix_:""] :=
-    Module[{parameterStr, cSymbol, idx1Str, idx2Str, decl},
-           parameterStr = ToValidCSymbolString[parameter];
-           cSymbol = namePrefix <> ToValidCSymbolString[parameter[idx1,idx2]];
-           idx1Str = ToValidCSymbolString[idx1];
-           idx2Str = ToValidCSymbolString[idx2];
-           decl = "const double " <> cSymbol <> " = " <>
-                  macro <> "3(" <> parameterStr <> "," <> idx1Str <>
-                  "," <> idx2Str <> ");\n";
-           Return[{cSymbol, decl}];
-          ];
-
 ApplyConstraint[{parameter_, value_}, modelName_String] :=
-    Parameters`SetParameter[parameter, value, modelName];
+    Which[Parameters`IsModelParameter[parameter],
+          Parameters`SetParameter[parameter, value, modelName],
+          Parameters`IsInputParameter[parameter],
+          Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
+          _,
+          Print["Error: ", parameter, " is neither a model nor an input parameter!"];
+          ""
+         ];
 
 ApplyConstraint[{parameter_ /; parameter === SARAH`UpYukawa,
                  value_ /; (!FreeQ[value, Global`topDRbar] || value === Automatic)},
@@ -295,11 +271,11 @@ CheckSetting[patt:{parameter_[idx1_Integer, idx2_Integer], value_}, constraintNa
           ];
 
 CheckSetting[patt:{parameter_, value_}, constraintName_String] :=
-    Module[{modelParameters},
-           modelParameters = Parameters`GetModelParameters[];
-           If[!MemberQ[modelParameters, parameter],
+    Module[{outputParameters},
+           outputParameters = Parameters`GetOutputParameters[];
+           If[MemberQ[outputParameters, parameter],
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
-              Print["   ", parameter, " is not a model parameter!"];
+              Print["   ", parameter, " is a output parameter!"];
               Return[False];
              ];
            True
