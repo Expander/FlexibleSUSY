@@ -37,5 +37,5 @@ Block MINPAR                 # Input parameters
     1   125.                 # m0
     2   500.                 # m12
     3   10.                  # TanBeta
-    4   1                    # SignMu
+    4   1                    # CosPhi
     5   0                    # Azero
