@@ -9,6 +9,7 @@ CreateParameterNamesStr::usage="";
 CreateParameterEnums::usage="";
 
 SetParameter::usage="set model parameter";
+SetInputParameter::usage="set input parameter";
 
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
@@ -673,12 +674,19 @@ CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCTyp
            Return[ass];
           ];
 
-CheckParameter[parameter_] :=
-    IsModelParameter[parameter] || IsInputParameter[parameter];
+SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
+    Module[{parameterStr, valueStr},
+           If[IsInputParameter[parameter],
+              parameterStr = CConversion`ToValidCSymbolString[parameter];
+              valueStr = CConversion`RValueToCFormString[value];
+              wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+              ""
+             ]
+          ];
 
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
-           If[CheckParameter[parameter],
+           If[IsModelParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               class <> "->set_" <> parameterStr <> "(" <> CConversion`CastTo[value,castToType] <> ");\n",
               ""
@@ -687,7 +695,7 @@ SetParameter[parameter_, value_String, class_String, castToType_:None] :=
 
 SetParameter[parameter_[idx_Integer], value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
-           If[CheckParameter[parameter],
+           If[IsModelParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               class <> "->set_" <> parameterStr <> "(" <> ToString[idx] <> ", " <>
               CConversion`CastTo[value,castToType] <> ");\n",
@@ -697,7 +705,7 @@ SetParameter[parameter_[idx_Integer], value_String, class_String, castToType_:No
 
 SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
-           If[CheckParameter[parameter],
+           If[IsModelParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               class <> "->set_" <> parameterStr <> "(" <> ToString[idx1] <> ", " <>
               ToString[idx2] <> ", " <> CConversion`CastTo[value,castToType] <> ");\n",
