@@ -20,4 +20,5 @@ Print["Starting model: ", ToString[HoldForm[Start["@ModelName@"@SubModel@]]]];
 
 Start["@ModelName@"@SubModel@];
 
-MakeFlexibleSUSY[InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}]];
+MakeFlexibleSUSY[InputFile -> FileNameJoin[{"@DIR@","FlexibleSUSY.m"}],
+                 DebugOutput -> @ENABLE_DEBUG_META@];

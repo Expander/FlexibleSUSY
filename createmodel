@@ -30,13 +30,24 @@ model_file=""
 name=""
 sarah_model=""
 
+# flags
+options="                    \
+   enable_debug              \
+"
+
+# default flag values
+enable_debug="no"
+
+# corresponding meta code level flags
+ENABLE_DEBUG_META="False"
+
 # exit codes
 exit_ok="0"
 exit_syntax_error="1"
 exit_model_dir_exists="2"
 exit_no_default_model="3"
 
-createmodel_log="createmodel.log"
+createmodel_log="${BASEDIR}/createmodel.log"
 
 #_____________________________________________________________________
 find_default_model_files() {
@@ -79,6 +90,10 @@ Options:
 
   --help,-h          Print this help message.
 
+enable/disable options, prefix with either --enable- or --disable-
+
+  debug              Debug messages from the meta code (default: ${enable_debug})
+
 Examples:
 
   Create a FlexibleSUSY model for the E6SSM:
@@ -91,6 +106,33 @@ Examples:
 
     ./createmodel --name=MyMSSM --model-file=NUHMSSM --sarah-model=MSSM
 EOF
+}
+
+#_____________________________________________________________________
+logmsg() {
+    # Write message to the log file.  Use -n as first parameter to
+    # prevent a newline at the end of the message.
+    if test $# -lt 1 ; then
+        echo "logmsg: Too few arguments"
+        return 1
+    fi
+    if test "x$1" = "x-n"; then
+       shift
+       printf "%s" "$*" >> $createmodel_log
+    else
+       echo "$*" >> $createmodel_log
+    fi
+}
+
+#_____________________________________________________________________
+message() {
+    # Write a simple message to std out (and to the log file)
+    if test $# -lt 1 ; then
+        echo "message: Too few arguments"
+        return 1
+    fi
+    echo "$*"
+    logmsg "$*"
 }
 
 #_____________________________________________________________________
@@ -113,6 +155,17 @@ exists_in_path () {
 	alias\ *) return 1 ;; # alias
 	*) return 1 ;; # built-in or function
     esac
+}
+
+#_____________________________________________________________________
+check_flags() {
+    if test "x$enable_debug" = "xyes" ; then
+        ENABLE_DEBUG_META="True"
+        message "Enabling meta code debug mode"
+    elif test "x$enable_debug" = "x" -o "x$enable_debug" = "xno" ; then
+        ENABLE_DEBUG_META="False"
+        logmsg "Disabling meta code debug mode"
+    fi
 }
 
 # contains(string, substring)
@@ -244,13 +297,15 @@ EOF
     fi
 }
 
+trap "exit 1" INT QUIT TERM
+
+rm -f ${createmodel_log}
+
 if test $# -lt 1 ; then
     echo "Error: Too few arguments"
     help
     exit ${exit_syntax_error}
 fi
-
-rm -f ${createmodel_log}
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
@@ -260,6 +315,46 @@ if test $# -gt 0 ; then
         esac
 
         case $1 in
+            --enable-*)
+                f=`echo $1 | sed -e 's/--//' -e 's/-/_/g'`
+                eval prev='$'`echo ${f}`
+                if test "x${prev}" = "xyes"; then
+                    echo "INFO: $1: already enabled by default."
+                fi
+                if test ! "x`echo ${deprecated_options} | grep ${f}`" = "x"; then
+                    echo "WARNING: option $1 is deprecated and ignored"'!'
+                fi
+                eval ${f}=yes
+                for c in $options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                for c in $deprecated_options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                if test "x$f" != "x" ; then
+                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                fi
+                ;;
+            --disable-*)
+                f=`echo $1 | sed -e 's/--disable/enable/' -e 's/-/_/g'`
+                eval prev='$'`echo ${f}`
+                if test "x${prev}" = "xno"; then
+                    echo "INFO: $1: already disabled by default."
+                fi
+                eval ${f}=no
+                for c in $options ; do
+                    if test "x$c" = "x$f" ; then
+                        f=""
+                    fi
+                done
+                if test "x$f" != "x" ; then
+                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                fi
+                ;;
             --force|-f)              overwrite="yes" ;;
             --help|-h)               help; exit ${exit_ok} ;;
             --model-file=*)          model_file="$optarg" ;;
@@ -287,6 +382,7 @@ fi
 
 check_model_name "${name}"
 check_sarah_model "${sarah_model}" "${sub_model}"
+check_flags
 
 # create target directory name
 targetdir="models/${name}"
@@ -368,6 +464,7 @@ if [ -n "$sub_model" ]; then
     sub_model_replacement=", \"$sub_model\""
 fi
 sed -e "s|@DIR@|$targetdir|g"                     \
+    -e "s|@ENABLE_DEBUG_META@|$ENABLE_DEBUG_META|g" \
     -e "s|@ModelName@|$sarah_model|g"             \
     -e "s|@SubModel@|$sub_model_replacement|g"    \
     -e "s|@CLASSNAME@|$name|g"                    \
@@ -386,5 +483,3 @@ for slha_in in $SLHA_input_files; do
     cp $model_file_dir/$slha_in $targetdir
     echo "done"
 done
-
-rm -f ${createmodel_log}
