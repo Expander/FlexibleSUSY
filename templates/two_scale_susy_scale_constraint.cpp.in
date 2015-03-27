@@ -33,6 +33,7 @@
 namespace flexiblesusy {
 
 #define INPUTPARAMETER(p) inputPars.p
+#define MODELINPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
