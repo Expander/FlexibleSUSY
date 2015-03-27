@@ -112,7 +112,7 @@ FSImportString[fileName_String] :=
              ]
           ];
 
-ForceJoin[elem__] :=
+ForceJoin[elem___] :=
     Join[Sequence @@ Select[{elem}, (Head[#] === List)&]];
 
 End[];
