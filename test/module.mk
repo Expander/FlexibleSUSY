@@ -129,6 +129,11 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_low_scale_constraint.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-CMSSM --with-cCMSSM),yes yes)
+TEST_SRC += \
+		$(DIR)/test_cCMSSM.sh
+endif
+
 TEST_SH := \
 		$(DIR)/test_run_examples.sh \
 		$(DIR)/test_run_all_spectrum_generators.sh \
