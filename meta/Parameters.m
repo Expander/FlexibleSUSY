@@ -810,9 +810,18 @@ CreateLocalConstRefsForInputParameters[expr_, head_String:"INPUT"] :=
            Return[result];
           ];
 
+SetInputParameterTo[Re[par_], value_String] :=
+    CConversion`ToValidCSymbolString[par] <> ".real(" <> value <> ");";
+
+SetInputParameterTo[Im[par_], value_String] :=
+    CConversion`ToValidCSymbolString[par] <> ".imag(" <> value <> ");";
+
+SetInputParameterTo[par_, value_String] :=
+    CConversion`ToValidCSymbolString[par] <> " = " <> value <> ";";
+
 CreateCaseFromTuple[{key_?NumberQ, parameter_}] :=
     "case " <> ToString[key] <> ": input." <>
-    CConversion`ToValidCSymbolString[parameter] <> " = value; break;\n";
+    SetInputParameterTo[parameter, "value"] <> " break;\n";
 
 CreateCaseFromTuple[expr_] :=
     Block[{},
