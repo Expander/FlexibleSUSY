@@ -126,13 +126,21 @@ logmsg() {
 
 #_____________________________________________________________________
 message() {
-    # Write a simple message to std out (and to the log file)
+    # Write a simple message to std out (and to the log file).  Use -n
+    # as first parameter to prevent a newline at the end of the
+    # message.
     if test $# -lt 1 ; then
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$*"
-    logmsg "$*"
+    if test "x$1" = "x-n"; then
+        shift
+        printf "%s" "$*"
+        logmsg "-n" "$*"
+    else
+        echo "$*"
+        logmsg "$*"
+    fi
 }
 
 #_____________________________________________________________________
@@ -168,6 +176,7 @@ check_flags() {
     fi
 }
 
+#_____________________________________________________________________
 # contains(string, substring)
 #
 # Returns 0 if the specified string contains the specified substring,
@@ -183,6 +192,7 @@ contains() {
     fi
 }
 
+#_____________________________________________________________________
 check_model_name() {
     if test $# -ne 1 ; then
         echo "check_model_name: Exactly one argument required"
@@ -195,6 +205,7 @@ check_model_name() {
         { printf "Error: invalid model name: ${_model}\n" && exit 1; }
 }
 
+#_____________________________________________________________________
 check_sarah_model() {
     if test $# -ne 2 ; then
         echo "check_sarah_model: Exactly one argument required"
@@ -210,12 +221,12 @@ check_sarah_model() {
 
     local found="no"
 
-    printf "Checking SARAH model ${_sarah_model} ... "
+    message -n "Checking SARAH model ${_sarah_model} ... "
 
     if ! exists_in_path "$mathematica_kernel"; then
-        printf "error\n"
-        echo "Error: could not find Mathematica kernel \"${mathematica_kernel}\""
-        echo "    Please specify the Mathematica kernel via --with-math-cmd="
+        message "error"
+        message "Error: could not find Mathematica kernel \"${mathematica_kernel}\""
+        message "    Please specify the Mathematica kernel via --with-math-cmd="
         exit 1
     fi
 
@@ -227,15 +238,15 @@ Quit[0];
 EOF
     local _sarah_is_available="$?"
     if test ! "x${_sarah_is_available}" = "x0" ; then
-        printf "error\n"
-        echo "Error: SARAH could not be loaded via Needs[\"SARAH\`\"] ."
-        echo "    Please install SARAH such that it can be loaded via Needs[\"SARAH\`\"] ."
-        echo "    You can use ./install-sarah to install SARAH."
+        message "error"
+        message "Error: SARAH could not be loaded via Needs[\"SARAH\`\"] ."
+        message "    Please install SARAH such that it can be loaded via Needs[\"SARAH\`\"] ."
+        message "    You can use ./install-sarah to install SARAH."
         exit 1
     fi
 
     # trying to load model file
-    "${mathematica_kernel}" <<EOF 1> /dev/null 2> ${createmodel_log}
+    "${mathematica_kernel}" <<EOF 1> /dev/null 2>> ${createmodel_log}
 FindModelFiles[dir_String, modelName_String, submodeldir_] :=
     Module[{files, modelFile, modelDir},
            If[submodeldir =!= False,
@@ -287,11 +298,11 @@ EOF
     fi
 
     if test "${found}" = "ok" ; then
-        printf "ok\n"
+        message "ok"
         return 0
     else
-        printf "not found\n"
-        echo "Error: SARAH model ${_sarah_model} not found in"
+        message "not found"
+        message "Error: SARAH model ${_sarah_model} not found in"
         cat ${createmodel_log}
         exit 1
     fi
@@ -302,7 +313,7 @@ trap "exit 1" INT QUIT TERM
 rm -f ${createmodel_log}
 
 if test $# -lt 1 ; then
-    echo "Error: Too few arguments"
+    message "Error: Too few arguments"
     help
     exit ${exit_syntax_error}
 fi
@@ -319,10 +330,10 @@ if test $# -gt 0 ; then
                 f=`echo $1 | sed -e 's/--//' -e 's/-/_/g'`
                 eval prev='$'`echo ${f}`
                 if test "x${prev}" = "xyes"; then
-                    echo "INFO: $1: already enabled by default."
+                    message "INFO: $1: already enabled by default."
                 fi
-                if test ! "x`echo ${deprecated_options} | grep ${f}`" = "x"; then
-                    echo "WARNING: option $1 is deprecated and ignored"'!'
+                if test ! "x`message ${deprecated_options} | grep ${f}`" = "x"; then
+                    message "WARNING: option $1 is deprecated and ignored"'!'
                 fi
                 eval ${f}=yes
                 for c in $options ; do
@@ -336,14 +347,14 @@ if test $# -gt 0 ; then
                     fi
                 done
                 if test "x$f" != "x" ; then
-                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                    message "Invalid option '$1'. Try $0 --help" ; exit 1 ;
                 fi
                 ;;
             --disable-*)
                 f=`echo $1 | sed -e 's/--disable/enable/' -e 's/-/_/g'`
                 eval prev='$'`echo ${f}`
                 if test "x${prev}" = "xno"; then
-                    echo "INFO: $1: already disabled by default."
+                    message "INFO: $1: already disabled by default."
                 fi
                 eval ${f}=no
                 for c in $options ; do
@@ -352,7 +363,7 @@ if test $# -gt 0 ; then
                     fi
                 done
                 if test "x$f" != "x" ; then
-                    echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;
+                    message "Invalid option '$1'. Try $0 --help" ; exit 1 ;
                 fi
                 ;;
             --force|-f)              overwrite="yes" ;;
@@ -361,14 +372,14 @@ if test $# -gt 0 ; then
             --name=*)                name="$optarg" ;;
             --sarah-model=*)         sarah_model="$optarg" ;;
             --with-math-cmd=*)       mathematica_kernel="$optarg" ;;
-            *)  echo "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
+            *)  message "Invalid option '$1'. Try $0 --help" ; exit ${exit_syntax_error} ;;
         esac
         shift
     done
 fi
 
 if [ -z "$name" ] ; then
-    echo "Error: no model specified!"
+    message "Error: no model specified!"
     help
     exit ${exit_syntax_error}
 fi
@@ -388,33 +399,33 @@ check_flags
 targetdir="models/${name}"
 
 if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
-    echo "Error: directory $targetdir already exists!"
-    echo "Please chose another model name or use the --force option."
-    echo "See ./`basename $0` --help for more information."
+    message "Error: directory $targetdir already exists!"
+    message "Please chose another model name or use the --force option."
+    message "See ./`basename $0` --help for more information."
     exit ${exit_model_dir_exists}
 fi
 
 if [ -n "$sub_model" ]; then
-    echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
+    message "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
 else
-    echo "Creating model $name (SARAH model: $sarah_model)"
+    message "Creating model $name (SARAH model: $sarah_model)"
 fi
 
 # check if we provide a FlexibleSUSY model file for the given model
 # name
 model_file_dir="model_files"
 if [ -n "$model_file" ]; then
-    printf "  searching for ${model_file} model file ... "
+    message -n "  searching for ${model_file} model file ... "
     if test -d "$model_file_dir/$model_file"; then
         model_file_dir="$model_file_dir/$model_file"
-        printf "found in ${model_file_dir}/\n"
+        message "found in ${model_file_dir}/"
     else
-        printf "not found in ${model_file_dir}/${model_file}\n"
-        echo "Error: There is no model file for the ${model_file}!"
-        echo "  You can create one via"
-        echo ""
-        echo "  \$ mkdir ${model_file_dir}/${model_file}"
-        echo "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
+        message "not found in ${model_file_dir}/${model_file}"
+        message "Error: There is no model file for the ${model_file}!"
+        message "  You can create one via"
+        message ""
+        message "  \$ mkdir ${model_file_dir}/${model_file}"
+        message "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
         exit ${exit_no_default_model}
     fi
 else
@@ -422,25 +433,25 @@ else
     # exists in model_files/$name/
     if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
         model_file_dir="$model_file_dir/$name"
-        printf "  Using model file ${model_file_dir}/FlexibleSUSY.m.in\n"
+        message "  Using model file ${model_file_dir}/FlexibleSUSY.m.in"
     else
-        echo "Error: No FlexibleSUSY model file found in ${model_file_dir}/${name}/"
-        echo "  You can either create a model file via"
-        echo ""
-        echo "  \$ mkdir ${model_file_dir}/${name}"
-        echo "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${name}/"
-        echo ""
-        echo "  or you can specify the model file via"
-        echo ""
-        echo "  \$ ./`basename $0` [...] --model-file=MSSM"
+        message "Error: No FlexibleSUSY model file found in ${model_file_dir}/${name}/"
+        message "  You can either create a model file via"
+        message ""
+        message "  \$ mkdir ${model_file_dir}/${name}"
+        message "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${name}/"
+        message ""
+        message "  or you can specify the model file via"
+        message ""
+        message "  \$ ./`basename $0` [...] --model-file=MSSM"
         exit ${exit_no_default_model}
     fi
 fi
 
 if test ! -d "$targetdir" ; then
-    printf "  Creating model directory %s ... " "$targetdir"
+    message -n "  Creating model directory $targetdir ... "
     mkdir $targetdir
-    echo "done"
+    message "done"
 fi
 
 set -- $(find $model_file_dir -type f -iname LesHouches.in\* -printf " %f")
@@ -450,15 +461,15 @@ SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
     sed 's/ / \\\\\\n/g;
 	 s,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
 
-printf "  Creating Makefile module %s/module.mk ... " "$targetdir"
+message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
-echo "done"
+message "done"
 
-printf "  Creating start script %s/start.m ... " "$targetdir"
+message -n "  Creating start script $targetdir/start.m ... "
 sub_model_replacement=""
 if [ -n "$sub_model" ]; then
     sub_model_replacement=", \"$sub_model\""
@@ -469,17 +480,17 @@ sed -e "s|@DIR@|$targetdir|g"                     \
     -e "s|@SubModel@|$sub_model_replacement|g"    \
     -e "s|@CLASSNAME@|$name|g"                    \
     < templates/start.m.in > $targetdir/start.m
-echo "done"
+message "done"
 
-printf "  Creating FlexibleSUSY model file %s/FlexibleSUSY.m ... " "$targetdir"
+message -n "  Creating FlexibleSUSY model file $targetdir/FlexibleSUSY.m ... "
 sed -e "s|@DIR@|$targetdir|g"               \
     -e "s|@ModelName@|$sarah_model|g"       \
     -e "s|@CLASSNAME@|$name|g"              \
     < $model_file_dir/FlexibleSUSY.m.in > $targetdir/FlexibleSUSY.m
-echo "done"
+message "done"
 
 for slha_in in $SLHA_input_files; do
-    printf "  Creating SLHA input file %s/%s ... " "$targetdir" "$slha_in"
+    message -n "  Creating SLHA input file $targetdir/$slha_in ... "
     cp $model_file_dir/$slha_in $targetdir
-    echo "done"
+    message "done"
 done
