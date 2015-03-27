@@ -101,6 +101,11 @@ const @ModelName@_input_parameters& @ModelName@_susy_parameters::get_input() con
    return input;
 }
 
+@ModelName@_input_parameters& @ModelName@_susy_parameters::get_input()
+{
+   return input;
+}
+
 void @ModelName@_susy_parameters::set_input_parameters(const @ModelName@_input_parameters& input_)
 {
    input = input_;
