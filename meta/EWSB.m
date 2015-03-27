@@ -610,19 +610,29 @@ CreateEWSBRootFinders[{}] :=
 CreateEWSBRootFinders[rootFinders_List] :=
     Utils`StringJoinWithSeparator[CreateEWSBRootFinder /@ rootFinders, ",\n"];
 
+WrapPhase[phase_ /; phase === Null, str_String] :=
+    str;
+
+WrapPhase[phase_, str_String] :=
+    "LOCALINPUT(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
+
 CreateIndices[indices_List] :=
     "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par], idx_, func_String] :=
-    CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
+SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par],
+                idx_, phase_, func_String] :=
+    CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <>
+    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
 
-SetEWSBSolution[par_, idx_, func_String] :=
-    CConversion`ToValidCSymbolString[par] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
+SetEWSBSolution[par_, idx_, phase_, func_String] :=
+    CConversion`ToValidCSymbolString[par] <> " = " <>
+    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
 
-SetEWSBSolution[parametersFixedByEWSB_List, func_String] :=
-    Module[{result = "", i},
+SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String] :=
+    Module[{result = "", i, phase},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, func];
+               phase = FindFreePhase[parametersFixedByEWSB[[i]], freePhases];
+               result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, phase, func];
               ];
            result
           ];
