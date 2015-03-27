@@ -29,7 +29,8 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
     Which[Parameters`IsModelParameter[parameter],
           Parameters`SetParameter[parameter, value, modelName],
           Parameters`IsInputParameter[parameter],
-          Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
+          Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"] <>
+          Parameters`SetInputParameter[parameter, value, "MODELINPUTPARAMETER"],
           _,
           Print["Error: ", parameter, " is neither a model nor an input parameter!"];
           ""
