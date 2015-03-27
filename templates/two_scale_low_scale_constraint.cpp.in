@@ -34,7 +34,7 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
@@ -52,7 +52,6 @@ namespace flexiblesusy {
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
    , oneset()
    , MWDRbar(0.)
    , MZDRbar(0.)
@@ -68,11 +67,9 @@ namespace flexiblesusy {
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
-   @ModelName@<Two_scale>* model_,
-   const @ModelName@_input_parameters& inputPars_, const QedQcd& oneset_)
+   @ModelName@<Two_scale>* model_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
    , oneset(oneset_)
    , new_@hyperchargeCoupling@(0.)
    , new_@leftCoupling@(0.)
@@ -117,11 +114,6 @@ double @ModelName@_low_scale_constraint<Two_scale>::get_initial_scale_guess() co
 void @ModelName@_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<@ModelName@<Two_scale>*>(model_);
-}
-
-void @ModelName@_low_scale_constraint<Two_scale>::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void @ModelName@_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)

@@ -35,7 +35,7 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
@@ -50,16 +50,13 @@ namespace flexiblesusy {
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
 {
 }
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
-   @ModelName@<Two_scale>* model_,
-   const @ModelName@_input_parameters& inputPars_)
+   @ModelName@<Two_scale>* model_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
 {
    initialize();
 }
@@ -115,7 +112,7 @@ double @ModelName@_high_scale_constraint<Two_scale>::get_initial_scale_guess() c
 
 const @ModelName@_input_parameters& @ModelName@_high_scale_constraint<Two_scale>::get_input_parameters() const
 {
-   return inputPars;
+   return model->get_input();
 }
 
 @ModelName@<Two_scale>* @ModelName@_high_scale_constraint<Two_scale>::get_model() const
@@ -126,11 +123,6 @@ const @ModelName@_input_parameters& @ModelName@_high_scale_constraint<Two_scale>
 void @ModelName@_high_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<@ModelName@<Two_scale>*>(model_);
-}
-
-void @ModelName@_high_scale_constraint<Two_scale>::set_input_parameters(const @ModelName@_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void @ModelName@_high_scale_constraint<Two_scale>::set_scale(double s)

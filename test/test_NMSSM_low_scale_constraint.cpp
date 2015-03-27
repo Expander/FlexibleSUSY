@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
-   NMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   NMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    m.calculate_DRbar_masses();
    s.calcDrBarPars();
 
-   NMSSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   NMSSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double TanBeta = input.TanBeta;
    const double g1 = m.get_g1();
