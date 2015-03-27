@@ -11,6 +11,13 @@ Parameters`SetModelParameters[allPars];
 Parameters`AddRealParameter[realPars];
 SARAH`RealParameters = {};
 
+TestEquality[Parameters`IsRealParameter[a], True];
+TestEquality[Parameters`IsRealParameter[b], True];
+TestEquality[Parameters`IsRealParameter[c], True];
+TestEquality[Parameters`IsRealParameter[x], False];
+TestEquality[Parameters`IsRealParameter[y], False];
+TestEquality[Parameters`IsRealParameter[z], False];
+
 TestEquality[Parameters`IsRealExpression[a], True];
 TestEquality[Parameters`IsRealExpression[x], False];
 
