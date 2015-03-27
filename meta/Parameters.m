@@ -1,5 +1,5 @@
 
-BeginPackage["Parameters`", {"SARAH`", "CConversion`"}];
+BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`"}];
 
 FindSymbolDef::usage="";
 
