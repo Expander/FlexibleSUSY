@@ -1441,7 +1441,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               inputParameters = DeleteDuplicates @ Join[inputParameters,
-                                                        {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+                                                        {#[[2]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
              ];
 
