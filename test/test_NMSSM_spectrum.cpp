@@ -156,7 +156,7 @@ public:
       low_constraint ->initialize();
 
       NMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
-      NMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
+      NMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);

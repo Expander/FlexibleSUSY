@@ -140,7 +140,7 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, input, oneset,
+   @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint);
    Two_scale_increasing_precision precision(10.0, precision_goal);
