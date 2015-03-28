@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 
    m.calculate_DRbar_masses();
 
-   SM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   SM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);

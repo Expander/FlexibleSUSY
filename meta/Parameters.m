@@ -10,6 +10,7 @@ CreateParameterEnums::usage="";
 
 SetParameter::usage="set model parameter";
 SetInputParameter::usage="set input parameter";
+AddInputParameters::usage="add an input parameter";
 
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
@@ -94,9 +95,10 @@ allInputParameters = {};
 allModelParameters = {};
 allOutputParameters = {};
 
-SetInputParameters[pars_List] := allInputParameters = pars;
-SetModelParameters[pars_List] := allModelParameters = pars;
-SetOutputParameters[pars_List] := allOutputParameters = pars;
+SetInputParameters[pars_List] := allInputParameters = DeleteDuplicates[pars];
+AddInputParameters[pars_List] := allInputParameters = DeleteDuplicates[Utils`ForceJoin[allInputParameters, pars]];
+SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
+SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 
 GetInputParameters[] := allInputParameters;
 GetModelParameters[] := allModelParameters;

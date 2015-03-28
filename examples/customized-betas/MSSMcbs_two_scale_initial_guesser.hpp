@@ -20,7 +20,6 @@
 #define MSSMCBS_TWO_SCALE_INITIAL_GUESSER_H
 
 #include "MSSMcbs_initial_guesser.hpp"
-#include "CMSSM_input_parameters.hpp"
 #include "MSSMcbs_two_scale_low_scale_constraint.hpp"
 #include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "CMSSM_two_scale_high_scale_constraint.hpp"
@@ -39,7 +38,6 @@ template<>
 class MSSMcbs_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
    MSSMcbs_initial_guesser(MSSMcbs<Two_scale>*,
-                               const CMSSM_input_parameters&,
                                const QedQcd&,
                                const MSSMcbs_low_scale_constraint<Two_scale>&,
                                const CMSSM_susy_scale_constraint<Two_scale>&,
@@ -51,7 +49,6 @@ public:
 
 private:
    MSSMcbs<Two_scale>* model;
-   CMSSM_input_parameters input_pars;
    QedQcd oneset;
    double mu_guess;
    double mc_guess;

@@ -29,11 +29,11 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    SoftsusyMSSM<Two_scale> smssm;
 
    // create CMSSM initial guesser
-   CMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, input, oneset);
-   CMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m, input);
-   CMSSM_high_scale_constraint<Two_scale> high_constraint(&m, input);
+   CMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, oneset);
+   CMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m);
+   CMSSM_high_scale_constraint<Two_scale> high_constraint(&m);
 
-   CMSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
+   CMSSM_initial_guesser<Two_scale> guesser(&m, oneset, low_constraint,
                                            susy_constraint, high_constraint);
 
    // create Mssm initial guesser

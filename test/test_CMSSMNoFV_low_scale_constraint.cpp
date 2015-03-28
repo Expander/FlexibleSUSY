@@ -43,9 +43,9 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    mssm.calculate_DRbar_masses();
    mssmnofv.calculate_DRbar_masses();
 
-   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, input_mssm, oneset);
+   CMSSM_low_scale_constraint<Two_scale> constraint_mssm(&mssm, oneset);
 
-   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,input_mssmnofv, oneset);
+   CMSSMNoFV_low_scale_constraint<Two_scale> constraint_mssmnofv(&mssmnofv,oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);

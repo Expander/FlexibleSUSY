@@ -105,15 +105,18 @@ template <class T>
 void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
 					const CMSSM_input_parameters& input)
 {
+   model.clear();
+   model.set_input_parameters(input);
+   model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.set_loops(beta_loop_order);
+   model.set_thresholds(threshold_corrections_loop_order);
+
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
    high_scale_constraint.set_model(&model);
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
-   high_scale_constraint.set_input_parameters(input);
-   susy_scale_constraint.set_input_parameters(input);
-   low_scale_constraint .set_input_parameters(input);
    low_scale_constraint .set_sm_parameters(oneset);
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
@@ -129,12 +132,6 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
       &susy_scale_constraint,
       &low_scale_constraint
    };
-
-   model.clear();
-   model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
 
    CMSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)

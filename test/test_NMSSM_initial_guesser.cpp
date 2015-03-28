@@ -33,11 +33,12 @@ BOOST_AUTO_TEST_CASE( test_initial_guess )
    input.SignvS = 1;
    QedQcd oneset;
 
-   NMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, input, oneset);
-   NMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m, input);
-   NMSSM_high_scale_constraint<Two_scale> high_constraint(&m, input);
+   m.set_input_parameters(input);
+   NMSSM_low_scale_constraint<Two_scale>  low_constraint(&m, oneset);
+   NMSSM_susy_scale_constraint<Two_scale> susy_constraint(&m);
+   NMSSM_high_scale_constraint<Two_scale> high_constraint(&m);
 
-   NMSSM_initial_guesser<Two_scale> guesser(&m, input, oneset, low_constraint,
+   NMSSM_initial_guesser<Two_scale> guesser(&m, oneset, low_constraint,
                                             susy_constraint, high_constraint);
 
    // create SoftsusyNMSSM initial guesser

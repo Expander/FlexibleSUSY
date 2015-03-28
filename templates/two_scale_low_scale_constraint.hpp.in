@@ -38,7 +38,7 @@ template<>
 class @ModelName@_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_low_scale_constraint();
-   @ModelName@_low_scale_constraint(@ModelName@<Two_scale>*, const @ModelName@_input_parameters&, const QedQcd&);
+   @ModelName@_low_scale_constraint(@ModelName@<Two_scale>*, const QedQcd&);
    virtual ~@ModelName@_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -48,7 +48,6 @@ public:
    double get_initial_scale_guess() const;
    void initialize();
    const QedQcd& get_sm_parameters() const;
-   void set_input_parameters(const @ModelName@_input_parameters&);
    void set_sm_parameters(const QedQcd&);
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
@@ -56,7 +55,6 @@ private:
    double scale;
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
-   @ModelName@_input_parameters inputPars;
    QedQcd oneset;
    double MWDRbar;
    double MZDRbar;

@@ -27,7 +27,6 @@ GUTNormalization::usage="Returns GUT normalization of a given coupling";
 FSModelName;
 FSLesHouchesList;
 FSUnfixedParameters;
-InputParameters;
 EWSBOutputParameters = {};
 SUSYScale;
 SUSYScaleFirstGuess;
@@ -429,7 +428,7 @@ GeneralReplacementRules[] :=
       "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
-      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[FlexibleSUSY`InputParameters[[ToExpression[num]]]],
+      "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[Parameters`GetInputParameters[][[ToExpression[num]]]],
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
@@ -1353,8 +1352,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           FlexibleSUSY`InputParameters = Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR];
-           Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
+           Parameters`SetInputParameters[
+               DeleteDuplicates @ Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR]];
 
            If[SARAH`SupersymmetricModel,
               (* pick beta functions of supersymmetric parameters *)
@@ -1444,8 +1443,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`AutomaticInputAtMSUSY,
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`SetInputParameters[Join[FlexibleSUSY`InputParameters,
-                                                 (#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters]];
+              Parameters`AddInputParameters[(#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -1475,9 +1473,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determine type of extra input parameters *)
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
-           Parameters`SetInputParameters[Join[Parameters`GetInputParameters[],
-                                              (#[[1]])& /@ FlexibleSUSY`FSExtraInputParameters,
-                                              (#[[2]])& /@ lesHouchesInputParameters]];
+           Parameters`AddInputParameters[(#[[1]])& /@ FlexibleSUSY`FSExtraInputParameters];
+           Parameters`AddInputParameters[(#[[2]])& /@ lesHouchesInputParameters];
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
@@ -1603,8 +1600,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
-              FlexibleSUSY`InputParameters = Join[Parameters`GetInputParameters[], freePhases];
-              Parameters`SetInputParameters[FlexibleSUSY`InputParameters];
+              Parameters`AddInputParameters[freePhases];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
@@ -1621,10 +1617,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
              ];
 
-           Print["Input parameters: ", InputForm[FlexibleSUSY`InputParameters]];
+           Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[FlexibleSUSY`InputParameters,
+           WriteInputParameterClass[Parameters`GetInputParameters[],
                                     Join[{#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
                                          {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters],
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
@@ -1809,7 +1805,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
-           WriteUserExample[FlexibleSUSY`InputParameters,
+           WriteUserExample[Parameters`GetInputParameters[],
                             {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
                             {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},

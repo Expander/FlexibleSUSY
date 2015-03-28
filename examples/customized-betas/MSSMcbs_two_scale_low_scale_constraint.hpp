@@ -20,7 +20,6 @@
 #define MSSMCBS_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 
 #include "MSSMcbs_low_scale_constraint.hpp"
-#include "CMSSM_input_parameters.hpp"
 #include "two_scale_constraint.hpp"
 #include "lowe.h"
 #include <Eigen/Core>
@@ -36,7 +35,7 @@ template<>
 class MSSMcbs_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    MSSMcbs_low_scale_constraint();
-   MSSMcbs_low_scale_constraint(MSSMcbs<Two_scale>*, const CMSSM_input_parameters&, const QedQcd&);
+   MSSMcbs_low_scale_constraint(MSSMcbs<Two_scale>*, const QedQcd&);
    virtual ~MSSMcbs_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -45,7 +44,6 @@ public:
    void clear();
    double get_initial_scale_guess() const;
    void initialize();
-   void set_input_parameters(const CMSSM_input_parameters&);
    void set_sm_parameters(const QedQcd&);
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
@@ -53,7 +51,6 @@ private:
    double scale;
    double initial_scale_guess;
    MSSMcbs<Two_scale>* model;
-   CMSSM_input_parameters inputPars;
    QedQcd oneset;
    double MZDRbar;
    double new_g1, new_g2, new_g3;

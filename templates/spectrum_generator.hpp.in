@@ -113,6 +113,13 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
+   model.clear();
+   model.set_input_parameters(input);
+   model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.do_force_output(force_output);
+   model.set_loops(beta_loop_order);
+   model.set_thresholds(threshold_corrections_loop_order);
+
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -122,9 +129,6 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
 
-   high_scale_constraint.set_input_parameters(input);
-   susy_scale_constraint.set_input_parameters(input);
-   low_scale_constraint .set_input_parameters(input);
    low_scale_constraint .set_sm_parameters(oneset);
 
    high_scale_constraint.initialize();
@@ -140,18 +144,11 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;
 
-   model.clear();
-   model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.do_force_output(force_output);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
-
    @ModelName@_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, input, oneset,
+   @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
