@@ -63,13 +63,7 @@ FSImportString::usage = "Returns the content of a file in form of a string.  If 
 Begin["`Private`"];
 
 StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
-    Module[{result = "", i},
-           For[i = 1, i <= Length[list], i++,
-               If[i > 1, result = result <> separator;];
-               result = result <> transformer[list[[i]]];
-              ];
-           Return[result];
-          ];
+    StringJoin[Riffle[transformer /@ list, separator]];
 
 Zip[list1_List, list2_List] :=
     MapThread[List, {list1, list2}];
