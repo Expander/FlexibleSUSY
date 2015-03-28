@@ -392,18 +392,7 @@ CalculateScaleFromExpr[Equal[expr1_, expr2_], scaleName_String] :=
 CalculateScaleFromExpr[expr_, scaleName_String] :=
     scaleName <> " = " <> CConversion`RValueToCFormString[Parameters`DecreaseIndexLiterals[expr, Parameters`GetOutputParameters[]]] <> ";\n";
 
-DefineParameter[parameter_Symbol] :=
-    CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
-    " " <> ToValidCSymbolString[parameter] <> ";\n";
-
-DefineParameter[FlexibleSUSY`Phase[phase_]] :=
-    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]] <>
-    " " <> ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> ";\n";
-
-DefineParameter[FlexibleSUSY`Sign[phase_]] :=
-    "int " <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> ";\n";
-
-DefineParameter[{parameter_Symbol, type_}] :=
+DefineParameter[{parameter_, type_}] :=
     CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[parameter] <> ";\n";
 
 DefineInputParameters[inputParameters_List] :=
@@ -412,13 +401,10 @@ DefineInputParameters[inputParameters_List] :=
            Return[result];
           ];
 
-InitializeInputParameter[{parameter_, value_?NumericQ}] :=
-    ToValidCSymbolString[parameter] <> "(" <> RValueToCFormString[value] <> ")";
-
-InitializeInputParameter[FlexibleSUSY`Phase[phase_]] :=
+InitializeInputParameter[{FlexibleSUSY`Phase[phase_], _}] :=
     ToValidCSymbolString[FlexibleSUSY`Phase[phase]] <> "(1.,.0)";
 
-InitializeInputParameter[FlexibleSUSY`Sign[phase_]] :=
+InitializeInputParameter[{FlexibleSUSY`Sign[phase_], _}] :=
     ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "(1)";
 
 InitializeInputParameter[{parameter_Symbol, type_}] :=

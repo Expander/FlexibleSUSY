@@ -95,9 +95,6 @@ PrintInputParameter[{parameter_, type_}, streamName_String] :=
                   "INPUT(" <> CConversion`RValueToCFormString[expr] <> ") << \", \";\n"];
           ];
 
-PrintInputParameter[parameter_, streamName_String] :=
-    PrintInputParameter[{parameter, Parameters`GetType[parameter]}, streamName];
-
 PrintInputParameters[parameters_List, streamName_String] :=
     Module[{result = ""},
            (result = result <> PrintInputParameter[#,streamName])& /@ parameters;
@@ -559,19 +556,9 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
            Return[result];
           ];
 
-ParseCmdLineOption[parameter_Symbol] :=
+ParseCmdLineOption[{parameter_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]}] :=
     Module[{parameterStr},
-           parameterStr = ToValidCSymbolString[parameter];
-           "\
-if(Command_line_options::get_parameter_value(option, \"--" <> parameterStr <> "=\", input." <> parameterStr <>"))
-   continue;
-
-"
-          ];
-
-ParseCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
-    Module[{parameterStr},
-           parameterStr = ToValidCSymbolString[FlexibleSUSY`Sign[phase]];
+           parameterStr = CConversion`ToValidCSymbolString[parameter];
            "\
 if(Command_line_options::get_parameter_value(option, \"--" <> parameterStr <> "=\", input." <> parameterStr <>"))
    continue;
@@ -584,11 +571,8 @@ ParseCmdLineOption[_] := "";
 ParseCmdLineOptions[inputParameters_List] :=
     StringJoin[ParseCmdLineOption /@ inputParameters];
 
-PrintCmdLineOption[parameter_Symbol] :=
+PrintCmdLineOption[{parameter_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]}] :=
     "\"  --" <> ToValidCSymbolString[parameter] <> "=<value>\\n\"\n";
-
-PrintCmdLineOption[FlexibleSUSY`Sign[phase_]] :=
-    "\"  --" <> ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "=<value>\\n\"\n";
 
 PrintCmdLineOption[_] := "";
 

@@ -500,20 +500,11 @@ WriteRGEClass[betaFun_List, anomDim_List, files_List,
                               makefileModuleTemplates];
          ];
 
-DefaultValueOf[FlexibleSUSY`Sign[_]] := 1;
-DefaultValueOf[FlexibleSUSY`Phase[_]] := 1;
-DefaultValueOf[_] := 0;
-
-WriteInputParameterClass[inputParameters_List,
-                         lesHouchesInputParameters_List,
-                         files_List] :=
-   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters,
-           allInputParameters},
-          allInputParameters = Join[inputParameters,lesHouchesInputParameters];
-          defaultValues = {#, DefaultValueOf[#]}& /@ inputParameters;
-          defineInputParameters = Constraint`DefineInputParameters[allInputParameters];
-          defaultInputParametersInit = Constraint`InitializeInputParameters[Join[defaultValues,lesHouchesInputParameters]];
-          printInputParameters = WriteOut`PrintInputParameters[allInputParameters,"ostr"];
+WriteInputParameterClass[inputParameters_List, files_List] :=
+   Module[{defineInputParameters, defaultInputParametersInit, printInputParameters},
+          defineInputParameters = Constraint`DefineInputParameters[inputParameters];
+          defaultInputParametersInit = Constraint`InitializeInputParameters[inputParameters];
+          printInputParameters = WriteOut`PrintInputParameters[inputParameters,"ostr"];
           WriteOut`ReplaceInFiles[files,
                          { "@defineInputParameters@" -> IndentText[defineInputParameters],
                            "@defaultInputParametersInit@" -> WrapLines[defaultInputParametersInit],
@@ -910,12 +901,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
-WriteUserExample[inputParameters_List,
-                 lesHouchesInputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, allParameters},
-           allParameters = Join[inputParameters,lesHouchesInputParameters];
-           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[allParameters];
-           printCommandLineOptions = WriteOut`PrintCmdLineOptions[allParameters];
+WriteUserExample[inputParameters_List, files_List] :=
+    Module[{parseCmdLineOptions, printCommandLineOptions},
+           parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
+           printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
@@ -1287,6 +1276,13 @@ FindUnfixedParameters[parameters_List, fixed_List] :=
            Complement[parameters, fixedParameters]
           ];
 
+GuessInputParameterType[FlexibleSUSY`Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessInputParameterType[par_] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1308,6 +1304,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
+            inputParameters (* list of 2-component lists of the form {name, type} *),
             haveEWSB = True,
             ewsbEquations, massMatrices, phases,
             diagonalizationPrecision,
@@ -1352,8 +1349,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           Parameters`SetInputParameters[
-               DeleteDuplicates @ Join[(#[[2]])& /@ SARAH`MINPAR, (#[[2]])& /@ SARAH`EXTPAR]];
+           inputParameters = {#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR]);
+           Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
 
            If[SARAH`SupersymmetricModel,
               (* pick beta functions of supersymmetric parameters *)
@@ -1443,7 +1440,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`AutomaticInputAtMSUSY,
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              Parameters`AddInputParameters[(#[[2]])& /@ FlexibleSUSY`FSUnfixedParameters];
+              inputParameters = Join[inputParameters,
+                                     {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
              ];
 
            lesHouchesInputParameters = DeleteDuplicates[
@@ -1464,8 +1463,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       ]
            ];
 
-           lesHouchesInputParameters = Select[Join[{BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBetaFunctions,
-                                                   {BetaFunction`GetName[#], Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"], #[[2]]}& /@ susyBreakingBetaFunctions] /.
+           lesHouchesInputParameters = Select[{BetaFunction`GetName[#],
+                                               Symbol[ToValidCSymbolString[BetaFunction`GetName[#]] <> "Input"],
+                                               Parameters`GetRealTypeFromDimension @ SARAH`getDimParameters @ Parameters`StripIndices @ BetaFunction`GetName[#]}& /@
+                                                  Join[susyBetaFunctions, susyBreakingBetaFunctions] /.
                                               a_[Susyno`LieGroups`i1] :> a /.
                                               a_[Susyno`LieGroups`i1,SARAH`i2] :> a,
                                               MemberQ[lesHouchesInputParameters,#[[1]]]&];
@@ -1473,8 +1474,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determine type of extra input parameters *)
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
-           Parameters`AddInputParameters[(#[[1]])& /@ FlexibleSUSY`FSExtraInputParameters];
-           Parameters`AddInputParameters[(#[[2]])& /@ lesHouchesInputParameters];
+           inputParameters = Join[inputParameters,
+                                  {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters,
+                                  {#[[2]], #[[3]]}& /@ lesHouchesInputParameters];
+           Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
@@ -1600,7 +1603,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
-              Parameters`AddInputParameters[freePhases];
+              inputParameters = Join[inputParameters,
+                                     {#, GuessInputParameterType[#]}& /@ freePhases];
+              Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
              ];
 
            (* Fixed-point iteration can only be used if an analytic EWSB solution exists *)
@@ -1620,9 +1625,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
-           WriteInputParameterClass[Parameters`GetInputParameters[],
-                                    Join[{#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
-                                         {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters],
+           WriteInputParameterClass[inputParameters,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_input_parameters.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "input_parameters.cpp.in"}],
@@ -1805,8 +1808,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
-           WriteUserExample[Parameters`GetInputParameters[],
-                            {#[[2]], #[[3]]}& /@ lesHouchesInputParameters,
+           WriteUserExample[inputParameters,
                             {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
