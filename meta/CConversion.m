@@ -536,6 +536,11 @@ Format[Complex[r_,i_],CForm] :=
 
 Protect[Complex];
 
+Unprotect[Power];
+Format[Power[E,z_],CForm] :=
+    Format["Exp(" <> ToString[CForm[z]] <> ")", OutputForm];
+Protect[Power];
+
 Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
     Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
@@ -684,7 +689,6 @@ RValueToCFormString[expr_] :=
                     Power[a_,-0.5]           :> 1/Sqrt[a] /.
                     Power[a_,2]              :> Global`Sqr[a] /.
                     Power[a_,-2]             :> 1/Global`Sqr[a] /.
-                    Power[E,a_]              :> exp[a] /.
                     Sqrt[x_]/Sqrt[y_]        :> Sqrt[x/y];
            result = Apply[Function[code, Hold[CForm[code]], HoldAll],
                           Hold[#] &[result /. { SARAH`MatMul[a__] :> times @@ SARAH`MatMul[a],
