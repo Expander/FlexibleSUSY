@@ -310,6 +310,11 @@ void Sort(Eigen::Array<double, N, 1>& v)
    std::sort(v.data(), v.data() + v.size(), CompareAbs_d());
 }
 
+inline double SignedAbsSqrt(double a)
+{
+   return Sign(a) * AbsSqrt(a);
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);
