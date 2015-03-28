@@ -407,7 +407,7 @@ InitializeInputParameter[{FlexibleSUSY`Phase[phase_], _}] :=
 InitializeInputParameter[{FlexibleSUSY`Sign[phase_], _}] :=
     ToValidCSymbolString[FlexibleSUSY`Sign[phase]] <> "(1)";
 
-InitializeInputParameter[{parameter_Symbol, type_}] :=
+InitializeInputParameter[{parameter_, type_}] :=
     CConversion`CreateDefaultConstructor[CConversion`ToValidCSymbolString[parameter],type];
 
 InitializeInputParameter[pars__] :=
