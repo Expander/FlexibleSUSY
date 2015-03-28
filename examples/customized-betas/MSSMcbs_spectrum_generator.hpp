@@ -137,7 +137,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   MSSMcbs_initial_guesser<T> initial_guesser(&model, input, oneset,
+   MSSMcbs_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
