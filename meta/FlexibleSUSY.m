@@ -1349,7 +1349,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            SARAH`Xip = 1;
            SARAH`rMS = SelectRenormalizationScheme[FlexibleSUSY`FSRenormalizationScheme];
 
-           inputParameters = {#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR]);
+           inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
 
            If[SARAH`SupersymmetricModel,
@@ -1440,8 +1440,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`AutomaticInputAtMSUSY,
               FlexibleSUSY`SUSYScaleInput = Join[FlexibleSUSY`SUSYScaleInput,
                                                  {#[[1]],#[[2]]}& /@ FlexibleSUSY`FSUnfixedParameters];
-              inputParameters = Join[inputParameters,
-                                     {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
+              inputParameters = DeleteDuplicates @ Join[inputParameters,
+                                                        {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSUnfixedParameters];
               Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
              ];
 
@@ -1474,9 +1474,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* determine type of extra input parameters *)
            FlexibleSUSY`FSExtraInputParameters = {#[[1]], #[[2]], Parameters`GetRealTypeFromDimension[#[[3]]]}& /@ FlexibleSUSY`FSExtraInputParameters;
 
-           inputParameters = Join[inputParameters,
-                                  {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters,
-                                  {#[[2]], #[[3]]}& /@ lesHouchesInputParameters];
+           inputParameters = DeleteDuplicates @ Join[inputParameters,
+                                                     {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters,
+                                                     {#[[2]], #[[3]]}& /@ lesHouchesInputParameters];
            Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
@@ -1603,8 +1603,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
-              inputParameters = Join[inputParameters,
-                                     {#, GuessInputParameterType[#]}& /@ freePhases];
+              inputParameters = DeleteDuplicates @ Join[inputParameters,
+                                                        {#, GuessInputParameterType[#]}& /@ freePhases];
               Parameters`AddInputParameters[(#[[1]])& /@ inputParameters];
              ];
 
