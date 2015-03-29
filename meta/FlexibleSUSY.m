@@ -1547,7 +1547,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           haveEWSB = ewsbEquations =!= Table[0, {Length[ewsbEquations]}];
+           (* filter out trivial EWSB eqs. *)
+           ewsbEquations = Select[ewsbEquations, (#=!=0)&];
+
+           haveEWSB = ewsbEquations =!= {};
 
            If[haveEWSB,
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
@@ -1593,7 +1596,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
                 ];
               ,
-              Print["Note: EWSB equations are zero."];
+              Print["Note: There are no EWSB equations."];
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];
