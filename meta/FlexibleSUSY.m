@@ -775,7 +775,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
            setEWSBParametersFromGSLVector = EWSB`SetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, parametersFixedByEWSB, freePhases, "tadpole"];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];

@@ -146,16 +146,9 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
            Parameters`SetParameter[parameter, value, "model"]
           ];
 
-FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
-                     gslOutputVector_String] :=
+FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
     Module[{i, result = "", par, dim},
            dim = TreeMasses`GetDimension[higgs];
-           If[dim =!= Length[parametersFixedByEWSB],
-              Print["Error: number of Higgs bosons (",dim,
-                    ") is not equal to the number of fixed parameters (",
-                    Length[parametersFixedByEWSB],")"];
-              Return[""];
-             ];
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "get_ewsb_eq_" <>
