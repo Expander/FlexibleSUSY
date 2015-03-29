@@ -51,6 +51,9 @@ FlexibleSUSY-1.0.5 [not released yet]
    calculation of the down-quark and charged lepton Yukawa couplings
    in non-SUSY models, like the SM, for example.
 
+ * Bugfix (commit d035544): Ignore trivial EWSB eqs.  Makes the MRSSM
+   work in FlexibleSUSY with SARAH 4.5.x.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
