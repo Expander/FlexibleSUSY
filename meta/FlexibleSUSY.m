@@ -769,7 +769,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               twoLoopHiggsHeaders = "#include \"sfermions.hpp\"\n#include \"nmssm_twoloophiggs.h\"\n";
              ];
            setEWSBParametersFromGSLVector = EWSB`SetEWSBParametersFromGSLVector[parametersFixedByEWSB, freePhases, "x"];
-           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, parametersFixedByEWSB, freePhases, "tadpole"];
+           calculateTreeLevelTadpoles   = EWSB`FillArrayWithEWSBEqs[SARAH`HiggsBoson, "tadpole"];
            ewsbInitialGuess             = EWSB`FillInitialGuessArray[parametersFixedByEWSB];
            solveEwsbTreeLevel           = EWSB`CreateTreeLevelEwsbSolver[ewsbSolution /. FlexibleSUSY`tadpole[_] -> 0];
            {selfEnergyPrototypes, selfEnergyFunctions} = SelfEnergies`CreateNPointFunctions[nPointFunctions, vertexRules];
@@ -840,7 +840,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@higgsMassGetters@"     -> higgsMassGetters[[2]],
                             "@tadpoleEqPrototypes@"  -> IndentText[tadpoleEqPrototypes],
                             "@tadpoleEqFunctions@"   -> tadpoleEqFunctions,
-                            "@numberOfEWSBEquations@"-> ToString[numberOfEWSBEquations],
+                            "@numberOfEWSBEquations@"-> ToString[TreeMasses`GetDimension[SARAH`HiggsBoson]],
                             "@calculateTreeLevelTadpoles@" -> IndentText[calculateTreeLevelTadpoles],
                             "@calculateOneLoopTadpoles@"   -> IndentText[calculateOneLoopTadpoles],
                             "@calculateTwoLoopTadpoles@"   -> IndentText[calculateTwoLoopTadpoles],
@@ -1553,7 +1553,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Quit[1];
              ];
 
-           haveEWSB = ewsbEquations =!= Table[0, {Length[ewsbEquations]}];
+           (* filter out trivial EWSB eqs. *)
+           ewsbEquations = Select[ewsbEquations, (#=!=0)&];
+
+           haveEWSB = ewsbEquations =!= {};
 
            If[haveEWSB,
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
@@ -1599,7 +1602,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  ewsbSolution = FlexibleSUSY`TreeLevelEWSBSolution;
                 ];
               ,
-              Print["Note: EWSB equations are zero."];
+              Print["Note: There are no EWSB equations."];
              ];
            If[freePhases =!= {},
               Print["Note: adding free phases: ", freePhases];

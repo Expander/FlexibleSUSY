@@ -1,7 +1,7 @@
 Off[General::spell]
 
-Model`Name = "FullMSSM";
-Model`NameLaTeX ="FullMSSM";
+Model`Name = "UnbrokenMSSM";
+Model`NameLaTeX ="UnbrokenMSSM";
 Model`Authors = "F.Staub,A.Voigt";
 Model`Date = "2015-02-17";
 

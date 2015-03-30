@@ -84,20 +84,40 @@ CreateEWSBEqPrototype[higgs_] :=
            Return[result];
           ];
 
+(* Creates a get_ewsb_eq_<higgs>() function for each Higgs multiplet
+   entry.
+
+   This function assumes, that the ordering of the EWSB
+   eqs. corresponds to the Higgs multiplet entries.  If there are less
+   equations than Higgs multiplet entries, the remaining equations
+   will be set to 0.  If there are more EWSB equations than Higgs
+   bosons, the remaining equations will be ignored.
+ *)
 CreateEWSBEqFunction[higgs_, equation_List] :=
-    Module[{result = "", body = "", dim, i, eq},
+    Module[{result = "", body = "", dim, i, eq, dimEq},
            dim = TreeMasses`GetDimension[higgs];
-           If[dim =!= Length[equation],
-              Print["Error: number of Higgs bosons (", dim,
-                    ") != number of EWSB eqs. (",Length[equation],")"];
-              Quit[1];
+           dimEq = Length[equation];
+           If[dim < dimEq,
+              Print["Warning: number of Higgs bosons (", dim,
+                    ") < number of EWSB eqs. (",dimEq,")."
+                    "The EWSB eqs. ", (dimEq - dim), "...", (dimEq),
+                    " will be ignored"];
+             ];
+           If[dim > dimEq,
+              Print["Warning: number of Higgs bosons (", dim,
+                    ") > number of EWSB eqs. (",dimEq,").",
+                    "The EWSB eqs. for the fields ", higgs, "(n), n >= ",
+                    dimEq, ", will be set to zero."];
              ];
            For[i = 1, i <= dim, i++,
                result = result <>
                         "double CLASSNAME::get_ewsb_eq_" <>
                         ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const\n{\n";
-               eq   = equation[[i]];
+               If[i <= dimEq,
+                  eq = equation[[i]];,
+                  eq = 0;
+                 ];
                body = Parameters`CreateLocalConstRefsForInputParameters[eq, "LOCALINPUT"] <>
                       "\n" <> "double result = " <>
                       RValueToCFormString[eq] <> ";\n";
@@ -133,16 +153,9 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
            Parameters`SetParameter[parameter, value, "model"]
           ];
 
-FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
-                     gslOutputVector_String] :=
+FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
     Module[{i, result = "", par, dim},
            dim = TreeMasses`GetDimension[higgs];
-           If[dim =!= Length[parametersFixedByEWSB],
-              Print["Error: number of Higgs bosons (",dim,
-                    ") is not equal to the number of fixed parameters (",
-                    Length[parametersFixedByEWSB],")"];
-              Return[""];
-             ];
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "get_ewsb_eq_" <>
