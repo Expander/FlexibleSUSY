@@ -38,8 +38,9 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    m.set_Ye(2, 2, 1.77699 * Sqrt(2.) / vev);
 
    m.calculate_DRbar_masses();
+   m.set_input_parameters(input);
 
-   NSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   NSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
