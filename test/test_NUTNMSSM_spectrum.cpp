@@ -175,7 +175,16 @@ public:
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
       mssm.do_force_output(true);
 
-      low_constraint->set_sm_parameters(oneset);
+      high_constraint->clear();
+      susy_constraint->clear();
+      low_constraint ->clear();
+      high_constraint->set_model(&mssm);
+      susy_constraint->set_model(&mssm);
+      low_constraint ->set_model(&mssm);
+      low_constraint ->set_sm_parameters(oneset);
+      high_constraint->initialize();
+      susy_constraint->initialize();
+      low_constraint ->initialize();
 
       NUTNMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
       convergence_tester.set_max_iterations(100);
