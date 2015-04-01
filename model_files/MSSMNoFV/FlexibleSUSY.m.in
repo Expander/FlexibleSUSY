@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = MSSMNoFV;
 
 (* CMSSM input parameters *)
 
