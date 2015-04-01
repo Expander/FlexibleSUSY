@@ -67,7 +67,14 @@ Options:
                      Available models are: ${available_default_model_files}
 
   --sarah-model=     Name of the SARAH model, used in SARAH\`Start[].
-                     If empty, the value given by --name= is used.
+                     If empty, the script will look if a default SARAH
+                     model file is specified in the FlexibleSUSY model
+                     file in the form
+
+                        FSDefaultSARAHModel = <model>;
+
+                     If no such entry can be found, the value given by
+                     --name= is used.
                      A sub-model can be specified after a /
                      Syntax: <sarah-model>[/<sub-model>]
                      Example: --sarah-model=MSSM/CKM
