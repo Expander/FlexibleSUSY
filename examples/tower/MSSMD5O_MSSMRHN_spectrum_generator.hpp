@@ -120,14 +120,18 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
 
    matching.reset();
 
+   model_1.clear();
+   model_1.set_input_parameters(input_1);
+   model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
+
+   model_2.clear();
+   model_2.set_input_parameters(input_2);
+
    // needed for constraint::initialize()
    high_scale_constraint_2.set_model(&model_2);
    susy_scale_constraint_1.set_model(&model_1);
    low_scale_constraint_1 .set_model(&model_1);
 
-   high_scale_constraint_2.set_input_parameters(input_2);
-   susy_scale_constraint_1.set_input_parameters(input_1);
-   low_scale_constraint_1.set_input_parameters(input_1);
    low_scale_constraint_1.set_sm_parameters(oneset);
    matching.set_lower_input_parameters(input_1);
    high_scale_constraint_2.initialize();
@@ -141,18 +145,11 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    downward_constraints_1.push_back(&susy_scale_constraint_1);
    downward_constraints_1.push_back(&low_scale_constraint_1);
 
-   model_1.clear();
-   model_1.set_input_parameters(input_1);
-   model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
-
    std::vector<Constraint<T>*> upward_constraints_2;
    upward_constraints_2.push_back(&high_scale_constraint_2);
 
    std::vector<Constraint<T>*> downward_constraints_2;
    downward_constraints_2.push_back(&high_scale_constraint_2);
-
-   model_2.clear();
-   model_2.set_input_parameters(input_2);
 
    MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
    MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);

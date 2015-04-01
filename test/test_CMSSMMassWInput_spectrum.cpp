@@ -39,8 +39,8 @@ class CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint
 public:
    CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint()
       : CMSSMMassWInput_low_scale_constraint<Two_scale>() {}
-   CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters& inputPars_, const QedQcd& oneset_)
-      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+   CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters&, const QedQcd& oneset_)
+      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_,oneset_) {}
    virtual ~CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint() {}
 
    virtual void apply();
@@ -67,7 +67,7 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
    update_scale();
    calculate_DRbar_gauge_couplings();
 
-   const double TanBeta = inputPars.TanBeta;
+   const double TanBeta = model->get_input().TanBeta;
    const double g1 = model->get_g1();
    const double g2 = model->get_g2();
 
@@ -90,7 +90,7 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
 
    // prevent tan(beta) from being reset
    softsusy.setSetTbAtMX(true);
-   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+   softsusy.sparticleThresholdCorrections(model->get_input().TanBeta);
 
    if (softsusy.displayProblem().test()) {
       std::ostringstream ss;
@@ -133,9 +133,9 @@ public:
       : CMSSMMassWInput_low_scale_constraint<Two_scale>() {}
    CMSSMMassWInput_weinberg_angle_low_scale_constraint(
       CMSSMMassWInput<Two_scale>* model_,
-      const CMSSMMassWInput_input_parameters& inputPars_,
+      const CMSSMMassWInput_input_parameters&,
       const QedQcd& oneset_)
-      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_,oneset_) {}
    virtual ~CMSSMMassWInput_weinberg_angle_low_scale_constraint() {}
 
    virtual void apply();
@@ -172,7 +172,7 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    BOOST_MESSAGE("Difference (g2_mw_mz - g2_gf_mz)(MZ) = "
                  << g2_mw_mz - g2_gf_mz);
 
-   const auto TanBeta = inputPars.TanBeta;
+   const auto TanBeta = model->get_input().TanBeta;
    const auto g1 = model->get_g1();
    const auto g2 = model->get_g2();
 
@@ -194,7 +194,7 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    // prevent tan(beta) from being reset
    softsusy.setSetTbAtMX(true);
    softsusy::PRINTOUT = 10;
-   softsusy.sparticleThresholdCorrections(inputPars.TanBeta);
+   softsusy.sparticleThresholdCorrections(model->get_input().TanBeta);
 
    if (softsusy.displayProblem().test()) {
       std::ostringstream ss;
@@ -397,7 +397,7 @@ public:
    CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint()
       : CMSSMMassWInput_susy_scale_constraint<Two_scale>() {}
    CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters& inputPars_)
-      : CMSSMMassWInput_susy_scale_constraint<Two_scale>(model_, inputPars_) {}
+      : CMSSMMassWInput_susy_scale_constraint<Two_scale>(model_) {}
    virtual ~CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint() {}
 
    virtual void apply();
@@ -421,12 +421,12 @@ void CMSSMMassWInput_softsusy_ewsb_susy_scale_constraint::apply()
    softsusy.calcDrBarPars();
    const double new_Msusy = softsusy.calcMs();
 
-   const int signMu = inputPars.SignMu;
+   const int signMu = model->get_input().SignMu;
    const double mt = softsusy.displayDrBarPars().mt;
    DoubleVector highScaleSoftPars(3);
-   highScaleSoftPars(1) = inputPars.m0;
-   highScaleSoftPars(2) = inputPars.m12;
-   highScaleSoftPars(3) = inputPars.Azero;
+   highScaleSoftPars(1) = model->get_input().m0;
+   highScaleSoftPars(2) = model->get_input().m12;
+   highScaleSoftPars(3) = model->get_input().Azero;
 
    softsusy.rewsb(signMu, mt, highScaleSoftPars);
 
@@ -542,37 +542,16 @@ public:
    void set_high_scale_constraint(CMSSMMassWInput_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
    void setup_default_constaints(const CMSSMMassWInput_input_parameters& pp, const QedQcd& oneset) {
       if (!high_constraint)
-         high_constraint = new CMSSMMassWInput_high_scale_constraint<Two_scale>(&mssm, pp);
+         high_constraint = new CMSSMMassWInput_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new CMSSMMassWInput_susy_scale_constraint<Two_scale>(&mssm, pp);
+         susy_constraint = new CMSSMMassWInput_susy_scale_constraint<Two_scale>(&mssm);
       if (!low_constraint)
-         low_constraint = new CMSSMMassWInput_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
+         low_constraint = new CMSSMMassWInput_low_scale_constraint<Two_scale>(&mssm, oneset);
    }
    void test(const CMSSMMassWInput_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints(pp, oneset);
 
-      high_constraint->clear();
-      susy_constraint->clear();
-      low_constraint ->clear();
-      high_constraint->set_model(&mssm);
-      susy_constraint->set_model(&mssm);
-      low_constraint ->set_model(&mssm);
-      high_constraint->set_input_parameters(pp);
-      low_constraint ->set_input_parameters(pp);
-      low_constraint ->set_sm_parameters(oneset);
-      susy_constraint->set_input_parameters(pp);
-      high_constraint->initialize();
-      susy_constraint->initialize();
-      low_constraint ->initialize();
-
       const double precision_goal = softsusy::TOLERANCE;
-
-      CMSSMMassWInput_convergence_tester<Two_scale> convergence_tester(&mssm, precision_goal);
-      CMSSMMassWInput_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
-                                                      *low_constraint,
-                                                      *susy_constraint,
-                                                      *high_constraint);
-      Two_scale_increasing_precision precision(10.0, precision_goal);
 
       mssm.clear();
       mssm.set_loops(2);
@@ -581,6 +560,24 @@ public:
       mssm.set_pole_mass_loop_order(pole_mass_loop_order);
       mssm.set_input_parameters(pp);
       mssm.set_precision(precision_goal);
+
+      high_constraint->clear();
+      susy_constraint->clear();
+      low_constraint ->clear();
+      high_constraint->set_model(&mssm);
+      susy_constraint->set_model(&mssm);
+      low_constraint ->set_model(&mssm);
+      low_constraint ->set_sm_parameters(oneset);
+      high_constraint->initialize();
+      susy_constraint->initialize();
+      low_constraint ->initialize();
+
+      CMSSMMassWInput_convergence_tester<Two_scale> convergence_tester(&mssm, precision_goal);
+      CMSSMMassWInput_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
+                                                      *low_constraint,
+                                                      *susy_constraint,
+                                                      *high_constraint);
+      Two_scale_increasing_precision precision(10.0, precision_goal);
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
@@ -623,8 +620,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum )
    pp.SignMu = 1;
    pp.Azero = 0.;
 
-   CMSSMMassWInput<Two_scale> _model;
-   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   CMSSMMassWInput<Two_scale> _model(pp);
+   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    CMSSMMassWInput_tester mssm_tester;
@@ -878,8 +875,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_Softsusy_gauge_coupling
    pp.Azero = 0.;
    softsusy::QedQcd oneset;
 
-   CMSSMMassWInput<Two_scale> _model;
-   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   CMSSMMassWInput<Two_scale> _model(pp);
+   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    CMSSMMassWInput_tester mssm_tester;
@@ -948,8 +945,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_with_weinberg_angle )
    pp.Azero = 0.;
    softsusy::QedQcd oneset;
 
-   CMSSMMassWInput<Two_scale> _model;
-   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   CMSSMMassWInput<Two_scale> _model(pp);
+   const CMSSMMassWInput_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    CMSSMMassWInput_tester mssm_tester;
@@ -1017,8 +1014,8 @@ class CMSSMMassWInput_iterative_low_scale_constraint
 public:
    CMSSMMassWInput_iterative_low_scale_constraint()
       : CMSSMMassWInput_low_scale_constraint<Two_scale>() {}
-   CMSSMMassWInput_iterative_low_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters& inputPars_, const QedQcd& oneset_)
-      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+   CMSSMMassWInput_iterative_low_scale_constraint(CMSSMMassWInput<Two_scale>* model_, const CMSSMMassWInput_input_parameters&, const QedQcd& oneset_)
+      : CMSSMMassWInput_low_scale_constraint<Two_scale>(model_,oneset_) {}
    virtual ~CMSSMMassWInput_iterative_low_scale_constraint() {}
 
    virtual void apply();
@@ -1091,7 +1088,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMMassWInput_spectrum_higgs_iteration )
    pp.TanBeta = 30.;
    softsusy::QedQcd oneset;
 
-   CMSSMMassWInput<Two_scale> _model;
+   CMSSMMassWInput<Two_scale> _model(pp);
    CMSSMMassWInput_tester mssm_tester;
    mssm_tester.set_low_scale_constraint(new CMSSMMassWInput_iterative_low_scale_constraint(&_model, pp, oneset));
    // BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));

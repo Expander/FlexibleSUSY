@@ -1,6 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = UMSSM;
 
 MINPAR = { {1, m0},
            {2, m12},

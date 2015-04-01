@@ -308,6 +308,32 @@ EOF
     fi
 }
 
+# searches for string of the form
+#    FSDefaultSARAHModel = XXX;
+# and sets $2 to XXX
+search_default_model() {
+    if test $# -ne 2 ; then
+        echo "Error: search_default_model expects 2 arguments"
+        exit ${exit_syntax_error}
+    fi
+
+    local _file="$1"
+    local _output_var="$2"
+    local _sarah_model=""
+
+    message -n "Searching for default SARAH model in $_file ... "
+
+    _sarah_model="`sed -n 's/FSDefaultSARAHModel *= *\([^;]\+\)/\1/p' < ${_file}`"
+
+    if [ -z $_sarah_model ]; then
+        message "not found"
+    else
+        message "found $_sarah_model"
+    fi
+
+    eval "${_output_var}=${_sarah_model}"
+}
+
 trap "exit 1" INT QUIT TERM
 
 rm -f ${createmodel_log}
@@ -384,6 +410,43 @@ if [ -z "$name" ] ; then
     exit ${exit_syntax_error}
 fi
 
+# create target directory name
+targetdir="models/${name}"
+
+if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
+    message "Error: directory $targetdir already exists!"
+    message "Please chose another model name or use the --force option."
+    message "See ./`basename $0` --help for more information."
+    exit ${exit_model_dir_exists}
+fi
+
+# check if we provide a FlexibleSUSY model file for the given model
+# name
+[ -n "$model_file" ] || model_file="$name"
+model_file_dir="model_files/$model_file"
+message -n "Searching for ${model_file} model file ..."
+
+if test -r "$model_file_dir/FlexibleSUSY.m.in"; then
+    message "found ${model_file_dir}/FlexibleSUSY.m.in"
+else
+    message "no found in ${model_file_dir}"
+    echo "Error: No FlexibleSUSY model file found in ${model_file_dir}/"
+    echo "  You can either create a model file via"
+    echo ""
+    echo "  \$ mkdir ${model_file_dir}"
+    echo "  \$ cp model_files/MSSM/FlexibleSUSY.m.in ${model_file_dir}/"
+    echo ""
+    echo "  or you can specify the model file via"
+    echo ""
+    echo "  \$ ./`basename $0` [...] --model-file=MSSM"
+    exit ${exit_no_default_model}
+fi
+
+# search for default SARAH model in the FlexibleSUSY model file
+if [ -z "$sarah_model" ]; then
+    search_default_model "$model_file_dir/FlexibleSUSY.m.in" sarah_model
+fi
+
 sub_model=$(echo $sarah_model | awk -F / '{ if (NF > 1) print $NF }')
 sarah_model=$(echo $sarah_model | awk -F / '{ print $1 }')
 
@@ -395,57 +458,10 @@ check_model_name "${name}"
 check_sarah_model "${sarah_model}" "${sub_model}"
 check_flags
 
-# create target directory name
-targetdir="models/${name}"
-
-if test -d "$targetdir" -a "x$overwrite" = "xno" ; then
-    message "Error: directory $targetdir already exists!"
-    message "Please chose another model name or use the --force option."
-    message "See ./`basename $0` --help for more information."
-    exit ${exit_model_dir_exists}
-fi
-
 if [ -n "$sub_model" ]; then
-    message "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
+    echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
 else
-    message "Creating model $name (SARAH model: $sarah_model)"
-fi
-
-# check if we provide a FlexibleSUSY model file for the given model
-# name
-model_file_dir="model_files"
-if [ -n "$model_file" ]; then
-    message -n "  searching for ${model_file} model file ... "
-    if test -d "$model_file_dir/$model_file"; then
-        model_file_dir="$model_file_dir/$model_file"
-        message "found in ${model_file_dir}/"
-    else
-        message "not found in ${model_file_dir}/${model_file}"
-        message "Error: There is no model file for the ${model_file}!"
-        message "  You can create one via"
-        message ""
-        message "  \$ mkdir ${model_file_dir}/${model_file}"
-        message "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${model_file}/"
-        exit ${exit_no_default_model}
-    fi
-else
-    # if the user has no default model file specified, we check if one
-    # exists in model_files/$name/
-    if test -r "$model_file_dir/$name/FlexibleSUSY.m.in"; then
-        model_file_dir="$model_file_dir/$name"
-        message "  Using model file ${model_file_dir}/FlexibleSUSY.m.in"
-    else
-        message "Error: No FlexibleSUSY model file found in ${model_file_dir}/${name}/"
-        message "  You can either create a model file via"
-        message ""
-        message "  \$ mkdir ${model_file_dir}/${name}"
-        message "  \$ cp ${model_file_dir}/MSSM/FlexibleSUSY.m.in ${model_file_dir}/${name}/"
-        message ""
-        message "  or you can specify the model file via"
-        message ""
-        message "  \$ ./`basename $0` [...] --model-file=MSSM"
-        exit ${exit_no_default_model}
-    fi
+    echo "Creating model $name (SARAH model: $sarah_model)"
 fi
 
 if test ! -d "$targetdir" ; then
