@@ -7,6 +7,7 @@ FSDefaultSARAHModel = MRSSM;
 
 MINPAR = { {3, TanBeta} };
 
+(* alternative: mHd2, mHu2, vS, vT *)
 EWSBOutputParameters = { mHd2, mHu2, mS2, mT2 };
 
 SUSYScale = 1000;
