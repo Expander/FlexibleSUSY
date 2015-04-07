@@ -30,7 +30,7 @@ ApplyConstraint[{parameter_, value_}, modelName_String] :=
           Parameters`SetParameter[parameter, value, modelName],
           Parameters`IsInputParameter[parameter],
           Parameters`SetInputParameter[parameter, value, "INPUTPARAMETER"],
-          _,
+          True,
           Print["Error: ", parameter, " is neither a model nor an input parameter!"];
           ""
          ];
