@@ -178,6 +178,8 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
            Return[result];
           ];
 
+MakeParameterUnique[Re[par_]]      := Rule[Re[par]     , CConversion`ToValidCSymbol[Re[par]]];
+MakeParameterUnique[Im[par_]]      := Rule[Im[par]     , CConversion`ToValidCSymbol[Im[par]]];
 MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
 MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
 MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
@@ -208,22 +210,32 @@ ComplexParameterReplacementRules[eqs_List, par_] :=
              ]
           ];
 
+SplitRealAndImagParts[eqs_List, pars_List] :=
+    eqs /. DeleteDuplicates[Cases[pars, Re[p_] | Im[p_] :> Rule[p,Re[p]+I Im[p]]]]
+
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
     Module[{realParameters, complexParameters, simplificationRules,
-            renamedEqs},
+            renamedEqs, splitEqs},
+           DebugPrint["Splitting Re[] and Im[] within EWSB eqs. ..."];
+           splitEqs = SplitRealAndImagParts[equations, parametersFixedByEWSB];
            realParameters = Select[parametersFixedByEWSB, Parameters`IsRealParameter[#]&];
+           DebugPrint["real parameters: ", realParameters];
            complexParameters = Complement[parametersFixedByEWSB, realParameters];
+           DebugPrint["complex parameters: ", complexParameters];
            (* make parameters unique *)
            uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
+           DebugPrint["Making parameters unique via: ", uniqueParameters];
            realParameters = realParameters /. uniqueParameters;
            complexParameters = complexParameters /. uniqueParameters;
-           renamedEqs = equations /. uniqueParameters;
+           renamedEqs = splitEqs /. uniqueParameters;
+           DebugPrint["EWSB eqs. with unique parameters: ", renamedEqs];
            simplificationRules =
                Flatten[Join[{Rule[SARAH`Conj[#],#],
                              Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters,
-                            ComplexParameterReplacementRules[renamedEqs, complexParameters]& /@ complexParameters
+                            ComplexParameterReplacementRules[renamedEqs, complexParameters]
                            ]
                       ];
+           DebugPrint["Simplification rules: ", simplificationRules];
            (* substitute back *)
            uniqueParameters = Reverse /@ uniqueParameters;
            renamedEqs /. simplificationRules /. uniqueParameters
