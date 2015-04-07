@@ -11,15 +11,19 @@ MINPAR = { {1, m0},
            {4, Sign[\[Mu]]},
            {5, Azero} };
 
-EXTPAR = { {100, eta} };
+EXTPAR = { {100, etaInput} };
 
-EWSBOutputParameters = { B[\[Mu]], \[Mu], mHd2, mHu2 };
+RealParameters = {};
+
+EWSBOutputParameters = { Re[B[\[Mu]]], Im[B[\[Mu]]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
-SUSYScaleInput = {};
+SUSYScaleInput = {
+    {eta, etaInput}
+};
 
 HighScale = g1 == g2;
 
