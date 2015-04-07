@@ -180,6 +180,9 @@ IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
 
 IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
 
+IsRealParameter[Re[sym_]] := True;
+IsRealParameter[Im[sym_]] := True;
+
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
     MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
