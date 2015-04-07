@@ -1310,7 +1310,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             diagonalizationPrecision,
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
-            fixedParameters, treeLevelEwsbOutputFile,
+            fixedParameters,
+            treeLevelEwsbSolutionOutputFile, treeLevelEwsbEqsOutputFile,
             lesHouchesInputParameters, lesHouchesInputParameterReplacementRules,
             extraSLHAOutputBlocks,
 	    vertexRules, vertexRuleFileName,
@@ -1567,12 +1568,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               If[FlexibleSUSY`TreeLevelEWSBSolution === {},
                  (* trying to find an analytic solution for the EWSB eqs. *)
-                 treeLevelEwsbOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
-                                                         FlexibleSUSY`FSModelName <> "_tree_level_EWSB_solution.m"}];
+                 treeLevelEwsbSolutionOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                         FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
+                 treeLevelEwsbEqsOutputFile      = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                         FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
+                 Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
+                 Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
                  Print["Solving EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
                  {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
                                                                              FlexibleSUSY`EWSBOutputParameters,
-                                                                             treeLevelEwsbOutputFile];
+                                                                             treeLevelEwsbSolutionOutputFile];
                  If[ewsbSolution === {},
                     Print["Warning: could not find an analytic solution to the EWSB eqs."];
                     Print["   An iterative algorithm will be used.  You can try to set"];
@@ -1584,8 +1589,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               If[i != Length[FlexibleSUSY`EWSBOutputParameters], ",", ""]];
                        ];
                     Print["   };\n"];
-                    Print["   The tree-level EWSB solution was written to the file:"];
-                    Print["      ", treeLevelEwsbOutputFile];
+                    Print["   The EWSB solution was written to the file:"];
+                    Print["      ", treeLevelEwsbSolutionOutputFile];
                    ];
                  ,
                  If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
