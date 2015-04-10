@@ -179,4 +179,36 @@ TestEquality[Sort[cmssmSolution],
                     Mu -> FlexibleSUSY`Phase[Mu] Sqrt[-5 - x^2 - x*y - z]
                   }]];
 
+Print["testing CMSSMCPV-like EWSB for |Mu|, Re[BMu] and Im[BMu] ..."];
+
+FlexibleSUSY`FSDebugOutput = True;
+
+cmssmcpvEwsbEqs = {
+    x - (E^(I*eta)*vu*B[Mu])/2 + vd*Mu*Susyno`LieGroups`conj[Mu] -
+    (vu*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)),
+    y - (E^(I*eta)*vd*B[Mu])/2 + vu*Mu*Susyno`LieGroups`conj[Mu] -
+    (vd*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)),
+    (-I/2)*E^(I*eta)*vd*B[Mu] + ((I/2)*vd*Susyno`LieGroups`conj[B[Mu]])/E^(I*eta)
+};
+
+cmssmcpvEwsbOutputParameters = { Mu, Re[B[Mu]], Im[B[Mu]] };
+
+TestEquality[Parameters`IsRealParameter[Mu], False];
+TestEquality[Parameters`IsRealParameter[B[Mu]], False];
+
+Print["\t calling FindSolution[] ..."];
+
+cmssmcpvFullSolution = EWSB`Private`FindSolution[cmssmcpvEwsbEqs, cmssmcpvEwsbOutputParameters];
+
+Print["solution === ", InputForm[cmssmcpvFullSolution]];
+
+TestEquality[Sort /@ cmssmcpvFullSolution,
+             Sort /@ {{Mu        -> -(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
+                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
+                       Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))},
+                      {Mu        -> +(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
+                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
+                       Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))}
+                     }];
+
 PrintTestSummary[];

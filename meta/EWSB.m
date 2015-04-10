@@ -409,21 +409,24 @@ EliminateOneParameter[equations_List, parameters_List] :=
           ];
 
 FindSolution[equations_List, parametersFixedByEWSB_List] :=
-    Module[{simplifiedEqs, uniqueParameters, solution},
+    Module[{simplifiedEqs, makeParsUnique, solution,
+            uniquePars, uniqueEqs},
            DebugPrint["Simplifying the EWSB eqs. ..."];
            simplifiedEqs = SimplifyEwsbEqs[equations, parametersFixedByEWSB];
            simplifiedEqs = (# == 0)& /@ simplifiedEqs;
            DebugPrint["Simplified EWSB eqs.: ", simplifiedEqs];
            (* replace non-symbol parameters by unique symbols *)
-           uniqueParameters = MakeParametersUnique[parametersFixedByEWSB];
-           DebugPrint["Eliminating the parameters ",
-                      parametersFixedByEWSB /. uniqueParameters];
-           solution = EliminateOneParameter[
-                          simplifiedEqs /. uniqueParameters,
-                          parametersFixedByEWSB /. uniqueParameters];
+           makeParsUnique = MakeParametersUnique[parametersFixedByEWSB];
+           uniquePars = parametersFixedByEWSB /. makeParsUnique;
+           uniqueEqs = simplifiedEqs /. makeParsUnique;
+           DebugPrint["Eliminating the parameters ", uniquePars];
+           solution = EliminateOneParameter[uniqueEqs, uniquePars];
+           If[solution === {},
+              solution = TimeConstrainedSolve[uniqueEqs, uniquePars];
+             ];
            (* substitute back unique parameters *)
-           uniqueParameters = Reverse /@ uniqueParameters;
-           solution /. uniqueParameters
+           makeParsUnique = Reverse /@ makeParsUnique;
+           solution /. makeParsUnique
           ];
 
 StripSign[Times[int_?NumericQ,expr_]] := Abs[int] expr;
