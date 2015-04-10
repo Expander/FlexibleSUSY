@@ -473,7 +473,7 @@ ReduceTwoSolutions[sol1_, sol2_] :=
            signOrPhase = SignOrPhase[par];
            If[PossibleZeroQ[sol1[[2]] - sol2[[2]]],
               DebugPrint["The two solutions for ", par, " are identical"];
-              Return[{{sol1}}];
+              Return[{sol1}];
              ];
            If[!PossibleZeroQ[sol1[[2]] + sol2[[2]]],
               Print["Warning: cannot reduce solution for ", par];
@@ -487,8 +487,8 @@ ReduceTwoSolutions[sol1_, sol2_] :=
                Rule[p_, expr_] :>
                Rule[p, signOrPhase StripSign[expr]];
            DebugPrint["=> the reduced solution is: ",
-                      {{reducedSolution}, signOrPhase}];
-           {{reducedSolution}, signOrPhase}
+                      {reducedSolution, signOrPhase}];
+           {reducedSolution, signOrPhase}
           ];
 
 ReduceSolution[{sol_}] := {{sol},{}};
