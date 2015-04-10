@@ -89,6 +89,8 @@ AppendGenerationIndices::usage="";
 
 StripIndices::usage="removes indices from model parameter";
 
+FilterOutLinearDependentEqs::usage="returns linear independent equations";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -1000,6 +1002,23 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
                  ];
            ExtractParametersFromSARAHBetaLists[dimPars]
           ];
+
+AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
+    Module[{frac = Simplify[eq1/eq2]},
+           And @@ (FreeQ[frac,#]& /@ parameters)
+          ];
+
+FilterOutLinearDependentEqs[{}, _List] := {};
+
+FilterOutLinearDependentEqs[{eq_}, _List] := {eq};
+
+FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
+    If[Or @@ (AreLinearDependent[#,parameters]& /@ ({eq,#}& /@ {rest})),
+       (* leave out eq and check rest *)
+       FilterOutLinearDependentEqs[{rest}, parameters],
+       (* keep eq and check rest *)
+       {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
+      ];
 
 End[];
 
