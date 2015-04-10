@@ -378,7 +378,7 @@ EliminateOneParameter[equations_List, parameters_List] :=
             largestIndependentSubset, s},
            independentSubset = FindIndependentSubset[equations, parameters];
            If[independentSubset === {},
-              Print["EWSB equations are not reducible"];
+              DebugPrint["EWSB equations are not reducible"];
               Return[{}];
              ];
            (* search for the largest independent equation subset *)
@@ -395,12 +395,16 @@ EliminateOneParameter[equations_List, parameters_List] :=
            reducedPars = largestIndependentSubset[[2]];
            reducedSolution = EliminateOneParameter[reducedEqs, reducedPars];
            If[reducedSolution === {},
-              Print["Warning: could not solve reduced EWSB eqs. subset"];
+              DebugPrint["Could not solve reduced EWSB eqs. subset"];
               Return[{}];
              ];
            complementEq = Complement[equations, reducedEqs];
            complementPar = Complement[parameters, reducedPars];
            complementSolution = EliminateOneParameter[complementEq, complementPar];
+           If[complementSolution === {},
+              DebugPrint["Could not solve remaining EWSB eqs. subset"];
+              Return[{}];
+             ];
            Join[reducedSolution, complementSolution]
           ];
 
