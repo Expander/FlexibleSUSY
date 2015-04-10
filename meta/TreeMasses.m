@@ -70,6 +70,9 @@ GetVectorBosons::usage="returns list of all vector bosons";
 
 GetDimension::usage="returns the size of the particle multiplet";
 
+GetDimensionWithoutGoldstones::usage = "returns the size of the
+particle multiplet, ignoring Goldstone bosons";
+
 GetDimensionStartSkippingGoldstones::usage="return first index,
 skipping goldstone bosons";
 
@@ -253,6 +256,16 @@ GetDimensionStartSkippingGoldstones[sym_] :=
                  Return[max];
                 ];
              ];
+          ];
+
+GetDimensionWithoutGoldstones[sym_[__], states_:FlexibleSUSY`FSEigenstates] :=
+    GetDimensionWithoutGoldstones[sym, states];
+
+GetDimensionWithoutGoldstones[sym_, states_:FlexibleSUSY`FSEigenstates] :=
+    Module[{goldstones, numberOfGoldstones},
+           numberOfGoldstones = GetDimensionStartSkippingGoldstones[sym] - 1;
+           dim = GetDimension[sym] - numberOfGoldstones;
+           If[dim <= 0, 0, dim]
           ];
 
 GetMassMatrixType[particle_] :=
