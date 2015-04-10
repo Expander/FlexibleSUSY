@@ -21,9 +21,8 @@ TestEquality[mssmFreePhases, {FlexibleSUSY`Sign[mu]}];
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
 TestEquality[Sort /@ mssmFullSolution,
-             Sort /@ { {{mu -> -Sqrt[-5 - x^2 - x*y - z]},
-                        {mu -> Sqrt[-5 - x^2 - x*y - z]}},
-                       {{B[mu] -> -5 + x^2 - x*y - z}}
+             Sort /@ { {mu -> -Sqrt[-5 - x^2 - x*y - z], B[mu] -> -5 + x^2 - x*y - z},
+                       {mu ->  Sqrt[-5 - x^2 - x*y - z], B[mu] -> -5 + x^2 - x*y - z}
                      }];
 
 TestEquality[Sort[mssmSolution],
@@ -54,7 +53,8 @@ TestEquality[nmssmFreePhases, {FlexibleSUSY`Sign[s]}];
 nmssmFullSolution = EWSB`Private`FindSolution[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
 TestEquality[Sort /@ nmssmFullSolution,
-             Sort /@ {{{s -> -(Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]/
+             Sort /@ EWSB`Private`ToMathematicaSolutionFormat@
+                     {{{s -> -(Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]/
                                Sqrt[lambda^2*vd^2 - lambda^2*vu^2])},
                        {s -> Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]/
                         Sqrt[lambda^2*vd^2 - lambda^2*vu^2]}},
@@ -91,7 +91,8 @@ TestEquality[umssmFreePhases, {}];
 umssmFullSolution = EWSB`Private`FindSolution[umssmEwsbEqs, umssmEwsbOutputParameters];
 
 TestEquality[Sort /@ umssmFullSolution,
-             Sort /@ { {{mHu2 -> (g^2*(vd^2 - vu^2))/vu}},
+             Sort /@ EWSB`Private`ToMathematicaSolutionFormat@
+                     { {{mHu2 -> (g^2*(vd^2 - vu^2))/vu}},
                        {{mHd2 -> -(g^2*(vd^2 - vu^2))/vd}},
                        {{mS2 -> -(X/s)}}
                      }];
@@ -142,7 +143,8 @@ nsmEwsbEqs = {
 nsmFullSolution = EWSB`Private`FindSolution[nsmEwsbEqs, nsmEwsbOutputParameters];
 
 TestEquality[Sort /@ nsmFullSolution,
-             Sort /@ { {{mH2 -> (vH^3*l1 + vH*vS^2*l3 + vH*vS*l4 + tadpole[1])/vH}},
+             Sort /@ EWSB`Private`ToMathematicaSolutionFormat@
+                     { {{mH2 -> (vH^3*l1 + vH*vS^2*l3 + vH*vS*l4 + tadpole[1])/vH}},
                        {{mS2 -> (8*vS^3*l2 + 2*vH^2*vS*l3 + vH^2*l4 + 6*vS^2*l5 + 2*tadpole[2])/(4*vS)}}
                      }];
 
@@ -163,7 +165,8 @@ Print["\t calling FindSolution[] ..."];
 cmssmFullSolution = EWSB`Private`FindSolution[cmssmEwsbEqs, cmssmEwsbOutputParameters];
 
 TestEquality[Sort /@ cmssmFullSolution,
-             Sort /@ { {{Mu -> -Sqrt[-5 - x^2 - x*y - z]},
+             Sort /@ EWSB`Private`ToMathematicaSolutionFormat@
+                     { {{Mu -> -Sqrt[-5 - x^2 - x*y - z]},
                         {Mu -> Sqrt[-5 - x^2 - x*y - z]}},
                        {{B[Mu] -> -5 + x^2 - x*y - z}}
                      }];
@@ -180,8 +183,6 @@ TestEquality[Sort[cmssmSolution],
                   }]];
 
 Print["testing CMSSMCPV-like EWSB for |Mu|, Re[BMu] and Im[BMu] ..."];
-
-FlexibleSUSY`FSDebugOutput = True;
 
 cmssmcpvEwsbEqs = {
     x - (E^(I*eta)*vu*B[Mu])/2 + vd*Mu*Susyno`LieGroups`conj[Mu] -
@@ -200,8 +201,6 @@ Print["\t calling FindSolution[] ..."];
 
 cmssmcpvFullSolution = EWSB`Private`FindSolution[cmssmcpvEwsbEqs, cmssmcpvEwsbOutputParameters];
 
-Print["solution === ", InputForm[cmssmcpvFullSolution]];
-
 TestEquality[Sort /@ cmssmcpvFullSolution,
              Sort /@ {{Mu        -> -(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
                        Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
@@ -210,5 +209,18 @@ TestEquality[Sort /@ cmssmcpvFullSolution,
                        Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
                        Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))}
                      }];
+
+Print["\t calling FindSolutionAndFreePhases[] ..."];
+
+{cmssmcpvSolution, cmssmcpvFreePhases} = EWSB`FindSolutionAndFreePhases[cmssmcpvEwsbEqs, cmssmcpvEwsbOutputParameters];
+
+TestEquality[cmssmcpvFreePhases, {FlexibleSUSY`Phase[Mu]}];
+
+TestEquality[Sort[cmssmcpvSolution],
+             Sort[{Mu        -> (Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]
+                                 *FlexibleSUSY`Phase[Mu]/Sqrt[vu]),
+                   Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2)),
+                   Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2))
+                  }]];
 
 PrintTestSummary[];

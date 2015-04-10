@@ -323,16 +323,34 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               !FreeQ[{eq2},p2] && FreeQ[{eq2},p1],
               DebugPrint["The two equations are independent of each other."];
               DebugPrint["Step 1: solving for ", p1, ": ", eq1];
-              reduction[[1]] =
-              TimeConstrainedSolve[{eq1}, p1];
+              reduction[[1]] = TimeConstrainedSolve[{eq1}, p1];
               If[IsNoSolution[reduction[[1]]],
                  DebugPrint["Failed"];
                  Return[{}];,
                  DebugPrint["Solution: ", reduction[[1]]];
                 ];
               DebugPrint["Step 2: solving for ", p2, ": ", eq2];
-              reduction[[2]] =
-              TimeConstrainedSolve[{eq2}, p2];
+              reduction[[2]] = TimeConstrainedSolve[{eq2}, p2];
+              If[IsNoSolution[reduction[[2]]],
+                 DebugPrint["Failed"];
+                 Return[{}];,
+                 DebugPrint["Solution: ", reduction[[2]]];
+                ];
+              DebugPrint["Full solution: ", reduction];
+              Return[reduction];
+             ];
+           If[!FreeQ[{eq1},p2] && FreeQ[{eq1},p1] &&
+              !FreeQ[{eq2},p1] && FreeQ[{eq2},p2],
+              DebugPrint["The two equations are independent of each other."];
+              DebugPrint["Step 1: solving for ", p2, ": ", eq1];
+              reduction[[1]] = TimeConstrainedSolve[{eq1}, p2];
+              If[IsNoSolution[reduction[[1]]],
+                 DebugPrint["Failed"];
+                 Return[{}];,
+                 DebugPrint["Solution: ", reduction[[1]]];
+                ];
+              DebugPrint["Step 2: solving for ", p1, ": ", eq2];
+              reduction[[2]] = TimeConstrainedSolve[{eq2}, p1];
               If[IsNoSolution[reduction[[2]]],
                  DebugPrint["Failed"];
                  Return[{}];,
@@ -405,8 +423,14 @@ EliminateOneParameter[equations_List, parameters_List] :=
               DebugPrint["Could not solve remaining EWSB eqs. subset"];
               Return[{}];
              ];
+           DebugPrint["Solution = ", Join[reducedSolution, complementSolution]];
            Join[reducedSolution, complementSolution]
           ];
+
+ToMathematicaSolutionFormat[{}] := {};
+
+ToMathematicaSolutionFormat[sol_List] :=
+    Tuples[Flatten /@ sol];
 
 FindSolution[equations_List, parametersFixedByEWSB_List] :=
     Module[{simplifiedEqs, makeParsUnique, solution,
@@ -420,7 +444,7 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            uniquePars = parametersFixedByEWSB /. makeParsUnique;
            uniqueEqs = simplifiedEqs /. makeParsUnique;
            DebugPrint["Eliminating the parameters ", uniquePars];
-           solution = EliminateOneParameter[uniqueEqs, uniquePars];
+           solution = ToMathematicaSolutionFormat @ EliminateOneParameter[uniqueEqs, uniquePars];
            If[solution === {},
               solution = TimeConstrainedSolve[uniqueEqs, uniquePars];
              ];
@@ -445,7 +469,12 @@ SignOrPhase[par_] :=
 ReduceTwoSolutions[sol1_, sol2_] :=
     Module[{par, signOrPhase, reducedSolution},
            par = sol1[[1]];
+           DebugPrint["Reducing solutions for ", par, "..."];
            signOrPhase = SignOrPhase[par];
+           If[PossibleZeroQ[sol1[[2]] - sol2[[2]]],
+              DebugPrint["The two solutions for ", par, " are identical"];
+              Return[{{sol1}}];
+             ];
            If[!PossibleZeroQ[sol1[[2]] + sol2[[2]]],
               Print["Warning: cannot reduce solution for ", par];
               Print["   because the two solutions are not related by a global sign."];
@@ -462,33 +491,31 @@ ReduceTwoSolutions[sol1_, sol2_] :=
            {{reducedSolution}, signOrPhase}
           ];
 
-ReduceSolution[solution_List] :=
-    Module[{reducedSolution = {}, freePhases = {},
-            s, flattenedSolution, red},
-           DebugPrint["Reducing the solutions: ", solution];
-           For[s = 1, s <= Length[solution], s++,
-               flattenedSolution = Flatten[solution[[s]]];
-               Switch[Length[flattenedSolution],
-                      0,
-                      Print["Warning: no solution found for the EWSB eqs."];,
-                      1,
-                      AppendTo[reducedSolution, flattenedSolution];,
-                      2,
-                      red = ReduceTwoSolutions[flattenedSolution[[1]], flattenedSolution[[2]]];
-                      If[Length[red] == 2,
-                         AppendTo[reducedSolution, red[[1]]];
+ReduceSolution[{sol_}] := {{sol},{}};
+
+ReduceSolution[{sol1_, sol2_}] :=
+    Module[{reducedSolution = {}, freePhases = {}, s, red},
+           DebugPrint["Reducing the two solutions: ", {sol1,sol2}];
+           For[s = 1, s <= Length[sol1], s++,
+               red = ReduceTwoSolutions[sol1[[s]], sol2[[s]]];
+               Switch[Length[red],
+                      1, AppendTo[reducedSolution, red[[1]]];,
+                      2, AppendTo[reducedSolution, red[[1]]];
                          AppendTo[freePhases, red[[2]]];
-                        ];,
-                      _,
-                      Print["Warning: cannot reduce solution for ", flattenedSolution];
-                      Print["   because there are more than two solutions"];
                      ];
               ];
-           If[Length[reducedSolution] != Length[solution],
+           If[Length[reducedSolution] != Length[sol1],
               Print["Warning: analytic reduction of EWSB solutions failed."];
               Return[{{},{}}];
              ];
            Return[{reducedSolution, freePhases}];
+          ];
+
+ReduceSolution[solution_List] :=
+    Module[{},
+           Print["Error: cannot reduce the solution ", solution];
+           Print["   because there are more than two solutions"];
+           {{},{}}
           ];
 
 FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:""] :=
