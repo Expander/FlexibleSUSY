@@ -362,7 +362,8 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
                 ];
               Return[{reduction[[1]], rest}];
               ,
-              DebugPrint["continue with solution 2, because it is simpler::", reduction[[2]]];
+              DebugPrint["continue with solution 2, because it is simpler:",
+                         reduction[[2]]];
               rest = SolveRest[eq1, eq2, p2];
               If[IsNoSolution[rest],
                  DebugPrint["could not solve rest for solution 2"];
