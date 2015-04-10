@@ -1561,6 +1561,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[haveEWSB,
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
+              ewsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
               FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
               (* adding tadpoles to the EWSB eqs. *)
