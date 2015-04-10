@@ -262,7 +262,6 @@ FindIndependentSubset[equations_List, parameters_List] :=
                                    Complement[parameters, parameterSubsets[[p]]]}]];
                   ];
               ];
-
            result = Select[result, (Length[#[[1]]] == Length[#[[2]]]) &];
            Return[result];
           ];
@@ -382,9 +381,9 @@ EliminateOneParameter[equations_List, parameters_List] :=
               Print["EWSB equations are not reducible"];
               Return[{}];
              ];
+           (* search for the largest independent equation subset *)
            If[Length[independentSubset] == 1,
               largestIndependentSubset = independentSubset[[1]];,
-              (* search for the largest independent equation subset *)
               largestIndependentSubset = independentSubset[[1]];
               For[s = 1, s <= Length[independentSubset], s++,
                   If[Length[independentSubset[[s,2]]] > Length[largestIndependentSubset[[2]]],
