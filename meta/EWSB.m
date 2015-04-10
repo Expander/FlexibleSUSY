@@ -274,28 +274,29 @@ FindMinimumByteCount[lst_List] :=
 IsNoSolution[expr_] :=
     Head[expr] === Solve || Flatten[expr] === {};
 
+TimeConstrainedSolve[eq_, par_] :=
+    TimeConstrained[Solve[eq, par], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+
 EliminateOneParameter[{}, {}] := {};
 
 EliminateOneParameter[{eq_}, {p_}] :=
     Block[{},
           DebugPrint["eliminating ", p, ": ", eq];
-          TimeConstrained[{Solve[eq, p]}, FlexibleSUSY`FSSolveEWSBTimeConstraint, {}]
+          {TimeConstrainedSolve[eq, p]}
          ];
 
 (* solves the two equations for `par' and returns the simpler solution *)
 SolveRest[eq1_, eq2_, par_] :=
     Module[{rest = {}, solution},
            DebugPrint["solving rest for ", par, ": ", eq1];
-           solution = TimeConstrained[Solve[eq1, par],
-                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           solution = TimeConstrainedSolve[eq1, par];
            If[IsNoSolution[solution],
               DebugPrint["Failed"];,
               DebugPrint["Solution found: ", solution];
               AppendTo[rest, solution];
              ];
            DebugPrint["solving rest for ", par, ": ", eq2];
-           solution = TimeConstrained[Solve[eq2, par],
-                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           solution = TimeConstrainedSolve[eq2, par];
            If[IsNoSolution[solution],
               DebugPrint["Failed"];,
               DebugPrint["Solution found: ", solution];
@@ -323,7 +324,7 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
               DebugPrint["The two equations are independent of each other."];
               DebugPrint["Step 1: solving for ", p1, ": ", eq1];
               reduction[[1]] =
-              TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              TimeConstrainedSolve[{eq1}, p1];
               If[IsNoSolution[reduction[[1]]],
                  DebugPrint["Failed"];
                  Return[{}];,
@@ -331,7 +332,7 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
                 ];
               DebugPrint["Step 2: solving for ", p2, ": ", eq2];
               reduction[[2]] =
-              TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              TimeConstrainedSolve[{eq2}, p2];
               If[IsNoSolution[reduction[[2]]],
                  DebugPrint["Failed"];
                  Return[{}];,
@@ -342,12 +343,10 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
              ];
            DebugPrint["eliminate ", p1, " and solve for ", p2, ": ", {eq1, eq2}];
            reduction[[1]] =
-           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
-                           FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p1], p2];
            DebugPrint["eliminate ", p2, " and solve for ", p1, ": ", {eq1, eq2}];
            reduction[[2]] =
-           TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
-                           FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p2], p1];
            If[IsNoSolution[reduction[[1]]] || IsNoSolution[reduction[[2]]],
               DebugPrint["Failed"];
               Return[{}];
@@ -572,8 +571,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
               Quit[1];
              ];
            simplifiedEqs = (# == 0)& /@ equations;
-           solution = TimeConstrained[Solve[simplifiedEqs, parameters],
-                                      FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           solution = TimeConstrainedSolve[simplifiedEqs, parameters];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",
                     parameters, " uniquely"];
