@@ -687,12 +687,22 @@ WrapPhase[phase_, str_String] :=
 CreateIndices[indices_List] :=
     "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-SetEWSBSolution[par_[indices__] /; And @@ (NumberQ /@ {indices}), idx_, phase_, func_String] :=
-    CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <>
-    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
+CreateParameterLValue[par_[indices__] /; And @@ (NumberQ /@ {indices})] :=
+    CreateParameterLValue[par] <> CreateIndices[{indices}];
+
+CreateParameterLValue[par_] :=
+    CConversion`ToValidCSymbolString[par];
+
+SetEWSBSolution[Re[par_], idx_, phase_, func_String] :=
+    CreateParameterLValue[par] <> ".real(" <>
+    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ");\n";
+
+SetEWSBSolution[Im[par_], idx_, phase_, func_String] :=
+    CreateParameterLValue[par] <> ".imag(" <>
+    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ");\n";
 
 SetEWSBSolution[par_, idx_, phase_, func_String] :=
-    CConversion`ToValidCSymbolString[par] <> " = " <>
+    CreateParameterLValue[par] <> " = " <>
     WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
 
 SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String] :=
