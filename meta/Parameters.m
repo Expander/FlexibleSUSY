@@ -42,6 +42,8 @@ IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
 IsIndex::usage="returns true if given symbol is an index";
 
+GetIndices::usage="returns list of indices from a given parameter";
+
 AllModelParametersAreReal::usage="returns True if all model parameters
 are real, False otherwise";
 
@@ -183,7 +185,22 @@ IsSymmetricMatrixParameter[sym_] :=
 
 AllModelParametersAreReal[] := MemberQ[SARAH`RealParameters, All];
 
+sarahIndices = {
+    SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4,
+    Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
+};
+
+IsIndex[i_?NumberQ] := True;
+IsIndex[i_ /; MemberQ[sarahIndices,i]] := True;
+IsIndex[_] := False;
+
+GetIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] := {indices};
+GetIndices[parameter_] := {};
+
 IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
+
+IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsModelParameter[parameter];
 
 IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
 
@@ -326,15 +343,6 @@ GetType[FlexibleSUSY`M[sym_]] :=
 
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
-
-sarahIndices = {
-    SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4,
-    Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
-};
-
-IsIndex[i_?NumberQ] := True;
-IsIndex[i_ /; MemberQ[sarahIndices,i]] := True;
-IsIndex[_] := False;
 
 GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
@@ -708,45 +716,29 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
              ]
           ];
 
+ConcatIndices[indices_List] :=
+    Utils`StringJoinWithSeparator[ToString /@ indices,","];
+
+CreateIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    "(" <> ConcatIndices[{indices}] <> ")";
+
+CreateIndices[parameter_] := "";
+
+AppendIfNotEmpty[str_String, sym_String] := If[str == "", "", str <> sym];
+
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
            If[IsModelParameter[parameter],
-              parameterStr = CConversion`ToValidCSymbolString[parameter];
-              class <> "->set_" <> parameterStr <> "(" <> CConversion`CastTo[value,castToType] <> ");\n",
-              ""
-             ]
-          ];
-
-SetParameter[parameter_[idx_Integer], value_String, class_String, castToType_:None] :=
-    Module[{parameterStr},
-           If[IsModelParameter[parameter],
-              parameterStr = CConversion`ToValidCSymbolString[parameter];
-              class <> "->set_" <> parameterStr <> "(" <> ToString[idx] <> ", " <>
+              parameterStr = CConversion`ToValidCSymbolString[StripIndices[parameter]];
+              class <> "->set_" <> parameterStr <> "(" <>
+              AppendIfNotEmpty[ConcatIndices[GetIndices[parameter]],","] <>
               CConversion`CastTo[value,castToType] <> ");\n",
-              ""
-             ]
-          ];
-
-SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String, castToType_:None] :=
-    Module[{parameterStr},
-           If[IsModelParameter[parameter],
-              parameterStr = CConversion`ToValidCSymbolString[parameter];
-              class <> "->set_" <> parameterStr <> "(" <> ToString[idx1] <> ", " <>
-              ToString[idx2] <> ", " <> CConversion`CastTo[value,castToType] <> ");\n",
               ""
              ]
           ];
 
 SetParameter[parameter_, value_, class_String] :=
     SetParameter[parameter, CConversion`RValueToCFormString[value], class, GetType[parameter]]
-
-CreateIndices[indices_List] :=
-    "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
-
-CreateIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    CreateIndices[{indices}];
-
-CreateIndices[parameter_] := "";
 
 SetParameter[Re[parameter_], value_, castToType_:CConversion`ScalarType[CConversion`realScalarCType]] :=
     CConversion`ToValidCSymbolString[StripIndices[parameter]] <> ".real(" <>
