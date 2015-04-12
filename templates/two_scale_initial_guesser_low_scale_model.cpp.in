@@ -129,7 +129,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_DRbar_yukawa_couplings()
  */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
-   Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<std::complex<double>,3,3> topDRbar(ZEROMATRIXCOMPLEX(3,3));
    topDRbar(0,0) = mu_guess;
    topDRbar(1,1) = mc_guess;
    topDRbar(2,2) = mt_guess;
@@ -144,7 +144,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@UpYukawa@_DRbar()
  */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
-   Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<std::complex<double>,3,3> bottomDRbar(ZEROMATRIXCOMPLEX(3,3));
    bottomDRbar(0,0) = md_guess;
    bottomDRbar(1,1) = ms_guess;
    bottomDRbar(2,2) = mb_guess;
@@ -159,7 +159,7 @@ void @ModelName@_initial_guesser<Two_scale>::calculate_@DownYukawa@_DRbar()
  */
 void @ModelName@_initial_guesser<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
-   Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<std::complex<double>,3,3> electronDRbar(ZEROMATRIXCOMPLEX(3,3));
    electronDRbar(0,0) = me_guess;
    electronDRbar(1,1) = mm_guess;
    electronDRbar(2,2) = mtau_guess;
