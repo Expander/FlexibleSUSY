@@ -1283,6 +1283,13 @@ GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
 GuessInputParameterType[par_] :=
     CConversion`ScalarType[CConversion`realScalarCType];
 
+(* returns beta functions of VEV phases *)
+GetVEVPhasesBetaFunctions[eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Module[{phases},
+           phases = Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
+           {#, 0, 0}& /@ phases
+          ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1384,6 +1391,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaLi  , (* linear scalar term *)
                                             SARAH`BetaVEV };
              ];
+
+           (* add beta-functions for VEV phases, because they don't
+              appear in the SARAH beta functions lists *)
+           AppendTo[susyBetaFunctions, GetVEVPhasesBetaFunctions[]];
 
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
