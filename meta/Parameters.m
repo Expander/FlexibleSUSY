@@ -728,6 +728,22 @@ CreateIndices[parameter_] := "";
 
 AppendIfNotEmpty[str_String, sym_String] := If[str == "", "", str <> sym];
 
+SetParameter[Re[parameter_], value_String, class_String, castToType_:None] :=
+    Module[{parameterStr, newValue},
+           parameterStr = CConversion`RValueToCFormString[parameter];
+           newValue = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+               "(" <> value <> ",Im(MODELPARAMETER(" <> parameterStr <> ")))";
+           SetParameter[parameter, newValue, class, castToType]
+          ];
+
+SetParameter[Im[parameter_], value_String, class_String, castToType_:None] :=
+    Module[{parameterStr, newValue},
+           parameterStr = CConversion`RValueToCFormString[parameter];
+           newValue = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+               "(Re(MODELPARAMETER(" <> parameterStr <> "))," <> value <> ")";
+           SetParameter[parameter, newValue, class, castToType]
+          ];
+
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr},
            If[IsModelParameter[parameter],
