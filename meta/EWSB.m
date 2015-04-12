@@ -558,9 +558,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  parStr = CConversion`RValueToCFormString[par];
-                  result = result <> parStr <> " = " <>
-                           CConversion`RValueToCFormString[expr] <> ";\n";
+                  result = result <> Parameters`SetParameter[par, expr];
                  ];
               result = result <> "\n";
               (* check for errors *)
@@ -577,9 +575,8 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               body = "";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
-                  parStr = CConversion`RValueToCFormString[par];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
-                  body = body <> parStr <> " = " <> oldParStr <> ";\n";
+                  body = body <> Parameters`SetParameter[par, oldParStr, None];
                  ];
               body = body <> "error = 1;\n";
               result = result <>
@@ -599,7 +596,7 @@ SolveTreeLevelEwsbVia[equations_List, {}] :=
           ];
 
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
-    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr, type},
+    Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr, type, ctype},
            If[Length[equations] =!= Length[parameters],
               Print["Warning: SolveTreeLevelEwsbVia: trying to solve ",
                     Length[equations], " equations for ", Length[parameters],
@@ -622,11 +619,12 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            For[i = 1, i <= Length[solution], i++,
                par  = solution[[i,1]];
                expr = solution[[i,2]];
-               type = CConversion`CreateCType[Parameters`GetType[par]];
+               type = Parameters`GetType[par];
+               ctype = CConversion`CreateCType[type];
                parStr = "new_" <> CConversion`ToValidCSymbolString[par];
                result = result <>
-               "const " <> type <> " " <> parStr <> " = " <>
-               CConversion`RValueToCFormString[expr] <> ";\n";
+               "const " <> ctype <> " " <> parStr <> " = " <>
+               CConversion`CastTo[CConversion`RValueToCFormString[expr],type] <> ";\n";
               ];
            result = result <> "\n";
            For[i = 1, i <= Length[solution], i++,
@@ -684,26 +682,8 @@ WrapPhase[phase_ /; phase === Null, str_String] :=
 WrapPhase[phase_, str_String] :=
     "LOCALINPUT(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
 
-CreateIndices[indices_List] :=
-    "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
-
-CreateParameterLValue[par_[indices__] /; And @@ (NumberQ /@ {indices})] :=
-    CreateParameterLValue[par] <> CreateIndices[{indices}];
-
-CreateParameterLValue[par_] :=
-    CConversion`ToValidCSymbolString[par];
-
-SetEWSBSolution[Re[par_], idx_, phase_, func_String] :=
-    CreateParameterLValue[par] <> ".real(" <>
-    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ");\n";
-
-SetEWSBSolution[Im[par_], idx_, phase_, func_String] :=
-    CreateParameterLValue[par] <> ".imag(" <>
-    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ");\n";
-
 SetEWSBSolution[par_, idx_, phase_, func_String] :=
-    CreateParameterLValue[par] <> " = " <>
-    WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
+    Parameters`SetParameter[par, WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"], None];
 
 SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String] :=
     Module[{result = "", i, phase},
@@ -768,9 +748,10 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
+                  type = Parameters`GetType[par];
                   parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> parStr <> " = " <>
-                           CConversion`RValueToCFormString[expr] <> ";\n";
+                           CConversion`CastTo[CConversion`RValueToCFormString[expr],type] <> ";\n";
                  ];
               result = result <> "\n";
               (* check for errors *)
