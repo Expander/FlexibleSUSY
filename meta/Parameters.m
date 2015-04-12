@@ -780,30 +780,39 @@ AppendGenerationIndices[expr_] := expr;
 (*
  * Expands a list of expressions of the form
  *
- *   { {1 + A[SARAH`gt1]},
- *     {1 + B[SARAH`gt2]} }
+ *   { 1 + A[SARAH`gt1] }
  *
  * to
  *
- *   { {1 + A[1]}, {1 + A[2]}, {1 + A[3]},
- *     {1 + B[1]}, {1 + B[2]}, {1 + B[3]} }
+ *   { 1 + A[1], 1 + A[2], 1 + A[3] }
  *
  * where the indices SARAH`gt1 and SARAH`gt2 are assumed to run from 1
- * to 3.
+ * to their maximum value.
  *)
 ExpandExpressions[eqs_List] :=
-    Module[{result = {}, i, expanded},
-           For[i = 1, i <= Length[eqs], i++,
-               expanded = {eqs[[i]]};
-               If[!FreeQ[expanded, SARAH`gt1],
-                  expanded = Table[expanded, {SARAH`gt1, 1, 3}];
-                 ];
-               If[!FreeQ[expanded, SARAH`gt2],
-                  expanded = Table[expanded, {SARAH`gt2, 1, 3}];
-                 ];
-               result = Join[result, Flatten[expanded]];
-              ];
-           Return[result];
+    Join[Flatten[ExpandExpressions /@ eqs]];
+
+GetIdxRange[{idx_,par_}] :=
+    Module[{dim = GetParameterDimensions[par]},
+           Switch[dim,
+                  {}  , {idx,1,1},
+                  {0} , {idx,1,1},
+                  {n_?NumberQ}, {idx,1,dim[[1]]},
+                  {__}, {idx,1,1}
+                 ]
+          ];
+
+ExpandExpressions[eq_] :=
+    Module[{par, indexSymbols, indexRanges, indices = {SARAH`gt1, SARAH`gt2}},
+           indexSymbols = DeleteDuplicates[
+               Join @@ (Cases[eq, par_[idx_ /; !FreeQ[idx,#]] /;
+                                  MemberQ[Join[GetModelParameters[], GetOutputParameters[]], par] :> {#,par},
+                              {0,Infinity}]& /@ indices)];
+           indexRanges  = DeleteDuplicates[GetIdxRange /@ indexSymbols];
+           If[indexRanges === {},
+              eq,
+              Table[eq, Evaluate[Sequence @@ indexRanges]]
+             ]
           ];
 
 (* removes indices from model Parameter, taking SARAH's L, B, T, Q
