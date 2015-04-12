@@ -16,6 +16,13 @@ FlexibleSUSY-1.0.5 [not released yet]
    can be enabled/disabled using entries 13 or 4 of the FlexibleSUSY
    block in the SLHA input file.
 
+ * Feature: In the shipped FlexibleSUSY model files, the corresponding
+   default SARAH model file is specified.  This allows a user to
+   create a new model with the simplified command:
+   ./createmodel --name=CMSSM
+   The default SARAH model file to be used with a given FlexibleSUSY
+   model file can be set via FSDefaultSARAHModel = <model>;
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.

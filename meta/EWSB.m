@@ -687,8 +687,7 @@ WrapPhase[phase_, str_String] :=
 CreateIndices[indices_List] :=
     "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par],
-                idx_, phase_, func_String] :=
+SetEWSBSolution[par_[indices__] /; And @@ (NumberQ /@ {indices}), idx_, phase_, func_String] :=
     CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <>
     WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"] <> ";\n";
 

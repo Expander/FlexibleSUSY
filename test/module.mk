@@ -51,7 +51,7 @@ ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_sfermions.cpp \
-		$(DIR)/test_CMSSM_beta_functions.cpp \
+		$(DIR)/test_CMSSM_beta_function_benchmark.cpp \
 		$(DIR)/test_CMSSM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_higgs_iteration.cpp \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
@@ -415,7 +415,7 @@ $(DIR)/test_CMSSM_info.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$
 
 $(DIR)/test_CMSSM_two_loop_spectrum.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
-$(DIR)/test_CMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
+$(DIR)/test_CMSSM_beta_function_benchmark.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 
 $(DIR)/test_CMSSM_initial_guesser.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

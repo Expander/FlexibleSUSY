@@ -36,6 +36,8 @@ CheckExternalField[extField_, cp_Cp] := (
 CheckExternalField[extField_, lst_List] :=
     And @@ (CheckExternalField[extField, #]& /@ Cases[lst, _Cp, Infinity]);
 
+If[FreeQ[SARAH`Particles[EWSB], phiO | sigmaO] (* SARAH version < 4.5 *),
+
 (* external fields are at wrong positions in following Cp[]'s *)
 
 selfEnergySOc = {
@@ -106,7 +108,72 @@ TestEquality[Cp[USd[{gO1}], conj[USd[{gO2}]], conj[SOc], SOc] /. vertexRulesSd,
     0];
 
 TestEquality[Cp[USu[{gO1}], conj[USu[{gO2}]], conj[SOc], SOc] /. vertexRulesSu,
-    0];
+    0]
+,
+(*
+ * SARAH version >= 4.5 eliminates from self-energy expressions
+ * vertices which vanish after color summation
+ *)
+
+selfEnergyPhiO = {
+    FSSelfEnergy[phiO,
+     -(C*A0[Mass2[sigmaO]]*Cp[phiO, sigmaO, phiO, sigmaO])/2
+    ]};
+
+selfEnergySigmaO = {
+    FSSelfEnergy[sigmaO,
+     -(C*A0[Mass2[phiO]]*Cp[phiO, phiO, sigmaO, sigmaO])/2
+    ]};
+
+selfEnergySd = {
+    FSSelfEnergy[Sd[gO1, gO2],
+     -C sum[gI1, 1, 6,
+        A0[Mass2[Sd[{gI1}]]]
+	Cp[USd[{gO1}], conj[Sd[{gI1}]], Sd[{gI1}], conj[USd[{gO2}]]]] -
+      C sum[gI1, 1, 6,
+        A0[Mass2[Su[{gI1}]]]
+	Cp[Su[{gI1}], conj[USd[{gO2}]], conj[Su[{gI1}]], USd[{gO1}]]]
+    ]};
+
+selfEnergySu = {
+    FSSelfEnergy[Su[gO1, gO2],
+     -C sum[gI1, 1, 6,
+        A0[Mass2[Sd[{gI1}]]]
+	Cp[Sd[{gI1}], conj[USu[{gO2}]], USu[{gO1}], conj[Sd[{gI1}]]]] -
+      C sum[gI1, 1, 6,
+        A0[Mass2[Su[{gI1}]]]
+	Cp[Su[{gI1}], conj[Su[{gI1}]], conj[USu[{gO2}]], USu[{gO1}]]]
+    ]};
+
+massMatrices = {
+    FSMassMatrix[dummy, SOc, Null],
+    FSMassMatrix[dummy, Sd, ZD],
+    FSMassMatrix[dummy, Su, ZU]
+};
+
+Print["testing EnforceCpColorStructures[] ..."];
+
+selfEnergyPhiO   = EnforceCpColorStructures[selfEnergyPhiO  ];
+selfEnergySigmaO = EnforceCpColorStructures[selfEnergySigmaO];
+selfEnergySd  	 = EnforceCpColorStructures[selfEnergySd    ];
+selfEnergySu  	 = EnforceCpColorStructures[selfEnergySu    ];
+
+TestEquality[CheckExternalField[phiO  , selfEnergyPhiO  ], True];
+TestEquality[CheckExternalField[sigmaO, selfEnergySigmaO], True];
+TestEquality[CheckExternalField[USd   , selfEnergySd    ], True];
+TestEquality[CheckExternalField[USu   , selfEnergySu    ], True];
+
+Print["testing color summation ..."];
+
+vertexRulesPhiO   = VertexRules[selfEnergyPhiO  , massMatrices];
+vertexRulesSigmaO = VertexRules[selfEnergySigmaO, massMatrices];
+
+TestEquality[Cp[phiO, phiO, sigmaO, sigmaO] /. vertexRulesPhiO,
+    -6*g3^2];
+
+TestEquality[Cp[sigmaO, sigmaO, phiO, phiO] /. vertexRulesSigmaO,
+    -6*g3^2];
+]
 
 DeleteDirectory[$sarahOutputDir, DeleteContents -> True];
 

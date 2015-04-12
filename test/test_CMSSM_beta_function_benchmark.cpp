@@ -1,6 +1,6 @@
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_CMSSM_beta_functions
+#define BOOST_TEST_MODULE test_CMSSM_beta_function_benchmark
 
 #include <boost/test/unit_test.hpp>
 
@@ -12,7 +12,7 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
-BOOST_AUTO_TEST_CASE( test_CMSSM_beta_functions_benchmark )
+BOOST_AUTO_TEST_CASE( test_CMSSM_beta_function_calculation_time )
 {
    CMSSM_input_parameters input;
    CMSSM<Two_scale> m;
