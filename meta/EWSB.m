@@ -592,21 +592,27 @@ CreateTreeLevelEwsbSolver[solution_List] :=
            Return[result];
           ];
 
+SolveTreeLevelEwsbVia[equations_List, {}] :=
+    Module[{},
+           Print["Error: SolveTreeLevelEwsbVia: list of output parameters is empty"];
+           Quit[1];
+          ];
+
 SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
     Module[{result = "", simplifiedEqs, solution, i, par, expr, parStr, type},
            If[Length[equations] =!= Length[parameters],
-              Print["Error: SolveTreeLevelEwsbVia: trying to solve ",
+              Print["Warning: SolveTreeLevelEwsbVia: trying to solve ",
                     Length[equations], " equations for ", Length[parameters],
                     " parameters ", parameters];
-              Quit[1];
              ];
            simplifiedEqs = (# == 0)& /@ equations;
+           simplifiedEqs = Parameters`FilterOutIndependentEqs[simplifiedEqs, parameters];
            solution = TimeConstrainedSolve[simplifiedEqs, parameters];
            If[solution === {} || Length[solution] > 1,
               Print["Error: can't solve the EWSB equations for the parameters ",
                     parameters, " uniquely"];
-              Print["Here are the EWSB equations we have: ", simplifiedEqs];
-              Print["Here is the solution we get: ", solution];
+              Print["Here are the EWSB equations we have: ", InputForm[simplifiedEqs]];
+              Print["Here is the solution we get: ", InputForm[solution]];
               Return[result];
              ];
            solution = solution[[1]]; (* select first solution *)
