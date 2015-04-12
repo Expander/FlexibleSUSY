@@ -98,6 +98,9 @@ FilterOutIndependentEqs::usage = "returns equations that depend on the
 given list of parameters.  I.e. equations, that do not depend on the
 given list of parameters are omitted from the output.";
 
+FindAllParameters::usage = "returns list of all parameters contained
+in the given expression";
+
 Begin["`Private`"];
 
 allInputParameters = {};

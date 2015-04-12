@@ -638,34 +638,43 @@ UpperTriangleMatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String] 
            Return[result];
           ];
 
+CastMatrixElementToReal[el_] :=
+    If[Or @@ (Parameters`IsComplexParameter /@ Parameters`FindAllParameters[el]),
+       Re[el],
+       el
+      ];
+
 MatrixToCFormString[matrix_List /; MatrixQ[matrix], symbol_String, matrixElementType_] :=
     Module[{dim, result = "", i, k, isSymmetric = IsSymmetric[matrix],
-            isHermitian = IsHermitian[matrix], matrixType, dimStr},
+            isHermitian = IsHermitian[matrix], matrixType, dimStr, castedMatrix},
            dim = Length[matrix];
            dimStr = ToString[dim];
            matrixType = CreateCType[CConversion`MatrixType[matrixElementType, dim, dim]];
+           castedMatrix = If[matrixElementType === CConversion`realScalarCType,
+                             CastMatrixElementToReal /@ matrix, matrix];
            result = matrixType <> " " <> symbol <> ";\n\n"; (* not initialized *)
            Which[isSymmetric,
-                 result = result <> UpperTriangleMatrixToCFormString[matrix, symbol] <> "\n" <>
+                 result = result <> UpperTriangleMatrixToCFormString[castedMatrix, symbol] <> "\n" <>
                           "Symmetrize(" <> symbol <> ");\n";,
                  isHermitian,
-                 result = result <> UpperTriangleMatrixToCFormString[matrix, symbol] <> "\n" <>
+                 result = result <> UpperTriangleMatrixToCFormString[castedMatrix, symbol] <> "\n" <>
                           "Hermitianize(" <> symbol <> ");\n";,
                  True,
-                 result = result <> MatrixToCFormString[matrix, symbol];
+                 result = result <> MatrixToCFormString[castedMatrix, symbol];
                 ];
            Return[result];
           ];
 
 MatrixToCFormString[matrix_List, symbol_String, matrixElementType_] :=
-    Module[{result = "", type},
+    Module[{result = "", type, ctype},
            If[Length[matrix] != 1,
               Print["Error: Expression is not a 1-element list: ", matrix];
               Return["return 0.;"];
              ];
-           type = CreateCType[CConversion`ScalarType[matrixElementType]];
-           result = "const " <> type <> " " <> symbol <> " = " <>
-                    RValueToCFormString[matrix[[1]]] <>
+           type = CConversion`ScalarType[matrixElementType];
+           ctype = CreateCType[type];
+           result = "const " <> ctype <> " " <> symbol <> " = " <>
+                    CastTo[RValueToCFormString[matrix[[1]]], type] <>
                     ";\n"; (* not initialized *)
            Return[result];
           ];
