@@ -40,6 +40,7 @@ IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
+IsIndex::usage="returns true if given symbol is an index";
 
 AllModelParametersAreReal::usage="returns True if all model parameters
 are real, False otherwise";
@@ -324,6 +325,18 @@ GetType[FlexibleSUSY`M[sym_]] :=
     GetTypeFromDimension[sym, {SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
 GetType[sym_] :=
+    GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
+
+sarahIndices = {
+    SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4,
+    SARAH`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
+};
+
+IsIndex[i_?NumberQ] := True;
+IsIndex[i_ /; MemberQ[sarahIndices,i]] := True;
+IsIndex[_] := False;
+
+GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
 GetParameterDimensions[sym_] :=
@@ -730,7 +743,7 @@ SetParameter[parameter_, value_, class_String] :=
 CreateIndices[indices_List] :=
     "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-CreateIndices[parameter_[indices__] /; And @@ (NumberQ /@ {indices})] :=
+CreateIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     CreateIndices[{indices}];
 
 CreateIndices[parameter_] := "";
