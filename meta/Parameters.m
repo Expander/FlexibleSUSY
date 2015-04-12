@@ -727,6 +727,28 @@ SetParameter[parameter_[idx1_Integer, idx2_Integer], value_String, class_String,
 SetParameter[parameter_, value_, class_String] :=
     SetParameter[parameter, CConversion`RValueToCFormString[value], class, GetType[parameter]]
 
+CreateIndices[indices_List] :=
+    "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
+
+CreateIndices[parameter_[indices__] /; And @@ (NumberQ /@ {indices})] :=
+    CreateIndices[{indices}];
+
+CreateIndices[parameter_] := "";
+
+SetParameter[Re[parameter_], value_, castToType_:CConversion`ScalarType[CConversion`realScalarCType]] :=
+    CConversion`ToValidCSymbolString[StripIndices[parameter]] <> ".real(" <>
+    CConversion`CastTo[CConversion`RValueToCFormString[value] <> CreateIndices[parameter],
+                       castToType] <> ");\n";
+
+SetParameter[Im[parameter_], value_, castToType_:CConversion`ScalarType[CConversion`realScalarCType]] :=
+    CConversion`ToValidCSymbolString[StripIndices[parameter]] <> ".imag(" <>
+    CConversion`CastTo[CConversion`RValueToCFormString[value] <> CreateIndices[parameter],
+                       castToType] <> ");\n";
+
+SetParameter[parameter_, value_, castToType_:None] :=
+    CConversion`ToValidCSymbolString[StripIndices[parameter]] <> CreateIndices[parameter] <> " = " <>
+    CConversion`CastTo[CConversion`RValueToCFormString[value],castToType] <> ";\n";
+
 SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
     Module[{i, result = ""},
            For[i = 1, i <= Length[parameters], i++,
