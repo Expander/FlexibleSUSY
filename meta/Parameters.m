@@ -91,6 +91,10 @@ StripIndices::usage="removes indices from model parameter";
 
 FilterOutLinearDependentEqs::usage="returns linear independent equations";
 
+FilterOutIndependentEqs::usage = "returns equations that depend on the
+given list of parameters.  I.e. equations, that do not depend on the
+given list of parameters are omitted from the output.";
+
 Begin["`Private`"];
 
 allInputParameters = {};
@@ -1019,6 +1023,12 @@ FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
        (* keep eq and check rest *)
        {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
       ];
+
+FilterOutIndependentEqs[eqs_List, pars_List] :=
+    DeleteDuplicates @ Flatten @ Join[FilterOutIndependentEqs[eqs,#]& /@ pars];
+
+FilterOutIndependentEqs[eqs_List, p_] :=
+    Select[eqs, (!FreeQ[#,p])&];
 
 End[];
 
