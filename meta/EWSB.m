@@ -75,9 +75,10 @@ CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
 CreateEWSBEqPrototype[higgs_] :=
-    Module[{result = "", i},
+    Module[{result = "", i, ctype},
+           ctype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
            For[i = 1, i <= TreeMasses`GetDimension[higgs], i++,
-               result = result <> "double get_ewsb_eq_" <>
+               result = result <> ctype <> " get_ewsb_eq_" <>
                         ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const;\n";
               ];
@@ -94,10 +95,12 @@ CreateEWSBEqPrototype[higgs_] :=
    bosons, the remaining equations will be ignored.
  *)
 CreateEWSBEqFunction[higgs_, equation_List] :=
-    Module[{result = "", body = "", dim, i, eq, dimEq, dimPhys},
+    Module[{result = "", body = "", dim, i, eq, dimEq, dimPhys, type, ctype},
            dim = TreeMasses`GetDimension[higgs];
            dimPhys = TreeMasses`GetDimensionWithoutGoldstones[higgs];
            dimEq = Length[equation];
+           type = CConversion`ScalarType[CConversion`realScalarCType];
+           ctype = CConversion`CreateCType[type];
            If[dimPhys < dimEq,
               Print["Warning: number of physical Higgs bosons (", dimPhys,
                     ") < number of EWSB eqs. (",dimEq,")."
@@ -112,7 +115,7 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
              ];
            For[i = 1, i <= dim, i++,
                result = result <>
-                        "double CLASSNAME::get_ewsb_eq_" <>
+                        ctype <> " CLASSNAME::get_ewsb_eq_" <>
                         ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const\n{\n";
                If[i <= dimEq,
@@ -120,8 +123,8 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
                   eq = 0;
                  ];
                body = Parameters`CreateLocalConstRefsForInputParameters[eq, "LOCALINPUT"] <>
-                      "\n" <> "double result = " <>
-                      RValueToCFormString[eq] <> ";\n";
+                      "\n" <> ctype <> " result = " <>
+                      CastTo[RValueToCFormString[eq], type] <> ";\n";
                body = body <> "\nreturn result;\n";
                body = IndentText[WrapLines[body]];
                result = result <> body <> "}\n\n"
