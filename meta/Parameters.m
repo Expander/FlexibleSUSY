@@ -329,7 +329,7 @@ GetType[sym_] :=
 
 sarahIndices = {
     SARAH`gt1, SARAH`gt2, SARAH`gt3, SARAH`gt4,
-    SARAH`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
+    Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
 };
 
 IsIndex[i_?NumberQ] := True;
