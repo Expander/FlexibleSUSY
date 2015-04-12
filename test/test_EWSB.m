@@ -1,5 +1,6 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["EWSB`", "EWSB.m"];
+Needs["Parameters`", "Parameters.m"];
 
 Print["testing MSSM-like EWSB for Mu and BMu ..."];
 
@@ -222,5 +223,45 @@ TestEquality[Sort[cmssmcpvSolution],
                    Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2)),
                    Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2))
                   }]];
+
+Print["testing EWSB for mHu2, mHd2 ..."];
+
+solution = EWSB`Private`TimeConstrainedSolve[{a + b - 2 == 0, a - b == 0}, {a,b}];
+
+TestEquality[Sort[solution], Sort[{{a -> 1, b -> 1}}]];
+
+solution = EWSB`Private`TimeConstrainedSolve[{a + b - 2 == 0, a - b == 0, c == 1}, {a,b}];
+
+TestEquality[Sort[solution],
+             Sort[{{a -> 1, b -> 1}}]
+            ];
+
+solution = EWSB`Private`TimeConstrainedSolve[{a - 2 == 0, b - 1 == 0, c == 1}, {a,b}];
+
+TestEquality[Sort[solution],
+             Sort[{{a -> 2, b -> 1}}]
+            ];
+
+(* test case for the MSSM/CPV:
+
+   Here we have three linear independent equations, which we want to
+   solve for two the parametes mHu2, mHd2
+ *)
+
+solution = EWSB`Private`TimeConstrainedSolve[
+    Parameters`FilterOutIndependentEqs[
+        {mHd2*vd + x - (E^(I*eta)*vu*B[Mu])/2 - (vu*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
+         mHu2*vu - y - (E^(I*eta)*vd*B[Mu])/2 - (vd*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
+         -I/2*E^(I*eta)*vd*B[Mu] + (I/2*vd*Susyno`LieGroups`conj[B[Mu]])/E^(I*eta) == 0},
+        {mHd2, mHu2}
+    ]
+    ,
+    {mHd2, mHu2}
+];
+
+TestEquality[Sort[solution],
+             Sort[{{mHd2 -> (-2*E^(I*eta)*x + E^((2*I)*eta)*vu*B[Mu] + vu*conj[B[Mu]])/(2*E^(I*eta)*vd),
+                    mHu2 -> ( 2*E^(I*eta)*y + E^((2*I)*eta)*vd*B[Mu] + vd*conj[B[Mu]])/(2*E^(I*eta)*vu)}}]
+            ];
 
 PrintTestSummary[];
