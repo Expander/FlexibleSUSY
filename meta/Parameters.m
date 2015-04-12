@@ -198,6 +198,8 @@ GetIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] := {indices};
 GetIndices[parameter_] := {};
 
 IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
+IsModelParameter[Re[parameter_]] := IsModelParameter[parameter];
+IsModelParameter[Im[parameter_]] := IsModelParameter[parameter];
 
 IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
