@@ -668,12 +668,16 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
                 files_List, diagonalizationPrecision_List] :=
-    Module[{ewsbEquationsTreeLevel, massGetters = "", k,
+    Module[{ewsbEquationsTreeLevel, independentEwsbEquationsTreeLevel,
+            independentEwsbEquations,
+            massGetters = "", k,
             mixingMatrixGetters = "",
             slhaPoleMassGetters = "", slhaPoleMixingMatrixGetters = "",
             higgsMassGetters = "",
             tadpoleEqPrototypes = "", tadpoleEqFunctions = "",
-            numberOfEWSBEquations = Length[ewsbEquations], calculateTreeLevelTadpoles = "",
+            numberOfEWSBEquations = Length[ewsbEquations],
+            numberOfIndependentEWSBEquations,
+            calculateTreeLevelTadpoles = "",
             ewsbInitialGuess = "", physicalMassesDef = "", mixingMatricesDef = "",
             physicalMassesInit = "", physicalMassesInitNoLeadingComma = "", mixingMatricesInit = "",
             massCalculationPrototypes = "", massCalculationFunctions = "",
@@ -716,7 +720,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             softHiggsMassToTadpoleAssociation,
             enablePoleMassThreads = True
            },
+           independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, parametersFixedByEWSB];
+           numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
+           independentEwsbEquationsTreeLevel = independentEwsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
@@ -743,8 +750,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
            tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquationsTreeLevel];
            If[ewsbEquations =!= Table[0, {numberOfEWSBEquations}] &&
-              Length[parametersFixedByEWSB] != numberOfEWSBEquations,
-              Print["Error: There are ", numberOfEWSBEquations, " EWSB ",
+              Length[parametersFixedByEWSB] != numberOfIndependentEWSBEquations,
+              Print["Error: There are ", numberOfIndependentEWSBEquations, " independent EWSB ",
                     "equations, but you want to fix ", Length[parametersFixedByEWSB],
                     " parameters: ", parametersFixedByEWSB];
              ];
@@ -811,7 +818,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[Head[softHiggsMasses] === List && Length[softHiggsMasses] > 0,
               saveSoftHiggsMasses       = Parameters`SaveParameterLocally[softHiggsMasses, "old_", ""];
               restoreSoftHiggsMasses    = Parameters`RestoreParameter[softHiggsMasses, "old_", ""];
-              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[ewsbEquationsTreeLevel, softHiggsMasses];
+              solveTreeLevelEWSBviaSoftHiggsMasses = EWSB`SolveTreeLevelEwsbVia[independentEwsbEquationsTreeLevel, softHiggsMasses];
               solveEWSBTemporarily = "solve_ewsb_tree_level_via_soft_higgs_masses();";
               ,
               saveSoftHiggsMasses       = Parameters`SaveParameterLocally[FlexibleSUSY`EWSBOutputParameters, "old_", ""];
@@ -1313,7 +1320,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 2-component lists of the form {name, type} *),
             haveEWSB = True,
-            ewsbEquations, massMatrices, phases,
+            ewsbEquations, independentEwsbEquations,
+            massMatrices, phases,
             diagonalizationPrecision,
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
@@ -1572,7 +1580,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[haveEWSB,
               ewsbEquations = Parameters`ExpandExpressions[ewsbEquations];
-              ewsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
               FlexibleSUSY`EWSBOutputParameters = Parameters`DecreaseIndexLiterals[FlexibleSUSY`EWSBOutputParameters];
 
               (* adding tadpoles to the EWSB eqs. *)
@@ -1586,8 +1593,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                          FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
                  Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
                  Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
-                 Print["Solving EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
-                 {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[ewsbEquations,
+                 Print["Solving independent EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
+                 independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
+                 {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[independentEwsbEquations,
                                                                              FlexibleSUSY`EWSBOutputParameters,
                                                                              treeLevelEwsbSolutionOutputFile];
                  If[ewsbSolution === {},
@@ -1605,7 +1613,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                     Print["      ", treeLevelEwsbSolutionOutputFile];
                    ];
                  ,
-                 If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[ewsbEquations],
+                 If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[independentEwsbEquations],
                     Print["Error: not enough EWSB solutions given!"];
                     Quit[1];
                    ];
