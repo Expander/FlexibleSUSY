@@ -271,7 +271,7 @@ int CLASSNAME::solve_ewsb_iteratively()
    };
 
    const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
-   double x_init[number_of_ewsb_equations];
+   double x_init[number_of_ewsb_equations] = { 0. };
    ewsb_initial_guess(x_init);
 
 #ifdef ENABLE_VERBOSE
