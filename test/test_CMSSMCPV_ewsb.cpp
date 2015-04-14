@@ -215,21 +215,26 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
 
    BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(0))), precision);
    BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(1))), precision);
-   BOOST_CHECK_GT(Abs(Im(m.tadpole_hh(2))), precision);
-   BOOST_CHECK_GT(Abs(Im(m.tadpole_hh(3))), precision);
    BOOST_CHECK_SMALL(Im(m.tadpole_hh(0)), precision);
    BOOST_CHECK_SMALL(Im(m.tadpole_hh(1)), precision);
    BOOST_CHECK_SMALL(Re(m.tadpole_hh(2)), precision);
    BOOST_CHECK_SMALL(Re(m.tadpole_hh(3)), precision);
 
-   // check relation between one-loop tadpoles 3 and 4
    const double vu = m.get_vu(), vd = m.get_vd();
-   BOOST_CHECK_CLOSE_FRACTION(Im(m.tadpole_hh(2)), (vu/vd) * Im(m.tadpole_hh(3)), 1e-10);
+
+   // check relation between one-loop tadpoles 3 and 4
+   if (Abs(Im(m.tadpole_hh(2))) > precision &&
+       Abs(Im(m.tadpole_hh(3))) > precision) {
+      BOOST_CHECK_CLOSE_FRACTION(Im(m.tadpole_hh(2)), (vu/vd) * Im(m.tadpole_hh(3)), 1e-10);
+   }
 
    const int neq = CMSSMCPV<Two_scale>::number_of_ewsb_equations;
    double tadpole[neq] = { 0. };
    m.tadpole_equations(tadpole);
 
-   // check relation between sum of tree-level and one-loop tadpoles 3 and 4
-   BOOST_CHECK_CLOSE_FRACTION(tadpole[2], (vu/vd) * tadpole[3], 1e-10);
+   if (Abs(tadpole[2]) > precision &&
+       Abs(tadpole[3]) > precision) {
+      // check relation between sum of tree-level and one-loop tadpoles 3 and 4
+      BOOST_CHECK_CLOSE_FRACTION(tadpole[2], (vu/vd) * tadpole[3], 1e-10);
+   }
 }
