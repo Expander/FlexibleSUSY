@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
 
    // check relation between one-loop tadpoles 3 and 4
    const double vu = m.get_vu(), vd = m.get_vd();
-   BOOST_CHECK_CLOSE_FRACTION(Re(m.tadpole_hh(2)), (vu/vd) * Re(m.tadpole_hh(3)), 1e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Im(m.tadpole_hh(2)), (vu/vd) * Im(m.tadpole_hh(3)), 1e-10);
 
    const int neq = CMSSMCPV<Two_scale>::number_of_ewsb_equations;
    double tadpole[neq] = { 0. };
