@@ -213,10 +213,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles )
 
    m.calculate_DRbar_masses();
 
-   BOOST_CHECK_GT(Re(m.tadpole_hh(0)), precision);
-   BOOST_CHECK_GT(Re(m.tadpole_hh(1)), precision);
-   BOOST_CHECK_GT(Im(m.tadpole_hh(2)), precision);
-   BOOST_CHECK_GT(Im(m.tadpole_hh(3)), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(0))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(1))), precision);
+   BOOST_CHECK_GT(Abs(Im(m.tadpole_hh(2))), precision);
+   BOOST_CHECK_GT(Abs(Im(m.tadpole_hh(3))), precision);
    BOOST_CHECK_SMALL(Im(m.tadpole_hh(0)), precision);
    BOOST_CHECK_SMALL(Im(m.tadpole_hh(1)), precision);
    BOOST_CHECK_SMALL(Re(m.tadpole_hh(2)), precision);
