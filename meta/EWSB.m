@@ -95,20 +95,19 @@ CreateEWSBEqPrototype[higgs_] :=
    bosons, the remaining equations will be ignored.
  *)
 CreateEWSBEqFunction[higgs_, equation_List] :=
-    Module[{result = "", body = "", dim, i, eq, dimEq, dimPhys, type, ctype},
+    Module[{result = "", body = "", dim, i, eq, dimEq, type, ctype},
            dim = TreeMasses`GetDimension[higgs];
-           dimPhys = TreeMasses`GetDimensionWithoutGoldstones[higgs];
            dimEq = Length[equation];
            type = CConversion`ScalarType[CConversion`realScalarCType];
            ctype = CConversion`CreateCType[type];
-           If[dimPhys < dimEq,
-              Print["Warning: number of physical Higgs bosons (", dimPhys,
+           If[dim < dimEq,
+              Print["Warning: number of Higgs bosons (", dim,
                     ") < number of EWSB eqs. (",dimEq,")."
-                    "The EWSB eqs. ", (dimEq - dimPhys), "...", (dimEq),
+                    "The EWSB eqs. ", dim, "...", dimEq,
                     " will be ignored"];
              ];
-           If[dimPhys > dimEq,
-              Print["Warning: number of physical Higgs bosons (", dimPhys,
+           If[dim > dimEq,
+              Print["Warning: number of physical Higgs bosons (", dim,
                     ") > number of EWSB eqs. (",dimEq,").",
                     "The EWSB eqs. for the fields ", higgs, "(n), n >= ",
                     dimEq, ", will be set to zero."];
