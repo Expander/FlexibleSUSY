@@ -8,7 +8,7 @@ FSDefaultSARAHModel = MSSM/CPV;
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
-           {4, Sign[\[Mu]]},
+           {4, Phase[\[Mu]]},
            {5, Azero} };
 
 EXTPAR = { {100, etaInput} };
