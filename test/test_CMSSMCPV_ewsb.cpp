@@ -127,6 +127,32 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_tadpoles )
    BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_3(), (vu/vd) * m.get_ewsb_eq_hh_4(), 1e-10);
 }
 
+BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_tadpoles_real_limit )
+{
+   CMSSMCPV_input_parameters input;
+   input.m0 = 125;
+   input.m12 = 200;
+   input.TanBeta = 10;
+   input.Azero = 0;
+   input.etaInput = 0.;
+   input.PhaseMu = std::complex<double>(1,0);
+
+   CMSSMCPV<Two_scale> m;
+   const double precision = 1.0e-10;
+   setup_CMSSMCPV(m, input);
+
+   // initial guess
+   m.set_mHu2(-Sqr(input.m0));
+   m.set_mHd2(Sqr(input.m0));
+   m.set_Mu(input.m0);
+   m.set_BMu(input.m0);
+
+   BOOST_CHECK(Abs(m.get_ewsb_eq_hh_1()) > 1.);
+   BOOST_CHECK(Abs(m.get_ewsb_eq_hh_2()) > 1.);
+   BOOST_CHECK_LT(Abs(m.get_ewsb_eq_hh_3()), precision);
+   BOOST_CHECK_LT(Abs(m.get_ewsb_eq_hh_4()), precision);
+}
+
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_one_loop_tadpoles_real_limit )
 {
    CMSSMCPV_input_parameters input;
