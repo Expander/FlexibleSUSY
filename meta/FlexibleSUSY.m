@@ -623,12 +623,14 @@ ExpandGaugeIndices[gauge_, number_] :=
 ExpandGaugeIndices[gauge_List] :=
     Flatten[ExpandGaugeIndices[#,GetDimOfVEV[FindVEV[#]]]& /@ gauge];
 
-(* Returns a list of two-component list where the information is stored
-   which Higgs corresponds to which EWSB eq.
+(* Returns a list of three-component lists where the information is
+   stored which Higgs corresponds to which EWSB eq. and whether the
+   corresponding tadpole is real or imaginary (only in models with CP
+   violation).
 
    Example: MRSSM
    In[] := CreateHiggsToEWSBEqAssociation[]
-   Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
+   Out[] = {{hh, 1, Re}, {hh, 2, Re}, {hh, 4, Re}, {hh, 3, Re}}
  *)
 CreateHiggsToEWSBEqAssociation[] :=
     Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
@@ -650,6 +652,21 @@ CreateHiggsToEWSBEqAssociation[] :=
                      ];
            Join[Append[#,Re]& /@ FindPositions[Transpose[vevs][[3]]],
                 Append[#,Im]& /@ FindPositions[Transpose[vevs][[2]]]]
+          ];
+
+(* Returns a list of three-component lists where the information is
+   stored which VEV corresponds to which Tadpole eq.
+
+   Example: MRSSM
+   It[] := CreateVEVToTadpoleAssociation[]
+   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
+ *)
+CreateVEVToTadpoleAssociation[] :=
+    Module[{association, vev},
+           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           association = CreateHiggsToEWSBEqAssociation[];
+           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
           ];
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
