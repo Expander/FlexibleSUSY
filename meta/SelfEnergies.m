@@ -485,17 +485,18 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
           ];
 
 FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
-    Module[{body = "", v, field, idx, functionName},
+    Module[{body = "", v, field, idx, head, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
+               head = CConversion`ToValidCSymbolString[higgsAndIdx[[v,3]]];
                functionName = CreateTadpoleFunctionName[field];
                If[Length[higgsAndIdx] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
-                         "Re(" <> struct <> functionName <> "());\n";
+                         head <> "(" <> struct <> functionName <> "());\n";
                   ,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
-                         "Re(" <> struct <> functionName <>
+                         head <> "(" <> struct <> functionName <>
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
               ];

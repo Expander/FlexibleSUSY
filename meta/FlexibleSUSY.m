@@ -627,26 +627,29 @@ ExpandGaugeIndices[gauge_List] :=
    which Higgs corresponds to which EWSB eq.
 
    Example: MRSSM
-   It[] := CreateHiggsToEWSBEqAssociation[]
+   In[] := CreateHiggsToEWSBEqAssociation[]
    Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, gaugeES, higgs, numberOfVEVs, numberOfHiggses, vevs,
+    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
             vev, dimVev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
               Return[{{SARAH`HiggsBoson, 1}}];
              ];
-           (* list of gauge eigenstate fields, ordered according to VEVs / EWSB eqs. *)
-           gaugeES = Join[Transpose[vevs][[3]],Transpose[vevs][[2]]];
-           gaugeES = ExpandGaugeIndices[gaugeES];
-           (* list of gauge eigenstate fields, ordered according to Higgs mixing *)
-           higgsGaugeES = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
-                                {gauge_List, {SARAH`HiggsBoson, _}} :> gauge][[1]];
-           higgsGaugeES = ExpandGaugeIndices[higgsGaugeES];
-           (* find positions of gaugeES in higgsGaugeES *)
-           {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ gaugeES])
+           FindPositions[es_] :=
+               Module[{gaugeES, higgsGaugeES},
+                      gaugeES = ExpandGaugeIndices[es];
+                      (* list of gauge eigenstate fields, ordered according to Higgs mixing *)
+                      higgsGaugeES = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
+                                           {gauge_List, {SARAH`HiggsBoson, _}} :> gauge][[1]];
+                      higgsGaugeES = ExpandGaugeIndices[higgsGaugeES];
+                      (* find positions of gaugeES in higgsGaugeES *)
+                      {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ gaugeES])
+                     ];
+           Join[Append[#,Re]& /@ FindPositions[Transpose[vevs][[3]]],
+                Append[#,Im]& /@ FindPositions[Transpose[vevs][[2]]]]
           ];
 
 (* Returns a list of three-component lists where the information is
