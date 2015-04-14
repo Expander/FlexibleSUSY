@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_tree_level )
 
    // check relation between tree-level tadpoles 3 and 4
    const double vu = m.get_vu(), vd = m.get_vd();
-   BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_3(), -(vu/vd) * m.get_ewsb_eq_hh_4(), 1e-10);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_ewsb_eq_hh_3(), (vu/vd) * m.get_ewsb_eq_hh_4(), 1e-10);
 
    m.set_ewsb_iteration_precision(precision);
    const int error = m.solve_ewsb_tree_level();
