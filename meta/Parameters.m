@@ -1065,7 +1065,7 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
           ];
 
 AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
-    Module[{frac = Simplify[eq1/eq2]},
+    Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0]},
            And @@ (FreeQ[frac,#]& /@ parameters)
           ];
 
