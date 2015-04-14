@@ -74,13 +74,21 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_one_loop )
    m.set_Mu(input.m0);
    m.set_BMu(input.m0);
 
+   const int neq = CMSSMCPV<Two_scale>::number_of_ewsb_equations;
+   double tadpole[neq] = { 0. };
+
+   m.tadpole_equations(tadpole);
+
+   BOOST_CHECK(Abs(tadpole[0]) > 1.);
+   BOOST_CHECK(Abs(tadpole[1]) > 1.);
+   BOOST_CHECK(Abs(tadpole[2]) > 1.);
+   BOOST_CHECK(Abs(tadpole[3]) > 1.);
+
    m.set_ewsb_iteration_precision(precision);
    const int error = m.solve_ewsb_one_loop();
 
    BOOST_REQUIRE(error == 0);
 
-   const int neq = CMSSMCPV<Two_scale>::number_of_ewsb_equations;
-   double tadpole[neq] = { 0. };
    m.tadpole_equations(tadpole);
 
    BOOST_CHECK_SMALL(Abs(tadpole[0]), precision);
