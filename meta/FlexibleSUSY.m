@@ -654,21 +654,6 @@ CreateHiggsToEWSBEqAssociation[] :=
                 Append[#,Im]& /@ FindPositions[Transpose[vevs][[2]]]]
           ];
 
-(* Returns a list of three-component lists where the information is
-   stored which VEV corresponds to which Tadpole eq.
-
-   Example: MRSSM
-   It[] := CreateVEVToTadpoleAssociation[]
-   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
- *)
-CreateVEVToTadpoleAssociation[] :=
-    Module[{association, vev},
-           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
-                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
-           association = CreateHiggsToEWSBEqAssociation[];
-           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
-          ];
-
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
