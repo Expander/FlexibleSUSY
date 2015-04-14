@@ -214,7 +214,7 @@ ComplexParameterReplacementRules[eqs_List, par_] :=
           ];
 
 SplitRealAndImagParts[eqs_List, pars_List] :=
-    eqs /. DeleteDuplicates[Cases[pars, Re[p_] | Im[p_] :> Rule[p,Re[p]+I Im[p]]]]
+    eqs /. DeleteDuplicates[Cases[pars, Re[p_] | Im[p_] :> Rule[p,Re[p]+I Im[p]]]];
 
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
     Module[{realParameters, complexParameters, simplificationRules,
