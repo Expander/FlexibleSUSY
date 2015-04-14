@@ -206,6 +206,11 @@ TEST_SRC += \
 		$(DIR)/test_compare_ewsb_solvers.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV),yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMCPV_ewsb.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-NUTNMSSM),yes)
 TEST_SH += \
 		$(DIR)/test_NUTNMSSM.sh
@@ -441,6 +446,8 @@ $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $
 $(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMLowPrecision.x: $(LIBSoftsusyMSSM) $(LIBCMSSMLowPrecision) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NMSSM_beta_functions.x: $(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS)) $(LIBTEST)
 
