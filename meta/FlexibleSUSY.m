@@ -631,22 +631,22 @@ ExpandGaugeIndices[gauge_List] :=
    Out[] = {{hh, 1}, {hh, 2}, {hh, 4}, {hh, 3}}
  *)
 CreateHiggsToEWSBEqAssociation[] :=
-    Module[{association = {}, v, phi, sigma, higgs, numberOfVEVs, numberOfHiggses, vevs,
+    Module[{association = {}, v, gaugeES, higgs, numberOfVEVs, numberOfHiggses, vevs,
             vev, dimVev},
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
               Return[{{SARAH`HiggsBoson, 1}}];
              ];
-           (* list of phi fields, ordered according to VEVs / EWSB eqs. *)
-           phi = Transpose[vevs][[3]];
-           phi = ExpandGaugeIndices[phi];
-           (* list of phi fields, ordered according to Higgs mixing *)
+           (* list of gauge eigenstate fields, ordered according to VEVs / EWSB eqs. *)
+           gaugeES = Join[Transpose[vevs][[3]],Transpose[vevs][[2]]];
+           gaugeES = ExpandGaugeIndices[gaugeES];
+           (* list of gauge eigenstate fields, ordered according to Higgs mixing *)
            higgsGaugeES = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`MatterSector],
                                 {gauge_List, {SARAH`HiggsBoson, _}} :> gauge][[1]];
            higgsGaugeES = ExpandGaugeIndices[higgsGaugeES];
-           (* find positions of phi in higgsGaugeES *)
-           {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ phi])
+           (* find positions of gaugeES in higgsGaugeES *)
+           {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ gaugeES])
           ];
 
 (* Returns a list of three-component lists where the information is
