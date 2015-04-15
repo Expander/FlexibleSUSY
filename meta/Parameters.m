@@ -1,5 +1,5 @@
 
-BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`"}];
+BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
 FindSymbolDef::usage="";
 
@@ -978,7 +978,7 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 ClearPhase[phase_] :=
-    CConversion`ToValidCSymbolString[phase] <> " = " <>
+    Phases`CreatePhaseName[phase] <> " = " <>
     CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(1.,0.);\n";
 
 ClearPhases[phases_List] :=
