@@ -87,8 +87,6 @@ given description string.";
 NumberOfIndependentEntriesOfSymmetricMatrix::usage="Returns number of
 independent parameters of a real symmetric nxn matrix";
 
-ClearPhases::usage="";
-
 ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
 
@@ -984,16 +982,6 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
-
-ClearPhase[p:Exp[phase_]] :=
-    Phases`CreatePhaseName[p] <> " = 0.;\n";
-
-ClearPhase[phase_] :=
-    Phases`CreatePhaseName[phase] <> " = " <>
-    CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(1.,0.);\n";
-
-ClearPhases[phases_List] :=
-    StringJoin[ClearPhase /@ phases];
 
 AppendGenerationIndices[expr_List] :=
     AppendGenerationIndices /@ expr;

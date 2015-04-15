@@ -15,6 +15,8 @@ CreatePhaseName::usage = "creates the name of a SARAH phase";
 
 GetArg::usage = "returs the real arg of a given phase";
 
+ClearPhases::usage="resets phases";
+
 Begin["`Private`"];
 
 GetArg[Exp[phase_]] := GetArg[phase];
@@ -67,6 +69,16 @@ CreatePhasesInitialization[phases_List] :=
               ];
            Return[result];
           ];
+
+ClearPhase[p:Exp[phase_]] :=
+    Phases`CreatePhaseName[p] <> " = 0.;\n";
+
+ClearPhase[phase_] :=
+    Phases`CreatePhaseName[phase] <> " = " <>
+    CreateCType[CConversion`ScalarType[complexScalarCType]] <> "(1.,0.);\n";
+
+ClearPhases[phases_List] :=
+    StringJoin[ClearPhase /@ phases];
 
 End[];
 

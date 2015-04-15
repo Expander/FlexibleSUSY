@@ -734,7 +734,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                    TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,""],
                    "\n"
                ];
-           clearPhases = Parameters`ClearPhases[phases];
+           clearPhases = Phases`ClearPhases[phases];
            calculateAllMasses = TreeMasses`CallMassCalculationFunctions[massMatrices];
            tadpoleEqPrototypes = EWSB`CreateEWSBEqPrototype[SARAH`HiggsBoson];
            tadpoleEqFunctions  = EWSB`CreateEWSBEqFunction[SARAH`HiggsBoson, ewsbEquationsTreeLevel];
