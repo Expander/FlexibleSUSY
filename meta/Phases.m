@@ -13,26 +13,34 @@ phases"
 
 CreatePhaseName::usage = "creates the name of a SARAH phase";
 
+GetArg::usage = "returs the real arg of a given phase";
+
 Begin["`Private`"];
 
-CreatePhaseName[Exp[phase_]] :=
-    CreatePhaseName[phase];
-
-CreatePhaseName[I phase_] :=
-    CConversion`ToValidCSymbolString[phase];
+GetArg[Exp[phase_]] := GetArg[phase];
+GetArg[I phase_] := phase;
+GetArg[phase_] := phase;
 
 CreatePhaseName[phase_] :=
-    CConversion`ToValidCSymbolString[phase];
+    CConversion`ToValidCSymbolString[GetArg[phase]];
 
 ConvertSarahPhases[phases_List] :=
     DeleteDuplicates[(#[[2]])& /@ phases];
+
+GetPhaseType[Exp[_]] := CConversion`ScalarType[CConversion`realScalarCType];
+GetPhaseType[_]      := CConversion`ScalarType[CConversion`complexScalarCType];
+
+CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`realScalarCType]] :=
+    "(0)";
+
+CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`complexScalarCType]] :=
+    "(1,0)";
 
 CreatePhasesDefinition[phases_List] :=
     Module[{result = "", k},
            For[k = 1, k <= Length[phases], k++,
                result = result <> CConversion`CreateCType[
-                            CConversion`ScalarType[
-                                CConversion`complexScalarCType]] <> " " <>
+                            GetPhaseType[phases[[k]]]] <> " " <>
                         CreatePhaseName[phases[[k]]] <> ";\n";
               ];
            Return[result];
@@ -42,19 +50,20 @@ CreatePhasesGetterSetters[phases_List] :=
     Module[{result = "", k, phaseName, type},
            For[k = 1, k <= Length[phases], k++,
                phaseName = CreatePhaseName[phases[[k]]];
-               type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
+               type = GetPhaseType[phases[[k]]];
                result = result <>
-                        CConversion`CreateInlineSetter[phaseName, "const " <> type <> "&"] <>
-                        CConversion`CreateInlineGetter[phaseName, "const " <> type <> "&"];
+                        CConversion`CreateInlineSetter[phaseName, type] <>
+                        CConversion`CreateInlineGetter[phaseName, type];
               ];
            Return[result];
           ];
 
 CreatePhasesInitialization[phases_List] :=
-    Module[{result = "", k, phaseName},
+    Module[{result = "", k, phaseName, type},
            For[k = 1, k <= Length[phases], k++,
                phaseName = CreatePhaseName[phases[[k]]];
-               result = result <> ", " <> phaseName <> "(1,0)";
+               type = GetPhaseType[phases[[k]]];
+               result = result <> ", " <> phaseName <> CreatePhaseInit[type];
               ];
            Return[result];
           ];

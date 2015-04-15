@@ -11,6 +11,8 @@ CreateParameterEnums::usage="";
 SetParameter::usage="set model parameter";
 SetInputParameter::usage="set input parameter";
 AddInputParameters::usage="add an input parameter";
+SetPhases::usage="sets field phases";
+GetPhases::usage="returns field phases";
 
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
@@ -106,15 +108,18 @@ Begin["`Private`"];
 allInputParameters = {};
 allModelParameters = {};
 allOutputParameters = {};
+allPhases = {};
 
 SetInputParameters[pars_List] := allInputParameters = DeleteDuplicates[pars];
 AddInputParameters[pars_List] := allInputParameters = DeleteDuplicates[Utils`ForceJoin[allInputParameters, pars]];
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
+SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
 
 GetInputParameters[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
+GetPhases[] := allPhases;
 
 additionalRealParameters = {};
 
@@ -146,7 +151,8 @@ FindSymbolDef[sym_] :=
 (* Returns all parameters within an expression *)
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
-           allParameters = Join[allModelParameters, allOutputParameters, allInputParameters];
+           allParameters = Join[allModelParameters, allOutputParameters,
+                                allInputParameters, Phases`GetArg /@ allPhases];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -824,7 +830,7 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses},
+            poleMasses, phases},
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity],
@@ -835,9 +841,11 @@ CreateLocalConstRefs[expr_] :=
            inputSymbols = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
+           phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
+           (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
@@ -976,6 +984,9 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
           ];
 
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
+
+ClearPhase[p:Exp[phase_]] :=
+    Phases`CreatePhaseName[p] <> " = 0.;\n";
 
 ClearPhase[phase_] :=
     Phases`CreatePhaseName[phase] <> " = " <>

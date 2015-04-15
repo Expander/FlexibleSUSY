@@ -1279,11 +1279,8 @@ GuessInputParameterType[par_] :=
     CConversion`ScalarType[CConversion`realScalarCType];
 
 (* returns beta functions of VEV phases *)
-GetVEVPhasesBetaFunctions[eigenstates_:FlexibleSUSY`FSEigenstates] :=
-    Module[{phases},
-           phases = Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
-           {#, 0, 0}& /@ phases
-          ];
+GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
+    Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
 
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
@@ -1388,16 +1385,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                             SARAH`BetaVEV };
              ];
 
-           (* add beta-functions for VEV phases, because they don't
-              appear in the SARAH beta functions lists *)
-           AppendTo[susyBetaFunctions, GetVEVPhasesBetaFunctions[]];
-
            (* store all model parameters *)
            allParameters = ((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions]) /.
                                a_[Susyno`LieGroups`i1] :> a /.
                                a_[Susyno`LieGroups`i1,SARAH`i2] :> a;
            allIndexReplacementRules = Parameters`CreateIndexReplacementRules[allParameters];
            Parameters`SetModelParameters[allParameters];
+
+           (* collect all phases from SARAH *)
+           phases = DeleteDuplicates @ Join[
+               ConvertSarahPhases[SARAH`ParticlePhases],
+               Exp[I #]& /@ GetVEVPhases[FlexibleSUSY`FSEigenstates]];
+           Parameters`SetPhases[phases];
 
            susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
@@ -1778,8 +1777,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                     }
                                    ];
 
-           phases = ConvertSarahPhases[SARAH`ParticlePhases];
-
            (* determin diagonalization precision for each particle *)
            diagonalizationPrecision = ReadPoleMassPrecisions[
                DefaultPoleMassPrecision,
@@ -1800,7 +1797,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
                            FlexibleSUSY`EWSBOutputParameters, ewsbSolution, freePhases,
-                           nPointFunctions, vertexRules, phases,
+                           nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
