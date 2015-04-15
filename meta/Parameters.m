@@ -13,6 +13,7 @@ SetInputParameter::usage="set input parameter";
 AddInputParameters::usage="add an input parameter";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
+SetPhase::usage="sets a phase to a value";
 
 ApplyGUTNormalization::usage="Returns a list of repacement rules for
 gauge couplings, which replace non-normalized gauge couplings
@@ -43,6 +44,7 @@ IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
 IsIndex::usage="returns true if given symbol is an index";
+IsPhase::usage="returns True if given symbol is a phase";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -203,6 +205,8 @@ IsIndex[_] := False;
 
 GetIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] := {indices};
 GetIndices[parameter_] := {};
+
+IsPhase[parameter_] := MemberQ[Phases`GetArg /@ allPhases, Phases`GetArg[parameter]];
 
 IsModelParameter[parameter_] := MemberQ[allModelParameters, parameter];
 IsModelParameter[Re[parameter_]] := IsModelParameter[parameter];
@@ -721,6 +725,16 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
               parameterStr = CConversion`ToValidCSymbolString[parameter];
               valueStr = CConversion`RValueToCFormString[value];
               wrapper <> "(" <> parameterStr <> ") = " <> CConversion`CastTo[valueStr,castToType] <> ";\n",
+              ""
+             ]
+          ];
+
+SetPhase[phase_, value_, class_String] :=
+    Module[{phaseStr, valueStr},
+           If[IsPhase[phase],
+              phaseStr = Phases`CreatePhaseName[phase];
+              valueStr = CConversion`RValueToCFormString[value];
+              class <> "->set_" <> phaseStr <> "(" <> valueStr <> ");\n",
               ""
              ]
           ];
