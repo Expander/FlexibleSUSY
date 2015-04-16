@@ -638,7 +638,7 @@ CreateHiggsToEWSBEqAssociation[] :=
            vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
                         {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
            If[Length[vevs] == 1,
-              Return[{{SARAH`HiggsBoson, 1}}];
+              Return[{{SARAH`HiggsBoson, 1, Re}}];
              ];
            FindPositions[es_] :=
                Module[{gaugeES, higgsGaugeES},
