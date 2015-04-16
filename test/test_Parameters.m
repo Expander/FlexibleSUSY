@@ -79,7 +79,7 @@ Parameters`SetModelParameters[modelParameters];
 
 expr = 2 * Mu SARAH`B[Mu] + WOp SARAH`Q[WOp] + a;
 
-TestEquality[Sort[Parameters`Private`FindAllParameters[expr]],
+TestEquality[Sort[Parameters`FindAllParameters[expr]],
              Sort[modelParameters]
             ];
 
