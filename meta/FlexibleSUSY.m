@@ -651,7 +651,7 @@ CreateHiggsToEWSBEqAssociation[] :=
                       {SARAH`HiggsBoson,#}& /@ (Flatten[Position[higgsGaugeES, #]& /@ gaugeES])
                      ];
            Join[Append[#,Re]& /@ FindPositions[Transpose[vevs][[3]]],
-                Append[#,Im]& /@ FindPositions[Transpose[vevs][[2]]]]
+                Append[#,Re]& /@ FindPositions[Transpose[vevs][[2]]]]
           ];
 
 WriteModelClass[massMatrices_List, ewsbEquations_List,
