@@ -7,6 +7,21 @@ listed below, please file a bug report at
 Known problems
 ==============
 
+Exception due to multi-threading
+--------------------------------
+
+If FlexibleSUSY exits with an exception indicating that threads cannot
+be opened (which happens for example with g++ 4.8.x), one can try
+adding "-Wl,--no-as-needed" to the CXXFLAGS, i.e. for example
+
+   ./configure --with-cxxflags="-Wl,--no-as-needed -std=c++11 -O2"
+
+If this does not solve the problem, one can disable multi-threading
+via
+
+   ./configure --disable-threads
+
+
 Expressing the Weinberg angle in terms of the gauge couplings
 -------------------------------------------------------------
 
