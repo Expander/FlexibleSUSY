@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    setup_CMSSMCKM(m, s, input, oneset);
    s.setData(oneset);
 
-   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    softsusy::MIXING = 3; // up-type mixing with only one CKM factor
 
-   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   CMSSMCKM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    {
       // compare CKM matrices

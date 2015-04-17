@@ -172,7 +172,8 @@ BOOST_AUTO_TEST_CASE( test_high_scale_constraint )
    setup(input, inputParameters);
    setup(m, s);
 
-   CMSSMCKM_high_scale_constraint<Two_scale> constraint(&m, input);
+   m.set_input_parameters(input);
+   CMSSMCKM_high_scale_constraint<Two_scale> constraint(&m);
 
    try {
       m.calculate_DRbar_masses();
