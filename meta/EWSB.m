@@ -560,7 +560,8 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  result = result <> Parameters`SetParameter[par, expr];
+                  type = Parameters`GetType[par];
+                  result = result <> Parameters`SetParameter[par, expr, type];
                  ];
               result = result <> "\n";
               (* check for errors *)
