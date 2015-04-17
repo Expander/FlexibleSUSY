@@ -847,8 +847,8 @@ ConvertSoftSquaredMassesToSLHA[] :=
                               ] <> ";\n";
                      ,
                      result = result <>
+                              CreateSLHASoftSquaredMassName[#] <> " = " <>
                               CastTo[
-                                  CreateSLHASoftSquaredMassName[#] <> " = " <>
                                   CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
                                   CConversion`ToValidCSymbolString[#] <> " * " <>
                                   CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()",
