@@ -419,6 +419,10 @@ GeneralReplacementRules[] :=
       "@UpYukawa@"       -> ToValidCSymbolString[SARAH`UpYukawa],
       "@DownYukawa@"     -> ToValidCSymbolString[SARAH`DownYukawa],
       "@ElectronYukawa@" -> ToValidCSymbolString[SARAH`ElectronYukawa],
+      "@LeftUpMixingMatrix@"   -> ToValidCSymbolString[SARAH`UpMatrixL],
+      "@LeftDownMixingMatrix@" -> ToValidCSymbolString[SARAH`DownMatrixL],
+      "@RightUpMixingMatrix@"  -> ToValidCSymbolString[SARAH`UpMatrixR],
+      "@RightDownMixingMatrix@"-> ToValidCSymbolString[SARAH`DownMatrixR],
       "@hyperchargeCoupling@" -> ToValidCSymbolString[SARAH`hyperchargeCoupling],
       "@leftCoupling@"        -> ToValidCSymbolString[SARAH`leftCoupling],
       "@strongCoupling@"      -> ToValidCSymbolString[SARAH`strongCoupling],
@@ -654,6 +658,79 @@ CreateHiggsToEWSBEqAssociation[] :=
                 Append[#,Re]& /@ FindPositions[Transpose[vevs][[2]]]]
           ];
 
+WriteModelSLHAClass[massMatrices_List, files_List] :=
+    Module[{k,
+            slhaYukawaDef = "",
+            slhaYukawaGetter = "",
+            convertYukawaCouplingsToSLHA = "",
+            slhaTrilinearCouplingsDef = "",
+            slhaTrilinearCouplingsGetter = "",
+            convertTrilinearCouplingsToSLHA = "",
+            slhaSoftSquaredMassesDef = "",
+            slhaSoftSquaredMassesGetter = "",
+            convertSoftSquaredMassesToSLHA = "",
+            slhaFerimonMixingMatricesDef = "",
+            slhaFerimonMixingMatricesGetters = "",
+            slhaPoleMassGetters = "",
+            slhaPoleMixingMatrixGetters = "",
+            convertMixingsToSLHAConvention = "",
+            calculateCKMMatrix = "",
+            calculatePMNSMatrix = ""
+           },
+           slhaYukawaDef        = WriteOut`CreateSLHAYukawaDefinition[];
+           slhaYukawaGetter     = WriteOut`CreateSLHAYukawaGetters[];
+           convertYukawaCouplingsToSLHA = WriteOut`ConvertYukawaCouplingsToSLHA[];
+           slhaTrilinearCouplingsDef    = WriteOut`CreateSLHATrilinearCouplingDefinition[];
+           slhaTrilinearCouplingsGetter = WriteOut`CreateSLHATrilinearCouplingGetters[];
+           convertTrilinearCouplingsToSLHA = WriteOut`ConvertTrilinearCouplingsToSLHA[];
+           slhaSoftSquaredMassesDef    = WriteOut`CreateSLHASoftSquaredMassesDefinition[];
+           slhaSoftSquaredMassesGetter = WriteOut`CreateSLHASoftSquaredMassesGetters[];
+           convertSoftSquaredMassesToSLHA = WriteOut`ConvertSoftSquaredMassesToSLHA[];
+           slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
+           slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
+           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
+           calculateCKMMatrix = WriteOut`CalculateCKMMatrix[];
+           calculatePMNSMatrix = WriteOut`CalculatePMNSMatrix[];
+           For[k = 1, k <= Length[massMatrices], k++,
+               slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
+               slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
+              ];
+           WriteOut`ReplaceInFiles[files,
+                          { "@slhaYukawaDef@"                  -> IndentText[slhaYukawaDef],
+                            "@slhaYukawaGetter@"               -> IndentText[slhaYukawaGetter],
+                            "@convertYukawaCouplingsToSLHA@"   -> IndentText[convertYukawaCouplingsToSLHA],
+                            "@slhaFerimonMixingMatricesDef@"   -> IndentText[slhaFerimonMixingMatricesDef],
+                            "@slhaFerimonMixingMatricesGetters@" -> IndentText[slhaFerimonMixingMatricesGetters],
+                            "@slhaTrilinearCouplingsDef@"      -> IndentText[slhaTrilinearCouplingsDef],
+                            "@slhaTrilinearCouplingsGetter@"   -> IndentText[slhaTrilinearCouplingsGetter],
+                            "@convertTrilinearCouplingsToSLHA@"-> IndentText[convertTrilinearCouplingsToSLHA],
+                            "@slhaSoftSquaredMassesDef@"       -> IndentText[slhaSoftSquaredMassesDef],
+                            "@slhaSoftSquaredMassesGetter@"    -> IndentText[slhaSoftSquaredMassesGetter],
+                            "@convertSoftSquaredMassesToSLHA@" -> IndentText[convertSoftSquaredMassesToSLHA],
+                            "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
+                            "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
+                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
+                            "@calculateCKMMatrix@"             -> IndentText[calculateCKMMatrix],
+                            "@calculatePMNSMatrix@"             -> IndentText[calculatePMNSMatrix],
+                            Sequence @@ GeneralReplacementRules[]
+                          } ];
+          ];
+
+(* Returns a list of three-component lists where the information is
+   stored which VEV corresponds to which Tadpole eq.
+
+   Example: MRSSM
+   It[] := CreateVEVToTadpoleAssociation[]
+   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
+ *)
+CreateVEVToTadpoleAssociation[] :=
+    Module[{association, vev},
+           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           association = CreateHiggsToEWSBEqAssociation[];
+           {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
+          ];
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
@@ -716,8 +793,6 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            For[k = 1, k <= Length[massMatrices], k++,
                massGetters          = massGetters <> TreeMasses`CreateMassGetter[massMatrices[[k]]];
                mixingMatrixGetters  = mixingMatrixGetters <> TreeMasses`CreateMixingMatrixGetter[massMatrices[[k]]];
-               slhaPoleMassGetters         = slhaPoleMassGetters <> TreeMasses`CreateSLHAPoleMassGetter[massMatrices[[k]]];
-               slhaPoleMixingMatrixGetters = slhaPoleMixingMatrixGetters <> TreeMasses`CreateSLHAPoleMixingMatrixGetter[massMatrices[[k]]];
                physicalMassesDef    = physicalMassesDef <> TreeMasses`CreatePhysicalMassDefinition[massMatrices[[k]]];
                mixingMatricesDef    = mixingMatricesDef <> TreeMasses`CreateMixingMatrixDefinition[massMatrices[[k]]];
                physicalMassesInit   = physicalMassesInit <> TreeMasses`CreatePhysicalMassInitialization[massMatrices[[k]]];
@@ -1288,7 +1363,7 @@ SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
 SelectRenormalizationScheme[renormalizationScheme_] :=
     Switch[renormalizationScheme,
            FlexibleSUSY`DRbar, 0,
-           FlexibleSUSY`MSbar, 0, (* set MS-bar -- DR-bar conversion CTs to zero *)
+           FlexibleSUSY`MSbar, 1,
            _, Message[SelectRenormalizationScheme::UnknownRenormalizationScheme, renormalizationScheme];
               Quit[1];
           ];
@@ -1793,6 +1868,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName]];
 
+           PrintHeadline["Creating SLHA model"];
+           Print["Creating class for SLHA model ..."];
+           WriteModelSLHAClass[massMatrices,
+                               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
+                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
+                                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
+                                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]}
+                               }];
+
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations,
@@ -1800,16 +1886,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.cpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.hpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.hpp"}]},
-                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model_slha.cpp.in"}],
-                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model_slha.cpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "physical.cpp.in"}],

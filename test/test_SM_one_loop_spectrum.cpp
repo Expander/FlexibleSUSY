@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
    for (unsigned i = 0; i < 3; i++) {
       const double gluon_contrib =
          -5.333333333333333 *
-         ReB0(Sqr(p),Sqr(MFu(i)),0,Sqr(scale))
+         (-0.5 + ReB0(Sqr(p),Sqr(MFu(i)),0,Sqr(scale)))
             * Sqr(g3) * MFu(i);
 
       se_t_check(i,i) += gluon_contrib * oneOver16PiSqr;

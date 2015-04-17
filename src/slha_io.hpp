@@ -30,6 +30,7 @@
 #include "error.hpp"
 #include "wrappers.hpp"
 #include "numerics.hpp"
+#include "pmns.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -117,9 +118,30 @@ public:
    typedef boost::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
    struct Modsel {
+      bool quark_flavour_violated;   ///< key = 6
+      bool lepton_flavour_violated;  ///< key = 6
       double parameter_output_scale; ///< key = 12
-      Modsel() : parameter_output_scale(0.) {}
-      void clear() { parameter_output_scale = 0.; }
+      Modsel()
+         : quark_flavour_violated(false)
+         , lepton_flavour_violated(false)
+         , parameter_output_scale(0.)
+         {}
+      void clear() {
+         quark_flavour_violated = false;
+         lepton_flavour_violated = false;
+         parameter_output_scale = 0.;
+      }
+   };
+
+   struct CKM_wolfenstein {
+      double lambdaW, aCkm, rhobar, etabar;
+      CKM_wolfenstein() : lambdaW(0.), aCkm(0.), rhobar(0.), etabar(0.) {}
+      void clear() {
+         lambdaW = 0.;
+         aCkm    = 0.;
+         rhobar  = 0.;
+         etabar  = 0.;
+      }
    };
 
    class ReadError : public Error {
@@ -182,6 +204,8 @@ private:
    static std::string to_lower(const std::string&); ///< string to lower case
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
+   static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
+   static void process_upmnsin_tuple(PMNS_parameters&, int, double);
 };
 
 template <class Scalar>

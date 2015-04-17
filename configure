@@ -1874,16 +1874,9 @@ EOF
     if test "x${_sarah_is_available}" = "x0" ; then
         if test -r "${sarahconfig}" ; then
             SARAH_VERSION=`cat ${sarahconfig}`
-            SARAH_MAJOR=`echo ${SARAH_VERSION} | awk -F . '{ print $1 }'`
-            SARAH_MINOR=`echo ${SARAH_VERSION} | awk -F . '{ print $2 }'`
-            SARAH_PATCH=`echo ${SARAH_VERSION} | awk -F . '{ print $3 }'`
-            if test \
-                \( "${SARAH_MAJOR}" -lt "${required_sarah_major}" \) -o \
-                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
-                   \( "${SARAH_MINOR}" -lt "${required_sarah_minor}" \) \) -o \
-                \( \( "${SARAH_MAJOR}" -eq "${required_sarah_major}" \) -a \
-                   \( "${SARAH_MINOR}" -eq "${required_sarah_minor}" \) -a \
-                   \( "${SARAH_PATCH}" -lt "${required_sarah_patch}" \) \)
+            split_version "$SARAH_VERSION" SARAH_MAJOR SARAH_MINOR SARAH_PATCH
+
+            if ! major_minor_patch_at_least $SARAH_MAJOR $SARAH_MINOR $SARAH_PATCH "${required_sarah_major}" "${required_sarah_minor}" "${required_sarah_patch}"
             then
                 result "not ok"
                 message "Error: SARAH version ${SARAH_VERSION} no longer supported!"

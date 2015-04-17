@@ -25,6 +25,7 @@
 #include "@ModelName@_info.hpp"
 #include "@ModelName@_physical.hpp"
 #include "slha_io.hpp"
+#include "ckm.hpp"
 #include "ew_input.hpp"
 
 #include <Eigen/Core>
@@ -80,8 +81,6 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
-   static void convert_to_slha_convention(@ModelName@_physical&);
-
    template <class T>
    static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
 
@@ -99,6 +98,8 @@ private:
    void set_mass(const @ModelName@_physical&, bool);
    void set_mixing_matrices(const @ModelName@_physical&, bool);
    template <class T> void set_model_parameters(const @ModelName@_slha<T>&);
+   void set_ckm(const Eigen::Matrix<std::complex<double>,3,3>&, double);
+   void set_pmns(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
    template <class T> void fill_drbar_parameters(@ModelName@_slha<T>&) const;
    template <class T> void fill_physical(@ModelName@_slha<T>&) const;
@@ -231,6 +232,12 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
    set_model_parameters(model);
    set_mass(physical, write_sm_masses);
    set_mixing_matrices(physical, write_sm_masses);
+
+   if (slha_io.get_modsel().quark_flavour_violated)
+      set_ckm(model.get_ckm_matrix(), model.get_scale());
+
+   if (slha_io.get_modsel().lepton_flavour_violated)
+      set_pmns(model.get_pmns_matrix(), model.get_scale());
 }
 
 } // namespace flexiblesusy

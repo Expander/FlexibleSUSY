@@ -7,6 +7,7 @@ LIBFLEXI_MK  := \
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/build_info.cpp \
+		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
 		$(DIR)/dilog.f \
@@ -19,6 +20,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
@@ -32,6 +34,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/cextensions.hpp \
+		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
 		$(DIR)/compare.hpp \
 		$(DIR)/composite_convergence_tester.hpp \
@@ -64,6 +67,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics.hpp \
+		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
 		$(DIR)/rge.h \

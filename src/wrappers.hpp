@@ -115,6 +115,11 @@ inline double ArcCos(double a)
    return std::acos(a);
 }
 
+inline double Arg(const std::complex<double>& z)
+{
+   return std::arg(z);
+}
+
 inline double Conj(double a)
 {
    return a;
@@ -288,6 +293,22 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
+template<int M, int N>
+Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
+{
+   return x;
+}
+
+template<class Derived>
+typename Eigen::Matrix<
+   double,
+   Eigen::MatrixBase<Derived>::RowsAtCompileTime,
+   Eigen::MatrixBase<Derived>::ColsAtCompileTime>
+Re(const Eigen::MatrixBase<Derived>& x)
+{
+   return x.real();
+}
+
 inline double Im(double x)
 {
    return 0.;
@@ -302,6 +323,11 @@ namespace {
    struct CompareAbs_d {
       bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
    };
+}
+
+inline int Round(double a)
+{
+   return static_cast<int>(a >= 0. ? a + 0.5 : a - 0.5);
 }
 
 template<int N>
@@ -370,6 +396,18 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
+
+template<class Scalar, int M>
+Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
+{
+   return Eigen::Matrix<Scalar,M,M>(a.matrix().asDiagonal());
+}
+
+template<class Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> ToMatrix(const Eigen::Matrix<Scalar,M,N>& a)
+{
+   return a;
+}
 
 template <typename T>
 std::string ToString(T a)

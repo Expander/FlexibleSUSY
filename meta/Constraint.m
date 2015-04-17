@@ -52,6 +52,11 @@ ApplyConstraint[{parameter_ /; parameter === SARAH`ElectronYukawa,
                 modelName_String] :=
     "calculate_" <> CConversion`ToValidCSymbolString[parameter] <> "_DRbar();\n";
 
+ApplyConstraint[{parameter_,
+                 value_ /; !FreeQ[value, Global`neutrinoDRbar]}, modelName_String] :=
+    "calculate_MNeutrino_DRbar();\n" <>
+    Parameters`SetParameter[parameter, value, modelName];
+
 ApplyConstraint[{parameter_ /; !MemberQ[{SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa}, parameter], value_ /; value === Automatic}, modelName_String] :=
     Block[{},
           Print["Error: cannot determine ", parameter, " automatically!"];

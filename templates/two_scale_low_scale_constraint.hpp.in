@@ -45,6 +45,8 @@ public:
    virtual void set_model(Two_scale_model*);
 
    void clear();
+   const Eigen::Matrix<std::complex<double>,3,3>& get_ckm();
+   const Eigen::Matrix<std::complex<double>,3,3>& get_pmns();
    double get_initial_scale_guess() const;
    void initialize();
    const QedQcd& get_sm_parameters() const;
@@ -56,6 +58,9 @@ private:
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
    QedQcd oneset;
+   Eigen::Matrix<std::complex<double>,3,3> ckm;
+   Eigen::Matrix<std::complex<double>,3,3> pmns;
+   Eigen::Matrix<double,3,3> neutrinoDRbar;
    double MWDRbar;
    double MZDRbar;
    double AlphaS;
@@ -72,6 +77,7 @@ private:
    void calculate_@UpYukawa@_DRbar();
    void calculate_@DownYukawa@_DRbar();
    void calculate_@ElectronYukawa@_DRbar();
+   void calculate_MNeutrino_DRbar();
    double calculate_delta_alpha_em(double) const;
    double calculate_delta_alpha_s(double) const;
    void recalculate_mw_pole();

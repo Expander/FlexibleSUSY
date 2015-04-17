@@ -67,10 +67,15 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
           ];
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=
-    Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
+    Module[{result, deltaSusy, deltaSM, prefactor, topQuark, conversion = 0},
            topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaEm / (2 Pi);
-           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
+           conversion = Switch[renormalizationScheme,
+                               FlexibleSUSY`DRbar, 1/3,
+                               FlexibleSUSY`MSbar, 0,
+                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
+                              ];
+           deltaSM = conversion - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
@@ -351,14 +356,18 @@ se_data.mb_drbar = mb_drbar;
 se_data.gY       = gY;
 se_data.g2       = g2;
 
-const double pizztMZ_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+double pizztMZ_corrected = pizztMZ;
+double piwwtMW_corrected = self_energy_w_at_mw;
+double piwwt0_corrected  = piwwt0;
 
-const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
-
-const double piwwt0_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+if (model->get_thresholds() > 1) {
+   pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+   piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
+   piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+}
 
 Weinberg_angle::Data data;
 data.scale               = scale;
@@ -452,14 +461,18 @@ se_data.mb_drbar = mb_drbar;
 se_data.gY       = gY;
 se_data.g2       = g2;
 
-const double pizztMZ_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+double pizztMZ_corrected = pizztMZ;
+double piwwtMW_corrected = self_energy_w_at_mw;
+double piwwt0_corrected  = piwwt0;
 
-const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
-
-const double piwwt0_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+if (model->get_thresholds() > 1) {
+   pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+   piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
+   piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+}
 
 Weinberg_angle::Data data;
 data.scale               = scale;

@@ -37,13 +37,14 @@ bool is_equal(const softsusy::DoubleMatrix& a, const softsusy::DoubleMatrix& b, 
 bool is_equal(const Eigen::Matrix<double,3,3>& a,
               const Eigen::Matrix<double,3,3>& b, double max_dev)
 {
-   for (int i = 0; i < 3; ++i) {
-      for (int l = 0; l < 3; ++l) {
-         if (!is_equal(a(i,l), b(i,l), max_dev))
-            return false;
-      }
-   }
-   return true;
+   return (a - b).cwiseAbs().maxCoeff() <= max_dev;
+}
+
+bool is_equal(const Eigen::Matrix<std::complex<double>,3,3>& a,
+              const Eigen::Matrix<std::complex<double>,3,3>& b,
+              double max_dev)
+{
+   return (a - b).cwiseAbs().maxCoeff() <= max_dev;
 }
 
 template <typename T>

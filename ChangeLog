@@ -61,6 +61,15 @@ FlexibleSUSY-1.0.5 [not released yet]
  * Bugfix (commit d035544): Ignore trivial EWSB eqs.  Makes the MRSSM
    work in FlexibleSUSY with SARAH 4.5.x.
 
+ * Bugfix (commit d1e5db4): implement fermion 1-loop and 2-loof QCD
+   self-energy corrections in the MS-bar scheme.
+
+ * Bugfix (commit 0a2c91a): omit DR-bar conversion factor in the
+   calculation of alpha_em in non-SUSY models.
+
+ * Bugfix (commit 0084e11): adding MS-bar conversion terms to the
+   self-energies of non-SUSY models.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
@@ -123,6 +132,8 @@ FlexibleSUSY-1.0.3 [November, 21 2014]
  * Allow extra user-defined SLHA output blocks
 
  * Allow user-defined matrix- or vector-like SLHA input parameters
+
+ * Support low-energy quark flavour violation via CKM matrix
 
  * Bugfix (commit 5f78968): perform residual color contractions before
    stripping group factors.  Thanks to Philip Diessner and Wojciech

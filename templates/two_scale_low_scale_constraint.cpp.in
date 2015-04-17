@@ -44,6 +44,8 @@ namespace flexiblesusy {
 #define Pole(p) model->get_physical().p
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+#define CKM ckm
+#define PMNS pmns
 #define THETAW theta_w
 #define ALPHA_EM_DRBAR alpha_em_drbar
 #define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
@@ -54,6 +56,8 @@ namespace flexiblesusy {
    , initial_scale_guess(0.)
    , model(0)
    , oneset()
+   , ckm()
+   , pmns()
    , MWDRbar(0.)
    , MZDRbar(0.)
    , AlphaS(0.)
@@ -65,6 +69,13 @@ namespace flexiblesusy {
    , self_energy_w_at_mw(0.)
    , threshold_corrections_loop_order(1)
 {
+   ckm << 1., 0., 0.,
+          0., 1., 0.,
+          0., 0., 1.;
+
+   pmns << 1., 0., 0.,
+           0., 1., 0.,
+           0., 0., 1.;
 }
 
 @ModelName@_low_scale_constraint<Two_scale>::@ModelName@_low_scale_constraint(
@@ -100,6 +111,16 @@ void @ModelName@_low_scale_constraint<Two_scale>::apply()
    model->set_@strongCoupling@(new_@strongCoupling@);
 
    recalculate_mw_pole();
+}
+
+const Eigen::Matrix<std::complex<double>,3,3>& @ModelName@_low_scale_constraint<Two_scale>::get_ckm()
+{
+   return ckm;
+}
+
+const Eigen::Matrix<std::complex<double>,3,3>& @ModelName@_low_scale_constraint<Two_scale>::get_pmns()
+{
+   return pmns;
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::get_scale() const
@@ -160,6 +181,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::initialize()
    new_@hyperchargeCoupling@ = 0.;
    new_@leftCoupling@ = 0.;
    new_@strongCoupling@ = 0.;
+   ckm = oneset.get_complex_ckm();
+   pmns = oneset.get_complex_pmns();
    self_energy_w_at_mw = 0.;
 }
 
@@ -282,6 +305,14 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
       electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
 
 @setDRbarElectronYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
+{
+   neutrinoDRbar.setZero();
+   neutrinoDRbar(0,0) = oneset.displayNeutrinoPoleMass(1);
+   neutrinoDRbar(1,1) = oneset.displayNeutrinoPoleMass(2);
+   neutrinoDRbar(2,2) = oneset.displayNeutrinoPoleMass(3);
 }
 
 /**

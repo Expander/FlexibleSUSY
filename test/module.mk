@@ -15,6 +15,7 @@ LIBTEST_DEP := \
 LIBTEST     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 TEST_SRC := \
+		$(DIR)/test_ckm.cpp \
 		$(DIR)/test_cast_model.cpp \
 		$(DIR)/test_logger.cpp \
 		$(DIR)/test_betafunction.cpp \
@@ -76,6 +77,13 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_benchmark.cpp \
 		$(DIR)/test_CMSSM_slha_output.cpp
 endif
+
+ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyFlavourMSSM --with-CMSSMCKM),yes yes yes)
+TEST_SRC += \
+		$(DIR)/test_CMSSMCKM_high_scale_constraint.cpp \
+		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-SoftsusyNMSSM --with-NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
@@ -330,6 +338,9 @@ $(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 $(DIR)/test_cast_model.x: $(DIR)/test_cast_model.o $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS)
 
+$(DIR)/test_ckm.x: $(DIR)/test_ckm.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
+
 $(DIR)/test_logger.x: $(DIR)/test_logger.o $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
@@ -440,6 +451,10 @@ $(DIR)/test_CMSSM_slha_input.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-ou
 $(DIR)/test_CMSSM_slha.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMCKM_high_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSMCKM_low_scale_constraint.x: $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyMSSM) $(LIBCMSSMCKM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
