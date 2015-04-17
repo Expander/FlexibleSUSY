@@ -25,6 +25,7 @@
 namespace flexiblesusy {
 
 namespace @ModelName@_info {
+@gaugeCouplingNormalizationDefs@
 @particleMultiplicity@
 @particleNames@
 @particleLaTeXNames@

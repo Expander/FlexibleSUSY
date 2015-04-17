@@ -121,16 +121,26 @@ public:
    void set_low_scale_constraint(CMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(CMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(CMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
-   void setup_default_constaints(const CMSSM_input_parameters& pp, const QedQcd& oneset) {
+   void setup_default_constaints(const CMSSM_input_parameters&, const QedQcd& oneset) {
       if (!high_constraint)
-         high_constraint = new CMSSM_high_scale_constraint<Two_scale>(&mssm, pp);
+         high_constraint = new CMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm, pp);
+         susy_constraint = new CMSSM_susy_scale_constraint<Two_scale>(&mssm);
       if (!low_constraint)
-         low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
+         low_constraint = new CMSSM_low_scale_constraint<Two_scale>(&mssm, oneset);
    }
    void test(const CMSSM_input_parameters& pp, const QedQcd& oneset = QedQcd()) {
       setup_default_constaints(pp, oneset);
+
+      const double precision_goal = softsusy::TOLERANCE;
+
+      mssm.clear();
+      mssm.set_loops(2);
+      mssm.set_thresholds(2);
+      mssm.set_ewsb_loop_order(ewsb_loop_order);
+      mssm.set_pole_mass_loop_order(pole_mass_loop_order);
+      mssm.set_input_parameters(pp);
+      mssm.set_precision(precision_goal);
 
       high_constraint->clear();
       susy_constraint->clear();
@@ -138,30 +148,17 @@ public:
       high_constraint->set_model(&mssm);
       susy_constraint->set_model(&mssm);
       low_constraint ->set_model(&mssm);
-      high_constraint->set_input_parameters(pp);
-      low_constraint ->set_input_parameters(pp);
       low_constraint ->set_sm_parameters(oneset);
-      susy_constraint->set_input_parameters(pp);
       high_constraint->initialize();
       susy_constraint->initialize();
       low_constraint ->initialize();
 
-      const double precision_goal = softsusy::TOLERANCE;
-
       CMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, precision_goal);
-      CMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
+      CMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
                                                       *low_constraint,
                                                       *susy_constraint,
                                                       *high_constraint);
       Two_scale_increasing_precision precision(10.0, precision_goal);
-
-      mssm.clear();
-      mssm.set_loops(2);
-      mssm.set_thresholds(1);
-      mssm.set_ewsb_loop_order(ewsb_loop_order);
-      mssm.set_pole_mass_loop_order(pole_mass_loop_order);
-      mssm.set_input_parameters(pp);
-      mssm.set_precision(precision_goal);
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
@@ -205,7 +202,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    pp.Azero = 0.;
 
    CMSSM<Two_scale> _model;
-   const CMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   const CMSSM_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    CMSSM_tester mssm_tester;
@@ -457,8 +454,8 @@ class CMSSM_iterative_low_scale_constraint
 public:
    CMSSM_iterative_low_scale_constraint()
       : CMSSM_low_scale_constraint<Two_scale>() {}
-   CMSSM_iterative_low_scale_constraint(CMSSM<Two_scale>* model_, const CMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
-      : CMSSM_low_scale_constraint<Two_scale>(model_, inputPars_,oneset_) {}
+   CMSSM_iterative_low_scale_constraint(CMSSM<Two_scale>* model_, const QedQcd& oneset_)
+      : CMSSM_low_scale_constraint<Two_scale>(model_,oneset_) {}
    virtual ~CMSSM_iterative_low_scale_constraint() {}
 
    virtual void apply();
@@ -533,7 +530,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum_higgs_iteration )
 
    CMSSM<Two_scale> _model;
    CMSSM_tester mssm_tester;
-   mssm_tester.set_low_scale_constraint(new CMSSM_iterative_low_scale_constraint(&_model, pp, oneset));
+   mssm_tester.set_low_scale_constraint(new CMSSM_iterative_low_scale_constraint(&_model, oneset));
    // BOOST_REQUIRE_NO_THROW(mssm_tester.test(pp));
 
    try {

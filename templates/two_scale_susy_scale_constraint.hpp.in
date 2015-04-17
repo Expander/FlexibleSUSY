@@ -36,7 +36,7 @@ template<>
 class @ModelName@_susy_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_susy_scale_constraint();
-   @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*, const @ModelName@_input_parameters&);
+   @ModelName@_susy_scale_constraint(@ModelName@<Two_scale>*);
    virtual ~@ModelName@_susy_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -44,16 +44,17 @@ public:
 
    void clear();
    double get_initial_scale_guess() const;
+   const @ModelName@_input_parameters& get_input_parameters() const;
+   @ModelName@<Two_scale>* get_model() const;
    void initialize();
-   void set_input_parameters(const @ModelName@_input_parameters&);
+
+protected:
+   void update_scale();
 
 private:
    double scale;
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
-   @ModelName@_input_parameters inputPars;
-
-   void update_scale();
 };
 
 } // namespace flexiblesusy

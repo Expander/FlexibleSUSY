@@ -246,8 +246,8 @@ public:
   /// Set MZ^2 predicted after iteration
   void setPredMzSq(double a) { predMzSq = a; }
   void setAlternativeMs(bool flag) { alternativeMs = flag; }
-  double setTadpole1Ms(double t) { t1OV1Ms = t; }
-  double setTadpole2Ms(double t) { t2OV2Ms = t; }
+  void setTadpole1Ms(double t) { t1OV1Ms = t; }
+  void setTadpole2Ms(double t) { t2OV2Ms = t; }
 
   //PA: sets fracDiff, needed for access by NmssmSoftsusy methods
   void setFracDiff(double fD) { fracDiff = fD; };
@@ -961,13 +961,24 @@ public:
   /// SUSY breaking is set in the usual way. If it is true, the boundary
   /// condition is set to \f$\sqrt{m_{{\tilde t}_1} m_{{\tilde t}_2}} \f$, ie
   /// like in the "pheno MSSM".
-
+  void fixedPointIteration(void (*boundaryCondition)
+			   (Softsusy<SoftPars>&, const DoubleVector &),
+			   double mxGuess, 
+			   const DoubleVector & pars, int sgnMu, double tanb,
+			   const QedQcd & oneset, bool gaugeUnification, 
+			   bool ewsbBCscale =  false); 
+  /// legacy wrapper to provide backward compatibility: does the same as the
+  /// above 
   void lowOrg(void (*boundaryCondition)
-		(Softsusy &, const DoubleVector &),
+		(Softsusy<SoftPars>&, const DoubleVector &),
 		double mxGuess, 
 		const DoubleVector & pars, int sgnMu, double tanb,
 		const QedQcd & oneset, bool gaugeUnification, 
-		bool ewsbBCscale =  false); 
+		bool ewsbBCscale =  false) {
+    fixedPointIteration(boundaryCondition, mxGuess, pars, sgnMu, tanb, oneset,
+			gaugeUnification, ewsbBCscale);
+  }; 
+
   /// Main iteration routine: 
   /// Boundary condition is the theoretical condition on parameters at the high
   /// energy scale mx: the parameters themselves are contained within the

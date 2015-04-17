@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = MSSM;
 
 MINPAR = { {3, TanBeta} };
 
@@ -41,7 +42,7 @@ ExtraSLHAOutputBlocks = {
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
-   {ALPHA, {{ArcCos[Pole[ZH[1,2]]]}}},
+   {ALPHA, {{ArcSin[Pole[ZH[2,2]]]}}},
    {HMIX , {{1, \[Mu]},
             {2, vu / vd},
             {3, Sqrt[vu^2 + vd^2]},

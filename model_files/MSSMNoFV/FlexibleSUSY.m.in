@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = MSSMNoFV;
 
 (* CMSSM input parameters *)
 
@@ -50,7 +51,7 @@ SUSYScaleInput = {};
 
 HighScale = Qin;
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = Qin;
 
 HighScaleInput = {
    {T[Ye][1,1], AeIN*Ye[1,1]},

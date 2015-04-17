@@ -22,11 +22,11 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
 {
    NSM<Two_scale> m;
    NSM_input_parameters input;
-   input.LambdaInput1 = 0.1;
-   input.LambdaInput2 = 0.1;
-   input.LambdaInput3 = 0.1;
-   input.LambdaInput4 = 0.0;
-   input.LambdaInput5 = 0.0;
+   input.Lambda1Input = 0.1;
+   input.Lambda2Input = 0.1;
+   input.Lambda3Input = 0.1;
+   input.Lambda4Input = 0.0;
+   input.Lambda5Input = 0.0;
    QedQcd oneset;
 
    const double vev = 246.;
@@ -38,8 +38,9 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    m.set_Ye(2, 2, 1.77699 * Sqrt(2.) / vev);
 
    m.calculate_DRbar_masses();
+   m.set_input_parameters(input);
 
-   NSM_low_scale_constraint<Two_scale> constraint(&m, input, oneset);
+   NSM_low_scale_constraint<Two_scale> constraint(&m, oneset);
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
@@ -68,11 +69,11 @@ BOOST_AUTO_TEST_CASE( test_delta_spectrum )
 {
    NSM<Two_scale> m;
    NSM_input_parameters input;
-   input.LambdaInput1 = 0.1;
-   input.LambdaInput2 = 0.1;
-   input.LambdaInput3 = 0.1;
-   input.LambdaInput4 = 0.0;
-   input.LambdaInput5 = 0.0;
+   input.Lambda1Input = 0.1;
+   input.Lambda2Input = 0.1;
+   input.Lambda3Input = 0.1;
+   input.Lambda4Input = 0.0;
+   input.Lambda5Input = 0.0;
    QedQcd oneset;
 
    const double vev = 246.;

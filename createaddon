@@ -79,7 +79,7 @@ echo "Creating addon $name"
 
 if test ! -d "$targetdir" ; then
     printf "  Creating addon directory %s ... " "$targetdir"
-    mkdir $targetdir
+    mkdir -p $targetdir
     echo "done"
 fi
 

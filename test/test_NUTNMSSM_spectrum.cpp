@@ -157,35 +157,42 @@ public:
    void set_high_scale_constraint(NUTNMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
    void setup_default_constaints(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset) {
       if (!high_constraint)
-         high_constraint = new NUTNMSSM_high_scale_constraint<Two_scale>(&mssm, pp);
+         high_constraint = new NUTNMSSM_high_scale_constraint<Two_scale>(&mssm);
       if (!susy_constraint)
-         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm, pp);
+         susy_constraint = new NUTNMSSM_susy_scale_constraint<Two_scale>(&mssm);
       if (!low_constraint)
-         low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, pp, oneset);
+         low_constraint = new NUTNMSSM_low_scale_constraint<Two_scale>(&mssm, oneset);
    }
    void test(const NUTNMSSM_input_parameters& pp, const QedQcd& oneset) {
       setup_default_constaints(pp, oneset);
-      high_constraint->set_input_parameters(pp);
-      low_constraint->set_input_parameters(pp);
-      low_constraint->set_sm_parameters(oneset);
-      susy_constraint->set_input_parameters(pp);
-
-      NUTNMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
-      convergence_tester.set_max_iterations(100);
-      NUTNMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, pp, oneset,
-                                                      *low_constraint,
-                                                      *susy_constraint,
-                                                      *high_constraint);
-      Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       mssm.clear();
       mssm.set_loops(2);
-      mssm.set_thresholds(1);
+      mssm.set_thresholds(2);
       mssm.set_ewsb_loop_order(loops);
       mssm.set_pole_mass_loop_order(loops);
       mssm.set_input_parameters(pp);
       mssm.set_precision(1.0e-4); // == softsusy::TOLERANCE
       mssm.do_force_output(true);
+
+      high_constraint->clear();
+      susy_constraint->clear();
+      low_constraint ->clear();
+      high_constraint->set_model(&mssm);
+      susy_constraint->set_model(&mssm);
+      low_constraint ->set_model(&mssm);
+      low_constraint ->set_sm_parameters(oneset);
+      high_constraint->initialize();
+      susy_constraint->initialize();
+      low_constraint ->initialize();
+
+      NUTNMSSM_convergence_tester<Two_scale> convergence_tester(&mssm, 1.0e-4);
+      convergence_tester.set_max_iterations(100);
+      NUTNMSSM_initial_guesser<Two_scale> initial_guesser(&mssm, oneset,
+                                                      *low_constraint,
+                                                      *susy_constraint,
+                                                      *high_constraint);
+      Two_scale_increasing_precision precision(10.0, 1.0e-6);
 
       std::vector<Constraint<Two_scale>*> upward_constraints;
       upward_constraints.push_back(low_constraint);
@@ -453,8 +460,8 @@ BOOST_AUTO_TEST_CASE( test_NUTNMSSM_spectrum )
    softsusy::QedQcd oneset;
    set_S1(pp, oneset);
 
-   NUTNMSSM<Two_scale> _model;
-   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   NUTNMSSM<Two_scale> _model(pp);
+   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    NUTNMSSM_tester nmssm_tester;
@@ -765,8 +772,8 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
    const NUTNMSSM_input_parameters& pp,
    const softsusy::QedQcd& oneset)
 {
-   NUTNMSSM<Two_scale> _model;
-   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model, pp);
+   NUTNMSSM<Two_scale> _model(pp);
+   const NUTNMSSM_high_scale_constraint<Two_scale> high_constraint(&_model);
    const double mxGuess = high_constraint.get_initial_scale_guess();
 
    NUTNMSSM_tester nmssm_tester;

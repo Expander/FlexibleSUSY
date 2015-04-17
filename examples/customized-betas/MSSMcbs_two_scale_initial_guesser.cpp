@@ -28,14 +28,13 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) input_pars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define SM(p) Electroweak_constants::p
 #define MODEL model
 
 MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
    MSSMcbs<Two_scale>* model_,
-   const CMSSM_input_parameters& input_pars_,
    const QedQcd& oneset_,
    const MSSMcbs_low_scale_constraint<Two_scale>& low_constraint_,
    const CMSSM_susy_scale_constraint<Two_scale>& susy_constraint_,
@@ -43,7 +42,6 @@ MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
 )
    : Initial_guesser<Two_scale>()
    , model(model_)
-   , input_pars(input_pars_)
    , oneset(oneset_)
    , mu_guess(0.)
    , mc_guess(0.)

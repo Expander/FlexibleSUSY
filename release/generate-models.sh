@@ -3,7 +3,8 @@
 # creates models for public release
 
 number_of_jobs=1
-version=
+directory="release"
+MATH=math
 
 #_____________________________________________________________________
 help() {
@@ -12,7 +13,8 @@ Usage: ./`basename $0` [options]
 Options:
 
   --number-of-jobs=    number of parallel makefile jobs
-  --version=           FlexibleSUSY version
+  --directory=         output directory (default: ${directory})
+  --with-math-cmd=     Mathematic kernel (default: $MATH)
   --help,-h            Print this help message
 EOF
 }
@@ -26,7 +28,8 @@ if test $# -gt 0 ; then
 
         case $1 in
             --number-of-jobs=*)      number_of_jobs=$optarg ;;
-            --version=*)             version=$optarg ;;
+            --directory=*)           directory=$optarg ;;
+            --with-math-cmd=*)       MATH=$optarg ;;
             --help|-h)               help; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
         esac
@@ -54,6 +57,7 @@ models_array="             \
    E6SSM,E6SSM             \
    MRSSM,MRSSM             \
    TMSSM,TMSSM             \
+   SM,SM                   \
 "
 
 models="`echo $models_array | sed 's/,[a-zA-Z0-9]*//g'`"
@@ -68,7 +72,12 @@ do
     _model="`echo $_model_sarah | cut -d\" \" -f1`"
     _sarah="`echo $_model_sarah | cut -d\" \" -f2`"
 
-    ./createmodel --name=${_model} --sarah-model=${_sarah} --force
+    ./createmodel --name=${_model} --sarah-model=${_sarah} --force \
+        --with-math-cmd=${MATH}
+
+    if test "x$?" != "x0"; then
+        exit 1
+    fi
 done
 
 # running configure
@@ -76,7 +85,12 @@ models_comma="`echo $models | tr ' ' ','`"
 
 ./configure \
     --disable-compile \
-    --with-models=${models_comma}
+    --with-models=${models_comma} \
+    --with-math-cmd=${MATH}
+
+if test "x$?" != "x0"; then
+    exit 1
+fi
 
 make showbuild
 
@@ -90,17 +104,17 @@ do
 done
 
 # moving models
-if test "x$version" != "x"; then
-    mkdir -p release/${version}/
-else
-    mkdir -p release/
+if test "x$directory" = "x"; then
+    directory="."
+fi
+
+if test ! -d "${directory}"; then
+    mkdir -p ${directory}
 fi
 
 for m in ${models}
 do
-    if test "x$version" != "x"; then
-        mv ${m}.tar.gz release/${version}/
-    else
-        mv ${m}.tar.gz release/
+    if test "x${directory}" != "x."; then
+        mv ${m}.tar.gz ${directory}/
     fi
 done

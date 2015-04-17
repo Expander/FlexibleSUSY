@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
    CMSSM<Two_scale> m; MssmSoftsusy s;
    setup_CMSSM(m, s, input);
 
-   CMSSM_susy_scale_constraint<Two_scale> constraint(&m,input);
+   CMSSM_susy_scale_constraint<Two_scale> constraint(&m);
    constraint.apply();
 
    double tadpole[2];

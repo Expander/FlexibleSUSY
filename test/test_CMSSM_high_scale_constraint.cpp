@@ -8,6 +8,7 @@
 #include <Eigen/Dense>
 
 #define private public
+#define protected public
 
 #include "softsusy.h"
 #include "SoftsusyMSSM_parameter_point.hpp"
@@ -91,7 +92,8 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    input.TanBeta = m.get_vd() / m.get_vu();
    input.Azero = 300;
 
-   CMSSM_high_scale_constraint<Two_scale> constraint(&m, input);
+   m.set_input_parameters(input);
+   CMSSM_high_scale_constraint<Two_scale> constraint(&m);
 
    double mgut = constraint.get_scale(); // initial guess
    double mgut_new = mgut;
@@ -140,7 +142,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.signMu = input.SignMu;
 
-   CMSSM_high_scale_constraint<Two_scale> CMSSM_sugra_constraint(&m,input);
+   CMSSM_high_scale_constraint<Two_scale> CMSSM_sugra_constraint(&m);
    SoftsusyMSSM_sugra_constraint mssm_sugra_constraint(pp);
 
    mssm_sugra_constraint.set_model((Two_scale_model*)&s);

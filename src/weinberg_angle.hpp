@@ -87,6 +87,7 @@ public:
 
    void set_data(const Data&);       ///< set data necessary for the calculation
    void set_number_of_iterations(unsigned); ///< maximum number of iterations
+   void set_number_of_loops(unsigned); ///< set number of loops
    void set_precision_goal(double);  ///< set precision goal
    double get_rho_hat() const;       ///< returns the rho parameter
    double get_sin_theta() const;     ///< returns sin(theta_w)
@@ -99,14 +100,15 @@ public:
 
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
+   unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
    double rho_hat;                ///< output rho-hat parameter
    double sin_theta;              ///< output sin(theta)
    Data data;
    bool susy_contributions;       ///< model type
 
-   static double calculate_delta_r(double, double, const Data&, bool add_susy_contributions = true);
-   static double calculate_delta_rho(double, double, const Data&, bool add_susy_contributions = true);
+   static double calculate_delta_r(double, double, const Data&, bool add_susy_contributions = true, unsigned number_of_loops = 2);
+   static double calculate_delta_rho(double, double, const Data&, bool add_susy_contributions = true, unsigned number_of_loops = 2);
    static double calculate_delta_vb(double, double, const Data&, bool add_susy_contributions = true);
    static double calculate_delta_vb_sm(double, double, const Data&);
    static double calculate_delta_vb_susy(double, const Data&);

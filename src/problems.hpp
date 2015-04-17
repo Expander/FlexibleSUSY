@@ -19,6 +19,9 @@
 #ifndef PROBLEMS_H
 #define PROBLEMS_H
 
+#include "logger.hpp"
+#include "config.h"
+
 #include <iostream>
 #include <map>
 #include <cassert>
@@ -124,6 +127,11 @@ void Problems<Number_of_particles>::flag_tachyon(unsigned particle, bool flag)
    assert(particle < Number_of_particles
           && "Error: particle index out of bounds");
    tachyons[particle] = flag;
+
+#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
+   if (flag)
+      WARNING(particle_names[particle] << " tachyon");
+#endif
 }
 
 template <unsigned Number_of_particles>

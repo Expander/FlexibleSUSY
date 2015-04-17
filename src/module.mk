@@ -45,13 +45,15 @@ LIBFLEXI_HDR := \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/def.h \
 		$(DIR)/dilog.h \
+		$(DIR)/eigen_utils.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
+		$(DIR)/functors.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/higgs_2loop_corrections.hpp \
+		$(DIR)/two_loop_corrections.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
 		$(DIR)/linalg.h \

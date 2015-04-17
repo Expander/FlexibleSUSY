@@ -1,6 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = MSSM;
 
 (* CMSSM input parameters *)
 
@@ -31,7 +32,7 @@ SUSYScaleInput = {};
 
 HighScale = Qin;
 
-HighScaleFirstGuess = 2.0 10^16;
+HighScaleFirstGuess = Qin;
 
 HighScaleInput = {
    {T[Ye], Aeij*Ye},

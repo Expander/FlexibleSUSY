@@ -351,14 +351,18 @@ se_data.mb_drbar = mb_drbar;
 se_data.gY       = gY;
 se_data.g2       = g2;
 
-const double pizztMZ_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+double pizztMZ_corrected = pizztMZ;
+double piwwtMW_corrected = self_energy_w_at_mw;
+double piwwt0_corrected  = piwwt0;
 
-const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
-
-const double piwwt0_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+if (model->get_thresholds() > 1) {
+   pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+   piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
+   piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+}
 
 Weinberg_angle::Data data;
 data.scale               = scale;
@@ -389,6 +393,7 @@ data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.enable_susy_contributions();
+weinberg.set_number_of_loops(MODEL->get_thresholds());
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();
@@ -451,14 +456,18 @@ se_data.mb_drbar = mb_drbar;
 se_data.gY       = gY;
 se_data.g2       = g2;
 
-const double pizztMZ_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+double pizztMZ_corrected = pizztMZ;
+double piwwtMW_corrected = self_energy_w_at_mw;
+double piwwt0_corrected  = piwwt0;
 
-const double piwwtMW_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
-
-const double piwwt0_corrected =
-   Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+if (model->get_thresholds() > 1) {
+   pizztMZ_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_z(pizztMZ, mz_pole, se_data);
+   piwwtMW_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(self_energy_w_at_mw, mw_pole, se_data);
+   piwwt0_corrected =
+      Weinberg_angle::replace_mtop_in_self_energy_w(piwwt0, 0., se_data);
+}
 
 Weinberg_angle::Data data;
 data.scale               = scale;
@@ -478,6 +487,7 @@ data.ymu                 = ymu;
 
 Weinberg_angle weinberg;
 weinberg.disable_susy_contributions();
+weinberg.set_number_of_loops(MODEL->get_thresholds());
 weinberg.set_data(data);
 
 const int error = weinberg.calculate();

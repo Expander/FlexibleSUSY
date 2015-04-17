@@ -27,10 +27,11 @@
  * parameters.
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
- * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
 #include "@ModelName@_two_scale_model.hpp"
+#include "eigen_utils.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
 #include "logger.hpp"
@@ -40,11 +41,13 @@
 #include "gsl_utils.hpp"
 #include "config.h"
 #include "pv.hpp"
+#include "functors.hpp"
 
 @twoLoopHiggsHeaders@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 #ifdef ENABLE_THREADS
 #include <thread>
@@ -62,10 +65,11 @@ using namespace @ModelName@_info;
 #define INPUT(parameter) model->get_input().parameter
 #define LOCALINPUT(parameter) input.parameter
 
-#define HIGGS_2LOOP_CORRECTION_AT_AS     higgs_2loop_corrections.at_as
-#define HIGGS_2LOOP_CORRECTION_AB_AS     higgs_2loop_corrections.ab_as
-#define HIGGS_2LOOP_CORRECTION_AT_AT     higgs_2loop_corrections.at_at
-#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU higgs_2loop_corrections.atau_atau
+#define HIGGS_2LOOP_CORRECTION_AT_AS     two_loop_corrections.higgs_at_as
+#define HIGGS_2LOOP_CORRECTION_AB_AS     two_loop_corrections.higgs_ab_as
+#define HIGGS_2LOOP_CORRECTION_AT_AT     two_loop_corrections.higgs_at_at
+#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU two_loop_corrections.higgs_atau_atau
+#define TOP_2LOOP_CORRECTION_QCD         two_loop_corrections.top_qcd
 
 #ifdef ENABLE_THREADS
    std::mutex CLASSNAME::mtx_fortran;
@@ -89,7 +93,7 @@ CLASSNAME::@ModelName@(const @ModelName@_input_parameters& input_)
    , ewsb_iteration_precision(1.0e-5)
    , physical()
    , problems(@ModelName@_info::particle_names)
-   , higgs_2loop_corrections()
+   , two_loop_corrections()
 #ifdef ENABLE_THREADS
    , thread_exception()
 #endif
@@ -128,9 +132,9 @@ void CLASSNAME::set_ewsb_loop_order(unsigned loop_order)
    ewsb_loop_order = loop_order;
 }
 
-void CLASSNAME::set_higgs_2loop_corrections(const Higgs_2loop_corrections& higgs_2loop_corrections_)
+void CLASSNAME::set_two_loop_corrections(const Two_loop_corrections& two_loop_corrections_)
 {
-   higgs_2loop_corrections = higgs_2loop_corrections_;
+   two_loop_corrections = two_loop_corrections_;
 }
 
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
@@ -265,6 +269,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 @EWSBSolvers@
    };
 
+   const std::size_t number_of_solvers = sizeof(solvers)/sizeof(*solvers);
    double x_init[number_of_ewsb_equations];
    ewsb_initial_guess(x_init);
 
@@ -272,12 +277,12 @@ int CLASSNAME::solve_ewsb_iteratively()
    std::cout << "Solving EWSB equations ...\n"
       "\tInitial guess: x_init =";
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      std::cout << " " << x_init[i];
+      std::cout << ' ' << x_init[i];
    std::cout << '\n';
 #endif
 
    int status;
-   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
+   for (std::size_t i = 0; i < number_of_solvers; ++i) {
       VERBOSE_MSG("\tStarting EWSB iteration using solver " << i);
       status = solve_ewsb_iteratively_with(solvers[i], x_init);
       if (status == EWSB_solver::SUCCESS) {
@@ -302,8 +307,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i)
-      delete solvers[i];
+   for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }
@@ -517,7 +521,7 @@ double CLASSNAME::G0(double p, double m1, double m2) const
 void CLASSNAME::calculate_DRbar_masses()
 {
 @saveSoftHiggsMasses@
-   solve_ewsb_tree_level_via_soft_higgs_masses();
+@solveEWSBTemporarily@
 
 @calculateAllMasses@
 @restoreSoftHiggsMasses@

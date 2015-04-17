@@ -44,18 +44,23 @@ couplings.  The equation which could not be solved is: `2`.  I'll use \
 the Standard Model definition `3` instead.";
 
 ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
-    Module[{eqs, reducedEq, solution, smValue},
+    Module[{weinbergDef, eqs, reducedEq, solution, smValue},
            Print["Expressing Weinberg angle in terms of model parameters ..."];
            (* SM value of the Weinberg angle *)
            smValue = Simplify[
                ArcTan[SARAH`hyperchargeCoupling / SARAH`leftCoupling] /.
                Parameters`ApplyGUTNormalization[]];
+           (* search weinberg angle definition *)
+           weinbergDef = FindWeinbergAngleDef[] /. Parameters`ApplyGUTNormalization[];
+           If[weinbergDef === 0,
+              Print["Warning: Weinberg angle is defined to be zero."];
+              Return[weinbergDef];
+             ];
            (* Assumption: the masses contain GUT normalized gauge
               couplings, but the Weinberg angle does not (because we
               take it directly from SARAH`ParameterDefinitions, where
               no GUT normalization has been applied so far)*)
-           eqs = {SARAH`Weinberg == FindWeinbergAngleDef[] /.
-                                    Parameters`ApplyGUTNormalization[],
+           eqs = {SARAH`Weinberg == weinbergDef,
                   SARAH`Mass[SARAH`VectorW]^2 == FindMassW[masses],
                   SARAH`Mass[SARAH`VectorZ]^2 == FindMassZ[masses]
                  };

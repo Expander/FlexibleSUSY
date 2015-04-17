@@ -4,11 +4,11 @@
 
 #include "wrappers.hpp"
 #include "ew_input.hpp"
-#include "SM_two_scale_model.hpp"
 
 using namespace flexiblesusy;
 
-void setup_SM_const(SM<Two_scale>& m, const SM_input_parameters& input)
+template <class TSM, class TInput>
+void setup_SM_const(TSM& m, const TInput& input)
 {
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;

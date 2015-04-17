@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "wrappers.hpp"
+#include "eigen_utils.hpp"
 
 using namespace flexiblesusy;
 

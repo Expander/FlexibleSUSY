@@ -22,7 +22,10 @@ model_files/CMSSMGSLHybrid      export-ignore
 model_files/CMSSMGSLHybridS     export-ignore
 model_files/CMSSMGSLNewton      export-ignore
 model_files/CMSSMLowPrecision   export-ignore
+model_files/CMSSMMediumPrecision export-ignore
+model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
+model_files/CMSSMConvergenceTester export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/MSSMCPV             export-ignore
@@ -31,6 +34,8 @@ model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
+model_files/UnbrokenMSSM        export-ignore
+model_files/SMHighPrecision     export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
@@ -43,6 +48,7 @@ release/generate-models.sh      export-ignore
 sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
+sarah/UnbrokenMSSM              export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore

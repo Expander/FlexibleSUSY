@@ -31,7 +31,7 @@
 
 namespace flexiblesusy {
 
-#define INPUTPARAMETER(p) inputPars.p
+#define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
@@ -46,7 +46,6 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
-   , inputPars()
    , oneset()
    , MZDRbar(0.)
    , new_g1(0.)
@@ -57,11 +56,9 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
 }
 
 MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint(
-   MSSMcbs<Two_scale>* model_,
-   const CMSSM_input_parameters& inputPars_, const QedQcd& oneset_)
+   MSSMcbs<Two_scale>* model_, const QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(model_)
-   , inputPars(inputPars_)
    , oneset(oneset_)
    , new_g1(0.)
    , new_g2(0.)
@@ -114,11 +111,6 @@ double MSSMcbs_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
 void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
 {
    model = cast_model<MSSMcbs<Two_scale>*>(model_);
-}
-
-void MSSMcbs_low_scale_constraint<Two_scale>::set_input_parameters(const CMSSM_input_parameters& inputPars_)
-{
-   inputPars = inputPars_;
 }
 
 void MSSMcbs_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)

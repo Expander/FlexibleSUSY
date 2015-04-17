@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 
    const double precision = m.get_ewsb_iteration_precision();
 
-   NMSSM_susy_scale_constraint<Two_scale> constraint(&m, input);
+   NMSSM_susy_scale_constraint<Two_scale> constraint(&m);
    constraint.apply();
 
    double tadpole[3];

@@ -11,6 +11,7 @@ realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
 UNITMATRIX::usage="";
+ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
 ZEROVECTOR::usage="";
 oneOver16PiSqr::usage="";
@@ -21,6 +22,8 @@ IndexSum::usage="";
 TensorProd::usgae="";
 
 CreateCType::usage="returns string with the C/C++ data type";
+
+GetElementType::usage="returns type of matrix / vector / array elements";
 
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
 
@@ -59,6 +62,9 @@ a given parameter type";
 CreateDefaultDefinition::usage="creates C/C++ variable definition
 using the default constructor";
 
+CreateConstExternDecl::usage="";
+CreateConstDef::usage="";
+
 SetToDefault::usage="set parameter to default value";
 
 ExpandSums::usage="expands expressions that contain sum symbols of the
@@ -95,6 +101,11 @@ ReleaseHoldAt[expr_, partspec_] :=
  *   Out[]= 2
  *)
 SARAH`ThetaStep /: Power[SARAH`ThetaStep[a_,b_],_] := SARAH`ThetaStep[a,b];
+
+GetElementType[CConversion`ScalarType[type_]]     := type;
+GetElementType[CConversion`ArrayType[type_, __]]  := type;
+GetElementType[CConversion`VectorType[type_, __]] := type;
+GetElementType[CConversion`MatrixType[type_, __]] := type;
 
 EigenMatrix[elementType_String, dim1_String, dim2_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
@@ -331,6 +342,21 @@ CreateZero[CConversion`VectorType[_, entries_]] :=
 CreateZero[CConversion`MatrixType[_, rows_, cols_]] :=
     CConversion`ZEROMATRIX[rows,cols];
 
+CreateConstExternDecl[parameter_String, type_] :=
+    "extern const " <> CreateCType[type] <> " " <>
+    parameter <> ";\n";
+
+CreateConstExternDecl[parameter_, type_] :=
+    CreateConstExternDecl[ToValidCSymbolString[parameter], type];
+
+CreateConstDef[parameter_String, type_, value_] :=
+    "const " <> CreateCType[type] <> " " <>
+    parameter <> " = " <>
+    RValueToCFormString[value] <> ";\n";
+
+CreateConstDef[parameter_, type_, value_] :=
+    CreateConstDef[ToValidCSymbolString[parameter], type, value];
+
 MakeUnique[name_String] :=
     Module[{appendix = ""},
            While[NameQ[Evaluate[name <> appendix]] &&
@@ -468,6 +494,18 @@ Format[Complex[r_,i_],CForm] :=
            OutputForm];
 
 Protect[Complex];
+
+Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
+    Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROVECTOR[a_,b_],CForm] :=
+    Format["ZEROVECTOR(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
+
+Format[CConversion`ZEROMATRIX[a_,b_],CForm] :=
+    Format["ZEROMATRIX(" <> ToString[CForm[a]] <> "," <>
+           ToString[CForm[b]] <> ")", OutputForm];
 
 Format[CConversion`FSKroneckerDelta[a_,b_],CForm] :=
     Format["KroneckerDelta(" <> ToString[CForm[a]] <> "," <>

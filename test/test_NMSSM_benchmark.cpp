@@ -46,10 +46,10 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
    int status;
    flexiblesusy::Stopwatch stopwatch;
 
-   const std::string slha_output_file("test/test_benchmark.out.spc");
+   const std::string slha_output_file("test/test_NMSSM_benchmark.out.spc");
 
    stopwatch.start();
-   status = run_cmd("./models/CMSSM/run_CMSSM.x --slha-input-file=" +
+   status = run_cmd("./models/NMSSM/run_NMSSM.x --slha-input-file=" +
                     slha_file + " --slha-output-file=" + slha_output_file +
                     " > /dev/null 2>&1");
    stopwatch.stop();
@@ -88,20 +88,26 @@ int run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
 
 SLHAea::Coll create_point(double tanBeta)
 {
-   std::ifstream ifs("test/test_benchmark.in.spc.in");
+   std::ifstream ifs("test/test_NMSSM_benchmark.in.spc.in");
    SLHAea::Coll coll(ifs);
-   SLHAea::Block minpar;
+   SLHAea::Block minpar, extpar;
 
-   const std::string str(
+   const std::string minpar_str(
       "Block MINPAR\n"
-      "   1   1.250000000e+02   # m0\n"
+      "   1   2.000000000e+02   # m0\n"
       "   2   5.000000000e+02   # m12\n"
       "   3   " + boost::lexical_cast<std::string>(tanBeta) + "   # TanBeta\n"
-      "   4   1.000000000e+00   # sign(Mu)\n"
-      "   5   0.000000000e+00   # A0\n");
+      "   5  -5.000000000e+02   # A0\n");
 
-   minpar.str(str);
+   const std::string extpar_str(
+      "Block EXTPAR\n"
+      "  61   0.1               # LambdaInput\n");
+
+   minpar.str(minpar_str);
    coll.push_back(minpar);
+
+   extpar.str(extpar_str);
+   coll.push_back(extpar);
 
    return coll;
 }
@@ -122,7 +128,7 @@ void test_tanbeta_scan()
    for (unsigned i = 0; i < num_points; i++) {
       const double tanBeta = tanBeta_start + i * tanBeta_step;
       const SLHAea::Coll coll(create_point(tanBeta));
-      const std::string input_file("test/test_benchmark.in.spc");
+      const std::string input_file("test/test_NMSSM_benchmark.in.spc");
 
       std::ofstream ofs(input_file);
       ofs << coll;
@@ -144,7 +150,7 @@ void test_tanbeta_scan()
         "  Softsusy    : " << ss_average_time <<
         " (" << ss_data.number_of_valid_points << "/" << num_points << " points)");
 
-   TEST_GREATER(ss_average_time, 1.5 * fs_average_time);
+   TEST_GREATER(ss_average_time, fs_average_time);
 }
 
 int main()

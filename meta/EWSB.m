@@ -77,20 +77,40 @@ CreateEWSBEqPrototype[higgs_] :=
            Return[result];
           ];
 
+(* Creates a get_ewsb_eq_<higgs>() function for each Higgs multiplet
+   entry.
+
+   This function assumes, that the ordering of the EWSB
+   eqs. corresponds to the Higgs multiplet entries.  If there are less
+   equations than Higgs multiplet entries, the remaining equations
+   will be set to 0.  If there are more EWSB equations than Higgs
+   bosons, the remaining equations will be ignored.
+ *)
 CreateEWSBEqFunction[higgs_, equation_List] :=
-    Module[{result = "", body = "", dim, i, eq},
+    Module[{result = "", body = "", dim, i, eq, dimEq},
            dim = TreeMasses`GetDimension[higgs];
-           If[dim =!= Length[equation],
-              Print["Error: number of Higgs bosons (", dim,
-                    ") != number of EWSB eqs. (",Length[equation],")"];
-              Quit[1];
+           dimEq = Length[equation];
+           If[dim < dimEq,
+              Print["Warning: number of Higgs bosons (", dim,
+                    ") < number of EWSB eqs. (",dimEq,")."
+                    "The EWSB eqs. ", (dimEq - dim), "...", (dimEq),
+                    " will be ignored"];
+             ];
+           If[dim > dimEq,
+              Print["Warning: number of Higgs bosons (", dim,
+                    ") > number of EWSB eqs. (",dimEq,").",
+                    "The EWSB eqs. for the fields ", higgs, "(n), n >= ",
+                    dimEq, ", will be set to zero."];
              ];
            For[i = 1, i <= dim, i++,
                result = result <>
                         "double CLASSNAME::get_ewsb_eq_" <>
                         ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const\n{\n";
-               eq   = equation[[i]];
+               If[i <= dimEq,
+                  eq = equation[[i]];,
+                  eq = 0;
+                 ];
                body = Parameters`CreateLocalConstRefsForInputParameters[eq, "LOCALINPUT"] <>
                       "\n" <> "double result = " <>
                       RValueToCFormString[eq] <> ";\n";
@@ -126,16 +146,9 @@ SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePha
            Parameters`SetParameter[parameter, value, "model"]
           ];
 
-FillArrayWithEWSBEqs[higgs_, parametersFixedByEWSB_List, freePhases_List,
-                     gslOutputVector_String] :=
+FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
     Module[{i, result = "", par, dim},
            dim = TreeMasses`GetDimension[higgs];
-           If[dim =!= Length[parametersFixedByEWSB],
-              Print["Error: number of Higgs bosons (",dim,
-                    ") is not equal to the number of fixed parameters (",
-                    Length[parametersFixedByEWSB],")"];
-              Return[""];
-             ];
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "get_ewsb_eq_" <>
@@ -161,6 +174,8 @@ SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
            simplificationRules = Flatten[{Rule[SARAH`Conj[#],#], Rule[Susyno`LieGroups`conj[#],#]}& /@ realParameters];
            equations /. simplificationRules
           ];
+
+FindIndependentSubset[equations_List, {}] := {};
 
 FindIndependentSubset[equations_List, parameters_List] :=
     Module[{equationSubsets, numberOfEquations, parameterSubsets,
@@ -197,8 +212,22 @@ EliminateOneParameter[{eq_}, {p_}] :=
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, rest = {}, solution},
-           If[FreeQ[{eq1, eq2}, p1] || FreeQ[{eq1, eq2}, p2],
+           If[FreeQ[{eq1, eq2}, p1],
+              Print["Error: EWSB output parameter ", p1, " does not appear in the EWSB eqs."];
               Return[{}];
+             ];
+           If[FreeQ[{eq1, eq2}, p2],
+              Print["Error: EWSB output parameter ", p2, " does not appear in the EWSB eqs."];
+              Return[{}];
+             ];
+           (* special case: no elimination needed *)
+           If[!FreeQ[{eq1},p1] && FreeQ[{eq1},p2] &&
+              !FreeQ[{eq2},p2] && FreeQ[{eq2},p1],
+              reduction[[1]] =
+              TimeConstrained[Solve[{eq1}, p1], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              reduction[[2]] =
+              TimeConstrained[Solve[{eq2}, p2], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              Return[reduction];
              ];
            reduction[[1]] =
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p1], p2],
@@ -207,7 +236,6 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
            TimeConstrained[Solve[Eliminate[{eq1, eq2}, p2], p1],
                            FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
            If[reduction[[1]] === {} || reduction[[2]] === {} ||
-
               reduction[[1]] === {{}} || reduction[[2]] === {{}},
               Return[{}];
              ];
@@ -487,7 +515,7 @@ CreateEWSBRootFinders[rootFinders_List] :=
 CreateIndices[indices_List] :=
     "(" <> Utils`StringJoinWithSeparator[ToString /@ indices,","] <> ")";
 
-SetEWSBSolution[par_[indices__] /; MemberQ[Join[Parameters`GetModelParameters[],Parameters`GetOutputParameters[]],par], idx_, func_String] :=
+SetEWSBSolution[par_[indices__] /; And @@ (NumberQ /@ {indices}), idx_, func_String] :=
     CConversion`ToValidCSymbolString[par] <> CreateIndices[{indices}] <> " = " <> func <> "(" <> ToString[idx-1] <> ");\n";
 
 SetEWSBSolution[par_, idx_, func_String] :=
@@ -600,7 +628,7 @@ SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
           ];
 
 CreateEWSBParametersInitializationList[parameters_List] :=
-    Module[{result = ""},
+    Module[{result = "{}"},
            If[Length[parameters] > 0,
               result = Utils`StringJoinWithSeparator[
                   CConversion`ToValidCSymbolString /@ parameters,

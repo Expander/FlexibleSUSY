@@ -5,6 +5,7 @@
 #include <boost/test/unit_test.hpp>
 
 #define private public
+#define protected public
 
 #include "test.h"
 #include "test_NMSSM.hpp"
@@ -28,7 +29,8 @@ BOOST_AUTO_TEST_CASE( test_unification_condition )
    NmssmSoftsusy s;
    setup_NMSSM(m, s, input);
 
-   NMSSM_high_scale_constraint<Two_scale> constraint(&m, input);
+   m.set_input_parameters(input);
+   NMSSM_high_scale_constraint<Two_scale> constraint(&m);
 
    double mgut = constraint.get_scale(); // initial guess
    double mgut_new = mgut;
@@ -83,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_mx_calculation )
    pp.m0 = input.m0;
    pp.lambda = input.LambdaInput;
 
-   NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(&m, input);
+   NMSSM_high_scale_constraint<Two_scale> NMSSM_sugra_constraint(&m);
    SoftsusyNMSSM_sugra_constraint snmssm_sugra_constraint(pp);
 
    snmssm_sugra_constraint.set_model((Two_scale_model*)&s);

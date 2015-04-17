@@ -16,23 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-/**
- * @file higgs_2loop_corrections.hpp
- * @brief contains struct for selection of Higgs 2-loop corrections
- */
-
-#ifndef HIGGS_2LOOP_CORRECTIONS_H
-#define HIGGS_2LOOP_CORRECTIONS_H
+#ifndef FUNCTORS_H
+#define FUNCTORS_H
 
 namespace flexiblesusy {
 
-struct Higgs_2loop_corrections {
-   Higgs_2loop_corrections()
-      : at_as(true), ab_as(true), at_at(true), atau_atau(true)
-      {}
-   bool at_as, ab_as, at_at, atau_atau;
+struct Delete_object {
+   template <typename T>
+   void operator()(const T* ptr) {
+      delete ptr;
+   }
 };
 
 } // namespace flexiblesusy

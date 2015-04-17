@@ -20,6 +20,8 @@ GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 ParseCmdLineOptions::usage="";
 PrintCmdLineOptions::usage="";
+GetGaugeCouplingNormalizationsDecls::usage="";
+GetGaugeCouplingNormalizationsDefs::usage="";
 
 CreateSLHAYukawaDefinition::usage="";
 CreateSLHAYukawaGetters::usage="";
@@ -893,6 +895,23 @@ CalculatePMNSMatrix[] :=
              ];
            result
           ];
+
+GetGaugeCouplingNormalizationsDecls[gauge_List] :=
+    StringJoin[
+        CConversion`CreateConstExternDecl[
+            "normalization_" <> CConversion`ToValidCSymbolString[#[[4]]],
+            CConversion`ScalarType[realScalarCType]
+        ]& /@ gauge
+    ];
+
+GetGaugeCouplingNormalizationsDefs[gauge_List] :=
+    StringJoin[
+        CConversion`CreateConstDef[
+            "normalization_" <> CConversion`ToValidCSymbolString[#[[4]]],
+            CConversion`ScalarType[realScalarCType],
+            Parameters`GetGUTNormalization[#[[4]]]
+        ]& /@ gauge
+    ];
 
 End[];
 

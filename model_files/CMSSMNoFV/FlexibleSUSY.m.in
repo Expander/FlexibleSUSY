@@ -1,6 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = MSSMNoFV;
 
 (* CMSSM input parameters *)
 
@@ -129,7 +130,9 @@ ExtraSLHAOutputBlocks = {
             {47, Sqrt[md2[1,1]]},
             {48, Sqrt[md2[2,2]]},
             {49, Sqrt[md2[3,3]]} } },
-   {MASS,  {{1000021, Pole[M[Glu]]    },
+   {MASS,  {{      6, Pole[M[Ft]]     },
+            {     24, Pole[M[VWm]]    },
+            {1000021, Pole[M[Glu]]    },
             {1000012, Pole[M[SveL]]   },
             {1000014, Pole[M[SvmL]]   },
             {1000016, Pole[M[SvtL]]   },

@@ -26,7 +26,6 @@
 #include <string>
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
-#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -89,18 +88,6 @@ inline double ArcCos(double a)
 inline double Arg(const std::complex<double>& z)
 {
    return std::arg(z);
-}
-
-template <typename Derived>
-unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
-{
-   unsigned pos;
-   typename Derived::PlainObject tmp;
-   tmp.setConstant(mass);
-
-   (v - tmp).abs().minCoeff(&pos);
-
-   return pos;
 }
 
 inline double Conj(double a)
@@ -173,6 +160,24 @@ inline double FiniteLog(double a)
    return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
 }
 
+/**
+ * Fills lower triangle of hermitian matrix from values
+ * in upper triangle.
+ *
+ * @param m matrix
+ */
+template <typename Derived>
+void Hermitianize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Hermitianize is only defined for squared matrices");
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = Conj(m(k,i));
+}
+
 inline double Log(double a)
 {
    return std::log(a);
@@ -225,35 +230,6 @@ inline int Sign(int x)
    return (x >= 0 ? 1 : -1);
 }
 
-/**
- * The element of v, which is closest to mass, is moved to the
- * position idx.
- *
- * @param idx new index of the mass eigenvalue
- * @param mass mass to compare against
- * @param v vector of masses
- * @param z corresponding mixing matrix
- */
-template <typename DerivedArray, typename DerivedMatrix>
-void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
-                       Eigen::MatrixBase<DerivedMatrix>& z)
-{
-   int pos = closest_index(mass, v);
-   if (pos == idx)
-      return;
-
-   const int sign = Sign(idx - pos);
-   int steps = std::abs(idx - pos);
-
-   // now we shuffle the states
-   while (steps--) {
-      const int new_pos = pos + sign;
-      v.row(new_pos).swap(v.row(pos));
-      z.row(new_pos).swap(z.row(pos));
-      pos = new_pos;
-   }
-}
-
 template <typename Base, typename Exponent>
 double Power(Base base, Exponent exp)
 {
@@ -271,6 +247,7 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
+<<<<<<< HEAD
 template<int M, int N>
 Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
 {
@@ -349,6 +326,8 @@ void reorder_vector(
    reorder_vector(v, matrix.diagonal().array().eval());
 }
 
+=======
+>>>>>>> development
 inline double Im(double x)
 {
    return x;
@@ -387,6 +366,12 @@ T Sqr(T a)
    return a * a;
 }
 
+/**
+ * Fills lower triangle of symmetric matrix from values in upper
+ * triangle.
+ *
+ * @param m matrix
+ */
 template <typename Derived>
 void Symmetrize(Eigen::MatrixBase<Derived>& m)
 {

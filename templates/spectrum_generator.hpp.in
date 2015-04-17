@@ -31,7 +31,7 @@
 
 #include "coupling_monitor.hpp"
 #include "error.hpp"
-#include "higgs_2loop_corrections.hpp"
+#include "two_loop_corrections.hpp"
 #include "numerics.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
@@ -53,7 +53,7 @@ public:
       , precision_goal(1.0e-4)
       , max_iterations(0)
       , beta_loop_order(2)
-      , threshold_corrections_loop_order(1)
+      , threshold_corrections_loop_order(2)
       , calculate_sm_masses(false)
       , force_output(false)
    {}
@@ -76,7 +76,7 @@ public:
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
    void set_force_output(bool flag) { force_output = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
-   void set_higgs_2loop_corrections(const Higgs_2loop_corrections& c) { model.set_higgs_2loop_corrections(c); }
+   void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
 
    void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
@@ -113,6 +113,13 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
+   model.clear();
+   model.set_input_parameters(input);
+   model.do_calculate_sm_pole_masses(calculate_sm_masses);
+   model.do_force_output(force_output);
+   model.set_loops(beta_loop_order);
+   model.set_thresholds(threshold_corrections_loop_order);
+
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -122,36 +129,26 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    susy_scale_constraint.set_model(&model);
    low_scale_constraint .set_model(&model);
 
-   high_scale_constraint.set_input_parameters(input);
-   susy_scale_constraint.set_input_parameters(input);
-   low_scale_constraint .set_input_parameters(input);
    low_scale_constraint .set_sm_parameters(oneset);
 
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   std::vector<Constraint<T>*> upward_constraints(2, NULL);
+   std::vector<Constraint<T>*> upward_constraints(2);
    upward_constraints[0] = &low_scale_constraint;
    upward_constraints[1] = &high_scale_constraint;
 
-   std::vector<Constraint<T>*> downward_constraints(3, NULL);
+   std::vector<Constraint<T>*> downward_constraints(3);
    downward_constraints[0] = &high_scale_constraint;
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;
-
-   model.clear();
-   model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.do_force_output(force_output);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
 
    @ModelName@_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
       convergence_tester.set_max_iterations(max_iterations);
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, input, oneset,
+   @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);

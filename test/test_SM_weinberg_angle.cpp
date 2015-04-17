@@ -17,7 +17,7 @@ using namespace weinberg_angle;
 
 #define ROOT2 Electroweak_constants::root2
 
-double calculate_delta_vb_sm(
+double calculate_delta_vb_sm_1loop(
    double rho,
    double sinThetaW,
    const Weinberg_angle::Data& data
@@ -44,7 +44,7 @@ double calculate_delta_vb_sm(
   return deltaVbSm;
 }
 
-double calculate_delta_r_sm(
+double calculate_delta_r_sm_1loop(
    double rho,
    double sinThetaW,
    const Weinberg_angle::Data& data
@@ -61,7 +61,32 @@ double calculate_delta_r_sm(
    const double pizztMZ = data.self_energy_z_at_mz;
    const double piwwt0 = data.self_energy_w_at_0;
 
-   const double dvb = ::calculate_delta_vb_sm(rho, sinThetaW, data);
+   const double dvb = ::calculate_delta_vb_sm_1loop(rho, sinThetaW, data);
+
+   const double deltaR = rho * piwwt0 / Sqr(mw) -
+      pizztMZ / Sqr(mz) + dvb;
+
+   return deltaR;
+}
+
+double calculate_delta_r_sm_2loop(
+   double rho,
+   double sinThetaW,
+   const Weinberg_angle::Data& data
+)
+{
+   const double outcos = Cos(ArcSin(sinThetaW));
+   const double mz = data.mz_pole;
+   const double mw = data.mw_pole;
+   const double mt = data.mt_pole;
+   const double mh = data.mh_drbar;
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) * ROOT2 * oneOver16PiSqr;
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double g3 = data.g3;
+   const double pizztMZ = data.self_energy_z_at_mz;
+   const double piwwt0 = data.self_energy_w_at_0;
+
+   const double dvb = ::calculate_delta_vb_sm_1loop(rho, sinThetaW, data);
 
    const double deltaR = rho * piwwt0 / Sqr(mw) -
       pizztMZ / Sqr(mz) + dvb;
@@ -78,7 +103,29 @@ double calculate_delta_r_sm(
    return deltaR_full;
 }
 
-double calculate_delta_rho_sm(
+double calculate_delta_rho_sm_1loop(
+   double rho,
+   double sinThetaW,
+   const Weinberg_angle::Data& data
+)
+{
+   const double mz = data.mz_pole;
+   const double mw = data.mw_pole;
+   const double mt = data.mt_pole;
+   const double mh = data.mh_drbar;
+   const double xt = 3.0 * data.fermi_contant * Sqr(mt) * ROOT2 * oneOver16PiSqr;
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double g3 = data.g3;
+   const double pizztMZ = data.self_energy_z_at_mz;
+   const double piwwtMW = data.self_energy_w_at_mw;
+
+   const double deltaRhoOneLoop = pizztMZ / (rho * Sqr(mz))
+      - piwwtMW / Sqr(mw);
+
+   return deltaRhoOneLoop;
+}
+
+double calculate_delta_rho_sm_2loop(
    double rho,
    double sinThetaW,
    const Weinberg_angle::Data& data
@@ -107,6 +154,22 @@ double calculate_delta_rho_sm(
    const double deltaRho = deltaRhoOneLoop + deltaRho2LoopSm;
 
    return deltaRho;
+}
+
+double calculate_sin_theta_tree(const Weinberg_angle::Data& data)
+{
+   const double alphaDRbar = data.alpha_em_drbar;
+   const double mz_pole    = data.mz_pole;
+   const double gfermi     = data.fermi_contant;
+
+
+   const double sin2thetasqO4 = Pi * alphaDRbar /
+      (Sqrt(2.) * Sqr(mz_pole) * gfermi);
+
+   const double sin2theta = Sqrt(4.0 * sin2thetasqO4);
+   const double theta = 0.5 * ArcSin(sin2theta);
+
+   return Sin(theta);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_vb )
@@ -175,7 +238,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    data.ymu = fs_hmu;
 
    const double ss_delta_vb =
-      ::calculate_delta_vb_sm(outrho, outsin, data);
+      ::calculate_delta_vb_sm_1loop(outrho, outsin, data);
 
    const double fs_delta_vb =
       Weinberg_angle::calculate_delta_vb_sm(outrho, outsin, data);
@@ -248,13 +311,24 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
-   const double ss_delta_r =
-      ::calculate_delta_r_sm(outrho, outsin, data);
+   const double ss_delta_r_1l =
+      ::calculate_delta_r_sm_1loop(outrho, outsin, data);
 
-   const double fs_delta_r =
-      Weinberg_angle::calculate_delta_r(outrho, outsin, data, false);
+   const double ss_delta_r_2l =
+      ::calculate_delta_r_sm_2loop(outrho, outsin, data);
 
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 1.0e-10);
+   const double fs_delta_r_0l =
+      Weinberg_angle::calculate_delta_r(outrho, outsin, data, false, 0);
+
+   const double fs_delta_r_1l =
+      Weinberg_angle::calculate_delta_r(outrho, outsin, data, false, 1);
+
+   const double fs_delta_r_2l =
+      Weinberg_angle::calculate_delta_r(outrho, outsin, data, false, 2);
+
+   BOOST_CHECK_SMALL(fs_delta_r_0l, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_1l, fs_delta_r_1l, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_2l, fs_delta_r_2l, 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_delta_rho )
@@ -322,13 +396,24 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
-   const double ss_delta_r =
-      ::calculate_delta_rho_sm(outrho, outsin, data);
+   const double ss_delta_r_1l =
+      ::calculate_delta_rho_sm_1loop(outrho, outsin, data);
 
-   const double fs_delta_r =
-      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false);
+   const double ss_delta_r_2l =
+      ::calculate_delta_rho_sm_2loop(outrho, outsin, data);
 
-   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r, fs_delta_r, 1.0e-10);
+   const double fs_delta_r_0l =
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 0);
+
+   const double fs_delta_r_1l =
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 1);
+
+   const double fs_delta_r_2l =
+      Weinberg_angle::calculate_delta_rho(outrho, outsin, data, false, 2);
+
+   BOOST_CHECK_SMALL(fs_delta_r_0l, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_1l, fs_delta_r_1l, 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(ss_delta_r_2l, fs_delta_r_2l, 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
@@ -396,16 +481,24 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    data.g3 = fs_g3;
    data.ymu = fs_hmu;
 
+   const double sin_theta_tree = ::calculate_sin_theta_tree(data);
+
    Weinberg_angle weinberg;
    weinberg.disable_susy_contributions();
    weinberg.set_number_of_iterations(20);
+   weinberg.set_number_of_loops(0);
    weinberg.set_precision_goal(1.0e-8);
    weinberg.set_data(data);
 
-   const int error = weinberg.calculate();
+   for (unsigned loops = 0; loops < 3; loops++) {
+      weinberg.set_number_of_loops(loops);
+      const int error = weinberg.calculate();
+      const double fs_sin = weinberg.get_sin_theta();
 
-   const double fs_sin = weinberg.get_sin_theta();
+      BOOST_REQUIRE(error == 0);
+      BOOST_MESSAGE("SM sin(ThetaW) " << loops << "-loop = " << fs_sin);
 
-   BOOST_REQUIRE(error == 0);
-   BOOST_MESSAGE("SM sin(ThetaW) = " << fs_sin);
+      if (loops == 0)
+         BOOST_CHECK_CLOSE_FRACTION(fs_sin, sin_theta_tree, 1.0e-10);
+   }
 }

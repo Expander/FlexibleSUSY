@@ -282,7 +282,8 @@ log_package_information() {
 guess_machine_word_size() {
     chip=`uname -m | tr '[A-Z]' '[a-z]'`
     case "$chip" in
-        *32) machine_word_size="32"; return 0 ;;
+        *32|i[36]86)
+             machine_word_size="32"; return 0 ;;
         *64) machine_word_size="64"; return 0 ;;
         *)   machine_word_size="unknown"
              message "Warning: could not guess machine word size"
@@ -928,7 +929,7 @@ check_models() {
         fi
         if ! test -r ${m}/start.m; then
             logmsg ""
-            logmsg "Note: No start script not found in ${m}"
+            logmsg "Note: No start script found in ${m}"
         fi
         if ! test -r ${m}/FlexibleSUSY.m; then
             logmsg ""
@@ -2327,12 +2328,17 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
     -e "s|@ADDONS@|$ADDONS|"           \
+    -e "s|@BOOSTFLAGS@|$BOOSTFLAGS|"   \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FC@|$FC|"                   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
     -e "s|@FLIBS@|$FLIBS|"             \
+    -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
+    -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
@@ -2402,6 +2408,7 @@ sed -e "s|@MATH@|$MATH|" \
     < $SARAH_DEP_GEN_TMPL > $SARAH_DEP_GEN
 
 echo "$FLEXIBLESUSY_VERSION" > ${CONFIGDIR}/version
+echo "$GIT_COMMIT" > ${CONFIGDIR}/git_commit
 echo "{${required_sarah_major}, ${required_sarah_minor}, ${required_sarah_patch}}" > ${CONFIGDIR}/required_sarah_version.m
 
 chmod a+x $FSCONFIG
