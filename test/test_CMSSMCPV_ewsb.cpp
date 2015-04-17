@@ -79,10 +79,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_one_loop )
 
    m.tadpole_equations(tadpole);
 
-   BOOST_CHECK(Abs(tadpole[0]) > 1.);
-   BOOST_CHECK(Abs(tadpole[1]) > 1.);
-   BOOST_CHECK(Abs(tadpole[2]) > 1.);
-   BOOST_CHECK(Abs(tadpole[3]) > 1.);
+   BOOST_CHECK(Abs(tadpole[0]) > 1000.);
+   BOOST_CHECK(Abs(tadpole[1]) > 1000.);
+   BOOST_CHECK(Abs(tadpole[2]) > 1000.);
+   BOOST_CHECK(Abs(tadpole[3]) > 100. );
 
    m.set_ewsb_iteration_precision(precision);
    const int error = m.solve_ewsb_one_loop();
@@ -91,10 +91,27 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_ewsb_one_loop )
 
    m.tadpole_equations(tadpole);
 
-   BOOST_CHECK_SMALL(Abs(tadpole[0]), 0.003);
-   BOOST_CHECK_SMALL(Abs(tadpole[1]), 0.0005);
-   BOOST_CHECK_SMALL(Abs(tadpole[2]), precision);
-   BOOST_CHECK_SMALL(Abs(tadpole[3]), precision);
+   // tadpole[0,1,3] are fixed by the three EWSB eqs.  tadpole[2] is
+   // not directly fixed by any EWSB eq.  However, the relation
+   //
+   //    tadpole[2]/tadpole[3] = vu/vd           (1)
+   //
+   // is valid, up to higher order effects.  After the iteration
+   // tadpole[2] is not exactly zero, because during the iteration the
+   // relation (1) is spoiled by higher order effects: During the
+   // iteration Mu and BMu pick up tree-level and one-loop tadpole
+   // contributions.  The new values for Mu and BMu in the next
+   // iteration step are then used to recalculate the tree-level
+   // spectrum, which is then used to calculate the one-loop tadpoles.
+   // I.e. during this iterative procedure higher order contributions
+   // are put into Mu and BMu, which leads to a violation of (1).  For
+   // this reason, tadpole[2] is not exactly zero, even if tadpole[3]
+   // is exactly zero.
+
+   BOOST_CHECK_SMALL(Abs(tadpole[0]), 0.003);     // fixed by EWSB
+   BOOST_CHECK_SMALL(Abs(tadpole[1]), 0.0005);    // fixed by EWSB
+   BOOST_CHECK_SMALL(Abs(tadpole[2]), 4.);
+   BOOST_CHECK_SMALL(Abs(tadpole[3]), precision); // fixed by EWSB
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_tadpoles )
