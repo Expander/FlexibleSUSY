@@ -15,6 +15,8 @@ EXTPAR = {
     {22, mHu2IN}
 };
 
+RealParameters = { B[\[Mu]], \[Mu], MassB, MassWB, MassG };
+
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
@@ -28,16 +30,16 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 2.0 10^16;
 
 HighScaleInput = {
-   {T[Ye], Re[MatMul[Tp[ZER], Tp[LHInput[T[Ye]]], ZEL]]},
-   {T[Yd], Re[MatMul[Tp[ZDR], Tp[LHInput[T[Yd]]], ZDL]]},
-   {T[Yu], Re[MatMul[Tp[ZUR], Tp[LHInput[T[Yu]]], ZUL]]},
+   {T[Ye], MatMul[Tp[ZER], Tp[LHInput[T[Ye]]], ZEL]},
+   {T[Yd], MatMul[Tp[ZDR], Tp[LHInput[T[Yd]]], ZDL]},
+   {T[Yu], MatMul[Tp[ZUR], Tp[LHInput[T[Yu]]], ZUL]},
    {mHd2, mHd2IN},
    {mHu2, mHu2IN},
-   {mq2, Re[MatMul[Tp[ZDR], LHInput[mq2], ZDR]]},
-   {ml2, Re[MatMul[Tp[ZER], LHInput[ml2], ZER]]},
-   {md2, Re[MatMul[Tp[ZDL], Tp[LHInput[md2]], ZDL]]},
-   {mu2, Re[MatMul[Tp[ZUL], Tp[LHInput[mu2]], ZUL]]},
-   {me2, Re[MatMul[Tp[ZEL], Tp[LHInput[me2]], ZEL]]},
+   {mq2, MatMul[Tp[ZDR], LHInput[mq2], ZDR]},
+   {ml2, MatMul[Tp[ZER], LHInput[ml2], ZER]},
+   {md2, MatMul[Tp[ZDL], Tp[LHInput[md2]], ZDL]},
+   {mu2, MatMul[Tp[ZUL], Tp[LHInput[mu2]], ZUL]},
+   {me2, MatMul[Tp[ZEL], Tp[LHInput[me2]], ZEL]},
    {MassB, LHInput[MassB]},
    {MassWB,LHInput[MassWB]},
    {MassG, LHInput[MassG]}
@@ -48,7 +50,7 @@ LowScale = SM[MZ];
 LowScaleFirstGuess = SM[MZ];
 
 LowScaleInput = {
-   {Yu, Sqrt[2] Re[MatMul[Tp[CKM], topDRbar]] / vu},
+   {Yu, Sqrt[2] MatMul[Tp[CKM], topDRbar] / vu},
    {Yd, Sqrt[2] bottomDRbar / vd},
    {Ye, Sqrt[2] electronDRbar / vd},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
@@ -86,34 +88,5 @@ ExtraSLHAOutputBlocks = {
             {4, M[Ah[2]]^2},
             {101, B[\[Mu]]},
             {102, vd},
-            {103, vu} } },
-   {Au,    {{1, 1, T[Yu][1,1] / Yu[1,1]},
-            {2, 2, T[Yu][2,2] / Yu[2,2]},
-            {3, 3, T[Yu][3,3] / Yu[3,3]} } },
-   {Ad,    {{1, 1, T[Yd][1,1] / Yd[1,1]},
-            {2, 2, T[Yd][2,2] / Yd[2,2]},
-            {3, 3, T[Yd][3,3] / Yd[3,3]} } },
-   {Ae,    {{1, 1, T[Ye][1,1] / Ye[1,1]},
-            {2, 2, T[Ye][2,2] / Ye[2,2]},
-            {3, 3, T[Ye][3,3] / Ye[3,3]} } },
-   {MSOFT, {{1, MassB},
-            {2, MassWB},
-            {3, MassG},
-            {21, mHd2},
-            {22, mHu2},
-            {31, Sqrt[ml2[1,1]]},
-            {32, Sqrt[ml2[2,2]]},
-            {33, Sqrt[ml2[3,3]]},
-            {34, Sqrt[me2[1,1]]},
-            {35, Sqrt[me2[2,2]]},
-            {36, Sqrt[me2[3,3]]},
-            {41, Sqrt[mq2[1,1]]},
-            {42, Sqrt[mq2[2,2]]},
-            {43, Sqrt[mq2[3,3]]},
-            {44, Sqrt[mu2[1,1]]},
-            {45, Sqrt[mu2[2,2]]},
-            {46, Sqrt[mu2[3,3]]},
-            {47, Sqrt[md2[1,1]]},
-            {48, Sqrt[md2[2,2]]},
-            {49, Sqrt[md2[3,3]]} } }
+            {103, vu} } }
 };
