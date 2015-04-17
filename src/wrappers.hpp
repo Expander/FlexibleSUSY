@@ -260,6 +260,11 @@ inline double MaxAbsValue(double x)
    return Abs(x);
 }
 
+inline double MaxAbsValue(const std::complex<double>& x)
+{
+   return Abs(x);
+}
+
 template <class Derived>
 double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
 {
