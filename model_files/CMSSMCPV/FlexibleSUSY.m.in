@@ -38,6 +38,8 @@ HighScaleInput = {
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
+   {mHu2, m0^2},
+   {mHd2, m0^2},
    {MassB, m12},
    {MassWB,m12},
    {MassG, m12}
