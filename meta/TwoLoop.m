@@ -77,7 +77,7 @@ GetDeltaMOverMQCDTwoLoopDRbar[_, _] := 0;
 
 GetDeltaMOverMQCDTwoLoopMSbar[quark_, renScale_] :=
     Module[{CF, CA, colorPosition, alphaStrong, mf, log,
-            t = 1/2, nf = 6, I31, result},
+            t = 1/2, Nf = 6, I31, result},
            colorPosition = Position[SARAH`Gauge, SARAH`color][[1,1]];
            CF = SA`Casimir[quark, colorPosition];
            CA = SA`Casimir[SARAH`VectorG, colorPosition];
@@ -87,7 +87,7 @@ GetDeltaMOverMQCDTwoLoopMSbar[quark_, renScale_] :=
            I31 = 3/2 Zeta[3] - 6 Zeta[2] Log[2];
            result = (alphaStrong / (4 Pi))^2 (
                CF CA (1111/24 - 8 Zeta[2] - 4 I31 + 185/6 log + 11/2 log^2)
-               - CF t nf (71/6 + 8 Zeta[2] + 26/3 log + 2 log^2)
+               - CF t Nf (71/6 + 8 Zeta[2] + 26/3 log + 2 log^2)
                + CF^2 (121/8 + 30 Zeta[2] + 8 I31 + 27/2 log + 9/2 log^2)
                - 12 CF t (1 - 2 Zeta[2]));
            Simplify[N[result]]
