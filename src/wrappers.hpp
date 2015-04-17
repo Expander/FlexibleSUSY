@@ -247,7 +247,6 @@ inline double Re(const std::complex<double>& x)
    return std::real(x);
 }
 
-<<<<<<< HEAD
 template<int M, int N>
 Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
 {
@@ -264,70 +263,6 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-/**
- * Copies all elements from src to dst which are not close to the
- * elements in cmp.
- *
- * @param src source vector
- * @param cmp vector with elements to compare against
- * @param dst destination vector
- */
-template<class Real, int Nsrc, int Ncmp, int Ndst>
-void remove_if_equal(const Eigen::Array<Real,Nsrc,1>& src,
-                     const Eigen::Array<Real,Ncmp,1>& cmp,
-                     Eigen::Array<Real,Ndst,1>& dst)
-{
-   static_assert(Nsrc == Ncmp + Ndst,
-                 "Error: remove_if_equal: vectors have incompatible length!");
-
-   Eigen::Array<Real,Nsrc,1> non_equal(src);
-
-   for (int i = 0; i < Ncmp; i++) {
-      const int idx = closest_index(cmp(i), non_equal);
-      non_equal(idx) = std::numeric_limits<double>::infinity();
-   }
-
-   std::remove_copy_if(non_equal.data(), non_equal.data() + Nsrc,
-                       dst.data(), Is_not_finite<Real>());
-}
-
-/**
- * @brief reorders vector v according to ordering in vector v2
- * @param v vector with elementes to be reordered
- * @param v2 vector with reference ordering
- */
-template<class Real, int N>
-void reorder_vector(
-   Eigen::Array<Real,N,1>& v,
-   const Eigen::Array<Real,N,1>& v2)
-{
-   Eigen::PermutationMatrix<N> p;
-   p.setIdentity();
-   std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-             CompareAbs<Real, N>(v2));
-
-#if EIGEN_VERSION_AT_LEAST(3,1,4)
-   v.matrix().transpose() *= p.inverse();
-#else
-   Eigen::Map<Eigen::Matrix<Real,N,1> >(v.data()).transpose() *= p.inverse();
-#endif
-}
-
-/**
- * @brief reorders vector v according to ordering of diagonal elements in mass_matrix
- * @param v vector with elementes to be reordered
- * @param matrix matrix with diagonal elements with reference ordering
- */
-template<class Derived>
-void reorder_vector(
-   Eigen::Array<double,Eigen::MatrixBase<Derived>::RowsAtCompileTime,1>& v,
-   const Eigen::MatrixBase<Derived>& matrix)
-{
-   reorder_vector(v, matrix.diagonal().array().eval());
-}
-
-=======
->>>>>>> development
 inline double Im(double x)
 {
    return x;
