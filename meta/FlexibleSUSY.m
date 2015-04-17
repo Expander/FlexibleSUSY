@@ -1348,7 +1348,7 @@ SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
 SelectRenormalizationScheme[renormalizationScheme_] :=
     Switch[renormalizationScheme,
            FlexibleSUSY`DRbar, 0,
-           FlexibleSUSY`MSbar, 0, (* set MS-bar -- DR-bar conversion CTs to zero *)
+           FlexibleSUSY`MSbar, 1,
            _, Message[SelectRenormalizationScheme::UnknownRenormalizationScheme, renormalizationScheme];
               Quit[1];
           ];
