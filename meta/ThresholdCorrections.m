@@ -67,10 +67,15 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
           ];
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=
-    Module[{result, deltaSusy, deltaSM, prefactor, topQuark},
+    Module[{result, deltaSusy, deltaSM, prefactor, topQuark, conversion = 0},
            topQuark = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
            prefactor = Global`alphaEm / (2 Pi);
-           deltaSM = 1/3 - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
+           conversion = Switch[renormalizationScheme,
+                               FlexibleSUSY`DRbar, 1/3,
+                               FlexibleSUSY`MSbar, 0,
+                               _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
+                              ];
+           deltaSM = conversion - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
