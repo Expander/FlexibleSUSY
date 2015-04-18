@@ -2,6 +2,7 @@
 BeginPackage["TestSuite`"];
 
 TestEquality::usage="tests equality of two expressions";
+TestNonEquality::usage="tests inequality of two expressions";
 TestCPPCode::usage="tests a C/C++ code snippet for an expected
 result";
 PrintTestSummary::usage="prints test summary";
@@ -19,6 +20,16 @@ TestEquality[val_, expr_, msg_:""] :=
        numberOfFailedTests++;
        Print["Error: expressions are not equal: ",
              InputForm[val], " =!= ", InputForm[expr]];
+       Return[False];,
+       numberOfPassedTests++;
+       Return[True];
+      ];
+
+TestNonEquality[val_, expr_, msg_:""] :=
+    If[val === expr,
+       numberOfFailedTests++;
+       Print["Error: expressions are equal: ",
+             InputForm[val], " === ", InputForm[expr]];
        Return[False];,
        numberOfPassedTests++;
        Return[True];
