@@ -19,6 +19,8 @@
 #ifndef SUM_H
 #define SUM_H
 
+#include <cstddef>
+
 namespace flexiblesusy {
 
 #define SUM(...) (get_sum(__VA_ARGS__)(__VA_ARGS__))
@@ -28,7 +30,7 @@ namespace flexiblesusy {
 #define get_sum_macro(_1, _2, _3, _4, _5, name, ...) name
 
 #define sum_size_t(idx, ini, fin, expr)		\
-    sum<size_t, (ini), (fin)>([&](size_t (idx)) { return (expr); })
+    sum<std::size_t, (ini), (fin)>([&](std::size_t (idx)) { return (expr); })
 
 #define sum_user_t(type, idx, ini, fin, expr)	\
     sum<type, (ini), (fin)>([&](type (idx)) { return (expr); })
