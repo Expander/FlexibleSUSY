@@ -266,4 +266,57 @@ TestEquality[Sort[solution],
                     mHu2 -> ( 2*E^(I*eta)*y + E^((2*I)*eta)*vd*B[Mu] + vd*conj[B[Mu]])/(2*E^(I*eta)*vu)}}]
             ];
 
+(* test case for the NMSSM/CPV *)
+
+Print["testing NMSSM/CPV EWSB for mHd2, Im[T[\[Kappa]]], Re[T[\[Kappa]]], Im[T[\[Lambda]]], Re[T[\[Lambda]]]"];
+
+nmssmcpvEWSBEqs =
+{mHd2*vd + x - (E^(I*eta - (2*I)*etaS)*vS^2*vu*\[Lambda]*
+    conj[\[Kappa]])/4 - (E^((-I)*eta + (2*I)*etaS)*vS^2*vu*\[Kappa]*
+    conj[\[Lambda]])/4 + (vd*vS^2*\[Lambda]*conj[\[Lambda]])/2 +
+  (vd*vu^2*\[Lambda]*conj[\[Lambda]])/2 -
+  (E^((-I)*eta - I*etaS)*vS*vu*conj[T[\[Lambda]]])/(2*Sqrt[2]) -
+  (E^(I*eta + I*etaS)*vS*vu*T[\[Lambda]])/(2*Sqrt[2]),
+ mHu2*vu + y - (E^(I*eta - (2*I)*etaS)*vd*vS^2*\[Lambda]*conj[\[Kappa]])/
+   4 - (E^((-I)*eta + (2*I)*etaS)*vd*vS^2*\[Kappa]*conj[\[Lambda]])/4 +
+  (vd^2*vu*\[Lambda]*conj[\[Lambda]])/2 + (vS^2*vu*\[Lambda]*conj[\[Lambda]])/
+   2 - (E^((-I)*eta - I*etaS)*vd*vS*conj[T[\[Lambda]]])/(2*Sqrt[2]) -
+  (E^(I*eta + I*etaS)*vd*vS*T[\[Lambda]])/(2*Sqrt[2]),
+ ms2*vS + vS^3*\[Kappa]*conj[\[Kappa]] -
+  (E^(I*eta - (2*I)*etaS)*vd*vS*vu*\[Lambda]*conj[\[Kappa]])/2 -
+  (E^((-I)*eta + (2*I)*etaS)*vd*vS*vu*\[Kappa]*conj[\[Lambda]])/2 +
+  (vd^2*vS*\[Lambda]*conj[\[Lambda]])/2 + (vS*vu^2*\[Lambda]*conj[\[Lambda]])/
+   2 + (vS^2*conj[T[\[Kappa]]])/(2*Sqrt[2]*E^((3*I)*etaS)) -
+  (E^((-I)*eta - I*etaS)*vd*vu*conj[T[\[Lambda]]])/(2*Sqrt[2]) +
+  (E^((3*I)*etaS)*vS^2*T[\[Kappa]])/(2*Sqrt[2]) -
+  (E^(I*eta + I*etaS)*vd*vu*T[\[Lambda]])/(2*Sqrt[2]),
+ (-I/4)*E^(I*eta - (2*I)*etaS)*vS^2*vu*\[Lambda]*conj[\[Kappa]] +
+  (I/4)*E^((-I)*eta + (2*I)*etaS)*vS^2*vu*\[Kappa]*conj[\[Lambda]] +
+  ((I/2)*E^((-I)*eta - I*etaS)*vS*vu*conj[T[\[Lambda]]])/Sqrt[2] -
+  ((I/2)*E^(I*eta + I*etaS)*vS*vu*T[\[Lambda]])/Sqrt[2],
+ (-I/4)*E^(I*eta - (2*I)*etaS)*vd*vS^2*\[Lambda]*conj[\[Kappa]] +
+  (I/4)*E^((-I)*eta + (2*I)*etaS)*vd*vS^2*\[Kappa]*conj[\[Lambda]] +
+  ((I/2)*E^((-I)*eta - I*etaS)*vd*vS*conj[T[\[Lambda]]])/Sqrt[2] -
+  ((I/2)*E^(I*eta + I*etaS)*vd*vS*T[\[Lambda]])/Sqrt[2],
+ (I/2)*E^(I*eta - (2*I)*etaS)*vd*vS*vu*\[Lambda]*conj[\[Kappa]] -
+  (I/2)*E^((-I)*eta + (2*I)*etaS)*vd*vS*vu*\[Kappa]*conj[\[Lambda]] -
+  ((I/2)*vS^2*conj[T[\[Kappa]]])/(Sqrt[2]*E^((3*I)*etaS)) +
+  ((I/2)*E^((-I)*eta - I*etaS)*vd*vu*conj[T[\[Lambda]]])/Sqrt[2] +
+  ((I/2)*E^((3*I)*etaS)*vS^2*T[\[Kappa]])/Sqrt[2] -
+  ((I/2)*E^(I*eta + I*etaS)*vd*vu*T[\[Lambda]])/Sqrt[2]};
+
+nmssmcpvEWSBOutputParameters = { mHd2, Im[T[\[Kappa]]], Re[T[\[Kappa]]], Im[T[\[Lambda]]], Re[T[\[Lambda]]]};
+
+Parameters`SetRealParameters[{vS}];
+TestEquality[Parameters`IsRealParameter[Re[\[Kappa]]], True];
+TestEquality[Parameters`IsRealParameter[Im[\[Kappa]]], True];
+TestEquality[Parameters`IsRealParameter[Re[T[\[Kappa]]]], True];
+TestEquality[Parameters`IsRealParameter[Im[T[\[Kappa]]]], True];
+TestEquality[Parameters`IsRealParameter[vS], True];
+
+nmssmcpvFullSolution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+
+TestNonEquality[solution, {}];
+TestNonEquality[solution, {{}}];
+
 PrintTestSummary[];
