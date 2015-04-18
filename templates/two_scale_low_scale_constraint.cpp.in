@@ -200,6 +200,8 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
           " set is not defined at the same scale as the low-energy"
           " constraint.  You need to run the low-energy data set to this"
           " scale!");
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_threshold_corrections(): model pointer is zero");
 
    const double alpha_em = oneset.displayAlpha(ALPHA);
    const double alpha_s  = oneset.displayAlpha(ALPHAS);
@@ -234,6 +236,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_threshold_correction
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alpha_em_drbar)
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_theta_w(): model pointer is zero");
+
    double theta_w = 0.;
 
 @calculateThetaW@
@@ -243,6 +248,9 @@ double @ModelName@_low_scale_constraint<Two_scale>::calculate_theta_w(double alp
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_DRbar_gauge_couplings(): model pointer is zero");
+
    calculate_threshold_corrections();
 
 @calculateGaugeCouplings@
@@ -250,12 +258,18 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_coupling
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_em(double alphaEm) const
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_delta_alpha_em(): model pointer is zero");
+
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaEm@
 }
 
 double @ModelName@_low_scale_constraint<Two_scale>::calculate_delta_alpha_s(double alphaS) const
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_delta_alpha_s(): model pointer is zero");
+
    const double currentScale = model->get_scale();
 @calculateDeltaAlphaS@
 }
@@ -269,6 +283,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplin
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_@UpYukawa@_DRbar(): model pointer is zero");
+
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
    topDRbar(0,0)      = oneset.displayMass(mUp);
    topDRbar(1,1)      = oneset.displayMass(mCharm);
@@ -282,6 +299,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_@DownYukawa@_DRbar(): model pointer is zero");
+
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
    bottomDRbar(0,0)   = oneset.displayMass(mDown);
    bottomDRbar(1,1)   = oneset.displayMass(mStrange);
@@ -295,6 +315,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRbar()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_@ElectronYukawa@_DRbar(): model pointer is zero");
+
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
    electronDRbar(0,0) = oneset.displayMass(mElectron);
    electronDRbar(1,1) = oneset.displayMass(mMuon);
@@ -308,6 +331,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
 
 void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "calculate_MNeutrino_DRbar(): model pointer is zero");
+
    neutrinoDRbar.setZero();
    neutrinoDRbar(0,0) = oneset.displayNeutrinoPoleMass(1);
    neutrinoDRbar(1,1) = oneset.displayNeutrinoPoleMass(2);
@@ -319,6 +345,9 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
  */
 void @ModelName@_low_scale_constraint<Two_scale>::recalculate_mw_pole()
 {
+   assert(model && "@ModelName@_low_scale_constraint<Two_scale>::"
+          "recalculate_mw_pole(): model pointer is zero");
+
    if (!model->get_thresholds())
       return;
 
