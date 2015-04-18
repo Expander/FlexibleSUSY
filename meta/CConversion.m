@@ -10,6 +10,8 @@ integerScalarCType::usage="represents an integer C type";
 realScalarCType::usage="represents a real scalar C type";
 complexScalarCType::usage="represents a complex scalar C type";
 
+ToRealType::usage="convers a given type to a type with real elements";
+
 UNITMATRIX::usage="";
 ZEROARRAY::usage="";
 ZEROMATRIX::usage="";
@@ -127,6 +129,11 @@ EigenArray[elementType_String, dim_String] :=
 
 EigenVector[elementType_String, dim_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim <> ",1>";
+
+ToRealType[CConversion`ScalarType[_]] := CConversion`ScalarType[realScalarCType];
+ToRealType[CConversion`ArrayType[_,n_]] := CConversion`ArrayType[realScalarCType, n];
+ToRealType[CConversion`VectorType[_,n_]] := CConversion`VectorType[realScalarCType, n];
+ToRealType[CConversion`MatrixType[_,m_,n_]] := CConversion`MatrixType[realScalarCType, m, n];
 
 CreateCType[type_] :=
     Print["Error: CreateCType: unknown type: " <> ToString[type]];
