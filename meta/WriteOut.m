@@ -774,17 +774,14 @@ CreateSLHATrilinearCouplingGetters[] :=
 ConvertTrilinearCouplingsToSLHA[] :=
     Module[{result = "", tril},
            tril = GetTrilinearCouplings[];
-           Module[{vL, vR, type},
+           Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  type = Parameters`GetType[#];
                   result = result <>
-                           CreateSLHATrilinearCouplingName[#] <> " = " <>
-                           CastTo[
-                               CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                               CConversion`ToValidCSymbolString[#] <> " * " <>
-                               CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()",
-                               type
-                           ] <> ";\n";
+                           CreateSLHATrilinearCouplingName[#] <> " = (" <>
+                           CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                           CConversion`ToValidCSymbolString[#] <> " * " <>
+                           CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                           ").real();\n";
            ]& /@ tril;
            result
           ];
@@ -833,27 +830,22 @@ CreateSLHASoftSquaredMassesGetters[] :=
 ConvertSoftSquaredMassesToSLHA[] :=
     Module[{result = "", massSq},
            massSq = GetSoftSquaredMasses[];
-           Module[{vL, vR, type},
+           Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  type = Parameters`GetType[#];
                   If[IsLeftHanded[#],
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = " <>
-                              CastTo[
-                                  CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
-                                  CConversion`ToValidCSymbolString[#] <> " * " <>
-                                  CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()",
-                                  type
-                              ] <> ";\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                              CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
+                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                              ").real();\n";
                      ,
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = " <>
-                              CastTo[
-                                  CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                                  CConversion`ToValidCSymbolString[#] <> " * " <>
-                                  CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()",
-                                  type
-                              ] <> ";\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                              CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
+                              ").real();\n";
                     ];
            ]& /@ massSq;
            result
