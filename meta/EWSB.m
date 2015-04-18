@@ -277,7 +277,21 @@ IsNoSolution[expr_] :=
     Head[expr] === Solve || Flatten[expr] === {};
 
 TimeConstrainedSolve[eq_, par_] :=
-    TimeConstrained[Solve[eq, par], FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+    Module[{result, independentEq = eq, Selector},
+           If[Head[eq] === List,
+              Selector = Function[e,And @@ (Function[p,FreeQ[e,p]] /@ par)];
+              independentEq = Select[eq, (!Selector[#])&];
+             ];
+           result = TimeConstrained[Solve[independentEq, par],
+                                    FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           If[result === {} || result === {{}},
+              Off[Reduce::nsmet];
+              result = TimeConstrained[ToRules[Reduce[independentEq, par]],
+                                       FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              On[Reduce::nsmet];
+             ];
+           result
+          ];
 
 EliminateOneParameter[{}, {}] := {};
 
@@ -448,6 +462,8 @@ FindSolution[equations_List, parametersFixedByEWSB_List] :=
            DebugPrint["Eliminating the parameters ", uniquePars];
            solution = ToMathematicaSolutionFormat @ EliminateOneParameter[uniqueEqs, uniquePars];
            If[solution === {},
+              DebugPrint["Trying Mathematica's Solve[] with time constraint of ",
+                         FlexibleSUSY`FSSolveEWSBTimeConstraint, " seconds"];
               solution = TimeConstrainedSolve[uniqueEqs, uniquePars];
              ];
            (* substitute back unique parameters *)
