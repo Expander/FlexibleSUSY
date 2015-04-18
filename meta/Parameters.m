@@ -35,6 +35,7 @@ IsComplexParameter::usage="";
 IsRealExpression::usage="";
 IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
+IsOutputParameter::usage="returns true if parameter is a defined output parameter";
 
 SetInputParameters::usage="";
 SetModelParameters::usage="";
@@ -241,6 +242,9 @@ IsRealExpression[sum[index_, start_, stop_, expr_]] :=
     IsRealExpression[expr];
 
 IsRealExpression[otherwise_] := False;
+
+IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
+IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
 HasPhase[particle_] :=
     MemberQ[#[[1]]& /@ SARAH`ParticlePhases, particle];
