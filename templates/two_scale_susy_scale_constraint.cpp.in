@@ -92,6 +92,9 @@ double @ModelName@_susy_scale_constraint<Two_scale>::get_initial_scale_guess() c
 
 const @ModelName@_input_parameters& @ModelName@_susy_scale_constraint<Two_scale>::get_input_parameters() const
 {
+   assert(model && "Error: @ModelName@_susy_scale_constraint::"
+          "get_input_parameters(): model pointer is zero.");
+
    return model->get_input();
 }
 

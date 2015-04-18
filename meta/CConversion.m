@@ -27,6 +27,9 @@ FSKroneckerDelta::usage="";
 IndexSum::usage="";
 TensorProd::usgae="";
 
+HaveSameDimension::usage = "Checks if given types have same
+dimension";
+
 CreateCType::usage="returns string with the C/C++ data type";
 
 GetElementType::usage="returns type of matrix / vector / array elements";
@@ -849,6 +852,18 @@ ProtectTensorProducts[expr_, sym_[_]] := expr;
 
 ProtectTensorProducts[expr_, sym_[idx1_, idx2_]] :=
     ProtectTensorProducts[expr, idx1, idx2];
+
+HaveSameDimension[_] := True;
+HaveSameDimension[{}] := True;
+HaveSameDimension[types__] := HaveSameDimension[{types}];
+HaveSameDimension[{ScalarType[_], ScalarType[_]}] := True;
+HaveSameDimension[{ArrayType[_,n_], ArrayType[_,m_]}] := n === m;
+HaveSameDimension[{VectorType[_,n_], VectorType[_,m_]}] := n === m;
+HaveSameDimension[{VectorType[_,n_], ArrayType[_,m_]}] := n === m;
+HaveSameDimension[{MatrixType[_,n_,k_], MatrixType[_,m_,l_]}] := n === m && k === l;
+HaveSameDimension[{_,_}] := False;
+HaveSameDimension[types_List] :=
+    And @@ (HaveSameDimension /@ Subsets[types, {2}]);
 
 End[];
 

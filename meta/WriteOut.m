@@ -717,17 +717,30 @@ CreateSLHAYukawaGetters[] :=
            result
           ];
 
+ParametersHaveSameDimension[pars_List] :=
+    CConversion`HaveSameDimension[Parameters`GetType /@ pars];
+
 ConvertYukawaCouplingsToSLHA[] :=
     Module[{result = ""},
            yuks = GetYukawas[];
            Module[{dim, vL, vR},
                   dim = SARAH`getDimParameters[#][[1]];
                   {vL, vR} = GetMixingMatricesFor[#];
-                  result = result <>
-                           "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
-                                   CreateSLHAYukawaName[#] <> ", " <>
-                                   CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
-                                   CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     ParametersHaveSameDimension[{vL, vR, #}],
+                     result = result <>
+                              "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
+                                      CreateSLHAYukawaName[#] <> ", " <>
+                                      CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
+                                      CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
+                     ,
+                     Print["Warning: Cannot convert Yukawa coupling ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
+                     result = result <>
+                              CreateSLHAYukawaName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".diagonal().real();\n";
+                    ];
            ]& /@ yuks;
            result
           ];
@@ -776,12 +789,22 @@ ConvertTrilinearCouplingsToSLHA[] :=
            tril = GetTrilinearCouplings[];
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  result = result <>
-                           CreateSLHATrilinearCouplingName[#] <> " = (" <>
-                           CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                           CConversion`ToValidCSymbolString[#] <> " * " <>
-                           CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
-                           ").real();\n";
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     ParametersHaveSameDimension[{vL, vR, #}],
+                     result = result <>
+                              CreateSLHATrilinearCouplingName[#] <> " = (" <>
+                              CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                              CConversion`ToValidCSymbolString[#] <> " * " <>
+                              CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                              ").real();\n";
+                     ,
+                     Print["Warning: Cannot convert Trilinear coupling ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
+                     result = result <>
+                              CreateSLHATrilinearCouplingName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
+                    ];
            ]& /@ tril;
            result
           ];
@@ -832,20 +855,30 @@ ConvertSoftSquaredMassesToSLHA[] :=
            massSq = GetSoftSquaredMasses[];
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  If[IsLeftHanded[#],
-                     result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
-                              CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
-                              CConversion`ToValidCSymbolString[#] <> " * " <>
-                              CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
-                              ").real();\n";
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     ParametersHaveSameDimension[{vL, vR, #}],
+                     If[IsLeftHanded[#],
+                        result = result <>
+                                 CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                                 CreateSLHAFermionMixingMatrixName[vL] <> " * " <>
+                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
+                                 ").real();\n";
+                        ,
+                        result = result <>
+                                 CreateSLHASoftSquaredMassName[#] <> " = (" <>
+                                 CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
+                                 CConversion`ToValidCSymbolString[#] <> " * " <>
+                                 CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
+                                 ").real();\n";
+                       ];
                      ,
+                     Print["Warning: Cannot convert soft squared mass ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
                      result = result <>
-                              CreateSLHASoftSquaredMassName[#] <> " = (" <>
-                              CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
-                              CConversion`ToValidCSymbolString[#] <> " * " <>
-                              CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
-                              ").real();\n";
+                              CreateSLHASoftSquaredMassName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
                     ];
            ]& /@ massSq;
            result

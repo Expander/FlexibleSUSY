@@ -43,6 +43,7 @@ IsMatrix::usage="returns true if parameter is a matrix";
 IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
 IsModelParameter::usage="returns True if parameter is a model parameter";
 IsInputParameter::usage="returns False if parameter is an input parameter";
+IsOutputParameter::usage="returns True if parameter is a defined output parameter";
 IsIndex::usage="returns true if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
 
@@ -216,6 +217,9 @@ IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
 
 IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
+
+IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
+IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
