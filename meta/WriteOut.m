@@ -729,7 +729,8 @@ ConvertYukawaCouplingsToSLHA[] :=
            Module[{dim, vL, vR},
                   dim = SARAH`getDimParameters[#][[1]];
                   {vL, vR} = GetMixingMatricesFor[#];
-                  If[Parameters`IsOutputParameter[{vL, vR}],
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     CConversion`HaveSameDimension[{vL, vR, #}],
                      result = result <>
                               "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
                                       CreateSLHAYukawaName[#] <> ", " <>
@@ -737,7 +738,8 @@ ConvertYukawaCouplingsToSLHA[] :=
                                       CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
                      ,
                      Print["Warning: Cannot convert Yukawa coupling ", #,
-                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
                      result = result <>
                               CreateSLHAYukawaName[#] <> " = " <>
                               CConversion`ToValidCSymbolString[#] <> ".diagonal().real();\n";
@@ -790,7 +792,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
            tril = GetTrilinearCouplings[];
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  If[Parameters`IsOutputParameter[{vL, vR}],
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     CConversion`HaveSameDimension[{vL, vR, #}],
                      result = result <>
                               CreateSLHATrilinearCouplingName[#] <> " = (" <>
                               CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
@@ -799,7 +802,8 @@ ConvertTrilinearCouplingsToSLHA[] :=
                               ").real();\n";
                      ,
                      Print["Warning: Cannot convert Trilinear coupling ", #,
-                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
                      result = result <>
                               CreateSLHATrilinearCouplingName[#] <> " = " <>
                               CConversion`ToValidCSymbolString[#] <> ".real();\n";
@@ -854,7 +858,8 @@ ConvertSoftSquaredMassesToSLHA[] :=
            massSq = GetSoftSquaredMasses[];
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
-                  If[Parameters`IsOutputParameter[{vL, vR}],
+                  If[Parameters`IsOutputParameter[{vL, vR}] &&
+                     CConversion`HaveSameDimension[{vL, vR, #}],
                      If[IsLeftHanded[#],
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
@@ -872,7 +877,8 @@ ConvertSoftSquaredMassesToSLHA[] :=
                        ];
                      ,
                      Print["Warning: Cannot convert soft squared mass ", #,
-                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                           " to SLHA, because ", {vL,vR}, " are not defined",
+                           " or have incompatible dimension."];
                      result = result <>
                               CreateSLHASoftSquaredMassName[#] <> " = " <>
                               CConversion`ToValidCSymbolString[#] <> ".real();\n";
