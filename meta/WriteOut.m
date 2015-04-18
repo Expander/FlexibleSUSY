@@ -683,13 +683,13 @@ CreateSLHATrilinearCouplingName[c_] :=
     CConversion`ToValidCSymbolString[c] <> "_slha";
 
 GetSLHATrilinearCouplingType[c_] :=
-    Parameters`GetType[c];
+    CConversion`ToRealType[Parameters`GetType[c]];
 
 CreateSLHASoftSquaredMassName[c_] :=
     CConversion`ToValidCSymbolString[c] <> "_slha";
 
 GetSLHASoftSquaredMassType[c_] :=
-    Parameters`GetType[c];
+    CConversion`ToRealType[Parameters`GetType[c]];
 
 CreateSLHAYukawaDefinition[] :=
     Module[{result = "", yuks},
