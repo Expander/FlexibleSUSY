@@ -723,6 +723,9 @@ CreateSLHAYukawaGetters[] :=
            result
           ];
 
+ParametersHaveSameDimension[pars_List] :=
+    CConversion`HaveSameDimension[Parameters`GetType /@ pars];
+
 ConvertYukawaCouplingsToSLHA[] :=
     Module[{result = ""},
            yuks = GetYukawas[];
@@ -730,7 +733,7 @@ ConvertYukawaCouplingsToSLHA[] :=
                   dim = SARAH`getDimParameters[#][[1]];
                   {vL, vR} = GetMixingMatricesFor[#];
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
-                     CConversion`HaveSameDimension[{vL, vR, #}],
+                     ParametersHaveSameDimension[{vL, vR, #}],
                      result = result <>
                               "fs_svd(" <> CConversion`ToValidCSymbolString[#] <> ", " <>
                                       CreateSLHAYukawaName[#] <> ", " <>
@@ -793,7 +796,7 @@ ConvertTrilinearCouplingsToSLHA[] :=
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
-                     CConversion`HaveSameDimension[{vL, vR, #}],
+                     ParametersHaveSameDimension[{vL, vR, #}],
                      result = result <>
                               CreateSLHATrilinearCouplingName[#] <> " = (" <>
                               CreateSLHAFermionMixingMatrixName[vR] <> ".conjugate() * " <>
@@ -859,7 +862,7 @@ ConvertSoftSquaredMassesToSLHA[] :=
            Module[{vL, vR},
                   {vL, vR} = GetMixingMatricesFor[#];
                   If[Parameters`IsOutputParameter[{vL, vR}] &&
-                     CConversion`HaveSameDimension[{vL, vR, #}],
+                     ParametersHaveSameDimension[{vL, vR, #}],
                      If[IsLeftHanded[#],
                         result = result <>
                                  CreateSLHASoftSquaredMassName[#] <> " = (" <>
