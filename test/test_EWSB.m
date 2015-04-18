@@ -248,6 +248,8 @@ TestEquality[Sort[solution],
    solve for two the parametes mHu2, mHd2
  *)
 
+Print["testing MSSM/CPV EWSB for mHu2, mHd2"];
+
 solution = EWSB`Private`TimeConstrainedSolve[
     Parameters`FilterOutIndependentEqs[
         {mHd2*vd + x - (E^(I*eta)*vu*B[Mu])/2 - (vu*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
