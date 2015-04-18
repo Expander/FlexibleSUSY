@@ -735,6 +735,12 @@ ConvertYukawaCouplingsToSLHA[] :=
                                       CreateSLHAYukawaName[#] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vR] <> ", " <>
                                       CreateSLHAFermionMixingMatrixName[vL] <> ");\n";
+                     ,
+                     Print["Warning: Cannot convert Yukawa coupling ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                     result = result <>
+                              CreateSLHAYukawaName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".diagonal().real();\n";
                     ];
            ]& /@ yuks;
            result
@@ -791,6 +797,12 @@ ConvertTrilinearCouplingsToSLHA[] :=
                               CConversion`ToValidCSymbolString[#] <> " * " <>
                               CreateSLHAFermionMixingMatrixName[vL] <> ".adjoint()" <>
                               ").real();\n";
+                     ,
+                     Print["Warning: Cannot convert Trilinear coupling ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                     result = result <>
+                              CreateSLHATrilinearCouplingName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
                     ];
            ]& /@ tril;
            result
@@ -858,6 +870,12 @@ ConvertSoftSquaredMassesToSLHA[] :=
                                  CreateSLHAFermionMixingMatrixName[vR] <> ".transpose()" <>
                                  ").real();\n";
                        ];
+                     ,
+                     Print["Warning: Cannot convert soft squared mass ", #,
+                           " to SLHA, because ", {vL,vR}, " are not defined."];
+                     result = result <>
+                              CreateSLHASoftSquaredMassName[#] <> " = " <>
+                              CConversion`ToValidCSymbolString[#] <> ".real();\n";
                     ];
            ]& /@ massSq;
            result
