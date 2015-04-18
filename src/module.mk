@@ -78,6 +78,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
+		$(DIR)/sum.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/wrappers.hpp \
