@@ -1655,8 +1655,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                                          FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
                  Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
                  Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
-                 Print["Solving independent EWSB equations for ", FlexibleSUSY`EWSBOutputParameters," ..."];
+                 Print["Searching for independent EWSB equations ..."];
                  independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
+                 Print["Solving ", Length[independentEwsbEquations],
+                       " independent EWSB equations for ",
+                       FlexibleSUSY`EWSBOutputParameters," ..."];
                  {ewsbSolution, freePhases} = EWSB`FindSolutionAndFreePhases[independentEwsbEquations,
                                                                              FlexibleSUSY`EWSBOutputParameters,
                                                                              treeLevelEwsbSolutionOutputFile];
