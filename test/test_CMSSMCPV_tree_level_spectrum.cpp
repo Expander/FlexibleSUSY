@@ -122,9 +122,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCPV_goldstone_boson_masses )
          input.TanBeta = 10.;
          input.m0 = 125.;
          input.m12 = 200.;
-         input.PhaseMu = std::complex<double>(std::polar(1., 2*Pi*m));
+         input.PhaseMu = std::complex<double>(std::polar(1., 2*Pi*m/100));
          input.Azero = 100.;
-         input.etaInput = 2*Pi*e;
+         input.etaInput = 2*Pi*e/100;
 
          check_goldstone_masses(input);
       }
