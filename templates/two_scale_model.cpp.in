@@ -227,9 +227,8 @@ void CLASSNAME::tadpole_equations(double tadpole[number_of_ewsb_equations]) cons
  */
 int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* f)
 {
-   if (contains_nan(x, number_of_ewsb_equations)) {
-      for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-         gsl_vector_set(f, i, std::numeric_limits<double>::max());
+   if (!is_finite(x)) {
+      gsl_vector_set_all(f, std::numeric_limits<double>::max());
       return GSL_EDOM;
    }
 
@@ -250,7 +249,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   return is_finite(tadpole, number_of_ewsb_equations) ? GSL_SUCCESS : GSL_EDOM;
+   return is_finite<number_of_ewsb_equations>(tadpole) ? GSL_SUCCESS : GSL_EDOM;
 }
 
 /**
@@ -422,9 +421,8 @@ int CLASSNAME::ewsb_step(double ewsb_parameters[number_of_ewsb_equations]) const
  */
 int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
 {
-   if (contains_nan(x, number_of_ewsb_equations)) {
-      for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-         gsl_vector_set(f, i, std::numeric_limits<double>::max());
+   if (!is_finite(x)) {
+      gsl_vector_set_all(f, std::numeric_limits<double>::max());
       return GSL_EDOM;
    }
 
