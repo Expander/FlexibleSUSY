@@ -16,24 +16,40 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "two_scale_convergence_tester.hpp"
+#ifndef NUMERICS_HPP
+#define NUMERICS_HPP
 
-#include "numerics2.hpp"
+#include <cmath>
+#include <limits>
 
 namespace flexiblesusy {
 
-Convergence_tester<Two_scale>::~Convergence_tester()
+template <typename T>
+bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
 {
+   return std::fabs(a) < prec;
 }
 
-bool Convergence_tester<Two_scale>::is_equal(double a, double b) const
+template <typename T>
+bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 {
-   return flexiblesusy::is_equal(a, b);
+   return is_zero(a - b, prec);
 }
 
-bool Convergence_tester<Two_scale>::is_zero(double a) const
+template <typename T>
+bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 {
-   return flexiblesusy::is_zero(a);
+   if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+      return true;
+
+   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
+      return std::numeric_limits<T>::infinity();
+
+   return std::fabs((a - b)/a) < prec;
 }
+
+bool is_finite(const double*, std::size_t length);
 
 } // namespace flexiblesusy
+
+#endif

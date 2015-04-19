@@ -16,38 +16,20 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef NUMERICS_HPP
-#define NUMERICS_HPP
-
+#include "numerics2.hpp"
 #include <cmath>
-#include <limits>
+#include <cstddef>
 
 namespace flexiblesusy {
 
-template <typename T>
-bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+bool is_finite(const double* v, std::size_t length)
 {
-   return std::fabs(a) < prec;
-}
+   bool is_finite = true;
 
-template <typename T>
-bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
-{
-   return is_zero(a - b, prec);
-}
+   for (std::size_t i = 0; i < length; i++)
+      is_finite = is_finite && std::isfinite(v[i]);
 
-template <typename T>
-bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
-{
-   if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
-      return true;
-
-   if (std::fabs(a) < std::numeric_limits<T>::epsilon())
-      return std::numeric_limits<T>::infinity();
-
-   return std::fabs((a - b)/a) < prec;
+   return is_finite;
 }
 
 } // namespace flexiblesusy
-
-#endif

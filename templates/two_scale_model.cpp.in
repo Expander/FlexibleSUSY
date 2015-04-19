@@ -34,6 +34,7 @@
 #include "eigen_utils.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
+#include "numerics2.hpp"
 #include "logger.hpp"
 #include "error.hpp"
 #include "root_finder.hpp"
@@ -250,12 +251,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
    for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
       gsl_vector_set(f, i, tadpole[i]);
 
-   bool is_finite = true;
-
-   for (std::size_t i = 0; i < number_of_ewsb_equations; ++i)
-      is_finite = is_finite && std::isfinite(tadpole[i]);
-
-   return (is_finite ? GSL_SUCCESS : GSL_EDOM);
+   return is_finite(tadpole, number_of_ewsb_equations) ? GSL_SUCCESS : GSL_EDOM;
 }
 
 /**

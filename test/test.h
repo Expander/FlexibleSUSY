@@ -3,7 +3,7 @@
 #define TEST_H
 
 #include "linalg.h"
-#include "numerics.hpp"
+#include "numerics2.hpp"
 #include <Eigen/Core>
 
 namespace flexiblesusy {

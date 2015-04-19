@@ -19,6 +19,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/mssm_twoloophiggs.f \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
+		$(DIR)/numerics2.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/pv.cpp \
@@ -66,7 +67,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
-		$(DIR)/numerics.hpp \
+		$(DIR)/numerics2.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
@@ -78,6 +79,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
+		$(DIR)/sum.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/wrappers.hpp \

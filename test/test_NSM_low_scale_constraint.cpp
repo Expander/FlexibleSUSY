@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( test_delta_alpha )
    // the extra singlet field does not couple electromagnetically and
    // does thus not contribute here (or below)
    const double delta_alpha_em =
-      alpha_em / (2 * Pi) * (1./3. - 16./9. * log(Mtop/scale));
+      alpha_em / (2 * Pi) * (- 16./9. * log(Mtop/scale));
 
    // no MS-bar DR-bar conversion term appears here, because the NSM
    // is renormalized in MS-bar
