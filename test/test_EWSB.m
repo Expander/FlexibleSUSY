@@ -204,10 +204,10 @@ cmssmcpvFullSolution = EWSB`Private`FindSolution[cmssmcpvEwsbEqs, cmssmcpvEwsbOu
 
 TestEquality[Sort /@ cmssmcpvFullSolution,
              Sort /@ {{Mu        -> -(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
-                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
+                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)),
                        Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))},
                       {Mu        -> +(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
-                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)), 
+                       Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)),
                        Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))}
                      }];
 
@@ -314,18 +314,25 @@ TestEquality[Parameters`IsRealParameter[Re[T[\[Kappa]]]], True];
 TestEquality[Parameters`IsRealParameter[Im[T[\[Kappa]]]], True];
 TestEquality[Parameters`IsRealParameter[vS], True];
 
-nmssmcpvFullSolution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+solution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 
 TestNonEquality[solution, {}];
 TestNonEquality[solution, {{}}];
+TestEquality[Length[solution], 1];
+TestEquality[Length[solution[[1]]], 5];
 
-Print["testing NMSSM/CPV EWSB for mHd2, mHu2, ms2, Im[T[\[Kappa]]], Re[T[\[Kappa]]]"];
+Print["testing NMSSM/CPV EWSB for mHd2, mHu2, ms2, Im[T[\[Kappa]]], Im[T[\[Lambda]]]"];
 
-nmssmcpvEWSBOutputParameters = { mHd2, mHu2, ms2, Im[T[\[Kappa]]], Re[T[\[Kappa]]] };
+nmssmcpvEWSBOutputParameters = { mHd2, mHu2, ms2, Im[T[\[Kappa]]], Im[T[\[Lambda]]] };
 
-nmssmcpvFullSolution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+Parameters`AddRealParameter[{mHd2, mHu2, ms2}];
+
+nmssmcpvEWSBEqs = Parameters`FilterOutLinearDependentEqs[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+solution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 
 TestNonEquality[solution, {}];
 TestNonEquality[solution, {{}}];
+TestEquality[Length[solution], 1];
+TestEquality[Length[solution[[1]]], 5];
 
 PrintTestSummary[];
