@@ -29,7 +29,7 @@
 #include "logger.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
-#include "numerics.hpp"
+#include "numerics2.hpp"
 #include "pmns.hpp"
 
 namespace softsusy {

@@ -18,7 +18,7 @@
 
 #include "two_scale_convergence_tester.hpp"
 
-#include "numerics.hpp"
+#include "numerics2.hpp"
 
 namespace flexiblesusy {
 

@@ -66,7 +66,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/nmssm_twoloophiggs.h \
 		$(DIR)/numerics.h \
-		$(DIR)/numerics.hpp \
+		$(DIR)/numerics2.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \

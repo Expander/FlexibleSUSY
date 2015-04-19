@@ -26,7 +26,7 @@
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "root_finder.hpp"
-#include "numerics.hpp"
+#include "numerics2.hpp"
 
 #include <cassert>
 #include <cmath>

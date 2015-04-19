@@ -18,7 +18,7 @@
 
 #include <cmath>
 #include <Eigen/LU>
-#include "numerics.hpp"
+#include "numerics2.hpp"
 #include "linalg2.hpp"
 #include "ew_input.hpp"
 #include "wrappers.hpp"
