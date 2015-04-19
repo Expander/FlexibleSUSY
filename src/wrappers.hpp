@@ -176,6 +176,12 @@ inline bool IsFinite(const std::complex<double>& x)
    return std::isfinite(x.real()) && std::isfinite(x.imag());
 }
 
+template <class Derived>
+bool IsFinite(const Eigen::DenseBase<Derived>& m)
+{
+   return m.allFinite();
+}
+
 inline int KroneckerDelta(int i, int j)
 {
    return i == j;
