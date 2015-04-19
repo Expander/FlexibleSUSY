@@ -302,6 +302,9 @@ TimeConstrainedSolve[eq_, par_] :=
               Off[Reduce::nsmet];
               result = TimeConstrained[ToRules[Reduce[independentEq, par]],
                                        FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+              If[Head[result] === ToRules || Head[result] === Reduce,
+                 result = {};
+                ];
               On[Reduce::nsmet];
              ];
            result
