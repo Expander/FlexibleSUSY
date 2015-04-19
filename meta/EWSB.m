@@ -181,8 +181,10 @@ FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
            Return[result];
           ];
 
-MakeParameterUnique[Re[par_]]      := Rule[Re[par]     , CConversion`ToValidCSymbol[Re[par]]];
-MakeParameterUnique[Im[par_]]      := Rule[Im[par]     , CConversion`ToValidCSymbol[Im[par]]];
+MakeParameterUnique[(Re|Im)[par_]] :=
+    { MakeParameterUnique[par],
+      Rule[Re[par], CConversion`ToValidCSymbol[Re[par]]],
+      Rule[Im[par], CConversion`ToValidCSymbol[Im[par]]] };
 MakeParameterUnique[SARAH`L[par_]] := Rule[SARAH`L[par], CConversion`ToValidCSymbol[SARAH`L[par]]];
 MakeParameterUnique[SARAH`B[par_]] := Rule[SARAH`B[par], CConversion`ToValidCSymbol[SARAH`B[par]]];
 MakeParameterUnique[SARAH`T[par_]] := Rule[SARAH`T[par], CConversion`ToValidCSymbol[SARAH`T[par]]];
@@ -214,7 +216,19 @@ ComplexParameterReplacementRules[eqs_List, par_] :=
           ];
 
 SplitRealAndImagParts[eqs_List, pars_List] :=
-    eqs /. DeleteDuplicates[Cases[pars, Re[p_] | Im[p_] :> Rule[p,Re[p]+I Im[p]]]];
+    Module[{parsWithoutHeads, uniqueRules, uniqueEqs, uniquePars, result},
+           parsWithoutHeads = Cases[pars, (Re | Im | SARAH`L | SARAH`B | SARAH`T | SARAH`Q)[p_] | p_ :> p];
+           uniqueRules = DeleteDuplicates @ Flatten[{
+               Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
+               Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
+               Rule[SARAH`T[#], CConversion`ToValidCSymbol[SARAH`T[#]]],
+               Rule[SARAH`Q[#], CConversion`ToValidCSymbol[SARAH`Q[#]]]
+           }& /@ parsWithoutHeads];
+           uniqueEqs = eqs /. uniqueRules;
+           uniquePars = pars /. uniqueRules;
+           result = uniqueEqs /. DeleteDuplicates[Cases[uniquePars, Re[p_] | Im[p_] :> Rule[p,Re[p]+I Im[p]]]];
+           result /. (Reverse /@ uniqueRules)
+          ];
 
 SimplifyEwsbEqs[equations_List, parametersFixedByEWSB_List] :=
     Module[{realParameters, complexParameters, simplificationRules,
