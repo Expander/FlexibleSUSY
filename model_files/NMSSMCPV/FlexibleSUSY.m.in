@@ -75,6 +75,8 @@ InitialGuessAtLowScale = {
    {\[Kappa], KappaInput},
    {vS, LambdaTimesvSInput / LambdaInput},
    {ms2, SM[MZ]^2},
+   {eta, etaInput},
+   {etaS, etaSInput},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
