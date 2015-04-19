@@ -15,6 +15,8 @@ MINPAR = {
 EXTPAR = {
     {61, LambdaInput},
     {62, KappaInput},
+    {63, ALambdaInput},
+    {64, AKappaInput},
     {65, LambdaTimesvSInput},
     {100, etaInput},
     {101, etaSInput}
@@ -42,6 +44,8 @@ HighScaleInput={
    {T[Ye], Azero*Ye},
    {T[Yd], Azero*Yd},
    {T[Yu], Azero*Yu},
+   {T[\[Kappa]] , AKappaInput  KappaInput  + I Im[T[\[Kappa]]]},
+   {T[\[Lambda]], ALambdaInput LambdaInput + I Im[T[\[Lambda]]]},
    {mq2, UNITMATRIX[3] m0^2},
    {ml2, UNITMATRIX[3] m0^2},
    {md2, UNITMATRIX[3] m0^2},
