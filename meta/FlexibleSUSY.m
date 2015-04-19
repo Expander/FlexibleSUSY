@@ -799,6 +799,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               ];
            higgsMassGetters =
                Utils`StringZipWithSeparator[
+                   TreeMasses`CreateHiggsMassGetters[SARAH`HiggsBoson,""],
                    TreeMasses`CreateHiggsMassGetters[SARAH`ChargedHiggs,""],
                    TreeMasses`CreateHiggsMassGetters[SARAH`PseudoScalar,""],
                    "\n"
