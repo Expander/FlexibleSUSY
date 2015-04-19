@@ -51,7 +51,7 @@ ConvertSARAHTraces[abbrs_] :=
 
 GetTraceType[trace_] :=
     CConversion`ScalarType @
-    If[Parameters`IsRealExpression[trace],
+    If[Parameters`IsRealExpression[trace] || Parameters`AllModelParametersAreReal[],
        CConversion`realScalarCType,
        CConversion`complexScalarCType
       ];
