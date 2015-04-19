@@ -203,6 +203,8 @@ sarahIndices = {
 IsIndex[i_?NumberQ] := True;
 IsIndex[i_ /; MemberQ[sarahIndices,i]] := True;
 IsIndex[_] := False;
+IsIndex[indices_List] := And @@ (IsIndex /@ indices);
+IsIndex[indices__] := IsIndex[{indices}];
 
 GetIndices[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] := {indices};
 GetIndices[parameter_] := {};
