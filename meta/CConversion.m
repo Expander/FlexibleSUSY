@@ -34,6 +34,9 @@ CreateCType::usage="returns string with the C/C++ data type";
 
 GetElementType::usage="returns type of matrix / vector / array elements";
 
+GetScalarElementType::usage="returns a ScalarType whose element type
+is equal to the element type from the given type"
+
 CastTo::usage="cast an (string) expression to a give type";
 
 ToValidCSymbol::usage="creates a valid C variable name from a symbol";
@@ -117,6 +120,9 @@ GetElementType[CConversion`ScalarType[type_]]     := type;
 GetElementType[CConversion`ArrayType[type_, __]]  := type;
 GetElementType[CConversion`VectorType[type_, __]] := type;
 GetElementType[CConversion`MatrixType[type_, __]] := type;
+
+GetScalarElementType[type_] :=
+    CConversion`ScalarType[GetElementType[type]];
 
 EigenMatrix[elementType_String, dim1_String, dim2_String] :=
     "Eigen::Matrix<" <> elementType <> "," <> dim1 <> "," <> dim2 <> ">";
