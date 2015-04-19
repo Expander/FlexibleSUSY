@@ -33,8 +33,8 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 SUSYScaleInput = {
     {Yv, LHInput[Yv]},
     {vL[1], vL1Input},
-    {vL[2], vL1Input},
-    {vL[3], vL1Input},
+    {vL[2], vL2Input},
+    {vL[3], vL3Input},
     {vR, vRInput},
     {\[Kappa], KappaInput}
 };
