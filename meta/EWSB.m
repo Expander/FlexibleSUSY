@@ -585,7 +585,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  type = CConversion`CreateCType[Parameters`GetType[par]];
+                  type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
                   parStr = CConversion`RValueToCFormString[par];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   result = result <>
@@ -596,7 +596,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  type = Parameters`GetType[par];
+                  type = CConversion`GetScalarElementType[Parameters`GetType[par]];
                   result = result <> Parameters`SetParameter[par, expr, type];
                  ];
               result = result <> "\n";
@@ -658,7 +658,7 @@ SolveTreeLevelEwsbVia[equations_List, parameters_List] :=
            For[i = 1, i <= Length[solution], i++,
                par  = solution[[i,1]];
                expr = solution[[i,2]];
-               type = Parameters`GetType[par];
+               type = CConversion`GetScalarElementType[Parameters`GetType[par]];
                ctype = CConversion`CreateCType[type];
                parStr = "new_" <> CConversion`ToValidCSymbolString[par];
                result = result <>
@@ -778,7 +778,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  type = CConversion`CreateCType[Parameters`GetType[par]];
+                  type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
                   parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> type <> " " <> parStr <> ";\n";
                  ];
@@ -787,7 +787,7 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
                   expr = reducedSolution[[i,2]];
-                  type = Parameters`GetType[par];
+                  type = CConversion`GetScalarElementType[Parameters`GetType[par]];
                   parStr = CConversion`ToValidCSymbolString[par];
                   result = result <> parStr <> " = " <>
                            CConversion`CastTo[CConversion`RValueToCFormString[expr],type] <> ";\n";
@@ -815,7 +815,7 @@ GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
     Module[{i, result = "", par, parStr, type},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par = parametersFixedByEWSB[[i]];
-               type = CConversion`CreateCType[Parameters`GetType[par]];
+               type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
                parStr = CConversion`ToValidCSymbolString[par];
                result = result <>
                         "const " <> type <> " " <> parStr <> " = " <>
