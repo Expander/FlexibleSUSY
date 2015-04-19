@@ -10,15 +10,15 @@ In[]:= Zip[{a,b,c},{d,e,f}]
 Out[]= {{a, d}, {b, e}, {c, f}}
 ";
 
-StringZip::usage = "Combines two lists of strings to a list of concated strings.
-Example:
+StringZip::usage = "Combines lists of strings to a list of concated
+strings.  Example:
 
 In[]:= StringZip[{\"a\",\"b\"},{\"d\",\"e\"}]
 Out[]= {\"ad\", \"be\"}}
 ";
 
-StringZipWithSeparator::usage = "Combines two lists of strings to a list of concated strings using a separator.
-Example:
+StringZipWithSeparator::usage = "Combines lists of strings to a list
+of concated strings using a separator.  Example:
 
 In[]:= StringZipWithSeparator[{\"a\",\"b\"},{\"d\",\"e\"}, \"_\"]
 Out[]= {\"a_d\", \"b_e\"}}
@@ -72,11 +72,11 @@ StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
 Zip[list1_List, list2_List] :=
     MapThread[List, {list1, list2}];
 
-StringZip[list1_List, list2_List] :=
-    MapThread[StringJoin, {list1, list2}];
+StringZip[lists___List] :=
+    MapThread[StringJoin, {lists}];
 
-StringZipWithSeparator[list1_List, list2_List, separator_String] :=
-    MapThread[StringJoinWithSeparator[{#1,#2},separator]&, {list1, list2}];
+StringZipWithSeparator[lists___List, separator_String] :=
+    MapThread[StringJoinWithSeparator[{##},separator]&, {lists}];
 
 FSGetOption[opts_List, opt_] :=
     Module[{values},
