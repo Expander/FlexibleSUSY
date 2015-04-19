@@ -770,12 +770,16 @@ SetParameter[Im[parameter_], value_String, class_String, castToType_:None] :=
           ];
 
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
-    Module[{parameterStr},
+    Module[{parameterStr, targetType = castToType},
            If[IsModelParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[StripIndices[parameter]];
+              (* if the parameter indices, we need to cast to the element type *)
+              If[GetIndices[parameter] =!= {} && targetType =!= None,
+                 targetType = CConversion`GetScalarElementType[targetType];
+                ];
               class <> "->set_" <> parameterStr <> "(" <>
               AppendIfNotEmpty[ConcatIndices[GetIndices[parameter]],","] <>
-              CConversion`CastTo[value,castToType] <> ");\n",
+              CConversion`CastTo[value,targetType] <> ");\n",
               ""
              ]
           ];
