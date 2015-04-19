@@ -190,6 +190,8 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles_real_limit )
    input.LambdaInput = -0.1;
    input.KappaInput = 0.1;
    input.LambdaTimesvSInput = 100;
+   // eta and etaS must not be both equal to zero, because this will
+   // lead to a division by zero in the tree-level EWSB eqs.
    input.etaInput = 1e-8;
    input.etaSInput = 1e-10;
 
