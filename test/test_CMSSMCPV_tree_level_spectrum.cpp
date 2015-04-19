@@ -76,18 +76,37 @@ void copy_parameters(const CMSSMCPV<Two_scale>& a, CMSSM<Two_scale>& b)
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_tree_level_spectrum )
 {
    CMSSMCPV_input_parameters input;
-   input.TanBeta = 10.;
    input.m0 = 125.;
    input.m12 = 200.;
-   input.PhaseMu = 1.;
+   input.TanBeta = 10.;
    input.Azero = 0.;
    input.etaInput = 0;
+   input.PhaseMu = std::complex<double>(1,0);
 
-   CMSSMCPV<Two_scale> m1(input);
-   CMSSM<Two_scale> m2;
-
+   CMSSMCPV<Two_scale> m1;
+   const double precision = 1.0e-5;
    setup_CMSSMCPV(m1, input);
-   m1.solve_ewsb_tree_level();
+
+   // initial guess
+   m1.set_mHu2(-Sqr(input.m0));
+   m1.set_mHd2(Sqr(input.m0));
+   m1.set_Mu(input.m0);
+   m1.set_BMu(input.m0);
+
+   BOOST_CHECK_GT(Abs(m1.get_ewsb_eq_hh_1()), precision);
+   BOOST_CHECK_GT(Abs(m1.get_ewsb_eq_hh_2()), precision);
+   BOOST_CHECK_LT(Abs(m1.get_ewsb_eq_hh_3()), precision);
+   BOOST_CHECK_LT(Abs(m1.get_ewsb_eq_hh_4()), precision);
+
+   const int error = m1.solve_ewsb_tree_level();
+
+   BOOST_REQUIRE(error == 0);
+   BOOST_CHECK_SMALL(m1.get_ewsb_eq_hh_1(), precision);
+   BOOST_CHECK_SMALL(m1.get_ewsb_eq_hh_2(), precision);
+   BOOST_CHECK_SMALL(m1.get_ewsb_eq_hh_3(), precision);
+   BOOST_CHECK_SMALL(m1.get_ewsb_eq_hh_4(), precision);
+
+   CMSSM<Two_scale> m2;
    copy_parameters(m1, m2);
    m1.calculate_DRbar_masses();
    m2.calculate_DRbar_masses();
@@ -106,7 +125,27 @@ void check_goldstone_masses(const CMSSMCPV_input_parameters& input)
    CMSSMCPV<Two_scale> m;
    setup_CMSSMCPV(m, input);
 
-   m.solve_ewsb_tree_level();
+   // initial guess
+   m.set_mHu2(-Sqr(input.m0));
+   m.set_mHd2(Sqr(input.m0));
+   m.set_Mu(input.m0);
+   m.set_BMu(input.m0);
+
+   BOOST_CHECK_GT(Abs(m.get_ewsb_eq_hh_1()), 100);
+   BOOST_CHECK_GT(Abs(m.get_ewsb_eq_hh_2()), 100);
+
+   const int error = m.solve_ewsb_tree_level();
+   BOOST_REQUIRE(error == 0);
+   if (gErrors) {
+      BOOST_FAIL("tree-level EWSB failed");
+      gErrors = 0;
+   }
+
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_1(), 1e-8);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_2(), 1e-8);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_3(), 1e-8);
+   BOOST_CHECK_SMALL(m.get_ewsb_eq_hh_4(), 1e-8);
+
    m.calculate_DRbar_masses();
    m.reorder_DRbar_masses();
 
@@ -116,15 +155,15 @@ void check_goldstone_masses(const CMSSMCPV_input_parameters& input)
 
 BOOST_AUTO_TEST_CASE( test_CMSSMCPV_goldstone_boson_masses )
 {
-   for (unsigned m = 0; m < 100; m++) {
-      for (unsigned e = 0; e < 100; e++) {
+   for (unsigned m = 0; m < 10; m++) {
+      for (unsigned e = 0; e < 10; e++) {
          CMSSMCPV_input_parameters input;
          input.TanBeta = 10.;
          input.m0 = 125.;
          input.m12 = 200.;
-         input.PhaseMu = std::complex<double>(std::polar(1., 2*Pi*m/100));
+         input.PhaseMu = std::complex<double>(std::polar(1., 2*Pi*m/10));
          input.Azero = 100.;
-         input.etaInput = 2*Pi*e/100;
+         input.etaInput = 2*Pi*e/10;
 
          check_goldstone_masses(input);
       }
