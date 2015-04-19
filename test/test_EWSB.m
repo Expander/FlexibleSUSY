@@ -319,4 +319,13 @@ nmssmcpvFullSolution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOu
 TestNonEquality[solution, {}];
 TestNonEquality[solution, {{}}];
 
+Print["testing NMSSM/CPV EWSB for mHd2, mHu2, ms2, Im[T[\[Kappa]]], Re[T[\[Kappa]]]"];
+
+nmssmcpvEWSBOutputParameters = { mHd2, mHu2, ms2, Im[T[\[Kappa]]], Re[T[\[Kappa]]] };
+
+nmssmcpvFullSolution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+
+TestNonEquality[solution, {}];
+TestNonEquality[solution, {{}}];
+
 PrintTestSummary[];
