@@ -293,7 +293,10 @@ IsNoSolution[expr_] :=
 TimeConstrainedSolve[eq_, par_] :=
     Module[{result, independentEq = eq, Selector},
            If[Head[eq] === List,
-              Selector = Function[e,And @@ (Function[p,FreeQ[e,p]] /@ par)];
+              Selector = Function[e, If[Head[par] === List,
+                                        And @@ (Function[p,FreeQ[e,p]] /@ par),
+                                        FreeQ[e,par]
+                                       ]];
               independentEq = Select[eq, (!Selector[#])&];
              ];
            result = TimeConstrained[Solve[independentEq, par],
