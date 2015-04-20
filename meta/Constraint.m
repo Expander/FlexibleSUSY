@@ -99,7 +99,7 @@ SetGSLVectorFromExpressions[vector_String, expressions_List] :=
 CreateMinimizationFunctionWrapper[className_String, functionName_String, dim_String, parameters_List, function_] :=
 "struct " <> className <> " {
    static double " <> functionName <> "(const gsl_vector* x, void* parameters) {
-      if (contains_nan(x, " <> dim <> "))
+      if (!is_finite(x))
          return std::numeric_limits<double>::max();
 
       MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);
@@ -129,7 +129,7 @@ CreateRootFinderFunctionWrapper[className_String, functionName_String, dim_Strin
 "struct " <> className <> " {
    static int " <> functionName <> "(const gsl_vector* x, void* parameters, gsl_vector* f)
    {
-      if (contains_nan(x, " <> dim <> "))
+      if (!is_finite(x))
          return 1;
 
       MODELCLASSNAME* model = static_cast<MODELCLASSNAME*>(parameters);

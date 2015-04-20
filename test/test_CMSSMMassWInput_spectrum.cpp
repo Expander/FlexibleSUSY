@@ -1033,7 +1033,7 @@ void CMSSMMassWInput_iterative_low_scale_constraint::apply()
 
    struct Chi_sqr_mH_mZ {
       static double func(const gsl_vector* x, void* params) {
-         if (contains_nan(x, 2))
+         if (!is_finite(x))
             return std::numeric_limits<double>::max();
 
          CMSSMMassWInput<Two_scale>* model = static_cast<CMSSMMassWInput<Two_scale>*>(params);

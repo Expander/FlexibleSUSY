@@ -50,6 +50,17 @@ bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 
 bool is_finite(const double*, std::size_t length);
 
+template <std::size_t N>
+bool is_finite(const double v[N])
+{
+   bool is_finite = true;
+
+   for (std::size_t i = 0; i < N; i++)
+      is_finite = is_finite && std::isfinite(v[i]);
+
+   return is_finite;
+}
+
 } // namespace flexiblesusy
 
 #endif

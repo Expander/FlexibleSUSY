@@ -1037,7 +1037,7 @@ check_multiarch() {
                 result "$debmultiarch"
             fi
         else
-            result "`basename $0`: dpkg-architecture MUST be installed"
+            result "`basename $0`: dpkg-architecture or dpkg-dev MUST be installed"
             exit 1
         fi
     fi
