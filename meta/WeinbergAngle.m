@@ -5,6 +5,13 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings::usage="";
 
 Begin["`Private`"];
 
+InputFormOfNonStrings[a_String] := a;
+InputFormOfNonStrings[a_] := InputForm[a];
+
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<WeinbergAngle>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 FindWeinbergAngleDef[] :=
     Parameters`FindSymbolDef[SARAH`Weinberg];
 
@@ -64,8 +71,13 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                   SARAH`Mass[SARAH`VectorW]^2 == FindMassW[masses],
                   SARAH`Mass[SARAH`VectorZ]^2 == FindMassZ[masses]
                  };
+           DebugPrint["The 3 equations to determine the Weinberg angle are: ",
+                      eqs];
            reducedEq = Eliminate[eqs, {SARAH`Mass[SARAH`VectorW],
                                        SARAH`Mass[SARAH`VectorZ]}];
+           DebugPrint["Elimination of ",
+                      {SARAH`Mass[SARAH`VectorW], SARAH`Mass[SARAH`VectorZ]},
+                      " yields: ", reducedEq];
            (* Try Standard Model definition first *)
            If[SolvesWeinbergEq[reducedEq, smValue],
               Return[smValue];,
@@ -73,6 +85,9 @@ ExpressWeinbergAngleInTermsOfGaugeCouplings[masses_List] :=
                       InputForm[SARAH`Weinberg == smValue],
                       InputForm[eqs]];
              ];
+           DebugPrint["Solving equation for ", SARAH`Weinberg,
+                      " using a time constraint of ",
+                      FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint];
            Off[Solve::ifun];
            solution = TimeConstrained[Solve[reducedEq, SARAH`Weinberg, Reals],
                                       FlexibleSUSY`FSSolveWeinbergAngleTimeConstraint,
