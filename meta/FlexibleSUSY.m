@@ -1647,17 +1647,17 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
               (* adding tadpoles to the EWSB eqs. *)
               ewsbEquations = MapIndexed[#1 - tadpole[First[#2]]&, ewsbEquations];
+              treeLevelEwsbSolutionOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                              FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
+              treeLevelEwsbEqsOutputFile      = FileNameJoin[{Global`$flexiblesusyOutputDir,
+                                                              FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
+              Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
+              Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
+              Print["Searching for independent EWSB equations ..."];
+              independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
 
               If[FlexibleSUSY`TreeLevelEWSBSolution === {},
                  (* trying to find an analytic solution for the EWSB eqs. *)
-                 treeLevelEwsbSolutionOutputFile = FileNameJoin[{Global`$flexiblesusyOutputDir,
-                                                         FlexibleSUSY`FSModelName <> "_EWSB_solution.m"}];
-                 treeLevelEwsbEqsOutputFile      = FileNameJoin[{Global`$flexiblesusyOutputDir,
-                                                         FlexibleSUSY`FSModelName <> "_EWSB_equations.m"}];
-                 Print["Writing EWSB equations to ", treeLevelEwsbEqsOutputFile];
-                 Put[ewsbEquations, treeLevelEwsbEqsOutputFile];
-                 Print["Searching for independent EWSB equations ..."];
-                 independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, FlexibleSUSY`EWSBOutputParameters];
                  Print["Solving ", Length[independentEwsbEquations],
                        " independent EWSB equations for ",
                        FlexibleSUSY`EWSBOutputParameters," ..."];
@@ -1681,6 +1681,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  ,
                  If[Length[FlexibleSUSY`TreeLevelEWSBSolution] != Length[independentEwsbEquations],
                     Print["Error: not enough EWSB solutions given!"];
+                    Print["   You provided solutions for ", Length[FlexibleSUSY`TreeLevelEWSBSolution],
+                          " parameters."];
+                    Print["   However, there are ", Length[independentEwsbEquations],
+                          " independent EWSB eqs."];
                     Quit[1];
                    ];
                  If[Sort[#[[1]]& /@ FlexibleSUSY`TreeLevelEWSBSolution] =!= Sort[FlexibleSUSY`EWSBOutputParameters],
