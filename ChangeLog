@@ -23,6 +23,10 @@ FlexibleSUSY-1.0.5 [not released yet]
    The default SARAH model file to be used with a given FlexibleSUSY
    model file can be set via FSDefaultSARAHModel = <model>;
 
+ * Feature: Complex model parameters are now supported.  Linked to
+   this, the following new model files with complex parameters were
+   added: cSM, cMSSM, cCMSSM, CMSSMCPV, NMSSMCPV.
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
