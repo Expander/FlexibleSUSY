@@ -88,7 +88,7 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    const double BMu = Sqr(2.0 * susyMu);
    const double scale = Electroweak_constants::MZ;
 
-   Eigen::Matrix<double,3,3> Yu, Yd, Ye;
+   Eigen::Matrix<std::complex<double>,3,3> Yu, Yd, Ye;
 
    Yu << oneset.displayMass(mUp), 0, 0,
          0, oneset.displayMass(mCharm), 0,
@@ -106,7 +106,7 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    Yd *= root2 / vd;
    Ye *= root2 / vd;
 
-   Eigen::Matrix<double,3,3> mm0;
+   Eigen::Matrix<std::complex<double>,3,3> mm0;
 
    mm0 << Sqr(m0), 0        , 0,
           0      , 2*Sqr(m0), 0,
@@ -116,7 +116,7 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    //        200     , Sqr(170), 300,
    //        100     , 300     , Sqr(200);
 
-   Eigen::Matrix<double,3,3> TYu, TYd, TYe;
+   Eigen::Matrix<std::complex<double>,3,3> TYu, TYd, TYe;
    TYu = a0 * Yu;
    TYd = a0 * Yd;
    TYe = a0 * Ye;
@@ -155,22 +155,22 @@ void setup_CMSSMCKM(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s,
    s.setGaugeCoupling(1, g1);
    s.setGaugeCoupling(2, g2);
    s.setGaugeCoupling(3, g3);
-   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu));
-   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd));
-   s.setYukawaMatrix(YE, ToDoubleMatrix(Ye));
+   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu.real()));
+   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd.real()));
+   s.setYukawaMatrix(YE, ToDoubleMatrix(Ye.real()));
    s.setGauginoMass(1, M12);
    s.setGauginoMass(2, M12);
    s.setGauginoMass(3, M12);
-   s.setSoftMassMatrix(mQl, ToDoubleMatrix(mm0));
-   s.setSoftMassMatrix(mUr, ToDoubleMatrix(mm0));
-   s.setSoftMassMatrix(mDr, ToDoubleMatrix(mm0));
-   s.setSoftMassMatrix(mLl, ToDoubleMatrix(mm0));
-   s.setSoftMassMatrix(mEr, ToDoubleMatrix(mm0));
+   s.setSoftMassMatrix(mQl, ToDoubleMatrix(mm0.real()));
+   s.setSoftMassMatrix(mUr, ToDoubleMatrix(mm0.real()));
+   s.setSoftMassMatrix(mDr, ToDoubleMatrix(mm0.real()));
+   s.setSoftMassMatrix(mLl, ToDoubleMatrix(mm0.real()));
+   s.setSoftMassMatrix(mEr, ToDoubleMatrix(mm0.real()));
    s.setMh1Squared(sqr(m0));
    s.setMh2Squared(sqr(m0));
-   s.setTrilinearMatrix(UA, ToDoubleMatrix(TYu));
-   s.setTrilinearMatrix(DA, ToDoubleMatrix(TYd));
-   s.setTrilinearMatrix(EA, ToDoubleMatrix(TYe));
+   s.setTrilinearMatrix(UA, ToDoubleMatrix(TYu.real()));
+   s.setTrilinearMatrix(DA, ToDoubleMatrix(TYd.real()));
+   s.setTrilinearMatrix(EA, ToDoubleMatrix(TYe.real()));
    s.setSusyMu(susyMu);
    s.setM3Squared(BMu);
    s.setHvev(vev);
@@ -306,22 +306,37 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
          if (i == k)
             continue;
          BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.0001);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(i,k), 0.00001);
-         BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(i-1,k-1)), s.displayYukawaMatrix(YU)(i,k), 0.0001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(i-1,k-1)), s.displayYukawaMatrix(YD)(i,k), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(i-1,k-1)), s.displayYukawaMatrix(YE)(i,k), 0.00001);
+         BOOST_CHECK_SMALL(Im(m.get_Yu()(i-1,k-1)), 1e-10);
+         BOOST_CHECK_SMALL(Im(m.get_Yd()(i-1,k-1)), 1e-10);
+         BOOST_CHECK_SMALL(Im(m.get_Ye()(i-1,k-1)), 1e-10);
       }
    }
 
    BOOST_MESSAGE("testing diagonal yukawa elements");
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), s.displayYukawaMatrix(YU)(1,1), 0.00001);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), s.displayYukawaMatrix(YD)(1,1), 0.00001);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), s.displayYukawaMatrix(YE)(1,1), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(0,0)), s.displayYukawaMatrix(YU)(1,1), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(0,0)), s.displayYukawaMatrix(YD)(1,1), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(0,0)), s.displayYukawaMatrix(YE)(1,1), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(1,1), s.displayYukawaMatrix(YU)(2,2), 0.00001);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(1,1), s.displayYukawaMatrix(YD)(2,2), 0.00001);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(1,1), s.displayYukawaMatrix(YE)(2,2), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(1,1)), s.displayYukawaMatrix(YU)(2,2), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(1,1)), s.displayYukawaMatrix(YD)(2,2), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(1,1)), s.displayYukawaMatrix(YE)(2,2), 0.00001);
 
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.0001);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.00014);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(2,2)), s.displayYukawaMatrix(YU)(3,3), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(2,2)), s.displayYukawaMatrix(YD)(3,3), 0.00014);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(2,2)), s.displayYukawaMatrix(YE)(3,3), 0.00001);
+
+   BOOST_CHECK_SMALL(Im(m.get_Yu()(0,0)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Yd()(0,0)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Ye()(0,0)), 1e-10);
+
+   BOOST_CHECK_SMALL(Im(m.get_Yu()(1,1)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Yd()(1,1)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Ye()(1,1)), 1e-10);
+
+   BOOST_CHECK_SMALL(Im(m.get_Yu()(2,2)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Yd()(2,2)), 1e-10);
+   BOOST_CHECK_SMALL(Im(m.get_Ye()(2,2)), 1e-10);
 }

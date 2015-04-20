@@ -105,10 +105,10 @@ void setup(CMSSMCKM_input_parameters& input, DoubleVector& input2)
 
 void setup(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s)
 {
-   Eigen::Matrix<double,3,3>
-      Yu(Eigen::Matrix<double,3,3>::Zero()),
-      Yd(Eigen::Matrix<double,3,3>::Zero()),
-      Ye(Eigen::Matrix<double,3,3>::Zero());
+   Eigen::Matrix<std::complex<double>,3,3>
+      Yu(Eigen::Matrix<std::complex<double>,3,3>::Zero()),
+      Yd(Eigen::Matrix<std::complex<double>,3,3>::Zero()),
+      Ye(Eigen::Matrix<std::complex<double>,3,3>::Zero());
 
    const double ALPHASMZ = 0.1176;
    const double ALPHAMZ = 1.0 / 127.918;
@@ -151,9 +151,9 @@ void setup(CMSSMCKM<Two_scale>& m, FlavourMssmSoftsusy& s)
    m.set_Mu(susyMu);
    m.set_BMu(BMu);
 
-   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu));
-   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd));
-   s.setYukawaMatrix(YE, ToDoubleMatrix(Ye));
+   s.setYukawaMatrix(YU, ToDoubleMatrix(Yu.real()));
+   s.setYukawaMatrix(YD, ToDoubleMatrix(Yd.real()));
+   s.setYukawaMatrix(YE, ToDoubleMatrix(Ye.real()));
    s.setTanb(tanBeta);
    s.setHvev(vev);
    s.setGaugeCoupling(1, g1);
@@ -188,19 +188,19 @@ BOOST_AUTO_TEST_CASE( test_high_scale_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
 
-   TEST_CLOSE(ToDoubleMatrix(m.get_mq2()), s.displaySoftMassSquared(mQl), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_ml2()), s.displaySoftMassSquared(mLl), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_md2()), s.displaySoftMassSquared(mDr), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_mu2()), s.displaySoftMassSquared(mUr), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_me2()), s.displaySoftMassSquared(mEr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_mq2().real()), s.displaySoftMassSquared(mQl), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_ml2().real()), s.displaySoftMassSquared(mLl), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_md2().real()), s.displaySoftMassSquared(mDr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_mu2().real()), s.displaySoftMassSquared(mUr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_me2().real()), s.displaySoftMassSquared(mEr), 1.0e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassB() , s.displayGaugino(1), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassG() , s.displayGaugino(2), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassWB(), s.displayGaugino(3), 1.0e-10);
 
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYu()), s.displayTrilinear(UA), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYd()), s.displayTrilinear(DA), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYe()), s.displayTrilinear(EA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYu().real()), s.displayTrilinear(UA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYd().real()), s.displayTrilinear(DA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYe().real()), s.displayTrilinear(EA), 1.0e-6);
 
    for (int i = 0; i < 27; i++)
       slha2setTrilinear[i] = true;
@@ -212,17 +212,17 @@ BOOST_AUTO_TEST_CASE( test_high_scale_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_mHd2(), s.displayMh1Squared(), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_mHu2(), s.displayMh2Squared(), 1.0e-10);
 
-   TEST_CLOSE(ToDoubleMatrix(m.get_mq2()), s.displaySoftMassSquared(mQl), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_ml2()), s.displaySoftMassSquared(mLl), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_md2()), s.displaySoftMassSquared(mDr), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_mu2()), s.displaySoftMassSquared(mUr), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_me2()), s.displaySoftMassSquared(mEr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_mq2().real()), s.displaySoftMassSquared(mQl), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_ml2().real()), s.displaySoftMassSquared(mLl), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_md2().real()), s.displaySoftMassSquared(mDr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_mu2().real()), s.displaySoftMassSquared(mUr), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_me2().real()), s.displaySoftMassSquared(mEr), 1.0e-6);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassB() , s.displayGaugino(1), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassG() , s.displayGaugino(2), 1.0e-10);
    BOOST_CHECK_CLOSE_FRACTION(m.get_MassWB(), s.displayGaugino(3), 1.0e-10);
 
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYu()), s.displayTrilinear(UA), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYd()), s.displayTrilinear(DA), 1.0e-6);
-   TEST_CLOSE(ToDoubleMatrix(m.get_TYe()), s.displayTrilinear(EA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYu().real()), s.displayTrilinear(UA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYd().real()), s.displayTrilinear(DA), 1.0e-6);
+   TEST_CLOSE(ToDoubleMatrix(m.get_TYe().real()), s.displayTrilinear(EA), 1.0e-6);
 }
