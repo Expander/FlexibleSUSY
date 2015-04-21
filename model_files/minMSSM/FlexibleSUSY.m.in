@@ -37,21 +37,21 @@ HighScaleInput={
    {MassG,m12}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
-   FSMinimize[{vd,vu}, (SM[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2
-                     + (SM[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
+   FSMinimize[{vd,vu}, (LowEnergyConstant[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2
+                     + (LowEnergyConstant[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
 };
 
 InitialGuessAtLowScale = {
-   {vd, SM[vev]},
-   {vu, SM[vev] 20},
+   {vd, LowEnergyConstant[vev]},
+   {vu, LowEnergyConstant[vev] 20},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

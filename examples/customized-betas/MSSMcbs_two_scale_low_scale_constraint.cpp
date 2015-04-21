@@ -35,7 +35,7 @@ namespace flexiblesusy {
 #define MODELPARAMETER(p) model->get_##p()
 #define BETAPARAMETER(p) beta_functions.get_##p()
 #define BETA(p) beta_##p
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
 #define MODEL model
@@ -132,7 +132,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::clear()
 
 void MSSMcbs_low_scale_constraint<Two_scale>::initialize()
 {
-   initial_scale_guess = SM(MZ);
+   initial_scale_guess = LowEnergyConstant(MZ);
 
    scale = initial_scale_guess;
 
@@ -144,7 +144,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::initialize()
 
 void MSSMcbs_low_scale_constraint<Two_scale>::update_scale()
 {
-   scale = SM(MZ);
+   scale = LowEnergyConstant(MZ);
 
 
 }

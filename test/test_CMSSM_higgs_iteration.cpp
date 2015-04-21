@@ -25,7 +25,7 @@
 #include "CMSSM_two_scale_initial_guesser.hpp"
 #include "test_CMSSM.hpp"
 
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
 
 BOOST_AUTO_TEST_CASE( test_copy_Minimizer )
@@ -121,8 +121,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_higgs_iteration )
          const double mH = model->get_physical().Mhh(1);
          const double mZ = model->get_physical().MVZ;
 
-         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
-              + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION(MH));
+         return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+              + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH));
       }
    };
 

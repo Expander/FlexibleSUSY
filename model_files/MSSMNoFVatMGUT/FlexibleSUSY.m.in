@@ -44,7 +44,7 @@ EWSBOutputParameters = { B[\[Mu]], \[Mu] };
 
 SUSYScale = Sqrt[M[St[1]] M[St[2]]];
 
-SUSYScaleFirstGuess = SM[MZ];
+SUSYScaleFirstGuess = LowEnergyConstant[MZ];
 
 SUSYScaleInput = {};
 
@@ -84,9 +84,9 @@ HighScaleInput = {
    {MassG,M3}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, Automatic},
@@ -97,8 +97,8 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
@@ -195,7 +195,7 @@ ExtraSLHAOutputBlocks = {
             {1000023, Pole[M[Chi[2]]] },
             {1000025, Pole[M[Chi[3]]] },
             {1000035, Pole[M[Chi[4]]] },
-            {     24, SM[MW]          } } }
+            {     24, LowEnergyConstant[MW]          } } }
 };
 
 TopQuark    = Ft;

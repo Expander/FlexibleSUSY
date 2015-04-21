@@ -837,7 +837,7 @@ RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
           ];
 
 RemoveProtectedHeads[expr_] :=
-    expr /. { SARAH`SM[__] -> SARAH`SM[],
+    expr /. { FlexibleSUSY`LowEnergyConstant[__] -> FlexibleSUSY`LowEnergyConstant[],
               FlexibleSUSY`Pole[__]  -> FlexibleSUSY`Pole[] };
 
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
