@@ -1,4 +1,4 @@
-FlexibleSUSY-1.0.5 [not released yet]
+FlexibleSUSY-1.1.0 [not released yet]
 
  * Feature: Calculation of DR-bar weak mixing angle from Fermi
    constant and Z pole mass.  The implementation is based on
