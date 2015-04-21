@@ -152,7 +152,7 @@ ConvertSarahTadpoles[tadpoles_List] :=
                   result[[k,1]] = field[SARAH`gO1];
                  ];
               ];
-           Return[result /. SARAH`Mass2 -> FlexibleSUSY`M];
+           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
           ];
 
 ConvertSarahSelfEnergies[selfEnergies_List] :=
