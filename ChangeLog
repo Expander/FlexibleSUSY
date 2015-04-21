@@ -27,6 +27,11 @@ FlexibleSUSY-1.0.5 [not released yet]
    this, the following new model files with complex parameters were
    added: cSM, cMSSM, cCMSSM, CMSSMCPV, NMSSMCPV.
 
+ * Feature: The CKM and PMNS matrix can now be used as low-energy
+   inputs.  It are read from the VCKMIN and UPMNSIN input blocks,
+   respectively.  Linked to this, the new model file CMSSMCKM was
+   added to demonstrate the input of the CKM matrix at low energies.
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
