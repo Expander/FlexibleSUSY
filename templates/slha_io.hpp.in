@@ -40,7 +40,7 @@
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_POLE_MASS(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
 namespace flexiblesusy {

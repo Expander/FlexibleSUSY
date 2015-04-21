@@ -33,7 +33,7 @@ namespace flexiblesusy {
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
 #define PHASE(p) model->get_##p()
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define MODEL model
 
 @ModelName@_initial_guesser<Two_scale>::@ModelName@_initial_guesser(

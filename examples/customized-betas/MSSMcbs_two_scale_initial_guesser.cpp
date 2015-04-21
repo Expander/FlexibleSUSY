@@ -30,7 +30,7 @@ namespace flexiblesusy {
 
 #define INPUTPARAMETER(p) model->get_input().p
 #define MODELPARAMETER(p) model->get_##p()
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 #define MODEL model
 
 MSSMcbs_initial_guesser<Two_scale>::MSSMcbs_initial_guesser(
@@ -100,8 +100,8 @@ void MSSMcbs_initial_guesser<Two_scale>::guess_susy_parameters()
    // apply user-defined initial guess at the low scale
    const auto TanBeta = INPUTPARAMETER(TanBeta);
 
-   MODEL->set_vd(SM(vev)/Sqrt(1 + Sqr(TanBeta)));
-   MODEL->set_vu((TanBeta*SM(vev))/Sqrt(1 + Sqr(TanBeta)));
+   MODEL->set_vd(LowEnergyConstant(vev)/Sqrt(1 + Sqr(TanBeta)));
+   MODEL->set_vu((TanBeta*LowEnergyConstant(vev))/Sqrt(1 + Sqr(TanBeta)));
    calculate_Yu_DRbar();
    calculate_Yd_DRbar();
    calculate_Ye_DRbar();

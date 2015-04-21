@@ -1055,11 +1055,11 @@ void CMSSMMassWInput_iterative_low_scale_constraint::apply()
          const double mH = model->get_physical().Mhh(0);
          const double mZ = model->get_physical().MVZ;
 
-         #define SM(p) Electroweak_constants::p
+         #define LowEnergyConstant(p) Electroweak_constants::p
          #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
 
-         return Sqr(SM(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
-              + Sqr(SM(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
+         return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+              + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
       }
    };
 

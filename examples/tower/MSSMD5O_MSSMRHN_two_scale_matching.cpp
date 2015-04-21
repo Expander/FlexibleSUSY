@@ -28,7 +28,7 @@
 #include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
 
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 
 using namespace std;
 namespace flexiblesusy {
@@ -181,7 +181,7 @@ void MSSMD5O_MSSMRHN_matching<Two_scale>::set_lower_input_parameters(const MSSMD
 void MSSMD5O_MSSMRHN_matching<Two_scale>::make_initial_scale_guess()
 {
     const auto TanBeta = inputPars.TanBeta;
-    double vu = (TanBeta*SM(vev))/Sqrt(1 + Sqr(TanBeta));
+    double vu = (TanBeta*LowEnergyConstant(vev))/Sqrt(1 + Sqr(TanBeta));
     const auto mv1 = inputPars.mv1;
     const auto mv2 = inputPars.mv2;
     const auto mv3 = inputPars.mv3;

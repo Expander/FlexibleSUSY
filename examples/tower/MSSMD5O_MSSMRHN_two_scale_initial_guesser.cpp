@@ -32,7 +32,7 @@ namespace flexiblesusy {
 #define INPUTPARAMETER(p) input_pars.p
 #define MODEL1PARAMETER(p) model_1->get_##p()
 #define MODEL2PARAMETER(p) model_2->get_##p()
-#define SM(p) Electroweak_constants::p
+#define LowEnergyConstant(p) Electroweak_constants::p
 // #define MODEL model
 
 MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::MSSMD5O_MSSMRHN_initial_guesser(
@@ -86,8 +86,8 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
    // apply user-defined initial guess at the low scale
    const auto TanBeta = INPUTPARAMETER(TanBeta);
 
-   model_1->set_vd(SM(vev)/Sqrt(1 + Sqr(TanBeta)));
-   model_1->set_vu((TanBeta*SM(vev))/Sqrt(1 + Sqr(TanBeta)));
+   model_1->set_vd(LowEnergyConstant(vev)/Sqrt(1 + Sqr(TanBeta)));
+   model_1->set_vu((TanBeta*LowEnergyConstant(vev))/Sqrt(1 + Sqr(TanBeta)));
 
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero()),
       bottomDRbar(Eigen::Matrix<double,3,3>::Zero()),
