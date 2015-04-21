@@ -195,7 +195,7 @@ ExtraSLHAOutputBlocks = {
             {1000023, Pole[M[Chi[2]]] },
             {1000025, Pole[M[Chi[3]]] },
             {1000035, Pole[M[Chi[4]]] },
-            {     24, LowEnergyConstant[MW]          } } }
+            {     24, Pole[M[VWm]]    } } }
 };
 
 TopQuark    = Ft;
