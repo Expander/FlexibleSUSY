@@ -28,7 +28,7 @@ FlexibleSUSY-1.0.5 [not released yet]
    added: cSM, cMSSM, cCMSSM, CMSSMCPV, NMSSMCPV.
 
  * Feature: The CKM and PMNS matrix can now be used as low-energy
-   inputs.  It are read from the VCKMIN and UPMNSIN input blocks,
+   inputs.  They are read from the VCKMIN and UPMNSIN input blocks,
    respectively.  Linked to this, the new model file CMSSMCKM was
    added to demonstrate the input of the CKM matrix at low energies.
 
