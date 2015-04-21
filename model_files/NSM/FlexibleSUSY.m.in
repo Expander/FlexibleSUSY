@@ -33,9 +33,9 @@ SUSYScaleInput = {
     {vS, vSInput}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {vH, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
@@ -45,7 +45,7 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {vH, SM[vev]},
+   {vH, LowEnergyConstant[vev]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

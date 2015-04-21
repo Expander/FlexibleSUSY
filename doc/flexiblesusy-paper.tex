@@ -739,9 +739,9 @@ SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {};
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, Automatic},
@@ -754,8 +754,8 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
@@ -936,8 +936,8 @@ SUSYScaleInput = {
   %
   \begin{lstlisting}
 FSMinimize[{vd,vu},
-           (SM[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2 +
-           (SM[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
+           (LowEnergyConstant[MZ] - Pole[M[VZ]])^2 / STANDARDDEVIATION[MZ]^2 +
+           (LowEnergyConstant[MH] - Pole[M[hh[1]]])^2 / STANDARDDEVIATION[MH]^2]
   \end{lstlisting}
   %
   Here, the parameters \code{vu} and \code{vd} are varied until the
@@ -945,17 +945,17 @@ FSMinimize[{vd,vu},
   %
   \begin{align}
     \chi^2(v_d,v_u) =
-    \frac{(\texttt{SM[MZ]}-m_Z^\pole)^2}{\sigma_{m_Z}^2} +
-    \frac{(\texttt{SM[MH]}-m_{h_1}^\pole)^2}{\sigma_{m_h}^2}
+    \frac{(\texttt{LowEnergyConstant[MZ]}-m_Z^\pole)^2}{\sigma_{m_Z}^2} +
+    \frac{(\texttt{LowEnergyConstant[MH]}-m_{h_1}^\pole)^2}{\sigma_{m_h}^2}
   \end{align}
   %
-  is minimal.  The constants \code{SM[MZ]}, \code{SM[MH]},
+  is minimal.  The constants \code{LowEnergyConstant[MZ]}, \code{LowEnergyConstant[MH]},
   $\sigma_{m_Z}$ and $\sigma_{m_h}$ are defined in
   \code{src/ew_input.hpp} to be
   %
   \begin{align}
-    \texttt{SM[MZ]} &= 91.1876, &
-    \texttt{SM[MH]} &= 125.9, \\
+    \texttt{LowEnergyConstant[MZ]} &= 91.1876, &
+    \texttt{LowEnergyConstant[MH]} &= 125.9, \\
     \sigma_{m_Z} &= 0.0021, &
     \sigma_{m_h} &= 0.4 .
   \end{align}
@@ -968,7 +968,7 @@ FSMinimize[{vd,vu},
   %
   \begin{lstlisting}
 FSFindRoot[{vd,vu},
-           {SM[MZ] - Pole[M[VZ]], SM[MH] - Pole[M[hh[1]]]}]
+           {LowEnergyConstant[MZ] - Pole[M[VZ]], LowEnergyConstant[MH] - Pole[M[hh[1]]]}]
   \end{lstlisting}
   %
   Here, the parameters \code{vu} and \code{vd} are varied until the
@@ -977,8 +977,8 @@ FSFindRoot[{vd,vu},
   \begin{align}
     f(v_d,v_u) =
     \begin{pmatrix}
-      \texttt{SM[MZ]} - m_Z^\pole \\
-      \texttt{SM[MH]} - m_{h_1}^\pole
+      \texttt{LowEnergyConstant[MZ]} - m_Z^\pole \\
+      \texttt{LowEnergyConstant[MH]} - m_{h_1}^\pole
     \end{pmatrix}
   \end{align}
   %

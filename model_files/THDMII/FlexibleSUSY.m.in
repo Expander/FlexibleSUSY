@@ -34,9 +34,9 @@ SUSYScaleInput = {
     {Lambda5, Lambda5IN}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {v1, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
@@ -47,8 +47,8 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {v1, SM[vev] Cos[ArcTan[TanBeta]]},
-   {v2, SM[vev] Sin[ArcTan[TanBeta]]},
+   {v1, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {v2, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

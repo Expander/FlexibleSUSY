@@ -58,9 +58,9 @@ HighScaleInput={
    {B[MS], BMSInput}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, Automatic},
@@ -71,12 +71,12 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
-   {vd, SM[vev] Cos[ArcTan[TanBeta]]},
-   {vu, SM[vev] Sin[ArcTan[TanBeta]]},
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {\[Lambda], LambdaInput},
-   {\[Mu], SM[MZ]},
-   {B[\[Mu]], SM[MZ]^2},
-   {L[L1], SM[MZ]^3},
+   {\[Mu], LowEnergyConstant[MZ]},
+   {B[\[Mu]], LowEnergyConstant[MZ]^2},
+   {L[L1], LowEnergyConstant[MZ]^3},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}

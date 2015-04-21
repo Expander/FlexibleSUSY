@@ -48,9 +48,9 @@ HighScaleInput = {
    {B[\[Mu]], BMuInput}
 };
 
-LowScale = SM[MZ];
+LowScale = LowEnergyConstant[MZ];
 
-LowScaleFirstGuess = SM[MZ];
+LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
    {Yu, ZEROMATRIX[3,3]},
