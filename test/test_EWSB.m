@@ -202,11 +202,17 @@ Print["\t calling FindSolution[] ..."];
 
 cmssmcpvFullSolution = EWSB`Private`FindSolution[cmssmcpvEwsbEqs, cmssmcpvEwsbOutputParameters];
 
+solutionForMuMathematica7 = (Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]);
+solutionForMuMathematica8 = (Sqrt[-(vd*x) + vu*y]/Sqrt[vd^2 - vu^2]);
+solutionForMu = Which[$VersionNumber <= 7., solutionForMuMathematica7,
+                      $VersionNumber  > 7., solutionForMuMathematica8
+                     ];
+
 TestEquality[Sort /@ cmssmcpvFullSolution,
-             Sort /@ {{Mu        -> -(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
+             Sort /@ {{Mu        -> - solutionForMu,
                        Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)),
                        Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))},
-                      {Mu        -> +(Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]/Sqrt[vu]),
+                      {Mu        -> + solutionForMu,
                        Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2)),
                        Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2))}
                      }];
@@ -218,8 +224,7 @@ Print["\t calling FindSolutionAndFreePhases[] ..."];
 TestEquality[cmssmcpvFreePhases, {FlexibleSUSY`Phase[Mu]}];
 
 TestEquality[Sort[cmssmcpvSolution],
-             Sort[{Mu        -> (Sqrt[-((vd*vu*x)/(vd^2 - vu^2)) - y + (vd^2*y)/(vd^2 - vu^2)]
-                                 *FlexibleSUSY`Phase[Mu]/Sqrt[vu]),
+             Sort[{Mu        -> solutionForMu * FlexibleSUSY`Phase[Mu],
                    Im[B[Mu]] -> (I/2*(-1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(E^(I*eta)*(vd^2 - vu^2)),
                    Re[B[Mu]] -> ((1 + E^((2*I)*eta))*(-(vu*x) + vd*y))/(2*E^(I*eta)*(vd^2 - vu^2))
                   }]];
