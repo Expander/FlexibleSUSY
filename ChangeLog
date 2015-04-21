@@ -79,6 +79,10 @@ FlexibleSUSY-1.0.5 [not released yet]
  * Bugfix (commit 0084e11): adding MS-bar conversion terms to the
    self-energies of non-SUSY models.
 
+ * Bugfix (commit d8a1521): The SM() preprocessor macro has been
+   renamed to LowEnergyConstant() in order to avoid collisions with
+   the copy constructor of the SM model class.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
