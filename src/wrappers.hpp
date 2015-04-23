@@ -320,7 +320,7 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-inline double Im(double x)
+inline double Im(double)
 {
    return 0.;
 }
