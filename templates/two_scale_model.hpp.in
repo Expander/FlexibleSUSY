@@ -64,6 +64,9 @@ public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    virtual ~@ModelName@();
 
+   /// number of EWSB equations
+   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
+
    void calculate_DRbar_masses();
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
@@ -108,6 +111,10 @@ public:
 @massCalculationPrototypes@
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
+
+   /// calculates the tadpoles at current loop order
+   void tadpole_equations(double[number_of_ewsb_equations]) const;
+
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
@@ -147,7 +154,6 @@ private:
    bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
    double ewsb_iteration_precision;
-   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
@@ -163,7 +169,6 @@ private:
    void ewsb_initial_guess(double[number_of_ewsb_equations]);
    int ewsb_step(double[number_of_ewsb_equations]) const;
    static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   void tadpole_equations(double[number_of_ewsb_equations]) const;
    static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
