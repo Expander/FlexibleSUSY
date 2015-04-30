@@ -1,0 +1,125 @@
+﻿// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#ifndef @ModelName@_SM_TWO_SCALE_MATCHING_H
+#define @ModelName@_SM_TWO_SCALE_MATCHING_H
+
+#include "wrappers.hpp"
+#include "two_scale_matching.hpp"
+#include "SM_two_scale_model.hpp"
+#include "@ModelName@_two_scale_model.hpp"
+#include <cmath>
+
+#define MODELPARAMETER(p) model.get_##p()
+namespace flexiblesusy
+{
+
+  /**
+   * @class SM_two_scale_matching
+   * @brief matches Two-Scale-Model to Standardmodel in optional loop order
+   */
+  template <class T>
+  class @ModelName@_SM_two_scale_matching
+  {
+    public:
+	static void matchingTL(SM<T>&, const @ModelName@<T>&);
+	static void matching(SM<T>&, const @ModelName@<T>&);
+@smMediumDiagDecl@
+  };
+
+
+
+  /**
+   * matches  Standardmodel to @ModelName@-Model at tree-level
+   */
+  template <class T>
+  void @ModelName@_SM_two_scale_matching<T>::matchingTL(SM<T>& SM_, const @ModelName@<T>& model)
+  {
+    SM_.set_scale(model.get_scale());
+    SM_.set_g1(model.get_@hyperchargeCoupling@()*@hyperchargeCouplingGutNormalization@/Sqrt(.6));
+    SM_.set_g2(model.get_@leftCoupling@()*@leftCouplingGutNormalization@);
+    SM_.set_g3(model.get_@strongCoupling@());
+    SM_.set_v(2.*model.get_M@VectorW@()/SM_.get_g2());
+    SM_.set_Ye(Sqrt(2.)/SM_.get_v()*model.get_M@Electron@().matrix().asDiagonal());
+    SM_.set_Yu(-Sqrt(2.)/SM_.get_v()*model.get_M@TopQuark@().matrix().asDiagonal());
+    SM_.set_Yd(Sqrt(2.)/SM_.get_v()*model.get_M@BottomQuark@().matrix().asDiagonal());
+    SM_.set_Lambdax(Sqr(model.get_M@HiggsBoson@()@LightestHiggsExtension@)/Sqr(SM_.get_v()));
+    SM_.set_mu2( 1.5*SM_.get_Lambdax()*Sqr(SM_.get_v()) - Sqr(model.get_M@HiggsBoson@()@LightestHiggsExtension@));
+    SM_.solve_ewsb_tree_level();
+    SM_.calculate_DRbar_masses();
+
+  }
+
+
+ /**
+   * matches Standardmodel to @ModelName@-Model at one-loop-level
+   */
+ template <class T>
+  void @ModelName@_SM_two_scale_matching<T>::matching(SM<T>& SM_, const @ModelName@<T>& model)
+  {
+    const double currentScale = model.get_scale();
+    double MWMSbar2, MZMSbar2, MHMSbar2;
+    Eigen::Array<double, 3, 1> MuMSbar, MdMSbar, MeMSbar;
+
+    //match with tree-level as initial guess
+    matchingTL(SM_, model);
+    double g1drbar = SM_.get_g1();
+    double g2drbar = SM_.get_g2();
+@calcAlphaEM@
+    double alpha_s  = Sqr(SM_.get_g3())/(4.*Pi);
+@gauge1Linit@
+@alphaEM1Lmatching@
+@alphaS1Lmatching@
+
+	//calculate 1-loop corrected masses
+    SM_.solve_ewsb_one_loop();
+    MHMSbar2 = Mhh2matching1L(model);
+    MWMSbar2 = MVWp2matching1L(model);
+    MZMSbar2 = MVZ2matching1L(model);
+
+	//assuming no flavor mixing: yukawa matrices and self energies are diagonal
+    for(unsigned i = 0; i < 3; i++)
+    {
+          MeMSbar(i) = Sqrt(MFe2matching1L(model, i));
+          MuMSbar(i) = Sqrt(MFu2matching1L(model, i));
+          MdMSbar(i) = Sqrt(MFd2matching1L(model, i));
+    }
+
+    //copy SM-class for TL - template
+    const SM<T> SM_TL = SM_;
+
+    //calculate 1L-parameters from 1L-masses
+    SM_.set_g1(Sqrt(4.*Pi*alpha_em *(1. - delta_alpha_em + MZMSbar2/Sqr(SM_TL.get_MVZ()) - MWMSbar2/Sqr(SM_TL.get_MVWp()) )*Sqr(SM_TL.get_MVZ()/SM_TL.get_MVWp()))/Sqrt(.6));
+    SM_.set_g2(Sqrt(4.*Pi*alpha_em/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ()))*
+               (1. - delta_alpha_em + Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())*(-MZMSbar2/Sqr(SM_TL.get_MVZ()) + MWMSbar2/Sqr(SM_TL.get_MVWp()))/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())))));
+    SM_.set_g3(Sqrt(4.*Pi*alpha_s *(1. - delta_alpha_s)));
+    SM_.set_v(2.*SM_TL.get_MVWp()/SM_TL.get_g2()*Sqrt(1. + MWMSbar2/Sqr(SM_TL.get_MVWp()) - Sqr(SM_.get_g2()/SM_TL.get_g2())));
+    SM_.set_Ye((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFe())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MeMSbar) ).sqrt().matrix().asDiagonal());
+    SM_.set_Yu((-(2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFu())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MuMSbar) ).sqrt()).matrix().asDiagonal());
+    SM_.set_Yd((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFd())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MdMSbar) ).sqrt().matrix().asDiagonal());
+    SM_.set_Lambdax(Sqr(SM_TL.get_Mhh()/SM_TL.get_v())*(1. + MHMSbar2/Sqr(SM_TL.get_Mhh()) - Sqr(SM_.get_v()/SM_TL.get_v())));
+    SM_.set_mu2( 1.5*SM_TL.get_Lambdax()*Sqr(SM_TL.get_v())*(1. + SM_.get_Lambdax()/SM_TL.get_Lambdax() - Sqr(SM_.get_v()/SM_TL.get_v())) - MHMSbar2);
+    SM_.calculate_DRbar_masses();
+
+  }
+
+@smMediumDiag@
+
+
+} //namespace flexiblesusy
+#endif

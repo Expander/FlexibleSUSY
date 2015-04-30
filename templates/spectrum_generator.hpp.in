@@ -28,6 +28,7 @@
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
+#include "@ModelName@_SM_two_scale_matching.hpp"
 
 #include "coupling_monitor.hpp"
 #include "error.hpp"
@@ -35,6 +36,7 @@
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
+#include "SM_two_scale_model.hpp"
 
 namespace flexiblesusy {
 
@@ -77,6 +79,7 @@ public:
    void set_force_output(bool flag) { force_output = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
    void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
+   void do2LoopLogCalc();
 
    void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
@@ -177,6 +180,9 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
       model.get_physical().M@VectorW@
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
+      // start logarithmic resummation
+      if(model.get_two_loop_corrections().higgs_log) do2LoopLogCalc();
+
       // run to output scale (if scale > 0)
       if (!is_zero(parameter_output_scale)) {
          model.run_to(parameter_output_scale);
@@ -229,6 +235,69 @@ void @ModelName@_spectrum_generator<T>::write_spectrum(const std::string& filena
    @ModelName@_spectrum_plotter plotter;
    plotter.extract_spectrum<T>(model);
    plotter.write_to_file(filename);
+}
+
+/**
+ * Calculates logarithmic contributions to Higgs mass of 2-loop order and higher
+ */
+template <class T>
+void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
+{
+
+    /*
+     SM1: matching TL+1L+ running all orders with 2-Loop betafunctions, ewsb_loop_order = 1  => for observable TL+1L
+     SM2: matching and running TL, ewsb_loop_order = 1 	      => for observable TL+1L correction: subtracts TL + 1L-self-energy
+     SM3: matching TL, running 1L (only), ewsb_loop_order = 0 => for observable TL correction: subtracts 1L-contributions from running
+     SM4: matching TL+1L, running TL, ewsb_loop_order = 0     => for observable TL correction: subtracts 1L-contributions from matching [deleted: replaced with SM4_Mhh2]
+  */
+
+
+  double  p, p0, M_Pole, M_Higgs,  SM3_Mhh2, SM4_Mhh2;
+@GetHiggsMass@
+  M_Pole = 0.;
+
+  SM<T>  SM1, SM2, SM3;
+  SM1.set_ewsb_loop_order(1);	SM1.set_pole_mass_loop_order(1);
+  SM2.set_ewsb_loop_order(1);	SM2.set_pole_mass_loop_order(1);
+  SM3.set_ewsb_loop_order(1);	SM3.set_pole_mass_loop_order(1);
+
+  //matching
+  model.calculate_DRbar_masses();
+  @ModelName@_SM_two_scale_matching<T>::matching(SM1, model);
+  @ModelName@_SM_two_scale_matching<T>::matchingTL(SM2, model);
+  SM3 = SM2;
+  SM4_Mhh2 = @ModelName@_SM_two_scale_matching<T>::Mhh2matching1L(model);
+
+  //solve ewsb-equations
+  SM1.solve_ewsb_one_loop();
+  SM2.solve_ewsb_one_loop();
+  SM3.solve_ewsb_tree_level();
+
+  //running
+  SM1.run_to(low_scale_constraint.get_scale());
+  SM2.set_scale(low_scale_constraint.get_scale());
+  //extract 1-loop part of SM3-running
+  SM3.set_loops(1);
+  SM<T> SM_temp;
+  SM_temp.SM_soft_parameters::set(SM3.SM_soft_parameters::beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
+  SM_temp.SM_susy_parameters::set(SM3.SM_susy_parameters::beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
+  SM3.SM_soft_parameters::set(SM_temp.SM_soft_parameters::get());
+  SM3.SM_susy_parameters::set(SM_temp.SM_susy_parameters::get());
+  SM3.set_scale(low_scale_constraint.get_scale());
+  //since SM4 runs with TL in the SM (only scale changes),
+  //but gives only TL correcture (no scale parameter), it is not affected by running
+
+  //calculate parameter-masses
+  SM1.calculate_DRbar_masses();
+  SM2.calculate_DRbar_masses();
+
+  SM3_Mhh2 = -SM3.get_mu2() + 1.5*SM3.get_Lambdax()*Sqr(SM2.get_v()) + 3.*SM2.get_Lambdax()*SM2.get_v()*SM3.get_v();
+  SM4_Mhh2 -= Sqr(SM2.get_Mhh());
+
+
+@DiagonalizeEFT@
+
+@SetHiggsMass@
 }
 
 } // namespace flexiblesusy

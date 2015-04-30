@@ -87,6 +87,10 @@ public:
    void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
+   double get_precision() const { return precision; }
+   std::size_t get_number_of_ewsb_iterations() const { return number_of_ewsb_iterations; }
+   std::size_t get_number_of_mass_iterations() const { return number_of_mass_iterations; }
+   Two_loop_corrections get_two_loop_corrections() const { return two_loop_corrections; }
    const @ModelName@_physical& get_physical() const;
    @ModelName@_physical& get_physical();
    const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;

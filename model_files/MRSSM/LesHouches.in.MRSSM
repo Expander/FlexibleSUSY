@@ -3,6 +3,7 @@ Block MODSEL     #
     2 1          # Boundary Condition
     6 1          # Generation Mixing
 #   12 1000       # output scale
+   14   1                    # Higgs logarithmic resummation
 Block SMINPUTS   # Standard Model inputs
     2 1.166370E-05       # G_F,Fermi constant
     3 1.187000E-01       # alpha_s(MZ) SM MSbar

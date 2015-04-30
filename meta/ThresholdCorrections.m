@@ -9,6 +9,8 @@ RecalculateMWPole::usage="";
 SetDRbarYukawaCouplingTop::usage="";
 SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
+CalculateColorCoupling::usage="";
+CalculateElectromagneticCoupling::usage="";
 
 Begin["`Private`"];
 

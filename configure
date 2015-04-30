@@ -918,6 +918,11 @@ check_models() {
         fi
     fi
 
+    # test if SM is contained and add it if necessary
+    if contains_not "${MODELS}" "models/SM"; then
+        MODELS="models/SM $MODELS"
+    fi
+
     # check for Makefile module, start script and FlexibleSUSY model
     # file
     for m in ${MODELS}; do

@@ -437,6 +437,8 @@ GeneralReplacementRules[] :=
       "@DateAndTime@"         -> DateString[],
       "@SARAHVersion@"        -> SA`Version,
       "@FlexibleSUSYVersion@" -> FS`Version,
+      "@HiggsGen@" -> ToValidCSymbolString[GetDimension[SARAH`HiggsBoson]],
+      "@LightestHiggsExtension@" -> If[GetDimension[SARAH`HiggsBoson] === 1, "", ".minCoeff()"],
       "@FlexibleSUSYGitCommit@" -> FS`GitCommit
     }
 
@@ -732,6 +734,52 @@ CreateVEVToTadpoleAssociation[] :=
            {#[[1]], #[[2]], vevs[[#[[2]],1]]}& /@ association
           ];
 
+WriteMatchingClass[files_List] :=
+    Module[ {subst, eDRbar, g2Def, g1Def, subE, scheme, drbarparam,higgsMediumDiag, smMediumDiagDeclaration},
+		scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
+		drbarparam = If[SARAH`SupersymmetricModel, 1, 0];
+        subst = {SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`mwdrbar, SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`mzdrbar,
+                 SARAH`hyperchargeCoupling -> FlexibleSUSY`g1drbar,
+                 SARAH`leftCoupling -> FlexibleSUSY`g2drbar,
+                 SARAH`Weinberg ->  FlexibleSUSY`weinbergdrbar, SARAH`electricCharge -> eDRbar};
+        g1Def = Parameters`FindSymbolDef[SARAH`hyperchargeCoupling] //. subst;
+        g2Def = Parameters`FindSymbolDef[SARAH`leftCoupling] //. subst;
+        If[!FreeQ[ g2Def, eDRbar],
+           subE = Solve[g2Def == SARAH`leftCoupling //. subst, eDRbar];,
+           If[!FreeQ[ g1Def, eDRbar],
+              subE = Solve[g1Def == SARAH`hyperchargeCoupling //. subst, eDRbar];,
+              Print["ERROR: Cannot resolve relation between e, g1 and g2"];
+              Quit[1];
+             ];
+          ];
+        (* If you want to add tadpoles, call the following routine like this:
+           higgsMediumDiag[{...}, {...}, oneLoopTadpoles, vevs];
+        *)
+        smMediumDiag = LoopMasses`DiagonalizeForMatchingClass[
+        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
+        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"},{},{}];
+        smMediumDiagDeclaration = LoopMasses`DiagonalizeForMatchingClassDeclaration[
+        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
+        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"}];
+        WriteOut`ReplaceInFiles[files, {
+          "@gauge1Linit@"       -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
+                                                                    ThresholdCorrections`CalculateColorCoupling[scheme]
+                                                                  + ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
+                                                                                                                       ]]],
+          "@alphaS1Lmatching@"  ->  IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
+                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
+          "@alphaEM1Lmatching@" -> 	IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
+                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
+          "@calcAlphaEM@"       -> IndentText[WrapLines[
+                                            "double weinbergdrbar = model." <> CConversion`RValueToCFormString[SARAH`Weinberg[]] <> "; \n"<>
+                                            "double alpha_em = Sqr(" <> CConversion`RValueToCFormString[(eDRbar /. subE[[1,1]])] <> ")/(4.*Pi);\n"]],
+          "@smMediumDiag@"	->	IndentText[WrapLines[smMediumDiag]],
+          "@smMediumDiagDecl@"->IndentText[smMediumDiagDeclaration],
+          Sequence @@ GeneralReplacementRules[]}
+                               ];
+             ];
+
+
 WriteModelClass[massMatrices_List, ewsbEquations_List,
                 parametersFixedByEWSB_List, ewsbSolution_List, freePhases_List,
                 nPointFunctions_List, vertexRules_List, phases_List,
@@ -977,12 +1025,27 @@ WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
+           (* If you want to add tadpoles, call the following routine like this:
+              CreateHiggsLogDiagonalization[ oneLoopTadpoles, vevs];
+            *)
+           DiagonalizeEFT = LoopMasses`CreateHiggsLogDiagonalization[{},{}];
+           GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
+				  "M_Higgs  = (model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson] <> ");\n",
+				  "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]
+				  <> ".minCoeff();\n"];
+		   SetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
+				  "model.get_physical().M"<> ToValidCSymbolString[SARAH`HiggsBoson] <> " = M_Higgs;",
+				  "model.get_physical().M"<> ToValidCSymbolString[SARAH`HiggsBoson] <> "(0) = M_Higgs;"];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
+                            "@DiagonalizeEFT@" -> IndentText[WrapLines[DiagonalizeEFT]],
+                            "@GetHiggsMass@" -> IndentText[WrapLines[GetHiggsMass]],
+                            "@SetHiggsMass@" -> IndentText[WrapLines[SetHiggsMass]],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
+
 
 WritePlotScripts[files_List] :=
     Module[{},
@@ -1905,6 +1968,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
+
+            Print["Creating matching class ..."];
+            WriteMatchingClass[ {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_two_scale_matching.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_matching.hpp"}]}}
+                              ];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "spectrum_generator.hpp.in";

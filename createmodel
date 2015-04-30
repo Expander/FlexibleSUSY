@@ -489,6 +489,7 @@ sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
+    -e "s|@ABSBASEDIR@|$ABSBASEDIR|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"
 
