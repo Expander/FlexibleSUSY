@@ -113,7 +113,7 @@ namespace flexiblesusy
     SM_.set_Yu((-(2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFu())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MuMSbar) ).sqrt()).matrix().asDiagonal());
     SM_.set_Yd((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFd())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MdMSbar) ).sqrt().matrix().asDiagonal());
     SM_.set_Lambdax(Sqr(SM_TL.get_Mhh()/SM_TL.get_v())*(1. + MHMSbar2/Sqr(SM_TL.get_Mhh()) - Sqr(SM_.get_v()/SM_TL.get_v())));
-    SM_.set_mu2( 1.5*SM_TL.get_Lambdax()*Sqr(SM_TL.get_v())*(-1. + SM_.get_Lambdax()/SM_TL.get_Lambdax()  Sqr(SM_.get_v()/SM_TL.get_v())) - MHMSbar2);
+    SM_.set_mu2( 1.5*SM_TL.get_Lambdax()*Sqr(SM_TL.get_v())*(-1. + SM_.get_Lambdax()/SM_TL.get_Lambdax() +  Sqr(SM_.get_v()/SM_TL.get_v())) - MHMSbar2);
     SM_.calculate_DRbar_masses();
 
   }
