@@ -40,4 +40,4 @@ Block MINPAR                 # Input parameters
     4   1                    # CosPhi
     5   0                    # Azero
 Block EXTPAR
-  100   0                    # etaInput
+  100   0.1                  # etaInput
