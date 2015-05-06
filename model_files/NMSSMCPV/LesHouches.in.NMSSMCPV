@@ -45,5 +45,5 @@ Block EXTPAR  # Input parameters
    63   0                    # ALambdaInput
    64   0                    # AKappaInput
    65   100                  # LambdaTimesvSInput
-  100   0.00001              # etaInput
-  101   0.00002              # etaSInput
+  100  -0.1                  # etaInput
+  101   0.2                  # etaSInput
