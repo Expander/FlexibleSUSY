@@ -83,6 +83,12 @@ FlexibleSUSY-1.1.0 [not released yet]
    renamed to LowEnergyConstant() in order to avoid collisions with
    the copy constructor of the SM model class.
 
+ * Bugfix (commit 0c7a7ac): chop beta-function values smaller than the
+   zero-threshold to avoid failures of the RK integrator.  The
+   zero-threshold is 1e-11 by default and can be changed via
+   Beta_function::set_zero_threshold() or entry 14 in the SLHA input
+   file.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
