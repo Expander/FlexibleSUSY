@@ -63,18 +63,18 @@ Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
-              selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String] :=
+              selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String, type_] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const double self_energy_1  = Re(" <> selfEnergyFunctionS  <> "(p));\n" <>
-    "const double self_energy_PL = Re(" <> selfEnergyFunctionPL <> "(p));\n" <>
-    "const double self_energy_PR = Re(" <> selfEnergyFunctionPR <> "(p));\n" <>
+    "const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[selfEnergyFunctionS  <> "(p)",type] <> ";\n" <>
+    "const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[selfEnergyFunctionPL <> "(p)",type] <> ";\n" <>
+    "const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[selfEnergyFunctionPR <> "(p)",type] <> ";\n" <>
     "const auto M_1loop = " <> massMatrixName <>
     " - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR);\n" <>
     "PHYSICAL(" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> ") = " <>
     "calculate_singlet_mass(M_1loop);\n";
 
 Do1DimFermion[particle_ /; particle === SARAH`TopQuark, massMatrixName_String,
-              _String, _String, _String, momentum_String] :=
+              _String, _String, _String, momentum_String, type_] :=
     Module[{massName,
             topSelfEnergyFunctionS, topSelfEnergyFunctionPL, topSelfEnergyFunctionPR,
             qcdOneLoop, qcdTwoLoop
@@ -98,9 +98,9 @@ if (add_2loop_corrections) {
 }
 
 const double p = " <> momentum <> ";
-const double self_energy_1  = Re(" <> topSelfEnergyFunctionS  <> "(p));
-const double self_energy_PL = Re(" <> topSelfEnergyFunctionPL <> "(p));
-const double self_energy_PR = Re(" <> topSelfEnergyFunctionPR <> "(p));
+const " <> CreateCType[type] <> " self_energy_1  = " <> CastIfReal[topSelfEnergyFunctionS  <> "(p)",type] <> ";
+const " <> CreateCType[type] <> " self_energy_PL = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p)",type] <> ";
+const " <> CreateCType[type] <> " self_energy_PR = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p)",type] <> ";
 const auto M_1loop = " <> massMatrixName <> "\
  - self_energy_1 - " <> massMatrixName <> " * (self_energy_PL + self_energy_PR)\
  - " <> massMatrixName <> " * (qcd_1l + qcd_2l);\n
@@ -270,7 +270,7 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
               result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
-                                     massName];
+                                     massName, CConversion`GetScalarElementType[selfEnergyMatrixType]];
              ];
            Return[result];
           ];
@@ -569,7 +569,7 @@ if (add_2loop_corrections) {
               result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        Do1DimFermion[particle, "M_tree", selfEnergyFunctionS,
                                      selfEnergyFunctionPL, selfEnergyFunctionPR,
-                                     momentum];
+                                     momentum, CConversion`GetScalarElementType[selfEnergyMatrixType]];
              ];
            Return[result];
           ];
