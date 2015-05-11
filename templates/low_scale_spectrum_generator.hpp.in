@@ -280,6 +280,9 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   SM1.calculate_DRbar_masses();
   SM2.calculate_DRbar_masses();
 
+  //recalculate mu2 with 1-loop EWSB condition at proper scale
+  SM1.solve_ewsb_one_loop();
+
   SM3_Mhh2 = -SM3.get_mu2() + 1.5*SM3.get_Lambdax()*Sqr(SM2.get_v()) + 3.*SM2.get_Lambdax()*SM2.get_v()*SM3.get_v();
   SM4_Mhh2 -= Sqr(SM2.get_Mhh());
 
