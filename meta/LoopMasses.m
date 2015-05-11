@@ -119,6 +119,11 @@ Do1DimVector[particleName_String, massName_String, massMatrixName_String,
 
 (* ********** fast diagonalization routines ********** *)
 
+CastIfReal[str_String, type_[CConversion`realScalarCType, ___]] :=
+    "Re(" <> str <> ")";
+
+CastIfReal[str_String, type_[___]] := str;
+
 DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
     Module[{result, dim, dimStr, massName, massNameReordered, particleName,
             mixingMatrix, selfEnergyFunction, reorderMasses,
@@ -149,8 +154,8 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                                   "; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
                                              massNameReordered <> "(i2));\n" <>
-                                             "self_energy(i1,i2) = Re(" <>
-                                             selfEnergyFunction <> "(p,i1,i2));\n"] <>
+                                             "self_energy(i1,i2) = " <> CastIfReal[
+                                             selfEnergyFunction <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
                                   "}\n"
                                  ] <>
                        "}\n" <>
@@ -222,12 +227,12 @@ DoFastDiagonalization[particle_Symbol /; IsFermion[particle], _] :=
                        IndentText["for (unsigned i2 = 0; i2 < " <> dimStr <>"; ++i2) {\n" <>
                                   IndentText["const double p = AbsSqrt(" <> massNameReordered <> "(i1) * " <> 
                                              massNameReordered <> "(i2));\n" <>
-                                             "self_energy_1(i1,i2)  = Re(" <>
-                                             selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                             "self_energy_PL(i1,i2) = Re(" <>
-                                             selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                             "self_energy_PR(i1,i2) = Re(" <>
-                                             selfEnergyFunctionPR <> "(p,i1,i2));\n"
+                                             "self_energy_1(i1,i2)  = " <> CastIfReal[
+                                             selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                             "self_energy_PL(i1,i2) = " <> CastIfReal[
+                                             selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                             "self_energy_PR(i1,i2) = " <> CastIfReal[
+                                             selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"
                                             ] <>
                                   "}\n"
                                  ] <>
@@ -392,8 +397,8 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
                                              "; i2 < " <> dimStr <> "; ++i2) {\n" <>
-                                             IndentText["self_energy(i1,i2) = Re(" <>
-                                                        selfEnergyFunction <> "(p,i1,i2));\n"
+                                             IndentText["self_energy(i1,i2) = " <> CastIfReal[
+                                                        selfEnergyFunction <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"
                                                        ] <>
                                              "}\n"
                                             ] <>
@@ -481,18 +486,18 @@ if (add_2loop_corrections) {
                                              IndentText[
                                                 If[topTwoLoop,
                                                    "if (i1 == " <> highestIdxStr <> " && i2 == " <> highestIdxStr <> ") {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = Re(" <> topSelfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PL(i1,i2) = Re(" <> topSelfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PR(i1,i2) = Re(" <> topSelfEnergyFunctionPR <> "(p,i1,i2));\n"] <>
+                                                   IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[topSelfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                              "self_energy_PL(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                              "self_energy_PR(i1,i2) = " <> CastIfReal[topSelfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
                                                    "} else {\n" <>
-                                                   IndentText["self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                              "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"] <>
+                                                   IndentText["self_energy_1(i1,i2)  = " <> CastIfReal[selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                              "self_energy_PL(i1,i2) = " <> CastIfReal[selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                              "self_energy_PR(i1,i2) = " <> CastIfReal[selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"] <>
                                                    "}\n"
                                                    ,
-                                                   "self_energy_1(i1,i2)  = Re(" <> selfEnergyFunctionS <> "(p,i1,i2));\n" <>
-                                                   "self_energy_PL(i1,i2) = Re(" <> selfEnergyFunctionPL <> "(p,i1,i2));\n" <>
-                                                   "self_energy_PR(i1,i2) = Re(" <> selfEnergyFunctionPR <> "(p,i1,i2));\n"
+                                                   "self_energy_1(i1,i2)  = " <> CastIfReal[selfEnergyFunctionS <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                   "self_energy_PL(i1,i2) = " <> CastIfReal[selfEnergyFunctionPL <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n" <>
+                                                   "self_energy_PR(i1,i2) = " <> CastIfReal[selfEnergyFunctionPR <> "(p,i1,i2)", selfEnergyMatrixType] <> ";\n"
                                                   ]
                                              ] <>
                                              "}\n"
