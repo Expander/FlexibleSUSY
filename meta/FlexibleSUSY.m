@@ -1016,7 +1016,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
             writeExtraSLHAOutputBlock = "",
-            readLesHouchesOutputParameters, readLesHouchesPhyicalParameters,
+            readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             convertMixingsToSLHAConvention = "",
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
@@ -1039,7 +1039,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
-           readLesHouchesPhyicalParameters = WriteOut`ReadLesHouchesPhysicalParameters[];
+           readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["PHYSICAL_SLHA"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -1066,7 +1066,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
-                            "@readLesHouchesPhyicalParameters@" -> IndentText[readLesHouchesPhyicalParameters],
+                            "@readLesHouchesPhysicalParameters@" -> IndentText[readLesHouchesPhysicalParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
