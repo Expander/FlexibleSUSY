@@ -39,8 +39,6 @@
 #define MODELPARAMETER(p) model.get_##p()
 #define DEFINE_PARAMETER(p)                                            \
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
-#define DEFINE_POLE_MASS(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -103,7 +101,7 @@ private:
    void set_pmns(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
    template <class T> void fill_drbar_parameters(@ModelName@_slha<T>&) const;
-   template <class T> void fill_physical(@ModelName@_slha<T>&) const;
+   void fill_physical(@ModelName@_physical&) const;
 };
 
 /**
@@ -114,7 +112,7 @@ template <class T>
 void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 {
    fill_drbar_parameters(model);
-   fill_physical(model);
+   fill_physical(model.get_physical_slha());
 }
 
 /**
@@ -126,15 +124,6 @@ void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_slha<T>& model) cons
 @readLesHouchesOutputParameters@
 
    model.set_scale(read_scale());
-}
-
-/**
- * Reads pole masses and mixing matrices from a SLHA output file.
- */
-template <class T>
-void @ModelName@_slha_io::fill_physical(@ModelName@_slha<T>& model) const
-{
-@readLesHouchesPhysicalParameters@
 }
 
 template <class T>
@@ -249,7 +238,6 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 #undef LOCALPHYSICAL
 #undef MODELPARAMETER
 #undef DEFINE_PARAMETER
-#undef DEFINE_POLE_MASS
 #undef LowEnergyConstant
 #undef SCALES
 

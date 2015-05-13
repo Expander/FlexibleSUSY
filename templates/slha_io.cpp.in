@@ -37,6 +37,7 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
+#define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
 using namespace softsusy;
@@ -240,6 +241,14 @@ void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& s
    } else {
       WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }
+}
+
+/**
+ * Reads pole masses and mixing matrices from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill_physical(@ModelName@_physical& physical) const
+{
+@readLesHouchesPhysicalParameters@
 }
 
 /**

@@ -495,12 +495,12 @@ ReadSLHAOutputBlock[{parameter_, blockName_Symbol}] :=
            "}\n"
           ];
 
-ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}, struct_String:"PHYSICAL"] :=
+ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}, struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
     Module[{paramStr, blockNameStr},
            paramStr = CConversion`ToValidCSymbolString[parameter];
            blockNameStr = ToString[blockName];
            "{\n" <> IndentText[
-               "DEFINE_PARAMETER(" <> paramStr <> ");\n" <>
+               defMacro <> "(" <> paramStr <> ");\n" <>
                "slha_io.read_block(\"" <> blockNameStr <> "\", " <>
                paramStr <> ");\n" <>
                struct <> "(" <> paramStr <> ") = " <> paramStr <> ";"] <> "\n" <>
@@ -551,10 +551,10 @@ ReadLesHouchesOutputParameters[] :=
            Return[result];
           ];
 
-ReadLesHouchesPhysicalParameters[struct_String:"PHYSICAL"] :=
+ReadLesHouchesPhysicalParameters[struct_String:"PHYSICAL", defMacro_String:"DEFINE_PHYSICAL_PARAMETER"] :=
     Module[{result = "", physicalParameters},
            physicalParameters = GetSLHAMixinMatrices[];
-           (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#,struct])& /@ physicalParameters;
+           (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#,struct,defMacro])& /@ physicalParameters;
            result = result <> "\n" <> ReadSLHAPhysicalMassBlock[struct];
            Return[result];
           ];
