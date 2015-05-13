@@ -28,6 +28,9 @@
 #include <iostream>
 #include <iomanip>
 
+#define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
+
 using namespace softsusy;
 
 namespace flexiblesusy {

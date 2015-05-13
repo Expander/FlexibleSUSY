@@ -243,4 +243,14 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 
 } // namespace flexiblesusy
 
+#undef Pole
+#undef PHYSICAL
+#undef PHYSICAL_SLHA
+#undef LOCALPHYSICAL
+#undef MODELPARAMETER
+#undef DEFINE_PARAMETER
+#undef DEFINE_POLE_MASS
+#undef LowEnergyConstant
+#undef SCALES
+
 #endif

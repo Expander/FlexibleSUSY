@@ -32,6 +32,13 @@
 #include <iostream>
 #include <boost/bind.hpp>
 
+#define Pole(p) physical.p
+#define PHYSICAL(p) model.get_physical().p
+#define PHYSICAL_SLHA(p) model.get_physical_slha().p
+#define LOCALPHYSICAL(p) physical.p
+#define MODELPARAMETER(p) model.get_##p()
+#define LowEnergyConstant(p) Electroweak_constants::p
+
 using namespace softsusy;
 
 namespace flexiblesusy {

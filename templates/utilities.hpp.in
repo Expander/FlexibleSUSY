@@ -101,4 +101,7 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Arr
 
 } // namespace flexiblesusy
 
+#undef PHYSICAL
+#undef MODELPARAMETER
+
 #endif
