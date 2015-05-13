@@ -507,7 +507,7 @@ ReadSLHAPhysicalMixingMatrixBlock[{parameter_, blockName_Symbol}, struct_String:
            "}\n"
           ];
 
-ReadSLHAPhysicalMass[particle_] :=
+ReadSLHAPhysicalMass[particle_,struct_String:"PHYSICAL"] :=
     Module[{result = "", mass, massStr, dim, pdgList, pdg, pdgStr, i},
            mass = FlexibleSUSY`M[particle];
            massStr = CConversion`ToValidCSymbolString[mass];
@@ -520,7 +520,7 @@ ReadSLHAPhysicalMass[particle_] :=
               pdg = Abs[pdgList[[1]]];
               pdgStr = ToString[pdg];
               If[pdg != 0,
-                 result = "PHYSICAL(" <> massStr <>
+                 result = struct <> "(" <> massStr <>
                           ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
                 ];
               ,
@@ -529,7 +529,7 @@ ReadSLHAPhysicalMass[particle_] :=
                   pdgStr = ToString[pdg];
                   If[pdg != 0,
                      result = result <>
-                              "PHYSICAL(" <> massStr <> ")(" <> ToString[i-1] <>
+                              struct <> "(" <> massStr <> ")(" <> ToString[i-1] <>
                               ") = slha_io.read_entry(\"MASS\", " <> pdgStr <> ");\n";
                     ];
                  ];
@@ -537,10 +537,10 @@ ReadSLHAPhysicalMass[particle_] :=
            Return[result];
           ];
 
-ReadSLHAPhysicalMassBlock[] :=
+ReadSLHAPhysicalMassBlock[struct_String:"PHYSICAL"] :=
     Module[{result = "", particles},
            particles = TreeMasses`GetParticles[];
-           (result = result <> ReadSLHAPhysicalMass[#])& /@ particles;
+           (result = result <> ReadSLHAPhysicalMass[#,struct])& /@ particles;
            Return[result];
           ];
 
@@ -555,7 +555,7 @@ ReadLesHouchesPhysicalParameters[struct_String:"PHYSICAL"] :=
     Module[{result = "", physicalParameters},
            physicalParameters = GetSLHAMixinMatrices[];
            (result = result <> ReadSLHAPhysicalMixingMatrixBlock[#,struct])& /@ physicalParameters;
-           result = result <> "\n" <> ReadSLHAPhysicalMassBlock[];
+           result = result <> "\n" <> ReadSLHAPhysicalMassBlock[struct];
            Return[result];
           ];
 
