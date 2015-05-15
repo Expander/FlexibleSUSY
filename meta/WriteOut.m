@@ -16,6 +16,7 @@ ReadLesHouchesInputParameters::usage="";
 ReadLesHouchesOutputParameters::usage="";
 ReadLesHouchesPhysicalParameters::usage="";
 ConvertMixingsToSLHAConvention::usage="";
+ConvertMixingsToHKConvention::usage="";
 GetDRbarBlockNames::usage="";
 GetNumberOfDRbarBlocks::usage="";
 ParseCmdLineOptions::usage="";
@@ -575,6 +576,12 @@ GetDRbarBlockNames[] :=
 GetNumberOfDRbarBlocks[] := Length[GetDRbarBlocks[]];
 
 ConvertMixingsToSLHAConvention[massMatrices_List] :=
+    ConvertMixingsToConvention[massMatrices, "slha"];
+
+ConvertMixingsToHKConvention[massMatrices_List] :=
+    ConvertMixingsToConvention[massMatrices, "hk"];
+
+ConvertMixingsToConvention[massMatrices_List, convention_String] :=
     Module[{result = "", i,
             eigenstateName, mixingMatrixSym,
             eigenstateNameStr, mixingMatrixSymStr},
@@ -585,7 +592,7 @@ ConvertMixingsToSLHAConvention[massMatrices_List] :=
                   eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
                   mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
                   result = result <>
-                           "SLHA_io::convert_symmetric_fermion_mixings_to_slha(LOCALPHYSICAL(" <>
+                           "SLHA_io::convert_symmetric_fermion_mixings_to_" <> convention <> "(LOCALPHYSICAL(" <>
                            eigenstateNameStr <> "), LOCALPHYSICAL(" <>
                            mixingMatrixSymStr <> "));\n";
                  ];

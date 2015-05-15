@@ -49,6 +49,7 @@ public:
    virtual void clear();
    void convert_to_slha(); ///< converts pole masses and couplings to SLHA convention
    static void convert_to_slha(@ModelName@_physical&); ///< converts pole masses to SLHA convention
+   static void convert_to_hk(@ModelName@_physical&); ///< converts pole masses to HK convention
    const Eigen::Matrix<std::complex<double>,3,3>& get_ckm_matrix() const { return ckm; }
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns_matrix() const { return pmns; }
    const @ModelName@_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention

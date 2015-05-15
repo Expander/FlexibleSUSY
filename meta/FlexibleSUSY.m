@@ -676,6 +676,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaPoleMassGetters = "",
             slhaPoleMixingMatrixGetters = "",
             convertMixingsToSLHAConvention = "",
+            convertMixingsToHKConvention = "",
             calculateCKMMatrix = "",
             calculatePMNSMatrix = ""
            },
@@ -691,6 +692,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
            convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
+           convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
            calculateCKMMatrix = WriteOut`CalculateCKMMatrix[];
            calculatePMNSMatrix = WriteOut`CalculatePMNSMatrix[];
            For[k = 1, k <= Length[massMatrices], k++,
@@ -712,6 +714,7 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
                             "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
+                            "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             "@calculateCKMMatrix@"             -> IndentText[calculateCKMMatrix],
                             "@calculatePMNSMatrix@"             -> IndentText[calculatePMNSMatrix],
                             Sequence @@ GeneralReplacementRules[]
@@ -1018,7 +1021,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
             writeExtraSLHAOutputBlock = "",
             readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
-            convertMixingsToSLHAConvention = "",
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
             numberOfDRbarBlocks, drBarBlockNames},
@@ -1049,7 +1051,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
-           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            gaugeCouplingNormalizationDecls = WriteOut`GetGaugeCouplingNormalizationsDecls[SARAH`Gauge];
            gaugeCouplingNormalizationDefs  = WriteOut`GetGaugeCouplingNormalizationsDefs[SARAH`Gauge];
            WriteOut`ReplaceInFiles[files,
@@ -1074,7 +1075,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
-                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@gaugeCouplingNormalizationDecls@"-> IndentText[gaugeCouplingNormalizationDecls],
                             "@gaugeCouplingNormalizationDefs@" -> IndentText[gaugeCouplingNormalizationDefs],
                             "@numberOfDRbarBlocks@"            -> ToString[numberOfDRbarBlocks],

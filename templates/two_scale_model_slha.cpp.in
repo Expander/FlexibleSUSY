@@ -83,6 +83,18 @@ void CLASSNAME::convert_to_slha()
 }
 
 /**
+ * Convert masses and mixing matrices to Haber-Kane convention:
+ * Fermion masses are always positive and mixing matrices are allowed
+ * to be complex.
+ *
+ * @param physical struct of physical parameters to convert
+ */
+void CLASSNAME::convert_to_hk(@ModelName@_physical& physical)
+{
+@convertMixingsToHKConvention@
+}
+
+/**
  * Convert masses and mixing matrices to SLHA convention: Fermion
  * mixing matrices are always real and fermion masses are allowed to
  * be negative.

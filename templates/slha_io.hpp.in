@@ -113,6 +113,11 @@ void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 {
    fill_drbar_parameters(model);
    fill_physical(model.get_physical_slha());
+
+   // convert to Haber-Kane convention
+   @ModelName@_physical physical_hk(model.get_physical_slha());
+   @ModelName@_slha<T>::convert_to_hk(physical_hk);
+   model.get_physical() = physical_hk;
 }
 
 /**
