@@ -279,10 +279,8 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   //extract 1-loop part of SM3-running
   SM3.set_loops(1);
   SM<T> SM_temp;
-  SM_temp.SM_soft_parameters::set(SM3.SM_soft_parameters::beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
-  SM_temp.SM_susy_parameters::set(SM3.SM_susy_parameters::beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
-  SM3.SM_soft_parameters::set(SM_temp.SM_soft_parameters::get());
-  SM3.SM_susy_parameters::set(SM_temp.SM_susy_parameters::get());
+  SM_temp.set(SM3.beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
+  SM3.set(SM_temp.get());
   SM3.set_scale(low_scale_constraint.get_scale());
   //since SM4 runs with TL in the SM (only scale changes),
   //but gives only TL correcture (no scale parameter), it is not affected by running
