@@ -140,7 +140,7 @@ namespace flexiblesusy
        // Evaluation context struct, needed by DiagramEvaluator<>::value() further below
        struct EvaluationContext
        {
-           const CMSSM<Two_scale> &model;
+           const @ModelName@<Two_scale> &model;
 
            // Function templates that returns the mass of a particle
            // If P denotes a whole (SARAH) particle family, the index
@@ -273,7 +273,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
     double res = 0.0;
     
     using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename bar<PhotonEmitter>::type>;
-    using muonVertexFunction = VertexFunction<MuonFamily, typename bar<PhotonEmitter>::type, typename CMSSM_GMuonMinus2::conj<ExchangeParticle>::type>;
+    using muonVertexFunction = VertexFunction<MuonFamily, typename bar<PhotonEmitter>::type, typename @ModelName@_GMuonMinus2::conj<ExchangeParticle>::type>;
     
     for( auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
         photonVertexIndexIt != photonVertexFunction::indexBounds().end();
@@ -285,7 +285,6 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
             continue;
         
         // FIXME: We assume that the photonVertex is symmetric between its left and right parts!
-        // BUG (WONTFIX): This gives a 5% (!) deviation!
         double photonEmitterChargeCount = photonVertex.left().real() / muonCharge( context );
         
         const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>( photonVertexIndices );

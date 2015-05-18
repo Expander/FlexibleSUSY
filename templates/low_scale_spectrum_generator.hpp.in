@@ -27,6 +27,7 @@
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_g_muon_minus_2.hpp"
 
 #include "lowe.h"
 #include "error.hpp"
@@ -59,6 +60,7 @@ public:
    virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
+   double get_amuon( void ) const { return @gMuonMinus2@; }
 private:
    RGFlow<T> solver;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
@@ -137,6 +139,9 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       model.run_to(susy_scale);
       model.solve_ewsb();
       model.calculate_spectrum();
+
+      if( calculate_gmuon_minus2 )
+         @gMuonMinus2@ = @ModelName@_GMuonMinus2::calculate_amuon( model );
 
       // copy calculated W pole mass
       model.get_physical().M@VectorW@
