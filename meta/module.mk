@@ -24,7 +24,8 @@ META_SRC     := \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
-		$(DIR)/WeinbergAngle.m
+		$(DIR)/WeinbergAngle.m \
+		$(DIR)/GMuonMinus2.m
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

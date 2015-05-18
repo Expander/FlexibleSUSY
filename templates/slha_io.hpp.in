@@ -89,6 +89,7 @@ public:
    template <class T>
    static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
 
+   void set_amuon(double value);
 private:
    SLHA_io slha_io; ///< SLHA io class
    static unsigned const NUMBER_OF_DRBAR_BLOCKS = @numberOfDRbarBlocks@;

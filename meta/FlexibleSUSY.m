@@ -1,5 +1,4 @@
-
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "GMuonMinus2`"}];
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
@@ -780,6 +779,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
+            gMuonMinus2Getter = "",
             EWSBSolvers = "",
             setEWSBSolution = "",
             fillArrayWithEWSBParameters = "",
@@ -810,7 +810,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                copyDRbarMassesToPoleMasses = copyDRbarMassesToPoleMasses <> TreeMasses`CopyDRBarMassesToPoleMasses[massMatrices[[k]]];
                massCalculationPrototypes = massCalculationPrototypes <> TreeMasses`CreateMassCalculationPrototype[massMatrices[[k]]];
                massCalculationFunctions  = massCalculationFunctions  <> TreeMasses`CreateMassCalculationFunction[massMatrices[[k]]];
-              ];
+               ];
            higgsMassGetters =
                Utils`StringZipWithSeparator[
                    TreeMasses`CreateHiggsMassGetters[SARAH`HiggsBoson,""],
@@ -988,13 +988,39 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+WriteGMuonMinus2Class[files_List] :=
+    Module[{prototypes, diagrams, vertexFunctions,
+        definitions, calculationCode, threadedCalculationCode},
+           prototypes = GMuonMinus2`CreateParticles[];
+           diagrams = GMuonMinus2`CreateDiagrams[];
+           vertexFunctions = GMuonMinus2`CreateVertexFunctions[];
+           definitions = GMuonMinus2`CreateDefinitions[];
+           calculationCode = GMuonMinus2`CreateCalculation[];
+           threadedCalculationCode = GMuonMinus2`CreateThreadedCalculation[];
+           
+           WriteOut`ReplaceInFiles[files,
+                                   { "@GMuonMinus2_Particles@"          -> IndentText[prototypes,6],
+                                       "@GMuonMinus2_Diagrams@"           -> IndentText[diagrams,6],
+                                       "@GMuonMinus2_VertexFunctions@"    -> IndentText[vertexFunctions,6],
+                                       "@GMuonMinus2_Definitions@"        -> definitions,
+                                       "@GMuonMinus2_Calculation@"        -> IndentText[calculationCode],
+                                       "@GMuonMinus2_ThreadedCalculation@" -> IndentText[threadedCalculationCode],
+                                       Sequence @@ GeneralReplacementRules[]
+                                   } ];
+           ];
+
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions},
+    Module[{parseCmdLineOptions, printCommandLineOptions, gMuonMinus2Def, gMuonMinus2},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
+           gMuonMinus2Def = GMuonMinus2`CreatePhysicalDefinition[];
+           gMuonMinus2 = GMuonMinus2`GetPhysicalName[];
+           
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
+                            "@gMuonMinus2Def@"         -> IndentText[gMuonMinus2Def],
+                            "@gMuonMinus2@"            -> gMuonMinus2,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -1027,7 +1053,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
-            writeSLHAMassBlock = "", writeSLHAMixingMatricesBlocks = "",
+            writeSLHAMassBlock = "", writeSLHAGMuonMinus2Block = "",
+            writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
             writeExtraSLHAOutputBlock = "",
@@ -1055,6 +1082,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
+           writeSLHAGMuonMinus2Block = WriteOut`WriteSLHAGMuonMinus2Block[];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
@@ -1081,6 +1109,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
                             "@readLesHouchesPhysicalParameters@" -> IndentText[readLesHouchesPhysicalParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
+                            "@writeSLHAGMuonMinus2Block@"      -> IndentText[writeSLHAGMuonMinus2Block],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
@@ -1303,7 +1332,9 @@ PrepareTadpoles[eigenstates_] :=
            tadpoles = Get[tadpolesFile];
            Print["Converting tadpoles ..."];
            ConvertSarahTadpoles[tadpoles]
-          ];
+           ];
+
+PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
     Module[{nonMixedParticles = {}, nonMixedParticlesFile},
@@ -1450,7 +1481,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSPrepareRGEs[];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
-	      Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
+           Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates],
+                PrepareGMuonMinus2[]];
            PrepareUnrotatedParticles[FSEigenstates];
 
            FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
@@ -1960,6 +1992,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_physical.cpp"}]}
                            },
                            diagonalizationPrecision];
+           
+           Print["Creating class GMuonMinus2"];
+           WriteGMuonMinus2Class[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
+                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.hpp"}]},
+                                  {FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.cpp.in"}],
+                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.cpp"}]}}];
 
            Print["Creating user example spectrum generator program ..."];
            spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";

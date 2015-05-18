@@ -50,7 +50,9 @@ TEMPLATES    := \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.cpp.in \
 		$(DIR)/utilities.hpp.in \
-		$(DIR)/utilities.cpp.in
+		$(DIR)/utilities.cpp.in \
+		$(DIR)/g_muon_minus_2.hpp.in \
+		$(DIR)/g_muon_minus_2.cpp.in
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 

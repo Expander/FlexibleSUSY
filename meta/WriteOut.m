@@ -8,6 +8,7 @@ PrintParameters::usage="Creates parameter printout statements";
 PrintInputParameters::usage="Creates input parameter printout statements";
 WriteSLHAExtparBlock::usage="";
 WriteSLHAMassBlock::usage="";
+WriteSLHAGMuonMinus2Block::usage="";
 WriteSLHAMixingMatricesBlocks::usage="";
 WriteSLHAModelParametersBlocks::usage="";
 WriteSLHAMinparBlock::usage="";
@@ -174,6 +175,11 @@ WriteSLHAMassBlock[massMatrices_List] :=
                     "slha_io.set_block(mass);\n";
            Return[result];
           ];
+
+WriteSLHAGMuonMinus2Block[] :=
+    Module[{result},
+           result = "slha_io.set_block(\"GMUONMINUS2\", value, \"a_muon\");"
+           ];
 
 ConvertToRealInputParameter[parameter_, struct_String] :=
     struct <> CConversion`ToValidCSymbolString[parameter];

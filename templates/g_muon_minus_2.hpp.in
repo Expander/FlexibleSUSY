@@ -1,0 +1,46 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+/**
+ * @file @ModelName@_g_muon_minus_2.hpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ */
+
+#ifndef @ModelName@_G_MUON_MINUS_2_H
+#define @ModelName@_G_MUON_MINUS_2_H
+
+#include "config.h"
+
+#include "@ModelName@_model.hpp"
+
+namespace flexiblesusy
+{
+   class Two_scale;
+   template<> class @ModelName@<Two_scale>;
+
+   namespace @ModelName@_GMuonMinus2
+   {
+      extern double calculate_amuon( const @ModelName@<Two_scale> &model );
+   };
+} // namespace flexiblesusy
+
+#endif
