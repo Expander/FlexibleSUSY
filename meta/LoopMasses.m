@@ -608,9 +608,11 @@ DoMediumDiagonalization[particle_Symbol, inputMomentum_:"", _] :=
 (* ********** high precision diagonalization routines ********** *)
 
 DoSlowDiagonalization[particle_Symbol, tadpole_] :=
-    Module[{result, dim, dimStr, massName, inputMomenta, outputMomenta, body},
+    Module[{result, dim, dimStr, massName, inputMomenta, outputMomenta,
+            body, particleStr},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
+           particleStr = CConversion`ToValidCSymbolString[particle];
            massName = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            inputMomenta = "old_" <> massName;
            outputMomenta = "new_" <> massName;
@@ -626,8 +628,15 @@ DoSlowDiagonalization[particle_Symbol, tadpole_] :=
                     outputMomenta <> "(" <> massName <> ");\n\n" <>
                     "do {\n" <>
                     IndentText[body] <>
-                    "} while (diff > precision\n" <>
-                    "         && iteration < number_of_mass_iterations);\n";
+                    "\
+} while (diff > precision
+         && iteration < number_of_mass_iterations);
+
+if (diff > precision)
+   problems.flag_no_pole_mass_convergence(" <> FlexibleSUSY`FSModelName <> "_info::" <> particleStr <> ");
+else
+   problems.unflag_no_pole_mass_convergence(" <> FlexibleSUSY`FSModelName <> "_info::" <> particleStr <> ");
+";
            Return[result];
           ];
 

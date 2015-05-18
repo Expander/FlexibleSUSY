@@ -32,6 +32,10 @@ FlexibleSUSY-1.1.0 [not released yet]
    respectively.  Linked to this, the new model file CMSSMCKM was
    added to demonstrate the input of the CKM matrix at low energies.
 
+ * Feature: Mark parameter points as invalid, for which the
+   calculation of one of the pole masses failed due to
+   non-convergence.
+
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.
    Before, there were cases where a Goldstone boson mass was used.
