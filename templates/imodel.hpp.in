@@ -1,0 +1,192 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+/**
+ * @file @ModelName@_imodel.hpp
+ * @brief contains class for model with routines needed to solve boundary
+ *        value problem using the two_scale solver by solvingt EWSB
+ *        and determine the pole masses and mixings
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
+ */
+
+#ifndef @ModelName@_IMODEL_H
+#define @ModelName@_IMODEL_H
+
+#include "@ModelName@_two_scale_soft_parameters.hpp"
+#include "@ModelName@_physical.hpp"
+#include "@ModelName@_info.hpp"
+#include "two_loop_corrections.hpp"
+#include "problems.hpp"
+#include "config.h"
+
+#include <iosfwd>
+#include <string>
+
+#ifdef ENABLE_THREADS
+#include <mutex>
+#endif
+
+#include <gsl/gsl_vector.h>
+#include <Eigen/Core>
+
+namespace flexiblesusy {
+
+class EWSB_solver;
+/**
+ * @class @ModelName@_imodel
+ * @brief model class with routines for determing masses and mixinga and EWSB
+ */
+class @ModelName@_imodel : public @ModelName@_soft_parameters {
+public:
+   explicit @ModelName@_imodel(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   virtual ~@ModelName@_imodel();
+
+   /// number of EWSB equations
+   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
+
+   void calculate_DRbar_masses();
+   void calculate_DRbar_parameters();
+   void calculate_pole_masses();
+   virtual void clear();
+   void clear_DRbar_parameters();
+   void do_calculate_sm_pole_masses(bool);
+   bool do_calculate_sm_pole_masses() const;
+   void do_force_output(bool);
+   bool do_force_output() const;
+   void reorder_DRbar_masses();
+   void reorder_pole_masses();
+   void set_ewsb_iteration_precision(double);
+   void set_ewsb_loop_order(unsigned);
+   void set_two_loop_corrections(const Two_loop_corrections&);
+   void set_number_of_ewsb_iterations(std::size_t);
+   void set_number_of_mass_iterations(std::size_t);
+   void set_pole_mass_loop_order(unsigned);
+   void set_physical(const @ModelName@_physical&);
+   double get_ewsb_iteration_precision() const;
+   double get_ewsb_loop_order() const;
+   const @ModelName@_physical& get_physical() const;
+   @ModelName@_physical& get_physical();
+   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
+   int solve_ewsb_tree_level();
+   int solve_ewsb_one_loop();
+   int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
+
+   void calculate_spectrum();
+   void clear_problems();
+   std::string name() const;
+   void run_to(double scale, double eps = -1.0);
+   void print(std::ostream&) const;
+   void set_precision(double);
+
+@lspGetters@
+@massGetters@
+@higgsMassGetterPrototypes@
+@mixingMatrixGetters@
+@phasesGetterSetters@
+@massCalculationPrototypes@
+@tadpoleEqPrototypes@
+@selfEnergyPrototypes@
+
+   /// calculates the tadpoles at current loop order
+   void tadpole_equations(double[number_of_ewsb_equations]) const;
+
+@thirdGenerationHelperPrototypes@
+@twoLoopSelfEnergyPrototypes@
+@twoLoopTadpolePrototypes@
+@loopMassesPrototypes@
+@runningDRbarMassesPrototypes@
+@dependenceNumPrototypes@
+
+private:
+   struct EWSB_args {
+      @ModelName@_imodel* model;
+      unsigned ewsb_loop_order;
+   };
+
+#ifdef ENABLE_THREADS
+   struct Thread {
+      typedef void(@ModelName@_imodel::*Memfun_t)();
+      @ModelName@_imodel* model;
+      Memfun_t fun;
+
+      Thread(@ModelName@_imodel* model_, Memfun_t fun_)
+         : model(model_), fun(fun_) {}
+      void operator()() {
+         try {
+            (model->*fun)();
+         } catch (...) {
+            model->thread_exception = std::current_exception();
+         }
+      }
+   };
+#endif
+
+   std::size_t number_of_ewsb_iterations;
+   std::size_t number_of_mass_iterations;
+   unsigned ewsb_loop_order;
+   unsigned pole_mass_loop_order;
+   bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
+   bool force_output;             ///< switch to force output of pole masses
+   double precision;              ///< RG running precision
+   double ewsb_iteration_precision;
+   @ModelName@_physical physical; ///< contains the pole masses and mixings
+   Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
+   Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
+#ifdef ENABLE_THREADS
+   std::exception_ptr thread_exception;
+   static std::mutex mtx_fortran; /// locks fortran functions
+#endif
+
+   int solve_ewsb_iteratively();
+   int solve_ewsb_iteratively(unsigned);
+   int solve_ewsb_iteratively_with(EWSB_solver*, const double[number_of_ewsb_equations]);
+   int solve_ewsb_tree_level_via_soft_higgs_masses();
+   void ewsb_initial_guess(double[number_of_ewsb_equations]);
+   int ewsb_step(double[number_of_ewsb_equations]) const;
+   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
+   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   void copy_DRbar_masses_to_pole_masses();
+
+   // Passarino-Veltman loop functions
+   double A0(double) const;
+   double B0(double, double, double) const;
+   double B1(double, double, double) const;
+   double B00(double, double, double) const;
+   double B22(double, double, double) const;
+   double H0(double, double, double) const;
+   double F0(double, double, double) const;
+   double G0(double, double, double) const;
+
+   // DR-bar masses
+@physicalMassesDef@
+   // DR-bar mixing matrices
+@mixingMatricesDef@
+   // phases
+@phasesDefinition@
+};
+
+std::ostream& operator<<(std::ostream&, const @ModelName@_imodel&);
+
+} // namespace flexiblesusy
+
+#endif
