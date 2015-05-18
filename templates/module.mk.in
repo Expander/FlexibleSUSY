@@ -34,6 +34,7 @@ LIB@CLASSNAME@_HDR :=
 
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
+		$(DIR)/@CLASSNAME@_imodel.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_input_parameters.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
@@ -55,6 +56,7 @@ EXE@CLASSNAME@_SRC += \
 LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_high_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_imodel.hpp \
 		$(DIR)/@CLASSNAME@_info.hpp \
 		$(DIR)/@CLASSNAME@_initial_guesser.hpp \
 		$(DIR)/@CLASSNAME@_input_parameters.hpp \
