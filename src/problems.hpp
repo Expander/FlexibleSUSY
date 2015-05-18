@@ -48,7 +48,7 @@ public:
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
    void flag_no_pole_mass_convergence(unsigned);
-   void flag_non_perturbative_parameter_warning(const std::string&, double, double, double);
+   void flag_non_perturbative_parameter(const std::string&, double, double, double);
    void flag_no_rho_convergence() { failed_rho_convergence = true; }
 
    void unflag_bad_mass(unsigned);
@@ -59,7 +59,7 @@ public:
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
    void unflag_no_pole_mass_convergence(unsigned);
-   void unflag_non_perturbative_parameter_warning(const std::string&);
+   void unflag_non_perturbative_parameter(const std::string&);
    void unflag_no_rho_convergence() { failed_rho_convergence = false; }
 
    bool is_bad_mass(unsigned) const;
@@ -67,7 +67,7 @@ public:
    bool have_bad_mass() const;
    bool have_tachyon() const;
    bool have_thrown() const     { return thrown; }
-   bool have_non_perturbative_parameter_warning() const;
+   bool have_non_perturbative_parameter() const;
    bool have_failed_pole_mass_convergence() const;
    bool no_ewsb() const         { return failed_ewsb; }
    bool no_convergence() const  { return failed_convergence; }
@@ -199,7 +199,7 @@ bool Problems<Number_of_particles>::have_tachyon() const
 }
 
 template <unsigned Number_of_particles>
-bool Problems<Number_of_particles>::have_non_perturbative_parameter_warning() const
+bool Problems<Number_of_particles>::have_non_perturbative_parameter() const
 {
    return !non_pert_pars.empty();
 }
@@ -243,18 +243,18 @@ bool Problems<Number_of_particles>::have_problem() const
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_warning() const
 {
-   return have_bad_mass() || have_non_perturbative_parameter_warning();
+   return have_bad_mass() || have_non_perturbative_parameter();
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::flag_non_perturbative_parameter_warning(
+void Problems<Number_of_particles>::flag_non_perturbative_parameter(
    const std::string& name, double value, double scale, double threshold)
 {
    non_pert_pars[name] = NonPerturbativeValue(value, scale, threshold);
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::unflag_non_perturbative_parameter_warning(
+void Problems<Number_of_particles>::unflag_non_perturbative_parameter(
    const std::string& name)
 {
    non_pert_pars.erase(name);

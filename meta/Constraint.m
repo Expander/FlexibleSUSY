@@ -471,9 +471,9 @@ CheckPerturbativityForParameter[par_, thresh_, model_String:"model"] :=
            threshStr = CConversion`RValueToCFormString[thresh];
            snippet = "\
 if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ")
-   " <> model <> "->get_problems().flag_non_perturbative_parameter_warning(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
+   " <> model <> "->get_problems().flag_non_perturbative_parameter(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
 else
-   " <> model <> "->get_problems().unflag_non_perturbative_parameter_warning(\"" <> parStr <> "\");
+   " <> model <> "->get_problems().unflag_non_perturbative_parameter(\"" <> parStr <> "\");
 ";
            snippet
           ];
