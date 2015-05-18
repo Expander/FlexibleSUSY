@@ -61,23 +61,23 @@ namespace flexiblesusy
        
        template<> struct length<> { static const unsigned int value = 0; };
        
-       template<int N> struct IndexBounds;
+       template<unsigned int N> struct IndexBounds;
        
-       template<int N> class IndexIterator
+       template<unsigned int N> class IndexIterator
        {
            friend IndexBounds<N>;
        private:
            const IndexBounds<N> &bounds;
-           std::array<int, N> indices;
+           std::array<unsigned int, N> indices;
            
-           IndexIterator( const IndexBounds<N> &b, const int *i )
-           : bounds( b ) { std::memcpy( indices.data(), i, N*sizeof(int) ); }
+           IndexIterator( const IndexBounds<N> &b, const unsigned int *i )
+           : bounds( b ) { std::memcpy( indices.data(), i, N*sizeof(unsigned int) ); }
        public:
-           const std::array<int, N> &operator*( void ) const { return indices; }
+           const std::array<unsigned int, N> &operator*( void ) const { return indices; }
            
            IndexIterator &operator++( void )
            {
-               for( int i = 0; i != N; i++ )
+               for( unsigned int i = 0; i != N; i++ )
                {
                    indices[i]++;
                    if( indices[i] == bounds.indexEnd[i] )
@@ -89,7 +89,7 @@ namespace flexiblesusy
                    return *this;
                }
                
-               std::memcpy( indices.data(), bounds.indexEnd, N*sizeof(int) );
+               std::memcpy( indices.data(), bounds.indexEnd, N*sizeof(unsigned int) );
                return *this;
            }
            
@@ -100,22 +100,22 @@ namespace flexiblesusy
                return it;
            }
            
-           template<int M>
+           template<unsigned int M>
            friend bool operator==( const IndexIterator<M> &it1, const IndexIterator<M> &it2 );
        };
        
-       template<int N>
+       template<unsigned int N>
        bool operator==( const IndexIterator<N> &it1, const IndexIterator<N> &it2 )
        { return it1.indices == it2.indices; }
        
-       template<int N>
+       template<unsigned int N>
        bool operator!=( const IndexIterator<N> &it1, const IndexIterator<N> &it2 )
        { return !(it1 == it2 ); }
        
-       template<int N> struct IndexBounds
+       template<unsigned int N> struct IndexBounds
        {
-           int indexBegin[N];
-           int indexEnd[N];
+           unsigned int indexBegin[N];
+           unsigned int indexEnd[N];
            
            using const_iterator = IndexIterator<N>;
            
@@ -128,7 +128,7 @@ namespace flexiblesusy
        
        template<> struct IndexBounds<0>
        {
-           using const_iterator = const array<int, 0> *;
+           using const_iterator = const array<unsigned int, 0> *;
 
            const_iterator begin( void ) const { return nullptr; }
            const_iterator end( void ) const { return nullptr; }
@@ -144,7 +144,9 @@ namespace flexiblesusy
            // Function template that returns the mass of a particle
            // If P denotes a whole (SARAH) particle family, the index
            // specifies which particular particle is meant.
-           // This definition only kicks in for antiparticles.
+           // This definition kicks in for antiparticles as well as
+           // absorbs all malformed calls (wrong indices types)
+           // into infinite recursive calls (undefined behaviour).
            template<class P, class ...Index> double mass( Index... index ) const
            { return mass<typename anti<P>::type, Index...>( index... ); }
        };
@@ -205,11 +207,11 @@ namespace flexiblesusy
            static const index_bounds &indexBounds( void ) { return indexB; }
            
            template<unsigned int particleIndex>
-           static std::vector<int> particleIndices( const indices_type &indices )
+           static std::vector<unsigned int> particleIndices( const indices_type &indices )
            {
                auto begin = indices.begin() + particleIndexStart[particleIndex];
                auto end = indices.begin() + particleIndexStart[particleIndex+1];
-               return std::vector<int>( begin, end );
+               return std::vector<unsigned int>( begin, end );
            }
        };
        
@@ -225,7 +227,7 @@ namespace flexiblesusy
            using vertex_type = typename orig_type::vertex_type;
        public:
            template<unsigned int particleIndex>
-           static std::vector<int> particleIndices( const indices_type &indices )
+           static std::vector<unsigned int> particleIndices( const indices_type &indices )
            { return orig_type::template particleIndices<particlePermutation::template apply<particleIndex>::value>( indices ); }
        };
        
@@ -329,7 +331,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
                 photonEmitterMass = context.mass<PhotonEmitter>();
             else
             {
-                int generationIndex = photonEmitterIndices[0];
+                unsigned int generationIndex = photonEmitterIndices[0];
                 photonEmitterMass = context.mass<PhotonEmitter>( generationIndex );
             }
             
@@ -338,7 +340,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
                 exchangeMass = context.mass<ExchangeParticle>();
             else
             {
-                int generationIndex = exchangeIndices[0];
+                unsigned int generationIndex = exchangeIndices[0];
                 exchangeMass = context.mass<ExchangeParticle>( generationIndex );
             }
             
@@ -414,7 +416,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
                 photonEmitterMass = context.mass<PhotonEmitter>();
             else
             {
-                int generationIndex = photonEmitterIndices[0];
+                unsigned int generationIndex = photonEmitterIndices[0];
                 photonEmitterMass = context.mass<PhotonEmitter>( generationIndex );
             }
             
@@ -423,7 +425,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
                 exchangeMass = context.mass<ExchangeParticle>();
             else
             {
-                int generationIndex = exchangeIndices[0];
+                unsigned int generationIndex = exchangeIndices[0];
                 exchangeMass = context.mass<ExchangeParticle>( generationIndex );
             }
             

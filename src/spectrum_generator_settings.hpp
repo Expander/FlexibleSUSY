@@ -38,7 +38,6 @@ public:
       max_iterations,        ///< [1] maximum number of iterations (0 = automatic)
       algorithm,             ///< [2] RG solver algorithm (0 = two-scale)
       calculate_sm_masses,   ///< [3] calculate Standard Model pole masses
-      calculate_gmuon_minus2,   ///< [4] calculate anomalous magnetic moment of muon
       pole_mass_loop_order,  ///< [4] loop-order for calculation of pole masses
       ewsb_loop_order,       ///< [5] loop-order for solving the EWSB eqs.
       beta_loop_order,       ///< [6] loop-order of beta-functions

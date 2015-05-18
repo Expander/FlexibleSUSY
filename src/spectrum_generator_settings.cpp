@@ -54,7 +54,6 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | max_iterations                   | any positive double          | 0 (= automatic) |
  * | algorithm                        | 0 (two-scale) or 1 (lattice) | 0 (= two-scale) |
  * | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
- * | calculate_gmuon_minus2           | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
  * | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
  * | beta_loop_order                  | 0, 1, 2, 3                   | 2 (= 2-loop)    |
@@ -73,7 +72,6 @@ void Spectrum_generator_settings::reset()
    values[max_iterations]        = 0.; // 0 = automatic
    values[algorithm]             = 0.; // 0 = two-scale
    values[calculate_sm_masses]   = 0.; // 0 = false
-   values[calculate_gmuon_minus2]   = 0.; // 0 = false
    values[pole_mass_loop_order]  = 2.;
    values[ewsb_loop_order]       = 2.;
    values[beta_loop_order]       = 2.;

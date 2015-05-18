@@ -38,7 +38,7 @@ CreateParticles[] := Module[{particles, code},
                                     
                                     StringJoin @ Riffle[("struct " <> ParticleToString[#] <>
                                                          ": public Particle { " <>
-                                                         "static const int numberOfGenerations = " <>
+                                                         "static const unsigned int numberOfGenerations = " <>
                                                          ToString @ TreeMasses`GetDimension[#] <>
                                                          "; };" &) /@ particles, "\n"] <> "\n\n" <>
                                     "// Special particle families\n" <>
@@ -46,13 +46,17 @@ CreateParticles[] := Module[{particles, code},
                                     "using MuonFamily = " <> ParticleToString @ GetMuonFamily[] <> ";\n\n" <>
                                     
                                     "// AntiParticles\n" <>
-                                    "template<class P> struct anti : public P { using type = anti<P>; };\n" <>
+                                    "template<class P> struct anti\n" <>
+                                    "{\n" <>
+                                    IndentText @
+                                    ("static const unsigned int numberOfGenerations = P::numberOfGenerations;\n" <>
+                                    "using type = anti<P>;\n") <>
+                                    "};\n" <>
                                     "template<class P> struct anti<anti<P>> { using type = P; };\n\n" <>
                                     
                                     "// Particles that are their own antiparticles\n" <>
                                     StringJoin @ Riffle[("template<> struct " <>
-                                                         If[IsScalar[#] || IsVector[#],
-                                                            "anti<" <> ParticleToString[#] <> ">"] <>
+                                                         "anti<" <> ParticleToString[#] <> ">" <>
                                                          " { using type = " <> ParticleToString[#] <> "; };"
                                                          &) /@ Select[particles, (# == AntiParticle[#] &)],
                                                         "\n"]
@@ -143,9 +147,9 @@ Module[{particles, code},
        
        code = (StringJoin @
                Riffle[("template<> double EvaluationContext::mass<" <>
-                       ToString[#] <> If[TreeMasses`GetDimension[#] === 1, "", ", int"] <>
+                       ToString[#] <> If[TreeMasses`GetDimension[#] === 1, "", ", unsigned int"] <>
                        ">( " <>
-                       If[TreeMasses`GetDimension[#] === 1, "void", "int index"] <> " ) const\n" <>
+                       If[TreeMasses`GetDimension[#] === 1, "void", "unsigned int index"] <> " ) const\n" <>
                        "{ return model.get_M" <> ParticleToString[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
                        &) /@ particles, "\n\n"]);
@@ -491,7 +495,7 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
                          IndentText @
                          ("static const bool is_permutation = false;\n\n" <>
                           
-                          "using indices_type = std::array<int, " <> ToString @ NumberOfIndices[parsedVertex] <> ">;\n" <>
+                          "using indices_type = std::array<unsigned int, " <> ToString @ NumberOfIndices[parsedVertex] <> ">;\n" <>
                           "using index_bounds = IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> ">;\n" <>
                           "using vertex_type = " <> VertexClassName[parsedVertex] <> ";\n\n" <>
                           
