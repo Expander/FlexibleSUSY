@@ -237,13 +237,14 @@ bool Problems<Number_of_particles>::have_problem() const
 {
    return have_tachyon() || failed_ewsb || failed_convergence
       || non_perturbative || failed_rho_convergence || thrown
-      || have_failed_pole_mass_convergence();
+      || have_failed_pole_mass_convergence()
+      || have_non_perturbative_parameter();
 }
 
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_warning() const
 {
-   return have_bad_mass() || have_non_perturbative_parameter();
+   return have_bad_mass();
 }
 
 template <unsigned Number_of_particles>
@@ -299,6 +300,14 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
       if (failed_pole_mass_convergence[i])
          ostr << "no M" << particle_names[i] << " pole convergence, ";
    }
+
+   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
+           it = non_pert_pars.begin(), end = non_pert_pars.end();
+        it != end; ++it) {
+      ostr << "non-perturbative " << it->first
+           << " [|" << it->first << "|(" << it->second.scale << ") = "
+           << it->second.value << " > " << it->second.threshold << "], ";
+   }
 }
 
 template <unsigned Number_of_particles>
@@ -311,14 +320,6 @@ void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (bad_masses[i])
          ostr << "imprecise M" << particle_names[i] << ", ";
-   }
-
-   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
-           it = non_pert_pars.begin(), end = non_pert_pars.end();
-        it != end; ++it) {
-      ostr << "non-perturbative " << it->first
-           << " [|" << it->first << "|(" << it->second.scale << ") = "
-           << it->second.value << " > " << it->second.threshold << "], ";
    }
 }
 
