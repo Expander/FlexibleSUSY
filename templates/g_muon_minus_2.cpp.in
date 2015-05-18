@@ -128,28 +128,28 @@ namespace flexiblesusy
        
        template<> struct IndexBounds<0>
        {
-           std::array<int, 0> indexBegin;
-           std::array<int, 0> indexEnd;
-           
-           using const_iterator = const std::array<int, 0> *;
-           
-           const_iterator begin( void ) const { return &indexBegin; }
-           const_iterator end( void ) const { return &indexEnd; }
+           using const_iterator = const array<int, 0> *;
+
+           const_iterator begin( void ) const { return nullptr; }
+           const_iterator end( void ) const { return nullptr; }
        };
+
+@GMuonMinus2_Particles@
 
        // Evaluation context struct, needed by DiagramEvaluator<>::value() further below
        struct EvaluationContext
        {
            const @ModelName@<Two_scale> &model;
 
-           // Function templates that returns the mass of a particle
+           // Function template that returns the mass of a particle
            // If P denotes a whole (SARAH) particle family, the index
            // specifies which particular particle is meant.
-           template<class P> double mass( void ) const;
-           template<class P> double mass( int index ) const;
+           // This definition only kicks in for antiparticles.
+           template<class P, class ...Index> double mass( Index... index ) const
+           { return mass<typename anti<P>::type, Index...>( index... ); }
        };
 
-@GMuonMinus2_Particles@
+@GMuonMinus2_MuonFunctions@
 
 @GMuonMinus2_Diagrams@
 
@@ -251,6 +251,11 @@ namespace flexiblesusy
        { return 2.0/pow(1.0-x,4) * (2.0 + 3.0*x - 6.0*x*x + x*x*x + 6.0*x*log(x)); }
        static inline double OneLoopFunctionF2C( double x )
        { return 3.0/(2.0*pow(1.0-x,3)) * (-3.0 + 4.0*x - x*x - 2.0*log(x)); }
+       
+       static inline double OneLoopFunctionF1N( double x )
+       { return 2.0/pow(1.0-x,4) * (1.0 - 6.0*x + 3.0*x*x + 2.0*x*x*x - 6.0*x*x*log(x)); }
+       static inline double OneLoopFunctionF2N( double x )
+       { return 3.0/pow(1.0-x,3) * (1.0 - x*x + 2.0*x*log(x)); }
    }
 }
 
@@ -272,8 +277,8 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 {
     double res = 0.0;
     
-    using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename bar<PhotonEmitter>::type>;
-    using muonVertexFunction = VertexFunction<MuonFamily, typename bar<PhotonEmitter>::type, typename @ModelName@_GMuonMinus2::conj<ExchangeParticle>::type>;
+    using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
+    using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
     
     for( auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
         photonVertexIndexIt != photonVertexFunction::indexBounds().end();
@@ -356,5 +361,84 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 template<class PhotonEmitter, class ExchangeParticle>
 double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value( const EvaluationContext &context )
 {
-    return 0.0;
+    double res = 0.0;
+    
+    using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
+    using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
+    
+    for( auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
+        photonVertexIndexIt != photonVertexFunction::indexBounds().end();
+        ++photonVertexIndexIt )
+    {
+        const auto &photonVertexIndices = *photonVertexIndexIt;
+        const auto &photonVertex = photonVertexFunction::vertex( photonVertexIndices, context );
+        if( photonVertex.isZero() )
+            continue;
+        
+        double photonEmitterChargeCount = photonVertex.value().real() / muonCharge( context );
+        
+        const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>( photonVertexIndices );
+        
+        for( auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
+            muonVertexIndexIt != muonVertexFunction::indexBounds().end();
+            ++muonVertexIndexIt )
+        {
+            const auto &muonVertexIndices = *muonVertexIndexIt;
+            const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>( muonVertexIndices );
+            if( MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex() )
+                continue;
+            
+            if( photonEmitterIndices != muonVertexFunction::template particleIndices<1>( muonVertexIndices ) )
+                continue;
+            
+            const auto &muonVertex = muonVertexFunction::vertex( muonVertexIndices, context );
+            if( muonVertex.isZero() )
+                continue;
+            
+            const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>( muonVertexIndices );
+            
+            std::complex<double> zL = muonVertex.left();
+            std::complex<double> zR = muonVertex.right();
+            
+            double coeffA = std::norm( zL ) + std::norm( zR );
+            double coeffB = (zL * std::conj( zR ) + zR * std::conj( zL )).real();
+            
+            double muonMass;
+            if( MuonFamily::numberOfGenerations == 1 )
+                muonMass = context.mass<MuonFamily>();
+            else
+                muonMass = context.mass<MuonFamily>( muonIndex() );
+            
+            double photonEmitterMass;
+            if( PhotonEmitter::numberOfGenerations == 1 )
+                photonEmitterMass = context.mass<PhotonEmitter>();
+            else
+            {
+                int generationIndex = photonEmitterIndices[0];
+                photonEmitterMass = context.mass<PhotonEmitter>( generationIndex );
+            }
+            
+            double exchangeMass;
+            if( ExchangeParticle::numberOfGenerations == 1 )
+                exchangeMass = context.mass<ExchangeParticle>();
+            else
+            {
+                int generationIndex = exchangeIndices[0];
+                exchangeMass = context.mass<ExchangeParticle>( generationIndex );
+            }
+            
+            double massRatioSquared = exchangeMass / photonEmitterMass;
+            massRatioSquared *= massRatioSquared;
+            
+            double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N( massRatioSquared );
+            double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N( massRatioSquared );
+            
+            auto preFactor = muonMass * muonMass / (photonEmitterMass * photonEmitterMass);
+            preFactor *= - photonEmitterChargeCount / (16.0 * M_PI * M_PI);
+            
+            res += preFactor * (part1 + part2);
+        }
+    }
+    
+    return res;
 }

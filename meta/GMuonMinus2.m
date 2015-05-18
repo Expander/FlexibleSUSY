@@ -8,6 +8,7 @@ GetPhysicalName::usage="The name of the c++ data type that stores the resulting 
 CreatePhysicalDefinition::usage="Returns the c++ code with declaration of the magnetic moment variable";
 
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
+CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
 CreateVertexFunctions::usage="Returns the c++ code that contains all relevant vertex functions";
 
@@ -28,10 +29,9 @@ GetPhysicalName[] := "GMuonMinus2";
 CreatePhysicalDefinition[] := "double " <> GMuonMinus2`GetPhysicalName[] <> ";";
 
 (* Create c++ classes for all particles *)
-CreateParticles[] := Module[{particles, muonIndex, code},
+CreateParticles[] := Module[{particles, code},
                             (* Get a list of all particles *)
                             particles = TreeMasses`GetParticles[];
-                            muonIndex = GetMuonIndex[];
                             
                             code = ("// Particles (SARAH-style)\n" <>
                                     "struct Particle {};\n\n" <>
@@ -45,29 +45,14 @@ CreateParticles[] := Module[{particles, muonIndex, code},
                                     "using Photon = " <> ParticleToString @ GetPhoton[] <> ";\n" <>
                                     "using MuonFamily = " <> ParticleToString @ GetMuonFamily[] <> ";\n\n" <>
                                     
-                                    "static const unsigned int muonIndex( void )\n" <>
-                                    "{ unsigned int muonIndex" <>
-                                    If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
-                                    "; return muonIndex; }\n" <>
-                                    "static const double muonCharge( const EvaluationContext &context )\n" <>
-                                    "{ return context.model." <>
-                                    NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
-                                    If[muonIndex =!= Null,
-                                       "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
-                                       "()"] <> "; }\n\n" <>
-                                    
-                                    "// AntiParticles (SARAH-style)\n\n" <>
-                                    "template<class P> struct bar { using type = bar<P>; };\n" <>
-                                    "template<class P> struct conj { using type = conj<P>; };\n\n" <>
-                                    
-                                    "template<class P> struct bar<bar<P>> { using type = P; };\n" <>
-                                    "template<class P> struct conj<conj<P>> { using type = P; };\n\n" <>
+                                    "// AntiParticles\n" <>
+                                    "template<class P> struct anti : public P { using type = anti<P>; };\n" <>
+                                    "template<class P> struct anti<anti<P>> { using type = P; };\n\n" <>
                                     
                                     "// Particles that are their own antiparticles\n" <>
                                     StringJoin @ Riffle[("template<> struct " <>
                                                          If[IsScalar[#] || IsVector[#],
-                                                            "conj<" <> ParticleToString[#] <> ">",
-                                                            "bar<" <> ParticleToString[#] <> ">"] <>
+                                                            "anti<" <> ParticleToString[#] <> ">"] <>
                                                          " { using type = " <> ParticleToString[#] <> "; };"
                                                          &) /@ Select[particles, (# == AntiParticle[#] &)],
                                                         "\n"]
@@ -75,6 +60,21 @@ CreateParticles[] := Module[{particles, muonIndex, code},
                             
                             Return[code];
                             ];
+
+CreateMuonFunctions[] := Module[{muonIndex},
+                                muonIndex = GetMuonIndex[];
+                                
+                                "static const unsigned int muonIndex( void )\n" <>
+                                "{ unsigned int muonIndex" <>
+                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
+                                "; return muonIndex; }\n" <>
+                                "static const double muonCharge( const EvaluationContext &context )\n" <>
+                                "{ return context.model." <>
+                                NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
+                                If[muonIndex =!= Null,
+                                   "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
+                                   "()"] <> "; }"
+                                ];
 
 CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            diagrams = contributingFeynmanDiagramTypes;
@@ -142,7 +142,9 @@ Module[{particles, code},
        particles = Select[particles, (! TreeMasses`IsGhost[#] &)];
        
        code = (StringJoin @
-               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">( " <>
+               Riffle[("template<> double EvaluationContext::mass<" <>
+                       ToString[#] <> If[TreeMasses`GetDimension[#] === 1, "", ", int"] <>
+                       ">( " <>
                        If[TreeMasses`GetDimension[#] === 1, "void", "int index"] <> " ) const\n" <>
                        "{ return model.get_M" <> ParticleToString[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
@@ -184,8 +186,12 @@ AntiParticle[p_] := Module[{pNoIndices = Vertices`StripFieldIndices[p]},
 SetAttributes[AntiParticle, {Listable}];
 
 ParticleToString[p_] := SymbolName[p];
-ParticleToString[SARAH`bar[p_]] := "bar<" <> SymbolName[p] <> ">::type";
-ParticleToString[Susyno`LieGroups`conj[p_]] := CXXNamespace <> "::conj<" <> SymbolName[p] <> ">::type";
+ParticleToString[SARAH`bar[p_]] := "anti<" <> SymbolName[p] <> ">::type";
+ParticleToString[Susyno`LieGroups`conj[p_]] := "anti<" <> SymbolName[p] <> ">::type";
+
+SARAHParticleToString[p_] := SymbolName[p];
+SARAHParticleToString[SARAH`bar[p_]] := "bar<" <> SymbolName[p] <> ">::type";
+SARAHParticleToString[Susyno`LieGroups`conj[p_]] := "conj<" <> SymbolName[p] <> ">::type";
 
 ChangeIndexNumber[index_,number_Integer] := Symbol @ StringReplace[index,
                        Shortest[name__] ~~ NumberString :> name ~~ ToString[number]];
@@ -404,7 +410,8 @@ CreateVertexFunction[indexedParticles_List] :=
 
 NameOfCouplingFunction[particles_List] :=
     ((* FIXME: Not upwards compatible if naming conventions change *)
-     "Cp" <> StringReplace[StringJoin @ (ParticleToString /@ Sort[particles]), "<" | ">" | (CXXNamespace <> "::") | "::type" -> ""]);
+     "Cp" <> StringReplace[StringJoin @ (SARAHParticleToString /@ Sort[particles]),
+                           "<" | ">" | "::type" -> ""]);
 
 ParseVertex[indexedParticles_List] :=
     Module[{particles, numberOfIndices, indexParameters,
