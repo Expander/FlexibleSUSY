@@ -38,6 +38,7 @@ public:
    virtual bool accuracy_goal_reached();
    virtual double get_accuracy_goal() const;
    virtual unsigned int max_iterations() const;
+   double get_current_accuracy() const;
    void set_max_iterations(unsigned);           ///< set maximum number of iterations
 
 protected:
@@ -54,6 +55,7 @@ private:
    unsigned int it_count;  ///< iteration
    unsigned int max_it;    ///< maximum number of iterations
    double accuracy_goal;   ///< accuracy goal
+   double current_accuracy; ///< current accuracy
 };
 
 template <template<class Method> class Model>
@@ -65,6 +67,7 @@ Convergence_tester_DRbar<Model<Two_scale> >::Convergence_tester_DRbar
    , it_count(0)
    , max_it(static_cast<int>(-log(accuracy_goal_) / log(10.0) * 10))
    , accuracy_goal(accuracy_goal_)
+   , current_accuracy(std::numeric_limits<double>::infinity())
 {
    assert(model && "Error: Convergence_tester_DRbar<Model<Two_scale>>: "
           "model pointer must not be zero!");
@@ -86,7 +89,7 @@ bool Convergence_tester_DRbar<Model<Two_scale> >::accuracy_goal_reached()
    } else {
       const double scale_accuracy_goal = accuracy_goal * 16*M_PI*M_PI;
       if (rel_scale_difference() < scale_accuracy_goal) {
-	 const double current_accuracy = max_rel_diff();
+	 current_accuracy = max_rel_diff();
 	 precision_reached = current_accuracy < accuracy_goal;
 	 VERBOSE_MSG("Convergence_tester_DRbar: current accuracy = "
 		     << current_accuracy
@@ -110,6 +113,12 @@ template <template<class Method> class Model>
 double Convergence_tester_DRbar<Model<Two_scale> >::get_accuracy_goal() const
 {
    return accuracy_goal;
+}
+
+template <template<class Method> class Model>
+double Convergence_tester_DRbar<Model<Two_scale> >::get_current_accuracy() const
+{
+   return current_accuracy;
 }
 
 template <template<class Method> class Model>
