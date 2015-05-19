@@ -22,7 +22,7 @@ do
 
     expected=0
     # BP2 should fail due to tree-level hh tachyon
-    if test "$point" = "BP2"; then
+    if test "$point" = "BP1" -o "$point" = "BP2"; then
         expected=1
     fi
 
