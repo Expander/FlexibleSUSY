@@ -36,6 +36,8 @@
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 
+#include <limits>
+
 namespace flexiblesusy {
 
 template <class T>
@@ -51,6 +53,7 @@ public:
       , low_scale(0.)
       , parameter_output_scale(0.)
       , precision_goal(1.0e-4)
+      , reached_precision(std::numeric_limits<double>::infinity())
       , beta_zero_threshold(1.0e-11)
       , max_iterations(0)
       , beta_loop_order(2)
@@ -68,6 +71,7 @@ public:
       return model.get_problems();
    }
    int get_exit_code() const { return get_problems().have_problem(); }
+   double get_reached_precision() const { return reached_precision; }
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
    void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
@@ -93,6 +97,7 @@ private:
    double high_scale, susy_scale, low_scale;
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
+   double reached_precision; ///< the precision that was reached
    double beta_zero_threshold; ///< beta function zero threshold
    unsigned max_iterations; ///< maximum number of iterations
    unsigned beta_loop_order; ///< beta-function loop order
@@ -166,12 +171,14 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    solver.add_model(&model, upward_constraints, downward_constraints);
 
    high_scale = susy_scale = low_scale = 0.;
+   reached_precision = std::numeric_limits<double>::infinity();
 
    try {
       solver.solve();
       high_scale = high_scale_constraint.get_scale();
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
+      reached_precision = convergence_tester.get_current_accuracy();
 
       model.run_to(susy_scale);
       model.solve_ewsb();
