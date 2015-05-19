@@ -37,8 +37,6 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -61,6 +59,7 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
+   void fill(@ModelName@_imodel&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
@@ -100,7 +99,7 @@ private:
    void set_ckm(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    void set_pmns(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
-   template <class T> void fill_drbar_parameters(@ModelName@_slha<T>&) const;
+   void fill_drbar_parameters(@ModelName@_imodel&) const;
    void fill_physical(@ModelName@_physical&) const;
 };
 
@@ -111,24 +110,8 @@ private:
 template <class T>
 void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 {
-   fill_drbar_parameters(model);
+   fill(static_cast<@ModelName@_imodel&>(model));
    fill_physical(model.get_physical_slha());
-
-   // convert to Haber-Kane convention
-   @ModelName@_physical physical_hk(model.get_physical_slha());
-   @ModelName@_slha<T>::convert_to_hk(physical_hk);
-   model.get_physical() = physical_hk;
-}
-
-/**
- * Reads DR-bar parameters from a SLHA output file.
- */
-template <class T>
-void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_slha<T>& model) const
-{
-@readLesHouchesOutputParameters@
-
-   model.set_scale(read_scale());
 }
 
 template <class T>
@@ -242,7 +225,6 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 #undef PHYSICAL_SLHA
 #undef LOCALPHYSICAL
 #undef MODELPARAMETER
-#undef DEFINE_PARAMETER
 #undef LowEnergyConstant
 #undef SCALES
 

@@ -37,6 +37,8 @@
 #define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
+#define DEFINE_PARAMETER(p)                                            \
+   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
@@ -205,6 +207,30 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
    slha_io.read_block("EXTPAR", extpar_processor);
 
 @readLesHouchesInputParameters@
+}
+
+/**
+ * Reads DR-bar parameters from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_imodel& model) const
+{
+@readLesHouchesOutputParameters@
+
+   model.set_scale(read_scale());
+}
+
+/**
+ * Reads DR-bar parameters, pole masses and mixing matrices (in
+ * Haber-Kane convention) from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill(@ModelName@_imodel& model) const
+{
+   fill_drbar_parameters(model);
+
+   @ModelName@_physical physical_hk;
+   fill_physical(physical_hk);
+   physical_hk.convert_to_hk();
+   model.get_physical() = physical_hk;
 }
 
 /**

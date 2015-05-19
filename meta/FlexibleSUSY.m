@@ -675,8 +675,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaFerimonMixingMatricesGetters = "",
             slhaPoleMassGetters = "",
             slhaPoleMixingMatrixGetters = "",
-            convertMixingsToSLHAConvention = "",
-            convertMixingsToHKConvention = "",
             calculateCKMMatrix = "",
             calculatePMNSMatrix = ""
            },
@@ -691,8 +689,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            convertSoftSquaredMassesToSLHA = WriteOut`ConvertSoftSquaredMassesToSLHA[];
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
-           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
-           convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
            calculateCKMMatrix = WriteOut`CalculateCKMMatrix[];
            calculatePMNSMatrix = WriteOut`CalculatePMNSMatrix[];
            For[k = 1, k <= Length[massMatrices], k++,
@@ -713,8 +709,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@convertSoftSquaredMassesToSLHA@" -> IndentText[convertSoftSquaredMassesToSLHA],
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
-                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
-                            "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             "@calculateCKMMatrix@"             -> IndentText[calculateCKMMatrix],
                             "@calculatePMNSMatrix@"             -> IndentText[calculatePMNSMatrix],
                             Sequence @@ GeneralReplacementRules[]
@@ -789,8 +783,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
             setEWSBParametersFromGSLVector = "",
+            convertMixingsToSLHAConvention = "",
+            convertMixingsToHKConvention = "",
             enablePoleMassThreads = True
            },
+           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
+           convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
            independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, parametersFixedByEWSB];
            numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
@@ -973,6 +971,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
+                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
+                            "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
