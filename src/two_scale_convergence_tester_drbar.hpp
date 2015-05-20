@@ -42,6 +42,7 @@ public:
    void set_max_iterations(unsigned);           ///< set maximum number of iterations
 
 protected:
+   unsigned get_iteration() const;              ///< get current iteration number
    const Model<Two_scale>& get_model() const;                ///< get model
    const Model<Two_scale>& get_last_iteration_model() const; ///< get model state during last iteration
    virtual double max_rel_diff() const = 0;     ///< maximum relative difference to last iteration
@@ -119,6 +120,12 @@ template <template<class Method> class Model>
 double Convergence_tester_DRbar<Model<Two_scale> >::get_current_accuracy() const
 {
    return current_accuracy;
+}
+
+template <template<class Method> class Model>
+unsigned Convergence_tester_DRbar<Model<Two_scale> >::get_iteration() const
+{
+   return it_count;
 }
 
 template <template<class Method> class Model>
