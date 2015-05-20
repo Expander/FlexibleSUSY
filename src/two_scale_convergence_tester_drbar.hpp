@@ -139,8 +139,7 @@ template <template<class Method> class Model>
 void Convergence_tester_DRbar<Model<Two_scale> >::set_max_iterations
 (unsigned max_it_)
 {
-   if (max_it_ > 0)
-      max_it = max_it_;
+   max_it = max_it_;
 }
 
 template <template<class Method> class Model>
