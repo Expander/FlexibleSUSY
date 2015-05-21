@@ -1722,12 +1722,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               FlexibleSUSY`FSEWSBSolvers = Cases[FlexibleSUSY`FSEWSBSolvers, Except[FlexibleSUSY`FPIAbsolute]];
              ];
 
-           (* avoid numerical problems by using AbsSqrt *)
-           ewsbSolution = ewsbSolution /. {
-               Sqrt[expr_?(!NumericQ[#]&)] :> AbsSqrt[expr],
-               1/Sqrt[expr_?(!NumericQ[#]&)] :> 1/AbsSqrt[expr]
-           };
-
            Print["Input parameters: ", InputForm[Parameters`GetInputParameters[]]];
 
            Print["Creating class for input parameters ..."];
