@@ -324,8 +324,11 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@ElectronYukawa@_DRb
    electronDRbar(1,1) = oneset.displayMass(mMuon);
    electronDRbar(2,2) = oneset.displayMass(mTau);
 
-   if (model->get_thresholds())
+   if (model->get_thresholds()) {
+      electronDRbar(0,0) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mElectron), 0);
+      electronDRbar(1,1) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mMuon), 1);
       electronDRbar(2,2) = model->calculate_M@Electron@_DRbar(oneset.displayMass(mTau), 2);
+   }
 
 @setDRbarElectronYukawaCouplings@
 }
