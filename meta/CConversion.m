@@ -23,6 +23,7 @@ ZEROVECTORCOMPLEX::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
+AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
 IndexSum::usage="";
 TensorProd::usgae="";
