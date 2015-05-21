@@ -84,7 +84,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   model.solve_ewsb_tree_level();
    model.calculate_spectrum();
 
    BOOST_REQUIRE(!model.get_problems().have_problem());
@@ -177,7 +176,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_calculate_spectrum )
    model.set_vu(vu);
    model.set_vd(vd);
 
-   model.solve_ewsb_tree_level();
    model.calculate_spectrum(); // conversion happens here
 
    BOOST_REQUIRE(!model.get_problems().have_problem());
