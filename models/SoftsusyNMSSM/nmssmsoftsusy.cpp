@@ -3975,8 +3975,8 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
      mhAtmH3(2, 2) = mhAtmH3(2, 2) + displayTadpole2Ms1loop();
      
      mhAtmH1(3, 3) = mhAtmH1(3, 3) + displayTadpoleSMs1loop();
-     mhAtmH2(3, 3) = mhAtmH1(3, 3) + displayTadpoleSMs1loop();
-     mhAtmH3(3, 3) = mhAtmH1(3, 3) + displayTadpoleSMs1loop();
+     mhAtmH2(3, 3) = mhAtmH2(3, 3) + displayTadpoleSMs1loop();
+     mhAtmH3(3, 3) = mhAtmH3(3, 3) + displayTadpoleSMs1loop();
      
      mhAtmH1 = mhAtmH1 - sigmaMH1;
      mhAtmH2 = mhAtmH2 - sigmaMH2;
