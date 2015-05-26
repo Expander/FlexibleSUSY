@@ -1,9 +1,6 @@
 
 BeginPackage["GMuonMinus2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
-Clear[CreateCalculationFunctions];
-Clear[CreateCalculation];
-
 GetPhysicalName::usage="The name of the c++ data type that stores the resulting magnetic moment";
 CreatePhysicalDefinition::usage="Returns the c++ code with declaration of the magnetic moment variable";
 
@@ -20,8 +17,6 @@ CreateDefinitions::usage="Returns the c++ that contains all function definitions
 NPointFunctions::usage="Returns a list of all n point functions that are needed. Actually it is a list of fake functions to extract vertex functions...";
 
 Begin["`Private`"];
-
-CXXNamespace = (FlexibleSUSY`FSModelName <> "_GMuonMinus2");
 
 (************* Begin public interface *******************)
 
