@@ -36,513 +36,536 @@
 
 using namespace flexiblesusy;
 
-namespace flexiblesusy
-{
-   namespace @ModelName@_GMuonMinus2
-   {
-       template<unsigned int i, class T, T v1, T ...values> struct at
-       { static const T value = at<i-1, T, values...>::value; };
-       
-       template<class T, T v1, T ...values> struct at<0, T, v1, values...>
-       { static const T value = v1; };
-       
-       template<unsigned int ...p> struct permutation
-       {
-           template<unsigned int i> struct apply
-           {
-               static const unsigned int value = at<i, unsigned int, p...>::value;
-           };
-       };
-       
-       template<class ...Args> struct length;
-       
-       template<class A1, class ...Rest> struct length<A1, Rest...>
-       { static const unsigned int value = 1 + length<Rest...>::value; };
-       
-       template<> struct length<> { static const unsigned int value = 0; };
-       
-       template<unsigned int N> struct IndexBounds;
-       
-       template<unsigned int N> class IndexIterator
-       {
-           friend IndexBounds<N>;
-       private:
-           const IndexBounds<N> &bounds;
-           std::array<unsigned int, N> indices;
-           
-           IndexIterator( const IndexBounds<N> &b, const unsigned int *i )
-           : bounds( b ) { std::memcpy( indices.data(), i, N*sizeof(unsigned int) ); }
-       public:
-           const std::array<unsigned int, N> &operator*( void ) const { return indices; }
-           
-           IndexIterator &operator++( void )
-           {
-               for( unsigned int i = 0; i != N; i++ )
-               {
-                   indices[i]++;
-                   if( indices[i] == bounds.indexEnd[i] )
-                   {
-                       indices[i] = bounds.indexBegin[i];
-                       continue;
-                   }
-                   
-                   return *this;
-               }
-               
-               std::memcpy( indices.data(), bounds.indexEnd, N*sizeof(unsigned int) );
-               return *this;
-           }
-           
-           IndexIterator operator++( int )
-           {
-               IndexIterator it( *this );
-               this->operator++();
-               return it;
-           }
-           
-           template<unsigned int M>
-           friend bool operator==( const IndexIterator<M> &it1, const IndexIterator<M> &it2 );
-       };
-       
-       template<unsigned int N>
-       bool operator==( const IndexIterator<N> &it1, const IndexIterator<N> &it2 )
-       { return it1.indices == it2.indices; }
-       
-       template<unsigned int N>
-       bool operator!=( const IndexIterator<N> &it1, const IndexIterator<N> &it2 )
-       { return !(it1 == it2 ); }
-       
-       template<unsigned int N> struct IndexBounds
-       {
-           unsigned int indexBegin[N];
-           unsigned int indexEnd[N];
-           
-           using const_iterator = IndexIterator<N>;
-           
-           const_iterator begin( void ) const
-           { return const_iterator( *this, indexBegin ); }
-           
-           const_iterator end( void ) const
-           { return const_iterator( *this, indexEnd ); }
-       };
-       
-       template<> struct IndexBounds<0>
-       {
-           using const_iterator = const array<unsigned int, 0> *;
+namespace flexiblesusy {
+namespace @ModelName@_GMuonMinus2 {
+template<unsigned int i, class T, T v1, T ...values> struct at {
+   static const T value = at < i - 1, T, values... >::value;
+};
 
-           const_iterator begin( void ) const { return nullptr; }
-           const_iterator end( void ) const { return nullptr; }
-       };
+template<class T, T v1, T ...values> struct at<0, T, v1, values...> {
+   static const T value = v1;
+};
+
+template<unsigned int ...p> struct permutation {
+   template<unsigned int i> struct apply {
+      static const unsigned int value = at<i, unsigned int, p...>::value;
+   };
+};
+
+template<class ...Args> struct length;
+
+template<class A1, class ...Rest> struct length<A1, Rest...> {
+   static const unsigned int value = 1 + length<Rest...>::value;
+};
+
+template<> struct length<> {
+   static const unsigned int value = 0;
+};
+
+template<unsigned int N> struct IndexBounds;
+
+template<unsigned int N> class IndexIterator {
+   friend IndexBounds<N>;
+private:
+   const IndexBounds<N> &bounds;
+   std::array<unsigned int, N> indices;
+
+   IndexIterator(const IndexBounds<N> &b, const unsigned int *i)
+      : bounds(b)
+   {
+      std::memcpy(indices.data(), i, N * sizeof(unsigned int));
+   }
+public:
+   const std::array<unsigned int, N> &operator*(void) const
+   {
+      return indices;
+   }
+
+   IndexIterator &operator++(void)
+   {
+      for (unsigned int i = 0; i != N; i++) {
+         indices[i]++;
+         if (indices[i] == bounds.indexEnd[i]) {
+            indices[i] = bounds.indexBegin[i];
+            continue;
+         }
+
+         return *this;
+      }
+
+      std::memcpy(indices.data(), bounds.indexEnd, N * sizeof(unsigned int));
+      return *this;
+   }
+
+   IndexIterator operator++(int)
+   {
+      IndexIterator it(*this);
+      this->operator++();
+      return it;
+   }
+
+   template<unsigned int M>
+   friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
+};
+
+template<unsigned int N>
+bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
+{
+   return it1.indices == it2.indices;
+}
+
+template<unsigned int N>
+bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
+{
+   return !(it1 == it2);
+}
+
+template<unsigned int N> struct IndexBounds {
+   unsigned int indexBegin[N];
+   unsigned int indexEnd[N];
+
+   using const_iterator = IndexIterator<N>;
+
+   const_iterator begin(void) const
+   {
+      return const_iterator(*this, indexBegin);
+   }
+
+   const_iterator end(void) const
+   {
+      return const_iterator(*this, indexEnd);
+   }
+};
+
+template<> struct IndexBounds<0> {
+   using const_iterator = const array<unsigned int, 0> *;
+
+   const_iterator begin(void) const
+   {
+      return nullptr;
+   }
+   const_iterator end(void) const
+   {
+      return nullptr;
+   }
+};
 
 @GMuonMinus2_Particles@
 
-       // Evaluation context struct, needed by DiagramEvaluator<>::value() further below
-       struct EvaluationContext
-       {
-           const @ModelName@<Two_scale> &model;
+// Evaluation context struct, needed by DiagramEvaluator<>::value() further below
+struct EvaluationContext {
+   const @ModelName@<Two_scale> &model;
 
-           // Function template that returns the mass of a particle
-           // If P denotes a whole (SARAH) particle family, the index
-           // specifies which particular particle is meant.
-           // This definition kicks in for antiparticles as well as
-           // absorbs all malformed calls (wrong indices types)
-           // into infinite recursive calls (undefined behaviour).
-           template<class P, class ...Index> double mass( Index... index ) const
-           { return mass<typename anti<P>::type, Index...>( index... ); }
-       };
+   // Function template that returns the mass of a particle
+   // If P denotes a whole (SARAH) particle family, the index
+   // specifies which particular particle is meant.
+   // This definition kicks in for antiparticles as well as
+   // absorbs all malformed calls (wrong indices types)
+   // into infinite recursive calls (undefined behaviour).
+   template<class P, class ...Index> double mass(Index... index) const
+   {
+      return mass<typename anti<P>::type, Index...>(index...);
+   }
+};
 
 @GMuonMinus2_MuonFunctions@
 
 @GMuonMinus2_Diagrams@
 
-       // Classes that represent one specific vertex
-       class SingleComponentedVertex
-       {
-       private:
-           std::complex<double> val;
-       public:
-           SingleComponentedVertex( std::complex<double> v )
-           : val( v ) {}
-           
-           std::complex<double> value( void ) const { return val; }
-           bool isZero( void ) const
-           { return (is_zero( val.real() ) && is_zero( val.imag() )); }
-       };
-       
-       class LeftAndRightComponentedVertex
-       {
-       private:
-           std::pair<std::complex<double>, std::complex<double>> value;
-       public:
-           LeftAndRightComponentedVertex( const std::complex<double> &left,
-                                         const std::complex<double> &right )
-           : value( left, right ) {}
-           
-           std::complex<double> left( void ) const { return value.first; }
-           std::complex<double> right( void ) const { return value.second; }
-           
-           bool isZero( void ) const
-           { return (is_zero( value.first.real() ) && is_zero( value.first.imag() ) &&
-                     is_zero( value.second.real() ) && is_zero( value.second.imag() )); }
-       };
-       
-       // Classes that represent more general vertices
-       // No particle indices are specified here.
-       template<class ...P> struct VertexFunctionData;
-       
-       template<bool, class ...P> class VertexFunctionHelper;
-       
-       template<class ...P> class VertexFunctionHelper<false, P...>
-       : public VertexFunctionData<P...>
-       {
-       private:
-           using Base = VertexFunctionData<P...>;
-           using Base::particleIndexStart;
-           using Base::indexB;
-       public:
-           using typename Base::indices_type;
-           using typename Base::index_bounds;
-           using typename Base::vertex_type;
-       public:
-           static const index_bounds &indexBounds( void ) { return indexB; }
-           
-           template<unsigned int particleIndex>
-           static std::vector<unsigned int> particleIndices( const indices_type &indices )
-           {
-               auto begin = indices.begin() + particleIndexStart[particleIndex];
-               auto end = indices.begin() + particleIndexStart[particleIndex+1];
-               return std::vector<unsigned int>( begin, end );
-           }
-       };
-       
-       template<class ...P> class VertexFunctionHelper<true, P...>
-       : public VertexFunctionData<P...>::orig_type
-       {
-       private:
-           using orig_type = typename VertexFunctionData<P...>::orig_type;
-           using particlePermutation = typename VertexFunctionData<P...>::particlePermutation;
-       public:
-           using indices_type = typename orig_type::indices_type;
-           using index_bounds = typename orig_type::index_bounds;
-           using vertex_type = typename orig_type::vertex_type;
-       public:
-           template<unsigned int particleIndex>
-           static std::vector<unsigned int> particleIndices( const indices_type &indices )
-           { return orig_type::template particleIndices<particlePermutation::template apply<particleIndex>::value>( indices ); }
-       };
-       
-       template<class ...P> class VertexFunction
-       : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...>
-       {
-       private:
-           using Base = VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...>;
-       public:
-           using typename Base::indices_type;
-           using typename Base::index_bounds;
-           using typename Base::vertex_type;
+// Classes that represent one specific vertex
+class SingleComponentedVertex {
+private:
+   std::complex<double> val;
+public:
+   SingleComponentedVertex(std::complex<double> v)
+      : val(v) {}
 
-           template<class Q = Base>
-           static vertex_type vertex( const indices_type &indices, const EvaluationContext &context )
-           { return Q::vertex( indices, context ); }
-       };
+   std::complex<double> value(void) const
+   {
+      return val;
+   }
+   bool isZero(void) const
+   {
+      return (is_zero(val.real()) && is_zero(val.imag()));
+   }
+};
+
+class LeftAndRightComponentedVertex {
+private:
+   std::pair<std::complex<double>, std::complex<double>> value;
+public:
+   LeftAndRightComponentedVertex(const std::complex<double> &left,
+                                 const std::complex<double> &right)
+      : value(left, right) {}
+
+   std::complex<double> left(void) const
+   {
+      return value.first;
+   }
+   std::complex<double> right(void) const
+   {
+      return value.second;
+   }
+
+   bool isZero(void) const
+   {
+      return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
+              is_zero(value.second.real()) && is_zero(value.second.imag()));
+   }
+};
+
+// Classes that represent more general vertices
+// No particle indices are specified here.
+template<class ...P> struct VertexFunctionData;
+
+template<bool, class ...P> class VertexFunctionHelper;
+
+template<class ...P> class VertexFunctionHelper<false, P...>
+   : public VertexFunctionData<P...> {
+private:
+   using Base = VertexFunctionData<P...>;
+   using Base::particleIndexStart;
+   using Base::indexB;
+public:
+   using typename Base::indices_type;
+   using typename Base::index_bounds;
+   using typename Base::vertex_type;
+public:
+   static const index_bounds &indexBounds(void)
+   {
+      return indexB;
+   }
+
+   template<unsigned int particleIndex>
+   static std::vector<unsigned int> particleIndices(const indices_type &indices)
+   {
+      auto begin = indices.begin() + particleIndexStart[particleIndex];
+      auto end = indices.begin() + particleIndexStart[particleIndex + 1];
+      return std::vector<unsigned int>(begin, end);
+   }
+};
+
+template<class ...P> class VertexFunctionHelper<true, P...>
+   : public VertexFunctionData<P...>::orig_type {
+private:
+   using orig_type = typename VertexFunctionData<P...>::orig_type;
+   using particlePermutation = typename VertexFunctionData<P...>::particlePermutation;
+public:
+   using indices_type = typename orig_type::indices_type;
+   using index_bounds = typename orig_type::index_bounds;
+   using vertex_type = typename orig_type::vertex_type;
+public:
+   template<unsigned int particleIndex>
+   static std::vector<unsigned int> particleIndices(const indices_type &indices)
+   {
+      return orig_type::template particleIndices<particlePermutation::template apply<particleIndex>::value>(indices);
+   }
+};
+
+template<class ...P> class VertexFunction
+   : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> {
+private:
+   using Base = VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...>;
+public:
+   using typename Base::indices_type;
+   using typename Base::index_bounds;
+   using typename Base::vertex_type;
+
+   template<class Q = Base>
+   static vertex_type vertex(const indices_type &indices, const EvaluationContext &context)
+   {
+      return Q::vertex(indices, context);
+   }
+};
 
 @GMuonMinus2_VertexFunctions@
 
-       // Loop functions
-       static inline double OneLoopFunctionF1C( double x )
-       {
-           if( is_zero(x) )
-               return 4.0;
-           
-           /* error around x=1 is <= 10^-12 on an intel i7 */
-           double y = x - 1.0;
-           if( std::abs(y) < 0.21 )
-           {
-               return (1.0000000000000000000 -
-                       0.60000000000000000000  * y +
-                       0.40000000000000000000  * y*y -
-                       0.28571428571428571429  * y*y*y +
-                       0.21428571428571428571  * y*y*y*y -
-                       0.16666666666666666667  * y*y*y*y*y +
-                       0.13333333333333333333  * y*y*y*y*y*y -
-                       0.10909090909090909091  * y*y*y*y*y*y*y +
-                       0.090909090909090909091 * y*y*y*y*y*y*y*y -
-                       0.076923076923076923077 * y*y*y*y*y*y*y*y*y +
-                       0.065934065934065934066 * y*y*y*y*y*y*y*y*y*y -
-                       0.057142857142857142857 * y*y*y*y*y*y*y*y*y*y*y +
-                       0.050000000000000000000 * y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.044117647058823529412 * y*y*y*y*y*y*y*y*y*y*y*y*y +
-                       0.039215686274509803922 * y*y*y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.035087719298245614035 * y*y*y*y*y*y*y*y*y*y*y*y*y*y*y);
-           }
-           
-           return 2.0/(y*y*y*y) * (2.0 + 3.0*x - 6.0*x*x + x*x*x + 6.0*x*std::log(x));
-       }
-       static inline double OneLoopFunctionF2C( double x )
-       {
-           /* error around x=1 is <= 10^-13 on an intel i7 */
-           double y = x - 1.0;
-           if( std::abs(y) < 0.155 )
-               return (1.0 - 0.75 * y + 0.6 * y*y -
-                       0.50000000000000000000 * y*y*y +
-                       0.4285714285714285714  * y*y*y*y -
-                       0.37500000000000000000 * y*y*y*y*y +
-                       0.33333333333333333333 * y*y*y*y*y*y -
-                       0.3000000000000000000  * y*y*y*y*y*y*y +
-                       0.2727272727272727273  * y*y*y*y*y*y*y*y -
-                       0.2500000000000000000  * y*y*y*y*y*y*y*y*y +
-                       0.23076923076923076923 * y*y*y*y*y*y*y*y*y*y -
-                       0.21428571428571428571 * y*y*y*y*y*y*y*y*y*y*y +
-                       0.2000000000000000000  * y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.1875000000000000000  * y*y*y*y*y*y*y*y*y*y*y*y*y +
-                       0.1764705882352941176  * y*y*y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.16666666666666666667 * y*y*y*y*y*y*y*y*y*y*y*y*y*y*y);
-           
-           return -3.0/(2.0*y*y*y) * (-3.0 + 4.0*x - x*x - 2.0*std::log(x));
-       }
-       
-       static inline double OneLoopFunctionF1N( double x )
-       {
-           if( is_zero(x) )
-               return 2.0;
-           
-           /* error around x=1 is <= 10^-12 on an intel i7 */
-           double y = x - 1.0;
-           if( std::abs(y) < 0.23 )
-               return (1.0000000000000000000 -
-                       0.4000000000000000000  * y +
-                       0.2000000000000000000  * y*y -
-                       0.11428571428571428571 * y*y*y +
-                       0.07142857142857142857 * y*y*y*y -
-                       0.04761904761904761905 * y*y*y*y*y +
-                       0.03333333333333333333 * y*y*y*y*y*y -
-                       0.02424242424242424242 * y*y*y*y*y*y*y +
-                       0.0181818181818181818  * y*y*y*y*y*y*y*y -
-                       0.01398601398601398601 * y*y*y*y*y*y*y*y*y +
-                       0.01098901098901098901 * y*y*y*y*y*y*y*y*y*y -
-                       0.0087912087912087912  * y*y*y*y*y*y*y*y*y*y*y +
-                       0.00714285714285714286 * y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.0058823529411764706  * y*y*y*y*y*y*y*y*y*y*y*y*y +
-                       0.0049019607843137255  * y*y*y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.0041279669762641899  * y*y*y*y*y*y*y*y*y*y*y*y*y*y*y);
-           
-           return 2.0/(y*y*y*y) * (1.0 - 6.0*x + 3.0*x*x + 2.0*x*x*x - 6.0*x*x*std::log(x));
-       }
-       static inline double OneLoopFunctionF2N( double x )
-       {
-           if( is_zero(x) )
-               return 3.0;
-           
-           /* error around x=1 is <= 10^-13 on an intel i7 */
-           double y = x - 1.0;
-           if( std::abs(y) < 0.185 )
-               return (1.0000000000000000000 -
-                       0.50000000000000000000 * y +
-                       0.30000000000000000000 * y*y -
-                       0.2000000000000000000  * y*y*y +
-                       0.14285714285714285714 * y*y*y*y -
-                       0.10714285714285714286 * y*y*y*y*y +
-                       0.08333333333333333333 * y*y*y*y*y*y -
-                       0.06666666666666666667 * y*y*y*y*y*y*y +
-                       0.05454545454545454545 * y*y*y*y*y*y*y*y -
-                       0.0454545454545454545  * y*y*y*y*y*y*y*y*y +
-                       0.0384615384615384615  * y*y*y*y*y*y*y*y*y*y -
-                       0.03296703296703296703 * y*y*y*y*y*y*y*y*y*y*y +
-                       0.0285714285714285714  * y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.02500000000000000000 * y*y*y*y*y*y*y*y*y*y*y*y*y +
-                       0.0220588235294117647  * y*y*y*y*y*y*y*y*y*y*y*y*y*y -
-                       0.0196078431372549020  * y*y*y*y*y*y*y*y*y*y*y*y*y*y*y);
-           
-           return -3.0/(y*y*y) * (1.0 - x*x + 2.0*x*std::log(x));
-       }
+// Loop functions
+static inline double OneLoopFunctionF1C(double x)
+{
+   if (is_zero(x))
+      return 4.0;
+
+   /* error around x=1 is <= 10^-12 on an intel i7 */
+   double y = x - 1.0;
+   if (std::abs(y) < 0.21) {
+      return (1.0000000000000000000 -
+              0.60000000000000000000  * y +
+              0.40000000000000000000  * y * y -
+              0.28571428571428571429  * y * y * y +
+              0.21428571428571428571  * y * y * y * y -
+              0.16666666666666666667  * y * y * y * y * y +
+              0.13333333333333333333  * y * y * y * y * y * y -
+              0.10909090909090909091  * y * y * y * y * y * y * y +
+              0.090909090909090909091 * y * y * y * y * y * y * y * y -
+              0.076923076923076923077 * y * y * y * y * y * y * y * y * y +
+              0.065934065934065934066 * y * y * y * y * y * y * y * y * y * y -
+              0.057142857142857142857 * y * y * y * y * y * y * y * y * y * y * y +
+              0.050000000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.044117647058823529412 * y * y * y * y * y * y * y * y * y * y * y * y * y +
+              0.039215686274509803922 * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.035087719298245614035 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
    }
+
+   return 2.0 / (y * y * y * y) * (2.0 + 3.0 * x - 6.0 * x * x + x * x * x + 6.0 * x * std::log(x));
+}
+static inline double OneLoopFunctionF2C(double x)
+{
+   /* error around x=1 is <= 10^-13 on an intel i7 */
+   double y = x - 1.0;
+   if (std::abs(y) < 0.155)
+      return (1.0 - 0.75 * y + 0.6 * y * y -
+              0.50000000000000000000 * y * y * y +
+              0.4285714285714285714  * y * y * y * y -
+              0.37500000000000000000 * y * y * y * y * y +
+              0.33333333333333333333 * y * y * y * y * y * y -
+              0.3000000000000000000  * y * y * y * y * y * y * y +
+              0.2727272727272727273  * y * y * y * y * y * y * y * y -
+              0.2500000000000000000  * y * y * y * y * y * y * y * y * y +
+              0.23076923076923076923 * y * y * y * y * y * y * y * y * y * y -
+              0.21428571428571428571 * y * y * y * y * y * y * y * y * y * y * y +
+              0.2000000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.1875000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y * y +
+              0.1764705882352941176  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.16666666666666666667 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+   return -3.0 / (2.0 * y * y * y) * (-3.0 + 4.0 * x - x * x - 2.0 * std::log(x));
+}
+
+static inline double OneLoopFunctionF1N(double x)
+{
+   if (is_zero(x))
+      return 2.0;
+
+   /* error around x=1 is <= 10^-12 on an intel i7 */
+   double y = x - 1.0;
+   if (std::abs(y) < 0.23)
+      return (1.0000000000000000000 -
+              0.4000000000000000000  * y +
+              0.2000000000000000000  * y * y -
+              0.11428571428571428571 * y * y * y +
+              0.07142857142857142857 * y * y * y * y -
+              0.04761904761904761905 * y * y * y * y * y +
+              0.03333333333333333333 * y * y * y * y * y * y -
+              0.02424242424242424242 * y * y * y * y * y * y * y +
+              0.0181818181818181818  * y * y * y * y * y * y * y * y -
+              0.01398601398601398601 * y * y * y * y * y * y * y * y * y +
+              0.01098901098901098901 * y * y * y * y * y * y * y * y * y * y -
+              0.0087912087912087912  * y * y * y * y * y * y * y * y * y * y * y +
+              0.00714285714285714286 * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.0058823529411764706  * y * y * y * y * y * y * y * y * y * y * y * y * y +
+              0.0049019607843137255  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.0041279669762641899  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+   return 2.0 / (y * y * y * y) * (1.0 - 6.0 * x + 3.0 * x * x + 2.0 * x * x * x - 6.0 * x * x * std::log(x));
+}
+static inline double OneLoopFunctionF2N(double x)
+{
+   if (is_zero(x))
+      return 3.0;
+
+   /* error around x=1 is <= 10^-13 on an intel i7 */
+   double y = x - 1.0;
+   if (std::abs(y) < 0.185)
+      return (1.0000000000000000000 -
+              0.50000000000000000000 * y +
+              0.30000000000000000000 * y * y -
+              0.2000000000000000000  * y * y * y +
+              0.14285714285714285714 * y * y * y * y -
+              0.10714285714285714286 * y * y * y * y * y +
+              0.08333333333333333333 * y * y * y * y * y * y -
+              0.06666666666666666667 * y * y * y * y * y * y * y +
+              0.05454545454545454545 * y * y * y * y * y * y * y * y -
+              0.0454545454545454545  * y * y * y * y * y * y * y * y * y +
+              0.0384615384615384615  * y * y * y * y * y * y * y * y * y * y -
+              0.03296703296703296703 * y * y * y * y * y * y * y * y * y * y * y +
+              0.0285714285714285714  * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.02500000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y * y +
+              0.0220588235294117647  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+              0.0196078431372549020  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+   return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
+}
+}
 }
 
 using namespace flexiblesusy::@ModelName@_GMuonMinus2;
 
-double @ModelName@_GMuonMinus2::calculate_amuon( const @ModelName@<Two_scale> &model )
+double @ModelName@_GMuonMinus2::calculate_amuon(const @ModelName@<Two_scale> &model)
 {
 #ifdef ENABLE_THREADS
-@GMuonMinus2_Calculation@
+   @GMuonMinus2_Calculation@
 #else
-@GMuonMinus2_ThreadedCalculation@
+   @GMuonMinus2_ThreadedCalculation@
 #endif
 }
 
 @GMuonMinus2_Definitions@
 
 template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value( const EvaluationContext &context )
+double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(const EvaluationContext &context)
 {
-    double res = 0.0;
-    
-    using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
-    using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
-    
-    for( auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
-        photonVertexIndexIt != photonVertexFunction::indexBounds().end();
-        ++photonVertexIndexIt )
-    {
-        const auto &photonVertexIndices = *photonVertexIndexIt;
-        const auto &photonVertex = photonVertexFunction::vertex( photonVertexIndices, context );
-        if( photonVertex.isZero() )
-            continue;
-        
-        // FIXME: We assume that the photonVertex is symmetric between its left and right parts!
-        double photonEmitterChargeCount = photonVertex.left().real() / muonCharge( context );
-        
-        const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>( photonVertexIndices );
-        
-        for( auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
-            muonVertexIndexIt != muonVertexFunction::indexBounds().end();
-            ++muonVertexIndexIt )
-        {
-            const auto &muonVertexIndices = *muonVertexIndexIt;
-            const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>( muonVertexIndices );
-            if( MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex() )
-                continue;
-            
-            if( photonEmitterIndices != muonVertexFunction::template particleIndices<1>( muonVertexIndices ) )
-                continue;
-            
-            const auto &muonVertex = muonVertexFunction::vertex( muonVertexIndices, context );
-            if( muonVertex.isZero() )
-                continue;
-            
-            const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>( muonVertexIndices );
-            
-            std::complex<double> zL = muonVertex.left();
-            std::complex<double> zR = muonVertex.right();
-            
-            double coeffA = std::norm( zL ) + std::norm( zR );
-            double coeffB = (zL * std::conj( zR ) + zR * std::conj( zL )).real();
-            
-            double muonMass;
-            if( MuonFamily::numberOfGenerations == 1 )
-                muonMass = context.mass<MuonFamily>();
-            else
-                muonMass = context.mass<MuonFamily>( muonIndex() );
-            
-            double photonEmitterMass;
-            if( PhotonEmitter::numberOfGenerations == 1 )
-                photonEmitterMass = context.mass<PhotonEmitter>();
-            else
-            {
-                unsigned int generationIndex = photonEmitterIndices[0];
-                photonEmitterMass = context.mass<PhotonEmitter>( generationIndex );
-            }
-            
-            double exchangeMass;
-            if( ExchangeParticle::numberOfGenerations == 1 )
-                exchangeMass = context.mass<ExchangeParticle>();
-            else
-            {
-                unsigned int generationIndex = exchangeIndices[0];
-                exchangeMass = context.mass<ExchangeParticle>( generationIndex );
-            }
-            
-            double massRatioSquared = photonEmitterMass / exchangeMass;
-            massRatioSquared *= massRatioSquared;
-            
-            double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C( massRatioSquared );
+   double res = 0.0;
 
-            double part2;
-            if( is_zero( massRatioSquared ) )
-                part2 = 0.0;
-            else
-                part2 = photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C( massRatioSquared );
-            
-            auto preFactor = muonMass / (exchangeMass * exchangeMass);
-            preFactor *= photonEmitterChargeCount / (16.0 * M_PI * M_PI);
-            
-            res += preFactor * (part1 + part2);
-        }
-    }
-    
-    return res;
+   using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
+   using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
+
+   for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
+        photonVertexIndexIt != photonVertexFunction::indexBounds().end();
+        ++photonVertexIndexIt) {
+      const auto &photonVertexIndices = *photonVertexIndexIt;
+      const auto &photonVertex = photonVertexFunction::vertex(photonVertexIndices, context);
+      if (photonVertex.isZero())
+         continue;
+
+      // FIXME: We assume that the photonVertex is symmetric between its left and right parts!
+      double photonEmitterChargeCount = photonVertex.left().real() / muonCharge(context);
+
+      const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
+
+      for (auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
+           muonVertexIndexIt != muonVertexFunction::indexBounds().end();
+           ++muonVertexIndexIt) {
+         const auto &muonVertexIndices = *muonVertexIndexIt;
+         const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>(muonVertexIndices);
+         if (MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex())
+            continue;
+
+         if (photonEmitterIndices != muonVertexFunction::template particleIndices<1>(muonVertexIndices))
+            continue;
+
+         const auto &muonVertex = muonVertexFunction::vertex(muonVertexIndices, context);
+         if (muonVertex.isZero())
+            continue;
+
+         const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
+
+         std::complex<double> zL = muonVertex.left();
+         std::complex<double> zR = muonVertex.right();
+
+         double coeffA = std::norm(zL) + std::norm(zR);
+         double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+
+         double muonMass;
+         if (MuonFamily::numberOfGenerations == 1)
+            muonMass = context.mass<MuonFamily>();
+         else
+            muonMass = context.mass<MuonFamily>(muonIndex());
+
+         double photonEmitterMass;
+         if (PhotonEmitter::numberOfGenerations == 1)
+            photonEmitterMass = context.mass<PhotonEmitter>();
+         else {
+            unsigned int generationIndex = photonEmitterIndices[0];
+            photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
+         }
+
+         double exchangeMass;
+         if (ExchangeParticle::numberOfGenerations == 1)
+            exchangeMass = context.mass<ExchangeParticle>();
+         else {
+            unsigned int generationIndex = exchangeIndices[0];
+            exchangeMass = context.mass<ExchangeParticle>(generationIndex);
+         }
+
+         double massRatioSquared = photonEmitterMass / exchangeMass;
+         massRatioSquared *= massRatioSquared;
+
+         double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
+
+         double part2;
+         if (is_zero(massRatioSquared))
+            part2 = 0.0;
+         else
+            part2 = photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
+
+         auto preFactor = muonMass / (exchangeMass * exchangeMass);
+         preFactor *= photonEmitterChargeCount / (16.0 * M_PI * M_PI);
+
+         res += preFactor * (part1 + part2);
+      }
+   }
+
+   return res;
 }
 
 template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value( const EvaluationContext &context )
+double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value(const EvaluationContext &context)
 {
-    double res = 0.0;
-    
-    using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
-    using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
-    
-    for( auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
+   double res = 0.0;
+
+   using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
+   using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
+
+   for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
         photonVertexIndexIt != photonVertexFunction::indexBounds().end();
-        ++photonVertexIndexIt )
-    {
-        const auto &photonVertexIndices = *photonVertexIndexIt;
-        const auto &photonVertex = photonVertexFunction::vertex( photonVertexIndices, context );
-        if( photonVertex.isZero() )
+        ++photonVertexIndexIt) {
+      const auto &photonVertexIndices = *photonVertexIndexIt;
+      const auto &photonVertex = photonVertexFunction::vertex(photonVertexIndices, context);
+      if (photonVertex.isZero())
+         continue;
+
+      double photonEmitterChargeCount = photonVertex.value().real() / muonCharge(context);
+
+      const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
+
+      for (auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
+           muonVertexIndexIt != muonVertexFunction::indexBounds().end();
+           ++muonVertexIndexIt) {
+         const auto &muonVertexIndices = *muonVertexIndexIt;
+         const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>(muonVertexIndices);
+         if (MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex())
             continue;
-        
-        double photonEmitterChargeCount = photonVertex.value().real() / muonCharge( context );
-        
-        const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>( photonVertexIndices );
-        
-        for( auto muonVertexIndexIt = muonVertexFunction::indexBounds().begin();
-            muonVertexIndexIt != muonVertexFunction::indexBounds().end();
-            ++muonVertexIndexIt )
-        {
-            const auto &muonVertexIndices = *muonVertexIndexIt;
-            const auto &muonFamilyIndices = muonVertexFunction::template particleIndices<0>( muonVertexIndices );
-            if( MuonFamily::numberOfGenerations != 1 && muonFamilyIndices[0] != muonIndex() )
-                continue;
-            
-            if( photonEmitterIndices != muonVertexFunction::template particleIndices<1>( muonVertexIndices ) )
-                continue;
-            
-            const auto &muonVertex = muonVertexFunction::vertex( muonVertexIndices, context );
-            if( muonVertex.isZero() )
-                continue;
-            
-            const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>( muonVertexIndices );
-            
-            std::complex<double> zL = muonVertex.left();
-            std::complex<double> zR = muonVertex.right();
-            
-            double coeffA = std::norm( zL ) + std::norm( zR );
-            double coeffB = (zL * std::conj( zR ) + zR * std::conj( zL )).real();
-            
-            double muonMass;
-            if( MuonFamily::numberOfGenerations == 1 )
-                muonMass = context.mass<MuonFamily>();
-            else
-                muonMass = context.mass<MuonFamily>( muonIndex() );
-            
-            double photonEmitterMass;
-            if( PhotonEmitter::numberOfGenerations == 1 )
-                photonEmitterMass = context.mass<PhotonEmitter>();
-            else
-            {
-                unsigned int generationIndex = photonEmitterIndices[0];
-                photonEmitterMass = context.mass<PhotonEmitter>( generationIndex );
-            }
-            
-            double exchangeMass;
-            if( ExchangeParticle::numberOfGenerations == 1 )
-                exchangeMass = context.mass<ExchangeParticle>();
-            else
-            {
-                unsigned int generationIndex = exchangeIndices[0];
-                exchangeMass = context.mass<ExchangeParticle>( generationIndex );
-            }
-            
-            double massRatioSquared = exchangeMass / photonEmitterMass;
-            massRatioSquared *= massRatioSquared;
-            
-            double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N( massRatioSquared );
-            double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N( massRatioSquared );
-            
-            auto preFactor = muonMass * muonMass / (photonEmitterMass * photonEmitterMass);
-            preFactor *= - photonEmitterChargeCount / (16.0 * M_PI * M_PI);
-            
-            res += preFactor * (part1 + part2);
-        }
-    }
-    
-    return res;
+
+         if (photonEmitterIndices != muonVertexFunction::template particleIndices<1>(muonVertexIndices))
+            continue;
+
+         const auto &muonVertex = muonVertexFunction::vertex(muonVertexIndices, context);
+         if (muonVertex.isZero())
+            continue;
+
+         const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
+
+         std::complex<double> zL = muonVertex.left();
+         std::complex<double> zR = muonVertex.right();
+
+         double coeffA = std::norm(zL) + std::norm(zR);
+         double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+
+         double muonMass;
+         if (MuonFamily::numberOfGenerations == 1)
+            muonMass = context.mass<MuonFamily>();
+         else
+            muonMass = context.mass<MuonFamily>(muonIndex());
+
+         double photonEmitterMass;
+         if (PhotonEmitter::numberOfGenerations == 1)
+            photonEmitterMass = context.mass<PhotonEmitter>();
+         else {
+            unsigned int generationIndex = photonEmitterIndices[0];
+            photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
+         }
+
+         double exchangeMass;
+         if (ExchangeParticle::numberOfGenerations == 1)
+            exchangeMass = context.mass<ExchangeParticle>();
+         else {
+            unsigned int generationIndex = exchangeIndices[0];
+            exchangeMass = context.mass<ExchangeParticle>(generationIndex);
+         }
+
+         double massRatioSquared = exchangeMass / photonEmitterMass;
+         massRatioSquared *= massRatioSquared;
+
+         double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
+         double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
+
+         auto preFactor = muonMass * muonMass / (photonEmitterMass * photonEmitterMass);
+         preFactor *= - photonEmitterChargeCount / (16.0 * M_PI * M_PI);
+
+         res += preFactor * (part1 + part2);
+      }
+   }
+
+   return res;
 }

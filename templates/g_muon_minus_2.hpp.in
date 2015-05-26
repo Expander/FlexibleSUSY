@@ -32,15 +32,13 @@
 
 #include "@ModelName@_model.hpp"
 
-namespace flexiblesusy
-{
-   class Two_scale;
-   template<> class @ModelName@<Two_scale>;
+namespace flexiblesusy {
+class Two_scale;
+template<> class @ModelName@<Two_scale>;
 
-   namespace @ModelName@_GMuonMinus2
-   {
-      extern double calculate_amuon( const @ModelName@<Two_scale> &model );
-   };
+namespace @ModelName@_GMuonMinus2 {
+extern double calculate_amuon(const @ModelName@<Two_scale> &model);
+};
 } // namespace flexiblesusy
 
 #endif
