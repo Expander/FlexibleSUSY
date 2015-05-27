@@ -1,7 +1,8 @@
 
 BeginPackage["LoopMasses`", {"SARAH`", "TextFormatting`",
                              "CConversion`", "TreeMasses`",
-                             "SelfEnergies`", "TwoLoop`", "Parameters`"}];
+                             "SelfEnergies`", "TwoLoop`", "Parameters`",
+                             "Utils`"}];
 
 CreateOneLoopPoleMassFunctions::usage="";
 CreateOneLoopPoleMassPrototypes::usage="";
@@ -307,12 +308,32 @@ DoFastDiagonalization[particle_Symbol, _] :=
 
 (* ********** medium diagonalization routines ********** *)
 
+CreateGoldstoneSkippers[particle_, idx_String] :=
+    Module[{vectors, massName},
+           massName = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
+           vectors = TreeMasses`GetCorrespondingVectorBosons[particle];
+           If[Length[vectors] > 0,
+              "// skip goldstone bosons\n" <>
+              Utils`StringJoinWithSeparator[
+                  ("if (is_equal_rel(" <> massName <> idx <> ", " <>
+                   CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <> ", 1e-10)) {\n" <>
+                   IndentText["PHYSICAL(" <> massName <> idx <> ") = " <>
+                              CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <>
+                              ";\ncontinue;"] <> "\n}")& /@ vectors
+                  , "\n"
+              ] <> "\n"
+              ,
+              ""
+             ]
+          ];
+
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
             selfEnergyMatrixType, selfEnergyMatrixCType, eigenArrayType,
             addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
+            skipGoldstone = "",
             numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -338,7 +359,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             "if (eigen_values(es) < 0.)\n" <>
                             IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
                             "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
-                            "if (es == 0) {\n" <>
+                            "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ") {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
                             "}\n";
@@ -354,7 +375,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n";
               If[mixingMatrix =!= Null,
                  diagSnippet = diagSnippet <>
-                               "if (es == 0)\n" <>
+                               "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ")\n" <>
                                IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n"];
                 ];
              ];
@@ -388,11 +409,13 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
                    ];
                 ];
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
+              skipGoldstone = IndentText[CreateGoldstoneSkippers[particle, "(es)"]];
               result = tadpoleMatrix <>
                        selfEnergyMatrixCType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        calcTwoLoopHiggsContributions <> "\n" <>
                        "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
+                       skipGoldstone <> "\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
