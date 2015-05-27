@@ -1030,8 +1030,8 @@ WriteUserExample[inputParameters_List, files_List] :=
             *)
            DiagonalizeEFT = LoopMasses`CreateHiggsLogDiagonalization[{},{}];
            GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
-				  "M_Higgs  = (model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson] <> ");\n",
-				  "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]
+				  "M_Higgs = (model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson] <> ");\n",
+				  "M_Higgs = model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]
 				  <> ".minCoeff();\n"];
 		   SetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
 				  "model.get_physical().M"<> ToValidCSymbolString[SARAH`HiggsBoson] <> " = M_Higgs;",
