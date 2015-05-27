@@ -212,7 +212,7 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 /**
  * Reads DR-bar parameters from a SLHA output file.
  */
-void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_imodel& model) const
+void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_mass_eigenstates& model) const
 {
 @readLesHouchesOutputParameters@
 
@@ -223,7 +223,7 @@ void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_imodel& model) const
  * Reads DR-bar parameters, pole masses and mixing matrices (in
  * Haber-Kane convention) from a SLHA output file.
  */
-void @ModelName@_slha_io::fill(@ModelName@_imodel& model) const
+void @ModelName@_slha_io::fill(@ModelName@_mass_eigenstates& model) const
 {
    fill_drbar_parameters(model);
 

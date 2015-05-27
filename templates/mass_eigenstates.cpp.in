@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_imodel.cpp
+ * @file @ModelName@_mass_eigenstates.cpp
  * @brief implementation of the @ModelName@ model class
  *
  * Contains the definition of the @ModelName@ model class methods
@@ -30,7 +30,7 @@
  * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
-#include "@ModelName@_imodel.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 #include "eigen_utils.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
@@ -60,7 +60,7 @@ namespace flexiblesusy {
 
 using namespace @ModelName@_info;
 
-#define CLASSNAME @ModelName@_imodel
+#define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model->get_input().parameter
@@ -82,7 +82,7 @@ using namespace @ModelName@_info;
    #define UNLOCK_MUTEX()
 #endif
 
-CLASSNAME::@ModelName@_imodel(const @ModelName@_input_parameters& input_)
+CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
    , number_of_ewsb_iterations(100)
    , number_of_mass_iterations(20)
@@ -104,7 +104,7 @@ CLASSNAME::@ModelName@_imodel(const @ModelName@_input_parameters& input_)
 {
 }
 
-CLASSNAME::~@ModelName@_imodel()
+CLASSNAME::~@ModelName@_mass_eigenstates()
 {
 }
 
@@ -234,7 +234,7 @@ int CLASSNAME::tadpole_equations(const gsl_vector* x, void* params, gsl_vector* 
 
    const CLASSNAME::EWSB_args* ewsb_args
       = static_cast<CLASSNAME::EWSB_args*>(params);
-   @ModelName@_imodel* model = ewsb_args->model;
+   @ModelName@_mass_eigenstates* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
 @setEWSBParametersFromGSLVector@
@@ -428,7 +428,7 @@ int CLASSNAME::ewsb_step(const gsl_vector* x, void* params, gsl_vector* f)
 
    const CLASSNAME::EWSB_args* ewsb_args
       = static_cast<CLASSNAME::EWSB_args*>(params);
-   @ModelName@_imodel* model = ewsb_args->model;
+   @ModelName@_mass_eigenstates* model = ewsb_args->model;
    const unsigned ewsb_loop_order = ewsb_args->ewsb_loop_order;
 
 @getEWSBParametersFromGSLVector@
@@ -649,7 +649,7 @@ void CLASSNAME::run_to(double scale, double eps)
 
 @dependenceNumFunctions@
 
-std::ostream& operator<<(std::ostream& ostr, const @ModelName@_imodel& model)
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_mass_eigenstates& model)
 {
    model.print(ostr);
    return ostr;

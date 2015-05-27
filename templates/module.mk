@@ -4,8 +4,8 @@ MODNAME      := templates
 TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
-		$(DIR)/imodel.hpp.in \
-		$(DIR)/imodel.cpp.in \
+		$(DIR)/mass_eigenstates.hpp.in \
+		$(DIR)/mass_eigenstates.cpp.in \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/info.hpp.in \
 		$(DIR)/info.cpp.in \

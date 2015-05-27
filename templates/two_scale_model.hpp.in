@@ -32,7 +32,7 @@
 #define @ModelName@_TWO_SCALE_H
 
 #include "@ModelName@_model.hpp"
-#include "@ModelName@_imodel.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 #include "two_scale_model.hpp"
 
 namespace flexiblesusy {
@@ -43,7 +43,7 @@ class Two_scale;
  * @brief model class with routines for determing masses and mixinga and EWSB
  */
 template<>
-class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_imodel {
+class @ModelName@<Two_scale> : public Two_scale_model, public @ModelName@_mass_eigenstates {
 public:
    explicit @ModelName@(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
    virtual ~@ModelName@();

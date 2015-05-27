@@ -37,10 +37,10 @@ FlexibleSUSY-1.1.0 [not released yet]
    non-convergence.
 
  * Feature: New (non-templated) intermediate model class
-   <model>_imodel, which is able to calculate the pole and running
-   mass spectrum.  <model>_imodel is derived from
+   <model>_mass_eigenstates, which is able to calculate the pole and
+   running mass spectrum.  <model>_mass_eigenstates is derived from
    <model>_soft_parameters.  The templated model class
-   <model><Two_scale> is now derived from <model>_imodel .
+   <model><Two_scale> is now derived from <model>_mass_eigenstates .
 
  * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
    is used in the two-loop Higgs self-energy and tadpole corrections.

@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_imodel.hpp
+ * @file @ModelName@_mass_eigenstates.hpp
  * @brief contains class for model with routines needed to solve boundary
  *        value problem using the two_scale solver by solvingt EWSB
  *        and determine the pole masses and mixings
@@ -52,13 +52,13 @@ namespace flexiblesusy {
 
 class EWSB_solver;
 /**
- * @class @ModelName@_imodel
+ * @class @ModelName@_mass_eigenstates
  * @brief model class with routines for determing masses and mixinga and EWSB
  */
-class @ModelName@_imodel : public @ModelName@_soft_parameters {
+class @ModelName@_mass_eigenstates : public @ModelName@_soft_parameters {
 public:
-   explicit @ModelName@_imodel(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   virtual ~@ModelName@_imodel();
+   explicit @ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   virtual ~@ModelName@_mass_eigenstates();
 
    /// number of EWSB equations
    static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
@@ -119,17 +119,17 @@ public:
 
 private:
    struct EWSB_args {
-      @ModelName@_imodel* model;
+      @ModelName@_mass_eigenstates* model;
       unsigned ewsb_loop_order;
    };
 
 #ifdef ENABLE_THREADS
    struct Thread {
-      typedef void(@ModelName@_imodel::*Memfun_t)();
-      @ModelName@_imodel* model;
+      typedef void(@ModelName@_mass_eigenstates::*Memfun_t)();
+      @ModelName@_mass_eigenstates* model;
       Memfun_t fun;
 
-      Thread(@ModelName@_imodel* model_, Memfun_t fun_)
+      Thread(@ModelName@_mass_eigenstates* model_, Memfun_t fun_)
          : model(model_), fun(fun_) {}
       void operator()() {
          try {
@@ -185,7 +185,7 @@ private:
 @phasesDefinition@
 };
 
-std::ostream& operator<<(std::ostream&, const @ModelName@_imodel&);
+std::ostream& operator<<(std::ostream&, const @ModelName@_mass_eigenstates&);
 
 } // namespace flexiblesusy
 
