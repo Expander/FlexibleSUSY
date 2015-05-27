@@ -136,6 +136,9 @@ ReorderGoldstoneBosons::usage="";
 CreateHiggsMassGetters::usage="";
 CallPseudoscalarHiggsMassGetterFunction::usage="";
 
+GetCorrespondingVectorBosons::usage="returns list of vector bosons
+corresponding to a given goldstone boson";
+
 (* exported for the use in LoopMasses.m *)
 CallSVDFunction::usage="";
 CallDiagonalizeSymmetricFunction::usage="";

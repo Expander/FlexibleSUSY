@@ -565,7 +565,7 @@ void CLASSNAME::reorder_DRbar_masses()
 
 /**
  * reorders pole masses so that golstones are placed at the index
- * specified in the model files definition of the associuated
+ * specified in the model files definition of the associated
  * gauge boson (see Z-boson definition in default particles.m file
  * in the Models directory of your SARAH distribution for example)
  */
