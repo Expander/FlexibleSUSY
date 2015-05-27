@@ -99,6 +99,9 @@ FlexibleSUSY-1.1.0 [not released yet]
    Beta_function::set_zero_threshold() or entry 14 in the SLHA input
    file.
 
+ * Bugfix (commit 29a1578): Ignore goldstone boson "pole mass"
+   tachyons.
+
 FlexibleSUSY-1.0.4 [January, 15 2015]
 
  * Add new user example program run_cmd_line_<model>.x to run a
