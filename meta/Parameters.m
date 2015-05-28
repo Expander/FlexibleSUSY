@@ -81,6 +81,7 @@ DecreaseIndexLiterals::usage="";
 DecreaseSumIdices::usage="";
 
 GetEffectiveMu::usage="";
+GetEffectiveMASqr::usage="";
 
 GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
@@ -967,6 +968,17 @@ GetEffectiveMu[] :=
               Quit[1];
              ];
            FlexibleSUSY`EffectiveMu
+          ];
+
+GetEffectiveMASqr[] :=
+    Module[{},
+           If[!ValueQ[FlexibleSUSY`EffectiveMASqr],
+              Print["Error: effective CP-odd Higgs mass not defined!"];
+              Print["   Please set EffectiveMASqr to the expression of the"];
+              Print["   effective CP-odd Higgs mass."];
+              Quit[1];
+             ];
+           FlexibleSUSY`EffectiveMASqr
           ];
 
 GetParameterFromDescription[description_String] :=

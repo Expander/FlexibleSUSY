@@ -135,6 +135,9 @@ TreeLevelEWSBSolution = {
 
 UseHiggs2LoopNMSSM = True;
 EffectiveMu = \[Mu] + \[Lambda] vS / Sqrt[2];
+EffectiveBMu = (B[\[Mu]] + \[Lambda] (MS vS / Sqrt[2] + L1)
+    + T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2);
+EffectiveMASqr = EffectiveBMu (vu^2 + vd^2) / (vu vd);
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 

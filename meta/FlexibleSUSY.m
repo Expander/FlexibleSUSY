@@ -59,6 +59,7 @@ EDRbar;
 ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
+EffectiveMASqr;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
