@@ -42,9 +42,10 @@ FlexibleSUSY-1.1.0 [not released yet]
    <model>_soft_parameters.  The templated model class
    <model><Two_scale> is now derived from <model>_mass_eigenstates .
 
- * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
-   is used in the two-loop Higgs self-energy and tadpole corrections.
-   Before, there were cases where a Goldstone boson mass was used.
+ * Bugfix (commit 6da2cbd): ensure that the lightest MSSM-like CP-odd
+   Higgs mass is used in the two-loop Higgs self-energies.  Before,
+   there were cases where a Goldstone boson mass or a singlet-like
+   pseudoscalar mass was used.
 
  * Bugfix (commit 8335640): ensure that the tree-level EWSB conditions
    are fulfilled during calculation of the tree-level spectrum in
