@@ -11,6 +11,9 @@ FlexibleSUSY-1.1.0 [not released yet]
    Note: To achieve the maximum accuracy available, set the threshold
    corrections loop order to 2 (FlexibleSUSY block entry 7)
 
+ * Feature: Support for non-SUSY models, renormalized in the MS-bar
+   scheme.
+
  * Feature: 2-loop QCD corrections can be added when calculating the
    top pole mass from the top DR-bar mass.  These 2-loop contributions
    can be enabled/disabled using entries 13 or 4 of the FlexibleSUSY
@@ -47,48 +50,16 @@ FlexibleSUSY-1.1.0 [not released yet]
    tadpoles.  Before, there were cases where a Goldstone boson mass or
    a singlet-like pseudoscalar mass was used.
 
- * Bugfix (commit 8335640): ensure that the tree-level EWSB conditions
-   are fulfilled during calculation of the tree-level spectrum in
-   non-SUSY models.
-
  * Bugfix (commit 29a0833): incorporate tadpole contributions in pole
    masses of singlets
-
- * Bugfix (commit 3422d88): ensure only gluon is removed from top
-   self-energy for calculation of top DR-bar mass in the SM
-
- * Bugfix (commits 66d38f4 and 4ed231d): ensure Higgs and Goldstone
-   boson contributions are contained in the bottom and tau
-   self-energies for calculation of bottom and tau DR-bar masses in
-   the SM
-
- * Bugfix (commit 08128f0): For a non-SUSY model the all running
-   masses are checked for convergence.  Before, only non-SM particle
-   masses were checked for convergence, which led to an empty
-   convergence tester for the SM.
 
  * Bugfix (commit c64a333): Softsusy's B1 function is now thread-save.
    Before commit c64a333, the tau pole mass was varying due to a race
    condition, if multi-threading is enabled and neither fflite nor
    looptoos is used.
 
- * Bugfix (commit 2b3df8c): no DR-bar conversion for down-quark and
-   charged lepton running masses in non-SUSY models, because these
-   models are renormalized in the MS-bar scheme.  The bug affects the
-   calculation of the down-quark and charged lepton Yukawa couplings
-   in non-SUSY models, like the SM, for example.
-
  * Bugfix (commit d035544): Ignore trivial EWSB eqs.  Makes the MRSSM
    work in FlexibleSUSY with SARAH 4.5.x.
-
- * Bugfix (commit d1e5db4): implement fermion 1-loop and 2-loof QCD
-   self-energy corrections in the MS-bar scheme.
-
- * Bugfix (commit 0a2c91a): omit DR-bar conversion factor in the
-   calculation of alpha_em in non-SUSY models.
-
- * Bugfix (commit 0084e11): adding MS-bar conversion terms to the
-   self-energies of non-SUSY models.
 
  * Bugfix (commit d8a1521): The SM() preprocessor macro has been
    renamed to LowEnergyConstant() in order to avoid collisions with
