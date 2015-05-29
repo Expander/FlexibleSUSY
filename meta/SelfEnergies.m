@@ -642,7 +642,7 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
            tanbStr = CConversion`RValueToCFormString[SARAH`VEVSM2 / SARAH`VEVSM1];
            muStr   = CConversion`RValueToCFormString[-Parameters`GetEffectiveMu[]];
            m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
-           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
+           mA0Str  = CConversion`RValueToCFormString[Parameters`GetEffectiveMASqr[]];
            svevStr = CConversion`RValueToCFormString[Parameters`GetParameterFromDescription["Singlet-VEV"]];
            body = "\
 // calculate 3rd generation sfermion masses and mixing angles
@@ -679,7 +679,7 @@ const double sinb = tanb / Sqrt(1. + tanb2);
 const double cosb = 1. / Sqrt(1. + tanb2);
 double amu = Re(" <> muStr <> ");
 double mg = " <> m3Str <> ";
-double mAsq = Sqr(" <> mA0Str <> ");
+double mAsq = " <> mA0Str <> ";
 double cotbeta = 1.0 / tanb;
 double rmbsq = Sqr(" <> mbStr <> ");
 double rmtausq = Sqr(" <> mtauStr <> ");
