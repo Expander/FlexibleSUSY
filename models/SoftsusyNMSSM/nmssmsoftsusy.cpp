@@ -124,14 +124,25 @@ void NmssmSoftsusy::doTadpoles(double mt, double sinthDRbar) {
     if (numRewsbLoops > 1) {
        double lam = displayLambda(), s = displaySvev();
        const drBarPars& forLoops = displayDrBarPars();
+      double tanb = displayTanb();
+      double cb = cos(atan(tanb)), sb = sin(atan(tanb));
+      double kap = displayKappa();
+      double mupr = displayMupr();
+      double alam = displayTrialambda();
+      double m3sq = displayM3Squared();
+      double xiF = displayXiF();
+      double m3sqeff = m3sq  + lam * (mupr * s / root2 + xiF)
+      + alam * s / root2  +   0.5 * lam * kap * sqr(s);
+
+      double MAeffsq =  m3sqeff / (sb * cb);
        /// add the two-loop terms, prepare inputs
        double s1s = 0., s2s = 0., s1t = 0., s2t = 0.,
          gs = displayGaugeCoupling(3),
          rmtsq = sqr(forLoops.mt), 
-         scalesq = sqr(displayMu()), vev = displayHvev(),
-         vev2 = sqr(vev), tanb = displayTanb(), 
+         scalesq = sqr(displayMu()), 
+         vev = displayHvev(), vev2 = sqr(vev),  
          amu = - lam * s / root2, mg = displayGaugino(3), 
-         mAsq = sqr(forLoops.mA0(1)); 
+         mAsq = MAeffsq; 
       
       double sxt = sin(forLoops.thetat), cxt = cos(forLoops.thetat);
       double mst1sq = sqr(forLoops.mu(1, 3)), 
@@ -3767,7 +3778,7 @@ bool NmssmSoftsusy::higgs(int accuracy, double piwwtMS, double /* pizztMS */,
   double vev = displayHvev(), vev2 = sqr(vev);
   double m3sqeff = m3sq  + lam * (mupr * svev / root2 + xiF)
     + alam * svev / root2  +   0.5 * lam * kap * sqr(svev);
-  double MAeffsq =  m3sqeff / (sb * cb); ;
+  double MAeffsq =  m3sqeff / (sb * cb);
    /// PA: initialise CP even mass matrix in (Hd, Hu, S) basis
    // CP odd Higgs mass matrices mPpr in (Hd, Hu, S) basis 
    //and mP2 in roatated basis (A, S) -- goldstone boson removed    
