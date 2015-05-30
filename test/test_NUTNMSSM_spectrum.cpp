@@ -880,11 +880,11 @@ void test_NUTNMSSM_spectrum_with_fermi_constant_input_for_point(
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm_2l(2), mHpm_2l, 0.0018);
 
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.00013);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.00016);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(2), mA_2l(1), 0.00015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_2l(3), mA_2l(2), 0.0008);
 
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(1), mh_2l(1), 8.5e-05);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.00017);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(2), mh_2l(2), 0.0008);
    BOOST_CHECK_CLOSE_FRACTION(Mhh_2l(3), mh_2l(3), 0.0005);
 
    BOOST_MESSAGE("SoftSUSY    :\n mh_2l = " << mh_2l  << " mA_2l = " << mA_2l);
