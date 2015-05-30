@@ -55,7 +55,7 @@ find_default_model_files() {
     # directory.  If a FlexibleSUSY.m.in was found, the corresponding
     # model name will be stored in the variable $default_models .
 
-    default_models="`find ${BASEDIR}/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -printf '%h\n' | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
+    default_models="`find ${BASEDIR}/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -exec dirname {} \; | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
 }
 
 #_____________________________________________________________________
