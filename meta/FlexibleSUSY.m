@@ -1000,10 +1000,10 @@ WriteGMuonMinus2Class[files_List] :=
            threadedCalculationCode = GMuonMinus2`CreateThreadedCalculation[];
            
            WriteOut`ReplaceInFiles[files,
-                                   { "@GMuonMinus2_Particles@"          -> IndentText[particles,6],
-                                     "@GMuonMinus2_MuonFunctions@"      -> IndentText[muonFunctions,6],
-                                     "@GMuonMinus2_Diagrams@"           -> IndentText[diagrams,6],
-                                     "@GMuonMinus2_VertexFunctions@"    -> IndentText[vertexFunctions,6],
+                                   { "@GMuonMinus2_Particles@"          -> particles,
+                                     "@GMuonMinus2_MuonFunctions@"      -> muonFunctions,
+                                     "@GMuonMinus2_Diagrams@"           -> diagrams,
+                                     "@GMuonMinus2_VertexFunctions@"    -> vertexFunctions,
                                      "@GMuonMinus2_Definitions@"        -> definitions,
                                      "@GMuonMinus2_Calculation@"        -> IndentText[calculationCode],
                                      "@GMuonMinus2_ThreadedCalculation@" -> IndentText[threadedCalculationCode],
