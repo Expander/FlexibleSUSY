@@ -380,9 +380,9 @@ static inline double OneLoopFunctionF2N(double x)
 double calculate_amuon(const @ModelName@<Two_scale> &model)
 {
 #ifdef ENABLE_THREADS
-   @GMuonMinus2_Calculation@
+@GMuonMinus2_ThreadedCalculation@
 #else
-   @GMuonMinus2_ThreadedCalculation@
+@GMuonMinus2_Calculation@
 #endif
 }
 
