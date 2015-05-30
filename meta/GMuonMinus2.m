@@ -37,22 +37,22 @@ CreateParticles[] := Module[{particles, code},
                                                          ToString @ TreeMasses`GetDimension[#] <>
                                                          "; };" &) /@ particles, "\n"] <> "\n\n" <>
                                     "// Special particle families\n" <>
-                                    "using Photon = " <> ParticleToString @ GetPhoton[] <> ";\n" <>
-                                    "using MuonFamily = " <> ParticleToString @ GetMuonFamily[] <> ";\n\n" <>
+                                    "typedef " <> ParticleToString @ GetPhoton[] <> " Photon;\n" <>
+                                    "typedef " <> ParticleToString @ GetMuonFamily[] <> " MuonFamily;\n\n" <>
                                     
                                     "// AntiParticles\n" <>
                                     "template<class P> struct anti\n" <>
                                     "{\n" <>
                                     IndentText @
                                     ("static const unsigned int numberOfGenerations = P::numberOfGenerations;\n" <>
-                                    "using type = anti<P>;\n") <>
+                                    "typedef anti<P> type;\n") <>
                                     "};\n" <>
-                                    "template<class P> struct anti<anti<P>> { using type = P; };\n\n" <>
+                                    "template<class P> struct anti<anti<P>> { typedef P type; };\n\n" <>
                                     
                                     "// Particles that are their own antiparticles\n" <>
                                     StringJoin @ Riffle[("template<> struct " <>
                                                          "anti<" <> ParticleToString[#] <> ">" <>
-                                                         " { using type = " <> ParticleToString[#] <> "; };"
+                                                         " { typedef " <> ParticleToString[#] <> " type; };"
                                                          &) /@ Select[particles, (# == AntiParticle[#] &)],
                                                         "\n"]
                                     );
@@ -141,9 +141,7 @@ Module[{particles, code},
        particles = Select[particles, (! TreeMasses`IsGhost[#] &)];
        
        code = (StringJoin @
-               Riffle[("template<> double EvaluationContext::mass<" <>
-                       ToString[#] <> If[TreeMasses`GetDimension[#] === 1, "", ", unsigned int"] <>
-                       ">( " <>
+               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">( " <>
                        If[TreeMasses`GetDimension[#] === 1, "void", "unsigned int index"] <> " ) const\n" <>
                        "{ return model.get_M" <> ParticleToString[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
@@ -385,10 +383,10 @@ CreateVertexFunction[indexedParticles_List] :=
                           "{\n" <>
                           IndentText @
                           ("static const bool is_permutation = true;\n" <>
-                           "using orig_type = " <> orderedVertexFunction <> ";\n" <>
-                           "using particlePermutation = permutation<" <>
+                           "typedef " <> orderedVertexFunction <> " orig_type;\n" <>
+                           "typedef boost::mpl::vector_c<unsigned int, " <>
                            StringJoin @ Riffle[ToString /@ (Ordering[ordering] - 1), ", "] <>
-                           ">;\n"
+                           "> particlePermutation;\n"
                            ) <>
                           "};");
             
@@ -490,9 +488,9 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
                          IndentText @
                          ("static const bool is_permutation = false;\n\n" <>
                           
-                          "using indices_type = std::array<unsigned int, " <> ToString @ NumberOfIndices[parsedVertex] <> ">;\n" <>
-                          "using index_bounds = IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> ">;\n" <>
-                          "using vertex_type = " <> VertexClassName[parsedVertex] <> ";\n\n" <>
+                          "typedef std::array<unsigned int, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices_type;\n" <>
+                          "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
+                          "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n\n" <>
                           
                           "static const unsigned int particleIndexStart[" <> ToString[Length[orderedParticles]+1] <> "];\n" <>
                           "static const index_bounds indexB;\n"

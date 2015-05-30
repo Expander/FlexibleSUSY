@@ -19,6 +19,7 @@
 #ifndef NUMERICS_HPP
 #define NUMERICS_HPP
 
+#include <cstddef>
 #include <cmath>
 #include <limits>
 #include <cstddef>

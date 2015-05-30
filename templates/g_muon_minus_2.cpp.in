@@ -30,42 +30,28 @@
 
 #include <array>
 #include <vector>
+#include <boost/mpl/vector_c.hpp>
+#include <boost/mpl/at.hpp>
 
 #include "@ModelName@_g_muon_minus_2.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 
+/* Due to g++4.4 compatibility, we need the following workarounds:
+- no variadic non-template parameter packs :'-(
+- We have to use typedef instead of using
+- no extended friend syntax
+- no nullptr
+- no extended using syntax
+*/
+
 using namespace flexiblesusy;
 
 namespace flexiblesusy {
-namespace @ModelName@_GMuonMinus2 {
-template<unsigned int i, class T, T v1, T ...values> struct at {
-   static const T value = at < i - 1, T, values... >::value;
-};
-
-template<class T, T v1, T ...values> struct at<0, T, v1, values...> {
-   static const T value = v1;
-};
-
-template<unsigned int ...p> struct permutation {
-   template<unsigned int i> struct apply {
-      static const unsigned int value = at<i, unsigned int, p...>::value;
-   };
-};
-
-template<class ...Args> struct length;
-
-template<class A1, class ...Rest> struct length<A1, Rest...> {
-   static const unsigned int value = 1 + length<Rest...>::value;
-};
-
-template<> struct length<> {
-   static const unsigned int value = 0;
-};
-
+namespace CMSSM_GMuonMinus2 {
 template<unsigned int N> struct IndexBounds;
 
 template<unsigned int N> class IndexIterator {
-   friend IndexBounds<N>;
+   friend class IndexBounds<N>;
 private:
    const IndexBounds<N> &bounds;
    std::array<unsigned int, N> indices;
@@ -124,7 +110,7 @@ template<unsigned int N> struct IndexBounds {
    unsigned int indexBegin[N];
    unsigned int indexEnd[N];
 
-   using const_iterator = IndexIterator<N>;
+   typedef IndexIterator<N> const_iterator;
 
    const_iterator begin(void) const
    {
@@ -138,15 +124,15 @@ template<unsigned int N> struct IndexBounds {
 };
 
 template<> struct IndexBounds<0> {
-   using const_iterator = const array<unsigned int, 0> *;
+   typedef const array<unsigned int, 0> * const_iterator;
 
    const_iterator begin(void) const
    {
-      return nullptr;
+      return NULL;
    }
    const_iterator end(void) const
    {
-      return nullptr;
+      return NULL;
    }
 };
 
@@ -156,17 +142,18 @@ template<> struct IndexBounds<0> {
 struct EvaluationContext {
    const @ModelName@<Two_scale> &model;
 
-   // Function template that returns the mass of a particle
-   // If P denotes a whole (SARAH) particle family, the index
-   // specifies which particular particle is meant.
-   // This definition kicks in for antiparticles as well as
-   // absorbs all malformed calls (wrong indices types)
-   // into infinite recursive calls (undefined behaviour).
-   template<class P, class ...Index> double mass(Index... index) const
-   {
-      return mass<typename anti<P>::type, Index...>(index...);
-   }
+   template<class P> double mass(void) const;
+   template<class P> double mass(unsigned int) const;
 };
+
+template<class P> double EvaluationContext::mass(void) const
+{
+   return mass<typename anti<P>::type>();
+}
+template<class P> double EvaluationContext::mass(unsigned int index) const
+{
+   return mass<typename anti<P>::type>(index);
+}
 
 @GMuonMinus2_MuonFunctions@
 
@@ -214,6 +201,7 @@ public:
    }
 };
 
+
 // Classes that represent more general vertices
 // No particle indices are specified here.
 template<class ...P> struct VertexFunctionData;
@@ -223,13 +211,13 @@ template<bool, class ...P> class VertexFunctionHelper;
 template<class ...P> class VertexFunctionHelper<false, P...>
    : public VertexFunctionData<P...> {
 private:
-   using Base = VertexFunctionData<P...>;
+   typedef VertexFunctionData<P...> Base;
    using Base::particleIndexStart;
    using Base::indexB;
 public:
-   using typename Base::indices_type;
-   using typename Base::index_bounds;
-   using typename Base::vertex_type;
+   typedef typename Base::indices_type indices_type;
+   typedef typename Base::index_bounds index_bounds;
+   typedef typename Base::vertex_type vertex_type;
 public:
    static const index_bounds &indexBounds(void)
    {
@@ -248,28 +236,30 @@ public:
 template<class ...P> class VertexFunctionHelper<true, P...>
    : public VertexFunctionData<P...>::orig_type {
 private:
-   using orig_type = typename VertexFunctionData<P...>::orig_type;
-   using particlePermutation = typename VertexFunctionData<P...>::particlePermutation;
+   typedef typename VertexFunctionData<P...>::orig_type orig_type;
+   typedef typename VertexFunctionData<P...>::particlePermutation particlePermutation;
 public:
-   using indices_type = typename orig_type::indices_type;
-   using index_bounds = typename orig_type::index_bounds;
-   using vertex_type = typename orig_type::vertex_type;
+   typedef typename orig_type::indices_type indices_type;
+   typedef typename orig_type::index_bounds index_bounds;
+   typedef typename orig_type::vertex_type vertex_type;
 public:
    template<unsigned int particleIndex>
    static std::vector<unsigned int> particleIndices(const indices_type &indices)
    {
-      return orig_type::template particleIndices<particlePermutation::template apply<particleIndex>::value>(indices);
+      return orig_type::template particleIndices <
+                boost::mpl::at<particlePermutation, boost::mpl::int_<particleIndex>>::type::value
+                > (indices);
    }
 };
 
 template<class ...P> class VertexFunction
    : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> {
 private:
-   using Base = VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...>;
+   typedef VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> Base;
 public:
-   using typename Base::indices_type;
-   using typename Base::index_bounds;
-   using typename Base::vertex_type;
+   typedef typename Base::indices_type indices_type;
+   typedef typename Base::index_bounds index_bounds;
+   typedef typename Base::vertex_type vertex_type;
 
    template<class Q = Base>
    static vertex_type vertex(const indices_type &indices, const EvaluationContext &context)
@@ -386,12 +376,8 @@ static inline double OneLoopFunctionF2N(double x)
 
    return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
 }
-}
-}
 
-using namespace flexiblesusy::@ModelName@_GMuonMinus2;
-
-double @ModelName@_GMuonMinus2::calculate_amuon(const @ModelName@<Two_scale> &model)
+double calculate_amuon(const @ModelName@<Two_scale> &model)
 {
 #ifdef ENABLE_THREADS
    @GMuonMinus2_Calculation@
@@ -407,8 +393,8 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 {
    double res = 0.0;
 
-   using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
-   using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
+   typedef VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type> photonVertexFunction;
+   typedef VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type> muonVertexFunction;
 
    for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
         photonVertexIndexIt != photonVertexFunction::indexBounds().end();
@@ -494,8 +480,8 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
 {
    double res = 0.0;
 
-   using photonVertexFunction = VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type>;
-   using muonVertexFunction = VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type>;
+   typedef VertexFunction<Photon, PhotonEmitter, typename anti<PhotonEmitter>::type> photonVertexFunction;
+   typedef VertexFunction<MuonFamily, typename anti<PhotonEmitter>::type, typename anti<ExchangeParticle>::type> muonVertexFunction;
 
    for (auto photonVertexIndexIt = photonVertexFunction::indexBounds().begin();
         photonVertexIndexIt != photonVertexFunction::indexBounds().end();
@@ -568,4 +554,6 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
    }
 
    return res;
+}
+}
 }
