@@ -52,6 +52,7 @@ models_array="             \
    MSSMRHN,MSSMRHN         \
    NMSSM,NMSSM             \
    NUTNMSSM,NMSSM          \
+   lowNMSSM,NMSSM          \
    SMSSM,SMSSM             \
    UMSSM,UMSSM             \
    E6SSM,E6SSM             \
