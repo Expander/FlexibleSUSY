@@ -1,5 +1,5 @@
 
-BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`", "LatticeUtils`"}];
+BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`", "LatticeUtils`", "Utils`"}];
 
 FSMassMatrix::usage="Head of a mass matrix";
 
@@ -534,16 +534,6 @@ CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper] <>
     CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper];
 
-SetAttributes[ApplyAndConcatenate, HoldFirst];
-
-ApplyAndConcatenate[Func_, l_List] :=
-    Module[{result = ""},
-           (result = result <> Evaluate[Func[#]])& /@ l;
-           result
-          ];
-
-ApplyAndConcatenate[Func_, l_] := Evaluate[Func[l]];
-
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix /; GetMixingMatrixSymbol[massMatrix] === Null] := "";
 
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
@@ -555,7 +545,7 @@ CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            (* mixing matrices for majorana Fermions and
               2-component charginos will be made real *)
            If[LatticeUtils`MajoranaQ[particle] || (IsChargino[particle] && dim <= 2),
-              ApplyAndConcatenate[
+              Utils`ApplyAndConcatenate[
                   Function[m,
                            CConversion`CreateInlineGetter[
                                ToValidCSymbolString[m],
