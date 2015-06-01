@@ -20,6 +20,7 @@ META_SRC     := \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
 		$(DIR)/TwoLoop.m \
+		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
 		$(DIR)/WeinbergAngle.m
