@@ -30,6 +30,8 @@
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_model_slha.hpp"
 
+#define PHYSICAL_SLHA(p) physical_slha.p
+
 namespace flexiblesusy {
 
 class Two_scale;
@@ -81,5 +83,7 @@ private:
 };
 
 } // namespace flexiblesusy
+
+#undef PHYSICAL_SLHA
 
 #endif

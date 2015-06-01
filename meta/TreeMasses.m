@@ -423,7 +423,7 @@ GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 
 GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 
-CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
+CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", wrapper_String:""] :=
     Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr, CreateElementGetter},
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
@@ -436,12 +436,12 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_S
            (* don't create element getters for ScalarType *)
            CreateElementGetter[name_String, CConversion`ScalarType[_], pf_String, st_String] := "";
            CreateElementGetter[name_String, type_, pf_String, st_String] := CConversion`CreateInlineElementGetter[name, type, pf, st];
-           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, struct] <>
-           CreateElementGetter[massESSymbolStr, returnType, postFix, struct]
+           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, wrapper] <>
+           CreateElementGetter[massESSymbolStr, returnType, postFix, wrapper]
           ];
 
 CreateSLHAPoleMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    CreateMassGetter[massMatrix, "_pole_slha", "physical_slha."];
+    CreateMassGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"];
 
 CreateParticleEnum[particles_List] :=
     Module[{i, par, name, result = ""},
@@ -512,27 +512,27 @@ FillSpectrumVector[particles_List] :=
            Return[result];
           ];
 
-CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
+CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", wrapper_String:""] :=
     Module[{mixingMatrixSymbol, returnType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            returnType = GetMixingMatrixType[massMatrix];
-           CreateMixingMatrixGetter[mixingMatrixSymbol, returnType, postFix, struct]
+           CreateMixingMatrixGetter[mixingMatrixSymbol, returnType, postFix, wrapper]
           ];
 
-CreateMixingMatrixGetter[mixingMatrixSymbol_List, returnType_, postFix_String:"", struct_String:""] :=
+CreateMixingMatrixGetter[mixingMatrixSymbol_List, returnType_, postFix_String:"", wrapper_String:""] :=
     Module[{result = ""},
-           (result = result <> CreateMixingMatrixGetter[#,returnType, postFix, struct])& /@ mixingMatrixSymbol;
+           (result = result <> CreateMixingMatrixGetter[#,returnType, postFix, wrapper])& /@ mixingMatrixSymbol;
            Return[result];
           ];
 
-CreateMixingMatrixGetter[Null, returnType_, postFix_String:"", struct_String:""] := "";
+CreateMixingMatrixGetter[Null, returnType_, postFix_String:"", wrapper_String:""] := "";
 
-CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:"", struct_String:""] :=
-    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct] <>
-    CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct];
+CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:"", wrapper_String:""] :=
+    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper] <>
+    CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper];
 
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    CreateMixingMatrixGetter[massMatrix, "_pole_slha", "physical_slha."];
+    CreateMixingMatrixGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"];
 
 CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
     Module[{matrix, dim},

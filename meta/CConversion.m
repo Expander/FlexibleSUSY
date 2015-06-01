@@ -255,45 +255,45 @@ CreateInlineSetter[parameter_String, type_] :=
     CreateInlineSetter[parameter, CreateSetterInputType[type]];
 
 (* Creates a C++ inline element getter *)
-CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer, postFix_String:"", struct_String:""] :=
+CreateInlineElementGetter[parameter_String, elementType_String, dim_Integer, postFix_String:"", wrapper_String:""] :=
     elementType <> " get_" <> parameter <> postFix <> "(int i) const" <>
-    " { return " <> struct <> parameter <> "(i); }\n";
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i)" <> If[wrapper != "", ")", ""] <> "; }\n";
 
-CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, postFix_String:"", struct_String:""] :=
+CreateInlineElementGetter[parameter_String, elementType_String, dim1_Integer, dim2_Integer, postFix_String:"", wrapper_String:""] :=
     elementType <> " get_" <> parameter <> postFix <> "(int i, int k) const" <>
-    " { return " <> struct <> parameter <> "(i,k); }\n";
+    " { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> "(i,k)" <> If[wrapper != "", ")", ""] <> "; }\n";
 
-CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCType], postFix_String:"", struct_String:""] :=
-    CreateInlineGetter[parameter, "double", postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`ScalarType[realScalarCType], postFix_String:"", wrapper_String:""] :=
+    CreateInlineGetter[parameter, "double", postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ScalarType[complexScalarCType], postFix_String:"", struct_String:""] :=
-    CreateInlineGetter[parameter, "const std::complex<double>&", postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`ScalarType[complexScalarCType], postFix_String:"", wrapper_String:""] :=
+    CreateInlineGetter[parameter, "const std::complex<double>&", postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "double", entries, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`ArrayType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`ArrayType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`VectorType[realScalarCType, entries_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "double", entries, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`VectorType[realScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "double", entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`VectorType[complexScalarCType, entries_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", entries, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "double", dim1, dim2, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`MatrixType[realScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "double", dim1, dim2, postFix, wrapper];
 
-CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", struct_String:""] :=
-    CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, struct];
+CreateInlineElementGetter[parameter_String, CConversion`MatrixType[complexScalarCType, dim1_, dim2_], postFix_String:"", wrapper_String:""] :=
+    CreateInlineElementGetter[parameter, "const std::complex<double>&", dim1, dim2, postFix, wrapper];
 
 (* Creates a C++ inline getter *)
-CreateInlineGetter[parameter_String, type_String, postFix_String:"", struct_String:""] :=
+CreateInlineGetter[parameter_String, type_String, postFix_String:"", wrapper_String:""] :=
     type <> " get_" <> parameter <> postFix <>
-    "() const { return " <> struct <> parameter <> "; }\n";
+    "() const { return " <> If[wrapper != "", wrapper <> "(", ""] <> parameter <> If[wrapper != "", ")", ""] <> "; }\n";
 
-CreateInlineGetter[parameter_String, type_, postFix_String:"", struct_String:""] :=
-    CreateInlineGetter[ToValidCSymbolString[parameter], CreateGetterReturnType[type], postFix, struct];
+CreateInlineGetter[parameter_String, type_, postFix_String:"", wrapper_String:""] :=
+    CreateInlineGetter[ToValidCSymbolString[parameter], CreateGetterReturnType[type], postFix, wrapper];
 
 (* Creates C++ getter prototype *)
 CreateGetterPrototype[parameter_String, type_String] :=
