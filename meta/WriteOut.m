@@ -588,7 +588,7 @@ ConvertMixingsToConvention[massMatrices_List, convention_String] :=
            For[i = 1, i <= Length[massMatrices], i++,
                eigenstateName = TreeMasses`GetMassEigenstate[massMatrices[[i]]];
                mixingMatrixSym = TreeMasses`GetMixingMatrixSymbol[massMatrices[[i]]];
-               If[LatticeUtils`MajoranaMassMatrixQ[massMatrices[[i]]],
+               If[IsMajoranaFermion[eigenstateName] && mixingMatrixSym =!= Null,
                   eigenstateNameStr  = CConversion`ToValidCSymbolString[FlexibleSUSY`M[eigenstateName]];
                   mixingMatrixSymStr = CConversion`ToValidCSymbolString[mixingMatrixSym];
                   result = result <>

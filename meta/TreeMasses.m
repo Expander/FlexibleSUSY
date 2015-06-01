@@ -544,7 +544,7 @@ CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
            returnType = GetMixingMatrixType[massMatrix];
            (* mixing matrices for majorana Fermions and
               2-component charginos will be made real *)
-           If[LatticeUtils`MajoranaQ[particle] || (IsChargino[particle] && dim <= 2),
+           If[IsMajoranaFermion[particle] || (IsChargino[particle] && dim <= 2),
               Utils`ApplyAndConcatenate[
                   Function[m,
                            CConversion`CreateInlineGetter[
