@@ -29,8 +29,10 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_model_slha.hpp"
+#include "wrappers.hpp"
 
 #define PHYSICAL_SLHA(p) physical_slha.p
+#define PHYSICAL_SLHA_REAL(p) Re(physical_slha.p)
 
 namespace flexiblesusy {
 
@@ -85,5 +87,6 @@ private:
 } // namespace flexiblesusy
 
 #undef PHYSICAL_SLHA
+#undef PHYSICAL_SLHA_REAL
 
 #endif

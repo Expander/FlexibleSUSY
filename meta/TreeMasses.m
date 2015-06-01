@@ -1,5 +1,5 @@
 
-BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`"}];
+BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`", "LatticeUtils`"}];
 
 FSMassMatrix::usage="Head of a mass matrix";
 
@@ -189,6 +189,9 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+
+IsChargino[p_] :=
+    p === Parameters`GetParticleFromDescription["Charginos"];
 
 ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
@@ -531,8 +534,41 @@ CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:
     CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper] <>
     CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper];
 
+SetAttributes[ApplyAndConcatenate, HoldFirst];
+
+ApplyAndConcatenate[Func_, l_List] :=
+    Module[{result = ""},
+           (result = result <> Evaluate[Func[#]])& /@ l;
+           result
+          ];
+
+ApplyAndConcatenate[Func_, l_] := Evaluate[Func[l]];
+
+CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix /; GetMixingMatrixSymbol[massMatrix] === Null] := "";
+
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    CreateMixingMatrixGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"];
+    Module[{mixingMatrixSymbol, particle, dim, returnType},
+           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
+           particle = GetMassEigenstate[massMatrix];
+           dim = Length[GetMassMatrix[massMatrix]];
+           returnType = GetMixingMatrixType[massMatrix];
+           (* mixing matrices for majorana Fermions and
+              2-component charginos will be made real *)
+           If[LatticeUtils`MajoranaQ[particle] || (IsChargino[particle] && dim <= 2),
+              ApplyAndConcatenate[
+                  Function[m,
+                           CConversion`CreateInlineGetter[
+                               ToValidCSymbolString[m],
+                               returnType, "_pole_slha", "PHYSICAL_SLHA"] <>
+                           CConversion`CreateInlineElementGetter[
+                               ToValidCSymbolString[m],
+                               CConversion`ToRealType[returnType], "_pole_slha", "PHYSICAL_SLHA_REAL"]],
+                  mixingMatrixSymbol
+              ]
+              ,
+              CreateMixingMatrixGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"]
+             ]
+          ];
 
 CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
     Module[{matrix, dim},
