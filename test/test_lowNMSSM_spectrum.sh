@@ -23,7 +23,7 @@ if test ! -x "$softsusy_exe"; then
 fi
 
 echo -n "running lowMSSM point ... "
-$lowmssm_exe --slha-input-file=$lowmssm_input --slha-output-file=$lowmssm_output 
+$lowmssm_exe --slha-input-file=$lowmssm_input --slha-output-file=$lowmssm_output > /dev/null 2>&1
 echo "done"
 echo "lowMSSM SLHA input file:  $lowmssm_input"
 echo "lowMSSM SLHA output file: $lowmssm_output"
