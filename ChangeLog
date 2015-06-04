@@ -1,3 +1,8 @@
+FlexibleSUSY-1.1.1 [not released yet]
+
+ * Bugfix (commit e1ea433): Catch NaNs from Slavich's NMSSM 2-loop
+   self-energies.
+
 FlexibleSUSY-1.1.0 [May, 31 2015]
 
  * Feature: Calculation of DR-bar weak mixing angle from Fermi
