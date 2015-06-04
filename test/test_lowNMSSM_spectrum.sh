@@ -13,7 +13,7 @@ softsusy_exe="$BASEDIR/../models/SoftsusyNMSSM/run_softpoint.x"
 lowmssm_exe="$BASEDIR/../models/lowNMSSM/run_lowNMSSM.x"
 
 if test ! -x "$lowmssm_exe"; then
-    echo "Error: lowMSSM spectrum generator not found: $lowmssm_exe"
+    echo "Error: lowNMSSM spectrum generator not found: $lowmssm_exe"
     exit 1
 fi
 
@@ -22,13 +22,13 @@ if test ! -x "$softsusy_exe"; then
     exit 1
 fi
 
-echo -n "running lowMSSM point ... "
+echo -n "running lowNMSSM point ... "
 $lowmssm_exe --slha-input-file=$lowmssm_input --slha-output-file=$lowmssm_output > /dev/null 2>&1
 echo "done"
-echo "lowMSSM SLHA input file:  $lowmssm_input"
-echo "lowMSSM SLHA output file: $lowmssm_output"
+echo "lowNMSSM SLHA input file:  $lowmssm_input"
+echo "lowNMSSM SLHA output file: $lowmssm_output"
 
-echo -n "running lowMSSM point ... "
+echo -n "running lowNMSSM point ... "
 $softsusy_exe leshouches < $lowmssm_input > $softsusy_output 2> /dev/null
 echo "done"
 echo "SoftsusyNMSSM SLHA input file:  $lowmssm_input"
