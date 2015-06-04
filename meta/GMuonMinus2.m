@@ -7,7 +7,7 @@ CreatePhysicalDefinition::usage="Returns the c++ code with declaration of the ma
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
 CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
 CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram classes";
-CreateVertexFunctions::usage="Returns the c++ code that contains all relevant vertex functions";
+CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
 
 CreateCalculation::usage="Returns the c++ code that performs the actual calculation the magnetic moment";
 CreateThreadedCalculation::usage="Same as above, threaded version";
@@ -60,19 +60,41 @@ CreateParticles[] := Module[{particles, code},
                             Return[code];
                             ];
 
-CreateMuonFunctions[] := Module[{muonIndex},
+muonFunctions = Null;
+CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions},
+                                If[muonFunctions =!= Null, Return[muonFunctions]];
                                 muonIndex = GetMuonIndex[];
+                                muonFamily = GetMuonFamily[];
                                 
-                                "static const unsigned int muonIndex( void )\n" <>
-                                "{ unsigned int muonIndex" <>
-                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
-                                "; return muonIndex; }\n" <>
-                                "static const double muonCharge( const EvaluationContext &context )\n" <>
-                                "{ return context.model." <>
-                                NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
-                                If[muonIndex =!= Null,
-                                   "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
-                                   "()"] <> "; }"
+                                prototypes = ("static const unsigned int muonIndex( void );\n" <>
+                                              "static const double muonPhysicalMass( const EvaluationContext &context );\n" <>
+                                              "static const double muonCharge( const EvaluationContext &context );");
+                                
+                                definitions = ("static const unsigned int muonIndex( void )\n" <>
+                                               "{ unsigned int muonIndex" <>
+                                               If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
+                                               "; return muonIndex; }\n" <>
+                                               "static const double muonPhysicalMass( const EvaluationContext &context )\n" <>
+                                               "{\n" <>
+                                               IndentText @
+                                               ("if( context.model.do_calculate_sm_pole_masses() )\n" <>
+                                                IndentText @
+                                                ("return PHYSICAL(M" <> ParticleToString[muonFamily] <> ")" <>
+                                                 If[muonIndex =!= Null, "[muonIndex()]", ""] <> ";\n"
+                                                 ) <>
+                                                "return context.mass<" <> ParticleToString[muonFamily] <> ">(" <>
+                                                If[muonIndex =!= Null, " muonIndex() ", ""] <> ");\n"
+                                                ) <>
+                                               "}\n" <>
+                                               "static const double muonCharge( const EvaluationContext &context )\n" <>
+                                               "{ return context.model." <>
+                                               NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
+                                               If[muonIndex =!= Null,
+                                                  "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
+                                                  "()"] <> "; }");
+                                
+                                muonFunctions = {prototypes, definitions};
+                                Return[muonFunctions];
                                 ];
 
 CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
@@ -97,7 +119,7 @@ CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            Return[code];
                            ];
 
-CreateVertexFunctions[] := CreateVertices[][[1]];
+CreateVertexFunctionData[] := CreateVertices[][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
@@ -128,6 +150,7 @@ CreateCalculation[] := Module[{code},
 CreateThreadedCalculation[] := CreateCalculation[];
 
 CreateDefinitions[] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
+                        CreateMuonFunctions[][[2]] <> "\n\n" <>
                         CreateVertices[][[2]]);
 
 NPointFunctions[] := (If[nPointFunctions === Null, CreateVertices[]]; Return[nPointFunctions]);
@@ -483,31 +506,26 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
             dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[ParticleToString /@ orderedParticles, ", "] <> ">";
             functionClassName = "VertexFunction<" <> StringJoin @ Riffle[ParticleToString /@ orderedParticles, ", "] <> ">";
             
-            prototype = ("template<> struct " <> dataClassName <> "\n" <>
-                         "{\n" <>
-                         IndentText @
-                         ("static const bool is_permutation = false;\n\n" <>
-                          
-                          "typedef std::array<unsigned int, " <> ToString @ NumberOfIndices[parsedVertex] <> "> indices_type;\n" <>
-                          "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
-                          "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n\n" <>
-                          
-                          "static const unsigned int particleIndexStart[" <> ToString[Length[orderedParticles]+1] <> "];\n" <>
-                          "static const index_bounds indexB;\n"
-                          ) <>
-                         "};");
-            
             particleIndexStartF[1] = 0;
             particleIndexStartF[pIndex_] := particleIndexStartF[pIndex-1] + NumberOfIndices[parsedVertex, pIndex-1];
             particleIndexStartF[Length[orderedParticles]+1] = NumberOfIndices[parsedVertex];
             
             particleIndexStart = Table[particleIndexStartF[i], {i, 1, Length[orderedParticles] + 1}];
             
-            indexBounds = IndexBounds[parsedVertex];
+            prototype = ("template<> struct " <> dataClassName <> "\n" <>
+                         "{\n" <>
+                         IndentText @
+                         ("static const bool is_permutation = false;\n" <>
+                          "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
+                          "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
+                          "typedef boost::mpl::vector_c<unsigned int, " <>
+                             StringJoin @ Riffle[ToString /@ particleIndexStart, ", "] <>
+                          "> particleIndexStart;\n" <>
+                          "static const index_bounds indexB;\n"
+                          ) <>
+                         "};");
             
-            prototype = (prototype <> "\n" <>
-                         "const unsigned int " <> dataClassName <> "::particleIndexStart[" <> ToString[Length[orderedParticles]+1]
-                         <> "] = { " <> StringJoin @ Riffle[ToString /@ particleIndexStart, ", "] <> " };");
+            indexBounds = IndexBounds[parsedVertex];
             
             If[NumberOfIndices[parsedVertex] =!= 0,
                prototype = (prototype <> "\n" <>

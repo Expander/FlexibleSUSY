@@ -992,21 +992,21 @@ WriteGMuonMinus2Class[files_List] :=
     Module[{particles, muonFunctions, diagrams, vertexFunctions,
         definitions, calculationCode, threadedCalculationCode},
            particles = GMuonMinus2`CreateParticles[];
-           muonFunctions = GMuonMinus2`CreateMuonFunctions[];
+           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
-           vertexFunctions = GMuonMinus2`CreateVertexFunctions[];
+           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[];
            definitions = GMuonMinus2`CreateDefinitions[];
            calculationCode = GMuonMinus2`CreateCalculation[];
            threadedCalculationCode = GMuonMinus2`CreateThreadedCalculation[];
            
            WriteOut`ReplaceInFiles[files,
-                                   { "@GMuonMinus2_Particles@"          -> particles,
-                                     "@GMuonMinus2_MuonFunctions@"      -> muonFunctions,
-                                     "@GMuonMinus2_Diagrams@"           -> diagrams,
-                                     "@GMuonMinus2_VertexFunctions@"    -> vertexFunctions,
-                                     "@GMuonMinus2_Definitions@"        -> definitions,
-                                     "@GMuonMinus2_Calculation@"        -> IndentText[calculationCode],
-                                     "@GMuonMinus2_ThreadedCalculation@" -> IndentText[threadedCalculationCode],
+                                   { "@GMuonMinus2_Particles@"               -> particles,
+                                     "@GMuonMinus2_MuonFunctionPrototypes@"  -> muonFunctionPrototypes,
+                                     "@GMuonMinus2_Diagrams@"                -> diagrams,
+                                     "@GMuonMinus2_VertexFunctionData@"      -> vertexFunctionData,
+                                     "@GMuonMinus2_Definitions@"             -> definitions,
+                                     "@GMuonMinus2_Calculation@"             -> IndentText[calculationCode],
+                                     "@GMuonMinus2_ThreadedCalculation@"     -> IndentText[threadedCalculationCode],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];

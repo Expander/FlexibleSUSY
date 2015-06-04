@@ -36,8 +36,11 @@
 #include "@ModelName@_g_muon_minus_2.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 
+#define PHYSICAL(t) (context.model.get_physical().t)
+
 /* Due to g++4.4 compatibility, we need the following workarounds:
 - no variadic non-template parameter packs :'-(
+- no constexpr (less code, no boost workarounds...) :'-(
 - We have to use typedef instead of using
 - no extended friend syntax
 - no nullptr
@@ -47,10 +50,10 @@
 using namespace flexiblesusy;
 
 namespace flexiblesusy {
-namespace CMSSM_GMuonMinus2 {
+namespace @ModelName@_GMuonMinus2 {
 template<unsigned int N> struct IndexBounds;
 
-template<unsigned int N> class IndexIterator {
+template<unsigned int N> struct IndexIterator {
    friend class IndexBounds<N>;
 private:
    const IndexBounds<N> &bounds;
@@ -107,6 +110,8 @@ bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 }
 
 template<unsigned int N> struct IndexBounds {
+   typedef const std::array<unsigned int, N> indices_type;
+
    unsigned int indexBegin[N];
    unsigned int indexEnd[N];
 
@@ -124,17 +129,17 @@ template<unsigned int N> struct IndexBounds {
 };
 
 template<> struct IndexBounds<0> {
-   typedef const array<unsigned int, 0> * const_iterator;
+   typedef const std::array<unsigned int, 0> indices_type;
+   typedef indices_type * const_iterator;
+
+   static const indices_type dummyIndex;
 
    const_iterator begin(void) const
-   {
-      return NULL;
-   }
+   { return &dummyIndex; }
    const_iterator end(void) const
-   {
-      return NULL;
-   }
+   { return (begin()+1); }
 };
+IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
 
 @GMuonMinus2_Particles@
 
@@ -155,7 +160,7 @@ template<class P> double EvaluationContext::mass(unsigned int index) const
    return mass<typename anti<P>::type>(index);
 }
 
-@GMuonMinus2_MuonFunctions@
+@GMuonMinus2_MuonFunctionPrototypes@
 
 @GMuonMinus2_Diagrams@
 
@@ -212,11 +217,11 @@ template<class ...P> class VertexFunctionHelper<false, P...>
    : public VertexFunctionData<P...> {
 private:
    typedef VertexFunctionData<P...> Base;
-   using Base::particleIndexStart;
+   typedef typename Base::particleIndexStart particleIndexStart;
    using Base::indexB;
 public:
-   typedef typename Base::indices_type indices_type;
    typedef typename Base::index_bounds index_bounds;
+   typedef typename index_bounds::indices_type indices_type;
    typedef typename Base::vertex_type vertex_type;
 public:
    static const index_bounds &indexBounds(void)
@@ -227,8 +232,8 @@ public:
    template<unsigned int particleIndex>
    static std::vector<unsigned int> particleIndices(const indices_type &indices)
    {
-      auto begin = indices.begin() + particleIndexStart[particleIndex];
-      auto end = indices.begin() + particleIndexStart[particleIndex + 1];
+      auto begin = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex>::type::value;
+      auto end = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex+1>::type::value;
       return std::vector<unsigned int>(begin, end);
    }
 };
@@ -239,15 +244,15 @@ private:
    typedef typename VertexFunctionData<P...>::orig_type orig_type;
    typedef typename VertexFunctionData<P...>::particlePermutation particlePermutation;
 public:
-   typedef typename orig_type::indices_type indices_type;
    typedef typename orig_type::index_bounds index_bounds;
+   typedef typename index_bounds::indices_type indices_type;
    typedef typename orig_type::vertex_type vertex_type;
 public:
    template<unsigned int particleIndex>
    static std::vector<unsigned int> particleIndices(const indices_type &indices)
    {
-      return orig_type::template particleIndices <
-                boost::mpl::at<particlePermutation, boost::mpl::int_<particleIndex>>::type::value
+      return orig_type::template particleIndices<
+                boost::mpl::at_c<particlePermutation, particleIndex>::type::value
                 > (indices);
    }
 };
@@ -268,7 +273,7 @@ public:
    }
 };
 
-@GMuonMinus2_VertexFunctions@
+@GMuonMinus2_VertexFunctionData@
 
 // Loop functions
 static inline double OneLoopFunctionF1C(double x)
@@ -465,7 +470,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          else
             part2 = photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
-         auto preFactor = muonMass / (exchangeMass * exchangeMass);
+         double preFactor = muonPhysicalMass(context) / (exchangeMass * exchangeMass);
          preFactor *= photonEmitterChargeCount / (16.0 * M_PI * M_PI);
 
          res += preFactor * (part1 + part2);
@@ -546,7 +551,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
          double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
          double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
-         auto preFactor = muonMass * muonMass / (photonEmitterMass * photonEmitterMass);
+         double preFactor = muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
          preFactor *= - photonEmitterChargeCount / (16.0 * M_PI * M_PI);
 
          res += preFactor * (part1 + part2);
