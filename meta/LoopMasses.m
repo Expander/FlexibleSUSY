@@ -404,6 +404,12 @@ double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
 if (pole_mass_loop_order > 1)
 " <> IndentText["\
 self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
+for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
+   if (!std::isfinite(two_loop[i])) {
+      two_loop[i] = 0.;
+      problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+   }
+}
 "] <> "\
 ";
                    ];
