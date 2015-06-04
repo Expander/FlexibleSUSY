@@ -1603,6 +1603,10 @@ check_fflags() {
 
 #_____________________________________________________________________
 check_fortran_libs() {
+    if test "x${FLIBS}" != "x" ; then
+        return
+    fi
+
     case "$FC" in
         gfortran*)
             gfortran_lib_search_paths=`${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
@@ -2123,6 +2127,8 @@ Package directories, compilation settings and model selection
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
+  --with-flibs=             Fortran libraries (default: $FLIBS)
+                            If empty, FLIBS will be determined automatically.
   --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
@@ -2220,6 +2226,7 @@ if test $# -gt 0 ; then
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-flibs=*)          FLIBS=$optarg ;;
             --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
