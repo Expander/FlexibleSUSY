@@ -37,7 +37,7 @@ class Two_scale;
 template<> class @ModelName@<Two_scale>;
 
 namespace @ModelName@_GMuonMinus2 {
-extern double calculate_amuon(const @ModelName@<Two_scale> &model);
+extern double calculate_amuon(@ModelName@<Two_scale> &model);
 };
 } // namespace flexiblesusy
 

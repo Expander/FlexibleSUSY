@@ -145,7 +145,7 @@ IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
 
 // Evaluation context struct, needed by DiagramEvaluator<>::value() further below
 struct EvaluationContext {
-   const @ModelName@<Two_scale> &model;
+   @ModelName@<Two_scale> &model;
 
    template<class P> double mass(void) const;
    template<class P> double mass(unsigned int) const;
@@ -267,7 +267,7 @@ public:
    typedef typename Base::vertex_type vertex_type;
 
    template<class Q = Base>
-   static vertex_type vertex(const indices_type &indices, const EvaluationContext &context)
+   static vertex_type vertex(const indices_type &indices, EvaluationContext &context)
    {
       return Q::vertex(indices, context);
    }
@@ -382,7 +382,7 @@ static inline double OneLoopFunctionF2N(double x)
    return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
 }
 
-double calculate_amuon(const @ModelName@<Two_scale> &model)
+double calculate_amuon(@ModelName@<Two_scale> &model)
 {
 #ifdef ENABLE_THREADS
 @GMuonMinus2_ThreadedCalculation@
@@ -394,7 +394,7 @@ double calculate_amuon(const @ModelName@<Two_scale> &model)
 @GMuonMinus2_Definitions@
 
 template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(const EvaluationContext &context)
+double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
 {
    double res = 0.0;
 
@@ -481,7 +481,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 }
 
 template<class PhotonEmitter, class ExchangeParticle>
-double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value(const EvaluationContext &context)
+double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::value(EvaluationContext &context)
 {
    double res = 0.0;
 

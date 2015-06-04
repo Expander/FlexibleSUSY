@@ -67,26 +67,38 @@ CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions}
                                 muonFamily = GetMuonFamily[];
                                 
                                 prototypes = ("static const unsigned int muonIndex( void );\n" <>
-                                              "static const double muonPhysicalMass( const EvaluationContext &context );\n" <>
-                                              "static const double muonCharge( const EvaluationContext &context );");
+                                              "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
+                                              "static const double muonCharge( EvaluationContext &context );");
                                 
                                 definitions = ("static const unsigned int muonIndex( void )\n" <>
                                                "{ unsigned int muonIndex" <>
                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
                                                "; return muonIndex; }\n" <>
-                                               "static const double muonPhysicalMass( const EvaluationContext &context )\n" <>
-                                               "{\n" <>
-                                               IndentText @
-                                               ("if( context.model.do_calculate_sm_pole_masses() )\n" <>
+                                               "static const double muonPhysicalMass( EvaluationContext &context )\n" <>
+                                                "{\n" <>
                                                 IndentText @
-                                                ("return PHYSICAL(M" <> ParticleToString[muonFamily] <> ")" <>
-                                                 If[muonIndex =!= Null, "[muonIndex()]", ""] <> ";\n"
-                                                 ) <>
-                                                "return context.mass<" <> ParticleToString[muonFamily] <> ">(" <>
-                                                If[muonIndex =!= Null, " muonIndex() ", ""] <> ");\n"
-                                                ) <>
+                                                ("static double m_muon_pole = 0.0;\n\n" <>
+                                                 
+                                                 "if( m_muon_pole == 0.0 )\n" <>
+                                                 "{\n" <>
+                                                 IndentText @
+                                                 ("m_muon_pole = context.model.get_physical().M" <>
+                                                  ParticleToString[muonFamily] <> "(" <>
+                                                     If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n\n" <>
+                                                  
+                                                  "if( m_muon_pole == 0.0 )\n" <>
+                                                  "{\n" <>
+                                                  IndentText @
+                                                  ("context.model.calculate_M" <> ParticleToString[muonFamily] <> "_pole();\n" <>
+                                                   "m_muon_pole = context.model.get_physical().M" <>
+                                                      ParticleToString[muonFamily] <> "(" <>
+                                                      If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n") <>
+                                                  "}\n") <>
+                                                 "}\n\n" <>
+                                                 
+                                                 "return m_muon_pole;\n") <>
                                                "}\n" <>
-                                               "static const double muonCharge( const EvaluationContext &context )\n" <>
+                                               "static const double muonCharge( EvaluationContext &context )\n" <>
                                                "{ return context.model." <>
                                                NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
                                                If[muonIndex =!= Null,
@@ -125,7 +137,7 @@ CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitt
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
                                                      ToString @ type[[1]] <>
                                                      ">, PhotonEmitter, ExchangeParticle>\n" <>
-                                                     "{ static double value( const EvaluationContext &context ); };");
+                                                     "{ static double value( EvaluationContext &context ); };");
 
 calculationCode = Null;
 CreateCalculation[] := Module[{code},
@@ -534,7 +546,7 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
                             "{ " <> StringJoin @ Riffle[ToString /@ indexBounds[[2]], ", "] <> " } };"
                             );];
             definition = ("template<> template<> " <> functionClassName <> "::vertex_type\n" <>
-                          functionClassName <> "::vertex( const indices_type &indices, const EvaluationContext &context )\n" <>
+                          functionClassName <> "::vertex( const indices_type &indices, EvaluationContext &context )\n" <>
                           "{\n" <>
                           IndentText @ VertexFunctionBody[parsedVertex] <> "\n" <>
                           "}");
