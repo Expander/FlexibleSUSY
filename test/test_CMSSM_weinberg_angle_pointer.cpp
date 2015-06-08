@@ -17,12 +17,12 @@ using namespace weinberg_angle;
 void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222)
-   const double vu = model.get_vu();
-   const double vd = model.get_vd();
-   const double gY = model.get_g1() * Sqrt(0.6);
-   const double g2 = model.get_g2();
-   const double Mu = model.get_Mu();
-   const double BMu = model.get_BMu();
+   const double vu   = model.get_vu();
+   const double vd   = model.get_vd();
+   const double gY   = model.get_g1() * Sqrt(0.6);
+   const double g2   = model.get_g2();
+   const double Mu   = model.get_Mu();
+   const double BMu  = model.get_BMu();
    const double mHd2 = BMu*vu/vd - (Sqr(gY) + Sqr(g2))*(Sqr(vd) - Sqr(vu))/8. - Sqr(Mu);
    const double mHu2 = BMu*vd/vu + (Sqr(gY) + Sqr(g2))*(Sqr(vd) - Sqr(vu))/8. - Sqr(Mu);
    model.set_mHd2(mHd2);
@@ -34,26 +34,26 @@ void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
 void setup_CMSSM_const(CMSSM<Two_scale>& model, const CMSSM_input_parameters& input)
 {
    const double ALPHASMZ = Electroweak_constants::alpha3;
-   const double ALPHAMZ = Electroweak_constants::aem;
+   const double ALPHAMZ  = Electroweak_constants::aem;
    const double sinthWsq = Electroweak_constants::sinThetaW2;
-   const double alpha1 = 5 * ALPHAMZ / (3 * (1 - sinthWsq));
-   const double alpha2 = ALPHAMZ / sinthWsq;
-   const double g1 = Sqrt(4 * Pi * alpha1);
-   const double g2 = Sqrt(4 * Pi * alpha2);
-   const double g3 = Sqrt(4 * Pi * ALPHASMZ);
-   const double tanBeta = input.TanBeta;
-   const double sinBeta = sin(atan(tanBeta));
-   const double cosBeta = cos(atan(tanBeta));
-   const double M12 = input.m12;
-   const double m0 = input.m0;
-   const double a0 = input.Azero;
-   const double root2 = Sqrt(2.0);
-   const double vev = Electroweak_constants::vev;
-   const double vu = vev * sinBeta;
-   const double vd = vev * cosBeta;
-   const double susyMu = input.SignMu * 120.0;
-   const double BMu = Sqr(2.0 * susyMu);
-   const double scale = Electroweak_constants::MZ;
+   const double alpha1   = 5 * ALPHAMZ / (3 * (1 - sinthWsq));
+   const double alpha2   = ALPHAMZ / sinthWsq;
+   const double g1       = Sqrt(4 * Pi * alpha1);
+   const double g2       = Sqrt(4 * Pi * alpha2);
+   const double g3       = Sqrt(4 * Pi * ALPHASMZ);
+   const double tanBeta  = input.TanBeta;
+   const double sinBeta  = sin(atan(tanBeta));
+   const double cosBeta  = cos(atan(tanBeta));
+   const double M12      = input.m12;
+   const double m0       = input.m0;
+   const double a0       = input.Azero;
+   const double root2    = Sqrt(2.0);
+   const double vev      = Electroweak_constants::vev;
+   const double vu       = vev * sinBeta;
+   const double vd       = vev * cosBeta;
+   const double susyMu   = input.SignMu * 120.0;
+   const double BMu      = Sqr(2.0 * susyMu);
+   const double scale    = Electroweak_constants::MZ;
 
    Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero()),
       Yd(Eigen::Matrix<double,3,3>::Zero()),
@@ -103,7 +103,7 @@ void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& model,
 
    const double ymu = 0.1;
 
-   Eigen::Matrix<double,3,3> Ye(model.get_Ye());
+   Eigen::Matrix<double,3,3> Ye = model.get_Ye();
    Ye(1,1) = ymu;
    model.set_Ye(Ye);
 }
@@ -142,10 +142,10 @@ void setup_data(const CMSSM<Two_scale>& model,
    double msmuL  = 0.;
    double msnue  = 0.;
    double msnumu = 0.;
-   const auto MSe(model.get_MSe());
-   const auto ZE(model.get_ZE());
-   const auto MSv(model.get_MSv());
-   const auto ZV(model.get_ZV());
+   const auto MSe = model.get_MSe();
+   const auto ZE  = model.get_ZE();
+   const auto MSv = model.get_MSv();
+   const auto ZV  = model.get_ZV();
 
    for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       mselL += AbsSqr(ZE(i,0))*MSe(i);
@@ -191,10 +191,11 @@ void setup_data(const CMSSM<Two_scale>& model,
    data.self_energy_w_at_0  = piwwt0_corrected;
 }
 
-/*
+
 BOOST_AUTO_TEST_CASE( test_rho_2 )
 {
-   Weinberg_angle wein;
+   BOOST_REQUIRE(1 > 0);
+/*   Weinberg_angle wein;
    double r;
 
    r = 0.1;
@@ -210,9 +211,8 @@ BOOST_AUTO_TEST_CASE( test_rho_2 )
    BOOST_CHECK_CLOSE_FRACTION(rho2(r), wein.rho_2(r), 1.0e-10);
 
    r = 2.1;
-   BOOST_CHECK_CLOSE_FRACTION(rho2(r), wein.rho_2(r), 1.0e-10);
+   BOOST_CHECK_CLOSE_FRACTION(rho2(r), wein.rho_2(r), 1.0e-10);*/
 }
-*/
 
 /*
 BOOST_AUTO_TEST_CASE( test_delta_vb )
