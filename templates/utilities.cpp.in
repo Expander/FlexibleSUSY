@@ -68,7 +68,7 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
       return;
    }
 
-   filestr << "### one-loop pole masses (Q = " << scale << " GeV)\n";
+   filestr << "### pole masses (Q = " << scale << " GeV)\n";
    write_spectrum(spectrum, filestr);
 
    filestr.close();
