@@ -451,7 +451,7 @@ void MSSM_runner<T>::write_spectrum(const std::string& filename) const
 {
 #if 0
    MSSM_spectrum_plotter plotter;
-   plotter.extract_spectrum<T>(model);
+   plotter.extract_spectrum(model);
    plotter.write_to_file(filename);
 #endif
 }

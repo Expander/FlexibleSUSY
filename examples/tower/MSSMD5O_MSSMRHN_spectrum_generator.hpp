@@ -237,7 +237,7 @@ template <class T>
 void MSSMD5O_MSSMRHN_spectrum_generator<T>::write_spectrum(const std::string& filename) const
 {
    MSSMD5O_spectrum_plotter plotter;
-   plotter.extract_spectrum<T>(model_1);
+   plotter.extract_spectrum(model_1);
    plotter.write_to_file(filename);
 }
 
