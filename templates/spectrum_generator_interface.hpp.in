@@ -22,15 +22,19 @@
 #define @ModelName@_SPECTRUM_GENERATOR_INTERFACE_H
 
 #include "@ModelName@_two_scale_model.hpp"
-#include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_utilities.hpp"
 
-#include "lowe.h"
 #include "spectrum_generator_settings.hpp"
 #include "coupling_monitor.hpp"
 #include "two_loop_corrections.hpp"
 
+namespace softsusy {
+   class QedQcd;
+}
+
 namespace flexiblesusy {
+
+struct @ModelName@_input_parameters;
 
 template <class T>
 class @ModelName@_spectrum_generator_interface {
@@ -68,7 +72,7 @@ public:
    void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
    void set_settings(const Spectrum_generator_settings&);
 
-   virtual void run(const QedQcd&, const @ModelName@_input_parameters&) = 0;
+   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&) = 0;
    void write_running_couplings(const std::string& filename, double, double) const;
    void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 

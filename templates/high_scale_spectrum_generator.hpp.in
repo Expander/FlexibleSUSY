@@ -27,7 +27,9 @@
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
+#include "@ModelName@_input_parameters.hpp"
 
+#include "lowe.h"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
@@ -57,7 +59,7 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
 
-   virtual void run(const QedQcd&, const @ModelName@_input_parameters&);
+   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
    void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
 
 private:
@@ -80,7 +82,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
