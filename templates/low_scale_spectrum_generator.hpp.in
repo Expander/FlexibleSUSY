@@ -28,6 +28,7 @@
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
 
+#include "spectrum_generator_settings.hpp"
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "two_loop_corrections.hpp"
@@ -80,6 +81,7 @@ public:
    void set_force_output(bool flag) { force_output = flag; }
    void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
    void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
+   void set_settings(const Spectrum_generator_settings&);
 
    void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
    void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
@@ -196,6 +198,37 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    } catch (const std::exception& error) {
       model.get_problems().flag_thrown(error.what());
    }
+}
+
+/**
+ * Setup spectrum generator from a Spectrum_generator_settings object.
+ *
+ * @param settings spectrum generator settings
+ */
+template <class T>
+void @ModelName@_spectrum_generator<T>::set_settings(
+   const Spectrum_generator_settings& settings)
+{
+   set_precision_goal(
+      settings.get(Spectrum_generator_settings::precision));
+   set_max_iterations(
+      settings.get(Spectrum_generator_settings::max_iterations));
+   set_calculate_sm_masses(
+      settings.get(Spectrum_generator_settings::calculate_sm_masses) >= 1.0);
+   set_force_output(
+      settings.get(Spectrum_generator_settings::force_output) >= 1.0);
+   set_pole_mass_loop_order(
+      settings.get(Spectrum_generator_settings::pole_mass_loop_order));
+   set_ewsb_loop_order(
+      settings.get(Spectrum_generator_settings::ewsb_loop_order));
+   set_beta_loop_order(
+      settings.get(Spectrum_generator_settings::beta_loop_order));
+   set_beta_zero_threshold(
+      settings.get(Spectrum_generator_settings::beta_zero_threshold));
+   set_threshold_corrections_loop_order(
+      settings.get(Spectrum_generator_settings::threshold_corrections_loop_order));
+   set_two_loop_corrections(
+      settings.get_two_loop_corrections());
 }
 
 /**
