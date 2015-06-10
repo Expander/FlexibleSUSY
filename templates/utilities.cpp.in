@@ -42,6 +42,18 @@ namespace flexiblesusy {
 {
 }
 
+
+void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@_mass_eigenstates& model)
+{
+   spectrum.clear();
+   scale = model.get_scale();
+
+@fillSpectrumVectorWithSusyParticles@
+   if (model.do_calculate_sm_pole_masses()) {
+@fillSpectrumVectorWithSMParticles@
+   }
+}
+
 void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) const
 {
    if (spectrum.empty())
