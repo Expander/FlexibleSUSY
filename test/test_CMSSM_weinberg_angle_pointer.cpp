@@ -231,7 +231,12 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    setup_data(model, data);
    double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein(&model);
+   Weinberg_angle_pointer::Sm_parameters sm_parameters;
+   sm_parameters.fermi_constant = Electroweak_constants::gfermi;
+   sm_parameters.mw_pole = Electroweak_constants::MW;
+   sm_parameters.mz_pole = Electroweak_constants::MZ;
+   sm_parameters.mt_pole = Electroweak_constants::PMTOP;
+   Weinberg_angle_pointer wein(&model, sm_parameters);
    double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 1.0e-10);
@@ -255,7 +260,12 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    setup_data(model, data);
    double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein(&model);
+   Weinberg_angle_pointer::Sm_parameters sm_parameters;
+   sm_parameters.fermi_constant = Electroweak_constants::gfermi;
+   sm_parameters.mw_pole = Electroweak_constants::MW;
+   sm_parameters.mz_pole = Electroweak_constants::MZ;
+   sm_parameters.mt_pole = Electroweak_constants::PMTOP;
+   Weinberg_angle_pointer wein(&model, sm_parameters);
    double delta_r_2 = wein.calculate_delta_r(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
@@ -279,7 +289,12 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    setup_data(model, data);
    double delta_rho_1 = Weinberg_angle::calculate_delta_rho(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein(&model);
+   Weinberg_angle_pointer::Sm_parameters sm_parameters;
+   sm_parameters.fermi_constant = Electroweak_constants::gfermi;
+   sm_parameters.mw_pole = Electroweak_constants::MW;
+   sm_parameters.mz_pole = Electroweak_constants::MZ;
+   sm_parameters.mt_pole = Electroweak_constants::PMTOP;
+   Weinberg_angle_pointer wein(&model, sm_parameters);
    double delta_rho_2 = wein.calculate_delta_rho(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_rho_1, delta_rho_2, 1.0e-10);
@@ -320,7 +335,12 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
 
    BOOST_MESSAGE("running calculation with Weinberg_angle_pointer ...");
    stopwatch.start();
-   Weinberg_angle_pointer pwein(&model);
+   Weinberg_angle_pointer::Sm_parameters sm_parameters;
+   sm_parameters.fermi_constant = Electroweak_constants::gfermi;
+   sm_parameters.mw_pole = Electroweak_constants::MW;
+   sm_parameters.mz_pole = Electroweak_constants::MZ;
+   sm_parameters.mt_pole = Electroweak_constants::PMTOP;
+   Weinberg_angle_pointer pwein(&model, sm_parameters);
    pwein.set_number_of_iterations(maxTries);
    pwein.set_precision_goal(tol);
    double sin_theta_2;

@@ -18,7 +18,6 @@
 
 #include "CMSSM_two_scale_model.hpp"
 #include "weinberg_angle_pointer.hpp"
-#include "ew_input.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "numerics2.hpp"
@@ -26,23 +25,36 @@
 #include "numerics.h"
 #include "error.hpp"
 
-#define ROOT2 Electroweak_constants::root2
-
 namespace flexiblesusy {
 
+const double ROOT2 = Sqrt(2.0);
+
 namespace weinberg_angle {
+
+Weinberg_angle_pointer::Sm_parameters::Sm_parameters()
+   : fermi_constant(0.)
+   , mw_pole(0.)
+   , mz_pole(0.)
+   , mt_pole(0.)
+{
+}
+
 /**
  * Sets the maximum number of iterations to 20, the number of loops to 2,
- * the precision goal to 1.0e-8, and the model pointer to the one
- * which is handed over as parameter.
+ * the precision goal to 1.0e-8, and the model pointer as well as the
+ * SM parameter struct to the ones which are handed over as parameters. 
  *
  * @param model_ pointer to the model for which the calculation shall be done
+ * @param sm_parameters_ struct containing the required SM parameters
  */
-Weinberg_angle_pointer::Weinberg_angle_pointer(const CMSSM<Two_scale>* model_)
+Weinberg_angle_pointer::Weinberg_angle_pointer(
+   const CMSSM<Two_scale>* model_,
+   const Sm_parameters& sm_parameters_)
    : number_of_iterations(20)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
    , model(model_)
+   , sm_parameters(sm_parameters_)
 {
 }
 
@@ -70,6 +82,11 @@ void Weinberg_angle_pointer::set_model_pointer(const CMSSM<Two_scale>* model_)
    model = model_;
 }
 
+void Weinberg_angle_pointer::set_sm_parameters(const Sm_parameters& sm_parameters_)
+{
+   sm_parameters = sm_parameters_;
+}
+
 /**
  * Calculates the DR-bar weak mixing angle \f$\sin\hat{\theta}_W\f$ as
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
@@ -89,13 +106,13 @@ double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
    const double g2         = model->get_g2();
    const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
-   const double mz_pole    = Electroweak_constants::MZ;
    const double scale      = model->get_scale();
-   const double gfermi     = Electroweak_constants::gfermi;
+   const double mz         = sm_parameters.mz_pole;
+   const double gfermi     = sm_parameters.fermi_constant;
 
-   if (!is_equal(scale, mz_pole)) {
+   if (!is_equal(scale, mz)) {
       WARNING("Weinberg_angle_pointer::calculate() called at scale "
-              << scale << " != MZ_pole(" << mz_pole << ")");
+              << scale << " != MZ_pole(" << mz << ")");
    }
 
    unsigned iteration = 0;
@@ -107,7 +124,7 @@ double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
       const double deltaR = calculate_delta_r(rho_old, sin_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
-         (ROOT2 * Sqr(mz_pole) * gfermi * (1.0 - deltaR));
+         (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaR));
 
       if (sin2thetasqO4 >= 0.25)
          sin2thetasqO4 = 0.25;
@@ -161,12 +178,12 @@ double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
  */
 double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThetaW)
 {
-   const double mz = Electroweak_constants::MZ;
-   const double mw = Electroweak_constants::MW;
-   const double mt = Electroweak_constants::PMTOP;
+   const double mz = sm_parameters.mz_pole;
+   const double mw = sm_parameters.mw_pole;
+   const double mt = sm_parameters.mt_pole;
    const double mh = model->get_Mhh(0);
    const double g3 = model->get_g3();
-   const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
+   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
 
    const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
@@ -221,12 +238,12 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
  */
 double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW)
 {
-   const double mz = Electroweak_constants::MZ;
-   const double mw = Electroweak_constants::MW;
-   const double mt = Electroweak_constants::PMTOP;
+   const double mz = sm_parameters.mz_pole;
+   const double mw = sm_parameters.mw_pole;
+   const double mt = sm_parameters.mt_pole;
    const double mh = model->get_Mhh(0);
    const double g3 = model->get_g3();
-   const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
+   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
    const double outcos2 = 1.0 - Sqr(sinThetaW);
 
@@ -310,8 +327,8 @@ double Weinberg_angle_pointer::calculate_delta_vb(double rhohat, double sinTheta
 double Weinberg_angle_pointer::calculate_delta_vb_sm(
    double rhohat, double sinThetaW)
 {
-   const double mz  = Electroweak_constants::MZ;
-   const double mw  = Electroweak_constants::MW;
+   const double mz  = sm_parameters.mz_pole;
+   const double mw  = sm_parameters.mw_pole;
    const double cw2 = Sqr(mw / mz);
    const double sw2 = 1.0 - cw2;
    const double sinThetaW2 = Sqr(sinThetaW);
@@ -342,7 +359,7 @@ double Weinberg_angle_pointer::calculate_delta_vb_sm(
 double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
 {
    const double q          = model->get_scale();
-   const double mz         = Electroweak_constants::MZ;
+   const double mz         = sm_parameters.mz_pole;
    const double gY         = model->get_g1() * Sqrt(0.6);
    const double g2         = model->get_g2();
    const double hmu        = Re(model->get_Ye(1,1));

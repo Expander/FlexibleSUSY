@@ -31,13 +31,27 @@ namespace weinberg_angle {
  */
 class Weinberg_angle_pointer {
 public:
-    Weinberg_angle_pointer(const CMSSM<Two_scale>*);
+   /**
+    * @class Sm_parameters
+    * @brief SM parameters necessary for calculating the weak mixing angle
+    * -> are extracted from a QedQcd object
+    */
+   struct Sm_parameters {
+      Sm_parameters();
+      double fermi_constant; ///< Fermi constant
+      double mw_pole;        ///< W pole mass
+      double mz_pole;        ///< Z pole mass
+      double mt_pole;        ///< top quark pole mass
+   };
+
+   Weinberg_angle_pointer(const CMSSM<Two_scale>*, const Sm_parameters&);
    ~Weinberg_angle_pointer();
 
    void set_number_of_iterations(unsigned);         ///< maximum number of iterations
    void set_number_of_loops(unsigned);              ///< set number of loops
    void set_precision_goal(double);                 ///< set precision goal
    void set_model_pointer(const CMSSM<Two_scale>*); ///< set pointer to investigated model
+   void set_sm_parameters(const Sm_parameters&);    ///< set sm_parameters member variable
 
    /// calculates and returns the sinus of the Weinberg angle
    double calculate(double rho_start = 1.0, double sin_start = 0.48);
@@ -47,6 +61,7 @@ private:
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
    const CMSSM<Two_scale>* model; ///< pointer to investigated model
+   Sm_parameters sm_parameters;   ///< SM parameters
 
    double calculate_delta_rho(double, double);
    double calculate_delta_r(double, double);
