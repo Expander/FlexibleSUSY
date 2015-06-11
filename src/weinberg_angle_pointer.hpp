@@ -34,9 +34,6 @@ public:
     Weinberg_angle_pointer(const CMSSM<Two_scale>*);
    ~Weinberg_angle_pointer();
 
-   void enable_susy_contributions();  ///< enable susy contributions
-   void disable_susy_contributions(); ///< disable susy contributions
-
    void set_number_of_iterations(unsigned);         ///< maximum number of iterations
    void set_number_of_loops(unsigned);              ///< set number of loops
    void set_precision_goal(double);                 ///< set precision goal
@@ -67,7 +64,6 @@ private:
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
    const CMSSM<Two_scale>* model; ///< pointer to investigated model
-   bool susy_contributions;       ///< model type
    Derived_data derived_data;
 
    void calculate_derived_data();

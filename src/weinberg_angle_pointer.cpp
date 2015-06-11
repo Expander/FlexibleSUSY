@@ -53,33 +53,23 @@ Weinberg_angle_pointer::Derived_data::Derived_data()
 }
 
 /**
- * Sets the maximum number of iterations to 20,
- * the number of loops to 2,
- * and the precision goal to 1.0e-8 and
- * enables the SUSY contributions by default.
+ * Sets the maximum number of iterations to 20, the number of loops to 2,
+ * the precision goal to 1.0e-8, and the model pointer to the one
+ * which is handed over as parameter.
+ *
+ * @param model_ pointer to the model for which the calculation shall be done
  */
 Weinberg_angle_pointer::Weinberg_angle_pointer(const CMSSM<Two_scale>* model_)
    : number_of_iterations(20)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
    , model(model_)
-   , susy_contributions(true)
    , derived_data()
 {
 }
 
 Weinberg_angle_pointer::~Weinberg_angle_pointer()
 {
-}
-
-void Weinberg_angle_pointer::enable_susy_contributions()
-{
-   susy_contributions = true;
-}
-
-void Weinberg_angle_pointer::disable_susy_contributions()
-{
-   susy_contributions = false;
 }
 
 void Weinberg_angle_pointer::set_number_of_iterations(unsigned n)
@@ -317,7 +307,7 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
    const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
    const double sinb = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix12 = model->get_ZH(0,1);
+   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
    const double pizztMZ = derived_data.self_energy_z_at_mz;
    const double piwwtMW = derived_data.self_energy_w_at_mw;
    const double alphaDRbar = derived_data.alpha_em_drbar;
@@ -327,18 +317,12 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
    WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
    WARN_IF_ZERO(mh, calculate_delta_rho)
    WARN_IF_ZERO(g3, calculate_delta_rho)
+   WARN_IF_ZERO(sinb, calculate_delta_rho)
+   WARN_IF_ZERO(hmix_r, calculate_delta_rho)
    WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
    WARN_IF_ZERO(piwwtMW, calculate_delta_rho)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
-   if (susy_contributions) {
-      WARN_IF_ZERO(sinb, calculate_delta_rho)
-      WARN_IF_ZERO(hmix12, calculate_delta_rho)
-   }
 #endif
-
-   double hmix_r = 1.0;
-   if (susy_contributions)
-      hmix_r = Sqr(hmix12 / sinb);
 
    double deltaRho1Loop = 0.;
    if (number_of_loops > 0)
@@ -377,7 +361,7 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
    const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
    const double sinb = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix12 = model->get_ZH(0,1);
+   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
    const double outcos2 = 1.0 - Sqr(sinThetaW);
    const double piwwt0  = derived_data.self_energy_w_at_0;
    const double pizztMZ = derived_data.self_energy_z_at_mz;
@@ -388,23 +372,17 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
    WARN_IF_ZERO(sinThetaW, calculate_delta_r)
    WARN_IF_ZERO(mh, calculate_delta_r)
    WARN_IF_ZERO(g3, calculate_delta_r)
+   WARN_IF_ZERO(sinb, calculate_delta_r)
+   WARN_IF_ZERO(hmix_r, calculate_delta_r)
    WARN_IF_ZERO(outcos2, calculate_delta_r)
    WARN_IF_ZERO(piwwt0, calculate_delta_r)
    WARN_IF_ZERO(pizztMZ, calculate_delta_r)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_r)
-   if (susy_contributions) {
-      WARN_IF_ZERO(sinb, calculate_delta_r)
-      WARN_IF_ZERO(hmix12, calculate_delta_r)
-   }
 #endif
 
    double dvb = 0.;
    if (number_of_loops > 0)
       dvb = calculate_delta_vb(rhohat, sinThetaW);
-
-   double hmix_r = 1.0;
-   if (susy_contributions)
-      hmix_r = Sqr(hmix12 / sinb);
 
    double deltaR1Loop = 0.;
    if (number_of_loops > 0)
@@ -438,9 +416,7 @@ double Weinberg_angle_pointer::calculate_delta_vb(double rhohat, double sinTheta
 {
    const double deltaVbSm = calculate_delta_vb_sm(rhohat, sinThetaW);
 
-   double deltaVbSusy = 0.;
-   if (susy_contributions)
-      deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
+   const double deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
 
    const double deltaVb = deltaVbSm + deltaVbSusy;
 
