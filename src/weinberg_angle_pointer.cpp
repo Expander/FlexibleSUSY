@@ -75,7 +75,7 @@ void Weinberg_angle_pointer::set_model_pointer(const CMSSM<Two_scale>* model_)
  * defined in Eq. (C.3) from hep-ph/9606211 given the Fermi constant,
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as input.
  *
- * The function throws an exception of type NoConvergenceError if the
+ * The function throws an exception of type NoRhoConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
  *
  * @param rho_start initial guess for the rho-hat-parameter
@@ -145,7 +145,7 @@ double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
    }
 
    if (not_converged)
-      throw NoConvergenceError(number_of_iterations);
+      throw NoRhoConvergenceError(number_of_iterations, sin_new, rho_new);
 
    return sin_new;
 }
