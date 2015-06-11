@@ -26,14 +26,6 @@
 #include "numerics.h"
 #include "error.hpp"
 
-#define WARN_IF_ZERO(p,fun)                     \
-   if (is_zero(p))                              \
-      WARNING(#fun ": " #p " is zero!");
-
-#define QUIT_IF(condition,fun)                  \
-   if (condition)                               \
-      FATAL(#fun ": condition " #condition " is fullfilled!");
-
 #define ROOT2 Electroweak_constants::root2
 
 namespace flexiblesusy {
@@ -199,18 +191,6 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
                  + calculate_self_energy_w_top(mw, mt);
    }
 
-#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rhohat, calculate_delta_rho)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_rho)
-   WARN_IF_ZERO(mh, calculate_delta_rho)
-   WARN_IF_ZERO(g3, calculate_delta_rho)
-   WARN_IF_ZERO(sinb, calculate_delta_rho)
-   WARN_IF_ZERO(hmix_r, calculate_delta_rho)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
-   WARN_IF_ZERO(pizztMZ_corrected, calculate_delta_rho)
-   WARN_IF_ZERO(piwwtMW_corrected, calculate_delta_rho)
-#endif
-
    double deltaRho1Loop = 0.;
    if (number_of_loops > 0)
       deltaRho1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
@@ -271,19 +251,6 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
          piwwt0  - calculate_self_energy_w_top(0., mt_drbar)
                  + calculate_self_energy_w_top(0., mt);
    }
-
-#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rhohat, calculate_delta_r)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_r)
-   WARN_IF_ZERO(mh, calculate_delta_r)
-   WARN_IF_ZERO(g3, calculate_delta_r)
-   WARN_IF_ZERO(sinb, calculate_delta_r)
-   WARN_IF_ZERO(hmix_r, calculate_delta_r)
-   WARN_IF_ZERO(outcos2, calculate_delta_r)
-   WARN_IF_ZERO(piwwt0_corrected, calculate_delta_r)
-   WARN_IF_ZERO(pizztMZ_corrected, calculate_delta_r)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_r)
-#endif
 
    double dvb = 0.;
    if (number_of_loops > 0)
@@ -355,13 +322,6 @@ double Weinberg_angle_pointer::calculate_delta_vb_sm(
    const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
-#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(rhohat, calculate_delta_vb_sm)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_vb_sm)
-   WARN_IF_ZERO(outcos2, calculate_delta_vb_sm)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb_sm)
-#endif
-
    const double deltaVbSm = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
        (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2)));
@@ -414,29 +374,6 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
    const Eigen::MatrixXcd& n(model->get_ZN());
    const Eigen::MatrixXcd& u(model->get_UM());
    const Eigen::MatrixXcd& v(model->get_UP());
-
-#if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
-   WARN_IF_ZERO(sinThetaW, calculate_delta_vb_susy)
-   WARN_IF_ZERO(q, calculate_delta_vb_susy)
-   WARN_IF_ZERO(gY, calculate_delta_vb_susy)
-   WARN_IF_ZERO(g2, calculate_delta_vb_susy)
-   WARN_IF_ZERO(hmu, calculate_delta_vb_susy)
-   WARN_IF_ZERO(alphaDRbar, calculate_delta_vb_susy)
-   WARN_IF_ZERO(msel, calculate_delta_vb_susy)
-   WARN_IF_ZERO(msmul, calculate_delta_vb_susy)
-   WARN_IF_ZERO(msve, calculate_delta_vb_susy)
-   WARN_IF_ZERO(msvm, calculate_delta_vb_susy)
-   QUIT_IF(mneut.rows() < 4, calculate_delta_vb_susy)
-   QUIT_IF(mneut.cols() != 1, calculate_delta_vb_susy)
-   QUIT_IF(mch.rows() < 2, calculate_delta_vb_susy)
-   QUIT_IF(mch.cols() != 1, calculate_delta_vb_susy)
-   QUIT_IF(mneut.rows() != n.rows(), calculate_delta_vb_susy)
-   QUIT_IF(mneut.rows() != n.cols(), calculate_delta_vb_susy)
-   QUIT_IF(mch.rows() != u.rows(), calculate_delta_vb_susy)
-   QUIT_IF(mch.rows() != u.cols(), calculate_delta_vb_susy)
-   QUIT_IF(mch.rows() != v.rows(), calculate_delta_vb_susy)
-   QUIT_IF(mch.rows() != v.cols(), calculate_delta_vb_susy)
-#endif
 
    const int dimN = mneut.rows();
    const int dimC = mch.rows();
