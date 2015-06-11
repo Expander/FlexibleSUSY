@@ -58,11 +58,11 @@ Weinberg_angle_pointer::Derived_data::Derived_data()
  * and the precision goal to 1.0e-8 and
  * enables the SUSY contributions by default.
  */
-Weinberg_angle_pointer::Weinberg_angle_pointer()
+Weinberg_angle_pointer::Weinberg_angle_pointer(const CMSSM<Two_scale>* model_)
    : number_of_iterations(20)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
-   , model(nullptr)
+   , model(model_)
    , susy_contributions(true)
    , derived_data()
 {

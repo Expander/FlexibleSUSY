@@ -208,8 +208,7 @@ BOOST_AUTO_TEST_CASE( test_derived_data )
    Weinberg_angle::Data data;
    setup_data(model, data);
 
-   Weinberg_angle_pointer wein;
-   wein.set_model_pointer(&model);
+   Weinberg_angle_pointer wein(&model);
    wein.calculate_derived_data();
 
    BOOST_CHECK_CLOSE_FRACTION(data.alpha_em_drbar, wein.derived_data.alpha_em_drbar, 1.0e-10);
@@ -261,8 +260,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    setup_data(model, data);
    double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein;
-   wein.set_model_pointer(&model);
+   Weinberg_angle_pointer wein(&model);
    wein.calculate_derived_data();
    double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
@@ -287,8 +285,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    setup_data(model, data);
    double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein;
-   wein.set_model_pointer(&model);
+   Weinberg_angle_pointer wein(&model);
    wein.calculate_derived_data();
    double delta_r_2 = wein.calculate_delta_r(outrho, outsin);
 
@@ -313,8 +310,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    setup_data(model, data);
    double delta_rho_1 = Weinberg_angle::calculate_delta_rho(outrho, outsin, data);
 
-   Weinberg_angle_pointer wein;
-   wein.set_model_pointer(&model);
+   Weinberg_angle_pointer wein(&model);
    wein.calculate_derived_data();
    double delta_rho_2 = wein.calculate_delta_rho(outrho, outsin);
 
@@ -356,8 +352,7 @@ BOOST_AUTO_TEST_CASE( test_sin_theta )
 
    BOOST_MESSAGE("running calculation with Weinberg_angle_pointer ...");
    stopwatch.start();
-   Weinberg_angle_pointer pwein;
-   pwein.set_model_pointer(&model);
+   Weinberg_angle_pointer pwein(&model);
    pwein.set_number_of_iterations(maxTries);
    pwein.set_precision_goal(tol);
    double sin_theta_2;

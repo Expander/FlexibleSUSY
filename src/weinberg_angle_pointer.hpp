@@ -31,7 +31,7 @@ namespace weinberg_angle {
  */
 class Weinberg_angle_pointer {
 public:
-    Weinberg_angle_pointer();
+    Weinberg_angle_pointer(const CMSSM<Two_scale>*);
    ~Weinberg_angle_pointer();
 
    void enable_susy_contributions();  ///< enable susy contributions
