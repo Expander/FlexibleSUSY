@@ -167,9 +167,9 @@ void setup_data(const CMSSM<Two_scale>& model,
    const double pizztMZ     = Re(model.self_energy_VZ(mz_pole));
    const double piwwtMW     = Re(model.self_energy_VWm(mw_pole));
    const double piwwt0      = Re(model.self_energy_VWm(0.));
-   double pizztMZ_corrected = 0.;
-   double piwwtMW_corrected = 0.;
-   double piwwt0_corrected  = 0.;
+   double pizztMZ_corrected = pizztMZ;
+   double piwwtMW_corrected = piwwtMW;
+   double piwwt0_corrected  = piwwt0;
 
    Weinberg_angle::Self_energy_data se_data;
    se_data.scale    = scale;
@@ -191,35 +191,6 @@ void setup_data(const CMSSM<Two_scale>& model,
    data.self_energy_z_at_mz = pizztMZ_corrected;
    data.self_energy_w_at_mw = piwwtMW_corrected;
    data.self_energy_w_at_0  = piwwt0_corrected;
-}
-
-BOOST_AUTO_TEST_CASE( test_derived_data )
-{
-   CMSSM<Two_scale> model;
-   CMSSM_input_parameters input;
-   input.m0 = 125.;
-   input.m12 = 500.;
-   input.TanBeta = 10.;
-   input.SignMu = 1;
-   input.Azero = 0.;
-
-   setup_CMSSM_const_non_3rd_gen(model, input);
-
-   Weinberg_angle::Data data;
-   setup_data(model, data);
-
-   Weinberg_angle_pointer wein(&model);
-   wein.calculate_derived_data();
-
-   BOOST_CHECK_CLOSE_FRACTION(data.alpha_em_drbar, wein.derived_data.alpha_em_drbar, 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.msel_drbar    , wein.derived_data.msel_drbar    , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.msmul_drbar   , wein.derived_data.msmul_drbar   , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.msve_drbar    , wein.derived_data.msve_drbar    , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.msvm_drbar    , wein.derived_data.msvm_drbar    , 1.0e-10);
-
-   BOOST_CHECK_CLOSE_FRACTION(data.self_energy_z_at_mz, wein.derived_data.self_energy_z_at_mz , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.self_energy_w_at_0 , wein.derived_data.self_energy_w_at_0  , 1.0e-10);
-   BOOST_CHECK_CLOSE_FRACTION(data.self_energy_w_at_mw, wein.derived_data.self_energy_w_at_mw , 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_rho_2 )
@@ -261,7 +232,6 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
    double delta_vb_1 = Weinberg_angle::calculate_delta_vb(outrho, outsin, data);
 
    Weinberg_angle_pointer wein(&model);
-   wein.calculate_derived_data();
    double delta_vb_2 = wein.calculate_delta_vb(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_vb_1, delta_vb_2, 1.0e-10);
@@ -286,7 +256,6 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    double delta_r_1 = Weinberg_angle::calculate_delta_r(outrho, outsin, data);
 
    Weinberg_angle_pointer wein(&model);
-   wein.calculate_derived_data();
    double delta_r_2 = wein.calculate_delta_r(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
@@ -311,7 +280,6 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    double delta_rho_1 = Weinberg_angle::calculate_delta_rho(outrho, outsin, data);
 
    Weinberg_angle_pointer wein(&model);
-   wein.calculate_derived_data();
    double delta_rho_2 = wein.calculate_delta_rho(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_rho_1, delta_rho_2, 1.0e-10);

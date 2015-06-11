@@ -43,32 +43,10 @@ public:
    double calculate(double rho_start = 1.0, double sin_start = 0.48);
 
 private:
-   /**
-    * @class Derived_data
-    * @brief Derived model parameters necessary for calculating weak mixing angle
-    */
-   struct Derived_data {
-      Derived_data();
-
-      double alpha_em_drbar;      ///< alpha_em(MZ, DR-bar, SUSY)
-      double msel_drbar;          ///< left-handed selectron DR-bar mass
-      double msmul_drbar;         ///< left-handed smuon DR-bar mass
-      double msve_drbar;          ///< electron-sneutrino DR-bar mass
-      double msvm_drbar;          ///< muon-sneutrino DR-bar mass
-      double self_energy_z_at_mz; ///< self-energy Z at p = MZ, mt = mt_pole
-      double self_energy_w_at_0;  ///< self-energy W at p = 0, mt = mt_pole
-      double self_energy_w_at_mw; ///< self-energy W at p = MW, mt = mt_pole
-   };
-
    unsigned number_of_iterations; ///< maximum number of iterations
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
    const CMSSM<Two_scale>* model; ///< pointer to investigated model
-   Derived_data derived_data;
-
-   void calculate_derived_data();
-   double calculate_self_energy_z_top(double, double);
-   double calculate_self_energy_w_top(double, double);
 
    double calculate_delta_rho(double, double);
    double calculate_delta_r(double, double);
@@ -76,6 +54,9 @@ private:
    double calculate_delta_vb_sm(double, double);
    double calculate_delta_vb_susy(double);
    static double rho_2(double);
+
+   double calculate_self_energy_z_top(double, double);
+   double calculate_self_energy_w_top(double, double);
 };
 
 } // namespace weinberg_angle

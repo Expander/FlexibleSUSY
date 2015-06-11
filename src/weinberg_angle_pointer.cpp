@@ -39,19 +39,6 @@
 namespace flexiblesusy {
 
 namespace weinberg_angle {
-
-Weinberg_angle_pointer::Derived_data::Derived_data()
-   : alpha_em_drbar(0.)
-   , msel_drbar(0.)
-   , msmul_drbar(0.)
-   , msve_drbar(0.)
-   , msvm_drbar(0.)
-   , self_energy_z_at_mz(0.)
-   , self_energy_w_at_0(0.)
-   , self_energy_w_at_mw(0.)
-{
-}
-
 /**
  * Sets the maximum number of iterations to 20, the number of loops to 2,
  * the precision goal to 1.0e-8, and the model pointer to the one
@@ -64,7 +51,6 @@ Weinberg_angle_pointer::Weinberg_angle_pointer(const CMSSM<Two_scale>* model_)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
    , model(model_)
-   , derived_data()
 {
 }
 
@@ -107,9 +93,10 @@ void Weinberg_angle_pointer::set_model_pointer(const CMSSM<Two_scale>* model_)
  */
 double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
 {
-   calculate_derived_data();
-
-   const double alphaDRbar = derived_data.alpha_em_drbar;
+   const double gY         = model->get_g1() * Sqrt(0.6);
+   const double g2         = model->get_g2();
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
    const double mz_pole    = Electroweak_constants::MZ;
    const double scale      = model->get_scale();
    const double gfermi     = Electroweak_constants::gfermi;
@@ -172,123 +159,6 @@ double Weinberg_angle_pointer::calculate(double rho_start, double sin_start)
 }
 
 /**
- * Calculates and inserts the model parameters in derived_data
- * such that they can be used during the iteration
- * and do not have to be calculated anew in every step.
- * For the self-energies a transition from mt = mt_drbar to
- * mt = mt_pole is required.
- */
-void Weinberg_angle_pointer::calculate_derived_data()
-{
-   const double gY      = model->get_g1() * Sqrt(0.6);
-   const double g2      = model->get_g2();
-   const double e_drbar = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-
-   derived_data.alpha_em_drbar = Sqr(e_drbar) / (4.0 * Pi);
-
-   double msel  = 0.;
-   double msmul = 0.;
-   double msve  = 0.;
-   double msvm  = 0.;
-   const auto MSe = model->get_MSe();
-   const auto ZE  = model->get_ZE();
-   const auto MSv = model->get_MSv();
-   const auto ZV  = model->get_ZV();
-
-   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
-      msel  += AbsSqr(ZE(i,0))*MSe(i);
-      msmul += AbsSqr(ZE(i,1))*MSe(i);
-   }
-
-   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
-      msve += AbsSqr(ZV(i,0))*MSv(i);
-      msvm += AbsSqr(ZV(i,1))*MSv(i);
-   }
-
-   derived_data.msel_drbar  = msel;
-   derived_data.msmul_drbar = msmul;
-   derived_data.msve_drbar  = msve;
-   derived_data.msvm_drbar  = msvm;
-
-   const double mz_pole     = Electroweak_constants::MZ;
-   const double mw_pole     = Electroweak_constants::MW;
-   const double mt_pole     = Electroweak_constants::PMTOP;
-   const double mt_drbar    = model->get_MFu(2);
-   const double pizztMZ     = Re(model->self_energy_VZ(mz_pole));
-   const double piwwt0      = Re(model->self_energy_VWm(0.));
-   const double piwwtMW     = Re(model->self_energy_VWm(mw_pole));
-   double pizztMZ_corrected = 0.;
-   double piwwt0_corrected  = 0.;
-   double piwwtMW_corrected = 0.;
-
-   if (model->get_thresholds() > 1) {
-      pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_z_top(mz_pole, mt_drbar)
-                 + calculate_self_energy_z_top(mz_pole, mt_pole);
-      piwwt0_corrected =
-         piwwt0  - calculate_self_energy_w_top(0., mt_drbar)
-                 + calculate_self_energy_w_top(0., mt_pole);
-      piwwtMW_corrected =
-         piwwtMW - calculate_self_energy_w_top(mw_pole, mt_drbar)
-                 + calculate_self_energy_w_top(mw_pole, mt_pole);
-   }
-
-   derived_data.self_energy_z_at_mz = pizztMZ_corrected;
-   derived_data.self_energy_w_at_0  = piwwt0_corrected;
-   derived_data.self_energy_w_at_mw = piwwtMW_corrected;
-}
-
-/**
- * Calculates 1-loop top-quark contribution to Z boson self-energy.
- *
- * @param p momentum
- * @param mt top-quark mass
- *
- * @return 1-loop top-quark contribution to Z boson self-energy
- */
-double Weinberg_angle_pointer::calculate_self_energy_z_top(double p, double mt)
-{
-   const double q   = model->get_scale();
-   const double Nc  = 3.0;
-   const double gY  = model->get_g1() * Sqrt(0.6);
-   const double g2  = model->get_g2();
-   const double gY2 = Sqr(gY);
-   const double g22 = Sqr(g2);
-   const double sw2 = gY2 / (gY2 + g22);
-   const double cw2 = 1.0 - sw2;
-   const double guL = 0.5 - 2.0 * sw2 / 3.0;
-   const double guR = 2.0 * sw2 / 3.0;
-
-   const double self_energy_z_top =
-      Nc * Sqr(g2) / cw2 * oneOver16PiSqr *
-      (hfn(p, mt, mt, q) * (Sqr(guL) + Sqr(guR)) -
-       4.0 * guL * guR * Sqr(mt) * b0(p, mt, mt, q));
-
-   return self_energy_z_top;
-}
-
-/**
- * Calculates 1-loop top-quark contribution to W boson self-energy.
- *
- * @param p momentum
- * @param mt top-quark mass
- *
- * @return 1-loop top-quark contribution to W boson self-energy
- */
-double Weinberg_angle_pointer::calculate_self_energy_w_top(double p, double mt)
-{
-   const double q  = model->get_scale();
-   const double mb = model->get_MFd(2);
-   const double Nc = 3.0;
-   const double g2 = model->get_g2();
-
-   const double self_energy_w_top =
-      0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;
-
-   return self_energy_w_top;
-}
-
-/**
  * Calculates the \f$\Delta\hat{\rho}\f$ corrections as defined in
  * Eqs. (C.4), (C.6) from hep-ph/9606211.
  *
@@ -306,11 +176,28 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
    const double g3 = model->get_g3();
    const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
-   const double sinb = Sin(ArcTan(model->get_vu() / model->get_vd()));
+
+   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
    const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
-   const double pizztMZ = derived_data.self_energy_z_at_mz;
-   const double piwwtMW = derived_data.self_energy_w_at_mw;
-   const double alphaDRbar = derived_data.alpha_em_drbar;
+
+   const double gY         = model->get_g1() * Sqrt(0.6);
+   const double g2         = model->get_g2();
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+
+   const double mt_drbar    = model->get_MFu(2);
+   const double pizztMZ     = Re(model->self_energy_VZ(mz));
+   const double piwwtMW     = Re(model->self_energy_VWm(mw));
+   double pizztMZ_corrected = pizztMZ;
+   double piwwtMW_corrected = piwwtMW;
+   if (model->get_thresholds() > 1) {
+      pizztMZ_corrected =
+         pizztMZ - calculate_self_energy_z_top(mz, mt_drbar)
+                 + calculate_self_energy_z_top(mz, mt);
+      piwwtMW_corrected =
+         piwwtMW - calculate_self_energy_w_top(mw, mt_drbar)
+                 + calculate_self_energy_w_top(mw, mt);
+   }
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(rhohat, calculate_delta_rho)
@@ -319,14 +206,15 @@ double Weinberg_angle_pointer::calculate_delta_rho(double rhohat, double sinThet
    WARN_IF_ZERO(g3, calculate_delta_rho)
    WARN_IF_ZERO(sinb, calculate_delta_rho)
    WARN_IF_ZERO(hmix_r, calculate_delta_rho)
-   WARN_IF_ZERO(pizztMZ, calculate_delta_rho)
-   WARN_IF_ZERO(piwwtMW, calculate_delta_rho)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_rho)
+   WARN_IF_ZERO(pizztMZ_corrected, calculate_delta_rho)
+   WARN_IF_ZERO(piwwtMW_corrected, calculate_delta_rho)
 #endif
 
    double deltaRho1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRho1Loop = pizztMZ / (rhohat * Sqr(mz)) - piwwtMW / Sqr(mw);
+      deltaRho1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
+         piwwtMW_corrected / Sqr(mw);
 
    double deltaRho2LoopSm = 0.;
    if (number_of_loops > 1) {
@@ -360,12 +248,29 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
    const double g3 = model->get_g3();
    const double xt = 3.0 * Electroweak_constants::gfermi * Sqr(mt) *
                      ROOT2 * oneOver16PiSqr;
-   const double sinb = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
    const double outcos2 = 1.0 - Sqr(sinThetaW);
-   const double piwwt0  = derived_data.self_energy_w_at_0;
-   const double pizztMZ = derived_data.self_energy_z_at_mz;
-   const double alphaDRbar = derived_data.alpha_em_drbar;
+
+   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
+   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
+
+   const double gY         = model->get_g1() * Sqrt(0.6);
+   const double g2         = model->get_g2();
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+
+   const double mt_drbar    = model->get_MFu(2);
+   const double pizztMZ     = Re(model->self_energy_VZ(mz));
+   const double piwwt0      = Re(model->self_energy_VWm(0.));
+   double pizztMZ_corrected = pizztMZ;
+   double piwwt0_corrected  = piwwt0;
+   if (model->get_thresholds() > 1) {
+      pizztMZ_corrected =
+         pizztMZ - calculate_self_energy_z_top(mz, mt_drbar)
+                 + calculate_self_energy_z_top(mz, mt);
+      piwwt0_corrected =
+         piwwt0  - calculate_self_energy_w_top(0., mt_drbar)
+                 + calculate_self_energy_w_top(0., mt);
+   }
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(rhohat, calculate_delta_r)
@@ -375,8 +280,8 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
    WARN_IF_ZERO(sinb, calculate_delta_r)
    WARN_IF_ZERO(hmix_r, calculate_delta_r)
    WARN_IF_ZERO(outcos2, calculate_delta_r)
-   WARN_IF_ZERO(piwwt0, calculate_delta_r)
-   WARN_IF_ZERO(pizztMZ, calculate_delta_r)
+   WARN_IF_ZERO(piwwt0_corrected, calculate_delta_r)
+   WARN_IF_ZERO(pizztMZ_corrected, calculate_delta_r)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_r)
 #endif
 
@@ -386,7 +291,8 @@ double Weinberg_angle_pointer::calculate_delta_r(double rhohat, double sinThetaW
 
    double deltaR1Loop = 0.;
    if (number_of_loops > 0)
-      deltaR1Loop = rhohat * piwwt0 / Sqr(mw) - pizztMZ / Sqr(mz) + dvb;
+      deltaR1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
+         pizztMZ_corrected / Sqr(mz) + dvb;
 
    double deltaR2LoopSm = 0.;
    if (number_of_loops > 1) {
@@ -437,13 +343,17 @@ double Weinberg_angle_pointer::calculate_delta_vb(double rhohat, double sinTheta
 double Weinberg_angle_pointer::calculate_delta_vb_sm(
    double rhohat, double sinThetaW)
 {
-   const double mz = Electroweak_constants::MZ;
-   const double mw = Electroweak_constants::MW;
+   const double mz  = Electroweak_constants::MZ;
+   const double mw  = Electroweak_constants::MW;
    const double cw2 = Sqr(mw / mz);
    const double sw2 = 1.0 - cw2;
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
-   const double alphaDRbar = derived_data.alpha_em_drbar;
+
+   const double gY         = model->get_g1() * Sqrt(0.6);
+   const double g2         = model->get_g2();
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(rhohat, calculate_delta_vb_sm)
@@ -473,16 +383,32 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
 {
    const double q          = model->get_scale();
    const double mz         = Electroweak_constants::MZ;
-   const double gp         = model->get_g1() * Sqrt(0.6);
-   const double g          = model->get_g2();
+   const double gY         = model->get_g1() * Sqrt(0.6);
+   const double g2         = model->get_g2();
    const double hmu        = Re(model->get_Ye(1,1));
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
-   const double alphaDRbar = derived_data.alpha_em_drbar;
-   const double msel       = derived_data.msel_drbar;
-   const double msmul      = derived_data.msmul_drbar;
-   const double msve       = derived_data.msve_drbar;
-   const double msvm       = derived_data.msvm_drbar;
+
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+
+   double msel  = 0.;
+   double msmul = 0.;
+   double msve  = 0.;
+   double msvm  = 0.;
+   const auto MSe = model->get_MSe();
+   const auto ZE  = model->get_ZE();
+   const auto MSv = model->get_MSv();
+   const auto ZV  = model->get_ZV();
+   for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
+      msel  += AbsSqr(ZE(i,0))*MSe(i);
+      msmul += AbsSqr(ZE(i,1))*MSe(i);
+   }
+   for (int i = 0; i < decltype(MSv)::RowsAtCompileTime; i++) {
+      msve += AbsSqr(ZV(i,0))*MSv(i);
+      msvm += AbsSqr(ZV(i,1))*MSv(i);
+   }
+
    const Eigen::ArrayXd& mneut(model->get_MChi());
    const Eigen::ArrayXd& mch(model->get_MCha());
    const Eigen::MatrixXcd& n(model->get_ZN());
@@ -492,8 +418,8 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
 #if defined(ENABLE_VERBOSE) || defined(ENABLE_DEBUG)
    WARN_IF_ZERO(sinThetaW, calculate_delta_vb_susy)
    WARN_IF_ZERO(q, calculate_delta_vb_susy)
-   WARN_IF_ZERO(gp, calculate_delta_vb_susy)
-   WARN_IF_ZERO(g, calculate_delta_vb_susy)
+   WARN_IF_ZERO(gY, calculate_delta_vb_susy)
+   WARN_IF_ZERO(g2, calculate_delta_vb_susy)
    WARN_IF_ZERO(hmu, calculate_delta_vb_susy)
    WARN_IF_ZERO(alphaDRbar, calculate_delta_vb_susy)
    WARN_IF_ZERO(msel, calculate_delta_vb_susy)
@@ -522,12 +448,12 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
    Eigen::VectorXcd bChi0NuSnul, bChicNuSell;
    Eigen::VectorXcd bChi0ESell, aChicESnul;
 
-   bPsi0NuSnul(0) = -gp / ROOT2;
-   bPsi0NuSnul(1) =  g  * ROOT2 * 0.5;
-   bPsicNuSell(0) =  g;
-   bPsi0ESell(0)  = -gp / ROOT2;
-   bPsi0ESell(1)  = -g  * ROOT2 * 0.5;
-   aPsicESnul(0)  =  g;
+   bPsi0NuSnul(0) = - gY / ROOT2;
+   bPsi0NuSnul(1) =   g2 * ROOT2 * 0.5;
+   bPsicNuSell(0) =   g2;
+   bPsi0ESell(0)  = - gY / ROOT2;
+   bPsi0ESell(1)  = - g2 * ROOT2 * 0.5;
+   aPsicESnul(0)  =   g2;
 
    bChi0NuSnul = n * bPsi0NuSnul;
    bChicNuSell = u * bPsicNuSell;
@@ -550,12 +476,12 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
    Eigen::VectorXcd bChicNuSmul;
    Eigen::VectorXcd bChi0MuSmul, aChicMuSnul;
 
-   bPsicNuSmul(0) =  g;
-   bPsicNuSmul(1) = -hmu;
-   bPsi0MuSmul(0) = -gp / ROOT2;
-   bPsi0MuSmul(1) = -g  * ROOT2 * 0.5;
-   aPsicMuSnul(0) =  g;
-   aPsicMuSnul(1) = -hmu;
+   bPsicNuSmul(0) =   g2;
+   bPsicNuSmul(1) = - hmu;
+   bPsi0MuSmul(0) = - gY / ROOT2;
+   bPsi0MuSmul(1) = - g2  * ROOT2 * 0.5;
+   aPsicMuSnul(0) =   g2;
+   aPsicMuSnul(1) = - hmu;
 
    bChicNuSmul = u * bPsicNuSmul;
    bChi0MuSmul = n * bPsi0MuSmul;
@@ -572,15 +498,13 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
    }
 
    Eigen::MatrixXd aPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
-      bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC)),
-      fW(Eigen::MatrixXd::Zero(dimN,dimC)),
-      gW(Eigen::MatrixXd::Zero(dimN,dimC));
+      bPsi0PsicW(Eigen::MatrixXd::Zero(dimN,dimC));
    Eigen::MatrixXcd aChi0ChicW, bChi0ChicW;
 
-   aPsi0PsicW(1, 0) = -g;
-   aPsi0PsicW(3, 1) =  g / ROOT2;
-   bPsi0PsicW(1, 0) = -g;
-   bPsi0PsicW(2, 1) = -g / ROOT2;
+   aPsi0PsicW(1, 0) = - g2;
+   aPsi0PsicW(3, 1) =   g2 / ROOT2;
+   bPsi0PsicW(1, 0) = - g2;
+   bPsi0PsicW(2, 1) = - g2 / ROOT2;
 
    aChi0ChicW = n.conjugate() * aPsi0PsicW * v.transpose();
    bChi0ChicW = n * bPsi0PsicW * u.adjoint();
@@ -596,12 +520,12 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
          const double b0_0_mch_mneut    = b0(0.0, mch(i), mneut(j), q);
 
          deltaVE += bChicNuSell(i) * Conj(bChi0ESell(j)) *
-            (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msel_mch_mneut + 1.0 / (ROOT2 * g) * bChi0ChicW(j, i) *
+            (- ROOT2 / g2 * aChi0ChicW(j, i) * mch(i) * mneut(j) *
+             c0_msel_mch_mneut + 1.0 / (ROOT2 * g2) * bChi0ChicW(j, i) *
              (b0_0_mch_mneut + Sqr(msel) * c0_msel_mch_mneut - 0.5));
          deltaVE += - aChicESnul(i) * bChi0NuSnul(j) *
-            (- ROOT2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msve_mch_mneut + 1.0 / (ROOT2 * g) * aChi0ChicW(j, i) *
+            (- ROOT2 / g2 * bChi0ChicW(j, i) * mch(i) * mneut(j) *
+             c0_msve_mch_mneut + 1.0 / (ROOT2 * g2) * aChi0ChicW(j, i) *
              (b0_0_mch_mneut + Sqr(msve) * c0_msve_mch_mneut - 0.5));
       }
    }
@@ -619,12 +543,12 @@ double Weinberg_angle_pointer::calculate_delta_vb_susy(double sinThetaW)
          const double b0_0_mch_mneut     = b0(0.0, mch(i), mneut(j), q);
 
          deltaVMu += bChicNuSmul(i) * Conj(bChi0MuSmul(j)) *
-            (- ROOT2 / g * aChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msmul_mch_mneut + 1.0 / (ROOT2 * g) * bChi0ChicW(j, i) *
+            (- ROOT2 / g2 * aChi0ChicW(j, i) * mch(i) * mneut(j) *
+             c0_msmul_mch_mneut + 1.0 / (ROOT2 * g2) * bChi0ChicW(j, i) *
              (b0_0_mch_mneut + Sqr(msmul) * c0_msmul_mch_mneut - 0.5));
          deltaVMu += - aChicMuSnul(i) * bChi0NuSnul(j) *
-            (- ROOT2 / g * bChi0ChicW(j, i) * mch(i) * mneut(j) *
-             c0_msvm_mch_mneut + 1.0 / (ROOT2 * g) * aChi0ChicW(j, i) *
+            (- ROOT2 / g2 * bChi0ChicW(j, i) * mch(i) * mneut(j) *
+             c0_msvm_mch_mneut + 1.0 / (ROOT2 * g2) * aChi0ChicW(j, i) *
              (b0_0_mch_mneut + Sqr(msvm) * c0_msvm_mch_mneut - 0.5));
       }
    }
@@ -689,6 +613,56 @@ double Weinberg_angle_pointer::rho_2(double r)
          49.0 / 4.0 + 2.0 / 3.0 * rm1 + 1613.0 / 48.0 * rm2 + 87.57 * rm3 +
          341959.0 / 1200.0 * rm4 + 9737663.0 / 9800.0 * rm5;
    }
+}
+
+/**
+ * Calculates 1-loop top-quark contribution to Z boson self-energy.
+ *
+ * @param p momentum
+ * @param mt top-quark mass
+ *
+ * @return 1-loop top-quark contribution to Z boson self-energy
+ */
+double Weinberg_angle_pointer::calculate_self_energy_z_top(double p, double mt)
+{
+   const double q   = model->get_scale();
+   const double Nc  = 3.0;
+   const double gY  = model->get_g1() * Sqrt(0.6);
+   const double g2  = model->get_g2();
+   const double gY2 = Sqr(gY);
+   const double g22 = Sqr(g2);
+   const double sw2 = gY2 / (gY2 + g22);
+   const double cw2 = 1.0 - sw2;
+   const double guL = 0.5 - 2.0 * sw2 / 3.0;
+   const double guR = 2.0 * sw2 / 3.0;
+
+   const double self_energy_z_top =
+      Nc * Sqr(g2) / cw2 * oneOver16PiSqr *
+      (hfn(p, mt, mt, q) * (Sqr(guL) + Sqr(guR)) -
+       4.0 * guL * guR * Sqr(mt) * b0(p, mt, mt, q));
+
+   return self_energy_z_top;
+}
+
+/**
+ * Calculates 1-loop top-quark contribution to W boson self-energy.
+ *
+ * @param p momentum
+ * @param mt top-quark mass
+ *
+ * @return 1-loop top-quark contribution to W boson self-energy
+ */
+double Weinberg_angle_pointer::calculate_self_energy_w_top(double p, double mt)
+{
+   const double q  = model->get_scale();
+   const double mb = model->get_MFd(2);
+   const double Nc = 3.0;
+   const double g2 = model->get_g2();
+
+   const double self_energy_w_top =
+      0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;
+
+   return self_energy_w_top;
 }
 
 } // namespace weinberg_angle
