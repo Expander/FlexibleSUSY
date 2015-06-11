@@ -106,6 +106,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             Switch[loopOrder,
                    1, loopFactor = CConversion`oneOver16PiSqr;,
                    2, loopFactor = CConversion`twoLoop;,
+                   3, loopFactor = CConversion`threeLoop;,
                    _, loopFactor = CConversion`oneOver16PiSqr^loopOrder];
             name      = ToValidCSymbolString[GetName[betaFunction]];
             betaName  = "beta_" <> name;

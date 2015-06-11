@@ -23,6 +23,7 @@ ZEROVECTORCOMPLEX::usage="";
 THIRDGENERATIONPROJECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
+threeLoop::usage="";
 AbsSqr::usage="";
 AbsSqrt::usage="";
 FSKroneckerDelta::usage="";
