@@ -262,6 +262,11 @@ TEST_META := \
 		$(DIR)/test_ThresholdCorrections.m \
 		$(DIR)/test_Vertices.m
 
+ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+TEST_META += \
+		$(DIR)/test_SM_3loop_beta.m
+endif
+
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
 

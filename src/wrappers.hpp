@@ -408,6 +408,11 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
 
+#define THIRDGENERATIONPROJECTOR Proj
+#define DEFINE_THIRDGENERATIONPROJECTOR(N)                              \
+   Eigen::Matrix<double,N,N> Proj(Eigen::Matrix<double,N,N>::Zero());   \
+   Proj(N-1,N-1) = 1;
+
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)
 {

@@ -43,6 +43,7 @@ SMParticles = {
 };
 
 OnlyLowEnergyFlexibleSUSY = True;
+UseSM3LoopRGEs = True;
 
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh};
