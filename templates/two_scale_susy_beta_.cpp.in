@@ -65,7 +65,7 @@ namespace flexiblesusy {
  */
 @parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_three_loop(const Susy_traces& susy_traces) const
 {
-   DEFINE_THIRDGENERATIONPROJECTOR(3)
+   DEFINE_PROJECTOR(3,3,3,3)
 
 @localDeclThreeLoop@
 

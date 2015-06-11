@@ -1366,7 +1366,7 @@ AddSM3LoopRGE[beta_List, couplings_List] :=
     Module[{rules, MakeRule},
            MakeRule[coupling_] := {
                RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopSM`BetaSM[coupling]]}],
-               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`THIRDGENERATIONPROJECTOR}]
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`PROJECTOR}]
            };
            rules = Flatten[MakeRule /@ couplings];
            beta /. rules
