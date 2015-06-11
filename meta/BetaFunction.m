@@ -178,11 +178,11 @@ CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
               ];
            allBeta = allDecl <> "\n" <> allBeta1L <> "\n" <>
                      "if (get_loops() > 1) {\n" <>
-                     allBeta2L <>
+                     allBeta2L <> "\n" <>
                      TextFormatting`IndentText[
                          "if (get_loops() > 2) {\n" <>
                          allBeta3L <>
-                         "\n}\n"] <>
+                         "\n}"] <>
                      "\n}\n";
            Return[allBeta];
           ];
