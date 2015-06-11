@@ -135,7 +135,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             If[beta === 0,
                beta = CConversion`CreateZero[type];
               ];
-            betaStr    = RValueToCFormString[beta];
+            betaStr    = RValueToCFormString[Parameters`DecreaseIndexLiterals[beta]];
             betaStr    = CastTo[betaStr, type];
             betaStr    = betaName <> " = " <> betaStr <> ";\n";
             localDecl  = Parameters`CreateLocalConstRefsForInputParameters[expr] <>
