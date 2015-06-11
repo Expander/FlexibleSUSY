@@ -26,16 +26,21 @@ FindBetaFunction[lst_List, c_] :=
 TestBetaEquality[lst_, c_, loop_] :=
     Module[{sa, sm},
            sm = ThreeLoopSM`BetaSM[c][[loop]];
-           sa = FindBetaFunction[lst, c][[loop]] //. {
-               SARAH`UpYukawa       -> gt,
-               SARAH`DownYukawa     -> gb,
-               SARAH`ElectronYukawa -> g\[Tau],
-               SARAH`Adj[a_]        :> a,
-               a_[Susyno`LieGroups`i1,SARAH`i2] :> a
-           } /. {
+           sa = FindBetaFunction[lst, c][[loop]] /. {
+               SARAH`MatMul[a__][_,_] :> Times[a],
                SARAH`MatMul[a__]    :> Times[a],
                SARAH`trace[a__]     :> Times[a],
                SARAH`trace[a_]      :> a
+           } //. {
+               SARAH`Adj[a_]        :> a,
+               SARAH`UpYukawa       -> gt,
+               SARAH`DownYukawa     -> gb,
+               SARAH`ElectronYukawa -> g\[Tau],
+               a_[Susyno`LieGroups`i1,SARAH`i2] :> a
+           } /. {
+               gt -> SARAH`UpYukawa[3,3],
+               gb -> SARAH`DownYukawa[3,3],
+               g\[Tau] -> SARAH`ElectronYukawa[3,3]
            };
            TestEquality[Expand[sm], Expand[sa]]
           ];

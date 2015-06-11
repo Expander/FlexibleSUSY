@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
@@ -60,6 +60,7 @@ ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
+UseSM3LoopRGEs = False;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -1361,6 +1362,30 @@ GuessInputParameterType[par_] :=
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
 
+AddSM3LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopSM`BetaSM[coupling]]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`THIRDGENERATIONPROJECTOR}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddSM3LoopRGEs[] := Module[{
+    gauge = { SARAH`hyperchargeCoupling,
+              SARAH`leftCoupling,
+              SARAH`strongCoupling },
+    yuks  = { SARAH`UpYukawa,
+              SARAH`DownYukawa,
+              SARAH`ElectronYukawa },
+    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] }
+    },
+    SARAH`BetaGauge = AddSM3LoopRGE[SARAH`BetaGauge, gauge];
+    SARAH`BetaYijk  = AddSM3LoopRGE[SARAH`BetaYijk , yuks];
+    SARAH`BetaLijkl = AddSM3LoopRGE[SARAH`BetaLijkl, quart];
+    ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1431,6 +1456,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
+
+           If[FlexibleSUSY`UseSM3LoopRGEs,
+              AddSM3LoopRGEs[];
+             ];
 
            If[SARAH`SupersymmetricModel,
               (* pick beta functions of supersymmetric parameters *)

@@ -20,6 +20,7 @@ UNITMATRIXCOMPLEX::usage="";
 ZEROARRAYCOMPLEX::usage="";
 ZEROMATRIXCOMPLEX::usage="";
 ZEROVECTORCOMPLEX::usage="";
+THIRDGENERATIONPROJECTOR::usage="";
 oneOver16PiSqr::usage="";
 twoLoop::usage="";
 AbsSqr::usage="";
