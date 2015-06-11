@@ -1,6 +1,6 @@
 BeginPackage["ThreeLoopSM`", {"SARAH`"}];
 
-BetaSM::usage = "gauge coupling beta function";
+BetaSM::usage = "beta functions of the SM";
 
 Begin["`Private`"];
 
@@ -15,7 +15,7 @@ BetaSM[gc_] :=
            SARAH`DownYukawa         , Get[FileNameJoin[{subDir, "beta_gb.m"}]],
            SARAH`ElectronYukawa     , Get[FileNameJoin[{subDir, "beta_gtau.m"}]],
            \[Lambda]                , Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
-           _, Print["Error: unknown coupling: ", gc]; Null
+           _, Print["Error: unknown coupling: ", gc]; {0,0,0}
           ];
 
 End[];
