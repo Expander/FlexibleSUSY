@@ -22,7 +22,7 @@ WriteOut[sym_, name_, factor_, repl_:{}] :=
   Module[{l1, l2, l3, \[Kappa] = 1/(4 \[Pi])^2, filename},
     l1 = SM\[Beta][1, sym];
     l2 = SM\[Beta][2, sym] - l1;
-    l3 = SM\[Beta][3, sym] - l2;
+    l3 = SM\[Beta][3, sym] - l1 - l2;
     filename = FileNameJoin[{outputDir, "beta_" <> name <> ".m"}];
     Print["Writing beta-function for ", NoSubscript[sym], " to ", filename];
     Put[{\[Kappa]^-1 l1, \[Kappa]^-2 l2, \[Kappa]^-3 l3}*factor /. 
