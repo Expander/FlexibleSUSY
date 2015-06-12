@@ -20,7 +20,10 @@ rules = {
     lam -> \[Lambda]/4,
     NR -> 3,
     cR -> 4/3,
-    NG -> 3
+    NG -> 3,
+    z3 -> N[Zeta[3]],
+    TF -> 1/2,
+    cA -> 3
 };
 
 beta = {
