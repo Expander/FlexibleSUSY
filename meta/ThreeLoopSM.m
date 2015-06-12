@@ -6,6 +6,10 @@ Begin["`Private`"];
 
 subDir = FileNameJoin[{Global`$flexiblesusyMetaDir, "ThreeLoopSM"}];
 
+IsDefinedAndEqual[descr_String, c_] :=
+    Parameters`GetParameterFromDescription[descr] =!= Null &&
+    Parameters`GetParameterFromDescription[descr] === c
+
 BetaSM[gc_] :=
     Switch[gc,
            SARAH`hyperchargeCoupling, Get[FileNameJoin[{subDir, "beta_g1.m"}]],
@@ -16,7 +20,12 @@ BetaSM[gc_] :=
            SARAH`ElectronYukawa     , Get[FileNameJoin[{subDir, "beta_gtau.m"}]],
            \[Lambda]                , Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
            m2                       , Get[FileNameJoin[{subDir, "beta_m2.m"}]],
-           _, Print["Error: unknown coupling: ", gc]; {0,0,0}
+           _, Which[IsDefinedAndEqual["SM Mu Parameter", gc],
+                    Get[FileNameJoin[{subDir, "beta_m2.m"}]],
+                    IsDefinedAndEqual["SM Higgs Selfcouplings", gc],
+                    Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
+                    True, Print["Error: unknown coupling: ", gc]; {0,0,0}
+                    ]
           ] /. ThreeLoopSM`ToSARAHNamingConvention[];
 
 (* Note:
