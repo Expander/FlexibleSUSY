@@ -18,6 +18,9 @@ BetaSM[gc_] :=
            _, Print["Error: unknown coupling: ", gc]; {0,0,0}
           ] /. ThreeLoopSM`ToSARAHNamingConvention[];
 
+(* Note:
+   g1, g2, g3, gb are global variables in SARAH
+ *)
 ToSARAHNamingConvention[] := {
     g1 -> SARAH`hyperchargeCoupling,
     g2 -> SARAH`leftCoupling,
