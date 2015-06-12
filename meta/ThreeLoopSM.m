@@ -15,6 +15,7 @@ BetaSM[gc_] :=
            SARAH`DownYukawa         , Get[FileNameJoin[{subDir, "beta_gb.m"  }]],
            SARAH`ElectronYukawa     , Get[FileNameJoin[{subDir, "beta_gtau.m"}]],
            \[Lambda]                , Get[FileNameJoin[{subDir, "beta_lambda.m"}]],
+           m2                       , Get[FileNameJoin[{subDir, "beta_m2.m"}]],
            _, Print["Error: unknown coupling: ", gc]; {0,0,0}
           ] /. ThreeLoopSM`ToSARAHNamingConvention[];
 
@@ -28,7 +29,8 @@ ToSARAHNamingConvention[] := {
     Global`gt -> SARAH`UpYukawa[3,3],
     gb -> SARAH`DownYukawa[3,3],
     Global`g\[Tau] -> SARAH`ElectronYukawa[3,3],
-    \[Lambda] -> Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"]
+    \[Lambda] -> Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"],
+    m2        -> Parameters`GetParameterFromDescription["SM Mu Parameter"]
 };
 
 End[];

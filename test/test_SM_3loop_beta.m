@@ -23,9 +23,9 @@ SARAH`CalcRGEs[ReadLists -> True, TwoLoop -> True,
 FindBetaFunction[lst_List, c_] :=
     Cases[lst, {c | c[__], beta__} :> {beta}][[1]];
 
-TestBetaEquality[lst_, c_, loop_] :=
+TestBetaEquality[lst_, c_, csm_, loop_] :=
     Module[{sa, sm},
-           sm = ThreeLoopSM`BetaSM[c][[loop]];
+           sm = ThreeLoopSM`BetaSM[csm][[loop]];
            sa = FindBetaFunction[lst, c][[loop]] /. {
                SARAH`MatMul[a__][_,_] :> Times[a],
                SARAH`MatMul[a__]    :> Times[a],
@@ -46,13 +46,14 @@ TestBetaEquality[lst_, c_, loop_] :=
           ];
 
 For[l = 1, l <= 2, l++,
-    TestBetaEquality[SARAH`BetaGauge, SARAH`hyperchargeCoupling, l];
-    TestBetaEquality[SARAH`BetaGauge, SARAH`leftCoupling       , l];
-    TestBetaEquality[SARAH`BetaGauge, SARAH`strongCoupling     , l];
-    TestBetaEquality[SARAH`BetaYijk , SARAH`UpYukawa           , l];
-    TestBetaEquality[SARAH`BetaYijk , SARAH`DownYukawa         , l];
-    TestBetaEquality[SARAH`BetaYijk , SARAH`ElectronYukawa     , l];
-    TestBetaEquality[SARAH`BetaLijkl, \[Lambda]                , l];
+    TestBetaEquality[SARAH`BetaGauge, SARAH`hyperchargeCoupling, SARAH`hyperchargeCoupling, l];
+    TestBetaEquality[SARAH`BetaGauge, SARAH`leftCoupling       , SARAH`leftCoupling       , l];
+    TestBetaEquality[SARAH`BetaGauge, SARAH`strongCoupling     , SARAH`strongCoupling     , l];
+    TestBetaEquality[SARAH`BetaYijk , SARAH`UpYukawa           , SARAH`UpYukawa           , l];
+    TestBetaEquality[SARAH`BetaYijk , SARAH`DownYukawa         , SARAH`DownYukawa         , l];
+    TestBetaEquality[SARAH`BetaYijk , SARAH`ElectronYukawa     , SARAH`ElectronYukawa     , l];
+    TestBetaEquality[SARAH`BetaLijkl, \[Lambda]                , \[Lambda]                , l];
+    TestBetaEquality[SARAH`BetaBij  , mu2                      , m2                       , l];
    ];
 
 PrintTestSummary[];
