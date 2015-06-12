@@ -1379,11 +1379,13 @@ AddSM3LoopRGEs[] := Module[{
     yuks  = { SARAH`UpYukawa,
               SARAH`DownYukawa,
               SARAH`ElectronYukawa },
-    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] }
+    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] },
+    bilin = { Parameters`GetParameterFromDescription["SM Mu Parameter"] }
     },
     SARAH`BetaGauge = AddSM3LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddSM3LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaLijkl = AddSM3LoopRGE[SARAH`BetaLijkl, quart];
+    SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
     ];
 
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
