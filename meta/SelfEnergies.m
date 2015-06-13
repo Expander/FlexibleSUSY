@@ -34,6 +34,9 @@ definitions for two-loop tadpoles in the MSSM";
 CreateTwoLoopTadpolesNMSSM::usage="Creates function prototypes and
 definitions for two-loop tadpoles in the NMSSM";
 
+CreateTwoLoopSelfEnergiesSM::usage="Creates function prototypes and
+definitions for two-loop Higgs self-energies in the SM";
+
 CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the MSSM";
 
@@ -760,6 +763,29 @@ CreateTwoLoopTadpolesNMSSM[higgsBoson_] :=
     CreateTwoLoopTadpoles[higgsBoson, "NMSSM"];
 
 GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                                model_String /; model === "SM"] :=
+    Module[{body, mTop, mtStr, yt, ytStr},
+           AssertFieldDimension[particle, 1, model];
+           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
+           ytStr   = CConversion`RValueToCFormString[yt];
+           body = "\
+const double mt = " <> mtStr <> ";
+const double yt = " <> ytStr <> ";
+const double scale = get_scale();
+double self_energy = 0.;
+
+if (HIGGS_2LOOP_CORRECTION_AT_AT) {
+   self_energy = self_energy_higgs_2loop_at_at_sm(scale, mt, yt);
+}
+
+result[0] = self_energy;
+";
+           Return[body];
+          ];
+
+GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                                 model_String /; model === "MSSM"] :=
     Module[{body,
             g3Str, mtStr, mbStr, mtauStr,
@@ -1327,6 +1353,9 @@ CreateTwoLoopSelfEnergies[particles_List, model_String] :=
               ];
            Return[{prototype, function}];
           ];
+
+CreateTwoLoopSelfEnergiesSM[particles_List] :=
+    CreateTwoLoopSelfEnergies[particles, "SM"];
 
 CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
     CreateTwoLoopSelfEnergies[particles, "MSSM"];
