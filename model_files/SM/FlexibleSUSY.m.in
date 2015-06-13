@@ -44,6 +44,7 @@ SMParticles = {
 
 OnlyLowEnergyFlexibleSUSY = True;
 UseSM3LoopRGEs = True;
+UseHiggs2LoopSM = True;
 
 DefaultPoleMassPrecision = MediumPrecision;
 HighPoleMassPrecision    = {hh};
