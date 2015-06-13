@@ -25,6 +25,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/pv.cpp \
 		$(DIR)/rge.cpp \
 		$(DIR)/rk.cpp \
+		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/utils.cpp \
@@ -78,6 +79,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
+		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/utils.h \
