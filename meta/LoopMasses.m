@@ -53,10 +53,22 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
+Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+    If[SARAH`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
+       "\
+double self_energy = Re(" <> selfEnergyFunction <> "(p));
+if (pole_mass_loop_order > 1) {
+" <> IndentText["\
+double two_loop[1] = { 0. };
+self_energy_" <> particleName <> "_2loop(two_loop);
+self_energy += two_loop[0];
+"] <> "}
+"
+       ,
+       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n"
+      ] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "if (mass_sqr < 0.)\n" <>
@@ -186,7 +198,7 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                        massName <> "));\n";
               ,
               result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, massName,
+                       Do1DimScalar[particle, particleName, massName, "M_tree", selfEnergyFunction, massName,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
@@ -443,7 +455,7 @@ for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
               ,
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, momentum,
+                       Do1DimScalar[particle, particleName, massName, "M_tree", selfEnergyFunction, momentum,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
