@@ -13,7 +13,7 @@
 using namespace flexiblesusy;
 using namespace passarino_veltman;
 
-BOOST_AUTO_TEST_CASE( test_SM_1loop_SMH )
+BOOST_AUTO_TEST_CASE( test_SM_1loop_alpha_t )
 {
    SM_input_parameters input;
    input.LambdaIN = 0.25;
