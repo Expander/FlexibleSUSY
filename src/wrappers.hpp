@@ -210,7 +210,8 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 
 inline double FiniteLog(double a)
 {
-   return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
+   return (std::isfinite(a) && a > std::numeric_limits<double>::epsilon())
+      ? std::log(a) : 0;
 }
 
 /**
