@@ -120,7 +120,7 @@ double self_energy_higgs_2loop_at_as_sm(
    const double LogT2 = Sqr(LogT);
 
    const double result =
-      2*mt * 16*g32*yt2*(3*LogT2 + LogT);
+      2*mt2 * 16*g32*yt2*(3*LogT2 + LogT);
 
    return - result * twoLoop;
 }
@@ -145,7 +145,7 @@ double self_energy_higgs_2loop_at_at_sm(
    const double LogT2 = Sqr(LogT);
 
    const double result =
-      2*mt*(-3*yt4*(9*LogT2 - 3*LogT + 2 + Sqr(Pi)/3.));
+      2*mt2*(-3*yt4*(9*LogT2 - 3*LogT + 2 + Sqr(Pi)/3.));
 
    return - result * twoLoop;
 }
