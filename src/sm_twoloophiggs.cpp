@@ -28,6 +28,14 @@ using namespace passarino_veltman;
  * Standard Model Higgs self-energy 1-loop (Landau gauge).
  * Taken from arxiv:1205.6497, Eq. (16).
  *
+ * @note The result contains the 1-loop tadpole diagrams.  It is
+ * therefore not 1-particle irreducible (1PI).
+ *
+ * @note The sign of the result is opposite to arxiv:1205.6497,
+ * Eq. (16).
+ *
+ * @warning The result is in Landau gauge (\f$\xi = 1\f$).
+ *
  * @param p momentum
  * @param scale renormalization scale
  * @param mt MS-bar top mass
@@ -74,8 +82,14 @@ double self_energy_higgs_1loop_sm(
 }
 
 /**
- * Standard Model Higgs self-energy 1-loop, only O(alpha_t).
+ * Standard Model Higgs self-energy 1-loop, \f$O(\alpha_t)\f$.
  * Taken from arxiv:1205.6497, Eq. (16).
+ *
+ * @note The result contains the 1-loop top quark tadpole diagram.  It
+ * is therefore not 1-particle irreducible (1PI).
+ *
+ * @note The sign of the result is opposite to arxiv:1205.6497,
+ * Eq. (16).
  *
  * @param p momentum
  * @param scale renormalization scale
@@ -99,8 +113,16 @@ double self_energy_higgs_1loop_at_sm(
 }
 
 /**
- * Standard Model Higgs self-energy 2-loop, only O(alpha_t alpha_s)
- * Taken from arxiv:1205.6497, Eq. (20).
+ * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_t
+ * \alpha_s)\f$.  Taken from arxiv:1205.6497, Eq. (20).
+ *
+ * @note The result contains the 2-loop tadpole diagrams.  It is
+ * therefore not 1-particle irreducible (1PI).
+ *
+ * @note The sign of the result is opposite to arxiv:1205.6497,
+ * Eq. (20).
+ *
+ * @warning The result is in Landau gauge (\f$\xi = 1\f$).
  *
  * @param scale renormalization scale
  * @param mt MS-bar top mass
@@ -126,8 +148,14 @@ double self_energy_higgs_2loop_at_as_sm(
 }
 
 /**
- * Standard Model Higgs self-energy 2-loop, only O(alpha_t^2)
+ * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_t^2)\f$.
  * Taken from arxiv:1205.6497, Eq. (20).
+ *
+ * @note The result contains the 2-loop tadpole diagrams.  It is
+ * therefore not 1-particle irreducible (1PI).
+ *
+ * @note The sign of the result is opposite to arxiv:1205.6497,
+ * Eq. (20).
  *
  * @param scale renormalization scale
  * @param mt MS-bar top mass
