@@ -328,7 +328,7 @@ CreateGoldstoneSkippers[particle_, idx_String] :=
               "// skip goldstone bosons\n" <>
               Utils`StringJoinWithSeparator[
                   ("if (is_equal_rel(" <> massName <> idx <> ", " <>
-                   CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <> ", 1e-10)) {\n" <>
+                   CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <> ", goldstone_mass_precision)) {\n" <>
                    IndentText["PHYSICAL(" <> massName <> idx <> ") = " <>
                               CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <>
                               ";\ncontinue;"] <> "\n}")& /@ vectors

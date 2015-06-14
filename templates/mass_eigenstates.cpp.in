@@ -92,6 +92,7 @@ CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& inpu
    , force_output(false)
    , precision(1.0e-3)
    , ewsb_iteration_precision(1.0e-5)
+   , goldstone_mass_precision(1.0e-8)
    , physical()
    , problems(@ModelName@_info::particle_names)
    , two_loop_corrections()

@@ -149,6 +149,7 @@ private:
    bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
    double ewsb_iteration_precision;
+   double goldstone_mass_precision; ///< assumed precision of the goldstone boson tree-level mass
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
