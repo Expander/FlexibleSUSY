@@ -562,8 +562,13 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
            {reducedSolution, freePhases} = ReduceSolution[solution];
            DebugPrint["The full, reduced solution to the EWSB eqs. is:",
                       reducedSolution];
-           If[reducedSolution === {} && outputFile != "",
-              Put[solution, outputFile];
+           If[outputFile != "",
+              If[reducedSolution === {},
+                 DebugPrint["Writing full, non-reduced solution to file ", outputFile];
+                 Put[solution, outputFile];,
+                 DebugPrint["Writing reduced solution to file ", outputFile];
+                 Put[reducedSolution, outputFile];
+                ];
              ];
            Return[{Flatten[reducedSolution], freePhases}];
           ];
