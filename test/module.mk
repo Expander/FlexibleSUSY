@@ -229,6 +229,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_tree_level_spectrum.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSMCPV_spectrum.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-NMSSMCPV),yes)
