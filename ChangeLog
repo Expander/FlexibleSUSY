@@ -7,6 +7,10 @@ FlexibleSUSY-1.2.0 [not released yet]
    O(alpha_t^2) in the SM.  The self-energy corrections were take from
    arxiv:1205.6497.
 
+ * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
+   confusion between goldstone and Higgs bosons in the CP-violating
+   MSSM.
+
 FlexibleSUSY-1.1.1 [June, 08 2015]
 
  * Bugfix (commit e1ea433): Catch NaNs from Slavich's NMSSM 2-loop
