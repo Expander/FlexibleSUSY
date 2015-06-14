@@ -66,6 +66,7 @@ public:
    void calculate_DRbar_masses();
    void calculate_DRbar_parameters();
    void calculate_pole_masses();
+   void check_pole_masses_for_tachyons();
    virtual void clear();
    void clear_DRbar_parameters();
    void do_calculate_sm_pole_masses(bool);
@@ -149,7 +150,6 @@ private:
    bool force_output;             ///< switch to force output of pole masses
    double precision;              ///< RG running precision
    double ewsb_iteration_precision;
-   double goldstone_mass_precision; ///< assumed precision of the goldstone boson tree-level mass
    @ModelName@_physical physical; ///< contains the pole masses and mixings
    Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
    Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections

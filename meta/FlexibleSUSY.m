@@ -775,6 +775,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
+            checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
@@ -910,6 +911,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
+           checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
                             "@lspFunctions@"         -> lspFunctions,
@@ -932,6 +934,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@reorderDRbarMasses@"     -> IndentText[reorderDRbarMasses],
                             "@reorderPoleMasses@"      -> IndentText[reorderPoleMasses],
+                            "@checkPoleMassesForTachyons@" -> IndentText[checkPoleMassesForTachyons],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
