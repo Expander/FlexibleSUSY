@@ -797,7 +797,8 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            particleName = CConversion`ToValidCSymbolString[particle];
            "if (" <>
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
-           ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff() < 0.) " <>
+           If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
+           " < 0.) " <>
            "problems.flag_tachyon(" <> particleName <> ");\n"
           ];
 
