@@ -133,6 +133,7 @@ GetThirdGenerationMass::usage;
 GetLightestMass::usage;
 
 ReorderGoldstoneBosons::usage="";
+CheckPoleMassesForTachyons::usage="";
 CreateHiggsMassGetters::usage="";
 CallPseudoscalarHiggsMassGetterFunction::usage="";
 
@@ -782,6 +783,26 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
+
+CheckPoleMassesForTachyons[particles_List, macro_String] :=
+    Module[{result = ""},
+           (result = result <> CheckPoleMassesForTachyons[#,macro])& /@ particles;
+           Return[result];
+          ];
+
+CheckPoleMassesForTachyons[particle_, macro_String] :=
+    Module[{dimStart, dimEnd, particleName},
+           dimStart = GetDimensionStartSkippingGoldstones[particle];
+           dimEnd   = GetDimension[particle];
+           particleName = CConversion`ToValidCSymbolString[particle];
+           "if (" <>
+           WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
+           ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff() < 0.) " <>
+           "problems.flag_tachyon(" <> particleName <> ");\n"
+          ];
+
+CheckPoleMassesForTachyons[macro_String] :=
+    CheckPoleMassesForTachyons[Select[GetParticles[], (IsScalar[#] && !IsGoldstone[#])&], macro];
 
 GetHiggsName[sym_] :=
     Switch[sym,
