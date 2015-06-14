@@ -1,3 +1,7 @@
+# This point represents the CP-conserving CMSSM limit.  It can be run
+# with both the CMSSMCPV and the CMSSM and should lead to an identical
+# 1-loop pole mass spectrum.
+
 Block MODSEL                 # Select model
 #   12    1000                # DRbar parameter output scale (GeV)
 Block FlexibleSUSY
