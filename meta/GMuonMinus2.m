@@ -41,7 +41,7 @@ CreateParticles[] := Module[{particles, code},
                                     "typedef " <> ParticleToString @ GetMuonFamily[] <> " MuonFamily;\n\n" <>
                                     
                                     "// AntiParticles\n" <>
-                                    "template<class P> struct anti\n" <>
+                                    "template<class P> struct anti : public Particle\n" <>
                                     "{\n" <>
                                     IndentText @
                                     ("static const unsigned int numberOfGenerations = P::numberOfGenerations;\n" <>
