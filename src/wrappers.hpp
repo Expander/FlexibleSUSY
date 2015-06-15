@@ -354,6 +354,19 @@ inline double SignedAbsSqrt(double a)
    return Sign(a) * AbsSqrt(a);
 }
 
+namespace {
+   inline double SignedAbsSqrt_d(double a)
+   {
+      return SignedAbsSqrt(a);
+   }
+}
+
+template <typename Derived>
+Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);
