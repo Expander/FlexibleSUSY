@@ -36,6 +36,9 @@ using namespace passarino_veltman;
  *
  * @warning The result is in Landau gauge (\f$\xi = 1\f$).
  *
+ * @warning In the diagram that has a Higgs loop, the momentum has
+ * been set to the tree-level Higgs mass, \f$p^2 = 2\lambda v^2\f$.
+ *
  * @param p momentum
  * @param scale renormalization scale
  * @param mt MS-bar top mass
