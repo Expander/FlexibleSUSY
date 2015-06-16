@@ -5,7 +5,7 @@ FlexibleSUSY-1.2.0 [not released yet]
 
  * Feature: Allow the user to add 2-loop Higgs self-energy corrections
    O(alpha_t^2 + alpha_t alpha_s) in the SM.  The self-energy
-   corrections were take from arxiv:1205.6497.
+   corrections were taken from arxiv:1205.6497.
 
  * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
    confusion between goldstone and Higgs bosons in the CP-violating
