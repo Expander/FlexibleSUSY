@@ -260,9 +260,13 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   SM1.set_ewsb_loop_order(1);	SM1.set_pole_mass_loop_order(1);
   SM2.set_ewsb_loop_order(1);	SM2.set_pole_mass_loop_order(1);
   SM3.set_ewsb_loop_order(1);	SM3.set_pole_mass_loop_order(1);
+  
+  //beta loop order is equal to the parent model
+  SM1.set_loops(model.get_loops());  
 
   //matching
   model.calculate_DRbar_masses();
+  model.solve_ewsb_one_loop();
   @ModelName@_SM_two_scale_matching<T>::matching(SM1, model);
   @ModelName@_SM_two_scale_matching<T>::matchingTL(SM2, model);
   SM3 = SM2;
