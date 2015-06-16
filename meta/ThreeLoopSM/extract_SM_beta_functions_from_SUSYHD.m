@@ -5,7 +5,7 @@
 
    Run it like this:
 
-   math -run "Get[extract_SM_beta_functions_from_SUSYHD.m]; Quit[]"
+   math -run "Get[\"extract_SM_beta_functions_from_SUSYHD.m\"]; Quit[]"
 *)
 
 Needs["SUSYHD`"];
