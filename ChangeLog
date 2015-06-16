@@ -11,6 +11,11 @@ FlexibleSUSY-1.2.0 [not released yet]
    confusion between goldstone and Higgs bosons in the CP-violating
    MSSM.
 
+ * Bugfix (commit e2009f7): Adding missing declaration of input
+   parameters in the generated DependenceNum functions.  This fixes a
+   compilation error in the NE6SSM or the UMSSM if ThetaWp is set to
+   an expression that involves the charges.
+
 FlexibleSUSY-1.1.1 [June, 08 2015]
 
  * Bugfix (commit e1ea433): Catch NaNs from Slavich's NMSSM 2-loop
