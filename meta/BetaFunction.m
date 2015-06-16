@@ -55,14 +55,18 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
                      "_one_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_two_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
+                     "_two_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
+                     CConversion`CreateCType[GetType[#]] <>
+                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
+                     "_three_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
            Return[result];
           ];
 
 CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List] :=
     Module[{b, para, type, paraStr, typeStr, files = {},
             inputFile, outputFile,
-            localDeclOneLoop, localDeclTwoLoop, betaOneLoop, betaTwoLoop},
+            localDeclOneLoop, localDeclTwoLoop, localDeclThreeLoop,
+            betaOneLoop, betaTwoLoop, betaThreeLoop},
            For[b = 1, b <= Length[betaFun], b++,
                para = GetName[betaFun[[b]]];
                type = GetType[betaFun[[b]]];
@@ -75,14 +79,17 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
                                                         {".cpp.in" -> paraStr <> ".cpp"}]}];
                {localDeclOneLoop, betaOneLoop} = CreateBetaFunction[betaFun[[b]], 1, sarahTraces];
                {localDeclTwoLoop, betaTwoLoop} = CreateBetaFunction[betaFun[[b]], 2, sarahTraces];
+               {localDeclThreeLoop, betaThreeLoop} = CreateBetaFunction[betaFun[[b]], 3, sarahTraces];
                WriteOut`ReplaceInFiles[{{inputFile, outputFile}},
                      { "@ModelName@"     -> FlexibleSUSY`FSModelName,
                        "@parameterType@" -> typeStr,
                        "@parameterName@" -> paraStr,
                        "@localDeclOneLoop@" -> WrapLines[IndentText[localDeclOneLoop]],
                        "@localDeclTwoLoop@" -> WrapLines[IndentText[localDeclTwoLoop]],
+                       "@localDeclThreeLoop@" -> WrapLines[IndentText[localDeclThreeLoop]],
                        "@betaOneLoop@"   -> WrapLines[IndentText[betaOneLoop]],
                        "@betaTwoLoop@"   -> WrapLines[IndentText[betaTwoLoop]],
+                       "@betaThreeLoop@" -> WrapLines[IndentText[betaThreeLoop]],
                        "@DateAndTime@"   -> DateString[]
                      } ];
                AppendTo[files, outputFile];
@@ -99,18 +106,20 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             Switch[loopOrder,
                    1, loopFactor = CConversion`oneOver16PiSqr;,
                    2, loopFactor = CConversion`twoLoop;,
+                   3, loopFactor = CConversion`threeLoop;,
                    _, loopFactor = CConversion`oneOver16PiSqr^loopOrder];
+            name      = ToValidCSymbolString[GetName[betaFunction]];
+            betaName  = "beta_" <> name;
             type = GetType[betaFunction];
             expr = GetAllBetaFunctions[betaFunction];
             If[loopOrder > Length[expr],
-               Print["Warning: there is no beta function of ", loopOrder, " loop order."];
-               Return[{"", RValueToCFormString[CConversion`CreateZero[type]]}];
+               Return[{"",
+                       betaName <> " = " <>
+                       RValueToCFormString[CConversion`CreateZero[type]] <> ";\n"}];
               ];
             expr       = expr[[loopOrder]];
             dataType   = CConversion`CreateCType[type];
             (* convert beta function expressions to C form *)
-            name       = ToValidCSymbolString[GetName[betaFunction]];
-            betaName   = "beta_" <> name;
             beta       = (loopFactor * expr) /.
                             { Kronecker[Susyno`LieGroups`i1,SARAH`i2] :> CreateUnitMatrix[type],
                               a_[Susyno`LieGroups`i1] :> a,
@@ -127,7 +136,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             If[beta === 0,
                beta = CConversion`CreateZero[type];
               ];
-            betaStr    = RValueToCFormString[beta];
+            betaStr    = RValueToCFormString[Parameters`DecreaseIndexLiterals[beta]];
             betaStr    = CastTo[betaStr, type];
             betaStr    = betaName <> " = " <> betaStr <> ";\n";
             localDecl  = Parameters`CreateLocalConstRefsForInputParameters[expr] <>
@@ -136,9 +145,9 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
            ];
 
 CreateBetaFunctionCall[betaFunction_BetaFunction] :=
-     Module[{beta1L, beta2L = "", betaName = "", name = "",
+     Module[{beta1L, beta2L = "", beta3L = "", betaName = "", name = "",
              oneLoopBetaStr, dataType, localDecl = "",
-             twoLoopBeta, twoLoopBetaStr, type = ErrorType},
+             twoLoopBetaStr, threeLoopBetaStr, type = ErrorType},
             name          = ToValidCSymbolString[GetName[betaFunction]];
             dataType      = CConversion`CreateCType[GetType[betaFunction]];
             betaName      = "beta_" <> name;
@@ -148,21 +157,33 @@ CreateBetaFunctionCall[betaFunction_BetaFunction] :=
               twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
               beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
              ];
-            Return[{localDecl, beta1L, beta2L}];
+           If[Length[GetAllBetaFunctions[betaFunction]] > 2,
+              threeLoopBetaStr = "calc_beta_" <> name <> "_three_loop(TRACE_STRUCT)";
+              beta3L = betaName <> " += " <> threeLoopBetaStr <> ";\n";
+             ];
+            Return[{localDecl, beta1L, beta2L, beta3L}];
           ];
 
 CreateBetaFunction[betaFunctions_List, sarahTraces_List] :=
     Module[{def = "",
-            localDecl = "", beta1L = "", beta2L = "", allDecl = "", allBeta = "",
-            allBeta1L = "", allBeta2L = "", i, inputParsDecl},
+            localDecl = "", beta1L = "", beta2L = "", beta3L = "",
+            allDecl = "", allBeta = "",
+            allBeta1L = "", allBeta2L = "", allBeta3L = "", i, inputParsDecl},
            For[i = 1, i <= Length[betaFunctions], i++,
-               {localDecl, beta1L, beta2L} = CreateBetaFunctionCall[betaFunctions[[i]]];
+               {localDecl, beta1L, beta2L, beta3L} = CreateBetaFunctionCall[betaFunctions[[i]]];
                allDecl = allDecl <> localDecl;
                allBeta1L = allBeta1L <> beta1L;
                allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
+               allBeta3L = allBeta3L <> TextFormatting`IndentText[beta3L];
               ];
-           allBeta = allDecl <> "\n" <> allBeta1L <> "\nif (get_loops() > 1) {\n" <>
-                     allBeta2L <> "\n}\n";
+           allBeta = allDecl <> "\n" <> allBeta1L <> "\n" <>
+                     "if (get_loops() > 1) {\n" <>
+                     allBeta2L <> "\n" <>
+                     TextFormatting`IndentText[
+                         "if (get_loops() > 2) {\n" <>
+                         allBeta3L <>
+                         "\n}"] <>
+                     "\n}\n";
            Return[allBeta];
           ];
 

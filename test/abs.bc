@@ -1,0 +1,4 @@
+define abs(i) {
+   if (i < 0) return (-i)
+   return (i)
+}

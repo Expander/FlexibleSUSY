@@ -34,12 +34,9 @@
 
 #define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
+#define PHYSICAL_SLHA(p) model.get_physical_slha().p
 #define LOCALPHYSICAL(p) physical.p
 #define MODELPARAMETER(p) model.get_##p()
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
-#define DEFINE_POLE_MASS(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(PHYSICAL(p))>::type>::type p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 #define SCALES(p) scales.p
 
@@ -62,6 +59,7 @@ public:
 
    void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
+   void fill(@ModelName@_mass_eigenstates&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
    void fill(Spectrum_generator_settings&) const;
    double get_parameter_output_scale() const;
@@ -101,8 +99,8 @@ private:
    void set_ckm(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    void set_pmns(const Eigen::Matrix<std::complex<double>,3,3>&, double);
    double read_scale() const;
-   template <class T> void fill_drbar_parameters(@ModelName@_slha<T>&) const;
-   template <class T> void fill_physical(@ModelName@_slha<T>&) const;
+   void fill_drbar_parameters(@ModelName@_mass_eigenstates&) const;
+   void fill_physical(@ModelName@_physical&) const;
 };
 
 /**
@@ -112,28 +110,8 @@ private:
 template <class T>
 void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 {
-   fill_drbar_parameters(model);
-   fill_physical(model);
-}
-
-/**
- * Reads DR-bar parameters from a SLHA output file.
- */
-template <class T>
-void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_slha<T>& model) const
-{
-@readLesHouchesOutputParameters@
-
-   model.set_scale(read_scale());
-}
-
-/**
- * Reads pole masses and mixing matrices from a SLHA output file.
- */
-template <class T>
-void @ModelName@_slha_io::fill_physical(@ModelName@_slha<T>& model) const
-{
-@readLesHouchesPhyicalParameters@
+   fill(static_cast<@ModelName@_mass_eigenstates&>(model));
+   fill_physical(model.get_physical_slha());
 }
 
 template <class T>
@@ -241,5 +219,13 @@ void @ModelName@_slha_io::set_spectrum(const @ModelName@_slha<T>& model)
 }
 
 } // namespace flexiblesusy
+
+#undef Pole
+#undef PHYSICAL
+#undef PHYSICAL_SLHA
+#undef LOCALPHYSICAL
+#undef MODELPARAMETER
+#undef LowEnergyConstant
+#undef SCALES
 
 #endif

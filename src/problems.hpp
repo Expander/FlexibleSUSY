@@ -47,7 +47,8 @@ public:
    void flag_no_ewsb()         { failed_ewsb = true; }
    void flag_no_convergence()  { failed_convergence = true; }
    void flag_no_perturbative() { non_perturbative = true; }
-   void flag_non_perturbative_parameter_warning(const std::string&, double, double, double);
+   void flag_no_pole_mass_convergence(unsigned);
+   void flag_non_perturbative_parameter(const std::string&, double, double, double);
    void flag_no_rho_convergence() { failed_rho_convergence = true; }
 
    void unflag_bad_mass(unsigned);
@@ -57,7 +58,8 @@ public:
    void unflag_no_ewsb()         { failed_ewsb = false; }
    void unflag_no_convergence()  { failed_convergence = false; }
    void unflag_no_perturbative() { non_perturbative = false; }
-   void unflag_non_perturbative_parameter_warning(const std::string&);
+   void unflag_no_pole_mass_convergence(unsigned);
+   void unflag_non_perturbative_parameter(const std::string&);
    void unflag_no_rho_convergence() { failed_rho_convergence = false; }
 
    bool is_bad_mass(unsigned) const;
@@ -65,7 +67,8 @@ public:
    bool have_bad_mass() const;
    bool have_tachyon() const;
    bool have_thrown() const     { return thrown; }
-   bool have_non_perturbative_parameter_warning() const;
+   bool have_non_perturbative_parameter() const;
+   bool have_failed_pole_mass_convergence() const;
    bool no_ewsb() const         { return failed_ewsb; }
    bool no_convergence() const  { return failed_convergence; }
    bool no_perturbative() const { return non_perturbative; }
@@ -88,6 +91,7 @@ private:
 
    bool bad_masses[Number_of_particles]; ///< imprecise mass eigenvalues
    bool tachyons[Number_of_particles]; ///< tachyonic particles
+   bool failed_pole_mass_convergence[Number_of_particles]; ///< no convergence during pole mass calculation
    const char** particle_names;        ///< particle names
    bool thrown;                        ///< excepton thrown
    bool failed_ewsb;                   ///< no EWSB
@@ -102,6 +106,7 @@ template <unsigned Number_of_particles>
 Problems<Number_of_particles>::Problems(const char** particle_names_)
    : bad_masses() // intializes all elements to zero (= false)
    , tachyons()   // intializes all elements to zero (= false)
+   , failed_pole_mass_convergence()
    , particle_names(particle_names_)
    , thrown(false)
    , failed_ewsb(false)
@@ -194,9 +199,19 @@ bool Problems<Number_of_particles>::have_tachyon() const
 }
 
 template <unsigned Number_of_particles>
-bool Problems<Number_of_particles>::have_non_perturbative_parameter_warning() const
+bool Problems<Number_of_particles>::have_non_perturbative_parameter() const
 {
    return !non_pert_pars.empty();
+}
+
+template <unsigned Number_of_particles>
+bool Problems<Number_of_particles>::have_failed_pole_mass_convergence() const
+{
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (failed_pole_mass_convergence[i])
+         return true;
+   }
+   return false;
 }
 
 template <unsigned Number_of_particles>
@@ -206,6 +221,8 @@ void Problems<Number_of_particles>::clear()
       bad_masses[i] = false;
    for (unsigned i = 0; i < Number_of_particles; ++i)
       tachyons[i] = false;
+   for (unsigned i = 0; i < Number_of_particles; ++i)
+      failed_pole_mass_convergence[i] = false;
    failed_ewsb = false;
    failed_convergence = false;
    non_perturbative = false;
@@ -219,27 +236,43 @@ template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_problem() const
 {
    return have_tachyon() || failed_ewsb || failed_convergence
-      || non_perturbative || failed_rho_convergence || thrown;
+      || non_perturbative || failed_rho_convergence || thrown
+      || have_failed_pole_mass_convergence()
+      || have_non_perturbative_parameter();
 }
 
 template <unsigned Number_of_particles>
 bool Problems<Number_of_particles>::have_warning() const
 {
-   return have_bad_mass() || have_non_perturbative_parameter_warning();
+   return have_bad_mass();
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::flag_non_perturbative_parameter_warning(
+void Problems<Number_of_particles>::flag_non_perturbative_parameter(
    const std::string& name, double value, double scale, double threshold)
 {
    non_pert_pars[name] = NonPerturbativeValue(value, scale, threshold);
 }
 
 template <unsigned Number_of_particles>
-void Problems<Number_of_particles>::unflag_non_perturbative_parameter_warning(
+void Problems<Number_of_particles>::unflag_non_perturbative_parameter(
    const std::string& name)
 {
    non_pert_pars.erase(name);
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::flag_no_pole_mass_convergence(
+   unsigned particle_id)
+{
+   failed_pole_mass_convergence[particle_id] = true;
+}
+
+template <unsigned Number_of_particles>
+void Problems<Number_of_particles>::unflag_no_pole_mass_convergence(
+   unsigned particle_id)
+{
+   failed_pole_mass_convergence[particle_id] = false;
 }
 
 template <unsigned Number_of_particles>
@@ -263,6 +296,18 @@ void Problems<Number_of_particles>::print_problems(std::ostream& ostr) const
       ostr << "no rho convergence, ";
    if (thrown)
       ostr << "exception thrown(" << exception_msg << ")";
+   for (unsigned i = 0; i < Number_of_particles; ++i) {
+      if (failed_pole_mass_convergence[i])
+         ostr << "no M" << particle_names[i] << " pole convergence, ";
+   }
+
+   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
+           it = non_pert_pars.begin(), end = non_pert_pars.end();
+        it != end; ++it) {
+      ostr << "non-perturbative " << it->first
+           << " [|" << it->first << "|(" << it->second.scale << ") = "
+           << it->second.value << " > " << it->second.threshold << "], ";
+   }
 }
 
 template <unsigned Number_of_particles>
@@ -275,14 +320,6 @@ void Problems<Number_of_particles>::print_warnings(std::ostream& ostr) const
    for (unsigned i = 0; i < Number_of_particles; ++i) {
       if (bad_masses[i])
          ostr << "imprecise M" << particle_names[i] << ", ";
-   }
-
-   for (typename std::map<std::string, NonPerturbativeValue>::const_iterator
-           it = non_pert_pars.begin(), end = non_pert_pars.end();
-        it != end; ++it) {
-      ostr << "non-perturbative " << it->first
-           << " [|" << it->first << "|(" << it->second.scale << ") = "
-           << it->second.value << " > " << it->second.threshold << "], ";
    }
 }
 

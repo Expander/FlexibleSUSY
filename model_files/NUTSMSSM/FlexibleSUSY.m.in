@@ -1,24 +1,25 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
-FSDefaultSARAHModel = NMSSM;
+FSDefaultSARAHModel = SMSSM;
 
-(* CNMSSM input parameters *)
+(* CSMSSM input parameters *)
 
 MINPAR = { {1, m0},
            {2, m12},
            {3, TanBeta},
-           {4, Sign[vS]},
            {5, Azero}
          };
 
-EXTPAR = {
-    {23, MuInput},
-    {61, LambdaInput},
-    {62, KappaInput},
-    {63, AlambdaInput},
-    {64, AkappaInput}
-};
+EXTPAR = { {61, LambdaInput},
+           {62, KappaInput},
+           {65, LambdaSInput},
+           {66, L1Input},
+           {68, MSInput},
+           {69, BInput},
+           {70, MuInput},
+           {71, LInput}
+         };
 
 EWSBOutputParameters = { mHd2, mHu2, ms2 };
 
@@ -27,9 +28,7 @@ SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 SUSYScaleFirstGuess = Sqrt[m0^2 + 4 m12^2];
 
 SUSYScaleInput = {
-    {\[Lambda], LambdaInput},
-    {\[Kappa], KappaInput},
-    {vS, Sqrt[2] MuInput / LambdaInput}
+   {vS, LambdaSInput / \[Lambda]}
 };
 
 HighScale = g1 == g2;
@@ -37,19 +36,27 @@ HighScale = g1 == g2;
 HighScaleFirstGuess = 1.0 10^16;
 
 HighScaleInput={
-   {T[Ye], Azero Ye},
-   {T[Yd], Azero Yd},
-   {T[Yu], Azero Yu},
+   {T[Ye], Azero*Ye},
+   {T[Yd], Azero*Yd},
+   {T[Yu], Azero*Yu},
    {mq2, UNITMATRIX[3] m0^2},
    {ml2, UNITMATRIX[3] m0^2},
    {md2, UNITMATRIX[3] m0^2},
    {mu2, UNITMATRIX[3] m0^2},
    {me2, UNITMATRIX[3] m0^2},
-   {T[\[Kappa]], AkappaInput \[Kappa]},
-   {T[\[Lambda]], AlambdaInput \[Lambda]},
+   {\[Lambda], LambdaInput},
+   {\[Kappa], KappaInput},
+   {T[\[Kappa]], Azero \[Kappa]},
+   {T[\[Lambda]], Azero LambdaInput},
    {MassB, m12},
    {MassWB,m12},
-   {MassG, m12}
+   {MassG,m12},
+   {L1, L1Input},
+   {L[L1], LInput L1},
+   {MS, MSInput},
+   {B[MS], BInput MS},
+   {\[Mu], MuInput},
+   {B[\[Mu]], BInput \[Mu]}
 };
 
 LowScale = LowEnergyConstant[MZ];
@@ -68,11 +75,6 @@ InitialGuessAtLowScale = {
    {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
    {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
    {\[Lambda], LambdaInput},
-   {\[Kappa], KappaInput},
-   {vS, 1000},
-   {ms2, LowEnergyConstant[MZ]^2},
-   {mHd2, LowEnergyConstant[MZ]^2},
-   {mHu2, LowEnergyConstant[MZ]^2},
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic}
@@ -81,7 +83,10 @@ InitialGuessAtLowScale = {
 InitialGuessAtHighScale = {};
 
 UseHiggs2LoopNMSSM = True;
-EffectiveMu = \[Lambda] vS / Sqrt[2];
+EffectiveMu = \[Mu] + \[Lambda] vS / Sqrt[2];
+EffectiveBMu = (B[\[Mu]] + \[Lambda] (MS vS / Sqrt[2] + L1)
+    + T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2);
+EffectiveMASqr = EffectiveBMu (vu^2 + vd^2) / (vu vd);
 
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 

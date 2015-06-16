@@ -56,7 +56,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | calculate_sm_masses              | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | pole_mass_loop_order             | 0, 1, 2                      | 2 (= 2-loop)    |
  * | ewsb_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
- * | beta_loop_order                  | 0, 1, 2                      | 2 (= 2-loop)    |
+ * | beta_loop_order                  | 0, 1, 2, 3                   | 2 (= 2-loop)    |
  * | threshold_corrections_loop_order | 0, 1, 2                      | 2 (= 2-loop)    |
  * | higgs_2loop_correction_at_as     | 0, 1                         | 1 (= enabled)   |
  * | higgs_2loop_correction_ab_as     | 0, 1                         | 1 (= enabled)   |
@@ -65,6 +65,7 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | top_2loop_corrections_qcd        | 0, 1                         | 1 (= enabled)   |
  * | higgs_log_resum                  | 0 (no) or 1 (yes)            | 1 (= enabled)   |
+ * | beta_zero_threshold              | any positive double          | 1.0e-11         |
  */
 void Spectrum_generator_settings::reset()
 {
@@ -83,6 +84,7 @@ void Spectrum_generator_settings::reset()
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[top_2loop_corrections_qcd]        = 1.;
    values[higgs_log_resum]      = 1.;
+   values[beta_zero_threshold]              = 1.0e-11;
 }
 
 Two_loop_corrections Spectrum_generator_settings::get_two_loop_corrections() const

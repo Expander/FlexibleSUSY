@@ -1,6 +1,9 @@
 
 BeginPackage["Utils`"];
 
+ApplyAndConcatenate::usage = "Applies a function to a list and
+concatenates the resulting list.";
+
 StringJoinWithSeparator::usage = "Joins a list of strings with a given separator string";
 
 Zip::usage = "Combines two lists to a list of touples.
@@ -61,6 +64,16 @@ Out[]= {o1 -> x, o2 -> y, o3 -> z}
 FSImportString::usage = "Returns the content of a file in form of a string.  If the file does not exist, \"unknown\" is returned.";
 
 Begin["`Private`"];
+
+ApplyAndConcatenate[Func_, l_List] :=
+    Module[{result = ""},
+           (result = result <> Evaluate[Func[#]])& /@ l;
+           result
+          ];
+
+ApplyAndConcatenate[Func_, l_] := Evaluate[Func[l]];
+
+SetAttributes[ApplyAndConcatenate, HoldFirst];
 
 StringJoinWithSeparator[list_List, separator_String, transformer_:ToString] :=
     StringJoin[Riffle[transformer /@ list, separator]];

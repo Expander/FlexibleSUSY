@@ -21,7 +21,7 @@
 #ifndef @ModelName@_SPECTRUM_GENERATOR_H
 #define @ModelName@_SPECTRUM_GENERATOR_H
 
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_spectrum_generator_interface.hpp"
 #include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
 #include "@ModelName@_two_scale_low_scale_constraint.hpp"
@@ -29,76 +29,48 @@
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
 #include "@ModelName@_SM_two_scale_matching.hpp"
+#include "@ModelName@_input_parameters.hpp"
 
-#include "coupling_monitor.hpp"
+#include "lowe.h"
 #include "error.hpp"
-#include "two_loop_corrections.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
 #include "SM_two_scale_model.hpp"
 
+#include <limits>
+
 namespace flexiblesusy {
 
 template <class T>
-class @ModelName@_spectrum_generator {
+class @ModelName@_spectrum_generator
+   : public @ModelName@_spectrum_generator_interface<T> {
 public:
    @ModelName@_spectrum_generator()
-      : solver(), model()
+      : @ModelName@_spectrum_generator_interface<T>()
+      , solver()
       , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
       , high_scale(0.)
       , susy_scale(0.)
       , low_scale(0.)
-      , parameter_output_scale(0.)
-      , precision_goal(1.0e-4)
-      , max_iterations(0)
-      , beta_loop_order(2)
-      , threshold_corrections_loop_order(2)
-      , calculate_sm_masses(false)
-      , force_output(false)
    {}
-   ~@ModelName@_spectrum_generator() {}
+   virtual ~@ModelName@_spectrum_generator() {}
 
    double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
-   const @ModelName@<T>& get_model() const { return model; }
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const {
-      return model.get_problems();
-   }
-   int get_exit_code() const { return get_problems().have_problem(); }
-   void set_parameter_output_scale(double s) { parameter_output_scale = s; }
-   void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
-   void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_force_output(bool flag) { force_output = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
-   void set_two_loop_corrections(const Two_loop_corrections& c) { model.set_two_loop_corrections(c); }
+   virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
+   void write_running_couplings(const std::string& filename = "@ModelName@_rgflow.dat") const;
    void do2LoopLogCalc();
-
-   void run(const QedQcd& oneset, const @ModelName@_input_parameters& input);
-   void write_running_couplings(const std::string& filename = "@ModelName@_rge_running.dat") const;
-   void write_spectrum(const std::string& filename = "@ModelName@_spectrum.dat") const;
 
 private:
    RGFlow<T> solver;
-   @ModelName@<T> model;
    @ModelName@_high_scale_constraint<T> high_scale_constraint;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    @ModelName@_low_scale_constraint<T>  low_scale_constraint;
    double high_scale, susy_scale, low_scale;
-   double parameter_output_scale; ///< output scale for running parameters
-   double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
-   bool calculate_sm_masses; ///< calculate SM pole masses
-   bool force_output; ///< force output
 };
 
 /**
@@ -113,15 +85,17 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
+void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
+   @ModelName@<T>& model = this->model;
    model.clear();
    model.set_input_parameters(input);
-   model.do_calculate_sm_pole_masses(calculate_sm_masses);
-   model.do_force_output(force_output);
-   model.set_loops(beta_loop_order);
-   model.set_thresholds(threshold_corrections_loop_order);
+   model.do_calculate_sm_pole_masses(this->calculate_sm_masses);
+   model.do_force_output(this->force_output);
+   model.set_loops(this->beta_loop_order);
+   model.set_thresholds(this->threshold_corrections_loop_order);
+   model.set_zero_threshold(this->beta_zero_threshold);
 
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
@@ -147,16 +121,16 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    downward_constraints[1] = &susy_scale_constraint;
    downward_constraints[2] = &low_scale_constraint;
 
-   @ModelName@_convergence_tester<T> convergence_tester(&model, precision_goal);
-   if (max_iterations > 0)
-      convergence_tester.set_max_iterations(max_iterations);
+   @ModelName@_convergence_tester<T> convergence_tester(&model, this->precision_goal);
+   if (this->max_iterations > 0)
+      convergence_tester.set_max_iterations(this->max_iterations);
 
    @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
                                                   low_scale_constraint,
                                                   susy_scale_constraint,
                                                   high_scale_constraint);
 
-   Two_scale_increasing_precision precision(10.0, precision_goal);
+   Two_scale_increasing_precision precision(10.0, this->precision_goal);
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
@@ -165,12 +139,14 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
    solver.add_model(&model, upward_constraints, downward_constraints);
 
    high_scale = susy_scale = low_scale = 0.;
+   this->reached_precision = std::numeric_limits<double>::infinity();
 
    try {
       solver.solve();
       high_scale = high_scale_constraint.get_scale();
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
+      this->reached_precision = convergence_tester.get_current_accuracy();
 
       model.run_to(susy_scale);
       model.solve_ewsb();
@@ -181,11 +157,11 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
       // start logarithmic resummation
-      if(model.get_two_loop_corrections().higgs_log) do2LoopLogCalc();
+      if(model.get_Two_loop_corrections().higgs_log) do2LoopLogCalc();
 
       // run to output scale (if scale > 0)
-      if (!is_zero(parameter_output_scale)) {
-         model.run_to(parameter_output_scale);
+      if (!is_zero(this->parameter_output_scale)) {
+         model.run_to(this->parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
       model.get_problems().flag_no_convergence();
@@ -211,30 +187,10 @@ void @ModelName@_spectrum_generator<T>::run(const QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::write_running_couplings(const std::string& filename) const
+void @ModelName@_spectrum_generator<T>::write_running_couplings(
+   const std::string& filename) const
 {
-   @ModelName@<T> tmp_model(model);
-   tmp_model.run_to(low_scale);
-
-   @ModelName@_parameter_getter parameter_getter;
-   Coupling_monitor<@ModelName@<T>, @ModelName@_parameter_getter>
-      coupling_monitor(tmp_model, parameter_getter);
-
-   coupling_monitor.run(low_scale, high_scale, 100, true);
-   coupling_monitor.write_to_file(filename);
-}
-
-/**
- * Write spectrum (pole masses) to a text file
- *
- * @param filename output file name
- */
-template <class T>
-void @ModelName@_spectrum_generator<T>::write_spectrum(const std::string& filename) const
-{
-   @ModelName@_spectrum_plotter plotter;
-   plotter.extract_spectrum<T>(model);
-   plotter.write_to_file(filename);
+   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
 }
 
 /**
@@ -244,14 +200,14 @@ template <class T>
 void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
 {
 
-    /*
-     SM1: matching TL+1L+ running all orders with 2-Loop betafunctions, ewsb_loop_order = 1  => for observable TL+1L
-     SM2: matching and running TL, ewsb_loop_order = 1 	      => for observable TL+1L correction: subtracts TL + 1L-self-energy
-     SM3: matching TL, running 1L (only), ewsb_loop_order = 0 => for observable TL correction: subtracts 1L-contributions from running
-     SM4: matching TL+1L, running TL, ewsb_loop_order = 0     => for observable TL correction: subtracts 1L-contributions from matching [deleted: replaced with SM4_Mhh2]
+  /*
+   * SM1: matching TL+1L+ running all orders with 2-Loop betafunctions, ewsb_loop_order = 1  => for observable TL+1L
+   * SM2: matching and running TL, ewsb_loop_order = 1        => for observable TL+1L correction: subtracts TL + 1L-self-energy
+   * SM3: matching TL, running 1L (only), ewsb_loop_order = 0 => for observable TL correction: subtracts 1L-contributions from running
+   * SM4: matching TL+1L, running TL, ewsb_loop_order = 0     => for observable TL correction: subtracts 1L-contributions from matching [deleted: replaced with SM4_Mhh2]
   */
 
-
+  @ModelName@<T>& model = this->model;
   double  p, p0, M_Pole, M_Higgs,  SM3_Mhh2, SM4_Mhh2;
 @GetHiggsMass@
   M_Pole = 0.;
@@ -260,9 +216,9 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   SM1.set_ewsb_loop_order(1);	SM1.set_pole_mass_loop_order(1);
   SM2.set_ewsb_loop_order(1);	SM2.set_pole_mass_loop_order(1);
   SM3.set_ewsb_loop_order(1);	SM3.set_pole_mass_loop_order(1);
-  
+
   //beta loop order is equal to the parent model
-  SM1.set_loops(model.get_loops());  
+  SM1.set_loops(model.get_loops());
 
   //matching
   model.calculate_DRbar_masses();
@@ -278,12 +234,12 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   SM3.solve_ewsb_tree_level();
 
   //running
-  SM1.run_to(low_scale_constraint.get_scale());
-  SM2.set_scale(low_scale_constraint.get_scale());
+  SM1.run_to(low_scale);
+  SM2.set_scale(low_scale);
   //extract 1-loop part of SM3-running
   SM3.set_loops(1);
-  SM3.set(SM3.beta()*FiniteLog(low_scale_constraint.get_scale()/SM3.get_scale()));
-  SM3.set_scale(low_scale_constraint.get_scale());
+  SM3.set(SM3.beta()*FiniteLog(low_scale/SM3.get_scale()));
+  SM3.set_scale(low_scale);
   //since SM4 runs with TL in the SM (only scale changes),
   //but gives only TL correcture (no scale parameter), it is not affected by running
 

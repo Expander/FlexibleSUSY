@@ -32,6 +32,16 @@
 #include <iostream>
 #include <boost/bind.hpp>
 
+#define Pole(p) physical.p
+#define PHYSICAL(p) model.get_physical().p
+#define PHYSICAL_SLHA(p) model.get_physical_slha().p
+#define LOCALPHYSICAL(p) physical.p
+#define MODELPARAMETER(p) model.get_##p()
+#define DEFINE_PARAMETER(p)                                            \
+   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
+#define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
+#define LowEnergyConstant(p) Electroweak_constants::p
+
 using namespace softsusy;
 
 namespace flexiblesusy {
@@ -200,6 +210,30 @@ void @ModelName@_slha_io::fill(@ModelName@_input_parameters& input) const
 }
 
 /**
+ * Reads DR-bar parameters from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill_drbar_parameters(@ModelName@_mass_eigenstates& model) const
+{
+@readLesHouchesOutputParameters@
+
+   model.set_scale(read_scale());
+}
+
+/**
+ * Reads DR-bar parameters, pole masses and mixing matrices (in
+ * Haber-Kane convention) from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill(@ModelName@_mass_eigenstates& model) const
+{
+   fill_drbar_parameters(model);
+
+   @ModelName@_physical physical_hk;
+   fill_physical(physical_hk);
+   physical_hk.convert_to_hk();
+   model.get_physical() = physical_hk;
+}
+
+/**
  * Fill struct of spectrum generator settings from SLHA object
  * (FlexibleSUSY block)
  *
@@ -233,6 +267,14 @@ void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& s
    } else {
       WARNING("Unrecognized key in block FlexibleSUSY: " << key);
    }
+}
+
+/**
+ * Reads pole masses and mixing matrices from a SLHA output file.
+ */
+void @ModelName@_slha_io::fill_physical(@ModelName@_physical& physical) const
+{
+@readLesHouchesPhysicalParameters@
 }
 
 /**

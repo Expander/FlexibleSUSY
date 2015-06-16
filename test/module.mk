@@ -190,6 +190,7 @@ TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
 		$(DIR)/test_SM_low_scale_constraint.cpp \
 		$(DIR)/test_SM_one_loop_spectrum.cpp \
+		$(DIR)/test_SM_higgs_loop_corrections.cpp \
 		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_two_loop_spectrum.cpp \
 		$(DIR)/test_SM_weinberg_angle.cpp
@@ -210,6 +211,11 @@ TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-lowNMSSM --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes yes)
+TEST_SH += \
+		$(DIR)/test_lowNMSSM_spectrum.sh
+endif
+
 ifeq ($(shell $(FSCONFIG) --with-CMSSMGSLHybrid --with-CMSSMGSLHybridS --with-CMSSMGSLBroyden --with-CMSSMGSLNewton --with-CMSSMFPIRelative --with-CMSSMFPIAbsolute --with-CMSSMFPITadpole),yes yes yes yes yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_compare_ewsb_solvers.cpp
@@ -223,6 +229,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_tree_level_spectrum.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSMCPV_spectrum.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-NMSSMCPV),yes)
@@ -256,6 +264,11 @@ TEST_META := \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_ThresholdCorrections.m \
 		$(DIR)/test_Vertices.m
+
+ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+TEST_META += \
+		$(DIR)/test_SM_3loop_beta.m
+endif
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
@@ -421,7 +434,7 @@ $(DIR)/test_two_scale_solver.x: $(DIR)/test_two_scale_solver.o $(LIBFLEXI) $(LIB
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(FLIBS)
 
 $(DIR)/test_CMSSM_NMSSM_linking.x: $(DIR)/test_CMSSM_NMSSM_linking.o $(LIBCMSSM) $(LIBNMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(THREADLIBS)
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 $(DIR)/test_pv_fflite.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(LIBFFLITE)
@@ -535,6 +548,9 @@ $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGA
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_higgs_loop_corrections.x: $(DIR)/test_SM_higgs_loop_corrections.o $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$< $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(THREADLIBS)
 
 $(DIR)/test_SM_low_scale_constraint.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

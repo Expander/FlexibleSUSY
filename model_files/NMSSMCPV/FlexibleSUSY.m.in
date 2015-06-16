@@ -97,5 +97,16 @@ ExtraSLHAOutputBlocks = {
    {FlexibleSUSYOutput,
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
-            {2, Hold[LowScale]} } }
+            {2, Hold[LowScale]} } },
+   {NMSSMRUN,
+           {{1  , Re[\[Lambda]]   },
+            {2  , Re[\[Kappa]]    },
+            {3  , Re[T[\[Lambda]]]},
+            {4  , Re[T[\[Kappa]]] },
+            {5  , vS              },
+            {10 , ms2             },
+            {11 , Im[\[Lambda]]   },
+            {12 , Im[\[Kappa]]    },
+            {13 , Im[T[\[Lambda]]]},
+            {14 , Im[T[\[Kappa]]] } } }
 };

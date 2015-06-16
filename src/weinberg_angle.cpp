@@ -30,7 +30,7 @@
 
 #define QUIT_IF(condition,fun)                  \
    if (condition)                               \
-      FATAL(#fun ": condition " #condition " not fullfilled!");
+      FATAL(#fun ": " #condition);
 
 #define ROOT2 Electroweak_constants::root2
 
@@ -145,9 +145,8 @@ double Weinberg_angle::get_sin_theta() const
  * the Z-boson pole mass and the DR-bar electromagnetic coupling as
  * input.
  *
- * The function throws an exception of type NoConvergenceError if the
- * iterative procedure to determine the weak mixing angle does not
- * converge.
+ * The function returns 1 if the iterative procedure to determine the
+ * weak mixing angle does not converge.
  *
  * @param rho_start initial guess for the rho-hat-parameter
  * @param sin_start initial guess for the sinus of the weak mixing angle

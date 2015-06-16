@@ -35,6 +35,7 @@ GetPhase::usage="";
 HasPhase::usage="";
 GetRealTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
+GetThirdGeneration::usage="returns parameter with third generation index";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -81,6 +82,7 @@ DecreaseIndexLiterals::usage="";
 DecreaseSumIdices::usage="";
 
 GetEffectiveMu::usage="";
+GetEffectiveMASqr::usage="";
 
 GetParameterFromDescription::usage="Returns model parameter from a
 given description string.";
@@ -969,6 +971,17 @@ GetEffectiveMu[] :=
            FlexibleSUSY`EffectiveMu
           ];
 
+GetEffectiveMASqr[] :=
+    Module[{},
+           If[!ValueQ[FlexibleSUSY`EffectiveMASqr],
+              Print["Error: effective CP-odd Higgs mass not defined!"];
+              Print["   Please set EffectiveMASqr to the expression of the"];
+              Print["   effective CP-odd Higgs mass."];
+              Quit[1];
+             ];
+           FlexibleSUSY`EffectiveMASqr
+          ];
+
 GetParameterFromDescription[description_String] :=
     Module[{parameter},
            parameter =Cases[SARAH`ParameterDefinitions,
@@ -1113,6 +1126,12 @@ FilterOutIndependentEqs[eqs_List, pars_List] :=
 
 FilterOutIndependentEqs[eqs_List, p_] :=
     Select[eqs, (!FreeQ[#,p])&];
+
+GetThirdGeneration[par_] :=
+    Which[IsScalar[par], par,
+          IsMatrix[par], par[2,2],
+          True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
+         ];
 
 End[];
 

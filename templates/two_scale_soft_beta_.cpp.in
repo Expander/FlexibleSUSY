@@ -58,4 +58,22 @@ namespace flexiblesusy {
    return beta_@parameterName@;
 }
 
+/**
+ * Calculates the three-loop beta function of @parameterName@.
+ *
+ * @return three-loop beta function
+ */
+@parameterType@ @ModelName@_soft_parameters::calc_beta_@parameterName@_three_loop(const Soft_traces& soft_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+@localDeclThreeLoop@
+
+   @parameterType@ beta_@parameterName@;
+
+@betaThreeLoop@
+
+   return beta_@parameterName@;
+}
+
 } // namespace flexiblesusy

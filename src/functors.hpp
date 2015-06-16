@@ -19,7 +19,26 @@
 #ifndef FUNCTORS_H
 #define FUNCTORS_H
 
+#include "wrappers.hpp"
+#include <limits>
+
 namespace flexiblesusy {
+
+/**
+ * @class Chop
+ * @brief function object, whose operator() returns zero if the value
+ * it is applied to is smaller than the given threshold
+ * @tparam real scalar type
+ */
+template <typename RealScalar>
+struct Chop {
+   Chop() : threshold(std::numeric_limits<RealScalar>::epsilon()) {}
+   Chop(RealScalar threshold_) : threshold(Abs(threshold_)) {}
+   const RealScalar operator()(const RealScalar& x) const {
+      return Abs(x) < threshold ? static_cast<RealScalar>(0) : x;
+   }
+   RealScalar threshold;
+};
 
 struct Delete_object {
    template <typename T>

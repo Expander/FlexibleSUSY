@@ -27,6 +27,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/rk.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
+		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
@@ -78,6 +79,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
+		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/utils.h \
@@ -108,6 +110,7 @@ endif
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \
+		$(patsubst %.c, %.o, $(filter %.c, $(LIBFLEXI_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(LIBFLEXI_SRC)))
 
 LIBFLEXI_DEP := \
@@ -144,7 +147,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIBFLEXI_DEP) $(LIBFLEXI_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -155,7 +158,7 @@ $(LIBFLEXI): $(LIBFLEXI_OBJ)
 		$(MAKELIB) $@ $^
 else
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		$(MAKELIB) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(TSILLIBS)
 endif
 
 ALLDEP += $(LIBFLEXI_DEP)

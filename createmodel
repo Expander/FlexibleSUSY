@@ -55,7 +55,7 @@ find_default_model_files() {
     # directory.  If a FlexibleSUSY.m.in was found, the corresponding
     # model name will be stored in the variable $default_models .
 
-    default_models="`find ${BASEDIR}/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -printf '%h\n' | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
+    default_models="`find ${BASEDIR}/model_files/ -mindepth 2 -type f -name FlexibleSUSY.m.in -exec dirname {} \; | awk -F / '{ print $NF }' | tr '\n' ' ' | sort -u`"
 }
 
 #_____________________________________________________________________
@@ -330,7 +330,7 @@ search_default_model() {
 
     message -n "Searching for default SARAH model in $_file ... "
 
-    _sarah_model="`sed -n 's/FSDefaultSARAHModel *= *\([^;]\+\)/\1/p' < ${_file}`"
+    _sarah_model="`sed -n 's/FSDefaultSARAHModel *= *\([^;][^;]*\)/\1/p' < ${_file}`"
 
     if [ -z $_sarah_model ]; then
         message "not found"
@@ -477,12 +477,12 @@ if test ! -d "$targetdir" ; then
     message "done"
 fi
 
-set -- $(find $model_file_dir -type f -iname LesHouches.in\* -printf " %f")
+set -- $(find $model_file_dir -type f -iname LesHouches.in\* -not -iname \*~ -exec basename {} \; | tr '\n' ' ')
 SLHA_input_files="$*"
 
 SLHA_input_files_in_mk=$(echo "$SLHA_input_files" |
-    sed 's/ / \\\\\\n/g;
-	 s,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
+    sed -e 's/ / \\\\\\n/g;' \
+        -e 's,\(^\|\\n\)\(.\),\1		$(DIR)/\2,g')
 
 message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \

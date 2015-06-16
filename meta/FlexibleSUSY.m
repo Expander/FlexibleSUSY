@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
@@ -59,6 +59,9 @@ EDRbar;
 ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
+EffectiveMASqr;
+UseSM3LoopRGEs = False;
+UseHiggs2LoopSM;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -431,6 +434,7 @@ GeneralReplacementRules[] :=
       "@leftCouplingGutNormalization@"  -> RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]],
       "@hyperchargeCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]],
       "@leftCouplingInverseGutNormalization@" -> RValueToCFormString[1/Parameters`GetGUTNormalization[SARAH`leftCoupling]],
+      "@perturbativityThreshold@" -> ToString[N[FlexibleSUSY`FSPerturbativityThreshold]],
       "@ModelName@"           -> FlexibleSUSY`FSModelName,
       "@numberOfModelParameters@" -> ToString[numberOfModelParameters],
       "@InputParameter_" ~~ num_ ~~ "@" /; IntegerQ[ToExpression[num]] :> CConversion`ToValidCSymbolString[Parameters`GetInputParameters[][[ToExpression[num]]]],
@@ -676,7 +680,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
             slhaFerimonMixingMatricesGetters = "",
             slhaPoleMassGetters = "",
             slhaPoleMixingMatrixGetters = "",
-            convertMixingsToSLHAConvention = "",
             calculateCKMMatrix = "",
             calculatePMNSMatrix = ""
            },
@@ -691,7 +694,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
            convertSoftSquaredMassesToSLHA = WriteOut`ConvertSoftSquaredMassesToSLHA[];
            slhaFerimonMixingMatricesDef = WriteOut`CreateSLHAFermionMixingMatricesDef[];
            slhaFerimonMixingMatricesGetters = WriteOut`CreateSLHAFermionMixingMatricesGetters[];
-           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            calculateCKMMatrix = WriteOut`CalculateCKMMatrix[];
            calculatePMNSMatrix = WriteOut`CalculatePMNSMatrix[];
            For[k = 1, k <= Length[massMatrices], k++,
@@ -712,7 +714,6 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                             "@convertSoftSquaredMassesToSLHA@" -> IndentText[convertSoftSquaredMassesToSLHA],
                             "@slhaPoleMassGetters@"            -> IndentText[slhaPoleMassGetters],
                             "@slhaPoleMixingMatrixGetters@"    -> IndentText[slhaPoleMixingMatrixGetters],
-                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@calculateCKMMatrix@"             -> IndentText[calculateCKMMatrix],
                             "@calculatePMNSMatrix@"             -> IndentText[calculatePMNSMatrix],
                             Sequence @@ GeneralReplacementRules[]
@@ -822,6 +823,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
+            checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
@@ -833,8 +835,12 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             setEWSBParametersFromLocalCopies = "",
             ewsbParametersInitializationList = "",
             setEWSBParametersFromGSLVector = "",
+            convertMixingsToSLHAConvention = "",
+            convertMixingsToHKConvention = "",
             enablePoleMassThreads = True
            },
+           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
+           convertMixingsToHKConvention   = WriteOut`ConvertMixingsToHKConvention[massMatrices];
            independentEwsbEquations = Parameters`FilterOutLinearDependentEqs[ewsbEquations, parametersFixedByEWSB];
            numberOfIndependentEWSBEquations = Length[independentEwsbEquations];
            ewsbEquationsTreeLevel = ewsbEquations /. FlexibleSUSY`tadpole[_] -> 0;
@@ -878,6 +884,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
               calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
+             ];
+           If[SARAH`UseHiggs2LoopSM === True,
+              {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
+              twoLoopHiggsHeaders = "#include \"sm_twoloophiggs.hpp\"\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -949,6 +959,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
+           checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
                             "@lspFunctions@"         -> lspFunctions,
@@ -971,6 +982,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@reorderDRbarMasses@"     -> IndentText[reorderDRbarMasses],
                             "@reorderPoleMasses@"      -> IndentText[reorderPoleMasses],
+                            "@checkPoleMassesForTachyons@" -> IndentText[checkPoleMassesForTachyons],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
@@ -1017,6 +1029,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@setEWSBParametersFromGSLVector@"   -> IndentText[setEWSBParametersFromGSLVector],
                             "@ewsbParametersInitializationList@" -> ewsbParametersInitializationList,
                             "@setEWSBSolution@"              -> IndentText[setEWSBSolution],
+                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
+                            "@convertMixingsToHKConvention@"   -> IndentText[convertMixingsToHKConvention],
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -1079,8 +1093,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
             writeExtraSLHAOutputBlock = "",
-            readLesHouchesOutputParameters, readLesHouchesPhyicalParameters,
-            convertMixingsToSLHAConvention = "",
+            readLesHouchesOutputParameters, readLesHouchesPhysicalParameters,
             gaugeCouplingNormalizationDecls = "",
             gaugeCouplingNormalizationDefs = "",
             numberOfDRbarBlocks, drBarBlockNames},
@@ -1102,7 +1115,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
-           readLesHouchesPhyicalParameters = WriteOut`ReadLesHouchesPhysicalParameters[];
+           readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
@@ -1111,7 +1124,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            writeExtraSLHAOutputBlock = WriteOut`WriteExtraSLHAOutputBlock[extraSLHAOutputBlocks];
            numberOfDRbarBlocks  = WriteOut`GetNumberOfDRbarBlocks[];
            drBarBlockNames      = WriteOut`GetDRbarBlockNames[];
-           convertMixingsToSLHAConvention = WriteOut`ConvertMixingsToSLHAConvention[massMatrices];
            gaugeCouplingNormalizationDecls = WriteOut`GetGaugeCouplingNormalizationsDecls[SARAH`Gauge];
            gaugeCouplingNormalizationDefs  = WriteOut`GetGaugeCouplingNormalizationsDefs[SARAH`Gauge];
            WriteOut`ReplaceInFiles[files,
@@ -1129,14 +1141,13 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@fillInputParametersFromEXTPAR@" -> IndentText[fillInputParametersFromEXTPAR],
                             "@readLesHouchesInputParameters@" -> IndentText[readLesHouchesInputParameters],
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
-                            "@readLesHouchesPhyicalParameters@" -> IndentText[readLesHouchesPhyicalParameters],
+                            "@readLesHouchesPhysicalParameters@" -> IndentText[readLesHouchesPhysicalParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],
                             "@writeSLHAExtparBlock@"           -> IndentText[writeSLHAExtparBlock],
                             "@writeExtraSLHAOutputBlock@"      -> IndentText[writeExtraSLHAOutputBlock],
-                            "@convertMixingsToSLHAConvention@" -> IndentText[convertMixingsToSLHAConvention],
                             "@gaugeCouplingNormalizationDecls@"-> IndentText[gaugeCouplingNormalizationDecls],
                             "@gaugeCouplingNormalizationDefs@" -> IndentText[gaugeCouplingNormalizationDefs],
                             "@numberOfDRbarBlocks@"            -> ToString[numberOfDRbarBlocks],
@@ -1422,6 +1433,32 @@ GuessInputParameterType[par_] :=
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
 
+AddSM3LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopSM`BetaSM[coupling]]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`PROJECTOR}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddSM3LoopRGEs[] := Module[{
+    gauge = { SARAH`hyperchargeCoupling,
+              SARAH`leftCoupling,
+              SARAH`strongCoupling },
+    yuks  = { SARAH`UpYukawa,
+              SARAH`DownYukawa,
+              SARAH`ElectronYukawa },
+    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] },
+    bilin = { Parameters`GetParameterFromDescription["SM Mu Parameter"] }
+    },
+    SARAH`BetaGauge = AddSM3LoopRGE[SARAH`BetaGauge, gauge];
+    SARAH`BetaYijk  = AddSM3LoopRGE[SARAH`BetaYijk , yuks];
+    SARAH`BetaLijkl = AddSM3LoopRGE[SARAH`BetaLijkl, quart];
+    SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
+    ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1492,6 +1529,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
+
+           If[FlexibleSUSY`UseSM3LoopRGEs,
+              Print["Adding SM 3-loop beta-functions"];
+              AddSM3LoopRGEs[];
+             ];
 
            If[SARAH`SupersymmetricModel,
               (* pick beta functions of supersymmetric parameters *)
@@ -1958,6 +2000,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            nPointFunctions, vertexRules, Parameters`GetPhases[],
                            {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_model.hpp"}]},
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "mass_eigenstates.hpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.hpp"}]},
+                            {FileNameJoin[{Global`$flexiblesusyTemplateDir, "mass_eigenstates.cpp.in"}],
+                             FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_mass_eigenstates.cpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.hpp.in"}],
                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_model.hpp"}]},
                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_model.cpp.in"}],
@@ -1975,12 +2021,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               ];
 
            Print["Creating user example spectrum generator program ..."];
-           spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
+           spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],

@@ -28,6 +28,9 @@
 #include <iostream>
 #include <iomanip>
 
+#define PHYSICAL(p) model.get_physical().p
+#define MODELPARAMETER(p) model.get_##p()
+
 using namespace softsusy;
 
 namespace flexiblesusy {
@@ -37,6 +40,18 @@ namespace flexiblesusy {
    , scale(0.0)
    , width(16)
 {
+}
+
+
+void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@_mass_eigenstates& model)
+{
+   spectrum.clear();
+   scale = model.get_scale();
+
+@fillSpectrumVectorWithSusyParticles@
+   if (model.do_calculate_sm_pole_masses()) {
+@fillSpectrumVectorWithSMParticles@
+   }
 }
 
 void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) const
@@ -53,7 +68,7 @@ void @ModelName@_spectrum_plotter::write_to_file(const std::string& file_name) c
       return;
    }
 
-   filestr << "### one-loop pole masses (Q = " << scale << " GeV)\n";
+   filestr << "### pole masses (Q = " << scale << " GeV)\n";
    write_spectrum(spectrum, filestr);
 
    filestr.close();

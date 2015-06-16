@@ -1,5 +1,4 @@
 Block MODSEL                 # Select model
-    6   0                    # flavour violation
 #   12    1000                # DRbar parameter output scale (GeV)
 Block FlexibleSUSY
     0   1.000000000e-04      # precision goal
@@ -17,6 +16,7 @@ Block FlexibleSUSY
    12   0                    # force output
    13   1                    # Top quark 2-loop corrections QCD
    14   1                    # Higgs logarithmic resummation
+   14   1.000000000e-11      # beta-function zero threshold
 Block SMINPUTS               # Standard Model inputs
     1   1.279340000e+02      # alpha^(-1) SM MSbar(MZ)
     2   1.166370000e-05      # G_Fermi
@@ -36,13 +36,8 @@ Block SMINPUTS               # Standard Model inputs
    23   1.040000000e-01      # ms(2 GeV) MS-bar
    24   1.270000000e+00      # mc(mc) MS-bar
 Block MINPAR                 # Input parameters
-    1   1000                 # m0
-    2   1000                 # m12
-    3   5                    # TanBeta
-    5   -1000                # Azero
-Block EXTPAR  # Input parameters
-   23   2000                 # MuInput(MSUSY)
-   61   0.4                  # LambdaInput(MSUSY)
-   62   0.4                  # KappaInput(MSUSY)
-   63   -500                 # AlambdaInput(MGUT)
-   64   -500                 # AkappaInput(MGUT)
+    1   125.                 # m0
+    2   500.                 # m12
+    3   10.                  # TanBeta
+    4   1                    # SignMu
+    5   0                    # Azero

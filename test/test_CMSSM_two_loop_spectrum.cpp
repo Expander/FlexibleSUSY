@@ -11,6 +11,21 @@
 
 using namespace flexiblesusy;
 
+void ensure_tree_level_ewsb(CMSSM<Two_scale>& m)
+{
+   // ensure that the EWSB eqs. are satisfied (Drees p.222)
+   const double vu = m.get_vu();
+   const double vd = m.get_vd();
+   const double gY = m.get_g1() * sqrt(0.6);
+   const double g2 = m.get_g2();
+   const double Mu = m.get_Mu();
+   const double BMu = m.get_BMu();
+   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   m.set_mHd2(mHd2);
+   m.set_mHu2(mHu2);
+}
+
 template <class T1, class TInput>
 void setup_CMSSM_const(T1& m, const TInput& input)
 {
@@ -70,6 +85,9 @@ void setup_CMSSM_const(T1& m, const TInput& input)
    m.set_BMu(BMu);
    m.set_vu(vu);
    m.set_vd(vd);
+
+   ensure_tree_level_ewsb(m);
+   m.calculate_DRbar_masses();
 }
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
@@ -81,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
    input.m12 = 200.;
    input.SignMu = 1;
    input.Azero = 0.;
-   CMSSM<Two_scale> m;
+   CMSSM<Two_scale> m(input);
    m.do_calculate_sm_pole_masses(true);
    setup_CMSSM_const(m, input);
 

@@ -5,8 +5,8 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=4
+FLEXIBLESUSY_MINOR=1
+FLEXIBLESUSY_PATCH=1
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
@@ -99,6 +99,7 @@ options="                    \
    enable_silent             \
    enable_static_libs        \
    enable_threads            \
+   enable_tsil               \
    enable_verbose            \
 "
 
@@ -122,6 +123,7 @@ enable_meta="yes"
 enable_silent="no"
 enable_static_libs="yes"
 enable_threads="yes"
+enable_tsil="no"
 enable_verbose="no"
 
 # corresponding preprocessor define statements
@@ -133,6 +135,7 @@ DEFINE_ENABLE_LOOPTOOLS="#undef ENABLE_LOOPTOOLS"
 DEFINE_ENABLE_RANDOM="#undef ENABLE_RANDOM"
 DEFINE_ENABLE_SILENT="#undef ENABLE_SILENT"
 DEFINE_ENABLE_THREADS="#define ENABLE_THREADS 1"
+DEFINE_ENABLE_TSIL="#undef ENABLE_TSIL"
 DEFINE_ENABLE_VERBOSE="#undef ENABLE_VERBOSE"
 
 boost_lib_dir=""
@@ -148,6 +151,8 @@ GSLFLAGS=""
 CPPFLAGS=""
 CXXFLAGS="-std=c++11 -O2"
 CXXFLAGS_DEP_GEN="-std=c++11"
+CFLAGS="-O2"
+CFLAGS_DEP_GEN=""
 FFLAGS="-O2"
 FLIBS=""
 BOOSTTESTLIBS=""
@@ -156,6 +161,8 @@ THREADLIBS=""
 LIBEXT=".a"
 CXX="g++"
 CXX_DEP_GEN="${CXX}"
+CC="gcc"
+CC_DEP_GEN="${CC}"
 EIGENFLAGS=""
 FC="gfortran"
 FOR_DEP_GEN="${FC}"
@@ -165,6 +172,8 @@ BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
+tsil_lib_dir=""
+tsil_inc_dir=""
 # available RG algorithms
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
@@ -1426,6 +1435,20 @@ get_clang_version() {
 }
 
 #_____________________________________________________________________
+check_cc() {
+    checking_msg "C compiler $CC"
+    exists_in_path "$CC"
+    if [ -z "$cmd" ] ; then
+        result "not found"
+        message "Error: A C compiler must be installed to compile FlexibleSUSY!"
+        message "   Use --with-cc= to specify the C compiler to be used."
+        exit 1
+    else
+        result "found $cmd"
+    fi
+}
+
+#_____________________________________________________________________
 check_cxx() {
     checking_msg "C++ compiler $CXX"
     exists_in_path "$CXX"
@@ -1608,6 +1631,10 @@ check_fflags() {
 
 #_____________________________________________________________________
 check_fortran_libs() {
+    if test "x${FLIBS}" != "x" ; then
+        return
+    fi
+
     case "$FC" in
         gfortran*)
             gfortran_lib_search_paths=`${FC} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p' | tr ':' ' '`
@@ -1715,6 +1742,39 @@ check_looptools_incl() {
         # assume that the compiler will look in the default paths
         if [ -n "$looptools_inc_dir" ]; then
             LOOPTOOLSFLAGS="-I$looptools_inc_dir"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
+check_tsil_libs() {
+    check_library "libtsil" "$tsil_lib_dir" \
+       "$default_lib_paths"
+    if test "x$found_lib" = "x" ; then
+        message "Error: libtsil not found."
+        exit 1
+    else
+        local TSILLIBS_="-ltsil"
+        if [ -z "$tsil_lib_dir" ]; then
+            # assume that the linker will look in the default paths
+            TSILLIBS="$TSILLIBS_"
+        else
+            TSILLIBS="-L$tsil_lib_dir $TSILLIBS_"
+        fi
+    fi
+}
+
+#_____________________________________________________________________
+check_tsil_incl() {
+    check_header "tsil.h" "$tsil_inc_dir" \
+	"$default_inc_paths"
+    if test "x$found_hdr" = "x" ; then
+        message "Error: tsil.h not found in $tsil_inc_dir $default_inc_paths."
+        exit 1
+    else
+        # assume that the compiler will look in the default paths
+        if [ -n "$tsil_inc_dir" ]; then
+            TSILFLAGS="-I$tsil_inc_dir"
         fi
     fi
 }
@@ -2028,6 +2088,12 @@ enable_defines() {
         message "Disabling multi-threading"
         logmsg "   ${DEFINE_ENABLE_THREADS}"
     fi
+
+    if test "x${enable_tsil}" = "xyes" ; then
+        DEFINE_ENABLE_TSIL="#define ENABLE_TSIL 1"
+        message "Enabling tsil"
+        logmsg "   ${DEFINE_ENABLE_TSIL}"
+    fi
 }
 
 #_____________________________________________________________________
@@ -2053,6 +2119,10 @@ replace_markers() {
 	-e "s|@CXXFLAGS_DEP_GEN@|$CXXFLAGS_DEP_GEN|"   \
 	-e "s|@CXX@|$CXX|"                 \
 	-e "s|@CXX_DEP_GEN@|$CXX_DEP_GEN|" \
+	-e "s|@CFLAGS@|$CFLAGS|"           \
+	-e "s|@CFLAGS_DEP_GEN@|$CFLAGS_DEP_GEN|" \
+	-e "s|@CC@|$CC|"                   \
+	-e "s|@CC_DEP_GEN@|$CC_DEP_GEN|"   \
 	-e "s|@FC@|$FC|"                   \
 	-e "s|@FFLAGS@|$FFLAGS|"           \
 	-e "s|@FLIBS@|$FLIBS|"             \
@@ -2072,9 +2142,12 @@ replace_markers() {
 	-e "s|@ENABLE_DEBUG@|$enable_debug|"      \
 	-e "s|@ENABLE_CHECK_EIGENVALUE_ERROR@|$enable_mass_error_check|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
+	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+	-e "s|@TSILLIBS@|$TSILLIBS|"              \
+	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
 	-e "s|@MAKELIB@|$MAKELIB|"         \
 	-e "s|@ENABLE_STATIC_LIBS@|$enable_static_libs|" \
@@ -2128,6 +2201,8 @@ Package directories, compilation settings and model selection
   --with-eigen-incdir=      Path to search for Eigen headers
   --with-fc=                Fortran compiler (default: $FC)
   --with-fflags=            Fortran compiler flags (default: $FFLAGS)
+  --with-flibs=             Fortran libraries (default: $FLIBS)
+                            If empty, FLIBS will be determined automatically.
   --with-fortran-dep-gen=   Fortran file dependency generator (default: $FOR_DEP_GEN)
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
@@ -2136,6 +2211,8 @@ Package directories, compilation settings and model selection
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
   --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+  --with-tsil-libdir=       Path to search for TSIL library
+  --with-tsil-incdir=       Path to search for TSIL header
 EOF
 # BEGIN: NOT EXPORTED ##########################################
 cat <<EOF
@@ -2219,12 +2296,16 @@ if test $# -gt 0 ; then
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
+            --with-cc=*)             CC=$optarg ;;
+            --with-cflags=*)         CFLAGS=$optarg ;;
+            --with-cc-dep-gen=*)     CC_DEP_GEN=$optarg ;;
             --with-cxx=*)            CXX=$optarg ;;
             --with-cxxflags=*)       CXXFLAGS=$optarg ;;
             --with-cxx-dep-gen=*)    CXX_DEP_GEN=$optarg ;;
             --with-eigen-incdir=*)   eigen_inc_dir=$optarg ;;
             --with-fc=*)             FC=$optarg ;;
             --with-fflags=*)         FFLAGS=$optarg ;;
+            --with-flibs=*)          FLIBS=$optarg ;;
             --with-fortran-dep-gen=*) FOR_DEP_GEN=$optarg ;;
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
@@ -2235,6 +2316,8 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
+            --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
+            --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;
             --version|-v)            version; exit 0 ;;
             *)  echo "Invalid option '$1'. Try $0 --help" ; exit 1 ;;
@@ -2261,6 +2344,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_cxx_dep_gen_type
     check_cxx_dep_gen_version
     check_cxxflags_dep_gen
+    check_cc
     check_fc
     check_fflags
     check_fortran_dep_gen
@@ -2281,6 +2365,10 @@ if test "x${enable_compile}" = "xyes"; then
     if test "x$enable_looptools" = "xyes"; then
         check_looptools_incl
         check_looptools_libs
+    fi
+    if test "x$enable_tsil" = "xyes"; then
+        check_tsil_incl
+        check_tsil_libs
     fi
     check_makelib
     check_random_number_generator
@@ -2330,6 +2418,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@CPPFLAGS@|$CPPFLAGS|"       \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"       \
     -e "s|@CXX@|$CXX|"                 \
+    -e "s|@CFLAGS@|$CFLAGS|"           \
+    -e "s|@CC@|$CC|"                   \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"   \
     -e "s|@FC@|$FC|"                   \
     -e "s|@FFLAGS@|$FFLAGS|"           \
@@ -2337,6 +2427,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
+    -e "s|@TSILLIBS@|$TSILLIBS|"       \
+    -e "s|@TSILFLAGS@|$TSILFLAGS|"     \
     -e "s|@MAKELIB@|$MAKELIB|"         \
     -e "s|@MATH@|$MATH|"               \
     -e "s|@MODELS@|$MODELS|"           \
@@ -2357,6 +2449,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@THREADLIBS@|$THREADLIBS|"                 \
     -e "s|@CXX@|$CXX|"                               \
     -e "s|@CXXFLAGS@|$CXXFLAGS|"                     \
+    -e "s|@CC@|$CC|"                                 \
+    -e "s|@CFLAGS@|$CFLAGS|"                         \
     -e "s|@EIGENFLAGS@|$EIGENFLAGS|"                 \
     -e "s|@FC@|$FC|"                                 \
     -e "s|@FFLAGS@|$FFLAGS|"                         \
@@ -2380,6 +2474,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_RANDOM@|$DEFINE_ENABLE_RANDOM|"       \
     -e "s|@DEFINE_ENABLE_SILENT@|$DEFINE_ENABLE_SILENT|"       \
     -e "s|@DEFINE_ENABLE_THREADS@|$DEFINE_ENABLE_THREADS|"     \
+    -e "s|@DEFINE_ENABLE_TSIL@|$DEFINE_ENABLE_TSIL|"           \
     -e "s|@DEFINE_ENABLE_VERBOSE@|$DEFINE_ENABLE_VERBOSE|"     \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 

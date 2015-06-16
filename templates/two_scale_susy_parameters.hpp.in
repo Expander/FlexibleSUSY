@@ -73,6 +73,8 @@ private:
 
 std::ostream& operator<<(std::ostream&, const @ModelName@_susy_parameters&);
 
+#undef TRACE_STRUCT_TYPE
+
 } // namespace flexiblesusy
 
 #endif

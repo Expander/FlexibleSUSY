@@ -19,8 +19,11 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_physical.hpp"
+#include "slha_io.hpp"
 
 #include <iostream>
+
+#define LOCALPHYSICAL(p) p
 
 namespace flexiblesusy {
 
@@ -34,6 +37,26 @@ namespace flexiblesusy {
 void @ModelName@_physical::clear()
 {
 @clearOutputParameters@
+}
+
+/**
+ * Convert masses and mixing matrices to Haber-Kane convention:
+ * Fermion masses are always positive and mixing matrices are allowed
+ * to be complex.
+ */
+void @ModelName@_physical::convert_to_hk()
+{
+@convertMixingsToHKConvention@
+}
+
+/**
+ * Convert masses and mixing matrices to SLHA convention: Fermion
+ * mixing matrices are always real and fermion masses are allowed to
+ * be negative.
+ */
+void @ModelName@_physical::convert_to_slha()
+{
+@convertMixingsToSLHAConvention@
 }
 
 void @ModelName@_physical::print(std::ostream& ostr) const

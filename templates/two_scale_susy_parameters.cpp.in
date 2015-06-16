@@ -20,6 +20,7 @@
 
 #include "@ModelName@_two_scale_susy_parameters.hpp"
 #include "wrappers.hpp"
+#include "functors.hpp"
 
 #include <iostream>
 
@@ -54,7 +55,7 @@ namespace flexiblesusy {
 
 Eigen::ArrayXd @ModelName@_susy_parameters::beta() const
 {
-   return calc_beta().get();
+   return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
 @ModelName@_susy_parameters @ModelName@_susy_parameters::calc_beta() const

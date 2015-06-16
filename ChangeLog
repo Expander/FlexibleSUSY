@@ -1,4 +1,22 @@
-FlexibleSUSY-1.1.0 [not released yet]
+FlexibleSUSY-1.2.0 [not released yet]
+
+ * Feature: Allow the user to add 3-loop beta-functions in the SM.
+   The beta-functions were take from SUSYHD v1.0.
+
+ * Feature: Allow the user to add 2-loop Higgs self-energy corrections
+   O(alpha_t^2 + alpha_t alpha_s) in the SM.  The self-energy
+   corrections were take from arxiv:1205.6497.
+
+ * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
+   confusion between goldstone and Higgs bosons in the CP-violating
+   MSSM.
+
+FlexibleSUSY-1.1.1 [June, 08 2015]
+
+ * Bugfix (commit e1ea433): Catch NaNs from Slavich's NMSSM 2-loop
+   self-energies.
+
+FlexibleSUSY-1.1.0 [May, 31 2015]
 
  * Feature: Calculation of DR-bar weak mixing angle from Fermi
    constant and Z pole mass.  The implementation is based on
@@ -10,6 +28,9 @@ FlexibleSUSY-1.1.0 [not released yet]
    FSWeakMixingAngleInput = FSFermiConstant; (* or FSMassW *)
    Note: To achieve the maximum accuracy available, set the threshold
    corrections loop order to 2 (FlexibleSUSY block entry 7)
+
+ * Feature: Support for non-SUSY models, renormalized in the MS-bar
+   scheme.
 
  * Feature: 2-loop QCD corrections can be added when calculating the
    top pole mass from the top DR-bar mass.  These 2-loop contributions
@@ -23,65 +44,51 @@ FlexibleSUSY-1.1.0 [not released yet]
    The default SARAH model file to be used with a given FlexibleSUSY
    model file can be set via FSDefaultSARAHModel = <model>;
 
- * Feature: Complex model parameters are now supported.  Linked to
-   this, the following new model files with complex parameters were
-   added: cSM, cMSSM, cCMSSM, CMSSMCPV, NMSSMCPV.
+ * Feature: Complex model parameters are now supported.
 
  * Feature: The CKM and PMNS matrix can now be used as low-energy
    inputs.  They are read from the VCKMIN and UPMNSIN input blocks,
    respectively.  Linked to this, the new model file CMSSMCKM was
    added to demonstrate the input of the CKM matrix at low energies.
 
- * Bugfix (commit 4a1c471): ensure that the lightest CP-odd Higgs mass
-   is used in the two-loop Higgs self-energy and tadpole corrections.
-   Before, there were cases where a Goldstone boson mass was used.
+ * Feature: Mark parameter points as invalid, for which the
+   calculation of one of the pole masses failed due to
+   non-convergence.
 
- * Bugfix (commit 8335640): ensure that the tree-level EWSB conditions
-   are fulfilled during calculation of the tree-level spectrum in
-   non-SUSY models.
+ * Feature: New (non-templated) intermediate model class
+   <model>_mass_eigenstates, which is able to calculate the pole and
+   running mass spectrum.  <model>_mass_eigenstates is derived from
+   <model>_soft_parameters.  The templated model class
+   <model><Two_scale> is now derived from <model>_mass_eigenstates .
+
+ * Bugfix (commit 6da2cbd, 8113e32a): ensure that the MSSM-like CP-odd
+   Higgs mass is used in the two-loop Higgs self-energies and
+   tadpoles.  Before, there were cases where a Goldstone boson mass or
+   a singlet-like pseudoscalar mass was used.
 
  * Bugfix (commit 29a0833): incorporate tadpole contributions in pole
    masses of singlets
-
- * Bugfix (commit 3422d88): ensure only gluon is removed from top
-   self-energy for calculation of top DR-bar mass in the SM
-
- * Bugfix (commits 66d38f4 and 4ed231d): ensure Higgs and Goldstone
-   boson contributions are contained in the bottom and tau
-   self-energies for calculation of bottom and tau DR-bar masses in
-   the SM
-
- * Bugfix (commit 08128f0): For a non-SUSY model the all running
-   masses are checked for convergence.  Before, only non-SM particle
-   masses were checked for convergence, which led to an empty
-   convergence tester for the SM.
 
  * Bugfix (commit c64a333): Softsusy's B1 function is now thread-save.
    Before commit c64a333, the tau pole mass was varying due to a race
    condition, if multi-threading is enabled and neither fflite nor
    looptoos is used.
 
- * Bugfix (commit 2b3df8c): no DR-bar conversion for down-quark and
-   charged lepton running masses in non-SUSY models, because these
-   models are renormalized in the MS-bar scheme.  The bug affects the
-   calculation of the down-quark and charged lepton Yukawa couplings
-   in non-SUSY models, like the SM, for example.
-
  * Bugfix (commit d035544): Ignore trivial EWSB eqs.  Makes the MRSSM
    work in FlexibleSUSY with SARAH 4.5.x.
-
- * Bugfix (commit d1e5db4): implement fermion 1-loop and 2-loof QCD
-   self-energy corrections in the MS-bar scheme.
-
- * Bugfix (commit 0a2c91a): omit DR-bar conversion factor in the
-   calculation of alpha_em in non-SUSY models.
-
- * Bugfix (commit 0084e11): adding MS-bar conversion terms to the
-   self-energies of non-SUSY models.
 
  * Bugfix (commit d8a1521): The SM() preprocessor macro has been
    renamed to LowEnergyConstant() in order to avoid collisions with
    the copy constructor of the SM model class.
+
+ * Bugfix (commit 0c7a7ac): chop beta-function values smaller than the
+   zero-threshold to avoid failures of the RK integrator.  The
+   zero-threshold is 1e-11 by default and can be changed via
+   Beta_function::set_zero_threshold() or entry 14 in the SLHA input
+   file.
+
+ * Bugfix (commit 29a1578): Ignore goldstone boson "pole mass"
+   tachyons.
 
 FlexibleSUSY-1.0.4 [January, 15 2015]
 

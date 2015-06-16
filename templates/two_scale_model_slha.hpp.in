@@ -29,6 +29,10 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "@ModelName@_physical.hpp"
 #include "@ModelName@_model_slha.hpp"
+#include "wrappers.hpp"
+
+#define PHYSICAL_SLHA(p) physical_slha.p
+#define PHYSICAL_SLHA_REAL(p) Re(physical_slha.p)
 
 namespace flexiblesusy {
 
@@ -48,7 +52,6 @@ public:
 
    virtual void clear();
    void convert_to_slha(); ///< converts pole masses and couplings to SLHA convention
-   static void convert_to_slha(@ModelName@_physical&); ///< converts pole masses to SLHA convention
    const Eigen::Matrix<std::complex<double>,3,3>& get_ckm_matrix() const { return ckm; }
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns_matrix() const { return pmns; }
    const @ModelName@_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
@@ -82,5 +85,8 @@ private:
 };
 
 } // namespace flexiblesusy
+
+#undef PHYSICAL_SLHA
+#undef PHYSICAL_SLHA_REAL
 
 #endif

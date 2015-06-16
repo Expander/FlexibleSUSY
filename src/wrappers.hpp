@@ -32,6 +32,7 @@ namespace flexiblesusy {
 static const double Pi = M_PI;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 static const double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
+static const double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
 
 inline double Abs(double z)
 {
@@ -209,7 +210,8 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 
 inline double FiniteLog(double a)
 {
-   return a > std::numeric_limits<double>::epsilon() ? std::log(a) : 0;
+   return (std::isfinite(a) && a > std::numeric_limits<double>::epsilon())
+      ? std::log(a) : 0;
 }
 
 /**
@@ -352,6 +354,19 @@ inline double SignedAbsSqrt(double a)
    return Sign(a) * AbsSqrt(a);
 }
 
+namespace {
+   inline double SignedAbsSqrt_d(double a)
+   {
+      return SignedAbsSqrt(a);
+   }
+}
+
+template <typename Derived>
+Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
+{
+   return m.unaryExpr(std::ptr_fun(SignedAbsSqrt_d));
+}
+
 inline double Sqrt(double a)
 {
    return std::sqrt(a);
@@ -407,6 +422,13 @@ void Symmetrize(Eigen::MatrixBase<Derived>& m)
 #define ZEROMATRIXCOMPLEX(rows,cols) Eigen::Matrix<std::complex<double>,rows,cols>::Zero()
 #define ZEROVECTORCOMPLEX(rows)      Eigen::Matrix<std::complex<double>,rows,1>::Zero()
 #define ZEROARRAYCOMPLEX(rows)       Eigen::Array<std::complex<double>,rows,1>::Zero()
+
+// MxN matrix projection operator, which projects on the (X,Y)
+// component
+#define PROJECTOR Proj
+#define DEFINE_PROJECTOR(M,N,X,Y)                                       \
+   Eigen::Matrix<double,M,N> Proj(Eigen::Matrix<double,M,N>::Zero());   \
+   Proj(X-1,Y-1) = 1;
 
 template<class Scalar, int M>
 Eigen::Matrix<Scalar,M,M> ToMatrix(const Eigen::Array<Scalar,M,1>& a)

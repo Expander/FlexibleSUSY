@@ -48,7 +48,8 @@ public:
       higgs_2loop_correction_atau_atau, ///< [11] Higgs 2-loop correction O(alpha_tau alpha_tau)
       force_output,          ///< [12] force output
       top_2loop_corrections_qcd,        ///< [13] Top-quark 2-loop QCD corrections
-      higgs_log_resum,       ///< [13] Higgs pole mass logarithmic resummation
+      higgs_log_resum,       ///< [14] Higgs pole mass logarithmic resummation
+      beta_zero_threshold,   ///< [15] beta function zero threshold
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

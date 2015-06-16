@@ -67,4 +67,6 @@ std::ostream& operator<<(std::ostream&, const @ModelName@_soft_parameters&);
 
 } // namespace flexiblesusy
 
+#undef TRACE_STRUCT_TYPE
+
 #endif

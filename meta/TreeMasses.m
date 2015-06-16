@@ -1,5 +1,5 @@
 
-BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`"}];
+BeginPackage["TreeMasses`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "WeinbergAngle`", "LatticeUtils`", "Utils`"}];
 
 FSMassMatrix::usage="Head of a mass matrix";
 
@@ -133,8 +133,12 @@ GetThirdGenerationMass::usage;
 GetLightestMass::usage;
 
 ReorderGoldstoneBosons::usage="";
+CheckPoleMassesForTachyons::usage="";
 CreateHiggsMassGetters::usage="";
 CallPseudoscalarHiggsMassGetterFunction::usage="";
+
+GetCorrespondingVectorBosons::usage="returns list of vector bosons
+corresponding to a given goldstone boson";
 
 (* exported for the use in LoopMasses.m *)
 CallSVDFunction::usage="";
@@ -186,6 +190,9 @@ IsVector[sym_Symbol] := IsOfType[sym, V];
 IsGhost[sym_Symbol] := IsOfType[sym, G];
 
 IsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a[idx], sym];
+
+IsChargino[p_] :=
+    p === Parameters`GetParticleFromDescription["Charginos"];
 
 ContainsGoldstone[sym_] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a, sym];
 
@@ -420,7 +427,7 @@ GetMassEigenstate[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[2]];
 
 GetMassMatrix[massMatrix_TreeMasses`FSMassMatrix] := massMatrix[[1]];
 
-CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
+CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", wrapper_String:""] :=
     Module[{massESSymbol, returnType, dim, dimStr, massESSymbolStr, CreateElementGetter},
            massESSymbol = GetMassEigenstate[massMatrix];
            massESSymbolStr = ToValidCSymbolString[FlexibleSUSY`M[massESSymbol]];
@@ -433,12 +440,12 @@ CreateMassGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_S
            (* don't create element getters for ScalarType *)
            CreateElementGetter[name_String, CConversion`ScalarType[_], pf_String, st_String] := "";
            CreateElementGetter[name_String, type_, pf_String, st_String] := CConversion`CreateInlineElementGetter[name, type, pf, st];
-           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, struct] <>
-           CreateElementGetter[massESSymbolStr, returnType, postFix, struct]
+           CConversion`CreateInlineGetter[massESSymbolStr, returnType, postFix, wrapper] <>
+           CreateElementGetter[massESSymbolStr, returnType, postFix, wrapper]
           ];
 
 CreateSLHAPoleMassGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    CreateMassGetter[massMatrix, "_pole_slha", "physical_slha."];
+    CreateMassGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"];
 
 CreateParticleEnum[particles_List] :=
     Module[{i, par, name, result = ""},
@@ -509,27 +516,50 @@ FillSpectrumVector[particles_List] :=
            Return[result];
           ];
 
-CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", struct_String:""] :=
+CreateMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix, postFix_String:"", wrapper_String:""] :=
     Module[{mixingMatrixSymbol, returnType},
            mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
            returnType = GetMixingMatrixType[massMatrix];
-           CreateMixingMatrixGetter[mixingMatrixSymbol, returnType, postFix, struct]
+           CreateMixingMatrixGetter[mixingMatrixSymbol, returnType, postFix, wrapper]
           ];
 
-CreateMixingMatrixGetter[mixingMatrixSymbol_List, returnType_, postFix_String:"", struct_String:""] :=
+CreateMixingMatrixGetter[mixingMatrixSymbol_List, returnType_, postFix_String:"", wrapper_String:""] :=
     Module[{result = ""},
-           (result = result <> CreateMixingMatrixGetter[#,returnType, postFix, struct])& /@ mixingMatrixSymbol;
+           (result = result <> CreateMixingMatrixGetter[#,returnType, postFix, wrapper])& /@ mixingMatrixSymbol;
            Return[result];
           ];
 
-CreateMixingMatrixGetter[Null, returnType_, postFix_String:"", struct_String:""] := "";
+CreateMixingMatrixGetter[Null, returnType_, postFix_String:"", wrapper_String:""] := "";
 
-CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:"", struct_String:""] :=
-    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct] <>
-    CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, struct];
+CreateMixingMatrixGetter[mixingMatrixSymbol_Symbol, returnType_, postFix_String:"", wrapper_String:""] :=
+    CConversion`CreateInlineGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper] <>
+    CConversion`CreateInlineElementGetter[ToValidCSymbolString[mixingMatrixSymbol], returnType, postFix, wrapper];
+
+CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix /; GetMixingMatrixSymbol[massMatrix] === Null] := "";
 
 CreateSLHAPoleMixingMatrixGetter[massMatrix_TreeMasses`FSMassMatrix] :=
-    CreateMixingMatrixGetter[massMatrix, "_pole_slha", "physical_slha."];
+    Module[{mixingMatrixSymbol, particle, dim, returnType},
+           mixingMatrixSymbol = GetMixingMatrixSymbol[massMatrix];
+           particle = GetMassEigenstate[massMatrix];
+           dim = Length[GetMassMatrix[massMatrix]];
+           returnType = GetMixingMatrixType[massMatrix];
+           (* mixing matrices for majorana Fermions and
+              2-component charginos will be made real *)
+           If[IsMajoranaFermion[particle] || (IsChargino[particle] && dim <= 2),
+              Utils`ApplyAndConcatenate[
+                  Function[m,
+                           CConversion`CreateInlineGetter[
+                               ToValidCSymbolString[m],
+                               returnType, "_pole_slha", "PHYSICAL_SLHA"] <>
+                           CConversion`CreateInlineElementGetter[
+                               ToValidCSymbolString[m],
+                               CConversion`ToRealType[returnType], "_pole_slha", "PHYSICAL_SLHA_REAL"]],
+                  mixingMatrixSymbol
+              ]
+              ,
+              CreateMixingMatrixGetter[massMatrix, "_pole_slha", "PHYSICAL_SLHA"]
+             ]
+          ];
 
 CreateFSMassMatrixForUnmixedParticle[TreeMasses`FSMassMatrix[expr_, massESSymbol_, Null]] :=
     Module[{matrix, dim},
@@ -753,6 +783,27 @@ ReorderGoldstoneBosons[particle_[___], macro_String] :=
 
 ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
+
+CheckPoleMassesForTachyons[particles_List, macro_String] :=
+    Module[{result = ""},
+           (result = result <> CheckPoleMassesForTachyons[#,macro])& /@ particles;
+           Return[result];
+          ];
+
+CheckPoleMassesForTachyons[particle_, macro_String] :=
+    Module[{dimStart, dimEnd, particleName},
+           dimStart = GetDimensionStartSkippingGoldstones[particle];
+           dimEnd   = GetDimension[particle];
+           particleName = CConversion`ToValidCSymbolString[particle];
+           "if (" <>
+           WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
+           If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
+           " < 0.) " <>
+           "problems.flag_tachyon(" <> particleName <> ");\n"
+          ];
+
+CheckPoleMassesForTachyons[macro_String] :=
+    CheckPoleMassesForTachyons[Select[GetParticles[], (IsScalar[#] && !IsGoldstone[#])&], macro];
 
 GetHiggsName[sym_] :=
     Switch[sym,

@@ -4,6 +4,8 @@ MODNAME      := templates
 TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
+		$(DIR)/mass_eigenstates.hpp.in \
+		$(DIR)/mass_eigenstates.cpp.in \
 		$(DIR)/initial_guesser.hpp.in \
 		$(DIR)/info.hpp.in \
 		$(DIR)/info.cpp.in \
@@ -23,7 +25,8 @@ TEMPLATES    := \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
 		$(DIR)/SM_two_scale_matching.hpp.in \
-		$(DIR)/spectrum_generator.hpp.in \
+		$(DIR)/spectrum_generator_interface.hpp.in \
+		$(DIR)/high_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \

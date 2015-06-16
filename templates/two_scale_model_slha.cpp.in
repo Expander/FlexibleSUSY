@@ -72,26 +72,13 @@ void CLASSNAME::calculate_spectrum()
 void CLASSNAME::convert_to_slha()
 {
    physical_slha = get_physical();
-
-   convert_to_slha(physical_slha);
+   physical_slha.convert_to_slha();
 
    convert_yukawa_couplings_to_slha();
    calculate_ckm_matrix();
    calculate_pmns_matrix();
    convert_trilinear_couplings_to_slha();
    convert_soft_squared_masses_to_slha();
-}
-
-/**
- * Convert masses and mixing matrices to SLHA convention: Fermion
- * mixing matrices are always real and fermion masses are allowed to
- * be negative.
- *
- * @param physical struct of physical parameters to convert
- */
-void CLASSNAME::convert_to_slha(@ModelName@_physical& physical)
-{
-@convertMixingsToSLHAConvention@
 }
 
 void CLASSNAME::calculate_ckm_matrix()

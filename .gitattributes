@@ -28,7 +28,6 @@ model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
-model_files/MSSMCPV             export-ignore
 model_files/minMSSM             export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
@@ -36,6 +35,11 @@ model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
 model_files/SMHighPrecision     export-ignore
+model_files/cSM                 export-ignore
+model_files/cMSSM               export-ignore
+model_files/cCMSSM              export-ignore
+model_files/CMSSMCPV            export-ignore
+model_files/NMSSMCPV            export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore

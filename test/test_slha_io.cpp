@@ -365,6 +365,25 @@ BOOST_AUTO_TEST_CASE( test_slha_mixing_matrix_convention )
    BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(0,1)), 0.);
    BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,0)), 0.);
    BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,1)), 0.);
+
+   // convert to HK convention
+   SLHA_io::convert_symmetric_fermion_mixings_to_hk(eigenvalues, Z);
+
+   BOOST_CHECK(eigenvalues(0) > 0. && eigenvalues(1) > 0.);
+   BOOST_CHECK_GT(Z.imag().cwiseAbs().maxCoeff(), 0.);
+
+   // reconstruct mass matrix
+   reconstructed_mass_matrix = Z.transpose() * eigenvalues.matrix().asDiagonal() * Z;
+
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(0,0)), mass_matrix(0,0), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(0,1)), mass_matrix(0,1), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(1,0)), mass_matrix(1,0), 1.0e-15);
+   BOOST_CHECK_CLOSE_FRACTION(Re(reconstructed_mass_matrix(1,1)), mass_matrix(1,1), 1.0e-15);
+
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(0,0)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(0,1)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,0)), 0.);
+   BOOST_CHECK_EQUAL(Im(reconstructed_mass_matrix(1,1)), 0.);
 }
 
 template<int N>

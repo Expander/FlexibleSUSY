@@ -16,10 +16,12 @@ META_SRC     := \
 		$(DIR)/EWSB.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
+		$(DIR)/ThreeLoopSM.m \
 		$(DIR)/ThresholdCorrections.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
 		$(DIR)/TwoLoop.m \
+		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WriteOut.m \
 		$(DIR)/WeinbergAngle.m
