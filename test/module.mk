@@ -270,6 +270,11 @@ TEST_META += \
 		$(DIR)/test_SM_3loop_beta.m
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-SMnoGUT),yes)
+TEST_META += \
+		$(DIR)/test_SMnoGUT_3loop_beta.m
+endif
+
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
 
