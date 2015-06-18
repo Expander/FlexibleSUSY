@@ -1,8 +1,8 @@
 FlexibleSUSY-1.2.0 [not released yet]
 
  * Feature: Allow the user to add 3-loop beta-functions in the SM.
-   The beta-functions are taken from SUSYHD v1.0.1 and
-   arxiv:1303.4364.
+   The beta-functions are taken from SUSYHD v1.0.1 (arXiv:1504.05200)
+   and arxiv:1303.4364.
 
  * Feature: Allow the user to add 2-loop Higgs self-energy corrections
    O(alpha_t^2 + alpha_t alpha_s) in the SM.  The self-energy

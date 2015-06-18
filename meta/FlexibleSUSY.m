@@ -1468,7 +1468,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
-              Print["Adding SM 3-loop beta-functions"];
+              Print["Adding SM 3-loop beta-functions from ",
+                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
+                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
               AddSM3LoopRGEs[];
              ];
 
