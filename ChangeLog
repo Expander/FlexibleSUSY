@@ -17,6 +17,9 @@ FlexibleSUSY-1.2.0 [not released yet]
    compilation error in the NE6SSM or the UMSSM if ThetaWp is set to
    an expression that involves the charges.
 
+ * Bugfix (commit d80c30f): Correcting SLHA-2 convention for input
+   scale of tan(beta) in the lowNMSSM.
+
 FlexibleSUSY-1.1.1 [June, 08 2015]
 
  * Bugfix (commit e1ea433): Catch NaNs from Slavich's NMSSM 2-loop
