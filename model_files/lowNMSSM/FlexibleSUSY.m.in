@@ -43,6 +43,8 @@ SUSYScale = Qin;
 SUSYScaleFirstGuess = Qin;
 
 SUSYScaleInput = {
+    {vd, Sqrt[vu^2 + vd^2] Cos[ArcTan[TanBeta]]},
+    {vu, Sqrt[vu^2 + vd^2] Sin[ArcTan[TanBeta]]},
     {\[Kappa], KappaInput},
     {\[Lambda], LambdaInput},
     {T[\[Kappa]], AKappaInput KappaInput},
@@ -81,8 +83,8 @@ LowScaleInput = {
     {Yu, Automatic},
     {Yd, Automatic},
     {Ye, Automatic},
-    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
-    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[vu/vd]]},
+    {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[vu/vd]]}
 };
 
 InitialGuessAtLowScale = {
@@ -151,5 +153,12 @@ ExtraSLHAOutputBlocks = {
             {46, SignedAbsSqrt[mu2[3,3]]},
             {47, SignedAbsSqrt[md2[1,1]]},
             {48, SignedAbsSqrt[md2[2,2]]},
-            {49, SignedAbsSqrt[md2[3,3]]} } }
+            {49, SignedAbsSqrt[md2[3,3]]} } },
+   {NMSSMRUN,
+           {{1, \[Lambda]},
+            {2, \[Kappa]},
+            {3, T[\[Lambda]] / \[Lambda]},
+            {4, T[\[Kappa]] / \[Kappa]},
+            {5, \[Lambda] vS / Sqrt[2]},
+            {10, ms2} } }
 };
