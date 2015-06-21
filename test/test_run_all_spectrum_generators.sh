@@ -39,6 +39,13 @@ lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP3,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP4,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP5,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP6,0
+lowNMSSMTanBetaAtMZ,_DEFAULT_,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP1,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP2,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP3,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP4,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP5,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP6,0
 minMSSM,${DEFAULT_CMSSM_INPUT},1
 MRSSM,_DEFAULT_,0
 MSSM,_DEFAULT_,0
