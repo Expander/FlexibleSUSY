@@ -161,10 +161,9 @@ entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
 
 output_fields="$(echo $output | tr ',' ' ')"
 
-tmp_slha_input_file="$$.in"
 tmp_slha_output_file="$$.out"
-rm -f "$tmp_slha_input_file" "$tmp_slha_output_file"
-at_exit "rm -f \"${tmp_slha_output_file}\" \"${tmp_slha_input_file}\""
+rm -f "$tmp_slha_output_file"
+at_exit "rm -f \"${tmp_slha_output_file}\""
 
 # print comment line
 if test "$steps" -gt 0; then
@@ -187,19 +186,16 @@ $start + ($stop - $start)*${i} / $steps
 EOF
     )
 
-    # create SLHA input file
-    cp "$slha_input_file" "$tmp_slha_input_file"
-    cat <<EOF >> "$tmp_slha_input_file"
+    # run the spectrum generator
+    { cat "$slha_input_file" ; \
+      cat <<EOF
 Block $block # added by `basename $0`
   $entry    $value
 EOF
-
-    # run the spectrum generator
-    $spectrum_generator \
-        --slha-input-file="$tmp_slha_input_file" \
+    } | $spectrum_generator \
+        --slha-input-file=- \
         --slha-output-file="$tmp_slha_output_file" \
         > /dev/null 2>&1
-
     printfstr=" "
     args=
 
