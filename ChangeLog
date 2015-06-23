@@ -8,6 +8,12 @@ FlexibleSUSY-1.2.0 [not released yet]
    O(alpha_t^2 + alpha_t alpha_s) in the SM.  The self-energy
    corrections were taken from arxiv:1205.6497.
 
+ * Feature: Allow the user to provide SLHA input via stdin if the SLHA
+   input file name is set to - .
+   Example:
+   $ cat model_files/CMSSM/LesHouches.in.CMSSM | \
+        models/CMSSM/run_CMSSM.x --slha-input-file=-
+
  * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
    confusion between goldstone and Higgs bosons in the CP-violating
    MSSM.
