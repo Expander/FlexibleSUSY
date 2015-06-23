@@ -54,6 +54,22 @@ std::string SLHA_io::to_lower(const std::string& str)
 }
 
 /**
+ * @brief reads from source
+ *
+ * If source is "-", then read_from_stream() is called.  Otherwise,
+ * read_from_file() is called.
+ *
+ * @param source string that specifies the source
+ */
+void SLHA_io::read_from_source(const std::string& source)
+{
+   if (source == "-")
+      read_from_stream(std::cin);
+   else
+      read_from_file(source);
+}
+
+/**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name
  */
@@ -68,6 +84,15 @@ void SLHA_io::read_from_file(const std::string& file_name)
       msg << "cannot read SLHA file: \"" << file_name << "\"";
       throw ReadError(msg.str());
    }
+}
+
+/**
+ * @brief reads SLHA data from a stream
+ * @param istr input stream
+ */
+void SLHA_io::read_from_stream(std::istream& istr)
+{
+   data.read(istr);
 }
 
 void SLHA_io::read_modsel()
