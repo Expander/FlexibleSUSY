@@ -42,7 +42,7 @@ int main(int argc, const char* argv[])
       return options.status();
 
    const std::string rgflow_file(options.get_rgflow_file());
-   const std::string slha_input_file(options.get_slha_input_file());
+   const std::string slha_input_source(options.get_slha_input_file());
    const std::string slha_output_file(options.get_slha_output_file());
    const std::string spectrum_file(options.get_spectrum_file());
    @ModelName@_slha_io slha_io;
@@ -50,14 +50,14 @@ int main(int argc, const char* argv[])
    QedQcd oneset;
    @ModelName@_input_parameters input;
 
-   if (slha_input_file.empty()) {
-      ERROR("No SLHA input file given!\n"
+   if (slha_input_source.empty()) {
+      ERROR("No SLHA input source given!\n"
             "   Please provide one via the option --slha-input-file=");
       return EXIT_FAILURE;
    }
 
    try {
-      slha_io.read_from_file(slha_input_file);
+      slha_io.read_from_source(slha_input_source);
       slha_io.fill(oneset);
       slha_io.fill(input);
       slha_io.fill(spectrum_generator_settings);
