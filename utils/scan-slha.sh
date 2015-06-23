@@ -161,10 +161,6 @@ entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
 
 output_fields="$(echo $output | tr ',' ' ')"
 
-tmp_slha_output_file="$$.out"
-rm -f "$tmp_slha_output_file"
-at_exit "rm -f \"${tmp_slha_output_file}\""
-
 # print comment line
 if test "$steps" -gt 0; then
     comment="#"
@@ -187,15 +183,13 @@ EOF
     )
 
     # run the spectrum generator
+    slha_output=$(
     { cat "$slha_input_file" ; \
       cat <<EOF
 Block $block # added by `basename $0`
   $entry    $value
 EOF
-    } | $spectrum_generator \
-        --slha-input-file=- \
-        --slha-output-file="$tmp_slha_output_file" \
-        > /dev/null 2>&1
+    } | $spectrum_generator --slha-input-file=- 2>/dev/null)
 
     printfstr=" "
     args=
@@ -203,7 +197,7 @@ EOF
     # get the output
     for f in $output_fields; do
         output_block=$(echo "$f" | awk -F [ '{ print $1 }')
-        full_block=$(awk -v block="$output_block" "$print_slha_block_awk" "$tmp_slha_output_file")
+        full_block=$(echo "$slha_output" | awk -v block="$output_block" "$print_slha_block_awk")
         block_entries=$(echo "$f" | awk -F '[][]' '{ print $2 }')
 
         # get data value
