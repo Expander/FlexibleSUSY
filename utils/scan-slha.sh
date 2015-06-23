@@ -196,6 +196,7 @@ EOF
         --slha-input-file=- \
         --slha-output-file="$tmp_slha_output_file" \
         > /dev/null 2>&1
+
     printfstr=" "
     args=
 
