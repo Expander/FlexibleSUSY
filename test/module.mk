@@ -191,6 +191,7 @@ TEST_SRC += \
 		$(DIR)/test_SM_beta_functions.cpp \
 		$(DIR)/test_SM_low_scale_constraint.cpp \
 		$(DIR)/test_SM_one_loop_spectrum.cpp \
+		$(DIR)/test_SM_higgs_loop_corrections.cpp \
 		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_two_loop_spectrum.cpp \
 		$(DIR)/test_SM_weinberg_angle.cpp
@@ -229,6 +230,8 @@ endif
 ifeq ($(shell $(FSCONFIG) --with-CMSSMCPV --with-CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCPV_tree_level_spectrum.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSMCPV_spectrum.sh
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-NMSSMCPV),yes)
@@ -262,6 +265,16 @@ TEST_META := \
 		$(DIR)/test_TextFormatting.m \
 		$(DIR)/test_ThresholdCorrections.m \
 		$(DIR)/test_Vertices.m
+
+ifeq ($(shell $(FSCONFIG) --with-SM),yes)
+TEST_META += \
+		$(DIR)/test_SM_3loop_beta.m
+endif
+
+ifeq ($(shell $(FSCONFIG) --with-SMnoGUT),yes)
+TEST_META += \
+		$(DIR)/test_SMnoGUT_3loop_beta.m
+endif
 
 TEST_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(TEST_SRC)))
@@ -543,6 +556,9 @@ $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGA
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SM_higgs_loop_corrections.x: $(DIR)/test_SM_higgs_loop_corrections.o $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) -o $@ $(call abspathx,$< $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(GSLLIBS) $(FLIBS) $(THREADLIBS)
 
 $(DIR)/test_SM_low_scale_constraint.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

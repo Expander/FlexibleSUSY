@@ -54,3 +54,8 @@ When releasing FlexibleSUSY, please follow these steps:
 
       scp release/<version>/*.tar.gz \
          USERNAME@login.hepforge.org:/hepforge/home/flexiblesusy/downloads/models/<version>/
+
+ 8. Generate SLHA output files:
+
+      ./release/generate-slha-output.sh \
+         --directory=release/<version>-slha

@@ -65,6 +65,8 @@ public:
    double get_parameter_output_scale() const;
    const SLHA_io& get_slha_io() const { return slha_io; }
    void read_from_file(const std::string&);
+   void read_from_source(const std::string&);
+   void read_from_stream(std::istream&);
    void set_extpar(const @ModelName@_input_parameters&);
    template <class T> void set_extra(const @ModelName@_slha<T>&, const @ModelName@_scales&);
    void set_minpar(const @ModelName@_input_parameters&);

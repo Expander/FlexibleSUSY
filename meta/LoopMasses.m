@@ -53,15 +53,25 @@ FillTadpoleMatrix[tadpoles_List, matrixName_:"tadpoles"] :=
            Return[result];
           ];
 
-Do1DimScalar[particleName_String, massName_String, massMatrixName_String,
+Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
-    "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
+    If[SARAH`UseHiggs2LoopSM === True && particle === SARAH`HiggsBoson,
+       "\
+double self_energy = Re(" <> selfEnergyFunction <> "(p));
+if (pole_mass_loop_order > 1) {
+" <> IndentText["\
+double two_loop[1] = { 0. };
+self_energy_" <> particleName <> "_2loop(two_loop);
+self_energy += two_loop[0];
+"] <> "}
+"
+       ,
+       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n"
+      ] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
-    "if (mass_sqr < 0.)\n" <>
-    IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-    "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
+    "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(mass_sqr);\n";
 
 Do1DimFermion[particle_, massMatrixName_String, selfEnergyFunctionS_String,
               selfEnergyFunctionPL_String, selfEnergyFunctionPR_String, momentum_String, type_] :=
@@ -180,13 +190,11 @@ DoFastDiagonalization[particle_Symbol /; IsScalar[particle], tadpoles_List] :=
                 ];
               result = result <>
                        "\n" <>
-                       "if (PHYSICAL(" <> massName <> ").minCoeff() < 0.)\n" <>
-                       IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                       "PHYSICAL(" <> massName <> ") = AbsSqrt(PHYSICAL(" <>
+                       "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(PHYSICAL(" <>
                        massName <> "));\n";
               ,
               result = "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, massName,
+                       Do1DimScalar[particle, particleName, massName, "M_tree", selfEnergyFunction, massName,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];
@@ -308,32 +316,12 @@ DoFastDiagonalization[particle_Symbol, _] :=
 
 (* ********** medium diagonalization routines ********** *)
 
-CreateGoldstoneSkippers[particle_, idx_String] :=
-    Module[{vectors, massName},
-           massName = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
-           vectors = TreeMasses`GetCorrespondingVectorBosons[particle];
-           If[Length[vectors] > 0,
-              "// skip goldstone bosons\n" <>
-              Utils`StringJoinWithSeparator[
-                  ("if (is_equal_rel(" <> massName <> idx <> ", " <>
-                   CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <> ", 1e-10)) {\n" <>
-                   IndentText["PHYSICAL(" <> massName <> idx <> ") = " <>
-                              CConversion`ToValidCSymbolString[FlexibleSUSY`M[#[[2]]]] <>
-                              ";\ncontinue;"] <> "\n}")& /@ vectors
-                  , "\n"
-              ] <> "\n"
-              ,
-              ""
-             ]
-          ];
-
 DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, tadpole_List] :=
     Module[{result, dim, dimStr, massName, particleName, mixingMatrix, selfEnergyFunction,
             momentum = inputMomentum, U, V, Utemp, Vtemp, tadpoleMatrix, diagSnippet,
             massMatrixStr, selfEnergyIsSymmetric,
             selfEnergyMatrixType, selfEnergyMatrixCType, eigenArrayType,
             addTwoLoopHiggsContributions = "", calcTwoLoopHiggsContributions = "",
-            skipGoldstone = "",
             numberOfIndependentMatrixEntries, numberOfIndependentMatrixEntriesStr, n, l, k},
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -356,9 +344,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             TreeMasses`CallSVDFunction[
                                 particleName, "M_1loop", "eigen_values",
                                 Utemp, Vtemp] <> "\n" <>
-                            "if (eigen_values(es) < 0.)\n" <>
-                            IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                            "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n" <>
+                            "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n" <>
                             "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ") {\n" <>
                             IndentText["PHYSICAL(" <> U <> ") = " <> Utemp <> ";\n" <>
                                        "PHYSICAL(" <> V <> ") = " <> Vtemp <> ";\n"] <>
@@ -370,9 +356,7 @@ DoMediumDiagonalization[particle_Symbol /; IsScalar[particle], inputMomentum_, t
                             TreeMasses`CallDiagonalizeHermitianFunction[
                                 particleName, "M_1loop", "eigen_values",
                                 Utemp] <> "\n" <>
-                            "if (eigen_values(es) < 0.)\n" <>
-                            IndentText["problems.flag_tachyon(" <> particleName <> ");"] <> "\n\n" <>
-                            "PHYSICAL(" <> massName <> "(es)) = AbsSqrt(eigen_values(es));\n";
+                            "PHYSICAL(" <> massName <> "(es)) = SignedAbsSqrt(eigen_values(es));\n";
               If[mixingMatrix =!= Null,
                  diagSnippet = diagSnippet <>
                                "if (es == " <> ToString[GetDimensionStartSkippingGoldstones[particle]-1] <> ")\n" <>
@@ -404,18 +388,22 @@ double two_loop[" <> numberOfIndependentMatrixEntriesStr <> "] = { 0. };
 if (pole_mass_loop_order > 1)
 " <> IndentText["\
 self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop);
+for (unsigned i = 0; i < " <> numberOfIndependentMatrixEntriesStr <> "; i++) {
+   if (!std::isfinite(two_loop[i])) {
+      two_loop[i] = 0.;
+      problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> CConversion`ToValidCSymbolString[particle] <> ");
+   }
+}
 "] <> "\
 ";
                    ];
                 ];
               selfEnergyIsSymmetric = Length[Flatten[{mixingMatrix}]] === 1;
-              skipGoldstone = IndentText[CreateGoldstoneSkippers[particle, "(es)"]];
               result = tadpoleMatrix <>
                        selfEnergyMatrixCType <> " self_energy;\n" <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
                        calcTwoLoopHiggsContributions <> "\n" <>
                        "for (unsigned es = 0; es < " <> dimStr <> "; ++es) {\n" <>
-                       skipGoldstone <> "\n" <>
                        IndentText["const double p = Abs(" <> momentum <> "(es));\n" <>
                                   "for (unsigned i1 = 0; i1 < " <> dimStr <> "; ++i1) {\n" <>
                                   IndentText["for (unsigned i2 = " <> If[selfEnergyIsSymmetric,"i1","0"] <>
@@ -437,7 +425,7 @@ self_energy_" <> CConversion`ToValidCSymbolString[particle] <> "_2loop(two_loop)
               ,
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixCType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-                       Do1DimScalar[particleName, massName, "M_tree", selfEnergyFunction, momentum,
+                       Do1DimScalar[particle, particleName, massName, "M_tree", selfEnergyFunction, momentum,
                                     If[tadpoleMatrix == "", "", "tadpoles"]];
              ];
            Return[result];

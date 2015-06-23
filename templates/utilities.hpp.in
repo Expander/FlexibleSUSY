@@ -31,17 +31,14 @@
 #include <valarray>
 #include <utility>
 
-#define PHYSICAL(p) model.get_physical().p
-#define MODELPARAMETER(p) model.get_##p()
-
 namespace flexiblesusy {
 
 class @ModelName@_parameter_getter {
 public:
-   Eigen::ArrayXd get_parameters(const @ModelName@<Two_scale>& model) {
+   Eigen::ArrayXd get_parameters(const @ModelName@_mass_eigenstates& model) {
       return model.get();
    }
-   std::vector<std::string> get_parameter_names(const @ModelName@<Two_scale>&) const {
+   std::vector<std::string> get_parameter_names(const @ModelName@_mass_eigenstates&) const {
       using namespace @ModelName@_info;
       return std::vector<std::string>(parameter_names,
                                       parameter_names + NUMBER_OF_PARAMETERS);
@@ -53,8 +50,7 @@ public:
    @ModelName@_spectrum_plotter();
    ~@ModelName@_spectrum_plotter() {}
 
-   template <class T>
-   void extract_spectrum(const @ModelName@<T>&);
+   void extract_spectrum(const @ModelName@_mass_eigenstates&);
    void write_to_file(const std::string&) const;
 
 private:
@@ -80,19 +76,6 @@ private:
    static std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>&);
 };
 
-
-template <class T>
-void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@<T>& model)
-{
-   spectrum.clear();
-   scale = model.get_scale();
-
-@fillSpectrumVectorWithSusyParticles@
-   if (model.do_calculate_sm_pole_masses()) {
-@fillSpectrumVectorWithSMParticles@
-   }
-}
-
 template <class Scalar, int M, int N>
 std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Array<Scalar, M, N>& v)
 {
@@ -100,8 +83,5 @@ std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(const Eigen::Arr
 }
 
 } // namespace flexiblesusy
-
-#undef PHYSICAL
-#undef MODELPARAMETER
 
 #endif

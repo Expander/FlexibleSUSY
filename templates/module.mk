@@ -24,7 +24,8 @@ TEMPLATES    := \
 		$(DIR)/susy_scale_constraint.hpp.in \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
-		$(DIR)/spectrum_generator.hpp.in \
+		$(DIR)/spectrum_generator_interface.hpp.in \
+		$(DIR)/high_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_convergence_tester.hpp.in \
 		$(DIR)/two_scale_convergence_tester.cpp.in \

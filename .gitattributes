@@ -35,6 +35,7 @@ model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
 model_files/SMHighPrecision     export-ignore
+model_files/SMnoGUT             export-ignore
 model_files/cSM                 export-ignore
 model_files/cMSSM               export-ignore
 model_files/cCMSSM              export-ignore
@@ -53,6 +54,7 @@ sarah/InertMSSM                 export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
+sarah/SMnoGUT                   export-ignore
 
 src/SM.cpp                           export-ignore
 src/SM.hpp                           export-ignore

@@ -191,6 +191,28 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 }
 
 /**
+ * Read SLHA object from source
+ *
+ * calls SLHA_io::read_from_source()
+ *
+ * @param source source name
+ */
+void @ModelName@_slha_io::read_from_source(const std::string& source)
+{
+   slha_io.read_from_source(source);
+}
+
+/**
+ * Read SLHA object from stream
+ *
+ * @param istr stream name
+ */
+void @ModelName@_slha_io::read_from_stream(std::istream& istr)
+{
+   slha_io.read_from_stream(istr);
+}
+
+/**
  * Fill struct of model input parameters from SLHA object (MINPAR and
  * EXTPAR blocks)
  *

@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
@@ -60,6 +60,8 @@ ThetaWDRbar;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
+UseSM3LoopRGEs = False;
+UseHiggs2LoopSM;
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {};
 FSExtraInputParameters = {};
@@ -773,6 +775,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             solveEWSBTemporarily,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
+            checkPoleMassesForTachyons = "",
             higgsToEWSBEqAssociation,
             twoLoopHiggsHeaders = "",
             lspGetters = "", lspFunctions = "",
@@ -833,6 +836,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               calculateTwoLoopTadpoles  = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "-"];
               calculateTwoLoopTadpolesNoStruct = SelfEnergies`FillArrayWithTwoLoopTadpoles[SARAH`HiggsBoson, "tadpole", "+"];
               {thirdGenerationHelperPrototypes, thirdGenerationHelperFunctions} = TreeMasses`CreateThirdGenerationHelpers[];
+             ];
+           If[SARAH`UseHiggs2LoopSM === True,
+              {twoLoopSelfEnergyPrototypes, twoLoopSelfEnergyFunctions} = SelfEnergies`CreateTwoLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
+              twoLoopHiggsHeaders = "#include \"sm_twoloophiggs.hpp\"\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -904,6 +911,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            ewsbParametersInitializationList = EWSB`CreateEWSBParametersInitializationList[parametersFixedByEWSB];
            reorderDRbarMasses           = TreeMasses`ReorderGoldstoneBosons[""];
            reorderPoleMasses            = TreeMasses`ReorderGoldstoneBosons["PHYSICAL"];
+           checkPoleMassesForTachyons   = TreeMasses`CheckPoleMassesForTachyons["PHYSICAL"];
            WriteOut`ReplaceInFiles[files,
                           { "@lspGetters@"           -> IndentText[lspGetters],
                             "@lspFunctions@"         -> lspFunctions,
@@ -926,6 +934,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@copyDRbarMassesToPoleMasses@" -> IndentText[copyDRbarMassesToPoleMasses],
                             "@reorderDRbarMasses@"     -> IndentText[reorderDRbarMasses],
                             "@reorderPoleMasses@"      -> IndentText[reorderPoleMasses],
+                            "@checkPoleMassesForTachyons@" -> IndentText[checkPoleMassesForTachyons],
                             "@ewsbInitialGuess@"       -> IndentText[ewsbInitialGuess],
                             "@physicalMassesDef@"      -> IndentText[physicalMassesDef],
                             "@mixingMatricesDef@"      -> IndentText[mixingMatricesDef],
@@ -1361,6 +1370,32 @@ GuessInputParameterType[par_] :=
 GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
     Flatten @ Cases[DEFINITION[eigenstates][SARAH`VEVs], {_,_,_,_, p_} :> p];
 
+AddSM3LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopSM`BetaSM[coupling]]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`PROJECTOR}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddSM3LoopRGEs[] := Module[{
+    gauge = { SARAH`hyperchargeCoupling,
+              SARAH`leftCoupling,
+              SARAH`strongCoupling },
+    yuks  = { SARAH`UpYukawa,
+              SARAH`DownYukawa,
+              SARAH`ElectronYukawa },
+    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] },
+    bilin = { Parameters`GetParameterFromDescription["SM Mu Parameter"] }
+    },
+    SARAH`BetaGauge = AddSM3LoopRGE[SARAH`BetaGauge, gauge];
+    SARAH`BetaYijk  = AddSM3LoopRGE[SARAH`BetaYijk , yuks];
+    SARAH`BetaLijkl = AddSM3LoopRGE[SARAH`BetaLijkl, quart];
+    SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
+    ];
+
 SelectRenormalizationScheme::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
@@ -1431,6 +1466,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            inputParameters = DeleteDuplicates[{#, GuessInputParameterType[#]}& /@ ((#[[2]])& /@ Utils`ForceJoin[SARAH`MINPAR, SARAH`EXTPAR])];
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
+
+           If[FlexibleSUSY`UseSM3LoopRGEs,
+              Print["Adding SM 3-loop beta-functions from ",
+                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
+                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
+              AddSM3LoopRGEs[];
+             ];
 
            If[SARAH`SupersymmetricModel,
               (* pick beta functions of supersymmetric parameters *)
@@ -1913,12 +1955,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
            Print["Creating user example spectrum generator program ..."];
-           spectrumGeneratorInputFile = "spectrum_generator.hpp.in";
+           spectrumGeneratorInputFile = "high_scale_spectrum_generator.hpp.in";
            If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY,
               spectrumGeneratorInputFile = "low_scale_spectrum_generator.hpp.in";];
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".cpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run_cmd_line.cpp.in"}],

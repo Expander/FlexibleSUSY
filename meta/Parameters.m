@@ -35,6 +35,7 @@ GetPhase::usage="";
 HasPhase::usage="";
 GetRealTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
+GetThirdGeneration::usage="returns parameter with third generation index";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
@@ -1125,6 +1126,12 @@ FilterOutIndependentEqs[eqs_List, pars_List] :=
 
 FilterOutIndependentEqs[eqs_List, p_] :=
     Select[eqs, (!FreeQ[#,p])&];
+
+GetThirdGeneration[par_] :=
+    Which[IsScalar[par], par,
+          IsMatrix[par], par[2,2],
+          True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
+         ];
 
 End[];
 
