@@ -48,7 +48,8 @@ LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_two_scale_model_slha.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp
+		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp \
+		$(DIR)/@CLASSNAME@_weinberg_angle.cpp
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \
@@ -77,7 +78,8 @@ LIB@CLASSNAME@_HDR += \
 		$(DIR)/@CLASSNAME@_two_scale_model_slha.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.hpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.hpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp
+		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.hpp \
+		$(DIR)/@CLASSNAME@_weinberg_angle.hpp
 
 ifneq ($(MAKECMDGOALS),showbuild)
 ifneq ($(MAKECMDGOALS),tag)
