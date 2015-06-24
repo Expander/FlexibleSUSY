@@ -177,7 +177,7 @@ fi
 for i in `seq 0 $steps`; do
     # calculate current value for the scanned variable
     value=$(cat <<EOF | bc
-scale=10
+scale=20
 $start + ($stop - $start)*${i} / $steps
 EOF
     )
