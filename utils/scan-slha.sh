@@ -153,8 +153,8 @@ if test -z "$scan_range"; then
     exit 1
 fi
 
-start=$(echo "$scan_range" | awk -F '[=-:]' '{ print $2 }')
-stop=$(echo "$scan_range"  | awk -F '[=-:]' '{ print $3 }')
+start=$(echo "$scan_range" | awk -F '[=:-]' '{ print $2 }')
+stop=$(echo "$scan_range"  | awk -F '[=:-]' '{ print $3 }')
 steps=$(echo "$scan_range" | awk -F : '{ print $NF }')
 block=$(echo "$scan_range" | awk -F [ '{ print $1 }')
 entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
