@@ -158,6 +158,8 @@ FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
+LDFLAGS=""
+LDLIBS=""
 LIBEXT=".a"
 CXX="g++"
 CXX_DEP_GEN="${CXX}"
@@ -2127,6 +2129,8 @@ replace_markers() {
 	-e "s|@GSLLIBS@|$GSLLIBS|"         \
 	-e "s|@GSLFLAGS@|$GSLFLAGS|"       \
 	-e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+        -e "s|@LDFLAGS@|$LDFLAGS|"         \
+        -e "s|@LDLIBS@|$LDLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
@@ -2202,6 +2206,8 @@ Package directories, compilation settings and model selection
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
+  --with-ldflags=           Linker flags (default: $LDFLAGS)
+  --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
@@ -2305,6 +2311,8 @@ if test $# -gt 0 ; then
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
+            --with-ldflags=*)        LDFLAGS=$optarg ;;
+            --with-ldlibs=*)         LDLIBS=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
@@ -2421,6 +2429,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@LDFLAGS@|$LDFLAGS|"         \
+    -e "s|@LDLIBS@|$LDLIBS|"           \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \

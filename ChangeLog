@@ -14,6 +14,10 @@ FlexibleSUSY-1.2.0 [not released yet]
    $ cat model_files/CMSSM/LesHouches.in.CMSSM | \
         models/CMSSM/run_CMSSM.x --slha-input-file=-
 
+ * Feature: Allow the user create standalone executables that don't
+   depend on dynamically linked libraries.  See README for more
+   details.
+
  * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
    confusion between goldstone and Higgs bosons in the CP-violating
    MSSM.
