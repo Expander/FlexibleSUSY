@@ -21,7 +21,7 @@
 #ifndef @ModelName@_WEINBERG_ANGLE_H
 #define @ModelName@_WEINBERG_ANGLE_H
 
-#include 
+#include @HalloOma@
 
 namespace flexiblesusy {
 

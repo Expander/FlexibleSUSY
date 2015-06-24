@@ -607,6 +607,14 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
                  } ];
           ];
 
+WriteWeinbergAngleClass[files_List] :=
+   Module[{},
+          WriteOut`ReplaceInFiles[files,
+                 { "@HalloOma@" -> IndentText["IchSageOmaHallo"],
+                   Sequence @@ GeneralReplacementRules[]
+                 } ];
+          ];
+
 FindVEV[gauge_] :=
     Module[{result, vev},
            vev = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
@@ -1819,6 +1827,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_convergence_tester.cpp"}]}
                }
                                       ];
+
+           Print["Creating class for calculation of weinberg angle ..."];
+           WriteWeinbergAngleClass[
+               {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
+                {FileNameJoin[{Global`$flexiblesusyTemplateDir, "weinberg_angle.cpp.in"}],
+                 FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.cpp"}]}
+               }
+                                  ];
 
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
