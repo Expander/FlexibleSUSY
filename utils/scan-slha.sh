@@ -3,7 +3,7 @@
 # This script allows one to scan over one parameter given an SLHA
 # input file and a spectrum generator
 #
-# Example:
+# Examples:
 #
 # ./utils/scan-slha.sh \
 #    --spectrum-generator=models/CMSSM/run_CMSSM.x \
@@ -11,10 +11,17 @@
 #    --scan-range=MINPAR[1]=100-300:10 \
 #    --output=MINPAR[1],MASS[25],Yu[3:3]
 #
+# cat model_files/CMSSM/LesHouches.in.CMSSM | \
+# ./utils/scan-slha.sh \
+#    --spectrum-generator=models/CMSSM/run_CMSSM.x \
+#    --scan-range=MINPAR[1]=100-300:10 \
+#    --output=MINPAR[1],MASS[25],Yu[3:3]
+#
 # Author: Alexander Voigt
 
 output=
 scan_range=
+slha_input=
 slha_input_file=
 spectrum_generator=
 
@@ -91,15 +98,24 @@ Options:
   --scan-range=         Scan range
                         Syntax: <block>[<entry>]=<start>-<stop>:<steps-1>
                         Example: MINPAR[1]=100-1000:10
-  --slha-input-file=    SLHA input file
+  --slha-input-file=    SLHA input file (optional).
+                        If no SLHA input file is given, the SLHA input is
+                        read from stdin .
   --spectrum-generator= Spectrum generator executable
   --help,-h             Print this help message
 
-Example:
+Examples:
 
    $ ./utils/scan-slha.sh \\
         --spectrum-generator=models/CMSSM/run_CMSSM.x \\
         --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \\
+        --scan-range=MINPAR[3]=1-30:21 \\
+        --output=MINPAR[3],MASS[25],Yu[3:3] \\
+     > scan-slha.dat
+
+   $ cat model_files/CMSSM/LesHouches.in.CMSSM | \\
+     ./utils/scan-slha.sh \\
+        --spectrum-generator=models/CMSSM/run_CMSSM.x \\
         --scan-range=MINPAR[3]=1-30:21 \\
         --output=MINPAR[3],MASS[25],Yu[3:3] \\
      > scan-slha.dat
@@ -133,9 +149,15 @@ if test $# -gt 0 ; then
     done
 fi
 
-if test ! -e "$slha_input_file"; then
-    echo "Error: input file $slha_input_file not found."
-    exit 1
+if test -z "$slha_input_file"; then
+    slha_input=`cat`
+else
+    if test ! -e "$slha_input_file"; then
+        echo "Error: input file $slha_input_file not found."
+        exit 1
+    else
+        slha_input=`cat ${slha_input_file}`
+    fi
 fi
 
 if test ! -x "$spectrum_generator"; then
@@ -184,7 +206,7 @@ EOF
 
     # run the spectrum generator
     slha_output=$(
-    { cat "$slha_input_file" ; \
+    { echo "$slha_input" ; \
       cat <<EOF
 Block $block # added by `basename $0`
   $entry    $value
