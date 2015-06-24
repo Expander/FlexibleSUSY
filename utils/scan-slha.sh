@@ -149,16 +149,10 @@ if test $# -gt 0 ; then
     done
 fi
 
-if test -z "$slha_input_file"; then
-    slha_input=`cat`
-else
-    if test ! -e "$slha_input_file"; then
-        echo "Error: input file $slha_input_file not found."
-        exit 1
-    else
-        slha_input=`cat ${slha_input_file}`
-    fi
-fi
+test -z "$slha_input_file" -o -e "$slha_input_file" || \
+    { echo "Error: input file $slha_input_file not found." ; exit 1; }
+
+slha_input=`cat ${slha_input_file}`
 
 if test ! -x "$spectrum_generator"; then
     echo "Error: spectrum generator executable $spectrum_generator not found."
