@@ -407,9 +407,12 @@ check_library() {
 
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
         result "not found in $libdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -465,9 +468,12 @@ check_header() {
 
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
         result "not found in $hdrdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
