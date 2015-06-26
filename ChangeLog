@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.0 [not released yet]
+FlexibleSUSY-1.2.0 [June, 26 2015]
 
  * Feature: Allow the user to add 3-loop beta-functions in the SM.
    The beta-functions are taken from SUSYHD v1.0.1 (arXiv:1504.05200)
