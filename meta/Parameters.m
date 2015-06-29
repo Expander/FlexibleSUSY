@@ -928,11 +928,12 @@ CreateCaseFromTuple[expr_] :=
           ""
          ];
 
-FillInputParametersFromTuples[minpar_List] :=
+FillInputParametersFromTuples[minpar_List, blockName_String] :=
     Module[{result = ""},
            (result = result <> CreateCaseFromTuple[#])& /@ minpar;
            result = "switch (key) {\n" <> result <>
-                    "default: WARNING(\"Unrecognized key: \" << key); break;\n}\n";
+                    "default: WARNING(\"Unrecognized entry in block " <>
+                    blockName <> ": \" << key); break;\n}\n";
            Return[result];
           ];
 
