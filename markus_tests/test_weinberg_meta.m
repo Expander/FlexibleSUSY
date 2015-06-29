@@ -5,21 +5,22 @@ $flexiblesusyOutputDir   = FileNameJoin[{$flexiblesusyDir, "markus_tests"}];
 $flexiblesusyConfigDir   = FileNameJoin[{$flexiblesusyDir, "config"}];
 $flexiblesusyMetaDir     = FileNameJoin[{$flexiblesusyDir, "meta"}];
 $flexiblesusyTemplateDir = FileNameJoin[{$flexiblesusyDir, "templates"}];
-
 AppendTo[$Path, $flexiblesusyMetaDir];
 
-(* Needs["SARAH`"]; *)
+Needs["SARAH`"];
 Needs["FlexibleSUSY`", FileNameJoin[{$flexiblesusyMetaDir, "FlexibleSUSY.m"}]];
 
-(* SARAH`SARAH[OutputDirectory] = FileNameJoin[{$flexiblesusyDir, "Output"}];
+SARAH`SARAH[OutputDirectory] = FileNameJoin[{$flexiblesusyDir, "Output"}];
 SARAH`SARAH[InputDirectories] = {
     FileNameJoin[{$flexiblesusyDir, "sarah"}],
     ToFileName[{$sarahDir, "Models"}]
-}; *)
+};
 
 Print["Let's start!"];
 
-FlexibleSUSY`FSModelName = "ModelName";
+FlexibleSUSY`FSModelName = "CMSSM";
+
+Start["MSSM"];
 
 FlexibleSUSY`Private`WriteWeinbergAngleClass[
                {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
