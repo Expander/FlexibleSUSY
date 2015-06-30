@@ -102,8 +102,8 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  */
 double @ModelName@_weinberg_angle::calculate(double rho_start, double sin_start)
 {
-   const double gY         = model->get_g1() * Sqrt(0.6);
-   const double g2         = model->get_g2();
+   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
    const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
    const double scale      = model->get_scale();
@@ -181,37 +181,36 @@ double @ModelName@_weinberg_angle::calculate_delta_rho(double rhohat, double sin
    const double mz = sm_parameters.mz_pole;
    const double mw = sm_parameters.mw_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mh = model->get_Mhh(0);
-   const double g3 = model->get_g3();
-   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
-                     ROOT2 * oneOver16PiSqr;
-
-   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
-
-   const double gY         = model->get_g1() * Sqrt(0.6);
-   const double g2         = model->get_g2();
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
-
-   const double mt_drbar    = model->get_MFu(2);
-   const double pizztMZ     = Re(model->self_energy_VZ(mz));
-   const double piwwtMW     = Re(model->self_energy_VWm(mw));
+   const double mt_drbar    = model->get_M@TopQuark@(2);
+   const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
+   const double piwwtMW     = Re(model->self_energy_@VectorW@(mw));
    double pizztMZ_corrected = pizztMZ;
    double piwwtMW_corrected = piwwtMW;
    if (model->get_thresholds() > 1) {
       pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_@TopQuark@(mz, mt_drbar)
-                 + calculate_self_energy_@VectorZ@_@TopQuark@(mz, mt);
+         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mt_drbar)
+                 + calculate_self_energy_@VectorZ@_top(mz, mt);
       piwwtMW_corrected =
-         piwwtMW - calculate_self_energy_@VectorW@_@TopQuark@(mw, mt_drbar)
-                 + calculate_self_energy_@VectorW@_@TopQuark@(mw, mt);
+         piwwtMW - calculate_self_energy_@VectorW@_top(mw, mt_drbar)
+                 + calculate_self_energy_@VectorW@_top(mw, mt);
    }
 
    double deltaRho1Loop = 0.;
    if (number_of_loops > 0)
       deltaRho1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
          piwwtMW_corrected / Sqr(mw);
+
+   const double mh = model->get_M@HiggsBoson_0@;
+   const double g3 = model->get_@strongCoupling@();
+   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
+                     ROOT2 * oneOver16PiSqr;
+   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
+   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
+
+   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
    double deltaRho2LoopSm = 0.;
    if (number_of_loops > 1) {
@@ -241,32 +240,18 @@ double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinTh
    const double mz = sm_parameters.mz_pole;
    const double mw = sm_parameters.mw_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mh = model->get_Mhh(0);
-   const double g3 = model->get_g3();
-   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
-                     ROOT2 * oneOver16PiSqr;
-   const double outcos2 = 1.0 - Sqr(sinThetaW);
-
-   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
-
-   const double gY         = model->get_g1() * Sqrt(0.6);
-   const double g2         = model->get_g2();
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
-
-   const double mt_drbar    = model->get_MFu(2);
-   const double pizztMZ     = Re(model->self_energy_VZ(mz));
-   const double piwwt0      = Re(model->self_energy_VWm(0.));
+   const double mt_drbar    = model->get_M@TopQuark@(2);
+   const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
+   const double piwwt0      = Re(model->self_energy_@VectorW@(0.));
    double pizztMZ_corrected = pizztMZ;
    double piwwt0_corrected  = piwwt0;
    if (model->get_thresholds() > 1) {
       pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_@TopQuark@(mz, mt_drbar)
-                 + calculate_self_energy_@VectorZ@_@TopQuark@(mz, mt);
+         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mt_drbar)
+                 + calculate_self_energy_@VectorZ@_top(mz, mt);
       piwwt0_corrected =
-         piwwt0  - calculate_self_energy_@VectorW@_@TopQuark@(0., mt_drbar)
-                 + calculate_self_energy_@VectorW@_@TopQuark@(0., mt);
+         piwwt0  - calculate_self_energy_@VectorW@_top(0., mt_drbar)
+                 + calculate_self_energy_@VectorW@_top(0., mt);
    }
 
    double dvb = 0.;
@@ -277,6 +262,19 @@ double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinTh
    if (number_of_loops > 0)
       deltaR1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
          pizztMZ_corrected / Sqr(mz) + dvb;
+
+   const double mh = model->get_M@HiggsBoson_0@;
+   const double g3 = model->get_@strongCoupling@();
+   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
+                     ROOT2 * oneOver16PiSqr;
+   const double outcos2 = 1.0 - Sqr(sinThetaW);
+   const double sinb    = Sin(ArcTan(model->get_vu() / model->get_vd()));
+   const double hmix_r  = Sqr(model->get_ZH(0,1) / sinb);
+
+   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
    double deltaR2LoopSm = 0.;
    if (number_of_loops > 1) {
@@ -334,8 +332,8 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
 
-   const double gY         = model->get_g1() * Sqrt(0.6);
-   const double g2         = model->get_g2();
+   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
    const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
@@ -360,9 +358,9 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_susy(double sinThetaW)
 {
    const double q          = model->get_scale();
    const double mz         = sm_parameters.mz_pole;
-   const double gY         = model->get_g1() * Sqrt(0.6);
-   const double g2         = model->get_g2();
-   const double hmu        = Re(model->get_Ye(1,1));
+   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
+   const double hmu        = Re(model->get_@ElectronYukawa@(1,1));
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
 
@@ -373,9 +371,9 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_susy(double sinThetaW)
    double msmul = 0.;
    double msve  = 0.;
    double msvm  = 0.;
-   const auto MSe = model->get_MSe();
+   const auto MSe = model->get_M@Selectron@();
    const auto ZE  = model->get_ZE();
-   const auto MSv = model->get_MSv();
+   const auto MSv = model->get_M@Sneutrino@();
    const auto ZV  = model->get_ZV();
    for (int i = 0; i < decltype(MSe)::RowsAtCompileTime; i++) {
       msel  += AbsSqr(ZE(i,0))*MSe(i);
@@ -577,12 +575,12 @@ double @ModelName@_weinberg_angle::rho_2(double r)
  *
  * @return 1-loop top-quark contribution to Z boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_@TopQuark@(double p, double mt)
+double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_top(double p, double mt)
 {
    const double q   = model->get_scale();
    const double Nc  = 3.0;
-   const double gY  = model->get_g1() * Sqrt(0.6);
-   const double g2  = model->get_g2();
+   const double gY  = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
+   const double g2  = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
    const double gY2 = Sqr(gY);
    const double g22 = Sqr(g2);
    const double sw2 = gY2 / (gY2 + g22);
@@ -606,12 +604,12 @@ double @ModelName@_weinberg_angle::calculate_self_energy_@VectorZ@_@TopQuark@(do
  *
  * @return 1-loop top-quark contribution to W boson self-energy
  */
-double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@_@TopQuark@(double p, double mt)
+double @ModelName@_weinberg_angle::calculate_self_energy_@VectorW@_top(double p, double mt)
 {
    const double q  = model->get_scale();
-   const double mb = model->get_MFd(2);
+   const double mb = model->get_M@BottomQuark@(2);
    const double Nc = 3.0;
-   const double g2 = model->get_g2();
+   const double g2 = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
 
    const double self_energy_w_top =
       0.5 * Nc * hfn(p, mt, mb, q) * Sqr(g2) * oneOver16PiSqr;

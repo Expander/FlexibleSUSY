@@ -70,8 +70,8 @@ private:
    double calculate_delta_vb_susy(double);
    static double rho_2(double);
 
-   double calculate_self_energy_@VectorZ@_@TopQuark@(double, double);
-   double calculate_self_energy_@VectorW@_@TopQuark@(double, double);
+   double calculate_self_energy_@VectorZ@_top(double, double);
+   double calculate_self_energy_@VectorW@_top(double, double);
 };
 
 } // namespace flexiblesusy
