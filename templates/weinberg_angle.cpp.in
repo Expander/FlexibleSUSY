@@ -200,10 +200,11 @@ double @ModelName@_weinberg_angle::calculate_delta_rho(double rhohat, double sin
       deltaRho1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
          piwwtMW_corrected / Sqr(mw);
 
+   const double gfermi = sm_parameters.fermi_constant;
+
    const double mh = model->get_M@HiggsBoson_0@;
    const double g3 = model->get_@strongCoupling@();
-   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
-                     ROOT2 * oneOver16PiSqr;
+   const double xt = 3.0 * gfermi * Sqr(mt) * ROOT2 * oneOver16PiSqr;
    const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
    const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
 

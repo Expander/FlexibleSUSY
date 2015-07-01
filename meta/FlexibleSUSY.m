@@ -1,5 +1,5 @@
 
-BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`"}];
+BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`", "TextFormatting`", "CConversion`", "TreeMasses`", "EWSB`", "Traces`", "SelfEnergies`", "Vertices`", "Phases`", "LoopMasses`", "WriteOut`", "Constraint`", "ThresholdCorrections`", "ConvergenceTester`", "Utils`", "ThreeLoopSM`", "WeinbergAngleMuonDecay`"}];
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
@@ -610,7 +610,7 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 WriteWeinbergAngleClass[files_List] :=
    Module[{},
           WriteOut`ReplaceInFiles[files,
-                 { "@HalloOma@" -> IndentText["IchSageOmaHallo"],
+                 { "@deltaRho2LoopSM@" -> IndentText[WeinbergAngleMuonDecay`deltaRho2LoopSM[]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
