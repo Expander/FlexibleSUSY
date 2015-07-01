@@ -20,6 +20,7 @@
 
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_info.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
@@ -113,6 +114,9 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
       problems.print_problems(problems_str);
       spinfo << FORMAT_SPINFO(4, problems_str.str());
    }
+
+   spinfo << FORMAT_SPINFO(5, @ModelName@_info::model_name)
+          << FORMAT_SPINFO(9, SARAH_VERSION);
 
    slha_io.set_block(spinfo, SLHA_io::front);
 }
