@@ -45,6 +45,7 @@ remove_input_blocks() {
     $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SMINPUTS \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MINPAR \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=EXTPAR \
+        | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=SPINFO \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSOFTIN \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=HMIXIN \
         | $awk_cmd -f $CONFIGDIR/remove_slha_block.awk -v block=MSQ2IN \
