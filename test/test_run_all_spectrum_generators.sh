@@ -39,6 +39,13 @@ lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP3,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP4,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP5,0
 lowNMSSM,${HOMEDIR}/model_files/lowNMSSM/LesHouches.in.TP6,0
+lowNMSSMTanBetaAtMZ,_DEFAULT_,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP1,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP2,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP3,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP4,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP5,0
+lowNMSSMTanBetaAtMZ,${HOMEDIR}/model_files/lowNMSSMTanBetaAtMZ/LesHouches.in.TP6,0
 minMSSM,${DEFAULT_CMSSM_INPUT},1
 MRSSM,_DEFAULT_,0
 MSSM,_DEFAULT_,0
@@ -53,6 +60,7 @@ NMSSMCPV,_DEFAULT_,0
 NoYukawaMSSM,${DEFAULT_CMSSM_INPUT},1
 NSM,_DEFAULT_,0
 NUHMSSM,_DEFAULT_,0
+NUTNMSSM,_DEFAULT_,0
 NUTNMSSM,${HOMEDIR}/model_files/NUTNMSSM/LesHouches.in.NUTNMSSM_1308.1333_BP1,1
 NUTNMSSM,${HOMEDIR}/model_files/NUTNMSSM/LesHouches.in.NUTNMSSM_1308.1333_BP2,1
 NUTNMSSM,${HOMEDIR}/model_files/NUTNMSSM/LesHouches.in.NUTNMSSM_1308.1333_BP3,0

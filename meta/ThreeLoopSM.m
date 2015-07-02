@@ -10,9 +10,12 @@ IsDefinedAndEqual[descr_String, c_] :=
     Parameters`GetParameterFromDescription[descr] =!= Null &&
     Parameters`GetParameterFromDescription[descr] === c
 
+G1GUTNormalization[] :=
+    Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling] / Sqrt[3/5];
+
 BetaSM[gc_] :=
     Switch[gc,
-           SARAH`hyperchargeCoupling, Get[FileNameJoin[{subDir, "beta_g1.m"}]],
+           SARAH`hyperchargeCoupling, Get[FileNameJoin[{subDir, "beta_g1.m"}]] / G1GUTNormalization[],
            SARAH`leftCoupling       , Get[FileNameJoin[{subDir, "beta_g2.m"}]],
            SARAH`strongCoupling     , Get[FileNameJoin[{subDir, "beta_g3.m"}]],
            SARAH`UpYukawa           , Get[FileNameJoin[{subDir, "beta_gt.m"  }]],
@@ -32,7 +35,7 @@ BetaSM[gc_] :=
    g1, g2, g3, gb are global variables in SARAH
  *)
 ToSARAHNamingConvention[] := {
-    g1 -> SARAH`hyperchargeCoupling,
+    g1 -> SARAH`hyperchargeCoupling G1GUTNormalization[],
     g2 -> SARAH`leftCoupling,
     g3 -> SARAH`strongCoupling,
     Global`gt -> SARAH`UpYukawa[3,3],

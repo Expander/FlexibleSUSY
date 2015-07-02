@@ -20,8 +20,9 @@
 
 /**
  * @file @ModelName@_mass_eigenstates.hpp
+ *
  * @brief contains class for model with routines needed to solve boundary
- *        value problem using the two_scale solver by solvingt EWSB
+ *        value problem using the two_scale solver by solving EWSB
  *        and determine the pole masses and mixings
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY

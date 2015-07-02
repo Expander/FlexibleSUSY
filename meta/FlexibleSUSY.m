@@ -1111,8 +1111,8 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            parameterNames     = BetaFunction`CreateParameterNames[betaFun];
            isLowEnergyModel = If[FlexibleSUSY`OnlyLowEnergyFlexibleSUSY === True, "true", "false"];
            isSupersymmetricModel = If[SARAH`SupersymmetricModel === True, "true", "false"];
-           fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar];
-           fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar];
+           fillInputParametersFromMINPAR = Parameters`FillInputParametersFromTuples[minpar, "MINPAR"];
+           fillInputParametersFromEXTPAR = Parameters`FillInputParametersFromTuples[extpar, "EXTPAR"];
            readLesHouchesInputParameters = WriteOut`ReadLesHouchesInputParameters[lesHouchesInputParameters];
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
@@ -1531,7 +1531,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Parameters`SetInputParameters[(#[[1]])& /@ inputParameters];
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
-              Print["Adding SM 3-loop beta-functions"];
+              Print["Adding SM 3-loop beta-functions from ",
+                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
+                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
               AddSM3LoopRGEs[];
              ];
 

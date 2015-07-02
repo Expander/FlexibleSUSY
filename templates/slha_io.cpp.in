@@ -20,6 +20,7 @@
 
 #include "@ModelName@_slha_io.hpp"
 #include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_info.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
@@ -114,6 +115,9 @@ void @ModelName@_slha_io::set_spinfo(const Problems<@ModelName@_info::NUMBER_OF_
       spinfo << FORMAT_SPINFO(4, problems_str.str());
    }
 
+   spinfo << FORMAT_SPINFO(5, @ModelName@_info::model_name)
+          << FORMAT_SPINFO(9, SARAH_VERSION);
+
    slha_io.set_block(spinfo, SLHA_io::front);
 }
 
@@ -191,6 +195,28 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 }
 
 /**
+ * Read SLHA object from source
+ *
+ * calls SLHA_io::read_from_source()
+ *
+ * @param source source name
+ */
+void @ModelName@_slha_io::read_from_source(const std::string& source)
+{
+   slha_io.read_from_source(source);
+}
+
+/**
+ * Read SLHA object from stream
+ *
+ * @param istr stream name
+ */
+void @ModelName@_slha_io::read_from_stream(std::istream& istr)
+{
+   slha_io.read_from_stream(istr);
+}
+
+/**
  * Fill struct of model input parameters from SLHA object (MINPAR and
  * EXTPAR blocks)
  *
@@ -265,7 +291,7 @@ void @ModelName@_slha_io::fill_flexiblesusy_tuple(Spectrum_generator_settings& s
    if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
       settings.set((Spectrum_generator_settings::Settings)key, value);
    } else {
-      WARNING("Unrecognized key in block FlexibleSUSY: " << key);
+      WARNING("Unrecognized entry in block FlexibleSUSY: " << key);
    }
 }
 

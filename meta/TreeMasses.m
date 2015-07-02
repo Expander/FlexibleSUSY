@@ -1249,7 +1249,8 @@ CreateDependenceNumPrototypes[massMatrices_List] :=
 CreateDependenceNumFunction[Rule[parameter_, value_]] :=
     Module[{result, body, parStr},
            parStr = ToValidCSymbolString[parameter];
-           body = "return " <> RValueToCFormString[Simplify[value]] <> ";\n";
+           body = Parameters`CreateLocalConstRefsForInputParameters[value, "LOCALINPUT"] <> "\n" <>
+                  "return " <> RValueToCFormString[Simplify[value]] <> ";\n";
            result = "double CLASSNAME::" <> parStr <> "() const\n{\n" <>
                     IndentText[body] <> "}\n\n";
            Return[result];

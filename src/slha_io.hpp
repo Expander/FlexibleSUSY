@@ -164,6 +164,8 @@ public:
    const Modsel& get_modsel() const { return modsel; }
    const SLHAea::Coll& get_data() const { return data; }
    void read_from_file(const std::string&);
+   void read_from_source(const std::string&);
+   void read_from_stream(std::istream&);
    double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;

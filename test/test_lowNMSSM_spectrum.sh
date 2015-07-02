@@ -7,7 +7,7 @@ BASEDIR=$(dirname $0)
 lowmssm_input="$BASEDIR/../model_files/lowNMSSM/LesHouches.in.lowNMSSM.pseudoscalar"
 lowmssm_output="$BASEDIR/lowNMSSM.out.spc"
 softsusy_output="$BASEDIR/SoftsusyNMSSM.out.spc"
-rel_error="0.00001"
+rel_error="0.00005"
 
 softsusy_exe="$BASEDIR/../models/SoftsusyNMSSM/run_softpoint.x"
 lowmssm_exe="$BASEDIR/../models/lowNMSSM/run_lowNMSSM.x"

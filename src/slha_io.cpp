@@ -54,6 +54,22 @@ std::string SLHA_io::to_lower(const std::string& str)
 }
 
 /**
+ * @brief reads from source
+ *
+ * If source is "-", then read_from_stream() is called.  Otherwise,
+ * read_from_file() is called.
+ *
+ * @param source string that specifies the source
+ */
+void SLHA_io::read_from_source(const std::string& source)
+{
+   if (source == "-")
+      read_from_stream(std::cin);
+   else
+      read_from_file(source);
+}
+
+/**
  * @brief opens SLHA input file and reads the content
  * @param file_name SLHA input file name
  */
@@ -68,6 +84,15 @@ void SLHA_io::read_from_file(const std::string& file_name)
       msg << "cannot read SLHA file: \"" << file_name << "\"";
       throw ReadError(msg.str());
    }
+}
+
+/**
+ * @brief reads SLHA data from a stream
+ * @param istr input stream
+ */
+void SLHA_io::read_from_stream(std::istream& istr)
+{
+   data.read(istr);
 }
 
 void SLHA_io::read_modsel()
@@ -392,7 +417,7 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
       modsel.parameter_output_scale = value;
       break;
    default:
-      WARNING("Unrecognized key " << key << " in Block MODSEL");
+      WARNING("Unrecognized entry in block MODSEL: " << key);
       break;
    }
 }
@@ -461,7 +486,7 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setMass(mCharm, value);
       break;
    default:
-      WARNING("Unrecognized key in SMINPUTS: " << key);
+      WARNING("Unrecognized entry in block SMINPUTS: " << key);
       break;
    }
 }
@@ -489,7 +514,7 @@ void SLHA_io::process_vckmin_tuple(CKM_wolfenstein& ckm_wolfenstein, int key, do
       ckm_wolfenstein.etabar = value;
       break;
    default:
-      WARNING("Unrecognized key in VCKMIN: " << key);
+      WARNING("Unrecognized entry in block VCKMIN: " << key);
       break;
    }
 }
@@ -522,7 +547,7 @@ void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, d
       pmns_parameters.alpha_2 = value;
       break;
    default:
-      WARNING("Unrecognized key in UPMNSIN: " << key);
+      WARNING("Unrecognized entry in block UPMNSIN: " << key);
       break;
    }
 }
