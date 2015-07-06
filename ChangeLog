@@ -4,7 +4,8 @@ FlexibleSUSY-1.2.1 [not released yet]
    version is printed in SPINFO[9].
 
  * Bugfix (fea4d59): The MODSEL block was not read if SLHA input is
-   passed to the spectrum generator via stdin.
+   passed to the spectrum generator via stdin.  Thanks to Peter
+   Drechsel.
 
 FlexibleSUSY-1.2.0 [June, 26 2015]
 
