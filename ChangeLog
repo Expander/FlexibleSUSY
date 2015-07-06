@@ -1,3 +1,11 @@
+FlexibleSUSY-1.2.1 [not released yet]
+
+ * Feature: The model name is printed in SPINFO[5] and the SARAH
+   version is printed in SPINFO[9].
+
+ * Bugfix (fea4d59): The MODSEL block was not read if SLHA input is
+   passed to the spectrum generator via stdin.
+
 FlexibleSUSY-1.2.0 [June, 26 2015]
 
  * Feature: Allow the user to add 3-loop beta-functions in the SM.
