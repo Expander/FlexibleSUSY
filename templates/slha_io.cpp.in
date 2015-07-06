@@ -204,6 +204,7 @@ void @ModelName@_slha_io::read_from_file(const std::string& file_name)
 void @ModelName@_slha_io::read_from_source(const std::string& source)
 {
    slha_io.read_from_source(source);
+   slha_io.read_modsel();
 }
 
 /**
