@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.1 [not released yet]
+FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
    version is printed in SPINFO[9].
