@@ -11,6 +11,7 @@ SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
 CalculateColorCoupling::usage="";
 CalculateElectromagneticCoupling::usage="";
+SetDRbarYukawaCouplings[]::usage="";
 
 Begin["`Private`"];
 
@@ -24,7 +25,14 @@ CalculateColorCoupling[scheme_] :=
     CalculateCoupling[TreeMasses`FindColorGaugeGroup[], scheme];
 
 CalculateElectromagneticCoupling[scheme_] :=
-    CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme];
+  Module[{conversion},
+          conversion = Switch[scheme,
+                              FlexibleSUSY`DRbar, 1/3,
+                              FlexibleSUSY`MSbar, 0,
+                              _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
+                             ];
+          Return[CalculateCoupling[{SARAH`electricCharge, FlexibleSUSY`electricCharge, SARAH`U[1]}, scheme] + conversion];
+        ];
 
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
@@ -77,8 +85,8 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
                                FlexibleSUSY`MSbar, 0,
                                _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                               ];
-           deltaSM = conversion - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
-           deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
+           deltaSM = - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
+           deltaSusy = conversion + CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
@@ -255,6 +263,23 @@ SetDRbarYukawaCouplingFermion[fermion_, yukawa_, mass_, settings_] :=
              ];
            Parameters`CreateLocalConstRefs[f] <>
            Parameters`SetParameter[yukawa, f, "MODEL"]
+          ];
+
+SetDRbarYukawaCouplings[] :=
+    Module[{y, f, fermion, yukawa, mass, term = {0,0,0}},
+           fermion = {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron};
+           yukawa  = {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa};
+           mass    = {Global`topDRbar, Global`bottomDRbar, Global`electronDRbar};
+           For[i = 1, i <= 3, i++,
+                 {y, f} = InvertMassRelation[fermion[[i]], yukawa[[i]]];
+                 term[[i]] = f /. fermion[[i]] -> mass[[i]];
+              ];
+           Return[
+                   Parameters`CreateLocalConstRefs[term[[1]] + term[[2]] + term[[3]]] <>
+                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[1]]] <> "(" <> CConversion`RValueToCFormString[term[[1]]] <> ");\n" <>
+                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[2]]] <> "(" <> CConversion`RValueToCFormString[term[[2]]] <> ");\n" <>
+                   "model.set_" <> CConversion`ToValidCSymbolString[yukawa[[3]]] <> "(" <> CConversion`RValueToCFormString[term[[3]]] <> ");\n"
+                 ];
           ];
 
 MultiplyBy[factor_ /; factor == 1] := "";

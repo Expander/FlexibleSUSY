@@ -64,8 +64,11 @@ void Spectrum_generator_settings::set(Settings o, double value)
  * | higgs_2loop_correction_atau_atau | 0, 1                         | 1 (= enabled)   |
  * | force_output                     | 0 (no) or 1 (yes)            | 0 (= no)        |
  * | top_2loop_corrections_qcd        | 0, 1                         | 1 (= enabled)   |
- * | higgs_log_resum                  | 0 (no) or 1 (yes)            | 1 (= enabled)   |
+ * | higgs_log_resum                  | 0 (disabled),                |                 |
+ * |                                  | 1 (full theory @ 1-l + logs),|                 |
+ * |                                  | 2 (SM input for EFT)         | 0 (= disabled)  |
  * | beta_zero_threshold              | any positive double          | 1.0e-11         |
+ *
  */
 void Spectrum_generator_settings::reset()
 {
@@ -83,7 +86,7 @@ void Spectrum_generator_settings::reset()
    values[higgs_2loop_correction_atau_atau] = 1.;
    values[calculate_sm_masses]   = 0.; // 0 = false
    values[top_2loop_corrections_qcd]        = 1.;
-   values[higgs_log_resum]      = 1.;
+   values[higgs_log_resum]      = 0.;
    values[beta_zero_threshold]              = 1.0e-11;
 }
 

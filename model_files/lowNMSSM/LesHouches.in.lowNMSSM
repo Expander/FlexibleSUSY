@@ -13,7 +13,7 @@ Block FlexibleSUSY
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
    10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
-   14   1                    # Higgs logarithmic resummation
+   14   0                    # Higgs logarithmic resummation
 Block SMINPUTS               # Standard Model inputs
     1     1.28962000E+02     # alpha_em^(-1)
     2     1.16637000E-05     # G_F

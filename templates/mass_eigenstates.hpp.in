@@ -82,8 +82,10 @@ public:
    const Two_loop_corrections get_Two_loop_corrections() const { return two_loop_corrections; }
    void set_number_of_ewsb_iterations(std::size_t);
    void set_number_of_mass_iterations(std::size_t);
+   const std::size_t get_number_of_ewsb_iterations() const { return number_of_ewsb_iterations; }
    const std::size_t get_number_of_mass_iterations() const { return number_of_mass_iterations; }
    void set_pole_mass_loop_order(unsigned);
+   const unsigned get_pole_mass_loop_order() const { return pole_mass_loop_order; }
    void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;

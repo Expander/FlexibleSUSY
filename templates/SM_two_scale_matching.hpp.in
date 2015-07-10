@@ -25,9 +25,11 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include <cmath>
 
-#define MODELPARAMETER(p) model.get_##p()
+
 namespace flexiblesusy
 {
+
+#define MODELPARAMETER(p) model.get_##p()
 
   /**
    * @class SM_two_scale_matching
