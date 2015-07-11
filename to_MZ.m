@@ -55,6 +55,23 @@ mS2 >> "NMSSM_EWSB_solution.m";
 
 Print["mS2 == ", InputForm[mS2]];
 
+(* solve for MZ2 *)
+
+denom = (2*TB[-1, 2]*(-2*mHd2 + 2*mHu2*tanBeta^2 + MZ2*TB[-1, 2])* TB[1, 2]^2);
+
+t1 = -(TB[-1, 2]*(-2*mHd2 + 2*mHu2*tanBeta^2 + MZ2*TB[-1, 2])*TB[1, 2]^2*(-2*Akap*Alam + 4*Alam^2 + lam^2*vd^2*TB[1, 2]));
+
+t2 = 4*tanBeta^2*(2*MZ2^2*TB[-1, 2]^2 + (mHd2 - mHu2)*TB[1, 2]*(lam^2*vd^2*TB[-1, 4] + 2*(mHd2 - mHu2)*TB[1, 2]) + MZ2*(4*mHu2*TB[-1, 4] - TB[-1, 2]*(4*mHd2 + lam^2*vd^2*TB[-1, 2])*TB[1, 2]))
+
+Reform[sym_] :=
+    Simplify[(sym denom - t1 - t2)^2];
+
+solutionMZ2 = Solve[Reform[ms2] == Reform[mS2], MZ2];
+
+solutionMZ2 >> "NMSSM_MZ_solution.m";
+
+Print["number of solutions for MZ: ", Length[solutionMZ2]];
+
 Quit[0];
 
 
