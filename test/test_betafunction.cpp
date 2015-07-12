@@ -39,7 +39,7 @@ public:
       set_number_of_parameters(10);
    }
    virtual ~Eigen_model() {}
-   virtual const Eigen::ArrayXd get() const { return pars; }
+   virtual Eigen::ArrayXd get() const { return pars; }
    virtual void set(const Eigen::ArrayXd& s) { pars = s; }
    virtual Eigen::ArrayXd beta() const {
       Eigen::ArrayXd beta(pars.size());

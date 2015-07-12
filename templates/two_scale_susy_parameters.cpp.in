@@ -77,7 +77,7 @@ void @ModelName@_susy_parameters::clear()
 
 @anomDimFunctions@
 
-const Eigen::ArrayXd @ModelName@_susy_parameters::get() const
+Eigen::ArrayXd @ModelName@_susy_parameters::get() const
 {
    Eigen::ArrayXd pars(numberOfParameters);
 
