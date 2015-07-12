@@ -51,6 +51,7 @@ public:
 
 protected:
    void update_scale();
+   bool check_non_perturbative();
 
 private:
    double scale;

@@ -572,7 +572,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
                    "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
-                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[IndentText[checkPerturbativityForDimensionlessParameters]],
+                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];

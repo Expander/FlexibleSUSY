@@ -465,15 +465,17 @@ if (" <> scaleName <> " > " <> value <> ") {
            Return[result];
           ];
 
-CheckPerturbativityForParameter[par_, thresh_, model_String:"model"] :=
+CheckPerturbativityForParameter[par_, thresh_, model_String:"model", problem_String:"problem"] :=
     Module[{snippet, parStr, threshStr},
            parStr = CConversion`ToValidCSymbolString[par];
            threshStr = CConversion`RValueToCFormString[thresh];
            snippet = "\
-if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ")
+if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
+   " <> problem <> " = true;
    " <> model <> "->get_problems().flag_non_perturbative_parameter(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
-else
+} else {
    " <> model <> "->get_problems().unflag_non_perturbative_parameter(\"" <> parStr <> "\");
+}
 ";
            snippet
           ];
