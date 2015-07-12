@@ -156,8 +156,10 @@ ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 ifeq ($(findstring pack-,$(MAKECMDGOALS)),)
+ifeq ($(findstring print-,$(MAKECMDGOALS)),)
 ifeq ($(findstring release-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -264,6 +266,8 @@ showbuild:
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
 	@echo "$(MODULES)"
+
+print-% : ; @echo $* = $($*)
 
 tag:
 	git tag $(FLEXIBLESUSY_TAG)
