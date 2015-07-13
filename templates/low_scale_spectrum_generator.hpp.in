@@ -154,7 +154,12 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          = low_scale_constraint.get_sm_parameters().displayPoleMW();
 
       // start logarithmic resummation
-      if(model.get_Two_loop_corrections().higgs_log) do2LoopLogCalc();
+      switch (model.get_Two_loop_corrections().higgs_log)
+      {
+         case 0: break;
+         case 1: do2LoopLogCalc();
+         case 2: calcHiggsPoleEFT();
+      }
 
       // run to output scale (if scale > 0)
       if (!is_zero(this->parameter_output_scale)) {
