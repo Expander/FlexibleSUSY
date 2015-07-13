@@ -1,3 +1,9 @@
+FlexibleSUSY-1.2.2 [not released yet]
+
+ * Feature: The scale at which the EWSB output parameters are fixed
+   can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
+   By default, the susy-scale is chosen.
+
 FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
