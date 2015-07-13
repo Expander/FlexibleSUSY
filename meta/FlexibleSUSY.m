@@ -1036,7 +1036,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, scheme, GetHiggsMass, DiagonalizeEFT, setting, MatchingVEVsUserInput=""},
+    Module[{parseCmdLineOptions, printCommandLineOptions, scheme, GetHiggsMass, DiagonalizeEFT, setting, MatchingVEVsUserInput="", GetWMassExtension, GetZMassExtension},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
            (* If you want to add tadpoles, call the following routine like this:
@@ -1055,6 +1055,8 @@ WriteUserExample[inputParameters_List, files_List] :=
            GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson],
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]  <> "(0)"];
+           GetWMassExtension = If[GetDimension[SARAH`VectorW] == 1, "()", "(0)"];
+           GetZMassExtension = If[GetDimension[SARAH`VectorZ] == 1, "()", "(0)"];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
@@ -1068,6 +1070,8 @@ WriteUserExample[inputParameters_List, files_List] :=
                             "@alphaEM1Lmatching@" -> IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
                             "@MatchingVEVsUserInput@" -> IndentText[WrapLines[MatchingVEVsUserInput]],
+                            "@getWMassExtension@" -> GetWMassExtension,
+                            "@getZMassExtension@" -> GetZMassExtension,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
