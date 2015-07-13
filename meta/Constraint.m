@@ -156,6 +156,9 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
            Return[callRootFinder];
           ];
 
+ApplyConstraint[FlexibleSUSY`FSSolveEWSBFor[___], modelName_String] :=
+    modelName <> "->solve_ewsb();\n";
+
 ApplyConstraint[Null, _] :=
     Block[{},
           Print["Error: Null is not a valid constraint setting!"];
@@ -171,7 +174,7 @@ ApplyConstraint[p_, _] :=
 
 ApplyConstraints[settings_List] :=
     Module[{result, noMacros},
-           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__]];
+           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__] | FlexibleSUSY`FSSolveEWSBFor[__]];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> "\n";
            (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
@@ -181,6 +184,7 @@ ApplyConstraints[settings_List] :=
 FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[parameter];
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
 FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, value_]] := parameters;
+FindFixedParametersFromSetting[FlexibleSUSY`FSSolveEWSBFor[parameters_List]] := parameters;
 
 FindFixedParametersFromConstraint[settings_List] :=
     DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];

@@ -52,6 +52,7 @@ Pole;
 LowEnergyConstant;
 FSMinimize;
 FSFindRoot;
+FSSolveEWSBFor;
 MZ;
 MZDRbar;
 MWDRbar;
@@ -1546,8 +1547,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
-           fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
-                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+           (* add EWSB constraint to SUSY-scale constraint if not set *)
+           If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                    FlexibleSUSY`FSSolveEWSBFor[___]],
+              AppendTo[FlexibleSUSY`SUSYScaleInput,
+                       FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]
+                      ];
+             ];
+           fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
                                  ];
