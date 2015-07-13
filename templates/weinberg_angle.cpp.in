@@ -29,6 +29,8 @@
 
 namespace flexiblesusy {
 
+#define MODELPARAMETER(p) model->get_##p()
+#define RHO2 rho_2
 const double ROOT2 = Sqrt(2.0);
 
 @ModelName@_weinberg_angle::Sm_parameters::Sm_parameters()
@@ -202,27 +204,11 @@ double @ModelName@_weinberg_angle::calculate_delta_rho(double rhohat, double sin
 
    const double gfermi = sm_parameters.fermi_constant;
 
-   const double mh = model->get_M@HiggsBoson_0@;
-   const double g3 = model->get_@strongCoupling@();
-   const double xt = 3.0 * gfermi * Sqr(mt) * ROOT2 * oneOver16PiSqr;
-   const double sinb   = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix_r = Sqr(model->get_ZH(0,1) / sinb);
-
-   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
-
-   double deltaRho2LoopSm = 0.;
+   double deltaRho2LoopSM = 0.;
    if (number_of_loops > 1) {
-      deltaRho2LoopSm =
-         alphaDRbar * Sqr(g3) * oneOver16PiSqr / (Pi * Sqr(sinThetaW)) *
-         (-2.145 * Sqr(mt) / Sqr(mw) + 1.262 * log(mt / mz) - 2.24 -
-          0.85 * Sqr(mz) / Sqr(mt)) +
-         Sqr(xt) * hmix_r * rho_2(mh / mt) / 3.0;
-   }
+@deltaRho2LoopSM@   }
 
-   const double deltaRho = deltaRho1Loop + deltaRho2LoopSm;
+   const double deltaRho = deltaRho1Loop + deltaRho2LoopSM;
 
    return deltaRho;
 }
@@ -264,29 +250,13 @@ double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinTh
       deltaR1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
          pizztMZ_corrected / Sqr(mz) + dvb;
 
-   const double mh = model->get_M@HiggsBoson_0@;
-   const double g3 = model->get_@strongCoupling@();
-   const double xt = 3.0 * sm_parameters.fermi_constant * Sqr(mt) *
-                     ROOT2 * oneOver16PiSqr;
-   const double outcos2 = 1.0 - Sqr(sinThetaW);
-   const double sinb    = Sin(ArcTan(model->get_vu() / model->get_vd()));
-   const double hmix_r  = Sqr(model->get_ZH(0,1) / sinb);
+   const double gfermi = sm_parameters.fermi_constant;
 
-   const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
-   const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
-
-   double deltaR2LoopSm = 0.;
+   double deltaR2LoopSM = 0.;
    if (number_of_loops > 1) {
-      deltaR2LoopSm = alphaDRbar * Sqr(g3) * oneOver16PiSqr /
-         (Pi * Sqr(sinThetaW) * outcos2) *
-         (2.145 * Sqr(mt) / Sqr(mz) + 0.575 * log(mt / mz) - 0.224 -
-          0.144 * Sqr(mz) / Sqr(mt)) -
-         Sqr(xt) * hmix_r * rho_2(mh / mt) * (1.0 - deltaR1Loop) * rhohat / 3.0;
-   }
+@deltaR2LoopSM@   }
 
-   const double deltaR = deltaR1Loop + deltaR2LoopSm;
+   const double deltaR = deltaR1Loop + deltaR2LoopSM;
 
    return deltaR;
 }
@@ -303,11 +273,11 @@ double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinTh
  */
 double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat, double sinThetaW)
 {
-   const double deltaVbSm = calculate_delta_vb_sm(rhohat, sinThetaW);
+   const double deltaVbSM = calculate_delta_vb_sm(rhohat, sinThetaW);
 
    const double deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
 
-   const double deltaVb = deltaVbSm + deltaVbSusy;
+   const double deltaVb = deltaVbSM + deltaVbSusy;
 
    return deltaVb;
 }
@@ -338,11 +308,11 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
    const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
 
-   const double deltaVbSm = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
+   const double deltaVbSM = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
        (3.5 - 2.5 * sw2 - sinThetaW2 * (5.0 - 1.5 * cw2 / outcos2)));
 
-   return deltaVbSm;
+   return deltaVbSM;
 }
 
 /**
