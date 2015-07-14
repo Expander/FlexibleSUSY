@@ -55,6 +55,7 @@ const double ROOT2 = Sqrt(2.0);
    : number_of_iterations(20)
    , number_of_loops(2)
    , precision_goal(1.0e-8)
+   , include_dvbsusy(true)
    , model(model_)
    , sm_parameters(sm_parameters_)
 {
@@ -77,6 +78,16 @@ void @ModelName@_weinberg_angle::set_number_of_loops(unsigned n)
 void @ModelName@_weinberg_angle::set_precision_goal(double p)
 {
    precision_goal = p;
+}
+
+void @ModelName@_weinberg_angle::enable_dvbsusy()
+{
+   include_dvbsusy = true;
+}
+
+void @ModelName@_weinberg_angle::disable_dvbsusy()
+{
+   include_dvbsusy = false;
 }
 
 void @ModelName@_weinberg_angle::set_model_pointer(const @ModelName@<Two_scale>* model_)
@@ -275,7 +286,9 @@ double @ModelName@_weinberg_angle::calculate_delta_vb(double rhohat, double sinT
 {
    const double deltaVbSM = calculate_delta_vb_sm(rhohat, sinThetaW);
 
-   const double deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
+   double deltaVbSusy = 0.;
+   if (include_dvbsusy)
+      deltaVbSusy = calculate_delta_vb_susy(sinThetaW);
 
    const double deltaVb = deltaVbSM + deltaVbSusy;
 

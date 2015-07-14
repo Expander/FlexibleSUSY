@@ -50,6 +50,8 @@ public:
    void set_number_of_iterations(unsigned);  ///< maximum number of iterations
    void set_number_of_loops(unsigned);       ///< set number of loops
    void set_precision_goal(double);          ///< set precision goal
+   void enable_dvbsusy();                    ///< enable susy vertex and box corrections
+   void disable_dvbsusy();                   ///< disable susy vertex and box corrections
    void set_model_pointer(const @ModelName@<Two_scale>*);  ///< set pointer to investigated model
    void set_sm_parameters(const Sm_parameters&);  ///< set sm_parameters member variable
 
@@ -60,6 +62,7 @@ private:
    unsigned number_of_iterations; ///< maximum number of iterations
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
+   bool include_dvbsusy;          ///< susy vertex and box corrections are included or not
    const @ModelName@<Two_scale>* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
 
