@@ -179,7 +179,8 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_two_loop_spectrum.cpp \
 		$(DIR)/test_CMSSM_info.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle_pointer.cpp \
-		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
+		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp \
+		$(DIR)/test_CMSSM_weinberg_angle_scan.cpp
 endif
 
 ifeq ($(shell $(FSCONFIG) --with-NMSSM),yes)
@@ -500,6 +501,8 @@ $(DIR)/test_CMSSM_weinberg_angle.x: $(LIBSoftsusyMSSM) $(LIBCMSSM) $(LIBFLEXI) $
 $(DIR)/test_CMSSM_weinberg_angle_pointer.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSM_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_CMSSM_weinberg_angle_scan.x: $(LIBCMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_CMSSMMassWInput_spectrum.x: $(LIBSoftsusyMSSM) $(LIBCMSSMMassWInput) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 
