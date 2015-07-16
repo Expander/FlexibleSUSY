@@ -341,11 +341,11 @@ namespace {
 }
 
 template <typename T>
-T RelDiff(T a, T b)
+T RelDiff(T a, T b, T eps = std::numeric_limits<T>::epsilon())
 {
    const T max = std::max(a, b);
 
-   if (std::abs(max) < std::numeric_limits<T>::epsilon())
+   if (std::abs(max) < eps)
       return T();
 
    return (a - b) / max;
