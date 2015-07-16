@@ -19,9 +19,11 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
+#include <algorithm>
 #include <complex>
 #include <cmath>
 #include <functional>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <Eigen/Core>
@@ -336,6 +338,17 @@ namespace {
    struct CompareAbs_d {
       bool operator() (double a, double b) { return std::abs(a) < std::abs(b); }
    };
+}
+
+template <typename T>
+T RelDiff(T a, T b)
+{
+   const T max = std::max(a, b);
+
+   if (std::abs(max) < std::numeric_limits<T>::epsilon())
+      return T();
+
+   return (a - b) / max;
 }
 
 inline int Round(double a)
