@@ -4,6 +4,9 @@ FlexibleSUSY-1.2.2 [not released yet]
    can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
    By default, the susy-scale is chosen.
 
+ * Bugfix (commit 5530bf9): Defining a scale to be a running mass, for
+   example SUSYScale = M[hh], resulted in a compilation error.
+
 FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
