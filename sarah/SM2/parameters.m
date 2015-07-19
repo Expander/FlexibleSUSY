@@ -1,7 +1,6 @@
 ParameterDefinitions = { 
 
-{gY,        { Description -> "Hypercharge-Coupling",
-              GUTnormalization -> 1 }},
+{gY,        { Description -> "Hypercharge-Coupling" }},
 {g2,        { Description -> "Left-Coupling"}},
 {g3,        { Description -> "Strong-Coupling"}},    
 {AlphaS,    {Description -> "Alpha Strong"}},	
