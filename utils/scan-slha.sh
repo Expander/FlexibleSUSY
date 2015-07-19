@@ -8,13 +8,13 @@
 # ./utils/scan-slha.sh \
 #    --spectrum-generator=models/CMSSM/run_CMSSM.x \
 #    --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
-#    --scan-range=MINPAR[1]=100-300:10 \
+#    --scan-range=MINPAR[1]=100~300:10 \
 #    --output=MINPAR[1],MASS[25],Yu[3:3]
 #
 # cat model_files/CMSSM/LesHouches.in.CMSSM | \
 # ./utils/scan-slha.sh \
 #    --spectrum-generator=models/CMSSM/run_CMSSM.x \
-#    --scan-range=MINPAR[1]=100-300:10 \
+#    --scan-range=MINPAR[1]=100~300:10 \
 #    --output=MINPAR[1],MASS[25],Yu[3:3]
 #
 # Author: Alexander Voigt
@@ -169,8 +169,8 @@ if test -z "$scan_range"; then
     exit 1
 fi
 
-start=$(echo "$scan_range" | awk -F '[=:-]' '{ print $2 }')
-stop=$(echo "$scan_range"  | awk -F '[=:-]' '{ print $3 }')
+start=$(echo "$scan_range" | awk -F '[=:~]' '{ print $2 }')
+stop=$(echo "$scan_range"  | awk -F '[=:~]' '{ print $3 }')
 steps=$(echo "$scan_range" | awk -F : '{ print $NF }')
 block=$(echo "$scan_range" | awk -F [ '{ print $1 }')
 entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
