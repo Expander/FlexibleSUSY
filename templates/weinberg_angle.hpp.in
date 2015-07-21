@@ -55,8 +55,8 @@ public:
    void set_model_pointer(const @ModelName@<Two_scale>*);  ///< set pointer to investigated model
    void set_sm_parameters(const Sm_parameters&);  ///< set sm_parameters member variable
 
-   /// calculates and returns the sinus of the Weinberg angle
-   double calculate(double rho_start = 1.0, double sin_start = 0.48);
+   /// calculates and returns the sine of the Weinberg angle
+   double calculate(double rhohat_start = 1.0, double sinThetaW_start = 0.48);
 
 private:
    unsigned number_of_iterations; ///< maximum number of iterations
@@ -66,8 +66,8 @@ private:
    const @ModelName@<Two_scale>* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
 
-   double calculate_delta_rho(double, double);
-   double calculate_delta_r(double, double);
+   double calculate_delta_rho_hat(double, double);
+   double calculate_delta_r_hat(double, double);
    double calculate_delta_vb(double, double);
    double calculate_delta_vb_sm(double, double);
    double calculate_delta_vb_susy(double);

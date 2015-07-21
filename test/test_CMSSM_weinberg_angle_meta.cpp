@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = Electroweak_constants::PMTOP;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
-   double delta_r_2 = wein.calculate_delta_r(outrho, outsin);
+   double delta_r_2 = wein.calculate_delta_r_hat(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_r_1, delta_r_2, 1.0e-10);
 }
@@ -297,7 +297,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
    sm_parameters.mz_pole = Electroweak_constants::MZ;
    sm_parameters.mt_pole = Electroweak_constants::PMTOP;
    CMSSM_weinberg_angle wein(&model, sm_parameters);
-   double delta_rho_2 = wein.calculate_delta_rho(outrho, outsin);
+   double delta_rho_2 = wein.calculate_delta_rho_hat(outrho, outsin);
 
    BOOST_CHECK_CLOSE_FRACTION(delta_rho_1, delta_rho_2, 1.0e-10);
 }

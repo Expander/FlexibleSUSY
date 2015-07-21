@@ -108,17 +108,17 @@ void @ModelName@_weinberg_angle::set_sm_parameters(const Sm_parameters& sm_param
  * The function throws an exception of type NoRhoConvergenceError if the
  * iterative procedure to determine the weak mixing angle does not converge.
  *
- * @param rho_start initial guess for the rho-hat-parameter
- * @param sin_start initial guess for the sine of the weak mixing angle
+ * @param rhohat_start initial guess for the rho-hat-parameter
+ * @param sinThetaW_start initial guess for the sine of the weak mixing angle
  *
  * @return sine of the DR-bar weak mixing angle
  */
-double @ModelName@_weinberg_angle::calculate(double rho_start, double sin_start)
+double @ModelName@_weinberg_angle::calculate(double rhohat_start, double sinThetaW_start)
 {
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+   const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
    const double scale      = model->get_scale();
    const double mz         = sm_parameters.mz_pole;
    const double gfermi     = sm_parameters.fermi_constant;
@@ -130,14 +130,14 @@ double @ModelName@_weinberg_angle::calculate(double rho_start, double sin_start)
 
    unsigned iteration = 0;
    bool not_converged = true;
-   double rho_old = rho_start, sin_old = sin_start;
-   double rho_new = rho_start, sin_new = sin_start;
+   double rhohat_old = rhohat_start, sinThetaW_old = sinThetaW_start;
+   double rhohat_new = rhohat_start, sinThetaW_new = sinThetaW_start;
 
    while (not_converged && iteration < number_of_iterations) {
-      const double deltaR = calculate_delta_r(rho_old, sin_old);
+      const double deltaRHat = calculate_delta_r_hat(rhohat_old, sinThetaW_old);
 
       double sin2thetasqO4 = Pi * alphaDRbar /
-         (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaR));
+         (ROOT2 * Sqr(mz) * gfermi * (1.0 - deltaRHat));
 
       if (sin2thetasqO4 >= 0.25)
          sin2thetasqO4 = 0.25;
@@ -148,36 +148,36 @@ double @ModelName@_weinberg_angle::calculate(double rho_start, double sin_start)
       const double sin2theta = Sqrt(4.0 * sin2thetasqO4);
       const double theta = 0.5 * ArcSin(sin2theta);
 
-      sin_new = Sin(theta);
+      sinThetaW_new = Sin(theta);
 
-      const double deltaRho = calculate_delta_rho(rho_old, sin_new);
+      const double deltaRhoHat = calculate_delta_rho_hat(rhohat_old, sinThetaW_new);
 
-      if (Abs(deltaRho) < 1.0)
-         rho_new = 1.0 / (1.0 - deltaRho);
+      if (Abs(deltaRhoHat) < 1.0)
+         rhohat_new = 1.0 / (1.0 - deltaRhoHat);
       else
-         rho_new = 1.0;
+         rhohat_new = 1.0;
 
       const double precision
-         = Abs(rho_old / rho_new - 1.0) + Abs(sin_old / sin_new - 1.0);
+         = Abs(rhohat_old / rhohat_new - 1.0) + Abs(sinThetaW_old / sinThetaW_new - 1.0);
 
       VERBOSE_MSG("Iteration step " << iteration
                   << ": prec=" << precision
-                  << " dr=" << deltaR
-                  << " drho=" << deltaRho
-                  << " rho_new=" << rho_new
-                  << " sin_new=" << sin_new);
+                  << " dRHat=" << deltaRHat
+                  << " dRhoHat=" << deltaRhoHat
+                  << " rhohat_new=" << rhohat_new
+                  << " sinThetaW_new=" << sinThetaW_new);
 
       not_converged = precision >= precision_goal;
 
-      rho_old = rho_new;
-      sin_old = sin_new;
+      rhohat_old = rhohat_new;
+      sinThetaW_old = sinThetaW_new;
       iteration++;
    }
 
    if (not_converged)
-      throw NoRhoConvergenceError(number_of_iterations, sin_new, rho_new);
+      throw NoRhoConvergenceError(number_of_iterations, sinThetaW_new, rhohat_new);
 
-   return sin_new;
+   return sinThetaW_new;
 }
 
 /**
@@ -189,39 +189,39 @@ double @ModelName@_weinberg_angle::calculate(double rho_start, double sin_start)
  *
  * @return \f$\Delta\hat{\rho}\f$ as defined in (C.4) and (C.6) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_rho(double rhohat, double sinThetaW)
+double @ModelName@_weinberg_angle::calculate_delta_rho_hat(double rhohat, double sinThetaW)
 {
    const double mz = sm_parameters.mz_pole;
    const double mw = sm_parameters.mw_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mt_drbar    = model->get_M@TopQuark@(2);
+   const double mtDRbar     = model->get_M@TopQuark@(2);
    const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
    const double piwwtMW     = Re(model->self_energy_@VectorW@(mw));
    double pizztMZ_corrected = pizztMZ;
    double piwwtMW_corrected = piwwtMW;
    if (model->get_thresholds() > 1) {
       pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mt_drbar)
+         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
                  + calculate_self_energy_@VectorZ@_top(mz, mt);
       piwwtMW_corrected =
-         piwwtMW - calculate_self_energy_@VectorW@_top(mw, mt_drbar)
+         piwwtMW - calculate_self_energy_@VectorW@_top(mw, mtDRbar)
                  + calculate_self_energy_@VectorW@_top(mw, mt);
    }
 
-   double deltaRho1Loop = 0.;
+   double deltaRhoHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaRho1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
+      deltaRhoHat1Loop = pizztMZ_corrected / (rhohat * Sqr(mz)) -
          piwwtMW_corrected / Sqr(mw);
 
    const double gfermi = sm_parameters.fermi_constant;
 
-   double deltaRho2LoopSM = 0.;
+   double deltaRhoHat2LoopSM = 0.;
    if (number_of_loops > 1) {
-@deltaRho2LoopSM@   }
+@deltaRhoHat2LoopSM@   }
 
-   const double deltaRho = deltaRho1Loop + deltaRho2LoopSM;
+   const double deltaRhoHat = deltaRhoHat1Loop + deltaRhoHat2LoopSM;
 
-   return deltaRho;
+   return deltaRhoHat;
 }
 
 /**
@@ -233,22 +233,22 @@ double @ModelName@_weinberg_angle::calculate_delta_rho(double rhohat, double sin
  *
  * @return \f$\Delta\hat{r}\f$ as defined in (C.3) and (C.5) from hep-ph/9606211
  */
-double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinThetaW)
+double @ModelName@_weinberg_angle::calculate_delta_r_hat(double rhohat, double sinThetaW)
 {
    const double mz = sm_parameters.mz_pole;
    const double mw = sm_parameters.mw_pole;
    const double mt = sm_parameters.mt_pole;
-   const double mt_drbar    = model->get_M@TopQuark@(2);
+   const double mtDRbar     = model->get_M@TopQuark@(2);
    const double pizztMZ     = Re(model->self_energy_@VectorZ@(mz));
    const double piwwt0      = Re(model->self_energy_@VectorW@(0.));
    double pizztMZ_corrected = pizztMZ;
    double piwwt0_corrected  = piwwt0;
    if (model->get_thresholds() > 1) {
       pizztMZ_corrected =
-         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mt_drbar)
+         pizztMZ - calculate_self_energy_@VectorZ@_top(mz, mtDRbar)
                  + calculate_self_energy_@VectorZ@_top(mz, mt);
       piwwt0_corrected =
-         piwwt0  - calculate_self_energy_@VectorW@_top(0., mt_drbar)
+         piwwt0  - calculate_self_energy_@VectorW@_top(0., mtDRbar)
                  + calculate_self_energy_@VectorW@_top(0., mt);
    }
 
@@ -256,20 +256,20 @@ double @ModelName@_weinberg_angle::calculate_delta_r(double rhohat, double sinTh
    if (number_of_loops > 0)
       dvb = calculate_delta_vb(rhohat, sinThetaW);
 
-   double deltaR1Loop = 0.;
+   double deltaRHat1Loop = 0.;
    if (number_of_loops > 0)
-      deltaR1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
+      deltaRHat1Loop = rhohat * piwwt0_corrected / Sqr(mw) -
          pizztMZ_corrected / Sqr(mz) + dvb;
 
    const double gfermi = sm_parameters.fermi_constant;
 
-   double deltaR2LoopSM = 0.;
+   double deltaRHat2LoopSM = 0.;
    if (number_of_loops > 1) {
-@deltaR2LoopSM@   }
+@deltaRHat2LoopSM@   }
 
-   const double deltaR = deltaR1Loop + deltaR2LoopSM;
+   const double deltaRHat = deltaRHat1Loop + deltaRHat2LoopSM;
 
-   return deltaR;
+   return deltaRHat;
 }
 
 /**
@@ -318,8 +318,8 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_sm(
 
    const double gY         = model->get_@hyperchargeCoupling@() * @hyperchargeCouplingGutNormalization@;
    const double g2         = model->get_@leftCoupling@() * @leftCouplingGutNormalization@;
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+   const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
    const double deltaVbSM = rhohat * alphaDRbar / (4.0 * Pi * sinThetaW2) *
       (6.0 + log(cw2) / sw2 *
@@ -348,8 +348,8 @@ double @ModelName@_weinberg_angle::calculate_delta_vb_susy(double sinThetaW)
    const double sinThetaW2 = Sqr(sinThetaW);
    const double outcos2    = 1.0 - sinThetaW2;
 
-   const double e_drbar    = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
-   const double alphaDRbar = Sqr(e_drbar) / (4.0 * Pi);
+   const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
+   const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
 
    double msel  = 0.;
    double msmul = 0.;

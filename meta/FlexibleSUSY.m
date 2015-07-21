@@ -611,8 +611,8 @@ WriteConvergenceTesterClass[parameters_, files_List] :=
 WriteWeinbergAngleClass[files_List] :=
    Module[{},
           WriteOut`ReplaceInFiles[files,
-                 { "@deltaRho2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaRho2LoopSM[]]]],
-                   "@deltaR2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaR2LoopSM[]]]],
+                 { "@deltaRhoHat2LoopSM@" -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaRhoHat2LoopSM[]]]],
+                   "@deltaRHat2LoopSM@"   -> IndentText[IndentText[WrapLines[WeinbergAngleMuonDecay`deltaRHat2LoopSM[]]]],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
