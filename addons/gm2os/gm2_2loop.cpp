@@ -20,8 +20,6 @@
 #include "gm2_1loop.hpp"
 #include "MSSMNoFV_onshell.hpp"
 #include "ffunctions.hpp"
-#include "linalg2.hpp"
-#include "logger.hpp"
 #include "wrappers.hpp"
 
 #include <complex>
