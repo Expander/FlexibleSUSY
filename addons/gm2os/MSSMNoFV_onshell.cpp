@@ -22,7 +22,7 @@
 #include "numerics2.hpp"
 
 namespace flexiblesusy {
-namespace gm2 {
+namespace gm2os {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates& model_)
    : MSSMNoFV_mass_eigenstates(model_)
@@ -137,5 +137,5 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
 }
 
-} // gm2
+} // gm2os
 } // namespace flexiblesusy

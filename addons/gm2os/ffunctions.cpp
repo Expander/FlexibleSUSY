@@ -31,7 +31,7 @@ inline double cube(double x) { return x*x*x; }
 inline double quad(double x) { return sqr(x)*sqr(x); }
 }
 
-namespace gm2 {
+namespace gm2os {
 
 double F1C(double x) {
    if(is_equal(x, 1.))
@@ -164,6 +164,5 @@ double f_sferm(double z) {
    return 0.5 * z * (2. + log(z) - f_PS(z));
 }
 
-} // namespace gm2
-
+} // namespace gm2os
 } // namespace flexiblesusy

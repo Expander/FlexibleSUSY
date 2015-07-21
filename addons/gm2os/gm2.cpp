@@ -16,8 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 5 Mar 2014 14:17:07
-
 #include "logger.hpp"
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
@@ -29,9 +27,9 @@ using namespace flexiblesusy;
 int main()
 {
    MSSMNoFV_mass_eigenstates model;
-   gm2::MSSMNoFV_onshell osmodel(model);
+   gm2os::MSSMNoFV_onshell osmodel(model);
 
-   const double gm2_1l = gm2::calculate_gm2_1loop(osmodel);
+   const double gm2_1l = gm2os::calculate_gm2_1loop(osmodel);
    const double gm2_2l = amu2LFSfapprox(osmodel)
                         + amuChipmPhotonic(osmodel) + amuChi0Photonic(osmodel);
    const double gm2_2l_tanb_approx =  + (tan_beta_cor(osmodel) - 1.) * gm2_1l;

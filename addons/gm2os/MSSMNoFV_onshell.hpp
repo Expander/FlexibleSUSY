@@ -23,7 +23,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2 {
+namespace gm2os {
 
 class MSSMNoFV_onshell : public MSSMNoFV_mass_eigenstates {
 public:
@@ -67,7 +67,7 @@ private:
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit
 };
 
-} // namespace gm2
+} // namespace gm2os
 } // namespace flexiblesusy
 
 #endif

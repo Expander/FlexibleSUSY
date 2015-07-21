@@ -23,8 +23,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-
-namespace gm2 {
+namespace gm2os {
 
 double F1C(double);
 double F2C(double);
@@ -43,8 +42,7 @@ double f_PS(double);
 double f_S(double);
 double f_sferm(double);
 
-} // namespace gm2
-
+} // namespace gm2os
 } // namespace flexiblesusy
 
 #endif

@@ -24,7 +24,7 @@
 #include <complex>
 
 namespace flexiblesusy {
-namespace gm2 {
+namespace gm2os {
 
 // approximations
 
@@ -281,5 +281,5 @@ double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
    return amuChi0(model) + amuChipm(model);
 }
 
-} // namespace gm2
+} // namespace gm2os
 } // namespace flexiblesusy

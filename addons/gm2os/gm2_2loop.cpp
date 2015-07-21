@@ -26,7 +26,7 @@
 #include <cmath>
 
 namespace flexiblesusy {
-namespace gm2 {
+namespace gm2os {
 
 //tanbeta2 corrections
 
@@ -428,5 +428,5 @@ double amua2LCha(const MSSMNoFV_onshell& model) {
    return result * 2. * sqr(oneOver16PiSqr * sqr(EL) * MM / (MW * SW));
 }
 
-} // namespace gm2
+} // namespace gm2os
 } // namespace flexiblesusy

@@ -22,7 +22,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2 {
+namespace gm2os {
 
 class MSSMNoFV_onshell;
 
@@ -51,7 +51,7 @@ double amuChi0(const MSSMNoFV_onshell&);
 double amuChipm(const MSSMNoFV_onshell&);
 double calculate_gm2_1loop(const MSSMNoFV_onshell&);
 
-} // namespace gm2
+} // namespace gm2os
 } // namespace flexiblesusy
 
 #endif
