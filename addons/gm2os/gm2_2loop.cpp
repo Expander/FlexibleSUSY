@@ -25,6 +25,7 @@
 #include "wrappers.hpp"
 
 #include <complex>
+#include <cmath>
 
 namespace flexiblesusy {
 namespace gm2 {
@@ -64,9 +65,9 @@ double tan_beta_cor(const MSSMNoFV_onshell& model) {
 double LogNorm(const MSSMNoFV_onshell& model) {
    // function to find minimum special masses to normalize logarithms
 
-   return fmin(fabs(model.get_MassB()),
-           fmin(fabs(model.get_MassWB()),
-            fmin(fabs(model.get_Mu()),
+   return fmin(std::abs(model.get_MassB()),
+           fmin(std::abs(model.get_MassWB()),
+            fmin(std::abs(model.get_Mu()),
              fmin(sqrt(model.get_me2()(1, 1)), sqrt(model.get_ml2()(1, 1))))));
 }
 
