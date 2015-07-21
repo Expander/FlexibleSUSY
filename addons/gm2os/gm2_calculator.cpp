@@ -29,6 +29,10 @@ Gm2_calculator::Gm2_calculator(const MSSMNoFV_mass_eigenstates& model_)
    , EL0(0.30282212)
 {}
 
+/**
+ * Calculates the Ae parameter from the lepton trilinear and Yukawa
+ * couplings.
+ */
 Eigen::Matrix<double,3,3> Gm2_calculator::get_Ae() const {
    Eigen::Matrix<double,3,3> Ae(get_TYe());
    Eigen::Matrix<double,3,3> Ye(get_Ye());
@@ -40,6 +44,10 @@ Eigen::Matrix<double,3,3> Gm2_calculator::get_Ae() const {
    return Ae;
 }
 
+/**
+ * Calculates the Au parameter from the up-type quark trilinear and
+ * Yukawa couplings.
+ */
 Eigen::Matrix<double,3,3> Gm2_calculator::get_Au() const {
    Eigen::Matrix<double,3,3> Au(get_TYu());
    Eigen::Matrix<double,3,3> Yu(get_Yu());
@@ -51,6 +59,10 @@ Eigen::Matrix<double,3,3> Gm2_calculator::get_Au() const {
    return Au;
 }
 
+/**
+ * Calculates the Ad parameter from the down-type quark trilinear and
+ * Yukawa couplings.
+ */
 Eigen::Matrix<double,3,3> Gm2_calculator::get_Ad() const {
    Eigen::Matrix<double,3,3> Ad(get_TYd());
    Eigen::Matrix<double,3,3> Yd(get_Yd());
@@ -62,12 +74,26 @@ Eigen::Matrix<double,3,3> Gm2_calculator::get_Ad() const {
    return Ad;
 }
 
+/**
+ * Returns the electromagnetig gauge coupling, calculated from gY and
+ * g2.
+ */
 double Gm2_calculator::get_EL() const {
    const double gY = get_gY();
    const double g2 = get_g2();
    return gY * g2 / sqrt(sqr(gY) + sqr(g2));
 }
 
+/**
+ * Converts the model parameters from the DR-bar scheme to the
+ * on-shell scheme.
+ *
+ * The function assumes that the physical struct is filled with pole
+ * masses and corresponding mixing matrices.  From these quantities,
+ * the on-shell model parameters are calculated.
+ *
+ * @todo implement and check this function
+ */
 void Gm2_calculator::convert_to_onshell() {
 
    // get pole masses
