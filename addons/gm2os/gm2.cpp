@@ -29,12 +29,12 @@ using namespace flexiblesusy;
 int main()
 {
    MSSMNoFV_mass_eigenstates model;
-   gm2::MSSMNoFV_onshell calculator(model);
+   gm2::MSSMNoFV_onshell osmodel(model);
 
-   const double gm2_1l = gm2::calculate_gm2_1loop(calculator);
-   const double gm2_2l = amu2LFSfapprox(calculator)
-                        + amuChipmPhotonic(calculator) + amuChi0Photonic(calculator);
-   const double gm2_2l_tanb_approx =  + (tan_beta_cor(calculator) - 1.) * gm2_1l;
+   const double gm2_1l = gm2::calculate_gm2_1loop(osmodel);
+   const double gm2_2l = amu2LFSfapprox(osmodel)
+                        + amuChipmPhotonic(osmodel) + amuChi0Photonic(osmodel);
+   const double gm2_2l_tanb_approx =  + (tan_beta_cor(osmodel) - 1.) * gm2_1l;
 
    return 0;
 }
