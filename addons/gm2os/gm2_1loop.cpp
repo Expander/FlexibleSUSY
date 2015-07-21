@@ -253,14 +253,14 @@ double amuChi0(const MSSMNoFV_onshell& model) {
 double amuChipm(const MSSMNoFV_onshell& model) {
    double result = 0.;
    Eigen::Array<double,2,1> x__k(x_k(model));
-   Eigen::Array<double,3,1> MSv(model.get_MSvmL());
+   const double MSvm(model.get_MSvmL());
    Eigen::Array<double,2,1> AAC_(AAC(model));
    Eigen::Array<double,2,1> BBC_(BBC(model));
    Eigen::Array<double,2,1> MCha(model.get_MCha());
    for(int k=0; k<2; ++k) {
-      result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSv(1)))
+      result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSvm))
                  + 2. * MCha(k) * BBC_(k) * F2C(x__k(k))
-                  / (3. * sqr(MSv(1))) );
+                  / (3. * sqr(MSvm)) );
    }
 
    return result * sqr(model.get_MM()) * oneOver16PiSqr;
