@@ -75,8 +75,8 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
                                FlexibleSUSY`MSbar, 0,
                                _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                               ];
-           deltaSM = conversion - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
-           deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
+           deltaSM = -16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
+           deltaSusy = conversion + CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>

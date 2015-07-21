@@ -122,6 +122,10 @@ EXE@CLASSNAME@_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXE@CLASSNAME@_SRC))) \
 		$(patsubst %.f, %.o, $(filter %.f, $(EXE@CLASSNAME@_SRC)))
 
+EXE@CLASSNAME@_EXE := \
+		$(patsubst %.cpp, %.x, $(filter %.cpp, $(EXE@CLASSNAME@_SRC))) \
+		$(patsubst %.f, %.x, $(filter %.f, $(EXE@CLASSNAME@_SRC)))
+
 LIB@CLASSNAME@_DEP := \
 		$(LIB@CLASSNAME@_OBJ:.o=.d)
 
@@ -129,15 +133,6 @@ EXE@CLASSNAME@_DEP := \
 		$(EXE@CLASSNAME@_OBJ:.o=.d)
 
 LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
-
-RUN_@CLASSNAME@_OBJ := $(DIR)/run_@CLASSNAME@.o
-RUN_@CLASSNAME@_EXE := $(DIR)/run_@CLASSNAME@.x
-
-RUN_CMD_LINE_@CLASSNAME@_OBJ := $(DIR)/run_cmd_line_@CLASSNAME@.o
-RUN_CMD_LINE_@CLASSNAME@_EXE := $(DIR)/run_cmd_line_@CLASSNAME@.x
-
-SCAN_@CLASSNAME@_OBJ := $(DIR)/scan_@CLASSNAME@.o
-SCAN_@CLASSNAME@_EXE := $(DIR)/scan_@CLASSNAME@.x
 
 METACODE_STAMP_@CLASSNAME@ := $(DIR)/00_DELETE_ME_TO_RERUN_METACODE
 
@@ -189,9 +184,7 @@ clean-$(MODNAME): clean-$(MODNAME)-src
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj
 		-rm -f $(LIB@CLASSNAME@)
-		-rm -f $(RUN_@CLASSNAME@_EXE)
-		-rm -f $(RUN_CMD_LINE_@CLASSNAME@_EXE)
-		-rm -f $(SCAN_@CLASSNAME@_EXE)
+		-rm -f $(EXE@CLASSNAME@_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 
@@ -235,16 +228,10 @@ endif
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MAKELIB) $@ $^
 
-$(RUN_@CLASSNAME@_EXE): $(RUN_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(RUN_CMD_LINE_@CLASSNAME@_EXE): $(RUN_CMD_LINE_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
-
-$(SCAN_@CLASSNAME@_EXE): $(SCAN_@CLASSNAME@_OBJ) $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+$(DIR)/%.x: $(DIR)/%.o $(LIB@CLASSNAME@) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+		$(CXX) $(LDFLAGS) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(LDLIBS)
 
 ALLDEP += $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP)
 ALLSRC += $(LIB@CLASSNAME@_SRC) $(EXE@CLASSNAME@_SRC)
 ALLLIB += $(LIB@CLASSNAME@)
-ALLEXE += $(RUN_@CLASSNAME@_EXE) $(RUN_CMD_LINE_@CLASSNAME@_EXE) $(SCAN_@CLASSNAME@_EXE)
+ALLEXE += $(EXE@CLASSNAME@_EXE)

@@ -156,6 +156,9 @@ ApplyConstraint[FlexibleSUSY`FSFindRoot[parameters_List, function_List], modelNa
            Return[callRootFinder];
           ];
 
+ApplyConstraint[FlexibleSUSY`FSSolveEWSBFor[___], modelName_String] :=
+    modelName <> "->solve_ewsb();\n";
+
 ApplyConstraint[Null, _] :=
     Block[{},
           Print["Error: Null is not a valid constraint setting!"];
@@ -171,7 +174,7 @@ ApplyConstraint[p_, _] :=
 
 ApplyConstraints[settings_List] :=
     Module[{result, noMacros},
-           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__]];
+           noMacros = DeleteCases[settings, FlexibleSUSY`FSMinimize[__] | FlexibleSUSY`FSFindRoot[__] | FlexibleSUSY`FSSolveEWSBFor[__]];
            result = Parameters`CreateLocalConstRefs[(#[[2]])& /@ noMacros];
            result = result <> "\n";
            (result = result <> ApplyConstraint[#, "MODEL"])& /@ settings;
@@ -181,6 +184,7 @@ ApplyConstraints[settings_List] :=
 FindFixedParametersFromSetting[{parameter_, value_}] := Parameters`StripIndices[parameter];
 FindFixedParametersFromSetting[FlexibleSUSY`FSMinimize[parameters_List, value_]] := parameters;
 FindFixedParametersFromSetting[FlexibleSUSY`FSFindRoot[parameters_List, value_]] := parameters;
+FindFixedParametersFromSetting[FlexibleSUSY`FSSolveEWSBFor[parameters_List]] := parameters;
 
 FindFixedParametersFromConstraint[settings_List] :=
     DeleteDuplicates[Flatten[FindFixedParametersFromSetting /@ settings]];
@@ -465,15 +469,17 @@ if (" <> scaleName <> " > " <> value <> ") {
            Return[result];
           ];
 
-CheckPerturbativityForParameter[par_, thresh_, model_String:"model"] :=
+CheckPerturbativityForParameter[par_, thresh_, model_String:"model", problem_String:"problem"] :=
     Module[{snippet, parStr, threshStr},
            parStr = CConversion`ToValidCSymbolString[par];
            threshStr = CConversion`RValueToCFormString[thresh];
            snippet = "\
-if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ")
+if (MaxAbsValue(" <> parStr <> ") > " <> threshStr <> ") {
+   " <> problem <> " = true;
    " <> model <> "->get_problems().flag_non_perturbative_parameter(\"" <> parStr <> "\", MaxAbsValue(" <> parStr <> "), " <> model <> "->get_scale(), " <> threshStr <> ");
-else
+} else {
    " <> model <> "->get_problems().unflag_non_perturbative_parameter(\"" <> parStr <> "\");
+}
 ";
            snippet
           ];

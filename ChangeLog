@@ -1,4 +1,22 @@
-FlexibleSUSY-1.2.0 [not released yet]
+FlexibleSUSY-1.2.2 [not released yet]
+
+ * Feature: The scale at which the EWSB output parameters are fixed
+   can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
+   By default, the susy-scale is chosen.
+
+ * Bugfix (commit 5530bf9): Defining a scale to be a running mass, for
+   example SUSYScale = M[hh], resulted in a compilation error.
+
+FlexibleSUSY-1.2.1 [July, 07 2015]
+
+ * Feature: The model name is printed in SPINFO[5] and the SARAH
+   version is printed in SPINFO[9].
+
+ * Bugfix (fea4d59): The MODSEL block was not read if SLHA input is
+   passed to the spectrum generator via stdin.  Thanks to Peter
+   Drechsel.
+
+FlexibleSUSY-1.2.0 [June, 26 2015]
 
  * Feature: Allow the user to add 3-loop beta-functions in the SM.
    The beta-functions are taken from SUSYHD v1.0.1 (arXiv:1504.05200)
@@ -13,6 +31,10 @@ FlexibleSUSY-1.2.0 [not released yet]
    Example:
    $ cat model_files/CMSSM/LesHouches.in.CMSSM | \
         models/CMSSM/run_CMSSM.x --slha-input-file=-
+
+ * Feature: Allow the user create standalone executables that don't
+   depend on dynamically linked libraries.  See README for more
+   details.
 
  * Bugfix (commit 3843ea7): Rewrite pole mass tachyon check to fix a
    confusion between goldstone and Higgs bosons in the CP-violating

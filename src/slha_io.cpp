@@ -21,6 +21,7 @@
 #include "lowe.h"
 #include "linalg.h"
 #include "ew_input.hpp"
+#include "spectrum_generator_settings.hpp"
 
 #include <fstream>
 #include <algorithm>
@@ -138,6 +139,20 @@ void SLHA_io::fill(QedQcd& oneset) const
 
    // fill PMNS parameters in oneset
    oneset.setPMNS(pmns_parameters);
+}
+
+/**
+ * Fill struct of spectrum generator settings from SLHA object
+ * (FlexibleSUSY block)
+ *
+ * @param settings struct of spectrum generator settings
+ */
+void SLHA_io::fill(Spectrum_generator_settings& settings) const
+{
+   SLHA_io::Tuple_processor flexiblesusy_processor
+      = boost::bind(&SLHA_io::process_flexiblesusy_tuple, boost::ref(settings), _1, _2);
+
+   read_block("FlexibleSUSY", flexiblesusy_processor);
 }
 
 /**
@@ -417,7 +432,7 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
       modsel.parameter_output_scale = value;
       break;
    default:
-      WARNING("Unrecognized key " << key << " in Block MODSEL");
+      WARNING("Unrecognized entry in block MODSEL: " << key);
       break;
    }
 }
@@ -486,8 +501,18 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       oneset.setMass(mCharm, value);
       break;
    default:
-      WARNING("Unrecognized key in SMINPUTS: " << key);
+      WARNING("Unrecognized entry in block SMINPUTS: " << key);
       break;
+   }
+}
+
+void SLHA_io::process_flexiblesusy_tuple(Spectrum_generator_settings& settings,
+                                         int key, double value)
+{
+   if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
+      settings.set((Spectrum_generator_settings::Settings)key, value);
+   } else {
+      WARNING("Unrecognized entry in block FlexibleSUSY: " << key);
    }
 }
 
@@ -514,7 +539,7 @@ void SLHA_io::process_vckmin_tuple(CKM_wolfenstein& ckm_wolfenstein, int key, do
       ckm_wolfenstein.etabar = value;
       break;
    default:
-      WARNING("Unrecognized key in VCKMIN: " << key);
+      WARNING("Unrecognized entry in block VCKMIN: " << key);
       break;
    }
 }
@@ -547,7 +572,7 @@ void SLHA_io::process_upmnsin_tuple(PMNS_parameters& pmns_parameters, int key, d
       pmns_parameters.alpha_2 = value;
       break;
    default:
-      WARNING("Unrecognized key in UPMNSIN: " << key);
+      WARNING("Unrecognized entry in block UPMNSIN: " << key);
       break;
    }
 }

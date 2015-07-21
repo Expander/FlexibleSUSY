@@ -7,11 +7,13 @@ FSDefaultSARAHModel = SM;
 
 MINPAR = { {1, LambdaIN} };
 
+EXTPAR = { {0, Qin} };
+
 EWSBOutputParameters = { mu2 };
 
-SUSYScale = v;
+SUSYScale = Qin;
 
-SUSYScaleFirstGuess = 1000;
+SUSYScaleFirstGuess = Qin;
 
 SUSYScaleInput = {
     {\[Lambda], LambdaIN}

@@ -86,7 +86,6 @@ done
 models_comma="`echo $models | tr ' ' ','`"
 
 ./configure \
-    --disable-compile \
     --with-models=${models_comma} \
     --with-math-cmd=${MATH}
 

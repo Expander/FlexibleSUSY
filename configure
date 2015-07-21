@@ -5,7 +5,7 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
-FLEXIBLESUSY_MINOR=1
+FLEXIBLESUSY_MINOR=2
 FLEXIBLESUSY_PATCH=1
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
@@ -158,6 +158,8 @@ FLIBS=""
 BOOSTTESTLIBS=""
 BOOSTTHREADLIBS=""
 THREADLIBS=""
+LDFLAGS=""
+LDLIBS=""
 LIBEXT=".a"
 CXX="g++"
 CXX_DEP_GEN="${CXX}"
@@ -405,9 +407,12 @@ check_library() {
 
     if test "x$found_dir" = "x" || test "x$found_lib" = "x" ; then
         result "not found in $libdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -463,9 +468,12 @@ check_header() {
 
     if test "x$found_dir" = "x" || test "x$found_hdr" = "x" ; then
         result "not found in $hdrdirs"
+        return 1
     else
         result "found in $found_dir"
     fi
+
+    return 0
 }
 
 #_____________________________________________________________________
@@ -1810,6 +1818,9 @@ find_symbol_using_pkgconfig() {
 
 #_____________________________________________________________________
 check_blas_libs() {
+    # user has set BLASLIBS explicitly, no need to search
+    test -n "$BLASLIBS" && return 0
+
     if find_symbol_using_pkgconfig blas ztpsv_; then
 	BLASLIBS="$linker_flags"
     else
@@ -1819,6 +1830,9 @@ check_blas_libs() {
 
 #_____________________________________________________________________
 check_lapack_libs() {
+    # user has set LAPACKLIBS explicitly, no need to search
+    test -n "$LAPACKLIBS" && return 0
+
     if find_symbol_using_pkgconfig lapack dgbsv_; then
 	LAPACKLIBS="$linker_flags"
     else
@@ -2127,6 +2141,8 @@ replace_markers() {
 	-e "s|@GSLLIBS@|$GSLLIBS|"         \
 	-e "s|@GSLFLAGS@|$GSLFLAGS|"       \
 	-e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
+        -e "s|@LDFLAGS@|$LDFLAGS|"         \
+        -e "s|@LDLIBS@|$LDLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_FFLITE@|$enable_fflite|" \
@@ -2188,6 +2204,7 @@ Package directories, compilation settings and model selection
                             (default: $ALGORITHMS)
                             possible values: all $available_algorithms
   --with-blas-libdir=       Path to search for BLAS library
+  --with-blas-libs=         BLAS libraries to be linked
   --with-boost-libdir=      Path to search for BOOST libraries
   --with-boost-incdir=      Path to search for BOOST headers
   --with-cxx=               C++ compiler (default: $CXX)
@@ -2202,6 +2219,9 @@ Package directories, compilation settings and model selection
   --with-gsl-config=        Path to gsl-config (default: $gsl_config)
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
+  --with-lapack-libs=       LAPACK libraries to be linked
+  --with-ldflags=           Linker flags (default: $LDFLAGS)
+  --with-ldlibs=            Additional libraries to be linked (default: $LDLIBS)
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
@@ -2289,6 +2309,7 @@ if test $# -gt 0 ; then
             --with-addons=*)         ADDONS=$optarg ;;
             --with-algorithms=*)     ALGORITHMS=$optarg ;;
             --with-blas-libdir=*)    blas_lib_dir=$optarg ;;
+            --with-blas-libs=*)      BLASLIBS=$optarg ;;
             --with-boost-libdir=*)   boost_lib_dir=$optarg ;;
             --with-boost-incdir=*)   boost_inc_dir=$optarg ;;
             --with-cc=*)             CC=$optarg ;;
@@ -2305,6 +2326,9 @@ if test $# -gt 0 ; then
             --with-gsl-config=*)     gsl_config=$optarg ;;
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
+            --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
+            --with-ldflags=*)        LDFLAGS=$optarg ;;
+            --with-ldlibs=*)         LDLIBS=$optarg ;;
             --with-lib-ext=*)        LIBEXT=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
@@ -2421,6 +2445,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLIBS@|$FLIBS|"             \
     -e "s|@GSLFLAGS@|$GSLFLAGS|"       \
     -e "s|@GSLLIBS@|$GSLLIBS|"         \
+    -e "s|@LDFLAGS@|$LDFLAGS|"         \
+    -e "s|@LDLIBS@|$LDLIBS|"           \
     -e "s|@LOOPFUNCFLAGS@|$LOOPTOOLSFLAGS|" \
     -e "s|@TSILLIBS@|$TSILLIBS|"       \
     -e "s|@TSILFLAGS@|$TSILFLAGS|"     \

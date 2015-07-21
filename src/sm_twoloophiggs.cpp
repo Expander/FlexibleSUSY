@@ -34,7 +34,7 @@ using namespace passarino_veltman;
  * @note The sign of the result is opposite to arxiv:1205.6497,
  * Eq. (16).
  *
- * @warning The result is in Landau gauge (\f$\xi = 1\f$).
+ * @warning The result is in Landau gauge (\f$\xi = 0\f$).
  *
  * @warning In the diagram that has a Higgs loop, the momentum has
  * been set to the tree-level Higgs mass, \f$p^2 = 2\lambda v^2\f$.
@@ -125,7 +125,7 @@ double self_energy_higgs_1loop_at_sm(
  * @note The sign of the result is opposite to arxiv:1205.6497,
  * Eq. (20).
  *
- * @warning The result is in Landau gauge (\f$\xi = 1\f$).
+ * @warning The result is in Landau gauge (\f$\xi = 0\f$).
  *
  * @param scale renormalization scale
  * @param mt MS-bar top mass

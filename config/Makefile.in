@@ -57,6 +57,8 @@ FFLAGS             := @FFLAGS@
 FLIBS              := @FLIBS@
 FOR_DEP_GEN        := @FOR_DEP_GEN@
 MAKELIB            := @MAKELIB@
+LDFLAGS            := @LDFLAGS@
+LDLIBS             := @LDLIBS@
 LIBEXT             := @LIBEXT@
 BLASLIBS           := @BLASLIBS@
 BOOSTTESTLIBS      := @BOOSTTESTLIBS@
@@ -154,8 +156,10 @@ ifeq ($(findstring clean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring distclean-,$(MAKECMDGOALS)),)
 ifeq ($(findstring doc-,$(MAKECMDGOALS)),)
 ifeq ($(findstring pack-,$(MAKECMDGOALS)),)
+ifeq ($(findstring print-,$(MAKECMDGOALS)),)
 ifeq ($(findstring release-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -229,6 +233,8 @@ showbuild:
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "MAKELIB            = $(MAKELIB)"
+	@echo "LDFLAGS            = $(LDFLAGS)"
+	@echo "LDLIBS             = $(LDLIBS)"
 	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
@@ -260,6 +266,8 @@ showbuild:
 	@echo "The list of modules to be built:"
 	@echo "--------------------------------"
 	@echo "$(MODULES)"
+
+print-% : ; @echo $* = $($*)
 
 tag:
 	git tag $(FLEXIBLESUSY_TAG)

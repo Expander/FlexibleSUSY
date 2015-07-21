@@ -79,7 +79,6 @@ public:
 
    static void fill_minpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
-   static void fill_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
 
    template <class T>
    static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
