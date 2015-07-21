@@ -27,7 +27,7 @@ Gm2_calculator::Gm2_calculator(const MSSMNoFV_mass_eigenstates& model_)
    : MSSMNoFV_mass_eigenstates(model_),
    MW(80.385), MZ(91.1876), TB(10.), EL(0.303), ME(0.00051),
    MM(0.105), ML(1.777), MU(0.04), MC(1.5), MT(173.5), MD(0.04), MS(0.15),
-   MB(3.), gY(0.35), EL0(0.30282212), MUDIM(454.7), MA0(500.)
+   MB(3.), gY(0.35), EL0(0.30282212), MA0(500.)
 {}
 
 void Gm2_calculator::convert_parameters_reverse() {

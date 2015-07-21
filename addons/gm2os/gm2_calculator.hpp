@@ -39,7 +39,7 @@ public:
    Eigen::Array<double,2,1> get_MStop() const {return MStop;}
    Eigen::Matrix<double,2,2> get_UStop() const {return UStop;}
    double get_MA0() const {return MA0;}
-   double get_MUDIM() const {return MUDIM;}
+   double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
    double get_gY() const {return sqrt(3. / 5.) * get_g1();}
    double get_EL() const {return EL;}
@@ -102,7 +102,7 @@ public:
    void set_MB(double MB_new)
    {MB = MB_new;}
    void set_MUDIM(double MUDIM_new)
-   {MUDIM = MUDIM_new;}
+   {set_scale(MUDIM_new);}
    void set_MA0(double MA0_new)
    {MA0 = MA0_new;}
    void set_Ae(const Eigen::Matrix<double,3,3>& Ae_new)
@@ -142,7 +142,6 @@ private:
    double MB;
    double gY;
    double EL0;
-   double MUDIM;
    double MA0;
 };
 
