@@ -25,10 +25,10 @@
 namespace flexiblesusy {
 namespace gm2 {
 
-class Gm2_calculator : public MSSMNoFV_mass_eigenstates {
+class MSSMNoFV_onshell : public MSSMNoFV_mass_eigenstates {
 public:
-   Gm2_calculator(const MSSMNoFV_mass_eigenstates&);
-   virtual ~Gm2_calculator() {}
+   MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates&);
+   virtual ~MSSMNoFV_onshell() {}
 
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}

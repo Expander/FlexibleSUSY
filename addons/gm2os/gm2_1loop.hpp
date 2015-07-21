@@ -24,32 +24,32 @@
 namespace flexiblesusy {
 namespace gm2 {
 
-class Gm2_calculator;
+class MSSMNoFV_onshell;
 
-double amuWHnu(const Gm2_calculator&);
-double amuWHmuL(const Gm2_calculator&);
-double amuBHmuL(const Gm2_calculator&);
-double amuBHmuR(const Gm2_calculator&);
-double amuBmuLmuR(const Gm2_calculator&);
-double amu1Lapprox(const Gm2_calculator&);
+double amuWHnu(const MSSMNoFV_onshell&);
+double amuWHmuL(const MSSMNoFV_onshell&);
+double amuBHmuL(const MSSMNoFV_onshell&);
+double amuBHmuR(const MSSMNoFV_onshell&);
+double amuBmuLmuR(const MSSMNoFV_onshell&);
+double amu1Lapprox(const MSSMNoFV_onshell&);
 
-Eigen::Matrix<std::complex<double>,4,2> n_L(const Gm2_calculator&);
-Eigen::Matrix<std::complex<double>,4,2> n_R(const Gm2_calculator&);
+Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell&);
+Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell&);
 
-Eigen::Array<std::complex<double>,2,1> c_L(const Gm2_calculator&);
-Eigen::Array<std::complex<double>,2,1> c_R(const Gm2_calculator&);
+Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell&);
+Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell&);
 
-Eigen::Array<double,2,1> AAC(const Gm2_calculator&);
-Eigen::Matrix<double,4,2> AAN(const Gm2_calculator&);
-Eigen::Array<double,2,1> BBC(const Gm2_calculator&);
-Eigen::Matrix<double,4,2> BBN(const Gm2_calculator&);
+Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell&);
+Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell&);
+Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell&);
+Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell&);
 
-Eigen::Matrix<double,4,2> x_im(const Gm2_calculator&);
-Eigen::Array<double,2,1> x_k(const Gm2_calculator&);
+Eigen::Matrix<double,4,2> x_im(const MSSMNoFV_onshell&);
+Eigen::Array<double,2,1> x_k(const MSSMNoFV_onshell&);
 
-double amuChi0(const Gm2_calculator&);
-double amuChipm(const Gm2_calculator&);
-double calculate_gm2_1loop(const Gm2_calculator&);
+double amuChi0(const MSSMNoFV_onshell&);
+double amuChipm(const MSSMNoFV_onshell&);
+double calculate_gm2_1loop(const MSSMNoFV_onshell&);
 
 } // namespace gm2
 } // namespace flexiblesusy

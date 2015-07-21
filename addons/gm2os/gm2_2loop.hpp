@@ -24,36 +24,36 @@
 namespace flexiblesusy {
 namespace gm2 {
 
-class Gm2_calculator;
+class MSSMNoFV_onshell;
 
-double LogNorm(const Gm2_calculator&);
+double LogNorm(const MSSMNoFV_onshell&);
 
-double tan_beta_cor(const Gm2_calculator&);
+double tan_beta_cor(const MSSMNoFV_onshell&);
 
-double Deltag1(const Gm2_calculator&);
-double DeltaYukHiggsino(const Gm2_calculator&);
-double DeltaYukBinoHiggsino(const Gm2_calculator&);
-double Deltag2(const Gm2_calculator&);
-double DeltaYukWinoHiggsino(const Gm2_calculator&);
-double DeltaTanBeta(const Gm2_calculator&);
+double Deltag1(const MSSMNoFV_onshell&);
+double DeltaYukHiggsino(const MSSMNoFV_onshell&);
+double DeltaYukBinoHiggsino(const MSSMNoFV_onshell&);
+double Deltag2(const MSSMNoFV_onshell&);
+double DeltaYukWinoHiggsino(const MSSMNoFV_onshell&);
+double DeltaTanBeta(const MSSMNoFV_onshell&);
 
-double amuWHnu2L(const Gm2_calculator&);
-double amuWHmuL2L(const Gm2_calculator&);
-double amuBHmuL2L(const Gm2_calculator&);
-double amuBHmuR2L(const Gm2_calculator&);
-double amuBmuLmuR2L(const Gm2_calculator&);
-double amu2LFSfapprox(const Gm2_calculator&);
+double amuWHnu2L(const MSSMNoFV_onshell&);
+double amuWHmuL2L(const MSSMNoFV_onshell&);
+double amuBHmuL2L(const MSSMNoFV_onshell&);
+double amuBHmuR2L(const MSSMNoFV_onshell&);
+double amuBmuLmuR2L(const MSSMNoFV_onshell&);
+double amu2LFSfapprox(const MSSMNoFV_onshell&);
 
-double amuChipmPhotonic(const Gm2_calculator&);
-double amuChi0Photonic(const Gm2_calculator&);
+double amuChipmPhotonic(const MSSMNoFV_onshell&);
+double amuChi0Photonic(const MSSMNoFV_onshell&);
 
-double tan_alpha(const Gm2_calculator&);
-Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const Gm2_calculator&);
-Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const Gm2_calculator&);
-Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const Gm2_calculator&);
-Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const Gm2_calculator&);
-double amua2LSferm(const Gm2_calculator&);
-double amua2LCha(const Gm2_calculator&);
+double tan_alpha(const MSSMNoFV_onshell&);
+Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell&);
+Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell&);
+Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell&);
+Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell&);
+double amua2LSferm(const MSSMNoFV_onshell&);
+double amua2LCha(const MSSMNoFV_onshell&);
 
 } // namespace gm2
 } // namespace flexiblesusy

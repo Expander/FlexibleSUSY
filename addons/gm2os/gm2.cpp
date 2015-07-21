@@ -21,7 +21,7 @@
 #include "logger.hpp"
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
-#include "gm2_calculator.hpp"
+#include "MSSMNoFV_onshell.hpp"
 #include "wrappers.hpp"
 
 using namespace flexiblesusy;
@@ -29,7 +29,7 @@ using namespace flexiblesusy;
 int main()
 {
    MSSMNoFV_mass_eigenstates model;
-   gm2::Gm2_calculator calculator(model);
+   gm2::MSSMNoFV_onshell calculator(model);
 
    const double gm2_1l = gm2::calculate_gm2_1loop(calculator);
    const double gm2_2l = amu2LFSfapprox(calculator)

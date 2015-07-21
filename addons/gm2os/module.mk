@@ -6,7 +6,7 @@ LIBgm2os_SRC := \
 		$(DIR)/ffunctions.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
-		$(DIR)/gm2_calculator.cpp
+		$(DIR)/MSSMNoFV_onshell.cpp
 
 # main()
 EXEgm2os_SRC := \
@@ -17,7 +17,7 @@ LIBgm2os_HDR := \
 		$(DIR)/ffunctions.hpp \
 		$(DIR)/gm2_1loop.hpp \
 		$(DIR)/gm2_2loop.hpp \
-		$(DIR)/gm2_calculator.hpp
+		$(DIR)/MSSMNoFV_onshell.hpp
 
 LIBgm2os_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBgm2os_SRC))) \

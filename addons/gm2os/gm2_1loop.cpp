@@ -17,7 +17,7 @@
 // ====================================================================
 
 #include "gm2_1loop.hpp"
-#include "gm2_calculator.hpp"
+#include "MSSMNoFV_onshell.hpp"
 #include "ffunctions.hpp"
 #include "linalg2.hpp"
 #include "logger.hpp"
@@ -30,7 +30,7 @@ namespace gm2 {
 
 // approximations
 
-double amuWHnu(const Gm2_calculator& model) {
+double amuWHnu(const MSSMNoFV_onshell& model) {
    double tan_beta = model.get_TB();
    double M2 = model.get_MassWB();
    double MUE = model.get_Mu();
@@ -42,7 +42,7 @@ double amuWHnu(const Gm2_calculator& model) {
             * Fa(sqr(M2 / MSv_2), sqr(MUE / MSv_2)) );
 }
 
-double amuWHmuL(const Gm2_calculator& model) {
+double amuWHmuL(const MSSMNoFV_onshell& model) {
    double tan_beta = model.get_TB();
    double M2 = model.get_MassWB();
    double MUE = model.get_Mu();
@@ -54,7 +54,7 @@ double amuWHmuL(const Gm2_calculator& model) {
             * Fb(sqr(M2 / MSL_2), sqr(MUE / MSL_2)) );
 }
 
-double amuBHmuL(const Gm2_calculator& model) {
+double amuBHmuL(const MSSMNoFV_onshell& model) {
    double tan_beta = model.get_TB();
    double M1 = model.get_MassB();
    double MUE = model.get_Mu();
@@ -67,7 +67,7 @@ double amuBHmuL(const Gm2_calculator& model) {
             * Fb(sqr(M1 / MSL_2), sqr(MUE / MSL_2)) );
 }
 
-double amuBHmuR(const Gm2_calculator& model) {
+double amuBHmuR(const MSSMNoFV_onshell& model) {
    double tan_beta = model.get_TB();
    double M1 = model.get_MassB();
    double MUE = model.get_Mu();
@@ -80,7 +80,7 @@ double amuBHmuR(const Gm2_calculator& model) {
             * Fb(sqr(M1 / MSE_2), sqr(MUE / MSE_2)) );
 }
 
-double amuBmuLmuR(const Gm2_calculator& model) {
+double amuBmuLmuR(const MSSMNoFV_onshell& model) {
    double tan_beta = model.get_TB();
    double M1 = model.get_MassB();
    double MUE = model.get_Mu();
@@ -94,7 +94,7 @@ double amuBmuLmuR(const Gm2_calculator& model) {
             * Fb(sqr(MSL_2 / M1), sqr(MSE_2 / M1)) );
 }
 
-double amu1Lapprox(const Gm2_calculator& model) {
+double amu1Lapprox(const MSSMNoFV_onshell& model) {
 
    return ( amuWHnu(model) + amuWHmuL(model) + amuBHmuL(model)
             + amuBHmuR(model) + amuBmuLmuR(model) );
@@ -102,7 +102,7 @@ double amu1Lapprox(const Gm2_calculator& model) {
 
 // complete computation
 
-Eigen::Matrix<std::complex<double>,4,2> n_L(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
    double gY(model.get_gY());
    double g2(model.get_g2());
@@ -121,7 +121,7 @@ Eigen::Matrix<std::complex<double>,4,2> n_L(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Matrix<std::complex<double>,4,2> n_R(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
    double gY(model.get_gY());
    double ymu(model.get_Ye()(1, 1));
@@ -138,7 +138,7 @@ Eigen::Matrix<std::complex<double>,4,2> n_R(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Array<std::complex<double>,2,1> c_L(const Gm2_calculator& model) {
+Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell& model) {
    Eigen::Array<std::complex<double>,2,1> result;
    double g2 = model.get_g2();
    Eigen::Matrix<std::complex<double>,2,2> UP(model.get_UP());
@@ -149,7 +149,7 @@ Eigen::Array<std::complex<double>,2,1> c_L(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Array<std::complex<double>,2,1> c_R(const Gm2_calculator& model) {
+Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell& model) {
    Eigen::Array<std::complex<double>,2,1> result;
    double ymu = model.get_Ye()(1, 1);
    Eigen::Matrix<std::complex<double>,2,2> UM(model.get_UM());
@@ -160,7 +160,7 @@ Eigen::Array<std::complex<double>,2,1> c_R(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Array<double,2,1> AAC(const Gm2_calculator& model) {
+Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
    Eigen::Array<std::complex<double>,2,1> c__L(c_L(model));
    Eigen::Array<std::complex<double>,2,1> c__R(c_R(model));
@@ -171,7 +171,7 @@ Eigen::Array<double,2,1> AAC(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Matrix<double,4,2> AAN(const Gm2_calculator& model) {
+Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
    Eigen::Matrix<std::complex<double>,4,2> n__L(n_L(model));
    Eigen::Matrix<std::complex<double>,4,2> n__R(n_R(model));
@@ -184,7 +184,7 @@ Eigen::Matrix<double,4,2> AAN(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Array<double,2,1> BBC(const Gm2_calculator& model) {
+Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
    Eigen::Array<std::complex<double>,2,1> c__L(c_L(model));
    Eigen::Array<std::complex<double>,2,1> c__R(c_R(model));
@@ -195,7 +195,7 @@ Eigen::Array<double,2,1> BBC(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Matrix<double,4,2> BBN(const Gm2_calculator& model) {
+Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
    Eigen::Matrix<std::complex<double>,4,2> n__L = n_L(model);
    Eigen::Matrix<std::complex<double>,4,2> n__R = n_R(model);
@@ -208,7 +208,7 @@ Eigen::Matrix<double,4,2> BBN(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Matrix<double,4,2> x_im(const Gm2_calculator& model) {
+Eigen::Matrix<double,4,2> x_im(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
    Eigen::Array<double,2,1> m_smu(model.get_MSmu());
    Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
@@ -222,7 +222,7 @@ Eigen::Matrix<double,4,2> x_im(const Gm2_calculator& model) {
    return result;
 }
 
-Eigen::Array<double,2,1> x_k(const Gm2_calculator& model) {
+Eigen::Array<double,2,1> x_k(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
    for(int k=0; k<2; ++k) {
       result(k) = sqr(model.get_MCha()(k) / model.get_MSvmL()); // !!!
@@ -231,7 +231,7 @@ Eigen::Array<double,2,1> x_k(const Gm2_calculator& model) {
    return result;
 }
 
-double amuChi0(const Gm2_calculator& model) {
+double amuChi0(const MSSMNoFV_onshell& model) {
    double result = 0.;
    Eigen::Array<double,2,1> m_smu(model.get_MSmu());
    Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
@@ -250,7 +250,7 @@ double amuChi0(const Gm2_calculator& model) {
    return result * sqr(model.get_MM()) * oneOver16PiSqr;
 }
 
-double amuChipm(const Gm2_calculator& model) {
+double amuChipm(const MSSMNoFV_onshell& model) {
    double result = 0.;
    Eigen::Array<double,2,1> x__k(x_k(model));
    Eigen::Array<double,3,1> MSv(model.get_MSvmL());
@@ -266,7 +266,7 @@ double amuChipm(const Gm2_calculator& model) {
    return result * sqr(model.get_MM()) * oneOver16PiSqr;
 }
 
-double calculate_gm2_1loop(const Gm2_calculator& model) {
+double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
 
    return amuChi0(model) + amuChipm(model);
 }

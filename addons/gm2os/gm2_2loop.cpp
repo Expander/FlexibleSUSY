@@ -18,7 +18,7 @@
 
 #include "gm2_2loop.hpp"
 #include "gm2_1loop.hpp"
-#include "gm2_calculator.hpp"
+#include "MSSMNoFV_onshell.hpp"
 #include "ffunctions.hpp"
 #include "linalg2.hpp"
 #include "logger.hpp"
@@ -31,7 +31,7 @@ namespace gm2 {
 
 //tanbeta2 corrections
 
-double tan_beta_cor(const Gm2_calculator& model) {
+double tan_beta_cor(const MSSMNoFV_onshell& model) {
    double delta_mu;
    double mu = model.get_Mu();
    double TB = model.get_TB();
@@ -61,7 +61,7 @@ double tan_beta_cor(const Gm2_calculator& model) {
 
 // fermion/sfermion corrections, log-approximations
 
-double LogNorm(const Gm2_calculator& model) {
+double LogNorm(const MSSMNoFV_onshell& model) {
    // function to find minimum special masses to normalize logarithms
 
    return fmin(fabs(model.get_MassB()),
@@ -70,7 +70,7 @@ double LogNorm(const Gm2_calculator& model) {
              fmin(sqrt(model.get_me2()(1, 1)), sqrt(model.get_ml2()(1, 1))))));
 }
 
-double Deltag1(const Gm2_calculator& model) {
+double Deltag1(const MSSMNoFV_onshell& model) {
    double gY = model.get_gY();
    Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    Eigen::Matrix<double,3,3> md2(model.get_md2());
@@ -90,7 +90,7 @@ double Deltag1(const Gm2_calculator& model) {
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
-double DeltaYukHiggsino(const Gm2_calculator& model) {
+double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
    double ytau = model.get_Ye()(2, 2);
    double ytop = model.get_Yu()(2, 2);
    double ybot = model.get_Yd()(2, 2);
@@ -109,7 +109,7 @@ double DeltaYukHiggsino(const Gm2_calculator& model) {
                            + log(sqrt(ml2(2, 2)) / LogScale))) );
 }
 
-double DeltaYukBinoHiggsino(const Gm2_calculator& model) {
+double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
    double ytop = model.get_Yu()(2, 2);
    Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    Eigen::Matrix<double,3,3> mq2(model.get_mq2());
@@ -119,7 +119,7 @@ double DeltaYukBinoHiggsino(const Gm2_calculator& model) {
                             + 2. * log(sqrt(mq2(2, 2)) / LogScale)) );
 }
 
-double Deltag2(const Gm2_calculator& model) {
+double Deltag2(const MSSMNoFV_onshell& model) {
    double g2 = model.get_g2();
    Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    Eigen::Matrix<double,3,3> ml2(model.get_ml2());
@@ -131,7 +131,7 @@ double Deltag2(const Gm2_calculator& model) {
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
-double DeltaYukWinoHiggsino(const Gm2_calculator& model) {
+double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
    double ytop = model.get_Yu()(2, 2);
    Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    double LogScale = LogNorm(model);
@@ -139,7 +139,7 @@ double DeltaYukWinoHiggsino(const Gm2_calculator& model) {
    return oneOver16PiSqr * - 6. * sqr(ytop) * log(sqrt(mq2(2, 2)) / LogScale);
 }
 
-double DeltaTanBeta(const Gm2_calculator& model) {;
+double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
    double ytau = model.get_Ye()(2, 2);
    double ytop = model.get_Yu()(2, 2);
    double ybot = model.get_Yd()(2, 2);
@@ -150,7 +150,7 @@ double DeltaTanBeta(const Gm2_calculator& model) {;
              * log(MUDIM / LogScale) );
 }
 
-double amuWHnu2L(const Gm2_calculator& model) {
+double amuWHnu2L(const MSSMNoFV_onshell& model) {
    double test1 = .75;
 
    return ( amuWHnu(model)
@@ -158,7 +158,7 @@ double amuWHnu2L(const Gm2_calculator& model) {
               + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model)) );
 }
 
-double amuWHmuL2L(const Gm2_calculator& model) {
+double amuWHmuL2L(const MSSMNoFV_onshell& model) {
    double test2 = .75;
 
    return ( amuWHmuL(model)
@@ -166,7 +166,7 @@ double amuWHmuL2L(const Gm2_calculator& model) {
              + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
-double amuBHmuL2L(const Gm2_calculator& model) {
+double amuBHmuL2L(const MSSMNoFV_onshell& model) {
    double test3 = .75;
 
    return ( amuBHmuL(model)
@@ -174,7 +174,7 @@ double amuBHmuL2L(const Gm2_calculator& model) {
               + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
-double amuBHmuR2L(const Gm2_calculator& model) {
+double amuBHmuR2L(const MSSMNoFV_onshell& model) {
    double test4 = 2.;
 
    return ( amuBHmuR(model)
@@ -182,14 +182,14 @@ double amuBHmuR2L(const Gm2_calculator& model) {
               + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
-double amuBmuLmuR2L(const Gm2_calculator& model) {
+double amuBmuLmuR2L(const MSSMNoFV_onshell& model) {
    double test5 = 1.5;
 
    return ( amuBmuLmuR(model)
             * (.02 * test5 + Deltag1(model) + DeltaTanBeta(model)) );
 }
 
-double amu2LFSfapprox(const Gm2_calculator& model) {
+double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
 
    return ( amuWHnu2L(model) + amuWHmuL2L(model) + amuBHmuL2L(model)
            + amuBHmuR2L(model) + amuBmuLmuR2L(model) );
@@ -197,7 +197,7 @@ double amu2LFSfapprox(const Gm2_calculator& model) {
 
 // photonic corrections, all
 
-double amuChipmPhotonic(const Gm2_calculator& model) {
+double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
    double MM = model.get_MM();
    Eigen::Array<double,2,1> AAC_(AAC(model));
@@ -221,7 +221,7 @@ double amuChipmPhotonic(const Gm2_calculator& model) {
    return  sqr(model.get_EL0()) * sqr(oneOver16PiSqr) * sqr(MM / MSvmL) * result;
 }
 
-double amuChi0Photonic(const Gm2_calculator& model) {
+double amuChi0Photonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
    double MM = model.get_MM();
    Eigen::Matrix<double,4,2> AAN_(AAN(model));
@@ -249,7 +249,7 @@ double amuChi0Photonic(const Gm2_calculator& model) {
 
 // amu2Loop_a corrections
 
-double tan_alpha(const Gm2_calculator& model) {
+double tan_alpha(const MSSMNoFV_onshell& model) {
    double TB = model.get_TB();
    double MZ = model.get_MZ();
    double MA0 = model.get_MA0();
@@ -259,7 +259,7 @@ double tan_alpha(const Gm2_calculator& model) {
    return - 1. / tan2alpha - sqrt(1. / sqr(tan2alpha) + 1.); // alpha < 0 !
 }
 
-Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,3,3> result;
    Eigen::Array<double,2,1> MCha(model.get_MCha());
    double MW(model.get_MW());
@@ -287,7 +287,7 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const Gm2_calculator& mode
    return result;
 }
 
-Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    double TB(model.get_TB());
    double CB = 1. / sqrt(1. + sqr(TB));
@@ -311,7 +311,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const Gm2_calculator& model)
    return result;
 }
 
-Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    double TB(model.get_TB());
    double CB = 1. / sqrt(1. + sqr(TB));
@@ -334,7 +334,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const Gm2_calculator& model)
    return result;
 }
 
-Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const Gm2_calculator& model) {
+Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    double TB(model.get_TB());
    double CB = 1. / sqrt(1. + sqr(TB));
@@ -357,7 +357,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const Gm2_calculator& model)
    return result;
 }
 
-double amua2LSferm(const Gm2_calculator& model) {
+double amua2LSferm(const MSSMNoFV_onshell& model) {
    double result = 0.;
    double MM(model.get_MM());
    double MW(model.get_MW());
@@ -406,7 +406,7 @@ double amua2LSferm(const Gm2_calculator& model) {
    return result * 2. * sqr(oneOver16PiSqr * sqr(EL) * MM / (MW * SW));
 }
 
-double amua2LCha(const Gm2_calculator& model) {
+double amua2LCha(const MSSMNoFV_onshell& model) {
    double result = 0.;
    double MM(model.get_MM());
    double MW(model.get_MW());
