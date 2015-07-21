@@ -87,6 +87,7 @@ int main(int argc, const char* argv[])
    }
 
    gm2os::MSSMNoFV_onshell osmodel(model);
+   osmodel.calculate_DRbar_masses();
    osmodel.convert_to_onshell();
 
    const double gm2_1l = gm2os::calculate_gm2_1loop(osmodel);
