@@ -103,7 +103,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
 
    convert_gauge_couplings();
    convert_BMu();
-   convert_vevs();
+   convert_vev();
    convert_yukawa_couplings();
    convert_Mu_M1_M2();
 }
@@ -128,7 +128,7 @@ void MSSMNoFV_onshell::convert_BMu()
    set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
 }
 
-void MSSMNoFV_onshell::convert_vevs()
+void MSSMNoFV_onshell::convert_vev()
 {
    const double TB = get_TB(); // vu / vd
    const double MW = get_MW(); // pole mass

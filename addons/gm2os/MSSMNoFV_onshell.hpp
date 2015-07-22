@@ -77,7 +77,7 @@ private:
    void convert_BMu();
    void convert_Mu_M1_M2(double precision_goal = 1e-5,
                          unsigned max_iterations = 100);
-   void convert_vevs();
+   void convert_vev();
    void convert_yukawa_couplings();
 };
 
