@@ -24,6 +24,11 @@
 namespace flexiblesusy {
 namespace gm2os {
 
+MSSMNoFV_onshell::MSSMNoFV_onshell()
+   : MSSMNoFV_mass_eigenstates()
+   , EL0(0.30282212)
+{}
+
 MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates& model_)
    : MSSMNoFV_mass_eigenstates(model_)
    , EL0(0.30282212)

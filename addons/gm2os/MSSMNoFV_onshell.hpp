@@ -27,6 +27,7 @@ namespace gm2os {
 
 class MSSMNoFV_onshell : public MSSMNoFV_mass_eigenstates {
 public:
+   MSSMNoFV_onshell();
    MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates&);
    virtual ~MSSMNoFV_onshell() {}
 
