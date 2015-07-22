@@ -101,14 +101,14 @@ double MSSMNoFV_onshell::get_EL() const {
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
 
-   convert_gauge_couplings();
+   convert_weak_mixing_angle();
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings();
    convert_Mu_M1_M2();
 }
 
-void MSSMNoFV_onshell::convert_gauge_couplings()
+void MSSMNoFV_onshell::convert_weak_mixing_angle()
 {
    const double EL = get_EL(); // DR-bar
    const double MW = get_MW(); // pole mass
