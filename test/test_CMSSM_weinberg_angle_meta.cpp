@@ -5,7 +5,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_mass_eigenstates.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
 #include "stopwatch.hpp"
@@ -18,7 +18,7 @@
 using namespace flexiblesusy;
 using namespace weinberg_angle;
 
-void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
+void ensure_tree_level_ewsb(CMSSM_mass_eigenstates& model)
 {
    // ensure that the EWSB eqs. are satisfied (Drees p.222)
    const double vu   = model.get_vu();
@@ -35,7 +35,7 @@ void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
 
 // template version of this function already included
 // in test_CMSSMNoFV.hpp and test_CMSSM_two_loop_spectrum.cpp
-void setup_CMSSM_const(CMSSM<Two_scale>& model, const CMSSM_input_parameters& input)
+void setup_CMSSM_const(CMSSM_mass_eigenstates& model, const CMSSM_input_parameters& input)
 {
    const double ALPHASMZ = Electroweak_constants::alpha3;
    const double ALPHAMZ  = Electroweak_constants::aem;
@@ -100,7 +100,7 @@ void setup_CMSSM_const(CMSSM<Two_scale>& model, const CMSSM_input_parameters& in
    model.calculate_DRbar_masses();
 }
 
-void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& model,
+void setup_CMSSM_const_non_3rd_gen(CMSSM_mass_eigenstates& model,
                                    const CMSSM_input_parameters& input)
 {
    setup_CMSSM_const(model, input);
@@ -112,7 +112,7 @@ void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& model,
    model.set_Ye(Ye);
 }
 
-void setup_data(const CMSSM<Two_scale>& model,
+void setup_data(const CMSSM_mass_eigenstates& model,
                 Weinberg_angle::Data& data)
 {
    const double mw_pole = Electroweak_constants::MW;
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE( test_rho_2 )
 
 BOOST_AUTO_TEST_CASE( test_delta_vb )
 {
-   CMSSM<Two_scale> model;
+   CMSSM_mass_eigenstates model;
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE( test_delta_vb )
 
 BOOST_AUTO_TEST_CASE( test_delta_r )
 {
-   CMSSM<Two_scale> model;
+   CMSSM_mass_eigenstates model;
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
@@ -275,7 +275,7 @@ BOOST_AUTO_TEST_CASE( test_delta_r )
 
 BOOST_AUTO_TEST_CASE( test_delta_rho )
 {
-   CMSSM<Two_scale> model;
+   CMSSM_mass_eigenstates model;
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE( test_delta_rho )
 
 BOOST_AUTO_TEST_CASE( test_sin_theta )
 {
-   CMSSM<Two_scale> model;
+   CMSSM_mass_eigenstates model;
    CMSSM_input_parameters input;
    input.m0 = 125.;
    input.m12 = 500.;

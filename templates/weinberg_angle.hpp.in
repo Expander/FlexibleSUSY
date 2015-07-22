@@ -21,7 +21,7 @@
 #ifndef @ModelName@_WEINBERG_ANGLE_H
 #define @ModelName@_WEINBERG_ANGLE_H
 
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 
 namespace flexiblesusy {
 
@@ -44,7 +44,7 @@ public:
       double mt_pole;        ///< top quark pole mass
    };
 
-   @ModelName@_weinberg_angle(const @ModelName@<Two_scale>*, const Sm_parameters&);
+   @ModelName@_weinberg_angle(const @ModelName@_mass_eigenstates*, const Sm_parameters&);
    ~@ModelName@_weinberg_angle();
 
    void set_number_of_iterations(unsigned);  ///< maximum number of iterations
@@ -52,7 +52,7 @@ public:
    void set_precision_goal(double);          ///< set precision goal
    void enable_dvbsusy();                    ///< enable susy vertex and box corrections
    void disable_dvbsusy();                   ///< disable susy vertex and box corrections
-   void set_model_pointer(const @ModelName@<Two_scale>*);  ///< set pointer to investigated model
+   void set_model(const @ModelName@_mass_eigenstates*);  ///< set pointer to investigated model
    void set_sm_parameters(const Sm_parameters&);  ///< set sm_parameters member variable
 
    /// calculates and returns the sine of the Weinberg angle
@@ -63,7 +63,7 @@ private:
    unsigned number_of_loops;      ///< number of loops
    double precision_goal;         ///< precision goal
    bool include_dvbsusy;          ///< susy vertex and box corrections are included or not
-   const @ModelName@<Two_scale>* model; ///< pointer to investigated model
+   const @ModelName@_mass_eigenstates* model; ///< pointer to investigated model
    Sm_parameters sm_parameters;   ///< SM parameters
 
    double calculate_delta_rho_hat(double, double);

@@ -18,7 +18,7 @@
 
 // File generated at @DateAndTime@
 
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_weinberg_angle.hpp"
 #include "wrappers.hpp"
 #include "logger.hpp"
@@ -50,7 +50,7 @@ const double ROOT2 = Sqrt(2.0);
  * @param sm_parameters_ struct containing the required SM parameters
  */
 @ModelName@_weinberg_angle::@ModelName@_weinberg_angle(
-   const @ModelName@<Two_scale>* model_,
+   const @ModelName@_mass_eigenstates* model_,
    const Sm_parameters& sm_parameters_)
    : number_of_iterations(20)
    , number_of_loops(2)
@@ -90,7 +90,7 @@ void @ModelName@_weinberg_angle::disable_dvbsusy()
    include_dvbsusy = false;
 }
 
-void @ModelName@_weinberg_angle::set_model_pointer(const @ModelName@<Two_scale>* model_)
+void @ModelName@_weinberg_angle::set_model(const @ModelName@_mass_eigenstates* model_)
 {
    model = model_;
 }

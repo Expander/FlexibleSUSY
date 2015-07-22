@@ -4,7 +4,7 @@
 
 #define private public
 
-#include "CMSSM_two_scale_model.hpp"
+#include "CMSSM_mass_eigenstates.hpp"
 #include "CMSSM_weinberg_angle.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
@@ -12,7 +12,7 @@
 
 using namespace flexiblesusy;
 
-void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
+void ensure_tree_level_ewsb(CMSSM_mass_eigenstates& model)
 {
 // ensure that the EWSB eqs. are satisfied (Drees p.222)
    const double vu   = model.get_vu();
@@ -29,7 +29,7 @@ void ensure_tree_level_ewsb(CMSSM<Two_scale>& model)
 
 // template version of this function already included
 // in test_CMSSMNoFV.hpp and test_CMSSM_two_loop_spectrum.cpp
-void setup_CMSSM_const(CMSSM<Two_scale>& model, const CMSSM_input_parameters& input)
+void setup_CMSSM_const(CMSSM_mass_eigenstates& model, const CMSSM_input_parameters& input)
 {
    const double ALPHASMZ = Electroweak_constants::alpha3;
    const double ALPHAMZ  = Electroweak_constants::aem;
@@ -94,7 +94,7 @@ void setup_CMSSM_const(CMSSM<Two_scale>& model, const CMSSM_input_parameters& in
    model.calculate_DRbar_masses();
 }
 
-void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& model,
+void setup_CMSSM_const_non_3rd_gen(CMSSM_mass_eigenstates& model,
                                    const CMSSM_input_parameters& input)
 {
    setup_CMSSM_const(model, input);
@@ -108,7 +108,7 @@ void setup_CMSSM_const_non_3rd_gen(CMSSM<Two_scale>& model,
 
 int main()
 {
-   CMSSM<Two_scale> model;
+   CMSSM_mass_eigenstates model;
    CMSSM_input_parameters input;
    input.TanBeta = 10.;
    input.SignMu = 1;
