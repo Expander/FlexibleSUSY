@@ -135,6 +135,76 @@ void MSSMNoFV_onshell::convert_to_onshell() {
 
    const double tan2b = 2. * TB / (1. - sqr(TB));
    set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
+
+   convert_Mu_M1_M2();
+}
+
+template <class Derived>
+bool MSSMNoFV_onshell::is_equal(const Eigen::ArrayBase<Derived>& a,
+                                const Eigen::ArrayBase<Derived>& b,
+                                double precision_goal)
+{
+   return MaxRelDiff(a,b) < precision_goal;
+}
+
+bool MSSMNoFV_onshell::is_equal(double a, double b, double precision_goal)
+{
+   return MaxRelDiff(a,b) < precision_goal;
+}
+
+/**
+ * Returns index of most bino-like neutralino.  The function extracts
+ * this information from the neutralino pole mass mixing matrix.
+ */
+unsigned MSSMNoFV_onshell::find_bino_like_neutralino()
+{
+   unsigned max_bino;
+   get_physical().ZN.col(0).cwiseAbs().maxCoeff(&max_bino);
+
+   return max_bino;
+}
+
+void MSSMNoFV_onshell::convert_Mu_M1_M2(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   // find neutralino, which is most bino like
+   const unsigned max_bino = find_bino_like_neutralino();
+
+   const auto MCha_goal(get_physical().MCha);
+   auto MChi_goal(get_MChi());
+   MChi_goal(max_bino) = get_physical().MChi(max_bino);
+
+   bool accuracy_goal_reached =
+      MSSMNoFV_onshell::is_equal(MCha_goal, get_MCha(), precision_goal) &&
+      MSSMNoFV_onshell::is_equal(MChi_goal(max_bino), get_MChi(max_bino), precision_goal);
+   unsigned it = 0;
+
+   while (!accuracy_goal_reached && it < max_iterations) {
+
+      const auto U(get_UM()); // neg. chargino mixing matrix
+      const auto V(get_UP()); // pos. chargino mixing matrix
+      const auto N(get_ZN()); // neutralino mixing matrix
+      const auto X(U.transpose() * MCha_goal.matrix().asDiagonal() * V);
+      const auto Y(N.transpose() * MChi_goal.matrix().asDiagonal() * N);
+
+      set_MassB(Re(Y(0,0)));
+      set_MassWB(Re(X(0,0)));
+      set_Mu(Re(X(1,1)));
+
+      calculate_DRbar_masses();
+
+      MChi_goal = get_MChi();
+      MChi_goal(max_bino) = get_physical().MChi(max_bino);
+
+      accuracy_goal_reached =
+         MSSMNoFV_onshell::is_equal(MCha_goal, get_MCha(), precision_goal) &&
+         MSSMNoFV_onshell::is_equal(MChi_goal(max_bino), get_MChi(max_bino), precision_goal);
+      it++;
+   }
+
+   if (it == max_iterations)
+      WARNING("DR-bar to on-shell conversion did not converge.");
 }
 
 } // gm2os
