@@ -17,6 +17,7 @@ LIBgm2os_HDR := \
 		$(DIR)/ffunctions.hpp \
 		$(DIR)/gm2_1loop.hpp \
 		$(DIR)/gm2_2loop.hpp \
+		$(DIR)/gm2_error.hpp \
 		$(DIR)/MSSMNoFV_onshell.hpp
 
 LIBgm2os_OBJ := \

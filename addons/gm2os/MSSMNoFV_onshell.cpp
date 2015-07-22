@@ -22,6 +22,7 @@
 #include "logger.hpp"
 #include "numerics2.hpp"
 #include "root_finder.hpp"
+#include "gm2_error.hpp"
 
 namespace flexiblesusy {
 namespace gm2os {
@@ -98,16 +99,24 @@ double MSSMNoFV_onshell::get_EL() const {
  * The function assumes that the physical struct is filled with pole
  * masses and corresponding mixing matrices.  From these quantities,
  * the on-shell model parameters are calculated.
- *
- * @todo implement and check this function
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
+   check_input();
+
    convert_weak_mixing_angle();
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings();
    convert_Mu_M1_M2();
    convert_mf2();
+}
+
+void MSSMNoFV_onshell::check_input()
+{
+   if (is_zero(get_MW()))
+      throw EInvalidInput("W mass is zero");
+   if (is_zero(get_MZ()))
+      throw EInvalidInput("Z mass is zero");
 }
 
 void MSSMNoFV_onshell::convert_weak_mixing_angle()
