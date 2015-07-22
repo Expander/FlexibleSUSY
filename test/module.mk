@@ -131,7 +131,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-MSSMNoFV --with-gm2os),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2 --with-gm2os),yes yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
 endif
@@ -557,7 +557,7 @@ $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGA
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
-$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFV) $(LIBgm2os) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2os) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_SM_beta_functions.x: $(LIBSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 

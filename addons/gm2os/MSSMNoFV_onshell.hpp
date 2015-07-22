@@ -19,16 +19,16 @@
 #ifndef GM2_CALCULATOR_H
 #define GM2_CALCULATOR_H
 
-#include "MSSMNoFV_mass_eigenstates.hpp"
+#include "MSSMNoFVSLHA2_mass_eigenstates.hpp"
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 namespace gm2os {
 
-class MSSMNoFV_onshell : public MSSMNoFV_mass_eigenstates {
+class MSSMNoFV_onshell : public MSSMNoFVSLHA2_mass_eigenstates {
 public:
    MSSMNoFV_onshell();
-   MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates&);
+   MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates&);
    virtual ~MSSMNoFV_onshell() {}
 
    double get_MUDIM() const {return get_scale();}

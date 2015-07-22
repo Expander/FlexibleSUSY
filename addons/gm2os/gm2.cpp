@@ -22,7 +22,7 @@
 #include "gm2_2loop.hpp"
 #include "wrappers.hpp"
 
-#include "MSSMNoFV_slha_io.hpp"
+#include "MSSMNoFVSLHA2_slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
 using namespace flexiblesusy;
@@ -75,8 +75,8 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   MSSMNoFV_mass_eigenstates model;
-   MSSMNoFV_slha_io slha_io;
+   MSSMNoFVSLHA2_mass_eigenstates model;
+   MSSMNoFVSLHA2_slha_io slha_io;
 
    try {
       slha_io.read_from_source(options.slha_input_source);

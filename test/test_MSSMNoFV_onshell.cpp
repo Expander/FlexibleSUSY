@@ -12,7 +12,7 @@
 using namespace flexiblesusy;
 using namespace gm2os;
 
-void setup(MSSMNoFV_mass_eigenstates& model)
+void setup(MSSMNoFVSLHA2_mass_eigenstates& model)
 {
    const double TanBeta = 10;
    const double SignMu = 1;
@@ -69,7 +69,7 @@ void setup(MSSMNoFV_mass_eigenstates& model)
 
 BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
 {
-   MSSMNoFV_mass_eigenstates model;
+   MSSMNoFVSLHA2_mass_eigenstates model;
    setup(model);
 
    MSSMNoFV_onshell osmodel(model);

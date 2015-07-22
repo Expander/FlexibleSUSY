@@ -70,7 +70,7 @@ endif
 $(LIBgm2os): $(LIBgm2os_OBJ)
 		$(MAKELIB) $@ $^
 
-$(EXEgm2os_EXE): $(EXEgm2os_OBJ) $(LIBgm2os) $(LIBMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(EXEgm2os_EXE): $(EXEgm2os_OBJ) $(LIBgm2os) $(LIBMSSMNoFVSLHA2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBgm2os_DEP) $(EXEgm2os_DEP)

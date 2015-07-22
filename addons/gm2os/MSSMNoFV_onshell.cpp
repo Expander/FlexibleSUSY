@@ -27,12 +27,12 @@ namespace flexiblesusy {
 namespace gm2os {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
-   : MSSMNoFV_mass_eigenstates()
+   : MSSMNoFVSLHA2_mass_eigenstates()
    , EL0(0.30282212)
 {}
 
-MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFV_mass_eigenstates& model_)
-   : MSSMNoFV_mass_eigenstates(model_)
+MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
+   : MSSMNoFVSLHA2_mass_eigenstates(model_)
    , EL0(0.30282212)
 {}
 
@@ -102,7 +102,6 @@ double MSSMNoFV_onshell::get_EL() const {
  * @todo implement and check this function
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
-
    convert_weak_mixing_angle();
    convert_BMu();
    convert_vev();
