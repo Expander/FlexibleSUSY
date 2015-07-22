@@ -236,7 +236,7 @@ void MSSMNoFV_onshell::convert_Mu_M1_M2(
    }
 
    if (it == max_iterations)
-      WARNING("DR-bar to on-shell conversion did not converge.");
+      WARNING("DR-bar to on-shell conversion for Mu, M1 and M2 did not converge.");
 }
 
 int MSSMNoFV_onshell::sfermion_mass_diff(const gsl_vector* x, void* param, gsl_vector* f)
@@ -272,7 +272,7 @@ void MSSMNoFV_onshell::convert_mf2(
    const int error = solver.solve(start);
 
    if (error) {
-      WARNING("DR-bar to on-shell conversion did not converge.");
+      WARNING("DR-bar to on-shell conversion for ml2 and me2 did not converge.");
    } else {
       set_ml2(1,1,solver.get_root(0));
       set_me2(1,1,solver.get_root(1));
