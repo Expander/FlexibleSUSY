@@ -18,8 +18,10 @@
 
 #include "MSSMNoFV_onshell.hpp"
 #include "wrappers.hpp"
+#include "gsl_utils.hpp"
 #include "logger.hpp"
 #include "numerics2.hpp"
+#include "root_finder.hpp"
 
 namespace flexiblesusy {
 namespace gm2os {
@@ -106,6 +108,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_vev();
    convert_yukawa_couplings();
    convert_Mu_M1_M2();
+   convert_mf2();
 }
 
 void MSSMNoFV_onshell::convert_weak_mixing_angle()
@@ -234,6 +237,46 @@ void MSSMNoFV_onshell::convert_Mu_M1_M2(
 
    if (it == max_iterations)
       WARNING("DR-bar to on-shell conversion did not converge.");
+}
+
+int MSSMNoFV_onshell::sfermion_mass_diff(const gsl_vector* x, void* param, gsl_vector* f)
+{
+   if (!is_finite(x)) {
+      gsl_vector_set_all(f, std::numeric_limits<double>::max());
+      return GSL_EDOM;
+   }
+
+   MSSMNoFV_onshell* model = static_cast<MSSMNoFV_onshell*>(param);
+
+   model->set_ml2(1,1,gsl_vector_get(x, 0));
+   model->set_me2(1,1,gsl_vector_get(x, 1));
+
+   model->calculate_DRbar_masses();
+   const bool error = model->get_problems().have_problem();
+
+   const auto MSm(model->get_MSm());
+   const auto MSm_pole(model->get_physical().MSm);
+
+   gsl_vector_set(f, 0, MSm(0) - MSm_pole(0));
+   gsl_vector_set(f, 1, MSm(1) - MSm_pole(1));
+
+   return GSL_SUCCESS;
+}
+
+void MSSMNoFV_onshell::convert_mf2(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   Root_finder<2> solver(MSSMNoFV_onshell::sfermion_mass_diff, this, max_iterations, precision_goal);
+   double start[2] = { ml2(1,1), me2(1,1) };
+   const int error = solver.solve(start);
+
+   if (error) {
+      WARNING("DR-bar to on-shell conversion did not converge.");
+   } else {
+      set_ml2(1,1,solver.get_root(0));
+      set_me2(1,1,solver.get_root(1));
+   }
 }
 
 } // gm2os
