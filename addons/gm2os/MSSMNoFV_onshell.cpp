@@ -96,21 +96,45 @@ double MSSMNoFV_onshell::get_EL() const {
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
 
-   // get pole masses
-   const double MW = get_MW();
-   const double MZ = get_MZ();
-   const double MA = get_MA0();
+   convert_gauge_couplings();
+   convert_BMu();
+   convert_vevs();
+   convert_yukawa_couplings();
+   convert_Mu_M1_M2();
+}
 
-   const double TB = get_TB(); // DR-bar
+void MSSMNoFV_onshell::convert_gauge_couplings()
+{
    const double EL = get_EL(); // DR-bar
+   const double MW = get_MW(); // pole mass
+   const double MZ = get_MZ(); // pole mass
+   const double cW = MW / MZ;  // on-shell weak mixing angle
 
-   set_g1(sqrt(5. / 3.) * EL * MZ / MW);
-   set_g2(EL / sqrt(1. - sqr(MW / MZ)));
+   set_g1(sqrt(5. / 3.) * EL / cW);
+   set_g2(EL / sqrt(1. - sqr(cW)));
+}
 
-   const double v = 2. * MW / get_g2();
-   set_vu(v / sqrt(1. + 1. / sqr(TB)));
+void MSSMNoFV_onshell::convert_BMu()
+{
+   const double TB = get_TB(); // vu / vd
+   const double MA = get_MA0(); // pole mass
+   const double tan2b = 2. * TB / (1. - sqr(TB));
+
+   set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
+}
+
+void MSSMNoFV_onshell::convert_vevs()
+{
+   const double TB = get_TB(); // vu / vd
+   const double MW = get_MW(); // pole mass
+   const double vev = 2. * MW / get_g2();
+
+   set_vu(vev / sqrt(1. + 1. / sqr(TB)));
    set_vd(get_vu() / TB);
+}
 
+void MSSMNoFV_onshell::convert_yukawa_couplings()
+{
    Eigen::Matrix<double,3,3> Ye_neu(get_Ye());
    Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
    Ye_neu(1, 1) = sqrt(2.) * get_MM() / get_vd();
@@ -132,11 +156,6 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    set_TYe(Ye_neu * get_Ae());
    set_TYu(Yu_neu * get_Au());
    set_TYd(Yd_neu * get_Ad());
-
-   const double tan2b = 2. * TB / (1. - sqr(TB));
-   set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
-
-   convert_Mu_M1_M2();
 }
 
 template <class Derived>

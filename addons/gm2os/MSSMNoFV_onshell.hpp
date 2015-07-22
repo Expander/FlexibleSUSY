@@ -71,8 +71,13 @@ private:
    static bool is_equal(const Eigen::ArrayBase<Derived>&,
                         const Eigen::ArrayBase<Derived>&, double);
    unsigned find_bino_like_neutralino();
+
+   void convert_gauge_couplings();
+   void convert_BMu();
    void convert_Mu_M1_M2(double precision_goal = 1e-5,
                          unsigned max_iterations = 100);
+   void convert_vevs();
+   void convert_yukawa_couplings();
 };
 
 } // namespace gm2os
