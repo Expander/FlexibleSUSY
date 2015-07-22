@@ -98,9 +98,58 @@ int main(int argc, const char* argv[])
    }
 
    const double gm2_1l = gm2os::calculate_gm2_1loop(osmodel);
-   const double gm2_2l = amu2LFSfapprox(osmodel)
-                        + amuChipmPhotonic(osmodel) + amuChi0Photonic(osmodel);
-   const double gm2_2l_tanb_approx =  + (tan_beta_cor(osmodel) - 1.) * gm2_1l;
+   const double gm2_2l = gm2os::amu2LFSfapprox(osmodel)
+      + gm2os::amuChipmPhotonic(osmodel)
+      + gm2os::amuChi0Photonic(osmodel);
+   const double gm2_2l_tanb_approx =  + (gm2os::tan_beta_cor(osmodel) - 1.) * gm2_1l;
+
+   INFO(
+      "--------------------------------------\n"
+      "g-2 (1-loop) = " << gm2_1l << '\n' <<
+      "--------------------------------------\n"
+      "amuChi0 = " << gm2os::amuChi0(osmodel) << '\n' <<
+      "amuChipm = " << gm2os::amuChipm(osmodel) << '\n' <<
+      "--------------------------------------\n"
+      "amu1Lapprox = " << amu1Lapprox(osmodel) << '\n' <<
+      "--------------------------------------\n"
+      "amuWHnu = " << gm2os::amuWHnu(osmodel) << '\n' <<
+      "amuBmuLmuR = " << gm2os::amuBmuLmuR(osmodel) << '\n' <<
+      "amuBHmuL = " << gm2os::amuBHmuL(osmodel) << '\n' <<
+      "amuWHmuL = " << gm2os::amuWHmuL(osmodel) << '\n' <<
+      "amuBHmuR = " << gm2os::amuBHmuR(osmodel) << '\n' <<
+      "--------------------------------------\n"
+      "----- g-2 (2-loop) - corrections -----\n"
+      "--------------------------------------\n"
+      "g-2 (2-loop) = " << gm2_2l << '\n' <<
+      "2Loop / 1Loop = " << 100. * gm2_2l / gm2_1l << " %\n"
+      "--------------------------------------\n"
+      "amu2LSFsapprox = " << gm2os::amu2LFSfapprox(osmodel) << '\n' <<
+      "--------------------------------------\n"
+      "amuWHnu2L = " << gm2os::amuWHnu2L(osmodel) << '\n' <<
+      "amuWHmuL2L = " << gm2os::amuWHmuL2L(osmodel) << '\n' <<
+      "amuBHmuL2L = " << gm2os::amuBHmuL2L(osmodel) << '\n' <<
+      "amuBHmuR2L = " << gm2os::amuBHmuR2L(osmodel) << '\n' <<
+      "amuBmuLmuR2L = " << gm2os::amuBmuLmuR2L(osmodel) << '\n' <<
+      "2L_FSfapprox / 1Loop = " <<
+      100. * gm2os::amu2LFSfapprox(osmodel) / gm2_1l << " %\n"
+      "--------------------------------------\n"
+      "TanBetaCorrection) = " << gm2_2l_tanb_approx << '\n' <<
+      "2L_tanb / 1Loop = " << (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
+      "--------------------------------------\n"
+      "amu2LPhotonic = " <<
+      (gm2os::amuChipmPhotonic(osmodel)
+       + gm2os::amuChi0Photonic(osmodel)) << '\n' <<
+      "--------------------------------------\n"
+      "amuChipmPhotonic = " << gm2os::amuChipmPhotonic(osmodel) << '\n' <<
+      "amuChi0Photonic = " << gm2os::amuChi0Photonic(osmodel) << '\n' <<
+      "2L_Photonic / 1Loop = " <<
+      100. * (amuChipmPhotonic(osmodel)
+              + gm2os::amuChi0Photonic(osmodel)) / gm2_1l << " %\n"
+      "--------------------------------------\n"
+      "amu2LaSferm = " << gm2os::amua2LSferm(osmodel) << '\n' <<
+      "amua2LaCha = " << gm2os::amua2LCha(osmodel) << '\n' <<
+      "--------------------------------------"
+      );
 
    return 0;
 }
