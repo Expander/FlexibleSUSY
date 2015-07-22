@@ -105,6 +105,23 @@ int main(int argc, const char* argv[])
 
    INFO(
       "--------------------------------------\n"
+      " on-shell parameters \n"
+      "--------------------------------------\n"
+      "cos(TheatW) = " << (osmodel.get_MW() / osmodel.get_MZ()) << '\n' <<
+      "BMu         = " << osmodel.get_BMu() << '\n' <<
+      "SM vev      = " << Sqrt(Sqr(osmodel.get_vu()) + Sqr(osmodel.get_vd())) << '\n' <<
+      "yu          = " << osmodel.get_Yu().diagonal().transpose() << '\n' <<
+      "yd          = " << osmodel.get_Yd().diagonal().transpose() << '\n' <<
+      "ye          = " << osmodel.get_Ye().diagonal().transpose() << '\n' <<
+      "Mu          = " << osmodel.get_Mu() << '\n' <<
+      "M1          = " << osmodel.get_MassB() << '\n' <<
+      "M2          = " << osmodel.get_MassWB() << '\n' <<
+      "ml2(2,2)    = " << osmodel.get_ml2(1,1) << '\n' <<
+      "me2(2,2)    = " << osmodel.get_me2(1,1) << '\n'
+      );
+
+   INFO(
+      "--------------------------------------\n"
       "g-2 (1-loop) = " << gm2_1l << '\n' <<
       "--------------------------------------\n"
       "amuChi0 = " << gm2os::amuChi0(osmodel) << '\n' <<
@@ -116,7 +133,7 @@ int main(int argc, const char* argv[])
       "amuBmuLmuR = " << gm2os::amuBmuLmuR(osmodel) << '\n' <<
       "amuBHmuL = " << gm2os::amuBHmuL(osmodel) << '\n' <<
       "amuWHmuL = " << gm2os::amuWHmuL(osmodel) << '\n' <<
-      "amuBHmuR = " << gm2os::amuBHmuR(osmodel) << '\n' <<
+      "amuBHmuR = " << gm2os::amuBHmuR(osmodel) << "\n\n" <<
       "--------------------------------------\n"
       "----- g-2 (2-loop) - corrections -----\n"
       "--------------------------------------\n"
