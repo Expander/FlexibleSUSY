@@ -1,6 +1,7 @@
 DIR          := addons/gm2os
 MODNAME      := gm2os
 
+ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2),yes)
 # source files
 LIBgm2os_SRC := \
 		$(DIR)/ffunctions.cpp \
@@ -19,6 +20,7 @@ LIBgm2os_HDR := \
 		$(DIR)/gm2_2loop.hpp \
 		$(DIR)/gm2_error.hpp \
 		$(DIR)/MSSMNoFV_onshell.hpp
+endif
 
 LIBgm2os_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBgm2os_SRC))) \
