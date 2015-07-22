@@ -126,9 +126,9 @@ void MSSMNoFV_onshell::convert_BMu()
 {
    const double TB = get_TB(); // DR-bar
    const double MA = get_MA0(); // pole mass
-   const double tan2b = 2. * TB / (1. - sqr(TB));
+   const double sin2b = 2. * TB / (1. + sqr(TB));
 
-   set_BMu(0.5 * sqr(MA) * (tan2b / sqrt(1. + sqr(tan2b))));
+   set_BMu(0.5 * sqr(MA) * sin2b);
 }
 
 void MSSMNoFV_onshell::convert_vev()
