@@ -260,7 +260,6 @@ int MSSMNoFV_onshell::sfermion_mass_diff(const gsl_vector* x, void* param, gsl_v
    model->set_me2(1,1,gsl_vector_get(x, 1));
 
    model->calculate_DRbar_masses();
-   const bool error = model->get_problems().have_problem();
 
    const auto MSm(model->get_MSm());
    const auto MSm_pole(model->get_physical().MSm);
