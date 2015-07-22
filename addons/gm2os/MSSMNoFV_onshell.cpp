@@ -124,7 +124,7 @@ void MSSMNoFV_onshell::convert_weak_mixing_angle()
 
 void MSSMNoFV_onshell::convert_BMu()
 {
-   const double TB = get_TB(); // vu / vd
+   const double TB = get_TB(); // DR-bar
    const double MA = get_MA0(); // pole mass
    const double tan2b = 2. * TB / (1. - sqr(TB));
 
@@ -133,7 +133,7 @@ void MSSMNoFV_onshell::convert_BMu()
 
 void MSSMNoFV_onshell::convert_vev()
 {
-   const double TB = get_TB(); // vu / vd
+   const double TB = get_TB(); // DR-bar
    const double MW = get_MW(); // pole mass
    const double vev = 2. * MW / get_g2();
 
