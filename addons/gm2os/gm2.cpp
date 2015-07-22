@@ -20,6 +20,7 @@
 #include "logger.hpp"
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
+#include "error.hpp"
 #include "wrappers.hpp"
 
 #include "MSSMNoFVSLHA2_slha_io.hpp"
@@ -88,7 +89,13 @@ int main(int argc, const char* argv[])
 
    gm2os::MSSMNoFV_onshell osmodel(model);
    osmodel.calculate_DRbar_masses();
-   osmodel.convert_to_onshell();
+
+   try {
+      osmodel.convert_to_onshell();
+   } catch (const Error& e) {
+      ERROR(e.what());
+      return EXIT_FAILURE;
+   }
 
    const double gm2_1l = gm2os::calculate_gm2_1loop(osmodel);
    const double gm2_2l = amu2LFSfapprox(osmodel)
