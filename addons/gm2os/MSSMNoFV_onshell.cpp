@@ -140,6 +140,10 @@ void MSSMNoFV_onshell::convert_vev()
 
 void MSSMNoFV_onshell::convert_yukawa_couplings()
 {
+   const auto Ae(get_Ae());
+   const auto Au(get_Au());
+   const auto Ad(get_Ad());
+
    Eigen::Matrix<double,3,3> Ye_neu(get_Ye());
    Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
    Ye_neu(1, 1) = sqrt(2.) * get_MM() / get_vd();
@@ -158,9 +162,10 @@ void MSSMNoFV_onshell::convert_yukawa_couplings()
    Yd_neu(2, 2) = sqrt(2.) * get_MB() / get_vd();
    set_Yd(Yd_neu);
 
-   set_TYe(Ye_neu * get_Ae());
-   set_TYu(Yu_neu * get_Au());
-   set_TYd(Yd_neu * get_Ad());
+   // recalculate trilinear couplings with new Yukawas
+   set_TYe(Ye_neu * Ae);
+   set_TYu(Yu_neu * Au);
+   set_TYd(Yd_neu * Ad);
 }
 
 template <class Derived>
