@@ -106,13 +106,10 @@ Eigen::Matrix<double,3,3> MSSMNoFV_onshell::get_Ad() const {
 }
 
 /**
- * Returns the electromagnetig gauge coupling, calculated from gY and
- * g2.
+ * Returns the electromagnetig gauge coupling in the Thompson limit.
  */
 double MSSMNoFV_onshell::get_EL() const {
-   const double gY = get_gY();
-   const double g2 = get_g2();
-   return gY * g2 / sqrt(sqr(gY) + sqr(g2));
+   return EL;
 }
 
 /**

@@ -112,8 +112,12 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_MassG(slha_io.read_entry("MSOFT", 3));
 
    const double tanb = slha_io.read_entry("HMIX", 2);
-   const double vev = slha_io.read_entry("HMIX", 3);
    const double MA2_drbar = slha_io.read_entry("HMIX", 4);
+   const double MW = model.get_MW();
+   const double MZ = model.get_MZ();
+   const double cW = MW/MZ;
+   const double sW = std::sqrt(1. - cW*cW);
+   const double vev = 2. * model.get_MW() * sW / model.get_EL();
    const double sinb = tanb / std::sqrt(1 + tanb*tanb);
    const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
 
@@ -256,8 +260,8 @@ void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 
 void fill(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 {
-   fill_drbar_parameters(slha_io, model);
    fill_pole_masses(slha_io, model);
+   fill_drbar_parameters(slha_io, model);
 }
 
 } // namespace gm2os
