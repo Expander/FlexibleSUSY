@@ -200,16 +200,16 @@ void fill_physical(const SLHA_io& slha_io, MSSMNoFVSLHA2_physical& physical)
       LOCALPHYSICAL(ZTau) = ZTau;
    }
 
-   LOCALPHYSICAL(MVZ) = slha_io.read_entry("MASS", 23);
-   LOCALPHYSICAL(MFd) = slha_io.read_entry("MASS", 1);
-   LOCALPHYSICAL(MFs) = slha_io.read_entry("MASS", 3);
-   LOCALPHYSICAL(MFb) = slha_io.read_entry("MASS", 5);
-   LOCALPHYSICAL(MFu) = slha_io.read_entry("MASS", 2);
-   LOCALPHYSICAL(MFc) = slha_io.read_entry("MASS", 4);
-   LOCALPHYSICAL(MFt) = slha_io.read_entry("MASS", 6);
-   LOCALPHYSICAL(MFe) = slha_io.read_entry("MASS", 11);
-   LOCALPHYSICAL(MFm) = slha_io.read_entry("MASS", 13);
-   LOCALPHYSICAL(MFtau) = slha_io.read_entry("MASS", 15);
+   LOCALPHYSICAL(MVZ) = slha_io.read_entry("SMINPUTS", 4);
+   LOCALPHYSICAL(MFd) = slha_io.read_entry("SMINPUTS", 21);
+   LOCALPHYSICAL(MFs) = slha_io.read_entry("SMINPUTS", 23);
+   LOCALPHYSICAL(MFb) = slha_io.read_entry("SMINPUTS", 5);
+   LOCALPHYSICAL(MFu) = slha_io.read_entry("SMINPUTS", 22);
+   LOCALPHYSICAL(MFc) = slha_io.read_entry("SMINPUTS", 24);
+   LOCALPHYSICAL(MFt) = slha_io.read_entry("SMINPUTS", 6);
+   LOCALPHYSICAL(MFe) = slha_io.read_entry("SMINPUTS", 11);
+   LOCALPHYSICAL(MFm) = slha_io.read_entry("SMINPUTS", 13);
+   LOCALPHYSICAL(MFtau) = slha_io.read_entry("SMINPUTS", 7);
    LOCALPHYSICAL(MSveL) = slha_io.read_entry("MASS", 1000012);
    LOCALPHYSICAL(MSvmL) = slha_io.read_entry("MASS", 1000014);
    LOCALPHYSICAL(MSvtL) = slha_io.read_entry("MASS", 1000016);
