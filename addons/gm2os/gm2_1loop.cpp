@@ -28,6 +28,10 @@ namespace gm2os {
 
 // approximations
 
+/**
+ * Calculates the 1-loop leading log approximation: Wino--Higgsino,
+ * muon-sneutrino, Eq. (6.2a) arXiv:1311.1775
+ */
 double amuWHnu(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M2 = model.get_MassWB();
@@ -40,6 +44,10 @@ double amuWHnu(const MSSMNoFV_onshell& model) {
             * Fa(sqr(M2 / MSv_2), sqr(MUE / MSv_2)) );
 }
 
+/**
+ * Calculates the 1-loop leading log approximation: Wino--Higgsino,
+ * left-handed smuon, Eq. (6.2b) arXiv:1311.1775
+ */
 double amuWHmuL(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M2 = model.get_MassWB();
@@ -52,6 +60,10 @@ double amuWHmuL(const MSSMNoFV_onshell& model) {
             * Fb(sqr(M2 / MSL_2), sqr(MUE / MSL_2)) );
 }
 
+/**
+ * Calculates the 1-loop leading log approximation: Bino--Higgsino,
+ * left-handed smuon, Eq. (6.2c) arXiv:1311.1775
+ */
 double amuBHmuL(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
@@ -65,6 +77,10 @@ double amuBHmuL(const MSSMNoFV_onshell& model) {
             * Fb(sqr(M1 / MSL_2), sqr(MUE / MSL_2)) );
 }
 
+/**
+ * Calculates the 1-loop leading log approximation: Bino--Higgsino,
+ * right-handed smuon, Eq. (6.2d) arXiv:1311.1775
+ */
 double amuBHmuR(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
@@ -78,6 +94,10 @@ double amuBHmuR(const MSSMNoFV_onshell& model) {
             * Fb(sqr(M1 / MSE_2), sqr(MUE / MSE_2)) );
 }
 
+/**
+ * Calculates the 1-loop leading log approximation: Bino, left-handed
+ * smuon, right-handed smuon, Eq. (6.2e) arXiv:1311.1775
+ */
 double amuBmuLmuR(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
@@ -92,6 +112,10 @@ double amuBmuLmuR(const MSSMNoFV_onshell& model) {
             * Fb(sqr(MSL_2 / M1), sqr(MSE_2 / M1)) );
 }
 
+/**
+ * Calculates the full 1-loop leading log approximation, Eq. (6.1)
+ * arXiv:1311.1775
+ */
 double amu1Lapprox(const MSSMNoFV_onshell& model) {
 
    return ( amuWHnu(model) + amuWHmuL(model) + amuBHmuL(model)
