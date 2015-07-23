@@ -24,17 +24,35 @@
 #include "root_finder.hpp"
 #include "gm2_error.hpp"
 
+#include <cmath>
+
+namespace {
+   static const double ALPHA_EM_THOMPSON = 1./137.035999074;
+   static const double DELTA_ALPHA_EM_MZ =
+      + 0.031498 /*leptonic*/
+      - 0.0000728 /*top*/
+      + 0.027626 /*hadronic, arXiv:1105.3149v2 */;
+   static const double ALPHA_EM_MZ =
+      ALPHA_EM_THOMPSON / (1. - DELTA_ALPHA_EM_MZ);
+
+   double calculate_e(double alpha) {
+      return std::sqrt(4. * M_PI * alpha);
+   }
+}
+
 namespace flexiblesusy {
 namespace gm2os {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
    : MSSMNoFVSLHA2_mass_eigenstates()
-   , EL0(0.30282212)
+   , EL(calculate_e(ALPHA_EM_MZ))
+   , EL0(calculate_e(ALPHA_EM_THOMPSON))
 {}
 
 MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
    : MSSMNoFVSLHA2_mass_eigenstates(model_)
-   , EL0(Sqrt(4. * Pi / 137.035999074))
+   , EL(calculate_e(ALPHA_EM_MZ))
+   , EL0(calculate_e(ALPHA_EM_THOMPSON))
 {}
 
 /**

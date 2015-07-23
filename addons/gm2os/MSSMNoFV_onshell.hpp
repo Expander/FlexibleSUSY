@@ -65,6 +65,7 @@ public:
    void convert_to_onshell();
 
 private:
+   double EL;  ///< electromagnetic gauge coupling at MZ w/o hadronic corrections
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit
 
    static bool is_equal(double, double, double);
