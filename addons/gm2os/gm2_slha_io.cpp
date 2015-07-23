@@ -116,8 +116,12 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_MassB(slha_io.read_entry("MSOFT", 1));
    model.set_MassWB(slha_io.read_entry("MSOFT", 2));
    model.set_MassG(slha_io.read_entry("MSOFT", 3));
-   model.set_vd(slha_io.read_entry("HMIX", 102));
-   model.set_vu(slha_io.read_entry("HMIX", 103));
+
+   const double tanb = slha_io.read_entry("HMIX", 2);
+   const double vev = slha_io.read_entry("HMIX", 3);
+
+   model.set_vd(vev * 1.   / std::sqrt(1 + tanb*tanb));
+   model.set_vu(vev * tanb / std::sqrt(1 + tanb*tanb));
 
    model.set_scale(read_scale(slha_io));
 }
