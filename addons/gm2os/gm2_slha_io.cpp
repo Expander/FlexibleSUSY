@@ -20,10 +20,10 @@
 #include "slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
+#include <Eigen/Core>
+
 #define MODELPARAMETER(p) model.get_##p()
 #define LOCALPHYSICAL(p) physical.p
-#define DEFINE_PARAMETER(p)                                            \
-   typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 
 namespace {
@@ -60,34 +60,34 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_g2(slha_io.read_entry("gauge", 2));
    model.set_g3(slha_io.read_entry("gauge", 3));
    {
-      DEFINE_PARAMETER(Yu);
+      Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("Yu", Yu);
       model.set_Yu(Yu);
    }
    {
-      DEFINE_PARAMETER(Yd);
+      Eigen::Matrix<double,3,3> Yd(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("Yd", Yd);
       model.set_Yd(Yd);
    }
    {
-      DEFINE_PARAMETER(Ye);
+      Eigen::Matrix<double,3,3> Ye(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("Ye", Ye);
       model.set_Ye(Ye);
    }
    {
-      DEFINE_PARAMETER(TYe);
-      slha_io.read_block("Te", TYe);
-      model.set_TYe(TYe);
+      Eigen::Matrix<double,3,3> Ae(Eigen::Matrix<double,3,3>::Zero());
+      slha_io.read_block("AE", Ae);
+      model.set_TYe(Ae * model.get_Ye());
    }
    {
-      DEFINE_PARAMETER(TYd);
-      slha_io.read_block("Td", TYd);
-      model.set_TYd(TYd);
+      Eigen::Matrix<double,3,3> Au(Eigen::Matrix<double,3,3>::Zero());
+      slha_io.read_block("AU", Au);
+      model.set_TYu(Au * model.get_Yu());
    }
    {
-      DEFINE_PARAMETER(TYu);
-      slha_io.read_block("Tu", TYu);
-      model.set_TYu(TYu);
+      Eigen::Matrix<double,3,3> Ad(Eigen::Matrix<double,3,3>::Zero());
+      slha_io.read_block("AD", Ad);
+      model.set_TYd(Ad * model.get_Yd());
    }
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
