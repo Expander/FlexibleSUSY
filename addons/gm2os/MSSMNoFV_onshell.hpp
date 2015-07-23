@@ -63,6 +63,8 @@ public:
 
    void convert_to_onshell();
 
+   friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);
+
 private:
    double EL;  ///< electromagnetic gauge coupling at MZ w/o hadronic corrections
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit

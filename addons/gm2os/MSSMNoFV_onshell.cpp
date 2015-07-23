@@ -305,5 +305,14 @@ void MSSMNoFV_onshell::convert_mf2(
    }
 }
 
+std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
+{
+   os << static_cast<MSSMNoFVSLHA2_mass_eigenstates>(model)
+      << "e = " << model.get_EL() << '\n'
+      << "e0 = " << model.get_EL0() << '\n';
+
+   return os;
+}
+
 } // gm2os
 } // namespace flexiblesusy
