@@ -7,6 +7,7 @@ LIBgm2os_SRC := \
 		$(DIR)/ffunctions.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
+		$(DIR)/gm2_slha_io.cpp \
 		$(DIR)/MSSMNoFV_onshell.cpp
 
 # main()
@@ -19,6 +20,7 @@ LIBgm2os_HDR := \
 		$(DIR)/gm2_1loop.hpp \
 		$(DIR)/gm2_2loop.hpp \
 		$(DIR)/gm2_error.hpp \
+		$(DIR)/gm2_slha_io.hpp \
 		$(DIR)/MSSMNoFV_onshell.hpp
 endif
 

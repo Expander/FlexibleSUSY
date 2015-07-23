@@ -23,7 +23,8 @@
 #include "error.hpp"
 #include "wrappers.hpp"
 
-#include "MSSMNoFVSLHA2_slha_io.hpp"
+#include "slha_io.hpp"
+#include "gm2_slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
 using namespace flexiblesusy;
@@ -76,18 +77,17 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   MSSMNoFVSLHA2_mass_eigenstates model;
-   MSSMNoFVSLHA2_slha_io slha_io;
+   gm2os::MSSMNoFV_onshell osmodel;
+   SLHA_io slha_io;
 
    try {
       slha_io.read_from_source(options.slha_input_source);
-      slha_io.fill(model);
+      fill(slha_io, osmodel);
    } catch (const Error& error) {
       ERROR(error.what());
       return EXIT_FAILURE;
    }
 
-   gm2os::MSSMNoFV_onshell osmodel(model);
    osmodel.calculate_DRbar_masses();
 
    try {
