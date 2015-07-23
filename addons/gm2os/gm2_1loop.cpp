@@ -26,103 +26,59 @@
 namespace flexiblesusy {
 namespace gm2os {
 
-// approximations
-
 /**
- * Calculates the 1-loop leading log approximation: Wino--Higgsino,
- * muon-sneutrino, Eq. (6.2a) arXiv:1311.1775
+ * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
+ * arXiv:hep-ph/0609168.
  */
-double amuWHnu(const MSSMNoFV_onshell& model) {
-   const double tan_beta = model.get_TB();
-   const double M2 = model.get_MassWB();
-   const double MUE = model.get_Mu();
-   const double MSv_2 = model.get_MSvmL();
+double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
 
-   return ( sqr(model.get_g2()) * 2. * oneOver16PiSqr
-            * (sqr(model.get_MM()) * M2 * MUE * tan_beta)
-            / sqr(sqr(MSv_2))
-            * Fa(sqr(M2 / MSv_2), sqr(MUE / MSv_2)) );
+   return amuChi0(model) + amuChipm(model);
 }
 
 /**
- * Calculates the 1-loop leading log approximation: Wino--Higgsino,
- * left-handed smuon, Eq. (6.2b) arXiv:1311.1775
+ * Calculates 1-loop neutralino contribution to (g-2), Eq. (46) of
+ * arXiv:hep-ph/0609168.
  */
-double amuWHmuL(const MSSMNoFV_onshell& model) {
-   const double tan_beta = model.get_TB();
-   const double M2 = model.get_MassWB();
-   const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
+double amuChi0(const MSSMNoFV_onshell& model) {
+   double result = 0.;
+   const Eigen::Array<double,2,1> m_smu(model.get_MSmu());
+   const Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
+   const Eigen::Matrix<double,4,2> AAN_(AAN(model));
+   const Eigen::Matrix<double,4,2> BBN_(BBN(model));
+   const Eigen::Matrix<double,4,2> x__im(x_im(model));
+   const Eigen::Array<double,4,1> MChi(model.get_MChi());
 
-   return ( - sqr(model.get_g2()) * oneOver16PiSqr
-            * (sqr(model.get_MM()) * M2 * MUE * tan_beta)
-            / sqr(sqr(MSL_2))
-            * Fb(sqr(M2 / MSL_2), sqr(MUE / MSL_2)) );
+   for(int i=0; i<4; ++i) {
+      for(int m=0; m<2; ++m) {
+         result += ( - AAN_(i, m) * F1N(x__im(i, m)) / (12. * sqr(m_smu(m)))
+                     + MChi(i) * BBN_(i, m) * F2N(x__im(i, m))
+                      / (3. * sqr(m_smu(m))) );
+      }
+   }
+
+   return result * sqr(model.get_MM()) * oneOver16PiSqr;
 }
 
 /**
- * Calculates the 1-loop leading log approximation: Bino--Higgsino,
- * left-handed smuon, Eq. (6.2c) arXiv:1311.1775
+ * Calculates 1-loop chargino contribution to (g-2), Eq. (47) of
+ * arXiv:hep-ph/0609168.
  */
-double amuBHmuL(const MSSMNoFV_onshell& model) {
-   const double tan_beta = model.get_TB();
-   const double M1 = model.get_MassB();
-   const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
-   const double gY = model.get_gY();
+double amuChipm(const MSSMNoFV_onshell& model) {
+   double result = 0.;
+   const Eigen::Array<double,2,1> x__k(x_k(model));
+   const double MSvm(model.get_MSvmL());
+   const Eigen::Array<double,2,1> AAC_(AAC(model));
+   const Eigen::Array<double,2,1> BBC_(BBC(model));
+   const Eigen::Array<double,2,1> MCha(model.get_MCha());
 
-   return ( sqr(gY) * oneOver16PiSqr
-            * (sqr(model.get_MM()) * M1 * MUE * tan_beta)
-            / sqr(sqr(MSL_2))
-            * Fb(sqr(M1 / MSL_2), sqr(MUE / MSL_2)) );
+   for(int k=0; k<2; ++k) {
+      result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSvm))
+                 + 2. * MCha(k) * BBC_(k) * F2C(x__k(k))
+                  / (3. * sqr(MSvm)) );
+   }
+
+   return result * sqr(model.get_MM()) * oneOver16PiSqr;
 }
-
-/**
- * Calculates the 1-loop leading log approximation: Bino--Higgsino,
- * right-handed smuon, Eq. (6.2d) arXiv:1311.1775
- */
-double amuBHmuR(const MSSMNoFV_onshell& model) {
-   const double tan_beta = model.get_TB();
-   const double M1 = model.get_MassB();
-   const double MUE = model.get_Mu();
-   const double MSE_2 = sqrt(model.get_me2()(1, 1));
-   const double gY = model.get_gY();
-
-   return ( - sqr(gY) * 2. * oneOver16PiSqr
-            * (sqr(model.get_MM()) * M1 * MUE * tan_beta)
-            / sqr(sqr(MSE_2))
-            * Fb(sqr(M1 / MSE_2), sqr(MUE / MSE_2)) );
-}
-
-/**
- * Calculates the 1-loop leading log approximation: Bino, left-handed
- * smuon, right-handed smuon, Eq. (6.2e) arXiv:1311.1775
- */
-double amuBmuLmuR(const MSSMNoFV_onshell& model) {
-   const double tan_beta = model.get_TB();
-   const double M1 = model.get_MassB();
-   const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
-   const double MSE_2 = sqrt(model.get_me2()(1, 1));
-   const double gY = model.get_gY();
-
-   return ( sqr(gY) * 2. * oneOver16PiSqr
-            * (sqr(model.get_MM()) * MUE * tan_beta)
-            / (M1 * sqr(M1))
-            * Fb(sqr(MSL_2 / M1), sqr(MSE_2 / M1)) );
-}
-
-/**
- * Calculates the full 1-loop leading log approximation, Eq. (6.1)
- * arXiv:1311.1775
- */
-double amu1Lapprox(const MSSMNoFV_onshell& model) {
-
-   return ( amuWHnu(model) + amuWHmuL(model) + amuBHmuL(model)
-            + amuBHmuR(model) + amuBmuLmuR(model) );
-}
-
-// complete computation
 
 /**
  * Calculates \f$n^L_{im}\f$, Eq. (48) of arXiv:hep-ph/0609168.  This
@@ -306,58 +262,100 @@ Eigen::Array<double,2,1> x_k(const MSSMNoFV_onshell& model) {
    return result;
 }
 
+// === approximations ===
+
 /**
- * Calculates 1-loop neutralino contribution to (g-2), Eq. (46) of
- * arXiv:hep-ph/0609168.
+ * Calculates the 1-loop leading log approximation: Wino--Higgsino,
+ * muon-sneutrino, Eq. (6.2a) arXiv:1311.1775
  */
-double amuChi0(const MSSMNoFV_onshell& model) {
-   double result = 0.;
-   const Eigen::Array<double,2,1> m_smu(model.get_MSmu());
-   const Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
-   const Eigen::Matrix<double,4,2> AAN_(AAN(model));
-   const Eigen::Matrix<double,4,2> BBN_(BBN(model));
-   const Eigen::Matrix<double,4,2> x__im(x_im(model));
-   const Eigen::Array<double,4,1> MChi(model.get_MChi());
+double amuWHnu(const MSSMNoFV_onshell& model) {
+   const double tan_beta = model.get_TB();
+   const double M2 = model.get_MassWB();
+   const double MUE = model.get_Mu();
+   const double MSv_2 = model.get_MSvmL();
 
-   for(int i=0; i<4; ++i) {
-      for(int m=0; m<2; ++m) {
-         result += ( - AAN_(i, m) * F1N(x__im(i, m)) / (12. * sqr(m_smu(m)))
-                     + MChi(i) * BBN_(i, m) * F2N(x__im(i, m))
-                      / (3. * sqr(m_smu(m))) );
-      }
-   }
-
-   return result * sqr(model.get_MM()) * oneOver16PiSqr;
+   return ( sqr(model.get_g2()) * 2. * oneOver16PiSqr
+            * (sqr(model.get_MM()) * M2 * MUE * tan_beta)
+            / sqr(sqr(MSv_2))
+            * Fa(sqr(M2 / MSv_2), sqr(MUE / MSv_2)) );
 }
 
 /**
- * Calculates 1-loop chargino contribution to (g-2), Eq. (47) of
- * arXiv:hep-ph/0609168.
+ * Calculates the 1-loop leading log approximation: Wino--Higgsino,
+ * left-handed smuon, Eq. (6.2b) arXiv:1311.1775
  */
-double amuChipm(const MSSMNoFV_onshell& model) {
-   double result = 0.;
-   const Eigen::Array<double,2,1> x__k(x_k(model));
-   const double MSvm(model.get_MSvmL());
-   const Eigen::Array<double,2,1> AAC_(AAC(model));
-   const Eigen::Array<double,2,1> BBC_(BBC(model));
-   const Eigen::Array<double,2,1> MCha(model.get_MCha());
+double amuWHmuL(const MSSMNoFV_onshell& model) {
+   const double tan_beta = model.get_TB();
+   const double M2 = model.get_MassWB();
+   const double MUE = model.get_Mu();
+   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
 
-   for(int k=0; k<2; ++k) {
-      result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSvm))
-                 + 2. * MCha(k) * BBC_(k) * F2C(x__k(k))
-                  / (3. * sqr(MSvm)) );
-   }
-
-   return result * sqr(model.get_MM()) * oneOver16PiSqr;
+   return ( - sqr(model.get_g2()) * oneOver16PiSqr
+            * (sqr(model.get_MM()) * M2 * MUE * tan_beta)
+            / sqr(sqr(MSL_2))
+            * Fb(sqr(M2 / MSL_2), sqr(MUE / MSL_2)) );
 }
 
 /**
- * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
- * arXiv:hep-ph/0609168.
+ * Calculates the 1-loop leading log approximation: Bino--Higgsino,
+ * left-handed smuon, Eq. (6.2c) arXiv:1311.1775
  */
-double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
+double amuBHmuL(const MSSMNoFV_onshell& model) {
+   const double tan_beta = model.get_TB();
+   const double M1 = model.get_MassB();
+   const double MUE = model.get_Mu();
+   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
+   const double gY = model.get_gY();
 
-   return amuChi0(model) + amuChipm(model);
+   return ( sqr(gY) * oneOver16PiSqr
+            * (sqr(model.get_MM()) * M1 * MUE * tan_beta)
+            / sqr(sqr(MSL_2))
+            * Fb(sqr(M1 / MSL_2), sqr(MUE / MSL_2)) );
+}
+
+/**
+ * Calculates the 1-loop leading log approximation: Bino--Higgsino,
+ * right-handed smuon, Eq. (6.2d) arXiv:1311.1775
+ */
+double amuBHmuR(const MSSMNoFV_onshell& model) {
+   const double tan_beta = model.get_TB();
+   const double M1 = model.get_MassB();
+   const double MUE = model.get_Mu();
+   const double MSE_2 = sqrt(model.get_me2()(1, 1));
+   const double gY = model.get_gY();
+
+   return ( - sqr(gY) * 2. * oneOver16PiSqr
+            * (sqr(model.get_MM()) * M1 * MUE * tan_beta)
+            / sqr(sqr(MSE_2))
+            * Fb(sqr(M1 / MSE_2), sqr(MUE / MSE_2)) );
+}
+
+/**
+ * Calculates the 1-loop leading log approximation: Bino, left-handed
+ * smuon, right-handed smuon, Eq. (6.2e) arXiv:1311.1775
+ */
+double amuBmuLmuR(const MSSMNoFV_onshell& model) {
+   const double tan_beta = model.get_TB();
+   const double M1 = model.get_MassB();
+   const double MUE = model.get_Mu();
+   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
+   const double MSE_2 = sqrt(model.get_me2()(1, 1));
+   const double gY = model.get_gY();
+
+   return ( sqr(gY) * 2. * oneOver16PiSqr
+            * (sqr(model.get_MM()) * MUE * tan_beta)
+            / (M1 * sqr(M1))
+            * Fb(sqr(MSL_2 / M1), sqr(MSE_2 / M1)) );
+}
+
+/**
+ * Calculates the full 1-loop leading log approximation, Eq. (6.1)
+ * arXiv:1311.1775
+ */
+double amu1Lapprox(const MSSMNoFV_onshell& model) {
+
+   return ( amuWHnu(model) + amuWHmuL(model) + amuBHmuL(model)
+            + amuBHmuR(model) + amuBmuLmuR(model) );
 }
 
 } // namespace gm2os
