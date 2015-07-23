@@ -26,6 +26,11 @@
    typename std::remove_const<typename std::remove_reference<decltype(MODELPARAMETER(p))>::type>::type p;
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 
+namespace {
+   int sign(double x) { return x < 0 ? -1 : 1; }
+   double signedsqr(double x) { return sign(x) * x * x; }
+}
+
 namespace flexiblesusy {
 namespace gm2os {
 
@@ -85,47 +90,35 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
       model.set_TYu(TYu);
    }
    model.set_Mu(slha_io.read_entry("HMIX", 1));
-   {
-      DEFINE_PARAMETER(mq2);
-      slha_io.read_block("MSQ2", mq2);
-      model.set_mq2(mq2);
-   }
-   {
-      DEFINE_PARAMETER(me2);
-      slha_io.read_block("MSE2", me2);
-      model.set_me2(me2);
-   }
-   {
-      DEFINE_PARAMETER(ml2);
-      slha_io.read_block("MSL2", ml2);
-      model.set_ml2(ml2);
-   }
-   {
-      DEFINE_PARAMETER(mu2);
-      slha_io.read_block("MSU2", mu2);
-      model.set_mu2(mu2);
-   }
-   {
-      DEFINE_PARAMETER(md2);
-      slha_io.read_block("MSD2", md2);
-      model.set_md2(md2);
-   }
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
    model.set_mHu2(slha_io.read_entry("MSOFT", 22));
+   model.set_ml2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 31)));
+   model.set_ml2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 32)));
+   model.set_ml2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 33)));
+   model.set_me2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 34)));
+   model.set_me2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 35)));
+   model.set_me2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 36)));
+   model.set_mq2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 41)));
+   model.set_mq2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 42)));
+   model.set_mq2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 43)));
+   model.set_mu2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 44)));
+   model.set_mu2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 45)));
+   model.set_mu2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 46)));
+   model.set_md2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 47)));
+   model.set_md2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 48)));
+   model.set_md2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 49)));
    model.set_MassB(slha_io.read_entry("MSOFT", 1));
    model.set_MassWB(slha_io.read_entry("MSOFT", 2));
    model.set_MassG(slha_io.read_entry("MSOFT", 3));
 
    const double tanb = slha_io.read_entry("HMIX", 2);
    const double vev = slha_io.read_entry("HMIX", 3);
+   const double MA2_drbar = slha_io.read_entry("HMIX", 4);
    const double sinb = tanb / std::sqrt(1 + tanb*tanb);
    const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
 
    model.set_vd(vev * cosb);
    model.set_vu(vev * sinb);
-
-   const double MA2_drbar = slha_io.read_entry("HMIX", 4);
-
    model.set_BMu(MA2_drbar * sinb * cosb);
 
    model.set_scale(read_scale(slha_io));
