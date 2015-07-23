@@ -34,7 +34,7 @@ MSSMNoFV_onshell::MSSMNoFV_onshell()
 
 MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
    : MSSMNoFVSLHA2_mass_eigenstates(model_)
-   , EL0(0.30282212)
+   , EL0(Sqrt(4. * Pi / 137.035999074))
 {}
 
 /**
