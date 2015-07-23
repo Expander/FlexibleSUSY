@@ -85,7 +85,6 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
       model.set_TYu(TYu);
    }
    model.set_Mu(slha_io.read_entry("HMIX", 1));
-   model.set_BMu(slha_io.read_entry("HMIX", 101));
    {
       DEFINE_PARAMETER(mq2);
       slha_io.read_block("MSQ2", mq2);
@@ -119,9 +118,15 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 
    const double tanb = slha_io.read_entry("HMIX", 2);
    const double vev = slha_io.read_entry("HMIX", 3);
+   const double sinb = tanb / std::sqrt(1 + tanb*tanb);
+   const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
 
-   model.set_vd(vev * 1.   / std::sqrt(1 + tanb*tanb));
-   model.set_vu(vev * tanb / std::sqrt(1 + tanb*tanb));
+   model.set_vd(vev * cosb);
+   model.set_vu(vev * sinb);
+
+   const double MA2_drbar = slha_io.read_entry("HMIX", 4);
+
+   model.set_BMu(MA2_drbar * sinb * cosb);
 
    model.set_scale(read_scale(slha_io));
 }
