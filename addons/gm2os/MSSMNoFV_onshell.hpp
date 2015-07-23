@@ -75,7 +75,7 @@ private:
    unsigned find_bino_like_neutralino();
 
    void check_input();
-   void convert_weak_mixing_angle();
+   void convert_gauge_couplings();
    void convert_BMu();
    void convert_mf2(double precision_goal = 1e-5,
                     unsigned max_iterations = 100);

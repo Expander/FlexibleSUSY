@@ -106,13 +106,11 @@ Eigen::Matrix<double,3,3> MSSMNoFV_onshell::get_Ad() const {
 }
 
 /**
- * Returns the electromagnetig gauge coupling, calculated from gY and
- * g2.
+ * Returns the electromagnetig gauge coupling at MZ w/o hadronic
+ * contributions.
  */
 double MSSMNoFV_onshell::get_EL() const {
-   const double gY = get_gY();
-   const double g2 = get_g2();
-   return gY * g2 / sqrt(sqr(gY) + sqr(g2));
+   return EL;
 }
 
 /**
@@ -126,7 +124,7 @@ double MSSMNoFV_onshell::get_EL() const {
 void MSSMNoFV_onshell::convert_to_onshell() {
    check_input();
 
-   convert_weak_mixing_angle();
+   convert_gauge_couplings();
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings();
@@ -142,9 +140,9 @@ void MSSMNoFV_onshell::check_input()
       throw EInvalidInput("Z mass is zero");
 }
 
-void MSSMNoFV_onshell::convert_weak_mixing_angle()
+void MSSMNoFV_onshell::convert_gauge_couplings()
 {
-   const double EL = get_EL(); // DR-bar
+   const double EL = get_EL(); // at MZ w/o hadronic
    const double MW = get_MW(); // pole mass
    const double MZ = get_MZ(); // pole mass
    const double cW = MW / MZ;  // on-shell weak mixing angle
