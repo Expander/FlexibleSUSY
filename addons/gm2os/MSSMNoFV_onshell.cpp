@@ -138,8 +138,8 @@ double MSSMNoFV_onshell::get_EL() const {
  * the on-shell model parameters are calculated.
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
-   check_input();
    calculate_DRbar_masses();
+   check_input();
 
    convert_gauge_couplings();
    convert_BMu();
