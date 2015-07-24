@@ -338,10 +338,10 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "MW          = " << model.get_MW() << '\n' <<
       "MZ          = " << model.get_MZ() << '\n' <<
       "tan(beta)   = " << model.get_TB() << '\n' <<
-      "BMu         = " << model.get_BMu() << '\n' <<
       "yu          = " << model.get_Yu().diagonal().transpose() << '\n' <<
       "yd          = " << model.get_Yd().diagonal().transpose() << '\n' <<
       "ye          = " << model.get_Ye().diagonal().transpose() << '\n' <<
+      "BMu         = " << model.get_BMu() << '\n' <<
       "Mu          = " << model.get_Mu() << '\n' <<
       "M1          = " << model.get_MassB() << '\n' <<
       "M2          = " << model.get_MassWB() << '\n' <<
