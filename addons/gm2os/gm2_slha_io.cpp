@@ -25,9 +25,6 @@
 
 #include <Eigen/Core>
 
-#define LOCALPHYSICAL(p) physical.p
-#define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
-
 namespace {
    int sign(double x) { return x < 0 ? -1 : 1; }
    double signedsqr(double x) { return sign(x) * x * x; }
@@ -132,124 +129,50 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 
 void fill_physical(const SLHA_io& slha_io, MSSMNoFVSLHA2_physical& physical)
 {
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZH);
-      slha_io.read_block("SCALARMIX", ZH);
-      LOCALPHYSICAL(ZH) = ZH;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZA);
-      slha_io.read_block("PSEUDOSCALARMIX", ZA);
-      LOCALPHYSICAL(ZA) = ZA;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZP);
-      slha_io.read_block("CHARGEMIX", ZP);
-      LOCALPHYSICAL(ZP) = ZP;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZN);
-      slha_io.read_block("NMIX", ZN);
-      LOCALPHYSICAL(ZN) = ZN;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(UP);
-      slha_io.read_block("VMIX", UP);
-      LOCALPHYSICAL(UP) = UP;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(UM);
-      slha_io.read_block("UMIX", UM);
-      LOCALPHYSICAL(UM) = UM;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZD);
-      slha_io.read_block("sdownmix", ZD);
-      LOCALPHYSICAL(ZD) = ZD;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZS);
-      slha_io.read_block("sstrmix", ZS);
-      LOCALPHYSICAL(ZS) = ZS;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZB);
-      slha_io.read_block("sbotmix", ZB);
-      LOCALPHYSICAL(ZB) = ZB;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZU);
-      slha_io.read_block("supmix", ZU);
-      LOCALPHYSICAL(ZU) = ZU;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZC);
-      slha_io.read_block("scharmmix", ZC);
-      LOCALPHYSICAL(ZC) = ZC;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZT);
-      slha_io.read_block("stopmix", ZT);
-      LOCALPHYSICAL(ZT) = ZT;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZE);
-      slha_io.read_block("selemix", ZE);
-      LOCALPHYSICAL(ZE) = ZE;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZM);
-      slha_io.read_block("smumix", ZM);
-      LOCALPHYSICAL(ZM) = ZM;
-   }
-   {
-      DEFINE_PHYSICAL_PARAMETER(ZTau);
-      slha_io.read_block("staumix", ZTau);
-      LOCALPHYSICAL(ZTau) = ZTau;
-   }
+   slha_io.read_block("smumix", physical.ZM);
 
-   LOCALPHYSICAL(MVZ) = slha_io.read_entry("SMINPUTS", 4);
-   LOCALPHYSICAL(MFd) = slha_io.read_entry("SMINPUTS", 21);
-   LOCALPHYSICAL(MFs) = slha_io.read_entry("SMINPUTS", 23);
-   LOCALPHYSICAL(MFb) = slha_io.read_entry("SMINPUTS", 5);
-   LOCALPHYSICAL(MFu) = slha_io.read_entry("SMINPUTS", 22);
-   LOCALPHYSICAL(MFc) = slha_io.read_entry("SMINPUTS", 24);
-   LOCALPHYSICAL(MFt) = slha_io.read_entry("SMINPUTS", 6);
-   LOCALPHYSICAL(MFe) = slha_io.read_entry("SMINPUTS", 11);
-   LOCALPHYSICAL(MFm) = slha_io.read_entry("SMINPUTS", 13);
-   LOCALPHYSICAL(MFtau) = slha_io.read_entry("SMINPUTS", 7);
-   LOCALPHYSICAL(MSveL) = slha_io.read_entry("MASS", 1000012);
-   LOCALPHYSICAL(MSvmL) = slha_io.read_entry("MASS", 1000014);
-   LOCALPHYSICAL(MSvtL) = slha_io.read_entry("MASS", 1000016);
-   LOCALPHYSICAL(MSd)(0) = slha_io.read_entry("MASS", 1000001);
-   LOCALPHYSICAL(MSd)(1) = slha_io.read_entry("MASS", 2000001);
-   LOCALPHYSICAL(MSu)(0) = slha_io.read_entry("MASS", 1000002);
-   LOCALPHYSICAL(MSu)(1) = slha_io.read_entry("MASS", 2000002);
-   LOCALPHYSICAL(MSe)(0) = slha_io.read_entry("MASS", 1000011);
-   LOCALPHYSICAL(MSe)(1) = slha_io.read_entry("MASS", 2000011);
-   LOCALPHYSICAL(MSm)(0) = slha_io.read_entry("MASS", 1000013);
-   LOCALPHYSICAL(MSm)(1) = slha_io.read_entry("MASS", 2000013);
-   LOCALPHYSICAL(MStau)(0) = slha_io.read_entry("MASS", 1000015);
-   LOCALPHYSICAL(MStau)(1) = slha_io.read_entry("MASS", 2000015);
-   LOCALPHYSICAL(MSs)(0) = slha_io.read_entry("MASS", 1000003);
-   LOCALPHYSICAL(MSs)(1) = slha_io.read_entry("MASS", 2000003);
-   LOCALPHYSICAL(MSc)(0) = slha_io.read_entry("MASS", 1000004);
-   LOCALPHYSICAL(MSc)(1) = slha_io.read_entry("MASS", 2000004);
-   LOCALPHYSICAL(MSb)(0) = slha_io.read_entry("MASS", 1000005);
-   LOCALPHYSICAL(MSb)(1) = slha_io.read_entry("MASS", 2000005);
-   LOCALPHYSICAL(MSt)(0) = slha_io.read_entry("MASS", 1000006);
-   LOCALPHYSICAL(MSt)(1) = slha_io.read_entry("MASS", 2000006);
-   LOCALPHYSICAL(Mhh)(0) = slha_io.read_entry("MASS", 25);
-   LOCALPHYSICAL(Mhh)(1) = slha_io.read_entry("MASS", 35);
-   LOCALPHYSICAL(MAh)(1) = slha_io.read_entry("MASS", 36);
-   LOCALPHYSICAL(MHpm)(1) = slha_io.read_entry("MASS", 37);
-   LOCALPHYSICAL(MChi)(0) = slha_io.read_entry("MASS", 1000022);
-   LOCALPHYSICAL(MChi)(1) = slha_io.read_entry("MASS", 1000023);
-   LOCALPHYSICAL(MChi)(2) = slha_io.read_entry("MASS", 1000025);
-   LOCALPHYSICAL(MChi)(3) = slha_io.read_entry("MASS", 1000035);
-   LOCALPHYSICAL(MCha)(0) = slha_io.read_entry("MASS", 1000024);
-   LOCALPHYSICAL(MCha)(1) = slha_io.read_entry("MASS", 1000037);
-   LOCALPHYSICAL(MVWm) = slha_io.read_entry("MASS", 24);
+   physical.MVWm = slha_io.read_entry("MASS", 24);
+   physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
+   physical.MFd = slha_io.read_entry("SMINPUTS", 21);
+   physical.MFs = slha_io.read_entry("SMINPUTS", 23);
+   physical.MFb = slha_io.read_entry("SMINPUTS", 5);
+   physical.MFu = slha_io.read_entry("SMINPUTS", 22);
+   physical.MFc = slha_io.read_entry("SMINPUTS", 24);
+   physical.MFt = slha_io.read_entry("SMINPUTS", 6);
+   physical.MFe = slha_io.read_entry("SMINPUTS", 11);
+   physical.MFm = slha_io.read_entry("SMINPUTS", 13);
+   physical.MFtau = slha_io.read_entry("SMINPUTS", 7);
+   physical.MSveL = slha_io.read_entry("MASS", 1000012);
+   physical.MSvmL = slha_io.read_entry("MASS", 1000014);
+   physical.MSvtL = slha_io.read_entry("MASS", 1000016);
+   physical.MSd(0) = slha_io.read_entry("MASS", 1000001);
+   physical.MSd(1) = slha_io.read_entry("MASS", 2000001);
+   physical.MSu(0) = slha_io.read_entry("MASS", 1000002);
+   physical.MSu(1) = slha_io.read_entry("MASS", 2000002);
+   physical.MSe(0) = slha_io.read_entry("MASS", 1000011);
+   physical.MSe(1) = slha_io.read_entry("MASS", 2000011);
+   physical.MSm(0) = slha_io.read_entry("MASS", 1000013);
+   physical.MSm(1) = slha_io.read_entry("MASS", 2000013);
+   physical.MStau(0) = slha_io.read_entry("MASS", 1000015);
+   physical.MStau(1) = slha_io.read_entry("MASS", 2000015);
+   physical.MSs(0) = slha_io.read_entry("MASS", 1000003);
+   physical.MSs(1) = slha_io.read_entry("MASS", 2000003);
+   physical.MSc(0) = slha_io.read_entry("MASS", 1000004);
+   physical.MSc(1) = slha_io.read_entry("MASS", 2000004);
+   physical.MSb(0) = slha_io.read_entry("MASS", 1000005);
+   physical.MSb(1) = slha_io.read_entry("MASS", 2000005);
+   physical.MSt(0) = slha_io.read_entry("MASS", 1000006);
+   physical.MSt(1) = slha_io.read_entry("MASS", 2000006);
+   physical.Mhh(0) = slha_io.read_entry("MASS", 25);
+   physical.Mhh(1) = slha_io.read_entry("MASS", 35);
+   physical.MAh(1) = slha_io.read_entry("MASS", 36);
+   physical.MHpm(1) = slha_io.read_entry("MASS", 37);
+   physical.MChi(0) = slha_io.read_entry("MASS", 1000022);
+   physical.MChi(1) = slha_io.read_entry("MASS", 1000023);
+   physical.MChi(2) = slha_io.read_entry("MASS", 1000025);
+   physical.MChi(3) = slha_io.read_entry("MASS", 1000035);
+   physical.MCha(0) = slha_io.read_entry("MASS", 1000024);
+   physical.MCha(1) = slha_io.read_entry("MASS", 1000037);
 }
 
 void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
