@@ -20,6 +20,9 @@
 #include "slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
+#include <cmath>
+#include <limits>
+
 #include <Eigen/Core>
 
 #define MODELPARAMETER(p) model.get_##p()
@@ -258,10 +261,23 @@ void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.get_physical() = physical_hk;
 }
 
+void fill_gm2_specific(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
+{
+   const double alpha_MZ = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 1));
+   const double alpha_thompson = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 2));
+
+   if (alpha_MZ > std::numeric_limits<double>::epsilon())
+      model.set_alpha_MZ(alpha_MZ);
+
+   if (alpha_thompson > std::numeric_limits<double>::epsilon())
+      model.set_alpha_thompson(alpha_thompson);
+}
+
 void fill(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 {
    fill_pole_masses(slha_io, model);
    fill_drbar_parameters(slha_io, model);
+   fill_gm2_specific(slha_io, model);
 }
 
 } // namespace gm2os
