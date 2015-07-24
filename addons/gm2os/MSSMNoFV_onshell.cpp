@@ -22,6 +22,7 @@
 #include "numerics2.hpp"
 #include "root_finder.hpp"
 #include "gm2_error.hpp"
+#include "gm2_2loop.hpp"
 
 #include <cmath>
 #include <complex>
@@ -106,7 +107,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_gauge_couplings();
    convert_BMu();
    convert_vev();
-   convert_yukawa_couplings();
+   convert_yukawa_couplings(); // @todo replace by resummed yuks
    convert_Mu_M1_M2(1e-8, 100);
    convert_mf2(1e-8, 100);
 }
@@ -185,7 +186,7 @@ void MSSMNoFV_onshell::convert_vev()
    set_vd(get_vu() / TB);
 }
 
-void MSSMNoFV_onshell::convert_yukawa_couplings()
+void MSSMNoFV_onshell::convert_yukawa_couplings_treelevel()
 {
    Eigen::Matrix<double,3,3> Ye_neu(Eigen::Matrix<double,3,3>::Zero());
    Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
@@ -210,6 +211,40 @@ void MSSMNoFV_onshell::convert_yukawa_couplings()
    set_TYu(Yu_neu * Au);
    set_TYd(Yd_neu * Ad);
 }
+
+/**
+ * Resummed Yukawa couplings
+ *
+ * @todo the resummations depend on the model parameters.  Therefore,
+ * this routine needs to be called after all model parameters have
+ * been determined.
+ */
+void MSSMNoFV_onshell::convert_yukawa_couplings()
+{
+   Eigen::Matrix<double,3,3> Ye_neu(Eigen::Matrix<double,3,3>::Zero());
+   Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
+   Ye_neu(1, 1) = sqrt(2.) * get_MM() / get_vd() / (1 + delta_mu_correction(*this));
+   Ye_neu(2, 2) = sqrt(2.) * get_ML() / get_vd() / (1 + delta_tau_correction(*this));
+   set_Ye(Ye_neu);
+
+   Eigen::Matrix<double,3,3> Yu_neu(Eigen::Matrix<double,3,3>::Zero());
+   Yu_neu(0, 0) = sqrt(2.) * get_MU() / get_vu();
+   Yu_neu(1, 1) = sqrt(2.) * get_MC() / get_vu();
+   Yu_neu(2, 2) = sqrt(2.) * get_MT() / get_vu();
+   set_Yu(Yu_neu);
+
+   Eigen::Matrix<double,3,3> Yd_neu(Eigen::Matrix<double,3,3>::Zero());
+   Yd_neu(0, 0) = sqrt(2.) * get_MD() / get_vd();
+   Yd_neu(1, 1) = sqrt(2.) * get_MS() / get_vd();
+   Yd_neu(2, 2) = sqrt(2.) * get_MB() / get_vd() / (1 + delta_bottom_correction(*this));
+   set_Yd(Yd_neu);
+
+   // recalculate trilinear couplings with new Yukawas
+   set_TYe(Ye_neu * Ae);
+   set_TYu(Yu_neu * Au);
+   set_TYd(Yd_neu * Ad);
+}
+
 
 template <class Derived>
 bool MSSMNoFV_onshell::is_equal(const Eigen::ArrayBase<Derived>& a,
