@@ -60,6 +60,16 @@ MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
 {}
 
+void MSSMNoFV_onshell::set_alpha_MZ(double alpha)
+{
+   EL = calculate_e(alpha);
+}
+
+void MSSMNoFV_onshell::set_alpha_thompson(double alpha)
+{
+   EL0 = calculate_e(alpha);
+}
+
 /**
  * Calculates the Ae parameter from the lepton trilinear and Yukawa
  * couplings.

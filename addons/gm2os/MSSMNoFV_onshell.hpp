@@ -31,6 +31,11 @@ public:
    MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates&);
    virtual ~MSSMNoFV_onshell() {}
 
+   /// set alpha(MZ)
+   void set_alpha_MZ(double);
+   /// set alpha in the Thompson limit
+   void set_alpha_thompson(double);
+
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
    double get_gY() const {return sqrt(0.6) * get_g1();}
