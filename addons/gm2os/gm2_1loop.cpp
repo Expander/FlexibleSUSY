@@ -42,7 +42,6 @@ double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
 double amuChi0(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const Eigen::Array<double,2,1> m_smu(model.get_MSmu());
-   const Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
    const Eigen::Matrix<double,4,2> AAN_(AAN(model));
    const Eigen::Matrix<double,4,2> BBN_(BBN(model));
    const Eigen::Matrix<double,4,2> x__im(x_im(model));
