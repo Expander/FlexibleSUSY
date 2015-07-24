@@ -28,9 +28,33 @@ namespace gm2os {
 /**
  * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
  * arXiv:hep-ph/0609168.
+ *
+ * This function re-defines the muon Yukawa coupling in terms of the
+ * tree-level relation with the muon pole mass, i.e. \f$y_\mu =
+ * \frac{\sqrt{2} m_\mu^\text{pole}}{v_d}\f$.  Therefore, this
+ * function does not use tan(beta) resummation.
  */
-double calculate_gm2_1loop(const MSSMNoFV_onshell& model) {
+double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
+{
+   Eigen::Matrix<double,3,3> Ye_neu(model.get_Ye());
+   Ye_neu(1, 1) = sqrt(2.) * model.get_MM() / model.get_vd();
 
+   // create new model and reset its muon Yukawa coupling to tree-level
+   MSSMNoFV_onshell model_ytree(model);
+   model_ytree.set_Ye(Ye_neu);
+
+   return amuChi0(model) + amuChipm(model);
+}
+/**
+ * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
+ * arXiv:hep-ph/0609168.
+ *
+ * This function assumes that the Yukawa coupling is defined according
+ * to arXiv:1504.05500, Eq. (13) and footnote 2.  Therefore, this
+ * function uses tan(beta) resummation in the Yukawa coupling.
+ */
+double calculate_gm2_1loop(const MSSMNoFV_onshell& model)
+{
    return amuChi0(model) + amuChipm(model);
 }
 
