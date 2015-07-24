@@ -192,19 +192,19 @@ void MSSMNoFV_onshell::convert_yukawa_couplings()
    const auto Au(get_Au());
    const auto Ad(get_Ad());
 
-   Eigen::Matrix<double,3,3> Ye_neu(get_Ye());
+   Eigen::Matrix<double,3,3> Ye_neu(Eigen::Matrix<double,3,3>::Zero());
    Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
    Ye_neu(1, 1) = sqrt(2.) * get_MM() / get_vd();
    Ye_neu(2, 2) = sqrt(2.) * get_ML() / get_vd();
    set_Ye(Ye_neu);
 
-   Eigen::Matrix<double,3,3> Yu_neu(get_Yu());
+   Eigen::Matrix<double,3,3> Yu_neu(Eigen::Matrix<double,3,3>::Zero());
    Yu_neu(0, 0) = sqrt(2.) * get_MU() / get_vu();
    Yu_neu(1, 1) = sqrt(2.) * get_MC() / get_vu();
    Yu_neu(2, 2) = sqrt(2.) * get_MT() / get_vu();
    set_Yu(Yu_neu);
 
-   Eigen::Matrix<double,3,3> Yd_neu(get_Yd());
+   Eigen::Matrix<double,3,3> Yd_neu(Eigen::Matrix<double,3,3>::Zero());
    Yd_neu(0, 0) = sqrt(2.) * get_MD() / get_vd();
    Yd_neu(1, 1) = sqrt(2.) * get_MS() / get_vd();
    Yd_neu(2, 2) = sqrt(2.) * get_MB() / get_vd();
