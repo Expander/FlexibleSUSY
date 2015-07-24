@@ -25,7 +25,6 @@
 
 #include <Eigen/Core>
 
-#define MODELPARAMETER(p) model.get_##p()
 #define LOCALPHYSICAL(p) physical.p
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 
