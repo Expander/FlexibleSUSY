@@ -29,30 +29,9 @@ namespace gm2os {
 
 //tanbeta2 corrections
 
-double tan_beta_cor(const MSSMNoFV_onshell& model) {
-   double delta_mu;
-   const double mu = model.get_Mu();
-   const double TB = model.get_TB();
-   const double g2 = model.get_g2();
-   const double gY = model.get_gY();
-   const double M1 = model.get_MassB();
-   const double M2 = model.get_MassWB();
-   const double MW = model.get_MW();
-   const double MZ = model.get_MZ();
-   const double SW = sqrt(1. - sqr(MW / MZ));
-
-   double m1 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m_sneu_mu = sqrt(model.get_ml2()(1, 1) - 0.5 * sqr(MZ));
-   double m_smu_L = sqrt(model.get_ml2()(1, 1) - sqr(MZ) * (sqr(SW) - 0.5));
-   double m_smu_R = sqrt(model.get_me2()(1, 1) + sqr(MZ * SW));
-
-   delta_mu = ( - mu * TB * oneOver16PiSqr
-            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_mu) + 0.5 * Iabc(m1, m2, m_smu_L))
-            + sqr(gY) * M1 * (Iabc(mu, M1, m_smu_R) - 0.5 * Iabc(mu, M1, m_smu_L)
-                              - Iabc(M1, m_smu_L, m_smu_R))) );
+double tan_beta_cor(const MSSMNoFV_onshell& model)
+{
+   const double delta_mu = delta_mu_correction(model);
 
    return 1. / (1. + delta_mu);
 }
