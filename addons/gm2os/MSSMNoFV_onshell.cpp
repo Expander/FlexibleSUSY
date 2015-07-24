@@ -54,6 +54,9 @@ MSSMNoFV_onshell::MSSMNoFV_onshell()
    : MSSMNoFVSLHA2_mass_eigenstates()
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
+   , Ae(Eigen::Matrix<double,3,3>::Zero())
+   , Au(Eigen::Matrix<double,3,3>::Zero())
+   , Ad(Eigen::Matrix<double,3,3>::Zero())
 {
    get_physical().MFm  = 0.1056583715;
    get_physical().MVWm = 80.385;
@@ -65,7 +68,11 @@ MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
    : MSSMNoFVSLHA2_mass_eigenstates(model_)
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
-{}
+   , Ae(get_Ae())
+   , Au(get_Au())
+   , Ad(get_Ad())
+{
+}
 
 void MSSMNoFV_onshell::set_alpha_MZ(double alpha)
 {
@@ -75,51 +82,6 @@ void MSSMNoFV_onshell::set_alpha_MZ(double alpha)
 void MSSMNoFV_onshell::set_alpha_thompson(double alpha)
 {
    EL0 = calculate_e(alpha);
-}
-
-/**
- * Calculates the Ae parameter from the lepton trilinear and Yukawa
- * couplings.
- */
-Eigen::Matrix<double,3,3> MSSMNoFV_onshell::get_Ae() const {
-   Eigen::Matrix<double,3,3> Ae(get_TYe());
-   Eigen::Matrix<double,3,3> Ye(get_Ye());
-
-   for (int i = 0; i < 3; i++)
-      if (!is_zero(Ye(i,i)))
-         Ae(i,i) /= Ye(i,i);
-
-   return Ae;
-}
-
-/**
- * Calculates the Au parameter from the up-type quark trilinear and
- * Yukawa couplings.
- */
-Eigen::Matrix<double,3,3> MSSMNoFV_onshell::get_Au() const {
-   Eigen::Matrix<double,3,3> Au(get_TYu());
-   Eigen::Matrix<double,3,3> Yu(get_Yu());
-
-   for (int i = 0; i < 3; i++)
-      if (!is_zero(Yu(i,i)))
-         Au(i,i) /= Yu(i,i);
-
-   return Au;
-}
-
-/**
- * Calculates the Ad parameter from the down-type quark trilinear and
- * Yukawa couplings.
- */
-Eigen::Matrix<double,3,3> MSSMNoFV_onshell::get_Ad() const {
-   Eigen::Matrix<double,3,3> Ad(get_TYd());
-   Eigen::Matrix<double,3,3> Yd(get_Yd());
-
-   for (int i = 0; i < 3; i++)
-      if (!is_zero(Yd(i,i)))
-         Ad(i,i) /= Yd(i,i);
-
-   return Ad;
 }
 
 /**
@@ -225,10 +187,6 @@ void MSSMNoFV_onshell::convert_vev()
 
 void MSSMNoFV_onshell::convert_yukawa_couplings()
 {
-   const auto Ae(get_Ae());
-   const auto Au(get_Au());
-   const auto Ad(get_Ad());
-
    Eigen::Matrix<double,3,3> Ye_neu(Eigen::Matrix<double,3,3>::Zero());
    Ye_neu(0, 0) = sqrt(2.) * get_ME() / get_vd();
    Ye_neu(1, 1) = sqrt(2.) * get_MM() / get_vd();

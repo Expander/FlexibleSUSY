@@ -57,35 +57,21 @@ double read_scale(const SLHA_io& slha_io)
 void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 {
    {
-      Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("Yu", Yu);
-      model.set_Yu(Yu);
-   }
-   {
-      Eigen::Matrix<double,3,3> Yd(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("Yd", Yd);
-      model.set_Yd(Yd);
-   }
-   {
-      Eigen::Matrix<double,3,3> Ye(Eigen::Matrix<double,3,3>::Zero());
-      slha_io.read_block("Ye", Ye);
-      model.set_Ye(Ye);
-   }
-   {
       Eigen::Matrix<double,3,3> Ae(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("AE", Ae);
-      model.set_TYe(Ae * model.get_Ye());
+      model.set_Ae(Ae);
    }
    {
       Eigen::Matrix<double,3,3> Au(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("AU", Au);
-      model.set_TYu(Au * model.get_Yu());
+      model.set_Au(Au);
    }
    {
       Eigen::Matrix<double,3,3> Ad(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("AD", Ad);
-      model.set_TYd(Ad * model.get_Yd());
+      model.set_Ad(Ad);
    }
+
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
    model.set_mHu2(slha_io.read_entry("MSOFT", 22));

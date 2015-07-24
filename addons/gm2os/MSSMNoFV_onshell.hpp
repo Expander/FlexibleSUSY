@@ -37,14 +37,18 @@ public:
    /// set alpha in the Thompson limit
    void set_alpha_thompson(double);
 
+   void set_Ae(const Eigen::Matrix<double,3,3>& A) { Ae = A; }
+   void set_Au(const Eigen::Matrix<double,3,3>& A) { Au = A; }
+   void set_Ad(const Eigen::Matrix<double,3,3>& A) { Ad = A; }
+
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
    double get_gY() const {return sqrt(0.6) * get_g1();}
    double get_EL() const;
    double get_TB() const {return get_vu() / get_vd();}
-   Eigen::Matrix<double,3,3> get_Ae() const;
-   Eigen::Matrix<double,3,3> get_Au() const;
-   Eigen::Matrix<double,3,3> get_Ad() const;
+   Eigen::Matrix<double,3,3> get_Ae() const { return Ae; }
+   Eigen::Matrix<double,3,3> get_Au() const { return Au; }
+   Eigen::Matrix<double,3,3> get_Ad() const { return Ad; }
 
    // (g-2) wrappers for pole mass getters
    double get_MW() const { return get_physical().MVWm; }
@@ -74,6 +78,7 @@ public:
 private:
    double EL;  ///< electromagnetic gauge coupling at MZ w/o hadronic corrections
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit
+   Eigen::Matrix<double,3,3> Ae, Au, Ad; ///< trilinear couplings
 
    static bool is_equal(double, double, double);
    static bool is_zero(double,
