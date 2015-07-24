@@ -94,20 +94,27 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   const double gm2_1l = gm2os::calculate_gm2_1loop(osmodel);
-   const double gm2_2l = gm2os::amu2LFSfapprox(osmodel)
+   const double gm2_1l = gm2os::calculate_gm2_1loop_non_tan_beta_resummed(osmodel);
+   const double gm2_1l_TBresummed = gm2os::calculate_gm2_1loop(osmodel);
+   const double gm2_2l_TBresummed = gm2os::amu2LFSfapprox(osmodel)
       + gm2os::amuChipmPhotonic(osmodel)
       + gm2os::amuChi0Photonic(osmodel);
    const double gm2_2l_tanb_approx =  + (gm2os::tan_beta_cor(osmodel) - 1.) * gm2_1l;
+
+   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
 
    INFO(osmodel);
 
    INFO(
       "--------------------------------------\n"
-      "g-2 (1-loop) = " << gm2_1l << '\n' <<
+      "g-2 (1-loop + 2-loop best) = " << gm2_best << '\n' <<
       "--------------------------------------\n"
-      "amuChi0 = " << gm2os::amuChi0(osmodel) << '\n' <<
-      "amuChipm = " << gm2os::amuChipm(osmodel) << '\n' <<
+      "g-2 (1-loop strict) = " << gm2_1l << '\n' <<
+      "--------------------------------------\n"
+      "g-2 (1-loop TB resummed) = " << gm2_1l_TBresummed << '\n' <<
+      "--------------------------------------\n"
+      "amuChi0 (TB resummed) = " << gm2os::amuChi0(osmodel) << '\n' <<
+      "amuChipm (TB resummed) = " << gm2os::amuChipm(osmodel) << '\n' <<
       "--------------------------------------\n"
       "amu1Lapprox = " << amu1Lapprox(osmodel) << '\n' <<
       "--------------------------------------\n"
@@ -119,8 +126,8 @@ int main(int argc, const char* argv[])
       "--------------------------------------\n"
       "----- g-2 (2-loop) - corrections -----\n"
       "--------------------------------------\n"
-      "g-2 (2-loop) = " << gm2_2l << '\n' <<
-      "2Loop / 1Loop = " << 100. * gm2_2l / gm2_1l << " %\n"
+      "g-2 (2-loop (TB resummed)) = " << gm2_2l_TBresummed << '\n' <<
+      "2Loop / 1Loop = " << 100. * gm2_2l_TBresummed / gm2_1l_TBresummed << " %\n"
       "--------------------------------------\n"
       "amu2LSFsapprox = " << gm2os::amu2LFSfapprox(osmodel) << '\n' <<
       "--------------------------------------\n"
