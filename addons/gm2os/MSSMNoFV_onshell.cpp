@@ -107,7 +107,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_gauge_couplings();
    convert_BMu();
    convert_vev();
-   convert_yukawa_couplings(); // @todo replace by resummed yuks
+   convert_yukawa_couplings_treelevel(); // @todo replace by resummed yuks
    convert_Mu_M1_M2(1e-8, 100);
    convert_mf2(1e-8, 100);
 }
