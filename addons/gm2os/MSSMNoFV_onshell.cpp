@@ -38,6 +38,9 @@ namespace {
    double calculate_e(double alpha) {
       return std::sqrt(4. * M_PI * alpha);
    }
+   double calculate_alpha(double e) {
+      return e * e / (4. * M_PI);
+   }
 }
 
 namespace flexiblesusy {
@@ -317,9 +320,34 @@ void MSSMNoFV_onshell::convert_mf2(
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
 {
-   os << static_cast<MSSMNoFVSLHA2_mass_eigenstates>(model)
-      << "e = " << model.get_EL() << '\n'
-      << "e0 = " << model.get_EL0() << '\n';
+   os <<
+      "======================================\n"
+      " (g-2) parameters \n"
+      "======================================\n"
+      << "1/alpha(MZ) = " << 1./calculate_alpha(model.get_EL()) << '\n'
+      << "1/alpha(0)  = " << 1./calculate_alpha(model.get_EL0()) << '\n'
+      <<
+      "--------------------------------------\n"
+      " on-shell parameters \n"
+      "--------------------------------------\n"
+      "MM          = " << model.get_MM() << '\n' <<
+      "MSm         = " << model.get_MSmu().transpose() << '\n' <<
+      "USm         = " << model.get_USmu().row(0)
+                       << model.get_USmu().row(1) << '\n' <<
+      "MT          = " << model.get_MT() << '\n' <<
+      "MW          = " << model.get_MW() << '\n' <<
+      "MZ          = " << model.get_MZ() << '\n' <<
+      "tan(beta)   = " << model.get_TB() << '\n' <<
+      "BMu         = " << model.get_BMu() << '\n' <<
+      "yu          = " << model.get_Yu().diagonal().transpose() << '\n' <<
+      "yd          = " << model.get_Yd().diagonal().transpose() << '\n' <<
+      "ye          = " << model.get_Ye().diagonal().transpose() << '\n' <<
+      "Mu          = " << model.get_Mu() << '\n' <<
+      "M1          = " << model.get_MassB() << '\n' <<
+      "M2          = " << model.get_MassWB() << '\n' <<
+      "msl(2,2)    = " << SignedAbsSqrt(model.get_ml2(1,1)) << '\n' <<
+      "mse(2,2)    = " << SignedAbsSqrt(model.get_me2(1,1)) << '\n'
+      ;
 
    return os;
 }
