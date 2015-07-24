@@ -57,8 +57,8 @@ double tan_beta_cor(const MSSMNoFV_onshell& model) {
    return 1. / (1. + delta_mu);
 }
 
-double delta_mu_correction(const MSSMNoFV_onshell& model) {
-   double delta_mu;
+double delta_down_lepton_correction(const MSSMNoFV_onshell& model, int gen) {
+   double delta_lep;
    const double mu = model.get_Mu();
    const double TB = model.get_TB();
    const double g2 = model.get_g2();
@@ -73,44 +73,26 @@ double delta_mu_correction(const MSSMNoFV_onshell& model) {
                - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
    double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
                + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m_sneu_mu = sqrt(model.get_ml2()(1, 1) - 0.5 * sqr(MZ));
-   double m_smu_L = sqrt(model.get_ml2()(1, 1) - sqr(MZ) * (sqr(SW) - 0.5));
-   double m_smu_R = sqrt(model.get_me2()(1, 1) + sqr(MZ * SW));
+   double m_sneu_lep = sqrt(model.get_ml2(gen, gen) - 0.5 * sqr(MZ));
+   double m_slep_L = sqrt(model.get_ml2(gen, gen) - sqr(MZ) * (sqr(SW) - 0.5));
+   double m_slep_R = sqrt(model.get_me2(gen, gen) + sqr(MZ * SW));
 
-   delta_mu = ( - mu * TB * oneOver16PiSqr
-            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_mu) + 0.5 * Iabc(m1, m2, m_smu_L))
-            + sqr(gY) * M1 * (Iabc(mu, M1, m_smu_R) - 0.5 * Iabc(mu, M1, m_smu_L)
-                              - Iabc(M1, m_smu_L, m_smu_R))) );
+   delta_lep = ( - mu * TB * oneOver16PiSqr
+            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_lep) + 0.5 * Iabc(m1, m2, m_slep_L))
+            + sqr(gY) * M1 * (Iabc(mu, M1, m_slep_R) - 0.5 * Iabc(mu, M1, m_slep_L)
+                              - Iabc(M1, m_slep_L, m_slep_R))) );
 
-   return delta_mu;
+   return delta_lep;
 }
 
-double delta_tau_correction(const MSSMNoFV_onshell& model) {
-   double delta_tau;
-   const double mu = model.get_Mu();
-   const double TB = model.get_TB();
-   const double g2 = model.get_g2();
-   const double gY = model.get_gY();
-   const double M1 = model.get_MassB();
-   const double M2 = model.get_MassWB();
-   const double MW = model.get_MW();
-   const double MZ = model.get_MZ();
-   const double SW = sqrt(1. - sqr(MW / MZ));
+double delta_mu_correction(const MSSMNoFV_onshell& model)
+{
+   return delta_down_lepton_correction(model, 1);
+}
 
-   double m1 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
-               + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
-   double m_sneu_tau = sqrt(model.get_ml2()(2, 2) - 0.5 * sqr(MZ));
-   double m_stau_L = sqrt(model.get_ml2()(2, 2) - sqr(MZ) * (sqr(SW) - 0.5));
-   double m_stau_R = sqrt(model.get_me2()(2, 2) + sqr(MZ * SW));
-
-   delta_tau = ( - mu * TB * oneOver16PiSqr
-            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_tau) + 0.5 * Iabc(m1, m2, m_stau_L))
-            + sqr(gY) * M1 * (Iabc(mu, M1, m_stau_R) - 0.5 * Iabc(mu, M1, m_stau_L)
-                              - Iabc(M1, m_stau_L, m_stau_R))) );
-
-   return delta_tau;
+double delta_tau_correction(const MSSMNoFV_onshell& model)
+{
+   return delta_down_lepton_correction(model, 2);
 }
 
 double delta_bottom_correction(const MSSMNoFV_onshell& /* model */) {
