@@ -337,6 +337,9 @@ double tan_alpha(const MSSMNoFV_onshell& model) {
    return - 1. / tan2alpha - sqrt(1. / sqr(tan2alpha) + 1.); // alpha < 0 !
 }
 
+/**
+ * includes tan(beta) resummation
+ */
 Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,3,3> result;
    const Eigen::Array<double,2,1> MCha(model.get_MCha());
@@ -391,6 +394,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
    return result;
 }
 
+/**
+ * includes tan(beta) resummation
+ */
 Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    const double TA(tan_alpha(model));
@@ -413,6 +419,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
    return result;
 }
 
+/**
+ * includes tan(beta) resummation
+ */
 Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    const double TA(tan_alpha(model));
