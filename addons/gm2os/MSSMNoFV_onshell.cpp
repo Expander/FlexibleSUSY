@@ -144,8 +144,8 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings();
-   convert_Mu_M1_M2();
-   convert_mf2();
+   convert_Mu_M1_M2(1e-8, 100);
+   convert_mf2(1e-8, 100);
 }
 
 void MSSMNoFV_onshell::check_input()

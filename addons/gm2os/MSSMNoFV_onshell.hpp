@@ -83,10 +83,8 @@ private:
    void check_input();
    void convert_gauge_couplings();
    void convert_BMu();
-   void convert_mf2(double precision_goal = 1e-5,
-                    unsigned max_iterations = 100);
-   void convert_Mu_M1_M2(double precision_goal = 1e-5,
-                         unsigned max_iterations = 100);
+   void convert_mf2(double, unsigned);
+   void convert_Mu_M1_M2(double, unsigned);
    void convert_vev();
    void convert_yukawa_couplings();
 
