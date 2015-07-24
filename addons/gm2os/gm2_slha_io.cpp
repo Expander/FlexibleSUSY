@@ -36,8 +36,7 @@ namespace gm2os {
 double read_scale(const SLHA_io& slha_io)
 {
    char const * const drbar_blocks[] =
-      { "gauge", "Yu", "Yd", "Ye", "Te", "Td", "Tu", "HMIX", "MSQ2", "MSE2",
-        "MSL2", "MSU2", "MSD2", "MSOFT" };
+      { "Yu", "Yd", "Ye", "Ae", "Ad", "Au", "HMIX", "MSOFT" };
 
    double scale = 0.;
 
