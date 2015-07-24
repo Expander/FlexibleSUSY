@@ -55,9 +55,6 @@ double read_scale(const SLHA_io& slha_io)
 
 void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 {
-   model.set_g1(slha_io.read_entry("gauge", 1) * Sqrt(5./3.));
-   model.set_g2(slha_io.read_entry("gauge", 2));
-   model.set_g3(slha_io.read_entry("gauge", 3));
    {
       Eigen::Matrix<double,3,3> Yu(Eigen::Matrix<double,3,3>::Zero());
       slha_io.read_block("Yu", Yu);
