@@ -21,7 +21,6 @@
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "error.hpp"
-#include "wrappers.hpp"
 
 #include "slha_io.hpp"
 #include "gm2_slha_io.hpp"

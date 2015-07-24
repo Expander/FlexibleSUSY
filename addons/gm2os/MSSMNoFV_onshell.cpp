@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "MSSMNoFV_onshell.hpp"
-#include "wrappers.hpp"
 #include "gsl_utils.hpp"
 #include "logger.hpp"
 #include "numerics2.hpp"
@@ -25,6 +24,7 @@
 #include "gm2_error.hpp"
 
 #include <cmath>
+#include <complex>
 
 namespace {
    static const double ALPHA_EM_THOMPSON = 1./137.035999074;
@@ -40,6 +40,10 @@ namespace {
    }
    double calculate_alpha(double e) {
       return e * e / (4. * M_PI);
+   }
+   int sign(double x) { return x < 0 ? -1 : 1; }
+   double signed_abs_sqrt(double x) {
+      return sign(x) * std::sqrt(std::abs(x));
    }
 }
 
@@ -216,12 +220,12 @@ bool MSSMNoFV_onshell::is_equal(const Eigen::ArrayBase<Derived>& a,
                                 const Eigen::ArrayBase<Derived>& b,
                                 double precision_goal)
 {
-   return MaxRelDiff(a,b) < precision_goal;
+   return (a - b).cwiseAbs().maxCoeff() < precision_goal;
 }
 
 bool MSSMNoFV_onshell::is_equal(double a, double b, double precision_goal)
 {
-   return MaxRelDiff(a,b) < precision_goal;
+   return std::abs(a - b) < precision_goal;
 }
 
 /**
@@ -260,9 +264,9 @@ void MSSMNoFV_onshell::convert_Mu_M1_M2(
       const auto X(U.transpose() * MCha_goal.matrix().asDiagonal() * V);
       const auto Y(N.transpose() * MChi_goal.matrix().asDiagonal() * N);
 
-      set_MassB(Re(Y(0,0)));
-      set_MassWB(Re(X(0,0)));
-      set_Mu(Re(X(1,1)));
+      set_MassB(std::real(Y(0,0)));
+      set_MassWB(std::real(X(0,0)));
+      set_Mu(std::real(X(1,1)));
 
       calculate_DRbar_masses();
 
@@ -345,8 +349,8 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "Mu          = " << model.get_Mu() << '\n' <<
       "M1          = " << model.get_MassB() << '\n' <<
       "M2          = " << model.get_MassWB() << '\n' <<
-      "msl(2,2)    = " << SignedAbsSqrt(model.get_ml2(1,1)) << '\n' <<
-      "mse(2,2)    = " << SignedAbsSqrt(model.get_me2(1,1)) << '\n'
+      "msl(2,2)    = " << signed_abs_sqrt(model.get_ml2(1,1)) << '\n' <<
+      "mse(2,2)    = " << signed_abs_sqrt(model.get_me2(1,1)) << '\n'
       ;
 
    return os;

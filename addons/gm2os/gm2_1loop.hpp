@@ -19,12 +19,15 @@
 #ifndef GM2_1LOOP_H
 #define GM2_1LOOP_H
 
+#include <cmath>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 namespace gm2os {
 
 class MSSMNoFV_onshell;
+
+static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
 /// calculates full 1-loop SUSY contributions to (g-2) in the MSSM
 double calculate_gm2_1loop(const MSSMNoFV_onshell&);

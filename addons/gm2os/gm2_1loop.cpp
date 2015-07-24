@@ -19,7 +19,6 @@
 #include "gm2_1loop.hpp"
 #include "MSSMNoFV_onshell.hpp"
 #include "ffunctions.hpp"
-#include "wrappers.hpp"
 
 #include <complex>
 
@@ -96,8 +95,8 @@ Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
    for(int i=0; i <4; ++i) {
       for(int m=0; m <2; ++m) {
          result(i, m) = ( (1. / sqrt(2.) * ( gY * ZN(i, 0)
-                           + g2 * ZN(i, 1) ) * Conj(u_smu(m, 0)))
-                         - ymu * ZN(i, 2) * Conj(u_smu(m, 1)) );
+                           + g2 * ZN(i, 1) ) * std::conj(u_smu(m, 0)))
+                         - ymu * ZN(i, 2) * std::conj(u_smu(m, 1)) );
       }
    }
 

@@ -20,7 +20,6 @@
 #include "gm2_1loop.hpp"
 #include "MSSMNoFV_onshell.hpp"
 #include "ffunctions.hpp"
-#include "wrappers.hpp"
 
 #include <complex>
 #include <cmath>
@@ -272,11 +271,11 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
    const Eigen::Matrix<std::complex<double>,2,2> V(model.get_UP());
 
    for(int k=0; k<2; ++k) {
-      result(k, 0) = ( Sqrt(2.) * MW / MCha(k)
+      result(k, 0) = ( std::sqrt(2.) * MW / MCha(k)
                       * (U(k, 0) * V(k, 1) * CA + U(k, 1) * V(k, 0) * (-SA)) );
-      result(k, 1) = ( Sqrt(2.) * MW / MCha(k)
+      result(k, 1) = ( std::sqrt(2.) * MW / MCha(k)
                       * (U(k, 0) * V(k, 1) * SA + U(k, 1) * V(k, 0) * CA) );
-      result(k, 2) = ( Sqrt(2.) * MW / MCha(k)
+      result(k, 2) = ( std::sqrt(2.) * MW / MCha(k)
                       * (U(k, 0) * V(k, 1) * (-CB) + U(k, 1) * V(k, 0) * (-SB)) );
    }
    result(2, 0) = -SA / CB;
@@ -302,9 +301,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
 
    for(int i=0; i<2; ++i) {
       result(i, 0) = 2. * MT / (sqr(MStop(i)) * SB) * (Mu * SA + At * CA)
-                      * Conj(UStop(i, 0)) * UStop(i, 1);
+                      * std::conj(UStop(i, 0)) * UStop(i, 1);
       result(i, 1) = 2. * MT / (sqr(MStop(i)) * SB) * (Mu * (-CA) + At * SA)
-                      * Conj(UStop(i, 0)) * UStop(i, 1);
+                      * std::conj(UStop(i, 0)) * UStop(i, 1);
    }
 
    return result;
@@ -325,9 +324,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
 
    for(int i=0; i<2; ++i) {
       result(i, 0) = 2. * MB / (sqr(MSbot(i)) * CB) * (- Mu * CA + Ab * (-SA))
-                      * Conj(USbot(i, 0)) * USbot(i, 1);
+                      * std::conj(USbot(i, 0)) * USbot(i, 1);
       result(i, 1) = 2. * MB / (sqr(MSbot(i)) * CB) * (- Mu * SA + Ab * CA)
-                      * Conj(USbot(i, 0)) * USbot(i, 1);
+                      * std::conj(USbot(i, 0)) * USbot(i, 1);
    }
 
    return result;
@@ -348,9 +347,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& mode
 
    for(int i=0; i<2; ++i) {
       result(i, 0) = 2. * ML / (sqr(MStau(i)) * CB) * (- Mu * CA + Al * (-SA))
-                      * Conj(UStau(i, 0)) * UStau(i, 1);
+                      * std::conj(UStau(i, 0)) * UStau(i, 1);
       result(i, 1) = 2. * ML / (sqr(MStau(i)) * CB) * (- Mu * SA + Al * CA)
-                      * Conj(UStau(i, 0)) * UStau(i, 1);
+                      * std::conj(UStau(i, 0)) * UStau(i, 1);
    }
 
    return result;
