@@ -103,22 +103,7 @@ int main(int argc, const char* argv[])
       + gm2os::amuChi0Photonic(osmodel);
    const double gm2_2l_tanb_approx =  + (gm2os::tan_beta_cor(osmodel) - 1.) * gm2_1l;
 
-   INFO(
-      "--------------------------------------\n"
-      " on-shell parameters \n"
-      "--------------------------------------\n"
-      "cos(TheatW) = " << (osmodel.get_MW() / osmodel.get_MZ()) << '\n' <<
-      "BMu         = " << osmodel.get_BMu() << '\n' <<
-      "SM vev      = " << Sqrt(Sqr(osmodel.get_vu()) + Sqr(osmodel.get_vd())) << '\n' <<
-      "yu          = " << osmodel.get_Yu().diagonal().transpose() << '\n' <<
-      "yd          = " << osmodel.get_Yd().diagonal().transpose() << '\n' <<
-      "ye          = " << osmodel.get_Ye().diagonal().transpose() << '\n' <<
-      "Mu          = " << osmodel.get_Mu() << '\n' <<
-      "M1          = " << osmodel.get_MassB() << '\n' <<
-      "M2          = " << osmodel.get_MassWB() << '\n' <<
-      "ml2(2,2)    = " << osmodel.get_ml2(1,1) << '\n' <<
-      "me2(2,2)    = " << osmodel.get_me2(1,1) << '\n'
-      );
+   INFO(osmodel);
 
    INFO(
       "--------------------------------------\n"
