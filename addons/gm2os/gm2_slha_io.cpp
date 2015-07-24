@@ -43,11 +43,13 @@ double read_scale(const SLHA_io& slha_io)
    for (unsigned i = 0; i < sizeof(drbar_blocks)/sizeof(*drbar_blocks); i++) {
       const double block_scale = slha_io.read_scale(drbar_blocks[i]);
       if (!is_zero(block_scale)) {
-         if (!is_zero(scale) && !is_equal(scale, block_scale))
-            WARNING("DR-bar parameters defined at different scales");
          scale = block_scale;
+         break;
       }
    }
+
+   if (is_zero(scale))
+      ERROR("could not find renormalization scale in any SLHA block.");
 
    return scale;
 }
