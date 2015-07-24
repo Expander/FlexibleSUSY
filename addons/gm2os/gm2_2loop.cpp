@@ -57,6 +57,67 @@ double tan_beta_cor(const MSSMNoFV_onshell& model) {
    return 1. / (1. + delta_mu);
 }
 
+double delta_mu_correction(const MSSMNoFV_onshell& model) {
+   double delta_mu;
+   const double mu = model.get_Mu();
+   const double TB = model.get_TB();
+   const double g2 = model.get_g2();
+   const double gY = model.get_gY();
+   const double M1 = model.get_MassB();
+   const double M2 = model.get_MassWB();
+   const double MW = model.get_MW();
+   const double MZ = model.get_MZ();
+   const double SW = sqrt(1. - sqr(MW / MZ));
+
+   double m1 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+               - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
+   double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+               + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
+   double m_sneu_mu = sqrt(model.get_ml2()(1, 1) - 0.5 * sqr(MZ));
+   double m_smu_L = sqrt(model.get_ml2()(1, 1) - sqr(MZ) * (sqr(SW) - 0.5));
+   double m_smu_R = sqrt(model.get_me2()(1, 1) + sqr(MZ * SW));
+
+   delta_mu = ( - mu * TB * oneOver16PiSqr
+            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_mu) + 0.5 * Iabc(m1, m2, m_smu_L))
+            + sqr(gY) * M1 * (Iabc(mu, M1, m_smu_R) - 0.5 * Iabc(mu, M1, m_smu_L)
+                              - Iabc(M1, m_smu_L, m_smu_R))) );
+
+   return delta_mu;
+}
+
+double delta_tau_correction(const MSSMNoFV_onshell& model) {
+   double delta_tau;
+   const double mu = model.get_Mu();
+   const double TB = model.get_TB();
+   const double g2 = model.get_g2();
+   const double gY = model.get_gY();
+   const double M1 = model.get_MassB();
+   const double M2 = model.get_MassWB();
+   const double MW = model.get_MW();
+   const double MZ = model.get_MZ();
+   const double SW = sqrt(1. - sqr(MW / MZ));
+
+   double m1 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+               - sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
+   double m2 = ( sqrt(0.5 * (sqr(M2) + sqr(mu) + 2. * sqr(MW)
+               + sqrt(sqr(sqr(M2) + sqr(mu) + 2. * sqr(MW)) - sqr(2. * M2 * mu)))) );
+   double m_sneu_tau = sqrt(model.get_ml2()(2, 2) - 0.5 * sqr(MZ));
+   double m_stau_L = sqrt(model.get_ml2()(2, 2) - sqr(MZ) * (sqr(SW) - 0.5));
+   double m_stau_R = sqrt(model.get_me2()(2, 2) + sqr(MZ * SW));
+
+   delta_tau = ( - mu * TB * oneOver16PiSqr
+            * (sqr(g2) * M2 * (Iabc(m1, m2, m_sneu_tau) + 0.5 * Iabc(m1, m2, m_stau_L))
+            + sqr(gY) * M1 * (Iabc(mu, M1, m_stau_R) - 0.5 * Iabc(mu, M1, m_stau_L)
+                              - Iabc(M1, m_stau_L, m_stau_R))) );
+
+   return delta_tau;
+}
+
+double delta_bottom_correction(const MSSMNoFV_onshell& /* model */) {
+   WARNING("delta_bottom_correction not yet implemented");
+   return 0.;
+}
+
 // fermion/sfermion corrections, log-approximations
 
 double LogNorm(const MSSMNoFV_onshell& model) {
@@ -187,10 +248,22 @@ double amuBmuLmuR2L(const MSSMNoFV_onshell& model) {
             * (.02 * test5 + Deltag1(model) + DeltaTanBeta(model)) );
 }
 
-double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
+/**
+ * No tan(beta) resummation
+ */
+double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
 
    return ( amuWHnu2L(model) + amuWHmuL2L(model) + amuBHmuL2L(model)
            + amuBHmuR2L(model) + amuBmuLmuR2L(model) );
+}
+
+/**
+ * Includes tan(beta) resummation
+ */
+double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
+
+   return ( amuWHnu2L(model) + amuWHmuL2L(model) + amuBHmuL2L(model)
+	    + amuBHmuR2L(model) + amuBmuLmuR2L(model) ) * tan_beta_cor(model);
 }
 
 // photonic corrections, all
@@ -247,6 +320,13 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
 
 // amu2Loop_a corrections
 
+/**
+ * include resummation of 1/(1+Deltamu) within muon Yukawa coupling
+ * but not in other Yukawa couplings (in particular not in tau,
+ * bottom)
+ *
+ * @note the result is < 0
+ */
 double tan_alpha(const MSSMNoFV_onshell& model) {
    const double TB = model.get_TB();
    const double MZ = model.get_MZ();
@@ -269,6 +349,8 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
    const double SA = - sqrt(1. - sqr(CA));
    const Eigen::Matrix<std::complex<double>,2,2> U(model.get_UM());
    const Eigen::Matrix<std::complex<double>,2,2> V(model.get_UP());
+   const double one_over_cb_eff = sqrt(2.) * model.get_Ye()(1,1)
+      * model.get_MW() / model.get_MM() / model.get_g2();
 
    for(int k=0; k<2; ++k) {
       result(k, 0) = ( std::sqrt(2.) * MW / MCha(k)
@@ -278,9 +360,9 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
       result(k, 2) = ( std::sqrt(2.) * MW / MCha(k)
                       * (U(k, 0) * V(k, 1) * (-CB) + U(k, 1) * V(k, 0) * (-SB)) );
    }
-   result(2, 0) = -SA / CB;
-   result(2, 1) = CA / CB;
-   result(2, 2) = TB;
+   result(2, 0) = -SA * one_over_cb_eff;
+   result(2, 1) = CA * one_over_cb_eff;
+   result(2, 2) = SB * one_over_cb_eff;
 
    return result;
 }
@@ -311,21 +393,20 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
 
 Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
-   const double TB(model.get_TB());
-   const double CB = 1. / sqrt(1. + sqr(TB));
    const double TA(tan_alpha(model));
    const double CA = 1. / sqrt(1. + sqr(TA));
    const double SA = - sqrt(1. - sqr(CA));
-   const double MB(model.get_MB());
    const Eigen::Array<double,2,1> MSbot(model.get_MSbot());
    const Eigen::Matrix<double,2,2> USbot(model.get_USbot());
    const double Ab(model.get_Ad()(2, 2));
    const double Mu(model.get_Mu());
+   const double mb_over_cb_eff = sqrt(2.) * model.get_Yd()(2,2)
+      * model.get_MW() / model.get_g2();
 
    for(int i=0; i<2; ++i) {
-      result(i, 0) = 2. * MB / (sqr(MSbot(i)) * CB) * (- Mu * CA + Ab * (-SA))
+      result(i, 0) = 2. * mb_over_cb_eff / (sqr(MSbot(i))) * (- Mu * CA + Ab * (-SA))
                       * std::conj(USbot(i, 0)) * USbot(i, 1);
-      result(i, 1) = 2. * MB / (sqr(MSbot(i)) * CB) * (- Mu * SA + Ab * CA)
+      result(i, 1) = 2. * mb_over_cb_eff / (sqr(MSbot(i))) * (- Mu * SA + Ab * CA)
                       * std::conj(USbot(i, 0)) * USbot(i, 1);
    }
 
@@ -334,21 +415,20 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
 
 Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
-   const double TB(model.get_TB());
-   const double CB = 1. / sqrt(1. + sqr(TB));
    const double TA(tan_alpha(model));
    const double CA = 1. / sqrt(1. + sqr(TA));
    const double SA = - sqrt(1. - sqr(CA));
-   const double ML(model.get_ML());
    const Eigen::Array<double,2,1> MStau(model.get_MStau());
    const Eigen::Matrix<double,2,2> UStau(model.get_UStau());
    const double Al(model.get_Ae()(2, 2));
    const double Mu(model.get_Mu());
+   const double mtau_over_cb_eff = sqrt(2.) * model.get_Ye()(2,2)
+      * model.get_MW() / model.get_g2();
 
    for(int i=0; i<2; ++i) {
-      result(i, 0) = 2. * ML / (sqr(MStau(i)) * CB) * (- Mu * CA + Al * (-SA))
+      result(i, 0) = 2. * mtau_over_cb_eff / (sqr(MStau(i))) * (- Mu * CA + Al * (-SA))
                       * std::conj(UStau(i, 0)) * UStau(i, 1);
-      result(i, 1) = 2. * ML / (sqr(MStau(i)) * CB) * (- Mu * SA + Al * CA)
+      result(i, 1) = 2. * mtau_over_cb_eff / (sqr(MStau(i))) * (- Mu * SA + Al * CA)
                       * std::conj(UStau(i, 0)) * UStau(i, 1);
    }
 

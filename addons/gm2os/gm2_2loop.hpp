@@ -46,6 +46,7 @@ double amuBHmuL2L(const MSSMNoFV_onshell&);
 double amuBHmuR2L(const MSSMNoFV_onshell&);
 double amuBmuLmuR2L(const MSSMNoFV_onshell&);
 double amu2LFSfapprox(const MSSMNoFV_onshell&);
+double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell&);
 
 double amuChipmPhotonic(const MSSMNoFV_onshell&);
 double amuChi0Photonic(const MSSMNoFV_onshell&);
