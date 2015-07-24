@@ -139,6 +139,7 @@ double MSSMNoFV_onshell::get_EL() const {
  */
 void MSSMNoFV_onshell::convert_to_onshell() {
    check_input();
+   calculate_DRbar_masses();
 
    convert_gauge_couplings();
    convert_BMu();

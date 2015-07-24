@@ -87,8 +87,6 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   osmodel.calculate_DRbar_masses();
-
    try {
       osmodel.convert_to_onshell();
    } catch (const Error& e) {
