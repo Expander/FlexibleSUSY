@@ -20,6 +20,7 @@
 #define GM2_CALCULATOR_H
 
 #include "MSSMNoFVSLHA2_mass_eigenstates.hpp"
+#include <limits>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
@@ -75,9 +76,18 @@ private:
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit
 
    static bool is_equal(double, double, double);
+   static bool is_zero(double,
+                       double eps = std::numeric_limits<double>::epsilon());
    template <class Derived>
    static bool is_equal(const Eigen::ArrayBase<Derived>&,
                         const Eigen::ArrayBase<Derived>&, double);
+   template <class Derived>
+   static bool is_zero(const Eigen::ArrayBase<Derived>&,
+                       double eps = std::numeric_limits<double>::epsilon());
+   template <class Derived>
+   static bool is_zero(const Eigen::MatrixBase<Derived>&,
+                       double eps = std::numeric_limits<double>::epsilon());
+
    unsigned find_bino_like_neutralino();
 
    void check_input();

@@ -155,6 +155,43 @@ void MSSMNoFV_onshell::check_input()
       throw EInvalidInput("W mass is zero");
    if (is_zero(get_MZ()))
       throw EInvalidInput("Z mass is zero");
+
+   // if pole masses are zero, interpret the tree-level masses as pole
+   // masses
+
+#define COPY_IF_ZERO_0(m)                                               \
+   if (MSSMNoFV_onshell::is_zero(get_physical().m))                     \
+      get_physical().m = get_##m();
+#define COPY_IF_ZERO_1(m,z)                                             \
+   if (MSSMNoFV_onshell::is_zero(get_physical().m)) {                   \
+      get_physical().m = get_##m();                                     \
+      get_physical().z = get_##z();                                     \
+   }
+#define COPY_IF_ZERO_2(m,u,v)                                           \
+   if (MSSMNoFV_onshell::is_zero(get_physical().m)) {                   \
+      get_physical().m = get_##m();                                     \
+      get_physical().u = get_##u();                                     \
+      get_physical().v = get_##v();                                     \
+   }
+
+   COPY_IF_ZERO_1(MChi, ZN);
+   COPY_IF_ZERO_2(MCha, UM, UP);
+   COPY_IF_ZERO_0(MSveL);
+   COPY_IF_ZERO_0(MSvmL);
+   COPY_IF_ZERO_0(MSvtL);
+   COPY_IF_ZERO_1(MSd, ZD);
+   COPY_IF_ZERO_1(MSu, ZU);
+   COPY_IF_ZERO_1(MSe, ZE);
+   COPY_IF_ZERO_1(MSm, ZM);
+   COPY_IF_ZERO_1(MStau, ZTau);
+   COPY_IF_ZERO_1(MSs, ZS);
+   COPY_IF_ZERO_1(MSc, ZC);
+   COPY_IF_ZERO_1(MSb, ZB);
+   COPY_IF_ZERO_1(MSt, ZT);
+
+#undef COPY_IF_ZERO_0
+#undef COPY_IF_ZERO_1
+#undef COPY_IF_ZERO_2
 }
 
 void MSSMNoFV_onshell::convert_gauge_couplings()
@@ -227,6 +264,25 @@ bool MSSMNoFV_onshell::is_equal(const Eigen::ArrayBase<Derived>& a,
 bool MSSMNoFV_onshell::is_equal(double a, double b, double precision_goal)
 {
    return std::abs(a - b) < precision_goal;
+}
+
+template <class Derived>
+bool MSSMNoFV_onshell::is_zero(const Eigen::ArrayBase<Derived>& a,
+                               double eps)
+{
+   return a.cwiseAbs().minCoeff() < eps;
+}
+
+template <class Derived>
+bool MSSMNoFV_onshell::is_zero(const Eigen::MatrixBase<Derived>& a,
+                               double eps)
+{
+   return a.cwiseAbs().minCoeff() < eps;
+}
+
+bool MSSMNoFV_onshell::is_zero(double a, double eps)
+{
+   return std::abs(a) < eps;
 }
 
 /**
