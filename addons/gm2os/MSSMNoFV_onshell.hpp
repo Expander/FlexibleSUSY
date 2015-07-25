@@ -66,13 +66,13 @@ public:
    double get_MS() const { return get_physical().MFs; }
    double get_MB() const { return get_physical().MFb; }
    double get_MA0() const { return get_physical().MAh(1); }
-   Eigen::Array<double,2,1> get_MSmu() const { return get_MSm(); }
-   Eigen::Matrix<double,2,2> get_USmu() const { return get_ZM(); }
-   Eigen::Matrix<double,2,2> get_UStau() const { return get_ZTau(); }
-   Eigen::Array<double,2,1> get_MSbot() const { return get_MSb(); }
-   Eigen::Matrix<double,2,2> get_USbot() const { return get_ZB(); }
-   Eigen::Array<double,2,1> get_MStop() const { return get_MSt(); }
-   Eigen::Matrix<double,2,2> get_UStop() const { return get_ZT(); }
+   const Eigen::Array<double,2,1>&  get_MSmu() const { return get_MSm(); }
+   const Eigen::Matrix<double,2,2>& get_USmu() const { return get_ZM(); }
+   const Eigen::Matrix<double,2,2>& get_UStau() const { return get_ZTau(); }
+   const Eigen::Array<double,2,1>&  get_MSbot() const { return get_MSb(); }
+   const Eigen::Matrix<double,2,2>& get_USbot() const { return get_ZB(); }
+   const Eigen::Array<double,2,1>&  get_MStop() const { return get_MSt(); }
+   const Eigen::Matrix<double,2,2>& get_UStop() const { return get_ZT(); }
 
    void convert_to_onshell();
    void convert_yukawa_couplings_treelevel();
