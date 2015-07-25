@@ -108,7 +108,7 @@ Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
    const double gY(model.get_gY());
    const double g2(model.get_g2());
-   const double ymu(model.get_Ye()(1, 1));
+   const double ymu(model.get_Ye(1, 1));
    const Eigen::Matrix<std::complex<double>,4,4> ZN(model.get_ZN());
    const Eigen::Array<double,2,1> m_smu(model.get_MSmu());
    const Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
@@ -132,7 +132,7 @@ Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
 Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
    const double gY(model.get_gY());
-   const double ymu(model.get_Ye()(1, 1));
+   const double ymu(model.get_Ye(1, 1));
    const Eigen::Matrix<std::complex<double>,4,4> ZN(model.get_ZN());
    const Eigen::Array<double,2,1> m_smu(model.get_MSmu());
    const Eigen::Matrix<double,2,2> u_smu(model.get_USmu());
@@ -174,7 +174,7 @@ Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell& model) {
  */
 Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell& model) {
    Eigen::Array<std::complex<double>,2,1> result;
-   const double ymu = model.get_Ye()(1, 1);
+   const double ymu = model.get_Ye(1, 1);
    const Eigen::Matrix<std::complex<double>,2,2> UM(model.get_UM());
 
    for(int k=0; k<2; ++k) {
@@ -289,7 +289,7 @@ Eigen::Array<double,2,1> x_k(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
 
    for(int k=0; k<2; ++k) {
-      result(k) = sqr(model.get_MCha()(k) / model.get_MSvmL()); // !!!
+      result(k) = sqr(model.get_MCha(k) / model.get_MSvmL()); // !!!
    }
 
    return result;
@@ -321,7 +321,7 @@ double amuWHmuL(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M2 = model.get_MassWB();
    const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
+   const double MSL_2 = sqrt(model.get_ml2(1, 1));
 
    return ( - sqr(model.get_g2()) * oneOver16PiSqr
             * (sqr(model.get_MM()) * M2 * MUE * tan_beta)
@@ -337,7 +337,7 @@ double amuBHmuL(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
    const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
+   const double MSL_2 = sqrt(model.get_ml2(1, 1));
    const double gY = model.get_gY();
 
    return ( sqr(gY) * oneOver16PiSqr
@@ -354,7 +354,7 @@ double amuBHmuR(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
    const double MUE = model.get_Mu();
-   const double MSE_2 = sqrt(model.get_me2()(1, 1));
+   const double MSE_2 = sqrt(model.get_me2(1, 1));
    const double gY = model.get_gY();
 
    return ( - sqr(gY) * 2. * oneOver16PiSqr
@@ -371,8 +371,8 @@ double amuBmuLmuR(const MSSMNoFV_onshell& model) {
    const double tan_beta = model.get_TB();
    const double M1 = model.get_MassB();
    const double MUE = model.get_Mu();
-   const double MSL_2 = sqrt(model.get_ml2()(1, 1));
-   const double MSE_2 = sqrt(model.get_me2()(1, 1));
+   const double MSL_2 = sqrt(model.get_ml2(1, 1));
+   const double MSE_2 = sqrt(model.get_me2(1, 1));
    const double gY = model.get_gY();
 
    return ( sqr(gY) * 2. * oneOver16PiSqr

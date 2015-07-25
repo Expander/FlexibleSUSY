@@ -87,7 +87,7 @@ double LogNorm(const MSSMNoFV_onshell& model) {
    return fmin(std::abs(model.get_MassB()),
            fmin(std::abs(model.get_MassWB()),
             fmin(std::abs(model.get_Mu()),
-             fmin(sqrt(model.get_me2()(1, 1)), sqrt(model.get_ml2()(1, 1))))));
+             fmin(sqrt(model.get_me2(1, 1)), sqrt(model.get_ml2(1, 1))))));
 }
 
 double Deltag1(const MSSMNoFV_onshell& model) {
@@ -111,9 +111,9 @@ double Deltag1(const MSSMNoFV_onshell& model) {
 }
 
 double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
-   const double ytau = model.get_Ye()(2, 2);
-   const double ytop = model.get_Yu()(2, 2);
-   const double ybot = model.get_Yd()(2, 2);
+   const double ytau = model.get_Ye(2, 2);
+   const double ytop = model.get_Yu(2, 2);
+   const double ybot = model.get_Yd(2, 2);
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    const Eigen::Matrix<double,3,3> md2(model.get_md2());
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
@@ -130,7 +130,7 @@ double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
 }
 
 double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
-   const double ytop = model.get_Yu()(2, 2);
+   const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    const double LogScale = LogNorm(model);
@@ -152,7 +152,7 @@ double Deltag2(const MSSMNoFV_onshell& model) {
 }
 
 double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
-   const double ytop = model.get_Yu()(2, 2);
+   const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    const double LogScale = LogNorm(model);
 
@@ -160,9 +160,9 @@ double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
 }
 
 double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
-   const double ytau = model.get_Ye()(2, 2);
-   const double ytop = model.get_Yu()(2, 2);
-   const double ybot = model.get_Yd()(2, 2);
+   const double ytau = model.get_Ye(2, 2);
+   const double ytop = model.get_Yu(2, 2);
+   const double ybot = model.get_Yd(2, 2);
    const double LogScale = LogNorm(model);
    const double MUDIM = model.get_MUDIM();
 
@@ -313,7 +313,7 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
    const double SA = - sqrt(1. - sqr(CA));
    const Eigen::Matrix<std::complex<double>,2,2> U(model.get_UM());
    const Eigen::Matrix<std::complex<double>,2,2> V(model.get_UP());
-   const double one_over_cb_eff = sqrt(2.) * model.get_Ye()(1,1)
+   const double one_over_cb_eff = sqrt(2.) * model.get_Ye(1,1)
       * model.get_MW() / model.get_MM() / model.get_g2();
 
    for(int k=0; k<2; ++k) {
@@ -342,7 +342,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
    const double MT(model.get_MT());
    const Eigen::Array<double,2,1> MStop(model.get_MStop());
    const Eigen::Matrix<double,2,2> UStop(model.get_UStop());
-   const double At(model.get_Au()(2, 2));
+   const double At(model.get_Au(2, 2));
    const double Mu(model.get_Mu());
 
    for(int i=0; i<2; ++i) {
@@ -365,9 +365,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
    const double SA = - sqrt(1. - sqr(CA));
    const Eigen::Array<double,2,1> MSbot(model.get_MSbot());
    const Eigen::Matrix<double,2,2> USbot(model.get_USbot());
-   const double Ab(model.get_Ad()(2, 2));
+   const double Ab(model.get_Ad(2, 2));
    const double Mu(model.get_Mu());
-   const double mb_over_cb_eff = sqrt(2.) * model.get_Yd()(2,2)
+   const double mb_over_cb_eff = sqrt(2.) * model.get_Yd(2,2)
       * model.get_MW() / model.get_g2();
 
    for(int i=0; i<2; ++i) {
@@ -390,7 +390,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& mode
    const double SA = - sqrt(1. - sqr(CA));
    const Eigen::Array<double,2,1> MStau(model.get_MStau());
    const Eigen::Matrix<double,2,2> UStau(model.get_UStau());
-   const double Al(model.get_Ae()(2, 2));
+   const double Al(model.get_Ae(2, 2));
    const double Mu(model.get_Mu());
    const double mtau_over_cb_eff = sqrt(2.) * model.get_Ye()(2,2)
       * model.get_MW() / model.get_g2();

@@ -46,9 +46,12 @@ public:
    double get_gY() const {return sqrt(0.6) * get_g1();}
    double get_EL() const;
    double get_TB() const {return get_vu() / get_vd();}
-   Eigen::Matrix<double,3,3> get_Ae() const { return Ae; }
-   Eigen::Matrix<double,3,3> get_Au() const { return Au; }
-   Eigen::Matrix<double,3,3> get_Ad() const { return Ad; }
+   const Eigen::Matrix<double,3,3>& get_Ae() const { return Ae; }
+   const Eigen::Matrix<double,3,3>& get_Au() const { return Au; }
+   const Eigen::Matrix<double,3,3>& get_Ad() const { return Ad; }
+   double get_Ae(unsigned i, unsigned k) const { return Ae(i,k); }
+   double get_Au(unsigned i, unsigned k) const { return Au(i,k); }
+   double get_Ad(unsigned i, unsigned k) const { return Ad(i,k); }
 
    // (g-2) wrappers for pole mass getters
    double get_MW() const { return get_physical().MVWm; }
