@@ -133,6 +133,7 @@ endif
 
 ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2 --with-gm2os),yes yes)
 TEST_SRC += \
+		$(DIR)/test_gm2os.cpp \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
 endif
 
@@ -556,6 +557,8 @@ $(DIR)/test_CMSSMNoFV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFL
 $(DIR)/test_CMSSMNoFV_two_loop_spectrum.x: $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_CMSSMNoFV_low_scale_constraint.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBLEGACY)
+
+$(DIR)/test_gm2os.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2os) $(LIBFLEXI) $(LIBLEGACY)
 
 $(DIR)/test_MSSMNoFV_onshell.x: $(LIBMSSMNoFVSLHA2) $(LIBgm2os) $(LIBFLEXI) $(LIBLEGACY)
 
