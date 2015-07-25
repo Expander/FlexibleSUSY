@@ -128,8 +128,8 @@ Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$n^R_{im}\f$, Eq. (49) of arXiv:hep-ph/0609168.  This
- * expression is the negative of Eq. (2.5p) of arXiv:1311.1775.
+ * Calculates \f$n^R_{i\tilde{l}_k}\f$, Eq. (2.5p) of arXiv:1311.1775,
+ * with \f$l=\mu\f$.
  */
 Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
@@ -141,7 +141,7 @@ Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell& model) {
 
    for(int i=0; i <4; ++i) {
       for(int m=0; m <2; ++m) {
-         result(i, m) = ( sqrt(2.) * gY * ZN(i, 0) * u_smu(m, 1)
+         result(i, m) = - ( sqrt(2.) * gY * ZN(i, 0) * u_smu(m, 1)
                        + ymu * ZN(i, 2) * u_smu(m, 0) );
       }
    }
@@ -234,8 +234,8 @@ Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$n^L_{im} n^R_{im}\f$, which appears in Eq. (46) of
- * arXiv:hep-ph/0609168.
+ * Calculates \f$\text{Re}[n^L_{im} n^R_{im}]\f$, which appears in
+ * Eq. (46) of arXiv:hep-ph/0609168.
  */
 Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
@@ -244,7 +244,7 @@ Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
 
    for(int i=0; i<4; ++i) {
       for(int m=0; m<2; ++m) {
-         result(i, m) = real(n__L(i, m) * n__R(i, m)) / model.get_MM();
+         result(i, m) = - real(n__L(i, m) * n__R(i, m)) / model.get_MM();
       }
    }
 
