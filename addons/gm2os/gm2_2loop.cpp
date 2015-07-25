@@ -267,10 +267,10 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
       for(int m=0; m<2; ++m) {
          result +=  1. / sqr(MSmu(m))
                     * ((- 1. / 12. * AAN_(i, m) * F1N(x__im(i, m))
-                       + MNeu(i) / 3. * BBN_(i, m) * F2N(x__im(i, m)))
+                       - MNeu(i) / 6. * BBN_(i, m) * F2N(x__im(i, m)))
                         * 16. * log(MM / MSmu(m))
                       + 35. / 72. * AAN_(i, m) * F3N(x__im(i, m))
-                      - 16. * MNeu(i) / 9. * BBN_(i, m) * F4N(x__im(i, m))
+                      + 8. * MNeu(i) / 9. * BBN_(i, m) * F4N(x__im(i, m))
                       + (0.25 * AAN_(i, m) * F1N(x__im(i, m)))
                        * log(sqr(MSmu(m) / mu_DREG)) );
       }

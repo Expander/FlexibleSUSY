@@ -73,8 +73,8 @@ double amuChi0(const MSSMNoFV_onshell& model) {
    for(int i=0; i<4; ++i) {
       for(int m=0; m<2; ++m) {
          result += ( - AAN_(i, m) * F1N(x__im(i, m)) / (12. * sqr(m_smu(m)))
-                     + MChi(i) * BBN_(i, m) * F2N(x__im(i, m))
-                      / (3. * sqr(m_smu(m))) );
+                     - MChi(i) * BBN_(i, m) * F2N(x__im(i, m))
+                      / (6. * sqr(m_smu(m))) );
       }
    }
 
@@ -103,7 +103,8 @@ double amuChipm(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$n^L_{i\tilde{l}_k}\f$, Eq. (2.5o) of arXiv:1311.1775.
+ * Calculates \f$n^L_{i\tilde{l}_k}\f$, Eq. (2.5o) of arXiv:1311.1775,
+ * for \f$l=\mu\f$
  */
 Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,4,2> result;
@@ -199,8 +200,12 @@ Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$|n^L_{im}|^2 + |n^R_{im}|^2\f$, which appears in
- * Eq. (46) of arXiv:hep-ph/0609168.
+ * Calculates \f$\mathcal{A}^{n+}_{ii\tilde{\mu}_m} =
+ * |n^L_{i\tilde{\mu}_m}|^2 + |n^R_{i\tilde{\mu}_m}|^2\f$,
+ * Eqs. (2.11a), (2.7a) in arXiv:1311.1775.
+ *
+ * This expression is identical to \f$|n^L_{im}|^2 + |n^R_{im}|^2\f$,
+ * which appears in Eq. (46) of arXiv:hep-ph/0609168.
  */
 Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
@@ -233,8 +238,9 @@ Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$\text{Re}[(n^L_{im})^* n^R_{im}]\f$, which appears in
- * Eq. (46) of arXiv:hep-ph/0609168.
+ * Calculates \f$\mathcal{B}^{n+}_{ii\tilde{\mu}_m} = 2 \text{Re}
+ * [(n^L_{i\tilde{\mu}_m})^* n^R_{i\tilde{\mu}_m}]\f$, Eqs. (2.11a),
+ * (2.7b) in arXiv:1311.1775.
  */
 Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<double,4,2> result;
@@ -243,7 +249,7 @@ Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
 
    for(int i=0; i<4; ++i) {
       for(int m=0; m<2; ++m) {
-         result(i, m) = - real(std::conj(n__L(i,m)) * n__R(i,m)) / model.get_MM();
+         result(i, m) = 2. * std::real(std::conj(n__L(i,m)) * n__R(i,m)) / model.get_MM();
       }
    }
 
