@@ -111,6 +111,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_Mu_M1_M2(1e-8, 100);
    convert_mf2(1e-8, 100);
    convert_yukawa_couplings();
+   calculate_DRbar_masses();
 }
 
 void MSSMNoFV_onshell::check_input()
