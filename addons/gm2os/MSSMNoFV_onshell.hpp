@@ -63,8 +63,8 @@ public:
    double get_MS() const { return get_physical().MFs; }
    double get_MB() const { return get_physical().MFb; }
    double get_MA0() const { return get_physical().MAh(1); }
-   Eigen::Array<double,2,1> get_MSmu() const { return get_physical().MSm; }
-   Eigen::Matrix<double,2,2> get_USmu() const { return get_physical().ZM; }
+   Eigen::Array<double,2,1> get_MSmu() const { return get_MSm(); }
+   Eigen::Matrix<double,2,2> get_USmu() const { return get_ZM(); }
    Eigen::Matrix<double,2,2> get_UStau() const { return get_ZTau(); }
    Eigen::Array<double,2,1> get_MSbot() const { return get_MSb(); }
    Eigen::Matrix<double,2,2> get_USbot() const { return get_ZB(); }
