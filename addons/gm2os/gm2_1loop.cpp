@@ -39,6 +39,7 @@ double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
    // create new model and reset its muon Yukawa coupling to tree-level
    MSSMNoFV_onshell model_ytree(model);
    model_ytree.convert_yukawa_couplings_treelevel();
+   model_ytree.calculate_DRbar_masses();
 
    return amuChi0(model_ytree) + amuChipm(model_ytree);
 }
