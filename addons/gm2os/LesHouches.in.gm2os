@@ -51,7 +51,6 @@ Block MASS
 Block HMIX Q= 8.66360379E+02
      1     6.18568499E+02   # Mu
      2     10               # vu/vd
-     4     5.18944643E+05   # Sqr(MAh(1))
 Block Au Q= 8.66360379E+02
   3  3    -8.70714986E+02   # TYu(2,2)/Yu(2,2)
 Block Ad Q= 8.66360379E+02
