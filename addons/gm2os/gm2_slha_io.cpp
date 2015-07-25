@@ -113,9 +113,6 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 
 void fill_physical(const SLHA_io& slha_io, MSSMNoFVSLHA2_physical& physical)
 {
-   physical.ZM.setZero();
-   slha_io.read_block("smumix", physical.ZM);
-
    physical.MVWm = slha_io.read_entry("MASS", 24);
    physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
    physical.MFd = slha_io.read_entry("SMINPUTS", 21);
