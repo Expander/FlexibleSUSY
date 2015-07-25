@@ -36,12 +36,9 @@ namespace gm2os {
  */
 double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
 {
-   Eigen::Matrix<double,3,3> Ye_neu(model.get_Ye());
-   Ye_neu(1, 1) = sqrt(2.) * model.get_MM() / model.get_vd();
-
    // create new model and reset its muon Yukawa coupling to tree-level
    MSSMNoFV_onshell model_ytree(model);
-   model_ytree.set_Ye(Ye_neu);
+   model_ytree.convert_yukawa_couplings_treelevel();
 
    return amuChi0(model) + amuChipm(model);
 }

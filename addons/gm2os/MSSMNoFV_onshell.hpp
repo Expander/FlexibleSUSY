@@ -72,6 +72,7 @@ public:
    Eigen::Matrix<double,2,2> get_UStop() const { return get_ZT(); }
 
    void convert_to_onshell();
+   void convert_yukawa_couplings_treelevel();
 
    friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);
 
@@ -102,7 +103,6 @@ private:
    void convert_Mu_M1_M2(double, unsigned);
    void convert_vev();
    void convert_yukawa_couplings();
-   void convert_yukawa_couplings_treelevel();
 
    static int sfermion_mass_diff(const gsl_vector*, void*, gsl_vector*);
 };
