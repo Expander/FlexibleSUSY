@@ -241,12 +241,12 @@ double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
 
    for(int k=0; k<2; k++) {
       result += ( (AAC_(k) * F1C(x__k(k)) / 12.
-                   + MCha(k) / 3. * BBC_(k) * F2C(x__k(k)))
+                   + MCha(k) / 3. * BBC_(k) / model.get_MM() * F2C(x__k(k)))
                     * 16. * log(MM / MSvmL)
                   - 47. * AAC_(k) * F3C(x__k(k)) / 72.
-                  - 61. * MCha(k) / 9. * BBC_(k) * F4C(x__k(k))
+                  - 61. * MCha(k) / 9. * BBC_(k) / model.get_MM() * F4C(x__k(k))
                   - (0.5 * AAC_(k) * F1C(x__k(k))
-                   + MCha(k) * BBC_(k) * F2C(x__k(k)))
+                   + MCha(k) * BBC_(k) / model.get_MM() * F2C(x__k(k)))
                     * log(sqr(MSvmL / mu_DREG)) );
    }
 
@@ -267,10 +267,10 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
       for(int m=0; m<2; ++m) {
          result +=  1. / sqr(MSmu(m))
                     * ((- 1. / 12. * AAN_(i, m) * F1N(x__im(i, m))
-                       - MNeu(i) / 6. * BBN_(i, m) * F2N(x__im(i, m)))
+                       - MNeu(i) / 6. * BBN_(i, m) / model.get_MM() * F2N(x__im(i, m)))
                         * 16. * log(MM / MSmu(m))
                       + 35. / 72. * AAN_(i, m) * F3N(x__im(i, m))
-                      + 8. * MNeu(i) / 9. * BBN_(i, m) * F4N(x__im(i, m))
+                      + 8. * MNeu(i) / 9. * BBN_(i, m) / model.get_MM() * F4N(x__im(i, m))
                       + (0.25 * AAN_(i, m) * F1N(x__im(i, m)))
                        * log(sqr(MSmu(m) / mu_DREG)) );
       }

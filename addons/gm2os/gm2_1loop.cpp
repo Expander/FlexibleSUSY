@@ -75,7 +75,7 @@ double amuChi0(const MSSMNoFV_onshell& model) {
       for(int m=0; m<2; ++m) {
          result += ( - AAN_(i, m) * F1N(x__im(i, m)) / (12. * sqr(m_smu(m)))
                      - MChi(i) * BBN_(i, m) * F2N(x__im(i, m))
-                      / (6. * sqr(m_smu(m))) );
+                      / (6. * model.get_MM() * sqr(m_smu(m))) );
       }
    }
 
@@ -97,7 +97,7 @@ double amuChipm(const MSSMNoFV_onshell& model) {
    for(int k=0; k<2; ++k) {
       result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSvm))
                  + MCha(k) * BBC_(k) * F2C(x__k(k))
-                  / (3. * sqr(MSvm)) );
+                  / (3. * model.get_MM() * sqr(MSvm)) );
    }
 
    return result * sqr(model.get_MM()) * oneOver16PiSqr;
@@ -240,7 +240,7 @@ Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
    const Eigen::Array<std::complex<double>,2,1> c__R(c_R(model));
 
    for(int k=0; k<2; ++k) {
-      result(k) = 2. * std::real(std::conj(c__L(k)) * c__R(k)) / model.get_MM();
+      result(k) = 2. * std::real(std::conj(c__L(k)) * c__R(k));
    }
 
    return result;
@@ -258,7 +258,7 @@ Eigen::Matrix<double,4,2> BBN(const MSSMNoFV_onshell& model) {
 
    for(int i=0; i<4; ++i) {
       for(int m=0; m<2; ++m) {
-         result(i, m) = 2. * std::real(std::conj(n__L(i,m)) * n__R(i,m)) / model.get_MM();
+         result(i, m) = 2. * std::real(std::conj(n__L(i,m)) * n__R(i,m));
       }
    }
 
