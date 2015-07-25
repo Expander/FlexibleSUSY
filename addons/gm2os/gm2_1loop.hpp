@@ -57,15 +57,6 @@ double amuBHmuR(const MSSMNoFV_onshell&);
 /// 1-loop bino, left-handed smuon--right-handed smuon leading log approximation
 double amuBmuLmuR(const MSSMNoFV_onshell&);
 
-/// Eq. (48) of arXiv:hep-ph/0609168
-Eigen::Matrix<std::complex<double>,4,2> n_L(const MSSMNoFV_onshell&);
-/// Eq. (49) of arXiv:hep-ph/0609168
-Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell&);
-/// Eq. (50) of arXiv:hep-ph/0609168
-Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell&);
-/// Eq. (51) of arXiv:hep-ph/0609168
-Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell&);
-
 Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell&);
 Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell&);
 Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell&);
