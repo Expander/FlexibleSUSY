@@ -45,6 +45,7 @@ double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
 
    return amuChi0(model) + amuChipm(model);
 }
+
 /**
  * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
  * arXiv:hep-ph/0609168.
@@ -59,8 +60,8 @@ double calculate_gm2_1loop(const MSSMNoFV_onshell& model)
 }
 
 /**
- * Calculates 1-loop neutralino contribution to (g-2), Eq. (46) of
- * arXiv:hep-ph/0609168.
+ * Calculates 1-loop chargino contribution to (g-2), Eq. (2.11a) of
+ * arXiv:1311.1775.
  */
 double amuChi0(const MSSMNoFV_onshell& model) {
    double result = 0.;
@@ -82,8 +83,8 @@ double amuChi0(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates 1-loop chargino contribution to (g-2), Eq. (47) of
- * arXiv:hep-ph/0609168.
+ * Calculates 1-loop chargino contribution to (g-2), Eq. (2.11b) of
+ * arXiv:1311.1775.
  */
 double amuChipm(const MSSMNoFV_onshell& model) {
    double result = 0.;
@@ -95,7 +96,7 @@ double amuChipm(const MSSMNoFV_onshell& model) {
 
    for(int k=0; k<2; ++k) {
       result += ( AAC_(k) * F1C(x__k(k)) / (12. * sqr(MSvm))
-                 + 2. * MCha(k) * BBC_(k) * F2C(x__k(k))
+                 + MCha(k) * BBC_(k) * F2C(x__k(k))
                   / (3. * sqr(MSvm)) );
    }
 
@@ -150,9 +151,11 @@ Eigen::Matrix<std::complex<double>,4,2> n_R(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$c^L_k\f$, Eq. (50) of arXiv:hep-ph/0609168.  This
- * expression is the complex conjugate Eq. (2.5a) of arXiv:1311.1775
- * for \f$l=\mu\f$.
+ * Calculates \f$c^L_{i\tilde{\nu}_\mu}\f$, Eq. (2.5a) of
+ * arXiv:1311.1775 for \f$l=\mu\f$.
+ *
+ * This expression is the complex conjugate of Eq. (50) of
+ * arXiv:hep-ph/0609168.
  */
 Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell& model) {
    Eigen::Array<std::complex<double>,2,1> result;
@@ -160,16 +163,17 @@ Eigen::Array<std::complex<double>,2,1> c_L(const MSSMNoFV_onshell& model) {
    const Eigen::Matrix<std::complex<double>,2,2> UP(model.get_UP());
 
    for(int k=0; k<2; ++k) {
-      result(k) = - g2 * UP(k, 0);
+      result(k) = - g2 * std::conj(UP(k,0));
    }
 
    return result;
 }
 
 /**
- * Calculates \f$c^R_k\f$, Eq. (51) of arXiv:hep-ph/0609168.  This
- * expression is equal to Eq. (2.5b) of arXiv:1311.1775 for
- * \f$l=\mu\f$.
+ * Calculates \f$c^R_{i\tilde{\nu}_\mu}\f$, Eq. (2.5b) of
+ * arXiv:1311.1775 for \f$l=\mu\f$.
+ *
+ * This expression is equal to Eq. (51) of arXiv:hep-ph/0609168.
  */
 Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell& model) {
    Eigen::Array<std::complex<double>,2,1> result;
@@ -184,8 +188,12 @@ Eigen::Array<std::complex<double>,2,1> c_R(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$|c^L_k|^2 + |c^R_k|^2\f$, which appears in Eq. (47)
- * of arXiv:hep-ph/0609168.
+ * Calculates \f$\mathcal{A}^{c+}_{ii\tilde{\nu}_\mu} =
+ * |c^L_{i\tilde{\nu}_\mu}|^2 + |c^R_{i\tilde{\nu}_\mu}|^2\f$,
+ * Eqs. (2.11b), (2.7a) in arXiv:1311.1775.
+ *
+ * This expression is identical to \f$|c^L_{im}|^2 + |c^R_{im}|^2\f$,
+ * which appears in Eq. (47) of arXiv:hep-ph/0609168.
  */
 Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
@@ -222,8 +230,9 @@ Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$c^L_k c^R_k\f$, which appears in Eq. (47) of
- * arXiv:hep-ph/0609168.
+ * Calculates \f$\mathcal{B}^{c+}_{ii\tilde{\nu}_\mu} = 2 \text{Re}
+ * [(c^L_{i\tilde{\nu}_\mu})^* c^R_{i\tilde{\nu}_\mu}]\f$,
+ * Eqs. (2.11b), (2.7b) in arXiv:1311.1775.
  */
 Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
    Eigen::Array<double,2,1> result;
@@ -231,7 +240,7 @@ Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell& model) {
    const Eigen::Array<std::complex<double>,2,1> c__R(c_R(model));
 
    for(int k=0; k<2; ++k) {
-      result(k) = real(c__L(k) * c__R(k)) / model.get_MM();
+      result(k) = 2. * std::real(std::conj(c__L(k)) * c__R(k)) / model.get_MM();
    }
 
    return result;
