@@ -40,7 +40,7 @@ double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
    MSSMNoFV_onshell model_ytree(model);
    model_ytree.convert_yukawa_couplings_treelevel();
 
-   return amuChi0(model) + amuChipm(model);
+   return amuChi0(model_ytree) + amuChipm(model_ytree);
 }
 
 /**

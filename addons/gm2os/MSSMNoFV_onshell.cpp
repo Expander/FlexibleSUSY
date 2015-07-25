@@ -107,9 +107,10 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_gauge_couplings();
    convert_BMu();
    convert_vev();
-   convert_yukawa_couplings_treelevel(); // @todo replace by resummed yuks
+   convert_yukawa_couplings_treelevel();
    convert_Mu_M1_M2(1e-8, 100);
    convert_mf2(1e-8, 100);
+   convert_yukawa_couplings();
 }
 
 void MSSMNoFV_onshell::check_input()
@@ -213,11 +214,11 @@ void MSSMNoFV_onshell::convert_yukawa_couplings_treelevel()
 }
 
 /**
- * Resummed Yukawa couplings
+ * Calculate Yukawa couplings with resummed tan(beta) corrections
  *
- * @todo the resummations depend on the model parameters.  Therefore,
- * this routine needs to be called after all model parameters have
- * been determined.
+ * @note The resummations depend on the model parameters ml2, me2, Mu,
+ * MassB, MassWB, MassG.  Therefore, this routine needs to be called
+ * after all these model parameters have been determined.
  */
 void MSSMNoFV_onshell::convert_yukawa_couplings()
 {
