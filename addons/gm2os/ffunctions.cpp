@@ -129,7 +129,10 @@ double G4(double x) {
 }
 
 /**
- * \f$H_2(x,y)\f$ function from Eq. (34) of arxiv:0901.2065
+ * \f$H_2(x,y)\f$ function from Eq. (34) of arxiv:0901.2065 .
+ *
+ * The \f$H_2(x,y)\f$ function is related to \f$I(a,b,c)\f$ by
+ * \f$\frac{1}{z} H_2(\frac{x}{z},\frac{y}{z}) = - I(x,y,z)\f$.
  */
 double H2(double x, double y) {
    if (is_equal(x,1.) || is_equal(y,1.) || is_equal(x,y))
