@@ -74,9 +74,57 @@ double delta_tau_correction(const MSSMNoFV_onshell& model)
    return delta_down_lepton_correction(model, 2);
 }
 
-double delta_bottom_correction(const MSSMNoFV_onshell& /* model */) {
-   WARNING("delta_bottom_correction not yet implemented");
-   return 0.;
+/**
+ * Returns the \f$\Delta_b\f$ corrections from arxiv:0901.2065,
+ * Eq. (103) and Eqs. (31)-(35)
+ */
+double delta_bottom_correction(const MSSMNoFV_onshell& model)
+{
+   const double TB = model.get_TB();
+   const double At = model.get_Au(2,2);
+   const double yt = model.get_Yu(2,2);
+   const double gY = model.get_gY();
+   const double g2 = model.get_g2();
+   const double alpha_S = sqr(model.get_g3()) / (4*M_PI);
+   const double mu = model.get_Mu();
+   const double M1 = model.get_MassB();
+   const double M2 = model.get_MassWB();
+   const double M3 = model.get_MassG();
+   const double mstL2 = std::abs(model.get_mq2(2,2));
+   const double mstR2 = std::abs(model.get_mu2(2,2));
+   const double msbL2 = std::abs(model.get_mq2(1,1));
+   const double msbR2 = std::abs(model.get_md2(1,1));
+
+   const double eps_0 =
+      - 2. * alpha_S / (3*M_PI) * std::conj(mu) / M3
+        * H2(msbL2 / std::norm(M3), msbR2 / std::norm(M3))
+
+      + sqr(gY) / (96.*sqr(M_PI)) * std::conj(mu) / M1
+        * (H2(msbL2 / std::norm(M1), std::norm(mu) / std::norm(M1))
+           + 2. * H2(msbR2 / std::norm(M1), std::norm(mu) / std::norm(M1)))
+
+      + sqr(gY) / (144.*sqr(M_PI)) * std::conj(mu) / M1
+        * H2(msbL2 / std::norm(M1), msbR2 / std::norm(M1))
+
+      + 3. * sqr(g2) / (32.*sqr(M_PI)) * std::conj(mu) / M2
+        * H2(msbL2 / std::norm(M2), std::norm(mu) / std::norm(M2))
+      ;
+
+   const double eps_Y_vM =
+      oneOver16PiSqr * std::conj(At) / mu
+      * H2(mstL2 / std::norm(mu), mstR2 / std::norm(mu))
+      // term ~ self-energy neglected
+      ;
+
+   const double eps_Y = - oneOver16PiSqr * std::conj(At) / mu
+      * H2(mstL2 / std::norm(mu), mstR2 / std::norm(mu))
+      + eps_Y_vM;
+
+   const double eps_3_tilde = eps_0 + sqr(yt) * eps_Y;
+
+   const double delta_b = TB * eps_3_tilde;
+
+   return delta_b;
 }
 
 // fermion/sfermion corrections, log-approximations
