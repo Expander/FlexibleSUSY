@@ -17,11 +17,13 @@
 // ====================================================================
 
 #include "ffunctions.hpp"
-#include "logger.hpp"
 #include "numerics.h"
 #include "numerics2.hpp"
 
+#include <iostream>
 #include <cmath>
+
+#define ERROR(message) std::cerr << "Error: " << message;
 
 namespace flexiblesusy {
 

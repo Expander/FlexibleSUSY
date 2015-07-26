@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "command_line_options.hpp"
-#include "logger.hpp"
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "error.hpp"
@@ -25,6 +24,13 @@
 #include "slha_io.hpp"
 #include "gm2_slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
+
+#include <iostream>
+
+#ifdef ERROR
+#undef ERROR
+#endif
+#define ERROR(message) std::cerr << "Error: " << message;
 
 using namespace flexiblesusy;
 

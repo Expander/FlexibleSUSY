@@ -18,7 +18,6 @@
 
 #include "MSSMNoFV_onshell.hpp"
 #include "gsl_utils.hpp"
-#include "logger.hpp"
 #include "numerics2.hpp"
 #include "root_finder.hpp"
 #include "gm2_error.hpp"
