@@ -19,9 +19,6 @@
 #ifndef GM2_FFUNCTIONS_H
 #define GM2_FFUNCTIONS_H
 
-#include "logger.hpp"
-#include <Eigen/Core>
-
 namespace flexiblesusy {
 namespace gm2os {
 
