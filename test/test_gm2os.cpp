@@ -22,6 +22,7 @@ char const * const slha_input =
 "     1     0.00781653       # alpha(MZ)\n"
 "     2     0.00729735       # alpha in Thompson limit\n"
 "Block SMINPUTS\n"
+"     3     1.17600000E-01   # alpha_s(MZ) SM MSbar\n"
 "     4     9.11876000E+01   # MZ(pole)\n"
 "     5     4.20000000E+00   # mb(mb) SM MSbar\n"
 "     6     1.73300000E+02   # mtop(pole)\n"
@@ -137,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_gm2_standard_point )
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yu(2,2) , 1.01762     , 3e-6);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(0,0) , 0.000279538 , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(1,1) , 0.00612041  , 5e-7);
-   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(2,2) , 0.246624    , 5e-7);
+   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Yd(2,2) , 0.230714    , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_BMu()   , 49493.5     , 5e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Mu()    , 619.858     , 6e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MassB() , 211.722     , 3e-6);
