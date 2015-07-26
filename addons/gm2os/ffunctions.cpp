@@ -128,6 +128,16 @@ double G4(double x) {
    return 1. / (2. * cube(x - 1.)) * ((x - 1.) * (x + 1.) - 2. * x * log(x));
 }
 
+/**
+ * \f$H_2(x,y)\f$ function from Eq. (34) of arxiv:0901.2065
+ */
+double H2(double x, double y) {
+   if (is_equal(x,1.) || is_equal(y,1.) || is_equal(x,y))
+      ERROR("H2(" << x << "," << y << ") is not well-defined!");
+
+   return x * log(x) / ((1-x)*(x-y)) + y * log(y) / ((1-y)*(y-x));
+}
+
 double Iabc(double a, double b, double c) {
 
    return ( (sqr(a * b) * log(sqr(a / b))
