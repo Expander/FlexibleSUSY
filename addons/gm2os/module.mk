@@ -1,6 +1,14 @@
 DIR          := addons/gm2os
 MODNAME      := gm2os
 
+LIBgm2os_INSTALL_DIR := gm2os
+
+LIBgm2os_MK  := \
+		$(DIR)/Makefile.in
+
+LIBgm2os_gm2_MK  := \
+		$(DIR)/module.gm2.mk
+
 ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2),yes)
 # source files
 LIBgm2os_SRC := \
@@ -46,7 +54,7 @@ LIBgm2os     := \
 		$(DIR)/lib$(MODNAME)$(LIBEXT)
 
 .PHONY:         clean-$(MODNAME) clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
-		distclean-$(MODNAME)
+		distclean-$(MODNAME) export-gm2os
 
 clean-$(MODNAME)-dep:
 		-rm -f $(LIBgm2os_DEP)
@@ -65,6 +73,14 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+export-gm2os:
+		install -d $(LIBgm2os_INSTALL_DIR)
+		install -d $(LIBgm2os_INSTALL_DIR)/gm2
+		install -m u=rw,g=r,o=r $(LIBgm2os_SRC) $(LIBgm2os_INSTALL_DIR)/gm2
+		install -m u=rw,g=r,o=r $(LIBgm2os_HDR) $(LIBgm2os_INSTALL_DIR)/gm2
+		install -m u=rw,g=r,o=r $(LIBgm2os_MK) $(LIBgm2os_INSTALL_DIR)/Makefile
+		install -m u=rw,g=r,o=r $(LIBgm2os_gm2_MK) $(LIBgm2os_INSTALL_DIR)/gm2/module.mk
 
 $(LIBgm2os_DEP) $(EXEgm2os_DEP) $(LIBgm2os_OBJ) $(EXEgm2os_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 

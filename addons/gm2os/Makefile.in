@@ -1,0 +1,54 @@
+# Package information
+PKGNAME         := gm2calc
+VERSION         := 0.0.0
+LIBEXT          := .a
+
+# Variables for compilation
+CXX             := g++
+CPPFLAGS        := -I. -Igm2
+CXXFLAGS        := -O
+CXX_DEP_GEN     := $(CXX)
+CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
+FC              := gfortran
+FFLAGS          := -O -frecursive
+FLIBS           := -lgfortran -lm
+FOR_DEP_GEN     := $(FC)
+MAKELIB         := ar cru
+BLASLIBS        := -lblas
+BOOSTFLAGS      := -I/usr/include
+EIGENFLAGS      := -I/usr/include/eigen3
+GSLLIBS         := $(shell gsl-config --libs)
+GSLFLAGS        := $(shell gsl-config --cflags)
+LAPACKLIBS      := -llapack -lblas
+
+.PHONY:         all allexec alllib clean depend
+
+all: alllib allexec
+
+clean::
+		-rm -f $(GM2CALC_OBJ)
+		-rm -f $(GM2CALC_DEP)
+		-rm -f $(GM2CALC_EXE)
+
+include gm2/module.mk
+
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),depend)
+ifeq ($(findstring print-,$(MAKECMDGOALS)),)
+-include $(GM2CALC_DEP)
+endif
+endif
+endif
+
+allexec:  $(ALLEXE)
+alllib:   $(ALLLIB)
+depend:   $(ALLDEP)
+
+%.d: %.cpp
+	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+
+%.d: %.f
+	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	sed 's|.*\.o:|$*.o:|' > $@
+
+print-% : ; @echo $* = $($*)
