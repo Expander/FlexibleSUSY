@@ -72,6 +72,9 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
       model.set_Ad(Ad);
    }
 
+   const double alpha_S = slha_io.read_entry("SMINPUTS", 3);
+   model.set_g3(std::sqrt(4*M_PI*alpha_S));
+
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
    model.set_mHu2(slha_io.read_entry("MSOFT", 22));
