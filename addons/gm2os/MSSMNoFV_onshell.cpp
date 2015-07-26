@@ -109,6 +109,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_vev();
    convert_yukawa_couplings_treelevel();
    convert_Mu_M1_M2(1e-8, 100);
+   convert_yukawa_couplings(); // first guess of resummed yukawas
    convert_mf2(1e-8, 100);
    convert_yukawa_couplings();
    calculate_DRbar_masses();
