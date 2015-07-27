@@ -19,28 +19,25 @@
 #ifndef MSSMNoFV_onshell_susy_parameters_H
 #define MSSMNoFV_onshell_susy_parameters_H
 
-#include "betafunction.hpp"
-
 #include <iosfwd>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 
-class MSSMNoFV_onshell_susy_parameters : public Beta_function {
+class MSSMNoFV_onshell_susy_parameters {
 public:
    explicit MSSMNoFV_onshell_susy_parameters();
-   MSSMNoFV_onshell_susy_parameters(double scale_, double loops_, double thresholds_, const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_
-   , const Eigen::Matrix<double,3,3>& Yu_, double Mu_, double g1_, double g2_,
-   double g3_, double vd_, double vu_
-);
+   MSSMNoFV_onshell_susy_parameters(double scale_,
+      const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<double,3,3>& Ye_,
+      const Eigen::Matrix<double,3,3>& Yu_, double Mu_, double g1_, double g2_,
+      double g3_, double vd_, double vu_
+   );
    virtual ~MSSMNoFV_onshell_susy_parameters() {}
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;
-   virtual void set(const Eigen::ArrayXd&);
-
-   MSSMNoFV_onshell_susy_parameters calc_beta() const;
    virtual void clear();
+
+   void set_scale(double s) { scale = s; }
+   double get_scale() const { return scale; }
 
    void set_Yd(const Eigen::Matrix<double,3,3>& Yd_) { Yd = Yd_; }
    void set_Yd(int i, int k, double value) { Yd(i,k) = value; }
@@ -68,16 +65,8 @@ public:
    double get_vd() const { return vd; }
    double get_vu() const { return vu; }
 
-   Eigen::Matrix<double,3,3> get_SqSq() const;
-   Eigen::Matrix<double,3,3> get_SlSl() const;
-   double get_SHdSHd() const;
-   double get_SHuSHu() const;
-   Eigen::Matrix<double,3,3> get_SdR0SdR0() const;
-   Eigen::Matrix<double,3,3> get_SuR0SuR0() const;
-   Eigen::Matrix<double,3,3> get_SeR0SeR0() const;
-
-
 protected:
+   double scale;
    Eigen::Matrix<double,3,3> Yd;
    Eigen::Matrix<double,3,3> Ye;
    Eigen::Matrix<double,3,3> Yu;

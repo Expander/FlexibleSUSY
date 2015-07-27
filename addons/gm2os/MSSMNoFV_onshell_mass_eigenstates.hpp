@@ -67,12 +67,8 @@ public:
    int solve_ewsb_tree_level();
    int solve_ewsb();
 
-   void calculate_spectrum() {}
-   void clear_problems() {}
    std::string name() const;
-   void run_to(double scale, double eps = -1.0);
    void print(std::ostream&) const;
-   void set_precision(double);
 
 
    double get_MVG() const { return MVG; }

@@ -34,7 +34,6 @@ MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters()
    MassG(0)
 
 {
-   set_number_of_parameters(numberOfParameters);
 }
 
 MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(
@@ -53,19 +52,6 @@ MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters(
    MassWB_), MassG(MassG_)
 
 {
-   set_number_of_parameters(numberOfParameters);
-}
-
-Eigen::ArrayXd MSSMNoFV_onshell_soft_parameters::beta() const
-{
-   Eigen::ArrayXd beta(numberOfParameters);
-   beta.setZero();
-   return beta;
-}
-
-MSSMNoFV_onshell_soft_parameters MSSMNoFV_onshell_soft_parameters::calc_beta() const
-{
-   return MSSMNoFV_onshell_soft_parameters();
 }
 
 void MSSMNoFV_onshell_soft_parameters::clear()
@@ -88,93 +74,6 @@ void MSSMNoFV_onshell_soft_parameters::clear()
    MassG = 0.;
 }
 
-Eigen::ArrayXd MSSMNoFV_onshell_soft_parameters::get() const
-{
-   Eigen::ArrayXd pars(MSSMNoFV_onshell_susy_parameters::get());
-   pars.conservativeResize(numberOfParameters);
-
-   pars(33) = TYd(0,0);
-   pars(34) = TYd(0,1);
-   pars(35) = TYd(0,2);
-   pars(36) = TYd(1,0);
-   pars(37) = TYd(1,1);
-   pars(38) = TYd(1,2);
-   pars(39) = TYd(2,0);
-   pars(40) = TYd(2,1);
-   pars(41) = TYd(2,2);
-   pars(42) = TYe(0,0);
-   pars(43) = TYe(0,1);
-   pars(44) = TYe(0,2);
-   pars(45) = TYe(1,0);
-   pars(46) = TYe(1,1);
-   pars(47) = TYe(1,2);
-   pars(48) = TYe(2,0);
-   pars(49) = TYe(2,1);
-   pars(50) = TYe(2,2);
-   pars(51) = TYu(0,0);
-   pars(52) = TYu(0,1);
-   pars(53) = TYu(0,2);
-   pars(54) = TYu(1,0);
-   pars(55) = TYu(1,1);
-   pars(56) = TYu(1,2);
-   pars(57) = TYu(2,0);
-   pars(58) = TYu(2,1);
-   pars(59) = TYu(2,2);
-   pars(60) = BMu;
-   pars(61) = mq2(0,0);
-   pars(62) = mq2(0,1);
-   pars(63) = mq2(0,2);
-   pars(64) = mq2(1,0);
-   pars(65) = mq2(1,1);
-   pars(66) = mq2(1,2);
-   pars(67) = mq2(2,0);
-   pars(68) = mq2(2,1);
-   pars(69) = mq2(2,2);
-   pars(70) = ml2(0,0);
-   pars(71) = ml2(0,1);
-   pars(72) = ml2(0,2);
-   pars(73) = ml2(1,0);
-   pars(74) = ml2(1,1);
-   pars(75) = ml2(1,2);
-   pars(76) = ml2(2,0);
-   pars(77) = ml2(2,1);
-   pars(78) = ml2(2,2);
-   pars(79) = mHd2;
-   pars(80) = mHu2;
-   pars(81) = md2(0,0);
-   pars(82) = md2(0,1);
-   pars(83) = md2(0,2);
-   pars(84) = md2(1,0);
-   pars(85) = md2(1,1);
-   pars(86) = md2(1,2);
-   pars(87) = md2(2,0);
-   pars(88) = md2(2,1);
-   pars(89) = md2(2,2);
-   pars(90) = mu2(0,0);
-   pars(91) = mu2(0,1);
-   pars(92) = mu2(0,2);
-   pars(93) = mu2(1,0);
-   pars(94) = mu2(1,1);
-   pars(95) = mu2(1,2);
-   pars(96) = mu2(2,0);
-   pars(97) = mu2(2,1);
-   pars(98) = mu2(2,2);
-   pars(99) = me2(0,0);
-   pars(100) = me2(0,1);
-   pars(101) = me2(0,2);
-   pars(102) = me2(1,0);
-   pars(103) = me2(1,1);
-   pars(104) = me2(1,2);
-   pars(105) = me2(2,0);
-   pars(106) = me2(2,1);
-   pars(107) = me2(2,2);
-   pars(108) = MassB;
-   pars(109) = MassWB;
-   pars(110) = MassG;
-
-   return pars;
-}
-
 void MSSMNoFV_onshell_soft_parameters::print(std::ostream& ostr) const
 {
    MSSMNoFV_onshell_susy_parameters::print(ostr);
@@ -193,90 +92,6 @@ void MSSMNoFV_onshell_soft_parameters::print(std::ostream& ostr) const
    ostr << "MassB = " << MassB << '\n';
    ostr << "MassWB = " << MassWB << '\n';
    ostr << "MassG = " << MassG << '\n';
-}
-
-void MSSMNoFV_onshell_soft_parameters::set(const Eigen::ArrayXd& pars)
-{
-   MSSMNoFV_onshell_susy_parameters::set(pars);
-
-   TYd(0,0) = pars(33);
-   TYd(0,1) = pars(34);
-   TYd(0,2) = pars(35);
-   TYd(1,0) = pars(36);
-   TYd(1,1) = pars(37);
-   TYd(1,2) = pars(38);
-   TYd(2,0) = pars(39);
-   TYd(2,1) = pars(40);
-   TYd(2,2) = pars(41);
-   TYe(0,0) = pars(42);
-   TYe(0,1) = pars(43);
-   TYe(0,2) = pars(44);
-   TYe(1,0) = pars(45);
-   TYe(1,1) = pars(46);
-   TYe(1,2) = pars(47);
-   TYe(2,0) = pars(48);
-   TYe(2,1) = pars(49);
-   TYe(2,2) = pars(50);
-   TYu(0,0) = pars(51);
-   TYu(0,1) = pars(52);
-   TYu(0,2) = pars(53);
-   TYu(1,0) = pars(54);
-   TYu(1,1) = pars(55);
-   TYu(1,2) = pars(56);
-   TYu(2,0) = pars(57);
-   TYu(2,1) = pars(58);
-   TYu(2,2) = pars(59);
-   BMu = pars(60);
-   mq2(0,0) = pars(61);
-   mq2(0,1) = pars(62);
-   mq2(0,2) = pars(63);
-   mq2(1,0) = pars(64);
-   mq2(1,1) = pars(65);
-   mq2(1,2) = pars(66);
-   mq2(2,0) = pars(67);
-   mq2(2,1) = pars(68);
-   mq2(2,2) = pars(69);
-   ml2(0,0) = pars(70);
-   ml2(0,1) = pars(71);
-   ml2(0,2) = pars(72);
-   ml2(1,0) = pars(73);
-   ml2(1,1) = pars(74);
-   ml2(1,2) = pars(75);
-   ml2(2,0) = pars(76);
-   ml2(2,1) = pars(77);
-   ml2(2,2) = pars(78);
-   mHd2 = pars(79);
-   mHu2 = pars(80);
-   md2(0,0) = pars(81);
-   md2(0,1) = pars(82);
-   md2(0,2) = pars(83);
-   md2(1,0) = pars(84);
-   md2(1,1) = pars(85);
-   md2(1,2) = pars(86);
-   md2(2,0) = pars(87);
-   md2(2,1) = pars(88);
-   md2(2,2) = pars(89);
-   mu2(0,0) = pars(90);
-   mu2(0,1) = pars(91);
-   mu2(0,2) = pars(92);
-   mu2(1,0) = pars(93);
-   mu2(1,1) = pars(94);
-   mu2(1,2) = pars(95);
-   mu2(2,0) = pars(96);
-   mu2(2,1) = pars(97);
-   mu2(2,2) = pars(98);
-   me2(0,0) = pars(99);
-   me2(0,1) = pars(100);
-   me2(0,2) = pars(101);
-   me2(1,0) = pars(102);
-   me2(1,1) = pars(103);
-   me2(1,2) = pars(104);
-   me2(2,0) = pars(105);
-   me2(2,1) = pars(106);
-   me2(2,2) = pars(107);
-   MassB = pars(108);
-   MassWB = pars(109);
-   MassG = pars(110);
 }
 
 std::ostream& operator<<(std::ostream& ostr, const MSSMNoFV_onshell_soft_parameters& soft_pars)

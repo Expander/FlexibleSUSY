@@ -101,11 +101,6 @@ bool CLASSNAME::do_force_output() const
    return force_output;
 }
 
-void CLASSNAME::set_precision(double precision_)
-{
-   precision = precision_;
-}
-
 const MSSMNoFV_onshell_physical& CLASSNAME::get_physical() const
 {
    return physical;
@@ -417,14 +412,6 @@ std::string CLASSNAME::name() const
 {
    return "MSSMNoFV_onshell";
 }
-
-void CLASSNAME::run_to(double scale, double eps)
-{
-   if (eps < 0.0)
-      eps = precision;
-   MSSMNoFV_onshell_soft_parameters::run_to(scale, eps);
-}
-
 
 Eigen::Array<double,1,1> CLASSNAME::get_MChargedHiggs() const
 {

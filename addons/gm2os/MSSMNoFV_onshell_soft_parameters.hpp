@@ -38,12 +38,7 @@ public:
    double MassB_, double MassWB_, double MassG_
 );
    virtual ~MSSMNoFV_onshell_soft_parameters() {}
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
    virtual void print(std::ostream&) const;
-   virtual void set(const Eigen::ArrayXd&);
-
-   MSSMNoFV_onshell_soft_parameters calc_beta() const;
    virtual void clear();
 
    void set_TYd(const Eigen::Matrix<double,3,3>& TYd_) { TYd = TYd_; }
