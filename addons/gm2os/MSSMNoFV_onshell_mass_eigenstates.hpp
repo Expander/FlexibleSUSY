@@ -57,6 +57,7 @@ public:
    void calculate_DRbar_masses();
    virtual void clear();
    void clear_DRbar_parameters();
+   void copy_DRbar_masses_to_pole_masses();
    void do_force_output(bool);
    bool do_force_output() const;
    void reorder_DRbar_masses();
@@ -240,7 +241,6 @@ private:
    MSSMNoFV_onshell_physical physical; ///< contains the pole masses and mixings
 
    int solve_ewsb_tree_level_via_soft_higgs_masses();
-   void copy_DRbar_masses_to_pole_masses();
 
    // DR-bar masses
    double MVG;

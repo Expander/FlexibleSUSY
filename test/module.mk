@@ -131,7 +131,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
 endif
 
-ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2 --with-gm2os),yes yes)
+ifeq ($(shell $(FSCONFIG) --with-gm2os),yes)
 TEST_SRC += \
 		$(DIR)/test_gm2os.cpp \
 		$(DIR)/test_MSSMNoFV_onshell.cpp
