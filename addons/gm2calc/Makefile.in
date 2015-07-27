@@ -24,9 +24,6 @@ LAPACKLIBS      := -llapack -lblas
 all: alllib allexec
 
 clean::
-	-rm -f $(GM2CALC_OBJ)
-	-rm -f $(GM2CALC_DEP)
-	-rm -f $(GM2CALC_EXE)
 	-rm -f config.h
 
 include src/module.mk
