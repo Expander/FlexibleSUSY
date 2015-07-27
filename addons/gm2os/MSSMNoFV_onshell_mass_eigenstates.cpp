@@ -466,15 +466,12 @@ double CLASSNAME::get_mass_matrix_VG() const
 
 void CLASSNAME::calculate_MVG()
 {
-   const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = std::abs(mass_matrix_VG);
+   MVG = 0;
 }
 
 double CLASSNAME::get_mass_matrix_Glu() const
 {
-   const double mass_matrix_Glu = MassG;
-
-   return mass_matrix_Glu;
+   return MassG;
 }
 
 void CLASSNAME::calculate_MGlu()
