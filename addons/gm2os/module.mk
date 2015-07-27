@@ -9,14 +9,17 @@ LIBgm2os_MK  := \
 LIBgm2os_gm2_MK  := \
 		$(DIR)/module.gm2.mk
 
-ifeq ($(shell $(FSCONFIG) --with-MSSMNoFVSLHA2),yes)
 # source files
 LIBgm2os_SRC := \
 		$(DIR)/ffunctions.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
 		$(DIR)/gm2_slha_io.cpp \
-		$(DIR)/MSSMNoFV_onshell.cpp
+		$(DIR)/MSSMNoFV_onshell.cpp \
+		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.cpp \
+		$(DIR)/MSSMNoFV_onshell_physical.cpp \
+		$(DIR)/MSSMNoFV_onshell_soft_parameters.cpp \
+		$(DIR)/MSSMNoFV_onshell_susy_parameters.cpp
 
 # main()
 EXEgm2os_SRC := \
@@ -29,8 +32,11 @@ LIBgm2os_HDR := \
 		$(DIR)/gm2_2loop.hpp \
 		$(DIR)/gm2_error.hpp \
 		$(DIR)/gm2_slha_io.hpp \
-		$(DIR)/MSSMNoFV_onshell.hpp
-endif
+		$(DIR)/MSSMNoFV_onshell.hpp \
+		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.hpp \
+		$(DIR)/MSSMNoFV_onshell_physical.hpp \
+		$(DIR)/MSSMNoFV_onshell_soft_parameters.hpp \
+		$(DIR)/MSSMNoFV_onshell_susy_parameters.hpp
 
 LIBgm2os_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBgm2os_SRC))) \
@@ -99,7 +105,7 @@ endif
 $(LIBgm2os): $(LIBgm2os_OBJ)
 		$(MAKELIB) $@ $^
 
-$(EXEgm2os_EXE): $(EXEgm2os_OBJ) $(LIBgm2os) $(LIBMSSMNoFVSLHA2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(EXEgm2os_EXE): $(EXEgm2os_OBJ) $(LIBgm2os) $(LIBMSSMNoFV_onshell) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBgm2os_DEP) $(EXEgm2os_DEP)

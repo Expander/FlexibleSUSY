@@ -44,7 +44,7 @@ $(LIBgm2_DEP) $(EXEgm2_DEP) $(LIBgm2_OBJ) $(EXEgm2_OBJ): CPPFLAGS += $(EIGENFLAG
 $(LIBgm2): $(LIBgm2_OBJ)
 		$(MAKELIB) $@ $^
 
-$(EXEgm2_EXE): $(EXEgm2_OBJ) $(LIBgm2) $(LIBMSSMNoFVSLHA2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(EXEgm2_EXE): $(EXEgm2_OBJ) $(LIBgm2) $(LIBMSSMNoFV_onshell) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $^ $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBgm2_DEP) $(EXEgm2_DEP)

@@ -20,9 +20,13 @@
 #include "numerics2.hpp"
 #include "gm2_error.hpp"
 #include "gm2_2loop.hpp"
+#include "ffunctions.hpp"
 
 #include <cmath>
 #include <complex>
+#include <iostream>
+
+#define WARNING(message) std::cerr << "Warning: " << message;
 
 namespace {
    static const double ALPHA_EM_THOMPSON = 1./137.035999074;
@@ -39,17 +43,13 @@ namespace {
    double calculate_alpha(double e) {
       return e * e / (4. * M_PI);
    }
-   int sign(double x) { return x < 0 ? -1 : 1; }
-   double signed_abs_sqrt(double x) {
-      return sign(x) * std::sqrt(std::abs(x));
-   }
 }
 
 namespace flexiblesusy {
 namespace gm2os {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
-   : MSSMNoFVSLHA2_mass_eigenstates()
+   : MSSMNoFV_onshell_mass_eigenstates()
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
    , Ae(Eigen::Matrix<double,3,3>::Zero())
@@ -62,8 +62,8 @@ MSSMNoFV_onshell::MSSMNoFV_onshell()
    set_scale(get_physical().MVZ);
 }
 
-MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFVSLHA2_mass_eigenstates& model_)
-   : MSSMNoFVSLHA2_mass_eigenstates(model_)
+MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFV_onshell_mass_eigenstates& model_)
+   : MSSMNoFV_onshell_mass_eigenstates(model_)
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
    , Ae(get_Ae())

@@ -40,6 +40,12 @@ double f_PS(double);
 double f_S(double);
 double f_sferm(double);
 
+double cube(double);
+double quad(double);
+int sign(double);
+double signed_abs_sqrt(double);
+double sqr(double);
+
 } // namespace gm2os
 } // namespace flexiblesusy
 

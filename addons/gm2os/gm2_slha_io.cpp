@@ -114,7 +114,7 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_scale(read_scale(slha_io));
 }
 
-void fill_physical(const SLHA_io& slha_io, MSSMNoFVSLHA2_physical& physical)
+void fill_physical(const SLHA_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
    physical.MVWm = slha_io.read_entry("MASS", 24);
    physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
@@ -162,7 +162,7 @@ void fill_physical(const SLHA_io& slha_io, MSSMNoFVSLHA2_physical& physical)
 
 void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
 {
-   MSSMNoFVSLHA2_physical physical_hk;
+   MSSMNoFV_onshell_physical physical_hk;
    fill_physical(slha_io, physical_hk);
    physical_hk.convert_to_hk();
    model.get_physical() = physical_hk;

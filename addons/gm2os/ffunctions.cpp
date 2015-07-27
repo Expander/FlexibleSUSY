@@ -29,9 +29,6 @@
 namespace flexiblesusy {
 
 namespace {
-inline double sqr(double x)  { return x*x; }
-inline double cube(double x) { return x*x*x; }
-inline double quad(double x) { return sqr(x)*sqr(x); }
 
 double dilog(double x) {
    // The DiLogarithm function
@@ -116,6 +113,14 @@ std::complex<double> dilog(const std::complex<double>& x) {
 } // anonymous namespace
 
 namespace gm2os {
+
+double sqr(double x) { return x*x; }
+double cube(double x) { return x*x*x; }
+double quad(double x) { return sqr(x)*sqr(x); }
+int sign(double x) { return x < 0 ? -1 : 1; }
+double signed_abs_sqrt(double x) {
+   return sign(x) * std::sqrt(std::abs(x));
+}
 
 double F1C(double x) {
    if(is_equal(x, 1.))
