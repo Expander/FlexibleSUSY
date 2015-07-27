@@ -21,9 +21,9 @@
 
 #include <string>
 #include <iosfwd>
+#include <functional>
 #include <Eigen/Core>
 #include <boost/format.hpp>
-#include <boost/function.hpp>
 #include "slhaea.h"
 #include "error.hpp"
 #include "numerics2.hpp"
@@ -55,7 +55,7 @@ class MSSMNoFV_onshell;
 
 class GM2_slha_io {
 public:
-   typedef boost::function<void(int, double)> Tuple_processor;
+   typedef std::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
 
    class ReadError : public Error {
