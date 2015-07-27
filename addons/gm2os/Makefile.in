@@ -27,6 +27,7 @@ clean::
 	-rm -f $(GM2CALC_OBJ)
 	-rm -f $(GM2CALC_DEP)
 	-rm -f $(GM2CALC_EXE)
+	-rm -f config.h
 
 include src/module.mk
 
@@ -41,6 +42,15 @@ endif
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
 depend:   $(ALLDEP)
+
+config.h: Makefile
+	rm -f $@-t $@
+	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
+	  echo ''; \
+	  echo '/* program version */'; \
+	  echo '#define VERSION "$(VERSION)"'; \
+	} | sed '/""/d' > $@-t
+	mv $@-t $@
 
 %.d: %.cpp
 	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
