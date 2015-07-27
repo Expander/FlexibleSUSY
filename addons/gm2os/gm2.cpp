@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "command_line_options.hpp"
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "error.hpp"
@@ -45,6 +44,10 @@ void print_usage(const char* program_name)
 
 struct Gm2_cmd_line_options {
    std::string slha_input_source;
+
+   static bool starts_with(const std::string& str, const std::string& prefix) {
+      return !str.compare(0, prefix.size(), prefix);
+   }
 };
 
 Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
@@ -54,7 +57,7 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
    for (int i = 1; i < argc; ++i) {
       const std::string option(argv[i]);
 
-      if (Command_line_options::starts_with(option, "--slha-input-file=")) {
+      if (Gm2_cmd_line_options::starts_with(option, "--slha-input-file=")) {
          options.slha_input_source = option.substr(18);
          continue;
       }
