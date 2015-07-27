@@ -34,7 +34,7 @@ namespace gm2os {
  * \frac{\sqrt{2} m_\mu^\text{pole}}{v_d}\f$.  Therefore, this
  * function does not use tan(beta) resummation.
  */
-double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
+double calculate_amu_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
 {
    // create new model and reset its muon Yukawa coupling to tree-level
    MSSMNoFV_onshell model_ytree(model);
@@ -52,7 +52,7 @@ double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
  * to arXiv:1504.05500, Eq. (13) and footnote 2.  Therefore, this
  * function uses tan(beta) resummation in the Yukawa coupling.
  */
-double calculate_gm2_1loop(const MSSMNoFV_onshell& model)
+double calculate_amu_1loop(const MSSMNoFV_onshell& model)
 {
    return amuChi0(model) + amuChipm(model);
 }

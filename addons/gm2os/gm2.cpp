@@ -102,8 +102,8 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   const double gm2_1l = gm2os::calculate_gm2_1loop_non_tan_beta_resummed(osmodel);
-   const double gm2_1l_TBresummed = gm2os::calculate_gm2_1loop(osmodel);
+   const double gm2_1l = gm2os::calculate_amu_1loop_non_tan_beta_resummed(osmodel);
+   const double gm2_1l_TBresummed = gm2os::calculate_amu_1loop(osmodel);
    const double gm2_2l_TBresummed = gm2os::amu2LFSfapprox(osmodel)
       + gm2os::amuChipmPhotonic(osmodel)
       + gm2os::amuChi0Photonic(osmodel);

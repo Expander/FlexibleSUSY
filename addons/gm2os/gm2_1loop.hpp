@@ -30,10 +30,10 @@ class MSSMNoFV_onshell;
 static const double oneOver16PiSqr = 1./(16. * M_PI * M_PI);
 
 /// calculates full 1-loop SUSY contributions to (g-2) in the MSSM (w/ tan(beta) resummation)
-double calculate_gm2_1loop(const MSSMNoFV_onshell&);
+double calculate_amu_1loop(const MSSMNoFV_onshell&);
 
 /// calculates full 1-loop SUSY contributions to (g-2) in the MSSM (no tan(beta) resummation)
-double calculate_gm2_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell&);
+double calculate_amu_1loop_non_tan_beta_resummed(const MSSMNoFV_onshell&);
 
 /// 1-loop neutralino contribution
 double amuChi0(const MSSMNoFV_onshell&);
