@@ -96,10 +96,10 @@ char const * const slha_input =
 
 using namespace flexiblesusy;
 
-gm2os::MSSMNoFV_onshell read(char const * const slha_input)
+gm2calc::MSSMNoFV_onshell read(char const * const slha_input)
 {
-   gm2os::MSSMNoFV_onshell osmodel;
-   gm2os::GM2_slha_io slha_io;
+   gm2calc::MSSMNoFV_onshell osmodel;
+   gm2calc::GM2_slha_io slha_io;
    std::istringstream sstr(slha_input);
 
    try {
@@ -112,9 +112,9 @@ gm2os::MSSMNoFV_onshell read(char const * const slha_input)
    return osmodel;
 }
 
-gm2os::MSSMNoFV_onshell setup()
+gm2calc::MSSMNoFV_onshell setup()
 {
-   gm2os::MSSMNoFV_onshell osmodel(read(slha_input));
+   gm2calc::MSSMNoFV_onshell osmodel(read(slha_input));
 
    BOOST_REQUIRE_NO_THROW(osmodel.convert_to_onshell());
 

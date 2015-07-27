@@ -13,11 +13,11 @@
 #include "test_MSSMNoFV_onshell.hpp"
 
 using namespace flexiblesusy;
-using namespace gm2os;
+using namespace gm2calc;
 
 BOOST_AUTO_TEST_CASE( test_gm2_standard_point )
 {
-   gm2os::MSSMNoFV_onshell osmodel(setup());
+   gm2calc::MSSMNoFV_onshell osmodel(setup());
 
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MM()    ,  0.103936   , 3e-06);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MT()    ,  173.3      , 1e-10);
@@ -37,8 +37,8 @@ BOOST_AUTO_TEST_CASE( test_gm2_standard_point )
    BOOST_CHECK_CLOSE_FRACTION(std::sqrt(osmodel.get_ml2(1,1)), 356.09 , 2e-6);
    BOOST_CHECK_CLOSE_FRACTION(std::sqrt(osmodel.get_me2(1,1)), 225.075, 3e-6);
 
-   const double gm2_1l = gm2os::calculate_amu_1loop_non_tan_beta_resummed(osmodel);
-   const double gm2_2l_tanb_approx =  + (gm2os::tan_beta_cor(osmodel) - 1.) * gm2_1l;
+   const double gm2_1l = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(osmodel);
+   const double gm2_2l_tanb_approx =  + (gm2calc::tan_beta_cor(osmodel) - 1.) * gm2_1l;
 
    BOOST_CHECK_CLOSE_FRACTION(gm2_1l              ,  8.91705e-10, 3e-7);
    // BOOST_CHECK_CLOSE_FRACTION(amu1Lapprox(osmodel),  9.04621e-10, 3e-7);

@@ -11,7 +11,7 @@
 #include "error.hpp"
 
 using namespace flexiblesusy;
-using namespace gm2os;
+using namespace gm2calc;
 
 void setup(MSSMNoFV_onshell_mass_eigenstates& model)
 {
