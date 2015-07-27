@@ -37,8 +37,8 @@ void print_usage(const char* program_name)
    std::cout <<
       "Usage: " << program_name << " [options]\n"
       "Options:\n"
-      "  --slha-input-file=<source>\n      SLHA input source (file name or - for stdin)"
-      "  --help,-h                         print this help message"
+      "  --slha-input-file=<source>      SLHA input source (file name or - for stdin)\n"
+      "  --help,-h                       print this help message"
              << std::endl;
 }
 
