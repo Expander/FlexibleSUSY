@@ -118,6 +118,7 @@ double sqr(double x) { return x*x; }
 double cube(double x) { return x*x*x; }
 double quad(double x) { return sqr(x)*sqr(x); }
 int sign(double x) { return x < 0 ? -1 : 1; }
+double signed_sqr(double x) { return sign(x) * x * x; }
 double signed_abs_sqrt(double x) {
    return sign(x) * std::sqrt(std::abs(x));
 }
