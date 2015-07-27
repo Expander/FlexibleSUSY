@@ -385,11 +385,22 @@ double amuBmuLmuR(const MSSMNoFV_onshell& model) {
 /**
  * Calculates the full 1-loop leading log approximation, Eq. (6.1)
  * arXiv:1311.1775
+ * as it stands, without tan(beta) resummation
  */
-double amu1Lapprox(const MSSMNoFV_onshell& model) {
+double amu1Lapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
 
    return ( amuWHnu(model) + amuWHmuL(model) + amuBHmuL(model)
             + amuBHmuR(model) + amuBmuLmuR(model) );
+}
+
+/**
+ * Calculates the full 1-loop leading log approximation, Eq. (6.1)
+ * arXiv:1311.1775
+ * but include tan(beta) resummation
+ */
+double amu1Lapprox(const MSSMNoFV_onshell& model) {
+
+   return amu1Lapprox_non_tan_beta_resummed(model) * tan_beta_cor(model);
 }
 
 } // namespace gm2os
