@@ -19,6 +19,7 @@
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
 #include "error.hpp"
+#include "config.h"
 
 #include "gm2_slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
@@ -38,7 +39,8 @@ void print_usage(const char* program_name)
       "Usage: " << program_name << " [options]\n"
       "Options:\n"
       "  --slha-input-file=<source>      SLHA input source (file name or - for stdin)\n"
-      "  --help,-h                       print this help message"
+      "  --help,-h                       print this help message\n"
+      "  --version,-v                    print version number"
              << std::endl;
 }
 
@@ -64,6 +66,11 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
 
       if (option == "--help" || option == "-h") {
          print_usage(argv[0]);
+         exit(EXIT_SUCCESS);
+      }
+
+      if (option == "--version" || option == "-v") {
+         std::cout << VERSION << '\n';
          exit(EXIT_SUCCESS);
       }
 
