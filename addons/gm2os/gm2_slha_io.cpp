@@ -17,23 +17,174 @@
 // ====================================================================
 
 #include "gm2_slha_io.hpp"
-#include "slha_io.hpp"
+#include "ffunctions.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
 #include <cmath>
+#include <fstream>
 #include <limits>
 
 #include <Eigen/Core>
 
-namespace {
-   int sign(double x) { return x < 0 ? -1 : 1; }
-   double signedsqr(double x) { return sign(x) * x * x; }
-}
-
 namespace flexiblesusy {
 namespace gm2os {
 
-double read_scale(const SLHA_io& slha_io)
+/**
+ * @brief reads from source
+ *
+ * If source is "-", then read_from_stream() is called.  Otherwise,
+ * read_from_file() is called.
+ *
+ * @param source string that specifies the source
+ */
+void GM2_slha_io::read_from_source(const std::string& source)
+{
+   if (source == "-")
+      read_from_stream(std::cin);
+   else
+      read_from_file(source);
+}
+
+/**
+ * @brief opens SLHA input file and reads the content
+ * @param file_name SLHA input file name
+ */
+void GM2_slha_io::read_from_file(const std::string& file_name)
+{
+   std::ifstream ifs(file_name);
+   if (ifs.good()) {
+      data.clear();
+      data.read(ifs);
+   } else {
+      std::ostringstream msg;
+      msg << "cannot read SLHA file: \"" << file_name << "\"";
+      throw ReadError(msg.str());
+   }
+}
+
+/**
+ * @brief reads SLHA data from a stream
+ * @param istr input stream
+ */
+void GM2_slha_io::read_from_stream(std::istream& istr)
+{
+   data.read(istr);
+}
+
+double GM2_slha_io::read_entry(const std::string& block_name, int key) const
+{
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   double entry = 0.;
+   const SLHAea::Block::key_type keys(1, std::to_string(key));
+   SLHAea::Block::const_iterator line;
+
+   while (block != data.cend()) {
+      line = block->find(keys);
+
+      if (line != block->end() && line->is_data_line() && line->size() > 1)
+         entry = convert_to<double>(line->at(1));
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
+   }
+
+   return entry;
+}
+
+/**
+ * Reads scale definition from SLHA block.
+ *
+ * @param block_name block name
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double GM2_slha_io::read_scale(const std::string& block_name) const
+{
+   if (!block_exists(block_name))
+      return 0.;
+
+   double scale = 0.;
+
+   for (SLHAea::Block::const_iterator line = data.at(block_name).cbegin(),
+        end = data.at(block_name).cend(); line != end; ++line) {
+      if (!line->is_data_line()) {
+         if (line->size() > 3 &&
+             to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
+            scale = convert_to<double>((*line)[3]);
+         break;
+      }
+   }
+
+   return scale;
+}
+
+bool GM2_slha_io::block_exists(const std::string& block_name) const
+{
+   return data.find(block_name) != data.cend();
+}
+
+std::string GM2_slha_io::to_lower(const std::string& str)
+{
+   std::string lower(str.size(), ' ');
+   std::transform(str.begin(), str.end(), lower.begin(), ::tolower);
+   return lower;
+}
+
+/**
+ * Applies processor to each (key, value) pair of a SLHA block.
+ * Non-data lines are ignored.
+ *
+ * @param block_name block name
+ * @param processor tuple processor to be applied
+ *
+ * @return scale (or 0 if no scale is defined)
+ */
+double GM2_slha_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
+{
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   double scale = 0.;
+
+   while (block != data.cend()) {
+      for (SLHAea::Block::const_iterator line = block->cbegin(),
+              end = block->cend(); line != end; ++line) {
+         if (!line->is_data_line()) {
+            // read scale from block definition
+            if (line->size() > 3 &&
+                to_lower((*line)[0]) == "block" && (*line)[2] == "Q=")
+               scale = convert_to<double>((*line)[3]);
+            continue;
+         }
+
+         if (line->size() >= 2) {
+            const int key = convert_to<int>((*line)[0]);
+            const double value = convert_to<double>((*line)[1]);
+            processor(key, value);
+         }
+      }
+
+      ++block;
+      block = data.find(block, data.cend(), block_name);
+   }
+
+   return scale;
+}
+
+void GM2_slha_io::set_block(const std::ostringstream& lines, Position position)
+{
+   SLHAea::Block block;
+   block.str(lines.str());
+   data.erase(block.name());
+   if (position == front)
+      data.push_front(block);
+   else
+      data.push_back(block);
+}
+
+double read_scale(const GM2_slha_io& slha_io)
 {
    char const * const drbar_blocks[] =
       { "Yu", "Yd", "Ye", "Ae", "Ad", "Au", "HMIX", "MSOFT" };
@@ -48,13 +199,15 @@ double read_scale(const SLHA_io& slha_io)
       }
    }
 
-   if (is_zero(scale))
-      ERROR("could not find renormalization scale in any SLHA block.");
+   if (is_zero(scale)) {
+      std::cerr << "could not find renormalization scale in any"
+         " SLHA block.\n";
+   }
 
    return scale;
 }
 
-void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
+void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    {
       Eigen::Matrix<double,3,3> Ae(Eigen::Matrix<double,3,3>::Zero());
@@ -78,21 +231,21 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
    model.set_mHu2(slha_io.read_entry("MSOFT", 22));
-   model.set_ml2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 31)));
-   model.set_ml2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 32)));
-   model.set_ml2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 33)));
-   model.set_me2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 34)));
-   model.set_me2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 35)));
-   model.set_me2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 36)));
-   model.set_mq2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 41)));
-   model.set_mq2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 42)));
-   model.set_mq2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 43)));
-   model.set_mu2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 44)));
-   model.set_mu2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 45)));
-   model.set_mu2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 46)));
-   model.set_md2(0, 0, signedsqr(slha_io.read_entry("MSOFT", 47)));
-   model.set_md2(1, 1, signedsqr(slha_io.read_entry("MSOFT", 48)));
-   model.set_md2(2, 2, signedsqr(slha_io.read_entry("MSOFT", 49)));
+   model.set_ml2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 31)));
+   model.set_ml2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 32)));
+   model.set_ml2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 33)));
+   model.set_me2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 34)));
+   model.set_me2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 35)));
+   model.set_me2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 36)));
+   model.set_mq2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 41)));
+   model.set_mq2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 42)));
+   model.set_mq2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 43)));
+   model.set_mu2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 44)));
+   model.set_mu2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 45)));
+   model.set_mu2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 46)));
+   model.set_md2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 47)));
+   model.set_md2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 48)));
+   model.set_md2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 49)));
    model.set_MassB(slha_io.read_entry("MSOFT", 1));
    model.set_MassWB(slha_io.read_entry("MSOFT", 2));
    model.set_MassG(slha_io.read_entry("MSOFT", 3));
@@ -114,7 +267,7 @@ void fill_drbar_parameters(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.set_scale(read_scale(slha_io));
 }
 
-void fill_physical(const SLHA_io& slha_io, MSSMNoFV_onshell_physical& physical)
+void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
    physical.MVWm = slha_io.read_entry("MASS", 24);
    physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
@@ -160,7 +313,7 @@ void fill_physical(const SLHA_io& slha_io, MSSMNoFV_onshell_physical& physical)
    physical.MCha(1) = slha_io.read_entry("MASS", 1000037);
 }
 
-void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
+void fill_pole_masses(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    MSSMNoFV_onshell_physical physical_hk;
    fill_physical(slha_io, physical_hk);
@@ -168,7 +321,7 @@ void fill_pole_masses(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
    model.get_physical() = physical_hk;
 }
 
-void fill_gm2_specific(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
+void fill_gm2_specific(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    const double alpha_MZ = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 1));
    const double alpha_thompson = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 2));
@@ -180,7 +333,7 @@ void fill_gm2_specific(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
       model.set_alpha_thompson(alpha_thompson);
 }
 
-void fill(const SLHA_io& slha_io, MSSMNoFV_onshell& model)
+void fill(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    fill_pole_masses(slha_io, model);
    fill_drbar_parameters(slha_io, model);

@@ -21,7 +21,6 @@
 #include "gm2_2loop.hpp"
 #include "error.hpp"
 
-#include "slha_io.hpp"
 #include "gm2_slha_io.hpp"
 #include "MSSMNoFV_onshell.hpp"
 
@@ -83,7 +82,7 @@ int main(int argc, const char* argv[])
    }
 
    gm2os::MSSMNoFV_onshell osmodel;
-   SLHA_io slha_io;
+   gm2os::GM2_slha_io slha_io;
 
    try {
       slha_io.read_from_source(options.slha_input_source);
@@ -109,9 +108,9 @@ int main(int argc, const char* argv[])
 
    const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
 
-   INFO(osmodel);
+   std::cout << osmodel << '\n';
 
-   INFO(
+   std::cout <<
       "--------------------------------------\n"
       "g-2 (1-loop + 2-loop best) = " << gm2_best << '\n' <<
       "--------------------------------------\n"
@@ -160,8 +159,8 @@ int main(int argc, const char* argv[])
       "--------------------------------------\n"
       "amu2LaSferm = " << gm2os::amua2LSferm(osmodel) << '\n' <<
       "amua2LaCha = " << gm2os::amua2LCha(osmodel) << '\n' <<
-      "--------------------------------------"
-      );
+      "--------------------------------------\n"
+      ;
 
    return 0;
 }
