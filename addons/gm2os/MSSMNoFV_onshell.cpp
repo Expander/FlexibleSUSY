@@ -19,7 +19,6 @@
 #include "MSSMNoFV_onshell.hpp"
 #include "gsl_utils.hpp"
 #include "numerics2.hpp"
-#include "root_finder.hpp"
 #include "gm2_error.hpp"
 #include "gm2_2loop.hpp"
 
@@ -109,7 +108,7 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_yukawa_couplings_treelevel();
    convert_Mu_M1_M2(1e-8, 100);
    convert_yukawa_couplings(); // first guess of resummed yukawas
-   convert_mf2(1e-8, 100);
+   convert_mf2(1e-8, 1000);
    convert_yukawa_couplings();
    calculate_DRbar_masses();
 }
@@ -335,43 +334,47 @@ void MSSMNoFV_onshell::convert_Mu_M1_M2(
       WARNING("DR-bar to on-shell conversion for Mu, M1 and M2 did not converge.");
 }
 
-int MSSMNoFV_onshell::sfermion_mass_diff(const gsl_vector* x, void* param, gsl_vector* f)
-{
-   if (!is_finite(x)) {
-      gsl_vector_set_all(f, std::numeric_limits<double>::max());
-      return GSL_EDOM;
-   }
-
-   MSSMNoFV_onshell* model = static_cast<MSSMNoFV_onshell*>(param);
-
-   model->set_ml2(1,1,gsl_vector_get(x, 0));
-   model->set_me2(1,1,gsl_vector_get(x, 1));
-
-   model->calculate_DRbar_masses();
-
-   const auto MSm(model->get_MSm());
-   const auto MSm_pole(model->get_physical().MSm);
-
-   gsl_vector_set(f, 0, MSm(0) - MSm_pole(0));
-   gsl_vector_set(f, 1, MSm(1) - MSm_pole(1));
-
-   return GSL_SUCCESS;
-}
-
 void MSSMNoFV_onshell::convert_mf2(
    double precision_goal,
    unsigned max_iterations)
 {
-   Root_finder<2> solver(MSSMNoFV_onshell::sfermion_mass_diff, this, max_iterations, precision_goal);
-   double start[2] = { ml2(1,1), me2(1,1) };
-   const int error = solver.solve(start);
+   const Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
+   Eigen::Array<double,2,1> MSm(get_MSm());
 
-   if (error) {
-      WARNING("DR-bar to on-shell conversion for ml2 and me2 did not converge.");
-   } else {
-      set_ml2(1,1,solver.get_root(0));
-      set_me2(1,1,solver.get_root(1));
+   bool accuracy_goal_reached =
+      MSSMNoFV_onshell::is_equal(MSm, MSm_pole, precision_goal);
+   unsigned it = 0;
+
+   while (!accuracy_goal_reached && it < max_iterations) {
+      const Eigen::Matrix<double,2,2> ZM(get_ZM()); // smuon mixing matrix
+      const Eigen::Matrix<double,2,2> M(ZM.adjoint() * MSm_pole.square().matrix().asDiagonal() * ZM);
+
+      const double vd2 = sqr(get_vd());
+      const double vu2 = sqr(get_vu());
+      const double g12 = sqr(get_g1());
+      const double g22 = sqr(get_g2());
+      const double ymu2 = std::norm(Ye(1,1));
+
+      const double ml211 = M(0,0)
+         - (0.5*ymu2*vd2 + 0.075*g12*vd2 - 0.125*g22*vd2
+            - 0.075*g12*vu2 + 0.125*g22*vu2);
+
+      const double me211 = M(1,1)
+         - (0.5*ymu2*vd2 - 0.15*g12*vd2 + 0.15*g12*vu2);
+
+      set_ml2(1,1,ml211);
+      set_me2(1,1,me211);
+
+      calculate_DRbar_masses();
+
+      accuracy_goal_reached =
+         MSSMNoFV_onshell::is_equal(get_MSm(), MSm_pole, precision_goal);
+
+      it++;
    }
+
+   if (it == max_iterations)
+      WARNING("DR-bar to on-shell conversion for ml2 and me2 did not converge.");
 }
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
