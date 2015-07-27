@@ -26,10 +26,7 @@
 
 #include <iostream>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-#define ERROR(message) std::cerr << "Error: " << message;
+#define ERROR(message) std::cerr << "Error: " << message << '\n';
 
 using namespace flexiblesusy;
 

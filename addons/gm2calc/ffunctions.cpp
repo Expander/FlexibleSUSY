@@ -24,7 +24,7 @@
 #include <cmath>
 #include <complex>
 
-#define ERROR(message) std::cerr << "Error: " << message;
+#define ERROR(message) std::cerr << "Error: " << message << '\n';
 
 namespace flexiblesusy {
 

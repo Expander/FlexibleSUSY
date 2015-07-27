@@ -26,7 +26,7 @@
 #include <complex>
 #include <iostream>
 
-#define WARNING(message) std::cerr << "Warning: " << message;
+#define WARNING(message) std::cerr << "Warning: " << message << '\n';
 
 namespace {
    static const double ALPHA_EM_THOMPSON = 1./137.035999074;
