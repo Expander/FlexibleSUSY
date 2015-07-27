@@ -101,11 +101,7 @@ export-gm2os:
 		install -m u=rw,g=r,o=r $(LIBgm2os_DEP_SRC) $(LIBgm2os_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r slhaea/slhaea.h $(LIBgm2os_INSTALL_DIR)/src
 
-$(LIBgm2os_DEP) $(EXEgm2os_DEP) $(LIBgm2os_OBJ) $(EXEgm2os_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
-
-ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
-$(LIBgm2os_DEP) $(EXEgm2os_DEP) $(LIBgm2os_OBJ) $(EXEgm2os_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
-endif
+$(LIBgm2os_DEP) $(EXEgm2os_DEP) $(LIBgm2os_OBJ) $(EXEgm2os_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIBgm2os): $(LIBgm2os_OBJ)
 		$(MAKELIB) $@ $^
