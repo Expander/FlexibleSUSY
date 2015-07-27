@@ -44,7 +44,7 @@ clean::
 		-rm -f $(LIBsrc_OBJ)
 		-rm -f $(EXEsrc_OBJ)
 		-rm -f $(LIBsrc)
-		-rm -f $(EXEsrc_EXE)
+		-rm -f $(patsubst src/%, bin/%, $(EXEsrc_EXE))
 
 $(LIBsrc_DEP) $(EXEsrc_DEP) $(LIBsrc_OBJ) $(EXEsrc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
