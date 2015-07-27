@@ -7,7 +7,11 @@ LIBgm2_SRC := \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
 		$(DIR)/gm2_slha_io.cpp \
-		$(DIR)/MSSMNoFV_onshell.cpp
+		$(DIR)/MSSMNoFV_onshell.cpp \
+		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.cpp \
+		$(DIR)/MSSMNoFV_onshell_physical.cpp \
+		$(DIR)/MSSMNoFV_onshell_soft_parameters.cpp \
+		$(DIR)/MSSMNoFV_onshell_susy_parameters.cpp
 
 # main()
 EXEgm2_SRC := \
