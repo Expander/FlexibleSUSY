@@ -6,7 +6,7 @@ LIBEXT          := .a
 # Variables for compilation
 CXX             := g++
 CPPFLAGS        := -I. -Isrc -Igm2
-CXXFLAGS        := -O
+CXXFLAGS        := -O -std=c++11
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
 FC              := gfortran
