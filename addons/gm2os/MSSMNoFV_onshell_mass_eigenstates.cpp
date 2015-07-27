@@ -32,25 +32,44 @@
 
 #include "MSSMNoFV_onshell_mass_eigenstates.hpp"
 #include "eigen_utils.hpp"
-#include "wrappers.hpp"
 #include "linalg2.hpp"
 #include "numerics2.hpp"
-#include "logger.hpp"
 #include "error.hpp"
-#include "root_finder.hpp"
-#include "fixed_point_iterator.hpp"
-#include "config.h"
-#include "functors.hpp"
-
-#include "sfermions.hpp"
-#include "mssm_twoloophiggs.h"
-
+#include "ffunctions.hpp"
 
 #include <cmath>
 #include <iostream>
 #include <algorithm>
 
+namespace {
+template <typename Derived>
+void Symmetrize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Symmetrize is only defined for squared matrices");
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = m(k,i);
+}
+
+template <typename Derived>
+void Hermitianize(Eigen::MatrixBase<Derived>& m)
+{
+   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
+                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+                 "Hermitianize is only defined for squared matrices");
+
+   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
+      for (int k = 0; k < i; k++)
+         m(i,k) = std::conj(m(k,i));
+}
+} // anonymous namespace
+
 namespace flexiblesusy {
+
+using namespace gm2os;
 
 #define CLASSNAME MSSMNoFV_onshell_mass_eigenstates
 #define PHYSICAL(parameter) physical.parameter
@@ -125,19 +144,19 @@ int CLASSNAME::solve_ewsb_tree_level_via_soft_higgs_masses()
 {
    int error = 0;
 
-   const double new_mHd2 = Re((0.025*(-40*vd*AbsSqr(Mu) + 20*vu*BMu + 20*vu*
-      Conj(BMu) - 3*Power(vd,3)*Sqr(g1) - 5*Power(vd,3)*Sqr(g2) + 3*vd*Sqr(g1)*Sqr
-      (vu) + 5*vd*Sqr(g2)*Sqr(vu)))/vd);
-   const double new_mHu2 = Re((0.025*(-40*vu*AbsSqr(Mu) + 20*vd*BMu + 20*vd*
-      Conj(BMu) - 3*Power(vu,3)*Sqr(g1) - 5*Power(vu,3)*Sqr(g2) + 3*vu*Sqr(g1)*Sqr
-      (vd) + 5*vu*Sqr(g2)*Sqr(vd)))/vu);
+   const double new_mHd2 = (0.025*(-40*vd*sqr(Mu) + 20*vu*BMu + 20*vu*
+      BMu - 3*std::pow(vd,3)*sqr(g1) - 5*std::pow(vd,3)*sqr(g2) + 3*vd*sqr(g1)*sqr
+      (vu) + 5*vd*sqr(g2)*sqr(vu)))/vd;
+   const double new_mHu2 = (0.025*(-40*vu*sqr(Mu) + 20*vd*BMu + 20*vd*
+      BMu - 3*std::pow(vu,3)*sqr(g1) - 5*std::pow(vu,3)*sqr(g2) + 3*vu*sqr(g1)*sqr
+      (vd) + 5*vu*sqr(g2)*sqr(vd)))/vu;
 
-   if (IsFinite(new_mHd2))
+   if (std::isfinite(new_mHd2))
       mHd2 = new_mHd2;
    else
       error = 1;
 
-   if (IsFinite(new_mHu2))
+   if (std::isfinite(new_mHu2))
       mHu2 = new_mHu2;
    else
       error = 1;
@@ -442,20 +461,18 @@ Eigen::Array<double,1,1> CLASSNAME::get_MPseudoscalarHiggs() const
 
 double CLASSNAME::get_mass_matrix_VG() const
 {
-   const double mass_matrix_VG = Re(0);
-
-   return mass_matrix_VG;
+   return 0;
 }
 
 void CLASSNAME::calculate_MVG()
 {
    const auto mass_matrix_VG = get_mass_matrix_VG();
-   MVG = calculate_singlet_mass(mass_matrix_VG);
+   MVG = std::abs(mass_matrix_VG);
 }
 
 double CLASSNAME::get_mass_matrix_Glu() const
 {
-   const double mass_matrix_Glu = Re(MassG);
+   const double mass_matrix_Glu = MassG;
 
    return mass_matrix_Glu;
 }
@@ -463,26 +480,25 @@ double CLASSNAME::get_mass_matrix_Glu() const
 void CLASSNAME::calculate_MGlu()
 {
    const auto mass_matrix_Glu = get_mass_matrix_Glu();
-   MGlu = calculate_singlet_mass(mass_matrix_Glu, PhaseGlu);
+   PhaseGlu = std::polar(1., 0.5 * std::arg(std::complex<double>(mass_matrix_Glu)));
+   MGlu = std::abs(mass_matrix_Glu);
 }
 
 double CLASSNAME::get_mass_matrix_VP() const
 {
-   const double mass_matrix_VP = Re(0);
-
-   return mass_matrix_VP;
+   return 0;
 }
 
 void CLASSNAME::calculate_MVP()
 {
    const auto mass_matrix_VP = get_mass_matrix_VP();
-   MVP = calculate_singlet_mass(mass_matrix_VP);
+   MVP = std::abs(mass_matrix_VP);
 }
 
 double CLASSNAME::get_mass_matrix_VZ() const
 {
-   const double mass_matrix_VZ = Re(0.25*(Sqr(vd) + Sqr(vu))*Sqr(g2*Cos(
-      ThetaW()) + 0.7745966692414834*g1*Sin(ThetaW())));
+   const double mass_matrix_VZ = 0.25*(sqr(vd) + sqr(vu))*sqr(g2*std::cos(
+      ThetaW()) + 0.7745966692414834*g1*std::sin(ThetaW()));
 
    return mass_matrix_VZ;
 }
@@ -490,17 +506,14 @@ double CLASSNAME::get_mass_matrix_VZ() const
 void CLASSNAME::calculate_MVZ()
 {
    const auto mass_matrix_VZ = get_mass_matrix_VZ();
-   MVZ = calculate_singlet_mass(mass_matrix_VZ);
+   MVZ = std::abs(mass_matrix_VZ);
 
-   // if (MVZ < 0.)
-   //    problems.flag_tachyon(MSSMNoFV_onshell_info::VZ);
-
-   MVZ = AbsSqrt(MVZ);
+   MVZ = sqrt(MVZ);
 }
 
 double CLASSNAME::get_mass_matrix_Fd() const
 {
-   const double mass_matrix_Fd = Re(0.7071067811865475*vd*Yd(0,0));
+   const double mass_matrix_Fd = 0.7071067811865475*vd*Yd(0,0);
 
    return mass_matrix_Fd;
 }
@@ -508,12 +521,12 @@ double CLASSNAME::get_mass_matrix_Fd() const
 void CLASSNAME::calculate_MFd()
 {
    const auto mass_matrix_Fd = get_mass_matrix_Fd();
-   MFd = calculate_singlet_mass(mass_matrix_Fd);
+   MFd = std::abs(mass_matrix_Fd);
 }
 
 double CLASSNAME::get_mass_matrix_Fs() const
 {
-   const double mass_matrix_Fs = Re(0.7071067811865475*vd*Yd(1,1));
+   const double mass_matrix_Fs = 0.7071067811865475*vd*Yd(1,1);
 
    return mass_matrix_Fs;
 }
@@ -521,12 +534,12 @@ double CLASSNAME::get_mass_matrix_Fs() const
 void CLASSNAME::calculate_MFs()
 {
    const auto mass_matrix_Fs = get_mass_matrix_Fs();
-   MFs = calculate_singlet_mass(mass_matrix_Fs);
+   MFs = std::abs(mass_matrix_Fs);
 }
 
 double CLASSNAME::get_mass_matrix_Fb() const
 {
-   const double mass_matrix_Fb = Re(0.7071067811865475*vd*Yd(2,2));
+   const double mass_matrix_Fb = 0.7071067811865475*vd*Yd(2,2);
 
    return mass_matrix_Fb;
 }
@@ -534,12 +547,12 @@ double CLASSNAME::get_mass_matrix_Fb() const
 void CLASSNAME::calculate_MFb()
 {
    const auto mass_matrix_Fb = get_mass_matrix_Fb();
-   MFb = calculate_singlet_mass(mass_matrix_Fb);
+   MFb = std::abs(mass_matrix_Fb);
 }
 
 double CLASSNAME::get_mass_matrix_Fu() const
 {
-   const double mass_matrix_Fu = Re(0.7071067811865475*vu*Yu(0,0));
+   const double mass_matrix_Fu = 0.7071067811865475*vu*Yu(0,0);
 
    return mass_matrix_Fu;
 }
@@ -547,12 +560,12 @@ double CLASSNAME::get_mass_matrix_Fu() const
 void CLASSNAME::calculate_MFu()
 {
    const auto mass_matrix_Fu = get_mass_matrix_Fu();
-   MFu = calculate_singlet_mass(mass_matrix_Fu);
+   MFu = std::abs(mass_matrix_Fu);
 }
 
 double CLASSNAME::get_mass_matrix_Fc() const
 {
-   const double mass_matrix_Fc = Re(0.7071067811865475*vu*Yu(1,1));
+   const double mass_matrix_Fc = 0.7071067811865475*vu*Yu(1,1);
 
    return mass_matrix_Fc;
 }
@@ -560,12 +573,12 @@ double CLASSNAME::get_mass_matrix_Fc() const
 void CLASSNAME::calculate_MFc()
 {
    const auto mass_matrix_Fc = get_mass_matrix_Fc();
-   MFc = calculate_singlet_mass(mass_matrix_Fc);
+   MFc = std::abs(mass_matrix_Fc);
 }
 
 double CLASSNAME::get_mass_matrix_Ft() const
 {
-   const double mass_matrix_Ft = Re(0.7071067811865475*vu*Yu(2,2));
+   const double mass_matrix_Ft = 0.7071067811865475*vu*Yu(2,2);
 
    return mass_matrix_Ft;
 }
@@ -573,51 +586,45 @@ double CLASSNAME::get_mass_matrix_Ft() const
 void CLASSNAME::calculate_MFt()
 {
    const auto mass_matrix_Ft = get_mass_matrix_Ft();
-   MFt = calculate_singlet_mass(mass_matrix_Ft);
+   MFt = std::abs(mass_matrix_Ft);
 }
 
 double CLASSNAME::get_mass_matrix_Fve() const
 {
-   const double mass_matrix_Fve = Re(0);
-
-   return mass_matrix_Fve;
+   return 0;
 }
 
 void CLASSNAME::calculate_MFve()
 {
    const auto mass_matrix_Fve = get_mass_matrix_Fve();
-   MFve = calculate_singlet_mass(mass_matrix_Fve);
+   MFve = std::abs(mass_matrix_Fve);
 }
 
 double CLASSNAME::get_mass_matrix_Fvm() const
 {
-   const double mass_matrix_Fvm = Re(0);
-
-   return mass_matrix_Fvm;
+   return 0;
 }
 
 void CLASSNAME::calculate_MFvm()
 {
    const auto mass_matrix_Fvm = get_mass_matrix_Fvm();
-   MFvm = calculate_singlet_mass(mass_matrix_Fvm);
+   MFvm = std::abs(mass_matrix_Fvm);
 }
 
 double CLASSNAME::get_mass_matrix_Fvt() const
 {
-   const double mass_matrix_Fvt = Re(0);
-
-   return mass_matrix_Fvt;
+   return 0;
 }
 
 void CLASSNAME::calculate_MFvt()
 {
    const auto mass_matrix_Fvt = get_mass_matrix_Fvt();
-   MFvt = calculate_singlet_mass(mass_matrix_Fvt);
+   MFvt = std::abs(mass_matrix_Fvt);
 }
 
 double CLASSNAME::get_mass_matrix_Fe() const
 {
-   const double mass_matrix_Fe = Re(0.7071067811865475*vd*Ye(0,0));
+   const double mass_matrix_Fe = 0.7071067811865475*vd*Ye(0,0);
 
    return mass_matrix_Fe;
 }
@@ -625,12 +632,12 @@ double CLASSNAME::get_mass_matrix_Fe() const
 void CLASSNAME::calculate_MFe()
 {
    const auto mass_matrix_Fe = get_mass_matrix_Fe();
-   MFe = calculate_singlet_mass(mass_matrix_Fe);
+   MFe = std::abs(mass_matrix_Fe);
 }
 
 double CLASSNAME::get_mass_matrix_Fm() const
 {
-   const double mass_matrix_Fm = Re(0.7071067811865475*vd*Ye(1,1));
+   const double mass_matrix_Fm = 0.7071067811865475*vd*Ye(1,1);
 
    return mass_matrix_Fm;
 }
@@ -638,12 +645,12 @@ double CLASSNAME::get_mass_matrix_Fm() const
 void CLASSNAME::calculate_MFm()
 {
    const auto mass_matrix_Fm = get_mass_matrix_Fm();
-   MFm = calculate_singlet_mass(mass_matrix_Fm);
+   MFm = std::abs(mass_matrix_Fm);
 }
 
 double CLASSNAME::get_mass_matrix_Ftau() const
 {
-   const double mass_matrix_Ftau = Re(0.7071067811865475*vd*Ye(2,2));
+   const double mass_matrix_Ftau = 0.7071067811865475*vd*Ye(2,2);
 
    return mass_matrix_Ftau;
 }
@@ -651,13 +658,13 @@ double CLASSNAME::get_mass_matrix_Ftau() const
 void CLASSNAME::calculate_MFtau()
 {
    const auto mass_matrix_Ftau = get_mass_matrix_Ftau();
-   MFtau = calculate_singlet_mass(mass_matrix_Ftau);
+   MFtau = std::abs(mass_matrix_Ftau);
 }
 
 double CLASSNAME::get_mass_matrix_SveL() const
 {
-   const double mass_matrix_SveL = Re(0.125*(8*ml2(0,0) - 0.6*Sqr(g1)*(
-      -Sqr(vd) + Sqr(vu)) - Sqr(g2)*(-Sqr(vd) + Sqr(vu))));
+   const double mass_matrix_SveL = 0.125*(8*ml2(0,0) - 0.6*sqr(g1)*(
+      -sqr(vd) + sqr(vu)) - sqr(g2)*(-sqr(vd) + sqr(vu)));
 
    return mass_matrix_SveL;
 }
@@ -665,18 +672,18 @@ double CLASSNAME::get_mass_matrix_SveL() const
 void CLASSNAME::calculate_MSveL()
 {
    const auto mass_matrix_SveL = get_mass_matrix_SveL();
-   MSveL = calculate_singlet_mass(mass_matrix_SveL);
+   MSveL = std::abs(mass_matrix_SveL);
 
    // if (MSveL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SveL);
 
-   MSveL = AbsSqrt(MSveL);
+   MSveL = sqrt(MSveL);
 }
 
 double CLASSNAME::get_mass_matrix_SvmL() const
 {
-   const double mass_matrix_SvmL = Re(0.125*(8*ml2(1,1) - 0.6*Sqr(g1)*(
-      -Sqr(vd) + Sqr(vu)) - Sqr(g2)*(-Sqr(vd) + Sqr(vu))));
+   const double mass_matrix_SvmL = 0.125*(8*ml2(1,1) - 0.6*sqr(g1)*(
+      -sqr(vd) + sqr(vu)) - sqr(g2)*(-sqr(vd) + sqr(vu)));
 
    return mass_matrix_SvmL;
 }
@@ -684,18 +691,18 @@ double CLASSNAME::get_mass_matrix_SvmL() const
 void CLASSNAME::calculate_MSvmL()
 {
    const auto mass_matrix_SvmL = get_mass_matrix_SvmL();
-   MSvmL = calculate_singlet_mass(mass_matrix_SvmL);
+   MSvmL = std::abs(mass_matrix_SvmL);
 
    // if (MSvmL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SvmL);
 
-   MSvmL = AbsSqrt(MSvmL);
+   MSvmL = sqrt(MSvmL);
 }
 
 double CLASSNAME::get_mass_matrix_SvtL() const
 {
-   const double mass_matrix_SvtL = Re(0.125*(8*ml2(2,2) - 0.6*Sqr(g1)*(
-      -Sqr(vd) + Sqr(vu)) - Sqr(g2)*(-Sqr(vd) + Sqr(vu))));
+   const double mass_matrix_SvtL = 0.125*(8*ml2(2,2) - 0.6*sqr(g1)*(
+      -sqr(vd) + sqr(vu)) - sqr(g2)*(-sqr(vd) + sqr(vu)));
 
    return mass_matrix_SvtL;
 }
@@ -703,25 +710,25 @@ double CLASSNAME::get_mass_matrix_SvtL() const
 void CLASSNAME::calculate_MSvtL()
 {
    const auto mass_matrix_SvtL = get_mass_matrix_SvtL();
-   MSvtL = calculate_singlet_mass(mass_matrix_SvtL);
+   MSvtL = std::abs(mass_matrix_SvtL);
 
    // if (MSvtL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SvtL);
 
-   MSvtL = AbsSqrt(MSvtL);
+   MSvtL = sqrt(MSvtL);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sd() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Sd;
 
-   mass_matrix_Sd(0,0) = mq2(0,0) + 0.5*AbsSqr(Yd(0,0))*Sqr(vd) - 0.025*
-      Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) + 0.025*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Sd(0,1) = 0.7071067811865475*vd*Conj(TYd(0,0)) -
-      0.7071067811865475*vu*Conj(Yd(0,0))*Mu;
-   mass_matrix_Sd(1,1) = md2(0,0) + 0.5*AbsSqr(Yd(0,0))*Sqr(vd) - 0.05*
-      Sqr(g1)*Sqr(vd) + 0.05*Sqr(g1)*Sqr(vu);
+   mass_matrix_Sd(0,0) = mq2(0,0) + 0.5*sqr(Yd(0,0))*sqr(vd) - 0.025*
+      sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) + 0.025*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Sd(0,1) = 0.7071067811865475*vd*std::conj(TYd(0,0)) -
+      0.7071067811865475*vu*std::conj(Yd(0,0))*Mu;
+   mass_matrix_Sd(1,1) = md2(0,0) + 0.5*sqr(Yd(0,0))*sqr(vd) - 0.05*
+      sqr(g1)*sqr(vd) + 0.05*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Sd);
 
@@ -736,20 +743,20 @@ void CLASSNAME::calculate_MSd()
    // if (MSd.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sd);
 
-   MSd = AbsSqrt(MSd);
+   MSd = sqrt(MSd);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Su() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Su;
 
-   mass_matrix_Su(0,0) = mq2(0,0) - 0.025*Sqr(g1)*Sqr(vd) + 0.125*Sqr(g2)
-      *Sqr(vd) + 0.5*AbsSqr(Yu(0,0))*Sqr(vu) + 0.025*Sqr(g1)*Sqr(vu) - 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Su(0,1) = 0.7071067811865475*vu*Conj(TYu(0,0)) -
-      0.7071067811865475*vd*Conj(Yu(0,0))*Mu;
-   mass_matrix_Su(1,1) = mu2(0,0) + 0.1*Sqr(g1)*Sqr(vd) + 0.5*AbsSqr(Yu(0
-      ,0))*Sqr(vu) - 0.1*Sqr(g1)*Sqr(vu);
+   mass_matrix_Su(0,0) = mq2(0,0) - 0.025*sqr(g1)*sqr(vd) + 0.125*sqr(g2)
+      *sqr(vd) + 0.5*sqr(Yu(0,0))*sqr(vu) + 0.025*sqr(g1)*sqr(vu) - 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Su(0,1) = 0.7071067811865475*vu*std::conj(TYu(0,0)) -
+      0.7071067811865475*vd*std::conj(Yu(0,0))*Mu;
+   mass_matrix_Su(1,1) = mu2(0,0) + 0.1*sqr(g1)*sqr(vd) + 0.5*sqr(Yu(0
+      ,0))*sqr(vu) - 0.1*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Su);
 
@@ -764,20 +771,20 @@ void CLASSNAME::calculate_MSu()
    // if (MSu.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Su);
 
-   MSu = AbsSqrt(MSu);
+   MSu = sqrt(MSu);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Se() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Se;
 
-   mass_matrix_Se(0,0) = ml2(0,0) + 0.5*AbsSqr(Ye(0,0))*Sqr(vd) + 0.075*
-      Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Se(0,1) = 0.7071067811865475*vd*Conj(TYe(0,0)) -
-      0.7071067811865475*vu*Conj(Ye(0,0))*Mu;
-   mass_matrix_Se(1,1) = me2(0,0) + 0.5*AbsSqr(Ye(0,0))*Sqr(vd) - 0.15*
-      Sqr(g1)*Sqr(vd) + 0.15*Sqr(g1)*Sqr(vu);
+   mass_matrix_Se(0,0) = ml2(0,0) + 0.5*sqr(Ye(0,0))*sqr(vd) + 0.075*
+      sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) - 0.075*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Se(0,1) = 0.7071067811865475*vd*std::conj(TYe(0,0)) -
+      0.7071067811865475*vu*std::conj(Ye(0,0))*Mu;
+   mass_matrix_Se(1,1) = me2(0,0) + 0.5*sqr(Ye(0,0))*sqr(vd) - 0.15*
+      sqr(g1)*sqr(vd) + 0.15*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Se);
 
@@ -792,20 +799,20 @@ void CLASSNAME::calculate_MSe()
    // if (MSe.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Se);
 
-   MSe = AbsSqrt(MSe);
+   MSe = sqrt(MSe);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sm() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Sm;
 
-   mass_matrix_Sm(0,0) = ml2(1,1) + 0.5*AbsSqr(Ye(1,1))*Sqr(vd) + 0.075*
-      Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Sm(0,1) = 0.7071067811865475*vd*Conj(TYe(1,1)) -
-      0.7071067811865475*vu*Conj(Ye(1,1))*Mu;
-   mass_matrix_Sm(1,1) = me2(1,1) + 0.5*AbsSqr(Ye(1,1))*Sqr(vd) - 0.15*
-      Sqr(g1)*Sqr(vd) + 0.15*Sqr(g1)*Sqr(vu);
+   mass_matrix_Sm(0,0) = ml2(1,1) + 0.5*sqr(Ye(1,1))*sqr(vd) + 0.075*
+      sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) - 0.075*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Sm(0,1) = 0.7071067811865475*vd*std::conj(TYe(1,1)) -
+      0.7071067811865475*vu*std::conj(Ye(1,1))*Mu;
+   mass_matrix_Sm(1,1) = me2(1,1) + 0.5*sqr(Ye(1,1))*sqr(vd) - 0.15*
+      sqr(g1)*sqr(vd) + 0.15*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Sm);
 
@@ -820,20 +827,20 @@ void CLASSNAME::calculate_MSm()
    // if (MSm.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sm);
 
-   MSm = AbsSqrt(MSm);
+   MSm = sqrt(MSm);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Stau() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Stau;
 
-   mass_matrix_Stau(0,0) = ml2(2,2) + 0.5*AbsSqr(Ye(2,2))*Sqr(vd) + 0.075
-      *Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Stau(0,1) = 0.7071067811865475*vd*Conj(TYe(2,2)) -
-      0.7071067811865475*vu*Conj(Ye(2,2))*Mu;
-   mass_matrix_Stau(1,1) = me2(2,2) + 0.5*AbsSqr(Ye(2,2))*Sqr(vd) - 0.15*
-      Sqr(g1)*Sqr(vd) + 0.15*Sqr(g1)*Sqr(vu);
+   mass_matrix_Stau(0,0) = ml2(2,2) + 0.5*sqr(Ye(2,2))*sqr(vd) + 0.075
+      *sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) - 0.075*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Stau(0,1) = 0.7071067811865475*vd*std::conj(TYe(2,2)) -
+      0.7071067811865475*vu*std::conj(Ye(2,2))*Mu;
+   mass_matrix_Stau(1,1) = me2(2,2) + 0.5*sqr(Ye(2,2))*sqr(vd) - 0.15*
+      sqr(g1)*sqr(vd) + 0.15*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Stau);
 
@@ -848,20 +855,20 @@ void CLASSNAME::calculate_MStau()
    // if (MStau.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Stau);
 
-   MStau = AbsSqrt(MStau);
+   MStau = sqrt(MStau);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Ss() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Ss;
 
-   mass_matrix_Ss(0,0) = mq2(1,1) + 0.5*AbsSqr(Yd(1,1))*Sqr(vd) - 0.025*
-      Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) + 0.025*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Ss(0,1) = 0.7071067811865475*vd*Conj(TYd(1,1)) -
-      0.7071067811865475*vu*Conj(Yd(1,1))*Mu;
-   mass_matrix_Ss(1,1) = md2(1,1) + 0.5*AbsSqr(Yd(1,1))*Sqr(vd) - 0.05*
-      Sqr(g1)*Sqr(vd) + 0.05*Sqr(g1)*Sqr(vu);
+   mass_matrix_Ss(0,0) = mq2(1,1) + 0.5*sqr(Yd(1,1))*sqr(vd) - 0.025*
+      sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) + 0.025*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Ss(0,1) = 0.7071067811865475*vd*std::conj(TYd(1,1)) -
+      0.7071067811865475*vu*std::conj(Yd(1,1))*Mu;
+   mass_matrix_Ss(1,1) = md2(1,1) + 0.5*sqr(Yd(1,1))*sqr(vd) - 0.05*
+      sqr(g1)*sqr(vd) + 0.05*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Ss);
 
@@ -876,20 +883,20 @@ void CLASSNAME::calculate_MSs()
    // if (MSs.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Ss);
 
-   MSs = AbsSqrt(MSs);
+   MSs = sqrt(MSs);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sc() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Sc;
 
-   mass_matrix_Sc(0,0) = mq2(1,1) - 0.025*Sqr(g1)*Sqr(vd) + 0.125*Sqr(g2)
-      *Sqr(vd) + 0.5*AbsSqr(Yu(1,1))*Sqr(vu) + 0.025*Sqr(g1)*Sqr(vu) - 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Sc(0,1) = 0.7071067811865475*vu*Conj(TYu(1,1)) -
-      0.7071067811865475*vd*Conj(Yu(1,1))*Mu;
-   mass_matrix_Sc(1,1) = mu2(1,1) + 0.1*Sqr(g1)*Sqr(vd) + 0.5*AbsSqr(Yu(1
-      ,1))*Sqr(vu) - 0.1*Sqr(g1)*Sqr(vu);
+   mass_matrix_Sc(0,0) = mq2(1,1) - 0.025*sqr(g1)*sqr(vd) + 0.125*sqr(g2)
+      *sqr(vd) + 0.5*sqr(Yu(1,1))*sqr(vu) + 0.025*sqr(g1)*sqr(vu) - 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Sc(0,1) = 0.7071067811865475*vu*std::conj(TYu(1,1)) -
+      0.7071067811865475*vd*std::conj(Yu(1,1))*Mu;
+   mass_matrix_Sc(1,1) = mu2(1,1) + 0.1*sqr(g1)*sqr(vd) + 0.5*sqr(Yu(1
+      ,1))*sqr(vu) - 0.1*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Sc);
 
@@ -904,20 +911,20 @@ void CLASSNAME::calculate_MSc()
    // if (MSc.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sc);
 
-   MSc = AbsSqrt(MSc);
+   MSc = sqrt(MSc);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sb() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Sb;
 
-   mass_matrix_Sb(0,0) = mq2(2,2) + 0.5*AbsSqr(Yd(2,2))*Sqr(vd) - 0.025*
-      Sqr(g1)*Sqr(vd) - 0.125*Sqr(g2)*Sqr(vd) + 0.025*Sqr(g1)*Sqr(vu) + 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_Sb(0,1) = 0.7071067811865475*vd*Conj(TYd(2,2)) -
-      0.7071067811865475*vu*Conj(Yd(2,2))*Mu;
-   mass_matrix_Sb(1,1) = md2(2,2) + 0.5*AbsSqr(Yd(2,2))*Sqr(vd) - 0.05*
-      Sqr(g1)*Sqr(vd) + 0.05*Sqr(g1)*Sqr(vu);
+   mass_matrix_Sb(0,0) = mq2(2,2) + 0.5*sqr(Yd(2,2))*sqr(vd) - 0.025*
+      sqr(g1)*sqr(vd) - 0.125*sqr(g2)*sqr(vd) + 0.025*sqr(g1)*sqr(vu) + 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_Sb(0,1) = 0.7071067811865475*vd*std::conj(TYd(2,2)) -
+      0.7071067811865475*vu*std::conj(Yd(2,2))*Mu;
+   mass_matrix_Sb(1,1) = md2(2,2) + 0.5*sqr(Yd(2,2))*sqr(vd) - 0.05*
+      sqr(g1)*sqr(vd) + 0.05*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_Sb);
 
@@ -932,20 +939,20 @@ void CLASSNAME::calculate_MSb()
    // if (MSb.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sb);
 
-   MSb = AbsSqrt(MSb);
+   MSb = sqrt(MSb);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_St() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_St;
 
-   mass_matrix_St(0,0) = mq2(2,2) - 0.025*Sqr(g1)*Sqr(vd) + 0.125*Sqr(g2)
-      *Sqr(vd) + 0.5*AbsSqr(Yu(2,2))*Sqr(vu) + 0.025*Sqr(g1)*Sqr(vu) - 0.125*
-      Sqr(g2)*Sqr(vu);
-   mass_matrix_St(0,1) = 0.7071067811865475*vu*Conj(TYu(2,2)) -
-      0.7071067811865475*vd*Conj(Yu(2,2))*Mu;
-   mass_matrix_St(1,1) = mu2(2,2) + 0.1*Sqr(g1)*Sqr(vd) + 0.5*AbsSqr(Yu(2
-      ,2))*Sqr(vu) - 0.1*Sqr(g1)*Sqr(vu);
+   mass_matrix_St(0,0) = mq2(2,2) - 0.025*sqr(g1)*sqr(vd) + 0.125*sqr(g2)
+      *sqr(vd) + 0.5*sqr(Yu(2,2))*sqr(vu) + 0.025*sqr(g1)*sqr(vu) - 0.125*
+      sqr(g2)*sqr(vu);
+   mass_matrix_St(0,1) = 0.7071067811865475*vu*std::conj(TYu(2,2)) -
+      0.7071067811865475*vd*std::conj(Yu(2,2))*Mu;
+   mass_matrix_St(1,1) = mu2(2,2) + 0.1*sqr(g1)*sqr(vd) + 0.5*sqr(Yu(2
+      ,2))*sqr(vu) - 0.1*sqr(g1)*sqr(vu);
 
    Hermitianize(mass_matrix_St);
 
@@ -960,19 +967,19 @@ void CLASSNAME::calculate_MSt()
    // if (MSt.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::St);
 
-   MSt = AbsSqrt(MSt);
+   MSt = sqrt(MSt);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_hh() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_hh;
 
-   mass_matrix_hh(0,0) = mHd2 + AbsSqr(Mu) + 0.225*Sqr(g1)*Sqr(vd) +
-      0.375*Sqr(g2)*Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) - 0.125*Sqr(g2)*Sqr(vu);
-   mass_matrix_hh(0,1) = -0.5*BMu - 0.5*Conj(BMu) - 0.15*vd*vu*Sqr(g1) -
-      0.25*vd*vu*Sqr(g2);
-   mass_matrix_hh(1,1) = mHu2 + AbsSqr(Mu) - 0.075*Sqr(g1)*Sqr(vd) -
-      0.125*Sqr(g2)*Sqr(vd) + 0.225*Sqr(g1)*Sqr(vu) + 0.375*Sqr(g2)*Sqr(vu);
+   mass_matrix_hh(0,0) = mHd2 + sqr(Mu) + 0.225*sqr(g1)*sqr(vd) +
+      0.375*sqr(g2)*sqr(vd) - 0.075*sqr(g1)*sqr(vu) - 0.125*sqr(g2)*sqr(vu);
+   mass_matrix_hh(0,1) = -0.5*BMu - 0.5*BMu - 0.15*vd*vu*sqr(g1) -
+      0.25*vd*vu*sqr(g2);
+   mass_matrix_hh(1,1) = mHu2 + sqr(Mu) - 0.075*sqr(g1)*sqr(vd) -
+      0.125*sqr(g2)*sqr(vd) + 0.225*sqr(g1)*sqr(vu) + 0.375*sqr(g2)*sqr(vu);
 
    Symmetrize(mass_matrix_hh);
 
@@ -987,24 +994,24 @@ void CLASSNAME::calculate_Mhh()
    // if (Mhh.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::hh);
 
-   Mhh = AbsSqrt(Mhh);
+   Mhh = sqrt(Mhh);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Ah() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Ah;
 
-   mass_matrix_Ah(0,0) = mHd2 + AbsSqr(Mu) + 0.3872983346207417*g1*g2*Cos
-      (ThetaW())*Sin(ThetaW())*Sqr(vd) + 0.075*Sqr(g1)*Sqr(vd) + 0.125*Sqr(g2)*
-      Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) - 0.125*Sqr(g2)*Sqr(vu) + 0.25*Sqr(g2)*
-      Sqr(vd)*Sqr(Cos(ThetaW())) + 0.15*Sqr(g1)*Sqr(vd)*Sqr(Sin(ThetaW()));
-   mass_matrix_Ah(0,1) = 0.5*BMu + 0.5*Conj(BMu) - 0.3872983346207417*g1*
-      g2*vd*vu*Cos(ThetaW())*Sin(ThetaW()) - 0.25*vd*vu*Sqr(g2)*Sqr(Cos(ThetaW(
-      ))) - 0.15*vd*vu*Sqr(g1)*Sqr(Sin(ThetaW()));
-   mass_matrix_Ah(1,1) = mHu2 + AbsSqr(Mu) - 0.075*Sqr(g1)*Sqr(vd) -
-      0.125*Sqr(g2)*Sqr(vd) + 0.3872983346207417*g1*g2*Cos(ThetaW())*Sin(ThetaW
-      ())*Sqr(vu) + 0.075*Sqr(g1)*Sqr(vu) + 0.125*Sqr(g2)*Sqr(vu) + 0.25*Sqr(g2
-      )*Sqr(vu)*Sqr(Cos(ThetaW())) + 0.15*Sqr(g1)*Sqr(vu)*Sqr(Sin(ThetaW()));
+   mass_matrix_Ah(0,0) = mHd2 + sqr(Mu) + 0.3872983346207417*g1*g2*std::cos
+      (ThetaW())*std::sin(ThetaW())*sqr(vd) + 0.075*sqr(g1)*sqr(vd) + 0.125*sqr(g2)*
+      sqr(vd) - 0.075*sqr(g1)*sqr(vu) - 0.125*sqr(g2)*sqr(vu) + 0.25*sqr(g2)*
+      sqr(vd)*sqr(std::cos(ThetaW())) + 0.15*sqr(g1)*sqr(vd)*sqr(std::sin(ThetaW()));
+   mass_matrix_Ah(0,1) = 0.5*BMu + 0.5*BMu - 0.3872983346207417*g1*
+      g2*vd*vu*std::cos(ThetaW())*std::sin(ThetaW()) - 0.25*vd*vu*sqr(g2)*sqr(std::cos(ThetaW(
+      ))) - 0.15*vd*vu*sqr(g1)*sqr(std::sin(ThetaW()));
+   mass_matrix_Ah(1,1) = mHu2 + sqr(Mu) - 0.075*sqr(g1)*sqr(vd) -
+      0.125*sqr(g2)*sqr(vd) + 0.3872983346207417*g1*g2*std::cos(ThetaW())*std::sin(ThetaW
+      ())*sqr(vu) + 0.075*sqr(g1)*sqr(vu) + 0.125*sqr(g2)*sqr(vu) + 0.25*sqr(g2
+      )*sqr(vu)*sqr(std::cos(ThetaW())) + 0.15*sqr(g1)*sqr(vu)*sqr(std::sin(ThetaW()));
 
    Symmetrize(mass_matrix_Ah);
 
@@ -1019,18 +1026,18 @@ void CLASSNAME::calculate_MAh()
    // if (MAh.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Ah);
 
-   MAh = AbsSqrt(MAh);
+   MAh = sqrt(MAh);
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Hpm() const
 {
    Eigen::Matrix<double,2,2> mass_matrix_Hpm;
 
-   mass_matrix_Hpm(0,0) = mHd2 + AbsSqr(Mu) + 0.075*Sqr(g1)*Sqr(vd) +
-      0.375*Sqr(g2)*Sqr(vd) - 0.075*Sqr(g1)*Sqr(vu) + 0.125*Sqr(g2)*Sqr(vu);
-   mass_matrix_Hpm(0,1) = Conj(BMu);
-   mass_matrix_Hpm(1,1) = mHu2 + AbsSqr(Mu) - 0.075*Sqr(g1)*Sqr(vd) +
-      0.125*Sqr(g2)*Sqr(vd) + 0.075*Sqr(g1)*Sqr(vu) + 0.375*Sqr(g2)*Sqr(vu);
+   mass_matrix_Hpm(0,0) = mHd2 + sqr(Mu) + 0.075*sqr(g1)*sqr(vd) +
+      0.375*sqr(g2)*sqr(vd) - 0.075*sqr(g1)*sqr(vu) + 0.125*sqr(g2)*sqr(vu);
+   mass_matrix_Hpm(0,1) = BMu;
+   mass_matrix_Hpm(1,1) = mHu2 + sqr(Mu) - 0.075*sqr(g1)*sqr(vd) +
+      0.125*sqr(g2)*sqr(vd) + 0.075*sqr(g1)*sqr(vu) + 0.375*sqr(g2)*sqr(vu);
 
    Hermitianize(mass_matrix_Hpm);
 
@@ -1045,7 +1052,7 @@ void CLASSNAME::calculate_MHpm()
    // if (MHpm.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Hpm);
 
-   MHpm = AbsSqrt(MHpm);
+   MHpm = sqrt(MHpm);
 }
 
 Eigen::Matrix<double,4,4> CLASSNAME::get_mass_matrix_Chi() const
@@ -1094,7 +1101,7 @@ void CLASSNAME::calculate_MCha()
 
 double CLASSNAME::get_mass_matrix_VWm() const
 {
-   const double mass_matrix_VWm = Re(0.25*Sqr(g2)*(Sqr(vd) + Sqr(vu)));
+   const double mass_matrix_VWm = 0.25*sqr(g2)*(sqr(vd) + sqr(vu));
 
    return mass_matrix_VWm;
 }
@@ -1102,41 +1109,41 @@ double CLASSNAME::get_mass_matrix_VWm() const
 void CLASSNAME::calculate_MVWm()
 {
    const auto mass_matrix_VWm = get_mass_matrix_VWm();
-   MVWm = calculate_singlet_mass(mass_matrix_VWm);
+   MVWm = std::abs(mass_matrix_VWm);
 
    // if (MVWm < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::VWm);
 
-   MVWm = AbsSqrt(MVWm);
+   MVWm = sqrt(MVWm);
 }
 
 
 double CLASSNAME::get_ewsb_eq_hh_1() const
 {
-   double result = Re(mHd2*vd + vd*AbsSqr(Mu) - 0.5*vu*BMu - 0.5*vu*Conj(BMu) +
-      0.075*Power(vd,3)*Sqr(g1) + 0.125*Power(vd,3)*Sqr(g2) - 0.075*vd*Sqr(g1)*
-      Sqr(vu) - 0.125*vd*Sqr(g2)*Sqr(vu));
+   double result = mHd2*vd + vd*sqr(Mu) - 0.5*vu*BMu - 0.5*vu*BMu +
+      0.075*std::pow(vd,3)*sqr(g1) + 0.125*std::pow(vd,3)*sqr(g2) - 0.075*vd*sqr(g1)*
+      sqr(vu) - 0.125*vd*sqr(g2)*sqr(vu);
 
    return result;
 }
 
 double CLASSNAME::get_ewsb_eq_hh_2() const
 {
-   double result = Re(mHu2*vu + vu*AbsSqr(Mu) - 0.5*vd*BMu - 0.5*vd*Conj(BMu) +
-      0.075*Power(vu,3)*Sqr(g1) + 0.125*Power(vu,3)*Sqr(g2) - 0.075*vu*Sqr(g1)*
-      Sqr(vd) - 0.125*vu*Sqr(g2)*Sqr(vd));
+   double result = mHu2*vu + vu*sqr(Mu) - 0.5*vd*BMu - 0.5*vd*BMu +
+      0.075*std::pow(vu,3)*sqr(g1) + 0.125*std::pow(vu,3)*sqr(g2) - 0.075*vu*sqr(g1)*
+      sqr(vd) - 0.125*vu*sqr(g2)*sqr(vd);
 
    return result;
 }
 
 double CLASSNAME::ThetaW() const
 {
-   return ArcTan((0.7745966692414834*g1)/g2);
+   return std::atan((0.7745966692414834*g1)/g2);
 }
 
 double CLASSNAME::v() const
 {
-   return 2*Sqrt(Sqr(MVWm)/Sqr(g2));
+   return 2*sqrt(sqr(MVWm)/sqr(g2));
 }
 
 
