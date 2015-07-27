@@ -5,7 +5,7 @@ LIBEXT          := .a
 
 # Variables for compilation
 CXX             := g++
-CPPFLAGS        := -I. -Igm2 -Islhaea -Isrc
+CPPFLAGS        := -I. -Isrc
 CXXFLAGS        := -O -std=c++11
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
@@ -24,16 +24,16 @@ LAPACKLIBS      := -llapack -lblas
 all: alllib allexec
 
 clean::
-		-rm -f $(GM2CALC_OBJ)
-		-rm -f $(GM2CALC_DEP)
-		-rm -f $(GM2CALC_EXE)
+	-rm -f $(GM2CALC_OBJ)
+	-rm -f $(GM2CALC_DEP)
+	-rm -f $(GM2CALC_EXE)
 
-include gm2/module.mk
+include src/module.mk
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),depend)
 ifeq ($(findstring print-,$(MAKECMDGOALS)),)
--include $(GM2CALC_DEP)
+-include $(ALLDEP)
 endif
 endif
 endif
