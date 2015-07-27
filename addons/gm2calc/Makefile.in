@@ -18,6 +18,7 @@ BOOSTFLAGS      := -I/usr/include
 EIGENFLAGS      := -I/usr/include/eigen3
 LAPACKLIBS      := -llapack -lblas
 LIBEXT          := .a
+BINDIR          := bin
 
 .PHONY:         all allexec alllib clean depend
 
@@ -39,6 +40,9 @@ endif
 allexec:  $(ALLEXE)
 alllib:   $(ALLLIB)
 depend:   $(ALLDEP)
+
+$(BINDIR):
+	mkdir $(BINDIR)
 
 config.h: Makefile
 	rm -f $@-t $@
