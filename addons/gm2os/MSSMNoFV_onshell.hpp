@@ -74,7 +74,7 @@ public:
    const Eigen::Array<double,2,1>&  get_MStop() const { return get_MSt(); }
    const Eigen::Matrix<double,2,2>& get_UStop() const { return get_ZT(); }
 
-   void convert_to_onshell();
+   void convert_to_onshell(double precision = 1e-8);
    void convert_yukawa_couplings_treelevel();
 
    friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);

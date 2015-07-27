@@ -97,7 +97,7 @@ double MSSMNoFV_onshell::get_EL() const {
  * masses and corresponding mixing matrices.  From these quantities,
  * the on-shell model parameters are calculated.
  */
-void MSSMNoFV_onshell::convert_to_onshell() {
+void MSSMNoFV_onshell::convert_to_onshell(double precision) {
    calculate_DRbar_masses();
    check_input();
 
@@ -105,9 +105,9 @@ void MSSMNoFV_onshell::convert_to_onshell() {
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings_treelevel();
-   convert_Mu_M1_M2(1e-8, 100);
+   convert_Mu_M1_M2(precision, 1000);
    convert_yukawa_couplings(); // first guess of resummed yukawas
-   convert_mf2(1e-8, 1000);
+   convert_mf2(precision, 1000);
    convert_yukawa_couplings();
    calculate_DRbar_masses();
 }
