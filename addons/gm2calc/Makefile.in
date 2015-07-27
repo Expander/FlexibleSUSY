@@ -1,7 +1,6 @@
 # Package information
 PKGNAME         := gm2calc
 VERSION         := 0.0.0
-LIBEXT          := .a
 
 # Variables for compilation
 CXX             := g++
@@ -18,6 +17,7 @@ BLASLIBS        := -lblas
 BOOSTFLAGS      := -I/usr/include
 EIGENFLAGS      := -I/usr/include/eigen3
 LAPACKLIBS      := -llapack -lblas
+LIBEXT          := .a
 
 .PHONY:         all allexec alllib clean depend
 
