@@ -17,8 +17,6 @@ MAKELIB         := ar cru
 BLASLIBS        := -lblas
 BOOSTFLAGS      := -I/usr/include
 EIGENFLAGS      := -I/usr/include/eigen3
-GSLLIBS         := $(shell gsl-config --libs)
-GSLFLAGS        := $(shell gsl-config --cflags)
 LAPACKLIBS      := -llapack -lblas
 
 .PHONY:         all allexec alllib clean depend

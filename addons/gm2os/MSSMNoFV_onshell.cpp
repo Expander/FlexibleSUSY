@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "MSSMNoFV_onshell.hpp"
-#include "gsl_utils.hpp"
 #include "numerics2.hpp"
 #include "gm2_error.hpp"
 #include "gm2_2loop.hpp"
