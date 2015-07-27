@@ -5,7 +5,7 @@ LIBEXT          := .a
 
 # Variables for compilation
 CXX             := g++
-CPPFLAGS        := -I. -Igm2
+CPPFLAGS        := -I. -Isrc -Igm2
 CXXFLAGS        := -O
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
