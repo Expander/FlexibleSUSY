@@ -25,7 +25,7 @@
 #include <cmath>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 // fermion/sfermion corrections, log-approximations
 
@@ -425,5 +425,5 @@ double amua2LCha(const MSSMNoFV_onshell& model) {
    return result * 2. * sqr(oneOver16PiSqr * sqr(EL) * MM / (MW * SW));
 }
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy

@@ -23,7 +23,7 @@
 #include <complex>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 /**
  * Calculates full 1-loop SUSY contribution to (g-2), Eq. (45) of
@@ -503,5 +503,5 @@ double delta_bottom_correction(const MSSMNoFV_onshell& model)
    return delta_b;
 }
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy

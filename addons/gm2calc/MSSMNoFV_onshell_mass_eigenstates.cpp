@@ -69,7 +69,7 @@ void Hermitianize(Eigen::MatrixBase<Derived>& m)
 
 namespace flexiblesusy {
 
-using namespace gm2os;
+using namespace gm2calc;
 
 #define CLASSNAME MSSMNoFV_onshell_mass_eigenstates
 #define PHYSICAL(parameter) physical.parameter

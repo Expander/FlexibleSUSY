@@ -22,7 +22,7 @@
 #include "error.hpp"
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 class EInvalidInput : public Error {
 public:
@@ -33,7 +33,7 @@ private:
    std::string message;
 };
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

@@ -48,7 +48,7 @@ config.h: Makefile
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
 	  echo ''; \
 	  echo '/* program version */'; \
-	  echo '#define VERSION "$(VERSION)"'; \
+	  echo '#define GM2CALC_VERSION "$(VERSION)"'; \
 	} | sed '/""/d' > $@-t
 	mv $@-t $@
 

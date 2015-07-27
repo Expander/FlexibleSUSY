@@ -23,7 +23,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 class MSSMNoFV_onshell;
 
@@ -76,7 +76,7 @@ Eigen::Matrix<double,4,2> x_im(const MSSMNoFV_onshell&);
 /// squared chargino muon-sneutrino mass ratio
 Eigen::Array<double,2,1> x_k(const MSSMNoFV_onshell&);
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

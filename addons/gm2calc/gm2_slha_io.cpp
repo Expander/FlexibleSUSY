@@ -27,7 +27,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 /**
  * @brief reads from source
@@ -340,5 +340,5 @@ void fill(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    fill_gm2_specific(slha_io, model);
 }
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy

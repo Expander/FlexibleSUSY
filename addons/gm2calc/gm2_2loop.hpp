@@ -22,7 +22,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 class MSSMNoFV_onshell;
 
@@ -54,7 +54,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell&);
 double amua2LSferm(const MSSMNoFV_onshell&);
 double amua2LCha(const MSSMNoFV_onshell&);
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

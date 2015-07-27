@@ -112,7 +112,7 @@ std::complex<double> dilog(const std::complex<double>& x) {
 
 } // anonymous namespace
 
-namespace gm2os {
+namespace gm2calc {
 
 double sqr(double x) { return x*x; }
 double cube(double x) { return x*x*x; }
@@ -267,5 +267,5 @@ double f_sferm(double z) {
    return 0.5 * z * (2. + log(z) - f_PS(z));
 }
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy

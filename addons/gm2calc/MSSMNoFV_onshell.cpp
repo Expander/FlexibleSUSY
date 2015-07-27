@@ -46,7 +46,7 @@ namespace {
 }
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
    : MSSMNoFV_onshell_mass_eigenstates()
@@ -410,5 +410,5 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
    return os;
 }
 
-} // gm2os
+} // gm2calc
 } // namespace flexiblesusy

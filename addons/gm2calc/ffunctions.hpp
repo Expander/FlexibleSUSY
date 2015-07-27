@@ -20,7 +20,7 @@
 #define GM2_FFUNCTIONS_H
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 double F1C(double);
 double F2C(double);
@@ -47,7 +47,7 @@ double signed_abs_sqrt(double);
 double signed_sqr(double);
 double sqr(double);
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

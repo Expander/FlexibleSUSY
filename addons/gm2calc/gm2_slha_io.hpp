@@ -29,7 +29,7 @@
 #include "numerics2.hpp"
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 class MSSMNoFV_onshell;
 
@@ -167,7 +167,7 @@ double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<
 
 void fill(const GM2_slha_io&, MSSMNoFV_onshell&);
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

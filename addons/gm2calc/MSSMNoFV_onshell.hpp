@@ -24,7 +24,7 @@
 #include <Eigen/Core>
 
 namespace flexiblesusy {
-namespace gm2os {
+namespace gm2calc {
 
 class MSSMNoFV_onshell : public MSSMNoFV_onshell_mass_eigenstates {
 public:
@@ -108,7 +108,7 @@ private:
    void convert_yukawa_couplings();
 };
 
-} // namespace gm2os
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif
