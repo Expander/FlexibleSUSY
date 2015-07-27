@@ -28,11 +28,6 @@ class MSSMNoFV_onshell;
 
 double LogNorm(const MSSMNoFV_onshell&);
 
-double tan_beta_cor(const MSSMNoFV_onshell&);
-double delta_mu_correction(const MSSMNoFV_onshell&);
-double delta_tau_correction(const MSSMNoFV_onshell&);
-double delta_bottom_correction(const MSSMNoFV_onshell&);
-
 double Deltag1(const MSSMNoFV_onshell&);
 double DeltaYukHiggsino(const MSSMNoFV_onshell&);
 double DeltaYukBinoHiggsino(const MSSMNoFV_onshell&);

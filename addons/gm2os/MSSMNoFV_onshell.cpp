@@ -19,7 +19,7 @@
 #include "MSSMNoFV_onshell.hpp"
 #include "numerics2.hpp"
 #include "gm2_error.hpp"
-#include "gm2_2loop.hpp"
+#include "gm2_1loop.hpp"
 #include "ffunctions.hpp"
 
 #include <cmath>

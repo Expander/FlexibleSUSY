@@ -57,6 +57,15 @@ double amuBHmuR(const MSSMNoFV_onshell&);
 /// 1-loop bino, left-handed smuon--right-handed smuon leading log approximation
 double amuBmuLmuR(const MSSMNoFV_onshell&);
 
+// === resummations ===
+
+double tan_beta_cor(const MSSMNoFV_onshell&);
+double delta_mu_correction(const MSSMNoFV_onshell&);
+double delta_tau_correction(const MSSMNoFV_onshell&);
+double delta_bottom_correction(const MSSMNoFV_onshell&);
+
+// === couplings ===
+
 Eigen::Array<double,2,1> AAC(const MSSMNoFV_onshell&);
 Eigen::Matrix<double,4,2> AAN(const MSSMNoFV_onshell&);
 Eigen::Array<double,2,1> BBC(const MSSMNoFV_onshell&);
