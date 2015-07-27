@@ -24,7 +24,6 @@
 #include <Eigen/Core>
 
 #include <iosfwd>
-#include <string>
 
 namespace flexiblesusy {
 
