@@ -82,8 +82,12 @@ distclean::     distclean-$(MODNAME)
 
 # dependent files in src/
 LIBgm2os_DEP_SRC := \
+		src/compare.hpp \
 		src/dilog.h \
 		src/dilog.f \
+		src/eigen_utils.hpp \
+		src/error.hpp \
+		src/linalg2.hpp \
 		src/numerics2.hpp
 
 export-gm2os:
@@ -95,6 +99,8 @@ export-gm2os:
 		install -m u=rw,g=r,o=r $(LIBgm2os_gm2_MK) $(LIBgm2os_INSTALL_DIR)/gm2/module.mk
 		install -d $(LIBgm2os_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r $(LIBgm2os_DEP_SRC) $(LIBgm2os_INSTALL_DIR)/src
+		install -d $(LIBgm2os_INSTALL_DIR)/slhaea
+		install -m u=rw,g=r,o=r slhaea/slhaea.h $(LIBgm2os_INSTALL_DIR)/slhaea
 
 $(LIBgm2os_DEP) $(EXEgm2os_DEP) $(LIBgm2os_OBJ) $(EXEgm2os_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
 
