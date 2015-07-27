@@ -97,6 +97,7 @@ export-gm2os:
 		install -m u=rw,g=r,o=r $(LIBgm2os_gm2_MK) $(LIBgm2os_INSTALL_DIR)/src/module.mk
 		install -m u=rw,g=r,o=r $(LIBgm2os_SRC) $(LIBgm2os_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r $(LIBgm2os_HDR) $(LIBgm2os_INSTALL_DIR)/src
+		install -m u=rw,g=r,o=r $(EXEgm2os_SRC) $(LIBgm2os_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r $(LIBgm2os_DEP_SRC) $(LIBgm2os_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r slhaea/slhaea.h $(LIBgm2os_INSTALL_DIR)/src
 

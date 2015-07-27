@@ -5,6 +5,7 @@ MODNAME      := src
 LIBsrc_SRC := \
 		$(DIR)/dilog.f \
 		$(DIR)/ffunctions.cpp \
+		$(DIR)/gm2.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
 		$(DIR)/gm2_slha_io.cpp \
