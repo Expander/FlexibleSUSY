@@ -62,10 +62,10 @@ Running GM2Calc
 GM2Calc uses an SLHA interface.
 Example:
 
-  $ src/gm2.x --slha-input-file=slha/LesHouches.in.gm2os
+  $ bin/gm2.x --slha-input-file=slha/LesHouches.in.gm2os
 
 or
 
-  $ cat slha/LesHouches.in.gm2os | src/gm2.x --slha-input-file=-
+  $ cat slha/LesHouches.in.gm2os | bin/gm2.x --slha-input-file=-
 
-See `src/gm2.x --help' for more options.
+See `bin/gm2.x --help' for more options.

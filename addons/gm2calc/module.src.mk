@@ -51,8 +51,9 @@ $(LIBsrc_DEP) $(EXEsrc_DEP) $(LIBsrc_OBJ) $(EXEsrc_OBJ): CPPFLAGS += $(EIGENFLAG
 $(LIBsrc): $(LIBsrc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBsrc) $(LIBFLEXI)
+$(DIR)/%.x: $(DIR)/%.o $(LIBsrc) $(LIBFLEXI) | $(BINDIR)
 		$(CXX) -o $@ $^ $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
+		mv $@ $(BINDIR)
 
 ALLDEP += $(LIBsrc_DEP) $(EXEsrc_DEP)
 ALLLIB += $(LIBsrc)
