@@ -353,6 +353,58 @@ void GM2_slha_io::process_fermion_sminputs_tuple(
    }
 }
 
+void fill_susy_masses_from_mass(
+   const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
+{
+   using namespace std::placeholders;
+
+   GM2_slha_io::Tuple_processor processor
+      = std::bind(GM2_slha_io::process_mass_tuple, std::ref(physical), _1, _2);
+
+   slha_io.read_block("MASS", processor);
+}
+
+void GM2_slha_io::process_mass_tuple(
+   MSSMNoFV_onshell_physical& physical, int key, double value)
+{
+   switch (key) {
+   case 1000012: physical.MSveL = value;    break;
+   case 1000014: physical.MSvmL = value;    break;
+   case 1000016: physical.MSvtL = value;    break;
+   case 1000001: physical.MSd(0) = value;   break;
+   case 2000001: physical.MSd(1) = value;   break;
+   case 1000002: physical.MSu(0) = value;   break;
+   case 2000002: physical.MSu(1) = value;   break;
+   case 1000011: physical.MSe(0) = value;   break;
+   case 2000011: physical.MSe(1) = value;   break;
+   case 1000013: physical.MSm(0) = value;   break;
+   case 2000013: physical.MSm(1) = value;   break;
+   case 1000015: physical.MStau(0) = value; break;
+   case 2000015: physical.MStau(1) = value; break;
+   case 1000003: physical.MSs(0) = value;   break;
+   case 2000003: physical.MSs(1) = value;   break;
+   case 1000004: physical.MSc(0) = value;   break;
+   case 2000004: physical.MSc(1) = value;   break;
+   case 1000005: physical.MSb(0) = value;   break;
+   case 2000005: physical.MSb(1) = value;   break;
+   case 1000006: physical.MSt(0) = value;   break;
+   case 2000006: physical.MSt(1) = value;   break;
+   case 25     : physical.Mhh(0) = value;   break;
+   case 35     : physical.Mhh(1) = value;   break;
+   case 36     : physical.MAh(1) = value;   break;
+   case 37     : physical.MHpm(1) = value;  break;
+   case 1000022: physical.MChi(0) = value;  break;
+   case 1000023: physical.MChi(1) = value;  break;
+   case 1000025: physical.MChi(2) = value;  break;
+   case 1000035: physical.MChi(3) = value;  break;
+   case 1000024: physical.MCha(0) = value;  break;
+   case 1000037: physical.MCha(1) = value;  break;
+   default:
+      WARNING("Unrecognized entry in block MASS: " << key);
+      break;
+   }
+}
+
 void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
    // read all pole masses (includin MW) from SMINPUTS
@@ -363,37 +415,7 @@ void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physic
    if (!is_zero(MW))
       physical.MVWm = MW;
 
-   physical.MSveL = slha_io.read_entry("MASS", 1000012);
-   physical.MSvmL = slha_io.read_entry("MASS", 1000014);
-   physical.MSvtL = slha_io.read_entry("MASS", 1000016);
-   physical.MSd(0) = slha_io.read_entry("MASS", 1000001);
-   physical.MSd(1) = slha_io.read_entry("MASS", 2000001);
-   physical.MSu(0) = slha_io.read_entry("MASS", 1000002);
-   physical.MSu(1) = slha_io.read_entry("MASS", 2000002);
-   physical.MSe(0) = slha_io.read_entry("MASS", 1000011);
-   physical.MSe(1) = slha_io.read_entry("MASS", 2000011);
-   physical.MSm(0) = slha_io.read_entry("MASS", 1000013);
-   physical.MSm(1) = slha_io.read_entry("MASS", 2000013);
-   physical.MStau(0) = slha_io.read_entry("MASS", 1000015);
-   physical.MStau(1) = slha_io.read_entry("MASS", 2000015);
-   physical.MSs(0) = slha_io.read_entry("MASS", 1000003);
-   physical.MSs(1) = slha_io.read_entry("MASS", 2000003);
-   physical.MSc(0) = slha_io.read_entry("MASS", 1000004);
-   physical.MSc(1) = slha_io.read_entry("MASS", 2000004);
-   physical.MSb(0) = slha_io.read_entry("MASS", 1000005);
-   physical.MSb(1) = slha_io.read_entry("MASS", 2000005);
-   physical.MSt(0) = slha_io.read_entry("MASS", 1000006);
-   physical.MSt(1) = slha_io.read_entry("MASS", 2000006);
-   physical.Mhh(0) = slha_io.read_entry("MASS", 25);
-   physical.Mhh(1) = slha_io.read_entry("MASS", 35);
-   physical.MAh(1) = slha_io.read_entry("MASS", 36);
-   physical.MHpm(1) = slha_io.read_entry("MASS", 37);
-   physical.MChi(0) = slha_io.read_entry("MASS", 1000022);
-   physical.MChi(1) = slha_io.read_entry("MASS", 1000023);
-   physical.MChi(2) = slha_io.read_entry("MASS", 1000025);
-   physical.MChi(3) = slha_io.read_entry("MASS", 1000035);
-   physical.MCha(0) = slha_io.read_entry("MASS", 1000024);
-   physical.MCha(1) = slha_io.read_entry("MASS", 1000037);
+   fill_susy_masses_from_mass(slha_io, physical);
 }
 
 void fill_pole_masses_from_sminputs_and_mass(
