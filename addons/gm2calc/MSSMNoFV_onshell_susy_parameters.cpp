@@ -16,8 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 22 Jul 2015 18:12:15
-
 #include "MSSMNoFV_onshell_susy_parameters.hpp"
 
 #include <iostream>

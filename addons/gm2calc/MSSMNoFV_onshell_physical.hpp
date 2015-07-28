@@ -16,8 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at Wed 22 Jul 2015 18:14:31
-
 #ifndef MSSMNoFV_onshell_PHYSICAL_H
 #define MSSMNoFV_onshell_PHYSICAL_H
 
