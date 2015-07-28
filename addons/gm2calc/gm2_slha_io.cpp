@@ -403,52 +403,74 @@ void fill_gm2_specific_alphas(const GM2_slha_io& slha_io, MSSMNoFV_onshell& mode
       model.set_alpha_thompson(alpha_thompson);
 }
 
+/**
+ * Reads the GM2CalcInput block and fills the model parameter class.
+ *
+ * This function assumes that MW(pole) and MZ(pole) are non-zero.
+ */
 void fill_gm2_specific_onshell_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   const double tanb = slha_io.read_entry("GM2CalcInput", 3);
-   const double MW = model.get_MW();
-   const double MZ = model.get_MZ();
-   const double cW = MW/MZ;
-   const double sW = std::sqrt(1. - cW*cW);
-   const double vev = 2. * MW * sW / model.get_EL();
-   const double sinb = tanb / std::sqrt(1 + tanb*tanb);
-   const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
+   using namespace std::placeholders;
 
-   model.set_vd(vev * cosb);
-   model.set_vu(vev * sinb);
+   GM2_slha_io::Tuple_processor processor
+      = std::bind(GM2_slha_io::process_gm2calcinput_tuple, std::ref(model), _1, _2);
 
-   model.set_scale(         slha_io.read_entry("GM2CalcInput", 0));
-   model.set_alpha_MZ(      slha_io.read_entry("GM2CalcInput", 1));
-   model.set_alpha_thompson(slha_io.read_entry("GM2CalcInput", 2));
-   model.set_Mu(            slha_io.read_entry("GM2CalcInput", 4));
-   model.set_MassB(         slha_io.read_entry("GM2CalcInput", 5));
-   model.set_MassWB(        slha_io.read_entry("GM2CalcInput", 6));
-   model.set_MassG(         slha_io.read_entry("GM2CalcInput", 7));
-   model.set_BMu(           slha_io.read_entry("GM2CalcInput", 8));
-   model.set_ml2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 9 )));
-   model.set_ml2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 10)));
-   model.set_ml2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 11)));
-   model.set_me2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 12)));
-   model.set_me2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 13)));
-   model.set_me2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 14)));
-   model.set_mq2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 15)));
-   model.set_mq2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 16)));
-   model.set_mq2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 17)));
-   model.set_mu2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 18)));
-   model.set_mu2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 19)));
-   model.set_mu2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 20)));
-   model.set_md2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 21)));
-   model.set_md2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 22)));
-   model.set_md2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 23)));
-   model.set_Ae( 0, 0,      slha_io.read_entry("GM2CalcInput", 24));
-   model.set_Ae( 1, 1,      slha_io.read_entry("GM2CalcInput", 25));
-   model.set_Ae( 2, 2,      slha_io.read_entry("GM2CalcInput", 26));
-   model.set_Ad( 0, 0,      slha_io.read_entry("GM2CalcInput", 27));
-   model.set_Ad( 1, 1,      slha_io.read_entry("GM2CalcInput", 28));
-   model.set_Ad( 2, 2,      slha_io.read_entry("GM2CalcInput", 29));
-   model.set_Au( 0, 0,      slha_io.read_entry("GM2CalcInput", 30));
-   model.set_Au( 1, 1,      slha_io.read_entry("GM2CalcInput", 31));
-   model.set_Au( 2, 2,      slha_io.read_entry("GM2CalcInput", 32));
+   slha_io.read_block("GM2CalcInput", processor);
+}
+
+void GM2_slha_io::process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
+                                             int key, double value)
+{
+   switch (key) {
+   case 0: model.set_scale(value);          break;
+   case 1: model.set_alpha_MZ(value);       break;
+   case 2: model.set_alpha_thompson(value); break;
+   case 3: {
+      const double tanb = value;
+      const double MW = model.get_MW();
+      const double MZ = model.get_MZ();
+      const double cW = MW/MZ;
+      const double sW = std::sqrt(1. - cW*cW);
+      const double vev = 2. * MW * sW / model.get_EL();
+      const double sinb = tanb / std::sqrt(1 + tanb*tanb);
+      const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
+      model.set_vd(vev * cosb);
+      model.set_vu(vev * sinb);
+      }
+      break;
+   case  4: model.set_Mu(    value); break;
+   case  5: model.set_MassB( value); break;
+   case  6: model.set_MassWB(value); break;
+   case  7: model.set_MassG( value); break;
+   case  8: model.set_BMu(   value); break;
+   case  9: model.set_ml2(0, 0, signed_sqr(value)); break;
+   case 10: model.set_ml2(1, 1, signed_sqr(value)); break;
+   case 11: model.set_ml2(2, 2, signed_sqr(value)); break;
+   case 12: model.set_me2(0, 0, signed_sqr(value)); break;
+   case 13: model.set_me2(1, 1, signed_sqr(value)); break;
+   case 14: model.set_me2(2, 2, signed_sqr(value)); break;
+   case 15: model.set_mq2(0, 0, signed_sqr(value)); break;
+   case 16: model.set_mq2(1, 1, signed_sqr(value)); break;
+   case 17: model.set_mq2(2, 2, signed_sqr(value)); break;
+   case 18: model.set_mu2(0, 0, signed_sqr(value)); break;
+   case 19: model.set_mu2(1, 1, signed_sqr(value)); break;
+   case 20: model.set_mu2(2, 2, signed_sqr(value)); break;
+   case 21: model.set_md2(0, 0, signed_sqr(value)); break;
+   case 22: model.set_md2(1, 1, signed_sqr(value)); break;
+   case 23: model.set_md2(2, 2, signed_sqr(value)); break;
+   case 24: model.set_Ae( 0, 0, value); break;
+   case 25: model.set_Ae( 1, 1, value); break;
+   case 26: model.set_Ae( 2, 2, value); break;
+   case 27: model.set_Ad( 0, 0, value); break;
+   case 28: model.set_Ad( 1, 1, value); break;
+   case 29: model.set_Ad( 2, 2, value); break;
+   case 30: model.set_Au( 0, 0, value); break;
+   case 31: model.set_Au( 1, 1, value); break;
+   case 32: model.set_Au( 2, 2, value); break;
+   default:
+      WARNING("Unrecognized entry in block GM2CalcInput: " << key);
+      break;
+   }
 }
 
 void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
@@ -490,6 +512,7 @@ void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
       break;
    case 2:
       config_options.tanb_resummation = value;
+      break;
    default:
       WARNING("Unrecognized entry in block GM2CalcConfig: " << key);
       break;
