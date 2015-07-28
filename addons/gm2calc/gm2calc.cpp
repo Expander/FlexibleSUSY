@@ -90,18 +90,37 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
    return options;
 }
 
+/**
+ * Setup the model parameters consistently, depending on the input
+ * parameter set (chosen by the user).
+ *
+ * If the user has chosen an SLHA-compliant input, the input
+ * parameters (given in \a slha_io) are converted to the g-2 specific
+ * on-shell scheme.
+ *
+ * If the user has chosen the GM2Calc specific input, the input
+ * parameters are already given in the on-shell scheme.  In this case
+ * the SUSY mass spectrum is calculated from the given input
+ * parameters.
+ *
+ * @param model model parameters (and particle masses)
+ * @param slha_io object with numerical values of input parameters
+ * @param options command line options (defines meaning of input parameter set)
+ */
 void setup_model(gm2calc::MSSMNoFV_onshell& model,
                  const gm2calc::GM2_slha_io& slha_io,
                  const Gm2_cmd_line_options& options)
 {
    switch (options.input_type) {
    case Gm2_cmd_line_options::SLHA:
-      // determine model parameters from an SLHA parameter set
+      // determine on-shell model parameters from an SLHA parameter
+      // set
       fill_slha(slha_io, model);
       model.convert_to_onshell();
       break;
    case Gm2_cmd_line_options::GM2Calc:
-      // on-shell parameters are directly given
+      // on-shell parameters are directly given, calculate mass
+      // spectrum
       fill_gm2calc(slha_io, model);
       model.calculate_masses();
       break;
@@ -112,7 +131,7 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
 }
 
 /**
- * Calculate most precise value of amu.
+ * Calculate most precise value of a_mu for a given set op parameters
  */
 double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
 {
@@ -129,7 +148,8 @@ double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
 }
 
 /**
- * Print detailed amu calculation
+ * Prints detailed a_mu calculation (1-loop w/ and w/o tan(beta)
+ * resumation, 2-loop, and differenc contributions).
  */
 void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
 {
@@ -202,6 +222,15 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       ;
 }
 
+/**
+ * Calculates a_mu for a given set of configuration options (loop
+ * order, tan(beta) resummation.
+ *
+ * @param model model parameters
+ * @param config_options configuration options
+ *
+ * @return a_mu
+ */
 double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
                      const gm2calc::Config_options& config_options)
 {
