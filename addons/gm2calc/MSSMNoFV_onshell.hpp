@@ -40,6 +40,9 @@ public:
    void set_Ae(const Eigen::Matrix<double,3,3>& A) { Ae = A; }
    void set_Au(const Eigen::Matrix<double,3,3>& A) { Au = A; }
    void set_Ad(const Eigen::Matrix<double,3,3>& A) { Ad = A; }
+   void set_Ae(unsigned i, unsigned k, double a) { Ae(i,k) = a; }
+   void set_Au(unsigned i, unsigned k, double a) { Au(i,k) = a; }
+   void set_Ad(unsigned i, unsigned k, double a) { Ad(i,k) = a; }
 
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
