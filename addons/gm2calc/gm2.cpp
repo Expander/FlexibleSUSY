@@ -36,13 +36,17 @@ void print_usage(const char* program_name)
       "Usage: " << program_name << " [options]\n"
       "Options:\n"
       "  --slha-input-file=<source>      SLHA input source (file name or - for stdin)\n"
+      "  --gm2calc-input-file=<source>   GM2Calc input source (file name or - for stdin)\n"
       "  --help,-h                       print this help message\n"
       "  --version,-v                    print version number"
              << std::endl;
 }
 
 struct Gm2_cmd_line_options {
-   std::string slha_input_source;
+   enum E_input_type { SLHA, GM2Calc };
+
+   std::string input_source;
+   E_input_type input_type;
 
    static bool starts_with(const std::string& str, const std::string& prefix) {
       return !str.compare(0, prefix.size(), prefix);
@@ -57,7 +61,14 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
       const std::string option(argv[i]);
 
       if (Gm2_cmd_line_options::starts_with(option, "--slha-input-file=")) {
-         options.slha_input_source = option.substr(18);
+         options.input_source = option.substr(18);
+         options.input_type = Gm2_cmd_line_options::SLHA;
+         continue;
+      }
+
+      if (Gm2_cmd_line_options::starts_with(option, "--gm2calc-input-file=")) {
+         options.input_source = option.substr(21);
+         options.input_type = Gm2_cmd_line_options::GM2Calc;
          continue;
       }
 
@@ -82,9 +93,10 @@ int main(int argc, const char* argv[])
 {
    Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
 
-   if (options.slha_input_source.empty()) {
-      ERROR("No SLHA input source given!\n"
-            "   Please provide one via the option --slha-input-file=");
+   if (options.input_source.empty()) {
+      ERROR("No input source given!\n"
+            "   Please provide an SLHA input via the option --slha-input-file=\n"
+            "   or a GM2Calc input via the option --gm2calc-input-file=");
       return EXIT_FAILURE;
    }
 
@@ -92,17 +104,19 @@ int main(int argc, const char* argv[])
    gm2calc::GM2_slha_io slha_io;
 
    try {
-      slha_io.read_from_source(options.slha_input_source);
-      fill(slha_io, osmodel);
+      slha_io.read_from_source(options.input_source);
+      switch (options.input_type) {
+      case Gm2_cmd_line_options::SLHA:
+         fill_slha(slha_io, osmodel);
+         osmodel.convert_to_onshell();
+         break;
+      case Gm2_cmd_line_options::GM2Calc:
+         fill_gm2calc(slha_io, osmodel);
+         osmodel.calculate_masses();
+         break;
+      }
    } catch (const Error& error) {
       ERROR(error.what());
-      return EXIT_FAILURE;
-   }
-
-   try {
-      osmodel.convert_to_onshell();
-   } catch (const Error& e) {
-      ERROR(e.what());
       return EXIT_FAILURE;
    }
 

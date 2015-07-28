@@ -207,6 +207,12 @@ double read_scale(const GM2_slha_io& slha_io)
    return scale;
 }
 
+void fill_alpha_s(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+{
+   const double alpha_S = slha_io.read_entry("SMINPUTS", 3);
+   model.set_g3(std::sqrt(4*M_PI*alpha_S));
+}
+
 void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    {
@@ -224,9 +230,6 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
       slha_io.read_block("AD", Ad);
       model.set_Ad(Ad);
    }
-
-   const double alpha_S = slha_io.read_entry("SMINPUTS", 3);
-   model.set_g3(std::sqrt(4*M_PI*alpha_S));
 
    model.set_Mu(slha_io.read_entry("HMIX", 1));
    model.set_mHd2(slha_io.read_entry("MSOFT", 21));
@@ -267,16 +270,8 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    model.set_scale(read_scale(slha_io));
 }
 
-void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
+void fill_fermion_pole_masses_from_sminputs(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
-   // read MW from MASS[24].  If not given there, read from
-   // SMINPUTS[9]
-   double MW = slha_io.read_entry("MASS", 24);
-   if (is_zero(MW))
-      MW = slha_io.read_entry("SMINPUTS", 9);
-
-   physical.MVWm = MW;
-   physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
    physical.MFd = slha_io.read_entry("SMINPUTS", 21);
    physical.MFs = slha_io.read_entry("SMINPUTS", 23);
    physical.MFb = slha_io.read_entry("SMINPUTS", 5);
@@ -286,6 +281,20 @@ void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physic
    physical.MFe = slha_io.read_entry("SMINPUTS", 11);
    physical.MFm = slha_io.read_entry("SMINPUTS", 13);
    physical.MFtau = slha_io.read_entry("SMINPUTS", 7);
+}
+
+void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
+{
+   // read MW from MASS[24].  If not given there, read from
+   // SMINPUTS[9]
+   double MW = slha_io.read_entry("MASS", 24);
+   if (is_zero(MW))
+      MW = slha_io.read_entry("SMINPUTS", 9);
+
+   fill_fermion_pole_masses_from_sminputs(slha_io, physical);
+
+   physical.MVWm = MW;
+   physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
    physical.MSveL = slha_io.read_entry("MASS", 1000012);
    physical.MSvmL = slha_io.read_entry("MASS", 1000014);
    physical.MSvtL = slha_io.read_entry("MASS", 1000016);
@@ -319,7 +328,7 @@ void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physic
    physical.MCha(1) = slha_io.read_entry("MASS", 1000037);
 }
 
-void fill_pole_masses(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+void fill_pole_masses_from_sminputs_and_mass(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    MSSMNoFV_onshell_physical physical_hk;
    fill_physical(slha_io, physical_hk);
@@ -327,10 +336,18 @@ void fill_pole_masses(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    model.get_physical() = physical_hk;
 }
 
-void fill_gm2_specific(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+void fill_pole_masses_from_sminputs(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   const double alpha_MZ = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 1));
-   const double alpha_thompson = std::abs(slha_io.read_entry("FlexibleSUSYGM2", 2));
+   fill_fermion_pole_masses_from_sminputs(slha_io, model.get_physical());
+
+   model.get_physical().MVWm = slha_io.read_entry("SMINPUTS", 9);
+   model.get_physical().MVZ = slha_io.read_entry("SMINPUTS", 4);
+}
+
+void fill_gm2_specific_alphas(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+{
+   const double alpha_MZ = std::abs(slha_io.read_entry("FlexibleSUSYGM2Input", 1));
+   const double alpha_thompson = std::abs(slha_io.read_entry("FlexibleSUSYGM2Input", 2));
 
    if (alpha_MZ > std::numeric_limits<double>::epsilon())
       model.set_alpha_MZ(alpha_MZ);
@@ -339,11 +356,68 @@ void fill_gm2_specific(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
       model.set_alpha_thompson(alpha_thompson);
 }
 
-void fill(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+void fill_gm2_specific_onshell_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   fill_pole_masses(slha_io, model);
+   const double tanb = slha_io.read_entry("FlexibleSUSYGM2Input", 3);
+   const double MW = model.get_MW();
+   const double MZ = model.get_MZ();
+   const double cW = MW/MZ;
+   const double sW = std::sqrt(1. - cW*cW);
+   const double vev = 2. * MW * sW / model.get_EL();
+   const double sinb = tanb / std::sqrt(1 + tanb*tanb);
+   const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
+
+   model.set_vd(vev * cosb);
+   model.set_vu(vev * sinb);
+
+   model.set_scale(         slha_io.read_entry("FlexibleSUSYGM2Input", 0));
+   model.set_alpha_MZ(      slha_io.read_entry("FlexibleSUSYGM2Input", 1));
+   model.set_alpha_thompson(slha_io.read_entry("FlexibleSUSYGM2Input", 2));
+   model.set_Mu(            slha_io.read_entry("FlexibleSUSYGM2Input", 4));
+   model.set_MassB(         slha_io.read_entry("FlexibleSUSYGM2Input", 5));
+   model.set_MassWB(        slha_io.read_entry("FlexibleSUSYGM2Input", 6));
+   model.set_MassG(         slha_io.read_entry("FlexibleSUSYGM2Input", 7));
+   model.set_BMu(           slha_io.read_entry("FlexibleSUSYGM2Input", 8));
+   model.set_ml2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 9 )));
+   model.set_ml2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 10)));
+   model.set_ml2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 11)));
+   model.set_me2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 12)));
+   model.set_me2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 13)));
+   model.set_me2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 14)));
+   model.set_mq2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 15)));
+   model.set_mq2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 16)));
+   model.set_mq2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 17)));
+   model.set_mu2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 18)));
+   model.set_mu2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 19)));
+   model.set_mu2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 20)));
+   model.set_md2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 21)));
+   model.set_md2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 22)));
+   model.set_md2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 23)));
+   model.set_Ae( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 24));
+   model.set_Ae( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 25));
+   model.set_Ae( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 26));
+   model.set_Ad( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 27));
+   model.set_Ad( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 28));
+   model.set_Ad( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 29));
+   model.set_Au( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 30));
+   model.set_Au( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 31));
+   model.set_Au( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 32));
+}
+
+void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+{
+   fill_pole_masses_from_sminputs(slha_io, model);
+   fill_alpha_s(slha_io, model);
+   fill_gm2_specific_alphas(slha_io, model);
+   fill_gm2_specific_onshell_parameters(slha_io, model);
+}
+
+void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+{
+   fill_pole_masses_from_sminputs_and_mass(slha_io, model);
+   fill_alpha_s(slha_io, model);
    fill_drbar_parameters(slha_io, model);
-   fill_gm2_specific(slha_io, model);
+   fill_gm2_specific_alphas(slha_io, model);
 }
 
 } // namespace gm2calc

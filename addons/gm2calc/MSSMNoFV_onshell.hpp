@@ -78,6 +78,7 @@ public:
    const Eigen::Matrix<double,2,2>& get_UStop() const { return get_ZT(); }
 
    void convert_to_onshell(double precision = 1e-8);
+   void calculate_masses();
    void convert_yukawa_couplings_treelevel();
 
    friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);

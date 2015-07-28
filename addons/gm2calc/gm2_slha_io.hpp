@@ -165,7 +165,8 @@ double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<
    return scale;
 }
 
-void fill(const GM2_slha_io&, MSSMNoFV_onshell&);
+void fill_gm2calc(const GM2_slha_io&, MSSMNoFV_onshell&);
+void fill_slha(const GM2_slha_io&, MSSMNoFV_onshell&);
 
 } // namespace gm2calc
 } // namespace flexiblesusy
