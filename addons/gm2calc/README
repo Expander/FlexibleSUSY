@@ -33,6 +33,7 @@ argument to make.  For example:
   $ make \
        CXX=icpc \
        FC=ifort \
+       FLIBS="-L/opt/intel/2015/lib/intel64 -lifcore -limf -lintlc" \
        EIGENFLAGS="-I/opt/eigen3/eigen3" \
        BOOSTFLAGS="-I/opt/boost/include"
 
