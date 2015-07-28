@@ -140,6 +140,8 @@ void MSSMNoFV_onshell::check_input()
       throw EInvalidInput("W mass is zero");
    if (is_zero(get_MZ()))
       throw EInvalidInput("Z mass is zero");
+   if (is_zero(get_MM()))
+      throw EInvalidInput("Muon mass is zero");
 }
 
 void MSSMNoFV_onshell::copy_susy_masses_to_pole()
