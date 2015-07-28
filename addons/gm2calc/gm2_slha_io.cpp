@@ -260,6 +260,46 @@ void fill_alpha_s(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    model.set_g3(std::sqrt(4*M_PI*alpha_S));
 }
 
+void fill_soft_parameters_from_msoft(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+{
+   using namespace std::placeholders;
+
+   GM2_slha_io::Tuple_processor processor
+      = std::bind(GM2_slha_io::process_msoft_tuple, std::ref(model), _1, _2);
+
+   slha_io.read_block("MSOFT", processor);
+}
+
+void GM2_slha_io::process_msoft_tuple(
+   MSSMNoFV_onshell& model, int key, double value)
+{
+   switch (key) {
+   case 21: model.set_mHd2(                value) ; break;
+   case 22: model.set_mHu2(                value) ; break;
+   case 31: model.set_ml2(0, 0, signed_sqr(value)); break;
+   case 32: model.set_ml2(1, 1, signed_sqr(value)); break;
+   case 33: model.set_ml2(2, 2, signed_sqr(value)); break;
+   case 34: model.set_me2(0, 0, signed_sqr(value)); break;
+   case 35: model.set_me2(1, 1, signed_sqr(value)); break;
+   case 36: model.set_me2(2, 2, signed_sqr(value)); break;
+   case 41: model.set_mq2(0, 0, signed_sqr(value)); break;
+   case 42: model.set_mq2(1, 1, signed_sqr(value)); break;
+   case 43: model.set_mq2(2, 2, signed_sqr(value)); break;
+   case 44: model.set_mu2(0, 0, signed_sqr(value)); break;
+   case 45: model.set_mu2(1, 1, signed_sqr(value)); break;
+   case 46: model.set_mu2(2, 2, signed_sqr(value)); break;
+   case 47: model.set_md2(0, 0, signed_sqr(value)); break;
+   case 48: model.set_md2(1, 1, signed_sqr(value)); break;
+   case 49: model.set_md2(2, 2, signed_sqr(value)); break;
+   case  1: model.set_MassB(               value) ; break;
+   case  2: model.set_MassWB(              value) ; break;
+   case  3: model.set_MassG(               value) ; break;
+   default:
+      WARNING("Unrecognized entry in block MSOFT: " << key);
+      break;
+   }
+}
+
 void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    {
@@ -278,27 +318,9 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
       model.set_Ad(Ad);
    }
 
+   fill_soft_parameters_from_msoft(slha_io, model);
+
    model.set_Mu(slha_io.read_entry("HMIX", 1));
-   model.set_mHd2(slha_io.read_entry("MSOFT", 21));
-   model.set_mHu2(slha_io.read_entry("MSOFT", 22));
-   model.set_ml2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 31)));
-   model.set_ml2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 32)));
-   model.set_ml2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 33)));
-   model.set_me2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 34)));
-   model.set_me2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 35)));
-   model.set_me2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 36)));
-   model.set_mq2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 41)));
-   model.set_mq2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 42)));
-   model.set_mq2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 43)));
-   model.set_mu2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 44)));
-   model.set_mu2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 45)));
-   model.set_mu2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 46)));
-   model.set_md2(0, 0, signed_sqr(slha_io.read_entry("MSOFT", 47)));
-   model.set_md2(1, 1, signed_sqr(slha_io.read_entry("MSOFT", 48)));
-   model.set_md2(2, 2, signed_sqr(slha_io.read_entry("MSOFT", 49)));
-   model.set_MassB(slha_io.read_entry("MSOFT", 1));
-   model.set_MassWB(slha_io.read_entry("MSOFT", 2));
-   model.set_MassG(slha_io.read_entry("MSOFT", 3));
 
    const double tanb = slha_io.read_entry("HMIX", 2);
    const double MA2_drbar = slha_io.read_entry("HMIX", 4);

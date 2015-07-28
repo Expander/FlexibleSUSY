@@ -104,6 +104,7 @@ public:
    static void process_gm2calcinput_tuple(MSSMNoFV_onshell&, int, double);
    static void process_fermion_sminputs_tuple(MSSMNoFV_onshell_physical&, int, double);
    static void process_mass_tuple(MSSMNoFV_onshell_physical&, int, double);
+   static void process_msoft_tuple(MSSMNoFV_onshell&, int, double);
 
 private:
    SLHAea::Coll data;          ///< SHLA data
