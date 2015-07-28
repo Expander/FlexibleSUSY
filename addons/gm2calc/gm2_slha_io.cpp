@@ -411,6 +411,7 @@ void GM2_slha_io::process_mass_tuple(
    case 2000005: physical.MSb(1) = value;   break;
    case 1000006: physical.MSt(0) = value;   break;
    case 2000006: physical.MSt(1) = value;   break;
+   case 24     : /* MW */                   break;
    case 25     : physical.Mhh(0) = value;   break;
    case 35     : physical.Mhh(1) = value;   break;
    case 36     : physical.MAh(1) = value;   break;
