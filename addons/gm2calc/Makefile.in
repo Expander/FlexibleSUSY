@@ -6,12 +6,11 @@ VERSION         := 0.0.0
 CXX             := g++
 CPPFLAGS        := -I. -Isrc
 CXXFLAGS        := -O2 -std=c++11
-CXX_DEP_GEN     := $(CXX)
-CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
+CXX_DEP_GEN     := g++
 FC              := gfortran
 FFLAGS          := -O2 -frecursive
 FLIBS           := -lgfortran -lm
-FOR_DEP_GEN     := $(FC)
+FOR_DEP_GEN     := gfortran
 MAKELIB         := ar cru
 BLASLIBS        := -lblas
 BOOSTFLAGS      := -I/usr/include
@@ -54,7 +53,7 @@ config.h: Makefile
 	mv $@-t $@
 
 %.d: %.cpp
-	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+	$(CXX_DEP_GEN) $(CPPFLAGS) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
