@@ -98,8 +98,8 @@ double MSSMNoFV_onshell::get_EL() const {
  * the on-shell model parameters are calculated.
  */
 void MSSMNoFV_onshell::convert_to_onshell(double precision) {
-   calculate_DRbar_masses();
    check_input();
+   calculate_DRbar_masses();
    copy_susy_masses_to_pole();
 
    convert_gauge_couplings();
@@ -121,6 +121,7 @@ void MSSMNoFV_onshell::convert_to_onshell(double precision) {
  * the on-shell model parameters are calculated.
  */
 void MSSMNoFV_onshell::calculate_masses() {
+   check_input();
    convert_gauge_couplings();
    convert_vev();
    convert_yukawa_couplings_treelevel();
