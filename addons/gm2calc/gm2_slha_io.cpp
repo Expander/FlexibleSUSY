@@ -269,7 +269,13 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 
 void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
-   physical.MVWm = slha_io.read_entry("MASS", 24);
+   // read MW from MASS[24].  If not given there, read from
+   // SMINPUTS[9]
+   double MW = slha_io.read_entry("MASS", 24);
+   if (is_zero(MW))
+      MW = slha_io.read_entry("SMINPUTS", 9);
+
+   physical.MVWm = MW;
    physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
    physical.MFd = slha_io.read_entry("SMINPUTS", 21);
    physical.MFs = slha_io.read_entry("SMINPUTS", 23);
