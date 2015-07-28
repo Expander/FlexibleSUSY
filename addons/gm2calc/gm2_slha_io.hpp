@@ -29,12 +29,10 @@
 #include "numerics2.hpp"
 
 namespace flexiblesusy {
-
-class MSSMNoFV_onshell_physical;
-
 namespace gm2calc {
 
 class MSSMNoFV_onshell;
+class MSSMNoFV_onshell_physical;
 
    namespace {
       /// SLHA number formatter

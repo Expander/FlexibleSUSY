@@ -24,6 +24,7 @@
 #include <iosfwd>
 
 namespace flexiblesusy {
+namespace gm2calc {
 
 class MSSMNoFV_onshell_soft_parameters : public MSSMNoFV_onshell_susy_parameters {
 public:
@@ -109,6 +110,7 @@ private:
 
 std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell_soft_parameters&);
 
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

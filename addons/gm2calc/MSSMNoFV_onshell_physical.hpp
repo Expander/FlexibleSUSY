@@ -24,6 +24,7 @@
 #include <iosfwd>
 
 namespace flexiblesusy {
+namespace gm2calc {
 
 struct MSSMNoFV_onshell_physical {
    MSSMNoFV_onshell_physical();
@@ -87,6 +88,7 @@ struct MSSMNoFV_onshell_physical {
 
 std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell_physical&);
 
+} // namespace gm2calc
 } // namespace flexiblesusy
 
 #endif

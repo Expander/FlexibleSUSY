@@ -21,6 +21,7 @@
 #include <iostream>
 
 namespace flexiblesusy {
+namespace gm2calc {
 
 MSSMNoFV_onshell_soft_parameters::MSSMNoFV_onshell_soft_parameters()
    : MSSMNoFV_onshell_susy_parameters()
@@ -99,3 +100,4 @@ std::ostream& operator<<(std::ostream& ostr, const MSSMNoFV_onshell_soft_paramet
 }
 
 } // namespace flexiblesusy
+} // namespace gm2calc
