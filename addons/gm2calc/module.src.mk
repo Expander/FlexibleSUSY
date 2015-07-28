@@ -5,7 +5,6 @@ MODNAME      := src
 LIBsrc_SRC := \
 		$(DIR)/dilog.f \
 		$(DIR)/ffunctions.cpp \
-		$(DIR)/gm2.cpp \
 		$(DIR)/gm2_1loop.cpp \
 		$(DIR)/gm2_2loop.cpp \
 		$(DIR)/gm2_slha_io.cpp \
@@ -17,7 +16,7 @@ LIBsrc_SRC := \
 
 # main()
 EXEsrc_SRC := \
-		$(DIR)/gm2.cpp
+		$(DIR)/gm2calc.cpp
 
 LIBsrc_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBsrc_SRC))) \

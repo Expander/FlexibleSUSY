@@ -23,7 +23,7 @@ LIBgm2calc_SRC := \
 
 # main()
 EXEgm2calc_SRC := \
-		$(DIR)/gm2.cpp
+		$(DIR)/gm2calc.cpp
 
 # header files
 LIBgm2calc_HDR := \
