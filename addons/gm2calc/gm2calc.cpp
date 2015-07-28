@@ -307,6 +307,8 @@ int main(int argc, const char* argv[])
       slha_io.write_to_stream(std::cout);
       break;
    default:
+      ERROR("Unknown output format: " << config_options.output_format);
+      return EXIT_FAILURE;
       break;
    }
 
