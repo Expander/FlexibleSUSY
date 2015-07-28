@@ -317,7 +317,7 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    model.set_scale(read_scale(slha_io));
 }
 
-void fill_fermion_pole_masses_from_sminputs(
+void fill_pole_masses_from_sminputs(
    const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
    using namespace std::placeholders;
@@ -332,11 +332,13 @@ void GM2_slha_io::process_fermion_sminputs_tuple(
    MSSMNoFV_onshell_physical& physical, int key, double value)
 {
    switch (key) {
+   case  3: /* alpha_s(MZ) */       break;
+   case  4: physical.MVZ = value;   break;
    case  5: physical.MFb = value;   break;
    case  6: physical.MFt = value;   break;
    case  7: physical.MFtau = value; break;
    case  8: /* nu_3 */              break;
-   case  9: /* MW */                break;
+   case  9: physical.MVWm = value;  break;
    case 11: physical.MFe = value;   break;
    case 12: /* nu_1 */              break;
    case 13: physical.MFm = value;   break;
@@ -353,16 +355,14 @@ void GM2_slha_io::process_fermion_sminputs_tuple(
 
 void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
-   // read MW from MASS[24].  If not given there, read from
-   // SMINPUTS[9]
-   double MW = slha_io.read_entry("MASS", 24);
-   if (is_zero(MW))
-      MW = slha_io.read_entry("SMINPUTS", 9);
+   // read all pole masses (includin MW) from SMINPUTS
+   fill_pole_masses_from_sminputs(slha_io, physical);
 
-   fill_fermion_pole_masses_from_sminputs(slha_io, physical);
+   // if MW if given in MASS[24], prefer this value
+   const double MW = slha_io.read_entry("MASS", 24);
+   if (!is_zero(MW))
+      physical.MVWm = MW;
 
-   physical.MVWm = MW;
-   physical.MVZ = slha_io.read_entry("SMINPUTS", 4);
    physical.MSveL = slha_io.read_entry("MASS", 1000012);
    physical.MSvmL = slha_io.read_entry("MASS", 1000014);
    physical.MSvtL = slha_io.read_entry("MASS", 1000016);
@@ -396,20 +396,13 @@ void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physic
    physical.MCha(1) = slha_io.read_entry("MASS", 1000037);
 }
 
-void fill_pole_masses_from_sminputs_and_mass(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
+void fill_pole_masses_from_sminputs_and_mass(
+   const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
    MSSMNoFV_onshell_physical physical_hk;
    fill_physical(slha_io, physical_hk);
    physical_hk.convert_to_hk();
-   model.get_physical() = physical_hk;
-}
-
-void fill_pole_masses_from_sminputs(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
-{
-   fill_fermion_pole_masses_from_sminputs(slha_io, model.get_physical());
-
-   model.get_physical().MVWm = slha_io.read_entry("SMINPUTS", 9);
-   model.get_physical().MVZ = slha_io.read_entry("SMINPUTS", 4);
+   physical = physical_hk;
 }
 
 void fill_gm2_specific_alphas(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
@@ -496,14 +489,14 @@ void GM2_slha_io::process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
 
 void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   fill_pole_masses_from_sminputs(slha_io, model);
+   fill_pole_masses_from_sminputs(slha_io, model.get_physical());
    fill_alpha_s(slha_io, model);
    fill_gm2_specific_onshell_parameters(slha_io, model);
 }
 
 void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   fill_pole_masses_from_sminputs_and_mass(slha_io, model);
+   fill_pole_masses_from_sminputs_and_mass(slha_io, model.get_physical());
    fill_alpha_s(slha_io, model);
    fill_drbar_parameters(slha_io, model);
    fill_gm2_specific_alphas(slha_io, model);
