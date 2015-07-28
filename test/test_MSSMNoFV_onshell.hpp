@@ -6,7 +6,7 @@
 #include <sstream>
 
 char const * const slha_input =
-"Block FlexibleSUSYGM2\n"
+"Block GM2CalcInput\n"
 "     1     0.00781653       # alpha(MZ)\n"
 "     2     0.00729735       # alpha in Thompson limit\n"
 "Block SMINPUTS\n"
