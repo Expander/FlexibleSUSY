@@ -1,4 +1,4 @@
-Block FlexibleSUSYGM2Input
+Block GM2CalcInput
      0     8.66360379E+02   # ren. scale
      1     0.00781653       # alpha(MZ)
      2     0.00729735       # alpha in Thompson limit

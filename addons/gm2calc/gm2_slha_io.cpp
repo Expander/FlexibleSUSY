@@ -346,8 +346,8 @@ void fill_pole_masses_from_sminputs(const GM2_slha_io& slha_io, MSSMNoFV_onshell
 
 void fill_gm2_specific_alphas(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   const double alpha_MZ = std::abs(slha_io.read_entry("FlexibleSUSYGM2Input", 1));
-   const double alpha_thompson = std::abs(slha_io.read_entry("FlexibleSUSYGM2Input", 2));
+   const double alpha_MZ = std::abs(slha_io.read_entry("GM2CalcInput", 1));
+   const double alpha_thompson = std::abs(slha_io.read_entry("GM2CalcInput", 2));
 
    if (alpha_MZ > std::numeric_limits<double>::epsilon())
       model.set_alpha_MZ(alpha_MZ);
@@ -358,7 +358,7 @@ void fill_gm2_specific_alphas(const GM2_slha_io& slha_io, MSSMNoFV_onshell& mode
 
 void fill_gm2_specific_onshell_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
-   const double tanb = slha_io.read_entry("FlexibleSUSYGM2Input", 3);
+   const double tanb = slha_io.read_entry("GM2CalcInput", 3);
    const double MW = model.get_MW();
    const double MZ = model.get_MZ();
    const double cW = MW/MZ;
@@ -370,38 +370,38 @@ void fill_gm2_specific_onshell_parameters(const GM2_slha_io& slha_io, MSSMNoFV_o
    model.set_vd(vev * cosb);
    model.set_vu(vev * sinb);
 
-   model.set_scale(         slha_io.read_entry("FlexibleSUSYGM2Input", 0));
-   model.set_alpha_MZ(      slha_io.read_entry("FlexibleSUSYGM2Input", 1));
-   model.set_alpha_thompson(slha_io.read_entry("FlexibleSUSYGM2Input", 2));
-   model.set_Mu(            slha_io.read_entry("FlexibleSUSYGM2Input", 4));
-   model.set_MassB(         slha_io.read_entry("FlexibleSUSYGM2Input", 5));
-   model.set_MassWB(        slha_io.read_entry("FlexibleSUSYGM2Input", 6));
-   model.set_MassG(         slha_io.read_entry("FlexibleSUSYGM2Input", 7));
-   model.set_BMu(           slha_io.read_entry("FlexibleSUSYGM2Input", 8));
-   model.set_ml2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 9 )));
-   model.set_ml2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 10)));
-   model.set_ml2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 11)));
-   model.set_me2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 12)));
-   model.set_me2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 13)));
-   model.set_me2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 14)));
-   model.set_mq2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 15)));
-   model.set_mq2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 16)));
-   model.set_mq2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 17)));
-   model.set_mu2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 18)));
-   model.set_mu2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 19)));
-   model.set_mu2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 20)));
-   model.set_md2(0, 0,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 21)));
-   model.set_md2(1, 1,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 22)));
-   model.set_md2(2, 2,      signed_sqr(slha_io.read_entry("FlexibleSUSYGM2Input", 23)));
-   model.set_Ae( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 24));
-   model.set_Ae( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 25));
-   model.set_Ae( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 26));
-   model.set_Ad( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 27));
-   model.set_Ad( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 28));
-   model.set_Ad( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 29));
-   model.set_Au( 0, 0,      slha_io.read_entry("FlexibleSUSYGM2Input", 30));
-   model.set_Au( 1, 1,      slha_io.read_entry("FlexibleSUSYGM2Input", 31));
-   model.set_Au( 2, 2,      slha_io.read_entry("FlexibleSUSYGM2Input", 32));
+   model.set_scale(         slha_io.read_entry("GM2CalcInput", 0));
+   model.set_alpha_MZ(      slha_io.read_entry("GM2CalcInput", 1));
+   model.set_alpha_thompson(slha_io.read_entry("GM2CalcInput", 2));
+   model.set_Mu(            slha_io.read_entry("GM2CalcInput", 4));
+   model.set_MassB(         slha_io.read_entry("GM2CalcInput", 5));
+   model.set_MassWB(        slha_io.read_entry("GM2CalcInput", 6));
+   model.set_MassG(         slha_io.read_entry("GM2CalcInput", 7));
+   model.set_BMu(           slha_io.read_entry("GM2CalcInput", 8));
+   model.set_ml2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 9 )));
+   model.set_ml2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 10)));
+   model.set_ml2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 11)));
+   model.set_me2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 12)));
+   model.set_me2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 13)));
+   model.set_me2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 14)));
+   model.set_mq2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 15)));
+   model.set_mq2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 16)));
+   model.set_mq2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 17)));
+   model.set_mu2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 18)));
+   model.set_mu2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 19)));
+   model.set_mu2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 20)));
+   model.set_md2(0, 0,      signed_sqr(slha_io.read_entry("GM2CalcInput", 21)));
+   model.set_md2(1, 1,      signed_sqr(slha_io.read_entry("GM2CalcInput", 22)));
+   model.set_md2(2, 2,      signed_sqr(slha_io.read_entry("GM2CalcInput", 23)));
+   model.set_Ae( 0, 0,      slha_io.read_entry("GM2CalcInput", 24));
+   model.set_Ae( 1, 1,      slha_io.read_entry("GM2CalcInput", 25));
+   model.set_Ae( 2, 2,      slha_io.read_entry("GM2CalcInput", 26));
+   model.set_Ad( 0, 0,      slha_io.read_entry("GM2CalcInput", 27));
+   model.set_Ad( 1, 1,      slha_io.read_entry("GM2CalcInput", 28));
+   model.set_Ad( 2, 2,      slha_io.read_entry("GM2CalcInput", 29));
+   model.set_Au( 0, 0,      slha_io.read_entry("GM2CalcInput", 30));
+   model.set_Au( 1, 1,      slha_io.read_entry("GM2CalcInput", 31));
+   model.set_Au( 2, 2,      slha_io.read_entry("GM2CalcInput", 32));
 }
 
 void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
