@@ -204,34 +204,30 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
 double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
                      const gm2calc::Config_options& config_options)
 {
-   double result = -999.;
+   double result = 0.;
 
-   if (config_options.tanb_resummation) {
-      switch (config_options.loop_order) {
-      case 1:
+   switch (config_options.loop_order) {
+   case 0:
+      ERROR("0-loop order not supported!");
+      break;
+   case 1:
+      if (config_options.tanb_resummation)
          result = gm2calc::calculate_amu_1loop(model);
-         break;
-      case 2:
-         result = gm2calc::calculate_amu_1loop(model)
-            + gm2calc::amu2LFSfapprox(model)
-            + gm2calc::amuChipmPhotonic(model)
-            + gm2calc::amuChi0Photonic(model);
-         break;
-      }
-   } else {
-      switch (config_options.loop_order) {
-      case 1:
+      else
          result = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
-         break;
-      default:
+      break;
+   case 2:
+      if (!config_options.tanb_resummation)
          WARNING("tan(beta) resummation is always enabled at 2-loop level");
-         // resummation is always switched on at 2-loop level
-         result = gm2calc::calculate_amu_1loop(model)
-            + gm2calc::amu2LFSfapprox(model)
-            + gm2calc::amuChipmPhotonic(model)
-            + gm2calc::amuChi0Photonic(model);
-         break;
-      }
+      // calculate amu w/ resummation
+      result = gm2calc::calculate_amu_1loop(model)
+         + gm2calc::amu2LFSfapprox(model)
+         + gm2calc::amuChipmPhotonic(model)
+         + gm2calc::amuChi0Photonic(model);
+      break;
+   default:
+      ERROR("loop orders > 2 not supported!");
+      break;
    }
 
    return result;

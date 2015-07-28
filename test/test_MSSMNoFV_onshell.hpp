@@ -104,7 +104,7 @@ gm2calc::MSSMNoFV_onshell read(char const * const slha_input)
 
    try {
       slha_io.read_from_stream(sstr);
-      fill(slha_io, osmodel);
+      fill_slha(slha_io, osmodel);
    } catch (const Error& error) {
       BOOST_FAIL(error.what());
    }
