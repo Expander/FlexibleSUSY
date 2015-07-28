@@ -102,7 +102,7 @@ LIBgm2calc_INFO := \
 export-gm2calc:
 		install -d $(LIBgm2calc_INSTALL_DIR)
 		install -d $(LIBgm2calc_INSTALL_DIR)/src
-		install -d $(LIBgm2calc_INSTALL_DIR)/slha
+		install -d $(LIBgm2calc_INSTALL_DIR)/input
 		install -m u=rw,g=r,o=r $(LIBgm2calc_INFO) $(LIBgm2calc_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LIBgm2calc_MK) $(LIBgm2calc_INSTALL_DIR)/Makefile
 		install -m u=rw,g=r,o=r $(LIBgm2calc_gm2_MK) $(LIBgm2calc_INSTALL_DIR)/src/module.mk
@@ -111,7 +111,7 @@ export-gm2calc:
 		install -m u=rw,g=r,o=r $(EXEgm2calc_SRC) $(LIBgm2calc_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r $(LIBgm2calc_DEP_SRC) $(LIBgm2calc_INSTALL_DIR)/src
 		install -m u=rw,g=r,o=r slhaea/slhaea.h $(LIBgm2calc_INSTALL_DIR)/src
-		install -m u=rw,g=r,o=r $(LIBgm2calc_SLHA_INPUT) $(LIBgm2calc_INSTALL_DIR)/slha
+		install -m u=rw,g=r,o=r $(LIBgm2calc_SLHA_INPUT) $(LIBgm2calc_INSTALL_DIR)/input
 
 $(LIBgm2calc_DEP) $(EXEgm2calc_DEP) $(LIBgm2calc_OBJ) $(EXEgm2calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
