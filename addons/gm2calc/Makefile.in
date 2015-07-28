@@ -19,9 +19,9 @@ LAPACKLIBS      := -llapack -lblas
 LIBEXT          := .a
 BINDIR          := bin
 
-.PHONY:         all allexec alllib clean depend
+.PHONY:         all allexec alllib clean depend make.args
 
-all: alllib allexec
+all: alllib allexec make.args
 
 clean::
 	-rm -f config.h
@@ -30,8 +30,10 @@ include src/module.mk
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),depend)
+ifneq ($(MAKECMDGOALS),make.args)
 ifeq ($(findstring print-,$(MAKECMDGOALS)),)
 -include $(ALLDEP)
+endif
 endif
 endif
 endif
@@ -50,6 +52,24 @@ config.h: Makefile
 	  echo '/* program version */'; \
 	  echo '#define GM2CALC_VERSION "$(VERSION)"'; \
 	} | sed '/""/d' > $@-t
+	mv $@-t $@
+
+make.args:
+	rm -f $@-t $@
+	{ echo 'CXX="$(CXX)"' \
+	       'CPPFLAGS="$(CPPFLAGS)"' \
+	       'CXXFLAGS="$(CXXFLAGS)"' \
+	       'CXX_DEP_GEN="$(CXX_DEP_GEN)"' \
+	       'FC="$(FC)"' \
+	       'FFLAGS="$(FFLAGS)"' \
+	       'FLIBS="$(FLIBS)"' \
+	       'FOR_DEP_GEN="$(FOR_DEP_GEN)"' \
+	       'MAKELIB="$(MAKELIB)"' \
+	       'BLASLIBS="$(BLASLIBS)"' \
+	       'BOOSTFLAGS="$(BOOSTFLAGS)"' \
+	       'EIGENFLAGS="$(EIGENFLAGS)"' \
+	       'LAPACKLIBS="$(LAPACKLIBS)"'; \
+	} > $@-t
 	mv $@-t $@
 
 %.d: %.cpp
