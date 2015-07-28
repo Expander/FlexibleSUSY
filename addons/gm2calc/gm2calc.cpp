@@ -116,14 +116,14 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
  */
 double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
 {
-   const double gm2_1l_TBresummed =
+   const double gm2_1l_tan_beta_resummed =
       gm2calc::calculate_amu_1loop(model);
-   const double gm2_2l_TBresummed =
+   const double gm2_2l_tan_beta_resummed =
       + gm2calc::amu2LFSfapprox(model)
       + gm2calc::amuChipmPhotonic(model)
       + gm2calc::amuChi0Photonic(model);
 
-   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
+   const double gm2_best = gm2_1l_tan_beta_resummed + gm2_2l_tan_beta_resummed;
 
    return gm2_best;
 }
@@ -135,16 +135,16 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
 {
    const double gm2_1l =
       gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
-   const double gm2_1l_TBresummed =
+   const double gm2_1l_tan_beta_resummed =
       gm2calc::calculate_amu_1loop(model);
-   const double gm2_2l_TBresummed =
+   const double gm2_2l_tan_beta_resummed =
       + gm2calc::amu2LFSfapprox(model)
       + gm2calc::amuChipmPhotonic(model)
       + gm2calc::amuChi0Photonic(model);
    const double gm2_2l_tanb_approx =
       + (gm2calc::tan_beta_cor(model) - 1.) * gm2_1l;
 
-   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
+   const double gm2_best = gm2_1l_tan_beta_resummed + gm2_2l_tan_beta_resummed;
 
    std::cout << model << '\n';
 
@@ -154,7 +154,7 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "--------------------------------------\n"
       "g-2 (1-loop strict) = " << gm2_1l << '\n' <<
       "--------------------------------------\n"
-      "g-2 (1-loop TB resummed) = " << gm2_1l_TBresummed << '\n' <<
+      "g-2 (1-loop TB resummed) = " << gm2_1l_tan_beta_resummed << '\n' <<
       "--------------------------------------\n"
       "amuChi0 (TB resummed) = " << gm2calc::amuChi0(model) << '\n' <<
       "amuChipm (TB resummed) = " << gm2calc::amuChipm(model) << '\n' <<
@@ -169,8 +169,9 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "--------------------------------------\n"
       "----- g-2 (2-loop) - corrections -----\n"
       "--------------------------------------\n"
-      "g-2 (2-loop (TB resummed)) = " << gm2_2l_TBresummed << '\n' <<
-      "2Loop / 1Loop = " << 100. * gm2_2l_TBresummed / gm2_1l_TBresummed << " %\n"
+      "g-2 (2-loop (TB resummed)) = " << gm2_2l_tan_beta_resummed << '\n' <<
+      "2Loop / 1Loop = " <<
+      (100. * gm2_2l_tan_beta_resummed / gm2_1l_tan_beta_resummed) << " %\n"
       "--------------------------------------\n"
       "amu2LSFsapprox = " << gm2calc::amu2LFSfapprox(model) << '\n' <<
       "--------------------------------------\n"
