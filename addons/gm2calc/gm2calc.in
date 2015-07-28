@@ -39,10 +39,10 @@ Block SMINPUTS
      6     1.73300000E+02   # mtop(pole)
      7     1.77700000E+00   # mtau(pole)
      8     0.00000000E+00   # mnu3(pole)
-     9     8.04040000E+01   # MW(pole)
+     9     8.03850000E+01   # MW(pole)
     11     5.02667588E-04   # melectron(pole)
     12     0.00000000E+00   # mnu1(pole)
-    13     0.1039357        # mmuon(pole)
+    13     0.1056583715     # mmuon(pole)
     14     0.00000000E+00   # mnu2(pole)
     21     4.76052706E-03   # md
     22     2.40534062E-03   # mu

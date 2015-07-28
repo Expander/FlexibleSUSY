@@ -91,7 +91,8 @@ LIBgm2calc_DEP_SRC := \
 		src/numerics2.hpp
 
 LIBgm2calc_SLHA_INPUT := \
-		$(DIR)/LesHouches.in.gm2os
+		$(DIR)/slha.in \
+		$(DIR)/gm2calc.in
 
 LIBgm2calc_INFO := \
 		$(DIR)/AUTHORS \
