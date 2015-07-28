@@ -1,3 +1,8 @@
+Block GM2CalcConfig
+     0     2     # output format (0 = minimal, 1 = detailed,
+                 #                2 = NMSSMTools, 3 = SPheno)
+     1     2     # loop order (1 or 2)
+     2     1     # disable/enable tan(beta) resummation (0 or 1)
 Block GM2CalcInput
      1     0.00781653       # alpha(MZ)
      2     0.00729735       # alpha in Thompson limit

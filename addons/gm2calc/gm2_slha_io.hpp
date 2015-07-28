@@ -53,6 +53,15 @@ class MSSMNoFV_onshell;
 #define FORMAT_SPINFO(n,str)                                            \
    boost::format(spinfo_formatter) % n % str
 
+struct Config_options {
+   enum E_output_format : unsigned {
+      Minimal = 0, Detailed = 1, NMSSMTools = 2, SPheno = 3 };
+
+   E_output_format output_format = Minimal;
+   unsigned loop_order = 2;
+   bool tanb_resummation = true;
+};
+
 class GM2_slha_io {
 public:
    typedef std::function<void(int, double)> Tuple_processor;
@@ -83,9 +92,10 @@ public:
    // writing functions
    void set_data(const SLHAea::Coll& data_) { data = data_; }
    void set_block(const std::ostringstream&, Position position = back);
-   template <class Derived>
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
+
+   void fill_block_entry(const std::string&, unsigned, double, const std::string&);
 
 private:
    SLHAea::Coll data;          ///< SHLA data
@@ -167,6 +177,7 @@ double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<
 
 void fill_gm2calc(const GM2_slha_io&, MSSMNoFV_onshell&);
 void fill_slha(const GM2_slha_io&, MSSMNoFV_onshell&);
+void fill(const GM2_slha_io&, Config_options&);
 
 } // namespace gm2calc
 } // namespace flexiblesusy

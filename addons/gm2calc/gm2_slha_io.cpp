@@ -29,6 +29,8 @@
 namespace flexiblesusy {
 namespace gm2calc {
 
+#define ERROR(message) std::cerr << "Error: " << message << '\n';
+
 /**
  * @brief reads from source
  *
@@ -182,6 +184,50 @@ void GM2_slha_io::set_block(const std::ostringstream& lines, Position position)
       data.push_front(block);
    else
       data.push_back(block);
+}
+
+void GM2_slha_io::write_to_file(const std::string& file_name)
+{
+   std::ofstream ofs(file_name);
+   write_to_stream(ofs);
+}
+
+void GM2_slha_io::write_to_stream(std::ostream& ostr)
+{
+   if (ostr.good())
+      ostr << data;
+   else
+      ERROR("cannot write SLHA file");
+}
+
+/**
+ * Fills a block entry with a value.  If the block or the entry do not
+ * exist, the block / entry is created.
+ *
+ * @param block_name block name
+ * @param entry number of the entry
+ * @param value value
+ * @param description comment
+ */
+void GM2_slha_io::fill_block_entry(const std::string& block_name,
+                                   unsigned entry, double value,
+                                   const std::string& description)
+{
+   std::ostringstream sstr;
+   sstr << FORMAT_ELEMENT(entry, value, description);
+
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   if (block == data.cend()) {
+      // create new block
+      std::ostringstream block;
+      block << "Block " << block_name << '\n'
+            << sstr.str();
+      set_block(block, GM2_slha_io::back);
+   } else {
+      data[block_name][SLHAea::to<double>(entry)] = sstr.str();
+   }
 }
 
 double read_scale(const GM2_slha_io& slha_io)
@@ -418,6 +464,17 @@ void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    fill_alpha_s(slha_io, model);
    fill_drbar_parameters(slha_io, model);
    fill_gm2_specific_alphas(slha_io, model);
+}
+
+void fill(const GM2_slha_io& slha_io, Config_options& config_options)
+{
+   config_options.output_format =
+      static_cast<Config_options::E_output_format>(
+         SLHAea::to<unsigned>(slha_io.read_entry("GM2CalcConfig", 0)));
+   config_options.loop_order =
+      SLHAea::to<unsigned>(slha_io.read_entry("GM2CalcConfig", 1));
+   config_options.tanb_resummation =
+      SLHAea::to<bool>(slha_io.read_entry("GM2CalcConfig", 2));
 }
 
 } // namespace gm2calc

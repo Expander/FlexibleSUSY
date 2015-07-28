@@ -30,6 +30,17 @@
 
 using namespace flexiblesusy;
 
+struct Gm2_cmd_line_options {
+   enum E_input_type { SLHA, GM2Calc };
+
+   std::string input_source;
+   E_input_type input_type;
+
+   static bool starts_with(const std::string& str, const std::string& prefix) {
+      return !str.compare(0, prefix.size(), prefix);
+   }
+};
+
 void print_usage(const char* program_name)
 {
    std::cout <<
@@ -41,17 +52,6 @@ void print_usage(const char* program_name)
       "  --version,-v                    print version number"
              << std::endl;
 }
-
-struct Gm2_cmd_line_options {
-   enum E_input_type { SLHA, GM2Calc };
-
-   std::string input_source;
-   E_input_type input_type;
-
-   static bool starts_with(const std::string& str, const std::string& prefix) {
-      return !str.compare(0, prefix.size(), prefix);
-   }
-};
 
 Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
 {
@@ -110,6 +110,126 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
    }
 }
 
+/**
+ * Calculate most precise value of amu.
+ */
+double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
+{
+   const double gm2_1l_TBresummed =
+      gm2calc::calculate_amu_1loop(model);
+   const double gm2_2l_TBresummed =
+      + gm2calc::amu2LFSfapprox(model)
+      + gm2calc::amuChipmPhotonic(model)
+      + gm2calc::amuChi0Photonic(model);
+
+   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
+
+   return gm2_best;
+}
+
+/**
+ * Print detailed amu calculation
+ */
+void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
+{
+   const double gm2_1l =
+      gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
+   const double gm2_1l_TBresummed =
+      gm2calc::calculate_amu_1loop(model);
+   const double gm2_2l_TBresummed =
+      + gm2calc::amu2LFSfapprox(model)
+      + gm2calc::amuChipmPhotonic(model)
+      + gm2calc::amuChi0Photonic(model);
+   const double gm2_2l_tanb_approx =
+      + (gm2calc::tan_beta_cor(model) - 1.) * gm2_1l;
+
+   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
+
+   std::cout << model << '\n';
+
+   std::cout <<
+      "--------------------------------------\n"
+      "g-2 (1-loop + 2-loop best) = " << gm2_best << '\n' <<
+      "--------------------------------------\n"
+      "g-2 (1-loop strict) = " << gm2_1l << '\n' <<
+      "--------------------------------------\n"
+      "g-2 (1-loop TB resummed) = " << gm2_1l_TBresummed << '\n' <<
+      "--------------------------------------\n"
+      "amuChi0 (TB resummed) = " << gm2calc::amuChi0(model) << '\n' <<
+      "amuChipm (TB resummed) = " << gm2calc::amuChipm(model) << '\n' <<
+      "--------------------------------------\n"
+      "amu1Lapprox = " << amu1Lapprox(model) << '\n' <<
+      "--------------------------------------\n"
+      "amuWHnu = " << gm2calc::amuWHnu(model) << '\n' <<
+      "amuBmuLmuR = " << gm2calc::amuBmuLmuR(model) << '\n' <<
+      "amuBHmuL = " << gm2calc::amuBHmuL(model) << '\n' <<
+      "amuWHmuL = " << gm2calc::amuWHmuL(model) << '\n' <<
+      "amuBHmuR = " << gm2calc::amuBHmuR(model) << "\n\n" <<
+      "--------------------------------------\n"
+      "----- g-2 (2-loop) - corrections -----\n"
+      "--------------------------------------\n"
+      "g-2 (2-loop (TB resummed)) = " << gm2_2l_TBresummed << '\n' <<
+      "2Loop / 1Loop = " << 100. * gm2_2l_TBresummed / gm2_1l_TBresummed << " %\n"
+      "--------------------------------------\n"
+      "amu2LSFsapprox = " << gm2calc::amu2LFSfapprox(model) << '\n' <<
+      "--------------------------------------\n"
+      "amuWHnu2L = " << gm2calc::amuWHnu2L(model) << '\n' <<
+      "amuWHmuL2L = " << gm2calc::amuWHmuL2L(model) << '\n' <<
+      "amuBHmuL2L = " << gm2calc::amuBHmuL2L(model) << '\n' <<
+      "amuBHmuR2L = " << gm2calc::amuBHmuR2L(model) << '\n' <<
+      "amuBmuLmuR2L = " << gm2calc::amuBmuLmuR2L(model) << '\n' <<
+      "2L_FSfapprox / 1Loop = " <<
+      100. * gm2calc::amu2LFSfapprox(model) / gm2_1l << " %\n"
+      "--------------------------------------\n"
+      "TanBetaCorrection) = " << gm2_2l_tanb_approx << '\n' <<
+      "2L_tanb / 1Loop = " << (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
+      "--------------------------------------\n"
+      "amu2LPhotonic = " <<
+      (gm2calc::amuChipmPhotonic(model)
+       + gm2calc::amuChi0Photonic(model)) << '\n' <<
+      "--------------------------------------\n"
+      "amuChipmPhotonic = " << gm2calc::amuChipmPhotonic(model) << '\n' <<
+      "amuChi0Photonic = " << gm2calc::amuChi0Photonic(model) << '\n' <<
+      "2L_Photonic / 1Loop = " <<
+      100. * (amuChipmPhotonic(model)
+              + gm2calc::amuChi0Photonic(model)) / gm2_1l << " %\n"
+      "--------------------------------------\n"
+      "amu2LaSferm = " << gm2calc::amua2LSferm(model) << '\n' <<
+      "amua2LaCha = " << gm2calc::amua2LCha(model) << '\n' <<
+      "--------------------------------------\n"
+      ;
+}
+
+double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
+                     const gm2calc::Config_options& config_options)
+{
+   double result = -999.;
+
+   if (config_options.tanb_resummation) {
+      switch (config_options.loop_order) {
+      case 1:
+         result = gm2calc::calculate_amu_1loop(model);
+         break;
+      case 2:
+         result = gm2calc::calculate_amu_1loop(model)
+            + gm2calc::amu2LFSfapprox(model)
+            + gm2calc::amuChipmPhotonic(model)
+            + gm2calc::amuChi0Photonic(model);
+         break;
+      }
+   } else {
+      switch (config_options.loop_order) {
+      case 1:
+         result = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
+         break;
+      default:
+         break;
+      }
+   }
+
+   return result;
+}
+
 int main(int argc, const char* argv[])
 {
    Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
@@ -121,79 +241,41 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
-   gm2calc::MSSMNoFV_onshell osmodel;
+   gm2calc::MSSMNoFV_onshell model;
    gm2calc::GM2_slha_io slha_io;
+   gm2calc::Config_options config_options;
 
    try {
       slha_io.read_from_source(options.input_source);
-      setup_model(osmodel, slha_io, options);
+      fill(slha_io, config_options);
+      setup_model(model, slha_io, options);
    } catch (const Error& error) {
       ERROR(error.what());
       return EXIT_FAILURE;
    }
 
-   const double gm2_1l = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(osmodel);
-   const double gm2_1l_TBresummed = gm2calc::calculate_amu_1loop(osmodel);
-   const double gm2_2l_TBresummed = gm2calc::amu2LFSfapprox(osmodel)
-      + gm2calc::amuChipmPhotonic(osmodel)
-      + gm2calc::amuChi0Photonic(osmodel);
-   const double gm2_2l_tanb_approx =  + (gm2calc::tan_beta_cor(osmodel) - 1.) * gm2_1l;
-
-   const double gm2_best = gm2_1l_TBresummed + gm2_2l_TBresummed;
-
-   std::cout << osmodel << '\n';
-
-   std::cout <<
-      "--------------------------------------\n"
-      "g-2 (1-loop + 2-loop best) = " << gm2_best << '\n' <<
-      "--------------------------------------\n"
-      "g-2 (1-loop strict) = " << gm2_1l << '\n' <<
-      "--------------------------------------\n"
-      "g-2 (1-loop TB resummed) = " << gm2_1l_TBresummed << '\n' <<
-      "--------------------------------------\n"
-      "amuChi0 (TB resummed) = " << gm2calc::amuChi0(osmodel) << '\n' <<
-      "amuChipm (TB resummed) = " << gm2calc::amuChipm(osmodel) << '\n' <<
-      "--------------------------------------\n"
-      "amu1Lapprox = " << amu1Lapprox(osmodel) << '\n' <<
-      "--------------------------------------\n"
-      "amuWHnu = " << gm2calc::amuWHnu(osmodel) << '\n' <<
-      "amuBmuLmuR = " << gm2calc::amuBmuLmuR(osmodel) << '\n' <<
-      "amuBHmuL = " << gm2calc::amuBHmuL(osmodel) << '\n' <<
-      "amuWHmuL = " << gm2calc::amuWHmuL(osmodel) << '\n' <<
-      "amuBHmuR = " << gm2calc::amuBHmuR(osmodel) << "\n\n" <<
-      "--------------------------------------\n"
-      "----- g-2 (2-loop) - corrections -----\n"
-      "--------------------------------------\n"
-      "g-2 (2-loop (TB resummed)) = " << gm2_2l_TBresummed << '\n' <<
-      "2Loop / 1Loop = " << 100. * gm2_2l_TBresummed / gm2_1l_TBresummed << " %\n"
-      "--------------------------------------\n"
-      "amu2LSFsapprox = " << gm2calc::amu2LFSfapprox(osmodel) << '\n' <<
-      "--------------------------------------\n"
-      "amuWHnu2L = " << gm2calc::amuWHnu2L(osmodel) << '\n' <<
-      "amuWHmuL2L = " << gm2calc::amuWHmuL2L(osmodel) << '\n' <<
-      "amuBHmuL2L = " << gm2calc::amuBHmuL2L(osmodel) << '\n' <<
-      "amuBHmuR2L = " << gm2calc::amuBHmuR2L(osmodel) << '\n' <<
-      "amuBmuLmuR2L = " << gm2calc::amuBmuLmuR2L(osmodel) << '\n' <<
-      "2L_FSfapprox / 1Loop = " <<
-      100. * gm2calc::amu2LFSfapprox(osmodel) / gm2_1l << " %\n"
-      "--------------------------------------\n"
-      "TanBetaCorrection) = " << gm2_2l_tanb_approx << '\n' <<
-      "2L_tanb / 1Loop = " << (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
-      "--------------------------------------\n"
-      "amu2LPhotonic = " <<
-      (gm2calc::amuChipmPhotonic(osmodel)
-       + gm2calc::amuChi0Photonic(osmodel)) << '\n' <<
-      "--------------------------------------\n"
-      "amuChipmPhotonic = " << gm2calc::amuChipmPhotonic(osmodel) << '\n' <<
-      "amuChi0Photonic = " << gm2calc::amuChi0Photonic(osmodel) << '\n' <<
-      "2L_Photonic / 1Loop = " <<
-      100. * (amuChipmPhotonic(osmodel)
-              + gm2calc::amuChi0Photonic(osmodel)) / gm2_1l << " %\n"
-      "--------------------------------------\n"
-      "amu2LaSferm = " << gm2calc::amua2LSferm(osmodel) << '\n' <<
-      "amua2LaCha = " << gm2calc::amua2LCha(osmodel) << '\n' <<
-      "--------------------------------------\n"
-      ;
+   switch (config_options.output_format) {
+   case gm2calc::Config_options::Minimal:
+      std::cout << calculate_amu_best(model) << '\n';
+      break;
+   case gm2calc::Config_options::Detailed:
+      print_amu_detailed(model);
+      break;
+   case gm2calc::Config_options::NMSSMTools:
+      slha_io.fill_block_entry("LOWEN", 6,
+                               calculate_amu(model, config_options),
+                               "Delta(g-2)_muon/2");
+      slha_io.write_to_stream(std::cout);
+      break;
+   case gm2calc::Config_options::SPheno:
+      slha_io.fill_block_entry("SPhenoLowEnergy", 21,
+                               calculate_amu(model, config_options),
+                               "Delta(g-2)_muon/2");
+      slha_io.write_to_stream(std::cout);
+      break;
+   default:
+      break;
+   }
 
    return 0;
 }
