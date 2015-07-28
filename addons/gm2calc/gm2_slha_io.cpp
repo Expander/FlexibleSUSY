@@ -317,17 +317,38 @@ void fill_drbar_parameters(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    model.set_scale(read_scale(slha_io));
 }
 
-void fill_fermion_pole_masses_from_sminputs(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
+void fill_fermion_pole_masses_from_sminputs(
+   const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)
 {
-   physical.MFd = slha_io.read_entry("SMINPUTS", 21);
-   physical.MFs = slha_io.read_entry("SMINPUTS", 23);
-   physical.MFb = slha_io.read_entry("SMINPUTS", 5);
-   physical.MFu = slha_io.read_entry("SMINPUTS", 22);
-   physical.MFc = slha_io.read_entry("SMINPUTS", 24);
-   physical.MFt = slha_io.read_entry("SMINPUTS", 6);
-   physical.MFe = slha_io.read_entry("SMINPUTS", 11);
-   physical.MFm = slha_io.read_entry("SMINPUTS", 13);
-   physical.MFtau = slha_io.read_entry("SMINPUTS", 7);
+   using namespace std::placeholders;
+
+   GM2_slha_io::Tuple_processor processor
+      = std::bind(GM2_slha_io::process_fermion_sminputs_tuple, std::ref(physical), _1, _2);
+
+   slha_io.read_block("SMINPUTS", processor);
+}
+
+void GM2_slha_io::process_fermion_sminputs_tuple(
+   MSSMNoFV_onshell_physical& physical, int key, double value)
+{
+   switch (key) {
+   case  5: physical.MFb = value;   break;
+   case  6: physical.MFt = value;   break;
+   case  7: physical.MFtau = value; break;
+   case  8: /* nu_3 */              break;
+   case  9: /* MW */                break;
+   case 11: physical.MFe = value;   break;
+   case 12: /* nu_1 */              break;
+   case 13: physical.MFm = value;   break;
+   case 14: /* nu_2 */              break;
+   case 21: physical.MFd = value;   break;
+   case 23: physical.MFs = value;   break;
+   case 22: physical.MFu = value;   break;
+   case 24: physical.MFc = value;   break;
+   default:
+      WARNING("Unrecognized entry in block SMINPUTS: " << key);
+      break;
+   }
 }
 
 void fill_physical(const GM2_slha_io& slha_io, MSSMNoFV_onshell_physical& physical)

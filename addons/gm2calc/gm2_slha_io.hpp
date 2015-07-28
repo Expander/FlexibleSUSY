@@ -29,6 +29,9 @@
 #include "numerics2.hpp"
 
 namespace flexiblesusy {
+
+class MSSMNoFV_onshell_physical;
+
 namespace gm2calc {
 
 class MSSMNoFV_onshell;
@@ -99,6 +102,7 @@ public:
 
    static void process_gm2calcconfig_tuple(Config_options&, int, double);
    static void process_gm2calcinput_tuple(MSSMNoFV_onshell&, int, double);
+   static void process_fermion_sminputs_tuple(MSSMNoFV_onshell_physical&, int, double);
 
 private:
    SLHAea::Coll data;          ///< SHLA data
