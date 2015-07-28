@@ -110,6 +110,7 @@ private:
    void convert_Mu_M1_M2(double, unsigned);
    void convert_vev();
    void convert_yukawa_couplings();
+   void copy_susy_masses_to_pole();
 };
 
 } // namespace gm2calc

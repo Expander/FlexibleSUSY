@@ -100,6 +100,7 @@ double MSSMNoFV_onshell::get_EL() const {
 void MSSMNoFV_onshell::convert_to_onshell(double precision) {
    calculate_DRbar_masses();
    check_input();
+   copy_susy_masses_to_pole();
 
    convert_gauge_couplings();
    convert_BMu();
@@ -123,11 +124,11 @@ void MSSMNoFV_onshell::calculate_masses() {
    convert_gauge_couplings();
    convert_vev();
    convert_yukawa_couplings_treelevel();
-   // tan(beta) resummation in Yukawas
-   convert_yukawa_couplings();
-   // final mass spectrum
-   calculate_DRbar_masses();
-   check_input();
+   convert_yukawa_couplings(); // tan(beta) resummation in Yukawas
+   calculate_DRbar_masses();   // final mass spectrum
+
+   // copy SUSY masses to physical struct
+   copy_susy_masses_to_pole();
    get_physical().MAh = get_MAh();
    get_physical().Mhh = get_Mhh();
 }
@@ -138,7 +139,10 @@ void MSSMNoFV_onshell::check_input()
       throw EInvalidInput("W mass is zero");
    if (is_zero(get_MZ()))
       throw EInvalidInput("Z mass is zero");
+}
 
+void MSSMNoFV_onshell::copy_susy_masses_to_pole()
+{
    // if pole masses are zero, interpret the tree-level masses as pole
    // masses
 
