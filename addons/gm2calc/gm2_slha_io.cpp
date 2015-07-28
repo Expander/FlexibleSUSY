@@ -477,7 +477,6 @@ void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    fill_pole_masses_from_sminputs(slha_io, model);
    fill_alpha_s(slha_io, model);
-   fill_gm2_specific_alphas(slha_io, model);
    fill_gm2_specific_onshell_parameters(slha_io, model);
 }
 
