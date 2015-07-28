@@ -97,6 +97,8 @@ public:
 
    void fill_block_entry(const std::string&, unsigned, double, const std::string&);
 
+   static void process_gm2calcconfig_tuple(Config_options&, int, double);
+
 private:
    SLHAea::Coll data;          ///< SHLA data
    template <class Scalar>

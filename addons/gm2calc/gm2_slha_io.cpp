@@ -30,6 +30,7 @@ namespace flexiblesusy {
 namespace gm2calc {
 
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
+#define WARNING(message) std::cerr << "Warning: " << message << '\n';
 
 /**
  * @brief reads from source
@@ -468,13 +469,31 @@ void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 
 void fill(const GM2_slha_io& slha_io, Config_options& config_options)
 {
-   config_options.output_format =
-      static_cast<Config_options::E_output_format>(
-         SLHAea::to<unsigned>(slha_io.read_entry("GM2CalcConfig", 0)));
-   config_options.loop_order =
-      SLHAea::to<unsigned>(slha_io.read_entry("GM2CalcConfig", 1));
-   config_options.tanb_resummation =
-      SLHAea::to<bool>(slha_io.read_entry("GM2CalcConfig", 2));
+   using namespace std::placeholders;
+
+   GM2_slha_io::Tuple_processor processor
+      = std::bind(GM2_slha_io::process_gm2calcconfig_tuple, std::ref(config_options), _1, _2);
+
+   slha_io.read_block("GM2CalcConfig", processor);
+}
+
+void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
+                                              int key, double value)
+{
+   switch (key) {
+   case 0:
+      config_options.output_format =
+         static_cast<Config_options::E_output_format>(value);
+      break;
+   case 1:
+      config_options.loop_order = value;
+      break;
+   case 2:
+      config_options.tanb_resummation = value;
+   default:
+      WARNING("Unrecognized entry in block GM2CalcConfig: " << key);
+      break;
+   }
 }
 
 } // namespace gm2calc
