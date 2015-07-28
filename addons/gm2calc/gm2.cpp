@@ -27,6 +27,7 @@
 #include <iostream>
 
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
+#define WARNING(message) std::cerr << "Warning: " << message << '\n';
 
 using namespace flexiblesusy;
 
@@ -223,6 +224,12 @@ double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
          result = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
          break;
       default:
+         WARNING("tan(beta) resummation is always enabled at 2-loop level");
+         // resummation is always switched on at 2-loop level
+         result = gm2calc::calculate_amu_1loop(model)
+            + gm2calc::amu2LFSfapprox(model)
+            + gm2calc::amuChipmPhotonic(model)
+            + gm2calc::amuChi0Photonic(model);
          break;
       }
    }
