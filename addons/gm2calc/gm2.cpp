@@ -89,6 +89,27 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
    return options;
 }
 
+void setup_model(gm2calc::MSSMNoFV_onshell& model,
+                 const gm2calc::GM2_slha_io& slha_io,
+                 const Gm2_cmd_line_options& options)
+{
+   switch (options.input_type) {
+   case Gm2_cmd_line_options::SLHA:
+      // determine model parameters from an SLHA parameter set
+      fill_slha(slha_io, model);
+      model.convert_to_onshell();
+      break;
+   case Gm2_cmd_line_options::GM2Calc:
+      // on-shell parameters are directly given
+      fill_gm2calc(slha_io, model);
+      model.calculate_masses();
+      break;
+   default:
+      throw SetupError("Unknown input option");
+      break;
+   }
+}
+
 int main(int argc, const char* argv[])
 {
    Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
@@ -105,16 +126,7 @@ int main(int argc, const char* argv[])
 
    try {
       slha_io.read_from_source(options.input_source);
-      switch (options.input_type) {
-      case Gm2_cmd_line_options::SLHA:
-         fill_slha(slha_io, osmodel);
-         osmodel.convert_to_onshell();
-         break;
-      case Gm2_cmd_line_options::GM2Calc:
-         fill_gm2calc(slha_io, osmodel);
-         osmodel.calculate_masses();
-         break;
-      }
+      setup_model(osmodel, slha_io, options);
    } catch (const Error& error) {
       ERROR(error.what());
       return EXIT_FAILURE;
