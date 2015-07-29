@@ -43,9 +43,6 @@
 
 namespace flexiblesusy {
 
-#define MODELPARAMETER(p) model.get_##p()
-#define SMINPUT(p) EFT.get_##p()
-
 template <class T>
 class @ModelName@_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
@@ -73,8 +70,6 @@ private:
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    @ModelName@_low_scale_constraint<T>  low_scale_constraint;
    double susy_scale, low_scale;
-   void calcYukawaCouplings(@ModelName@<T>&, Eigen::Matrix<double, 3, 3>&,
-							Eigen::Matrix<double, 3, 3>&, Eigen::Matrix<double, 3, 3>&);
 };
 
 /**
@@ -160,6 +155,7 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
          case 1: do2LoopLogCalc();
          case 2: calcHiggsPoleEFT();
       }
+
 
       // run to output scale (if scale > 0)
       if (!is_zero(this->parameter_output_scale)) {
@@ -268,128 +264,83 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
 template <class T>
 void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
 {
-  @ModelName@<T> model = this->model;
-  Eigen::Matrix<double, 3, 3> ZeroMatrix = Eigen::Matrix<double, 3, 3>::Zero();
 
-  SM<T> EFT;
-  EFT.set_loops(3);
-  EFT.set_ewsb_loop_order(model.get_ewsb_loop_order());
-  EFT.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
-  EFT.set_precision(model.get_precision());
-  EFT.set_ewsb_iteration_precision(model.get_ewsb_iteration_precision());
-  EFT.set_number_of_ewsb_iterations(model.get_number_of_ewsb_iterations());
-  EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
+   @ModelName@<T> model = this->model;
+   Eigen::Matrix<double, 3, 3> ZeroMatrix = Eigen::Matrix<double, 3, 3>::Zero();
+   QedQcd lowEnergyData = low_scale_constraint.get_sm_parameters();
+   double lambda_low;
+   unsigned iteration = 0;
 
-  //fill SM class with low scale parameters, using input from QedQcd class
-  const double MZpole = low_scale_constraint.get_sm_parameters().displayPoleMZ();
-  const double MWpole = low_scale_constraint.get_sm_parameters().displayPoleMW();
-  const double MTpole = low_scale_constraint.get_sm_parameters().displayPoleMt();
-  const double MHpole = Electroweak_constants::MH;
-  const double alphaS = low_scale_constraint.get_sm_parameters().displayAlpha(ALPHAS);
-  const double alphaE = low_scale_constraint.get_sm_parameters().displayAlpha(ALPHA);
-  const double eMSbar = Sqrt(4. * Pi * alphaE / (1. + 0.28294212105225836*alphaE*FiniteLog(
-                          low_scale_constraint.get_sm_parameters().displayMass(mTop)/EFT.get_scale())));
-  EFT.set_scale(MZpole);
-  EFT.set_g1(5./3.*eMSbar / Electroweak_constants::cosThetaW);
-  EFT.set_g2(eMSbar / Electroweak_constants::sinThetaW);
-  EFT.set_g3(Sqrt(4. * Pi * alphaS / (1. + 0.1061032953945969*alphaS*FiniteLog(
-               low_scale_constraint.get_sm_parameters().displayMass(mTop)/EFT.get_scale()))));
+   SM<T> EFT;
+   EFT.set_loops(3);
+   EFT.set_ewsb_loop_order(model.get_ewsb_loop_order());
+   EFT.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
+   EFT.set_precision(model.get_precision());
+   EFT.set_ewsb_iteration_precision(model.get_ewsb_iteration_precision());
+   EFT.set_number_of_ewsb_iterations(model.get_number_of_ewsb_iterations());
+   EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
 
-  //see (22) from arXiv:1205.6497 [hep-ph]
-  EFT.set_v(Sqrt( 1./(Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayFermiConstant())
-                  + oneOver16PiSqr*( 3.*Sqr(MTpole)*(4.*FiniteLog(MTpole/MZpole) - 1.) + Sqr(MWpole)*(5. - 12.*FiniteLog(MWpole/MZpole))
-                  +  2.5*Sqr(MZpole) + 1.5*Sqr(MWpole*MZpole)/(Sqr(MZpole) - Sqr(MWpole))*FiniteLog(MZpole/MWpole) - .5*Sqr(MHpole)
-                  -  6.*Sqr(MWpole*MHpole)/(Sqr(MWpole) - Sqr(MHpole))*FiniteLog(MWpole/MHpole))));
+   const double MZpole = 91.1876;
+   const double MWpole = 80.384;
+   const double MTpole = 173.34;
+   const double MHpole = 125.09;
+   const double alphaS = .1185;
+   const double GFermi = 1.1663787e-5;
 
-  EFT.set_Yu(ZeroMatrix);
-  EFT.set_Yd(ZeroMatrix);
-  EFT.set_Ye(ZeroMatrix);
-  EFT.set_Yu(2, 2, -Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mTop)/EFT.get_v());
-  EFT.set_Yu(1, 1, -Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mCharm)/EFT.get_v());
-  EFT.set_Yu(0, 0, -Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mUp)/EFT.get_v());
-  EFT.set_Yd(2, 2, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mBottom)/EFT.get_v());
-  EFT.set_Yd(1, 1, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mStrange)/EFT.get_v());
-  EFT.set_Yd(0, 0, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mDown)/EFT.get_v());
-  EFT.set_Ye(2, 2, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mTau)/EFT.get_v());
-  EFT.set_Ye(1, 1, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mMuon)/EFT.get_v());
-  EFT.set_Ye(0, 0, Sqrt(2.)*low_scale_constraint.get_sm_parameters().displayMass(mElectron)/EFT.get_v());
+   // high precision values from arXiv:1307.3536
+   lowEnergyData.runto(MTpole);
+   EFT.set_scale(MTpole);
+   EFT.set_g1(Sqrt(5./3.) * (.3583 + .00011*(MTpole - 173.34) - .0002*(MWpole - 80.384)/.014));
+   EFT.set_g2(.64779 + .00004*(MTpole - 173.34) - .0002*(MWpole - 80.384)/.014);
+   EFT.set_g3(1.1666 + .00314*(alphaS - .1184) - .00046*(MTpole - 173.34));
+   EFT.set_Yu(ZeroMatrix);
+   EFT.set_Yd(ZeroMatrix);
+   EFT.set_Ye(ZeroMatrix);
+   EFT.set_Yu(2, 2, -(.9369 + .00556*(MTpole - 173.34) - .00042*(alphaS - .1184)/.0007));
 
-  //store vev, gauge - and yukawa couplings as low scale condition
-  const auto lowEnergyInput = EFT.get();
-  //initial value for lambda
-  EFT.set_Lambdax(MHpole/Sqr(EFT.get_v()));
+   // see (22) from arXiv:1205.6497 [hep-ph]
+   EFT.set_v(Sqrt( 1./(Sqrt(2.)*lowEnergyData.displayFermiConstant())
+                     + oneOver16PiSqr*( 3.*Sqr(MTpole)*(4.*FiniteLog(MTpole/MTpole) - 1.) + Sqr(MWpole)*(5. - 12.*FiniteLog(MWpole/MTpole))
+                     +  2.5*Sqr(MZpole) - 6.*Sqr(MZpole)*FiniteLog(MZpole/MTpole) + 1.5*Sqr(MWpole*MZpole)/(Sqr(MZpole) - Sqr(MWpole))*FiniteLog(MZpole/MWpole) - .5*Sqr(MHpole)
+                     -  6.*Sqr(MWpole*MHpole)/(Sqr(MWpole) - Sqr(MHpole))*FiniteLog(MWpole/MHpole))));
 
-  double lambda_low;
-  unsigned iteration = 0;
-  const double currentScale = model.get_scale();
-  double MW_SUSY, MZ_SUSY;
-  Eigen::Matrix<double, 3, 3> topDRbar = ZeroMatrix, bottomDRbar = ZeroMatrix, electronDRbar = ZeroMatrix;
+   EFT.set_Yu(1, 1, -Sqrt(2.)*lowEnergyData.displayMass(mCharm)/EFT.get_v());
+   EFT.set_Yu(0, 0, -Sqrt(2.)*lowEnergyData.displayMass(mUp)/EFT.get_v());
+   EFT.set_Yd(2, 2,  Sqrt(2.)*lowEnergyData.displayMass(mBottom)/EFT.get_v());
+   EFT.set_Yd(1, 1,  Sqrt(2.)*lowEnergyData.displayMass(mStrange)/EFT.get_v());
+   EFT.set_Yd(0, 0,  Sqrt(2.)*lowEnergyData.displayMass(mDown)/EFT.get_v());
+   EFT.set_Ye(2, 2,  Sqrt(2.)*lowEnergyData.displayMass(mTau)/EFT.get_v());
+   EFT.set_Ye(1, 1,  Sqrt(2.)*lowEnergyData.displayMass(mMuon)/EFT.get_v());
+   EFT.set_Ye(0, 0,  Sqrt(2.)*lowEnergyData.displayMass(mElectron)/EFT.get_v());
 
+   // initial value for lambda, see (55) from arXiv:1205.6497 [hep-ph]:
+   EFT.set_Lambdax(.12604 + .00206*(MHpole - 125.15) - .00004*(MTpole - 173.34));
+
+   const auto lowEnergyInput = EFT.get();
+
+   EFT.run_to(model.get_scale());
+   model.calculate_DRbar_masses();
+   model.solve_ewsb_one_loop();
+   
+   const auto alpha_em = @alphaEMdef@;
+   const auto currentScale = model.get_scale();
+@em1Linit@
+@alphaEM1Lmatching@
+   const double MH2matched = @ModelName@_SM_two_scale_matching<T>::Mhh2matching1L(model);
+   const double MW2matched = @ModelName@_SM_two_scale_matching<T>::MVWp2matching1L(model);
+   const double MZ2matched = @ModelName@_SM_two_scale_matching<T>::MVZ2matching1L(model);
+   const double lambda_high = Pi * MH2matched/MW2matched * alpha_em/((1. - MW2matched/MZ2matched)*(1. + delta_alpha_em));
+   EFT.run_to(MTpole);
 
   do
   {
     iteration++;
     lambda_low = EFT.get_Lambdax();
-
-    //apply low scale condition
     EFT.set(lowEnergyInput);
     EFT.set_Lambdax(lambda_low);
-    EFT.calculate_DRbar_masses();
-    EFT.solve_ewsb_one_loop();
     EFT.run_to(model.get_scale());
-
-    //calculate gauge couplings at the high scale
-    const double alpha_em = .6 * Sqr(EFT.get_g1() * EFT.get_g2())/(4. * Pi * (Sqr(EFT.get_g2()) + .6 * Sqr(EFT.get_g1())));
-    const double alpha_s = Sqr(EFT.get_g3())/(4. * Pi);
-
-    //apply threshold conditions to SM - constrained model parameters
-    EFT.calculate_DRbar_masses();
-    //tree-level matching of gauge couplings
-    model.set_@hyperchargeCoupling@(EFT.get_g1()*Sqrt(.6)/@hyperchargeCouplingGutNormalization@);
-    model.set_@leftCoupling@(EFT.get_g2()/@leftCouplingGutNormalization@);
-    model.set_@strongCoupling@(EFT.get_g3());
-    //user input for matching SM VEV to SUSY parameters
-@MatchingVEVsUserInput@
-    //tree-level matching of yukawas
-    topDRbar = model.get_mass_matrix_@TopQuark@();
-    bottomDRbar = model.get_mass_matrix_@BottomQuark@();
-    electronDRbar = model.get_mass_matrix_@Electron@();
-    calcYukawaCouplings(model, topDRbar, bottomDRbar, electronDRbar);
-
-    //loop matching for gauge couplings
-    model.calculate_DRbar_masses();
-@gauge1Linit@
-@alphaEM1Lmatching@
-@alphaS1Lmatching@
-
-    //match running masses back to SUSY theory at 1-loop
-    MW_SUSY = Sqrt(Sqr(EFT.get_MVWp()) + Sqr(model.get_M@VectorW@@getWMassExtension@) - @ModelName@_SM_two_scale_matching<T>::MVWp2matching1L(model));
-    MZ_SUSY = Sqrt(Sqr(EFT.get_MVZ())  + Sqr(model.get_M@VectorZ@@getZMassExtension@) - @ModelName@_SM_two_scale_matching<T>::MVZ2matching1L(model));
-
-    topDRbar = ZeroMatrix;
-    bottomDRbar = ZeroMatrix;
-    electronDRbar = ZeroMatrix;
-
-    for(unsigned i = 0; i < 3; i++)
-    {
-      topDRbar(i, i)      = EFT.get_MFu(i) + model.get_M@TopQuark@(i) - Sqrt(@ModelName@_SM_two_scale_matching<T>::MFu2matching1L(model, i));
-      bottomDRbar(i, i)   = EFT.get_MFd(i) + model.get_M@BottomQuark@(i) - Sqrt(@ModelName@_SM_two_scale_matching<T>::MFd2matching1L(model, i));
-      electronDRbar(i, i) = EFT.get_MFe(i) + model.get_M@Electron@(i) - Sqrt(@ModelName@_SM_two_scale_matching<T>::MFe2matching1L(model, i));
-    }
-
-    //1-loop matching for Yukawas
-    calcYukawaCouplings(model, topDRbar, bottomDRbar, electronDRbar);
-
-    //loop matching for gauge couplings
-    model.set_@hyperchargeCoupling@(Sqrt(4. * Pi * alpha_em / (1. - delta_alpha_em) * Sqr(MZ_SUSY/MW_SUSY))/@hyperchargeCouplingGutNormalization@);
-    model.set_@leftCoupling@(Sqrt(4. * Pi * alpha_em / (1. - delta_alpha_em) / (1. - Sqr(MW_SUSY/MZ_SUSY)))/@leftCouplingGutNormalization@);
-    model.set_@strongCoupling@(Sqrt(4. * Pi * alpha_s / (1. - delta_alpha_s)));
-
-    //matching lambda from full theory
-    model.calculate_DRbar_masses();
-    model.solve_ewsb_one_loop();
-    EFT.set_Lambdax(@ModelName@_SM_two_scale_matching<T>::Mhh2matching1L(model)/Sqr(EFT.get_v()));
-    EFT.run_to(MZpole);
+    EFT.set_Lambdax(lambda_high);
+    EFT.run_to(MTpole);
   }
   while ((MaxRelDiff(lambda_low, EFT.get_Lambdax()) > model.get_precision()
           || MaxRelDiff(lowEnergyInput(32), EFT.get_v()) > model.get_precision()) &&
@@ -399,6 +350,7 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
   lambda_low = EFT.get_Lambdax();
   EFT.set(lowEnergyInput);
   EFT.set_Lambdax(lambda_low);
+  EFT.run_to(low_scale);
   EFT.calculate_DRbar_masses();
   EFT.solve_ewsb();
   EFT.calculate_Mhh_pole();
@@ -406,13 +358,6 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
   //store Higgs pole mass in physical structure
   this->@GetHiggsMass@ = EFT.get_physical().Mhh;
 
-}
-
-template <class T>
-void @ModelName@_spectrum_generator<T>::calcYukawaCouplings(@ModelName@<T>& model, Eigen::Matrix<double, 3, 3>& topDRbar,
-															Eigen::Matrix<double, 3, 3>& bottomDRbar, Eigen::Matrix<double, 3, 3>& electronDRbar)
-{
-@calcYukawas@
 }
 
 } // namespace flexiblesusy

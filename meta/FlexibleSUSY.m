@@ -766,7 +766,7 @@ WriteMatchingClass[files_List] :=
           "@gauge1Linit@"       -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
                                                                     ThresholdCorrections`CalculateColorCoupling[scheme]
                                                                   + ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
-                                                                                                                       ]]],
+                                                                  ]]],                                                                                                                    
           "@alphaS1Lmatching@"  ->  IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
           "@alphaEM1Lmatching@" -> 	IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
@@ -1036,7 +1036,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, scheme, GetHiggsMass, DiagonalizeEFT, setting, MatchingVEVsUserInput="", GetWMassExtension, GetZMassExtension},
+    Module[{parseCmdLineOptions, printCommandLineOptions, GetHiggsMass, DiagonalizeEFT, scheme},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
            (* If you want to add tadpoles, call the following routine like this:
@@ -1044,34 +1044,26 @@ WriteUserExample[inputParameters_List, files_List] :=
             *)
            DiagonalizeEFT = LoopMasses`CreateHiggsLogDiagonalization[{},{}];
            scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
-           If[!ListQ[FlexibleSUSY`VEVsAtSUSYScale] || Length[Flatten[VEVsAtSUSYScale]] == 0, MatchingVEVsUserInput = "// no matching condition for VEVs specified";,
-                                       MatchingVEVsUserInput = "model.calculate_DRbar_masses();\n";
-
-                                       For[i = 1, i <= Length[VEVsAtSUSYScale], i++,
-                                          MatchingVEVsUserInput = MatchingVEVsUserInput <> "model.set_" <> ToValidCSymbolString[FlexibleSUSY`VEVsAtSUSYScale[[i, 1]]]
-                                                                   <> "(" <> RValueToCFormString[FlexibleSUSY`VEVsAtSUSYScale[[i, 2]]] <> ");\n";
-                                          ];
-             ];
            GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson],
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]  <> "(0)"];
-           GetWMassExtension = If[GetDimension[SARAH`VectorW] == 1, "()", "(0)"];
-           GetZMassExtension = If[GetDimension[SARAH`VectorZ] == 1, "()", "(0)"];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@DiagonalizeEFT@" -> IndentText[WrapLines[DiagonalizeEFT]],
                             "@GetHiggsMass@" -> GetHiggsMass,
-                            "@calcYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
-                            "@gauge1Linit@" -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[ThresholdCorrections`CalculateColorCoupling[scheme]
-                                                                   + ThresholdCorrections`CalculateElectromagneticCoupling[scheme]]]],
-                            "@alphaS1Lmatching@" -> IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
-                                                         CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
+                            "@alphaEMdef@" -> "Sqr(" <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling] Parameters`GetGUTNormalization[SARAH`leftCoupling]] 
+                               <> " * model.get_"
+                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "() * model.get_" <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())/(4. * Pi * (Sqr(" 
+                               <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]] <> " * model.get_"
+                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "()) + Sqr("
+                               <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]] <> " * model.get_"
+                               <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())))",
+                            "@em1Linit@" -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
+                                                                    ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
+                                                                    ]]],
                             "@alphaEM1Lmatching@" -> IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
-                            "@MatchingVEVsUserInput@" -> IndentText[WrapLines[MatchingVEVsUserInput]],
-                            "@getWMassExtension@" -> GetWMassExtension,
-                            "@getZMassExtension@" -> GetZMassExtension,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
