@@ -152,7 +152,7 @@ double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
  * Prints detailed a_mu calculation (1-loop w/ and w/o tan(beta)
  * resumation, 2-loop, and differenc contributions).
  */
-void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
+void print_amu_detailed(const gm2calc::MSSMNoFV_onshell& model)
 {
    const double gm2_1l =
       gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
