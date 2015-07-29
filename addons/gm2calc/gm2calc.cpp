@@ -25,6 +25,7 @@
 #include "MSSMNoFV_onshell.hpp"
 
 #include <iostream>
+#include <limits>
 
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
 #define WARNING(message) std::cerr << "Warning: " << message << '\n';
@@ -168,6 +169,10 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
 
    std::cout << model << '\n';
 
+   // set high output precision
+   std::ios_base::fmtflags flags(std::cout.flags());
+   std::cout.precision(std::numeric_limits<double>::digits10);
+
    std::cout <<
       "=============================================\n"
       "   amu (1-loop + 2-loop best) = " << gm2_best << '\n' <<
@@ -230,6 +235,8 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "amua2LaCha = " << gm2calc::amua2LCha(model) << '\n' <<
       "--------------------------------------\n"
       ;
+
+   std::cout.flags(flags);
 }
 
 /**
@@ -299,7 +306,9 @@ int main(int argc, const char* argv[])
 
    switch (config_options.output_format) {
    case gm2calc::Config_options::Minimal:
-      std::cout << calculate_amu_best(model) << '\n';
+      std::cout << std::setprecision(std::numeric_limits<double>::digits10)
+                << std::scientific
+                << calculate_amu_best(model) << '\n';
       break;
    case gm2calc::Config_options::Detailed:
       print_amu_detailed(model);
