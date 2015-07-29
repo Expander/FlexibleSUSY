@@ -33,6 +33,7 @@ void setup(MSSMNoFV_onshell_mass_eigenstates& model)
       mm0(Eigen::Matrix<double,3,3>::Zero());
    Yu(2,2) = 165.0   * root2 / (vev * sinBeta);
    Yd(2,2) = 2.9     * root2 / (vev * cosBeta);
+   Ye(1,1) = 0.105   * root2 / (vev * cosBeta);
    Ye(2,2) = 1.77699 * root2 / (vev * cosBeta);
    mm0 = Sqr(m0) * Eigen::Matrix<double,3,3>::Identity();
 
