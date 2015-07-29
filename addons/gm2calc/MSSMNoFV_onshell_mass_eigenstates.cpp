@@ -503,7 +503,7 @@ void CLASSNAME::calculate_MVZ()
    const auto mass_matrix_VZ = get_mass_matrix_VZ();
    MVZ = std::abs(mass_matrix_VZ);
 
-   MVZ = sqrt(MVZ);
+   MVZ = std::sqrt(std::abs(MVZ));
 }
 
 double CLASSNAME::get_mass_matrix_Fd() const
@@ -672,7 +672,7 @@ void CLASSNAME::calculate_MSveL()
    // if (MSveL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SveL);
 
-   MSveL = sqrt(MSveL);
+   MSveL = std::sqrt(std::abs(MSveL));
 }
 
 double CLASSNAME::get_mass_matrix_SvmL() const
@@ -691,7 +691,7 @@ void CLASSNAME::calculate_MSvmL()
    // if (MSvmL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SvmL);
 
-   MSvmL = sqrt(MSvmL);
+   MSvmL = std::sqrt(std::abs(MSvmL));
 }
 
 double CLASSNAME::get_mass_matrix_SvtL() const
@@ -710,7 +710,7 @@ void CLASSNAME::calculate_MSvtL()
    // if (MSvtL < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::SvtL);
 
-   MSvtL = sqrt(MSvtL);
+   MSvtL = std::sqrt(std::abs(MSvtL));
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sd() const
@@ -738,7 +738,7 @@ void CLASSNAME::calculate_MSd()
    // if (MSd.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sd);
 
-   MSd = sqrt(MSd);
+   MSd = sqrt(MSd.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Su() const
@@ -766,7 +766,7 @@ void CLASSNAME::calculate_MSu()
    // if (MSu.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Su);
 
-   MSu = sqrt(MSu);
+   MSu = sqrt(MSu.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Se() const
@@ -794,7 +794,7 @@ void CLASSNAME::calculate_MSe()
    // if (MSe.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Se);
 
-   MSe = sqrt(MSe);
+   MSe = sqrt(MSe.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sm() const
@@ -822,7 +822,7 @@ void CLASSNAME::calculate_MSm()
    // if (MSm.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sm);
 
-   MSm = sqrt(MSm);
+   MSm = sqrt(MSm.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Stau() const
@@ -850,7 +850,7 @@ void CLASSNAME::calculate_MStau()
    // if (MStau.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Stau);
 
-   MStau = sqrt(MStau);
+   MStau = sqrt(MStau.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Ss() const
@@ -878,7 +878,7 @@ void CLASSNAME::calculate_MSs()
    // if (MSs.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Ss);
 
-   MSs = sqrt(MSs);
+   MSs = sqrt(MSs.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sc() const
@@ -906,7 +906,7 @@ void CLASSNAME::calculate_MSc()
    // if (MSc.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sc);
 
-   MSc = sqrt(MSc);
+   MSc = sqrt(MSc.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Sb() const
@@ -934,7 +934,7 @@ void CLASSNAME::calculate_MSb()
    // if (MSb.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Sb);
 
-   MSb = sqrt(MSb);
+   MSb = sqrt(MSb.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_St() const
@@ -962,7 +962,7 @@ void CLASSNAME::calculate_MSt()
    // if (MSt.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::St);
 
-   MSt = sqrt(MSt);
+   MSt = sqrt(MSt.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_hh() const
@@ -989,7 +989,7 @@ void CLASSNAME::calculate_Mhh()
    // if (Mhh.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::hh);
 
-   Mhh = sqrt(Mhh);
+   Mhh = sqrt(Mhh.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Ah() const
@@ -1021,7 +1021,7 @@ void CLASSNAME::calculate_MAh()
    // if (MAh.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Ah);
 
-   MAh = sqrt(MAh);
+   MAh = sqrt(MAh.cwiseAbs());
 }
 
 Eigen::Matrix<double,2,2> CLASSNAME::get_mass_matrix_Hpm() const
@@ -1047,7 +1047,7 @@ void CLASSNAME::calculate_MHpm()
    // if (MHpm.minCoeff() < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::Hpm);
 
-   MHpm = sqrt(MHpm);
+   MHpm = sqrt(MHpm.cwiseAbs());
 }
 
 Eigen::Matrix<double,4,4> CLASSNAME::get_mass_matrix_Chi() const
@@ -1109,7 +1109,7 @@ void CLASSNAME::calculate_MVWm()
    // if (MVWm < 0.)
    //    problems.flag_tachyon(MSSMNoFV_onshell_info::VWm);
 
-   MVWm = sqrt(MVWm);
+   MVWm = std::sqrt(std::abs(MVWm));
 }
 
 
@@ -1138,7 +1138,7 @@ double CLASSNAME::ThetaW() const
 
 double CLASSNAME::v() const
 {
-   return 2*sqrt(sqr(MVWm)/sqr(g2));
+   return 2*std::sqrt(sqr(MVWm)/sqr(g2));
 }
 
 
