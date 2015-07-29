@@ -411,17 +411,33 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "======================================\n"
       << "1/alpha(MZ) = " << 1./calculate_alpha(model.get_EL()) << '\n'
       << "1/alpha(0)  = " << 1./calculate_alpha(model.get_EL0()) << '\n'
+      << "alpha_s(MZ) = " <<    calculate_alpha(model.get_g3()) << '\n'
       <<
       "--------------------------------------\n"
-      " on-shell parameters \n"
+      " on-shell masses and parameters \n"
       "--------------------------------------\n"
       "MM          = " << model.get_MM() << '\n' <<
-      "MSm         = " << model.get_MSmu().transpose() << '\n' <<
-      "USm         = " << model.get_USmu().row(0)
-                       << model.get_USmu().row(1) << '\n' <<
       "MT          = " << model.get_MT() << '\n' <<
+      "MB          = " << model.get_MB() << '\n' <<
+      "MTau        = " << model.get_ML() << '\n' <<
       "MW          = " << model.get_MW() << '\n' <<
       "MZ          = " << model.get_MZ() << '\n' <<
+      "MSm         = " << model.get_MSmu().transpose() << '\n' <<
+      "USm         = " << model.get_USmu().row(0) << ' '
+                       << model.get_USmu().row(1) << '\n' <<
+      "MSb         = " << model.get_MSbot().transpose() << '\n' <<
+      "USb         = " << model.get_USbot().row(0) << ' '
+                       << model.get_USbot().row(1) << '\n' <<
+      "MSt         = " << model.get_MStop().transpose() << '\n' <<
+      "USt         = " << model.get_UStop().row(0) << ' '
+                       << model.get_UStop().row(1) << '\n' <<
+      "MStau       = " << model.get_MStau().transpose() << '\n' <<
+      "UStau       = " << model.get_UStau().row(0) << ' '
+                       << model.get_UStau().row(1) << '\n' <<
+      "MCha        = " << model.get_MCha().transpose() << '\n' <<
+      "MChi        = " << model.get_MChi().transpose() << '\n' <<
+      "MA0         = " << model.get_MA0() << '\n' <<
+      "MH          = " << model.get_Mhh().transpose() << '\n' <<
       "tan(beta)   = " << model.get_TB() << '\n' <<
       "yu          = " << model.get_Yu().diagonal().transpose() << '\n' <<
       "yd          = " << model.get_Yd().diagonal().transpose() << '\n' <<
@@ -430,8 +446,15 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "Mu          = " << model.get_Mu() << '\n' <<
       "M1          = " << model.get_MassB() << '\n' <<
       "M2          = " << model.get_MassWB() << '\n' <<
-      "msl(2,2)    = " << signed_abs_sqrt(model.get_ml2(1,1)) << '\n' <<
-      "mse(2,2)    = " << signed_abs_sqrt(model.get_me2(1,1)) << '\n'
+      "M3          = " << model.get_MassG() << '\n' <<
+      "msl         = " << model.get_ml2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
+      "mse         = " << model.get_me2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
+      "msq         = " << model.get_mq2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
+      "msu         = " << model.get_mu2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
+      "msd         = " << model.get_md2().diagonal().transpose().unaryExpr(std::ptr_fun(signed_abs_sqrt)) << '\n' <<
+      "Au          = " << model.get_Au().diagonal().transpose() << '\n' <<
+      "Ad          = " << model.get_Ad().diagonal().transpose() << '\n' <<
+      "Ae          = " << model.get_Ae().diagonal().transpose() << '\n'
       ;
 
    return os;
