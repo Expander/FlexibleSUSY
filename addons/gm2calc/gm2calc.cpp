@@ -169,12 +169,18 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
    std::cout << model << '\n';
 
    std::cout <<
+      "=============================================\n"
+      "   amu (1-loop + 2-loop best) = " << gm2_best << '\n' <<
+      "=============================================\n\n"
+
+      "==============================\n"
+      "   amu (1-loop) corrections\n"
+      "==============================\n\n"
+
       "--------------------------------------\n"
-      "g-2 (1-loop + 2-loop best) = " << gm2_best << '\n' <<
+      "amu (1-loop strict) = " << gm2_1l << '\n' <<
       "--------------------------------------\n"
-      "g-2 (1-loop strict) = " << gm2_1l << '\n' <<
-      "--------------------------------------\n"
-      "g-2 (1-loop TB resummed) = " << gm2_1l_tan_beta_resummed << '\n' <<
+      "amu (1-loop TB resummed) = " << gm2_1l_tan_beta_resummed << '\n' <<
       "--------------------------------------\n"
       "amuChi0 (TB resummed) = " << gm2calc::amuChi0(model) << '\n' <<
       "amuChipm (TB resummed) = " << gm2calc::amuChipm(model) << '\n' <<
@@ -186,11 +192,14 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "amuBHmuL = " << gm2calc::amuBHmuL(model) << '\n' <<
       "amuWHmuL = " << gm2calc::amuWHmuL(model) << '\n' <<
       "amuBHmuR = " << gm2calc::amuBHmuR(model) << "\n\n" <<
+
+      "==============================\n"
+      "   amu (2-loop) corrections\n"
+      "==============================\n\n"
+
       "--------------------------------------\n"
-      "----- g-2 (2-loop) - corrections -----\n"
-      "--------------------------------------\n"
-      "g-2 (2-loop (TB resummed)) = " << gm2_2l_tan_beta_resummed << '\n' <<
-      "2Loop / 1Loop = " <<
+      "amu (2-loop (TB resummed)) = " << gm2_2l_tan_beta_resummed << '\n' <<
+      "2-loop / 1-loop = " <<
       (100. * gm2_2l_tan_beta_resummed / gm2_1l_tan_beta_resummed) << " %\n"
       "--------------------------------------\n"
       "amu2LSFsapprox = " << gm2calc::amu2LFSfapprox(model) << '\n' <<
@@ -200,11 +209,12 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "amuBHmuL2L = " << gm2calc::amuBHmuL2L(model) << '\n' <<
       "amuBHmuR2L = " << gm2calc::amuBHmuR2L(model) << '\n' <<
       "amuBmuLmuR2L = " << gm2calc::amuBmuLmuR2L(model) << '\n' <<
-      "2L_FSfapprox / 1Loop = " <<
-      100. * gm2calc::amu2LFSfapprox(model) / gm2_1l << " %\n"
+      "2-loop_FSfapprox / 1-loop = " <<
+      (100. * gm2calc::amu2LFSfapprox(model) / gm2_1l) << " %\n"
       "--------------------------------------\n"
-      "TanBetaCorrection) = " << gm2_2l_tanb_approx << '\n' <<
-      "2L_tanb / 1Loop = " << (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
+      "tan(beta) correction = " << gm2_2l_tanb_approx << '\n' <<
+      "2-loop_tan(beta) / 1-loop = " <<
+      (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
       "--------------------------------------\n"
       "amu2LPhotonic = " <<
       (gm2calc::amuChipmPhotonic(model)
@@ -212,7 +222,7 @@ void print_amu_detailed(gm2calc::MSSMNoFV_onshell& model)
       "--------------------------------------\n"
       "amuChipmPhotonic = " << gm2calc::amuChipmPhotonic(model) << '\n' <<
       "amuChi0Photonic = " << gm2calc::amuChi0Photonic(model) << '\n' <<
-      "2L_Photonic / 1Loop = " <<
+      "2-loop_Photonic / 1-loop = " <<
       100. * (amuChipmPhotonic(model)
               + gm2calc::amuChi0Photonic(model)) / gm2_1l << " %\n"
       "--------------------------------------\n"
