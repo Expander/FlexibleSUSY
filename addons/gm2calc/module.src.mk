@@ -45,7 +45,8 @@ clean::
 		-rm -f $(LIBsrc)
 		-rm -f $(patsubst src/%, bin/%, $(EXEsrc_EXE))
 
-$(LIBsrc_DEP) $(EXEsrc_DEP) $(LIBsrc_OBJ) $(EXEsrc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIBsrc_DEP) $(EXEsrc_DEP) $(LIBsrc_OBJ) $(EXEsrc_OBJ): \
+		override CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIBsrc): $(LIBsrc_OBJ)
 		$(MAKELIB) $@ $^
