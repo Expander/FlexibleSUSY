@@ -175,8 +175,12 @@ double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
 	    + amuBHmuR2L(model) + amuBmuLmuR2L(model) ) * tan_beta_cor(model);
 }
 
-// photonic corrections, all
+// === photonic 2-loop corrections ===
 
+/**
+ * Calculates the photonic 2-loop contribution to the 1-loop chargino
+ * diagram, Eq. (36) arXiv:1003.5820.
+ */
 double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM = model.get_MM();
@@ -201,6 +205,10 @@ double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
    return  sqr(model.get_EL0()) * sqr(oneOver16PiSqr) * sqr(MM / MSvmL) * result;
 }
 
+/**
+ * Calculates the photonic 2-loop contribution to the 1-loop
+ * neutralino diagram, Eq. (35) arXiv:1003.5820.
+ */
 double amuChi0Photonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM = model.get_MM();
