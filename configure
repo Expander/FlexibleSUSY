@@ -181,7 +181,7 @@ tsil_inc_dir=""
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
-MODELS="all"
+MODELS=""
 # addons that will be compiled
 ADDONS=""
 
