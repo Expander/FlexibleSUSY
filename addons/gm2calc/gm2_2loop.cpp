@@ -171,8 +171,7 @@ double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
  */
 double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
 
-   return ( amuWHnu2L(model) + amuWHmuL2L(model) + amuBHmuL2L(model)
-	    + amuBHmuR2L(model) + amuBmuLmuR2L(model) ) * tan_beta_cor(model);
+   return amu2LFSfapprox_non_tan_beta_resummed(model) * tan_beta_cor(model);
 }
 
 // === photonic 2-loop corrections ===
