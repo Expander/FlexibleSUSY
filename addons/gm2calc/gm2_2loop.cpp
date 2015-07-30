@@ -29,6 +29,9 @@ namespace gm2calc {
 
 // fermion/sfermion corrections, log-approximations
 
+/**
+ * Calculates \f$m_{SUSY}\f$, p.37 arxiv:1311.1775.
+ */
 double LogNorm(const MSSMNoFV_onshell& model) {
    // function to find minimum special masses to normalize logarithms
 
@@ -38,6 +41,9 @@ double LogNorm(const MSSMNoFV_onshell& model) {
              fmin(sqrt(model.get_me2(1, 1)), sqrt(model.get_ml2(1, 1))))));
 }
 
+/**
+ * Calculates \f$\Delta_{g_1}\f$, Eq. (6.6a) arxiv:1311.1775.
+ */
 double Deltag1(const MSSMNoFV_onshell& model) {
    const double gY = model.get_gY();
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
@@ -58,6 +64,9 @@ double Deltag1(const MSSMNoFV_onshell& model) {
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
+/**
+ * Calculates \f$\Delta_{\tilde{H}}\f$, Eq. (6.6c) arxiv:1311.1775.
+ */
 double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
    const double ytau = model.get_Ye(2, 2);
    const double ytop = model.get_Yu(2, 2);
@@ -77,6 +86,10 @@ double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
                            + log(sqrt(ml2(2, 2)) / LogScale))) );
 }
 
+/**
+ * Calculates \f$\Delta_{\tilde{B}\tilde{H}}\f$, Eq. (6.6d)
+ * arxiv:1311.1775.
+ */
 double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
    const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
@@ -87,6 +100,9 @@ double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
                             + 2. * log(sqrt(mq2(2, 2)) / LogScale)) );
 }
 
+/**
+ * Calculates \f$\Delta_{g_2}\f$, Eq. (6.6b) arxiv:1311.1775.
+ */
 double Deltag2(const MSSMNoFV_onshell& model) {
    const double g2 = model.get_g2();
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
@@ -99,6 +115,10 @@ double Deltag2(const MSSMNoFV_onshell& model) {
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
+/**
+ * Calculates \f$\Delta_{\tilde{W}\tilde{H}}\f$, Eq. (6.6e)
+ * arxiv:1311.1775.
+ */
 double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
    const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
@@ -107,6 +127,9 @@ double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
    return oneOver16PiSqr * - 6. * sqr(ytop) * log(sqrt(mq2(2, 2)) / LogScale);
 }
 
+/**
+ * Calculates \f$\Delta_{t_\beta}\f$, Eq. (6.6f) arxiv:1311.1775.
+ */
 double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
    const double ytau = model.get_Ye(2, 2);
    const double ytop = model.get_Yu(2, 2);
@@ -118,6 +141,9 @@ double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
              * log(MUDIM / LogScale) );
 }
 
+/**
+ * Calculates 1st line of Eq. (6.5) arxiv:1311.1775.
+ */
 double amuWHnu2L(const MSSMNoFV_onshell& model) {
    const double test1 = .75;
 
@@ -126,6 +152,9 @@ double amuWHnu2L(const MSSMNoFV_onshell& model) {
               + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model)) );
 }
 
+/**
+ * Calculates 2nd line of Eq. (6.5) arxiv:1311.1775.
+ */
 double amuWHmuL2L(const MSSMNoFV_onshell& model) {
    const double test2 = .75;
 
@@ -134,6 +163,9 @@ double amuWHmuL2L(const MSSMNoFV_onshell& model) {
              + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
+/**
+ * Calculates 3rd line of Eq. (6.5) arxiv:1311.1775.
+ */
 double amuBHmuL2L(const MSSMNoFV_onshell& model) {
    const double test3 = .75;
 
@@ -142,6 +174,9 @@ double amuBHmuL2L(const MSSMNoFV_onshell& model) {
               + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
+/**
+ * Calculates 4th line of Eq. (6.5) arxiv:1311.1775.
+ */
 double amuBHmuR2L(const MSSMNoFV_onshell& model) {
    const double test4 = 2.;
 
@@ -150,6 +185,9 @@ double amuBHmuR2L(const MSSMNoFV_onshell& model) {
               + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
 }
 
+/**
+ * Calculates 5th line of Eq. (6.5) arxiv:1311.1775.
+ */
 double amuBmuLmuR2L(const MSSMNoFV_onshell& model) {
    const double test5 = 1.5;
 
@@ -158,6 +196,9 @@ double amuBmuLmuR2L(const MSSMNoFV_onshell& model) {
 }
 
 /**
+ * Calculates 2-loop leading log approximation for fermion-sfermion
+ * loop contributions, Eq. (6.5) arxiv:1311.1775.
+ *
  * No tan(beta) resummation
  */
 double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
@@ -167,6 +208,9 @@ double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
 }
 
 /**
+ * Calculates 2-loop leading log approximation for fermion-sfermion
+ * loop contributions, Eq. (6.5) arxiv:1311.1775.
+ *
  * Includes tan(beta) resummation
  */
 double amu2LFSfapprox(const MSSMNoFV_onshell& model) {

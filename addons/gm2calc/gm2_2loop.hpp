@@ -26,6 +26,17 @@ namespace gm2calc {
 
 class MSSMNoFV_onshell;
 
+// === 2-loop fermion/sfermion approximations ===
+
+double amu2LFSfapprox(const MSSMNoFV_onshell&);
+double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell&);
+
+double amuWHnu2L(const MSSMNoFV_onshell&);
+double amuWHmuL2L(const MSSMNoFV_onshell&);
+double amuBHmuL2L(const MSSMNoFV_onshell&);
+double amuBHmuR2L(const MSSMNoFV_onshell&);
+double amuBmuLmuR2L(const MSSMNoFV_onshell&);
+
 double LogNorm(const MSSMNoFV_onshell&);
 
 double Deltag1(const MSSMNoFV_onshell&);
@@ -35,13 +46,6 @@ double Deltag2(const MSSMNoFV_onshell&);
 double DeltaYukWinoHiggsino(const MSSMNoFV_onshell&);
 double DeltaTanBeta(const MSSMNoFV_onshell&);
 
-double amuWHnu2L(const MSSMNoFV_onshell&);
-double amuWHmuL2L(const MSSMNoFV_onshell&);
-double amuBHmuL2L(const MSSMNoFV_onshell&);
-double amuBHmuR2L(const MSSMNoFV_onshell&);
-double amuBmuLmuR2L(const MSSMNoFV_onshell&);
-double amu2LFSfapprox(const MSSMNoFV_onshell&);
-double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell&);
 
 // === photonic 2-loop corrections ===
 
