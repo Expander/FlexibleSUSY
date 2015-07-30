@@ -43,16 +43,21 @@ double amuBmuLmuR2L(const MSSMNoFV_onshell&);
 double amu2LFSfapprox(const MSSMNoFV_onshell&);
 double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell&);
 
+// === photonic 2-loop corrections ===
+
 double amuChipmPhotonic(const MSSMNoFV_onshell&);
 double amuChi0Photonic(const MSSMNoFV_onshell&);
+
+// === SUSY 2L(a) diagrams ===
+
+double amua2LSferm(const MSSMNoFV_onshell&);
+double amua2LCha(const MSSMNoFV_onshell&);
 
 double tan_alpha(const MSSMNoFV_onshell&);
 Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell&);
 Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell&);
 Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell&);
 Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell&);
-double amua2LSferm(const MSSMNoFV_onshell&);
-double amua2LCha(const MSSMNoFV_onshell&);
 
 } // namespace gm2calc
 } // namespace flexiblesusy

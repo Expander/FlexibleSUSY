@@ -36,8 +36,11 @@ double G3(double);
 double G4(double);
 double H2(double, double);
 double Iabc(double, double, double);
+/// \f$f_{PS}(z)\f$, Eq. (70) arXiv:hep-ph/0609168
 double f_PS(double);
+/// \f$f_S(z)\f$, Eq. (71) arXiv:hep-ph/0609168
 double f_S(double);
+/// \f$f_{\tilde{f}}(z)\f$, Eq. (72) arXiv:hep-ph/0609168
 double f_sferm(double);
 
 double cube(double);

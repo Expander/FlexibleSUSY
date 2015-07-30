@@ -235,12 +235,16 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
    return sqr(model.get_EL0()) * sqr(oneOver16PiSqr) * sqr(MM) * result;
 }
 
-// amu2Loop_a corrections
+// ==== amu2Loop_a corrections ====
 
 /**
- * include resummation of 1/(1+Deltamu) within muon Yukawa coupling
- * but not in other Yukawa couplings (in particular not in tau,
- * bottom)
+ * The following functions include resummation of 1/(1+Deltamu) within
+ * muon Yukawa coupling but not in other Yukawa couplings (in
+ * particular not in tau, bottom)
+ */
+
+/**
+ * Calculates CP-even Higgs mixing angle \f$\tan\alpha\f$.
  *
  * @note the result is < 0
  */
@@ -255,6 +259,13 @@ double tan_alpha(const MSSMNoFV_onshell& model) {
 }
 
 /**
+ * Calculates \f$\lambda_{\mu}\f$, Eq. (65), and
+ * \f$\lambda_{\chi_k^+}\f$, Eq. (66) arXiv:hep-ph/0609168.
+ *
+ * Row 0 contains \f$\lambda_{\chi_1^+}\f$, Eq. (66).
+ * Row 1 contains \f$\lambda_{\chi_2^+}\f$, Eq. (66).
+ * Row 2 contains \f$\lambda_{\mu}\f$, Eq. (65).
+ *
  * includes tan(beta) resummation
  */
 Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& model) {
@@ -287,6 +298,10 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
    return result;
 }
 
+/**
+ * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq. (67)
+ * arXiv:hep-ph/0609168
+ */
 Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& model) {
    Eigen::Matrix<std::complex<double>,2,2> result;
    const double TB(model.get_TB());
@@ -312,6 +327,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
 }
 
 /**
+ * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq. (68)
+ * arXiv:hep-ph/0609168
+ *
  * includes tan(beta) resummation
  */
 Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& model) {
@@ -337,6 +355,9 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
 }
 
 /**
+ * Calculates \f$\lambda_{\tilde{t}_i}\f$, Eq. (69)
+ * arXiv:hep-ph/0609168
+ *
  * includes tan(beta) resummation
  */
 Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& model) {
@@ -361,6 +382,12 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& mode
    return result;
 }
 
+/**
+ * Calculates 2-loop contribution to amu, where a sfermion loop has
+ * been inserted into a 1-loop Standard Model diagram (photonic
+ * Barr-Zee diagram \f$(\tilde{f}\gamma H)\f$), Eq. (64)
+ * arXiv:hep-ph/0609168.
+ */
 double amua2LSferm(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM(model.get_MM());
@@ -411,6 +438,12 @@ double amua2LSferm(const MSSMNoFV_onshell& model) {
    return result * 2. * sqr(oneOver16PiSqr * sqr(EL) * MM / (MW * SW));
 }
 
+/**
+ * Calculates 2-loop contribution to amu, where a chargino loop has
+ * been inserted into a 1-loop Standard Model diagram (photonic
+ * Barr-Zee diagram \f$(\chi\gamma H)\f$), Eq. (63)
+ * arXiv:hep-ph/0609168.
+ */
 double amua2LCha(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM(model.get_MM());

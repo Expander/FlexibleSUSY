@@ -239,6 +239,9 @@ double Iabc(double a, double b, double c) {
            / ((sqr(a) - sqr(b)) * (sqr(b) - sqr(c)) * (sqr(a) - sqr(c))) );
 }
 
+/**
+ * Calculates \f$f_{PS}(z)\f$, Eq. (70) arXiv:hep-ph/0609168
+ */
 double f_PS(double z) {
    double result = 0.;
    if(z < 0.25) {
@@ -253,6 +256,9 @@ double f_PS(double z) {
    return result;
 }
 
+/**
+ * Calculates \f$f_S(z)\f$, Eq. (71) arXiv:hep-ph/0609168
+ */
 double f_S(double z) {
    if(z < 0.)
       ERROR("f_S: z must not be negativ!");
@@ -260,6 +266,9 @@ double f_S(double z) {
    return (2. * z - 1.) * f_PS(z) - 2. * z * (2. + log(z));
 }
 
+/**
+ * Calculates \f$f_{\tilde{f}}(z)\f$, Eq. (72) arXiv:hep-ph/0609168
+ */
 double f_sferm(double z) {
    if(z < 0.)
       ERROR("f_sferm: z must not be negativ!");
