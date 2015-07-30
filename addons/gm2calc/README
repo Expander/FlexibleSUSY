@@ -54,6 +54,12 @@ are given:
   EIGENFLAGS      := -I/usr/include/eigen3
   LAPACKLIBS      := -llapack -lblas
 
+The command line arguments passed to `make' are stored in the file
+`make.args'.  To (re-)run `make' with the command line arguments
+stored in `make.args' run
+
+  $ cat make.args | xargs make
+
 
 Running GM2Calc
 ===============
