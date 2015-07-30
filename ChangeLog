@@ -4,6 +4,11 @@ FlexibleSUSY-1.2.2 [not released yet]
    can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
    By default, the susy-scale is chosen.
 
+ * Change (commit 5b9d653): If ./configure is run without the
+   `--with-models=<models>' argument, no models will be build.  In
+   former FlexibleSUSY versions if the `--with-models=<models>'
+   argument was missing, all models were build.
+
  * Bugfix (commit 5530bf9): Defining a scale to be a running mass, for
    example SUSYScale = M[hh], resulted in a compilation error.
 
