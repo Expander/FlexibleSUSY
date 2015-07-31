@@ -169,7 +169,7 @@ double QedQcd::qedBeta() const {
   if (displayMu() > mf.display(mBottom)) x += 2.0 / 9.0;
   if (displayMu() > mf.display(mTau)) x += 2.0 / 3.0;
   if (displayMu() > MW) x += 1.0 / 6.0;
-  if (displayMu() > (mtPole + TOLERANCE))  {
+  /*if (displayMu() > (mtPole + TOLERANCE))  {
     ostringstream ii;
     
       ii << "qed beta function called at " << displayMu() << 
@@ -177,7 +177,7 @@ double QedQcd::qedBeta() const {
 	", outside range of validity";
       ii << " in QedQcd::qedbeta\n";
       throw ii.str();
-    }
+    }*/
   
   return (x * sqr(a.display(ALPHA)) / PI);
 }
