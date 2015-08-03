@@ -1,8 +1,8 @@
 
 BeginPackage["GMuonMinus2`", {"SARAH`", "TextFormatting`", "TreeMasses`", "LoopMasses`", "Vertices`"}];
 
-GetPhysicalName::usage="The name of the c++ data type that stores the resulting magnetic moment";
-CreatePhysicalDefinition::usage="Returns the c++ code with declaration of the magnetic moment variable";
+GetVariableName::usage="The name of the c++ data type that stores the resulting magnetic moment";
+CreateVariableDefinition::usage="Returns the c++ code with declaration of the magnetic moment variable";
 
 CreateParticles::usage="Returns the c++ code that contains all particle classes";
 CreateMuonFunctions::usage="Returns the c++ code that contains all muon functions";
@@ -20,8 +20,8 @@ Begin["`Private`"];
 
 (************* Begin public interface *******************)
 
-GetPhysicalName[] := "GMuonMinus2";
-CreatePhysicalDefinition[] := "double " <> GMuonMinus2`GetPhysicalName[] <> ";";
+GetVariableName[] := "GMuonMinus2";
+CreateVariableDefinition[] := "double " <> GMuonMinus2`GetVariableName[] <> ";";
 
 (* Create c++ classes for all particles *)
 CreateParticles[] := Module[{particles, code},

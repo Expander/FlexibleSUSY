@@ -988,6 +988,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                           } ];
           ];
 
+(* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[files_List] :=
     Module[{particles, muonFunctions, diagrams, vertexFunctions,
         definitions, calculationCode, threadedCalculationCode},
@@ -1015,8 +1016,8 @@ WriteUserExample[inputParameters_List, files_List] :=
     Module[{parseCmdLineOptions, printCommandLineOptions, gMuonMinus2Def, gMuonMinus2},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
-           gMuonMinus2Def = GMuonMinus2`CreatePhysicalDefinition[];
-           gMuonMinus2 = GMuonMinus2`GetPhysicalName[];
+           gMuonMinus2Def = GMuonMinus2`CreateVariableDefinition[];
+           gMuonMinus2 = GMuonMinus2`GetVariableName[];
            
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
@@ -1336,6 +1337,7 @@ PrepareTadpoles[eigenstates_] :=
            ConvertSarahTadpoles[tadpoles]
            ];
 
+(* Get all nPointFunctions that GMM2 needs *)
 PrepareGMuonMinus2[] := GMuonMinus2`NPointFunctions[];
 
 PrepareUnrotatedParticles[eigenstates_] :=
