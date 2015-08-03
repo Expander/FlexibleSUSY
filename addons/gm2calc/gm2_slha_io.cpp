@@ -501,7 +501,7 @@ void GM2_slha_io::process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
    case  5: model.set_MassB( value); break;
    case  6: model.set_MassWB(value); break;
    case  7: model.set_MassG( value); break;
-   case  8: model.set_BMu(   value); break;
+   case  8: model.set_MA0(   value); break;
    case  9: model.set_ml2(0, 0, signed_sqr(value)); break;
    case 10: model.set_ml2(1, 1, signed_sqr(value)); break;
    case 11: model.set_ml2(2, 2, signed_sqr(value)); break;

@@ -43,6 +43,7 @@ public:
    void set_Ae(unsigned i, unsigned k, double a) { Ae(i,k) = a; }
    void set_Au(unsigned i, unsigned k, double a) { Au(i,k) = a; }
    void set_Ad(unsigned i, unsigned k, double a) { Ad(i,k) = a; }
+   void set_MA0(double m) { get_physical().MAh(1) = m; }
 
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
