@@ -36,8 +36,6 @@
 #include "@ModelName@_g_muon_minus_2.hpp"
 #include "@ModelName@_two_scale_model.hpp"
 
-#define PHYSICAL(t) (context.model.get_physical().t)
-
 /* Due to g++4.4 compatibility, we need the following workarounds:
 - no variadic non-template parameter packs :'-(
 - no constexpr (less code, no boost workarounds...) :'-(
@@ -51,16 +49,43 @@ using namespace flexiblesusy;
 
 namespace flexiblesusy {
 namespace @ModelName@_GMuonMinus2 {
+/**
+ * @class IndexBounds<N>
+ * @brief A class representing multiple (N) index ranges.
+ *
+ * N is a non-negative integer.
+ * The ranges are specified the c++ way; The range begins are inclusive
+ * and the range ends are exclusive. Misspecified ranges result in
+ * undefined behaviour!
+ * The intended use is to iterate over an IndexBounds<N> using the normal
+ * begin()/end() syntax, which will iterate over every possible combination
+ * of the indices within their respective ranges.
+ * The ranges are const! Once they are initialized they cannot be changed.
+ * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
+ */
 template<unsigned int N> struct IndexBounds;
 
-template<unsigned int N> struct IndexIterator {
+/**
+ * @class IndexIterator<N>
+ * @brief The iterator class used by IndexBounds<N>.
+ *
+ * It only fulfils the input iterator requirements!
+ * The value_type is a const std::array<unsigned int, N>
+ * containing the current indices.
+ * Incrementing the iterator results in a new index combination.
+ */
+template<unsigned int N> struct IndexIterator
+: public std::iterator<
+std::input_iterator_tag,
+const std::array<unsigned int, N>>
+{
    friend class IndexBounds<N>;
 private:
-   const IndexBounds<N> &bounds;
+   const IndexBounds<N> *bounds;
    std::array<unsigned int, N> indices;
 
    IndexIterator(const IndexBounds<N> &b, const unsigned int *i)
-      : bounds(b)
+      : bounds(&b)
    {
       std::memcpy(indices.data(), i, N * sizeof(unsigned int));
    }
@@ -70,19 +95,24 @@ public:
       return indices;
    }
 
+   const std::array<unsigned int, N> *operator->( void ) const
+   {
+      return &indices;
+   }
+
    IndexIterator &operator++(void)
    {
       for (unsigned int i = 0; i != N; i++) {
          indices[i]++;
-         if (indices[i] == bounds.indexEnd[i]) {
-            indices[i] = bounds.indexBegin[i];
+         if (indices[i] == bounds->indexEnd[i]) {
+            indices[i] = bounds->indexBegin[i];
             continue;
          }
 
          return *this;
       }
 
-      std::memcpy(indices.data(), bounds.indexEnd, N * sizeof(unsigned int));
+      std::memcpy(indices.data(), bounds->indexEnd, N * sizeof(unsigned int));
       return *this;
    }
 
@@ -143,10 +173,21 @@ IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
 
 @GMuonMinus2_Particles@
 
-// Evaluation context struct, needed by DiagramEvaluator<>::value() further below
+/**
+ * @class EvaluationContext
+ * @brief Represents an evaluation context.
+ *
+ * Actually it simply contains a reference to a model object.
+ * All computational functions are forwarded to that object,
+ * e.g. mass calculation functions.
+ */
 struct EvaluationContext {
-   @ModelName@<Two_scale> &model;
+   @ModelName@<Two_scale> &model; ///< The model object.
 
+   /**
+    * @fn mass<P>
+    * @brief Returns the mass of a particle.
+    */
    template<class P> double mass(void) const;
    template<class P> double mass(unsigned int) const;
 };
@@ -160,45 +201,88 @@ template<class P> double EvaluationContext::mass(unsigned int index) const
    return mass<typename anti<P>::type>(index);
 }
 
+/**
+ * @class DiagramEvaluator
+ * @brief A template that can calculate disagrams.
+ *
+ * This template is completely general. The intended use is
+ * to have specialisations of the kind:
+ *   DiagramEvaluator<DiagramType, Particle1, Particle2, ...>
+ * along with a static member function:
+ *   static double value( EvaluationContext &context );
+ * that calculates the contribution to a_muon
+ * for a specific diagram class with specified particles.
+ */
+template<class ...Args> struct DiagramEvaluator;
+
 @GMuonMinus2_MuonFunctionPrototypes@
 
 @GMuonMinus2_Diagrams@
 
-// Classes that represent one specific vertex
+/**
+ * @class SingleComponentedVertex
+ * @brief A vertex whose value can be represented by a single complex number
+ */
 class SingleComponentedVertex {
 private:
-   std::complex<double> val;
+   std::complex<double> val; ///< The value
 public:
    SingleComponentedVertex(std::complex<double> v)
       : val(v) {}
 
+   /**
+    * @fn value
+    * @brief Returns the value of the vertex.
+    */
    std::complex<double> value(void) const
    {
       return val;
    }
+
+   /**
+    * @fn isZero
+    * @brief Tests whether the value is numerically significant
+    */
    bool isZero(void) const
    {
       return (is_zero(val.real()) && is_zero(val.imag()));
    }
 };
 
+/**
+ * @class LeftAndRightComponentedVertex
+ * @brief A vertex whose value can be represented by two complex numbers
+ */
 class LeftAndRightComponentedVertex {
 private:
-   std::pair<std::complex<double>, std::complex<double>> value;
+   std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
 public:
    LeftAndRightComponentedVertex(const std::complex<double> &left,
                                  const std::complex<double> &right)
       : value(left, right) {}
 
+   /**
+    * @fn left
+    * @brief Returns the left component of the vertex.
+    */
    std::complex<double> left(void) const
    {
       return value.first;
    }
+
+   /**
+    * @fn right
+    * @brief Returns the left component of the vertex.
+    */
    std::complex<double> right(void) const
    {
       return value.second;
    }
 
+   /**
+    * @fn isZero
+    * @brief Tests whether the values are numerically significant
+    */
    bool isZero(void) const
    {
       return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
@@ -206,11 +290,26 @@ public:
    }
 };
 
-
-// Classes that represent more general vertices
-// No particle indices are specified here.
+/**
+ * @class VertexFunctionData<P...>
+ * @brief Vertex data for a vertex with the particles specified by P...
+ *
+ * All elements in P... have to be publicly derived from Particle.
+ * The data includes the type of the vertex, whether P... is in
+ * canonical order or permuted as well as index bounds referring to
+ * the specific particles (generation and colour indices, etc).
+ * The intention is to have a program generate VertexFunctionData<>
+ * specialisations that are then used by the VertexFunction<> template.
+ */
 template<class ...P> struct VertexFunctionData;
 
+/**
+ * @class VertexFunctionHelper<bool, P...>
+ * @brief A helper template that is used by VertexFunction<P...>
+ *
+ * You should never have to use this class directly. It is just a
+ * helper class.
+ */
 template<bool, class ...P> class VertexFunctionHelper;
 
 template<class ...P> class VertexFunctionHelper<false, P...>
@@ -257,6 +356,17 @@ public:
    }
 };
 
+/**
+ * @class VertexFunction<P...>
+ * @brief A template that represents a vertex with open particle indices.
+ *
+ * All elements in P... have to be publicly derived from Particle.
+ * To obtain a conrete value, use the static member function vertex()
+ * along with the desired particle indices.
+ * The intention here is to have a program generate the vertex calculation
+ * code for a canonically ordered P... and have c++ take care of
+ * possible particle permutations.
+ */
 template<class ...P> class VertexFunction
    : public VertexFunctionHelper<VertexFunctionData<P...>::is_permutation, P...> {
 private:
@@ -266,6 +376,33 @@ public:
    typedef typename Base::index_bounds index_bounds;
    typedef typename Base::vertex_type vertex_type;
 
+   /**
+    * @fn indexBounds
+    * @brief Returns the IndexBounds<> object of the VertexFunction.
+    */
+   using Base::indexBounds;
+
+   /**
+    * @fn particleIndices
+    * @brief Returns the subset of indices belonging to
+    *        a particle at a given index.
+    * @param indices The complete set of indices for all particles
+    *
+    * The particle indexing is in the same order as the template arguments
+    * and starts at 0.
+    */
+   using Base::particleIndices;
+
+   /**
+    * @fn vertex
+    * @brief Calculates the vertex for a given set of particle indices.
+    * @param indices The particle indices
+    * @param context The evaluation context
+    *
+    * Q is just used for SFINAE (c++)
+    * This definition only kicks in for permuted P...
+    * For canonical P... the definitions have to be supplied separately.
+    */
    template<class Q = Base>
    static vertex_type vertex(const indices_type &indices, EvaluationContext &context)
    {
@@ -275,7 +412,15 @@ public:
 
 @GMuonMinus2_VertexFunctionData@
 
-// Loop functions
+/**
+ * @defgroup LoopFunctions
+ * @brief The loop functions necessary for GMM2 one-loop calculations.
+ *
+ * These are OneLoopFunctionF1C(), OneLoopFunctionF2C(),
+ * OneLoopFunctionF1N() and OneLoopFunctionF2N()
+ * as specified in arXiv:1311.1775
+*/
+
 static inline double OneLoopFunctionF1C(double x)
 {
    if (is_zero(x))
