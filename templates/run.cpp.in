@@ -93,9 +93,6 @@ int main(int argc, const char* argv[])
        spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
       slha_io.set_spectrum(model);
 
-      if( calculateGMuonMinus2 )
-         slha_io.set_amuon( spectrum_generator.get_amuon() );
-
       slha_io.set_extra(model, scales);
    }
 
