@@ -459,7 +459,7 @@ CouplingsForParticles[particles_List] :=
            couplings = {ReplacePart[particles, 0 -> SARAH`Cp]};
            
            couplings = Switch[vertexType,
-                              (* SingleComponentedVertex, couplings, *)
+                              SingleComponentedVertex, couplings,
                               LeftAndRightComponentedVertex, {couplings[[1]][SARAH`PL], couplings[[1]][SARAH`PR]}];
            Return[couplings];
            ];
