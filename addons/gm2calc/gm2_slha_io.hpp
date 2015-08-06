@@ -25,10 +25,9 @@
 #include <Eigen/Core>
 #include <boost/format.hpp>
 #include "slhaea.h"
-#include "error.hpp"
+#include "gm2_error.hpp"
 #include "numerics2.hpp"
 
-namespace flexiblesusy {
 namespace gm2calc {
 
 class MSSMNoFV_onshell;
@@ -68,18 +67,10 @@ public:
    typedef std::function<void(int, double)> Tuple_processor;
    enum Position { front, back };
 
-   class ReadError : public Error {
-   public:
-      ReadError(const std::string& message_) : message(message_) {}
-      virtual ~ReadError() {}
-      virtual std::string what() const { return message; }
-   private:
-      std::string message;
-   };
-
    void clear();
 
    // reading functions
+   const SLHAea::Coll& get_data() const { return data; }
    bool block_exists(const std::string&) const;
    void read_from_file(const std::string&);
    void read_from_source(const std::string&);
@@ -95,8 +86,8 @@ public:
    void set_block(const std::ostringstream&, Position position = back);
    void write_to_file(const std::string&);
    void write_to_stream(std::ostream& = std::cout);
-
    void fill_block_entry(const std::string&, unsigned, double, const std::string&);
+   void fill_block_entry(const std::string&, unsigned, const std::string&);
 
    static void process_gm2calcconfig_tuple(Config_options&, int, double);
    static void process_gm2calcinput_tuple(MSSMNoFV_onshell&, int, double);
@@ -187,6 +178,5 @@ void fill_slha(const GM2_slha_io&, MSSMNoFV_onshell&);
 void fill(const GM2_slha_io&, Config_options&);
 
 } // namespace gm2calc
-} // namespace flexiblesusy
 
 #endif

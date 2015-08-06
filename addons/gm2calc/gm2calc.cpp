@@ -18,7 +18,7 @@
 
 #include "gm2_1loop.hpp"
 #include "gm2_2loop.hpp"
-#include "error.hpp"
+#include "gm2_error.hpp"
 #include "config.h"
 
 #include "gm2_slha_io.hpp"
@@ -126,26 +126,9 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
       model.calculate_masses();
       break;
    default:
-      throw SetupError("Unknown input option");
+      throw gm2calc::SetupError("Unknown input option");
       break;
    }
-}
-
-/**
- * Calculate most precise value of a_mu for a given set op parameters
- */
-double calculate_amu_best(gm2calc::MSSMNoFV_onshell& model)
-{
-   const double gm2_1l_tan_beta_resummed =
-      gm2calc::calculate_amu_1loop(model);
-   const double gm2_2l_tan_beta_resummed =
-      + gm2calc::amu2LFSfapprox(model)
-      + gm2calc::amuChipmPhotonic(model)
-      + gm2calc::amuChi0Photonic(model);
-
-   const double gm2_best = gm2_1l_tan_beta_resummed + gm2_2l_tan_beta_resummed;
-
-   return gm2_best;
 }
 
 /**
@@ -248,10 +231,10 @@ void print_amu_detailed(const gm2calc::MSSMNoFV_onshell& model)
  *
  * @return a_mu
  */
-double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
+double calculate_amu(const gm2calc::MSSMNoFV_onshell& model,
                      const gm2calc::Config_options& config_options)
 {
-   double result = 0.;
+   double result = std::numeric_limits<double>::signaling_NaN();
 
    switch (config_options.loop_order) {
    case 0:
@@ -280,35 +263,23 @@ double calculate_amu(gm2calc::MSSMNoFV_onshell& model,
    return result;
 }
 
-int main(int argc, const char* argv[])
+/**
+ * Calculates amu and prints it to std::cout.  The output format
+ * depends on the \a config_options .
+ *
+ * @param model model
+ * @param slha_io SLHA object
+ * @param config_options configuration options
+ */
+void print_amu(const gm2calc::MSSMNoFV_onshell& model,
+               gm2calc::GM2_slha_io& slha_io,
+               const gm2calc::Config_options& config_options)
 {
-   Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
-
-   if (options.input_source.empty()) {
-      ERROR("No input source given!\n"
-            "   Please provide an SLHA input via the option --slha-input-file=\n"
-            "   or a GM2Calc input via the option --gm2calc-input-file=");
-      return EXIT_FAILURE;
-   }
-
-   gm2calc::MSSMNoFV_onshell model;
-   gm2calc::GM2_slha_io slha_io;
-   gm2calc::Config_options config_options;
-
-   try {
-      slha_io.read_from_source(options.input_source);
-      fill(slha_io, config_options);
-      setup_model(model, slha_io, options);
-   } catch (const Error& error) {
-      ERROR(error.what());
-      return EXIT_FAILURE;
-   }
-
    switch (config_options.output_format) {
    case gm2calc::Config_options::Minimal:
       std::cout << std::setprecision(std::numeric_limits<double>::digits10)
                 << std::scientific
-                << calculate_amu_best(model) << '\n';
+                << calculate_amu(model, config_options) << '\n';
       break;
    case gm2calc::Config_options::Detailed:
       print_amu_detailed(model);
@@ -327,9 +298,72 @@ int main(int argc, const char* argv[])
       break;
    default:
       ERROR("Unknown output format: " << config_options.output_format);
-      return EXIT_FAILURE;
       break;
    }
+}
 
-   return 0;
+/**
+ * Prints output if an error has occured.
+ *
+ * @param error error object
+ * @param model model
+ * @param slha_io SLHA object
+ * @param config_options configuration options
+ */
+void print_error(const gm2calc::Error& error,
+                 const gm2calc::MSSMNoFV_onshell& model,
+                 gm2calc::GM2_slha_io& slha_io,
+                 const gm2calc::Config_options& config_options)
+{
+   ERROR(error.what());
+
+   switch (config_options.output_format) {
+   case gm2calc::Config_options::Detailed:
+      // in detailed mode print amu even if an error has occured
+      print_amu_detailed(model);
+      std::cout << '\n'
+                << "================================\n"
+                << "   " << error.what() << '\n'
+                << "================================\n";
+      break;
+   case gm2calc::Config_options::NMSSMTools:
+   case gm2calc::Config_options::SPheno:
+      // print SPINFO block with error description
+      slha_io.fill_block_entry("SPINFO", 1, "GM2Calc");
+      slha_io.fill_block_entry("SPINFO", 2, GM2CALC_VERSION);
+      slha_io.fill_block_entry("SPINFO", 4, error.what());
+      slha_io.write_to_stream(std::cout);
+      break;
+   default:
+      break;
+   }
+}
+
+int main(int argc, const char* argv[])
+{
+   Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
+
+   if (options.input_source.empty()) {
+      ERROR("No input source given!\n"
+            "   Please provide an SLHA input via the option --slha-input-file=\n"
+            "   or a GM2Calc input via the option --gm2calc-input-file=");
+      return EXIT_FAILURE;
+   }
+
+   gm2calc::MSSMNoFV_onshell model;
+   gm2calc::GM2_slha_io slha_io;
+   gm2calc::Config_options config_options;
+   int exit_code = 0;
+
+   try {
+      slha_io.read_from_source(options.input_source);
+      fill(slha_io, config_options);
+      setup_model(model, slha_io, options);
+      print_amu(model, slha_io, config_options);
+   } catch (const gm2calc::Error& error) {
+      print_error(error, model, slha_io, config_options);
+      exit_code = EXIT_FAILURE;
+   }
+
+   return exit_code;
 }

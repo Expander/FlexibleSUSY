@@ -26,8 +26,9 @@
 
 #include <Eigen/Core>
 
-namespace flexiblesusy {
 namespace gm2calc {
+
+using namespace flexiblesusy;
 
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
 #define WARNING(message) std::cerr << "Warning: " << message << '\n';
@@ -216,6 +217,35 @@ void GM2_slha_io::fill_block_entry(const std::string& block_name,
 {
    std::ostringstream sstr;
    sstr << FORMAT_ELEMENT(entry, value, description);
+
+   SLHAea::Coll::const_iterator block =
+      data.find(data.cbegin(), data.cend(), block_name);
+
+   if (block == data.cend()) {
+      // create new block
+      std::ostringstream block;
+      block << "Block " << block_name << '\n'
+            << sstr.str();
+      set_block(block, GM2_slha_io::back);
+   } else {
+      data[block_name][SLHAea::to<double>(entry)] = sstr.str();
+   }
+}
+
+/**
+ * Fills a block entry with a string.  If the block or the entry do
+ * not exist, the block / entry is created.
+ *
+ * @param block_name block name
+ * @param entry number of the entry
+ * @param description comment
+ */
+void GM2_slha_io::fill_block_entry(const std::string& block_name,
+                                   unsigned entry,
+                                   const std::string& description)
+{
+   std::ostringstream sstr;
+   sstr << FORMAT_SPINFO(entry, description);
 
    SLHAea::Coll::const_iterator block =
       data.find(data.cbegin(), data.cend(), block_name);
@@ -578,4 +608,3 @@ void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
 }
 
 } // namespace gm2calc
-} // namespace flexiblesusy
