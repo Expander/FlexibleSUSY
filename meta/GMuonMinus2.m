@@ -28,7 +28,6 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
  - Write the necessary c++ code: loop functions, DiagramEvaluator<> specialisations
  **********)
 
-
 Begin["`Private`"];
 
 (************* Begin public interface *******************)
@@ -407,7 +406,7 @@ CreateVertices[] := Module[{contributingDiagrams, vertices,
                            vertices = DeleteDuplicates[vertices,
                                                        (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
                            
-                           nPointFunctions = Flatten[((Null[Null, #] &) /@ CouplingsForParticles[#] &) /@ vertices];
+                           nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
                            
                            createdVertices = {vertexClassesPrototypes, vertexClassesDefinitions};
                            createdVertices = (StringJoin @ Riffle[#, "\n\n"] &) /@ createdVertices;
@@ -430,13 +429,13 @@ VerticesForDiagram[Diagram[loopDiagram_OneLoopDiagram, photonEmitter_, exchangeP
            ];
 
 (* Returns the vertex type for a vertex with a given list of particles *)
-VertexTypeForParticles[particles_list] :=
+VertexTypeForParticles[particles_List] :=
     Module[{strippedParticles, scalars, vectors, fermions, scalarCount, vectorCount, fermionCount},
            strippedParticles = Vertices`StripFieldIndices /@ particles;
            
-           scalars = Select[strippedParticles, TreeMasses`IsScalar];
-           vectors = Select[strippedParticles, TreeMasses`IsVector];
-           fermions = Select[strippedParticles, TreeMasses`IsFermion];
+           scalars = Select[strippedParticles, (TreeMasses`IsScalar[#] || TreeMasses`IsScalar[AntiParticle[#]] &)];
+           vectors = Select[strippedParticles, (TreeMasses`IsVector[#] || TreeMasses`IsVector[AntiParticle[#]] &)];
+           fermions = Select[strippedParticles, (TreeMasses`IsFermion[#] || TreeMasses`IsFermion[AntiParticle[#]] &)];
            
            scalarCount = Length[scalars];
            vectorCount = Length[vectors];
@@ -454,7 +453,7 @@ VertexTypeForParticles[particles_list] :=
            ];
 
 (* Returns the different SARAH`Cp coupling parts for a vertex with a given list of particles *)
-CouplingsForParticles[particles_list] :=
+CouplingsForParticles[particles_List] :=
     Module[{vertexType, couplings},
            vertexType = VertexTypeForParticles[particles];
            couplings = {ReplacePart[particles, 0 -> SARAH`Cp]};
@@ -525,7 +524,7 @@ CreateVertexFunction[indexedParticles_List] :=
  *)
 
 (* The heart of the algorithm! From the particle content, determine all
- necessary information. For now this ONLY works for diagram types 1 through 4! *)
+ necessary information. *)
 ParseVertex[indexedParticles_List] :=
     Module[{particles, numberOfIndices, indexParameters,
         parsedVertex, vertexClassName, vertexFunctionBody,
@@ -538,7 +537,7 @@ ParseVertex[indexedParticles_List] :=
                                                  ", "];
            If[indexParameters =!= "", indexParameters = " " <> indexParameters <> " "];
            
-           vertexClassName = ToString[VertexTypeForParticles[particles]];
+           vertexClassName = SymbolName[VertexTypeForParticles[particles]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        "return vertex_type( context.model." <>
@@ -552,7 +551,6 @@ ParseVertex[indexedParticles_List] :=
                                        "std::complex<double> right = context.model." <>
                                        NameOfCouplingFunction[particles] <> "PR" <>
                                        "(" <> indexParameters <> ");\n\n" <>
-                                       
                                        "return vertex_type( left, right );"];
            
            sarahParticles = SARAH`getParticleName /@ particles;
