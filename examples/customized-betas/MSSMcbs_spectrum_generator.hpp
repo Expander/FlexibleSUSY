@@ -75,8 +75,6 @@ public:
    void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "CMSSM_spectrum.dat") const;
 
-   double get_amuon( void ) const { return @gMuonMinus2@; }
-
 private:
    RGFlow<T> solver;
    MSSMcbs<T> model;
@@ -163,7 +161,7 @@ void MSSMcbs_spectrum_generator<T>::run(const QedQcd& oneset,
       model.run_to(susy_scale);
       model.solve_ewsb();
       model.calculate_spectrum();
-       
+
       // run to output scale (if scale > 0)
       if (!is_zero(parameter_output_scale)) {
          model.run_to(parameter_output_scale);

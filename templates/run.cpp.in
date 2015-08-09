@@ -67,7 +67,7 @@ int main(int argc, const char* argv[])
    }
 
    oneset.toMz(); // run SM fermion masses to MZ
-   
+
    @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
    spectrum_generator.set_parameter_output_scale(
@@ -92,7 +92,6 @@ int main(int argc, const char* argv[])
    if (!problems.have_problem() ||
        spectrum_generator_settings.get(Spectrum_generator_settings::force_output)) {
       slha_io.set_spectrum(model);
-
       slha_io.set_extra(model, scales);
    }
 

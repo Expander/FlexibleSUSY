@@ -1013,17 +1013,12 @@ WriteGMuonMinus2Class[files_List] :=
            ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, gMuonMinus2Def, gMuonMinus2},
+    Module[{parseCmdLineOptions, printCommandLineOptions},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
-           gMuonMinus2Def = GMuonMinus2`CreateVariableDefinition[];
-           gMuonMinus2 = GMuonMinus2`GetVariableName[];
-           
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
-                            "@gMuonMinus2Def@"         -> IndentText[gMuonMinus2Def],
-                            "@gMuonMinus2@"            -> gMuonMinus2,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
