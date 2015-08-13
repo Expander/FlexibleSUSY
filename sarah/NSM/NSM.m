@@ -24,9 +24,9 @@ FermionFields[[4]] = {u, 3, conj[uR],    -2/3, 1, -3};
 FermionFields[[5]] = {e, 3, conj[eR],       1, 1,  1};
 
 ScalarFields[[1]]  = {H, 1, {Hp, H0},     1/2, 2,  1};
-ScalarFields[[2]]  = {S, 1, S0      ,       0, 1,  1};
+ScalarFields[[2]]  = {s, 1, s0      ,       0, 1,  1};
 
-RealScalars = {S};
+RealScalars = {s};
 
 (*----------------------------------------------*)
 (*   DEFINITION                                 *)
@@ -43,14 +43,14 @@ DEFINITION[GaugeES][LagrangianInput] = {
 
 LagZ2 = \
     - mH2 conj[H].H \
-    - mS2 S.S \
+    - mS2 s.s \
     + \[Lambda]1 conj[H].H.conj[H].H \
-    + \[Lambda]2 S.S.S.S \
-    + \[Lambda]3 S.S.conj[H].H;
+    + \[Lambda]2 s.s.s.s \
+    + \[Lambda]3 s.s.conj[H].H;
 
 LagZ2v = \
-    + \[Lambda]4 S.conj[H].H \
-    + \[Lambda]5 S.S.S;
+    + \[Lambda]4 s.conj[H].H \
+    + \[Lambda]5 s.s.s;
 
 LagNoHC = LagZ2 + LagZ2v;
 
@@ -67,7 +67,7 @@ DEFINITION[EWSB][GaugeSector] = {
 
 DEFINITION[EWSB][VEVs] = {
     {H0, {vH, 1/Sqrt[2]}, {Ah, \[ImaginaryI]/Sqrt[2]}, {phiH, 1/Sqrt[2]}},
-    {S0, {vS, 1}, {0, 0}, {phiS, 1}}
+    {s0, {vS, 1}, {0, 0}, {phiS, 1}}
 };
 
 DEFINITION[EWSB][MatterSector] = {
