@@ -25,6 +25,7 @@
 #include <cmath>
 #include <complex>
 #include <iostream>
+#include <sstream>
 
 #define WARNING(message) std::cerr << "Warning: " << message << '\n';
 
@@ -45,7 +46,6 @@ namespace {
    }
 }
 
-namespace flexiblesusy {
 namespace gm2calc {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
@@ -82,6 +82,15 @@ void MSSMNoFV_onshell::set_alpha_thompson(double alpha)
    EL0 = calculate_e(alpha);
 }
 
+void MSSMNoFV_onshell::set_TB(double tanb)
+{
+   const double vev = std::sqrt(sqr(vu) + sqr(vd));
+   const double sinb = tanb / std::sqrt(1 + tanb*tanb);
+   const double cosb = 1.   / std::sqrt(1 + tanb*tanb);
+   set_vd(vev * cosb);
+   set_vu(vev * sinb);
+}
+
 /**
  * Returns the electromagnetig gauge coupling in the Thompson limit.
  */
@@ -110,7 +119,11 @@ void MSSMNoFV_onshell::convert_to_onshell(double precision) {
    convert_yukawa_couplings(); // first guess of resummed yukawas
    convert_mf2(precision, 1000);
    convert_yukawa_couplings();
+
+   // final mass spectrum
+   get_problems().clear();
    calculate_DRbar_masses();
+   check_problems();
 }
 
 /**
@@ -127,7 +140,11 @@ void MSSMNoFV_onshell::calculate_masses() {
    convert_vev();
    convert_yukawa_couplings_treelevel();
    convert_yukawa_couplings(); // tan(beta) resummation in Yukawas
-   calculate_DRbar_masses();   // final mass spectrum
+
+   // final mass spectrum
+   get_problems().clear();
+   calculate_DRbar_masses();
+   check_problems();
 
    // copy SUSY masses to physical struct
    copy_susy_masses_to_pole();
@@ -143,6 +160,21 @@ void MSSMNoFV_onshell::check_input()
       throw EInvalidInput("Z mass is zero");
    if (is_zero(get_MM()))
       throw EInvalidInput("Muon mass is zero");
+   if (is_zero(get_MassB()))
+      throw EInvalidInput("Bino mass M1 is zero");
+   if (is_zero(get_MassWB()))
+      throw EInvalidInput("Bino mass M2 is zero");
+   if (is_zero(get_MassG()))
+      throw EInvalidInput("Gluino mass M3 is zero");
+}
+
+void MSSMNoFV_onshell::check_problems()
+{
+   if (get_problems().have_problem()) {
+      std::ostringstream sstr;
+      sstr << get_problems();
+      throw EPhysicalProblem(sstr.str());
+   }
 }
 
 void MSSMNoFV_onshell::copy_susy_masses_to_pole()
@@ -461,4 +493,3 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
 }
 
 } // gm2calc
-} // namespace flexiblesusy

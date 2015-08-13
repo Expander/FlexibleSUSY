@@ -18,12 +18,14 @@ LIBgm2calc_SRC := \
 		$(DIR)/MSSMNoFV_onshell.cpp \
 		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.cpp \
 		$(DIR)/MSSMNoFV_onshell_physical.cpp \
+		$(DIR)/MSSMNoFV_onshell_problems.cpp \
 		$(DIR)/MSSMNoFV_onshell_soft_parameters.cpp \
 		$(DIR)/MSSMNoFV_onshell_susy_parameters.cpp
 
 # main()
 EXEgm2calc_SRC := \
-		$(DIR)/gm2calc.cpp
+		$(DIR)/gm2calc.cpp \
+		$(DIR)/gm2scan.cpp
 
 # header files
 LIBgm2calc_HDR := \
@@ -35,6 +37,7 @@ LIBgm2calc_HDR := \
 		$(DIR)/MSSMNoFV_onshell.hpp \
 		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.hpp \
 		$(DIR)/MSSMNoFV_onshell_physical.hpp \
+		$(DIR)/MSSMNoFV_onshell_problems.hpp \
 		$(DIR)/MSSMNoFV_onshell_soft_parameters.hpp \
 		$(DIR)/MSSMNoFV_onshell_susy_parameters.hpp
 
@@ -118,7 +121,7 @@ $(LIBgm2calc_DEP) $(EXEgm2calc_DEP) $(LIBgm2calc_OBJ) $(EXEgm2calc_OBJ): CPPFLAG
 $(LIBgm2calc): $(LIBgm2calc_OBJ)
 		$(MAKELIB) $@ $^
 
-$(EXEgm2calc_EXE): $(EXEgm2calc_OBJ) $(LIBgm2calc) $(LIBMSSMNoFV_onshell) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(DIR)/%.x: $(DIR)/%.o $(LIBgm2calc) $(LIBMSSMNoFV_onshell) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS)
 
 ALLDEP += $(LIBgm2calc_DEP) $(EXEgm2calc_DEP)

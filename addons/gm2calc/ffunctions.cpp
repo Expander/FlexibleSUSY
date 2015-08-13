@@ -26,9 +26,11 @@
 
 #define ERROR(message) std::cerr << "Error: " << message << '\n';
 
-namespace flexiblesusy {
+namespace gm2calc {
 
-namespace {
+using namespace flexiblesusy;
+
+const double precision = 1e-10;
 
 double dilog(double x) {
    // The DiLogarithm function
@@ -110,10 +112,6 @@ std::complex<double> dilog(const std::complex<double>& x) {
    return std::complex<double>(ansreal, ansimag);
 }
 
-} // anonymous namespace
-
-namespace gm2calc {
-
 double sqr(double x) { return x*x; }
 double cube(double x) { return x*x*x; }
 double quad(double x) { return sqr(x)*sqr(x); }
@@ -124,23 +122,38 @@ double signed_abs_sqrt(double x) {
 }
 
 double F1C(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F1C: x must not be 1 !");
+   if (is_equal(x, 1., 0.01)) {
+      return 1. - 0.6*(-1 + x) + 0.4*sqr(-1 + x)
+         - 0.2857142857142857*cube(-1 + x)
+         + 0.21428571428571427*quad(-1 + x)
+         - 0.16666666666666666*std::pow(-1 + x,5)
+         + 0.13333333333333333*std::pow(-1 + x,6);
+   }
 
    return 2. / quad(1. - x) * (2. + 3. * x - 6. * sqr(x)
                            + cube(x) + 6. * x * log(x));
 }
 
 double F2C(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F2C: x must not be 1 !");
+   if (is_equal(x, 1., 0.01)) {
+      return 1. - 0.75*(-1 + x) + 0.6*sqr(-1 + x) - 0.5*cube(-1 + x)
+         + 0.42857142857142855*quad(-1 + x)
+         - 0.375*std::pow(-1 + x,5)
+         + 0.3333333333333333*std::pow(-1 + x,6);
+   }
 
    return 3. / (2. * cube(1. - x)) * (- 3. + 4. * x - sqr(x) - 2. * log(x));
 }
 
 double F3C(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F3C: x must not be 1 !");
+   if (is_equal(x, 1., 0.07)) {
+      return 1. + 0.9012765957446807*(-1 + x)
+         - 1.2235460992907807*sqr(-1 + x)
+         + 1.2279808944854547*cube(-1 + x)
+         - 1.1530221450282228*quad(-1 + x)
+         + 1.0620712114633095*std::pow(-1 + x,5)
+         - 0.9740314565542522*std::pow(-1 + x,6);
+   }
 
    return ( 4. / (141. * quad(1. - x)) * ((1. - x) * (151. * sqr(x) - 335. * x + 592.)
              + 6. * (21. * cube(x) - 108. * sqr(x) - 93. * x + 50.) * log(x)
@@ -149,8 +162,14 @@ double F3C(double x) {
 }
 
 double F4C(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F4C: x must not be 1 !");
+   if (is_equal(x, 1., 0.07)) {
+      return 1. - 0.3688524590163934*(-1 + x)
+         + 0.15426229508196715*sqr(-1 + x)
+         - 0.05573770491803279*cube(-1 + x)
+         + 0.0037738374038140845*quad(-1 + x)
+         + 0.025907494145199085*std::pow(-1 + x,5)
+         - 0.04369818965837698*std::pow(-1 + x,6);
+   }
 
    return ( - 9. / (122. * cube(1. - x)) * (8. * (sqr(x) - 3. * x + 2.)
              +  (11. * sqr(x) - 40. * x + 5.) * log(x)
@@ -159,23 +178,38 @@ double F4C(double x) {
 }
 
 double F1N(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F1N: x must not be 1 !");
+   if (is_equal(x, 1., 0.01)) {
+      return 1. - 0.4*(-1 + x) + 0.2*sqr(-1 + x)
+         - 0.1142857142857143*cube(-1 + x)
+         + 0.07142857142857142*quad(-1 + x)
+         - 0.047619047619047616*std::pow(-1 + x,5)
+         + 0.03333333333333333*std::pow(-1 + x,6);
+   }
 
    return 2. / quad(1. - x) * (1. - 6. * x + 3. * sqr(x)
                           + 2. * cube(x) - 6. * sqr(x) * log(x));
 }
 
 double F2N(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F2N: x must not be 1 !");
+   if(is_equal(x, 1., 0.01)){
+      return 1. - 0.5*(-1 + x) + 0.3*sqr(-1 + x)
+         - 0.2*cube(-1 + x) + 0.14285714285714285*quad(-1 + x)
+         - 0.10714285714285714*std::pow(-1 + x,5)
+         + 0.08333333333333333*std::pow(-1 + x,6);
+   }
 
    return 3. / cube(1. - x) * (1. - sqr(x) + 2. * x * log(x));
 }
 
 double F3N(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F3N: x must not be 1 !");
+   if (is_equal(x, 1., 0.07)) {
+      return 1. + 0.08685714285714365*(-1 + x)
+         - 0.1641904761904751*sqr(-1 + x)
+         + 0.13662973760932912*cube(-1 + x)
+         - 0.1038192419825078*quad(-1 + x)
+         + 0.07823129251700683*std::pow(-1 + x,5)
+         - 0.05960544217687109*std::pow(-1 + x,6);
+   }
 
    return 4. / (105. * quad(1. - x)) * ((1. - x) * (- 97. * sqr(x) - 529. * x + 2.)
             + 6. * sqr(x) * (13. * x + 81.) * log(x)
@@ -183,25 +217,73 @@ double F3N(double x) {
 }
 
 double F4N(double x) {
-   if(is_equal(x, 1.))
-      ERROR("F4N: x must not be 1 !");
+   if (is_equal(x, 1., 0.07)) {
+      return 1. + 6.245004513516506e-17*(-1 + x)
+         - 0.13875*sqr(-1 + x)
+         + 0.1475*cube(-1 + x)
+         - 0.13163265306122446*quad(-1 + x)
+         + 0.1128826530612245*std::pow(-1 + x,5)
+         - 0.09610615079365077*std::pow(-1 + x,6);
+   }
 
    return - 2.25 / cube(1. - x) * ((x + 3.) * (x * log(x) + x - 1.)
                                   + (6. * x + 2.) * dilog(1. - x));
 }
 
-double Fa(double x, double y) {
-   if(is_equal(x, y))
-      ERROR("Fa: x must not be equal y!");
+/// Fb(x,1)
+double Fb1(double x) {
+   return (cube(x) - 6*sqr(x) + 3*x + 2. + 3*x*log(sqr(x)))
+      / (6*quad(x - 1.));
+}
 
-   return - (G3(x) - G3(y)) / (x - y);
+/// Fb(x,x)
+double Fbx(double x) {
+   return 0.5 * (sqr(x) + 4*x - 5. - (2*x + 1.)*log(sqr(x)))
+      / quad(x - 1.);
 }
 
 double Fb(double x, double y) {
-   if(is_equal(x, y))
-      ERROR("Fb: x must not be equal y!");
+   if (is_equal(x, 1., precision) && is_equal(y, 1., precision))
+      return 1./12.;
+
+   if (is_equal(x, 1., precision))
+      return Fb1(y);
+
+   if (is_equal(y, 1., precision))
+      return Fb1(x);
+
+   if (is_equal(x, y, precision))
+      return Fbx(x);
 
    return - (G4(x) - G4(y)) / (x - y);
+}
+
+/// Fa(x,1)
+double Fa1(double x) {
+   return 0.25 * (cube(x) - 4*sqr(x) + 11*x - 8. - (x + 2.)*log(sqr(x)))
+      / quad(x - 1.) + 0.5 * Fb1(x);
+}
+
+/// Fa(x,x)
+double Fax(double x) {
+   return 0.25 * (cube(x) - 16*sqr(x) + 11*x + 4. + x*(2*x + 7.)*log(sqr(x)))
+      / (x * quad(x - 1.)) + 0.5 * Fbx(x);
+}
+
+double Fa(double x, double y) {
+   if (is_equal(x, 1., precision) && is_equal(y, 1., precision))
+      return 0.25;
+
+   if (is_equal(x, 1., precision))
+      return Fa1(y);
+
+   if (is_equal(y, 1., precision))
+      return Fa1(x);
+
+   if (is_equal(x, y, precision))
+      return Fax(x);
+
+   return - (G3(x) - G3(y)) / (x - y);
 }
 
 double G3(double x) {
@@ -225,13 +307,38 @@ double G4(double x) {
  * \f$\frac{1}{z} H_2(\frac{x}{z},\frac{y}{z}) = - I(x,y,z)\f$.
  */
 double H2(double x, double y) {
-   if (is_equal(x,1.) || is_equal(y,1.) || is_equal(x,y))
-      ERROR("H2(" << x << "," << y << ") is not well-defined!");
+   if (is_equal(x, 1., precision) && is_equal(y, 1., precision))
+      return -0.5;
+
+   if (is_equal(x, 1., precision))
+      return (-1. + y - y*log(y))/sqr(-1. + y);
+
+   if (is_equal(y, 1., precision))
+      return (-1. + x - x*log(x))/sqr(-1. + x);
+
+   if (is_equal(x, y, precision))
+      return (1 - y + log(y))/sqr(-1 + y);
 
    return x * log(x) / ((1-x)*(x-y)) + y * log(y) / ((1-y)*(y-x));
 }
 
+/// Iabc(a,a,c)
+double Iaac(double a, double c) {
+   return (sqr(a) - sqr(c) - sqr(c)*log(sqr(a/c))) / sqr(sqr(a) - sqr(c));
+}
+
 double Iabc(double a, double b, double c) {
+   if (is_equal(a,b) && is_equal(b,c))
+      return 0.5 / sqr(a);
+
+   if (is_equal(a,b))
+      return Iaac(a,c);
+
+   if (is_equal(b,c))
+      return Iaac(b,a);
+
+   if (is_equal(a,c))
+      return Iaac(a,b);
 
    return ( (sqr(a * b) * log(sqr(a / b))
            + sqr(b * c) * log(sqr(b / c))
@@ -277,4 +384,3 @@ double f_sferm(double z) {
 }
 
 } // namespace gm2calc
-} // namespace flexiblesusy

@@ -23,7 +23,6 @@
 #include <limits>
 #include <Eigen/Core>
 
-namespace flexiblesusy {
 namespace gm2calc {
 
 class MSSMNoFV_onshell : public MSSMNoFV_onshell_mass_eigenstates {
@@ -44,6 +43,7 @@ public:
    void set_Au(unsigned i, unsigned k, double a) { Au(i,k) = a; }
    void set_Ad(unsigned i, unsigned k, double a) { Ad(i,k) = a; }
    void set_MA0(double m) { get_physical().MAh(1) = m; }
+   void set_TB(double);
 
    double get_MUDIM() const {return get_scale();}
    double get_EL0() const {return EL0;}
@@ -105,6 +105,7 @@ private:
    unsigned find_bino_like_neutralino();
 
    void check_input();
+   void check_problems();
    void convert_gauge_couplings();
    void convert_BMu();
    void convert_mf2(double, unsigned);
@@ -115,6 +116,5 @@ private:
 };
 
 } // namespace gm2calc
-} // namespace flexiblesusy
 
 #endif

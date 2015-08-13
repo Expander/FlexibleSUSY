@@ -24,8 +24,14 @@
 #include <complex>
 #include <cmath>
 
-namespace flexiblesusy {
 namespace gm2calc {
+
+/**
+ * \file gm2_2loop.cpp
+ *
+ * Contains functions necessary to calculate the SUSY contributions
+ * for g-2 at the 2-loop level.
+ */
 
 // fermion/sfermion corrections, log-approximations
 
@@ -282,8 +288,7 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
 
 /**
  * The following functions include resummation of 1/(1+Deltamu) within
- * muon Yukawa coupling but not in other Yukawa couplings (in
- * particular not in tau, bottom)
+ * the muon, tau and bottom Yukawa couplings.
  */
 
 /**
@@ -510,4 +515,3 @@ double amua2LCha(const MSSMNoFV_onshell& model) {
 }
 
 } // namespace gm2calc
-} // namespace flexiblesusy
