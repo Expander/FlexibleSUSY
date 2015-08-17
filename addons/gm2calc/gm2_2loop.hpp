@@ -38,12 +38,12 @@ double amuBmuLmuR2L(const MSSMNoFV_onshell&);
 
 double LogNorm(const MSSMNoFV_onshell&);
 
-double Deltag1(const MSSMNoFV_onshell&);
-double DeltaYukHiggsino(const MSSMNoFV_onshell&);
-double DeltaYukBinoHiggsino(const MSSMNoFV_onshell&);
-double Deltag2(const MSSMNoFV_onshell&);
-double DeltaYukWinoHiggsino(const MSSMNoFV_onshell&);
-double DeltaTanBeta(const MSSMNoFV_onshell&);
+double Delta_g1(const MSSMNoFV_onshell&);
+double Delta_g2(const MSSMNoFV_onshell&);
+double Delta_YukHiggsino(const MSSMNoFV_onshell&);
+double Delta_YukBinoHiggsino(const MSSMNoFV_onshell&);
+double Delta_YukWinoHiggsino(const MSSMNoFV_onshell&);
+double Delta_TanBeta(const MSSMNoFV_onshell&);
 
 
 // === photonic 2-loop corrections ===
@@ -53,8 +53,8 @@ double amuChi0Photonic(const MSSMNoFV_onshell&);
 
 // === SUSY 2L(a) diagrams ===
 
-double amua2LSferm(const MSSMNoFV_onshell&);
-double amua2LCha(const MSSMNoFV_onshell&);
+double amu2LaSferm(const MSSMNoFV_onshell&);
+double amu2LaCha(const MSSMNoFV_onshell&);
 
 double tan_alpha(const MSSMNoFV_onshell&);
 Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell&);

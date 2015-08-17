@@ -26,8 +26,10 @@
 #include <complex>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
-#define WARNING(message) std::cerr << "Warning: " << message << '\n';
+#define WARNING(message)                                                \
+   do { std::cerr << "Warning: " << message << '\n'; } while (0)
 
 namespace {
    static const double ALPHA_EM_THOMPSON = 1./137.035999074;
@@ -154,18 +156,22 @@ void MSSMNoFV_onshell::calculate_masses() {
 
 void MSSMNoFV_onshell::check_input()
 {
-   if (is_zero(get_MW()))
-      throw EInvalidInput("W mass is zero");
-   if (is_zero(get_MZ()))
-      throw EInvalidInput("Z mass is zero");
-   if (is_zero(get_MM()))
-      throw EInvalidInput("Muon mass is zero");
-   if (is_zero(get_MassB()))
-      throw EInvalidInput("Bino mass M1 is zero");
-   if (is_zero(get_MassWB()))
-      throw EInvalidInput("Bino mass M2 is zero");
-   if (is_zero(get_MassG()))
-      throw EInvalidInput("Gluino mass M3 is zero");
+#define WARN_OR_THROW_IF_ZERO(mass,msg)         \
+   if (is_zero(get_##mass())) {                 \
+      if (do_force_output())                    \
+         WARNING(msg);                          \
+      else                                      \
+         throw EInvalidInput(msg);              \
+   }
+
+   WARN_OR_THROW_IF_ZERO(MW    , "W mass is zero");
+   WARN_OR_THROW_IF_ZERO(MZ    , "Z mass is zero");
+   WARN_OR_THROW_IF_ZERO(MM    , "Muon mass is zero");
+   WARN_OR_THROW_IF_ZERO(MassB , "Bino mass M1 is zero");
+   WARN_OR_THROW_IF_ZERO(MassWB, "Wino mass M2 is zero");
+   WARN_OR_THROW_IF_ZERO(MassG , "Gluino mass M3 is zero");
+
+#undef WARN_OR_THROW_IF_ZERO
 }
 
 void MSSMNoFV_onshell::check_problems()
@@ -173,7 +179,10 @@ void MSSMNoFV_onshell::check_problems()
    if (get_problems().have_problem()) {
       std::ostringstream sstr;
       sstr << get_problems();
-      throw EPhysicalProblem(sstr.str());
+      if (do_force_output())
+         WARNING(sstr.str());
+      else
+         throw EPhysicalProblem(sstr.str());
    }
 }
 
@@ -397,7 +406,9 @@ void MSSMNoFV_onshell::convert_mf2(
    double precision_goal,
    unsigned max_iterations)
 {
-   const Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
+   Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
+   /// pole masses should be mass ordered for this to work
+   std::sort(MSm_pole.data(), MSm_pole.data() + MSm_pole.size());
    Eigen::Array<double,2,1> MSm(get_MSm());
 
    bool accuracy_goal_reached =
@@ -424,8 +435,7 @@ void MSSMNoFV_onshell::convert_mf2(
       set_ml2(1,1,ml211);
       set_me2(1,1,me211);
 
-      calculate_DRbar_masses();
-
+      calculate_MSm();
       accuracy_goal_reached =
          MSSMNoFV_onshell::is_equal(get_MSm(), MSm_pole, precision_goal);
 
@@ -458,6 +468,7 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "MSm         = " << model.get_MSmu().transpose() << '\n' <<
       "USm         = " << model.get_USmu().row(0) << ' '
                        << model.get_USmu().row(1) << '\n' <<
+      "MSvm        = " << model.get_MSvmL() << '\n' <<
       "MSb         = " << model.get_MSbot().transpose() << '\n' <<
       "USb         = " << model.get_USbot().row(0) << ' '
                        << model.get_USbot().row(1) << '\n' <<

@@ -173,7 +173,7 @@ void print_amu_detailed(const gm2calc::MSSMNoFV_onshell& model)
       "amuChi0 (TB resummed) = " << gm2calc::amuChi0(model) << '\n' <<
       "amuChipm (TB resummed) = " << gm2calc::amuChipm(model) << '\n' <<
       "--------------------------------------\n"
-      "amu1Lapprox = " << amu1Lapprox(model) << '\n' <<
+      "amu1Lapprox = " << gm2calc::amu1Lapprox(model) << '\n' <<
       "--------------------------------------\n"
       "amuWHnu = " << gm2calc::amuWHnu(model) << '\n' <<
       "amuBmuLmuR = " << gm2calc::amuBmuLmuR(model) << '\n' <<
@@ -214,8 +214,8 @@ void print_amu_detailed(const gm2calc::MSSMNoFV_onshell& model)
       100. * (amuChipmPhotonic(model)
               + gm2calc::amuChi0Photonic(model)) / gm2_1l << " %\n"
       "--------------------------------------\n"
-      "amu2LaSferm = " << gm2calc::amua2LSferm(model) << '\n' <<
-      "amua2LaCha = " << gm2calc::amua2LCha(model) << '\n' <<
+      "amu2LaSferm = " << gm2calc::amu2LaSferm(model) << '\n' <<
+      "amu2LaCha = " << gm2calc::amu2LaCha(model) << '\n' <<
       "--------------------------------------\n"
       ;
 
@@ -306,26 +306,16 @@ void print_amu(const gm2calc::MSSMNoFV_onshell& model,
  * Prints output if an error has occured.
  *
  * @param error error object
- * @param model model
  * @param slha_io SLHA object
  * @param config_options configuration options
  */
 void print_error(const gm2calc::Error& error,
-                 const gm2calc::MSSMNoFV_onshell& model,
                  gm2calc::GM2_slha_io& slha_io,
                  const gm2calc::Config_options& config_options)
 {
    ERROR(error.what());
 
    switch (config_options.output_format) {
-   case gm2calc::Config_options::Detailed:
-      // in detailed mode print amu even if an error has occured
-      print_amu_detailed(model);
-      std::cout << '\n'
-                << "================================\n"
-                << "   " << error.what() << '\n'
-                << "================================\n";
-      break;
    case gm2calc::Config_options::NMSSMTools:
    case gm2calc::Config_options::SPheno:
       // print SPINFO block with error description
@@ -358,12 +348,15 @@ int main(int argc, const char* argv[])
    try {
       slha_io.read_from_source(options.input_source);
       fill(slha_io, config_options);
+      model.do_force_output(config_options.force_output);
       setup_model(model, slha_io, options);
       print_amu(model, slha_io, config_options);
    } catch (const gm2calc::Error& error) {
-      print_error(error, model, slha_io, config_options);
+      print_error(error, slha_io, config_options);
       exit_code = EXIT_FAILURE;
    }
+
+   exit_code |= model.get_problems().have_problem();
 
    return exit_code;
 }
