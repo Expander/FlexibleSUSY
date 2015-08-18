@@ -44,8 +44,11 @@ LowScaleInput = {};
 LowScaleMinimum;
 LowScaleMaximum;
 InitialGuessAtLowScale = {};
+InitialGuessAtSUSYScale = {};
 InitialGuessAtHighScale = {};
 OnlyLowEnergyFlexibleSUSY = False;
+SMTower = False;
+SUSYScaleUserMatching={};
 AutomaticInputAtMSUSY = True; (* input unfixed parameters at MSUSY *)
 TreeLevelEWSBSolution = {};
 Pole;
@@ -296,6 +299,9 @@ CheckModelFileSettings[] :=
            If[Head[FlexibleSUSY`InitialGuessAtLowScale] =!= List,
               FlexibleSUSY`InitialGuessAtLowScale = {};
              ];
+           If[Head[FlexibleSUSY`InitialGuessAtSUSYScale] =!= List,
+              FlexibleSUSY`InitialGuessAtSUSYScale = {};
+             ];
            If[Head[FlexibleSUSY`InitialGuessAtHighScale] =!= List,
               FlexibleSUSY`InitialGuessAtHighScale = {};
              ];
@@ -385,6 +391,7 @@ CheckModelFileSettings[] :=
 ReplaceIndicesInUserInput[rules_] :=
     Block[{},
           FlexibleSUSY`InitialGuessAtLowScale  = FlexibleSUSY`InitialGuessAtLowScale  /. rules;
+          FlexibleSUSY`InitialGuessAtSUSYScale = FlexibleSUSY`InitialGuessAtSUSYScale /. rules;
           FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /. rules;
           FlexibleSUSY`HighScale               = FlexibleSUSY`HighScale               /. rules;
           FlexibleSUSY`HighScaleFirstGuess     = FlexibleSUSY`HighScaleFirstGuess     /. rules;
@@ -579,10 +586,11 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  } ];
           ];
 
-WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
+WriteInitialGuesserClass[lowScaleGuess_List, susySaleGuess_List, highScaleGuess_List, files_List] :=
    Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings,
            allSettings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
+          initialGuessAtSUSYScale = Constraint`ApplyConstraints[susyScaleGuess];
           initialGuessAtHighScale = Constraint`ApplyConstraints[highScaleGuess];
           allSettings             = Join[lowScaleGuess, highScaleGuess];
           setDRbarYukawaCouplings = {
@@ -592,6 +600,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, highScaleGuess_List, files_List] :=
           };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
+                   "@initialGuessAtSUSYScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
@@ -736,7 +745,7 @@ CreateVEVToTadpoleAssociation[] :=
           ];
 
 WriteMatchingClass[files_List] :=
-    Module[ {subst, eDRbar, g2Def, g1Def, subE, scheme, drbarparam,higgsMediumDiag, smMediumDiagDeclaration},
+    Module[ {subst, eDRbar, g2Def, g1Def, subE, scheme, drbarparam,higgsMediumDiag, smMediumDiagDeclaration, reverseMatchingDiag,  reverseMatchingDiagDeclaration, userMatching},
 		scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
 		drbarparam = If[SARAH`SupersymmetricModel, 1, 0];
         subst = {SARAH`Mass[SARAH`VectorW] -> FlexibleSUSY`mwdrbar, SARAH`Mass[SARAH`VectorZ] -> FlexibleSUSY`mzdrbar,
@@ -762,20 +771,40 @@ WriteMatchingClass[files_List] :=
         smMediumDiagDeclaration = LoopMasses`DiagonalizeForMatchingClassDeclaration[
         {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
         {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"}];
+        reverseMatchingDiag = LoopMasses`DiagonalizeForReverseMatchingClass[
+        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
+        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"},{},{}];
+        reverseMatchingDiagDeclaration = LoopMasses`DiagonalizeForReverseMatchingClassDeclaration[
+        {SARAH`HiggsBoson, SARAH`VectorW, SARAH`VectorZ, SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron},
+        {"hh", "VWp", "VZ", "Fu", "Fd", "Fe"}];
+        userMatching="";
+        If[SMTower,
+           If[Length[SUSYScaleUserMatching] > 0,
+              For[i = 1, i <= Length[SUSYScaleUserMatching], i++,
+                 userMatching = userMatching <> "model.set_" <> CConversion`ToValidCSymbolString[SUSYScaleUserMatching[[i,1]]]
+                                <> "(" <> CConversion`RValueToCFormString[SUSYScaleUserMatching[[i, 2]]]
+                                <> ");\n";
+              ];
+           ];
+        ];
         WriteOut`ReplaceInFiles[files, {
           "@gauge1Linit@"       -> IndentText[WrapLines[ Parameters`CreateLocalConstRefs[
                                                                     ThresholdCorrections`CalculateColorCoupling[scheme]
                                                                   + ThresholdCorrections`CalculateElectromagneticCoupling[scheme]
-                                                                  ]]],                                                                                                                    
+                                                                  ]]],
           "@alphaS1Lmatching@"  ->  IndentText[WrapLines["const double delta_alpha_s = alpha_s/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateColorCoupling[scheme]] <> ");\n"]],
-          "@alphaEM1Lmatching@" -> 	IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
+          "@alphaEM1Lmatching@" ->  IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
           "@calcAlphaEM@"       -> IndentText[WrapLines[
                                             "double weinbergdrbar = model." <> CConversion`RValueToCFormString[SARAH`Weinberg[]] <> "; \n"<>
                                             "double alpha_em = Sqr(" <> CConversion`RValueToCFormString[(eDRbar /. subE[[1,1]])] <> ")/(4.*Pi);\n"]],
-          "@smMediumDiag@"	->	IndentText[WrapLines[smMediumDiag]],
-          "@smMediumDiagDecl@"->IndentText[smMediumDiagDeclaration],
+          "@smMediumDiag@" -> IndentText[WrapLines[smMediumDiag]],
+          "@smMediumDiagDecl@" -> IndentText[smMediumDiagDeclaration],
+          "@reverseDiag@" -> IndentText[reverseMatchingDiag],
+          "@reverseDiagDecl@" -> IndentText[reverseMatchingDiagDeclaration],
+          "@setYukawas@" -> IndentText[WrapLines[ThresholdCorrections`SetDRbarYukawaCouplings[]]],
+          "@applyUserMatching@" -> IndentText[WrapLines[userMatching]],
           Sequence @@ GeneralReplacementRules[]}
                                ];
              ];
@@ -1036,25 +1065,37 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 WriteUserExample[inputParameters_List, files_List] :=
-    Module[{parseCmdLineOptions, printCommandLineOptions, GetHiggsMass, DiagonalizeEFT, scheme},
+    Module[{parseCmdLineOptions, printCommandLineOptions, GetHiggsMass, GetZMass, GetWMass, DiagonalizeEFT, scheme, spectrumGen},
            parseCmdLineOptions = WriteOut`ParseCmdLineOptions[inputParameters];
            printCommandLineOptions = WriteOut`PrintCmdLineOptions[inputParameters];
            (* If you want to add tadpoles, call the following routine like this:
               CreateHiggsLogDiagonalization[ oneLoopTadpoles, vevs];
             *)
            DiagonalizeEFT = LoopMasses`CreateHiggsLogDiagonalization[{},{}];
+           spectrumGen = If[SMTower, CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName] <> "_SM",
+                              CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName],
+                              CConversion`ToValidCSymbolString[FlexibleSUSY`FSModelName]
+                           ];
            scheme = If[SARAH`SupersymmetricModel, FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
            GetHiggsMass = If[GetDimension[SARAH`HiggsBoson] == 1,
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson],
                             "model.get_physical().M" <> ToValidCSymbolString[SARAH`HiggsBoson]  <> "(0)"];
+           GetZMass = If[GetDimension[SARAH`VectorZ] == 1,
+                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorZ],
+                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorZ]  <> "(0)"];
+           GetWMass = If[GetDimension[SARAH`VectorW] == 1,
+                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorW],
+                            "model.get_physical().M" <> ToValidCSymbolString[SARAH`VectorW]  <> "(0)"];
            WriteOut`ReplaceInFiles[files,
                           { "@parseCmdLineOptions@" -> IndentText[IndentText[parseCmdLineOptions]],
                             "@printCommandLineOptions@" -> IndentText[IndentText[printCommandLineOptions]],
                             "@DiagonalizeEFT@" -> IndentText[WrapLines[DiagonalizeEFT]],
                             "@GetHiggsMass@" -> GetHiggsMass,
-                            "@alphaEMdef@" -> "Sqr(" <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling] Parameters`GetGUTNormalization[SARAH`leftCoupling]] 
+                            "@GetZMass@" -> GetZMass,
+                            "@GetWMass@" ->GetWMass,
+                            "@alphaEMdef@" -> "Sqr(" <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling] Parameters`GetGUTNormalization[SARAH`leftCoupling]]
                                <> " * model.get_"
-                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "() * model.get_" <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())/(4. * Pi * (Sqr(" 
+                               <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "() * model.get_" <> CConversion`RValueToCFormString[SARAH`leftCoupling] <> "())/(4. * Pi * (Sqr("
                                <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`hyperchargeCoupling]] <> " * model.get_"
                                <> CConversion`RValueToCFormString[SARAH`hyperchargeCoupling] <> "()) + Sqr("
                                <> CConversion`RValueToCFormString[Parameters`GetGUTNormalization[SARAH`leftCoupling]] <> " * model.get_"
@@ -1064,6 +1105,7 @@ WriteUserExample[inputParameters_List, files_List] :=
                                                                     ]]],
                             "@alphaEM1Lmatching@" -> IndentText[WrapLines["const double delta_alpha_em = alpha_em/(2.*Pi)*(" <>
                                                          CConversion`RValueToCFormString[ThresholdCorrections`CalculateElectromagneticCoupling[scheme]] <> ");\n"]],
+                            "@SpectrumGenerator@" -> spectrumGen,
                             Sequence @@ GeneralReplacementRules[]
                           } ];
           ];
@@ -1612,8 +1654,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`SUSYScaleInput, "SUSYScaleInput"];
            Constraint`CheckConstraint[FlexibleSUSY`HighScaleInput, "HighScaleInput"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
+           Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
            Constraint`SanityCheck[Join[FlexibleSUSY`InitialGuessAtLowScale,
+                                       FlexibleSUSY`InitialGuessAtSUSYScale
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
@@ -1698,6 +1742,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                lesHouchesInputParameterReplacementRules;
 
            FlexibleSUSY`InitialGuessAtLowScale = FlexibleSUSY`InitialGuessAtLowScale /.
+               lesHouchesInputParameterReplacementRules;
+           FlexibleSUSY`InitialGuessAtSUSYScale = FlexibleSUSY`InitialGuessAtSUSYScale /.
                lesHouchesInputParameterReplacementRules;
            FlexibleSUSY`InitialGuessAtHighScale = FlexibleSUSY`InitialGuessAtHighScale /.
                lesHouchesInputParameterReplacementRules;
@@ -1966,13 +2012,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               initialGuesserInputFile = "initial_guesser_low_scale_model";
              ];
            WriteInitialGuesserClass[FlexibleSUSY`InitialGuessAtLowScale,
+                                    FlexibleSUSY`InitialGuessAtSUSYScale,
                                     FlexibleSUSY`InitialGuessAtHighScale,
                                     {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "initial_guesser.hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
                                       FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.hpp"}]},
                                      {FileNameJoin[{Global`$flexiblesusyTemplateDir, "two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
-                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]}
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_two_scale_initial_guesser.cpp"}]},
+                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".hpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_initial_guesser.hpp"}]},
+                                     {FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_two_scale_" <> initialGuesserInputFile <> ".cpp.in"}],
+                                      FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_initial_guesser.cpp"}]}
                                     }
                                    ];
 
@@ -2026,7 +2077,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
 
             Print["Creating matching class ..."];
-            WriteMatchingClass[ {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_two_scale_matching.hpp.in"}],
+            WriteMatchingClass[ {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_matching.hpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_matching.hpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_matching.cpp.in"}],
+                                  FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_matching.cpp"}]},
+                                 {FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_two_scale_matching.hpp.in"}],
                                   FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_two_scale_matching.hpp"}]}}
                               ];
 
@@ -2037,6 +2092,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{Global`$flexiblesusyTemplateDir, spectrumGeneratorInputFile}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator.hpp"}]},
+                             {FileNameJoin[{Global`$flexiblesusyTemplateDir, "SM_" <> spectrumGeneratorInputFile}],
+                              FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_SM_spectrum_generator.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "spectrum_generator_interface.hpp.in"}],
                               FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_spectrum_generator_interface.hpp"}]},
                              {FileNameJoin[{Global`$flexiblesusyTemplateDir, "run.cpp.in"}],

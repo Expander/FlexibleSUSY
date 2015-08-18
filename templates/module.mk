@@ -24,7 +24,12 @@ TEMPLATES    := \
 		$(DIR)/susy_scale_constraint.hpp.in \
 		$(DIR)/plot_rgflow.gnuplot.in \
 		$(DIR)/plot_spectrum.gnuplot.in \
-		$(DIR)/SM_two_scale_matching.hpp.in \
+		$(DIR)/SM_two_scale_initial_guesser.hpp.in \
+		$(DIR)/SM_two_scale_initial_guesser.cpp.in \
+		$(DIR)/SM_two_scale_initial_guesser_low_scale_model.hpp.in \
+		$(DIR)/SM_two_scale_initial_guesser_low_scale_model.cpp.in \
+		$(DIR)/SM_matching.hpp.in \
+		$(DIR)/SM_matching.cpp.in \
 		$(DIR)/spectrum_generator_interface.hpp.in \
 		$(DIR)/high_scale_spectrum_generator.hpp.in \
 		$(DIR)/low_scale_spectrum_generator.hpp.in \
@@ -38,6 +43,9 @@ TEMPLATES    := \
 		$(DIR)/two_scale_initial_guesser_low_scale_model.cpp.in \
 		$(DIR)/two_scale_low_scale_constraint.hpp.in \
 		$(DIR)/two_scale_low_scale_constraint.cpp.in \
+		$(DIR)/SM_two_scale_matching.hpp.in \
+		$(DIR)/SM_high_scale_spectrum_generator.hpp.in \
+		$(DIR)/SM_low_scale_spectrum_generator.hpp.in \
 		$(DIR)/two_scale_model.hpp.in \
 		$(DIR)/two_scale_model.cpp.in \
 		$(DIR)/two_scale_model_slha.hpp.in \

@@ -13,6 +13,8 @@ CreateLoopMassFunctionName::usage="";
 CreateHiggsLogDiagonalization::usage="";
 DiagonalizeForMatchingClass::usage="";
 DiagonalizeForMatchingClassDeclaration::usage="";
+DiagonalizeForReverseMatchingClass::usage="";
+DiagonalizeForReverseMatchingClassDeclaration::usage="";
 
 GetLoopCorrectedParticles::usage="Returns list of all particles that
 get loop corrected masses.  These are all particles, except for
@@ -680,8 +682,8 @@ DoMediumDiagonalizationMatching[particle_Symbol /; (IsScalar[particle] || IsVect
               ,
               result = tadpoleMatrix <>
                        "const " <> selfEnergyMatrixType <> " M_tree(" <> massMatrixStr <> "());\n" <>
-			"M_Pole = M_tree - Re(" <> selfEnergyFunction <> "(p0))" <>
-			If[tadpoleMatrix == "", "", " + tadpoles"] <> ";\n" <> "\n";
+            "M_Pole = M_tree - Re(" <> selfEnergyFunction <> "(p0))" <>
+            If[tadpoleMatrix == "", "", " + tadpoles"] <> ";\n" <> "\n";
              ];
            Return[result];
           ];
@@ -766,8 +768,8 @@ DoMediumDiagonalizationMatching[particle_Symbol /; IsFermion[particle], _] :=
               (* for a dimension 1 fermion it plays not role if it's a
                  Majorana fermion or not *)
               result =  massMatrixStr <> "() - Re(model.self_energy_" <> particleName <> "_1(p0) + "
-				<> massMatrixStr <> "()*(model.self_energy_" <> particleName <> "_PL(p0) + model.self_energy_"
-				<> particleName <> "_PR(p0)));\n";
+                <> massMatrixStr <> "()*(model.self_energy_" <> particleName <> "_PL(p0) + model.self_energy_"
+                <> particleName <> "_PR(p0)));\n";
              ];
            Return[result];
           ];
@@ -813,7 +815,7 @@ else
 
 CreateHiggsLogDiagonalization[oneLoopTadpoles_List, vevs_List] :=
     Module[{result, dim, dimStr, massName, body, particle,
-	    i = 1, f, d, tadpole, fieldsAndVevs = {}, par},
+        i = 1, f, d, tadpole, fieldsAndVevs = {}, par},
            particle = SARAH`HiggsBoson;
            dim = GetDimension[particle];
            dimStr = ToString[dim];
@@ -832,27 +834,27 @@ CreateHiggsLogDiagonalization[oneLoopTadpoles_List, vevs_List] :=
                      IndentText["return;"] <> "\n\n";
              ];
            body = body <>
-		  "M_Higgs = M_Pole  - Re( SM1.self_energy_hh(p) );\n\n"
-		  <> "if(M_Higgs < 0.) model.get_problems().flag_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::"<> ToValidCSymbolString[particle] <> ");\n\n" <>
-		  "M_Higgs = AbsSqrt(M_Higgs);\n" <>
+          "M_Higgs = M_Pole  - Re( SM1.self_energy_hh(p) );\n\n"
+          <> "if(M_Higgs < 0.) model.get_problems().flag_tachyon(" <> FlexibleSUSY`FSModelName <> "_info::"<> ToValidCSymbolString[particle] <> ");\n\n" <>
+          "M_Higgs = AbsSqrt(M_Higgs);\n" <>
                   "diff = MaxRelDiff(M_Higgs, p);\n" <>
                   "iter++;\n";
            result = "unsigned iter = 0;\n" <>
                     "double diff = 0.0;\n";
            If[GetDimension[SARAH`HiggsBoson] != 1,
-			  result = result <> "p0 = model.get_M" <> ToValidCSymbolString[particle] <> "().minCoeff();\n";,
-			  result = result <> "p0 = model.get_M" <> ToValidCSymbolString[particle] <> "();\n";
-			  ];
+              result = result <> "p0 = model.get_M" <> ToValidCSymbolString[particle] <> "().minCoeff();\n";,
+              result = result <> "p0 = model.get_M" <> ToValidCSymbolString[particle] <> "();\n";
+              ];
            result = result <>
                     "auto precision = model.get_precision();\n" <>
                     "auto number_of_mass_iterations = model.get_number_of_mass_iterations();\n" <>
                     DoMediumDiagonalizationMatching[particle,  tadpole] <>
-					If[GetDimension[SARAH`HiggsBoson] != 1, "M_Pole = eigen_values.minCoeff(); \n", ""] <> "\n" <>
-					"M_Pole += Re(SM1.get_mass_matrix_hh() - SM2.get_mass_matrix_hh() + SM2.self_energy_hh(SM2.get_Mhh()) - SM3_Mhh2 - SM4_Mhh2);\n\n"
+                    If[GetDimension[SARAH`HiggsBoson] != 1, "M_Pole = eigen_values.minCoeff(); \n", ""] <> "\n" <>
+                    "M_Pole += Re(SM1.get_mass_matrix_hh() - SM2.get_mass_matrix_hh() + SM2.self_energy_hh(SM2.get_Mhh()) - SM3_Mhh2 - SM4_Mhh2);\n\n"
                     <>"do {\n" <>
-					IndentText[
-					  "const double p = M_Higgs;\n" <>
-					  body
+                    IndentText[
+                      "const double p = M_Higgs;\n" <>
+                      body
                     ] <>
                     "} while (diff > precision\n" <>
                     "         && iter < number_of_mass_iterations);\n";
@@ -861,7 +863,7 @@ CreateHiggsLogDiagonalization[oneLoopTadpoles_List, vevs_List] :=
 
 DiagonalizeForMatchingClass[particleList_List, smNameList_List, oneLoopTadpoles_List, vevs_List] :=
     Module[{  body="", particle,
-	    i = 1, j, f, d, tadpole, fieldsAndVevs = {}, par, smName},
+        i = 1, j, f, d, tadpole, fieldsAndVevs = {}, par, smName},
            (* create list that associates fields at vevs *)
            For[f = 1, f <= Length[oneLoopTadpoles], f++,
                par = GetField[oneLoopTadpoles[[f]]];
@@ -869,55 +871,114 @@ DiagonalizeForMatchingClass[particleList_List, smNameList_List, oneLoopTadpoles_
                    AppendTo[fieldsAndVevs, {par, d, vevs[[i]]}];
                   ];
               ];
-		   For[j = 1, j <= Length[particleList], j++,
-			particle = particleList[[j]];
-			smName = smNameList[[j]];
-			tadpole  = Cases[fieldsAndVevs, {particle[_], __}];
-			body =  body <> "template <class T> \n" <> "double " <> FlexibleSUSY`FSModelName <>
-			"_SM_two_scale_matching<T>::M" <> smName <>"2matching1L( const " <> FlexibleSUSY`FSModelName <>"<T>& " <> "model";
-			If[(GetDimension[particle] != 1) && IsFermion[particle], body = body <> ", unsigned i3";];
-			body = body <> ")\n" <> "{\n" <>
-			IndentText[
-					  "double M_Pole = 0.;\n" <> "double p0 = model.get_M" <> ToValidCSymbolString[particle]
-					   <> "()" <> If[GetDimension[particle] != 1, If[IsFermion[particle], "(i3)", ".minCoeff()"], "", ""] <> ";\n\n"
-					   <> "SM<T> SM0;\n" <> "SM0.set_ewsb_loop_order(1);\n" <> "SM0.set_pole_mass_loop_order(1);\n" <> "matchingTL(SM0, model);\n"
-					   <> "SM0.solve_ewsb_one_loop();\n" <> DoMediumDiagonalizationMatching[particle,  tadpole]
-					   <> If[IsFermion[particle],
-						   If[GetDimension[particle] > 1,
-							 "M_Pole = eigen_values(i3);\n"
-							 <> "M_Pole += Re(SM0.self_energy_" <> smName <> "_1(SM0.get_M" <> smName <> "()(i3), i3, i3) - SM0.get_mass_matrix_" <> smName
-							 <> "()(i3, i3) + SM0.get_M" <> smName <> "()(i3));\n"
-							 <> "for(unsigned i4 = 0; i4 <" <> ToValidCSymbolString[GetDimension[particle]] <> "; i4++)\n"
-							 <> IndentText["M_Pole += Re(SM0.get_mass_matrix_" <> smName <> "()(i3, i4)*SM0.self_energy_" <> smName <> "_PL(SM0.get_M" <> smName <> "()(i3), i4, i3) + "
-							 <> "SM0.get_mass_matrix_" <> smName <> "()(i4, i3)*SM0.self_energy_" <> smName <> "_PR(SM0.get_M" <> smName <> "()(i3), i3, i4));\n"]
-							 <> "return Sqr(M_Pole);\n",
-							 "M_Pole += Re(SM0.self_energy_" <> smName <> "(SM0.get_M" <> smName <> "()) + "
-							 <> "SM0.get_mass_matrix_" <> smName <> "()*SM0.self_energy_" <> smName <> "_PL(SM0.get_M" <> smName <> "()) + "
-							 <> "SM0.get_mass_matrix_" <> smName <> "()*SM0.self_energy_" <> smName <> "_PR(SM0.get_M" <> smName <> "())"
-							 <> "- SM0.get_mass_matrix_" <> smName <> "() + SM0.get_M" <> smName <> "());\n"
-							 <> "return Sqr(M_Pole);\n"],
-						   If[GetDimension[particle] > 1,
-							 "M_Pole = eigen_values.minCoeff();\n", "", ""]
-							 <> "M_Pole += Re(SM0.self_energy_" <> smName <> "(SM0.get_M" <> smName <> "()) - SM0.get_mass_matrix_" <> smName
-							 <> "() + Sqr(SM0.get_M" <> smName <> "()));\n"
-							 <> "return M_Pole;\n"
-							 ]
-					  ] <> "}\n\n";
-			  ];
+           For[j = 1, j <= Length[particleList], j++,
+            particle = particleList[[j]];
+            smName = smNameList[[j]];
+            tadpole  = Cases[fieldsAndVevs, {particle[_], __}];
+            body =  body <> "double " <> FlexibleSUSY`FSModelName <>
+            "_SM_matching::M" <> smName <>"2matching1L( const " <> FlexibleSUSY`FSModelName <>"_mass_eigenstates& " <> "model";
+            If[(GetDimension[particle] != 1) && IsFermion[particle], body = body <> ", unsigned i3";];
+            body = body <> ")\n" <> "{\n" <>
+            IndentText[
+                      "double M_Pole = 0.;\n" <> "double p0 = model.get_M" <> ToValidCSymbolString[particle]
+                       <> "()" <> If[GetDimension[particle] != 1, If[IsFermion[particle], "(i3)", ".minCoeff()"], "", ""] <> ";\n\n"
+                       <> "SM_mass_eigenstates SM0;\n" <> "SM0.set_ewsb_loop_order(1);\n" <> "SM0.set_pole_mass_loop_order(1);\n" <> "matchingTL(SM0, model);\n"
+                       <> "SM0.solve_ewsb_one_loop();\n" <> DoMediumDiagonalizationMatching[particle,  tadpole]
+                       <> If[IsFermion[particle],
+                           If[GetDimension[particle] > 1,
+                             "M_Pole = eigen_values(i3);\n"
+                             <> "M_Pole += Re(SM0.self_energy_" <> smName <> "_1(SM0.get_M" <> smName <> "()(i3), i3, i3) - SM0.get_mass_matrix_" <> smName
+                             <> "()(i3, i3) + SM0.get_M" <> smName <> "()(i3));\n"
+                             <> "for(unsigned i4 = 0; i4 <" <> ToValidCSymbolString[GetDimension[particle]] <> "; i4++)\n"
+                             <> IndentText["M_Pole += Re(SM0.get_mass_matrix_" <> smName <> "()(i3, i4)*SM0.self_energy_" <> smName <> "_PL(SM0.get_M" <> smName <> "()(i3), i4, i3) + "
+                             <> "SM0.get_mass_matrix_" <> smName <> "()(i4, i3)*SM0.self_energy_" <> smName <> "_PR(SM0.get_M" <> smName <> "()(i3), i3, i4));\n"]
+                             <> "return Sqr(M_Pole);\n",
+                             "M_Pole += Re(SM0.self_energy_" <> smName <> "(SM0.get_M" <> smName <> "()) + "
+                             <> "SM0.get_mass_matrix_" <> smName <> "()*SM0.self_energy_" <> smName <> "_PL(SM0.get_M" <> smName <> "()) + "
+                             <> "SM0.get_mass_matrix_" <> smName <> "()*SM0.self_energy_" <> smName <> "_PR(SM0.get_M" <> smName <> "())"
+                             <> "- SM0.get_mass_matrix_" <> smName <> "() + SM0.get_M" <> smName <> "());\n"
+                             <> "return Sqr(M_Pole);\n"],
+                           If[GetDimension[particle] > 1,
+                             "M_Pole = eigen_values.minCoeff();\n", "", ""]
+                             <> "M_Pole += Re(SM0.self_energy_" <> smName <> "(SM0.get_M" <> smName <> "()) - SM0.get_mass_matrix_" <> smName
+                             <> "() + Sqr(SM0.get_M" <> smName <> "()));\n"
+                             <> "return M_Pole;\n"
+                             ]
+                      ] <> "}\n\n";
+              ];
+           Return[body];
+          ];
+
+DiagonalizeForReverseMatchingClass[particleList_List, smNameList_List, oneLoopTadpoles_List, vevs_List] :=
+    Module[{  body="", particle,
+        i = 1, j, f, d, tadpole, fieldsAndVevs = {}, par, smName},
+           (* create list that associates fields at vevs *)
+           For[f = 1, f <= Length[oneLoopTadpoles], f++,
+               par = GetField[oneLoopTadpoles[[f]]];
+               For[d = 1, d <= GetDimension[par], d++; i++,
+                   AppendTo[fieldsAndVevs, {par, d, vevs[[i]]}];
+                  ];
+              ];
+           For[j = 1, j <= Length[particleList], j++,
+            particle = particleList[[j]];
+            smName = smNameList[[j]];
+            tadpole  = Cases[fieldsAndVevs, {particle[_], __}];
+            body =  body <> "double " <> FlexibleSUSY`FSModelName <>
+            "_SM_matching::M" <> smName <>"2matching1Lreverted( const SM_mass_eigenstates& SM_, " <> FlexibleSUSY`FSModelName <>"_mass_eigenstates& " <> "model";
+            If[(GetDimension[particle] != 1) && IsFermion[particle], body = body <> ", unsigned i3";];
+            body = body <> ")\n" <> "{\n" <>
+            IndentText[
+                      "double M_Pole = 0.;\n" <> "double p0 = SM_.get_M" <> smName
+                       <> "()" <>  If[IsFermion[particle], "(i3)", "", ""] <> ";\n\n"
+                       <> DoMediumDiagonalizationMatching[particle,  tadpole]
+                       <> If[IsFermion[particle],
+                           If[GetDimension[particle] > 1,
+                             "M_Pole = -eigen_values(i3);\n"
+                             <> "M_Pole += model.get_M" <> ToValidCSymbolString[particle] <> "(i3) - Re(SM_.self_energy_" <> smName <> "_1(SM_.get_M" <> smName <> "()(i3), i3, i3) - SM_.get_mass_matrix_" <> smName
+                             <> "()(i3, i3));\n"
+                             <> "for(unsigned i4 = 0; i4 <" <> ToValidCSymbolString[GetDimension[particle]] <> "; i4++)\n"
+                             <> IndentText["M_Pole -= Re(SM_.get_mass_matrix_" <> smName <> "()(i3, i4)*SM_.self_energy_" <> smName <> "_PL(SM_.get_M" <> smName <> "()(i3), i4, i3) + "
+                             <> "SM_.get_mass_matrix_" <> smName <> "()(i4, i3)*SM_.self_energy_" <> smName <> "_PR(SM_.get_M" <> smName <> "()(i3), i3, i4));\n"]
+                             <> "return Sqr(M_Pole);\n",
+                             "M_Pole = - M_Pole + model.get_M" <> ToValidCSymbolString[particle] <> "() - Re(SM_.self_energy_" <> smName <> "(SM_.get_M" <> smName <> "()) + "
+                             <> "SM_.get_mass_matrix_" <> smName <> "()*SM_.self_energy_" <> smName <> "_PL(SM_.get_M" <> smName <> "()) + "
+                             <> "SM_.get_mass_matrix_" <> smName <> "()*SM_.self_energy_" <> smName <> "_PR(SM_.get_M" <> smName <> "())"
+                             <> "- SM_.get_mass_matrix_" <> smName <> "());\n"
+                             <> "return Sqr(M_Pole);\n"],
+                           If[GetDimension[particle] > 1,
+                             "M_Pole = Sqr(model.get_M" <> ToValidCSymbolString[particle] <> "().minCoeff()) - eigen_values.minCoeff();\n", "M_Pole = Sqr(model.get_M" <> ToValidCSymbolString[particle] <> "()) - M_Pole;", "M_Pole *= -1.;"]
+                             <> "M_Pole -= Re(SM_.self_energy_" <> smName <> "(SM_.get_M" <> smName <> "()) - SM_.get_mass_matrix_" <> smName
+                             <> "());\n"
+                             <> "return M_Pole;\n"
+                             ]
+                      ] <> "}\n\n";
+              ];
            Return[body];
           ];
 
 DiagonalizeForMatchingClassDeclaration[particleList_List,smNameList_List ] :=
   Module[{particle, result="", i},
-		  For[i = 1, i <= Length[particleList], i++,
-			  particle = particleList[[i]];
-			  result = result <> "static double M"<> smNameList[[i]]
-			  <>"2matching1L( const " <> FlexibleSUSY`FSModelName <> "<T>&";
-			  If[(GetDimension[particle] != 1) && IsFermion[particle], result = result <> ", unsigned";];
-			  result = result <> ");\n";
-			  ];
-		  Return[result];
-		  ];
+          For[i = 1, i <= Length[particleList], i++,
+              particle = particleList[[i]];
+              result = result <> "static double M"<> smNameList[[i]]
+              <>"2matching1L( const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates&";
+              If[(GetDimension[particle] != 1) && IsFermion[particle], result = result <> ", unsigned";];
+              result = result <> ");\n";
+              ];
+          Return[result];
+          ];
+
+DiagonalizeForReverseMatchingClassDeclaration[particleList_List,smNameList_List ] :=
+  Module[{particle, result="", i},
+          For[i = 1, i <= Length[particleList], i++,
+              particle = particleList[[i]];
+              result = result <> "static double M"<> smNameList[[i]]
+              <>"2matching1Lreverted( const SM_mass_eigenstates& SM_, " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates&";
+              If[(GetDimension[particle] != 1) && IsFermion[particle], result = result <> ", unsigned";];
+              result = result <> ");\n";
+              ];
+          Return[result];
+          ];
 
 
 DoDiagonalization[particle_Symbol, FlexibleSUSY`LowPrecision, tadpole_] :=

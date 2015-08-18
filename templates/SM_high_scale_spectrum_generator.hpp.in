@@ -22,14 +22,15 @@
 #define @ModelName@_SPECTRUM_GENERATOR_H
 
 #include "@ModelName@_spectrum_generator_interface.hpp"
+#include "@ModelName@_two_scale_high_scale_constraint.hpp"
 #include "@ModelName@_two_scale_susy_scale_constraint.hpp"
-#include "@ModelName@_two_scale_low_scale_constraint.hpp"
+#include "SM_two_scale_low_scale_constraint.hpp"
 #include "@ModelName@_two_scale_convergence_tester.hpp"
-#include "@ModelName@_two_scale_initial_guesser.hpp"
+#include "@ModelName@_SM_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
 #include "@ModelName@_SM_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
-
+#include "@ModelName@_SM_two_scale_matching.hpp"
 
 #include "lowe.h"
 #include "error.hpp"
@@ -46,20 +47,22 @@ namespace flexiblesusy {
 #define MODELPARAMETER(p) model.get_##p()
 
 template <class T>
-class @ModelName@_spectrum_generator
+class @ModelName@_SM_spectrum_generator
    : public @ModelName@_spectrum_generator_interface<T> {
 public:
-   @ModelName@_spectrum_generator()
+   @ModelName@_SM_spectrum_generator()
       : @ModelName@_spectrum_generator_interface<T>()
       , solver()
+      , high_scale_constraint()
       , susy_scale_constraint()
       , low_scale_constraint()
+      , high_scale(0.)
       , susy_scale(0.)
       , low_scale(0.)
    {}
-   virtual ~@ModelName@_spectrum_generator() {}
+   virtual ~@ModelName@_SM_spectrum_generator() {}
 
-   double get_high_scale() const { return 0.; }
+   double get_high_scale() const { return high_scale; }
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    virtual void run(const softsusy::QedQcd&, const @ModelName@_input_parameters&);
@@ -68,16 +71,20 @@ public:
    void calcHiggsPoleEFT();
 
 private:
+   SM<T> eft;
    RGFlow<T> solver;
+   @ModelName@_high_scale_constraint<T> high_scale_constraint;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
-   @ModelName@_low_scale_constraint<T>  low_scale_constraint;
-   double susy_scale, low_scale;
+   SM_low_scale_constraint<T>  low_scale_constraint;
+   @ModelName@_SM_Matching<T> matching;
+
+   double high_scale, susy_scale, low_scale;
 };
 
 /**
  * @brief Run's the RG solver with the given input parameters
  *
- * This function sets up the RG solver using a susy-scale
+ * This function sets up the RG solver using a high-scale, susy-scale
  * and low-scale constraint.  Afterwards the solver is run until
  * convergence is reached or an error occours.  Finally the particle
  * spectrum (pole masses) is calculated.
@@ -86,7 +93,7 @@ private:
  * @param input model input parameters
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
+void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                                 const @ModelName@_input_parameters& input)
 {
    @ModelName@<T>& model = this->model;
@@ -98,46 +105,60 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    model.set_thresholds(this->threshold_corrections_loop_order);
    model.set_zero_threshold(this->beta_zero_threshold);
 
+   eft.clear();
+   eft.do_force_output(this->force_output);
+   eft.set_loops(this->beta_loop_order);
+   eft.set_thresholds(this->threshold_corrections_loop_order);
+   eft.set_zero_threshold(this->beta_zero_threshold);
+
+   high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
 
    // needed for constraint::initialize()
+   high_scale_constraint.set_model(&model);
    susy_scale_constraint.set_model(&model);
-   low_scale_constraint .set_model(&model);
+   low_scale_constraint .set_model(&eft);
 
    low_scale_constraint .set_sm_parameters(oneset);
 
+   high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
 
-   std::vector<Constraint<T>*> upward_constraints(2);
-   upward_constraints[0] = &low_scale_constraint;
-   upward_constraints[1] = &susy_scale_constraint;
+   matching.set_models(&eft, &model);
 
-   std::vector<Constraint<T>*> downward_constraints(2);
-   downward_constraints[0] = &susy_scale_constraint;
-   downward_constraints[1] = &low_scale_constraint;
+   std::vector<Constraint<T>*> model_constraints(2);
+   model_constraints[0] = &low_scale_constraint;
+   model_constraints[1] = &high_scale_constraint;
+
+   std::vector<Constraint<T>*> eft_constraints(1);
+   eft_constraints[0] = &low_scale_constraint;
 
    @ModelName@_convergence_tester<T> convergence_tester(&model, this->precision_goal);
    if (this->max_iterations > 0)
       convergence_tester.set_max_iterations(this->max_iterations);
 
-   @ModelName@_initial_guesser<T> initial_guesser(&model, oneset,
+   @ModelName@_SM_initial_guesser<T> initial_guesser(&model, &eft, oneset,
                                                   low_scale_constraint,
-                                                  susy_scale_constraint);
+                                                  susy_scale_constraint,
+                                                  high_scale_constraint);
+
    Two_scale_increasing_precision precision(10.0, this->precision_goal);
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model, upward_constraints, downward_constraints);
+   solver.add_model(&eft, &matching, eft_constraints);
+   solver.add_model(&model, model_constraints);
 
-   susy_scale = low_scale = 0.;
+   high_scale = susy_scale = low_scale = 0.;
    this->reached_precision = std::numeric_limits<double>::infinity();
 
    try {
       solver.solve();
+      high_scale = high_scale_constraint.get_scale();
       susy_scale = susy_scale_constraint.get_scale();
       low_scale  = low_scale_constraint.get_scale();
       this->reached_precision = convergence_tester.get_current_accuracy();
@@ -154,10 +175,9 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       switch (model.get_Two_loop_corrections().higgs_log)
       {
          case 0: break;
-         case 1: do2LoopLogCalc();
-         case 2: calcHiggsPoleEFT();
+         case 1: do2LoopLogCalc(); break;
+         case 2: calcHiggsPoleEFT(); break;
       }
-
 
       // run to output scale (if scale > 0)
       if (!is_zero(this->parameter_output_scale)) {
@@ -187,17 +207,17 @@ void @ModelName@_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
  * @param filename name of output file
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::write_running_couplings(
+void @ModelName@_SM_spectrum_generator<T>::write_running_couplings(
    const std::string& filename) const
 {
-   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, susy_scale);
+   @ModelName@_spectrum_generator_interface<T>::write_running_couplings(filename, low_scale, high_scale);
 }
 
 /**
  * Calculates logarithmic contributions to Higgs mass of 2-loop order and higher
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
+void @ModelName@_SM_spectrum_generator<T>::do2LoopLogCalc()
 {
 
   /*
@@ -213,9 +233,9 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   M_Pole = 0.;
 
   SM<T>  SM1, SM2, SM3;
-  SM1.set_ewsb_loop_order(1);	SM1.set_pole_mass_loop_order(1);
-  SM2.set_ewsb_loop_order(1);	SM2.set_pole_mass_loop_order(1);
-  SM3.set_ewsb_loop_order(1);	SM3.set_pole_mass_loop_order(1);
+  SM1.set_ewsb_loop_order(1);   SM1.set_pole_mass_loop_order(1);
+  SM2.set_ewsb_loop_order(1);   SM2.set_pole_mass_loop_order(1);
+  SM3.set_ewsb_loop_order(1);   SM3.set_pole_mass_loop_order(1);
 
   //beta loop order is equal to the parent model
   SM1.set_loops(model.get_loops());
@@ -256,7 +276,22 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
 
 @DiagonalizeEFT@
 
-  @GetHiggsMass@ = M_Higgs;
+  this->@GetHiggsMass@ = M_Higgs;
+
+  if(this->calculate_sm_masses)
+  {
+     SM1.calculate_MVWp_pole();
+     SM1.calculate_MVZ_pole();
+     SM1.calculate_MFu_pole();
+     SM1.calculate_MFd_pole();
+     SM1.calculate_MFe_pole();
+
+     this->@GetZMass@ = SM1.get_physical().MVZ;
+     this->@GetWMass@ = SM1.get_physical().MVWp;
+     this->model.get_physical().M@TopQuark@ = SM1.get_physical().MFu;
+     this->model.get_physical().M@BottomQuark@ = SM1.get_physical().MFd;
+     this->model.get_physical().M@Electron@ = SM1.get_physical().MFe;
+  }
 }
 
 /**
@@ -264,7 +299,7 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
  * using SM input parameters at the scale MZ for the VEV, yukawas and gauge couplings
  */
 template <class T>
-void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
+void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
 {
 
    @ModelName@<T> model = this->model;
@@ -355,11 +390,19 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
   EFT.run_to(low_scale);
   EFT.calculate_DRbar_masses();
   EFT.solve_ewsb();
-  EFT.calculate_Mhh_pole();
+  if(this->calculate_sm_masses) EFT.calculate_spectrum();
+     else EFT.calculate_Mhh_pole();
 
   //store Higgs pole mass in physical structure
   this->@GetHiggsMass@ = EFT.get_physical().Mhh;
-
+  if(this->calculate_sm_masses)
+  {
+     this->@GetZMass@ = EFT.get_physical().MVZ;
+     this->@GetWMass@ = EFT.get_physical().MVWp;
+     this->model.get_physical().M@TopQuark@ = EFT.get_physical().MFu;
+     this->model.get_physical().M@BottomQuark@ = EFT.get_physical().MFd;
+     this->model.get_physical().M@Electron@ = EFT.get_physical().MFe;
+  }
 }
 
 } // namespace flexiblesusy

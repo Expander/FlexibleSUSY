@@ -28,7 +28,7 @@
 #include "@ModelName@_two_scale_convergence_tester.hpp"
 #include "@ModelName@_two_scale_initial_guesser.hpp"
 #include "@ModelName@_utilities.hpp"
-#include "@ModelName@_SM_two_scale_matching.hpp"
+#include "@ModelName@_SM_matching.hpp"
 #include "@ModelName@_input_parameters.hpp"
 
 #include "lowe.h"
@@ -42,6 +42,8 @@
 #include <limits>
 
 namespace flexiblesusy {
+
+#define MODELPARAMETER(p) model.get_##p()
 
 template <class T>
 class @ModelName@_spectrum_generator
@@ -230,10 +232,10 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   //matching
   model.calculate_DRbar_masses();
   model.solve_ewsb_one_loop();
-  @ModelName@_SM_two_scale_matching<T>::matching(SM1, model);
-  @ModelName@_SM_two_scale_matching<T>::matchingTL(SM2, model);
+  @ModelName@_SM_matching::matching(SM1, model);
+  @ModelName@_SM_matching::matchingTL(SM2, model);
   SM3 = SM2;
-  SM4_Mhh2 = @ModelName@_SM_two_scale_matching<T>::Mhh2matching1L(model);
+  SM4_Mhh2 = @ModelName@_SM_matching::Mhh2matching1L(model);
 
   //solve ewsb-equations
   SM1.solve_ewsb_one_loop();
@@ -275,7 +277,6 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
 {
 
    @ModelName@<T> model = this->model;
-   Eigen::Matrix<double, 3, 3> ZeroMatrix = Eigen::Matrix<double, 3, 3>::Zero();
    QedQcd lowEnergyData = low_scale_constraint.get_sm_parameters();
    double lambda_low;
    unsigned iteration = 0;
@@ -289,12 +290,12 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_number_of_ewsb_iterations(model.get_number_of_ewsb_iterations());
    EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
 
-   const double MZpole = 91.1876;
-   const double MWpole = 80.384;
-   const double MTpole = 173.34;
+   const double MZpole = lowEnergyData.displayPoleMZ();
+   const double MWpole = lowEnergyData.displayPoleMZ();
+   const double MTpole = lowEnergyData.displayPoleMt();
    const double MHpole = 125.09;
-   const double alphaS = .1185;
-   const double GFermi = 1.1663787e-5;
+   const double alphaS = lowEnergyData.displayAlpha(ALPHAS);
+   const double GFermi = lowEnergyData.displayFermiConstant();
 
    // high precision values from arXiv:1307.3536
    lowEnergyData.runto(MTpole);
@@ -302,13 +303,13 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_g1(Sqrt(5./3.) * (.3583 + .00011*(MTpole - 173.34) - .0002*(MWpole - 80.384)/.014));
    EFT.set_g2(.64779 + .00004*(MTpole - 173.34) - .0002*(MWpole - 80.384)/.014);
    EFT.set_g3(1.1666 + .00314*(alphaS - .1184) - .00046*(MTpole - 173.34));
-   EFT.set_Yu(ZeroMatrix);
-   EFT.set_Yd(ZeroMatrix);
-   EFT.set_Ye(ZeroMatrix);
+   EFT.set_Yu(ZEROMATRIX(3,3));
+   EFT.set_Yd(ZEROMATRIX(3,3));
+   EFT.set_Ye(ZEROMATRIX(3,3));
    EFT.set_Yu(2, 2, -(.9369 + .00556*(MTpole - 173.34) - .00042*(alphaS - .1184)/.0007));
 
    // see (22) from arXiv:1205.6497 [hep-ph]
-   EFT.set_v(Sqrt( 1./(Sqrt(2.)*GFermi)
+   EFT.set_v(Sqrt( 1./(Sqrt(2.)*lowEnergyData.displayFermiConstant())
                      + oneOver16PiSqr*( 3.*Sqr(MTpole)*(4.*FiniteLog(MTpole/MTpole) - 1.) + Sqr(MWpole)*(5. - 12.*FiniteLog(MWpole/MTpole))
                      +  2.5*Sqr(MZpole) - 6.*Sqr(MZpole)*FiniteLog(MZpole/MTpole) + 1.5*Sqr(MWpole*MZpole)/(Sqr(MZpole) - Sqr(MWpole))*FiniteLog(MZpole/MWpole) - .5*Sqr(MHpole)
                      -  6.*Sqr(MWpole*MHpole)/(Sqr(MWpole) - Sqr(MHpole))*FiniteLog(MWpole/MHpole))));
@@ -322,7 +323,7 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_Ye(1, 1,  Sqrt(2.)*lowEnergyData.displayMass(mMuon)/EFT.get_v());
    EFT.set_Ye(0, 0,  Sqrt(2.)*lowEnergyData.displayMass(mElectron)/EFT.get_v());
 
-   // initial value for lambda, see (55) from arXiv:1205.6497 [hep-ph]:
+   // initial value for lambda, see (55) from arXiv:1307.3536 [hep-ph]:
    EFT.set_Lambdax(.12604 + .00206*(MHpole - 125.15) - .00004*(MTpole - 173.34));
 
    const auto lowEnergyInput = EFT.get();
@@ -330,20 +331,21 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.run_to(model.get_scale());
    model.calculate_DRbar_masses();
    model.solve_ewsb_one_loop();
-   
+
    const auto alpha_em = @alphaEMdef@;
    const auto currentScale = model.get_scale();
 @em1Linit@
 @alphaEM1Lmatching@
-   const double MH2matched = @ModelName@_SM_two_scale_matching<T>::Mhh2matching1L(model);
-   const double MW2matched = @ModelName@_SM_two_scale_matching<T>::MVWp2matching1L(model);
-   const double MZ2matched = @ModelName@_SM_two_scale_matching<T>::MVZ2matching1L(model);
+   const double MH2matched = @ModelName@_SM_matching::Mhh2matching1L(model);
+   const double MW2matched = @ModelName@_SM_matching::MVWp2matching1L(model);
+   const double MZ2matched = @ModelName@_SM_matching::MVZ2matching1L(model);
    const double lambda_high = Pi * MH2matched/MW2matched * alpha_em/((1. - MW2matched/MZ2matched)*(1. + delta_alpha_em));
    EFT.run_to(MTpole);
 
   do
   {
     iteration++;
+    // save lambda while other couplings are reset to low scale values
     lambda_low = EFT.get_Lambdax();
     EFT.set(lowEnergyInput);
     EFT.set_Lambdax(lambda_low);

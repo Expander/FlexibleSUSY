@@ -1,4 +1,4 @@
-﻿// ====================================================================
+// ====================================================================
 // This file is part of FlexibleSUSY.
 //
 // FlexibleSUSY is free software: you can redistribute it and/or modify
@@ -16,112 +16,77 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef @ModelName@_SM_TWO_SCALE_MATCHING_H
-#define @ModelName@_SM_TWO_SCALE_MATCHING_H
+#ifndef @ModelName@_TWO_SCALE_MATCHING_H
+#define @ModelName@_TWO_SCALE_MATCHING_H
 
-#include "wrappers.hpp"
 #include "two_scale_matching.hpp"
-#include "SM_two_scale_model.hpp"
 #include "@ModelName@_two_scale_model.hpp"
-#include <cmath>
+#include "SM_two_scale_model.hpp"
+#include "@ModelName@_SM_matching.hpp"
+#include "error.hpp"
 
+namespace flexiblesusy {
 
-namespace flexiblesusy
+class Two_scale;
+class Two_scale_model;
+
+template <class T>
+class @ModelName@_SM_Matching;
+
+template<>
+class @ModelName@_SM_Matching<Two_scale>: public Matching<Two_scale>
 {
+public:
+   @ModelName@_SM_Matching(): scale(0), eft(0), model(0) {}
 
-#define MODELPARAMETER(p) model.get_##p()
+   @ModelName@_SM_Matching(SM<Two_scale>* low_, @ModelName@<Two_scale>* high_):scale(0), eft(low_), model(high_) {}
 
-  /**
-   * @class SM_two_scale_matching
-   * @brief matches Two-Scale-Model to Standardmodel in optional loop order
-   */
-  template <class T>
-  class @ModelName@_SM_two_scale_matching
-  {
-    public:
-	static void matchingTL(SM<T>&, const @ModelName@<T>&);
-	static void matching(SM<T>&, const @ModelName@<T>&);
-@smMediumDiagDecl@
-  };
+   virtual ~@ModelName@_SM_Matching() {}
 
+   virtual double get_scale() const {return scale;}
 
+   virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
+      eft = (SM<Two_scale>*) low;
+      model = (@ModelName@<Two_scale>*) high;
+   }
 
-  /**
-   * matches  Standardmodel to @ModelName@-Model at tree-level
-   */
-  template <class T>
-  void @ModelName@_SM_two_scale_matching<T>::matchingTL(SM<T>& SM_, const @ModelName@<T>& model)
-  {
-    SM_.set_scale(model.get_scale());
-    SM_.set_g1(model.get_@hyperchargeCoupling@()*@hyperchargeCouplingGutNormalization@/Sqrt(.6));
-    SM_.set_g2(model.get_@leftCoupling@()*@leftCouplingGutNormalization@);
-    SM_.set_g3(model.get_@strongCoupling@());
-    SM_.set_v(2.*model.get_M@VectorW@()/SM_.get_g2());
-    SM_.set_Ye(Sqrt(2.)/SM_.get_v()*model.get_M@Electron@().matrix().asDiagonal());
-    SM_.set_Yu(-Sqrt(2.)/SM_.get_v()*model.get_M@TopQuark@().matrix().asDiagonal());
-    SM_.set_Yd(Sqrt(2.)/SM_.get_v()*model.get_M@BottomQuark@().matrix().asDiagonal());
-    SM_.set_Lambdax(Sqr(model.get_M@HiggsBoson@()@LightestHiggsExtension@)/Sqr(SM_.get_v()));
-    SM_.set_mu2( 1.5*SM_.get_Lambdax()*Sqr(SM_.get_v()) - Sqr(model.get_M@HiggsBoson@()@LightestHiggsExtension@));
-    SM_.solve_ewsb_tree_level();
-    SM_.calculate_DRbar_masses();
+   virtual void match_high_to_low_scale_model()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
-  }
+      scale = model->get_scale();
+      @ModelName@_SM_matching::matching(*eft, *model);
+   }
 
+   virtual void match_low_to_high_scale_model()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
- /**
-   * matches Standardmodel to @ModelName@-Model at one-loop-level
-   */
- template <class T>
-  void @ModelName@_SM_two_scale_matching<T>::matching(SM<T>& SM_, const @ModelName@<T>& model)
-  {
-    const double currentScale = model.get_scale();
-    double MWMSbar2, MZMSbar2, MHMSbar2;
-    Eigen::Array<double, 3, 1> MuMSbar, MdMSbar, MeMSbar;
+      scale = eft->get_scale();
+      @ModelName@_SM_matching::matchingReverse(*model, *eft);
+   }
 
-    //match with tree-level as initial guess
-    matchingTL(SM_, model);
-    double g1drbar = SM_.get_g1();
-    double g2drbar = SM_.get_g2();
-@calcAlphaEM@
-    double alpha_s  = Sqr(SM_.get_g3())/(4.*Pi);
-@gauge1Linit@
-@alphaEM1Lmatching@
-@alphaS1Lmatching@
+   void match_high_to_low_scale_model_tree_level()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
-	//calculate 1-loop corrected masses
-    SM_.solve_ewsb_one_loop();
-    MHMSbar2 = Mhh2matching1L(model);
-    MWMSbar2 = MVWp2matching1L(model);
-    MZMSbar2 = MVZ2matching1L(model);
+      scale = model->get_scale();
+      @ModelName@_SM_matching::matching(*eft, *model);
+   }
 
-	//assuming no flavor mixing: yukawa matrices and self energies are diagonal
-    for(unsigned i = 0; i < 3; i++)
-    {
-          MeMSbar(i) = Sqrt(MFe2matching1L(model, i));
-          MuMSbar(i) = Sqrt(MFu2matching1L(model, i));
-          MdMSbar(i) = Sqrt(MFd2matching1L(model, i));
-    }
+   void match_low_to_high_scale_model_tree_level()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
-    //copy SM-class for TL - template
-    const SM<T> SM_TL = SM_;
+      scale = eft->get_scale();
+      @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+   }
 
-    //calculate 1L-parameters from 1L-masses
-    SM_.set_g1(Sqrt(4.*Pi*alpha_em *(1. - delta_alpha_em + MZMSbar2/Sqr(SM_TL.get_MVZ()) - MWMSbar2/Sqr(SM_TL.get_MVWp()) )*Sqr(SM_TL.get_MVZ()/SM_TL.get_MVWp()))/Sqrt(.6));
-    SM_.set_g2(Sqrt(4.*Pi*alpha_em/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ()))*
-               (1. - delta_alpha_em + Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())*(-MZMSbar2/Sqr(SM_TL.get_MVZ()) + MWMSbar2/Sqr(SM_TL.get_MVWp()))/(1. - Sqr(SM_TL.get_MVWp()/SM_TL.get_MVZ())))));
-    SM_.set_g3(Sqrt(4.*Pi*alpha_s *(1. - delta_alpha_s)));
-    SM_.set_v(2.*SM_TL.get_MVWp()/SM_TL.get_g2()*Sqrt(1. + MWMSbar2/Sqr(SM_TL.get_MVWp()) - Sqr(SM_.get_g2()/SM_TL.get_g2())));
-    SM_.set_Ye((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFe())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MeMSbar) ).sqrt().matrix().asDiagonal());
-    SM_.set_Yu((-(2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFu())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MuMSbar) ).sqrt()).matrix().asDiagonal());
-    SM_.set_Yd((2./Sqr(SM_TL.get_v())*Sqr(SM_TL.get_MFd())*(1. - Sqr(SM_.get_v()/SM_TL.get_v()))  + 2./Sqr(SM_TL.get_v())*Sqr(MdMSbar) ).sqrt().matrix().asDiagonal());
-    SM_.set_Lambdax(Sqr(SM_TL.get_Mhh()/SM_TL.get_v())*(1. + MHMSbar2/Sqr(SM_TL.get_Mhh()) - Sqr(SM_.get_v()/SM_TL.get_v())));
-    SM_.set_mu2( 1.5*SM_TL.get_Lambdax()*Sqr(SM_TL.get_v())*(-1. + SM_.get_Lambdax()/SM_TL.get_Lambdax() +  Sqr(SM_.get_v()/SM_TL.get_v())) - MHMSbar2);
-    SM_.calculate_DRbar_masses();
+private:
+   @ModelName@<Two_scale>* model;
+   SM<Two_scale>* eft;
+   double scale;
+};
 
-  }
-
-@smMediumDiag@
-
-
-} //namespace flexiblesusy
+} // namespace flexiblesusy
 #endif

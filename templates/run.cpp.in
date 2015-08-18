@@ -20,7 +20,7 @@
 
 #include "@ModelName@_input_parameters.hpp"
 #include "@ModelName@_slha_io.hpp"
-#include "@ModelName@_spectrum_generator.hpp"
+#include "@SpectrumGenerator@_spectrum_generator.hpp"
 
 #include "spectrum_generator_settings.hpp"
 #include "lowe.h"
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
 
    oneset.toMz(); // run SM fermion masses to MZ
 
-   @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
+   @SpectrumGenerator@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_settings(spectrum_generator_settings);
    spectrum_generator.set_parameter_output_scale(
       slha_io.get_parameter_output_scale());

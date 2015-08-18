@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_spectrum_generator.hpp"
+#include "@SpectrumGenerator@_spectrum_generator.hpp"
 #include "@ModelName@_two_scale_model_slha.hpp"
 
 #include "command_line_options.hpp"
@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
    QedQcd oneset;
    oneset.toMz();
 
-   @ModelName@_spectrum_generator<algorithm_type> spectrum_generator;
+   @SpectrumGenerator@_spectrum_generator<algorithm_type> spectrum_generator;
    spectrum_generator.set_precision_goal(1.0e-4);
    spectrum_generator.set_max_iterations(0);         // 0 == automatic
    spectrum_generator.set_calculate_sm_masses(0);    // 0 == no
