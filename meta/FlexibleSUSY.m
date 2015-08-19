@@ -586,7 +586,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                  } ];
           ];
 
-WriteInitialGuesserClass[lowScaleGuess_List, susySaleGuess_List, highScaleGuess_List, files_List] :=
+WriteInitialGuesserClass[lowScaleGuess_List, susyScaleGuess_List, highScaleGuess_List, files_List] :=
    Module[{initialGuessAtLowScale, initialGuessAtHighScale, setDRbarYukawaCouplings,
            allSettings},
           initialGuessAtLowScale  = Constraint`ApplyConstraints[lowScaleGuess];
@@ -600,7 +600,7 @@ WriteInitialGuesserClass[lowScaleGuess_List, susySaleGuess_List, highScaleGuess_
           };
           WriteOut`ReplaceInFiles[files,
                  { "@initialGuessAtLowScale@"  -> IndentText[WrapLines[initialGuessAtLowScale]],
-                   "@initialGuessAtSUSYScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
+                   "@initialGuessAtSUSYScale@" -> IndentText[WrapLines[initialGuessAtSUSYScale]],
                    "@initialGuessAtHighScale@" -> IndentText[WrapLines[initialGuessAtHighScale]],
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
@@ -1656,14 +1656,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtLowScale, "InitialGuessAtLowScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtSUSYScale, "InitialGuessAtSUSYScale"];
            Constraint`CheckConstraint[FlexibleSUSY`InitialGuessAtHighScale, "InitialGuessAtHighScale"];
-           Constraint`SanityCheck[Join[FlexibleSUSY`InitialGuessAtLowScale,
-                                       FlexibleSUSY`InitialGuessAtSUSYScale
+           Constraint`SanityCheck[Join[ If[SMTower, FlexibleSUSY`InitialGuessAtSUSYScale,
+                                                                 FlexibleSUSY`InitialGuessAtLowScale,
+                                                                 FlexibleSUSY`InitialGuessAtLowScale],
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
            fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
-                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
-                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                  Constraint`FindFixedParametersFromConstraint[If[SMTower, FlexibleSUSY`InitialGuessAtSUSYScale,
+                                                                                           FlexibleSUSY`InitialGuessAtLowScale,
+                                                                                           FlexibleSUSY`InitialGuessAtLowScale]],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
                                  ];
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[allParameters, fixedParameters];

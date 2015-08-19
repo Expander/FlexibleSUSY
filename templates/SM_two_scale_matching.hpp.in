@@ -45,6 +45,8 @@ public:
 
    virtual double get_scale() const {return scale;}
 
+   void set_scale(double scale_) { if(scale_ >= 0.) scale = scale_;}
+
    virtual void set_models(Two_scale_model* low, Two_scale_model* high) {
       eft = (SM<Two_scale>*) low;
       model = (@ModelName@<Two_scale>*) high;
@@ -55,6 +57,8 @@ public:
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
       scale = model->get_scale();
+      model->calculate_DRbar_masses();
+      model->solve_ewsb_one_loop();
       @ModelName@_SM_matching::matching(*eft, *model);
    }
 

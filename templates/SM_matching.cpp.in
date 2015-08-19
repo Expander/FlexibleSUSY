@@ -141,6 +141,7 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
 {
    // match parameter at tree-level first
    matchingReverseTL(model, SM_);
+   model.solve_ewsb_one_loop();
    SM_.solve_ewsb_one_loop();
 
    const double alpha_em = .6 * Sqr(SM_.get_g1() * SM_.get_g2())/(4. * Pi * (.6*Sqr(SM_.get_g1()) + Sqr(SM_.get_g2())));
@@ -161,9 +162,9 @@ void @ModelName@_SM_matching::matchingReverse(@ModelName@_mass_eigenstates& mode
 
    for( unsigned gen = 0; gen < 3; gen++)
    {
-      topDRbar(gen, gen)      = MFu2matching1Lreverted(SM_, model, gen);
-      bottomDRbar(gen, gen)   = MFd2matching1Lreverted(SM_, model, gen);
-      electronDRbar(gen, gen) = MFe2matching1Lreverted(SM_, model, gen);
+      topDRbar(gen, gen)      = Sqrt(MFu2matching1Lreverted(SM_, model, gen));
+      bottomDRbar(gen, gen)   = Sqrt(MFd2matching1Lreverted(SM_, model, gen));
+      electronDRbar(gen, gen) = Sqrt(MFe2matching1Lreverted(SM_, model, gen));
    }
 
    // define and apply 1L-matched gauge parameters

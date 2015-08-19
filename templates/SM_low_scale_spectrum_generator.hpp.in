@@ -72,7 +72,7 @@ private:
    RGFlow<T> solver;
    @ModelName@_susy_scale_constraint<T> susy_scale_constraint;
    SM_low_scale_constraint<T>  low_scale_constraint;
-   @ModelName@_SM_Matching matching;
+   @ModelName@_SM_Matching<T> matching;
    double susy_scale, low_scale;
 };
 
@@ -119,11 +119,12 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
    low_scale_constraint .initialize();
 
    matching.set_models(&eft, &model);
+   matching.set_scale(susy_scale_constraint.get_scale());
 
    std::vector<Constraint<T>*> model_constraints(1);
    model_constraints[0] = &susy_scale_constraint;
 
-   std::vector<Constraint<T>*> eft_constraints(2);
+   std::vector<Constraint<T>*> eft_constraints(1);
    eft_constraints[0] = &susy_scale_constraint;
 
    @ModelName@_convergence_tester<T> convergence_tester(&model, this->precision_goal);

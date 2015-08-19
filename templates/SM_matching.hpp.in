@@ -29,7 +29,7 @@ namespace flexiblesusy
 
 /**
  * @class SM_two_scale_matching
- * @brief matches Two-Scale-Model to Standardmodel in optional loop order
+ * @brief provides matching conditions from Model to Standard Model and reverse
  */
 class @ModelName@_SM_matching
 {
