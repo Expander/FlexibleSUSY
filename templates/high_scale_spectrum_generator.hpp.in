@@ -291,7 +291,7 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
 
    const double MZpole = lowEnergyData.displayPoleMZ();
-   const double MWpole = lowEnergyData.displayPoleMZ();
+   const double MWpole = lowEnergyData.displayPoleMW();
    const double MTpole = lowEnergyData.displayPoleMt();
    const double MHpole = 125.09;
    const double alphaS = lowEnergyData.displayAlpha(ALPHAS);

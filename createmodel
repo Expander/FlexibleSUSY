@@ -518,3 +518,8 @@ for slha_in in $SLHA_input_files; do
     cp $model_file_dir/$slha_in $targetdir
     message "done"
 done
+
+if [ $name != SM ]; then
+   message "Creating SM as effective model ..."
+   /bin/sh $ABSBASEDIR/createmodel --name=SM --force
+fi

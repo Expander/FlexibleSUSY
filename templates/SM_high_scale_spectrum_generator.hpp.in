@@ -309,7 +309,7 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
    unsigned iteration = 0;
 
    SM<T> EFT;
-   EFT.set_loops(3);
+   EFT.set_loops(model.get_loops());
    EFT.set_ewsb_loop_order(model.get_ewsb_loop_order());
    EFT.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
    EFT.set_precision(model.get_precision());
@@ -318,7 +318,7 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
 
    const double MZpole = lowEnergyData.displayPoleMZ();
-   const double MWpole = lowEnergyData.displayPoleMZ();
+   const double MWpole = lowEnergyData.displayPoleMW();
    const double MTpole = lowEnergyData.displayPoleMt();
    const double MHpole = 125.09;
    const double alphaS = lowEnergyData.displayAlpha(ALPHAS);
@@ -391,13 +391,19 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
   EFT.run_to(low_scale);
   EFT.calculate_DRbar_masses();
   EFT.solve_ewsb();
-  if(this->calculate_sm_masses) EFT.calculate_spectrum();
-     else EFT.calculate_Mhh_pole();
+  EFT.calculate_Mhh_pole();
 
   //store Higgs pole mass in physical structure
   this->@GetHiggsMass@ = EFT.get_physical().Mhh;
+
   if(this->calculate_sm_masses)
   {
+     EFT.calculate_MVZ_pole();
+     EFT.calculate_MVWp_pole();
+     EFT.calculate_MFu_pole();
+     EFT.calculate_MFd_pole();
+     EFT.calculate_MFe_pole();
+
      this->@GetZMass@ = EFT.get_physical().MVZ;
      this->@GetWMass@ = EFT.get_physical().MVWp;
      this->model.get_physical().M@TopQuark@ = EFT.get_physical().MFu;

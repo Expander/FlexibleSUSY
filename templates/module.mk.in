@@ -138,7 +138,7 @@ LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 ifeq ($(SARAH_MODEL),SM)
 LIBEFT             :=
 else
-LIBEFT             := $(ABSBASEDIR)/models/SM/libSM$(LIBEXT)
+LIBEFT             := $(LIBSM)
 endif
 
 RUN_@CLASSNAME@_OBJ := $(DIR)/run_@CLASSNAME@.o
