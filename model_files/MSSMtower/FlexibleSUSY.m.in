@@ -97,7 +97,7 @@ SUSYScaleUserMatching = {
 {vd, vev Cos[ArcTan[INPUTPARAMETER[TanBeta]]]}
 };
 
-(* vev is a keyword in SUSYScaleUserMatching, denoting SM VEV matched into full theory *)
+(* vev is a keyword in SUSYScaleUserMatching, describing SM VEV matched into full theory *)
 
 LowScale = LowEnergyConstant[MZ];
 

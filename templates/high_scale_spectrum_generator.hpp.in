@@ -222,7 +222,8 @@ void @ModelName@_spectrum_generator<T>::do2LoopLogCalc()
   M_Pole = 0.;
 
   SM<T>  SM1, SM2, SM3;
-  SM1.set_ewsb_loop_order(1);	SM1.set_pole_mass_loop_order(1);
+  SM1.set_ewsb_loop_order(model.get_ewsb_loop_order());
+  SM1.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
   SM2.set_ewsb_loop_order(1);	SM2.set_pole_mass_loop_order(1);
   SM3.set_ewsb_loop_order(1);	SM3.set_pole_mass_loop_order(1);
 
@@ -282,7 +283,7 @@ void @ModelName@_spectrum_generator<T>::calcHiggsPoleEFT()
    unsigned iteration = 0;
 
    SM<T> EFT;
-   EFT.set_loops(3);
+   EFT.set_loops(model.get_loops());
    EFT.set_ewsb_loop_order(model.get_ewsb_loop_order());
    EFT.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
    EFT.set_precision(model.get_precision());
