@@ -1,0 +1,44 @@
+Block MODSEL                 # Select model
+#   12    1000                # DRbar parameter output scale (GeV)
+Block FlexibleSUSY
+    0   1.000000000e-04      # precision goal
+    1   0                    # max. iterations (0 = automatic)
+    2   0                    # algorithm (0 = two_scale, 1 = lattice)
+    3   0                    # calculate SM pole masses
+    4   2                    # pole mass loop order
+    5   2                    # EWSB loop order
+    6   2                    # beta-functions loop order
+    7   2                    # threshold corrections loop order
+    8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
+    9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
+   10   1                    # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+   11   1                    # Higgs 2-loop corrections O(alpha_tau^2)
+   12   0                    # force output
+   13   1                    # Top quark 2-loop corrections QCD
+   14   1.000000000e-11      # beta-function zero threshold
+BLOCK SMINPUTS
+    1     1.28962000E+02   # alpha_em^(-1)
+    2     1.16637000E-05   # G_F
+    3     1.19000000E-01   # alpha_s
+    4     9.11876000E+01   # Mz
+    5     4.19000000E+00   # m_b^MS(mb)
+    6     1.73200000E+02   # m_t
+    7     1.77682000E+00   # m_tau
+    9     8.03850000E+01   # Mw
+   11     5.10998910E-04   # m_e
+   13     1.05658367E-01   # m_mu
+   21     4.95000000E-03   # m_d
+   22     2.50000000E-03   # m_u
+   23     1.00000000E-01   # m_s
+   24     1.42000000E+00   # m_c
+BLOCK MINPAR
+    1     1000             # M0
+    2     1000             # M12
+    3     10               # tanbeta
+    5    -3000             # A0
+BLOCK EXTPAR
+   61     0.05             # lambda
+   62     0.05             # kappa
+   63    -150              # Alambda
+   64    -300              # Akappa
+   65     100              # mu_eff

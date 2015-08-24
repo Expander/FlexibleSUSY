@@ -55,6 +55,7 @@ Pole;
 LowEnergyConstant;
 FSMinimize;
 FSFindRoot;
+FSSolveEWSBFor;
 MZ;
 MZDRbar;
 MWDRbar;
@@ -581,7 +582,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
                    "@saveEwsbOutputParameters@"    -> IndentText[saveEwsbOutputParameters],
                    "@restoreEwsbOutputParameters@" -> IndentText[restoreEwsbOutputParameters],
-                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[IndentText[checkPerturbativityForDimensionlessParameters]],
+                   "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
                    Sequence @@ GeneralReplacementRules[]
                  } ];
           ];
@@ -1668,13 +1669,29 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                        FlexibleSUSY`InitialGuessAtHighScale],
                                   "initial guess"
                                  ];
-           fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
-                                  Constraint`FindFixedParametersFromConstraint[If[SMTower,
-                                                                                           FlexibleSUSY`InitialGuessAtSUSYScale,
-                                                                                           FlexibleSUSY`InitialGuessAtLowScale,
-                                                                                           FlexibleSUSY`InitialGuessAtLowScale]],
-                                  Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
-                                 ];
+
+           (* add EWSB constraint to SUSY-scale constraint if not set *)
+           If[FlexibleSUSY`SMTower,
+            If[FreeQ[Join[FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                     FlexibleSUSY`FSSolveEWSBFor[___]],
+               AppendTo[FlexibleSUSY`SUSYScaleInput,
+                        FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]
+                        ];
+               ];
+            fixedParameters = Join[ Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
+                                    ];,
+            If[FreeQ[Join[FlexibleSUSY`LowScaleInput, FlexibleSUSY`SUSYScaleInput, FlexibleSUSY`HighScaleInput],
+                     FlexibleSUSY`FSSolveEWSBFor[___]],
+               AppendTo[FlexibleSUSY`SUSYScaleInput,
+                        FlexibleSUSY`FSSolveEWSBFor[FlexibleSUSY`EWSBOutputParameters]
+                        ];
+               ];
+            fixedParameters = Join[Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`LowScaleInput],
+                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`SUSYScaleInput],
+                                    Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]
+                                    ];
+             ];
            FlexibleSUSY`FSUnfixedParameters = FindUnfixedParameters[allParameters, fixedParameters];
            If[FlexibleSUSY`FSUnfixedParameters =!= {} &&
               FlexibleSUSY`AutomaticInputAtMSUSY =!= True,

@@ -70,7 +70,7 @@ void @ModelName@_soft_parameters::clear()
 @clearParameters@
 }
 
-const Eigen::ArrayXd @ModelName@_soft_parameters::get() const
+Eigen::ArrayXd @ModelName@_soft_parameters::get() const
 {
    Eigen::ArrayXd pars(@ModelName@_susy_parameters::get());
    pars.conservativeResize(numberOfParameters);

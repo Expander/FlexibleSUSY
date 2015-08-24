@@ -6,10 +6,11 @@
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
 FLEXIBLESUSY_MINOR=2
-FLEXIBLESUSY_PATCH=0
+FLEXIBLESUSY_PATCH=1
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
+GM2CALC_VERSION="0.2.7"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -180,7 +181,7 @@ tsil_inc_dir=""
 ALGORITHMS="two_scale"
 available_algorithms="two_scale lattice"
 # models that will be compiled
-MODELS="all"
+MODELS=""
 # addons that will be compiled
 ADDONS=""
 
@@ -2467,6 +2468,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
     -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
     -e "s|@GIT_COMMIT@|$GIT_COMMIT|"                 \
+    -e "s|@GM2CALC_VERSION@|$GM2CALC_VERSION|"       \
     -e "s|@PKGNAME@|$PROGRAM_NAME|"                  \
     -e "s|@BLASLIBS@|$BLASLIBS|"                     \
     -e "s|@BOOSTTESTLIBS@|$BOOSTTESTLIBS|"           \

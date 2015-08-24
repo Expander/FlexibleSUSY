@@ -159,23 +159,23 @@ FindAllParameters[expr_] :=
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
-               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], Infinity],
-                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], Infinity],
-                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], Infinity],
-                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], Infinity],
-                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], Infinity],
-                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], Infinity],
-                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], Infinity],
-                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], Infinity]
+               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
                }]];
            (* remove parameters found from compactExpr *)
            compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
            (* find all model parameters without SARAH head in compactExpr *)
            symbols = Join[symbols,
                { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
-                 Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, Infinity],
-                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
-                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                 Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                }];
            DeleteDuplicates[Flatten[symbols]]
           ];
@@ -857,8 +857,8 @@ CreateLocalConstRefs[expr_] :=
             poleMasses, phases},
            symbols = FindAllParameters[expr];
            poleMasses = {
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity],
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                         };
            symbols = DeleteDuplicates[Flatten[symbols]];
            poleMasses = DeleteDuplicates[Flatten[poleMasses]];
@@ -878,9 +878,9 @@ CreateLocalConstRefsForPhysicalParameters[expr_] :=
     Module[{result = "", symbols, outputPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
            symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], Infinity],
-                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], Infinity]
+                       Cases[compactExpr, a_[__] /; MemberQ[allOutputParameters,a] :> a, {0,Infinity}],
+                       Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]], {0,Infinity}],
+                       Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
                      };
            symbols = DeleteDuplicates[Flatten[symbols]];
            outputPars = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
@@ -892,7 +892,7 @@ CreateLocalConstRefsForBetas[expr_] :=
     Module[{result = "", symbols, modelPars, compactExpr},
            compactExpr = RemoveProtectedHeads[expr];
            symbols = { Cases[compactExpr, _Symbol, {0,Infinity}],
-                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, Infinity] };
+                       Cases[compactExpr, a_[__] /; MemberQ[allModelParameters,a] :> a, {0,Infinity}] };
            symbols = DeleteDuplicates[Flatten[symbols]];
            modelPars = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            (result = result <> DefineLocalConstCopy[#, "BETAPARAMETER", "beta_"])& /@ modelPars;

@@ -11,7 +11,7 @@ SetDRbarYukawaCouplingBottom::usage="";
 SetDRbarYukawaCouplingElectron::usage="";
 CalculateColorCoupling::usage="";
 CalculateElectromagneticCoupling::usage="";
-SetDRbarYukawaCouplings[]::usage="";
+SetDRbarYukawaCouplings::usage="";
 
 Begin["`Private`"];
 
@@ -85,7 +85,7 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
                                FlexibleSUSY`MSbar, 0,
                                _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                               ];
-           deltaSM = - 16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
+           deltaSM = -16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = conversion + CalculateElectromagneticCoupling[renormalizationScheme];
            result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>

@@ -96,9 +96,17 @@ void @ModelName@_high_scale_constraint<Two_scale>::apply()
    update_scale();
 
 @applyConstraint@
-   {
+
+   check_non_perturbative();
+}
+
+bool @ModelName@_high_scale_constraint<Two_scale>::check_non_perturbative()
+{
+   bool problem = false;
+
 @checkPerturbativityForDimensionlessParameters@
-   }
+
+   return problem;
 }
 
 double @ModelName@_high_scale_constraint<Two_scale>::get_scale() const
