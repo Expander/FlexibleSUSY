@@ -1465,10 +1465,16 @@ LoadModelFile[file_String] :=
           ];
 
 FindUnfixedParameters[parameters_List, fixed_List] :=
-    Module[{fixedParameters},
+    Module[{fixedParameters, autoInput},
+           autoInput = { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
+                                            SARAH`strongCoupling };
+           If[FlexibleSUSY`SMTower,
+           autoInput = Join[autoInput, {SARAH`UpYukawa, SARAH`DownYukawa, SARAH`ElectronYukawa},
+                            #[[1]] & /@ SUSYScaleUserMatching
+                           ];
+           ];
            fixedParameters = DeleteDuplicates[Flatten[Join[fixed,
-                                          { SARAH`hyperchargeCoupling, SARAH`leftCoupling,
-                                            SARAH`strongCoupling }]]];
+                                          autoInput]]];
            Complement[parameters, fixedParameters]
           ];
 
@@ -1663,7 +1669,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                   "initial guess"
                                  ];
            fixedParameters = Join[FlexibleSUSY`EWSBOutputParameters,
-                                  Constraint`FindFixedParametersFromConstraint[If[SMTower, FlexibleSUSY`InitialGuessAtSUSYScale,
+                                  Constraint`FindFixedParametersFromConstraint[If[SMTower,
+                                                                                           FlexibleSUSY`InitialGuessAtSUSYScale,
                                                                                            FlexibleSUSY`InitialGuessAtLowScale,
                                                                                            FlexibleSUSY`InitialGuessAtLowScale]],
                                   Constraint`FindFixedParametersFromConstraint[FlexibleSUSY`HighScaleInput]

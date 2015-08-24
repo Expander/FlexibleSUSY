@@ -82,12 +82,7 @@ InitialGuessAtSUSYScale = {
 {B[\[Mu]], 1/4 Sqr[Ms]},
 {T[Yu], \[Mu]/TanBeta Yu},
 {T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye},
-{vu, SMPARAMETER[v] Sin[ArcTan[TanBeta]]},
-{vd, SMPARAMETER[v] Cos[ArcTan[TanBeta]]},
-{Yu, -SMPARAMETER[Yu] Sin[ArcTan[TanBeta]]},
-{Yd, SMPARAMETER[Yd] Cos[ArcTan[TanBeta]]},
-{Ye, SMPARAMETER[Ye] Cos[ArcTan[TanBeta]]}
+{T[Ye], \[Mu] TanBeta Ye}
 };
 
 (* InitialGuessAtLowScale is ignored if SMTower is true *)
