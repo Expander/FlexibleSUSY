@@ -163,7 +163,29 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       // start logarithmic resummation
       switch (model.get_Two_loop_corrections().higgs_log)
       {
-         case 0: break;
+         case 0: if(model.do_calculate_sm_masses())
+                 {
+                    model.run_to(susy_scale);
+                    matching.match_high_to_low_scale_model();
+                    eft.run_to(low_scale);
+                    eft.calculate_DRbar_masses();
+                    eft.solve_ewsb();
+                    
+                    eft.calculate_Mhh_pole();
+                    eft.calculate_MVZ_pole();
+                    eft.calculate_MVWp_pole();
+                    eft.calculate_MFu_pole();
+                    eft.calculate_MFd_pole();
+                    eft.calculate_MFe_pole();
+                    
+                    this->@GetHiggsMass@ = eft.get_physical().Mhh;
+                    this->@GetZMass@ = eft.get_physical().MVZ;
+                    this->@GetWMass@ = eft.get_physical().MVWp;
+                    this->model.get_physical().M@TopQuark@ = eft.get_physical().MFu;
+                    this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
+                    this->model.get_physical().M@Electron@ = EFT.get_physical().MFe;
+                 }
+                 break;
          case 1: do2LoopLogCalc(); break;
          case 2: calcHiggsPoleEFT(); break;
       }
@@ -225,6 +247,8 @@ void @ModelName@_SM_spectrum_generator<T>::do2LoopLogCalc()
   SM<T>  SM1, SM2, SM3;
   SM1.set_ewsb_loop_order(model.get_ewsb_loop_order());
   SM1.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
+  SM1.set_loops(model.get_loops());
+  SM1.set_zero_threshold(model.get_zero_threshold());
   SM2.set_ewsb_loop_order(1);   SM2.set_pole_mass_loop_order(1);
   SM3.set_ewsb_loop_order(1);   SM3.set_pole_mass_loop_order(1);
 
@@ -300,12 +324,14 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
 
    SM<T> EFT;
    EFT.set_loops(model.get_loops());
+   EFT.set_thresholds(model.get_thresholds());
    EFT.set_ewsb_loop_order(model.get_ewsb_loop_order());
    EFT.set_pole_mass_loop_order(model.get_pole_mass_loop_order());
    EFT.set_precision(model.get_precision());
    EFT.set_ewsb_iteration_precision(model.get_ewsb_iteration_precision());
    EFT.set_number_of_ewsb_iterations(model.get_number_of_ewsb_iterations());
    EFT.set_number_of_mass_iterations(model.get_number_of_mass_iterations());
+   EFT.set_zero_threshold(model.get_zero_threshold());
 
    const double MZpole = lowEnergyData.displayPoleMZ();
    const double MWpole = lowEnergyData.displayPoleMW();
@@ -323,7 +349,9 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
    EFT.set_Yu(ZEROMATRIX(3,3));
    EFT.set_Yd(ZEROMATRIX(3,3));
    EFT.set_Ye(ZEROMATRIX(3,3));
-   EFT.set_Yu(2, 2, -(.9369 + .00556*(MTpole - 173.34) - .00042*(alphaS - .1184)/.0007));
+   EFT.set_Yu(2, 2, -(.94018 + .00556*(MTpole - 173.34) - .00042*(alphaS - .1184)/.0007));
+   if(EFT.get_thresholds() > 2) EFT.set_Yu(2, 2, EFT.get_Yu(2,2) + .00328);
+
 
    // see (22) from arXiv:1205.6497 [hep-ph]
    EFT.set_v(Sqrt( 1./(Sqrt(2.)*lowEnergyData.displayFermiConstant())
