@@ -175,7 +175,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       // start logarithmic resummation
       switch (model.get_Two_loop_corrections().higgs_log)
       {
-         case 0: if(model.do_calculate_sm_masses())
+         case 0: if(model.do_calculate_sm_pole_masses())
                  {
                     model.run_to(susy_scale);
                     matching.match_high_to_low_scale_model();
@@ -195,7 +195,7 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
                     this->@GetWMass@ = eft.get_physical().MVWp;
                     this->model.get_physical().M@TopQuark@ = eft.get_physical().MFu;
                     this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
-                    this->model.get_physical().M@Electron@ = EFT.get_physical().MFe;
+                    this->model.get_physical().M@Electron@ = eft.get_physical().MFe;
                  }
                  break;
          case 1: do2LoopLogCalc(); break;
