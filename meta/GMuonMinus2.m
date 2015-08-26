@@ -19,7 +19,7 @@ NPointFunctions::usage="Returns a list of all n point functions that are needed.
 (******** IMPORTANT NOTES:
  If you add new kinds of vertices (e.g for new diagram types):
  - Add the new types to vertexTypes
- - Expand CouplingsForParticles[] and VertexTypeForParticles[] accordingly
+ - Expand CouplingsForParticles[] and VertexTypeForParticles[] accordingly
  - Write the c++ class for the new vertex type
  
  When adding support for new diagram types, do the following:
@@ -121,18 +121,18 @@ CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions}
                                 Return[muonFunctions];
                                 ];
 
-CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
+CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            diagrams = contributingFeynmanDiagramTypes;
                            diagramHeads = DeleteDuplicates @ (Head /@ diagrams);
                            
                            code = "// The different diagram types that contribute to the muon magnetic moment\n";
                            code = (code <>
-                                   StringJoin @ Riffle[("template<unsigned int> class " <> SymbolName[#] <> ";" &)
+                                   StringJoin @ Riffle[("template<unsigned int> class " <> SymbolName[#] <> ";" &)
                                                        /@ diagramHeads, "\n"] <>
                                    "\n\n");
                            
                            code = (code <> "// Indexed diagram types\n" <>
-                                   StringJoin @ Riffle[("template<> class " <> SymbolName[Head[#]] <>
+                                   StringJoin @ Riffle[("template<> class " <> SymbolName[Head[#]] <>
                                                         "<" <> ToString @ #[[1]] <> "> {};" &)
                                                        /@ diagrams, "\n"]);
                            
@@ -146,7 +146,7 @@ CreateVertexFunctionData[] := CreateVertices[][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
-                                                     ToString @ type[[1]] <>
+                                                     ToString @ type[[1]] <>
                                                      ">, PhotonEmitter, ExchangeParticle>\n" <>
                                                      "{ static double value( EvaluationContext &context ); };");
 
@@ -172,7 +172,7 @@ CreateCalculation[] := Module[{code},
 
 CreateThreadedCalculation[] := CreateCalculation[];
 
-CreateDefinitions[] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
+CreateDefinitions[] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
                         CreateMuonFunctions[][[2]] <> "\n\n" <>
                         CreateVertices[][[2]]);
 
@@ -277,8 +277,8 @@ OrderVertex[vertex_, ordering_] := Module[{indexRules, particles, expr, newVerte
                                           Return[newVertex];
                                           ];
 
-(* MemoizingVertex[] works just like SARAH`Vertex[], but it caches the results *)
-(* MemoizingVertex[] only works when __no__ indices are specified!!! *)
+(* MemoizingVertex[] works just like SARAH`Vertex[], but it caches the results *)
+(* MemoizingVertex[] only works when __no__ indices are specified!!! *)
 (* Use of memoization gives ~30% speedup for the MSSM! *)
 memoizedVertices = {};
 MemoizingVertex[particles_List, options : OptionsPattern[SARAH`Vertex]] :=
@@ -306,7 +306,7 @@ IsNonZeroVertex[v_] := MemberQ[v[[2 ;;]][[All, 1]], Except[0]];
  a specific vertex in a canonical order! *)
 NameOfCouplingFunction[particles_List] :=
 ((* FIXME: Not upwards compatible if naming conventions change *)
- "Cp" <> StringJoin @ (ParticleToSARAHString /@ Sort[particles]));
+ "Cp" <> StringJoin @ (ParticleToSARAHString /@ Sort[particles]));
 
 (********************** End helper routines **************************)
 
@@ -345,7 +345,7 @@ OneLoopDiagram[4][fermions_, scalars_, vectors_] := {scalars, fermions};
  This is important for the c++ conversion that assumes every argument after the type
  is a particle and uses ParticleToCXXName for conversion *)
 
-ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermions_, scalars_, vectors_] :=
+ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermions_, scalars_, vectors_] :=
     Module[{photonEmitters, exchangeParticles, photonVertices, muonVertices, test},
            (* Get the photon emitter and the exchange particle categories corresponding to the
             diagram type *)
@@ -388,7 +388,7 @@ ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fer
  Also the necessary nPointFunctions are created. *)
 createdVertices = Null;
 nPointFunctions = Null;
-CreateVertices[] := Module[{contributingDiagrams, vertices,
+CreateVertices[] := Module[{contributingDiagrams, vertices,
                             vertexClassesPrototypes, vertexClassesDefinitions},
                            If[createdVertices =!= Null, Return[createdVertices]];
                            
@@ -397,7 +397,7 @@ CreateVertices[] := Module[{contributingDiagrams, vertices,
                            vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
                            vertices = DeleteDuplicates[vertices];
                            
-                           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ (CreateVertexFunction /@ vertices);
+                           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ (CreateVertexFunction /@ vertices);
                            vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
                            vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
                            
@@ -433,9 +433,9 @@ VertexTypeForParticles[particles_List] :=
     Module[{strippedParticles, scalars, vectors, fermions, scalarCount, vectorCount, fermionCount},
            strippedParticles = Vertices`StripFieldIndices /@ particles;
            
-           scalars = Select[strippedParticles, (TreeMasses`IsScalar[#] || TreeMasses`IsScalar[AntiParticle[#]] &)];
-           vectors = Select[strippedParticles, (TreeMasses`IsVector[#] || TreeMasses`IsVector[AntiParticle[#]] &)];
-           fermions = Select[strippedParticles, (TreeMasses`IsFermion[#] || TreeMasses`IsFermion[AntiParticle[#]] &)];
+           scalars = Select[strippedParticles, (TreeMasses`IsScalar[#] || TreeMasses`IsScalar[AntiParticle[#]] &)];
+           vectors = Select[strippedParticles, (TreeMasses`IsVector[#] || TreeMasses`IsVector[AntiParticle[#]] &)];
+           fermions = Select[strippedParticles, (TreeMasses`IsFermion[#] || TreeMasses`IsFermion[AntiParticle[#]] &)];
            
            scalarCount = Length[scalars];
            vectorCount = Length[vectors];
