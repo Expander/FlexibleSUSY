@@ -12,6 +12,9 @@ FlexibleSUSY-1.2.2 [not released yet]
  * Bugfix (commit 5530bf9): Defining a scale to be a running mass, for
    example SUSYScale = M[hh], resulted in a compilation error.
 
+ * Bugfix (commit 2d6c0d2): use SLHA input value of the Z pole mass as
+   low-energy scale, instead of the hard-coded value MZ = 91.1876 GeV.
+
 FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
