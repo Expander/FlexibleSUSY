@@ -458,6 +458,7 @@ void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
       break;
    case 4:
       oneset.setPoleMZ(value);
+      softsusy::MZ = value;
       break;
    case 5:
       oneset.setMass(mBottom, value);
