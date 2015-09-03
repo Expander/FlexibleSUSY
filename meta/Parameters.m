@@ -78,6 +78,7 @@ expression.";
 FillInputParametersFromTuples::usage="";
 
 DecreaseIndexLiterals::usage="";
+IncreaseIndexLiterals::usage="";
 
 DecreaseSumIdices::usage="";
 
@@ -937,26 +938,35 @@ FillInputParametersFromTuples[minpar_List, blockName_String] :=
            Return[result];
           ];
 
-DecreaseIndex[ind_Integer] := ind - 1;
-DecreaseIndex[ind_]        := ind;
-DecreaseIndices[a_[{ind__}]] := a[DecreaseIndex /@ {ind}];
-DecreaseIndices[a_[ind__]] := a[Sequence @@ (DecreaseIndex /@ {ind})];
-DecreaseIndices[a_]        := a;
-DecreaseIndices[SARAH`Delta[a_, b_]] :=
-    CConversion`FSKroneckerDelta[DecreaseIndex[a], DecreaseIndex[b]];
+IncreaseIndex[ind_Integer, num_Integer] := ind + num;
+IncreaseIndex[ind_, _]     := ind;
+IncreaseIndices[a_[{ind__}], num_Integer] := a[IncreaseIndex[#,num]& /@ {ind}];
+IncreaseIndices[a_[ind__], num_Integer] := a[Sequence @@ (IncreaseIndex[#,num]& /@ {ind})];
+IncreaseIndices[a_, _]     := a;
+IncreaseIndices[SARAH`Delta[a_, b_], num_Integer] :=
+    CConversion`FSKroneckerDelta[IncreaseIndex[a,num], IncreaseIndex[b,num]];
 
-DecreaseIndexLiterals[expr_] :=
-    DecreaseIndexLiterals[expr, Join[allInputParameters, allModelParameters,
-                                     allOutputParameters]];
+IncreaseIndexLiterals[expr_] :=
+    IncreaseIndexLiterals[expr, 1];
 
-DecreaseIndexLiterals[expr_, heads_List] :=
+IncreaseIndexLiterals[expr_, num_Integer] :=
+    IncreaseIndexLiterals[expr, num, Join[allInputParameters, allModelParameters,
+                                          allOutputParameters]];
+
+IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
     Module[{indexedSymbols, rules, decrExpr, allHeads},
            allHeads = Join[heads /. FlexibleSUSY`M -> Identity, {SARAH`Delta, SARAH`ThetaStep}];
            indexedSymbols = Cases[{expr}, s_[__] /; MemberQ[allHeads, s], Infinity];
-           rules = Rule[#, DecreaseIndices[#]] & /@ indexedSymbols;
+           rules = Rule[#, IncreaseIndices[#,num]] & /@ indexedSymbols;
            decrExpr = expr /. rules;
            Return[decrExpr]
           ];
+
+DecreaseIndexLiterals[expr_] :=
+    IncreaseIndexLiterals[expr, -1];
+
+DecreaseIndexLiterals[expr_, heads_List] :=
+    IncreaseIndexLiterals[expr, -1, heads];
 
 DecreaseSumIdices[expr_] :=
     expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`IndexSum[idx, start - 1, stop - 1, exp];
