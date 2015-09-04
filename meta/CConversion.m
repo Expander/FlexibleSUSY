@@ -669,7 +669,7 @@ RValueToCFormString[expr_String] := expr;
 RValueToCFormString[expr_] :=
     Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
            symbols = Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True];
-           greekSymbols = Select[symbols, GreekQ];
+           greekSymbols = DeleteDuplicates @ Select[symbols, GreekQ];
            greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
            result = expr /.
                     greekSymbolsRules /.
