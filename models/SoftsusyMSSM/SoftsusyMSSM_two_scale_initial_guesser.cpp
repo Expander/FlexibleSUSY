@@ -23,6 +23,8 @@
 
 #include <cassert>
 
+using namespace softsusy;
+
 namespace flexiblesusy {
 
 SoftsusyMSSM_initial_guesser::SoftsusyMSSM_initial_guesser(SoftsusyMSSM<Two_scale>* mssm_,
