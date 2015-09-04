@@ -12,6 +12,7 @@
 #include "logger.hpp"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 class RGE_model : public RGE {
 public:

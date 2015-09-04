@@ -12,6 +12,7 @@
 #include "linalg.h"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_two_scale_slha_cctor )
 {

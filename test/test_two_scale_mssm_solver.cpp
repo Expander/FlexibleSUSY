@@ -18,6 +18,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_softsusy_mssm_solver )
 {

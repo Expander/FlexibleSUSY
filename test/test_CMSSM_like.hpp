@@ -8,6 +8,7 @@
 #include "ew_input.hpp"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 template <class MSSMModel>
 void copy_parameters(const MSSMModel& mssm, MssmSoftsusy& softsusy)
