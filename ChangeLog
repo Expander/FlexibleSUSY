@@ -20,6 +20,9 @@ FlexibleSUSY-1.2.2 [not released yet]
    starting with 1) in the comments of the extra user-defined SLHA
    output blocks.
 
+ * Bugfix (commit 0737c4d): Properly convert greek symbols in function
+   arguments.  Fixes #5.  Thanks to Dylan Harries.
+
 FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
