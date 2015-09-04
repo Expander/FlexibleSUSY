@@ -104,7 +104,7 @@ void SLHA_io::read_modsel()
    read_block("MODSEL", modsel_processor);
 }
 
-void SLHA_io::fill(QedQcd& oneset) const
+void SLHA_io::fill(softsusy::QedQcd& oneset) const
 {
    CKM_wolfenstein ckm_wolfenstein;
    PMNS_parameters pmns_parameters;
@@ -350,6 +350,7 @@ void SLHA_io::set_block(const std::string& name, const softsusy::ComplexMatrix& 
 
 void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd_)
 {
+   using namespace softsusy;
    softsusy::QedQcd qedqcd(qedqcd_);
    std::ostringstream ss;
 
@@ -444,8 +445,10 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
  * @param key SLHA key in SMINPUTS
  * @param value value corresponding to key
  */
-void SLHA_io::process_sminputs_tuple(QedQcd& oneset, int key, double value)
+void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& oneset, int key, double value)
 {
+   using namespace softsusy;
+
    switch (key) {
    case 1:
       oneset.setAlpha(ALPHA, 1.0 / value);

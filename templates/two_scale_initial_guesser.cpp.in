@@ -38,7 +38,7 @@ namespace flexiblesusy {
 
 @ModelName@_initial_guesser<Two_scale>::@ModelName@_initial_guesser(
    @ModelName@<Two_scale>* model_,
-   const QedQcd& oneset_,
+   const softsusy::QedQcd& oneset_,
    const @ModelName@_low_scale_constraint<Two_scale>& low_constraint_,
    const @ModelName@_susy_scale_constraint<Two_scale>& susy_constraint_,
    const @ModelName@_high_scale_constraint<Two_scale>& high_constraint_
@@ -91,7 +91,9 @@ void @ModelName@_initial_guesser<Two_scale>::guess()
  */
 void @ModelName@_initial_guesser<Two_scale>::guess_susy_parameters()
 {
-   QedQcd leAtMt(oneset);
+   using namespace softsusy;
+
+   softsusy::QedQcd leAtMt(oneset);
    const double MZ = Electroweak_constants::MZ;
    const double MW = Electroweak_constants::MW;
    const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
