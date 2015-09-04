@@ -8,6 +8,8 @@
 #include "CMSSM_two_scale_model_slha.hpp"
 #include "wrappers.hpp"
 #include "ckm.hpp"
+#include "utils.h"
+#include "linalg.h"
 
 using namespace flexiblesusy;
 
