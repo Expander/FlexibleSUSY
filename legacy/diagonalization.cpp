@@ -76,9 +76,9 @@ softsusy::ComplexMatrix phase_rotation(const softsusy::DoubleVector& v)
 
    for (int i = 1; i <= len; i++) {
       if (v(i) < 0.0)
-         rot(i, i) = Complex(0.0, -1.0);
+         rot(i, i) = softsusy::Complex(0.0, -1.0);
       else
-         rot(i, i) = Complex(1.0, 0.0);
+         rot(i, i) = softsusy::Complex(1.0, 0.0);
    }
 
    return rot;
