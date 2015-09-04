@@ -248,9 +248,9 @@ double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
    typename Eigen::MatrixBase<Derived>::PlainObject sumTol;
 
    for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++) {
-      const double max = maximum(a(i), b(i));
+      const double max = std::max(a(i), b(i));
       if (std::fabs(max) > std::numeric_limits<double>::epsilon())
-         sumTol(i) = fabs(1.0 - minimum(a(i), b(i)) / max);
+         sumTol(i) = fabs(1.0 - std::min(a(i), b(i)) / max);
       else
          sumTol(i) = 0.;
    }
