@@ -23,6 +23,10 @@ FlexibleSUSY-1.2.2 [not released yet]
  * Bugfix (commit 0737c4d): Properly convert greek symbols in function
    arguments.  Fixes #5.  Thanks to Dylan Harries.
 
+ * Bugfix (commit f4eed5d): Put class Complex into softsusy namespace
+   to avoid ambiguities in operator*().  Fixes #6.  Thanks to Dylan
+   Harries.
+
 FlexibleSUSY-1.2.1 [July, 07 2015]
 
  * Feature: The model name is printed in SPINFO[5] and the SARAH
