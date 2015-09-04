@@ -31,8 +31,6 @@
 #define PHYSICAL(p) model.get_physical().p
 #define MODELPARAMETER(p) model.get_##p()
 
-using namespace softsusy;
-
 namespace flexiblesusy {
 
 @ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter()
