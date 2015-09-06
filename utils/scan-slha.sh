@@ -96,8 +96,8 @@ Options:
                         Syntax: <block>[<entry>]
                         Example: MINPAR[1],MASS[25],Yu[3:3]
   --scan-range=         Scan range
-                        Syntax: <block>[<entry>]=<start>-<stop>:<steps-1>
-                        Example: MINPAR[1]=100-1000:10
+                        Syntax: <block>[<entry>]=<start>~<stop>:<steps-1>
+                        Example: MINPAR[1]=100~1000:10
   --slha-input-file=    SLHA input file (optional).
                         If no SLHA input file is given, the SLHA input is
                         read from stdin .
@@ -109,14 +109,14 @@ Examples:
    $ ./utils/scan-slha.sh \\
         --spectrum-generator=models/CMSSM/run_CMSSM.x \\
         --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \\
-        --scan-range=MINPAR[3]=1-30:21 \\
+        --scan-range=MINPAR[3]=1~30:21 \\
         --output=MINPAR[3],MASS[25],Yu[3:3] \\
      > scan-slha.dat
 
    $ cat model_files/CMSSM/LesHouches.in.CMSSM | \\
      ./utils/scan-slha.sh \\
         --spectrum-generator=models/CMSSM/run_CMSSM.x \\
-        --scan-range=MINPAR[3]=1-30:21 \\
+        --scan-range=MINPAR[3]=1~30:21 \\
         --output=MINPAR[3],MASS[25],Yu[3:3] \\
      > scan-slha.dat
 
