@@ -565,6 +565,13 @@ void GM2_slha_io::process_gm2calcinput_tuple(MSSMNoFV_onshell& model,
    }
 }
 
+/**
+ * Reads model parameters in GM2Calc format from GM2CalcInput and
+ * SMINPUTS blocks
+ *
+ * @param slha_io SLHA object
+ * @param model model
+ */
 void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    fill_pole_masses_from_sminputs(slha_io, model.get_physical());
@@ -572,6 +579,13 @@ void fill_gm2calc(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    fill_gm2_specific_onshell_parameters(slha_io, model);
 }
 
+/**
+ * Reads model parameters in SLHA format (from SLHA and GM2CalcInput
+ * input blocks)
+ *
+ * @param slha_io SLHA object
+ * @param model model
+ */
 void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
 {
    fill_pole_masses_from_sminputs_and_mass(slha_io, model.get_physical());
@@ -580,6 +594,12 @@ void fill_slha(const GM2_slha_io& slha_io, MSSMNoFV_onshell& model)
    fill_gm2_specific_alphas(slha_io, model);
 }
 
+/**
+ * Reads configuration from GM2CalcConfig block
+ *
+ * @param slha_io SLHA object
+ * @param config_options configuration settings
+ */
 void fill(const GM2_slha_io& slha_io, Config_options& config_options)
 {
    using namespace std::placeholders;
@@ -606,6 +626,9 @@ void GM2_slha_io::process_gm2calcconfig_tuple(Config_options& config_options,
       break;
    case 3:
       config_options.force_output = value;
+      break;
+   case 4:
+      config_options.verbose_output = value;
       break;
    default:
       WARNING("Unrecognized entry in block GM2CalcConfig: " << key);

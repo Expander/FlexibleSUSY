@@ -27,9 +27,7 @@
 double calculate_amu(gm2calc::MSSMNoFV_onshell& model)
 {
    return gm2calc::calculate_amu_1loop(model)
-      + gm2calc::amu2LFSfapprox(model)
-      + gm2calc::amuChipmPhotonic(model)
-      + gm2calc::amuChi0Photonic(model);
+      + gm2calc::calculate_amu_2loop(model);
 }
 
 gm2calc::MSSMNoFV_onshell setup()
@@ -43,7 +41,7 @@ gm2calc::MSSMNoFV_onshell setup()
    const double MM = 0.105658;
    const double ML = 1.777;
    const double MT = 173.5;
-   const double MB = 3.;
+   const double MB = 4.18;
    const double cW = MW / MZ;
    const double EL = model.get_EL(); // default
    const double g2 = EL / std::sqrt(1. - cW*cW);
@@ -56,26 +54,21 @@ gm2calc::MSSMNoFV_onshell setup()
    Eigen::Matrix<double,3,3> md2;
    Eigen::Matrix<double,3,3> mu2;
    Eigen::Matrix<double,3,3> me2;
-   double Mu, M1, M2, M3;
-   double scale;
-   double MA0;
-   double TB;
-
-   Mu = 350;
-   M1 = 150;
-   M2 = 300;
-   M3 = 1;
-   TB = 10.;
-   scale = 454.7;
-   MA0 = 1500;
+   const double Mu = 350;
+   const double M1 = 150;
+   const double M2 = 300;
+   const double M3 = 1;
+   const double scale = 454.7;
+   const double MA0 = 1500;
+   const double TB = 10;
 
    Au.setZero();
    Ad.setZero();
    Ae.setZero();
 
-   mq2 << 400*400,           0,           0,
-                    0, 400*400,           0,
-                    0,       0,      400*400;
+   mq2 << 500*500,           0,           0,
+                    0, 500*500,           0,
+                    0,       0,      500*500;
 
    ml2 = md2 = mu2 = me2 = mq2;
 
@@ -117,11 +110,12 @@ int main()
    const double tanb_stop = 100.;
    const unsigned nsteps = 100;
 
-   printf("# %14s %16s\n", "tan(beta)", "amu");
+   printf("# %14s %16s %16s\n", "tan(beta)", "amu", "error");
 
    for (unsigned n = 0; n < nsteps; n++) {
       double amu;
       const double tanb = tanb_start + (tanb_stop - tanb_start) * n / nsteps;
+      std::string error;
 
       gm2calc::MSSMNoFV_onshell model(setup());
       model.do_force_output(false); // throw exception in case of problem
@@ -131,11 +125,11 @@ int main()
          model.calculate_masses();
          amu = calculate_amu(model);
       } catch (const gm2calc::Error& e) {
-         std::cerr << "Error: " << e.what() << std::endl;
+         error = "# " + e.what();
          amu = std::numeric_limits<double>::signaling_NaN();
       }
 
-      printf("%16.8e %16.8e\n", tanb, amu);
+      printf("%16.8e %16.8e %s\n", tanb, amu, error.c_str());
    }
 
    return 0;

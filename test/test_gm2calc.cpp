@@ -34,19 +34,19 @@ BOOST_AUTO_TEST_CASE( test_gm2_standard_point )
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_Mu()    , 619.858     , 6e-7);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MassB() , 211.722     , 3e-6);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MassWB(), 401.057     , 5e-7);
-   BOOST_CHECK_CLOSE_FRACTION(std::sqrt(osmodel.get_ml2(1,1)), 356.09 , 2e-6);
+   BOOST_CHECK_CLOSE_FRACTION(std::sqrt(osmodel.get_ml2(1,1)), 356.042, 2e-6);
    BOOST_CHECK_CLOSE_FRACTION(std::sqrt(osmodel.get_me2(1,1)), 225.075, 3e-6);
 
    const double gm2_1l = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(osmodel);
    const double gm2_2l_tanb_approx =  + (gm2calc::tan_beta_cor(osmodel) - 1.) * gm2_1l;
 
-   BOOST_CHECK_CLOSE_FRACTION(gm2_1l              ,  8.91705e-10, 3e-7);
+   BOOST_CHECK_CLOSE_FRACTION(gm2_1l              ,  8.91837e-10, 4e-7);
    // BOOST_CHECK_CLOSE_FRACTION(amu1Lapprox(osmodel),  9.04621e-10, 3e-7);
-   BOOST_CHECK_CLOSE_FRACTION(amuWHnu(osmodel)    ,  7.59322e-10, 1e-6);
-   BOOST_CHECK_CLOSE_FRACTION(amuBmuLmuR(osmodel) ,  4.32834e-10, 3e-6);
-   BOOST_CHECK_CLOSE_FRACTION(amuBHmuL(osmodel)   ,  4.51555e-11, 3e-6);
-   BOOST_CHECK_CLOSE_FRACTION(amuWHmuL(osmodel)   , -1.58784e-10, 3e-6);
+   BOOST_CHECK_CLOSE_FRACTION(amuWHnu(osmodel)    ,  7.59385e-10, 1e-6);
+   BOOST_CHECK_CLOSE_FRACTION(amuBmuLmuR(osmodel) ,  4.32919e-10, 3e-6);
+   BOOST_CHECK_CLOSE_FRACTION(amuBHmuL(osmodel)   ,  4.51653e-11, 3e-6);
+   BOOST_CHECK_CLOSE_FRACTION(amuWHmuL(osmodel)   , -1.58811e-10, 3e-6);
    BOOST_CHECK_CLOSE_FRACTION(amuBHmuR(osmodel)   , -1.73907e-10, 3e-6);
-   BOOST_CHECK_CLOSE_FRACTION(gm2_2l_tanb_approx  ,  1.80924e-11, 3e-6);
+   BOOST_CHECK_CLOSE_FRACTION(gm2_2l_tanb_approx  ,  1.80958e-11, 3e-6);
 
 }
