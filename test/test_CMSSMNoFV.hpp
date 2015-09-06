@@ -7,6 +7,7 @@
 #include "ew_input.hpp"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 template <class T>
 void ensure_tree_level_ewsb(T& m)

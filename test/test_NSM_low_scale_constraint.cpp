@@ -12,6 +12,7 @@
 #include "ew_input.hpp"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_model_properties )
 {
