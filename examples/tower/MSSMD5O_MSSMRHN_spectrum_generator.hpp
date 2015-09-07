@@ -78,7 +78,7 @@ public:
    void set_max_iterations(unsigned n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
-   void run(const QedQcd& oneset, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
+   void run(const softsusy::QedQcd& oneset, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
    void write_running_couplings_1(const std::string& filename = "MSSMD5O_rge_running.dat") const;
    void write_spectrum(const std::string& filename = "MSSMD5O_spectrum.dat") const;
 
@@ -111,7 +111,7 @@ private:
  */
 template <class T>
 void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
-(const QedQcd& oneset,
+(const softsusy::QedQcd& oneset,
  const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2)
 {
    high_scale_constraint_2.clear();

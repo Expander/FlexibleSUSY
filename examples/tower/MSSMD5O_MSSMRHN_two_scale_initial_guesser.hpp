@@ -44,7 +44,7 @@ class MSSMD5O_MSSMRHN_initial_guesser<Two_scale> : public Initial_guesser<Two_sc
 public:
    MSSMD5O_MSSMRHN_initial_guesser(MSSMD5O<Two_scale>*, MSSMRHN<Two_scale>*,
 				const MSSMD5O_input_parameters&,
-				const QedQcd&,
+                                const softsusy::QedQcd&,
 				const MSSMD5O_low_scale_constraint<Two_scale>&,
 				const MSSMD5O_susy_scale_constraint<Two_scale>&,
 				const MSSMRHN_high_scale_constraint<Two_scale>&,
@@ -56,7 +56,7 @@ private:
    MSSMD5O<Two_scale>* model_1;
    MSSMRHN<Two_scale>* model_2;
    MSSMD5O_input_parameters input_pars;
-   QedQcd oneset;
+   const softsusy::QedQcd oneset;
    MSSMD5O_low_scale_constraint<Two_scale> low_constraint_1;
    MSSMD5O_susy_scale_constraint<Two_scale> susy_constraint_1;
    MSSMRHN_high_scale_constraint<Two_scale> high_constraint_2;
