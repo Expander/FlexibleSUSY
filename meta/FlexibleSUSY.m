@@ -58,6 +58,7 @@ MZDRbar;
 MWDRbar;
 EDRbar;
 ThetaWDRbar;
+SCALE;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
