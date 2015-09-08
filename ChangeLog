@@ -1,4 +1,4 @@
-FlexibleSUSY-1.2.2 [not released yet]
+FlexibleSUSY-1.2.2 [September, 08 2015]
 
  * Feature: The scale at which the EWSB output parameters are fixed
    can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
