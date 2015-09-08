@@ -379,23 +379,33 @@ GetParameterDimensions[sym_] :=
                  ]
           ];
 
-CreateIndexReplacementRules[pars_List] :=
-    Module[{indexReplacementRules, p, i,j,k,l, dim, rule, parameter},
-           indexReplacementRules = {};
-           For[p = 1, p <= Length[pars], p++,
-               parameter = pars[[p]];
-               dim = SARAH`getDimParameters[parameter];
-               rule = {};
-               Switch[Length[dim],
-                      1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
-                      2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
-                      3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
-                      4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
-                     ];
-               AppendTo[indexReplacementRules, rule];
-              ];
-           Return[Flatten[indexReplacementRules]]
+CreateIndexReplacementRule[{parameter_, CConversion`ScalarType[_]}] := {};
+
+CreateIndexReplacementRule[{parameter_, CConversion`VectorType[_,_] | CConversion`ArrayType[_,_]}] :=
+    Module[{i},
+           RuleDelayed @@ Rule[parameter[i_], parameter[i-1]]
           ];
+
+CreateIndexReplacementRule[{parameter_, CConversion`MatrixType[_,_,_]}] :=
+    Module[{i,j},
+           RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]]
+          ];
+
+CreateIndexReplacementRule[parameter_] :=
+    Module[{i,j,k,l, dim, rule},
+           dim = SARAH`getDimParameters[parameter];
+           rule = {};
+           Switch[Length[dim],
+                  1, rule = RuleDelayed @@ Rule[parameter[i_], parameter[i-1]];,
+                  2, rule = RuleDelayed @@ Rule[parameter[i_,j_], parameter[i-1,j-1]];,
+                  3, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_], parameter[i-1,j-1,k-1]];,
+                  4, rule = RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]];
+                 ];
+           rule
+          ];
+
+CreateIndexReplacementRules[pars_List] :=
+    Flatten[CreateIndexReplacementRule /@ pars];
 
 GetGUTNormalization[coupling_Symbol] :=
     Module[{pos, norm},

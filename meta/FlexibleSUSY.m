@@ -1424,6 +1424,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
+            allInputParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
             fixedParameters,
@@ -1617,8 +1618,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
+           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
+            ];
+
            (* replace all indices in the user-defined model file variables *)
            ReplaceIndicesInUserInput[allIndexReplacementRules];
+           ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
 
            (* replace LHInput[p] by pInput in the constraints *)
 
