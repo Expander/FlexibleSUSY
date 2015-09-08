@@ -41,6 +41,7 @@ namespace flexiblesusy {
 #define MZPole Electroweak_constants::MZ
 #define STANDARDDEVIATION(p) Electroweak_constants::Error_##p
 #define Pole(p) model->get_physical().p
+#define SCALE model->get_scale()
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 
