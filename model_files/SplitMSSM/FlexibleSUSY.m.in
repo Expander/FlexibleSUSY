@@ -34,10 +34,6 @@ HighScale = MSUSY;
 HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
-    {\[Mu]    , MuInput},
-    {MassB    , M1Input},
-    {MassWB   , M2Input},
-    {MassG    , M3Input},
     {\[Lambda], lambdaTree + lambda1LReg + lambda1LPhi + lambda2LPhi},
     {gYu      , gYuTree + gYu1L},
     {gYd      , gYdTree + gYd1L},
@@ -58,6 +54,10 @@ LowScale = LowEnergyConstant[MZ];
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
+   {\[Mu] , MuInput},
+   {MassB , M1Input},
+   {MassWB, M2Input},
+   {MassG , M3Input},
    {v, Sqrt[2] MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
    {Yu, Automatic},
    {Yd, Automatic},
@@ -65,6 +65,10 @@ LowScaleInput = {
 };
 
 InitialGuessAtLowScale = {
+   {\[Mu] , MuInput},
+   {MassB , M1Input},
+   {MassWB, M2Input},
+   {MassG , M3Input},
    {v, LowEnergyConstant[vev]},
    {Yu, Automatic},
    {Yd, Automatic},
