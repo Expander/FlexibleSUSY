@@ -29,6 +29,8 @@
 #include <Eigen/Core>
 #include <boost/lexical_cast.hpp>
 
+#include "dilog.hpp"
+
 namespace flexiblesusy {
 
 static const double Pi = M_PI;
@@ -289,6 +291,13 @@ inline int Sign(double x)
 inline int Sign(int x)
 {
    return (x >= 0 ? 1 : -1);
+}
+
+template <typename T>
+T PolyLog(int n, T z) {
+   if (n == 2)
+      return dilog(z);
+   assert(false && "PolyLog(n!=2) not implemented");
 }
 
 template <typename Base, typename Exponent>
