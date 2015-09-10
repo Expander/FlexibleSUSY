@@ -20,6 +20,9 @@
 #define THRESHOLD_LOOP_FUNCTIONS_H
 
 #define TCF(n) threshold_loop_functions::F ## n
+#define TCf(n) threshold_loop_functions::f ## n
+#define TCf0 threshold_loop_functions::f
+#define TCg0 threshold_loop_functions::g
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
