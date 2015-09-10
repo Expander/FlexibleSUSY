@@ -17,9 +17,9 @@
 // ====================================================================
 
 #include "threshold_loop_functions.hpp"
-#include "numerics2.hpp"
 
 #include <cmath>
+#include <limits>
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
@@ -27,6 +27,18 @@ namespace threshold_loop_functions {
 namespace {
    const double EPS = 1.e-8;
    double sqr(double x) { return x*x; }
+
+   template <typename T>
+   bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+   {
+      return std::fabs(a) < prec;
+   }
+
+   template <typename T>
+   bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+   {
+      return is_zero(a - b, prec);
+   }
 }
 
 double F1(double x)
