@@ -153,6 +153,12 @@ lambda1LPhi = 1/(4 Pi)^2 (
     - 0.25 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]]^2 (3/5 g1^2 + g2^2) TCF[5][xQU]
     );
 
+(* arXiv:1407.4081, Eq. (35),
+   Valid in the limit MSUSY = MQ[3,3] = MU[3,3] *)
+lambda2LPhi = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
+    3 - 2 xtt + xtt^2 / 6
+);
+
 (* arXiv:1407.4081, Eq. (34) *)
 lambda2LPhi = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
     3
