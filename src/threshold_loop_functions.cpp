@@ -19,7 +19,6 @@
 #include "threshold_loop_functions.hpp"
 #include "wrappers.hpp"
 #include "numerics2.hpp"
-#include "logger.hpp"
 
 namespace flexiblesusy {
 namespace threshold_loop_functions {
