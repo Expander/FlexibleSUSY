@@ -176,14 +176,18 @@ lambda1LChi2 = 1/(4 Pi)^2 (
     )
 );
 
-(* arXiv:1407.4081, Eq. (36) *)
+(* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
+   arXiv:1407.4081, Eq. (36)
+   Valid in the limit M3 = MQ[3,3] = MU[3,3] = MSUSY *)
 lambda2LPhiHSS = With[{ r = xt / SCALE },
     (g3^2 Yu[3,3]^4)/(96 Pi^4) (
         -12 r - 6 r^2 + 14 r^3 + 1/2 r^4 - r^5
     )
 ];
 
-(* arXiv:1407.4081, provided by Pietro Slavich *)
+(* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
+   arXiv:1407.4081, provided by Pietro Slavich,
+   General expression. *)
 lambda2LPhiHSS = With[{
     htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
     CF = 4/3,
