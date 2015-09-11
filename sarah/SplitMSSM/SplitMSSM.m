@@ -55,7 +55,7 @@ DEFINITION[GaugeES][LagrangianInput] = {
     {LagSplit, {AddHC->True }}
 };
 
-LagNoHC = m2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
+LagNoHC = mu2 conj[H].H - 1/2 \[Lambda] conj[H].H.conj[H].H;
 
 LagHC = - Yd conj[H].d.q - Ye conj[H].e.l + Yu H.u.q;
 
