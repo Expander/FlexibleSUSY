@@ -7,7 +7,7 @@ Block FlexibleSUSY
     3   1                    # calculate SM pole masses
     4   2                    # pole mass loop order
     5   2                    # EWSB loop order
-    6   2                    # beta-functions loop order
+    6   3                    # beta-functions loop order
     7   2                    # threshold corrections loop order
     8   1                    # Higgs 2-loop corrections O(alpha_t alpha_s)
     9   1                    # Higgs 2-loop corrections O(alpha_b alpha_s)
@@ -37,7 +37,7 @@ Block EXTPAR                 # Input parameters
     0   1000                 # MSUSY
     1   1000                 # M1(MSUSY)
     2   1000                 # M2(MSUSY)
-    3   1001                 # M3(MSUSY)
+    3   1000                 # M3(MSUSY)
     4   1000                 # Mu(MSUSY)
     5   1000                 # mA(MSUSY)
     6   173.34               # MEWSB
@@ -63,7 +63,7 @@ Block MSL2IN
 Block MSU2IN
   1  1     1.00000000E+06   # mu2(1,1)
   2  2     1.00000000E+06   # mu2(2,2)
-  3  3     1.00100000E+06   # mu2(3,3)
+  3  3     1.00000000E+06   # mu2(3,3)
 Block MSD2IN
   1  1     1.00000000E+06   # md2(1,1)
   2  2     1.00000000E+06   # md2(2,2)
