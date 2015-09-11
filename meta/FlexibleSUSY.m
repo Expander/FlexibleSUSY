@@ -399,6 +399,13 @@ ReplaceIndicesInUserInput[rules_] :=
           FlexibleSUSY`SUSYScaleInput          = FlexibleSUSY`SUSYScaleInput          /. rules;
          ];
 
+EvaluateUserInput[] :=
+    Block[{},
+          FlexibleSUSY`HighScaleInput          = Map[Evaluate, FlexibleSUSY`HighScaleInput, {0,Infinity}];
+          FlexibleSUSY`LowScaleInput           = Map[Evaluate, FlexibleSUSY`LowScaleInput , {0,Infinity}];
+          FlexibleSUSY`SUSYScaleInput          = Map[Evaluate, FlexibleSUSY`SUSYScaleInput, {0,Infinity}];
+         ];
+
 GUTNormalization[coupling_] :=
     Parameters`GetGUTNormalization[coupling];
 
@@ -1624,6 +1631,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ];
 
            (* replace all indices in the user-defined model file variables *)
+           EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
            ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
 

@@ -171,6 +171,15 @@ inline int Delta(int i, int j)
    return i == j;
 }
 
+template <typename T>
+T If(bool c, T a, T b) { return c ? a : b; }
+
+inline bool IsClose(double a, double b,
+                    double eps = std::numeric_limits<double>::epsilon())
+{
+   return std::abs(a - b) < eps;
+}
+
 inline bool IsFinite(double x)
 {
    return std::isfinite(x);
