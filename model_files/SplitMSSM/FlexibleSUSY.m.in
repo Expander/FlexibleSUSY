@@ -34,7 +34,10 @@ HighScale = MSUSY;
 HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
-    {\[Lambda], lambdaTree + lambda1LReg + lambda1LPhi + lambda2LPhi},
+    {\[Lambda], lambdaTree + lambda1LReg + lambda1LPhi
+                + If[IsClose[SCALE^2,msq2[3,3]] &&
+                     IsClose[SCALE^2,msu2[3,3]],
+                     lambda2LPhiDegenerate, lambda2LPhiFull]},
     {gYu      , gYuTree + gYu1L},
     {gYd      , gYdTree + gYd1L},
     {g2u      , g2uTree + g2u1L},
@@ -155,12 +158,12 @@ lambda1LPhi = 1/(4 Pi)^2 (
 
 (* arXiv:1407.4081, Eq. (35),
    Valid in the limit MSUSY = MQ[3,3] = MU[3,3] *)
-lambda2LPhi = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
+lambda2LPhiDegenerate = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
     3 - 2 xtt + xtt^2 / 6
 );
 
 (* arXiv:1407.4081, Eq. (34) *)
-lambda2LPhi = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
+lambda2LPhiFull = - (g3^2 Yu[3,3]^4)/(32 Pi^4) (
     3
     + 4 Log[xQU]
     + 8 Log[xQU]^2
