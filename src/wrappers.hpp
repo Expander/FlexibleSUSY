@@ -296,7 +296,7 @@ inline int Sign(int x)
 template <typename T>
 T PolyLog(int n, T z) {
    if (n == 2)
-      return dilog(z);
+      return gm2calc::dilog(z);
    assert(false && "PolyLog(n!=2) not implemented");
 }
 
