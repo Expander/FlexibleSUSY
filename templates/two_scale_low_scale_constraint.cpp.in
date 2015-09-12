@@ -49,6 +49,7 @@ namespace flexiblesusy {
 #define CKM ckm
 #define PMNS pmns
 #define THETAW theta_w
+#define THRESHOLD static_cast<int>(model->get_thresholds())
 #define ALPHA_EM_DRBAR alpha_em_drbar
 #define CALCULATE_DRBAR_MASSES() model->calculate_DRbar_masses()
 

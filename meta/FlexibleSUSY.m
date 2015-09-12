@@ -59,6 +59,7 @@ MWDRbar;
 EDRbar;
 ThetaWDRbar;
 SCALE;
+THRESHOLD;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
