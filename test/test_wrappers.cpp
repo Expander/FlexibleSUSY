@@ -60,6 +60,17 @@ BOOST_AUTO_TEST_CASE( test_Delta )
    BOOST_CHECK_EQUAL(Delta(-2,0), 0);
 }
 
+BOOST_AUTO_TEST_CASE( test_UnitStep )
+{
+   BOOST_CHECK_EQUAL(UnitStep(-1  ), 0);
+   BOOST_CHECK_EQUAL(UnitStep(-2  ), 0);
+   BOOST_CHECK_EQUAL(UnitStep(-0.5), 0);
+   BOOST_CHECK_EQUAL(UnitStep(0   ), 1);
+   BOOST_CHECK_EQUAL(UnitStep(0.5 ), 1);
+   BOOST_CHECK_EQUAL(UnitStep(1   ), 1);
+   BOOST_CHECK_EQUAL(UnitStep(2   ), 1);
+}
+
 using namespace std;
 
 DoubleMatrix random_real_matrix(int n, int m)

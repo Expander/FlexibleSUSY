@@ -479,6 +479,13 @@ std::string ToString(T a)
    return boost::lexical_cast<std::string>(a);
 }
 
+/// step function (0 for x < 0, 1 otherwise)
+template <typename T>
+unsigned UnitStep(T x)
+{
+   return x < T() ? 0 : 1;
+}
+
 inline double ZeroSqrt(double x)
 {
    return (x > 0.0 ? std::sqrt(x) : 0.0);
