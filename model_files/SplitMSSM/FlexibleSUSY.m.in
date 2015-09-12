@@ -34,14 +34,16 @@ HighScale = MSUSY;
 HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
-    {\[Lambda], lambdaTree + lambda1LReg + lambda1LPhi
-                + If[IsClose[SCALE^2,msq2[3,3]] &&
+    {\[Lambda], lambdaTree
+                + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi)
+                + UnitStep[THRESHOLD-2]
+                  If[IsClose[SCALE^2,msq2[3,3]] &&
                      IsClose[SCALE^2,msu2[3,3]],
                      lambda2LPhiDegenerate, lambda2LPhiFull]},
-    {gYu      , gYuTree + gYu1L},
-    {gYd      , gYdTree + gYd1L},
-    {g2u      , g2uTree + g2u1L},
-    {g2d      , g2dTree + g2d1L}
+    {gYu      , gYuTree + UnitStep[THRESHOLD-1] gYu1L},
+    {gYd      , gYdTree + UnitStep[THRESHOLD-1] gYd1L},
+    {g2u      , g2uTree + UnitStep[THRESHOLD-1] g2u1L},
+    {g2d      , g2dTree + UnitStep[THRESHOLD-1] g2d1L}
 };
 
 (* The scale where we impose the EWSB conditions
