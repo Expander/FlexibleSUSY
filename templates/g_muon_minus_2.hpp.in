@@ -37,7 +37,8 @@ namespace @ModelName@_GMuonMinus2 {
 * @brief Calculates \f$a_\mu = (g-2)_\mu/2\f$ of the muon.
 */
 double calculate_amuon(const @ModelName@_mass_eigenstates& model);
-};
+} // namespace @ModelName@_GMuonMinus2
+
 } // namespace flexiblesusy
 
 #endif
