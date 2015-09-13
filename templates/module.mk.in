@@ -35,6 +35,7 @@ LIB@CLASSNAME@_HDR :=
 ifneq ($(findstring two_scale,$(ALGORITHMS)),)
 LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_mass_eigenstates.cpp \
+		$(DIR)/@CLASSNAME@_g_muon_minus_2.cpp \
 		$(DIR)/@CLASSNAME@_info.cpp \
 		$(DIR)/@CLASSNAME@_input_parameters.cpp \
 		$(DIR)/@CLASSNAME@_slha_io.cpp \
@@ -48,9 +49,7 @@ LIB@CLASSNAME@_SRC += \
 		$(DIR)/@CLASSNAME@_two_scale_model_slha.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_susy_parameters.cpp \
 		$(DIR)/@CLASSNAME@_two_scale_soft_parameters.cpp \
-		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp \
-		$(DIR)/@CLASSNAME@_g_muon_minus_2.cpp \
-		$(DIR)/@CLASSNAME@_mass_eigenstates.cpp
+		$(DIR)/@CLASSNAME@_two_scale_susy_scale_constraint.cpp
 EXE@CLASSNAME@_SRC += \
 		$(DIR)/run_@CLASSNAME@.cpp \
 		$(DIR)/run_cmd_line_@CLASSNAME@.cpp \

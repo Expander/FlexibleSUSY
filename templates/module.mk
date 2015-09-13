@@ -3,6 +3,8 @@ MODNAME      := templates
 
 TEMPLATES    := \
 		$(DIR)/convergence_tester.hpp.in \
+		$(DIR)/g_muon_minus_2.hpp.in \
+		$(DIR)/g_muon_minus_2.cpp.in \
 		$(DIR)/high_scale_constraint.hpp.in \
 		$(DIR)/mass_eigenstates.hpp.in \
 		$(DIR)/mass_eigenstates.cpp.in \
@@ -50,9 +52,7 @@ TEMPLATES    := \
 		$(DIR)/two_scale_susy_scale_constraint.hpp.in \
 		$(DIR)/two_scale_susy_scale_constraint.cpp.in \
 		$(DIR)/utilities.hpp.in \
-		$(DIR)/utilities.cpp.in \
-		$(DIR)/g_muon_minus_2.hpp.in \
-		$(DIR)/g_muon_minus_2.cpp.in
+		$(DIR)/utilities.cpp.in
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
