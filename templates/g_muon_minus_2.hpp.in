@@ -28,20 +28,15 @@
 #ifndef @ModelName@_G_MUON_MINUS_2_H
 #define @ModelName@_G_MUON_MINUS_2_H
 
-#include "config.h"
-
-#include "@ModelName@_model.hpp"
-
 namespace flexiblesusy {
-class Two_scale;
-template<> class @ModelName@<Two_scale>;
+class @ModelName@_mass_eigenstates;
 
 namespace @ModelName@_GMuonMinus2 {
 /**
 * @fn calculate_amuon
 * @brief Calculates GMM2/2.
 */
-double calculate_amuon(const @ModelName@<Two_scale>& model);
+double calculate_amuon(const @ModelName@_mass_eigenstates& model);
 };
 } // namespace flexiblesusy
 
