@@ -472,10 +472,13 @@ PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
     "tadpole T^{" <> RValueToCFormString[field] <> "}";
 
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
-    Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d},
+    Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d,
+            relevantVertexRules},
            (* create coupling functions for all vertices in the list *)
            Print["Converting vertex functions ..."];
-           {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[vertexRules];
+           (* extract vertex rules needed for the given nPointFunctions *)
+           relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[nPointFunctions,a]) :> r];
+           {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[relevantVertexRules];
            (* creating n-point functions *)
            Print["Generating C++ code for ..."];
            For[k = 1, k <= Length[nPointFunctions], k++,
