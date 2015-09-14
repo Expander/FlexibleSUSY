@@ -30,6 +30,7 @@
 #include <sstream>
 
 namespace flexiblesusy {
+using namespace softsusy;
 
 template <class T>
 class @ModelName@;
