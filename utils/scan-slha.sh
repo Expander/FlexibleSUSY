@@ -172,9 +172,10 @@ if test -z "$scan_range"; then
     exit 1
 fi
 
-start=$(echo "$scan_range" | awk -F '[=:~]' '{ print $2 }')
-stop=$(echo "$scan_range"  | awk -F '[=:~]' '{ print $3 }')
-steps=$(echo "$scan_range" | awk -F : '{ print $NF }')
+# transform scientific notation into bc syntax
+start=$(echo "$scan_range" | awk -F '[=:~]' '{ print $2 }' | sed -e 's/[eE]+*/*10^/')
+stop=$(echo "$scan_range"  | awk -F '[=:~]' '{ print $3 }' | sed -e 's/[eE]+*/*10^/')
+steps=$(echo "$scan_range" | awk -F : '{ print $NF }'      | sed -e 's/[eE]+*/*10^/')
 block=$(echo "$scan_range" | awk -F [ '{ print $1 }')
 entry=$(echo "$scan_range" | awk -F '[][]' '{ print $2 }')
 
