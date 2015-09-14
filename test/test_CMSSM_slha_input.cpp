@@ -20,9 +20,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_slha_reading )
    const double sinthWsq = 0.23122;
    const double alpha1 = 5 * ALPHAMZ / (3 * (1 - sinthWsq));
    const double alpha2 = ALPHAMZ / sinthWsq;
-   const double g1 = sqrt(4 * PI * alpha1);
-   const double g2 = sqrt(4 * PI * alpha2);
-   const double g3 = sqrt(4 * PI * ALPHASMZ);
+   const double g1 = sqrt(4 * softsusy::PI * alpha1);
+   const double g2 = sqrt(4 * softsusy::PI * alpha2);
+   const double g3 = sqrt(4 * softsusy::PI * ALPHASMZ);
    const double tanBeta = 10;
    const double sinBeta = sin(atan(tanBeta));
    const double cosBeta = cos(atan(tanBeta));

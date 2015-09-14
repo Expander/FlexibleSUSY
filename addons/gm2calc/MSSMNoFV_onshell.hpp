@@ -31,6 +31,9 @@ public:
    MSSMNoFV_onshell(const MSSMNoFV_onshell_mass_eigenstates&);
    virtual ~MSSMNoFV_onshell() {}
 
+   void set_verbose_output(bool flag) { verbose_output = flag; }
+   bool do_verbose_output() const { return verbose_output; }
+
    /// set alpha(MZ)
    void set_alpha_MZ(double);
    /// set alpha in the Thompson limit
@@ -78,13 +81,15 @@ public:
    const Eigen::Array<double,2,1>&  get_MStop() const { return get_MSt(); }
    const Eigen::Matrix<double,2,2>& get_UStop() const { return get_ZT(); }
 
-   void convert_to_onshell(double precision = 1e-8);
+   void convert_to_onshell(double precision = 1e-8,
+                           unsigned max_iterations = 1000);
    void calculate_masses();
    void convert_yukawa_couplings_treelevel();
 
    friend std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell&);
 
 private:
+   bool verbose_output; ///< verbose output
    double EL;  ///< electromagnetic gauge coupling at MZ w/o hadronic corrections
    double EL0; ///< electromagnetic gauge coupling in the Thompson limit
    Eigen::Matrix<double,3,3> Ae, Au, Ad; ///< trilinear couplings
@@ -98,17 +103,20 @@ private:
    template <class Derived>
    static bool is_zero(const Eigen::ArrayBase<Derived>&,
                        double eps = std::numeric_limits<double>::epsilon());
-   template <class Derived>
-   static bool is_zero(const Eigen::MatrixBase<Derived>&,
-                       double eps = std::numeric_limits<double>::epsilon());
 
-   unsigned find_bino_like_neutralino();
+   template <class Derived>
+   static unsigned find_bino_like_neutralino(const Eigen::MatrixBase<Derived>&);
+   template <class Derived>
+   static unsigned find_right_like_smuon(const Eigen::MatrixBase<Derived>&);
 
    void check_input();
    void check_problems();
    void convert_gauge_couplings();
    void convert_BMu();
-   void convert_mf2(double, unsigned);
+   void convert_ml2();
+   void convert_me2(double, unsigned);
+   void convert_me2_fpi(double, unsigned);
+   void convert_me2_root(double, unsigned);
    void convert_Mu_M1_M2(double, unsigned);
    void convert_vev();
    void convert_yukawa_couplings();

@@ -10,6 +10,7 @@
 #include "lowe.h"
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
 {

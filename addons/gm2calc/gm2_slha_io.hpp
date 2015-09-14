@@ -31,7 +31,7 @@
 namespace gm2calc {
 
 class MSSMNoFV_onshell;
-class MSSMNoFV_onshell_physical;
+struct MSSMNoFV_onshell_physical;
 
    namespace {
       /// SLHA number formatter
@@ -61,6 +61,7 @@ struct Config_options {
    unsigned loop_order = 2;
    bool tanb_resummation = true;
    bool force_output = false;
+   bool verbose_output = false;
 };
 
 class GM2_slha_io {
@@ -174,8 +175,13 @@ double GM2_slha_io::read_block(const std::string& block_name, Eigen::MatrixBase<
    return scale;
 }
 
+/// read model parameters (GM2Calc input format)
 void fill_gm2calc(const GM2_slha_io&, MSSMNoFV_onshell&);
+
+/// read model parameters (SLHA input format)
 void fill_slha(const GM2_slha_io&, MSSMNoFV_onshell&);
+
+/// read configuration
 void fill(const GM2_slha_io&, Config_options&);
 
 } // namespace gm2calc

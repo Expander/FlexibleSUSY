@@ -35,7 +35,7 @@ template<>
 class MSSMcbs_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    MSSMcbs_low_scale_constraint();
-   MSSMcbs_low_scale_constraint(MSSMcbs<Two_scale>*, const QedQcd&);
+   MSSMcbs_low_scale_constraint(MSSMcbs<Two_scale>*, const softsusy::QedQcd&);
    virtual ~MSSMcbs_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -44,14 +44,14 @@ public:
    void clear();
    double get_initial_scale_guess() const;
    void initialize();
-   void set_sm_parameters(const QedQcd&);
+   void set_sm_parameters(const softsusy::QedQcd&);
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale;
    double initial_scale_guess;
    MSSMcbs<Two_scale>* model;
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
    unsigned threshold_corrections_loop_order; ///< threshold corrections loop order

@@ -111,5 +111,5 @@ BOOST_AUTO_TEST_CASE( test_DRbar_os_conversion )
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MCha(1), osmodel.get_physical().MCha(1), 1e-5);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MChi(0), osmodel.get_physical().MChi(0), 1e-4);
    BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MSm(0), osmodel.get_physical().MSm(0), 1e-5);
-   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MSm(1), osmodel.get_physical().MSm(1), 1e-5);
+   BOOST_CHECK_CLOSE_FRACTION(osmodel.get_MSvmL(), osmodel.get_physical().MSveL, 1e-5);
 }

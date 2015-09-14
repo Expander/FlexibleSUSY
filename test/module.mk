@@ -25,6 +25,7 @@ TEST_SRC := \
 		$(DIR)/test_goldstones.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
+		$(DIR)/test_namespace_collisions.cpp \
 		$(DIR)/test_numerics.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_pv.cpp \

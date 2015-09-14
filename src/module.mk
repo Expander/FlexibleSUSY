@@ -10,7 +10,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
 		$(DIR)/def.cpp \
-		$(DIR)/dilog.f \
+		$(DIR)/dilog.cpp \
+		$(DIR)/dilogc.f \
 		$(DIR)/error.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/linalg.cpp \
@@ -28,6 +29,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
+		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
@@ -46,7 +48,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/def.h \
-		$(DIR)/dilog.h \
+		$(DIR)/dilog.hpp \
 		$(DIR)/eigen_utils.hpp \
 		$(DIR)/error.hpp \
 		$(DIR)/ew_input.hpp \
@@ -82,6 +84,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sm_twoloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/sum.hpp \
+		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/wrappers.hpp \

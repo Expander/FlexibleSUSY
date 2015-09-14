@@ -29,8 +29,8 @@
  * @FlexibleSUSYVersion@ (git commit: @FlexibleSUSYGitCommit@) and SARAH @SARAHVersion@ .
  */
 
-#ifndef @ModelName@_IMODEL_H
-#define @ModelName@_IMODEL_H
+#ifndef @ModelName@_MASS_EIGENSTATES_H
+#define @ModelName@_MASS_EIGENSTATES_H
 
 #include "@ModelName@_two_scale_soft_parameters.hpp"
 #include "@ModelName@_physical.hpp"

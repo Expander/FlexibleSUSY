@@ -56,7 +56,7 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
 }
 
 MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint(
-   MSSMcbs<Two_scale>* model_, const QedQcd& oneset_)
+   MSSMcbs<Two_scale>* model_, const softsusy::QedQcd& oneset_)
    : Constraint<Two_scale>()
    , model(model_)
    , oneset(oneset_)
@@ -113,7 +113,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
    model = cast_model<MSSMcbs<Two_scale>*>(model_);
 }
 
-void MSSMcbs_low_scale_constraint<Two_scale>::set_sm_parameters(const QedQcd& oneset_)
+void MSSMcbs_low_scale_constraint<Two_scale>::set_sm_parameters(const softsusy::QedQcd& oneset_)
 {
    oneset = oneset_;
 }
@@ -123,7 +123,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::clear()
    scale = 0.;
    initial_scale_guess = 0.;
    model = NULL;
-   oneset = QedQcd();
+   oneset = softsusy::QedQcd();
    MZDRbar = 0.;
    new_g1 = 0.;
    new_g2 = 0.;
@@ -156,8 +156,8 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
           " constraint.  You need to run the low-energy data set to this"
           " scale!");
 
-   const double alpha_em = oneset.displayAlpha(ALPHA);
-   double alpha_s  = oneset.displayAlpha(ALPHAS);
+   const double alpha_em = oneset.displayAlpha(softsusy::ALPHA);
+   double alpha_s  = oneset.displayAlpha(softsusy::ALPHAS);
 
    double delta_alpha_em = 0.;
    double alS5DRbar_over_alS5MSbar = 1;
@@ -320,9 +320,9 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_yukawa_couplings()
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
 {
    Eigen::Matrix<double,3,3> topDRbar(Eigen::Matrix<double,3,3>::Zero());
-   topDRbar(0,0)      = oneset.displayMass(mUp);
-   topDRbar(1,1)      = oneset.displayMass(mCharm);
-   topDRbar(2,2)      = oneset.displayMass(mTop);
+   topDRbar(0,0)      = oneset.displayMass(softsusy::mUp);
+   topDRbar(1,1)      = oneset.displayMass(softsusy::mCharm);
+   topDRbar(2,2)      = oneset.displayMass(softsusy::mTop);
 
    if (model->get_thresholds())
       topDRbar(2,2) = model->calculate_MFu_DRbar(oneset.displayPoleMt(), 2);
@@ -335,12 +335,12 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_Yu_DRbar()
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
 {
    Eigen::Matrix<double,3,3> bottomDRbar(Eigen::Matrix<double,3,3>::Zero());
-   bottomDRbar(0,0)   = oneset.displayMass(mDown);
-   bottomDRbar(1,1)   = oneset.displayMass(mStrange);
-   bottomDRbar(2,2)   = oneset.displayMass(mBottom);
+   bottomDRbar(0,0)   = oneset.displayMass(softsusy::mDown);
+   bottomDRbar(1,1)   = oneset.displayMass(softsusy::mStrange);
+   bottomDRbar(2,2)   = oneset.displayMass(softsusy::mBottom);
 
    if (model->get_thresholds())
-      bottomDRbar(2,2) = model->calculate_MFd_DRbar(oneset.displayMass(mBottom), 2);
+      bottomDRbar(2,2) = model->calculate_MFd_DRbar(oneset.displayMass(softsusy::mBottom), 2);
 
    const auto vd = MODELPARAMETER(vd);
    MODEL->set_Yd(((1.4142135623730951*bottomDRbar)/vd).transpose());
@@ -350,12 +350,12 @@ void MSSMcbs_low_scale_constraint<Two_scale>::calculate_Yd_DRbar()
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_Ye_DRbar()
 {
    Eigen::Matrix<double,3,3> electronDRbar(Eigen::Matrix<double,3,3>::Zero());
-   electronDRbar(0,0) = oneset.displayMass(mElectron);
-   electronDRbar(1,1) = oneset.displayMass(mMuon);
-   electronDRbar(2,2) = oneset.displayMass(mTau);
+   electronDRbar(0,0) = oneset.displayMass(softsusy::mElectron);
+   electronDRbar(1,1) = oneset.displayMass(softsusy::mMuon);
+   electronDRbar(2,2) = oneset.displayMass(softsusy::mTau);
 
    if (model->get_thresholds())
-      electronDRbar(2,2) = model->calculate_MFe_DRbar(oneset.displayMass(mTau), 2);
+      electronDRbar(2,2) = model->calculate_MFe_DRbar(oneset.displayMass(softsusy::mTau), 2);
 
    const auto vd = MODELPARAMETER(vd);
    MODEL->set_Ye(((1.4142135623730951*electronDRbar)/vd).transpose());

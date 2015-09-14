@@ -431,7 +431,7 @@ fi
 # name
 [ -n "$model_file" ] || model_file="$name"
 model_file_dir="model_files/$model_file"
-message -n "Searching for ${model_file} model file ..."
+message -n "Searching for ${model_file} model file ... "
 
 if test -r "$model_file_dir/FlexibleSUSY.m.in"; then
     message "found ${model_file_dir}/FlexibleSUSY.m.in"

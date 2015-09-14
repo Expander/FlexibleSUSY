@@ -61,6 +61,8 @@ MZDRbar;
 MWDRbar;
 EDRbar;
 ThetaWDRbar;
+SCALE;
+THRESHOLD;
 UseHiggs2LoopNMSSM;
 EffectiveMu;
 EffectiveMASqr;
@@ -403,6 +405,13 @@ ReplaceIndicesInUserInput[rules_] :=
           FlexibleSUSY`SUSYScale               = FlexibleSUSY`SUSYScale               /. rules;
           FlexibleSUSY`SUSYScaleFirstGuess     = FlexibleSUSY`SUSYScaleFirstGuess     /. rules;
           FlexibleSUSY`SUSYScaleInput          = FlexibleSUSY`SUSYScaleInput          /. rules;
+         ];
+
+EvaluateUserInput[] :=
+    Block[{},
+          FlexibleSUSY`HighScaleInput          = Map[Evaluate, FlexibleSUSY`HighScaleInput, {0,Infinity}];
+          FlexibleSUSY`LowScaleInput           = Map[Evaluate, FlexibleSUSY`LowScaleInput , {0,Infinity}];
+          FlexibleSUSY`SUSYScaleInput          = Map[Evaluate, FlexibleSUSY`SUSYScaleInput, {0,Infinity}];
          ];
 
 GUTNormalization[coupling_] :=
@@ -1542,6 +1551,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             ewsbEquations, independentEwsbEquations,
             massMatrices, phases,
             diagonalizationPrecision,
+            allInputParameterIndexReplacementRules = {},
             allParticles, allParameters,
             freePhases = {}, ewsbSolution = {},
             fixedParameters,
@@ -1750,8 +1760,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            FlexibleSUSY`FSLesHouchesList = Join[FlexibleSUSY`FSLesHouchesList, {#[[1]], #[[2]]}& /@ FlexibleSUSY`FSExtraInputParameters];
 
+           allInputParameterIndexReplacementRules = Parameters`CreateIndexReplacementRules[
+               (* {parameter, type} *)
+               {#[[1]], #[[3]]}& /@ FlexibleSUSY`FSExtraInputParameters
+            ];
+
            (* replace all indices in the user-defined model file variables *)
+           EvaluateUserInput[];
            ReplaceIndicesInUserInput[allIndexReplacementRules];
+           ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
 
            (* replace LHInput[p] by pInput in the constraints *)
 

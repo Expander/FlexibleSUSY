@@ -38,7 +38,7 @@ template<>
 class MSSMcbs_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
 public:
    MSSMcbs_initial_guesser(MSSMcbs<Two_scale>*,
-                               const QedQcd&,
+                               const softsusy::QedQcd&,
                                const MSSMcbs_low_scale_constraint<Two_scale>&,
                                const CMSSM_susy_scale_constraint<Two_scale>&,
                                const CMSSM_high_scale_constraint<Two_scale>&);
@@ -49,7 +49,7 @@ public:
 
 private:
    MSSMcbs<Two_scale>* model;
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    double mu_guess;
    double mc_guess;
    double mt_guess;

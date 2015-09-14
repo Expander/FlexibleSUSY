@@ -41,11 +41,11 @@ public:
                           const SoftsusyNMSSM_sugra_constraint&);
    virtual ~SoftsusyNMSSM_initial_guesser();
    virtual void guess();
-   void set_QedQcd(const QedQcd& qedqcd) { oneset = qedqcd; }
+   void set_QedQcd(const softsusy::QedQcd& qedqcd) { oneset = qedqcd; }
 
 private:
    SoftsusyNMSSM<Two_scale>* nmssm;  ///< SoftsusyNMSSM model
-   QedQcd oneset;             ///< low-energy parameters
+   softsusy::QedQcd oneset;          ///< low-energy parameters
    SoftsusyNMSSM_parameter_point pp; ///< SoftsusyNMSSM parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };

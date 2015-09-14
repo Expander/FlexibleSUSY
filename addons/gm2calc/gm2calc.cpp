@@ -107,11 +107,15 @@ Gm2_cmd_line_options get_cmd_line_options(int argc, const char* argv[])
  * @param model model parameters (and particle masses)
  * @param slha_io object with numerical values of input parameters
  * @param options command line options (defines meaning of input parameter set)
+ * @param config_options configuration options for the calculation
  */
 void setup_model(gm2calc::MSSMNoFV_onshell& model,
                  const gm2calc::GM2_slha_io& slha_io,
-                 const Gm2_cmd_line_options& options)
+                 const Gm2_cmd_line_options& options,
+                 const gm2calc::Config_options& config_options)
 {
+   model.set_verbose_output(config_options.verbose_output);
+
    switch (options.input_type) {
    case Gm2_cmd_line_options::SLHA:
       // determine on-shell model parameters from an SLHA parameter
@@ -129,97 +133,112 @@ void setup_model(gm2calc::MSSMNoFV_onshell& model,
       throw gm2calc::SetupError("Unknown input option");
       break;
    }
+
+   if (model.do_verbose_output())
+      std::cout << model << '\n';
 }
 
 /**
  * Prints detailed a_mu calculation (1-loop w/ and w/o tan(beta)
- * resumation, 2-loop, and differenc contributions).
+ * resummation, 2-loop, and different contributions).
+ *
+ * @param model model object (contains parameters)
  */
-void print_amu_detailed(const gm2calc::MSSMNoFV_onshell& model)
+void print_amu_detailed(
+   const gm2calc::MSSMNoFV_onshell& model)
 {
-   const double gm2_1l =
+#define FORMAT_AMU(amu) boost::format("% 16.14e") % (amu)
+#define FORMAT_PCT(pct) boost::format("%2.1f") % (pct)
+
+   const double amu_1l = gm2calc::calculate_amu_1loop(model);
+   const double amu_1l_non_tan_beta_resummed =
       gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
-   const double gm2_1l_tan_beta_resummed =
-      gm2calc::calculate_amu_1loop(model);
-   const double gm2_2l_tan_beta_resummed =
-      + gm2calc::amu2LFSfapprox(model)
-      + gm2calc::amuChipmPhotonic(model)
-      + gm2calc::amuChi0Photonic(model);
-   const double gm2_2l_tanb_approx =
-      + (gm2calc::tan_beta_cor(model) - 1.) * gm2_1l;
+   const double amu_2l_photonic_chipm = gm2calc::amuChipmPhotonic(model);
+   const double amu_2l_photonic_chi0 = gm2calc::amuChi0Photonic(model);
+   const double amu_2l_a_sfermion = gm2calc::amu2LaSferm(model);
+   const double amu_2l_a_cha = gm2calc::amu2LaCha(model);
+   const double amu_2l_ferm_sferm_approx = gm2calc::amu2LFSfapprox(model);
+   const double amu_2l = gm2calc::calculate_amu_2loop(model);
+   const double amu_2l_non_tan_beta_resummed =
+      gm2calc::calculate_amu_2loop_non_tan_beta_resummed(model);
+   const double tan_beta_cor = gm2calc::tan_beta_cor(model);
+   const double amu_2l_tanb_approx =
+      + (tan_beta_cor - 1.) * amu_1l_non_tan_beta_resummed;
 
-   const double gm2_best = gm2_1l_tan_beta_resummed + gm2_2l_tan_beta_resummed;
-
-   std::cout << model << '\n';
-
-   // set high output precision
-   std::ios_base::fmtflags flags(std::cout.flags());
-   std::cout.precision(std::numeric_limits<double>::digits10);
+   const double amu_best = amu_1l + amu_2l;
 
    std::cout <<
-      "=============================================\n"
-      "   amu (1-loop + 2-loop best) = " << gm2_best << '\n' <<
-      "=============================================\n\n"
-
+      "========================================================\n"
+      "   amu (1-loop + 2-loop best) = " << FORMAT_AMU(amu_best) << '\n' <<
+      "========================================================\n"
+      "\n"
       "==============================\n"
       "   amu (1-loop) corrections\n"
-      "==============================\n\n"
-
-      "--------------------------------------\n"
-      "amu (1-loop strict) = " << gm2_1l << '\n' <<
-      "--------------------------------------\n"
-      "amu (1-loop TB resummed) = " << gm2_1l_tan_beta_resummed << '\n' <<
-      "--------------------------------------\n"
-      "amuChi0 (TB resummed) = " << gm2calc::amuChi0(model) << '\n' <<
-      "amuChipm (TB resummed) = " << gm2calc::amuChipm(model) << '\n' <<
-      "--------------------------------------\n"
-      "amu1Lapprox = " << gm2calc::amu1Lapprox(model) << '\n' <<
-      "--------------------------------------\n"
-      "amuWHnu = " << gm2calc::amuWHnu(model) << '\n' <<
-      "amuBmuLmuR = " << gm2calc::amuBmuLmuR(model) << '\n' <<
-      "amuBHmuL = " << gm2calc::amuBHmuL(model) << '\n' <<
-      "amuWHmuL = " << gm2calc::amuWHmuL(model) << '\n' <<
-      "amuBHmuR = " << gm2calc::amuBHmuR(model) << "\n\n" <<
-
+      "==============================\n"
+      "\n"
+      "full 1L with tan(beta) resummation:\n"
+      "   chi^0     " << FORMAT_AMU(gm2calc::amuChi0(model)) << '\n' <<
+      "   chi^+-    " << FORMAT_AMU(gm2calc::amuChipm(model)) << '\n' <<
+      "   -------------------------------\n"
+      "   sum       " << FORMAT_AMU(amu_1l) <<
+      " (" << FORMAT_PCT(100. * amu_1l / amu_best) << "% of full 1L + 2L result)\n"
+      "\n"
+      "full 1L without tan(beta) resummation:\n"
+      "             " << FORMAT_AMU(amu_1l_non_tan_beta_resummed) << '\n' <<
+      "\n"
+      "1L approximation with tan(beta) resummation:\n"
+      "   W-H-nu    " << FORMAT_AMU(gm2calc::amuWHnu(model) * tan_beta_cor) << '\n' <<
+      "   W-H-muL   " << FORMAT_AMU(gm2calc::amuWHmuL(model) * tan_beta_cor) << '\n' <<
+      "   B-H-muL   " << FORMAT_AMU(gm2calc::amuBHmuL(model) * tan_beta_cor) << '\n' <<
+      "   B-H-muR   " << FORMAT_AMU(gm2calc::amuBHmuR(model) * tan_beta_cor) << '\n' <<
+      "   B-muL-muR " << FORMAT_AMU(gm2calc::amuBmuLmuR(model) * tan_beta_cor) << '\n' <<
+      "   -------------------------------\n"
+      "   sum       " << FORMAT_AMU(gm2calc::amu1Lapprox(model)) << '\n' <<
+      "\n"
       "==============================\n"
       "   amu (2-loop) corrections\n"
-      "==============================\n\n"
-
-      "--------------------------------------\n"
-      "amu (2-loop (TB resummed)) = " << gm2_2l_tan_beta_resummed << '\n' <<
-      "2-loop / 1-loop = " <<
-      (100. * gm2_2l_tan_beta_resummed / gm2_1l_tan_beta_resummed) << " %\n"
-      "--------------------------------------\n"
-      "amu2LSFsapprox = " << gm2calc::amu2LFSfapprox(model) << '\n' <<
-      "--------------------------------------\n"
-      "amuWHnu2L = " << gm2calc::amuWHnu2L(model) << '\n' <<
-      "amuWHmuL2L = " << gm2calc::amuWHmuL2L(model) << '\n' <<
-      "amuBHmuL2L = " << gm2calc::amuBHmuL2L(model) << '\n' <<
-      "amuBHmuR2L = " << gm2calc::amuBHmuR2L(model) << '\n' <<
-      "amuBmuLmuR2L = " << gm2calc::amuBmuLmuR2L(model) << '\n' <<
-      "2-loop_FSfapprox / 1-loop = " <<
-      (100. * gm2calc::amu2LFSfapprox(model) / gm2_1l) << " %\n"
-      "--------------------------------------\n"
-      "tan(beta) correction = " << gm2_2l_tanb_approx << '\n' <<
-      "2-loop_tan(beta) / 1-loop = " <<
-      (100. * gm2_2l_tanb_approx / gm2_1l) << " %\n"
-      "--------------------------------------\n"
-      "amu2LPhotonic = " <<
-      (gm2calc::amuChipmPhotonic(model)
-       + gm2calc::amuChi0Photonic(model)) << '\n' <<
-      "--------------------------------------\n"
-      "amuChipmPhotonic = " << gm2calc::amuChipmPhotonic(model) << '\n' <<
-      "amuChi0Photonic = " << gm2calc::amuChi0Photonic(model) << '\n' <<
-      "2-loop_Photonic / 1-loop = " <<
-      100. * (amuChipmPhotonic(model)
-              + gm2calc::amuChi0Photonic(model)) / gm2_1l << " %\n"
-      "--------------------------------------\n"
-      "amu2LaSferm = " << gm2calc::amu2LaSferm(model) << '\n' <<
-      "amu2LaCha = " << gm2calc::amu2LaCha(model) << '\n' <<
-      "--------------------------------------\n"
+      "==============================\n"
+      "\n"
+      "2L best with tan(beta) resummation:\n"
+      "             " << FORMAT_AMU(amu_2l) <<
+      " (" << FORMAT_PCT(100. * amu_2l / amu_best) << "% of full 1L + 2L result)\n"
+      "\n"
+      "2L best without tan(beta) resummation:\n"
+      "             " << FORMAT_AMU(amu_2l_non_tan_beta_resummed) << '\n' <<
+      "\n"
+      "photonic with tan(beta) resummation:\n"
+      "   chi^0     " << FORMAT_AMU(amu_2l_photonic_chi0) << '\n' <<
+      "   chi^+-    " << FORMAT_AMU(amu_2l_photonic_chipm) << '\n' <<
+      "   -------------------------------\n"
+      "   sum       " << FORMAT_AMU(amu_2l_photonic_chipm
+                                    + amu_2l_photonic_chi0) <<
+      " (" << FORMAT_PCT(100. * (amu_2l_photonic_chipm + amu_2l_photonic_chi0)
+                         / amu_best) << "% of full 1L + 2L result)\n"
+      "\n"
+      "fermion/sfermion approximation with tan(beta) resummation:\n"
+      "   W-H-nu    " << FORMAT_AMU(gm2calc::amuWHnu2L(model) * tan_beta_cor) << '\n' <<
+      "   W-H-muL   " << FORMAT_AMU(gm2calc::amuWHmuL2L(model) * tan_beta_cor) << '\n' <<
+      "   B-H-muL   " << FORMAT_AMU(gm2calc::amuBHmuL2L(model) * tan_beta_cor) << '\n' <<
+      "   B-H-muR   " << FORMAT_AMU(gm2calc::amuBHmuR2L(model)* tan_beta_cor) << '\n' <<
+      "   B-muL-muR " << FORMAT_AMU(gm2calc::amuBmuLmuR2L(model) * tan_beta_cor) << '\n' <<
+      "   -------------------------------\n"
+      "   sum       " << FORMAT_AMU(amu_2l_ferm_sferm_approx) <<
+      " (" << FORMAT_PCT(100. * amu_2l_ferm_sferm_approx / amu_best) << "% of full 1L + 2L result)\n"
+      "\n"
+      "2L(a) (1L insertions into 1L SM diagram) with tan(beta) resummation:\n"
+      "   sfermion  " << FORMAT_AMU(amu_2l_a_sfermion) << '\n' <<
+      "   cha^+-    " << FORMAT_AMU(amu_2l_a_cha) << '\n' <<
+      "   -------------------------------\n"
+      "   sum       " << FORMAT_AMU(amu_2l_a_sfermion + amu_2l_a_cha) <<
+      " (" << FORMAT_PCT(100. * (amu_2l_a_sfermion + amu_2l_a_cha) / amu_best) << "% of full 1L + 2L result)\n"
+      "\n"
+      "tan(beta) correction:\n"
+      "   amu(1L) * (1 / (1 + Delta_mu) - 1) = " << FORMAT_AMU(amu_2l_tanb_approx) <<
+      " (" << FORMAT_PCT(100. * amu_2l_tanb_approx / amu_1l_non_tan_beta_resummed) << "%)\n"
       ;
 
-   std::cout.flags(flags);
+#undef FORMAT_AMU
+#undef FORMAT_PCT
 }
 
 /**
@@ -247,13 +266,12 @@ double calculate_amu(const gm2calc::MSSMNoFV_onshell& model,
          result = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model);
       break;
    case 2:
-      if (!config_options.tanb_resummation)
-         WARNING("tan(beta) resummation is always enabled at 2-loop level");
-      // calculate amu w/ resummation
-      result = gm2calc::calculate_amu_1loop(model)
-         + gm2calc::amu2LFSfapprox(model)
-         + gm2calc::amuChipmPhotonic(model)
-         + gm2calc::amuChi0Photonic(model);
+      if (config_options.tanb_resummation)
+         result = gm2calc::calculate_amu_1loop(model)
+            + gm2calc::calculate_amu_2loop(model);
+      else
+         result = gm2calc::calculate_amu_1loop_non_tan_beta_resummed(model)
+            + gm2calc::calculate_amu_2loop_non_tan_beta_resummed(model);
       break;
    default:
       ERROR("loop orders > 2 not supported!");
@@ -329,6 +347,33 @@ void print_error(const gm2calc::Error& error,
    }
 }
 
+/**
+ * Adds SPINFO block with warning message to SLHA output if there is a
+ * warning.
+ *
+ * @param model model
+ * @param slha_io SLHA object
+ * @param config_options configuration options
+ */
+void print_warnings(const gm2calc::MSSMNoFV_onshell& model,
+                    gm2calc::GM2_slha_io& slha_io,
+                    const gm2calc::Config_options& config_options)
+{
+   if (model.get_problems().have_warning()) {
+      switch (config_options.output_format) {
+      case gm2calc::Config_options::NMSSMTools:
+      case gm2calc::Config_options::SPheno:
+         // print SPINFO block with warning description
+         slha_io.fill_block_entry("SPINFO", 1, "GM2Calc");
+         slha_io.fill_block_entry("SPINFO", 2, GM2CALC_VERSION);
+         slha_io.fill_block_entry("SPINFO", 3, model.get_problems().get_warning());
+         break;
+      default:
+         break;
+      }
+   }
+}
+
 int main(int argc, const char* argv[])
 {
    Gm2_cmd_line_options options(get_cmd_line_options(argc, argv));
@@ -343,20 +388,22 @@ int main(int argc, const char* argv[])
    gm2calc::MSSMNoFV_onshell model;
    gm2calc::GM2_slha_io slha_io;
    gm2calc::Config_options config_options;
-   int exit_code = 0;
+   int exit_code = EXIT_SUCCESS;
 
    try {
       slha_io.read_from_source(options.input_source);
       fill(slha_io, config_options);
       model.do_force_output(config_options.force_output);
-      setup_model(model, slha_io, options);
+      setup_model(model, slha_io, options, config_options);
+      print_warnings(model, slha_io, config_options);
       print_amu(model, slha_io, config_options);
    } catch (const gm2calc::Error& error) {
       print_error(error, slha_io, config_options);
       exit_code = EXIT_FAILURE;
    }
 
-   exit_code |= model.get_problems().have_problem();
+   if (model.get_problems().have_problem())
+      exit_code = EXIT_FAILURE;
 
    return exit_code;
 }

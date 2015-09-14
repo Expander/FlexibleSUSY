@@ -38,7 +38,7 @@ template<>
 class @ModelName@_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
 public:
    @ModelName@_low_scale_constraint();
-   @ModelName@_low_scale_constraint(@ModelName@<Two_scale>*, const QedQcd&);
+   @ModelName@_low_scale_constraint(@ModelName@<Two_scale>*, const softsusy::QedQcd&);
    virtual ~@ModelName@_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
@@ -49,15 +49,15 @@ public:
    const Eigen::Matrix<std::complex<double>,3,3>& get_pmns();
    double get_initial_scale_guess() const;
    void initialize();
-   const QedQcd& get_sm_parameters() const;
-   void set_sm_parameters(const QedQcd&);
+   const softsusy::QedQcd& get_sm_parameters() const;
+   void set_sm_parameters(const softsusy::QedQcd&);
    void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
    double scale;
    double initial_scale_guess;
    @ModelName@<Two_scale>* model;
-   QedQcd oneset;
+   softsusy::QedQcd oneset;
    Eigen::Matrix<std::complex<double>,3,3> ckm;
    Eigen::Matrix<std::complex<double>,3,3> pmns;
    Eigen::Matrix<double,3,3> neutrinoDRbar;
