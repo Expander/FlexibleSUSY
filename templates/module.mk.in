@@ -140,7 +140,7 @@ EXE@CLASSNAME@_DEP := \
 LIB@CLASSNAME@     := $(DIR)/lib$(MODNAME)$(LIBEXT)
 
 
-ifeq ($(SARAH_MODEL),SM)
+ifeq ($(MODNAME),SM)
 LIBEFT             :=
 else
 LIBEFT             := $(LIBSM)
