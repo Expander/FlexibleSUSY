@@ -479,12 +479,6 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            (* creating n-point functions *)
            Print["Generating C++ code for ..."];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               
-               (* HACK: (GMM2) ignore nPointFunctions with a Null head
-                This makes it possible to extract vertex rules without
-                having to generate an nPointFunction *)
-               If[Head[nPointFunctions[[k]]] === Null, Continue[]];
-               
                Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;

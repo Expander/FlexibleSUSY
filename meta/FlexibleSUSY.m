@@ -1445,6 +1445,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
+            gmm2Vertices = {},
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 2-component lists of the form {name, type} *),
@@ -1479,9 +1480,11 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            FSPrepareRGEs[];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ StripInvalidFieldIndices @
-           Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates],
-                PrepareGMuonMinus2[]];
+               Join[PrepareSelfEnergies[FSEigenstates], PrepareTadpoles[FSEigenstates]];
            PrepareUnrotatedParticles[FSEigenstates];
+
+           (* GMM2 vertices *)
+           gmm2Vertices = StripInvalidFieldIndices @ PrepareGMuonMinus2[];
 
            FlexibleSUSY`FSRenormalizationScheme = If[SARAH`SupersymmetricModel,
                                                      FlexibleSUSY`DRbar, FlexibleSUSY`MSbar];
@@ -1954,7 +1957,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 	      GetVertexRuleFileName[$sarahCurrentOutputMainDir, FSEigenstates];
 	   If[NeedToCalculateVertices[FSEigenstates],
 	      Put[vertexRules =
-		      Vertices`VertexRules[nPointFunctions, Lat$massMatrices],
+		      Vertices`VertexRules[Join[nPointFunctions, gmm2Vertices], Lat$massMatrices],
 		  vertexRuleFileName],
 	      vertexRules = Get[vertexRuleFileName]];
 
