@@ -14,7 +14,8 @@ EXTPAR = {
 
 FSExtraInputParameters = {
     {TanBeta, TanBeta, {1}},
-    {Ms, Ms, {1}}
+    {Ms, Ms, {1}},
+    {Xtt, Xtt, {1}}
 };
 
 EWSBOutputParameters = { mHd2, mHu2 };
@@ -51,7 +52,8 @@ SUSYScaleInput = {
 {B[\[Mu]], 1/4 Sqr[Ms]},
 {T[Yu], \[Mu]/TanBeta Yu},
 {T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye}
+{T[Ye], \[Mu] TanBeta Ye},
+{T[Yu][3,3], (\[Mu]/TanBeta + Xtt) Yu[3,3]}
 };
 
 InitialGuessAtSUSYScale = {
@@ -82,7 +84,8 @@ InitialGuessAtSUSYScale = {
 {B[\[Mu]], 1/4 Sqr[Ms]},
 {T[Yu], \[Mu]/TanBeta Yu},
 {T[Yd], \[Mu] TanBeta Yd},
-{T[Ye], \[Mu] TanBeta Ye}
+{T[Ye], \[Mu] TanBeta Ye},
+{T[Yu][3,3], (\[Mu]/TanBeta + Xtt) Yu[3,3]}
 };
 
 (* InitialGuessAtLowScale is ignored if SMTower is true *)

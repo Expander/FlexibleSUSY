@@ -42,3 +42,5 @@ Block Ms
     20000                    # SUSY scale
 Block TanBeta
     5                        # tan(Beta) at the SUSY scale
+Block Xtt
+    0                        # Xt / Ms 
