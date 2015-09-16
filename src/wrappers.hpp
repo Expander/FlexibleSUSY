@@ -174,6 +174,12 @@ inline int Delta(int i, int j)
 template <typename T>
 T If(bool c, T a, T b) { return c ? a : b; }
 
+template <typename T>
+T If(bool c, int a, T b) { return c ? T(a) : b; }
+
+template <typename T>
+T If(bool c, T a, int b) { return c ? a : T(b); }
+
 inline bool IsClose(double a, double b,
                     double eps = std::numeric_limits<double>::epsilon())
 {
