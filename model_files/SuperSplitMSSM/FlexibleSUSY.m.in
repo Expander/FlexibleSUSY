@@ -41,7 +41,8 @@ HighScaleInput = {
                   If[IsClose[SCALE^2,msq2[3,3]] &&
                      IsClose[SCALE^2,msu2[3,3]] &&
                      IsClose[SCALE,M3Input],
-                     lambda2LPhiHSSDegenerate, lambda2LPhiHSSFull]}
+                     lambda2LPhiHSSAlphaTAlphaSDegenerate,
+                     lambda2LPhiHSSAlphaTAlphaSFull]}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -185,7 +186,7 @@ lambda1LChi2 = 1/(4 Pi)^2 (
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    arXiv:1407.4081, Eq. (36)
    Valid in the limit M3 = MQ[3,3] = MU[3,3] = MSUSY *)
-lambda2LPhiHSSDegenerate = With[{ r = xt / SCALE },
+lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
     (g3^2 Yu[3,3]^4)/(96 Pi^4) (
         -12 r - 6 r^2 + 14 r^3 + 1/2 r^4 - r^5
     )
@@ -194,7 +195,7 @@ lambda2LPhiHSSDegenerate = With[{ r = xt / SCALE },
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    arXiv:1407.4081, provided by Pietro Slavich,
    General expression. *)
-lambda2LPhiHSSFull = With[{
+lambda2LPhiHSSAlphaTAlphaSFull = With[{
     htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
     CF = 4/3,
     Nc = 3,
