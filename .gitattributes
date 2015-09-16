@@ -93,3 +93,5 @@ templates/lattice_model.cpp.in                           export-ignore
 templates/lattice_model.hpp.in                           export-ignore
 templates/lattice_susy_scale_constraint.cpp.in           export-ignore
 templates/lattice_susy_scale_constraint.hpp.in           export-ignore
+
+test                            export-ignore
