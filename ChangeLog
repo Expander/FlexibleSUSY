@@ -4,6 +4,15 @@ FlexibleSUSY-1.2.3 [not released yet]
    contraints.  In addition, the IsClose[a,b,eps] function has been
    added to allow for a comparison of parameters.
 
+ * Change (commit f7cd242): The `test' and `examples' modules are no
+   longer loaded into the makefile by default.  To load them, run
+   ./configure --with-optional-modules="test examples"
+
+ * Change (commit e86d23a): The FlexibleSUSY test suite is no longer
+   shipped with the release tarball.  It can be obtained from the
+   official git repository at
+   https://github.com/FlexibleSUSY/FlexibleSUSY .
+
 FlexibleSUSY-1.2.2 [September, 08 2015]
 
  * Feature: The scale at which the EWSB output parameters are fixed
