@@ -35,10 +35,10 @@ Block SMINPUTS               # Standard Model inputs
    24   1.270000000e+00      # mc(mc) MS-bar
 Block EXTPAR                 # Input parameters
     0   1000                 # MSUSY
-    1   1000                 # M1(MSUSY)
-    2   1000                 # M2(MSUSY)
-    3   1000                 # M3(MSUSY)
-    4   1000                 # Mu(MSUSY)
+    1   1000                 # M1(MEWSB)
+    2   1000                 # M2(MEWSB)
+    3   1000                 # M3(MEWSB)
+    4   1000                 # Mu(MEWSB)
     5   1000                 # mA(MSUSY)
     6   173.34               # MEWSB
    25   10                   # TanBeta(MSUSY)
