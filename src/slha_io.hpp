@@ -60,17 +60,17 @@ namespace flexiblesusy {
    }
 
 #define FORMAT_MASS(pdg,mass,name)                                      \
-   boost::format(mass_formatter) % pdg % mass % name
+   boost::format(mass_formatter) % (pdg) % (mass) % (name)
 #define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \
-   boost::format(mixing_matrix_formatter) % i % k % entry % name
+   boost::format(mixing_matrix_formatter) % (i) % (k) % (entry) % (name)
 #define FORMAT_ELEMENT(pdg,value,name)                                  \
-   boost::format(single_element_formatter) % pdg % value % name
+   boost::format(single_element_formatter) % (pdg) % (value) % (name)
 #define FORMAT_SCALE(n)                                                 \
-   boost::format(scale_formatter) % n
+   boost::format(scale_formatter) % (n)
 #define FORMAT_NUMBER(n,str)                                            \
-   boost::format(number_formatter) % n % str
+   boost::format(number_formatter) % (n) % (str)
 #define FORMAT_SPINFO(n,str)                                            \
-   boost::format(spinfo_formatter) % n % str
+   boost::format(spinfo_formatter) % (n) % (str)
 
 /**
  * @class SLHA_io
