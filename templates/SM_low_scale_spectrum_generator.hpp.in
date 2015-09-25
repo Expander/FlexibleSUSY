@@ -157,41 +157,30 @@ void @ModelName@_SM_spectrum_generator<T>::run(const softsusy::QedQcd& oneset,
       model.solve_ewsb();
       model.calculate_spectrum();
 
-      // copy calculated W pole mass
-      model.get_physical().M@VectorW@
-         = low_scale_constraint.get_sm_parameters().displayPoleMW();
-
       // start logarithmic resummation
       switch (model.get_Two_loop_corrections().higgs_log)
       {
-         case 0: if(model.do_calculate_sm_pole_masses())
-                 {
-                    model.run_to(susy_scale);
-                    matching.match_high_to_low_scale_model();
-                    eft.run_to(low_scale);
-                    eft.calculate_DRbar_masses();
-                    eft.solve_ewsb();
-                    
-                    eft.calculate_Mhh_pole();
-                    eft.calculate_MVZ_pole();
-                    eft.calculate_MVWp_pole();
-                    eft.calculate_MFu_pole();
-                    eft.calculate_MFd_pole();
-                    eft.calculate_MFe_pole();
-                    
-                    this->@GetHiggsMass@ = eft.get_physical().Mhh;
-                    this->@GetZMass@ = eft.get_physical().MVZ;
-                    this->@GetWMass@ = eft.get_physical().MVWp;
-                    this->model.get_physical().M@TopQuark@ = eft.get_physical().MFu;
-                    this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
-                    this->model.get_physical().M@Electron@ = eft.get_physical().MFe;
-                 }
+         case 0: model.run_to(susy_scale);
+                 matching.match_high_to_low_scale_model();
+                 eft.run_to(low_scale);
+                 eft.calculate_DRbar_masses();
+                 eft.solve_ewsb();
+                 eft.calculate_spectrum();
+                 this->@GetHiggsMass@ = eft.get_physical().Mhh;
+                 this->@GetZMass@ = eft.get_physical().MVZ;
+                 this->@GetWMass@ = eft.get_physical().MVWp;
+                 this->model.get_physical().M@TopQuark@ = eft.get_physical().MFu;
+                 this->model.get_physical().M@BottomQuark@ = eft.get_physical().MFd;
+                 this->model.get_physical().M@Electron@ = eft.get_physical().MFe;
                  break;
          case 1: do2LoopLogCalc(); break;
          case 2: calcHiggsPoleEFT(); break;
       }
 
-
+      // copy calculated W pole mass
+      model.get_physical().M@VectorW@
+         = low_scale_constraint.get_sm_parameters().displayPoleMW();
+         
       // run to output scale (if scale > 0)
       if (!is_zero(this->parameter_output_scale)) {
          model.run_to(this->parameter_output_scale);
@@ -292,22 +281,14 @@ void @ModelName@_SM_spectrum_generator<T>::do2LoopLogCalc()
 
 @DiagonalizeEFT@
 
+  SM1.calculate_spectrum();
   this->@GetHiggsMass@ = M_Higgs;
-
-  if(this->calculate_sm_masses)
-  {
-     SM1.calculate_MVWp_pole();
-     SM1.calculate_MVZ_pole();
-     SM1.calculate_MFu_pole();
-     SM1.calculate_MFd_pole();
-     SM1.calculate_MFe_pole();
-
-     this->@GetZMass@ = SM1.get_physical().MVZ;
-     this->@GetWMass@ = SM1.get_physical().MVWp;
-     this->model.get_physical().M@TopQuark@ = SM1.get_physical().MFu;
-     this->model.get_physical().M@BottomQuark@ = SM1.get_physical().MFd;
-     this->model.get_physical().M@Electron@ = SM1.get_physical().MFe;
-  }
+  this->@GetZMass@ = SM1.get_physical().MVZ;
+  this->@GetWMass@ = SM1.get_physical().MVWp;
+  this->model.get_physical().M@TopQuark@ = SM1.get_physical().MFu;
+  this->model.get_physical().M@BottomQuark@ = SM1.get_physical().MFd;
+  this->model.get_physical().M@Electron@ = SM1.get_physical().MFe;
+  
 }
 
 /**
@@ -416,25 +397,17 @@ void @ModelName@_SM_spectrum_generator<T>::calcHiggsPoleEFT()
   EFT.run_to(low_scale);
   EFT.calculate_DRbar_masses();
   EFT.solve_ewsb();
-  EFT.calculate_Mhh_pole();
+  EFT.calculate_spectrum();
 
   //store Higgs pole mass in physical structure
   this->@GetHiggsMass@ = EFT.get_physical().Mhh;
+  this->@GetZMass@ = EFT.get_physical().MVZ;
+  this->@GetWMass@ = EFT.get_physical().MVWp;
+  this->model.get_physical().M@TopQuark@ = EFT.get_physical().MFu;
+  this->model.get_physical().M@BottomQuark@ = EFT.get_physical().MFd;
+  this->model.get_physical().M@Electron@ = EFT.get_physical().MFe;
 
-  if(this->calculate_sm_masses)
-  {
-     EFT.calculate_MVZ_pole();
-     EFT.calculate_MVWp_pole();
-     EFT.calculate_MFu_pole();
-     EFT.calculate_MFd_pole();
-     EFT.calculate_MFe_pole();
 
-     this->@GetZMass@ = EFT.get_physical().MVZ;
-     this->@GetWMass@ = EFT.get_physical().MVWp;
-     this->model.get_physical().M@TopQuark@ = EFT.get_physical().MFu;
-     this->model.get_physical().M@BottomQuark@ = EFT.get_physical().MFd;
-     this->model.get_physical().M@Electron@ = EFT.get_physical().MFe;
-  }
 }
 
 } // namespace flexiblesusy
