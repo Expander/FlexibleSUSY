@@ -59,7 +59,11 @@ public:
       scale = model->get_scale();
       model->calculate_DRbar_masses();
       model->solve_ewsb_one_loop();
-      @ModelName@_SM_matching::matching(*eft, *model);
+      
+      if(!model->get_thresholds())
+         @ModelName@_SM_matching::matchingTL(*eft, *model);
+      else 
+         @ModelName@_SM_matching::matching(*eft, *model);
    }
 
    virtual void match_low_to_high_scale_model()
@@ -67,23 +71,11 @@ public:
       if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
 
       scale = eft->get_scale();
-      @ModelName@_SM_matching::matchingReverse(*model, *eft);
-   }
 
-   void match_high_to_low_scale_model_tree_level()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-
-      scale = model->get_scale();
-      @ModelName@_SM_matching::matching(*eft, *model);
-   }
-
-   void match_low_to_high_scale_model_tree_level()
-   {
-      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
-
-      scale = eft->get_scale();
-      @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+      if(!model->get_thresholds())
+         @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+      else
+         @ModelName@_SM_matching::matchingReverse(*model, *eft);
    }
 
 private:
