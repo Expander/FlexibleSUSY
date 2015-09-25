@@ -78,6 +78,25 @@ public:
          @ModelName@_SM_matching::matchingReverse(*model, *eft);
    }
 
+   void match_high_to_low_scale_model_tree_level()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
+
+      scale = model->get_scale();
+      model->calculate_DRbar_masses();
+
+      @ModelName@_SM_matching::matchingTL(*eft, *model);
+   }
+
+   void match_low_to_high_scale_model_tree_level()
+   {
+      if(!model || !eft) throw SetupError("Model pointer in matching class is NULL!");
+
+      scale = eft->get_scale();
+
+      @ModelName@_SM_matching::matchingReverseTL(*model, *eft);
+   }
+
 private:
    @ModelName@<Two_scale>* model;
    SM<Two_scale>* eft;
