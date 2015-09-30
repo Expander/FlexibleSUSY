@@ -989,13 +989,13 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
 
 (* Write the GMM2 c++ files *)
 WriteGMuonMinus2Class[files_List] :=
-    Module[{particles, muonFunctions, diagrams, vertexFunctions,
+    Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
         definitions, calculationCode, threadedCalculationCode},
            particles = GMuonMinus2`CreateParticles[];
            muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
-           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[];
-           definitions = GMuonMinus2`CreateDefinitions[];
+           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[{"proof of concept"}];
+           definitions = GMuonMinus2`CreateDefinitions[{"proof of concept"}];
            calculationCode = GMuonMinus2`CreateCalculation[];
            threadedCalculationCode = GMuonMinus2`CreateThreadedCalculation[];
            

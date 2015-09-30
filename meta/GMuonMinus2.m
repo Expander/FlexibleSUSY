@@ -142,7 +142,7 @@ CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            Return[code];
                            ];
 
-CreateVertexFunctionData[] := CreateVertices[][[1]];
+CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
@@ -172,11 +172,27 @@ CreateCalculation[] := Module[{code},
 
 CreateThreadedCalculation[] := CreateCalculation[];
 
-CreateDefinitions[] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-                        CreateMuonFunctions[][[2]] <> "\n\n" <>
-                        CreateVertices[][[2]]);
+CreateDefinitions[vertexRules_List] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
+                                        CreateMuonFunctions[][[2]] <> "\n\n" <>
+                                        CreateVertices[vertexRules][[2]]);
 
-NPointFunctions[] := (If[nPointFunctions === Null, CreateVertices[]]; Return[nPointFunctions]);
+nPointFunctions = Null;
+NPointFunctions[] := Module[{contributingDiagrams, vertices},
+                            If[nPointFunctions =!= Null, Return[nPointFunctions]];
+                            
+                            contributingDiagrams = ContributingDiagrams[];
+                            
+                            vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
+                            vertices = DeleteDuplicates[vertices];
+                            
+                            AppendTo[vertices, {GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}];
+                            vertices = (OrderParticles[#, Ordering[(Vertices`StripFieldIndices /@ #)]] &) /@ vertices;
+                            vertices = DeleteDuplicates[vertices,
+                                                        (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
+                            
+                            nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
+                            Return[nPointFunctions];
+                            ];
 
 
 (**************** End public interface *****************)
@@ -387,32 +403,27 @@ ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermi
  The returned value is a list {prototypes, definitions}.
  Also the necessary nPointFunctions are created. *)
 createdVertices = Null;
-nPointFunctions = Null;
-CreateVertices[] := Module[{contributingDiagrams, vertices,
-                            vertexClassesPrototypes, vertexClassesDefinitions},
-                           If[createdVertices =!= Null, Return[createdVertices]];
-                           
-                           contributingDiagrams = ContributingDiagrams[];
-                           
-                           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
-                           vertices = DeleteDuplicates[vertices];
-                           
-                           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ (CreateVertexFunction /@ vertices);
-                           vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
-                           vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
-                           
-                           AppendTo[vertices, {GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}];
-                           vertices = (OrderParticles[#, Ordering[(Vertices`StripFieldIndices /@ #)]] &) /@ vertices;
-                           vertices = DeleteDuplicates[vertices,
-                                                       (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
-                           
-                           nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
-                           
-                           createdVertices = {vertexClassesPrototypes, vertexClassesDefinitions};
-                           createdVertices = (StringJoin @ Riffle[#, "\n\n"] &) /@ createdVertices;
-                           
-                           Return[createdVertices];
-                           ];
+CreateVertices[vertexRules_List] :=
+    Module[{contributingDiagrams, vertices,
+        vertexClassesPrototypes, vertexClassesDefinitions},
+           If[createdVertices =!= Null, Return[createdVertices]];
+           
+           contributingDiagrams = ContributingDiagrams[];
+           
+           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
+           vertices = DeleteDuplicates[vertices];
+           
+           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
+           vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
+           vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
+           
+           AppendTo[vertices, {GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}];
+           
+           createdVertices = {vertexClassesPrototypes, vertexClassesDefinitions};
+           createdVertices = (StringJoin @ Riffle[#, "\n\n"] &) /@ createdVertices;
+           
+           Return[createdVertices];
+           ];
 
 (* Returns the vertices that are present in the specified diagram.
  This function should be overloaded for future diagram types.
@@ -468,7 +479,7 @@ CouplingsForParticles[particles_List] :=
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
 vertexFunctions = {};
-CreateVertexFunction[indexedParticles_List] :=
+CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
     (Module[{prototypes, definitions = "", ordering, particles, orderedParticles,
              orderedIndexedParticles, addSpacing = True},
             particles = Vertices`StripFieldIndices /@ indexedParticles;
@@ -483,7 +494,7 @@ CreateVertexFunction[indexedParticles_List] :=
                prototypes = "";
                addSpacing = False,
                (* There is no entry yet, create it *)
-               {prototypes, definitions} = CreateOrderedVertexFunction[orderedIndexedParticles];
+               {prototypes, definitions} = CreateOrderedVertexFunction[orderedIndexedParticles, vertexRules];
                AppendTo[vertexFunctions, orderedParticles];
                ];
             
@@ -525,7 +536,7 @@ CreateVertexFunction[indexedParticles_List] :=
 
 (* The heart of the algorithm! From the particle content, determine all
  necessary information. *)
-ParseVertex[indexedParticles_List] :=
+ParseVertex[indexedParticles_List, vertexRules_List] :=
     Module[{particles, numberOfIndices, indexParameters,
         parsedVertex, vertexClassName, vertexFunctionBody,
         sarahParticles, particleInfo, indexBounds},
@@ -538,6 +549,9 @@ ParseVertex[indexedParticles_List] :=
            If[indexParameters =!= "", indexParameters = " " <> indexParameters <> " "];
            
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
+           
+           Print["Generating body for " <> ParticleToCXXName /@ particles <> "\nvertexRules = " <> ToString @ vertexRules];
+           
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        "return vertex_type( context.model." <>
@@ -592,11 +606,11 @@ VertexFunctionBody[parsedVertex_ParsedVertex] := parsedVertex[[4]];
 (** End getters **)
 
 (* Create the c++ code for a canonically ordered vertex *)
-CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
+CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
     (Module[{prototype, definition, orderedParticles, dataClassName, functionClassName,
         parsedVertex, particleIndexStartF, particleIndexStart, indexBounds},
             orderedParticles = Vertices`StripFieldIndices /@ orderedIndexedParticles;
-            parsedVertex = ParseVertex[orderedIndexedParticles];
+            parsedVertex = ParseVertex[orderedIndexedParticles, vertexRules];
             dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
             functionClassName = "VertexFunction<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
             
