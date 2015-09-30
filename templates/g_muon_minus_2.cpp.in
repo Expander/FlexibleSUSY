@@ -90,17 +90,17 @@ private:
       std::memcpy(indices.data(), i, N * sizeof(unsigned int));
    }
 public:
-   const std::array<unsigned int, N> &operator*(void) const
+   const std::array<unsigned int, N> &operator*() const
    {
       return indices;
    }
 
-   const std::array<unsigned int, N> *operator->( void ) const
+   const std::array<unsigned int, N> *operator->() const
    {
       return &indices;
    }
 
-   IndexIterator &operator++(void)
+   IndexIterator &operator++()
    {
       for (unsigned int i = 0; i != N; i++) {
          indices[i]++;
@@ -147,12 +147,12 @@ template<unsigned int N> struct IndexBounds {
 
    typedef IndexIterator<N> const_iterator;
 
-   const_iterator begin(void) const
+   const_iterator begin() const
    {
       return const_iterator(*this, indexBegin);
    }
 
-   const_iterator end(void) const
+   const_iterator end() const
    {
       return const_iterator(*this, indexEnd);
    }
@@ -164,9 +164,9 @@ template<> struct IndexBounds<0> {
 
    static const indices_type dummyIndex;
 
-   const_iterator begin(void) const
+   const_iterator begin() const
    { return &dummyIndex; }
-   const_iterator end(void) const
+   const_iterator end() const
    { return (begin()+1); }
 };
 IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
@@ -188,11 +188,11 @@ struct EvaluationContext {
     * @fn mass<P>
     * @brief Returns the mass of a particle.
     */
-   template<class P> double mass(void) const;
+   template<class P> double mass() const;
    template<class P> double mass(unsigned int) const;
 };
 
-template<class P> double EvaluationContext::mass(void) const
+template<class P> double EvaluationContext::mass() const
 {
    return mass<typename anti<P>::type>();
 }
@@ -234,7 +234,7 @@ public:
     * @fn value
     * @brief Returns the value of the vertex.
     */
-   std::complex<double> value(void) const
+   std::complex<double> value() const
    {
       return val;
    }
@@ -243,7 +243,7 @@ public:
     * @fn isZero
     * @brief Tests whether the value is numerically significant
     */
-   bool isZero(void) const
+   bool isZero() const
    {
       return (is_zero(val.real()) && is_zero(val.imag()));
    }
@@ -265,7 +265,7 @@ public:
     * @fn left
     * @brief Returns the left component of the vertex.
     */
-   std::complex<double> left(void) const
+   std::complex<double> left() const
    {
       return value.first;
    }
@@ -274,7 +274,7 @@ public:
     * @fn right
     * @brief Returns the left component of the vertex.
     */
-   std::complex<double> right(void) const
+   std::complex<double> right() const
    {
       return value.second;
    }
@@ -283,7 +283,7 @@ public:
     * @fn isZero
     * @brief Tests whether the values are numerically significant
     */
-   bool isZero(void) const
+   bool isZero() const
    {
       return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
               is_zero(value.second.real()) && is_zero(value.second.imag()));
@@ -323,7 +323,7 @@ public:
    typedef typename index_bounds::indices_type indices_type;
    typedef typename Base::vertex_type vertex_type;
 public:
-   static const index_bounds &indexBounds(void)
+   static const index_bounds &indexBounds()
    {
       return indexB;
    }

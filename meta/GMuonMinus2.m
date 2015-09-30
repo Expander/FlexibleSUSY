@@ -78,11 +78,11 @@ CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions}
                                 muonIndex = GetMuonIndex[];
                                 muonFamily = GetMuonFamily[];
                                 
-                                prototypes = ("static const unsigned int muonIndex( void );\n" <>
+                                prototypes = ("static const unsigned int muonIndex();\n" <>
                                               "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
                                               "static const double muonCharge( EvaluationContext &context );");
                                 
-                                definitions = ("static const unsigned int muonIndex( void )\n" <>
+                                definitions = ("static const unsigned int muonIndex()\n" <>
                                                "{ unsigned int muonIndex" <>
                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
                                                "; return muonIndex; }\n" <>
@@ -188,8 +188,8 @@ Module[{particles, code},
        particles = Select[particles, (! TreeMasses`IsGhost[#] &)];
        
        code = (StringJoin @
-               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">( " <>
-                       If[TreeMasses`GetDimension[#] === 1, "void", "unsigned int index"] <> " ) const\n" <>
+               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">(" <>
+                       If[TreeMasses`GetDimension[#] === 1, "", " unsigned int index "] <> ") const\n" <>
                        "{ return model.get_M" <> ParticleToCXXName[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
                        &) /@ particles, "\n\n"]);
