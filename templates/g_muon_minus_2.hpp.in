@@ -38,7 +38,7 @@ namespace @ModelName@_GMuonMinus2 {
 * @fn calculate_amuon
 * @brief Calculates GMM2/2.
 */
-extern double calculate_amuon(@ModelName@_mass_eigenstates &model);
+double calculate_amuon(@ModelName@_mass_eigenstates &model);
 };
 } // namespace flexiblesusy
 

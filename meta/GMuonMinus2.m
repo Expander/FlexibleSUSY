@@ -78,15 +78,15 @@ CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions}
                                 muonIndex = GetMuonIndex[];
                                 muonFamily = GetMuonFamily[];
                                 
-                                prototypes = ("static const unsigned int muonIndex();\n" <>
-                                              "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
-                                              "static const double muonCharge( EvaluationContext &context );");
+                                prototypes = ("unsigned int muonIndex();\n" <>
+                                              "double muonPhysicalMass( EvaluationContext &context );\n" <>
+                                              "double muonCharge( EvaluationContext &context );");
                                 
-                                definitions = ("static const unsigned int muonIndex()\n" <>
+                                definitions = (" unsigned int muonIndex()\n" <>
                                                "{ unsigned int muonIndex" <>
                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
                                                "; return muonIndex; }\n" <>
-                                               "static const double muonPhysicalMass( EvaluationContext &context )\n" <>
+                                               "double muonPhysicalMass( EvaluationContext &context )\n" <>
                                                 "{\n" <>
                                                 IndentText @
                                                 ("static double m_muon_pole = 0.0;\n\n" <>
@@ -110,7 +110,7 @@ CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions}
                                                  
                                                  "return m_muon_pole;\n") <>
                                                "}\n" <>
-                                               "static const double muonCharge( EvaluationContext &context )\n" <>
+                                               "double muonCharge( EvaluationContext &context )\n" <>
                                                "{ return context.model." <>
                                                NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
                                                If[muonIndex =!= Null,
