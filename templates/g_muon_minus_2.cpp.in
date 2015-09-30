@@ -34,7 +34,7 @@
 #include <boost/mpl/at.hpp>
 
 #include "@ModelName@_g_muon_minus_2.hpp"
-#include "@ModelName@_two_scale_model.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 
 /* Due to g++4.4 compatibility, we need the following workarounds:
 - no variadic non-template parameter packs :'-(
@@ -182,7 +182,7 @@ IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
  * e.g. mass calculation functions.
  */
 struct EvaluationContext {
-   @ModelName@<Two_scale> &model; ///< The model object.
+   @ModelName@_mass_eigenstates &model; ///< The model object.
 
    /**
     * @fn mass<P>
@@ -527,7 +527,7 @@ static inline double OneLoopFunctionF2N(double x)
    return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
 }
 
-double calculate_amuon(@ModelName@<Two_scale> &model)
+double calculate_amuon(@ModelName@_mass_eigenstates &model)
 {
 #ifdef ENABLE_THREADS
 @GMuonMinus2_ThreadedCalculation@
