@@ -35,7 +35,7 @@ MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
 MODULES            += $(MODELS) $(ADDONS)
 # BEGIN: NOT EXPORTED ##########################################
-MODULES            += test examples
+MODULES            += @OPTIONAL_MODULES@
 # END:   NOT EXPORTED ##########################################
 
 # Variables for Mathematica meta code

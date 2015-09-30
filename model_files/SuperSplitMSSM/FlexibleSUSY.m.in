@@ -41,7 +41,8 @@ HighScaleInput = {
                   If[IsClose[SCALE^2,msq2[3,3]] &&
                      IsClose[SCALE^2,msu2[3,3]] &&
                      IsClose[SCALE,M3Input],
-                     lambda2LPhiHSSDegenerate, lambda2LPhiHSSFull]}
+                     lambda2LPhiHSSAlphaTAlphaSDegenerate,
+                     lambda2LPhiHSSAlphaTAlphaSFull]}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -185,7 +186,7 @@ lambda1LChi2 = 1/(4 Pi)^2 (
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    arXiv:1407.4081, Eq. (36)
    Valid in the limit M3 = MQ[3,3] = MU[3,3] = MSUSY *)
-lambda2LPhiHSSDegenerate = With[{ r = xt / SCALE },
+lambda2LPhiHSSAlphaTAlphaSDegenerate = With[{ r = xt / SCALE },
     (g3^2 Yu[3,3]^4)/(96 Pi^4) (
         -12 r - 6 r^2 + 14 r^3 + 1/2 r^4 - r^5
     )
@@ -194,7 +195,7 @@ lambda2LPhiHSSDegenerate = With[{ r = xt / SCALE },
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
    arXiv:1407.4081, provided by Pietro Slavich,
    General expression. *)
-lambda2LPhiHSSFull = With[{
+lambda2LPhiHSSAlphaTAlphaSFull = With[{
     htSM = Yu[3,3] Sin[ArcTan[TanBeta]],
     CF = 4/3,
     Nc = 3,
@@ -276,3 +277,77 @@ betaLambda = (
     - 4 gYd gYu g2d g2u
     - 2 (gYd^2 + g2u^2) (gYu^2 + g2d^2)
 );
+
+(* lambda 2-loop threshold correction O(alpha_t^2),
+   arxiv:1504.05300, Eq. (21) *)
+lambda2LHSSAlphaT2 = With[{
+    tan\[Beta] = TanBeta,
+    mst = Sqrt[msq2[2,2]], (* average stop mass *)
+    Q = SCALE,
+    \[Mu] = MuInput,
+    K = -0.1953256,
+    Xt = xt,
+    gt = Yu[3,3] (* SM Yukawa coupling *)
+    },
+(3*(1 + tan\[Beta]^2)*(1/2 - 8.34993159891064/(1 + tan\[Beta]^2) +
+   (6*\[Mu]^2)/mst^2 +
+   (Xt^6*(-1/2 + (1/2 - Log[mst^2/Q^2]/2)/(1 + tan\[Beta]^2) +
+      Log[mst^2/Q^2]/2))/mst^6 - 4*Log[mst^2/Q^2] +
+   (13*Log[mst^2/Q^2])/(1 + tan\[Beta]^2) - (6*\[Mu]^2*Log[mst^2/Q^2])/
+    mst^2 + 3*Log[mst^2/Q^2]^2 - (3*Log[mst^2/Q^2]^2)/(1 + tan\[Beta]^2) +
+   (Xt^3*(Xt/mst + (2*\[Mu]*Csc[2*ArcTan[tan\[Beta]]])/mst)*
+     (0.8747904000000002/(1 + tan\[Beta]^2) - (2*Log[mst^2/Q^2])/
+       (1 + tan\[Beta]^2)))/mst^3 +
+   (Xt/mst + (2*\[Mu]*Csc[2*ArcTan[tan\[Beta]]])/mst)^2*
+    (0.1252095999999998/(1 + tan\[Beta]^2) + (3*Log[mst^2/Q^2])/
+      (1 + tan\[Beta]^2)) +
+   (Xt*(Xt/mst + (2*\[Mu]*Csc[2*ArcTan[tan\[Beta]]])/mst)*
+     (0.5008383999999992/(1 + tan\[Beta]^2) + (12*Log[mst^2/Q^2])/
+       (1 + tan\[Beta]^2)))/mst +
+   4*Piecewise[{{-9/4, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+     Re[((-1 + (2*\[Mu]^2)/mst^2 + (2*\[Mu]^4)/mst^4)*
+        (-Pi^2/6 - (\[Mu]^2*Log[\[Mu]^2/mst^2])/mst^2 + Log[\[Mu]^2/mst^2]*
+          Log[1 - \[Mu]^2/mst^2] + PolyLog[2, \[Mu]^2/mst^2]))/
+       (1 - \[Mu]^2/mst^2)^2]] -
+   8*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+     (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))] -
+   (2*\[Mu]^2*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+      (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))])/mst^2 +
+   (3*\[Mu]^2*Piecewise[{{1/2, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+      (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
+       (1 - \[Mu]^2/mst^2)])/mst^2 +
+   (Xt^2*(-7 + 19.6878144/(1 + tan\[Beta]^2) - (6*\[Mu]^2)/mst^2 +
+      27*Log[mst^2/Q^2] - (24*Log[mst^2/Q^2])/(1 + tan\[Beta]^2) +
+      (6*\[Mu]^2*Log[mst^2/Q^2])/mst^2 +
+      (Xt/mst + (2*\[Mu]*Csc[2*ArcTan[tan\[Beta]]])/mst)^2*
+       (-0.021147733333332752/(1 + tan\[Beta]^2) - (3*Log[mst^2/Q^2])/
+         (1 + tan\[Beta]^2)) +
+      4*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+        (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))] -
+      (6*\[Mu]^2*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+         (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))])/mst^2 -
+      4*Piecewise[{{1/2, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+        (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
+         (1 - \[Mu]^2/mst^2)] -
+      (6*\[Mu]^2*Piecewise[{{1/2, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+         (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
+          (1 - \[Mu]^2/mst^2)])/mst^2))/mst^2 +
+   (Xt^4*(11/2 - 25/(4*(1 + tan\[Beta]^2)) + \[Mu]^2/mst^2 -
+      (13*Log[mst^2/Q^2])/2 + (6*Log[mst^2/Q^2])/(1 + tan\[Beta]^2) -
+      (\[Mu]^2*Log[mst^2/Q^2])/mst^2 +
+      (Xt/mst + (2*\[Mu]*Csc[2*ArcTan[tan\[Beta]]])/mst)^2*
+       (-0.020728533333333354/(1 + tan\[Beta]^2) + Log[mst^2/Q^2]/
+         (2*(1 + tan\[Beta]^2))) -
+      Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+        (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))]/2 +
+      (\[Mu]^2*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+         (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))])/mst^2 +
+      Piecewise[{{1/2, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+        (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
+         (1 - \[Mu]^2/mst^2)]/2 +
+      (\[Mu]^2*Piecewise[{{1/2, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
+         (1 + (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2)))/
+          (1 - \[Mu]^2/mst^2)])/(2*mst^2)))/mst^4)*gt^6)/
+    (256*Pi^4*tan\[Beta]^2)
+    /. Piecewise[{{val_, cond_}}, default_] :> If[cond, val, default]
+    ];
