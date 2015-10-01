@@ -73,53 +73,53 @@ CreateParticles[] := Module[{particles, code},
                             ];
 
 muonFunctions = Null;
-CreateMuonFunctions[] := Module[{muonIndex, muonFamily, prototypes, definitions},
-                                If[muonFunctions =!= Null, Return[muonFunctions]];
-                                muonIndex = GetMuonIndex[];
-                                muonFamily = GetMuonFamily[];
-                                
-                                prototypes = ("static const unsigned int muonIndex();\n" <>
-                                              "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
-                                              "static const double muonCharge( EvaluationContext &context );");
-                                
-                                definitions = ("static const unsigned int muonIndex()\n" <>
-                                               "{ unsigned int muonIndex" <>
-                                               If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
-                                               "; return muonIndex; }\n" <>
-                                               "static const double muonPhysicalMass( EvaluationContext &context )\n" <>
-                                                "{\n" <>
-                                                IndentText @
-                                                ("static double m_muon_pole = 0.0;\n\n" <>
-                                                 
-                                                 "if( m_muon_pole == 0.0 )\n" <>
-                                                 "{\n" <>
-                                                 IndentText @
-                                                 ("m_muon_pole = context.model.get_physical().M" <>
-                                                  ParticleToCXXName[muonFamily] <> "(" <>
-                                                     If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n\n" <>
-                                                  
-                                                  "if( m_muon_pole == 0.0 )\n" <>
-                                                  "{\n" <>
-                                                  IndentText @
-                                                  ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
-                                                   "m_muon_pole = context.model.get_physical().M" <>
-                                                      ParticleToCXXName[muonFamily] <> "(" <>
-                                                      If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n") <>
-                                                  "}\n") <>
-                                                 "}\n\n" <>
-                                                 
-                                                 "return m_muon_pole;\n") <>
-                                               "}\n" <>
-                                               "static const double muonCharge( EvaluationContext &context )\n" <>
-                                               "{ return context.model." <>
-                                               NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
-                                               If[muonIndex =!= Null,
-                                                  "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
-                                                  "()"] <> "; }");
-                                
-                                muonFunctions = {prototypes, definitions};
-                                Return[muonFunctions];
-                                ];
+CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototypes, definitions},
+                                                If[muonFunctions =!= Null, Return[muonFunctions]];
+                                                muonIndex = GetMuonIndex[];
+                                                muonFamily = GetMuonFamily[];
+                                                
+                                                prototypes = ("static const unsigned int muonIndex();\n" <>
+                                                              "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
+                                                              "static const double muonCharge( EvaluationContext &context );");
+                                                
+                                                definitions = ("static const unsigned int muonIndex()\n" <>
+                                                               "{ unsigned int muonIndex" <>
+                                                               If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
+                                                               "; return muonIndex; }\n" <>
+                                                               "static const double muonPhysicalMass( EvaluationContext &context )\n" <>
+                                                               "{\n" <>
+                                                               IndentText @
+                                                               ("static double m_muon_pole = 0.0;\n\n" <>
+                                                                
+                                                                "if( m_muon_pole == 0.0 )\n" <>
+                                                                "{\n" <>
+                                                                IndentText @
+                                                                ("m_muon_pole = context.model.get_physical().M" <>
+                                                                 ParticleToCXXName[muonFamily] <> "(" <>
+                                                                 If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n\n" <>
+                                                                 
+                                                                 "if( m_muon_pole == 0.0 )\n" <>
+                                                                 "{\n" <>
+                                                                 IndentText @
+                                                                 ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
+                                                                  "m_muon_pole = context.model.get_physical().M" <>
+                                                                  ParticleToCXXName[muonFamily] <> "(" <>
+                                                                  If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n") <>
+                                                                 "}\n") <>
+                                                                "}\n\n" <>
+                                                                
+                                                                "return m_muon_pole;\n") <>
+                                                               "}\n" <>
+                                                               "static const double muonCharge( EvaluationContext &context )\n" <>
+                                                               "{ return context.model." <>
+                                                               NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
+                                                               If[muonIndex =!= Null,
+                                                                  "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
+                                                                  "()"] <> "; }");
+                                                
+                                                muonFunctions = {prototypes, definitions};
+                                                Return[muonFunctions];
+                                                ];
 
 CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            diagrams = contributingFeynmanDiagramTypes;
@@ -142,7 +142,7 @@ CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            Return[code];
                            ];
 
-CreateVertexFunctionData[] := CreateVertices[][[1]];
+CreateVertexFunctionData[vertexRules_List] := CreateVertices[vertexRules][[1]];
 
 CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitter, class ExchangeParticle>\n" <>
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
@@ -172,11 +172,27 @@ CreateCalculation[] := Module[{code},
 
 CreateThreadedCalculation[] := CreateCalculation[];
 
-CreateDefinitions[] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-                        CreateMuonFunctions[][[2]] <> "\n\n" <>
-                        CreateVertices[][[2]]);
+CreateDefinitions[vertexRules_List] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
+                                        CreateMuonFunctions[][[2]] <> "\n\n" <>
+                                        CreateVertices[vertexRules][[2]]);
 
-NPointFunctions[] := (If[nPointFunctions === Null, CreateVertices[]]; Return[nPointFunctions]);
+nPointFunctions = Null;
+NPointFunctions[] := Module[{contributingDiagrams, vertices},
+                            If[nPointFunctions =!= Null, Return[nPointFunctions]];
+                            
+                            contributingDiagrams = ContributingDiagrams[];
+                            
+                            vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
+                            AppendTo[vertices, StripLorentzIndices @ MemoizingVertex[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}][[1]]];
+                            vertices = DeleteDuplicates[vertices];
+                            
+                            vertices = (OrderParticles[#, Ordering[(Vertices`StripFieldIndices /@ #)]] &) /@ vertices;
+                            vertices = DeleteDuplicates[vertices,
+                                                        (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
+                            
+                            nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
+                            Return[nPointFunctions];
+                            ];
 
 
 (**************** End public interface *****************)
@@ -384,35 +400,26 @@ ContributingDiagramsOfType[type : (OneLoopDiagram[3] | OneLoopDiagram[4]), fermi
            ];
 
 (* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
- The returned value is a list {prototypes, definitions}.
- Also the necessary nPointFunctions are created. *)
+ The returned value is a list {prototypes, definitions}. *)
 createdVertices = Null;
-nPointFunctions = Null;
-CreateVertices[] := Module[{contributingDiagrams, vertices,
-                            vertexClassesPrototypes, vertexClassesDefinitions},
-                           If[createdVertices =!= Null, Return[createdVertices]];
-                           
-                           contributingDiagrams = ContributingDiagrams[];
-                           
-                           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
-                           vertices = DeleteDuplicates[vertices];
-                           
-                           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ (CreateVertexFunction /@ vertices);
-                           vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
-                           vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
-                           
-                           AppendTo[vertices, {GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}];
-                           vertices = (OrderParticles[#, Ordering[(Vertices`StripFieldIndices /@ #)]] &) /@ vertices;
-                           vertices = DeleteDuplicates[vertices,
-                                                       (Vertices`StripFieldIndices[#1] === Vertices`StripFieldIndices[#2] &)];
-                           
-                           nPointFunctions = Flatten[(Null[Null, #] &) /@ ((CouplingsForParticles[#] &) /@ vertices)];
-                           
-                           createdVertices = {vertexClassesPrototypes, vertexClassesDefinitions};
-                           createdVertices = (StringJoin @ Riffle[#, "\n\n"] &) /@ createdVertices;
-                           
-                           Return[createdVertices];
-                           ];
+CreateVertices[vertexRules_List] := Module[{contributingDiagrams, vertices,
+    vertexClassesPrototypes, vertexClassesDefinitions},
+                                           If[createdVertices =!= Null, Return[createdVertices]];
+                                           contributingDiagrams = ContributingDiagrams[];
+                                           
+                                           vertices = Flatten[VerticesForDiagram /@ contributingDiagrams, 1];
+                                           AppendTo[vertices, StripLorentzIndices @ MemoizingVertex[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}][[1]]];
+                                           vertices = DeleteDuplicates[vertices];
+                                           
+                                           {vertexClassesPrototypes, vertexClassesDefinitions} = Transpose @ ((CreateVertexFunction[#, vertexRules] &) /@ vertices);
+                                           vertexClassesPrototypes = Cases[vertexClassesPrototypes, Except[""]];
+                                           vertexClassesDefinitions = Cases[vertexClassesDefinitions, Except[""]];
+                                           
+                                           createdVertices = {vertexClassesPrototypes, vertexClassesDefinitions};
+                                           createdVertices = (StringJoin @ Riffle[#, "\n\n"] &) /@ createdVertices;
+                                           
+                                           Return[createdVertices];
+                                           ];
 
 (* Returns the vertices that are present in the specified diagram.
  This function should be overloaded for future diagram types.
@@ -468,7 +475,7 @@ CouplingsForParticles[particles_List] :=
  This involves creating the VertexFunctionData<> code as well as
  the VertexFunction<> code. You should never need to change this code! *)
 vertexFunctions = {};
-CreateVertexFunction[indexedParticles_List] :=
+CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
     (Module[{prototypes, definitions = "", ordering, particles, orderedParticles,
              orderedIndexedParticles, addSpacing = True},
             particles = Vertices`StripFieldIndices /@ indexedParticles;
@@ -483,7 +490,7 @@ CreateVertexFunction[indexedParticles_List] :=
                prototypes = "";
                addSpacing = False,
                (* There is no entry yet, create it *)
-               {prototypes, definitions} = CreateOrderedVertexFunction[orderedIndexedParticles];
+               {prototypes, definitions} = CreateOrderedVertexFunction[orderedIndexedParticles, vertexRules];
                AppendTo[vertexFunctions, orderedParticles];
                ];
             
@@ -525,7 +532,7 @@ CreateVertexFunction[indexedParticles_List] :=
 
 (* The heart of the algorithm! From the particle content, determine all
  necessary information. *)
-ParseVertex[indexedParticles_List] :=
+ParseVertex[indexedParticles_List, vertexRules_List] :=
     Module[{particles, numberOfIndices, indexParameters,
         parsedVertex, vertexClassName, vertexFunctionBody,
         sarahParticles, particleInfo, indexBounds},
@@ -538,7 +545,7 @@ ParseVertex[indexedParticles_List] :=
            If[indexParameters =!= "", indexParameters = " " <> indexParameters <> " "];
            
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
-           vertexFunctionBody = Switch[vertexClassName,
+           (* vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        "return vertex_type( context.model." <>
                                        NameOfCouplingFunction[particles] <>
@@ -551,6 +558,14 @@ ParseVertex[indexedParticles_List] :=
                                        "std::complex<double> right = context.model." <>
                                        NameOfCouplingFunction[particles] <> "PR" <>
                                        "(" <> indexParameters <> ");\n\n" <>
+                                       "return vertex_type( left, right );"]; *)
+           vertexFunctionBody = Switch[vertexClassName,
+                                       "SingleComponentedVertex",
+                                       "return vertex_type( 0.0 );",
+                                       
+                                       "LeftAndRightComponentedVertex",
+                                       "std::complex<double> left = 0.0;\n" <>
+                                       "std::complex<double> right = 0.0;\n\n" <>
                                        "return vertex_type( left, right );"];
            
            sarahParticles = SARAH`getParticleName /@ particles;
@@ -592,11 +607,11 @@ VertexFunctionBody[parsedVertex_ParsedVertex] := parsedVertex[[4]];
 (** End getters **)
 
 (* Create the c++ code for a canonically ordered vertex *)
-CreateOrderedVertexFunction[orderedIndexedParticles_List] :=
+CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
     (Module[{prototype, definition, orderedParticles, dataClassName, functionClassName,
         parsedVertex, particleIndexStartF, particleIndexStart, indexBounds},
             orderedParticles = Vertices`StripFieldIndices /@ orderedIndexedParticles;
-            parsedVertex = ParseVertex[orderedIndexedParticles];
+            parsedVertex = ParseVertex[orderedIndexedParticles, vertexRules];
             dataClassName = "VertexFunctionData<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
             functionClassName = "VertexFunction<" <> StringJoin @ Riffle[ParticleToCXXName /@ orderedParticles, ", "] <> ">";
             
