@@ -417,7 +417,7 @@ public:
 @GMuonMinus2_VertexFunctionData@
 }
 
-double @ModelName@_GMuonMinus2::calculate_amuon(@ModelName@_mass_eigenstates &model)
+double @ModelName@_GMuonMinus2::calculate_amuon(const @ModelName@_mass_eigenstates& model_)
 {
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
