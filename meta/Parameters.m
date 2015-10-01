@@ -136,6 +136,10 @@ AddRealParameter[parameter_] :=
 SetRealParameters[parameters_List] :=
     additionalRealParameters = parameters;
 
+DebugPrint[msg___] :=
+    If[FlexibleSUSY`FSDebugOutput,
+       Print["Debug<Parameters>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
+
 FindSymbolDef[sym_] :=
     Module[{symDef},
            symDef = Cases[SARAH`ParameterDefinitions,
@@ -1028,8 +1032,8 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
                              {___, SARAH`Description -> description, ___}} :>
                             particle];
            If[Length[particle] == 0,
-              Print["Error: Particle with description \"", description,
-                    "\" not found."];
+              DebugPrint["Note: Particle with description \"", description,
+                         "\" not found."];
               Return[Null];
              ];
            If[Length[particle] > 1,
