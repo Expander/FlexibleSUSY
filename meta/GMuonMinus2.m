@@ -111,11 +111,7 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                                 "return m_muon_pole;\n") <>
                                                                "}\n" <>
                                                                "static const double muonCharge( EvaluationContext &context )\n" <>
-                                                               "{ return context.model." <>
-                                                               NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
-                                                               If[muonIndex =!= Null,
-                                                                  "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
-                                                                  "()"] <> "; }");
+                                                               "{ return 1.0; }");
                                                 
                                                 muonFunctions = {prototypes, definitions};
                                                 Return[muonFunctions];
@@ -173,7 +169,7 @@ CreateCalculation[] := Module[{code},
 CreateThreadedCalculation[] := CreateCalculation[];
 
 CreateDefinitions[vertexRules_List] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-                                        CreateMuonFunctions[][[2]] <> "\n\n" <>
+                                        CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>
                                         CreateVertices[vertexRules][[2]]);
 
 nPointFunctions = Null;
