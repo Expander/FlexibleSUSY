@@ -38,7 +38,6 @@ namespace @ModelName@_GMuonMinus2 {
 */
 double calculate_amuon(const @ModelName@_mass_eigenstates& model);
 } // namespace @ModelName@_GMuonMinus2
-
 } // namespace flexiblesusy
 
 #endif

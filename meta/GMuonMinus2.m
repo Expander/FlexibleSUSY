@@ -78,15 +78,15 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                 muonIndex = GetMuonIndex[];
                                                 muonFamily = GetMuonFamily[];
                                                 
-                                                prototypes = ("static const unsigned int muonIndex();\n" <>
-                                                              "static const double muonPhysicalMass( EvaluationContext &context );\n" <>
-                                                              "static const double muonCharge( EvaluationContext &context );");
+                                                prototypes = ("unsigned int muonIndex();\n" <>
+                                                              "double muonPhysicalMass( EvaluationContext &context );\n" <>
+                                                              "double muonCharge( EvaluationContext &context );");
                                                 
-                                                definitions = ("static const unsigned int muonIndex()\n" <>
+                                                definitions = (" unsigned int muonIndex()\n" <>
                                                                "{ unsigned int muonIndex" <>
                                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
                                                                "; return muonIndex; }\n" <>
-                                                               "static const double muonPhysicalMass( EvaluationContext &context )\n" <>
+                                                               "double muonPhysicalMass( EvaluationContext &context )\n" <>
                                                                "{\n" <>
                                                                IndentText @
                                                                ("static double m_muon_pole = 0.0;\n\n" <>
@@ -110,12 +110,8 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                                 
                                                                 "return m_muon_pole;\n") <>
                                                                "}\n" <>
-                                                               "static const double muonCharge( EvaluationContext &context )\n" <>
-                                                               "{ return context.model." <>
-                                                               NameOfCouplingFunction[{GetPhoton[], GetMuonFamily[], SARAH`bar[GetMuonFamily[]]}] <> "PL" <>
-                                                               If[muonIndex =!= Null,
-                                                                  "( " <> ToString[muonIndex-1] <> ", " <> ToString[muonIndex-1] <> " )",
-                                                                  "()"] <> "; }");
+                                                               "double muonCharge( EvaluationContext &context )\n" <>
+                                                               "{ return 1.0; }");
                                                 
                                                 muonFunctions = {prototypes, definitions};
                                                 Return[muonFunctions];
@@ -173,7 +169,7 @@ CreateCalculation[] := Module[{code},
 CreateThreadedCalculation[] := CreateCalculation[];
 
 CreateDefinitions[vertexRules_List] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
-                                        CreateMuonFunctions[][[2]] <> "\n\n" <>
+                                        CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>
                                         CreateVertices[vertexRules][[2]]);
 
 nPointFunctions = Null;
@@ -204,8 +200,8 @@ Module[{particles, code},
        particles = Select[particles, (! TreeMasses`IsGhost[#] &)];
        
        code = (StringJoin @
-               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">( " <>
-                       If[TreeMasses`GetDimension[#] === 1, "", "unsigned int index"] <> " ) const\n" <>
+               Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">(" <>
+                       If[TreeMasses`GetDimension[#] === 1, "", " unsigned int index "] <> ") const\n" <>
                        "{ return model.get_M" <> ParticleToCXXName[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
                        &) /@ particles, "\n\n"]);
@@ -545,20 +541,6 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
            If[indexParameters =!= "", indexParameters = " " <> indexParameters <> " "];
            
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
-           (* vertexFunctionBody = Switch[vertexClassName,
-                                       "SingleComponentedVertex",
-                                       "return vertex_type( context.model." <>
-                                       NameOfCouplingFunction[particles] <>
-                                       "(" <> indexParameters <> ") );",
-                                       
-                                       "LeftAndRightComponentedVertex",
-                                       "std::complex<double> left = context.model." <>
-                                       NameOfCouplingFunction[particles] <> "PL" <>
-                                       "(" <> indexParameters <> ");\n" <>
-                                       "std::complex<double> right = context.model." <>
-                                       NameOfCouplingFunction[particles] <> "PR" <>
-                                       "(" <> indexParameters <> ");\n\n" <>
-                                       "return vertex_type( left, right );"]; *)
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        "return vertex_type( 0.0 );",
