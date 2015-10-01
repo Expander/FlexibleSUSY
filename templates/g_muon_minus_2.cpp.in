@@ -47,8 +47,7 @@
 
 using namespace flexiblesusy;
 
-namespace flexiblesusy {
-namespace @ModelName@_GMuonMinus2 {
+namespace {
 /**
  * @class IndexBounds<N>
  * @brief A class representing multiple (N) index ranges.
@@ -214,6 +213,11 @@ template<class P> double EvaluationContext::mass(unsigned int index) const
  * for a specific diagram class with specified particles.
  */
 template<class ...Args> struct DiagramEvaluator;
+
+double OneLoopFunctionF1C(double x);
+double OneLoopFunctionF2C(double x);
+double OneLoopFunctionF1N(double x);
+double OneLoopFunctionF2N(double x);
 
 @GMuonMinus2_MuonFunctionPrototypes@
 
@@ -411,123 +415,9 @@ public:
 };
 
 @GMuonMinus2_VertexFunctionData@
-
-/**
- * @defgroup LoopFunctions
- * @brief The loop functions necessary for GMM2 one-loop calculations.
- *
- * These are OneLoopFunctionF1C(), OneLoopFunctionF2C(),
- * OneLoopFunctionF1N() and OneLoopFunctionF2N()
- * as specified in arXiv:1311.1775
-*/
-
-static inline double OneLoopFunctionF1C(double x)
-{
-   if (is_zero(x))
-      return 4.0;
-
-   /* error around x=1 is <= 10^-12 on an intel i7 */
-   double y = x - 1.0;
-   if (std::abs(y) < 0.21) {
-      return (1.0000000000000000000 -
-              0.60000000000000000000  * y +
-              0.40000000000000000000  * y * y -
-              0.28571428571428571429  * y * y * y +
-              0.21428571428571428571  * y * y * y * y -
-              0.16666666666666666667  * y * y * y * y * y +
-              0.13333333333333333333  * y * y * y * y * y * y -
-              0.10909090909090909091  * y * y * y * y * y * y * y +
-              0.090909090909090909091 * y * y * y * y * y * y * y * y -
-              0.076923076923076923077 * y * y * y * y * y * y * y * y * y +
-              0.065934065934065934066 * y * y * y * y * y * y * y * y * y * y -
-              0.057142857142857142857 * y * y * y * y * y * y * y * y * y * y * y +
-              0.050000000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.044117647058823529412 * y * y * y * y * y * y * y * y * y * y * y * y * y +
-              0.039215686274509803922 * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.035087719298245614035 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
-   }
-
-   return 2.0 / (y * y * y * y) * (2.0 + 3.0 * x - 6.0 * x * x + x * x * x + 6.0 * x * std::log(x));
-}
-static inline double OneLoopFunctionF2C(double x)
-{
-   /* error around x=1 is <= 10^-13 on an intel i7 */
-   double y = x - 1.0;
-   if (std::abs(y) < 0.155)
-      return (1.0 - 0.75 * y + 0.6 * y * y -
-              0.50000000000000000000 * y * y * y +
-              0.4285714285714285714  * y * y * y * y -
-              0.37500000000000000000 * y * y * y * y * y +
-              0.33333333333333333333 * y * y * y * y * y * y -
-              0.3000000000000000000  * y * y * y * y * y * y * y +
-              0.2727272727272727273  * y * y * y * y * y * y * y * y -
-              0.2500000000000000000  * y * y * y * y * y * y * y * y * y +
-              0.23076923076923076923 * y * y * y * y * y * y * y * y * y * y -
-              0.21428571428571428571 * y * y * y * y * y * y * y * y * y * y * y +
-              0.2000000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.1875000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y * y +
-              0.1764705882352941176  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.16666666666666666667 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
-
-   return -3.0 / (2.0 * y * y * y) * (-3.0 + 4.0 * x - x * x - 2.0 * std::log(x));
 }
 
-static inline double OneLoopFunctionF1N(double x)
-{
-   if (is_zero(x))
-      return 2.0;
-
-   /* error around x=1 is <= 10^-12 on an intel i7 */
-   double y = x - 1.0;
-   if (std::abs(y) < 0.23)
-      return (1.0000000000000000000 -
-              0.4000000000000000000  * y +
-              0.2000000000000000000  * y * y -
-              0.11428571428571428571 * y * y * y +
-              0.07142857142857142857 * y * y * y * y -
-              0.04761904761904761905 * y * y * y * y * y +
-              0.03333333333333333333 * y * y * y * y * y * y -
-              0.02424242424242424242 * y * y * y * y * y * y * y +
-              0.0181818181818181818  * y * y * y * y * y * y * y * y -
-              0.01398601398601398601 * y * y * y * y * y * y * y * y * y +
-              0.01098901098901098901 * y * y * y * y * y * y * y * y * y * y -
-              0.0087912087912087912  * y * y * y * y * y * y * y * y * y * y * y +
-              0.00714285714285714286 * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.0058823529411764706  * y * y * y * y * y * y * y * y * y * y * y * y * y +
-              0.0049019607843137255  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.0041279669762641899  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
-
-   return 2.0 / (y * y * y * y) * (1.0 - 6.0 * x + 3.0 * x * x + 2.0 * x * x * x - 6.0 * x * x * std::log(x));
-}
-static inline double OneLoopFunctionF2N(double x)
-{
-   if (is_zero(x))
-      return 3.0;
-
-   /* error around x=1 is <= 10^-13 on an intel i7 */
-   double y = x - 1.0;
-   if (std::abs(y) < 0.185)
-      return (1.0000000000000000000 -
-              0.50000000000000000000 * y +
-              0.30000000000000000000 * y * y -
-              0.2000000000000000000  * y * y * y +
-              0.14285714285714285714 * y * y * y * y -
-              0.10714285714285714286 * y * y * y * y * y +
-              0.08333333333333333333 * y * y * y * y * y * y -
-              0.06666666666666666667 * y * y * y * y * y * y * y +
-              0.05454545454545454545 * y * y * y * y * y * y * y * y -
-              0.0454545454545454545  * y * y * y * y * y * y * y * y * y +
-              0.0384615384615384615  * y * y * y * y * y * y * y * y * y * y -
-              0.03296703296703296703 * y * y * y * y * y * y * y * y * y * y * y +
-              0.0285714285714285714  * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.02500000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y * y +
-              0.0220588235294117647  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
-              0.0196078431372549020  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
-
-   return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
-}
-
-double calculate_amuon(const @ModelName@_mass_eigenstates& model_)
+double @ModelName@_GMuonMinus2::calculate_amuon(const @ModelName@_mass_eigenstates& model_)
 {
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
@@ -537,6 +427,124 @@ double calculate_amuon(const @ModelName@_mass_eigenstates& model_)
 #else
 @GMuonMinus2_Calculation@
 #endif
+}
+
+namespace {
+/**
+* @defgroup LoopFunctions
+* @brief The loop functions necessary for GMM2 one-loop calculations.
+*
+* These are OneLoopFunctionF1C(), OneLoopFunctionF2C(),
+* OneLoopFunctionF1N() and OneLoopFunctionF2N()
+* as specified in arXiv:1311.1775
+*/
+
+double OneLoopFunctionF1C(double x)
+{
+if (is_zero(x))
+return 4.0;
+
+/* error around x=1 is <= 10^-12 on an intel i7 */
+double y = x - 1.0;
+if (std::abs(y) < 0.21) {
+return (1.0000000000000000000 -
+0.60000000000000000000  * y +
+0.40000000000000000000  * y * y -
+0.28571428571428571429  * y * y * y +
+0.21428571428571428571  * y * y * y * y -
+0.16666666666666666667  * y * y * y * y * y +
+0.13333333333333333333  * y * y * y * y * y * y -
+0.10909090909090909091  * y * y * y * y * y * y * y +
+0.090909090909090909091 * y * y * y * y * y * y * y * y -
+0.076923076923076923077 * y * y * y * y * y * y * y * y * y +
+0.065934065934065934066 * y * y * y * y * y * y * y * y * y * y -
+0.057142857142857142857 * y * y * y * y * y * y * y * y * y * y * y +
+0.050000000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y -
+0.044117647058823529412 * y * y * y * y * y * y * y * y * y * y * y * y * y +
+0.039215686274509803922 * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+0.035087719298245614035 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+}
+
+return 2.0 / (y * y * y * y) * (2.0 + 3.0 * x - 6.0 * x * x + x * x * x + 6.0 * x * std::log(x));
+}
+
+double OneLoopFunctionF2C(double x)
+{
+/* error around x=1 is <= 10^-13 on an intel i7 */
+double y = x - 1.0;
+if (std::abs(y) < 0.155)
+return (1.0 - 0.75 * y + 0.6 * y * y -
+0.50000000000000000000 * y * y * y +
+0.4285714285714285714  * y * y * y * y -
+0.37500000000000000000 * y * y * y * y * y +
+0.33333333333333333333 * y * y * y * y * y * y -
+0.3000000000000000000  * y * y * y * y * y * y * y +
+0.2727272727272727273  * y * y * y * y * y * y * y * y -
+0.2500000000000000000  * y * y * y * y * y * y * y * y * y +
+0.23076923076923076923 * y * y * y * y * y * y * y * y * y * y -
+0.21428571428571428571 * y * y * y * y * y * y * y * y * y * y * y +
+0.2000000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y -
+0.1875000000000000000  * y * y * y * y * y * y * y * y * y * y * y * y * y +
+0.1764705882352941176  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+0.16666666666666666667 * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+return -3.0 / (2.0 * y * y * y) * (-3.0 + 4.0 * x - x * x - 2.0 * std::log(x));
+}
+
+double OneLoopFunctionF1N(double x)
+{
+if (is_zero(x))
+return 2.0;
+
+/* error around x=1 is <= 10^-12 on an intel i7 */
+double y = x - 1.0;
+if (std::abs(y) < 0.23)
+return (1.0000000000000000000 -
+0.4000000000000000000  * y +
+0.2000000000000000000  * y * y -
+0.11428571428571428571 * y * y * y +
+0.07142857142857142857 * y * y * y * y -
+0.04761904761904761905 * y * y * y * y * y +
+0.03333333333333333333 * y * y * y * y * y * y -
+0.02424242424242424242 * y * y * y * y * y * y * y +
+0.0181818181818181818  * y * y * y * y * y * y * y * y -
+0.01398601398601398601 * y * y * y * y * y * y * y * y * y +
+0.01098901098901098901 * y * y * y * y * y * y * y * y * y * y -
+0.0087912087912087912  * y * y * y * y * y * y * y * y * y * y * y +
+0.00714285714285714286 * y * y * y * y * y * y * y * y * y * y * y * y -
+0.0058823529411764706  * y * y * y * y * y * y * y * y * y * y * y * y * y +
+0.0049019607843137255  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+0.0041279669762641899  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+return 2.0 / (y * y * y * y) * (1.0 - 6.0 * x + 3.0 * x * x + 2.0 * x * x * x - 6.0 * x * x * std::log(x));
+}
+
+double OneLoopFunctionF2N(double x)
+{
+if (is_zero(x))
+return 3.0;
+
+/* error around x=1 is <= 10^-13 on an intel i7 */
+double y = x - 1.0;
+if (std::abs(y) < 0.185)
+return (1.0000000000000000000 -
+0.50000000000000000000 * y +
+0.30000000000000000000 * y * y -
+0.2000000000000000000  * y * y * y +
+0.14285714285714285714 * y * y * y * y -
+0.10714285714285714286 * y * y * y * y * y +
+0.08333333333333333333 * y * y * y * y * y * y -
+0.06666666666666666667 * y * y * y * y * y * y * y +
+0.05454545454545454545 * y * y * y * y * y * y * y * y -
+0.0454545454545454545  * y * y * y * y * y * y * y * y * y +
+0.0384615384615384615  * y * y * y * y * y * y * y * y * y * y -
+0.03296703296703296703 * y * y * y * y * y * y * y * y * y * y * y +
+0.0285714285714285714  * y * y * y * y * y * y * y * y * y * y * y * y -
+0.02500000000000000000 * y * y * y * y * y * y * y * y * y * y * y * y * y +
+0.0220588235294117647  * y * y * y * y * y * y * y * y * y * y * y * y * y * y -
+0.0196078431372549020  * y * y * y * y * y * y * y * y * y * y * y * y * y * y * y);
+
+return -3.0 / (y * y * y) * (1.0 - x * x + 2.0 * x * std::log(x));
 }
 
 @GMuonMinus2_Definitions@
@@ -707,6 +715,5 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
    }
 
    return res;
-}
 }
 }
