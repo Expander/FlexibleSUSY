@@ -37,12 +37,13 @@ HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[THRESHOLD-1] (lambda1LReg + lambda1LPhi
                                          + lambda1LChi1 + lambda1LChi2)
-                + UnitStep[THRESHOLD-2]
-                  If[IsClose[SCALE^2,msq2[3,3]] &&
-                     IsClose[SCALE^2,msu2[3,3]] &&
-                     IsClose[SCALE,M3Input],
-                     lambda2LPhiHSSAlphaTAlphaSDegenerate,
-                     lambda2LPhiHSSAlphaTAlphaSFull]}
+                + UnitStep[THRESHOLD-2] (
+                    If[IsClose[SCALE^2,msq2[3,3]] &&
+                       IsClose[SCALE^2,msu2[3,3]] &&
+                       IsClose[SCALE,M3Input],
+                       lambda2LPhiHSSAlphaTAlphaSDegenerate,
+                       lambda2LPhiHSSAlphaTAlphaSFull]
+                    + lambda2LHSSAlphaT2) }
 };
 
 (* The scale where we impose the EWSB conditions
