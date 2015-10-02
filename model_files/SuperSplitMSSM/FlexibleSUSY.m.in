@@ -279,7 +279,7 @@ betaLambda = (
 );
 
 (* lambda 2-loop threshold correction O(alpha_t^2),
-   arxiv:1504.05300, Eq. (21) *)
+   arxiv:1504.05200, Eq. (21) *)
 lambda2LHSSAlphaT2 = With[{
     tan\[Beta] = TanBeta,
     mst = Sqrt[msq2[2,2]], (* average stop mass *)
