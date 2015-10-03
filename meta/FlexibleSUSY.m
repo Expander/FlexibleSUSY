@@ -997,14 +997,14 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
           ];
 
 (* Write the GMM2 c++ files *)
-WriteGMuonMinus2Class[files_List] :=
-    Module[{particles, muonFunctions, diagrams, vertexFunctions,
+WriteGMuonMinus2Class[vertexRules_List, files_List] :=
+    Module[{particles, muonFunctionPrototypes, diagrams, vertexFunctionData,
         definitions, calculationCode, threadedCalculationCode},
            particles = GMuonMinus2`CreateParticles[];
-           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[][[1]];
+           muonFunctionPrototypes = GMuonMinus2`CreateMuonFunctions[vertexRules][[1]];
            diagrams = GMuonMinus2`CreateDiagrams[];
-           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[];
-           definitions = GMuonMinus2`CreateDefinitions[];
+           vertexFunctionData = GMuonMinus2`CreateVertexFunctionData[vertexRules];
+           definitions = GMuonMinus2`CreateDefinitions[vertexRules];
            calculationCode = GMuonMinus2`CreateCalculation[];
            threadedCalculationCode = GMuonMinus2`CreateThreadedCalculation[];
            
@@ -2012,7 +2012,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            diagonalizationPrecision];
            
            Print["Creating class GMuonMinus2"];
-           WriteGMuonMinus2Class[{{FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
+           WriteGMuonMinus2Class[vertexRules,
+                                 {{FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.hpp.in"}],
                                    FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.hpp"}]},
                                   {FileNameJoin[{Global`$flexiblesusyTemplateDir, "g_muon_minus_2.cpp.in"}],
                                    FileNameJoin[{Global`$flexiblesusyOutputDir, FlexibleSUSY`FSModelName <> "_g_muon_minus_2.cpp"}]}}];
