@@ -562,6 +562,13 @@ Format[Power[E,z_],CForm] :=
     Format["Exp(" <> ToString[CForm[z]] <> ")", OutputForm];
 Protect[Power];
 
+Unprotect[If];
+Format[If[c_,a_,b_],CForm] :=
+    Format["If(" <> ToString[CForm[c]] <> ", " <>
+           ToString[CForm[Evaluate[a]]] <> ", " <>
+           ToString[CForm[Evaluate[b]]] <> ")", OutputForm];
+Protect[If];
+
 Format[CConversion`ZEROARRAY[a_,b_],CForm] :=
     Format["ZEROARRAY(" <> ToString[CForm[a]] <> "," <>
            ToString[CForm[b]] <> ")", OutputForm];
@@ -668,8 +675,8 @@ RValueToCFormString[expr_String] := expr;
 
 RValueToCFormString[expr_] :=
     Module[{times, result, symbols, greekSymbols, greekSymbolsRules},
-           symbols = Cases[{expr}, x_Symbol | x_Symbol[__] :> x, Infinity];
-           greekSymbols = Select[symbols, GreekQ];
+           symbols = Cases[expr, x_Symbol | x_Symbol[__] :> x, {0,Infinity}, Heads->True];
+           greekSymbols = DeleteDuplicates @ Select[symbols, GreekQ];
            greekSymbolsRules = Rule[#, FlexibleSUSY`GreekSymbol[#]]& /@ greekSymbols;
            result = expr /.
                     greekSymbolsRules /.

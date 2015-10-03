@@ -26,7 +26,7 @@ namespace flexiblesusy {
 SoftsusyMSSM_low_scale_constraint::SoftsusyMSSM_low_scale_constraint(const SoftsusyMSSM_parameter_point& pp_)
    : Constraint<Two_scale>()
    , mssm(NULL)
-   , scale(MZ)
+   , scale(softsusy::MZ)
    , pp(pp_)
 {
 }

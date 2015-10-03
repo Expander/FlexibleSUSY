@@ -1,4 +1,19 @@
-FlexibleSUSY-1.2.2 [not released yet]
+FlexibleSUSY-1.2.3 [not released yet]
+
+ * Feature: Adding support for If[] statements at the r.h.s. of
+   contraints.  In addition, the IsClose[a,b,eps] function has been
+   added to allow for a comparison of parameters.
+
+ * Change (commit f7cd242): The `test' and `examples' modules are no
+   longer loaded into the makefile by default.  To load them, run
+   ./configure --with-optional-modules="test examples"
+
+ * Change (commit e86d23a): The FlexibleSUSY test suite is no longer
+   shipped with the release tarball.  It can be obtained from the
+   official git repository at
+   https://github.com/FlexibleSUSY/FlexibleSUSY .
+
+FlexibleSUSY-1.2.2 [September, 08 2015]
 
  * Feature: The scale at which the EWSB output parameters are fixed
    can now be chosen by the user via the FSSolveEWSBFor[{...}] symbol.
@@ -11,6 +26,21 @@ FlexibleSUSY-1.2.2 [not released yet]
 
  * Bugfix (commit 5530bf9): Defining a scale to be a running mass, for
    example SUSYScale = M[hh], resulted in a compilation error.
+
+ * Bugfix (commits 2d6c0d2, 87cfe28): use SLHA input value of the Z
+   pole mass as low-energy scale, instead of the hard-coded value MZ =
+   91.1876 GeV.
+
+ * Bugfix (commit 1ac0aa0): Use math/physics index convention (index
+   starting with 1) in the comments of the extra user-defined SLHA
+   output blocks.
+
+ * Bugfix (commit 0737c4d): Properly convert greek symbols in function
+   arguments.  Fixes #5.  Thanks to Dylan Harries.
+
+ * Bugfix (commit f4eed5d): Put class Complex into softsusy namespace
+   to avoid ambiguities in operator*().  Fixes #6.  Thanks to Dylan
+   Harries.
 
 FlexibleSUSY-1.2.1 [July, 07 2015]
 

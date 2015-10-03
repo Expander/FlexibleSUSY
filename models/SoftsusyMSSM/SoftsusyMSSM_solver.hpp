@@ -29,38 +29,38 @@ class SoftSusy_t;
 template<>
 class RGFlow<SoftSusy_t> {
 public:
-   typedef void (*THighScaleBoundaryCondition)(MssmSoftsusy&, const DoubleVector&);
+   typedef void (*THighScaleBoundaryCondition)(softsusy::MssmSoftsusy&, const softsusy::DoubleVector&);
 
    RGFlow();
    ~RGFlow();
 
    void solve();
 
-   const sPhysical& displayPhys() const;
-   const sProblem& displayProblem() const;
+   const softsusy::sPhysical& displayPhys() const;
+   const softsusy::sProblem& displayProblem() const;
 
    void setHighScaleBoundaryCondition(THighScaleBoundaryCondition);
    void setMxGuess(double);
-   void setSoftHighScalePars(const DoubleVector&);
+   void setSoftHighScalePars(const softsusy::DoubleVector&);
    void setSignMu(int);
    void setTanBeta(double);
-   void setLowScaleBoundaryConditions(const QedQcd&);
+   void setLowScaleBoundaryConditions(const softsusy::QedQcd&);
    void setGaugeUnification(bool);
 
 private:
-   MssmSoftsusy                 fMssmSoftSusy;
+   softsusy::MssmSoftsusy       fMssmSoftSusy;
    THighScaleBoundaryCondition  fHighScaleBoundaryCondition;
    double                       fMxGuess;
-   DoubleVector                 fSoftHighScalePars;
+   softsusy::DoubleVector       fSoftHighScalePars;
    int                          fSignMu;
    double                       fTanBeta;
-   QedQcd                       fLowScaleBoundaryContitions;
+   softsusy::QedQcd              fLowScaleBoundaryContitions;
    bool                         fGaugeUnification;
 };
 
 RGFlow<SoftSusy_t>::RGFlow()
    : fMssmSoftSusy()
-   , fHighScaleBoundaryCondition(sugraBcs)
+   , fHighScaleBoundaryCondition(softsusy::sugraBcs)
    , fMxGuess(1.9e16)
    , fSoftHighScalePars(3)
    , fSignMu(1)
@@ -81,12 +81,12 @@ void RGFlow<SoftSusy_t>::solve()
                         fGaugeUnification);
 }
 
-const sPhysical& RGFlow<SoftSusy_t>::displayPhys() const
+const softsusy::sPhysical& RGFlow<SoftSusy_t>::displayPhys() const
 {
    return fMssmSoftSusy.displayPhys();
 }
 
-const sProblem& RGFlow<SoftSusy_t>::displayProblem() const
+const softsusy::sProblem& RGFlow<SoftSusy_t>::displayProblem() const
 {
    return fMssmSoftSusy.displayProblem();
 }
@@ -101,7 +101,7 @@ void RGFlow<SoftSusy_t>::setMxGuess(double mxGuess)
    fMxGuess = mxGuess;
 }
 
-void RGFlow<SoftSusy_t>::setSoftHighScalePars(const DoubleVector& softHighScalePars)
+void RGFlow<SoftSusy_t>::setSoftHighScalePars(const softsusy::DoubleVector& softHighScalePars)
 {
    fSoftHighScalePars = softHighScalePars;
 }
@@ -116,7 +116,7 @@ void RGFlow<SoftSusy_t>::setTanBeta(double tanBeta)
    fTanBeta = tanBeta;
 }
 
-void RGFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const QedQcd& lowScaleBC)
+void RGFlow<SoftSusy_t>::setLowScaleBoundaryConditions(const softsusy::QedQcd& lowScaleBC)
 {
    fLowScaleBoundaryContitions = lowScaleBC;
 }

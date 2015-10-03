@@ -7,6 +7,11 @@
 
 #ifdef SOFTSUSY_H
 
+using std::fabs;
+using std::sqrt;
+using std::exp;
+using std::log;
+
 extern double sw2, gnuL, guL, gdL, geL, guR, gdR, geR, yuL, yuR, ydL,
   ydR, yeL, yeR, ynuL;
 

@@ -14,6 +14,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 /**
  * This function is a copy of the initial guess part that Softsusy

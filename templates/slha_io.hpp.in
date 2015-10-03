@@ -27,6 +27,7 @@
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
+#include "lowe.h"
 
 #include <Eigen/Core>
 #include <string>
@@ -57,7 +58,7 @@ public:
 
    void clear();
 
-   void fill(QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
+   void fill(softsusy::QedQcd& qedqcd) const { slha_io.fill(qedqcd); }
    void fill(@ModelName@_input_parameters&) const;
    void fill(@ModelName@_mass_eigenstates&) const;
    template <class T> void fill(@ModelName@_slha<T>&) const;
@@ -81,13 +82,13 @@ public:
    static void fill_extpar_tuple(@ModelName@_input_parameters&, int, double);
 
    template <class T>
-   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
+   static void fill_slhaea(SLHAea::Coll&, const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd&);
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&);
 
    template <class T>
-   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const QedQcd&, const @ModelName@_scales&);
+   static SLHAea::Coll fill_slhaea(const @ModelName@_slha<T>&, const softsusy::QedQcd&, const @ModelName@_scales&);
 
    void set_amuon(double value);
 private:
@@ -119,7 +120,7 @@ void @ModelName@_slha_io::fill(@ModelName@_slha<T>& model) const
 template <class T>
 void @ModelName@_slha_io::fill_slhaea(
    SLHAea::Coll& slhaea, const @ModelName@_slha<T>& model,
-   const QedQcd& qedqcd, const @ModelName@_scales& scales)
+   const softsusy::QedQcd& qedqcd, const @ModelName@_scales& scales)
 {
    @ModelName@_slha_io slha_io;
    const @ModelName@_input_parameters& input = model.get_input();
@@ -141,7 +142,7 @@ void @ModelName@_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
-   const @ModelName@_slha<T>& model, const QedQcd& qedqcd)
+   const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd)
 {
    @ModelName@_scales scales;
 
@@ -150,7 +151,7 @@ SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
 
 template <class T>
 SLHAea::Coll @ModelName@_slha_io::fill_slhaea(
-   const @ModelName@_slha<T>& model, const QedQcd& qedqcd,
+   const @ModelName@_slha<T>& model, const softsusy::QedQcd& qedqcd,
    const @ModelName@_scales& scales)
 {
    SLHAea::Coll slhaea;

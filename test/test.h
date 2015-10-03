@@ -59,7 +59,7 @@ void check_equality(T a, T b, const std::string& testMsg, T max_dev)
    }
 }
 
-void check_equality(Complex a, Complex b,
+void check_equality(softsusy::Complex a, softsusy::Complex b,
                     const std::string& testMsg, double max_dev)
 {
    std::ostringstream msg;
@@ -180,7 +180,7 @@ void check_equality(const softsusy::DoubleMatrix& a, const softsusy::ComplexMatr
       for (int l = 1; l <= a.displayCols(); ++l) {
          std::ostringstream element;
          element << testMsg << " [element " << i << "," << l << "] ";
-         check_equality(Complex(a(i,l), 0.0), b(i,l), element.str(), max_dev);
+         check_equality(softsusy::Complex(a(i,l), 0.0), b(i,l), element.str(), max_dev);
       }
    }
 }

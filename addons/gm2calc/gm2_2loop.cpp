@@ -33,6 +33,45 @@ namespace gm2calc {
  * for g-2 at the 2-loop level.
  */
 
+/**
+ * \fn calculate_amu_2loop_non_tan_beta_resummed
+ *
+ * Calculates best 2-loop SUSY contribution to a_mu without tan(beta)
+ * resummation.
+ *
+ * This function re-defines the muon Yukawa coupling in terms of the
+ * tree-level relation with the muon pole mass, i.e. \f$y_\mu =
+ * \frac{\sqrt{2} m_\mu^\text{pole}}{v_d}\f$.  Therefore, this
+ * function does not use tan(beta) resummation.
+ */
+double calculate_amu_2loop_non_tan_beta_resummed(const MSSMNoFV_onshell& model)
+{
+   MSSMNoFV_onshell model_ytree(model);
+   model_ytree.convert_yukawa_couplings_treelevel();
+   model_ytree.calculate_DRbar_masses();
+
+   return amu2LFSfapprox_non_tan_beta_resummed(model_ytree)
+      + amuChipmPhotonic(model_ytree)
+      + amuChi0Photonic(model_ytree)
+      + amu2LaSferm(model_ytree)
+      + amu2LaCha(model_ytree);
+}
+
+/**
+ * \fn calculate_amu_2loop
+ *
+ * Calculates best 2-loop SUSY contribution to a_mu with tan(beta)
+ * resummation.
+ */
+double calculate_amu_2loop(const MSSMNoFV_onshell& model)
+{
+   return amu2LFSfapprox(model)
+      + amuChipmPhotonic(model)
+      + amuChi0Photonic(model)
+      + amu2LaSferm(model)
+      + amu2LaCha(model);
+}
+
 // fermion/sfermion corrections, log-approximations
 
 /**
@@ -48,9 +87,9 @@ double LogNorm(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$\Delta_{g_1}\f$, Eq. (6.6a) arxiv:1311.1775.
+ * Calculates \f$\Delta_{g_1}\f$, Eq (6.6a) arxiv:1311.1775.
  */
-double Deltag1(const MSSMNoFV_onshell& model) {
+double Delta_g1(const MSSMNoFV_onshell& model) {
    const double gY = model.get_gY();
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    const Eigen::Matrix<double,3,3> md2(model.get_md2());
@@ -60,20 +99,23 @@ double Deltag1(const MSSMNoFV_onshell& model) {
    const double LogScale = LogNorm(model);
 
    return ( sqr(gY) * oneOver16PiSqr * 4. / 3.
-            * (8. / 3. * log(sqrt(mu2(0, 0)) / LogScale)
+            * (4. / 3. * log(sqrt(mu2(0, 0)) / LogScale)
+             + 4. / 3. * log(sqrt(mu2(1, 1)) / LogScale)
              + 4. / 3. * log(sqrt(mu2(2, 2)) / LogScale)
-             + 2. / 3. * log(sqrt(md2(0, 0)) / LogScale)
+             + 1. / 3. * log(sqrt(md2(0, 0)) / LogScale)
+             + 1. / 3. * log(sqrt(md2(1, 1)) / LogScale)
              + 1. / 3. * log(sqrt(md2(2, 2)) / LogScale)
-             + 1. / 3. * log(sqrt(mq2(0, 0)) / LogScale)
+             + 1. / 6. * log(sqrt(mq2(0, 0)) / LogScale)
+             + 1. / 6. * log(sqrt(mq2(1, 1)) / LogScale)
              + 1. / 6. * log(sqrt(mq2(2, 2)) / LogScale)
              + log(sqrt(me2(2, 2)) / LogScale)
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
 /**
- * Calculates \f$\Delta_{\tilde{H}}\f$, Eq. (6.6c) arxiv:1311.1775.
+ * Calculates \f$\Delta_{\tilde{H}}\f$, Eq (6.6c) arxiv:1311.1775.
  */
-double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
+double Delta_YukHiggsino(const MSSMNoFV_onshell& model) {
    const double ytau = model.get_Ye(2, 2);
    const double ytop = model.get_Yu(2, 2);
    const double ybot = model.get_Yd(2, 2);
@@ -93,10 +135,10 @@ double DeltaYukHiggsino(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$\Delta_{\tilde{B}\tilde{H}}\f$, Eq. (6.6d)
+ * Calculates \f$\Delta_{\tilde{B}\tilde{H}}\f$, Eq (6.6d)
  * arxiv:1311.1775.
  */
-double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
+double Delta_YukBinoHiggsino(const MSSMNoFV_onshell& model) {
    const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mu2(model.get_mu2());
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
@@ -107,25 +149,26 @@ double DeltaYukBinoHiggsino(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$\Delta_{g_2}\f$, Eq. (6.6b) arxiv:1311.1775.
+ * Calculates \f$\Delta_{g_2}\f$, Eq (6.6b) arxiv:1311.1775.
  */
-double Deltag2(const MSSMNoFV_onshell& model) {
+double Delta_g2(const MSSMNoFV_onshell& model) {
    const double g2 = model.get_g2();
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    const Eigen::Matrix<double,3,3> ml2(model.get_ml2());
    const double LogScale = LogNorm(model);
 
    return ( sqr(g2) * oneOver16PiSqr * 4. / 3.
-            * (3. * log(sqrt(mq2(0, 0)) / LogScale)
+            * (1.5 * log(sqrt(mq2(0, 0)) / LogScale)
+             + 1.5 * log(sqrt(mq2(1, 1)) / LogScale)
              + 1.5 * log(sqrt(mq2(2, 2)) / LogScale)
              + 0.5 * log(sqrt(ml2(2, 2)) / LogScale)) );
 }
 
 /**
- * Calculates \f$\Delta_{\tilde{W}\tilde{H}}\f$, Eq. (6.6e)
+ * Calculates \f$\Delta_{\tilde{W}\tilde{H}}\f$, Eq (6.6e)
  * arxiv:1311.1775.
  */
-double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
+double Delta_YukWinoHiggsino(const MSSMNoFV_onshell& model) {
    const double ytop = model.get_Yu(2, 2);
    const Eigen::Matrix<double,3,3> mq2(model.get_mq2());
    const double LogScale = LogNorm(model);
@@ -134,9 +177,9 @@ double DeltaYukWinoHiggsino(const MSSMNoFV_onshell& model) {
 }
 
 /**
- * Calculates \f$\Delta_{t_\beta}\f$, Eq. (6.6f) arxiv:1311.1775.
+ * Calculates \f$\Delta_{t_\beta}\f$, Eq (6.6f) arxiv:1311.1775.
  */
-double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
+double Delta_TanBeta(const MSSMNoFV_onshell& model) {;
    const double ytau = model.get_Ye(2, 2);
    const double ytop = model.get_Yu(2, 2);
    const double ybot = model.get_Yd(2, 2);
@@ -148,62 +191,62 @@ double DeltaTanBeta(const MSSMNoFV_onshell& model) {;
 }
 
 /**
- * Calculates 1st line of Eq. (6.5) arxiv:1311.1775.
+ * Calculates 1st line of Eq (6.5) arxiv:1311.1775.
  */
 double amuWHnu2L(const MSSMNoFV_onshell& model) {
    const double test1 = .75;
 
    return ( amuWHnu(model)
-            * (.02 * test1 + Deltag2(model) + DeltaYukHiggsino(model)
-              + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model)) );
+            * (.02 * test1 + Delta_g2(model) + Delta_YukHiggsino(model)
+              + Delta_YukWinoHiggsino(model) + Delta_TanBeta(model)) );
 }
 
 /**
- * Calculates 2nd line of Eq. (6.5) arxiv:1311.1775.
+ * Calculates 2nd line of Eq (6.5) arxiv:1311.1775.
  */
 double amuWHmuL2L(const MSSMNoFV_onshell& model) {
    const double test2 = .75;
 
    return ( amuWHmuL(model)
-            * (.02 * test2 + Deltag2(model) + DeltaYukHiggsino(model)
-             + DeltaYukWinoHiggsino(model) + DeltaTanBeta(model))  );
+            * (.02 * test2 + Delta_g2(model) + Delta_YukHiggsino(model)
+             + Delta_YukWinoHiggsino(model) + Delta_TanBeta(model))  );
 }
 
 /**
- * Calculates 3rd line of Eq. (6.5) arxiv:1311.1775.
+ * Calculates 3rd line of Eq (6.5) arxiv:1311.1775.
  */
 double amuBHmuL2L(const MSSMNoFV_onshell& model) {
    const double test3 = .75;
 
    return ( amuBHmuL(model)
-            * (.02 * test3 + Deltag1(model) + DeltaYukHiggsino(model)
-              + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
+            * (.02 * test3 + Delta_g1(model) + Delta_YukHiggsino(model)
+              + Delta_YukBinoHiggsino(model) + Delta_TanBeta(model))  );
 }
 
 /**
- * Calculates 4th line of Eq. (6.5) arxiv:1311.1775.
+ * Calculates 4th line of Eq (6.5) arxiv:1311.1775.
  */
 double amuBHmuR2L(const MSSMNoFV_onshell& model) {
    const double test4 = 2.;
 
    return ( amuBHmuR(model)
-            * (.02 * test4 + Deltag1(model) + DeltaYukHiggsino(model)
-              + DeltaYukBinoHiggsino(model) + DeltaTanBeta(model))  );
+            * (.02 * test4 + Delta_g1(model) + Delta_YukHiggsino(model)
+              + Delta_YukBinoHiggsino(model) + Delta_TanBeta(model))  );
 }
 
 /**
- * Calculates 5th line of Eq. (6.5) arxiv:1311.1775.
+ * Calculates 5th line of Eq (6.5) arxiv:1311.1775.
  */
 double amuBmuLmuR2L(const MSSMNoFV_onshell& model) {
    const double test5 = 1.5;
 
    return ( amuBmuLmuR(model)
-            * (.02 * test5 + Deltag1(model) + DeltaTanBeta(model)) );
+            * (.02 * test5 + Delta_g1(model) + Delta_TanBeta(model)) );
 }
 
 /**
  * Calculates 2-loop leading log approximation for fermion-sfermion
- * loop contributions, Eq. (6.5) arxiv:1311.1775.
+ * loop contributions, Eq (6.5) arxiv:1311.1775.
  *
  * No tan(beta) resummation
  */
@@ -215,7 +258,7 @@ double amu2LFSfapprox_non_tan_beta_resummed(const MSSMNoFV_onshell& model) {
 
 /**
  * Calculates 2-loop leading log approximation for fermion-sfermion
- * loop contributions, Eq. (6.5) arxiv:1311.1775.
+ * loop contributions, Eq (6.5) arxiv:1311.1775.
  *
  * Includes tan(beta) resummation
  */
@@ -228,7 +271,7 @@ double amu2LFSfapprox(const MSSMNoFV_onshell& model) {
 
 /**
  * Calculates the photonic 2-loop contribution to the 1-loop chargino
- * diagram, Eq. (36) arXiv:1003.5820.
+ * diagram, Eq (36) arXiv:1003.5820.
  */
 double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
@@ -256,7 +299,7 @@ double amuChipmPhotonic(const MSSMNoFV_onshell& model) {
 
 /**
  * Calculates the photonic 2-loop contribution to the 1-loop
- * neutralino diagram, Eq. (35) arXiv:1003.5820.
+ * neutralino diagram, Eq (35) arXiv:1003.5820.
  */
 double amuChi0Photonic(const MSSMNoFV_onshell& model) {
    double result = 0.;
@@ -287,7 +330,7 @@ double amuChi0Photonic(const MSSMNoFV_onshell& model) {
 // ==== amu2Loop_a corrections ====
 
 /**
- * The following functions include resummation of 1/(1+Deltamu) within
+ * The following functions include resummation of 1/(1+Delta_mu) within
  * the muon, tau and bottom Yukawa couplings.
  */
 
@@ -303,12 +346,12 @@ double tan_alpha(const MSSMNoFV_onshell& model) {
    const double tan2beta = 2. * TB / (1. - sqr(TB));
    const double tan2alpha = tan2beta * (sqr(MA0) + sqr(MZ)) / (sqr(MA0) - sqr(MZ));
 
-   return - 1. / tan2alpha - sqrt(1. / sqr(tan2alpha) + 1.); // alpha < 0 !
+   return - 1. / tan2alpha - sqrt(1. / sqr(tan2alpha) + 1.);
 }
 
 /**
- * Calculates \f$\lambda_{\mu}\f$, Eq. (65), and
- * \f$\lambda_{\chi_k^+}\f$, Eq. (66) arXiv:hep-ph/0609168.
+ * Calculates \f$\lambda_{\mu}\f$, Eq (65), and
+ * \f$\lambda_{\chi_k^+}\f$, Eq (66) arXiv:hep-ph/0609168.
  *
  * Row 0 contains \f$\lambda_{\chi_1^+}\f$, Eq. (66).
  * Row 1 contains \f$\lambda_{\chi_2^+}\f$, Eq. (66).
@@ -347,7 +390,7 @@ Eigen::Matrix<std::complex<double>,3,3> lambda_mu_cha(const MSSMNoFV_onshell& mo
 }
 
 /**
- * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq. (67)
+ * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq (67)
  * arXiv:hep-ph/0609168
  */
 Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& model) {
@@ -375,7 +418,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stop(const MSSMNoFV_onshell& mode
 }
 
 /**
- * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq. (68)
+ * Calculates \f$\lambda_{\tilde{b}_i}\f$, Eq (68)
  * arXiv:hep-ph/0609168
  *
  * includes tan(beta) resummation
@@ -403,7 +446,7 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_sbot(const MSSMNoFV_onshell& mode
 }
 
 /**
- * Calculates \f$\lambda_{\tilde{t}_i}\f$, Eq. (69)
+ * Calculates \f$\lambda_{\tilde{t}_i}\f$, Eq (69)
  * arXiv:hep-ph/0609168
  *
  * includes tan(beta) resummation
@@ -433,10 +476,10 @@ Eigen::Matrix<std::complex<double>,2,2> lambda_stau(const MSSMNoFV_onshell& mode
 /**
  * Calculates 2-loop contribution to amu, where a sfermion loop has
  * been inserted into a 1-loop Standard Model diagram (photonic
- * Barr-Zee diagram \f$(\tilde{f}\gamma H)\f$), Eq. (64)
+ * Barr-Zee diagram \f$(\tilde{f}\gamma H)\f$), Eq (64)
  * arXiv:hep-ph/0609168.
  */
-double amua2LSferm(const MSSMNoFV_onshell& model) {
+double amu2LaSferm(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM(model.get_MM());
    const double MW(model.get_MW());
@@ -489,10 +532,10 @@ double amua2LSferm(const MSSMNoFV_onshell& model) {
 /**
  * Calculates 2-loop contribution to amu, where a chargino loop has
  * been inserted into a 1-loop Standard Model diagram (photonic
- * Barr-Zee diagram \f$(\chi\gamma H)\f$), Eq. (63)
+ * Barr-Zee diagram \f$(\chi\gamma H)\f$), Eq (63)
  * arXiv:hep-ph/0609168.
  */
-double amua2LCha(const MSSMNoFV_onshell& model) {
+double amu2LaCha(const MSSMNoFV_onshell& model) {
    double result = 0.;
    const double MM(model.get_MM());
    const double MW(model.get_MW());

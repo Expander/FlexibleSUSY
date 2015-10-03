@@ -6,11 +6,11 @@
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=1
 FLEXIBLESUSY_MINOR=2
-FLEXIBLESUSY_PATCH=1
+FLEXIBLESUSY_PATCH=2
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT="`git describe --tags 2> /dev/null || echo unknown`"
-GM2CALC_VERSION="0.2.7"
+GM2CALC_VERSION="0.2.10-dev"
 
 # directory of this script
 BASEDIR=$(dirname $0)
@@ -175,6 +175,7 @@ BLASLIBS=""
 LAPACKLIBS=""
 MAKELIB="ar cru"
 MATH="math"
+OPTIONAL_MODULES=""
 tsil_lib_dir=""
 tsil_inc_dir=""
 # available RG algorithms
@@ -2158,6 +2159,7 @@ replace_markers() {
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
+	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
 	-e "s|@TSILLIBS@|$TSILLIBS|"              \
 	-e "s|@TSILFLAGS@|$TSILFLAGS|"            \
 	-e "s|@MODELS@|$MODELS|"           \
@@ -2226,7 +2228,9 @@ Package directories, compilation settings and model selection
   --with-lib-ext=           Library extension (default: $LIBEXT)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
-  --with-make-lib-cmd       Command to make library (default: $MAKELIB)
+  --with-make-lib-cmd=      Command to make library (default: $MAKELIB)
+  --with-optional-modules=  Load optional FlexibleSUSY modules
+                            (for example the \`test' or \`examples' module)
   --with-tsil-libdir=       Path to search for TSIL library
   --with-tsil-incdir=       Path to search for TSIL header
 EOF
@@ -2336,6 +2340,7 @@ if test $# -gt 0 ; then
             --with-make-lib-cmd=*)   MAKELIB=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
             --with-models=*)         MODELS=$optarg ;;
+            --with-optional-modules=*) OPTIONAL_MODULES=$optarg ;;
             --with-tsil-libdir=*)    tsil_lib_dir=$optarg ;;
             --with-tsil-incdir=*)    tsil_inc_dir=$optarg ;;
             --help|-h)               help; exit 0 ;;

@@ -348,7 +348,7 @@ ClearAttributes[WriteSLHABlockEntry, HoldFirst];
 
 WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, idx1Str, idx2Str, commentStr},
-           parStr = CConversion`RValueToCFormString[par];
+           parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                      Parameters`GetOutputParameters[]],
@@ -363,7 +363,7 @@ WriteSLHABlockEntry[{par_, idx1_?NumberQ, idx2_?NumberQ}, comment_String:""] :=
 
 WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
     Module[{parStr, parVal, pdgStr, commentStr},
-           parStr = CConversion`RValueToCFormString[par];
+           parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                      Parameters`GetOutputParameters[]],
@@ -384,7 +384,7 @@ WriteSLHABlockEntry[{par_, pdg_?NumberQ}, comment_String:""] :=
 
 WriteSLHABlockEntry[{par_}, comment_String:""] :=
     Module[{parStr, parVal, commentStr},
-           parStr = CConversion`RValueToCFormString[par];
+           parStr = CConversion`RValueToCFormString[Parameters`IncreaseIndexLiterals[par]];
            parVal = CConversion`RValueToCFormString[
                WrapPreprocessorMacroAround[par, Join[Parameters`GetModelParameters[],
                                                      Parameters`GetOutputParameters[]],

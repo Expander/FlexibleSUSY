@@ -26,7 +26,7 @@ SoftsusyMSSM<Two_scale>::SoftsusyMSSM()
 {
 }
 
-SoftsusyMSSM<Two_scale>::SoftsusyMSSM(const SoftParsMssm& softPars)
+SoftsusyMSSM<Two_scale>::SoftsusyMSSM(const softsusy::SoftParsMssm& softPars)
 {
    setSoftPars(softPars);
 }
@@ -37,7 +37,7 @@ SoftsusyMSSM<Two_scale>::~SoftsusyMSSM()
 
 void SoftsusyMSSM<Two_scale>::calculate_spectrum()
 {
-   run_to(maximum(displayMsusy(), MZ));
+   run_to(maximum(displayMsusy(), softsusy::MZ));
    physical(3);
    runto(displayMz());
 }

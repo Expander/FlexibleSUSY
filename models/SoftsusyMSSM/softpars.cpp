@@ -10,6 +10,9 @@
 
 #ifdef SOFTPARS_H
 
+using std::fabs;
+using std::log;
+
 template<class Susy, class Brevity>
 const SoftPars<Susy, Brevity> & SoftPars<Susy, Brevity>::operator=(const SoftPars<Susy, Brevity> & s) {
   if (this == &s) return *this;

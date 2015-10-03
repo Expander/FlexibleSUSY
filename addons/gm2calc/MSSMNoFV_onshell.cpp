@@ -26,8 +26,12 @@
 #include <complex>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
-#define WARNING(message) std::cerr << "Warning: " << message << '\n';
+#include <boost/math/tools/roots.hpp>
+
+#define WARNING(message)                                                \
+   do { std::cerr << "Warning: " << message << '\n'; } while (0)
 
 namespace {
    static const double ALPHA_EM_THOMPSON = 1./137.035999074;
@@ -50,6 +54,7 @@ namespace gm2calc {
 
 MSSMNoFV_onshell::MSSMNoFV_onshell()
    : MSSMNoFV_onshell_mass_eigenstates()
+   , verbose_output(false)
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
    , Ae(Eigen::Matrix<double,3,3>::Zero())
@@ -64,6 +69,7 @@ MSSMNoFV_onshell::MSSMNoFV_onshell()
 
 MSSMNoFV_onshell::MSSMNoFV_onshell(const MSSMNoFV_onshell_mass_eigenstates& model_)
    : MSSMNoFV_onshell_mass_eigenstates(model_)
+   , verbose_output(false)
    , EL(calculate_e(ALPHA_EM_MZ))
    , EL0(calculate_e(ALPHA_EM_THOMPSON))
    , Ae(get_Ae())
@@ -92,7 +98,7 @@ void MSSMNoFV_onshell::set_TB(double tanb)
 }
 
 /**
- * Returns the electromagnetig gauge coupling in the Thompson limit.
+ * Returns the electromagnetic gauge coupling in the Thompson limit.
  */
 double MSSMNoFV_onshell::get_EL() const {
    return EL;
@@ -105,8 +111,13 @@ double MSSMNoFV_onshell::get_EL() const {
  * The function assumes that the physical struct is filled with pole
  * masses and corresponding mixing matrices.  From these quantities,
  * the on-shell model parameters are calculated.
+ *
+ * @param precision accuracy goal for the conversion
+ * @param max_iterations maximum number of iterations
  */
-void MSSMNoFV_onshell::convert_to_onshell(double precision) {
+void MSSMNoFV_onshell::convert_to_onshell(
+   double precision, unsigned max_iterations)
+{
    check_input();
    calculate_DRbar_masses();
    copy_susy_masses_to_pole();
@@ -115,13 +126,14 @@ void MSSMNoFV_onshell::convert_to_onshell(double precision) {
    convert_BMu();
    convert_vev();
    convert_yukawa_couplings_treelevel();
-   convert_Mu_M1_M2(precision, 1000);
+   convert_Mu_M1_M2(precision, max_iterations);
    convert_yukawa_couplings(); // first guess of resummed yukawas
-   convert_mf2(precision, 1000);
+   convert_ml2();
+   convert_me2(precision, max_iterations);
    convert_yukawa_couplings();
 
    // final mass spectrum
-   get_problems().clear();
+   get_problems().clear_problems();
    calculate_DRbar_masses();
    check_problems();
 }
@@ -154,18 +166,21 @@ void MSSMNoFV_onshell::calculate_masses() {
 
 void MSSMNoFV_onshell::check_input()
 {
-   if (is_zero(get_MW()))
-      throw EInvalidInput("W mass is zero");
-   if (is_zero(get_MZ()))
-      throw EInvalidInput("Z mass is zero");
-   if (is_zero(get_MM()))
-      throw EInvalidInput("Muon mass is zero");
-   if (is_zero(get_MassB()))
-      throw EInvalidInput("Bino mass M1 is zero");
-   if (is_zero(get_MassWB()))
-      throw EInvalidInput("Bino mass M2 is zero");
-   if (is_zero(get_MassG()))
-      throw EInvalidInput("Gluino mass M3 is zero");
+#define WARN_OR_THROW_IF_ZERO(mass,msg)         \
+   if (is_zero(get_##mass())) {                 \
+      if (do_force_output())                    \
+         WARNING(msg);                          \
+      else                                      \
+         throw EInvalidInput(msg);              \
+   }
+
+   WARN_OR_THROW_IF_ZERO(MW    , "W mass is zero");
+   WARN_OR_THROW_IF_ZERO(MZ    , "Z mass is zero");
+   WARN_OR_THROW_IF_ZERO(MM    , "Muon mass is zero");
+   WARN_OR_THROW_IF_ZERO(MassB , "Bino mass M1 is zero");
+   WARN_OR_THROW_IF_ZERO(MassWB, "Wino mass M2 is zero");
+
+#undef WARN_OR_THROW_IF_ZERO
 }
 
 void MSSMNoFV_onshell::check_problems()
@@ -173,7 +188,10 @@ void MSSMNoFV_onshell::check_problems()
    if (get_problems().have_problem()) {
       std::ostringstream sstr;
       sstr << get_problems();
-      throw EPhysicalProblem(sstr.str());
+      if (do_force_output())
+         WARNING(sstr.str());
+      else
+         throw EPhysicalProblem(sstr.str());
    }
 }
 
@@ -316,50 +334,76 @@ bool MSSMNoFV_onshell::is_equal(const Eigen::ArrayBase<Derived>& a,
 
 bool MSSMNoFV_onshell::is_equal(double a, double b, double precision_goal)
 {
-   return std::abs(a - b) < precision_goal;
+   return flexiblesusy::is_equal(a, b, precision_goal);
 }
 
 template <class Derived>
 bool MSSMNoFV_onshell::is_zero(const Eigen::ArrayBase<Derived>& a,
                                double eps)
 {
-   return a.cwiseAbs().minCoeff() < eps;
-}
-
-template <class Derived>
-bool MSSMNoFV_onshell::is_zero(const Eigen::MatrixBase<Derived>& a,
-                               double eps)
-{
-   return a.cwiseAbs().minCoeff() < eps;
+   return a.cwiseAbs().maxCoeff() < eps;
 }
 
 bool MSSMNoFV_onshell::is_zero(double a, double eps)
 {
-   return std::abs(a) < eps;
+   return flexiblesusy::is_zero(a, eps);
 }
 
 /**
  * Returns index of most bino-like neutralino.  The function extracts
- * this information from the neutralino pole mass mixing matrix.
+ * this information from the given neutralino mixing matrix.
+ *
+ * @param ZN neutralino mixing matrix
  */
-unsigned MSSMNoFV_onshell::find_bino_like_neutralino()
+template <class Derived>
+unsigned MSSMNoFV_onshell::find_bino_like_neutralino(
+   const Eigen::MatrixBase<Derived>& ZN)
 {
    unsigned max_bino;
-   get_physical().ZN.col(0).cwiseAbs().maxCoeff(&max_bino);
+   ZN.col(0).cwiseAbs().maxCoeff(&max_bino);
 
    return max_bino;
 }
 
+/**
+ * Returns index of most right-handed smuon.  The function extracts
+ * this information from the given smuon mixing matrix.
+ *
+ * @param ZM smuon mixing matrix
+ */
+template <class Derived>
+unsigned MSSMNoFV_onshell::find_right_like_smuon(
+   const Eigen::MatrixBase<Derived>& ZM)
+{
+   return (ZM(0,0) > ZM(0,1)) ? 1 : 0;
+}
+
+/**
+ * Determines the Mu parameter and the soft-breaking Bino and Wino
+ * mass parameters from the two chargino pole masses and the most
+ * bino-like neutralino pole mass.  The function uses a fixed-point
+ * iteration.
+ *
+ * @param precision_goal precision goal of iteration
+ * @param max_iterations maximum number of iterations
+ */
 void MSSMNoFV_onshell::convert_Mu_M1_M2(
    double precision_goal,
    unsigned max_iterations)
 {
    // find neutralino, which is most bino like
-   const unsigned max_bino = find_bino_like_neutralino();
+   const unsigned max_bino = find_bino_like_neutralino(get_physical().ZN);
 
    const auto MCha_goal(get_physical().MCha);
    auto MChi_goal(get_MChi());
    MChi_goal(max_bino) = get_physical().MChi(max_bino);
+
+   if (verbose_output) {
+      std::cout << "Converting Mu, M1, M2 to on-shell scheme ...\n"
+                   "   Goal: MCha = " << MCha_goal.transpose()
+                << ", MChi(" << max_bino << ") = " << MChi_goal(max_bino)
+                << '\n';
+   }
 
    bool accuracy_goal_reached =
       MSSMNoFV_onshell::is_equal(MCha_goal, get_MCha(), precision_goal) &&
@@ -383,22 +427,157 @@ void MSSMNoFV_onshell::convert_Mu_M1_M2(
       MChi_goal = get_MChi();
       MChi_goal(max_bino) = get_physical().MChi(max_bino);
 
+      if (verbose_output) {
+         std::cout << "   Iteration " << it << ": Mu = " << get_Mu()
+                   << ", M1 = " << get_MassB()
+                   << ", M2 = " << get_MassWB()
+                   << ", MCha = " << get_MCha().transpose()
+                   << ", MChi(" << max_bino << ") = " << get_MChi(max_bino)
+                   << '\n';
+      }
+
       accuracy_goal_reached =
          MSSMNoFV_onshell::is_equal(MCha_goal, get_MCha(), precision_goal) &&
          MSSMNoFV_onshell::is_equal(MChi_goal(max_bino), get_MChi(max_bino), precision_goal);
+
       it++;
    }
 
-   if (it == max_iterations)
-      WARNING("DR-bar to on-shell conversion for Mu, M1 and M2 did not converge.");
+   if (it == max_iterations) {
+      const double precision =
+         std::max((MCha_goal - get_MCha()).cwiseAbs().maxCoeff(),
+                  std::abs(MChi_goal(max_bino) - get_MChi(max_bino)));
+      WARNING("DR-bar to on-shell conversion for Mu, M1 and M2 did"
+              " not converge"
+              " (reached accuracy: " << precision <<
+              ", accuracy goal: " << precision_goal <<
+              ", max. iterations: " << max_iterations << ")");
+      get_problems().flag_no_convergence_Mu_MassB_MassWB(precision, it);
+   } else {
+      get_problems().unflag_no_convergence_Mu_MassB_MassWB();
+   }
+
+   if (verbose_output) {
+      std::cout << "   Achieved absolute accuracy: "
+                << (std::max((MCha_goal - get_MCha()).cwiseAbs().maxCoeff(),
+                             std::abs(MChi_goal(max_bino) - get_MChi(max_bino))))
+                << " GeV\n";
+   }
 }
 
-void MSSMNoFV_onshell::convert_mf2(
+/**
+ * Determines soft-breaking left-handed smuon mass parameter from the
+ * muon sneutrino pole mass.
+ */
+void MSSMNoFV_onshell::convert_ml2()
+{
+   const double MSvmL_pole = get_physical().MSvmL;
+   const double vd2 = sqr(get_vd());
+   const double vu2 = sqr(get_vu());
+   const double g12 = sqr(get_g1());
+   const double g22 = sqr(get_g2());
+
+   // calculate ml2(1,1) from muon sneutrino pole mass
+   const double ml211
+      = sqr(MSvmL_pole) + 0.125*(0.6*g12*(vu2 - vd2) + g22*(vu2 - vd2));
+
+   set_ml2(1,1,ml211);
+   calculate_MSvmL();
+}
+
+/**
+ * Determines soft-breaking right-handed smuon mass parameter from one
+ * smuon pole mass.
+ *
+ * @param precision_goal precision goal of iteration
+ * @param max_iterations maximum number of iterations
+ */
+void MSSMNoFV_onshell::convert_me2(
    double precision_goal,
    unsigned max_iterations)
 {
-   const Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
-   Eigen::Array<double,2,1> MSm(get_MSm());
+   convert_me2_fpi(precision_goal, max_iterations);
+}
+
+/**
+ * Determines soft-breaking right-handed smuon mass parameter from one
+ * smuon pole mass.  The function uses a one-dimensional root-finding
+ * algorithm.
+ *
+ * @param precision_goal precision goal for the root finding algorithm
+ * @param max_iterations maximum number of iterations
+ */
+void MSSMNoFV_onshell::convert_me2_root(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   class Difference_MSm {
+   public:
+      Difference_MSm(const MSSMNoFV_onshell& model_)
+         : model(model_) {}
+
+      double operator()(double me211) {
+         model.set_me2(1,1,me211);
+         model.calculate_MSm();
+
+         Eigen::Array<double,2,1> MSm_pole(model.get_physical().MSm);
+         std::sort(MSm_pole.data(), MSm_pole.data() + MSm_pole.size());
+         const int right_index = find_right_like_smuon(model.get_ZM());
+
+         return model.get_MSm(right_index) - MSm_pole(right_index);
+      }
+   private:
+      MSSMNoFV_onshell model;
+   };
+
+   boost::uintmax_t it = max_iterations;
+
+   // stopping criterion, given two brackets a, b
+   auto Stop_crit = [precision_goal](double a, double b) -> bool {
+      return flexiblesusy::is_equal(a,b,precision_goal);
+   };
+
+   // find the root
+   const std::pair<double,double> root =
+      boost::math::tools::toms748_solve(Difference_MSm(*this), 0., 1e16, Stop_crit, it);
+
+   set_me2(1,1,0.5*(root.first + root.second));
+   calculate_MSm();
+
+   if (it >= max_iterations) {
+      const double precision = std::abs(Difference_MSm(*this)(get_me2(1,1)));
+      WARNING("DR-bar to on-shell conversion for me2 did not converge "
+              " (reached accuracy: " << precision <<
+              ", accuracy goal: " << precision_goal <<
+              ", max. iterations: " << max_iterations << ")");
+      get_problems().flag_no_convergence_me2(precision, it);
+   } else {
+      get_problems().unflag_no_convergence_me2();
+   }
+}
+
+/**
+ * Determines soft-breaking right-handed smuon mass parameter from one
+ * smuon pole mass.  The function uses a fixed-point iteration.
+ *
+ * @param precision_goal precision goal of iteration
+ * @param max_iterations maximum number of iterations
+ */
+void MSSMNoFV_onshell::convert_me2_fpi(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   Eigen::Array<double,2,1> MSm_pole(get_physical().MSm);
+   // pole masses should be mass ordered for this to work
+   std::sort(MSm_pole.data(), MSm_pole.data() + MSm_pole.size());
+   const Eigen::Array<double,2,1> MSm(get_MSm());
+
+   if (verbose_output) {
+      const int right_index = find_right_like_smuon(get_ZM());
+      std::cout << "Converting mse(2,2) to on-shell scheme ...\n"
+                   "   Goal: MSm(" << right_index << ") = "
+                << MSm_pole(right_index) << '\n';
+   }
 
    bool accuracy_goal_reached =
       MSSMNoFV_onshell::is_equal(MSm, MSm_pole, precision_goal);
@@ -411,29 +590,51 @@ void MSSMNoFV_onshell::convert_mf2(
       const double vd2 = sqr(get_vd());
       const double vu2 = sqr(get_vu());
       const double g12 = sqr(get_g1());
-      const double g22 = sqr(get_g2());
       const double ymu2 = std::norm(Ye(1,1));
-
-      const double ml211 = M(0,0)
-         - (0.5*ymu2*vd2 + 0.075*g12*vd2 - 0.125*g22*vd2
-            - 0.075*g12*vu2 + 0.125*g22*vu2);
 
       const double me211 = M(1,1)
          - (0.5*ymu2*vd2 - 0.15*g12*vd2 + 0.15*g12*vu2);
 
-      set_ml2(1,1,ml211);
       set_me2(1,1,me211);
+      calculate_MSm();
 
-      calculate_DRbar_masses();
+      const int right_index = find_right_like_smuon(ZM);
+
+      MSm_pole = get_MSm();
+      MSm_pole(right_index) = get_physical().MSm(right_index);
+
+      if (verbose_output) {
+         std::cout << "   Iteration " << it << ": mse(2,2) = "
+                   << signed_abs_sqrt(me211) << ", MSm(" << right_index
+                   << ") = " << get_MSm(right_index) << '\n';
+      }
 
       accuracy_goal_reached =
-         MSSMNoFV_onshell::is_equal(get_MSm(), MSm_pole, precision_goal);
+         MSSMNoFV_onshell::is_equal(get_MSm(right_index), MSm_pole(right_index),
+                                    precision_goal);
 
       it++;
    }
 
-   if (it == max_iterations)
-      WARNING("DR-bar to on-shell conversion for ml2 and me2 did not converge.");
+   if (it == max_iterations) {
+      const int right_index = find_right_like_smuon(get_ZM());
+      const double precision =
+         std::abs(get_MSm(right_index) - MSm_pole(right_index));
+      WARNING("DR-bar to on-shell conversion for me2 did not converge."
+              " (reached accuracy: " << precision <<
+              ", accuracy goal: " << precision_goal <<
+              ", max. iterations: " << max_iterations << ")");
+      get_problems().flag_no_convergence_me2(precision, it);
+   } else {
+      get_problems().unflag_no_convergence_me2();
+   }
+
+   if (verbose_output) {
+      const int right_index = find_right_like_smuon(get_ZM());
+      std::cout << "   Achieved absolute accuracy: "
+                << std::abs(get_MSm(right_index) - MSm_pole(right_index))
+                << " GeV\n";
+   }
 }
 
 std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
@@ -458,6 +659,7 @@ std::ostream& operator<<(std::ostream& os, const MSSMNoFV_onshell& model)
       "MSm         = " << model.get_MSmu().transpose() << '\n' <<
       "USm         = " << model.get_USmu().row(0) << ' '
                        << model.get_USmu().row(1) << '\n' <<
+      "MSvm        = " << model.get_MSvmL() << '\n' <<
       "MSb         = " << model.get_MSbot().transpose() << '\n' <<
       "USb         = " << model.get_USbot().row(0) << ' '
                        << model.get_USbot().row(1) << '\n' <<

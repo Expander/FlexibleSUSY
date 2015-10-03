@@ -1,8 +1,26 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
 #ifndef SM_TWO_SCALE_H
 #define SM_TWO_SCALE_H
 
 #include "rge.h"
+#include "linalg.h"
 #include "two_scale_model.hpp"
 #include "sm.hpp"
 
@@ -16,10 +34,10 @@ class Two_scale;
 std::ostream& operator <<(std::ostream&, const StandardModel<Two_scale>&);
 
 template<>
-class StandardModel<Two_scale>: public Two_scale_model, protected RGE {
+class StandardModel<Two_scale>: public Two_scale_model, protected softsusy::RGE {
 private:
-   DoubleMatrix yu, yd, ye; ///< Yukawa matrices for ups, downs and leptons
-   DoubleVector g;          ///< Gauge couplings (g1 = sqrt(5/3) g_Y)
+   softsusy::DoubleMatrix yu, yd, ye; ///< Yukawa matrices for ups, downs and leptons
+   softsusy::DoubleVector g;          ///< Gauge couplings (g1 = sqrt(5/3) g_Y)
    double precision;
 
 public:
@@ -28,8 +46,8 @@ public:
 
    StandardModel();
    StandardModel(const StandardModel<Two_scale>&);
-   StandardModel(const DoubleMatrix& yu, const DoubleMatrix& yd,
-                 const DoubleMatrix& ye, const DoubleVector& g);
+   StandardModel(const softsusy::DoubleMatrix& yu, const softsusy::DoubleMatrix& yd,
+                 const softsusy::DoubleMatrix& ye, const softsusy::DoubleVector& g);
 
    virtual ~StandardModel();
 
@@ -45,22 +63,22 @@ public:
    /// Sets Yukawa matrix element
    void setYukawaElement(yukawa, int, int, double);
    /// Sets whole Yukawa matrix
-   void setYukawaMatrix(yukawa, const DoubleMatrix&);
+   void setYukawaMatrix(yukawa, const softsusy::DoubleMatrix&);
    /// Set a single gauge coupling
    virtual void setGaugeCoupling(int, double);
    /// Set all gauge couplings
-   virtual void setAllGauge(const DoubleVector&);
+   virtual void setAllGauge(const softsusy::DoubleVector&);
    /// Sets renormalisation scale
    void setScale(double mu) { RGE::setMu(mu); }
 
    /// Returns a single Yukawa matrix element
    double displayYukawaElement(yukawa, int, int) const;
    /// Returns a whole Yukawa matrix
-   DoubleMatrix displayYukawaMatrix(yukawa) const;
+   softsusy::DoubleMatrix displayYukawaMatrix(yukawa) const;
    /// Returns a single gauge coupling
    virtual double displayGaugeCoupling(int) const;
    /// Returns all gauge couplings
-   virtual DoubleVector displayGauge() const;
+   virtual softsusy::DoubleVector displayGauge() const;
    /// Return renomalisation scale
    double get_scale() const { return RGE::displayMu(); }
    /// Return number of loops
@@ -72,11 +90,11 @@ public:
 
 protected:
    /// Sets all RGE parameters to elements of vector
-   virtual void set(const DoubleVector&);
+   virtual void set(const softsusy::DoubleVector&);
    /// Returns all parameters as elements of a vector
-   virtual const DoubleVector display() const;
+   virtual const softsusy::DoubleVector display() const;
    /// Calculate beta functions
-   virtual DoubleVector beta() const;
+   virtual softsusy::DoubleVector beta() const;
 };
 
 }

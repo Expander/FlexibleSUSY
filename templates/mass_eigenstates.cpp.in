@@ -138,14 +138,29 @@ void CLASSNAME::set_two_loop_corrections(const Two_loop_corrections& two_loop_co
    two_loop_corrections = two_loop_corrections_;
 }
 
+const Two_loop_corrections& CLASSNAME::get_two_loop_corrections() const
+{
+   return two_loop_corrections;
+}
+
 void CLASSNAME::set_number_of_ewsb_iterations(std::size_t iterations)
 {
    number_of_ewsb_iterations = iterations;
 }
 
+std::size_t CLASSNAME::get_number_of_ewsb_iterations() const
+{
+   return number_of_ewsb_iterations;
+}
+
 void CLASSNAME::set_number_of_mass_iterations(std::size_t iterations)
 {
    number_of_mass_iterations = iterations;
+}
+
+std::size_t CLASSNAME::get_number_of_mass_iterations() const
+{
+   return number_of_mass_iterations;
 }
 
 void CLASSNAME::set_precision(double precision_)
@@ -159,6 +174,11 @@ void CLASSNAME::set_pole_mass_loop_order(unsigned loop_order)
    pole_mass_loop_order = loop_order;
 }
 
+unsigned CLASSNAME::get_pole_mass_loop_order() const
+{
+   return pole_mass_loop_order;
+}
+
 void CLASSNAME::set_ewsb_iteration_precision(double precision)
 {
    ewsb_iteration_precision = precision;
@@ -167,6 +187,11 @@ void CLASSNAME::set_ewsb_iteration_precision(double precision)
 double CLASSNAME::get_ewsb_iteration_precision() const
 {
    return ewsb_iteration_precision;
+}
+
+double CLASSNAME::get_precision() const
+{
+   return precision;
 }
 
 double CLASSNAME::get_ewsb_loop_order() const
@@ -302,7 +327,7 @@ int CLASSNAME::solve_ewsb_iteratively()
 #endif
    }
 
-   for_each(solvers, solvers + number_of_solvers, Delete_object());
+   std::for_each(solvers, solvers + number_of_solvers, Delete_object());
 
    return status;
 }

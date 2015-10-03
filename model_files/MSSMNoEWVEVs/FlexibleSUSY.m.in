@@ -1,7 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
-FSDefaultSARAHModel = UnbrokenMSSM;
+FSDefaultSARAHModel = MSSMNoEWVEVs;
 
 (* CMSSM input parameters *)
 

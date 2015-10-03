@@ -28,13 +28,37 @@ class MSSMNoFV_onshell_problems {
 public:
    MSSMNoFV_onshell_problems();
    void clear();
+   void clear_problems();
+   void clear_warnings();
+   void flag_no_convergence_Mu_MassB_MassWB(double, unsigned);
+   void flag_no_convergence_me2(double, unsigned);
    void flag_tachyon(const std::string&);
+   void unflag_no_convergence_Mu_MassB_MassWB();
+   void unflag_no_convergence_me2();
    bool have_problem() const;
+   bool have_warning() const;
+   std::string get_warning() const;
    void print(std::ostream&) const;
+   void print_problems(std::ostream&) const;
+   void print_warnings(std::ostream&) const;
 
 private:
+   struct Convergence_problem {
+      Convergence_problem() : precision(0.), iterations(0) {}
+      void clear() {
+         precision = 0.;
+         iterations = 0;
+      }
+      double precision;    ///< achieved accuracy
+      unsigned iterations; ///< used number of iterations
+   };
+
+   bool have_no_convergence_Mu_MassB_MassWB;
+   bool have_no_convergence_me2;
    bool have_tachyon;
    std::string tachyonic_particle;
+   Convergence_problem convergence_problem_Mu_MassB_MassWB;
+   Convergence_problem convergence_problem_me2;
 };
 
 std::ostream& operator<<(std::ostream&, const MSSMNoFV_onshell_problems&);

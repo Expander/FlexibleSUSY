@@ -7,6 +7,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace flexiblesusy;
+using namespace softsusy;
 
 #define YU StandardModel<Two_scale>::YU
 #define YD StandardModel<Two_scale>::YD
