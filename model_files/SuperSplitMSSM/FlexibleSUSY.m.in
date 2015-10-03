@@ -308,8 +308,8 @@ lambda2LHSSAlphaT2 = With[{
    4*Piecewise[{{-9/4, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
      Re[((-1 + (2*\[Mu]^2)/mst^2 + (2*\[Mu]^4)/mst^4)*
         (-Pi^2/6 - (\[Mu]^2*Log[\[Mu]^2/mst^2])/mst^2 + Log[\[Mu]^2/mst^2]*
-          Log[1 - \[Mu]^2/mst^2] + PolyLog[2, \[Mu]^2/mst^2]))/
-       (1 - \[Mu]^2/mst^2)^2]] -
+          Log[Abs[1 - \[Mu]^2/mst^2]] + PolyLog[2, \[Mu]^2/mst^2]))/
+       Abs[(1 - \[Mu]^2/mst^2)^2]]] -
    8*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
      (\[Mu]^2*Log[\[Mu]^2/mst^2])/(mst^2*(1 - \[Mu]^2/mst^2))] -
    (2*\[Mu]^2*Piecewise[{{-1, Abs[-1 + \[Mu]^2/mst^2] < 1/100000}},
