@@ -194,10 +194,57 @@ double f4(double r)
       + (2*(r4-19*r2-18)*r2*std::log(r2))/(7*std::pow(r2-1,3));
 }
 
+/// f5(r1,r2) in the limit r1 -> 1
+static double f5_1_1(double r1, double r2)
+{
+   return 0.772943722943723 - 0.5524891774891774*r2 +
+      0.7870670995670994*std::pow(r2,2) - 0.3316558441558441*std::pow(r2,3) +
+      0.056277056277056266*std::pow(r2,4) + r1*(-0.5524891774891774 +
+      1.0700757575757573*r2 - 0.6625541125541123*std::pow(r2,2) +
+      0.22483766233766228*std::pow(r2,3) - 0.03344155844155843*std::pow(r2,4)) +
+      std::pow(r1,3)*(-0.33165584415584404 + 0.22483766233766223*r2 -
+      0.08755411255411245*std::pow(r2,2) + 0.01650432900432896*std::pow(r2,3) -
+      0.0007034632034631958*std::pow(r2,4)) + std::pow(r1,4)*(0.05627705627705626
+      - 0.03344155844155841*r2 + 0.010281385281385256*std::pow(r2,2) -
+      0.0007034632034631921*std::pow(r2,3) -
+      0.0002705627705627725*std::pow(r2,4)) + std::pow(r1,2)*(0.7870670995670994
+      - 0.6625541125541123*r2 + 0.32061688311688297*std::pow(r2,2) -
+      0.08755411255411248*std::pow(r2,3) + 0.01028138528138527*std::pow(r2,4));
+}
+
+/// f5(r1,r2) in the limit r1 -> 1
+static double f5_1_r2(double r1, double r2)
+{
+   return (-0.025*std::pow(-1. + r1,3)*(4. - 17.*r2 + 4.*std::pow(r2,2) - 25.*std::pow(r2,3) -
+        20.*std::pow(r2,4) + 41.*std::pow(r2,5) + 12.*std::pow(r2,6) + std::pow(r2,7) +
+        (-30.*std::pow(r2,3) - 30.*std::pow(r2,5))*std::log(std::pow(r2,2))))/
+    (std::pow(-1. + r2,6)*std::pow(1. + r2,2)) -
+   (0.125*std::pow(-1. + r1,2)*(1. - 4.*r2 + std::pow(r2,2) - 4.*std::pow(r2,3) -
+        5.*std::pow(r2,4) + 8.*std::pow(r2,5) + 3.*std::pow(r2,6) +
+        (-6.*std::pow(r2,3) - 6.*std::pow(r2,5))*std::log(std::pow(r2,2))))/
+    (std::pow(-1. + r2,5)*std::pow(1. + r2,2)) +
+   (0.75*(-1 + r2 + 2*std::pow(r2,2) - std::pow(r2,4) - std::pow(r2,5) +
+        (std::pow(r2,3) + std::pow(r2,5))*std::log(std::pow(r2,2))))/
+    (std::pow(-1 + r2,3)*std::pow(1 + r2,2)) +
+   (0.25*(-1. + r1)*(1. - 1.*r2 - 2.*std::pow(r2,2) + 8.*std::pow(r2,3) + std::pow(r2,4) -
+        7.*std::pow(r2,5) + (3.*std::pow(r2,3) + 3.*std::pow(r2,5))*std::log(std::pow(r2,2))))/
+    (std::pow(-1. + r2,4)*std::pow(1. + r2,2)) +
+   (0.05*std::pow(-1. + r1,4)*(-1. + 4.5*r2 + 2.*std::pow(r2,2) + 16.5*std::pow(r2,3) -
+        16.5*std::pow(r2,5) - 2.*std::pow(r2,6) - 4.5*std::pow(r2,7) + 1.*std::pow(r2,8) +
+        (15.*std::pow(r2,3) + 15.*std::pow(r2,5))*std::log(std::pow(r2,2))))/
+      (std::pow(-1. + r2,7)*std::pow(1. + r2,2));
+}
+
 double f5(double r1, double r2)
 {
-   if (is_equal(r1, 1., EPS) && is_equal(r2, 1., EPS))
-      return 1.;
+   if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
+      return f5_1_1(r1, r2);
+
+   if (is_equal(r1, 1., 0.01))
+      return f5_1_r2(r1, r2);
+
+   if (is_equal(r2, 1., 0.01))
+      return f5_1_r2(r2, r1);
 
    const double r12 = sqr(r1);
 
