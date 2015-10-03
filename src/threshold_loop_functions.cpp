@@ -150,8 +150,9 @@ double g(double r)
 
 double f1(double r)
 {
-   if (is_equal(r, 1., EPS))
-      return 1.;
+   if (is_equal(r, 1., 0.01))
+      return (-81 + 464*r + 270*std::pow(r,2)
+              - 208*std::pow(r,3) + 45*std::pow(r,4))/490.;
 
    const double r2 = sqr(r);
 
@@ -161,8 +162,9 @@ double f1(double r)
 
 double f2(double r)
 {
-   if (is_equal(r, 1., EPS))
-      return 1.;
+   if (is_equal(r, 1., 0.01))
+      return (-285 + 1616*r + 1230*std::pow(r,2)
+              - 848*std::pow(r,3) + 177*std::pow(r,4))/1890.;
 
    const double r2 = sqr(r);
 
@@ -172,8 +174,9 @@ double f2(double r)
 
 double f3(double r)
 {
-   if (is_equal(r, 1., EPS))
-      return 1.;
+   if (is_equal(r, 1., 0.01))
+      return (849 - 1184*r + 1566*std::pow(r,2)
+              - 736*std::pow(r,3) + 135*std::pow(r,4))/630.;
 
    const double r2 = sqr(r);
    const double r4 = std::pow(r,4);
