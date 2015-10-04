@@ -570,7 +570,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          continue;
 
       // FIXME: We assume that the photonVertex is symmetric between its left and right parts!
-      double photonEmitterChargeCount = photonVertex.left().real() / muonCharge(context);
+      const double photonEmitterChargeCount = photonVertex.left().real() / muonCharge(context);
 
       const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
 
@@ -591,11 +591,11 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
 
-         std::complex<double> zL = muonVertex.left();
-         std::complex<double> zR = muonVertex.right();
+         const std::complex<double> zL = muonVertex.left();
+         const std::complex<double> zR = muonVertex.right();
 
-         double coeffA = std::norm(zL) + std::norm(zR);
-         double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+         const double coeffA = std::norm(zL) + std::norm(zR);
+         const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
          double muonMass;
          if (MuonFamily::numberOfGenerations == 1)
@@ -619,10 +619,9 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
             exchangeMass = context.mass<ExchangeParticle>(generationIndex);
          }
 
-         double massRatioSquared = photonEmitterMass / exchangeMass;
-         massRatioSquared *= massRatioSquared;
+         const double massRatioSquared = Sqr(photonEmitterMass / exchangeMass);
 
-         double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
+         const double part1 = muonMass / 12.0 * coeffA * OneLoopFunctionF1C(massRatioSquared);
 
          double part2;
          if (is_zero(massRatioSquared))
@@ -630,8 +629,8 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          else
             part2 = photonEmitterMass / 3.0 * coeffB * OneLoopFunctionF2C(massRatioSquared);
 
-         double preFactor = muonPhysicalMass(context) / (exchangeMass * exchangeMass);
-         preFactor *= photonEmitterChargeCount / (16.0 * M_PI * M_PI);
+         const double preFactor = oneOver16PiSqr * photonEmitterChargeCount
+            * muonPhysicalMass(context) / (exchangeMass * exchangeMass);
 
          res += preFactor * (part1 + part2);
       }
@@ -656,7 +655,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
       if (photonVertex.isZero())
          continue;
 
-      double photonEmitterChargeCount = photonVertex.value().real() / muonCharge(context);
+      const double photonEmitterChargeCount = photonVertex.value().real() / muonCharge(context);
 
       const auto &photonEmitterIndices = photonVertexFunction::template particleIndices<2>(photonVertexIndices);
 
@@ -677,11 +676,11 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
 
          const auto &exchangeIndices = muonVertexFunction::template particleIndices<2>(muonVertexIndices);
 
-         std::complex<double> zL = muonVertex.left();
-         std::complex<double> zR = muonVertex.right();
+         const std::complex<double> zL = muonVertex.left();
+         const std::complex<double> zR = muonVertex.right();
 
-         double coeffA = std::norm(zL) + std::norm(zR);
-         double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
+         const double coeffA = std::norm(zL) + std::norm(zR);
+         const double coeffB = (zL * std::conj(zR) + zR * std::conj(zL)).real();
 
          double muonMass;
          if (MuonFamily::numberOfGenerations == 1)
@@ -705,14 +704,13 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
             exchangeMass = context.mass<ExchangeParticle>(generationIndex);
          }
 
-         double massRatioSquared = exchangeMass / photonEmitterMass;
-         massRatioSquared *= massRatioSquared;
+         const double massRatioSquared = Sqr(exchangeMass / photonEmitterMass);
 
-         double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
-         double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
+         const double part1 = 1.0 / 12.0 * coeffA * OneLoopFunctionF1N(massRatioSquared);
+         const double part2 = exchangeMass / (6.0 * muonMass) * coeffB * OneLoopFunctionF2N(massRatioSquared);
 
-         double preFactor = muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
-         preFactor *= - photonEmitterChargeCount / (16.0 * M_PI * M_PI);
+         const double preFactor = - oneOver16PiSqr * photonEmitterChargeCount
+            * muonPhysicalMass(context) * muonMass / (photonEmitterMass * photonEmitterMass);
 
          res += preFactor * (part1 + part2);
       }
