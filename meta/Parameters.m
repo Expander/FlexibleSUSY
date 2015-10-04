@@ -63,6 +63,9 @@ GetOutputParameters::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
 
+GetDependenceNumSymbols::usage="Returns symbols which have a
+DependenceNum";
+
 CreateLocalConstRefs::usage="creates local const references to model
 parameters / input parameters.";
 
@@ -160,7 +163,8 @@ FindSymbolDef[sym_] :=
 FindAllParameters[expr_] :=
     Module[{symbols, compactExpr, allParameters},
            allParameters = Join[allModelParameters, allOutputParameters,
-                                allInputParameters, Phases`GetArg /@ allPhases];
+                                allInputParameters, Phases`GetArg /@ allPhases,
+                                GetDependenceNumSymbols[]];
            compactExpr = RemoveProtectedHeads[expr];
            (* find all model parameters with SARAH head *)
            symbols = DeleteDuplicates[Flatten[
@@ -869,7 +873,7 @@ CalculateLocalPoleMasses[parameter_] :=
 
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", symbols, inputSymbols, modelPars, outputPars,
-            poleMasses, phases},
+            poleMasses, phases, depNum},
            symbols = FindAllParameters[expr];
            poleMasses = {
                Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
@@ -881,10 +885,12 @@ CreateLocalConstRefs[expr_] :=
            modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
            outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutputParameters,#])&]];
            phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceNumSymbols[],#])&]];
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
+           (result = result <> DefineLocalConstCopy[#,"DERIVEDPARAMETER"])& /@ depNum;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
@@ -1157,6 +1163,15 @@ GetThirdGeneration[par_] :=
           IsMatrix[par], par[2,2],
           True, Print["Warning: GetThirdGeneration[",par,"]: unknown type"]; par
          ];
+
+GetDependenceNumSymbols[] :=
+    DeleteDuplicates @ Flatten @
+    Join[{SARAH`Weinberg},
+         Cases[SARAH`ParameterDefinitions,
+               {parameter_ /; !MemberQ[Parameters`GetModelParameters[], parameter] &&
+                parameter =!= SARAH`Weinberg && parameter =!= SARAH`electricCharge,
+                {___, SARAH`DependenceNum -> value:Except[None], ___}} :> parameter]
+        ];
 
 End[];
 
