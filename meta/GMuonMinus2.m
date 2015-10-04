@@ -574,8 +574,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "LeftAndRightComponentedVertex",
                                        exprL = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
                                        exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
-                                       "std::complex<double> left = 0.0;\n" <>
-                                       "std::complex<double> right = 0.0;\n\n" <>
+                                       "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
                                        VertexExpressionToString[exprL, "left"] <> "\n" <>
