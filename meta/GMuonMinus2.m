@@ -518,21 +518,10 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
 (* Converts an expression to a valid C++ string.  The result of the
    expression will be stored in `result'.
 *)
-ExpressionToString[expr_, result_String] :=
-    Module[{type, exprNoDep, exprStr},
+VertexExpressionToString[expr_, result_String] :=
+    Module[{exprNoDep},
            exprNoDep = TreeMasses`ReplaceDependenciesReverse[expr];
-           If[FreeQ[exprNoDep,SARAH`sum] && FreeQ[exprNoDep,SARAH`ThetaStep],
-              exprStr = result <> " = " <>
-                  CConversion`RValueToCFormString[
-                      Simplify[Parameters`DecreaseIndexLiterals[exprNoDep]]] <> ";\n";
-              ,
-              type = CConversion`ScalarType[CConversion`complexScalarCType];
-              exprStr = CConversion`ExpandSums[
-                  Parameters`DecreaseIndexLiterals[
-                      Parameters`DecreaseSumIdices[exprNoDep]],
-                  result, type, ""];
-             ];
-           exprStr
+           TreeMasses`ExpressionToString[exprNoDep, result]
           ];
 
 (* ParsedVertex structure:
@@ -566,7 +555,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
                                        "double result = 0.;\n\n" <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       ExpressionToString[expr, "result"] <> "\n" <>
+                                       VertexExpressionToString[expr, "result"] <> "\n" <>
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
@@ -575,8 +564,8 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "std::complex<double> left = 0.0;\n" <>
                                        "std::complex<double> right = 0.0;\n\n" <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       ExpressionToString[exprL, "left"] <> "\n" <>
-                                       ExpressionToString[exprR, "right"] <> "\n" <>
+                                       VertexExpressionToString[exprL, "left"] <> "\n" <>
+                                       VertexExpressionToString[exprR, "right"] <> "\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahParticles = SARAH`getParticleName /@ particles;
