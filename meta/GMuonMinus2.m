@@ -515,15 +515,6 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
             Return[{prototypes, definitions}];
             ];);
 
-(* Converts an expression to a valid C++ string.  The result of the
-   expression will be stored in `result'.
-*)
-VertexExpressionToString[expr_, result_String] :=
-    Module[{exprNoDep},
-           exprNoDep = TreeMasses`ReplaceDependenciesReverse[expr];
-           TreeMasses`ExpressionToString[exprNoDep, result]
-          ];
-
 (* Creates local declarations of field indices, whose values are taken
    from the elements of `arrayName'.
  *)
@@ -565,20 +556,23 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
+                                       expr = TreeMasses`ReplaceDependenciesReverse[expr];
                                        "double result = 0.;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-                                       VertexExpressionToString[expr, "result"] <> "\n" <>
+                                       TreeMasses`ExpressionToString[expr, "result"] <> "\n" <>
                                        "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
                                        exprL = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
                                        exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
+                                       exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
+                                       exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        "std::complex<double> left, right;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
-                                       VertexExpressionToString[exprL, "left"] <> "\n" <>
-                                       VertexExpressionToString[exprR, "right"] <> "\n" <>
+                                       TreeMasses`ExpressionToString[exprL, "left"] <> "\n" <>
+                                       TreeMasses`ExpressionToString[exprR, "right"] <> "\n" <>
                                        "return vertex_type(left, right);"];
 
            sarahParticles = SARAH`getParticleName /@ particles;
