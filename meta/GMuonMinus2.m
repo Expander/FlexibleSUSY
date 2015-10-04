@@ -552,7 +552,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
                                        expr = TreeMasses`ReplaceDependenciesReverse[expr];
-                                       "double result = 0.;\n\n" <>
+                                       "std::complex<double> result;\n\n" <>
                                        declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
                                        TreeMasses`ExpressionToString[expr, "result"] <> "\n" <>
