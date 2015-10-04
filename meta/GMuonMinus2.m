@@ -524,6 +524,22 @@ VertexExpressionToString[expr_, result_String] :=
            TreeMasses`ExpressionToString[exprNoDep, result]
           ];
 
+(* Creates local declarations of field indices, whose values are taken
+   from the elements of `arrayName'.
+ *)
+DeclareIndices[indexedParticles_List, arrayName_String] :=
+    Module[{p, total = 0, fieldIndexList, decl = ""},
+           DeclareIndex[idx_, num_Integer, an_String] := (
+               "const unsigned " <> CConversion`ToValidCSymbolString[idx] <>
+               " = " <> an <> "[" <> ToString[num] <> "];\n");
+           For[p = 1, p <= Length[indexedParticles], p++,
+               fieldIndexList = FieldIndexList[indexedParticles[[p]]];
+               decl = decl <> StringJoin[DeclareIndex[#, total++, arrayName]& /@ fieldIndexList];
+              ];
+           Assert[total == Total[Length[FieldIndexList[#]]& /@ indexedParticles]];
+           decl
+          ];
+
 (* ParsedVertex structure:
  ParsedVertex[
               {numP1Indices, numP2Indices, ...},
@@ -538,22 +554,19 @@ VertexExpressionToString[expr_, result_String] :=
 (* The heart of the algorithm! From the particle content, determine all
  necessary information. *)
 ParseVertex[indexedParticles_List, vertexRules_List] :=
-    Module[{particles, numberOfIndices, indexParameters,
+    Module[{particles, numberOfIndices, declareIndices,
         parsedVertex, vertexClassName, vertexFunctionBody,
         sarahParticles, particleInfo, indexBounds, expr, exprL, exprR},
            numberOfIndices = ((Length @ FieldIndexList[#] &) /@ indexedParticles);
            particles = Vertices`StripFieldIndices /@ indexedParticles;
-           
-           indexParameters = StringJoin @ Riffle[Table["indices[" <> ToString[i] <> "]",
-                                                       {i, 0, Total[numberOfIndices] - 1}],
-                                                 ", "];
-           If[indexParameters =!= "", indexParameters = " " <> indexParameters <> " "];
-           
+           declareIndices = DeclareIndices[indexedParticles, "indices"];
+
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
                                        expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
                                        "double result = 0.;\n\n" <>
+                                       declareIndices <>
                                        Parameters`CreateLocalConstRefs[expr] <> "\n" <>
                                        VertexExpressionToString[expr, "result"] <> "\n" <>
                                        "return vertex_type(result);",
@@ -563,6 +576,7 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
                                        exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
                                        "std::complex<double> left = 0.0;\n" <>
                                        "std::complex<double> right = 0.0;\n\n" <>
+                                       declareIndices <>
                                        Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
                                        VertexExpressionToString[exprL, "left"] <> "\n" <>
                                        VertexExpressionToString[exprR, "right"] <> "\n" <>
