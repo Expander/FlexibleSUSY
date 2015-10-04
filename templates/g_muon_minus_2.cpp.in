@@ -93,18 +93,15 @@ private:
       std::memcpy(indices.data(), i, N * sizeof(unsigned int));
    }
 public:
-   const std::array<unsigned int, N> &operator*() const
-   {
+   const std::array<unsigned int, N> &operator*() const {
       return indices;
    }
 
-   const std::array<unsigned int, N> *operator->() const
-   {
+   const std::array<unsigned int, N> *operator->() const {
       return &indices;
    }
 
-   IndexIterator &operator++()
-   {
+   IndexIterator &operator++() {
       for (unsigned int i = 0; i != N; i++) {
          indices[i]++;
          if (indices[i] == bounds->indexEnd[i]) {
@@ -119,8 +116,7 @@ public:
       return *this;
    }
 
-   IndexIterator operator++(int)
-   {
+   IndexIterator operator++(int) {
       IndexIterator it(*this);
       this->operator++();
       return it;
@@ -150,13 +146,11 @@ template<unsigned int N> struct IndexBounds {
 
    typedef IndexIterator<N> const_iterator;
 
-   const_iterator begin() const
-   {
+   const_iterator begin() const {
       return const_iterator(*this, indexBegin);
    }
 
-   const_iterator end() const
-   {
+   const_iterator end() const {
       return const_iterator(*this, indexEnd);
    }
 };
@@ -172,7 +166,7 @@ template<> struct IndexBounds<0> {
    const_iterator end() const
    { return (begin()+1); }
 };
-IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex = {};
+IndexBounds<0>::indices_type IndexBounds<0>::dummyIndex;
 
 @GMuonMinus2_Particles@
 
@@ -191,18 +185,14 @@ struct EvaluationContext {
     * @fn mass<P>
     * @brief Returns the mass of a particle.
     */
-   template<class P> double mass() const;
-   template<class P> double mass(unsigned int) const;
-};
+   template<class P> double mass() const {
+      return mass<typename anti<P>::type>();
+   }
 
-template<class P> double EvaluationContext::mass() const
-{
-   return mass<typename anti<P>::type>();
-}
-template<class P> double EvaluationContext::mass(unsigned int index) const
-{
-   return mass<typename anti<P>::type>(index);
-}
+   template<class P> double mass(unsigned int index) const {
+      return mass<typename anti<P>::type>(index);
+   }
+};
 
 /**
  * @class DiagramEvaluator
@@ -218,10 +208,10 @@ template<class P> double EvaluationContext::mass(unsigned int index) const
  */
 template<class ...Args> struct DiagramEvaluator;
 
-double OneLoopFunctionF1C(double x);
-double OneLoopFunctionF2C(double x);
-double OneLoopFunctionF1N(double x);
-double OneLoopFunctionF2N(double x);
+double OneLoopFunctionF1C(double);
+double OneLoopFunctionF2C(double);
+double OneLoopFunctionF1N(double);
+double OneLoopFunctionF2N(double);
 
 @GMuonMinus2_MuonFunctionPrototypes@
 
@@ -242,8 +232,7 @@ public:
     * @fn value
     * @brief Returns the value of the vertex.
     */
-   std::complex<double> value() const
-   {
+   std::complex<double> value() const {
       return val;
    }
 
@@ -251,8 +240,7 @@ public:
     * @fn isZero
     * @brief Tests whether the value is numerically significant
     */
-   bool isZero() const
-   {
+   bool isZero() const {
       return (is_zero(val.real()) && is_zero(val.imag()));
    }
 };
@@ -273,8 +261,7 @@ public:
     * @fn left
     * @brief Returns the left component of the vertex.
     */
-   std::complex<double> left() const
-   {
+   std::complex<double> left() const {
       return value.first;
    }
 
@@ -282,8 +269,7 @@ public:
     * @fn right
     * @brief Returns the left component of the vertex.
     */
-   std::complex<double> right() const
-   {
+   std::complex<double> right() const {
       return value.second;
    }
 
@@ -291,8 +277,7 @@ public:
     * @fn isZero
     * @brief Tests whether the values are numerically significant
     */
-   bool isZero() const
-   {
+   bool isZero() const {
       return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
               is_zero(value.second.real()) && is_zero(value.second.imag()));
    }
@@ -331,8 +316,7 @@ public:
    typedef typename index_bounds::indices_type indices_type;
    typedef typename Base::vertex_type vertex_type;
 public:
-   static const index_bounds &indexBounds()
-   {
+   static const index_bounds &indexBounds() {
       return indexB;
    }
 
@@ -449,7 +433,8 @@ double OneLoopFunctionF1C(double x)
       return 4.0;
 
    // error around x=1 is <= 10^-12 on an intel i7
-   double y = x - 1.0;
+   const double y = x - 1.0;
+
    if (std::abs(y) < 0.21) {
       return (1.0000000000000000000 -
               0.60000000000000000000  * y +
@@ -475,7 +460,8 @@ double OneLoopFunctionF1C(double x)
 double OneLoopFunctionF2C(double x)
 {
    // error around x=1 is <= 10^-13 on an intel i7
-   double y = x - 1.0;
+   const double y = x - 1.0;
+
    if (std::abs(y) < 0.155)
       return (1.0 - 0.75 * y + 0.6 * y * y -
               0.50000000000000000000 * y * y * y +
@@ -501,7 +487,8 @@ double OneLoopFunctionF1N(double x)
       return 2.0;
 
    // error around x=1 is <= 10^-12 on an intel i7
-   double y = x - 1.0;
+   const double y = x - 1.0;
+
    if (std::abs(y) < 0.23)
       return (1.0000000000000000000 -
               0.4000000000000000000  * y +
@@ -529,7 +516,8 @@ double OneLoopFunctionF2N(double x)
       return 3.0;
 
    // error around x=1 is <= 10^-13 on an intel i7
-   double y = x - 1.0;
+   const double y = x - 1.0;
+
    if (std::abs(y) < 0.185)
       return (1.0000000000000000000 -
               0.50000000000000000000 * y +

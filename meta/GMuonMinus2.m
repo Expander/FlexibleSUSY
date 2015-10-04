@@ -79,27 +79,25 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                 muonFamily = GetMuonFamily[];
                                                 
                                                 prototypes = ("unsigned int muonIndex();\n" <>
-                                                              "double muonPhysicalMass( EvaluationContext &context );\n" <>
-                                                              "double muonCharge( EvaluationContext &context );");
+                                                              "double muonPhysicalMass( EvaluationContext&);\n" <>
+                                                              "double muonCharge(EvaluationContext&);");
                                                 
-                                                definitions = (" unsigned int muonIndex()\n" <>
+                                                definitions = ("unsigned int muonIndex()\n" <>
                                                                "{ unsigned int muonIndex" <>
                                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
-                                                               "; return muonIndex; }\n" <>
-                                                               "double muonPhysicalMass( EvaluationContext &context )\n" <>
+                                                               "; return muonIndex; }\n\n" <>
+                                                               "double muonPhysicalMass(EvaluationContext& context)\n" <>
                                                                "{\n" <>
                                                                IndentText @
                                                                ("static double m_muon_pole = 0.0;\n\n" <>
                                                                 
-                                                                "if( m_muon_pole == 0.0 )\n" <>
-                                                                "{\n" <>
+                                                                "if(m_muon_pole == 0.0) {\n" <>
                                                                 IndentText @
                                                                 ("m_muon_pole = context.model.get_physical().M" <>
                                                                  ParticleToCXXName[muonFamily] <> "(" <>
                                                                  If[muonIndex =!= Null, ToString[muonIndex-1], ""] <> ");\n\n" <>
                                                                  
-                                                                 "if( m_muon_pole == 0.0 )\n" <>
-                                                                 "{\n" <>
+                                                                 "if(m_muon_pole == 0.0) {\n" <>
                                                                  IndentText @
                                                                  ("context.model.calculate_M" <> ParticleToCXXName[muonFamily] <> "_pole();\n" <>
                                                                   "m_muon_pole = context.model.get_physical().M" <>
@@ -109,8 +107,8 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                                 "}\n\n" <>
                                                                 
                                                                 "return m_muon_pole;\n") <>
-                                                               "}\n" <>
-                                                               "double muonCharge( EvaluationContext &context )\n" <>
+                                                               "}\n\n" <>
+                                                               "double muonCharge(EvaluationContext&)\n" <>
                                                                "{ return 1.0; }");
                                                 
                                                 muonFunctions = {prototypes, definitions};
