@@ -1057,7 +1057,7 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
             isLowEnergyModel = "false",
             isSupersymmetricModel = "false",
             fillInputParametersFromMINPAR = "", fillInputParametersFromEXTPAR = "",
-            writeSLHAMassBlock = "", writeSLHAGMuonMinus2Block = "",
+            writeSLHAMassBlock = "",
             writeSLHAMixingMatricesBlocks = "",
             writeSLHAModelParametersBlocks = "", writeSLHAMinparBlock = "",
             writeSLHAExtparBlock = "", readLesHouchesInputParameters,
@@ -1086,7 +1086,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
            readLesHouchesOutputParameters = WriteOut`ReadLesHouchesOutputParameters[];
            readLesHouchesPhysicalParameters = WriteOut`ReadLesHouchesPhysicalParameters["LOCALPHYSICAL", "DEFINE_PHYSICAL_PARAMETER"];
            writeSLHAMassBlock = WriteOut`WriteSLHAMassBlock[massMatrices];
-           writeSLHAGMuonMinus2Block = WriteOut`WriteSLHAGMuonMinus2Block[];
            writeSLHAMixingMatricesBlocks  = WriteOut`WriteSLHAMixingMatricesBlocks[];
            writeSLHAModelParametersBlocks = WriteOut`WriteSLHAModelParametersBlocks[];
            writeSLHAMinparBlock = WriteOut`WriteSLHAMinparBlock[minpar];
@@ -1113,7 +1112,6 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, minpar_List, extpar_List,
                             "@readLesHouchesOutputParameters@" -> IndentText[readLesHouchesOutputParameters],
                             "@readLesHouchesPhysicalParameters@" -> IndentText[readLesHouchesPhysicalParameters],
                             "@writeSLHAMassBlock@" -> IndentText[writeSLHAMassBlock],
-                            "@writeSLHAGMuonMinus2Block@"      -> IndentText[writeSLHAGMuonMinus2Block],
                             "@writeSLHAMixingMatricesBlocks@"  -> IndentText[writeSLHAMixingMatricesBlocks],
                             "@writeSLHAModelParametersBlocks@" -> IndentText[writeSLHAModelParametersBlocks],
                             "@writeSLHAMinparBlock@"           -> IndentText[writeSLHAMinparBlock],

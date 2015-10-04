@@ -134,16 +134,6 @@ void @ModelName@_slha_io::set_mass(const @ModelName@_physical& physical,
 }
 
 /**
-* Stores the anomalous magnetic moment of the muon in the SLHA object.
-*
-* @param value value of amuon
-*/
-void @ModelName@_slha_io::set_amuon(double value)
-{
-@writeSLHAGMuonMinus2Block@
-}
-
-/**
  * Stores the mixing matrices in the SLHA object.
  *
  * @param physical struct of physical parameters
