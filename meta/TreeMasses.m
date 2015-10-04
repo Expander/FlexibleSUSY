@@ -98,6 +98,9 @@ GetMassMatrixType::usage="returns mass matrix type of particle";
 ReplaceDependencies::usage="returs expression with dependencies
 (ThetaW etc.) replaced by the user-defined expressions (";
 
+ReplaceDependenciesReverse::usage="returs expression with dependencies
+(ThetaW etc.) replaced back";
+
 FindColorGaugeGroup::usage="returns triplet of color gauge coupling,
 group and SARAH name";
 
@@ -1265,6 +1268,9 @@ CreateDependenceNumFunctions[massMatrices_List] :=
 
 ReplaceDependencies[expr_] :=
     expr /. FindDependenceNumRules[];
+
+ReplaceDependenciesReverse[expr_] :=
+    expr /. (Reverse /@ FindDependenceNumRules[]);
 
 CallThirdGenerationHelperFunctionName[fermion_, msf1_String, msf2_String, theta_] :=
     "calculate_" <>
