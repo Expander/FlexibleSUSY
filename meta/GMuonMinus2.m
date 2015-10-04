@@ -10,7 +10,6 @@ CreateDiagrams::usage="Returns the c++ code that contains all relevant diagram c
 CreateVertexFunctionData::usage="Returns the c++ code that contains all relevant vertex function data";
 
 CreateCalculation::usage="Returns the c++ code that performs the actual calculation the magnetic moment";
-CreateThreadedCalculation::usage="Same as above, threaded version";
 
 CreateDefinitions::usage="Returns the c++ that contains all function definitions"
 
@@ -163,8 +162,6 @@ CreateCalculation[] := Module[{code},
                               calculationCode = code;
                               Return[code];
                               ];
-
-CreateThreadedCalculation[] := CreateCalculation[];
 
 CreateDefinitions[vertexRules_List] := (CreateEvaluationContextSpecializations[] <> "\n\n" <>
                                         CreateMuonFunctions[vertexRules][[2]] <> "\n\n" <>

@@ -28,7 +28,6 @@
 #include "@ModelName@_g_muon_minus_2.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
-#include "config.h"
 #include "numerics2.hpp"
 #include "wrappers.hpp"
 
@@ -410,11 +409,7 @@ double @ModelName@_GMuonMinus2::calculate_amuon(const @ModelName@_mass_eigenstat
    // make copy since model is modified via call to calculate_MFe_pole()
    @ModelName@_mass_eigenstates model(model_);
 
-#ifdef ENABLE_THREADS
-@GMuonMinus2_ThreadedCalculation@
-#else
 @GMuonMinus2_Calculation@
-#endif
 }
 
 namespace {
