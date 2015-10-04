@@ -519,16 +519,17 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
    expression will be stored in `result'.
 *)
 ExpressionToString[expr_, result_String] :=
-    Module[{type, exprStr},
-           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
+    Module[{type, exprNoDep, exprStr},
+           exprNoDep = TreeMasses`ReplaceDependenciesReverse[expr];
+           If[FreeQ[exprNoDep,SARAH`sum] && FreeQ[exprNoDep,SARAH`ThetaStep],
               exprStr = result <> " = " <>
                   CConversion`RValueToCFormString[
-                      Simplify[Parameters`DecreaseIndexLiterals[expr]]] <> ";\n";
+                      Simplify[Parameters`DecreaseIndexLiterals[exprNoDep]]] <> ";\n";
               ,
               type = CConversion`ScalarType[CConversion`complexScalarCType];
               exprStr = CConversion`ExpandSums[
                   Parameters`DecreaseIndexLiterals[
-                      Parameters`DecreaseSumIdices[expr]],
+                      Parameters`DecreaseSumIdices[exprNoDep]],
                   result, type, ""];
              ];
            exprStr
