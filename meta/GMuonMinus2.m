@@ -515,6 +515,25 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
             Return[{prototypes, definitions}];
             ];);
 
+(* Converts an expression to a valid C++ string.  The result of the
+   expression will be stored in `result'.
+*)
+ExpressionToString[expr_, result_String] :=
+    Module[{type, exprStr},
+           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
+              exprStr = result <> " = " <>
+                  CConversion`RValueToCFormString[
+                      Simplify[Parameters`DecreaseIndexLiterals[expr]]] <> ";\n";
+              ,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];
+              exprStr = CConversion`ExpandSums[
+                  Parameters`DecreaseIndexLiterals[
+                      Parameters`DecreaseSumIdices[expr]],
+                  result, type, ""];
+             ];
+           exprStr
+          ];
+
 (* ParsedVertex structure:
  ParsedVertex[
               {numP1Indices, numP2Indices, ...},
@@ -531,7 +550,7 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
 ParseVertex[indexedParticles_List, vertexRules_List] :=
     Module[{particles, numberOfIndices, indexParameters,
         parsedVertex, vertexClassName, vertexFunctionBody,
-        sarahParticles, particleInfo, indexBounds},
+        sarahParticles, particleInfo, indexBounds, expr, exprL, exprR},
            numberOfIndices = ((Length @ FieldIndexList[#] &) /@ indexedParticles);
            particles = Vertices`StripFieldIndices /@ indexedParticles;
            
@@ -543,13 +562,22 @@ ParseVertex[indexedParticles_List, vertexRules_List] :=
            vertexClassName = SymbolName[VertexTypeForParticles[particles]];
            vertexFunctionBody = Switch[vertexClassName,
                                        "SingleComponentedVertex",
-                                       "return vertex_type( 0.0 );",
+                                       expr = (SARAH`Cp @@ indexedParticles) /. vertexRules;
+                                       "double result = 0.;\n\n" <>
+                                       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+                                       ExpressionToString[expr, "result"] <> "\n" <>
+                                       "return vertex_type(result);",
                                        
                                        "LeftAndRightComponentedVertex",
+                                       exprL = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PL] /. vertexRules;
+                                       exprR = SARAH`Cp[Sequence @@ indexedParticles][SARAH`PR] /. vertexRules;
                                        "std::complex<double> left = 0.0;\n" <>
                                        "std::complex<double> right = 0.0;\n\n" <>
-                                       "return vertex_type( left, right );"];
-           
+                                       Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
+                                       ExpressionToString[exprL, "left"] <> "\n" <>
+                                       ExpressionToString[exprR, "right"] <> "\n" <>
+                                       "return vertex_type(left, right);"];
+
            sarahParticles = SARAH`getParticleName /@ particles;
            particleInfo = Flatten[(Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates], {#, ___}] &) /@
                                   sarahParticles, 1];
