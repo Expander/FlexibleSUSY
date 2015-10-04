@@ -79,7 +79,7 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                 muonFamily = GetMuonFamily[];
                                                 
                                                 prototypes = ("unsigned int muonIndex();\n" <>
-                                                              "double muonPhysicalMass( EvaluationContext&);\n" <>
+                                                              "double muonPhysicalMass(EvaluationContext&);\n" <>
                                                               "double muonCharge(EvaluationContext&);");
                                                 
                                                 definitions = ("unsigned int muonIndex()\n" <>
@@ -142,7 +142,7 @@ CreateDiagramEvaluatorClass[type_OneLoopDiagram] := ("template<class PhotonEmitt
                                                      "struct DiagramEvaluator<OneLoopDiagram<" <>
                                                      ToString @ type[[1]] <>
                                                      ">, PhotonEmitter, ExchangeParticle>\n" <>
-                                                     "{ static double value( EvaluationContext &context ); };");
+                                                     "{ static double value(EvaluationContext& context); };");
 
 calculationCode = Null;
 CreateCalculation[] := Module[{code},
@@ -155,7 +155,7 @@ CreateCalculation[] := Module[{code},
                               code = (code <>
                                       "EvaluationContext context{ model };\n" <>
                                       "double val = 0.0;\n\n" <>
-                                      StringJoin @ Riffle[("val += " <> # <> "::value( context );" &) /@ ConcreteDiagramEvaluators[],
+                                      StringJoin @ Riffle[("val += " <> # <> "::value(context);" &) /@ ConcreteDiagramEvaluators[],
                                                           "\n"] <> "\n\n" <>
                                       "return val;"
                                       );
@@ -199,9 +199,9 @@ Module[{particles, code},
        
        code = (StringJoin @
                Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">(" <>
-                       If[TreeMasses`GetDimension[#] === 1, "", " unsigned int index "] <> ") const\n" <>
+                       If[TreeMasses`GetDimension[#] === 1, "", "unsigned int index"] <> ") const\n" <>
                        "{ return model.get_M" <> ParticleToCXXName[#] <>
-                       If[TreeMasses`GetDimension[#] === 1, "()", "( index )"] <> "; }"
+                       If[TreeMasses`GetDimension[#] === 1, "()", "(index)"] <> "; }"
                        &) /@ particles, "\n\n"]);
        
        Return[code];
