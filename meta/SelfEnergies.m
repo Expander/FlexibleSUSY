@@ -271,21 +271,14 @@ CreateCouplingFunction[coupling_, expr_] :=
               ];
            cFunctionName = cFunctionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`realScalarCType;    initalValue = " = 0.0";,
-              type = CConversion`complexScalarCType; initalValue = "";];
-           type = CConversion`ScalarType[type];
+              type = CConversion`ScalarType[CConversion`realScalarCType];    initalValue = " = 0.0";,
+              type = CConversion`ScalarType[CConversion`complexScalarCType]; initalValue = "";];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
            body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
                   typeStr <> " result" <> initalValue <> ";\n\n";
-           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
-              body = body <> "result = " <>
-                     RValueToCFormString[Simplify[DecreaseIndexLiterals[expr]]] <> ";\n";
-              ,
-              body = body <> ExpandSums[DecreaseIndexLiterals[DecreaseSumIdices[expr]],
-                                        "result", type, initalValue];
-             ];
+           body = body <> TreeMasses`ExpressionToString[expr, "result"];
            body = body <> "\nreturn result;\n";
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";

@@ -101,6 +101,9 @@ ReplaceDependencies::usage="returs expression with dependencies
 ReplaceDependenciesReverse::usage="returs expression with dependencies
 (ThetaW etc.) replaced back";
 
+ExpressionToString::usage="Converts an expression to a valid C++
+string.";
+
 FindColorGaugeGroup::usage="returns triplet of color gauge coupling,
 group and SARAH name";
 
@@ -1430,6 +1433,30 @@ GetLightestMass[par_] :=
               mass = FlexibleSUSY`M[par][0];
              ];
            Return[mass];
+          ];
+
+(* Converts an expression to a valid C++ string.  The result of the
+   expression will be stored in `result'.
+*)
+ExpressionToString[expr_, result_String] :=
+    Module[{type, exprStr, initalValue},
+           If[FreeQ[expr,SARAH`sum] && FreeQ[expr,SARAH`ThetaStep],
+              exprStr = result <> " = " <>
+                  CConversion`RValueToCFormString[
+                      Simplify[Parameters`DecreaseIndexLiterals[expr]]] <> ";\n";
+              ,
+              If[Parameters`IsRealExpression[expr],
+                 type = CConversion`ScalarType[CConversion`realScalarCType];
+                 initalValue = " = 0.0";,
+                 type = CConversion`ScalarType[CConversion`complexScalarCType];
+                 initalValue = "";
+                ];
+              exprStr = CConversion`ExpandSums[
+                  Parameters`DecreaseIndexLiterals[
+                      Parameters`DecreaseSumIdices[expr]],
+                  result, type, initalValue];
+             ];
+           exprStr
           ];
 
 End[];
