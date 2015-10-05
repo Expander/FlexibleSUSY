@@ -75,6 +75,7 @@ SMHighPrecision,${DEFAULT_SM_INPUT},0
 SMSSM,_DEFAULT_,0
 SplitMSSM,_DEFAULT_,0
 SuperSplitMSSM,_DEFAULT_,0
+SuperSplitMSSM,${HOMEDIR}/model_files/SuperSplitMSSM/LesHouches.in.SuperSplitMSSM_nondegenerate,0
 THDMII,_DEFAULT_,0
 TMSSM,_DEFAULT_,0
 UMSSM,_DEFAULT_,0
