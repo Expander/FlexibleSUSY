@@ -798,9 +798,22 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
            Return[result];
           ];
 
+GetRunningOneLoopDRbarParticles[multipletName_String, splitNames_List] :=
+    Module[{result},
+           result = Parameters`GetParticleFromDescription[multipletName];
+           If[result =!= Null, Return[{result}]];
+           Parameters`GetParticleFromDescription /@ splitNames
+          ];
+
 GetRunningOneLoopDRbarParticles[] :=
-    {SARAH`TopQuark, SARAH`BottomQuark, SARAH`Electron, SARAH`Neutrino,
-     SARAH`VectorP, SARAH`VectorZ, SARAH`VectorW};
+    Module[{downQuarks, upQuarks, downLeptons, upLeptons},
+           upLeptons   = GetRunningOneLoopDRbarParticles["Neutrinos", {"Electron Neutrino","Muon Neutrino","Tau Neutrino"}];
+           downLeptons = GetRunningOneLoopDRbarParticles["Leptons", {"Electron","Muon","Tau"}];
+           upQuarks    = GetRunningOneLoopDRbarParticles["Up-Quarks", {"Up Quark","Charmed Quark","Top Quark"}];
+           downQuarks  = GetRunningOneLoopDRbarParticles["Down-Quarks", {"Down Quark","Strange Quark","Bottom Quark"}];
+           Flatten[{upLeptons, downLeptons, upQuarks, downQuarks,
+                    SARAH`VectorP, SARAH`VectorZ, SARAH`VectorW}]
+          ];
 
 (* returns conversion factor from MS-bar scheme to renormalizationScheme *)
 GetConversionFactorMSbarTo[particle_ /; particle === SARAH`BottomQuark,
@@ -822,7 +835,7 @@ GetConversionFactorMSbarTo[_,_,_] := 1;
 
 CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-    "_DRbar(double, int) const;\n";
+    "_DRbar(double" <> If[TreeMasses`GetDimension[particle] > 1, ", int", ""] <> ") const;\n";
 
 CreateRunningDRbarMassPrototype[particle_] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
