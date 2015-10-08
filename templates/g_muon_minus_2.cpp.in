@@ -65,43 +65,43 @@ namespace {
  * The ranges are const! Once they are initialized they cannot be changed.
  * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
  */
-template<unsigned int N> struct IndexBounds;
+template<unsigned N> struct IndexBounds;
 
 /**
  * @class IndexIterator<N>
  * @brief The iterator class used by IndexBounds<N>.
  *
  * It only fulfils the input iterator requirements!
- * The value_type is a const std::array<unsigned int, N>
+ * The value_type is a const std::array<unsigned, N>
  * containing the current indices.
  * Incrementing the iterator results in a new index combination.
  */
-template<unsigned int N> struct IndexIterator
+template<unsigned N> struct IndexIterator
 : public std::iterator<
 std::input_iterator_tag,
-const std::array<unsigned int, N>>
+const std::array<unsigned, N>>
 {
    friend class IndexBounds<N>;
 private:
    const IndexBounds<N> *bounds;
-   std::array<unsigned int, N> indices;
+   std::array<unsigned, N> indices;
 
-   IndexIterator(const IndexBounds<N> &b, const unsigned int *i)
+   IndexIterator(const IndexBounds<N> &b, const unsigned *i)
       : bounds(&b)
    {
-      std::memcpy(indices.data(), i, N * sizeof(unsigned int));
+      std::memcpy(indices.data(), i, N * sizeof(unsigned));
    }
 public:
-   const std::array<unsigned int, N> &operator*() const {
+   const std::array<unsigned, N> &operator*() const {
       return indices;
    }
 
-   const std::array<unsigned int, N> *operator->() const {
+   const std::array<unsigned, N> *operator->() const {
       return &indices;
    }
 
    IndexIterator &operator++() {
-      for (unsigned int i = 0; i != N; i++) {
+      for (unsigned i = 0; i != N; i++) {
          indices[i]++;
          if (indices[i] == bounds->indexEnd[i]) {
             indices[i] = bounds->indexBegin[i];
@@ -111,7 +111,7 @@ public:
          return *this;
       }
 
-      std::memcpy(indices.data(), bounds->indexEnd, N * sizeof(unsigned int));
+      std::memcpy(indices.data(), bounds->indexEnd, N * sizeof(unsigned));
       return *this;
    }
 
@@ -121,27 +121,27 @@ public:
       return it;
    }
 
-   template<unsigned int M>
+   template<unsigned M>
    friend bool operator==(const IndexIterator<M> &it1, const IndexIterator<M> &it2);
 };
 
-template<unsigned int N>
+template<unsigned N>
 bool operator==(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 {
    return it1.indices == it2.indices;
 }
 
-template<unsigned int N>
+template<unsigned N>
 bool operator!=(const IndexIterator<N> &it1, const IndexIterator<N> &it2)
 {
    return !(it1 == it2);
 }
 
-template<unsigned int N> struct IndexBounds {
-   typedef const std::array<unsigned int, N> indices_type;
+template<unsigned N> struct IndexBounds {
+   typedef const std::array<unsigned, N> indices_type;
 
-   unsigned int indexBegin[N];
-   unsigned int indexEnd[N];
+   unsigned indexBegin[N];
+   unsigned indexEnd[N];
 
    typedef IndexIterator<N> const_iterator;
 
@@ -155,7 +155,7 @@ template<unsigned int N> struct IndexBounds {
 };
 
 template<> struct IndexBounds<0> {
-   typedef const std::array<unsigned int, 0> indices_type;
+   typedef const std::array<unsigned, 0> indices_type;
    typedef indices_type * const_iterator;
 
    static const indices_type dummyIndex;
@@ -188,7 +188,7 @@ struct EvaluationContext {
       return mass<typename anti<P>::type>();
    }
 
-   template<class P> double mass(unsigned int index) const {
+   template<class P> double mass(unsigned index) const {
       return mass<typename anti<P>::type>(index);
    }
 };
@@ -319,12 +319,12 @@ public:
       return indexB;
    }
 
-   template<unsigned int particleIndex>
-   static std::vector<unsigned int> particleIndices(const indices_type &indices)
+   template<unsigned particleIndex>
+   static std::vector<unsigned> particleIndices(const indices_type &indices)
    {
       auto begin = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex>::type::value;
       auto end = indices.begin() + boost::mpl::at_c<particleIndexStart, particleIndex+1>::type::value;
-      return std::vector<unsigned int>(begin, end);
+      return std::vector<unsigned>(begin, end);
    }
 };
 
@@ -338,8 +338,8 @@ public:
    typedef typename index_bounds::indices_type indices_type;
    typedef typename orig_type::vertex_type vertex_type;
 public:
-   template<unsigned int particleIndex>
-   static std::vector<unsigned int> particleIndices(const indices_type &indices)
+   template<unsigned particleIndex>
+   static std::vector<unsigned> particleIndices(const indices_type &indices)
    {
       return orig_type::template particleIndices<
                 boost::mpl::at_c<particlePermutation, particleIndex>::type::value
@@ -590,7 +590,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          if (PhotonEmitter::numberOfGenerations == 1)
             photonEmitterMass = context.mass<PhotonEmitter>();
          else {
-            unsigned int generationIndex = photonEmitterIndices[0];
+            unsigned generationIndex = photonEmitterIndices[0];
             photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
          }
 
@@ -598,7 +598,7 @@ double DiagramEvaluator<OneLoopDiagram<3>, PhotonEmitter, ExchangeParticle>::val
          if (ExchangeParticle::numberOfGenerations == 1)
             exchangeMass = context.mass<ExchangeParticle>();
          else {
-            unsigned int generationIndex = exchangeIndices[0];
+            unsigned generationIndex = exchangeIndices[0];
             exchangeMass = context.mass<ExchangeParticle>(generationIndex);
          }
 
@@ -675,7 +675,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
          if (PhotonEmitter::numberOfGenerations == 1)
             photonEmitterMass = context.mass<PhotonEmitter>();
          else {
-            unsigned int generationIndex = photonEmitterIndices[0];
+            unsigned generationIndex = photonEmitterIndices[0];
             photonEmitterMass = context.mass<PhotonEmitter>(generationIndex);
          }
 
@@ -683,7 +683,7 @@ double DiagramEvaluator<OneLoopDiagram<4>, PhotonEmitter, ExchangeParticle>::val
          if (ExchangeParticle::numberOfGenerations == 1)
             exchangeMass = context.mass<ExchangeParticle>();
          else {
-            unsigned int generationIndex = exchangeIndices[0];
+            unsigned generationIndex = exchangeIndices[0];
             exchangeMass = context.mass<ExchangeParticle>(generationIndex);
          }
 

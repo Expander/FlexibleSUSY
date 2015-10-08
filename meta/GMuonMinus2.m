@@ -44,7 +44,7 @@ CreateParticles[] := Module[{particles, code},
                                     
                                     StringJoin @ Riffle[("struct " <> ParticleToCXXName[#] <>
                                                          ": public Particle { " <>
-                                                         "static const unsigned int numberOfGenerations = " <>
+                                                         "static const unsigned numberOfGenerations = " <>
                                                          ToString @ TreeMasses`GetDimension[#] <>
                                                          "; };" &) /@ particles, "\n"] <> "\n\n" <>
                                     "// Special particle families\n" <>
@@ -55,7 +55,7 @@ CreateParticles[] := Module[{particles, code},
                                     "template<class P> struct anti : public Particle\n" <>
                                     "{\n" <>
                                     IndentText @
-                                    ("static const unsigned int numberOfGenerations = P::numberOfGenerations;\n" <>
+                                    ("static const unsigned numberOfGenerations = P::numberOfGenerations;\n" <>
                                     "typedef anti<P> type;\n") <>
                                     "};\n" <>
                                     "template<class P> struct anti<anti<P>> { typedef P type; };\n\n" <>
@@ -77,12 +77,12 @@ CreateMuonFunctions[vertexRules_List] := Module[{muonIndex, muonFamily, prototyp
                                                 muonIndex = GetMuonIndex[];
                                                 muonFamily = GetMuonFamily[];
                                                 
-                                                prototypes = ("unsigned int muonIndex();\n" <>
+                                                prototypes = ("unsigned muonIndex();\n" <>
                                                               "double muonPhysicalMass(EvaluationContext&);\n" <>
                                                               "double muonCharge(EvaluationContext&);");
                                                 
-                                                definitions = ("unsigned int muonIndex()\n" <>
-                                                               "{ unsigned int muonIndex" <>
+                                                definitions = ("unsigned muonIndex()\n" <>
+                                                               "{ unsigned muonIndex" <>
                                                                If[muonIndex =!= Null, " = " <> ToString[muonIndex-1], ""] <>
                                                                "; return muonIndex; }\n\n" <>
                                                                "double muonPhysicalMass(EvaluationContext& context)\n" <>
@@ -120,7 +120,7 @@ CreateDiagrams[] := Module[{diagramTypes, diagramTypeHeads, code},
                            
                            code = "// The different diagram types that contribute to the muon magnetic moment\n";
                            code = (code <>
-                                   StringJoin @ Riffle[("template<unsigned int> class " <> SymbolName[#] <> ";" &)
+                                   StringJoin @ Riffle[("template<unsigned> class " <> SymbolName[#] <> ";" &)
                                                        /@ diagramHeads, "\n"] <>
                                    "\n\n");
                            
@@ -196,7 +196,7 @@ Module[{particles, code},
        
        code = (StringJoin @
                Riffle[("template<> double EvaluationContext::mass<" <> ToString[#] <> ">(" <>
-                       If[TreeMasses`GetDimension[#] === 1, "", "unsigned int index"] <> ") const\n" <>
+                       If[TreeMasses`GetDimension[#] === 1, "", "unsigned index"] <> ") const\n" <>
                        "{ return model.get_M" <> ParticleToCXXName[#] <>
                        If[TreeMasses`GetDimension[#] === 1, "()", "(index)"] <> "; }"
                        &) /@ particles, "\n\n"]);
@@ -500,7 +500,7 @@ CreateVertexFunction[indexedParticles_List, vertexRules_List] :=
                           IndentText @
                           ("static const bool is_permutation = true;\n" <>
                            "typedef " <> orderedVertexFunction <> " orig_type;\n" <>
-                           "typedef boost::mpl::vector_c<unsigned int, " <>
+                           "typedef boost::mpl::vector_c<unsigned, " <>
                            StringJoin @ Riffle[ToString /@ (Ordering[ordering] - 1), ", "] <>
                            "> particlePermutation;\n"
                            ) <>
@@ -629,7 +629,7 @@ CreateOrderedVertexFunction[orderedIndexedParticles_List, vertexRules_List] :=
                          ("static const bool is_permutation = false;\n" <>
                           "typedef IndexBounds<" <> ToString @ NumberOfIndices[parsedVertex] <> "> index_bounds;\n" <>
                           "typedef " <> VertexClassName[parsedVertex] <> " vertex_type;\n" <>
-                          "typedef boost::mpl::vector_c<unsigned int, " <>
+                          "typedef boost::mpl::vector_c<unsigned, " <>
                              StringJoin @ Riffle[ToString /@ particleIndexStart, ", "] <>
                           "> particleIndexStart;\n" <>
                           "static const index_bounds indexB;\n"
