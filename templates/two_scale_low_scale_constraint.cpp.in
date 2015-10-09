@@ -298,8 +298,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@UpYukawa@_DRbar()
    topDRbar(2,2)      = oneset.displayMass(softsusy::mTop);
 
    if (model->get_thresholds()) {
-@calculateDRbarMassUp@
-@calculateDRbarMassCharm@
 @calculateDRbarMassTop@
    }
 
@@ -317,8 +315,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_@DownYukawa@_DRbar()
    bottomDRbar(2,2)   = oneset.displayMass(softsusy::mBottom);
 
    if (model->get_thresholds()) {
-@calculateDRbarMassDown@
-@calculateDRbarMassStrange@
 @calculateDRbarMassBottom@
    }
 
