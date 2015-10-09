@@ -532,9 +532,9 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "MSSM"] :=
             mTop, mBot, mTau,
             vev2Str, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[SARAH`HiggsBoson, 2, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];
@@ -628,9 +628,9 @@ GetTwoLoopTadpoleCorrections[model_String /; model === "NMSSM"] :=
             g3Str, mtStr, mbStr, mtauStr,
             vev2Str, svevStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[SARAH`HiggsBoson, 3, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];
@@ -760,7 +760,7 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                                 model_String /; model === "SM"] :=
     Module[{body, mTop, mtStr, yt, ytStr, g3Str},
            AssertFieldDimension[particle, 1, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
            ytStr   = CConversion`RValueToCFormString[yt];
@@ -792,9 +792,9 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
             mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[particle, 2, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];
@@ -922,9 +922,9 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
             mTop, mBot, mTau,
             vev2Str, vuStr, vdStr, tanbStr, muStr, m3Str, mA0Str},
            AssertFieldDimension[particle, 2, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];
@@ -1033,9 +1033,9 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
             vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
             lambdaStr},
            AssertFieldDimension[particle, 3, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];
@@ -1185,9 +1185,9 @@ GetTwoLoopSelfEnergyCorrections[particle_ /; particle === SARAH`PseudoScalar,
             vev2Str, vuStr, vdStr, vsStr, tanbStr, muStr, m3Str, mA0Str,
             lambdaStr},
            AssertFieldDimension[particle, 3, model];
-           mTop    = TreeMasses`GetThirdGenerationMass[SARAH`TopQuark];
-           mBot    = TreeMasses`GetThirdGenerationMass[SARAH`BottomQuark];
-           mTau    = TreeMasses`GetThirdGenerationMass[SARAH`Electron];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
            mtauStr = CConversion`RValueToCFormString[mTau];

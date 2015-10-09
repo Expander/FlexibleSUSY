@@ -117,7 +117,7 @@ FSEWSBSolvers = { FPIRelative, GSLHybridS, GSLBroyden };
 FSFermiConstant;
 FSMassW;
 
-{FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+{FSHiggs, FSHyperchargeCoupling,
  FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2, FSNeutralino,
  FSChargino, FSNeutralinoMM, FSCharginoMinusMM, FSCharginoPlusMM,
  FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL, FSSmuonL,
@@ -125,8 +125,6 @@ FSMassW;
 
 FSWeakMixingAngleOptions = {
     FlexibleSUSY`FSWeakMixingAngleInput -> FSFermiConstant, (* or FSMassW *)
-    FlexibleSUSY`FSTopQuark             -> SARAH`TopQuark,
-    FlexibleSUSY`FSBottomQuark          -> SARAH`BottomQuark,
     FlexibleSUSY`FSHiggs                -> SARAH`HiggsBoson,
     FlexibleSUSY`FSHyperchargeCoupling  -> SARAH`hyperchargeCoupling,
     FlexibleSUSY`FSLeftCoupling         -> SARAH`leftCoupling,
@@ -232,7 +230,7 @@ CheckFermiConstantInputRequirements[requiredSymbols_List, printout_:True] :=
 
 CheckFermiConstantInputRequirementsForSUSYModel[] :=
     CheckFermiConstantInputRequirements[
-        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+        {FSHiggs, FSHyperchargeCoupling,
          FSLeftCoupling, FSStrongCoupling, FSVEVSM1, FSVEVSM2,
          FSNeutralino, FSChargino, FSNeutralinoMM, FSCharginoMinusMM,
          FSCharginoPlusMM, FSHiggsMM, FSSelectronL, FSSelectronNeutrinoL,
@@ -242,7 +240,7 @@ CheckFermiConstantInputRequirementsForSUSYModel[] :=
 
 CheckFermiConstantInputRequirementsForNonSUSYModel[] :=
     CheckFermiConstantInputRequirements[
-        {FSTopQuark, FSBottomQuark, FSHiggs, FSHyperchargeCoupling,
+        {FSHiggs, FSHyperchargeCoupling,
          FSLeftCoupling, FSStrongCoupling, FSVectorW, FSVectorZ,
          FSElectronYukawa}
     ];

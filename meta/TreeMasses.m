@@ -144,6 +144,13 @@ GetSMUpQuarks::usage="";
 GetSMDownQuarks::usage="";
 GetSMQuarks::usage="";
 
+GetUpQuark::usage="";
+GetDownQuark::usage="";
+GetUpLepton::usage="";
+GetDownLepton::usage="";
+
+GetMass::usage="wraps M[] head around particle";
+
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
 
@@ -283,6 +290,45 @@ GetSMDownQuarks[] :=
 
 GetSMQuarks[] :=
     Join[GetSMDownQuarks[], GetSMUpQuarks[]];
+
+GetUpQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMUpQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownQuark[gen_, cConvention_:False] :=
+    Module[{fields = GetSMDownQuarks[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down quarks != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetUpLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMNeutralLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of up leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetDownLepton[gen_, cConvention_:False] :=
+    Module[{fields = GetSMChargedLeptons[]},
+           Switch[Length[fields],
+                  1, fields[[1]][gen - If[cConvention === True, 1, 0]],
+                  3, fields[[gen]],
+                  _, Print["Error: Number of down leptons != 1 and != 3"]; Null
+                 ]
+          ];
+
+GetMass[particle_[idx__]] := GetMass[particle][idx];
+GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.
