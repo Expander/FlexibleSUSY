@@ -129,6 +129,12 @@ IsMassless::usage="";
 IsUnmixed::usage="";
 IsQuark::usage="";
 IsLepton::usage="";
+IsSMChargedLepton::usage="";
+IsSMNeutralLepton::usage="";
+IsSMLepton::usage="";
+IsSMUpQuark::usage="";
+IsSMDownQuark::usage="";
+IsSMQuark::usage="";
 ContainsGoldstone::usage="";
 
 GetSMChargedLeptons::usage="";
@@ -241,6 +247,24 @@ IsQuark[sym_Symbol] := MemberQ[GetColoredParticles[], sym];
 IsLepton[sym_[___]] := IsLepton[sym];
 IsLepton[sym_Symbol] :=
     MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
+
+IsSMChargedLepton[sym_[__]] := IsSMChargedLepton[sym];
+IsSMChargedLepton[sym_]     := MemberQ[GetSMChargedLeptons[], sym];
+
+IsSMNeutralLepton[sym_[__]] := IsSMNeutralLepton[sym];
+IsSMNeutralLepton[sym_]     := MemberQ[GetSMNeutralLeptons[], sym];
+
+IsSMLepton[sym_[__]]        := IsSMLepton[sym];
+IsSMLepton[sym_]            := MemberQ[GetSMLeptons[], sym];
+
+IsSMUpQuark[sym_[__]]       := IsSMUpQuark[sym];
+IsSMUpQuark[sym_]           := MemberQ[GetSMUpQuarks[], sym];
+
+IsSMDownQuark[sym_[__]]     := IsSMDownQuark[sym];
+IsSMDownQuark[sym_]         := MemberQ[GetSMDownQuarks[], sym];
+
+IsSMQuark[sym_[__]]         := IsSMQuark[sym];
+IsSMQuark[sym_]             := MemberQ[GetSMQuarks[], sym];
 
 GetSMChargedLeptons[] :=
     Parameters`GetParticleFromDescription["Leptons", {"Electron","Muon","Tau"}];
