@@ -210,7 +210,8 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
            result = Join[result, RemoveSMParticles /@ heavySE];
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`BottomQuark[__][_]|SARAH`Electron[__][_]|SARAH`BottomQuark[_]|SARAH`Electron[_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[
+               p:SARAH`BottomQuark[__][_]|SARAH`BottomQuark[_]|((particle_[__][_]|particle_[_]) /; TreeMasses`IsSMChargedLepton[particle]), expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`HiggsBoson}]& /@ heavySE)];

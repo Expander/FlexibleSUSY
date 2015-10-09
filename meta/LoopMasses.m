@@ -901,7 +901,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`BottomQuark, reno
            Return[result <> IndentText[body] <> "}\n\n"];
           ];
 
-CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron, renormalizationScheme_] :=
+CreateRunningDRbarMassFunction[particle_ /; TreeMasses`IsSMChargedLepton[particle], renormalizationScheme_] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, drbarConversion, gPrime,
             dimParticle},
