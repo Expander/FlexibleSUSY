@@ -349,12 +349,6 @@ void @ModelName@_low_scale_constraint<Two_scale>::calculate_MNeutrino_DRbar()
    neutrinoDRbar(0,0) = oneset.displayNeutrinoPoleMass(1);
    neutrinoDRbar(1,1) = oneset.displayNeutrinoPoleMass(2);
    neutrinoDRbar(2,2) = oneset.displayNeutrinoPoleMass(3);
-
-   if (model->get_thresholds()) {
-@calculateDRbarMassElectronNeutrino@
-@calculateDRbarMassMuonNeutrino@
-@calculateDRbarMassTauNeutrino@
-   }
 }
 
 /**
