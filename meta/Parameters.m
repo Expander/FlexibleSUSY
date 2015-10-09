@@ -1049,6 +1049,13 @@ GetParticleFromDescription[description_String, eigenstates_:FlexibleSUSY`FSEigen
            particle[[1]]
           ];
 
+GetParticleFromDescription[multipletName_String, splitNames_List] :=
+    Module[{result},
+           result = GetParticleFromDescription[multipletName];
+           If[result =!= Null, Return[{result}]];
+           GetParticleFromDescription /@ splitNames
+          ];
+
 NumberOfIndependentEntriesOfSymmetricMatrix[n_] := (n^2 + n) / 2;
 
 AppendGenerationIndices[expr_List] :=

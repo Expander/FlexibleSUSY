@@ -127,7 +127,16 @@ IsComplexScalar::usage="";
 IsRealScalar::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
+IsQuark::usage="";
+IsLepton::usage="";
 ContainsGoldstone::usage="";
+
+GetSMChargedLeptons::usage="";
+GetSMNeutralLeptons::usage="";
+GetSMLeptons::usage="";
+GetSMUpQuarks::usage="";
+GetSMDownQuarks::usage="";
+GetSMQuarks::usage="";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -222,6 +231,34 @@ IsRealScalar[sym_Symbol] :=
 
 IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
+
+GetColoredParticles[] :=
+    Select[GetParticles[], (SA`Dynkin[#, Position[SARAH`Gauge, SARAH`color][[1,1]]] =!= 0)&];
+
+IsQuark[sym_[___]] := IsQuark[sym];
+IsQuark[sym_Symbol] := MemberQ[GetColoredParticles[], sym];
+
+IsLepton[sym_[___]] := IsLepton[sym];
+IsLepton[sym_Symbol] :=
+    MemberQ[Complement[GetParticles[], GetColoredParticles[]], sym] && IsFermion[sym] && SARAH`SMQ[sym];
+
+GetSMChargedLeptons[] :=
+    Parameters`GetParticleFromDescription["Leptons", {"Electron","Muon","Tau"}];
+
+GetSMNeutralLeptons[] :=
+    Parameters`GetParticleFromDescription["Neutrinos", {"Electron Neutrino","Muon Neutrino","Tau Neutrino"}];
+
+GetSMLeptons[] :=
+    Join[GetSMNeutralLeptons[], GetSMChargedLeptons[]];
+
+GetSMUpQuarks[] :=
+    Parameters`GetParticleFromDescription["Up-Quarks", {"Up Quark","Charmed Quark","Top Quark"}];
+
+GetSMDownQuarks[] :=
+    Parameters`GetParticleFromDescription["Down-Quarks", {"Down Quark","Strange Quark","Bottom Quark"}];
+
+GetSMQuarks[] :=
+    Join[GetSMDownQuarks[], GetSMUpQuarks[]];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.

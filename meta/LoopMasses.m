@@ -799,19 +799,12 @@ CallAllPoleMassFunctions[states_, enablePoleMassThreads_] :=
            Return[result];
           ];
 
-GetRunningOneLoopDRbarParticles[multipletName_String, splitNames_List] :=
-    Module[{result},
-           result = Parameters`GetParticleFromDescription[multipletName];
-           If[result =!= Null, Return[{result}]];
-           Parameters`GetParticleFromDescription /@ splitNames
-          ];
-
 GetRunningOneLoopDRbarParticles[] :=
     Module[{downQuarks, upQuarks, downLeptons, upLeptons},
-           upLeptons   = GetRunningOneLoopDRbarParticles["Neutrinos", {"Electron Neutrino","Muon Neutrino","Tau Neutrino"}];
-           downLeptons = GetRunningOneLoopDRbarParticles["Leptons", {"Electron","Muon","Tau"}];
-           upQuarks    = GetRunningOneLoopDRbarParticles["Up-Quarks", {"Up Quark","Charmed Quark","Top Quark"}];
-           downQuarks  = GetRunningOneLoopDRbarParticles["Down-Quarks", {"Down Quark","Strange Quark","Bottom Quark"}];
+           upLeptons   = TreeMasses`GetSMNeutralLeptons[];
+           downLeptons = TreeMasses`GetSMChargedLeptons[];
+           upQuarks    = TreeMasses`GetSMUpQuarks[];
+           downQuarks  = TreeMasses`GetSMDownQuarks[];
            Flatten[{upLeptons, downLeptons, upQuarks, downQuarks,
                     SARAH`VectorP, SARAH`VectorZ, SARAH`VectorW}]
           ];
