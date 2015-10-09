@@ -810,20 +810,22 @@ GetRunningOneLoopDRbarParticles[] :=
           ];
 
 (* returns conversion factor from MS-bar scheme to renormalizationScheme *)
-GetConversionFactorMSbarTo[particle_ /; particle === SARAH`BottomQuark,
+GetConversionFactorMSbarTo[particle_,
                            renormalizationScheme_ /; renormalizationScheme === FlexibleSUSY`DRbar,
                            {alphaS_, gWeak_, gPrime_}
                           ] :=
-    (1 - alphaS / (3 Pi)
-     - 23 / 72 alphaS^2 / Pi^2
-     + 3 gWeak^2 / (128 Pi^2)
-     + 13 gPrime^2 / (1152 Pi^2));
-
-GetConversionFactorMSbarTo[particle_ /; particle === SARAH`Electron,
-                           renormalizationScheme_ /; renormalizationScheme === FlexibleSUSY`DRbar,
-                           {gWeak_, gPrime_}
-                          ] :=
-    1 - 3 (gPrime^2 - gWeak^2) / (128 Pi^2);
+    Which[(* down-type quarks *)
+          TreeMasses`IsSMDownQuark[particle],
+          (1 - alphaS / (3 Pi)
+           - 23 / 72 alphaS^2 / Pi^2
+           + 3 gWeak^2 / (128 Pi^2)
+           + 13 gPrime^2 / (1152 Pi^2)),
+          (* down-type leptons *)
+          TreeMasses`IsSMChargedLepton[particle],
+          (1 - 3 (gPrime^2 - gWeak^2) / (128 Pi^2)),
+          (* otherwise *)
+          True, 1
+         ];
 
 GetConversionFactorMSbarTo[_,_,_] := 1;
 
@@ -917,7 +919,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === SARAH`Electron, renorma
               ,
               (* convert MSbar to DRbar mass *)
               gPrime = SARAH`hyperchargeCoupling /. Parameters`ApplyGUTNormalization[];
-              drbarConversion = GetConversionFactorMSbarTo[particle, renormalizationScheme, {SARAH`leftCoupling, gPrime}];
+              drbarConversion = GetConversionFactorMSbarTo[particle, renormalizationScheme, {SARAH`strongCoupling^2/(4 Pi), SARAH`leftCoupling, gPrime}];
               If[dimParticle == 1,
                  result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_sm_msbar) const\n{\n";
                  body = "const double p = m_sm_msbar;\n" <>
