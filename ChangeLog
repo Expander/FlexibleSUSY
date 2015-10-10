@@ -13,6 +13,13 @@ FlexibleSUSY-1.2.3 [not released yet]
    official git repository at
    https://github.com/FlexibleSUSY/FlexibleSUSY .
 
+ * Bugfix (commit 20e88db): Use correct self-energy for 1st and 2nd
+   generation charged leptons in *NoFV models.  Before commit 20e88db,
+   the (heavy) tau self-energy was used to convert the running MS-bar
+   electron and muon masses to DR-bar masses in *NoFV models.
+   Corresponding test case:
+   test_CMSSMNoFV_low_scale_constraint::test_delta_Yf()
+
 FlexibleSUSY-1.2.2 [September, 08 2015]
 
  * Feature: The scale at which the EWSB output parameters are fixed
