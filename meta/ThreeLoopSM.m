@@ -4,7 +4,7 @@ BetaSM::usage = "beta functions of the SM from SUSYHD v1.0";
 
 Begin["`Private`"];
 
-subDir = FileNameJoin[{Global`$flexiblesusyMetaDir, "ThreeLoopSM"}];
+subDir = FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "ThreeLoopSM"}];
 
 IsDefinedAndEqual[descr_String, c_] :=
     Parameters`GetParameterFromDescription[descr] =!= Null &&
