@@ -13,6 +13,12 @@ CONFIG_TMPL  := \
 		$(DIR)/flexiblesusy-config.in \
 		$(DIR)/list_sarah_model_files.sh.in
 
+DEPGEN_SRC   := $(DIR)/depgen.cpp
+
+DEPGEN_OBJ   := $(DEPGEN_SRC:.cpp=.o)
+
+DEPGEN_EXE   := $(DEPGEN_SRC:.cpp=.x)
+
 CONFIG_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
 MAKEFILE_IN  := \
@@ -46,6 +52,7 @@ install-src::
 endif
 
 clean-$(MODNAME):
+		-rm -f $(DEPGEN_OBJ) $(DEPGEN_EXE)
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -f $(CONFIG_HDR)
@@ -56,3 +63,8 @@ distclean-$(MODNAME): clean-$(MODNAME)
 clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
+
+$(DEPGEN_EXE): $(DEPGEN_OBJ)
+		$(CXX) -o $@ $^
+
+ALLEXE += $(DEPGEN_EXE)
