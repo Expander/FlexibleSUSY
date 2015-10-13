@@ -3,7 +3,7 @@ BeginPackage["FlexibleSUSY`", {"SARAH`", "AnomalousDimension`", "BetaFunction`",
 
 FS`Version = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"version"}]]];
 FS`GitCommit = StringTrim[FSImportString[FileNameJoin[{Global`$flexiblesusyConfigDir,"git_commit"}]]];
-FS`Authors = {"P. Athron", "Jae-hyeon Park", "D. Stöckinger", "A. Voigt"};
+FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
 FS`Years   = "2013-2015";
 FS`References = Get[FileNameJoin[{Global`$flexiblesusyConfigDir,"references"}]];
 
