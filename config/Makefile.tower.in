@@ -121,10 +121,11 @@ endif
 endif
 
 %.d: %.cpp
-	$(DEPGEN) $(CPPFLAGS) $^ > $@
+       $(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
-	$(DEPGEN) $(CPPFLAGS) $^ > $@
+       $(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+       sed 's|.*\.o:|$*.o:|' > $@
 
 showbuild:
 	@echo "# package information"
