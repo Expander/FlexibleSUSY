@@ -28,7 +28,25 @@ Print["meta code directory: ", $flexiblesusyMetaDir];
 Print["config directory   : ", $flexiblesusyConfigDir];
 Print["templates directory: ", $flexiblesusyTemplateDir];
 
-MakeFlexibleSUSY::usage="";
+MakeFlexibleSUSY::usage="Creates a spectrum generator given a
+ FlexibleSUSY model file (FlexibleSUSY.m).
+
+Example:
+
+  MakeFlexibleSUSY[
+      InputFile -> \"models/<model>/FlexibleSUSY.m\",
+      OutputDirectory -> \"models/<model>/\",
+      DebugOutput -> False];
+
+Options:
+
+  InputFile: The name of the model file.
+
+  OutputDirectory: The output directory for the generated code.
+
+  DebugOutput (True|False): Enable/Disable debug output while running
+    the Mathematica meta code.
+";
 
 LowPrecision::usage="";
 MediumPrecision::usage="";
