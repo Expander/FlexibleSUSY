@@ -11,14 +11,17 @@ FS`Authors = {"P. Athron", "J.-h. Park", "D. Stöckinger", "A. Voigt"};
 FS`Years   = "2013-2015";
 FS`References = Get[FileNameJoin[{$flexiblesusyConfigDir,"references"}]];
 
-Print["*****************************************************************"];
-Print["FlexibleSUSY ", FS`Version];
-Print["by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
+Print["==================================================================="];
+Print[Style["FlexibleSUSY " <> FS`Version, Larger, Bold, Blue]];
+Print["  by " <> Utils`StringJoinWithSeparator[FS`Authors, ", "] <> ", " <>
       FS`Years];
 Print[""];
-Print["References:"];
+Print[Style["References:", Blue]];
 Print["  " <> #]& /@ FS`References;
-Print["*****************************************************************"];
+Print[""];
+Print[Style["Download and Documentation:", Blue]];
+Print["  https://flexiblesusy.hepforge.org"];
+Print["==================================================================="];
 Print[""];
 
 Print["meta code directory: ", $flexiblesusyMetaDir];
