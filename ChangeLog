@@ -13,6 +13,9 @@ FlexibleSUSY-1.2.3 [not released yet]
    official git repository at
    https://github.com/FlexibleSUSY/FlexibleSUSY .
 
+ * Change (commit 372bb96): Use FlexibleSUSY's own dependency file
+   generator instead of using the corresponding compiler capabilities.
+
  * Bugfix (commit 20e88db): Use correct self-energy for 1st and 2nd
    generation charged leptons in *NoFV models.  Before commit 20e88db,
    the (heavy) tau self-energy was used to convert the running MS-bar
