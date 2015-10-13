@@ -39,9 +39,12 @@ CXX             := @CXX@
 CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
                    $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
 CXXFLAGS        := @CXXFLAGS@
+CXX_DEP_GEN     := $(CXX)
+CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
 FC              := @FC@
 FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
+FOR_DEP_GEN     := $(FC)
 BLASLIBS        := @BLASLIBS@
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
 BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
@@ -121,11 +124,11 @@ endif
 endif
 
 %.d: %.cpp
-       $(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
+	$(CXX_DEP_GEN) $(CPPFLAGS) $(CXXFLAGS_DEP_GEN) -MM -MP -MG -o $@ -MT '$*.o' $^
 
 %.d: %.f
-       $(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
-       sed 's|.*\.o:|$*.o:|' > $@
+	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
+	sed 's|.*\.o:|$*.o:|' > $@
 
 showbuild:
 	@echo "# package information"
@@ -149,9 +152,12 @@ showbuild:
 	@echo "CXX                = $(CXX)"
 	@echo "CPPFLAGS           = $(CPPFLAGS)"
 	@echo "CXXFLAGS           = $(CXXFLAGS)"
+	@echo "CXX_DEP_GEN        = $(CXX_DEP_GEN)"
+	@echo "CXXFLAGS_DEP_GEN   = $(CXXFLAGS_DEP_GEN)"
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
+	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "LIBEXT             = $(LIBEXT)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
