@@ -29,6 +29,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
+		$(DIR)/split_threeloophiggs.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
@@ -82,6 +83,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
+		$(DIR)/split_threeloophiggs.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
