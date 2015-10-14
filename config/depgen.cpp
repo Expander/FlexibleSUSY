@@ -107,6 +107,7 @@ void print_usage(const std::string& program_name)
       "  -MG           Add missing headers to dependency list\n"
       "  -MM           Ignore system headers enclosed by < and >\n"
       "  -MMD <file>   Equivalent to -MM -MF <file>\n"
+      "  -MP           Add phony target for each dependency other than main file\n"
       "  -MT <target>  Set name of the target\n"
       "  -o <file>     Equivalent to -MF <file>\n"
       "  --help,-h     Print this help message and exit\n"
@@ -114,7 +115,6 @@ void print_usage(const std::string& program_name)
       "Unsupported options:\n"
       "  -M            Add system headers to dependency list\n"
       "  -MD <file>    Equivalent to -M -MF <file>\n"
-      "  -MP           Add phony target for each dependency other than main file\n"
       "  -MQ <target>  Same as -MT <traget> but quote characters special to make\n";
 }
 
@@ -131,6 +131,16 @@ void print_dependencies(const std::string& target_name,
    }
 
    ostr << '\n';
+}
+
+/// print empty phony targets for each dependency
+void print_empty_phony_targets(const std::vector<std::string>& dependencies,
+                               std::ostream& ostr = std::cout)
+{
+   for (std::vector<std::string>::const_iterator it = dependencies.begin(),
+           end = dependencies.end(); it != end; ++it) {
+      ostr << '\n' << *it << ":\n";
+   }
 }
 
 /// extract include statements from file (ignoring system headers)
@@ -238,7 +248,8 @@ int main(int argc, const char* argv[])
    // include paths
    std::vector<std::string> paths;
    std::string file_name, target_name, output_file;
-   bool ignore_non_existing = true;
+   bool ignore_non_existing = true; // -MG
+   bool add_empty_phony_targets = false; // -MP
 
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
@@ -254,13 +265,17 @@ int main(int argc, const char* argv[])
          // ignore headers from system directories (default)
          continue;
       }
-      if (arg == "-M" || arg == "-MP") {
+      if (arg == "-M") {
          std::cerr << "Warning: ignoring unsupported option " << arg << '\n';
          continue;
       }
       if (arg == "-MD" || arg == "-MQ") {
          std::cerr << "Warning: ignoring unsupported option " << arg << '\n';
          i++;
+         continue;
+      }
+      if (arg == "-MP") {
+         add_empty_phony_targets = true;
          continue;
       }
       if (arg == "-MT" && i + 1 < argc) {
@@ -299,17 +314,22 @@ int main(int argc, const char* argv[])
       = delete_duplicates(search_includes(file_name, paths, ignore_non_existing));
 
    // add file name to dependency list
-   dependencies.insert(dependencies.begin(), file_name);
+   std::vector<std::string> dependencies_and_main(dependencies);
+   dependencies_and_main.insert(dependencies_and_main.begin(), file_name);
 
    if (target_name.empty())
       target_name = replace_extension(filename(file_name), "o");
 
    if (output_file.empty()) {
-      print_dependencies(target_name, dependencies);
+      print_dependencies(target_name, dependencies_and_main);
+      if (add_empty_phony_targets)
+         print_empty_phony_targets(dependencies);
    } else {
       std::ofstream ostr(output_file.c_str());
       if (ostr.good()) {
-         print_dependencies(target_name, dependencies, ostr);
+         print_dependencies(target_name, dependencies_and_main, ostr);
+         if (add_empty_phony_targets)
+            print_empty_phony_targets(dependencies, ostr);
       } else {
          std::cerr << "Error: cannot write to file " << output_file << '\n';
          return EXIT_FAILURE;
