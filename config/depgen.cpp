@@ -94,23 +94,25 @@ void print_usage(const std::string& program_name)
    std::cout << "Usage: " << program_name << " [options] filename\n"
       "\n"
       "Options:\n"
-      "  -I<path>    Search for header files in <path>\n"
-      "  -MT         Set name of the target\n"
-      "  --help,-h   Print this help message and exit\n";
+      "  -I<path>      Search for header files in <path>\n"
+      "  -MT <target>  Set name of the target\n"
+      "  -o <file>     Write dependencies to <file>\n"
+      "  --help,-h     Print this help message and exit\n";
 }
 
 /// print dependency list
 void print_dependencies(const std::string& target_name,
-                        const std::vector<std::string>& dependencies)
+                        const std::vector<std::string>& dependencies,
+                        std::ostream& ostr = std::cout)
 {
-   std::cout << target_name << ':';
+   ostr << target_name << ':';
 
    for (std::vector<std::string>::const_iterator it = dependencies.begin(),
            end = dependencies.end(); it != end; ++it) {
-      std::cout << ' ' << *it;
+      ostr << ' ' << *it;
    }
 
-   std::cout << '\n';
+   ostr << '\n';
 }
 
 /// extract include statements from file (ignoring system headers)
@@ -186,7 +188,7 @@ int main(int argc, const char* argv[])
 {
    // include paths
    std::vector<std::string> paths;
-   std::string file_name, target_name;
+   std::string file_name, target_name, output_file;
 
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
@@ -198,6 +200,10 @@ int main(int argc, const char* argv[])
          target_name = argv[++i];
          continue;
       }
+      if (arg == "-o" && i + 1 < argc) {
+         output_file = argv[++i];
+         continue;
+      }
       if (arg == "--help" || arg == "-h") {
          print_usage(argv[0]);
          return EXIT_SUCCESS;
@@ -206,13 +212,13 @@ int main(int argc, const char* argv[])
       if (i + 1 == argc) {
          file_name = arg;
          if (!file_exists(file_name)) {
-            std::cout << "Error: file does not exist: " << file_name << '\n';
+            std::cerr << "Error: file does not exist: " << file_name << '\n';
             return EXIT_FAILURE;
          }
          continue;
       }
 
-      std::cout << "Error: unknown option: " << arg << '\n';
+      std::cerr << "Error: unknown option: " << arg << '\n';
       print_usage(argv[0]);
       return EXIT_FAILURE;
    }
@@ -227,7 +233,12 @@ int main(int argc, const char* argv[])
    if (target_name.empty())
       target_name = replace_extension_by(file_name, "o");
 
-   print_dependencies(target_name, dependencies);
+   if (output_file.empty()) {
+      print_dependencies(target_name, dependencies);
+   } else {
+      std::ofstream ostr(output_file.c_str());
+      print_dependencies(target_name, dependencies, ostr);
+   }
 
    return EXIT_SUCCESS;
 }
