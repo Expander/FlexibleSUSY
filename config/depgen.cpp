@@ -165,20 +165,33 @@ std::vector<std::string> get_includes(const std::string& file_name)
    return includes;
 }
 
-/// returns files `dir' which fulfill the predicate
+/// prepend `str' to all strings
+std::vector<std::string> prepend(const std::string& str,
+                                 const std::vector<std::string>& strings)
+{
+   std::vector<std::string> result(strings);
+
+   for (std::vector<std::string>::iterator it = result.begin(),
+           end = result.end(); it != end; ++it) {
+      *it = str + *it;
+   }
+
+   return result;
+}
+
+/// returns files in directory `dir' which fulfill the predicate
 template <class Predicate>
 std::vector<std::string> filter(const std::string& dir,
                                 const std::vector<std::string>& files,
                                 const Predicate& pred)
 {
+   const std::string dirname(dir.empty() || dir == "." ? "" : dir + '/');
+   const std::vector<std::string> files_in_dir(prepend(dirname, files));
+
    std::vector<std::string> existing_files;
 
-   for (std::vector<std::string>::const_iterator it = files.begin(),
-           end = files.end(); it != end; ++it) {
-      const std::string file_with_path(dir.empty() || dir == "." ? *it : dir + '/' + *it);
-      if (pred(file_with_path))
-         existing_files.push_back(file_with_path);
-   }
+   std::copy_if(files_in_dir.begin(), files_in_dir.end(),
+                std::back_inserter(existing_files), pred);
 
    return existing_files;
 }
