@@ -139,7 +139,7 @@ std::vector<std::string> get_existing(const std::string& dir,
 
    for (std::vector<std::string>::const_iterator it = files.begin(),
            end = files.end(); it != end; ++it) {
-      const std::string file_with_path(dir == "." ? *it : dir + '/' + *it);
+      const std::string file_with_path(dir.empty() || dir == "." ? *it : dir + '/' + *it);
       if (file_exists(file_with_path))
          existing_files.push_back(file_with_path);
    }
@@ -180,6 +180,12 @@ std::vector<std::string> search_includes(const std::string& file_name,
 
 int main(int argc, const char* argv[])
 {
+   if (argc < 2) {
+      std::cerr << "Error: no file given\n";
+      print_usage(argv[0]);
+      return EXIT_FAILURE;
+   }
+
    // include paths
    std::vector<std::string> paths;
    std::string file_name, target_name, output_file;
