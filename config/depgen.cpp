@@ -260,7 +260,12 @@ int main(int argc, const char* argv[])
       print_dependencies(target_name, dependencies);
    } else {
       std::ofstream ostr(output_file.c_str());
-      print_dependencies(target_name, dependencies, ostr);
+      if (ostr.good()) {
+         print_dependencies(target_name, dependencies, ostr);
+      } else {
+         std::cerr << "Error: cannot write to file " << output_file << '\n';
+         return EXIT_FAILURE;
+      }
    }
 
    return EXIT_SUCCESS;
