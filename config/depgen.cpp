@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <cstdio>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -43,12 +44,11 @@ std::string filename(const std::string& file_name)
 /// checks if given file exists
 bool file_exists(const std::string& name)
 {
-    if (FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    }
+   if (FILE *file = std::fopen(name.c_str(), "r")) {
+      std::fclose(file);
+      return true;
+   }
+   return false;
 }
 
 /// deletes duplicate elements from a vector
