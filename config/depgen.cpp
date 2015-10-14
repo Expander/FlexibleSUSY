@@ -157,7 +157,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
       return std::vector<std::string>();
 
    // find included files from #include statements
-   std::vector<std::string> includes(get_includes(file_name));
+   const std::vector<std::string> includes(get_includes(file_name));
 
    // select only files that exist in paths
    std::vector<std::string> existing;
