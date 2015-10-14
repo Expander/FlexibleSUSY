@@ -34,6 +34,21 @@ std::string directory(const std::string& file_name)
    return file_name.substr(0,pos);
 }
 
+/// returns file name w/o directory
+std::string filename(const std::string& file_name)
+{
+   const std::size_t pos = file_name.find_last_of("/\\");
+   return file_name.substr(pos+1);
+}
+
+/// returns file names w/o directory
+std::vector<std::string> filenames(const std::vector<std::string>& file_names)
+{
+   std::vector<std::string> result(file_names.size());
+   std::transform(file_names.begin(), file_names.end(), result.begin(), filename);
+   return result;
+}
+
 /// checks if given file exists
 bool file_exists(const std::string& name)
 {
@@ -140,7 +155,7 @@ std::vector<std::string> get_includes(const std::string& file_name)
    return includes;
 }
 
-/// returns files existing in `dir'
+/// returns files `dir' which fulfill the predicate
 template <class Predicate>
 std::vector<std::string> filter(const std::string& dir,
                                 const std::vector<std::string>& files,
@@ -195,12 +210,16 @@ std::vector<std::string> search_includes(const std::string& file_name,
 
    // search for non-existing headers
    if (!ignore_non_existing) {
+      std::vector<std::string> includes_without_path(filenames(includes));
+      std::sort(includes_without_path.begin(), includes_without_path.end());
+
+      std::vector<std::string> existing_without_path(filenames(existing));
+      std::sort(existing_without_path.begin(), existing_without_path.end());
+
       std::vector<std::string> non_existing;
-      for (std::vector<std::string>::const_iterator it = paths.begin(),
-              end = paths.end(); it != end; ++it) {
-         const std::vector<std::string> non_existing_in_path(filter(*it, includes, std::not1(File_exists())));
-         non_existing.insert(non_existing.end(), non_existing_in_path.begin(), non_existing_in_path.end());
-      }
+      std::set_difference(includes_without_path.begin(), includes_without_path.end(),
+                          existing_without_path.begin(), existing_without_path.end(),
+                          std::back_inserter(non_existing));
 
       existing.insert(existing.end(), non_existing.begin(), non_existing.end());
    }
@@ -217,7 +236,7 @@ int main(int argc, const char* argv[])
    }
 
    // include paths
-   std::vector<std::string> paths(1, ".");
+   std::vector<std::string> paths;
    std::string file_name, target_name, output_file;
    bool ignore_non_existing = true;
 
@@ -271,6 +290,8 @@ int main(int argc, const char* argv[])
       return EXIT_FAILURE;
    }
 
+   paths.push_back(".");
+   paths.push_back(directory(file_name));
    paths = delete_duplicates(paths);
 
    // search for header inclusions
