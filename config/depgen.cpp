@@ -95,9 +95,19 @@ void print_usage(const std::string& program_name)
       "\n"
       "Options:\n"
       "  -I<path>      Search for header files in <path>\n"
+      "  -MF <file>    Write dependencies to <file>\n"
+      "  -MM           Ignore system headers enclosed by < and >\n"
+      "  -MMD <file>   Equivalent to -MM -MF <file>\n"
       "  -MT <target>  Set name of the target\n"
-      "  -o <file>     Write dependencies to <file>\n"
-      "  --help,-h     Print this help message and exit\n";
+      "  -o <file>     Equivalent to -MF <file>\n"
+      "  --help,-h     Print this help message and exit\n"
+      "\n"
+      "Unsupported options:\n"
+      "  -M            Add system headers to dependency list\n"
+      "  -MD <file>    Equivalent to -M -MF <file>\n"
+      "  -MG           Add missing headers to dependency list\n"
+      "  -MP           Add phony target for each dependency other than main file\n"
+      "  -MQ <target>  Same as -MT <traget> but quote characters special to make\n";
 }
 
 /// print dependency list
@@ -196,11 +206,24 @@ int main(int argc, const char* argv[])
          paths.push_back(arg.substr(2));
          continue;
       }
+      if (arg == "-MM") {
+         // ignore headers from system directories (default)
+         continue;
+      }
+      if (arg == "-M" || arg == "-MG" || arg == "-MP") {
+         std::cerr << "Warning: ignoring unsupported option " << arg << '\n';
+         continue;
+      }
+      if (arg == "-MD" || arg == "-MQ") {
+         std::cerr << "Warning: ignoring unsupported option " << arg << '\n';
+         i++;
+         continue;
+      }
       if (arg == "-MT" && i + 1 < argc) {
          target_name = argv[++i];
          continue;
       }
-      if (arg == "-o" && i + 1 < argc) {
+      if ((arg == "-MF" || arg == "-MMD" || arg == "-o") && i + 1 < argc) {
          output_file = argv[++i];
          continue;
       }
