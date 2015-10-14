@@ -187,7 +187,7 @@ int main(int argc, const char* argv[])
    }
 
    // include paths
-   std::vector<std::string> paths;
+   std::vector<std::string> paths(1, ".");
    std::string file_name, target_name, output_file;
 
    for (int i = 1; i < argc; i++) {
@@ -235,6 +235,8 @@ int main(int argc, const char* argv[])
       print_usage(argv[0]);
       return EXIT_FAILURE;
    }
+
+   paths = delete_duplicates(paths);
 
    // search for header inclusions
    std::vector<std::string> dependencies
