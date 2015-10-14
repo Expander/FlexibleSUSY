@@ -302,7 +302,7 @@ int main(int argc, const char* argv[])
    dependencies.insert(dependencies.begin(), file_name);
 
    if (target_name.empty())
-      target_name = replace_extension(file_name, "o");
+      target_name = replace_extension(filename(file_name), "o");
 
    if (output_file.empty()) {
       print_dependencies(target_name, dependencies);
