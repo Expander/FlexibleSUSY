@@ -260,6 +260,11 @@ TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
 endif
 
+ifeq ($(shell $(FSCONFIG) --with-HSSUSY),yes)
+TEST_SH += \
+		$(DIR)/test_HSSUSY_SUSYHD.sh
+endif
+
 TEST_META := \
 		$(DIR)/test_BetaFunction.m \
 		$(DIR)/test_CConversion.m \
