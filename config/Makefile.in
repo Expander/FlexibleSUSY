@@ -183,17 +183,17 @@ clean-dep:
 depend:  clean-dep
 depend:  $(ALLDEP)
 
-%.d: %.cpp $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -o '$@' $<
+%.d: %.cpp | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.c $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -o '$@' $<
+%.d: %.c | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.f $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -o '$@' $<
+%.d: %.f | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
-%.d: %.F $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -o '$@' $<
+%.d: %.F | $(DEPGEN)
+	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
 
 clean-executables:
 	-rm -f $(ALLEXE)
